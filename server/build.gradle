@@ -8,9 +8,13 @@ plugins {
 	id "com.github.ben-manes.versions" version "0.52.0"
 }
 
-group = "thesis.aet"
+group = "de.tum.cit.aet.thesis"
 version = "3.0.6"
 description = "Thesis Management"
+
+springBoot {
+	mainClass = "de.tum.cit.aet.thesis.ThesisManagementApplication"
+}
 
 java {
 	sourceCompatibility = JavaVersion.VERSION_21
