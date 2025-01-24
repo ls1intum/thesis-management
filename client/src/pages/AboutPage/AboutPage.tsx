@@ -40,12 +40,12 @@ const AboutPage = () => {
   return (
     <PublicArea withBackButton={true}>
       <Stack>
-        <Title>ThesisManagement</Title>
+        <Title>Thesis Management</Title>
         <Text>
-          ThesisManagement addresses inefficient manual thesis management processes at large universities
-          through a web-based platform. The system digitizes the entire lifecycle from student
-          applications to final grading, serving three key stakeholders: supervisors (professors),
-          advisors (doctoral candidates), and students. Key features include:
+          Thesis Management addresses inefficient manual thesis management processes at large
+          universities through a web-based platform. The system digitizes the entire lifecycle from
+          student applications to final grading, serving three key stakeholders: supervisors
+          (professors), advisors (doctoral candidates), and students. Key features include:
         </Text>
         <List>
           <List.Item>
@@ -89,13 +89,13 @@ const AboutPage = () => {
         <Title order={3}>Features</Title>
         <Text>
           The following flowchart diagram provides a visual overview of the thesis processes
-          implemented in ThesisManagement. These diagram illustrates the step-by-step workflows involved,
-          from thesis topic selection and application submission to the final grading and completion
-          stages. It highlights key actions, decision points, and interactions between students,
-          advisors, and supervisors, clarifying how tasks are sequenced and managed within the
-          system. These flowcharts offer a quick reference for understanding how each role engages
-          in the thesis process, ensuring transparency and consistency in task progression and
-          responsibilities across different stages.
+          implemented in Thesis Management. These diagram illustrates the step-by-step workflows
+          involved, from thesis topic selection and application submission to the final grading and
+          completion stages. It highlights key actions, decision points, and interactions between
+          students, advisors, and supervisors, clarifying how tasks are sequenced and managed within
+          the system. These flowcharts offer a quick reference for understanding how each role
+          engages in the thesis process, ensuring transparency and consistency in task progression
+          and responsibilities across different stages.
         </Text>
         <Center>
           <Image src={flowchart} style={{ maxWidth: '600px' }} />

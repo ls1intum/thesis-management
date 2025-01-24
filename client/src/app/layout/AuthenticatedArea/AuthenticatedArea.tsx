@@ -182,7 +182,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
                 style={{ cursor: 'pointer' }}
                 onClick={() => navigate('/')}
               >
-                ThesisManagement
+                Thesis Management
               </Text>
               <ColorSchemeToggleButton ml='auto' />
             </Group>
