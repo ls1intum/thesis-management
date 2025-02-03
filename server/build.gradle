@@ -52,7 +52,7 @@ dependencies {
 	implementation "org.mnode.ical4j:ical4j:4.1.0"
 	implementation "com.itextpdf:itext-core:9.0.0"
 	implementation "com.itextpdf:html2pdf:6.0.0"
-	implementation "com.auth0:java-jwt:4.4.0"
+	implementation "com.auth0:java-jwt:4.5.0"
 
 	implementation "ch.qos.logback:logback-classic:${logback_version}"
 	implementation "ch.qos.logback:logback-core:${logback_version}"
