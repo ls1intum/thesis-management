@@ -30,7 +30,7 @@
     "update": "ncu -i --format group"
   },
   "dependencies": {
-    "@mantine/core": "7.16.1",
+    "@mantine/core": "7.16.3",
     "@mantine/dates": "7.16.1",
     "@mantine/dropzone": "7.16.1",
     "@mantine/form": "7.16.1",
