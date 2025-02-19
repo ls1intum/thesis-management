@@ -1,11 +1,11 @@
-# ThesisManagement (previously ThesisTrack)
+# Thesis Management
 
-ThesisManagement is a web-based thesis management system designed to streamline the thesis process in academic institutions by integrating essential stages into a single platform. 
+Thesis Management is a web-based thesis management system designed to streamline the thesis process in academic institutions by integrating essential stages into a single platform. 
 Developed to address challenges in managing large volumes of theses, it facilitates seamless interactions between students, advisors, and supervisors. 
 Key features include a centralized application process, guided workflows for thesis writing, automated notifications, and a comprehensive Gantt chart for tracking progress. 
 By consolidating communication, feedback, and file management, ThesisManagement enhances transparency, reduces administrative burdens, and fosters efficient thesis supervision and assessment.
 
-ThesisManagement was developed as part of this [bachelor's thesis](docs/files/ba-thesis-fabian-emilius.pdf).
+Thesis Management was developed as part of this [bachelor's thesis](docs/files/ba-thesis-fabian-emilius.pdf).
 
 ## User Documentation
 
