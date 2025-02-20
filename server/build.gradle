@@ -38,21 +38,29 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
 	// Avoid outdated version of netty to prevent security issues
-	implementation("io.netty:netty-common") {
-		version {
-			strictly netty_version
-		}
-	}
+	implementation("io.netty:netty-buffer") { version { 				strictly netty_version } }
+	implementation("io.netty:netty-codec") { version { 					strictly netty_version } }
+	implementation("io.netty:netty-codec-dns") { version { 				strictly netty_version } }
+	implementation("io.netty:netty-codec-http") { version { 			strictly netty_version } }
+	implementation("io.netty:netty-codec-http2") { version { 			strictly netty_version } }
+	implementation("io.netty:netty-codec-socks") { version { 			strictly netty_version } }
+	implementation("io.netty:netty-common") { version { 				strictly netty_version } }
+	implementation("io.netty:netty-resolver") { version { 	    		strictly netty_version } }
+	implementation("io.netty:netty-resolver-dns") { version { 			strictly netty_version } }
+	implementation("io.netty:netty-transport") { version { 				strictly netty_version } }
+	implementation("io.netty:netty-transport-native-epoll") { version {	strictly netty_version } }
+	implementation("io.netty:netty-handler") { version { 				strictly netty_version } }
+	implementation("io.netty:netty-handler-proxy") { version { 			strictly netty_version } }
 
-	implementation "org.liquibase:liquibase-core:4.31.0"
+	implementation "org.liquibase:liquibase-core:4.31.1"
 	implementation "org.postgresql:postgresql:42.7.5"
 
 	implementation "commons-io:commons-io:2.18.0"
 	implementation "com.github.vladimir-bukhtoyarov:bucket4j-core:8.0.1"
 	implementation "org.mnode.ical4j:ical4j:4.1.0"
-	implementation "com.itextpdf:itext-core:9.0.0"
-	implementation "com.itextpdf:html2pdf:6.0.0"
-	implementation "com.auth0:java-jwt:4.4.0"
+	implementation "com.itextpdf:itext-core:9.1.0"
+	implementation "com.itextpdf:html2pdf:6.1.0"
+	implementation "com.auth0:java-jwt:4.5.0"
 
 	implementation "ch.qos.logback:logback-classic:${logback_version}"
 	implementation "ch.qos.logback:logback-core:${logback_version}"
@@ -101,6 +109,22 @@ test {
 
 tasks.withType(JavaCompile).configureEach {
 	options.compilerArgs << "-Xlint:deprecation"
+}
+
+def isNonStable = { String version ->
+	def stableKeyword = ["RELEASE", "FINAL", "GA"].any { it -> version.toUpperCase().contains(it) }
+	def regex = /^[0-9,.v-]+(-r)?$/
+	return !stableKeyword && !(version ==~ regex)
+}
+
+tasks.named("dependencyUpdates").configure {
+	rejectVersionIf {
+		isNonStable(it.candidate.version)
+	}
+
+	rejectVersionIf {
+		isNonStable(it.candidate.version) && !isNonStable(it.currentVersion)
+	}
 }
 
 // Available commands:
