@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "de.tum.cit.aet.thesis"
-version = "3.0.6"
+version = "3.0.7"
 description = "Thesis Management"
 
 springBoot {
@@ -51,6 +51,8 @@ dependencies {
 	implementation("io.netty:netty-transport-native-epoll") { version {	strictly netty_version } }
 	implementation("io.netty:netty-handler") { version { 				strictly netty_version } }
 	implementation("io.netty:netty-handler-proxy") { version { 			strictly netty_version } }
+
+	implementation("net.minidev:json-smart") { version { 				strictly "2.5.2" } }
 
 	implementation "org.liquibase:liquibase-core:4.31.1"
 	implementation "org.postgresql:postgresql:42.7.5"

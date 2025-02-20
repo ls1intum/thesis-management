@@ -92,7 +92,7 @@ public abstract class BaseIntegrationTest {
     protected ObjectMapper objectMapper;
 
     @Container
-    protected static PostgreSQLContainer<?> dbContainer = new PostgreSQLContainer<>("postgres:17.1-alpine");
+    protected static PostgreSQLContainer<?> dbContainer = new PostgreSQLContainer<>("postgres:17.2-alpine");
 
     protected static void configureProperties(DynamicPropertyRegistry registry) {
         dbContainer.start();

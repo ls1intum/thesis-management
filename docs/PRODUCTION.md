@@ -75,7 +75,7 @@ environment:
 
 ## Reverse Proxy
 ```yaml
-image: traefik:v3.2
+image: traefik:v3.3
 command:
   - "--providers.docker=true"
   - "--providers.docker.exposedByDefault=false"
