@@ -3,7 +3,7 @@ name: Build and Deploy to Dev
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [develop, main]
 
 jobs:
   run-tests:
