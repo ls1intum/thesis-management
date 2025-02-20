@@ -52,6 +52,8 @@ dependencies {
 	implementation("io.netty:netty-handler") { version { 				strictly netty_version } }
 	implementation("io.netty:netty-handler-proxy") { version { 			strictly netty_version } }
 
+	implementation("net.minidev:json-smart") { version { 				strictly "2.5.2" } }
+
 	implementation "org.liquibase:liquibase-core:4.31.1"
 	implementation "org.postgresql:postgresql:42.7.5"
 
