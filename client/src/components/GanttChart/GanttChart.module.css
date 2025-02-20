@@ -1,0 +1,142 @@
+$chart-timeline-height: rem(1.3rem);
+$chart-row-spacing: rem(0.5rem);
+
+.chartContainer {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.chartBox {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-width: 800px;
+}
+
+.headers {
+    display: flex;
+    flex-direction: row;
+    border-bottom: 1px solid var(--mantine-color-text);
+}
+
+.dataHeader {
+    padding: rem(3);
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: center;
+
+    border-right: 1px solid var(--mantine-color-text);
+}
+
+.timelineHeader {
+    flex-grow: 1;
+    position: relative;
+}
+
+.timelineTick {
+    position: absolute;
+    bottom: 0;
+    transform: translateX(-50%);
+    margin-bottom: 5px;
+}
+
+.timelineTick::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1px;
+    height: 5px;
+    background-color: var(--mantine-color-text);
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.contentBackground {
+    display: flex;
+    flex-direction: row;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.columnBackground {
+    position: relative;
+}
+
+.timelineBackground {
+    flex-grow: 1;
+    position: relative;
+}
+
+.nowDivider {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    border-right: 1px solid var(--mantine-color-dimmed);
+    transform: translateX(-50%);
+}
+
+.groupRow {
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+}
+
+.groupContent {
+    display: flex;
+    flex-direction: column;
+}
+
+.groupContentRow {
+    display: flex;
+    flex-direction: row;
+    border-radius: 2px;
+}
+
+.groupContentRow:hover {
+    background-color: var(--mantine-color-default-hover)
+}
+
+.dataColumn {
+    height: calc($chart-timeline-height + 2 * $chart-row-spacing);
+    padding: 0 rem(5);
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+
+    display: flex;
+    align-items: center;
+
+    border-right: 1px solid var(--mantine-color-dimmed);
+}
+
+.timelineColumn {
+    position: relative;
+    height: calc($chart-timeline-height + 2 * $chart-row-spacing);
+    flex-grow: 1;
+}
+
+.timelinePart {
+    position: absolute;
+    top: $chart-row-spacing;
+    height: $chart-timeline-height;
+}
+
+.timelineEvent {
+    position: absolute;
+    top: $chart-row-spacing;
+    height: $chart-timeline-height;
+    transform: translateX(-50%);
+    color: var(--mantine-color-text);
+}

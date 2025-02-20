@@ -1,23 +1,27 @@
 {
   "compilerOptions": {
     "outDir": "./dist/",
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true,
-    "module": "CommonJS",
-    "target": "es2020",
+    "module": "ESNext",
+    "target": "ESNext",
     "jsx": "react-jsx",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
     "allowJs": true,
     "moduleResolution": "node",
     "strict": true,
-    "skipLibCheck": true,
+    "isolatedModules": true,
     "noImplicitAny": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "plugins": [
+      { "name": "typescript-plugin-css-modules" }
+    ]
   },
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
     "src/**/*.jsx",
-    "src/**/*.js",
-    "webpack.config.ts"
+    "src/**/*.js"
   ]
 }

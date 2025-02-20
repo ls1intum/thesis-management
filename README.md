@@ -1,63 +1,114 @@
-# thesis-tracker
-Web Application for trackage of theses applied for and supervised at the chair
+# Thesis Management
 
-## Client - React Web Application
+Thesis Management is a web-based thesis management system designed to streamline the thesis process in academic institutions by integrating essential stages into a single platform. 
+Developed to address challenges in managing large volumes of theses, it facilitates seamless interactions between students, advisors, and supervisors. 
+Key features include a centralized application process, guided workflows for thesis writing, automated notifications, and a comprehensive Gantt chart for tracking progress. 
+By consolidating communication, feedback, and file management, ThesisManagement enhances transparency, reduces administrative burdens, and fosters efficient thesis supervision and assessment.
 
-### Local development
+Thesis Management was developed as part of this [bachelor's thesis](docs/files/ba-thesis-fabian-emilius.pdf).
 
-#### Preconditions
-* Server running at http://localhost:8080
-* Keycloak realm `thesis-track` is available under http://localhost:8081 (See [Keycloak Setup](#keycloak-setup))
+## User Documentation
 
-To start the client application for local development, navigate to /client folder and execute the following command from the terminal:
-```
-yarn install
-yarn run dev
-```
+A short description and a demo video of the most important functionality of the platform.
+The videos are grouped by the roles student, advisor and supervisor.
 
-Client is served at http://localhost:3000. <br>
+#### Student
 
-The following **routes** are available: <br>
-`/management/thesis-applications` - Role-protected console for management of thesis applications <br>
-`/applications/thesis` - Form for thesis application submission
+- [Submit Thesis Application](https://live.rbg.tum.de/w/artemisintro/53606)  
+  Allows students to apply for available thesis topics. Students can choose a topic, provide relevant personal details, and submit a motivation letter. This structured process helps reduce application stress by offering clear guidance on required steps.
 
-## Server - Java Spring Boot Application
+- [Edit Thesis Application](https://live.rbg.tum.de/w/artemisintro/53607)  
+  Enables students to modify their submitted application details before it is reviewed by an advisor. This feature allows for adjustments to personal information and application motivation to ensure accuracy.
 
-### Local development
+- [Upload Proposal](https://live.rbg.tum.de/w/artemisintro/53608)  
+  Facilitates the initial submission of the thesis proposal document. Students can submit proposals for review, and advisors can provide feedback directly through the platform, helping improve proposal quality.
 
-#### Preconditions
-* Database available at `jdbc:postgresql://db:5432/thesis-track`
-* Keycloak realm `thesis-track` is available under http://localhost:8081 (See [Keycloak Setup](#keycloak-setup))
+- [Upload Thesis Files](https://live.rbg.tum.de/w/artemisintro/53609)  
+  Allows students to upload their completed thesis documents and presentations. This section supports version history and locks file uploads after final submission, ensuring that no changes are made post-submission.
 
-Server is served at http://localhost:8080.
+- [Create Presentation Draft](https://live.rbg.tum.de/w/artemisintro/53604)  
+  Provides students with a section to draft their presentation, which can be reviewed and adjusted by advisors. Finalizing this draft ensures that the presentation aligns with thesis requirements and is accessible to invited attendees.
 
-## Keycloak Setup
+- [Manage User Settings](https://live.rbg.tum.de/w/artemisintro/53605)  
+  Enables students to configure their account settings, including personal information such as study program and contact details, ensuring all details are up-to-date.
 
-For local development start a keycloak container by following the steps below:
-1. From the project root execute:
-```
-docker compose up keycloak -d
-```
-2. Open http://localhost:8081 and sign in with admin credentials
-   * Username: `admin`
-   * Password: `admin`
-3. Import the [keycloak-realm-config-example-json](/keycloak-realm-config-example.json) or create a new real `thesis-track` manually.
+#### Advisor
 
-## PostgreSQL Database
+- [Create Thesis Topic](https://live.rbg.tum.de/w/artemisintro/53599)  
+  Allows advisors to create new thesis topics with relevant details, enabling students to browse and apply for them. This feature helps streamline the matching of students to research-aligned topics.
 
-For local development start a database container by executing the following command from the project root:
-```
-docker compose up db -d
-```
+- [Review Applications](https://live.rbg.tum.de/w/artemisintro/53601)  
+  Provides advisors with tools to review student applications. Advisors can assess motivation letters, academic backgrounds, and make an informed decision on each applicant.
 
-### Liquibase
+- [Review Proposal](https://live.rbg.tum.de/w/artemisintro/53602)  
+  Enables advisors to review submitted proposals, provide structured feedback, and help students refine their project objectives and approach before starting full thesis work.
 
-Project employs liquibase technology for database migrations. Upon a database schema change, follow the steps:
-1. Create a new changeset by adding a new script in the [changelog folder](/src/main/resources/db/changelog/changes)
-2. Include the new changeset script into the [master changelog file](/src/main/resources/db/changelog/db.changelog-master.xml)
+- [Add Comments](https://live.rbg.tum.de/w/artemisintro/53600)  
+  Lets advisors post comments and attach relevant files as milestones or feedback for students. This ensures key information is documented and easily referenced during the thesis process.
 
-## Postfix
+- [Schedule Presentation](https://live.rbg.tum.de/w/artemisintro/53603)  
+  Provides a scheduling feature for thesis presentations, allowing advisors to set dates and invite relevant attendees, ensuring that students have a formal opportunity to present their work.
 
-Notice: local development currently does not support mailing functionality, i.e. mail send attempts will fail. However, in spite of the errors the initial requests are executed normally and completely, thus, not limiting local development of other features.
+- [Submit Thesis Assessment](https://live.rbg.tum.de/w/artemisintro/53598)  
+  Enables advisors to submit an evaluation of the thesis, including a recommended grade. This assessment informs the final grading and captures key feedback for student growth.
 
+#### Supervisor
 
+- [Add Final Grade + Complete Thesis](https://live.rbg.tum.de/w/artemisintro/53610)  
+  Allows supervisors to add the final grade and officially mark the thesis as complete. This feature consolidates all feedback and grading, ensuring the thesis lifecycle is fully documented.
+
+#### Thesis Page Permissions
+
+Admins can view and edit all theses on the platform. 
+For the other roles, please view this access table.
+Supervisor, Advisor and Student means that the user is directly assigned to the thesis with that role.
+
+|                             | Supervisor | Advisor | Student | Viewer |
+|-----------------------------|------------|---------|---------|--------|
+| Configure Thesis            | ✅          | ✅       | ❌       | ❌      |
+| View Student Information    | ✅          | ✅       | ❌       | ❌      |
+| Update Thesis Credits       | ✅          | ✅       | ❌       | ❌      |
+| View Thesis Info            | ✅          | ✅       | ✅       | ✅      |
+| Add Abstract / Links        | ✅          | ✅       | ✅       | ❌      |
+| Edit Thesis Titles          | ✅          | ✅       | ✅       | ❌      |
+| Upload Proposal             | ✅          | ✅       | ✅       | ❌      |
+| View Proposal               | ✅          | ✅       | ✅       | ✅      |
+| View Proposal History       | ✅          | ✅       | ✅       | ❌      |
+| Delete Proposal             | ✅          | ✅       | ❌       | ❌      |
+| Request Proposal Changes    | ✅          | ✅       | ❌       | ❌      |
+| Accept Proposal             | ✅          | ✅       | ❌       | ❌      |
+| Upload Thesis Files         | ✅          | ✅       | ✅       | ❌      |
+| View Thesis Files           | ✅          | ✅       | ✅       | ✅      |
+| View Thesis File History    | ✅          | ✅       | ✅       | ❌      |
+| Delete Thesis File          | ✅          | ✅       | ❌       | ❌      |
+| Create Presentation Draft   | ✅          | ✅       | ✅       | ❌      |
+| Schedule Presentation       | ✅          | ✅       | ❌       | ❌      |
+| Post / View Student Comment | ✅          | ✅       | ✅       | ❌      |
+| Post / View Advisor Comment | ✅          | ✅       | ❌       | ❌      |
+| Submit Thesis               | ✅          | ✅       | ✅       | ❌      |
+| Add Assessment              | ✅          | ✅       | ❌       | ❌      |
+| View Assessment             | ✅          | ✅       | ❌       | ❌      |
+| Add Final Grade             | ✅          | ❌       | ❌       | ❌      |
+| View Final Grade            | ✅          | ✅       | ✅       | ❌      |
+| Complete Thesis             | ✅          | ❌       | ❌       | ❌      |
+
+## Developer Documentation
+
+1. [Production Setup](docs/PRODUCTION.md)
+2. [Configuration](docs/CONFIGURATION.md)
+3. [Customizing E-Mails](docs/MAILS.md)
+4. [Development Setup](docs/DEVELOPMENT.md)
+5. [Database Changes](docs/DATABASE.md)
+
+## Features
+
+The following flowchart diagrams provide a visual overview of the thesis processes implemented in ThesisManagement. 
+These diagrams illustrate the step-by-step workflows involved, from thesis topic selection and application submission to the final grading and completion stages. 
+They highlight key actions, decision points, and interactions between students, advisors, and supervisors, clarifying how tasks are sequenced and managed within the system. 
+These flowcharts offer a quick reference for understanding how each role engages in the thesis process, ensuring transparency and consistency in task progression and responsibilities across different stages.
+
+#### Thesis Application Flowchart
+![Thesis Application Flowchart](docs/files/thesis-application-flowchart.svg)
+
+#### Thesis Writing Flowchart
+![Thesis Writing Flowchart](docs/files/thesis-writing-flowchart.svg)

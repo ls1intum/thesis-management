@@ -16,9 +16,9 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: 
+    environment:
       name: ${{ inputs.environment }}
-      url: 'https://${{ vars.SERVER_HOST }}'
+      url: '${{ vars.CLIENT_HOST }}'
     steps:
       - name: SSH to VM and Execute Docker-Compose Down
         uses: appleboy/ssh-action@v1.0.3
@@ -33,10 +33,10 @@ jobs:
           script: |
             docker compose -f docker-compose.prod.yml --env-file=.env.prod down --remove-orphans --rmi all
 
-      - name: checkout
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: 'Create main.cf and master.cf file'
+      - name: Create main.cf and master.cf File
         run: |
           echo "${{ vars.POSTFIX_MAIN_CF }}" > main.cf
           echo "${{ vars.POSTFIX_MASTER_CF }}" > master.cf
@@ -80,7 +80,7 @@ jobs:
           source: "master.cf"
           target: /home/${{ vars.VM_USERNAME }}/postfix-config/
 
-      - name: SSH to VM and create .env.prod file
+      - name: SSH to VM and Create .env.prod
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ vars.VM_HOST }}
@@ -91,23 +91,49 @@ jobs:
           proxy_key: ${{ secrets.DEPLOYMENT_GATEWAY_SSH_KEY }}
           proxy_port: ${{ vars.DEPLOYMENT_GATEWAY_PORT }}
           script: |
-            touch .env.prod 
+            rm .env.prod
+            touch .env.prod
 
-            echo "SPRING_DATASOURCE_URL=${{ vars.SPRING_DATASOURCE_URL }}" > .env.prod
+            echo "SPRING_DATASOURCE_DATABASE=${{ vars.SPRING_DATASOURCE_DATABASE }}" >> .env.prod
             echo "SPRING_DATASOURCE_USERNAME=${{ vars.SPRING_DATASOURCE_USERNAME }}" >> .env.prod
             echo "SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }}" >> .env.prod
 
+            echo "APP_HOSTNAME=${{ vars.APP_HOSTNAME }}" >> .env.prod
             echo "SERVER_HOST=${{ vars.SERVER_HOST }}" >> .env.prod
             echo "CLIENT_HOST=${{ vars.CLIENT_HOST }}" >> .env.prod
+            
+            echo "APPLICATION_TITLE=${{ vars.APPLICATION_TITLE }}" >> .env.prod
+            echo "CHAIR_NAME=${{ vars.CHAIR_NAME }}" >> .env.prod
+            echo "CHAIR_URL=${{ vars.CHAIR_URL }}" >> .env.prod
+            echo "DEFAULT_SUPERVISOR_UUID=${{ vars.DEFAULT_SUPERVISOR_UUID }}" >> .env.prod
+            echo "ALLOW_SUGGESTED_TOPICS=${{ vars.ALLOW_SUGGESTED_TOPICS }}" >> .env.prod
+            echo "THESIS_TYPES=${{ vars.THESIS_TYPES }}" >> .env.prod
+            echo "STUDY_PROGRAMS=${{ vars.STUDY_PROGRAMS }}" >> .env.prod
+            echo "STUDY_DEGREES=${{ vars.STUDY_DEGREES }}" >> .env.prod
+            echo "GENDERS=${{ vars.GENDERS }}" >> .env.prod
+            echo "LANGUAGES=${{ vars.LANGUAGES }}" >> .env.prod
+            echo "CUSTOM_DATA=${{ vars.CUSTOM_DATA }}" >> .env.prod
+            echo "THESIS_FILES=${{ vars.THESIS_FILES }}" >> .env.prod
+            
+            echo "SCIENTIFIC_WRITING_GUIDE=${{ vars.SCIENTIFIC_WRITING_GUIDE }}" >> .env.prod
 
+            echo "MAIL_SENDER=${{ vars.MAIL_SENDER }}" >> .env.prod
+            echo "MAIL_SIGNATURE=${{ vars.MAIL_SIGNATURE }}" >> .env.prod
+            echo "MAIL_BCC_RECIPIENTS=${{ vars.MAIL_BCC_RECIPIENTS }}" >> .env.prod
+            echo "MAIL_WORKSPACE_URL=${{ vars.MAIL_WORKSPACE_URL }}" >> .env.prod
+            
             echo "KEYCLOAK_HOST=${{ vars.KEYCLOAK_HOST }}" >> .env.prod
-            echo "KEYCLOAK_ISSUER_URI=${{ vars.KEYCLOAK_HOST }}/realms/${{ vars.KEYCLOAK_REALM_NAME }}" >> .env.prod
-            echo "KEYCLOAK_JWK_SET_URI=${{ vars.KEYCLOAK_HOST }}/realms/${{ vars.KEYCLOAK_REALM_NAME }}/protocol/openid-connect/certs" >> .env.prod
-            echo "KEYCLOAK_CLIENT_SECRET=${{ secrets.KEYCLOAK_CLIENT_SECRET }}" >> .env.prod
-            echo "IOS_SENDER_MAIL=${{ vars.IOS_SENDER_MAIL }}" >> .env.prod
-            echo "CHAIR_MEMBER_RECIPIENTS=${{ vars.CHAIR_MEMBER_RECIPIENTS }}" >> .env.prod
-            echo "ENVIRONMENT=${{ vars.ENVIRONMENT }}" >> .env.prod
-
+            echo "KEYCLOAK_REALM_NAME=${{ vars.KEYCLOAK_REALM_NAME }}" >> .env.prod
+            echo "KEYCLOAK_CLIENT_ID=${{ vars.KEYCLOAK_CLIENT_ID }}" >> .env.prod
+            echo "KEYCLOAK_SERVICE_CLIENT_ID=${{ vars.KEYCLOAK_SERVICE_CLIENT_ID }}" >> .env.prod
+            echo "KEYCLOAK_SERVICE_CLIENT_SECRET=${{ secrets.KEYCLOAK_SERVICE_CLIENT_SECRET }}" >> .env.prod
+            echo "KEYCLOAK_SERVICE_STUDENT_GROUP_NAME=${{ vars.KEYCLOAK_SERVICE_STUDENT_GROUP_NAME }}" >> .env.prod
+            
+            echo "CALDAV_ENABLED=${{ vars.CALDAV_ENABLED }}" >> .env.prod
+            echo "CALDAV_URL=${{ vars.CALDAV_URL }}" >> .env.prod
+            echo "CALDAV_USERNAME=${{ vars.CALDAV_USERNAME }}" >> .env.prod
+            echo "CALDAV_PASSWORD=${{ secrets.CALDAV_PASSWORD }}" >> .env.prod
+            
             echo "SERVER_IMAGE_TAG=${{ inputs.server_image_tag }}" >> .env.prod
             echo "CLIENT_IMAGE_TAG=${{ inputs.client_image_tag }}" >> .env.prod
 

@@ -1,17 +1,24 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.2.5'
-	id 'io.spring.dependency-management' version '1.1.4'
-	id 'org.liquibase.gradle' version '2.2.0'
+	id "java"
+	id "idea"
+	id "com.github.andygoossens.modernizer" version "1.11.0"
+	id "com.gorylenko.gradle-git-properties" version "2.4.2"
+	id "org.springframework.boot" version "${spring_boot_version}"
+	id "io.spring.dependency-management" version "1.1.7"
+	id "com.github.ben-manes.versions" version "0.52.0"
 }
 
-group = 'thesis-track.ls1'
-version = '0.0.1'
+group = "de.tum.cit.aet.thesis"
+version = "3.0.6"
+description = "Thesis Management"
 
-apply plugin: "org.liquibase.gradle"
+springBoot {
+	mainClass = "de.tum.cit.aet.thesis.ThesisManagementApplication"
+}
 
 java {
-	sourceCompatibility = '17'
+	sourceCompatibility = JavaVersion.VERSION_21
+	targetCompatibility = JavaVersion.VERSION_21
 }
 
 repositories {
@@ -19,28 +26,86 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'org.springframework.boot:spring-boot-starter-mail'
-	implementation 'org.postgresql:postgresql'
-	implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.0'
-	implementation 'javax.xml.bind:jaxb-api:2.3.1'
-	implementation 'com.github.fge:json-patch:1.7'
-	implementation 'com.konghq:unirest-java:3.14.2'
-	implementation 'com.konghq:unirest-objectmapper-jackson:3.14.2'
-	implementation 'com.github.vladimir-bukhtoyarov:bucket4j-core:7.6.0'
+	implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+	implementation "org.springframework.boot:spring-boot-starter-web"
+	implementation "org.springframework.boot:spring-boot-starter-validation"
+	implementation "org.springframework.boot:spring-boot-starter-mail"
+	implementation "org.springframework.boot:spring-boot-starter-webflux"
+	implementation "org.springframework.boot:spring-boot-starter-security"
+	implementation "org.springframework.boot:spring-boot-starter-oauth2-client"
+	implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
+	implementation "org.springframework.boot:spring-boot-starter-thymeleaf"
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
-	// Liquibase
-	implementation 'org.liquibase:liquibase-core:4.23.0'
-	implementation 'org.liquibase:liquibase-groovy-dsl:2.1.1'
+	// Avoid outdated version of netty to prevent security issues
+	implementation("io.netty:netty-common") {
+		version {
+			strictly netty_version
+		}
+	}
 
-	// Authentication
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
-	implementation 'org.keycloak:keycloak-admin-client:21.1.1'
+	implementation "org.liquibase:liquibase-core:4.31.0"
+	implementation "org.postgresql:postgresql:42.7.5"
 
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
+	implementation "commons-io:commons-io:2.18.0"
+	implementation "com.github.vladimir-bukhtoyarov:bucket4j-core:8.0.1"
+	implementation "org.mnode.ical4j:ical4j:4.1.0"
+	implementation "com.itextpdf:itext-core:9.0.0"
+	implementation "com.itextpdf:html2pdf:6.0.0"
+	implementation "com.auth0:java-jwt:4.4.0"
+
+	implementation "ch.qos.logback:logback-classic:${logback_version}"
+	implementation "ch.qos.logback:logback-core:${logback_version}"
+
+	// use newest version of commons-compress to avoid security issues through outdated dependencies
+	implementation "org.apache.commons:commons-compress:1.27.1"
+
+	compileOnly "org.projectlombok:lombok:1.18.36"
+	annotationProcessor "org.projectlombok:lombok:1.18.36"
+
+	testImplementation("org.springframework.boot:spring-boot-starter-test:${spring_boot_version}") {
+		exclude group: "org.junit.vintage", module: "junit-vintage-engine"
+		exclude group: "com.vaadin.external.google", module: "android-json"
+		exclude group: "org.xmlunit", module: "xmlunit-core"
+	}
+	testImplementation "org.mockito:mockito-core:5.15.2"
+	testImplementation "org.mockito:mockito-junit-jupiter:5.15.2"
+
+	testImplementation "org.testcontainers:testcontainers:${test_container_version}"
+	testImplementation "org.testcontainers:junit-jupiter:${test_container_version}"
+	testImplementation "org.testcontainers:jdbc:${test_container_version}"
+	testImplementation "org.testcontainers:database-commons:${test_container_version}"
+	testImplementation "org.testcontainers:postgresql:${test_container_version}"
+
+	testImplementation "org.junit.jupiter:junit-jupiter-api:5.11.4"
+	testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.11.4"
+	testRuntimeOnly "org.junit.platform:junit-platform-launcher:1.11.4"
 }
+
+springBoot {
+	buildInfo()
+}
+
+test {
+	useJUnitPlatform()
+
+	maxParallelForks = 1
+	forkEvery = 0
+
+	testLogging {
+		events "PASSED", "FAILED", "SKIPPED"
+	}
+	testLogging.showStandardStreams = true
+	systemProperty "spring.profiles.active", "test"
+}
+
+tasks.withType(JavaCompile).configureEach {
+	options.compilerArgs << "-Xlint:deprecation"
+}
+
+// Available commands:
+//
+// Find dependency updates:    ./gradlew dependencyUpdates -Drevision=release
+// Test:                       ./gradlew test
+// Build:                      ./gradlew build -x test
+// Run:						   ./gradlew bootRun

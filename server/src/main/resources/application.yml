@@ -1,43 +1,52 @@
 logging:
   level:
     liquibase: INFO
+    net.fortuna.ical4j.util.Configurator: INFO
 
 spring:
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/thesis-track}
-    username: ${SPRING_DATASOURCE_USERNAME:thesis-track-postgres}
-    password: ${SPRING_DATASOURCE_PASSWORD:thesis-track-postgres}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5144/thesis-management}
+    username: ${SPRING_DATASOURCE_USERNAME:thesis-management-postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:thesis-management-postgres}
     driver-class-name: org.postgresql.Driver
   liquibase:
+    enabled: true
     change-log: db/changelog/db.changelog-master.xml
   jpa:
+    open-in-view: true
     hibernate:
       ddl-auto: validate
-    # show-sql: true
+    show-sql: ${DEBUG_MODE:false}
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-    #   format_sql: true
+        format_sql: ${DEBUG_MODE:false}
+  thymeleaf:
+    prefix: ${MAIL_TEMPLATE_FOLDER:classpath:/mail-templates/}
+    suffix: .html
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
   security:
     oauth2:
       client:
         registration:
           keycloak:
-            client-id: thesis-track
-            client-secret: ${KEYCLOAK_CLIENT_SECRET:}
+            client-id: ${KEYCLOAK_CLIENT_ID:thesis-management-app}
             scope: openid
         provider:
           keycloak:
-            issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8081/realms/thesis-track}
+            issuer-uri: ${KEYCLOAK_HOST:http://localhost:8081}/realms/${KEYCLOAK_REALM_NAME:thesis-management}
             user-name-attribute: preferred_username
       resourceserver:
         jwt:
-          jwk-set-uri: ${KEYCLOAK_JWK_SET_URI:http://localhost:8081/realms/thesis-track/protocol/openid-connect/certs}
-          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8081/realms/thesis-track}
+          jwk-set-uri: ${KEYCLOAK_HOST:http://localhost:8081}/realms/${KEYCLOAK_REALM_NAME:thesis-management}/protocol/openid-connect/certs
+          issuer-uri: ${KEYCLOAK_HOST:http://localhost:8081}/realms/${KEYCLOAK_REALM_NAME:thesis-management}
   mail:
-    host: postfix
-    # username:
-    # password:
+    host: ${POSTFIX_HOST:localhost}
+    port: ${POSTFIX_PORT:25}
+    username: ${POSTFIX_USERNAME:}
+    password: ${POSTFIX_PASSWORD:}
     properties:
       mail:
         transport:
@@ -46,24 +55,46 @@ spring:
           starttls:
             enable: true
 
-jwt:
-  auth:
-    converter:
-      resource-id: thesis-track-server
-      principal-attribute: preferred_username
-
-thesis-track:
-  environment: ${ENVIRONMENT:dev}
-  client:
-    host: ${CLIENT_HOST:localhost}
-  mail:
-    sender: ${IOS_SENDER_MAIL:test@ios.ase.cit.tum.de}
-    chair-member-recipients: ${CHAIR_MEMBER_RECIPIENTS:}
-  storage:
-    theses-application-uploads-location: thesis_application_uploads
-    mailing-templates-location: mailing_templates
-
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  info:
+    java:
+      enabled: true
+    git:
+      enabled: true
+  health:
+    mail:
+      enabled: ${MAIL_ENABLED:false}
 
 server:
   servlet:
     context-path: /api
+
+thesis-management:
+  keycloak:
+    host: ${KEYCLOAK_HOST:http://localhost:8081}
+    realm-name: ${KEYCLOAK_REALM_NAME:thesis-management}
+    client-id: ${KEYCLOAK_CLIENT_ID:thesis-management-app}
+    service-client:
+      id: ${KEYCLOAK_SERVICE_CLIENT_ID:thesis-management-service-client}
+      secret: ${KEYCLOAK_SERVICE_CLIENT_SECRET:}
+      student-group-name: ${KEYCLOAK_SERVICE_STUDENT_GROUP_NAME:thesis-students}
+  calendar:
+    enabled: ${CALDAV_ENABLED:false}
+    url: ${CALDAV_URL:}
+    username: ${CALDAV_USERNAME:}
+    password: ${CALDAV_PASSWORD:}
+  client:
+    host: ${CLIENT_HOST:http://localhost:3000}
+  mail:
+    enabled: ${MAIL_ENABLED:false}
+    sender: ${MAIL_SENDER:test@ios.ase.cit.tum.de}
+    signature: ${MAIL_SIGNATURE:}
+    workspace-url: ${MAIL_WORKSPACE_URL:https://slack.com}
+    bcc-recipients: ${MAIL_BCC_RECIPIENTS:}
+  storage:
+    upload-location: ${UPLOAD_FOLDER:uploads}
+  scientific-writing-guide: ${SCIENTIFIC_WRITING_GUIDE:}

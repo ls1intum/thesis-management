@@ -17,13 +17,13 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - dockerfile: ./client/Dockerfile
-            image: ghcr.io/ls1intum/thesis-track/thesis-track-client
-            context: ./client
+          - dockerfile: ./client.Dockerfile
+            image: ghcr.io/ls1intum/thesis-management/thesis-management-client
+            context: ./
             path: client
-          - dockerfile: ./server/Dockerfile
-            image: ghcr.io/ls1intum/thesis-track/thesis-track-server
-            context: ./server
+          - dockerfile: ./server.Dockerfile
+            image: ghcr.io/ls1intum/thesis-management/thesis-management-server
+            context: ./
             path: server
     outputs:
       server_image_tag: "${{ steps.output-tag-server.outputs.server_image_tag }}"
@@ -36,13 +36,13 @@ jobs:
 
       - name: Get changed files in the client folder
         id: changed-files-client-folder
-        uses: tj-actions/changed-files@v44
+        uses: tj-actions/changed-files@v45
         with:
           files: client/**
 
       - name: Get changed files in the server folder
         id: changed-files-server-folder
-        uses: tj-actions/changed-files@v44
+        uses: tj-actions/changed-files@v45
         with:
           files: server/**
 
@@ -84,10 +84,6 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
-          build-args: |
-            "SERVER_HOST=${{ vars.SERVER_HOST }}"
-            "KEYCLOAK_HOST=${{ vars.KEYCLOAK_HOST }}"
-            "KEYCLOAK_REALM_NAME=${{ vars.KEYCLOAK_REALM_NAME }}"
 
       - id: output-tag-client
         run: |
