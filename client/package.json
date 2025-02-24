@@ -56,7 +56,7 @@
   },
   "devDependencies": {
     "@eslint/compat": "1.2.6",
-    "@eslint/eslintrc": "3.2.0",
+    "@eslint/eslintrc": "3.3.0",
     "@eslint/js": "9.20.0",
     "@types/react": "18.3.18",
     "@types/react-avatar-editor": "13.0.3",
