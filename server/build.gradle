@@ -43,6 +43,8 @@ dependencies {
 	implementation "org.liquibase:liquibase-core:4.31.1"
 	implementation "org.postgresql:postgresql:42.7.5"
 
+	implementation "org.hibernate.orm:hibernate-core:6.6.9.Final"
+
 	implementation "commons-io:commons-io:2.18.0"
 	implementation "com.github.vladimir-bukhtoyarov:bucket4j-core:8.0.1"
 	implementation "org.mnode.ical4j:ical4j:4.1.0"
