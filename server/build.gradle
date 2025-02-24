@@ -37,13 +37,26 @@ dependencies {
 	implementation "org.springframework.boot:spring-boot-starter-thymeleaf"
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
+	// Avoid outdated version of netty to prevent security issues
+	implementation("io.netty:netty-buffer") { version { 				strictly netty_version } }
+	implementation("io.netty:netty-codec") { version { 					strictly netty_version } }
+	implementation("io.netty:netty-codec-dns") { version { 				strictly netty_version } }
+	implementation("io.netty:netty-codec-http") { version { 			strictly netty_version } }
+	implementation("io.netty:netty-codec-http2") { version { 			strictly netty_version } }
+	implementation("io.netty:netty-codec-socks") { version { 			strictly netty_version } }
+	implementation("io.netty:netty-common") { version { 				strictly netty_version } }
+	implementation("io.netty:netty-resolver") { version { 	    		strictly netty_version } }
+	implementation("io.netty:netty-resolver-dns") { version { 			strictly netty_version } }
+	implementation("io.netty:netty-transport") { version { 				strictly netty_version } }
+	implementation("io.netty:netty-transport-native-epoll") { version {	strictly netty_version } }
+	implementation("io.netty:netty-handler") { version { 				strictly netty_version } }
+	implementation("io.netty:netty-handler-proxy") { version { 			strictly netty_version } }
+	
 	// Avoid outdated version to prevent security issues
 	implementation("net.minidev:json-smart") { version { 				strictly "2.5.2" } }
 
 	implementation "org.liquibase:liquibase-core:4.31.1"
 	implementation "org.postgresql:postgresql:42.7.5"
-
-	implementation "org.hibernate.orm:hibernate-core:6.6.9.Final"
 
 	implementation "commons-io:commons-io:2.18.0"
 	implementation "com.github.vladimir-bukhtoyarov:bucket4j-core:8.0.1"
