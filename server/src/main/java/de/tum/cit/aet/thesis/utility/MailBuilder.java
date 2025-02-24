@@ -82,14 +82,13 @@ public class MailBuilder {
         return this;
     }
 
-    public MailBuilder addRawAttatchment(ByteArrayDataSource file, String filename) {
+    public void addRawAttatchment(ByteArrayDataSource file, String filename) {
         if (filename == null || filename.isBlank()) {
-            return this;
+            return;
         }
 
         rawAttachments.add(new RawAttachment(filename, file));
 
-        return this;
     }
 
     public MailBuilder addNotificationName(String name) {
@@ -132,26 +131,17 @@ public class MailBuilder {
         return this;
     }
 
-    public MailBuilder addBccRecipient(InternetAddress address) {
+    public void addBccRecipient(InternetAddress address) {
         if (bccRecipients.contains(address)) {
-            return this;
+            return;
         }
 
         bccRecipients.add(address);
 
-        return this;
     }
 
     public MailBuilder sendToChairMembers() {
         for (User user : config.getChairMembers()) {
-            addPrimaryRecipient(user);
-        }
-
-        return this;
-    }
-
-    public MailBuilder sendToChairStudents() {
-        for (User user : config.getChairStudents()) {
             addPrimaryRecipient(user);
         }
 

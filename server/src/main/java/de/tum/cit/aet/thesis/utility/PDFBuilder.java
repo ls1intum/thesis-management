@@ -1,7 +1,6 @@
 package de.tum.cit.aet.thesis.utility;
 
 import com.itextpdf.html2pdf.ConverterProperties;
-import com.itextpdf.html2pdf.resolver.font.DefaultFontProvider;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
@@ -11,6 +10,7 @@ import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.html2pdf.HtmlConverter;
 
 import com.itextpdf.layout.element.Text;
+import com.itextpdf.styledxmlparser.resolver.font.BasicFontProvider;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 
@@ -59,7 +59,7 @@ public class PDFBuilder {
         document.add(mainHeadingParagraph);
 
         ConverterProperties converterProperties = new ConverterProperties();
-        converterProperties.setFontProvider(new DefaultFontProvider(true, false, false));
+        converterProperties.setFontProvider(new BasicFontProvider(true, false, false));
 
         for (Data row : data) {
             Paragraph element = new Paragraph()
