@@ -137,7 +137,7 @@ public abstract class BaseIntegrationTest {
     }
 
     protected String createRandomAuthentication(String role) throws Exception {
-        String universityId = UUID.randomUUID().toString().replace("-", "").substring(0, 12);;
+        String universityId = UUID.randomUUID().toString().replace("-", "").substring(0, 12);
 
         createTestUser(universityId, List.of(role));
 
