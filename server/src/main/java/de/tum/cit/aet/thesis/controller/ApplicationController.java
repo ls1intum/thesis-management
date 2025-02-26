@@ -66,8 +66,8 @@ public class ApplicationController {
     @GetMapping
     public ResponseEntity<PaginationDto<ApplicationDto>> getApplications(
             @RequestParam(required = false) String search,
-            @RequestParam(required = false) ApplicationState[] states,
-            @RequestParam(required = false) String[] topics,
+            @RequestParam(required = false) ApplicationState[] state,
+            @RequestParam(required = false) String[] topic,
             @RequestParam(required = false) String[] types,
             @RequestParam(required = false) String[] previous,
             @RequestParam(required = false, defaultValue = "true") Boolean includeSuggestedTopics,
@@ -84,9 +84,9 @@ public class ApplicationController {
                 fetchAll && authenticatedUser.hasAnyGroup("admin", "supervisor", "advisor") ? null : authenticatedUser.getId(),
                 fetchAll && authenticatedUser.hasAnyGroup("admin", "supervisor", "advisor") ? authenticatedUser.getId() : null,
                 search,
-                states,
+                state,
                 previous,
-                topics,
+                topic,
                 types,
                 includeSuggestedTopics,
                 page,
