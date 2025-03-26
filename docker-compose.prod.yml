@@ -115,7 +115,7 @@ services:
       - thesis-management-network
 
   db:
-    image: "postgres:17.2-alpine"
+    image: "postgres:17.3-alpine"
     container_name: thesis-management-db
     environment:
       - POSTGRES_USER=${SPRING_DATASOURCE_USERNAME}
