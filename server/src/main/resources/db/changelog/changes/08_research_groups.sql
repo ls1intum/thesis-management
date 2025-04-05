@@ -11,10 +11,10 @@ CREATE TABLE
     website_url       TEXT,
     campus            TEXT,
     created_at        TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at        TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_by        UUID      NOT NULL REFERENCES users (user_id),
-    archived          BOOLEAN   NOT NULL DEFAULT FALSE,
-    archived_at       TIMESTAMP
+    updated_at        TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_by        UUID      NOT NULL REFERENCES users (user_id),
+    archived          BOOLEAN   NOT NULL DEFAULT FALSE
 );
 
 --changeset marc:08-research-groups-2
