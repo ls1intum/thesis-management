@@ -74,21 +74,20 @@ BEGIN
                    FALSE
                );
 
-        UPDATE topics SET research_group_id = ase_group_id WHERE research_group_id IS NULL;
+        UPDATE topics
+        SET research_group_id = ase_group_id
+        WHERE research_group_id IS NULL;
 
-        UPDATE applications a
-        SET research_group_id = t.research_group_id
-        FROM topics t
-        WHERE a.topic_id = t.topic_id
-          AND a.research_group_id IS NULL;
+        UPDATE applications
+        SET research_group_id = ase_group_id
+        WHERE research_group_id IS NULL;
 
-        UPDATE theses th
-        SET research_group_id = a.research_group_id
-        FROM applications a
-        WHERE th.application_id = a.application_id
-          AND th.research_group_id IS NULL;
+        UPDATE theses
+        SET research_group_id = ase_group_id
+        WHERE research_group_id IS NULL;
 
-        UPDATE users SET research_group_id = ase_group_id
+        UPDATE users
+        SET research_group_id = ase_group_id
         WHERE research_group_id IS NULL;
     END IF;
 END;'
