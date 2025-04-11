@@ -2,6 +2,7 @@ package de.tum.cit.aet.thesis.service;
 
 import de.tum.cit.aet.thesis.entity.ResearchGroup;
 import de.tum.cit.aet.thesis.entity.User;
+import de.tum.cit.aet.thesis.exception.request.AccessDeniedException;
 import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.repository.ResearchGroupRepository;
 import de.tum.cit.aet.thesis.utility.HibernateHelper;
@@ -28,6 +29,7 @@ public class ResearchGroupService {
   }
 
   public Page<ResearchGroup> getAll(
+      User user,
       String[] heads,
       String[] campuses,
       boolean includeArchived,
@@ -37,6 +39,9 @@ public class ResearchGroupService {
       String sortBy,
       String sortOrder
   ) {
+    if (user.hasAnyGroup("professor", "supervisor", "advisor")) {
+      heads = new String[]{user.getId().toString()};
+    }
     Sort.Order order = new Sort.Order(
         sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,
         HibernateHelper.getColumnName(ResearchGroup.class, sortBy)
@@ -56,10 +61,22 @@ public class ResearchGroupService {
     );
   }
 
-  public ResearchGroup findById(UUID researchGroupId) {
-    return researchGroupRepository.findById(researchGroupId)
+  public ResearchGroup findById(User user, UUID researchGroupId) {
+    ResearchGroup researchGroup = researchGroupRepository.findById(researchGroupId)
         .orElseThrow(() -> new ResourceNotFoundException(
             String.format("Research Group with id %s not found.", researchGroupId)));
+
+    if (user.hasAnyGroup("student")) {
+      return researchGroup;
+    }
+
+    if (user.getResearchGroup() == null
+        || !researchGroup.getId().equals(user.getResearchGroup().getId()) && user.hasAnyGroup(
+        "professor", "supervisor", "advisor")) {
+      throw new AccessDeniedException("You are not authorized to access this Research Group.");
+    }
+
+    return researchGroup;
   }
 
   @Transactional

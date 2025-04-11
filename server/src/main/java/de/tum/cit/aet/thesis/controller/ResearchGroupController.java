@@ -47,9 +47,13 @@ public class ResearchGroupController {
       @RequestParam(required = false, defaultValue = "0") Integer page,
       @RequestParam(required = false, defaultValue = "50") Integer limit,
       @RequestParam(required = false, defaultValue = "name") String sortBy,
-      @RequestParam(required = false, defaultValue = "desc") String sortOrder
+      @RequestParam(required = false, defaultValue = "desc") String sortOrder,
+      JwtAuthenticationToken jwt
   ) {
+    User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
+
     Page<ResearchGroup> researchGroups = researchGroupService.getAll(
+        authenticatedUser,
         heads,
         campuses,
         includeArchived,
@@ -66,8 +70,11 @@ public class ResearchGroupController {
 
   @GetMapping("/{researchGroupId}")
   public ResponseEntity<ResearchGroupDto> getResearchGroup(
-      @PathVariable("researchGroupId") UUID researchGroupId) {
-    ResearchGroup researchGroup = researchGroupService.findById(researchGroupId);
+      @PathVariable("researchGroupId") UUID researchGroupId,
+      JwtAuthenticationToken jwt
+  ) {
+    User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
+    ResearchGroup researchGroup = researchGroupService.findById(authenticatedUser, researchGroupId);
 
     return ResponseEntity.ok(ResearchGroupDto.fromResearchGroupEntity(researchGroup));
   }
@@ -101,7 +108,7 @@ public class ResearchGroupController {
       JwtAuthenticationToken jwt
   ) {
     User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
-    ResearchGroup researchGroup = researchGroupService.findById(researchGroupId);
+    ResearchGroup researchGroup = researchGroupService.findById(authenticatedUser, researchGroupId);
 
     researchGroup = researchGroupService.updateResearchGroup(
         authenticatedUser,
@@ -124,7 +131,7 @@ public class ResearchGroupController {
       JwtAuthenticationToken jwt
   ) {
     User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
-    ResearchGroup researchGroup = researchGroupService.findById(researchGroupId);
+    ResearchGroup researchGroup = researchGroupService.findById(authenticatedUser, researchGroupId);
     researchGroupService.archiveResearchGroup(authenticatedUser, researchGroup);
 
     return ResponseEntity.noContent().build();
