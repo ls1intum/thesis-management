@@ -1,5 +1,7 @@
 package de.tum.cit.aet.thesis.controller;
 
+import de.tum.cit.aet.thesis.entity.ResearchGroup;
+import de.tum.cit.aet.thesis.service.ResearchGroupService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -29,11 +31,14 @@ import java.util.UUID;
 public class ApplicationController {
     private final ApplicationService applicationService;
     private final AuthenticationService authenticationService;
+    private final ResearchGroupService researchGroupService;
 
     @Autowired
-    public ApplicationController(ApplicationService applicationService, AuthenticationService authenticationService) {
+    public ApplicationController(ApplicationService applicationService, AuthenticationService authenticationService,
+        ResearchGroupService researchGroupService) {
         this.applicationService = applicationService;
         this.authenticationService = authenticationService;
+       this.researchGroupService = researchGroupService;
     }
 
     @PostMapping
@@ -42,6 +47,8 @@ public class ApplicationController {
             JwtAuthenticationToken jwt
     ) {
         User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
+        ResearchGroup researchGroup = researchGroupService.findById(authenticatedUser,
+            payload.researchGroupId());
 
         if (payload.topicId() == null && payload.thesisTitle() == null) {
             throw new ResourceInvalidParametersException("Either topic id or a thesis title must be provided");
@@ -51,13 +58,16 @@ public class ApplicationController {
             throw new ResourceAlreadyExistsException("There is already a pending application for this topic. Please edit your application in the dashboard.");
         }
 
-        Application application = applicationService.createApplication(
-                authenticatedUser,
-                payload.topicId(),
-                RequestValidator.validateStringMaxLengthAllowNull(payload.thesisTitle(), StringLimits.THESIS_TITLE.getLimit()),
-                RequestValidator.validateStringMaxLength(payload.thesisType(), StringLimits.THESIS_TITLE.getLimit()),
-                RequestValidator.validateNotNull(payload.desiredStartDate()),
-                RequestValidator.validateStringMaxLength(payload.motivation(), StringLimits.LONGTEXT.getLimit())
+        Application application = applicationService.createApplication(authenticatedUser,
+            payload.topicId(),
+            RequestValidator.validateStringMaxLengthAllowNull(payload.thesisTitle(),
+                StringLimits.THESIS_TITLE.getLimit()),
+            RequestValidator.validateStringMaxLength(payload.thesisType(),
+                StringLimits.THESIS_TITLE.getLimit()),
+            RequestValidator.validateNotNull(payload.desiredStartDate()),
+            RequestValidator.validateStringMaxLength(payload.motivation(),
+                StringLimits.LONGTEXT.getLimit()),
+            researchGroup
         );
 
         return ResponseEntity.ok(ApplicationDto.fromApplicationEntity(application, application.hasManagementAccess(authenticatedUser)));

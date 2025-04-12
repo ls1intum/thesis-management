@@ -81,7 +81,8 @@ public class ApplicationService {
     }
 
     @Transactional
-    public Application createApplication(User user, UUID topicId, String thesisTitle, String thesisType, Instant desiredStartDate, String motivation) {
+    public Application createApplication(User user, UUID topicId, String thesisTitle,
+        String thesisType, Instant desiredStartDate, String motivation, ResearchGroup researchGroup) {
         Topic topic = topicId == null ? null : topicService.findById(topicId);
 
         if (topic != null && topic.getClosedAt() != null) {
@@ -99,6 +100,7 @@ public class ApplicationService {
         application.setState(ApplicationState.NOT_ASSESSED);
         application.setDesiredStartDate(desiredStartDate);
         application.setCreatedAt(Instant.now());
+        application.setResearchGroup(researchGroup);
 
         application = applicationRepository.save(application);
 

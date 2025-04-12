@@ -11,6 +11,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,12 +53,16 @@ public class ResearchGroupService {
     String[] headsFilter = heads == null || heads.length == 0 ? null : heads;
     String[] campusesFilter = campuses == null || campuses.length == 0 ? null : campuses;
 
+    Pageable pageable = limit == -1
+        ? PageRequest.of(0, Integer.MAX_VALUE, Sort.by(order))
+        : PageRequest.of(page, limit, Sort.by(order));
+
     return researchGroupRepository.searchResearchGroup(
         headsFilter,
         campusesFilter,
         includeArchived,
         searchQueryFilter,
-        PageRequest.of(page, limit, Sort.by(order))
+        pageable
     );
   }
 
