@@ -158,7 +158,9 @@ const MotivationStep = (props: IMotivationStepProps) => {
         <Select
           label='Research Group'
           required={true}
-          disabled={loading || !researchGroups || !!mergedTopic}
+          disabled={
+            loading || !researchGroups || !!mergedTopic || researchGroups.totalElements <= 1
+          }
           data={researchGroups?.content.map((researchGroup: IResearchGroup) => ({
             label: researchGroup.name,
             value: researchGroup.id,

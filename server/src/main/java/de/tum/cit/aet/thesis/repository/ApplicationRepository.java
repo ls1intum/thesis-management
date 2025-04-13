@@ -44,15 +44,17 @@ public interface ApplicationRepository extends JpaRepository<Application, UUID> 
     );
 
     @Query(
-            "SELECT COUNT(DISTINCT a) FROM Application a " +
+        "SELECT COUNT(DISTINCT a) FROM Application a " +
             "LEFT JOIN Topic t ON (a.topic.id = t.id) " +
             "LEFT JOIN TopicRole r ON (t.id = r.topic.id) " +
-            "WHERE " +
-                    "(a.topic IS NULL OR :userId IS NULL OR r.user.id = :userId) AND " +
-                    "a.state = 'NOT_ASSESSED' AND " +
-                    "(:userId IS NULL OR NOT EXISTS(SELECT ar FROM ApplicationReviewer ar WHERE ar.application.id = a.id AND ar.user.id = :userId))"
+            "WHERE (a.researchGroup.id IS NULL OR a.researchGroup.id = :researchGroupId) AND " +
+            "(t.researchGroup.id IS NULL OR t.researchGroup.id = :researchGroupId) AND" +
+            "(a.topic IS NULL OR :userId IS NULL OR r.user.id = :userId) AND " +
+            "a.state = 'NOT_ASSESSED' AND " +
+            "(:userId IS NULL OR NOT EXISTS(SELECT ar FROM ApplicationReviewer ar WHERE ar.application.id = a.id AND ar.user.id = :userId))"
     )
-    long countUnreviewedApplications(@Param("userId") UUID userId);
+    long countUnreviewedApplications(@Param("userId") UUID userId,
+        @Param("researchGroupId") UUID researchGroupId);
 
     @Query(
             "SELECT EXISTS (" +

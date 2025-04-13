@@ -26,6 +26,7 @@ public interface TopicRepository  extends JpaRepository<Topic, UUID>  {
             Pageable page
     );
 
-    @Query("SELECT COUNT(*) FROM Topic t WHERE t.closedAt IS NULL")
-    long countOpenTopics();
+    @Query("SELECT COUNT(*) FROM Topic t WHERE t.closedAt IS NULL AND (:researchGroupId IS NULL "
+        + "OR t.researchGroup.id = :researchGroupId)")
+    long countOpenTopics(@Param("researchGroupId") UUID researchGroupId);
 }

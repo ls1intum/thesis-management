@@ -28,7 +28,9 @@ public class ApplicationReminder {
     @Scheduled(cron = "0 0 10 * * WED")
     public void emailReminder() {
         for (User user : userRepository.getRoleMembers(Set.of("admin", "supervisor", "advisor"))) {
-            long unreviewedApplications = applicationRepository.countUnreviewedApplications(user.getId());
+            long unreviewedApplications =
+                applicationRepository.countUnreviewedApplications(user.getId(),
+                    user.getResearchGroup().getId());
 
             if (unreviewedApplications > 0) {
                 mailingService.sendApplicationReminderEmail(user, unreviewedApplications);

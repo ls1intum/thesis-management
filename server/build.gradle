@@ -120,7 +120,8 @@ test {
 }
 
 tasks.withType(JavaCompile).configureEach {
-	options.compilerArgs << "-Xlint:deprecation"
+    options.compilerArgs << "-Xlint:deprecation"
+    options.compilerArgs << "-parameters"
 }
 
 def isNonStable = { String version ->

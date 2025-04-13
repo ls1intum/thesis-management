@@ -1,5 +1,7 @@
 package de.tum.cit.aet.thesis.service;
 
+import de.tum.cit.aet.thesis.security.CurrentUserProvider;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import de.tum.cit.aet.thesis.constants.ThesisPresentationState;
@@ -26,21 +28,25 @@ public class DashboardService {
     private final ApplicationRepository applicationRepository;
     private final TopicRepository topicRepository;
     private final String scientificWritingGuide;
+    private final CurrentUserProvider currentUserProvider;
 
     public DashboardService(
             ThesisRepository thesisRepository,
             ApplicationRepository applicationRepository,
             TopicRepository topicRepository,
-            @Value("${thesis-management.scientific-writing-guide}") String scientificWritingGuide
+            @Value("${thesis-management.scientific-writing-guide}") String scientificWritingGuide,
+            CurrentUserProvider currentUserProvider
     ) {
         this.thesisRepository = thesisRepository;
         this.applicationRepository = applicationRepository;
         this.topicRepository = topicRepository;
         this.scientificWritingGuide = scientificWritingGuide;
+        this.currentUserProvider = currentUserProvider;
     }
 
     public List<TaskDto> getTasks(User user) {
         List<TaskDto> tasks = new ArrayList<>();
+        UUID researchGroupId = user.getResearchGroup() != null ? user.getResearchGroup().getId() : null;
 
         if (user.hasAnyGroup("student") && !scientificWritingGuide.isBlank()) {
             tasks.add(new TaskDto(
@@ -51,7 +57,7 @@ public class DashboardService {
         }
 
         // general student tasks
-        for (Thesis thesis : thesisRepository.findActiveThesesForRole(user.getId(), Set.of(ThesisRoleName.STUDENT), null)) {
+        for (Thesis thesis : thesisRepository.findActiveThesesForRole(user.getId(), researchGroupId, Set.of(ThesisRoleName.STUDENT), null)) {
             if (thesis.getAbstractField().isBlank() || thesis.getInfo().isBlank()) {
                 tasks.add(new TaskDto(
                         "Add the abstract and additional information to thesis \"" + thesis.getTitle() + "\"",
@@ -62,7 +68,7 @@ public class DashboardService {
         }
 
         // general advisor, supervisor tasks
-        for (Thesis thesis : thesisRepository.findActiveThesesForRole(user.getId(), Set.of(ThesisRoleName.ADVISOR), null)) {
+        for (Thesis thesis : thesisRepository.findActiveThesesForRole(user.getId(), researchGroupId, Set.of(ThesisRoleName.ADVISOR), null)) {
             if (thesis.getState().equals(ThesisState.PROPOSAL)) {
                 continue;
             }
@@ -87,7 +93,7 @@ public class DashboardService {
         }
 
         // proposal task
-        for (Thesis thesis : thesisRepository.findActiveThesesForRole(user.getId(), Set.of(ThesisRoleName.STUDENT), Set.of(ThesisState.PROPOSAL))) {
+        for (Thesis thesis : thesisRepository.findActiveThesesForRole(user.getId(), researchGroupId, Set.of(ThesisRoleName.STUDENT), Set.of(ThesisState.PROPOSAL))) {
             if (!thesis.getProposals().isEmpty()) {
                 continue;
             }
@@ -99,7 +105,7 @@ public class DashboardService {
             ));
         }
 
-        for (Thesis thesis : thesisRepository.findActiveThesesForRole(user.getId(), Set.of(ThesisRoleName.ADVISOR), Set.of(ThesisState.PROPOSAL))) {
+        for (Thesis thesis : thesisRepository.findActiveThesesForRole(user.getId(), researchGroupId, Set.of(ThesisRoleName.ADVISOR), Set.of(ThesisState.PROPOSAL))) {
             if (thesis.getProposals().isEmpty()) {
                 continue;
             }
@@ -112,7 +118,7 @@ public class DashboardService {
         }
 
         // thesis submission task
-        for (Thesis thesis : thesisRepository.findActiveThesesForRole(user.getId(), Set.of(ThesisRoleName.STUDENT), Set.of(ThesisState.WRITING))) {
+        for (Thesis thesis : thesisRepository.findActiveThesesForRole(user.getId(), researchGroupId, Set.of(ThesisRoleName.STUDENT), Set.of(ThesisState.WRITING))) {
             tasks.add(new TaskDto(
                     "Submit your final thesis and presentation. You can check your submission deadline on the thesis page.",
                     getThesisLink(thesis),
@@ -121,7 +127,7 @@ public class DashboardService {
         }
 
         // presentation tasks
-        for (Thesis thesis : thesisRepository.findActiveThesesForRole(user.getId(), Set.of(ThesisRoleName.STUDENT, ThesisRoleName.ADVISOR), Set.of(ThesisState.WRITING, ThesisState.SUBMITTED))) {
+        for (Thesis thesis : thesisRepository.findActiveThesesForRole(user.getId(), researchGroupId, Set.of(ThesisRoleName.STUDENT, ThesisRoleName.ADVISOR), Set.of(ThesisState.WRITING, ThesisState.SUBMITTED))) {
             if (!thesis.getPresentations().isEmpty() || thesis.getEndDate() == null) {
                 continue;
             }
@@ -138,7 +144,7 @@ public class DashboardService {
         }
 
         // thesis assessment task
-        for (Thesis thesis : thesisRepository.findActiveThesesForRole(user.getId(), Set.of(ThesisRoleName.ADVISOR), Set.of(ThesisState.SUBMITTED))) {
+        for (Thesis thesis : thesisRepository.findActiveThesesForRole(user.getId(), researchGroupId, Set.of(ThesisRoleName.ADVISOR), Set.of(ThesisState.SUBMITTED))) {
             tasks.add(new TaskDto(
                     "Thesis \"" + thesis.getTitle() + "\" was submitted. Please review the thesis and add an assessment.",
                     getThesisLink(thesis),
@@ -147,7 +153,7 @@ public class DashboardService {
         }
 
         // grade thesis task
-        for (Thesis thesis : thesisRepository.findActiveThesesForRole(user.getId(), Set.of(ThesisRoleName.SUPERVISOR), Set.of(ThesisState.ASSESSED))) {
+        for (Thesis thesis : thesisRepository.findActiveThesesForRole(user.getId(),researchGroupId,  Set.of(ThesisRoleName.SUPERVISOR), Set.of(ThesisState.ASSESSED))) {
             tasks.add(new TaskDto(
                     "Review assessment of thesis \"" + thesis.getTitle() + "\" and add a final grade.",
                     getThesisLink(thesis),
@@ -156,7 +162,7 @@ public class DashboardService {
         }
 
         // close thesis task
-        for (Thesis thesis : thesisRepository.findActiveThesesForRole(user.getId(), Set.of(ThesisRoleName.SUPERVISOR), Set.of(ThesisState.GRADED))) {
+        for (Thesis thesis : thesisRepository.findActiveThesesForRole(user.getId(), researchGroupId, Set.of(ThesisRoleName.SUPERVISOR), Set.of(ThesisState.GRADED))) {
             tasks.add(new TaskDto(
                     "Thesis \"" + thesis.getTitle() + "\" is graded but not completed yet.",
                     getThesisLink(thesis),
@@ -166,7 +172,8 @@ public class DashboardService {
 
         if (user.hasAnyGroup("admin", "supervisor", "advisor")) {
             // review application task
-            long unreviewedApplications = applicationRepository.countUnreviewedApplications(user.getId());
+            long unreviewedApplications =
+                applicationRepository.countUnreviewedApplications(user.getId(), researchGroupId);
 
             if (unreviewedApplications > 0) {
                 tasks.add(new TaskDto(
@@ -177,7 +184,7 @@ public class DashboardService {
             }
 
             // no open topic task
-            long openTopics = topicRepository.countOpenTopics();
+            long openTopics = topicRepository.countOpenTopics(researchGroupId);
 
             if (openTopics == 0) {
                 tasks.add(new TaskDto(
@@ -193,7 +200,6 @@ public class DashboardService {
         return tasks.reversed();
     }
 
-    private String getThesisLink(Thesis thesis) {
-        return "/theses/" + thesis.getId();
+    private String getThesisLink(Thesis thesis) {return "/theses/" + thesis.getId();
     }
 }

@@ -29,13 +29,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class ResearchGroupController {
 
   private final ResearchGroupService researchGroupService;
-  private final AuthenticationService authenticationService;
 
   @Autowired
-  public ResearchGroupController(ResearchGroupService researchGroupService,
-      AuthenticationService authenticationService) {
+  public ResearchGroupController(ResearchGroupService researchGroupService) {
     this.researchGroupService = researchGroupService;
-    this.authenticationService = authenticationService;
   }
 
   @GetMapping
@@ -47,13 +44,9 @@ public class ResearchGroupController {
       @RequestParam(required = false, defaultValue = "0") Integer page,
       @RequestParam(required = false, defaultValue = "50") Integer limit,
       @RequestParam(required = false, defaultValue = "name") String sortBy,
-      @RequestParam(required = false, defaultValue = "desc") String sortOrder,
-      JwtAuthenticationToken jwt
+      @RequestParam(required = false, defaultValue = "desc") String sortOrder
   ) {
-    User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
-
     Page<ResearchGroup> researchGroups = researchGroupService.getAll(
-        authenticatedUser,
         heads,
         campuses,
         includeArchived,
@@ -70,11 +63,9 @@ public class ResearchGroupController {
 
   @GetMapping("/{researchGroupId}")
   public ResponseEntity<ResearchGroupDto> getResearchGroup(
-      @PathVariable("researchGroupId") UUID researchGroupId,
-      JwtAuthenticationToken jwt
+      @PathVariable("researchGroupId") UUID researchGroupId
   ) {
-    User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
-    ResearchGroup researchGroup = researchGroupService.findById(authenticatedUser, researchGroupId);
+    ResearchGroup researchGroup = researchGroupService.findById(researchGroupId);
 
     return ResponseEntity.ok(ResearchGroupDto.fromResearchGroupEntity(researchGroup));
   }
@@ -82,13 +73,9 @@ public class ResearchGroupController {
   @PostMapping
   @PreAuthorize("hasRole('admin')")
   public ResponseEntity<ResearchGroupDto> createResearchGroup(
-      @RequestBody CreateResearchGroupPayload payload,
-      JwtAuthenticationToken jwt
+      @RequestBody CreateResearchGroupPayload payload
   ) {
-    User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
-
     ResearchGroup researchGroup = researchGroupService.createResearchGroup(
-        authenticatedUser,
         RequestValidator.validateNotNull(payload.headId()),
         RequestValidator.validateNotNull(payload.name()),
         payload.abbreviation(),
@@ -104,14 +91,11 @@ public class ResearchGroupController {
   @PreAuthorize("hasRole('admin')")
   public ResponseEntity<ResearchGroupDto> updateResearchGroup(
       @PathVariable("researchGroupId") UUID researchGroupId,
-      @RequestBody CreateResearchGroupPayload payload,
-      JwtAuthenticationToken jwt
+      @RequestBody CreateResearchGroupPayload payload
   ) {
-    User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
-    ResearchGroup researchGroup = researchGroupService.findById(authenticatedUser, researchGroupId);
+    ResearchGroup researchGroup = researchGroupService.findById(researchGroupId);
 
     researchGroup = researchGroupService.updateResearchGroup(
-        authenticatedUser,
         researchGroup,
         RequestValidator.validateNotNull(payload.headId()),
         RequestValidator.validateNotNull(payload.name()),
@@ -130,9 +114,8 @@ public class ResearchGroupController {
       @PathVariable("researchGroupId") UUID researchGroupId,
       JwtAuthenticationToken jwt
   ) {
-    User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
-    ResearchGroup researchGroup = researchGroupService.findById(authenticatedUser, researchGroupId);
-    researchGroupService.archiveResearchGroup(authenticatedUser, researchGroup);
+    ResearchGroup researchGroup = researchGroupService.findById(researchGroupId);
+    researchGroupService.archiveResearchGroup(researchGroup);
 
     return ResponseEntity.noContent().build();
   }

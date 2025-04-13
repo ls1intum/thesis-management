@@ -39,14 +39,16 @@ public interface ThesisRepository extends JpaRepository<Thesis, UUID> {
     );
 
     @Query(
-            "SELECT DISTINCT t FROM Thesis t LEFT JOIN ThesisRole r ON (t.id = r.thesis.id) WHERE " +
-            "(t.state != 'FINISHED' AND t.state != 'DROPPED_OUT') AND " +
+        "SELECT DISTINCT t FROM Thesis t LEFT JOIN ThesisRole r ON (t.id = r.thesis.id) WHERE " +
             "(:userId IS NULL OR r.user.id = :userId) AND " +
+            "(:researchGroupId IS NULL OR t.researchGroup.id = :researchGroupId) AND " +
+            "(t.state != 'FINISHED' AND t.state != 'DROPPED_OUT') AND " +
             "(:roleNames IS NULL OR r.id.role IN :roleNames) AND " +
             "(:states IS NULL OR t.state IN :states)"
     )
     List<Thesis> findActiveThesesForRole(
             @Param("userId") UUID userId,
+            @Param("researchGroupId") UUID researchGroupId,
             @Param("roleNames") Set<ThesisRoleName> roleNames,
             @Param("states") Set<ThesisState> states
     );
