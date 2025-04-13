@@ -38,6 +38,7 @@ const UserInformationForm = (props: IUserInformationFormProps) => {
   const form = useForm<
     Omit<IUpdateUserInformationPayload, 'enrolledAt'> & {
       semester: string
+      researchGroupName: string | null
       customData: Record<string, string>
       declarationOfConsentAccepted: boolean
       avatar: File | undefined
@@ -57,6 +58,7 @@ const UserInformationForm = (props: IUserInformationFormProps) => {
       studyDegree: '',
       studyProgram: '',
       semester: '',
+      researchGroupName: null,
       specialSkills: '',
       projects: '',
       interests: '',
@@ -147,6 +149,7 @@ const UserInformationForm = (props: IUserInformationFormProps) => {
       studyDegree: user?.studyDegree || '',
       studyProgram: user?.studyProgram || '',
       semester: user?.enrolledAt ? enrollmentDateToSemester(user.enrolledAt).toString() : '',
+      researchGroupName: user?.researchGroupName || null,
       specialSkills: user?.specialSkills || '',
       interests: user?.interests || '',
       projects: user?.projects || '',
@@ -314,6 +317,14 @@ const UserInformationForm = (props: IUserInformationFormProps) => {
             {...form.getInputProps('semester')}
           />
         </Group>
+        {user?.researchGroupName && (
+          <Select
+            label='Research Group'
+            data={[user.researchGroupName]}
+            disabled
+            {...form.getInputProps('researchGroupName')}
+          />
+        )}
         {Object.entries(GLOBAL_CONFIG.custom_data).map(([key, value]) => (
           <TextInput
             key={key}
