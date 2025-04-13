@@ -19,7 +19,7 @@ import java.util.UUID;
 public interface ApplicationRepository extends JpaRepository<Application, UUID> {
     @Query(
             "SELECT DISTINCT a FROM Application a WHERE " +
-            "(:userId IS NULL OR a.user.id = :userId) AND " +
+            "(:userId IS NULL OR a.user.id = :userId) AND " + "(:researchGroupId IS NULL OR a.researchGroup.id = :researchGroupId) AND " +
             "(:states IS NULL OR a.state IN :states OR (:previousIds IS NOT NULL AND a.id IN :previousIds)) AND " +
             "(:reviewerId IS NULL OR NOT EXISTS (SELECT ar FROM ApplicationReviewer ar WHERE a.id = ar.application.id AND ar.user.id = :reviewerId AND ar.reason = 'NOT_INTERESTED') OR (:previousIds IS NOT NULL AND a.id IN :previousIds)) AND " +
             "(:includeSuggestedTopics = true OR a.topic IS NOT NULL) AND " +
@@ -31,6 +31,7 @@ public interface ApplicationRepository extends JpaRepository<Application, UUID> 
             "LOWER(a.user.universityId) LIKE %:searchQuery%)"
     )
     Page<Application> searchApplications(
+            @Param("researchGroupId") UUID researchGroupId,
             @Param("userId") UUID userId,
             @Param("reviewerId") UUID reviewerId,
             @Param("searchQuery") String searchQuery,

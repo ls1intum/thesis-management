@@ -39,6 +39,11 @@ public class AuthenticationService {
                 .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
     }
 
+    public User getAuthenticatedUserWithResearchGroup(JwtAuthenticationToken jwt) {
+        return userRepository.findByUniversityIdWithResearchGroup(getUniversityId(jwt))
+                .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
+    }
+
     @Transactional
     public User updateAuthenticatedUser(JwtAuthenticationToken jwt) {
         Map<String, Object> attributes = jwt.getTokenAttributes();

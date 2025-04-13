@@ -17,6 +17,9 @@ import java.util.UUID;
 public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findByUniversityId(String universityId);
 
+    @Query("SELECT u FROM User u LEFT JOIN FETCH u.researchGroup WHERE u.universityId = :universityId")
+    Optional<User> findByUniversityIdWithResearchGroup(@Param("universityId") String universityId);
+
     @Query(
             "SELECT DISTINCT u FROM User u LEFT JOIN UserGroup g ON (u.id = g.id.userId) WHERE " +
             "(:groups IS NULL OR g.id.group IN :groups) AND " +
