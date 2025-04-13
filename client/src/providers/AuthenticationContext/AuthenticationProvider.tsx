@@ -155,7 +155,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
       return doRequest<IUser>(
         '/v2/user-info',
         {
-          method: 'POST',
+          method: 'GET',
           requiresAuth: true,
         },
         (res) => {
