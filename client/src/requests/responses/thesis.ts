@@ -1,3 +1,4 @@
+import { ILightResearchGroup } from './researchGroup'
 import { ILightUser } from './user'
 
 export enum ThesisState {
@@ -42,6 +43,7 @@ export interface IThesis {
   startDate: string | null
   endDate: string | null
   createdAt: string
+  researchGroup: ILightResearchGroup
   students: ILightUser[]
   advisors: ILightUser[]
   supervisors: ILightUser[]
