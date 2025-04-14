@@ -9,6 +9,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
@@ -24,8 +25,13 @@ public class CurrentUserProvider {
 
    @PostConstruct
    public void loadUser() {
-      JwtAuthenticationToken jwt = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-      cachedUser = authenticationService.getAuthenticatedUserWithResearchGroup(jwt);
+      Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+      if (authentication instanceof JwtAuthenticationToken) {
+         JwtAuthenticationToken jwt = (JwtAuthenticationToken) authentication;
+         cachedUser = authenticationService.getAuthenticatedUserWithResearchGroup(jwt);
+      } else {
+         throw new AccessDeniedException("Please login first.");
+      }
    }
 
    public User getUser() {
