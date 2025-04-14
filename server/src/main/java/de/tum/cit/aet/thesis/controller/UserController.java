@@ -1,6 +1,8 @@
 package de.tum.cit.aet.thesis.controller;
 
+import de.tum.cit.aet.thesis.security.CurrentUserProvider;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -9,12 +11,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 import de.tum.cit.aet.thesis.dto.LightUserDto;
 import de.tum.cit.aet.thesis.dto.PaginationDto;
 import de.tum.cit.aet.thesis.entity.User;
-import de.tum.cit.aet.thesis.service.AuthenticationService;
 import de.tum.cit.aet.thesis.service.UserService;
 
 import java.util.UUID;
@@ -24,12 +24,17 @@ import java.util.UUID;
 @RequestMapping("/v2/users")
 public class UserController {
     private final UserService userService;
-    private final AuthenticationService authenticationService;
+    private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
 
     @Autowired
-    public UserController(UserService userService, AuthenticationService authenticationService) {
+    public UserController(UserService userService,
+        ObjectProvider<CurrentUserProvider> currentUserProviderProvider) {
         this.userService = userService;
-        this.authenticationService = authenticationService;
+        this.currentUserProviderProvider = currentUserProviderProvider;
+    }
+
+    private CurrentUserProvider currentUserProvider() {
+        return currentUserProviderProvider.getObject();
     }
 
     @GetMapping
@@ -48,11 +53,10 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/examination-report")
-    public ResponseEntity<Resource> getExaminationReport(@PathVariable UUID userId, JwtAuthenticationToken jwt) {
-        User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
+    public ResponseEntity<Resource> getExaminationReport(@PathVariable UUID userId) {
         User user = userService.findById(userId);
 
-        if (!user.hasFullAccess(authenticatedUser)) {
+        if (!user.hasFullAccess(currentUserProvider().getUser())) {
             throw new AccessDeniedException("You are not allowed to access data from this user");
         }
 
@@ -63,11 +67,10 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/cv")
-    public ResponseEntity<Resource> getCV(@PathVariable UUID userId, JwtAuthenticationToken jwt) {
-        User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
+    public ResponseEntity<Resource> getCV(@PathVariable UUID userId) {
         User user = userService.findById(userId);
 
-        if (!user.hasFullAccess(authenticatedUser)) {
+        if (!user.hasFullAccess(currentUserProvider().getUser())) {
             throw new AccessDeniedException("You are not allowed to access data from this user");
         }
 
@@ -78,11 +81,10 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/degree-report")
-    public ResponseEntity<Resource> getDegreeReport(@PathVariable UUID userId, JwtAuthenticationToken jwt) {
-        User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
+    public ResponseEntity<Resource> getDegreeReport(@PathVariable UUID userId) {
         User user = userService.findById(userId);
 
-        if (!user.hasFullAccess(authenticatedUser)) {
+        if (!user.hasFullAccess(currentUserProvider().getUser())) {
             throw new AccessDeniedException("You are not allowed to access data from this user");
         }
 

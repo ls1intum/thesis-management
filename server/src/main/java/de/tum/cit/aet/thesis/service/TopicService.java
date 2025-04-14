@@ -1,5 +1,8 @@
 package de.tum.cit.aet.thesis.service;
 
+import de.tum.cit.aet.thesis.entity.ResearchGroup;
+import de.tum.cit.aet.thesis.security.CurrentUserProvider;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,12 +29,19 @@ public class TopicService {
     private final TopicRepository topicRepository;
     private final TopicRoleRepository topicRoleRepository;
     private final UserRepository userRepository;
+    private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
 
     @Autowired
-    public TopicService(TopicRepository topicRepository, TopicRoleRepository topicRoleRepository, UserRepository userRepository) {
+    public TopicService(TopicRepository topicRepository, TopicRoleRepository topicRoleRepository, UserRepository userRepository,
+        ObjectProvider<CurrentUserProvider> currentUserProviderProvider) {
         this.topicRepository = topicRepository;
         this.topicRoleRepository = topicRoleRepository;
         this.userRepository = userRepository;
+       this.currentUserProviderProvider = currentUserProviderProvider;
+    }
+
+    private CurrentUserProvider currentUserProvider() {
+        return currentUserProviderProvider.getObject();
     }
 
     public Page<Topic> getAll(
@@ -48,10 +58,12 @@ public class TopicService {
                 HibernateHelper.getColumnName(Topic.class, sortBy)
         );
 
+        ResearchGroup researchGroup = currentUserProvider().getResearchGroupOrThrow();
         String searchQueryFilter = searchQuery == null || searchQuery.isEmpty() ? null : searchQuery.toLowerCase();
         String[] typesFilter = types == null || types.length == 0 ? null : types;
 
         return topicRepository.searchTopics(
+                researchGroup == null ? null : researchGroup.getId(),
                 typesFilter,
                 includeClosed,
                 searchQueryFilter,
@@ -61,7 +73,6 @@ public class TopicService {
 
     @Transactional
     public Topic createTopic(
-            User creator,
             String title,
             Set<String> thesisTypes,
             String problemStatement,
@@ -71,6 +82,7 @@ public class TopicService {
             List<UUID> supervisorIds,
             List<UUID> advisorIds
     ) {
+        User creator = currentUserProvider().getUser();
         Topic topic = new Topic();
 
         topic.setTitle(title);
@@ -82,17 +94,17 @@ public class TopicService {
         topic.setUpdatedAt(Instant.now());
         topic.setCreatedAt(Instant.now());
         topic.setCreatedBy(creator);
+        topic.setResearchGroup(creator.getResearchGroup());
 
         topic = topicRepository.save(topic);
 
-        assignTopicRoles(topic, creator, advisorIds, supervisorIds);
+        assignTopicRoles(topic, advisorIds, supervisorIds);
 
         return topicRepository.save(topic);
     }
 
     @Transactional
     public Topic updateTopic(
-            User updater,
             Topic topic,
             String title,
             Set<String> thesisTypes,
@@ -103,6 +115,7 @@ public class TopicService {
             List<UUID> supervisorIds,
             List<UUID> advisorIds
     ) {
+        currentUserProvider().assertCanAccessResearchGroup(topic.getResearchGroup());
         topic.setTitle(title);
         topic.setThesisTypes(thesisTypes);
         topic.setProblemStatement(problemStatement);
@@ -111,17 +124,20 @@ public class TopicService {
         topic.setReferences(references);
         topic.setUpdatedAt(Instant.now());
 
-        assignTopicRoles(topic, updater, advisorIds, supervisorIds);
+        assignTopicRoles(topic, advisorIds, supervisorIds);
 
         return topicRepository.save(topic);
     }
 
     public Topic findById(UUID topicId) {
-        return topicRepository.findById(topicId)
+        Topic topic = topicRepository.findById(topicId)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Topic with id %s not found.", topicId)));
+        currentUserProvider().assertCanAccessResearchGroup(topic.getResearchGroup());
+        return topic;
     }
 
-    private void assignTopicRoles(Topic topic, User assigner, List<UUID> advisorIds, List<UUID> supervisorIds) {
+    private void assignTopicRoles(Topic topic, List<UUID> advisorIds, List<UUID> supervisorIds) {
+        currentUserProvider().assertCanAccessResearchGroup(topic.getResearchGroup());
         List<User> supervisors = userRepository.findAllById(supervisorIds);
         List<User> advisors = userRepository.findAllById(advisorIds);
 
@@ -146,7 +162,7 @@ public class TopicService {
                 throw new ResourceInvalidParametersException("User is not a supervisor");
             }
 
-            saveTopicRole(topic, assigner, supervisor, ThesisRoleName.SUPERVISOR, i);
+            saveTopicRole(topic, supervisor, ThesisRoleName.SUPERVISOR, i);
         }
 
         for (int i = 0; i < advisors.size(); i++) {
@@ -156,11 +172,13 @@ public class TopicService {
                 throw new ResourceInvalidParametersException("User is not an advisor");
             }
 
-            saveTopicRole(topic, assigner, advisor, ThesisRoleName.ADVISOR, i);
+            saveTopicRole(topic, advisor, ThesisRoleName.ADVISOR, i);
         }
     }
 
-    private void saveTopicRole(Topic topic, User assigner, User user, ThesisRoleName role, int position) {
+    private void saveTopicRole(Topic topic, User user, ThesisRoleName role, int position) {
+        currentUserProvider().assertCanAccessResearchGroup(topic.getResearchGroup());
+        User assigner = currentUserProvider().getUser();
         if (assigner == null || user == null) {
             throw new ResourceInvalidParametersException("Assigner and user must be provided.");
         }

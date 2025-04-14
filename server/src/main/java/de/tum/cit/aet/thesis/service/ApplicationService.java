@@ -229,11 +229,11 @@ public class ApplicationService {
     }
 
     @Transactional
-    public Topic closeTopic(User closer, Topic topic, ApplicationRejectReason reason, boolean notifyUser) {
+    public Topic closeTopic(Topic topic, ApplicationRejectReason reason, boolean notifyUser) {
         currentUserProvider().assertCanAccessResearchGroup(topic.getResearchGroup());
         topic.setClosedAt(Instant.now());
 
-        self.rejectApplicationsForTopic(closer, topic, reason, notifyUser);
+        self.rejectApplicationsForTopic(currentUserProvider().getUser(), topic, reason, notifyUser);
 
         return topicRepository.save(topic);
     }
