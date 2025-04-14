@@ -25,7 +25,6 @@ import java.util.*;
 @Service
 public class ApplicationService {
     private final ApplicationRepository applicationRepository;
-    private final ApplicationService self;
     private final MailingService mailingService;
     private final TopicRepository topicRepository;
     private final ThesisService thesisService;
@@ -36,7 +35,6 @@ public class ApplicationService {
     @Autowired
     public ApplicationService(
             ApplicationRepository applicationRepository,
-            ApplicationService self,
             MailingService mailingService,
             TopicRepository topicRepository,
             ThesisService thesisService,
@@ -45,7 +43,6 @@ public class ApplicationService {
             ObjectProvider<CurrentUserProvider> currentUserProviderProvider
     ) {
         this.applicationRepository = applicationRepository;
-        this.self = self;
         this.mailingService = mailingService;
         this.topicRepository = topicRepository;
         this.thesisService = thesisService;
@@ -154,7 +151,7 @@ public class ApplicationService {
         application.setState(ApplicationState.ACCEPTED);
         application.setReviewedAt(Instant.now());
 
-        application = self.reviewApplication(application, reviewingUser,
+        application = reviewApplication(application, reviewingUser,
             ApplicationReviewReason.INTERESTED);
 
         Thesis thesis = thesisService.createThesis(
@@ -175,7 +172,7 @@ public class ApplicationService {
         if (topic != null && closeTopic) {
             topic.setClosedAt(Instant.now());
 
-            result.addAll(self.rejectApplicationsForTopic(reviewingUser, topic,
+            result.addAll(rejectApplicationsForTopic(reviewingUser, topic,
                 ApplicationRejectReason.TOPIC_FILLED, true));
 
             application.setTopic(topicRepository.save(topic));
@@ -197,7 +194,7 @@ public class ApplicationService {
         application.setRejectReason(reason);
         application.setReviewedAt(Instant.now());
 
-        application = self.reviewApplication(application, reviewingUser,
+        application = reviewApplication(application, reviewingUser,
             ApplicationReviewReason.NOT_INTERESTED);
 
         List<Application> result = new ArrayList<>();
@@ -211,7 +208,7 @@ public class ApplicationService {
                     item.setRejectReason(reason);
                     item.setReviewedAt(Instant.now());
 
-                    item = self.reviewApplication(item, reviewingUser,
+                    item = reviewApplication(item, reviewingUser,
                         ApplicationReviewReason.NOT_INTERESTED);
 
                     result.add(applicationRepository.save(item));
@@ -233,7 +230,7 @@ public class ApplicationService {
         currentUserProvider().assertCanAccessResearchGroup(topic.getResearchGroup());
         topic.setClosedAt(Instant.now());
 
-        self.rejectApplicationsForTopic(currentUserProvider().getUser(), topic, reason, notifyUser);
+        rejectApplicationsForTopic(currentUserProvider().getUser(), topic, reason, notifyUser);
 
         return topicRepository.save(topic);
     }
@@ -249,7 +246,7 @@ public class ApplicationService {
                 continue;
             }
 
-            result.addAll(self.reject(closer, application, reason, notifyUser));
+            result.addAll(reject(closer, application, reason, notifyUser));
         }
 
         return result;

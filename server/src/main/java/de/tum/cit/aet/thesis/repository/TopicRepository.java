@@ -13,7 +13,7 @@ import java.util.UUID;
 @Repository
 public interface TopicRepository  extends JpaRepository<Topic, UUID>  {
     @Query(value =
-            "SELECT t.* FROM topics t WHERE (:researchGroupId IS NULL OR t.researchGroup.id = :researchGroupId) AND " +
+            "SELECT t.* FROM topics t WHERE (:researchGroupId IS NULL OR t.research_group_id = :researchGroupId) AND " +
             "(:searchQuery IS NULL OR t.title ILIKE CONCAT('%', :searchQuery, '%')) AND " +
             "(t.thesis_types IS NULL OR CAST(:types AS TEXT[]) IS NULL OR t.thesis_types && CAST(:types AS TEXT[])) AND " +
             "(:includeClosed = TRUE OR t.closed_at IS NULL)",

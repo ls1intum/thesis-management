@@ -1,8 +1,7 @@
 package de.tum.cit.aet.thesis.controller;
 
-import de.tum.cit.aet.thesis.entity.ResearchGroup;
-import de.tum.cit.aet.thesis.service.ResearchGroupService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +17,6 @@ import de.tum.cit.aet.thesis.entity.User;
 import de.tum.cit.aet.thesis.exception.request.ResourceAlreadyExistsException;
 import de.tum.cit.aet.thesis.exception.request.ResourceInvalidParametersException;
 import de.tum.cit.aet.thesis.service.ApplicationService;
-import de.tum.cit.aet.thesis.service.AuthenticationService;
 import de.tum.cit.aet.thesis.utility.RequestValidator;
 
 import java.util.List;
@@ -37,18 +35,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/v2/applications")
 public class ApplicationController {
     private final ApplicationService applicationService;
-    private final CurrentUserProvider currentUserProvider;
+    private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
 
     @Autowired
     public ApplicationController(ApplicationService applicationService,
-        ResearchGroupService researchGroupService, CurrentUserProvider currentUserProvider) {
+        ObjectProvider<CurrentUserProvider> currentUserProviderProvider) {
         this.applicationService = applicationService;
-        this.currentUserProvider = currentUserProvider;
+        this.currentUserProviderProvider = currentUserProviderProvider;
+    }
+
+    private CurrentUserProvider currentUserProvider() {
+        return currentUserProviderProvider.getObject();
     }
 
     @PostMapping
     public ResponseEntity<ApplicationDto> createApplication(@RequestBody CreateApplicationPayload payload) {
-        User authenticatedUser = currentUserProvider.getUser();
+        User authenticatedUser = currentUserProvider().getUser();
 
         if (payload.topicId() == null && payload.thesisTitle() == null) {
             throw new ResourceInvalidParametersException("Either topic id or a thesis title must be provided");
@@ -86,12 +88,12 @@ public class ApplicationController {
             @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
             @RequestParam(required = false, defaultValue = "desc") String sortOrder
     ) {
-        User authenticatedUser = currentUserProvider.getUser();
+        User authenticatedUser = currentUserProvider().getUser();
 
         Page<Application> applications = applicationService.getAll(
-                fetchAll && !currentUserProvider.canSeeAllResearchGroups() ? null :
+                fetchAll && !currentUserProvider().canSeeAllResearchGroups() ? null :
                     authenticatedUser.getId(),
-                fetchAll && !currentUserProvider.canSeeAllResearchGroups() ? authenticatedUser.getId() :
+                fetchAll && !currentUserProvider().canSeeAllResearchGroups() ? authenticatedUser.getId() :
                     null,
                 search,
                 state,
@@ -112,7 +114,7 @@ public class ApplicationController {
 
     @GetMapping("/{applicationId}")
     public ResponseEntity<ApplicationDto> getApplication(@PathVariable UUID applicationId) {
-        User authenticatedUser = currentUserProvider.getUser();
+        User authenticatedUser = currentUserProvider().getUser();
         Application application = applicationService.findById(applicationId);
 
         if (!application.hasReadAccess(authenticatedUser)) {
@@ -127,7 +129,7 @@ public class ApplicationController {
             @PathVariable UUID applicationId,
             @RequestBody CreateApplicationPayload payload
     ) {
-        User authenticatedUser = currentUserProvider.getUser();
+        User authenticatedUser = currentUserProvider().getUser();
         Application application = applicationService.findById(applicationId);
 
         if (!application.hasEditAccess(authenticatedUser)) {
@@ -159,7 +161,7 @@ public class ApplicationController {
             @PathVariable UUID applicationId,
             @RequestBody UpdateApplicationCommentPayload payload
     ) {
-        User authenticatedUser = currentUserProvider.getUser();
+        User authenticatedUser = currentUserProvider().getUser();
         Application application = applicationService.findById(applicationId);
 
         if (!application.hasManagementAccess(authenticatedUser)) {
@@ -179,7 +181,7 @@ public class ApplicationController {
             @PathVariable UUID applicationId,
             @RequestBody ReviewApplicationPayload payload
     ) {
-        User authenticatedUser = currentUserProvider.getUser();
+        User authenticatedUser = currentUserProvider().getUser();
         Application application = applicationService.findById(applicationId);
 
         if (!application.hasManagementAccess(authenticatedUser)) {
@@ -200,7 +202,7 @@ public class ApplicationController {
             @PathVariable UUID applicationId,
             @RequestBody AcceptApplicationPayload payload
     ) {
-        User authenticatedUser = currentUserProvider.getUser();
+        User authenticatedUser = currentUserProvider().getUser();
         Application application = applicationService.findById(applicationId);
 
         if (!application.hasManagementAccess(authenticatedUser)) {
@@ -229,7 +231,7 @@ public class ApplicationController {
             @PathVariable UUID applicationId,
             @RequestBody RejectApplicationPayload payload
     ) {
-        User authenticatedUser = currentUserProvider.getUser();
+        User authenticatedUser = currentUserProvider().getUser();
         Application application = applicationService.findById(applicationId);
 
         if (!application.hasManagementAccess(authenticatedUser)) {
