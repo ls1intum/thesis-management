@@ -1,5 +1,7 @@
 package de.tum.cit.aet.thesis.cron;
 
+import de.tum.cit.aet.thesis.entity.ResearchGroup;
+import de.tum.cit.aet.thesis.service.ResearchGroupService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -18,22 +20,29 @@ public class ApplicationReminder {
     private final ApplicationRepository applicationRepository;
     private final MailingService mailingService;
     private final UserRepository userRepository;
+    private final ResearchGroupService researchGroupService;
 
-    public ApplicationReminder(ApplicationRepository applicationRepository, MailingService mailingService, UserRepository userRepository) {
+    public ApplicationReminder(ApplicationRepository applicationRepository, MailingService mailingService, UserRepository userRepository,
+        ResearchGroupService researchGroupService) {
         this.applicationRepository = applicationRepository;
         this.mailingService = mailingService;
         this.userRepository = userRepository;
+        this.researchGroupService = researchGroupService;
     }
 
     @Scheduled(cron = "0 0 10 * * WED")
     public void emailReminder() {
-        for (User user : userRepository.getRoleMembers(Set.of("admin", "supervisor", "advisor"))) {
-            long unreviewedApplications =
-                applicationRepository.countUnreviewedApplications(user.getId(),
-                    user.getResearchGroup().getId());
+        for (ResearchGroup researchGroup : researchGroupService.getAll(null, null, false, null, 0,
+            -1, "name", "asc").getContent()) {
+            for (User user : userRepository.getRoleMembers(Set.of("admin", "supervisor", "advisor"),
+                researchGroup.getId())) {
+                long unreviewedApplications =
+                    applicationRepository.countUnreviewedApplications(user.getId(),
+                        user.getResearchGroup().getId());
 
-            if (unreviewedApplications > 0) {
-                mailingService.sendApplicationReminderEmail(user, unreviewedApplications);
+                if (unreviewedApplications > 0) {
+                    mailingService.sendApplicationReminderEmail(user, unreviewedApplications);
+                }
             }
         }
 

@@ -76,12 +76,12 @@ public class MailConfig {
         return enabled;
     }
 
-    public List<User> getChairMembers() {
-        return userRepository.getRoleMembers(Set.of("admin", "supervisor", "advisor"));
+    public List<User> getChairMembers(UUID researchGroupId) {
+        return userRepository.getRoleMembers(Set.of("admin", "supervisor", "advisor"), researchGroupId);
     }
 
-    public List<User> getChairStudents() {
-        return userRepository.getRoleMembers(Set.of("student"));
+    public List<User> getChairStudents(UUID researchGroupId) {
+        return userRepository.getRoleMembers(Set.of("student"), researchGroupId);
     }
 
     public record MailConfigDto(

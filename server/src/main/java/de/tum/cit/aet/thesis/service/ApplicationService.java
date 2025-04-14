@@ -1,6 +1,7 @@
 package de.tum.cit.aet.thesis.service;
 
 import de.tum.cit.aet.thesis.security.CurrentUserProvider;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,30 +25,36 @@ import java.util.*;
 @Service
 public class ApplicationService {
     private final ApplicationRepository applicationRepository;
+    private final ApplicationService self;
     private final MailingService mailingService;
     private final TopicRepository topicRepository;
     private final ThesisService thesisService;
     private final TopicService topicService;
     private final ApplicationReviewerRepository applicationReviewerRepository;
-    private final CurrentUserProvider currentUserProvider;
+    private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
 
     @Autowired
     public ApplicationService(
             ApplicationRepository applicationRepository,
+            ApplicationService self,
             MailingService mailingService,
             TopicRepository topicRepository,
             ThesisService thesisService,
             TopicService topicService,
             ApplicationReviewerRepository applicationReviewerRepository,
-        CurrentUserProvider currentUserProvider) {
+            ObjectProvider<CurrentUserProvider> currentUserProviderProvider
+    ) {
         this.applicationRepository = applicationRepository;
+        this.self = self;
         this.mailingService = mailingService;
         this.topicRepository = topicRepository;
         this.thesisService = thesisService;
         this.topicService = topicService;
         this.applicationReviewerRepository = applicationReviewerRepository;
-       this.currentUserProvider = currentUserProvider;
+       this.currentUserProviderProvider = currentUserProviderProvider;
     }
+
+    private CurrentUserProvider currentUserProvider(){return currentUserProviderProvider.getObject();}
 
     public Page<Application> getAll(
             UUID userId,
@@ -65,7 +72,7 @@ public class ApplicationService {
     ) {
         Sort.Order order = new Sort.Order(sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
 
-        ResearchGroup researchGroup = currentUserProvider.getResearchGroupOrThrow();
+        ResearchGroup researchGroup = currentUserProvider().getResearchGroupOrThrow();
         String searchQueryFilter = searchQuery == null || searchQuery.isEmpty() ? null : searchQuery.toLowerCase();
         Set<ApplicationState> statesFilter = states == null || states.length == 0 ? null : new HashSet<>(Arrays.asList(states));
         Set<String> topicsFilter = topics == null || topics.length == 0 ? null : new HashSet<>(Arrays.asList(topics));
@@ -106,7 +113,7 @@ public class ApplicationService {
         application.setState(ApplicationState.NOT_ASSESSED);
         application.setDesiredStartDate(desiredStartDate);
         application.setCreatedAt(Instant.now());
-        application.setResearchGroup(currentUserProvider.getResearchGroupOrThrow());
+        application.setResearchGroup(currentUserProvider().getResearchGroupOrThrow());
 
         application = applicationRepository.save(application);
 
@@ -117,7 +124,7 @@ public class ApplicationService {
 
     @Transactional
     public Application updateApplication(Application application, UUID topicId, String thesisTitle, String thesisType, Instant desiredStartDate, String motivation) {
-        currentUserProvider.assertCanAccessResearchGroup(application.getResearchGroup());
+        currentUserProvider().assertCanAccessResearchGroup(application.getResearchGroup());
         application.setTopic(topicId == null ? null : topicService.findById(topicId));
         application.setThesisTitle(thesisTitle);
         application.setThesisType(thesisType);
@@ -141,16 +148,16 @@ public class ApplicationService {
             boolean notifyUser,
             boolean closeTopic
     ) {
-        currentUserProvider.assertCanAccessResearchGroup(application.getResearchGroup());
+        currentUserProvider().assertCanAccessResearchGroup(application.getResearchGroup());
         List<Application> result = new ArrayList<>();
 
         application.setState(ApplicationState.ACCEPTED);
         application.setReviewedAt(Instant.now());
 
-        application = reviewApplication(application, reviewingUser, ApplicationReviewReason.INTERESTED);
+        application = self.reviewApplication(application, reviewingUser,
+            ApplicationReviewReason.INTERESTED);
 
         Thesis thesis = thesisService.createThesis(
-                reviewingUser,
                 thesisTitle,
                 thesisType,
                 language,
@@ -168,7 +175,8 @@ public class ApplicationService {
         if (topic != null && closeTopic) {
             topic.setClosedAt(Instant.now());
 
-            result.addAll(rejectApplicationsForTopic(reviewingUser, topic, ApplicationRejectReason.TOPIC_FILLED, true));
+            result.addAll(self.rejectApplicationsForTopic(reviewingUser, topic,
+                ApplicationRejectReason.TOPIC_FILLED, true));
 
             application.setTopic(topicRepository.save(topic));
         }
@@ -184,12 +192,13 @@ public class ApplicationService {
 
     @Transactional
     public List<Application> reject(User reviewingUser, Application application, ApplicationRejectReason reason, boolean notifyUser) {
-        currentUserProvider.assertCanAccessResearchGroup(application.getResearchGroup());
+        currentUserProvider().assertCanAccessResearchGroup(application.getResearchGroup());
         application.setState(ApplicationState.REJECTED);
         application.setRejectReason(reason);
         application.setReviewedAt(Instant.now());
 
-        application = reviewApplication(application, reviewingUser, ApplicationReviewReason.NOT_INTERESTED);
+        application = self.reviewApplication(application, reviewingUser,
+            ApplicationReviewReason.NOT_INTERESTED);
 
         List<Application> result = new ArrayList<>();
 
@@ -202,7 +211,8 @@ public class ApplicationService {
                     item.setRejectReason(reason);
                     item.setReviewedAt(Instant.now());
 
-                    item = reviewApplication(item, reviewingUser, ApplicationReviewReason.NOT_INTERESTED);
+                    item = self.reviewApplication(item, reviewingUser,
+                        ApplicationReviewReason.NOT_INTERESTED);
 
                     result.add(applicationRepository.save(item));
                 }
@@ -220,17 +230,17 @@ public class ApplicationService {
 
     @Transactional
     public Topic closeTopic(User closer, Topic topic, ApplicationRejectReason reason, boolean notifyUser) {
-        currentUserProvider.assertCanAccessResearchGroup(topic.getResearchGroup());
+        currentUserProvider().assertCanAccessResearchGroup(topic.getResearchGroup());
         topic.setClosedAt(Instant.now());
 
-        rejectApplicationsForTopic(closer, topic, reason, notifyUser);
+        self.rejectApplicationsForTopic(closer, topic, reason, notifyUser);
 
         return topicRepository.save(topic);
     }
 
     @Transactional
     public List<Application> rejectApplicationsForTopic(User closer, Topic topic, ApplicationRejectReason reason, boolean notifyUser) {
-        currentUserProvider.assertCanAccessResearchGroup(topic.getResearchGroup());
+        currentUserProvider().assertCanAccessResearchGroup(topic.getResearchGroup());
         List<Application> applications = applicationRepository.findAllByTopic(topic);
         List<Application> result = new ArrayList<>();
 
@@ -239,7 +249,7 @@ public class ApplicationService {
                 continue;
             }
 
-            result.addAll(reject(closer, application, reason, notifyUser));
+            result.addAll(self.reject(closer, application, reason, notifyUser));
         }
 
         return result;
@@ -247,7 +257,7 @@ public class ApplicationService {
 
     @Transactional
     public Application reviewApplication(Application application, User reviewer, ApplicationReviewReason reason) {
-        currentUserProvider.assertCanAccessResearchGroup(application.getResearchGroup());
+        currentUserProvider().assertCanAccessResearchGroup(application.getResearchGroup());
         ApplicationReviewer entity = application.getReviewer(reviewer).orElseGet(() -> {
             ApplicationReviewerId id = new ApplicationReviewerId();
             id.setApplicationId(application.getId());
@@ -266,7 +276,7 @@ public class ApplicationService {
         entity.setReason(reason);
         entity.setReviewedAt(Instant.now());
 
-        application.setReviewers(new ArrayList<>(application.getReviewers().stream().filter((element) -> !element.getId().equals(entityId)).toList()));
+        application.setReviewers(new ArrayList<>(application.getReviewers().stream().filter(element -> !element.getId().equals(entityId)).toList()));
 
         if (reason == ApplicationReviewReason.NOT_REVIEWED) {
             applicationReviewerRepository.delete(entity);
@@ -281,7 +291,7 @@ public class ApplicationService {
 
     @Transactional
     public Application updateComment(Application application, String comment) {
-        currentUserProvider.assertCanAccessResearchGroup(application.getResearchGroup());
+        currentUserProvider().assertCanAccessResearchGroup(application.getResearchGroup());
         application.setComment(comment);
         return applicationRepository.save(application);
     }
@@ -293,7 +303,7 @@ public class ApplicationService {
     public Application findById(UUID applicationId) {
         Application application = applicationRepository.findById(applicationId)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Application with id %s not found.", applicationId)));
-        currentUserProvider.assertCanAccessResearchGroup(application.getResearchGroup());
+        currentUserProvider().assertCanAccessResearchGroup(application.getResearchGroup());
         return application;
     }
 }

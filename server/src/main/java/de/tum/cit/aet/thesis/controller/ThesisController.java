@@ -1,6 +1,8 @@
 package de.tum.cit.aet.thesis.controller;
 
+import de.tum.cit.aet.thesis.security.CurrentUserProvider;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -10,7 +12,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import de.tum.cit.aet.thesis.constants.*;
@@ -19,7 +20,6 @@ import de.tum.cit.aet.thesis.dto.PaginationDto;
 import de.tum.cit.aet.thesis.dto.ThesisCommentDto;
 import de.tum.cit.aet.thesis.dto.ThesisDto;
 import de.tum.cit.aet.thesis.entity.*;
-import de.tum.cit.aet.thesis.service.AuthenticationService;
 import de.tum.cit.aet.thesis.service.ThesisCommentService;
 import de.tum.cit.aet.thesis.service.ThesisPresentationService;
 import de.tum.cit.aet.thesis.service.ThesisService;
@@ -34,16 +34,21 @@ import java.util.concurrent.TimeUnit;
 @RequestMapping("/v2/theses")
 public class ThesisController {
     private final ThesisService thesisService;
-    private final AuthenticationService authenticationService;
     private final ThesisCommentService thesisCommentService;
     private final ThesisPresentationService thesisPresentationService;
+    private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
 
     @Autowired
-    public ThesisController(ThesisService thesisService, AuthenticationService authenticationService, ThesisCommentService thesisCommentService, ThesisPresentationService thesisPresentationService) {
+    public ThesisController(ThesisService thesisService, ThesisCommentService thesisCommentService, ThesisPresentationService thesisPresentationService,
+        ObjectProvider<CurrentUserProvider> currentUserProviderProvider) {
         this.thesisService = thesisService;
-        this.authenticationService = authenticationService;
         this.thesisCommentService = thesisCommentService;
         this.thesisPresentationService = thesisPresentationService;
+        this.currentUserProviderProvider = currentUserProviderProvider;
+    }
+
+    private CurrentUserProvider currentUserProvider() {
+        return currentUserProviderProvider.getObject();
     }
 
     @GetMapping
@@ -51,16 +56,14 @@ public class ThesisController {
             @RequestParam(required = false) String search,
             @RequestParam(required = false) ThesisState[] state,
             @RequestParam(required = false) String[] type,
-            @RequestParam(required = false, defaultValue = "false") Boolean fetchAll,
+            @RequestParam(required = false, defaultValue = "false") boolean fetchAll,
             @RequestParam(required = false, defaultValue = "0") Integer page,
             @RequestParam(required = false, defaultValue = "50") Integer limit,
             @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
-            @RequestParam(required = false, defaultValue = "desc") String sortOrder,
-            JwtAuthenticationToken jwt
+            @RequestParam(required = false, defaultValue = "desc") String sortOrder
     ) {
-        User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
-
-        UUID userId = authenticatedUser.getId();
+        User currentUser = currentUserProvider().getUser();
+        UUID userId = currentUser.getId();
         Set<ThesisVisibility> visibilities = Set.of(
                 ThesisVisibility.PUBLIC,
                 ThesisVisibility.STUDENT,
@@ -71,11 +74,11 @@ public class ThesisController {
         if (fetchAll) {
             userId = null;
 
-            if (authenticatedUser.hasAnyGroup("admin")) {
+            if (currentUserProvider().isAdmin()) {
                 visibilities = null;
-            } else if (authenticatedUser.hasAnyGroup("advisor", "supervisor")) {
+            } else if (currentUserProvider().isAdvisor() || currentUserProvider().isSupervisor()) {
                 visibilities = Set.of(ThesisVisibility.PUBLIC, ThesisVisibility.STUDENT, ThesisVisibility.INTERNAL);
-            } else if (authenticatedUser.hasAnyGroup("student")) {
+            } else if (currentUserProvider().isStudent()) {
                 visibilities = Set.of(ThesisVisibility.PUBLIC, ThesisVisibility.STUDENT);
             } else {
                 visibilities = Set.of(ThesisVisibility.PUBLIC);
@@ -95,31 +98,29 @@ public class ThesisController {
         );
 
         return ResponseEntity.ok(PaginationDto.fromSpringPage(
-                theses.map(thesis -> ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(authenticatedUser), thesis.hasStudentAccess(authenticatedUser)))
+                theses.map(thesis -> ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)))
         ));
     }
 
     @GetMapping("/{thesisId}")
-    public ResponseEntity<ThesisDto> getThesis(@PathVariable UUID thesisId, JwtAuthenticationToken jwt) {
-        User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
+    public ResponseEntity<ThesisDto> getThesis(@PathVariable UUID thesisId) {
+        User currentUser = currentUserProvider().getUser();
         Thesis thesis = thesisService.findById(thesisId);
 
-        if (!thesis.hasReadAccess(authenticatedUser)) {
+        if (!thesis.hasReadAccess(currentUser)) {
             throw new AccessDeniedException("You do not have the required permissions to view this thesis");
         }
 
-        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(authenticatedUser), thesis.hasStudentAccess(authenticatedUser)));
+        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
     }
 
     @PostMapping
     @PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
     public ResponseEntity<ThesisDto> createThesis(
-            @RequestBody CreateThesisPayload payload,
-            JwtAuthenticationToken jwt
+            @RequestBody CreateThesisPayload payload
     ) {
-        User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
+        User currentUser = currentUserProvider().getUser();
         Thesis thesis = thesisService.createThesis(
-                authenticatedUser,
                 RequestValidator.validateStringMaxLength(payload.thesisTitle(), StringLimits.THESIS_TITLE.getLimit()),
                 RequestValidator.validateStringMaxLength(payload.thesisType(), StringLimits.SHORTTEXT.getLimit()),
                 RequestValidator.validateStringMaxLength(payload.language(), StringLimits.SHORTTEXT.getLimit()),
@@ -129,25 +130,22 @@ public class ThesisController {
                 null,
                 true
         );
-
-        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(authenticatedUser), thesis.hasStudentAccess(authenticatedUser)));
+        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
     }
 
     @PutMapping("/{thesisId}")
     public ResponseEntity<ThesisDto> updateThesisConfig(
             @PathVariable UUID thesisId,
-            @RequestBody UpdateThesisPayload payload,
-            JwtAuthenticationToken jwt
+            @RequestBody UpdateThesisPayload payload
     ) {
-        User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
+        User currentUser = currentUserProvider().getUser();
         Thesis thesis = thesisService.findById(thesisId);
 
-        if (!thesis.hasAdvisorAccess(authenticatedUser)) {
+        if (!thesis.hasAdvisorAccess(currentUser)) {
             throw new AccessDeniedException("You need to be an advisor of this thesis to update the thesis");
         }
 
         thesis = thesisService.updateThesis(
-                authenticatedUser,
                 thesis,
                 RequestValidator.validateStringMaxLength(payload.thesisTitle(), StringLimits.THESIS_TITLE.getLimit()),
                 RequestValidator.validateStringMaxLength(payload.thesisType(), StringLimits.SHORTTEXT.getLimit()),
@@ -162,36 +160,34 @@ public class ThesisController {
                 RequestValidator.validateNotNull(payload.states())
         );
 
-        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(authenticatedUser), thesis.hasStudentAccess(authenticatedUser)));
+        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
     }
 
     @DeleteMapping("/{thesisId}")
     public ResponseEntity<ThesisDto> closeThesis(
-            @PathVariable UUID thesisId,
-            JwtAuthenticationToken jwt
+            @PathVariable UUID thesisId
     ) {
-        User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
+        User currentUser = currentUserProvider().getUser();
         Thesis thesis = thesisService.findById(thesisId);
 
-        if (!thesis.hasAdvisorAccess(authenticatedUser)) {
+        if (!thesis.hasAdvisorAccess(currentUser)) {
             throw new AccessDeniedException("You do not have the required permissions to view this thesis");
         }
 
-        thesis = thesisService.closeThesis(authenticatedUser, thesis);
+        thesis = thesisService.closeThesis(thesis);
 
-        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(authenticatedUser), thesis.hasStudentAccess(authenticatedUser)));
+        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
     }
 
     @PutMapping("/{thesisId}/info")
     public ResponseEntity<ThesisDto> updateThesisInfo(
             @PathVariable UUID thesisId,
-            @RequestBody UpdateThesisInfoPayload payload,
-            JwtAuthenticationToken jwt
+            @RequestBody UpdateThesisInfoPayload payload
     ) {
-        User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
+        User currentUser = currentUserProvider().getUser();
         Thesis thesis = thesisService.findById(thesisId);
 
-        if (!thesis.hasStudentAccess(authenticatedUser)) {
+        if (!thesis.hasStudentAccess(currentUser)) {
             throw new AccessDeniedException("You need to be a student of this thesis to update the abstract and info");
         }
 
@@ -207,19 +203,18 @@ public class ThesisController {
                 RequestValidator.validateNotNull(payload.secondaryTitles())
         );
 
-        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(authenticatedUser), thesis.hasStudentAccess(authenticatedUser)));
+        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
     }
 
     @PutMapping("/{thesisId}/credits")
     public ResponseEntity<ThesisDto> updateThesisCredits(
             @PathVariable UUID thesisId,
-            @RequestBody UpdateThesisCreditsPayload payload,
-            JwtAuthenticationToken jwt
+            @RequestBody UpdateThesisCreditsPayload payload
     ) {
-        User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
+        User currentUser = currentUserProvider().getUser();
         Thesis thesis = thesisService.findById(thesisId);
 
-        if (!thesis.hasAdvisorAccess(authenticatedUser)) {
+        if (!thesis.hasAdvisorAccess(currentUser)) {
             throw new AccessDeniedException("You need to be an advisor of this thesis to update the student credits");
         }
 
@@ -228,7 +223,7 @@ public class ThesisController {
                 payload.credits()
         );
 
-        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(authenticatedUser), thesis.hasStudentAccess(authenticatedUser)));
+        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
     }
 
     /* FEEDBACK ENDPOINTS */
@@ -236,60 +231,56 @@ public class ThesisController {
     public ResponseEntity<ThesisDto> completeFeedback(
             @PathVariable UUID thesisId,
             @PathVariable UUID feedbackId,
-            @PathVariable String action,
-            JwtAuthenticationToken jwt
+            @PathVariable String action
     ) {
-        User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
+        User currentUser = currentUserProvider().getUser();
         Thesis thesis = thesisService.findById(thesisId);
 
-        if (!thesis.hasStudentAccess(authenticatedUser)) {
+        if (!thesis.hasStudentAccess(currentUser)) {
             throw new AccessDeniedException("You need to be a student of this thesis to complete a feedback item");
         }
 
         thesis = thesisService.completeFeedback(thesis, feedbackId, action.equals("complete"));
 
-        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(authenticatedUser), thesis.hasStudentAccess(authenticatedUser)));
+        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
     }
 
     @DeleteMapping("/{thesisId}/feedback/{feedbackId}")
     public ResponseEntity<ThesisDto> deleteFeedback(
             @PathVariable UUID thesisId,
-            @PathVariable UUID feedbackId,
-            JwtAuthenticationToken jwt
+            @PathVariable UUID feedbackId
     ) {
-        User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
+        User currentUser = currentUserProvider().getUser();
         Thesis thesis = thesisService.findById(thesisId);
 
-        if (!thesis.hasAdvisorAccess(authenticatedUser)) {
+        if (!thesis.hasAdvisorAccess(currentUser)) {
             throw new AccessDeniedException("You need to be a advisor of this thesis to delete a feedback item");
         }
 
         thesis = thesisService.deleteFeedback(thesis, feedbackId);
 
-        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(authenticatedUser), thesis.hasStudentAccess(authenticatedUser)));
+        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
     }
 
     @PostMapping("/{thesisId}/feedback")
     public ResponseEntity<ThesisDto> requestChanges(
             @PathVariable UUID thesisId,
-            @RequestBody RequestChangesPayload payload,
-            JwtAuthenticationToken jwt
+            @RequestBody RequestChangesPayload payload
     ) {
-        User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
+        User currentUser = currentUserProvider().getUser();
         Thesis thesis = thesisService.findById(thesisId);
 
-        if (!thesis.hasAdvisorAccess(authenticatedUser)) {
+        if (!thesis.hasAdvisorAccess(currentUser)) {
             throw new AccessDeniedException("You need to be an advisor of this thesis to request changes");
         }
 
         thesis = thesisService.requestChanges(
-                authenticatedUser,
                 thesis,
                 RequestValidator.validateNotNull(payload.type()),
                 RequestValidator.validateNotNull(payload.requestedChanges())
         );
 
-        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(authenticatedUser), thesis.hasStudentAccess(authenticatedUser)));
+        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
     }
 
     /* PROPOSAL ENDPOINTS */
@@ -297,13 +288,12 @@ public class ThesisController {
     @GetMapping("/{thesisId}/proposal/{proposalId}")
     public ResponseEntity<Resource> getProposalFile(
             @PathVariable UUID thesisId,
-            @PathVariable UUID proposalId,
-            JwtAuthenticationToken jwt
+            @PathVariable UUID proposalId
     ) {
-        User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
+        User currentUser = currentUserProvider().getUser();
         Thesis thesis = thesisService.findById(thesisId);
 
-        if (!thesis.hasReadAccess(authenticatedUser)) {
+        if (!thesis.hasReadAccess(currentUser)) {
             throw new AccessDeniedException("You do not have the required permissions to view this thesis");
         }
 
@@ -319,112 +309,106 @@ public class ThesisController {
     @DeleteMapping("/{thesisId}/proposal/{proposalId}")
     public ResponseEntity<ThesisDto> deleteProposal(
             @PathVariable UUID thesisId,
-            @PathVariable UUID proposalId,
-            JwtAuthenticationToken jwt
+            @PathVariable UUID proposalId
     ) {
-        User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
+        User currentUser = currentUserProvider().getUser();
         Thesis thesis = thesisService.findById(thesisId);
 
-        if (!thesis.hasAdvisorAccess(authenticatedUser)) {
+        if (!thesis.hasAdvisorAccess(currentUser)) {
             throw new AccessDeniedException("You do not have the required permissions to delete this proposal");
         }
 
         thesis = thesisService.deleteProposal(thesis, proposalId);
 
-        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(authenticatedUser), thesis.hasStudentAccess(authenticatedUser)));
+        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
     }
 
     @PostMapping("/{thesisId}/proposal")
     public ResponseEntity<ThesisDto> uploadProposal(
             @PathVariable UUID thesisId,
-            @RequestPart("proposal") MultipartFile proposalFile,
-            JwtAuthenticationToken jwt
+            @RequestPart("proposal") MultipartFile proposalFile
     ) {
-        User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
+        User currentUser = currentUserProvider().getUser();
         Thesis thesis = thesisService.findById(thesisId);
 
-        if (!thesis.hasStudentAccess(authenticatedUser)) {
+        if (!thesis.hasStudentAccess(currentUser)) {
             throw new AccessDeniedException("You need to be a student of this thesis to add a proposal");
         }
 
-        if (thesis.getState() != ThesisState.PROPOSAL && !thesis.hasAdvisorAccess(authenticatedUser)) {
+        if (thesis.getState() != ThesisState.PROPOSAL && !thesis.hasAdvisorAccess(currentUser)) {
             throw new AccessDeniedException("Only advisors can upload a new proposal if thesis state is not PROPOSAL");
         }
 
-        thesis = thesisService.uploadProposal(authenticatedUser, thesis, RequestValidator.validateNotNull(proposalFile));
+        thesis = thesisService.uploadProposal(thesis, RequestValidator.validateNotNull(proposalFile));
 
-        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(authenticatedUser), thesis.hasStudentAccess(authenticatedUser)));
+        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
     }
 
     @PutMapping("/{thesisId}/proposal/accept")
     public ResponseEntity<ThesisDto> acceptProposal(
-            @PathVariable UUID thesisId,
-            JwtAuthenticationToken jwt
+            @PathVariable UUID thesisId
     ) {
-        User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
+        User currentUser = currentUserProvider().getUser();
         Thesis thesis = thesisService.findById(thesisId);
 
-        if (!thesis.hasAdvisorAccess(authenticatedUser)) {
+        if (!thesis.hasAdvisorAccess(currentUser)) {
             throw new AccessDeniedException("You need to be an advisor of this thesis to accept a proposal");
         }
 
-        thesis = thesisService.acceptProposal(authenticatedUser, thesis);
+        thesis = thesisService.acceptProposal(thesis);
 
-        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(authenticatedUser), thesis.hasStudentAccess(authenticatedUser)));
+        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
     }
 
     /* WRITING ENDPOINTS */
 
     @PutMapping("/{thesisId}/thesis/final-submission")
     public ResponseEntity<ThesisDto> submitThesis(
-            @PathVariable UUID thesisId,
-            JwtAuthenticationToken jwt
+            @PathVariable UUID thesisId
     ) {
-        User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
+        User currentUser = currentUserProvider().getUser();
         Thesis thesis = thesisService.findById(thesisId);
 
-        if (!thesis.hasStudentAccess(authenticatedUser)) {
+        if (!thesis.hasStudentAccess(currentUser)) {
             throw new AccessDeniedException("You need to be a student of the thesis to do the final submission");
         }
 
         thesis = thesisService.submitThesis(thesis);
 
-        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(authenticatedUser), thesis.hasStudentAccess(authenticatedUser)));
+        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
     }
 
     @PostMapping("/{thesisId}/files")
     public ResponseEntity<ThesisDto> uploadThesisFile(
             @PathVariable UUID thesisId,
             @RequestPart("type") String type,
-            @RequestPart("file") MultipartFile file,
-            JwtAuthenticationToken jwt
+            @RequestPart("file") MultipartFile file
     ) {
-        User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
+        User currentUser = currentUserProvider().getUser();
         Thesis thesis = thesisService.findById(thesisId);
 
-        if (!thesis.hasStudentAccess(authenticatedUser)) {
+        if (!thesis.hasStudentAccess(currentUser)) {
             throw new AccessDeniedException("You need to be a student of this thesis to upload thesis files");
         }
 
-        if (thesis.getState() != ThesisState.WRITING && !thesis.hasAdvisorAccess(authenticatedUser)) {
+        if (thesis.getState() != ThesisState.WRITING && !thesis.hasAdvisorAccess(currentUser)) {
             throw new AccessDeniedException("Only advisors can upload a new file if thesis state is not WRITING");
         }
 
-        thesis = thesisService.uploadThesisFile(authenticatedUser, thesis, type, RequestValidator.validateNotNull(file));
+        thesis = thesisService.uploadThesisFile(thesis, type, RequestValidator.validateNotNull(file));
 
-        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(authenticatedUser), thesis.hasStudentAccess(authenticatedUser)));
+        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
     }
 
     @GetMapping("/{thesisId}/files/{fileId}")
     public ResponseEntity<Resource> getThesisFile(
             @PathVariable UUID thesisId,
-            @PathVariable UUID fileId,
-            JwtAuthenticationToken jwt
+            @PathVariable UUID fileId
     ) {
-        User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
+        User currentUser = currentUserProvider().getUser();
         Thesis thesis = thesisService.findById(thesisId);
 
-        if (!thesis.hasReadAccess(authenticatedUser)) {
+        if (!thesis.hasReadAccess(currentUser)) {
             throw new AccessDeniedException("You do not have the required permissions to view this thesis");
         }
 
@@ -440,36 +424,33 @@ public class ThesisController {
     @DeleteMapping("/{thesisId}/files/{fileId}")
     public ResponseEntity<ThesisDto> deleteThesisFile(
             @PathVariable UUID thesisId,
-            @PathVariable UUID fileId,
-            JwtAuthenticationToken jwt
+            @PathVariable UUID fileId
     ) {
-        User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
+        User currentUser = currentUserProvider().getUser();
         Thesis thesis = thesisService.findById(thesisId);
 
-        if (!thesis.hasAdvisorAccess(authenticatedUser)) {
+        if (!thesis.hasAdvisorAccess(currentUser)) {
             throw new AccessDeniedException("You do not have the required permissions to delete this file");
         }
 
         thesis = thesisService.deleteThesisFile(thesis, fileId);
 
-        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(authenticatedUser), thesis.hasStudentAccess(authenticatedUser)));
+        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
     }
 
     @PostMapping("/{thesisId}/presentations")
     public ResponseEntity<ThesisDto> createPresentation(
             @PathVariable UUID thesisId,
-            @RequestBody ReplacePresentationPayload payload,
-            JwtAuthenticationToken jwt
+            @RequestBody ReplacePresentationPayload payload
     ) {
-        User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
+        User currentUser = currentUserProvider().getUser();
         Thesis thesis = thesisService.findById(thesisId);
 
-        if (!thesis.hasStudentAccess(authenticatedUser)) {
+        if (!thesis.hasStudentAccess(currentUser)) {
             throw new AccessDeniedException("You need to be a student of this thesis to create a presentation");
         }
 
         thesis = thesisPresentationService.createPresentation(
-                authenticatedUser,
                 thesis,
                 RequestValidator.validateNotNull(payload.type()),
                 RequestValidator.validateNotNull(payload.visibility()),
@@ -479,25 +460,24 @@ public class ThesisController {
                 RequestValidator.validateNotNull(payload.date())
         );
 
-        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(authenticatedUser), thesis.hasStudentAccess(authenticatedUser)));
+        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
     }
 
     @PutMapping("/{thesisId}/presentations/{presentationId}")
     public ResponseEntity<ThesisDto> updatePresentation(
             @PathVariable UUID thesisId,
             @PathVariable UUID presentationId,
-            @RequestBody ReplacePresentationPayload payload,
-            JwtAuthenticationToken jwt
+            @RequestBody ReplacePresentationPayload payload
     ) {
-        User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
+        User currentUser = currentUserProvider().getUser();
         ThesisPresentation presentation = thesisPresentationService.findById(thesisId, presentationId);
         Thesis thesis = presentation.getThesis();
 
-        if (!thesis.hasStudentAccess(authenticatedUser)) {
+        if (!thesis.hasStudentAccess(currentUser)) {
             throw new AccessDeniedException("You need to be a student of this thesis to update a presentation");
         }
 
-        if (presentation.getState() == ThesisPresentationState.SCHEDULED && !thesis.hasAdvisorAccess(authenticatedUser)) {
+        if (presentation.getState() == ThesisPresentationState.SCHEDULED && !thesis.hasAdvisorAccess(currentUser)) {
             throw new AccessDeniedException("You need to be an advisor of this thesis to update a scheduled presentation");
         }
 
@@ -511,21 +491,20 @@ public class ThesisController {
                 RequestValidator.validateNotNull(payload.date())
         );
 
-        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(authenticatedUser), thesis.hasStudentAccess(authenticatedUser)));
+        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
     }
 
     @PostMapping("/{thesisId}/presentations/{presentationId}/schedule")
     public ResponseEntity<ThesisDto> schedulePresentation(
             @PathVariable UUID thesisId,
             @PathVariable UUID presentationId,
-            @RequestBody SchedulePresentationPayload payload,
-            JwtAuthenticationToken jwt
+            @RequestBody SchedulePresentationPayload payload
     ) {
-        User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
+        User currentUser = currentUserProvider().getUser();
         ThesisPresentation presentation = thesisPresentationService.findById(thesisId, presentationId);
         Thesis thesis = presentation.getThesis();
 
-        if (!thesis.hasAdvisorAccess(authenticatedUser)) {
+        if (!thesis.hasAdvisorAccess(currentUser)) {
             throw new AccessDeniedException("You need to be an advisor of this thesis to schedule a presentation");
         }
 
@@ -536,25 +515,24 @@ public class ThesisController {
                 RequestValidator.validateNotNull(payload.optionalAttendees())
         );
 
-        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(authenticatedUser), thesis.hasStudentAccess(authenticatedUser)));
+        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
     }
 
     @DeleteMapping("/{thesisId}/presentations/{presentationId}")
     public ResponseEntity<ThesisDto> deletePresentation(
             @PathVariable UUID thesisId,
-            @PathVariable UUID presentationId,
-            JwtAuthenticationToken jwt
+            @PathVariable UUID presentationId
     ) {
-        User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
+        User currentUser = currentUserProvider().getUser();
         ThesisPresentation presentation = thesisPresentationService.findById(thesisId, presentationId);
 
-        if (!presentation.hasManagementAccess(authenticatedUser)) {
+        if (!presentation.hasManagementAccess(currentUser)) {
             throw new AccessDeniedException("You are not allowed to delete this presentation");
         }
 
-        Thesis thesis = thesisPresentationService.deletePresentation(authenticatedUser, presentation);
+        Thesis thesis = thesisPresentationService.deletePresentation(presentation);
 
-        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(authenticatedUser), thesis.hasStudentAccess(authenticatedUser)));
+        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
     }
 
     @GetMapping("/{thesisId}/comments")
@@ -562,17 +540,16 @@ public class ThesisController {
             @PathVariable UUID thesisId,
             @RequestParam(required = false, defaultValue = "THESIS") ThesisCommentType commentType,
             @RequestParam(required = false, defaultValue = "0") Integer page,
-            @RequestParam(required = false, defaultValue = "50") Integer limit,
-            JwtAuthenticationToken jwt
+            @RequestParam(required = false, defaultValue = "50") Integer limit
     ) {
-        User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
+        User currentUser = currentUserProvider().getUser();
         Thesis thesis = thesisService.findById(thesisId);
 
-        if (commentType == ThesisCommentType.ADVISOR && !thesis.hasAdvisorAccess(authenticatedUser)) {
+        if (commentType == ThesisCommentType.ADVISOR && !thesis.hasAdvisorAccess(currentUser)) {
             throw new AccessDeniedException("You need to be an advisor of this thesis to view advisor comments");
         }
 
-        if (!thesis.hasReadAccess(authenticatedUser)) {
+        if (!thesis.hasReadAccess(currentUser)) {
             throw new AccessDeniedException("You do not have the required permissions to view comments on this thesis");
         }
 
@@ -585,22 +562,20 @@ public class ThesisController {
     public ResponseEntity<ThesisCommentDto> createComment(
             @PathVariable UUID thesisId,
             @RequestPart("data") PostThesisCommentPayload payload,
-            @RequestPart(value = "file", required = false) MultipartFile file,
-            JwtAuthenticationToken jwt
+            @RequestPart(value = "file", required = false) MultipartFile file
     ) {
-        User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
+        User currentUser = currentUserProvider().getUser();
         Thesis thesis = thesisService.findById(thesisId);
 
-        if (payload.commentType() == ThesisCommentType.ADVISOR && !thesis.hasAdvisorAccess(authenticatedUser)) {
+        if (payload.commentType() == ThesisCommentType.ADVISOR && !thesis.hasAdvisorAccess(currentUser)) {
             throw new AccessDeniedException("You need to be an advisor of this thesis to add an advisor comment");
         }
 
-        if (!thesis.hasStudentAccess(authenticatedUser)) {
+        if (!thesis.hasStudentAccess(currentUser)) {
             throw new AccessDeniedException("You need to be a student of this thesis to add a comment");
         }
 
         ThesisComment comment = thesisCommentService.postComment(
-                authenticatedUser,
                 thesis,
                 RequestValidator.validateNotNull(payload.commentType()),
                 RequestValidator.validateStringMaxLength(payload.message(), StringLimits.LONGTEXT.getLimit()),
@@ -613,17 +588,16 @@ public class ThesisController {
     @GetMapping("/{thesisId}/comments/{commentId}/file")
     public ResponseEntity<Resource> getCommentFile(
             @PathVariable UUID thesisId,
-            @PathVariable UUID commentId,
-            JwtAuthenticationToken jwt
+            @PathVariable UUID commentId
     ) {
-        User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
+        User currentUser = currentUserProvider().getUser();
         ThesisComment comment = thesisCommentService.findById(thesisId, commentId);
 
-        if (comment.getType() == ThesisCommentType.ADVISOR && !comment.getThesis().hasAdvisorAccess(authenticatedUser)) {
+        if (comment.getType() == ThesisCommentType.ADVISOR && !comment.getThesis().hasAdvisorAccess(currentUser)) {
             throw new AccessDeniedException("You need to be a advisor of this thesis to view an advisor file");
         }
 
-        if (!comment.getThesis().hasReadAccess(authenticatedUser)) {
+        if (!comment.getThesis().hasReadAccess(currentUser)) {
             throw new AccessDeniedException("You do not have the required permissions to view this comment");
         }
 
@@ -637,13 +611,12 @@ public class ThesisController {
     @DeleteMapping("/{thesisId}/comments/{commentId}")
     public ResponseEntity<ThesisCommentDto> deleteComment(
             @PathVariable UUID thesisId,
-            @PathVariable UUID commentId,
-            JwtAuthenticationToken jwt
+            @PathVariable UUID commentId
     ) {
-        User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
+        User currentUser = currentUserProvider().getUser();
         ThesisComment comment = thesisCommentService.findById(thesisId, commentId);
 
-        if (!comment.hasManagementAccess(authenticatedUser)) {
+        if (!comment.hasManagementAccess(currentUser)) {
             throw new AccessDeniedException("You are not allowed to delete this comment");
         }
 
@@ -656,13 +629,12 @@ public class ThesisController {
 
     @GetMapping("/{thesisId}/assessment")
     public ResponseEntity<Resource> getAssessmentFile(
-            @PathVariable UUID thesisId,
-            JwtAuthenticationToken jwt
+            @PathVariable UUID thesisId
     ) {
-        User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
+        User currentUser = currentUserProvider().getUser();
         Thesis thesis = thesisService.findById(thesisId);
 
-        if (!thesis.hasAdvisorAccess(authenticatedUser)) {
+        if (!thesis.hasAdvisorAccess(currentUser)) {
             throw new AccessDeniedException("You need to be a advisor of this thesis to add an assessment");
         }
 
@@ -675,18 +647,16 @@ public class ThesisController {
     @PostMapping("/{thesisId}/assessment")
     public ResponseEntity<ThesisDto> createAssessment(
             @PathVariable UUID thesisId,
-            @RequestBody CreateAssessmentPayload payload,
-            JwtAuthenticationToken jwt
+            @RequestBody CreateAssessmentPayload payload
     ) {
-        User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
+        User currentUser = currentUserProvider().getUser();
         Thesis thesis = thesisService.findById(thesisId);
 
-        if (!thesis.hasAdvisorAccess(authenticatedUser)) {
+        if (!thesis.hasAdvisorAccess(currentUser)) {
             throw new AccessDeniedException("You need to be a advisor of this thesis to add an assessment");
         }
 
         thesis = thesisService.submitAssessment(
-                authenticatedUser,
                 thesis,
                 RequestValidator.validateStringMaxLength(payload.summary(), StringLimits.UNLIMITED_TEXT.getLimit()),
                 RequestValidator.validateStringMaxLength(payload.positives(), StringLimits.UNLIMITED_TEXT.getLimit()),
@@ -694,7 +664,7 @@ public class ThesisController {
                 RequestValidator.validateStringMaxLength(payload.gradeSuggestion(), StringLimits.THESIS_GRADE.getLimit())
         );
 
-        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(authenticatedUser), thesis.hasStudentAccess(authenticatedUser)));
+        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
     }
 
     /* GRADE ENDPOINTS */
@@ -702,13 +672,12 @@ public class ThesisController {
     @PostMapping("/{thesisId}/grade")
     public ResponseEntity<ThesisDto> addGrade(
             @PathVariable UUID thesisId,
-            @RequestBody AddThesisGradePayload payload,
-            JwtAuthenticationToken jwt
+            @RequestBody AddThesisGradePayload payload
     ) {
-        User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
+        User currentUser = currentUserProvider().getUser();
         Thesis thesis = thesisService.findById(thesisId);
 
-        if (!thesis.hasSupervisorAccess(authenticatedUser)) {
+        if (!thesis.hasSupervisorAccess(currentUser)) {
             throw new AccessDeniedException("You need to be a supervisor of this thesis to add a final grade");
         }
 
@@ -719,23 +688,22 @@ public class ThesisController {
                 RequestValidator.validateNotNull(payload.visibility())
         );
 
-        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(authenticatedUser), thesis.hasStudentAccess(authenticatedUser)));
+        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
     }
 
     @PostMapping("/{thesisId}/complete")
     public ResponseEntity<ThesisDto> completeThesis(
-            @PathVariable UUID thesisId,
-            JwtAuthenticationToken jwt
+            @PathVariable UUID thesisId
     ) {
-        User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
+        User currentUser = currentUserProvider().getUser();
         Thesis thesis = thesisService.findById(thesisId);
 
-        if (!thesis.hasSupervisorAccess(authenticatedUser)) {
+        if (!thesis.hasSupervisorAccess(currentUser)) {
             throw new AccessDeniedException("You need to be a supervisor of this thesis to close the thesis");
         }
 
         thesis = thesisService.completeThesis(thesis);
 
-        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(authenticatedUser), thesis.hasStudentAccess(authenticatedUser)));
+        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
     }
 }

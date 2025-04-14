@@ -44,4 +44,7 @@ public class ThesisFile {
     @JoinColumn(name = "uploaded_by", nullable = false)
     private User uploadedBy;
 
+    public ResearchGroup getResearchGroup() {
+        return thesis.getResearchGroup();
+    }
 }
