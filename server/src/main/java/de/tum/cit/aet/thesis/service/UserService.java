@@ -60,9 +60,7 @@ public class UserService {
     }
 
     public User findById(UUID userId) {
-        User user = userRepository.findById(userId)
+        return userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("User with id %s not found.", userId)));
-        currentUserProvider().assertCanAccessResearchGroup(user.getResearchGroup());
-        return user;
     }
 }

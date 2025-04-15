@@ -54,6 +54,7 @@ public class ThesisController {
     @GetMapping
     public ResponseEntity<PaginationDto<ThesisDto>> getTheses(
             @RequestParam(required = false) String search,
+            @RequestParam(required = false, defaultValue = "true") boolean onlyOwnResearchGroup,
             @RequestParam(required = false) ThesisState[] state,
             @RequestParam(required = false) String[] type,
             @RequestParam(required = false, defaultValue = "false") boolean fetchAll,
@@ -87,6 +88,7 @@ public class ThesisController {
 
         Page<Thesis> theses = thesisService.getAll(
                 userId,
+                onlyOwnResearchGroup,
                 visibilities,
                 search,
                 state,

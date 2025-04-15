@@ -45,6 +45,7 @@ public class TopicService {
     }
 
     public Page<Topic> getAll(
+            boolean onlyOwnResearchGroup,
             String[] types,
             boolean includeClosed,
             String searchQuery,
@@ -58,7 +59,8 @@ public class TopicService {
                 HibernateHelper.getColumnName(Topic.class, sortBy)
         );
 
-        ResearchGroup researchGroup = currentUserProvider().getResearchGroupOrThrow();
+        ResearchGroup researchGroup = onlyOwnResearchGroup ?
+            currentUserProvider().getResearchGroupOrThrow() : null;
         String searchQueryFilter = searchQuery == null || searchQuery.isEmpty() ? null : searchQuery.toLowerCase();
         String[] typesFilter = types == null || types.length == 0 ? null : types;
 

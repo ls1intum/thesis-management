@@ -56,7 +56,8 @@ public class ThesisService {
             AccessManagementService accessManagementService,
             ThesisPresentationService thesisPresentationService,
             ThesisFeedbackRepository thesisFeedbackRepository, ThesisFileRepository thesisFileRepository,
-            ObjectProvider<CurrentUserProvider> currentUserProviderProvider) {
+            ObjectProvider<CurrentUserProvider> currentUserProviderProvider
+    ) {
         this.thesisRoleRepository = thesisRoleRepository;
         this.thesisRepository = thesisRepository;
         this.thesisStateChangeRepository = thesisStateChangeRepository;
@@ -69,7 +70,7 @@ public class ThesisService {
         this.thesisPresentationService = thesisPresentationService;
         this.thesisFeedbackRepository = thesisFeedbackRepository;
         this.thesisFileRepository = thesisFileRepository;
-       this.currentUserProviderProvider = currentUserProviderProvider;
+        this.currentUserProviderProvider = currentUserProviderProvider;
     }
 
     private CurrentUserProvider currentUserProvider() {
@@ -77,31 +78,33 @@ public class ThesisService {
     }
 
     public Page<Thesis> getAll(
-            UUID userId,
-            Set<ThesisVisibility> visibilities,
-            String searchQuery,
-            ThesisState[] states,
-            String[] types,
-            int page,
-            int limit,
-            String sortBy,
-            String sortOrder
+        UUID userId,
+        boolean onlyOwnResearchGroup,
+        Set<ThesisVisibility> visibilities,
+        String searchQuery,
+        ThesisState[] states,
+        String[] types,
+        int page,
+        int limit,
+        String sortBy,
+        String sortOrder
     ) {
         Sort.Order order = new Sort.Order(sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
 
-        ResearchGroup researchGroup = currentUserProvider().getResearchGroupOrThrow();
+        ResearchGroup researchGroup = onlyOwnResearchGroup ?
+            currentUserProvider().getResearchGroupOrThrow() : null;
         String searchQueryFilter = searchQuery == null || searchQuery.isEmpty() ? null : searchQuery.toLowerCase();
         Set<ThesisState> statesFilter = states == null || states.length == 0 ? null : new HashSet<>(Arrays.asList(states));
         Set<String> typesFilter = types == null || types.length == 0 ? null : new HashSet<>(Arrays.asList(types));
 
         return thesisRepository.searchTheses(
-                researchGroup == null ? null : researchGroup.getId(),
-                userId,
-                visibilities,
-                searchQueryFilter,
-                statesFilter,
-                typesFilter,
-                PageRequest.of(page, limit, Sort.by(order))
+            researchGroup == null ? null : researchGroup.getId(),
+            userId,
+            visibilities,
+            searchQueryFilter,
+            statesFilter,
+            typesFilter,
+            PageRequest.of(page, limit, Sort.by(order))
         );
     }
 

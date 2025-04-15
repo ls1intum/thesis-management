@@ -34,6 +34,7 @@ public class TopicController {
     @GetMapping
     public ResponseEntity<PaginationDto<TopicDto>> getTopics(
             @RequestParam(required = false) String search,
+            @RequestParam(required = false, defaultValue = "true") boolean onlyOwnResearchGroup,
             @RequestParam(required = false, defaultValue = "") String[] type,
             @RequestParam(required = false, defaultValue = "false") Boolean includeClosed,
             @RequestParam(required = false, defaultValue = "0") Integer page,
@@ -42,6 +43,7 @@ public class TopicController {
             @RequestParam(required = false, defaultValue = "desc") String sortOrder
     ) {
         Page<Topic> topics = topicService.getAll(
+                onlyOwnResearchGroup,
                 type,
                 includeClosed,
                 search,

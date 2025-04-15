@@ -4,7 +4,6 @@ import de.tum.cit.aet.thesis.entity.ResearchGroup;
 import de.tum.cit.aet.thesis.entity.User;
 import de.tum.cit.aet.thesis.exception.request.AccessDeniedException;
 import de.tum.cit.aet.thesis.service.AuthenticationService;
-import jakarta.annotation.PostConstruct;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Scope;
@@ -23,23 +22,20 @@ public class CurrentUserProvider {
    private final AuthenticationService authenticationService;
    private User cachedUser;
 
-   @PostConstruct
-   public void loadUser() {
-      Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-      if (authentication instanceof JwtAuthenticationToken) {
-         JwtAuthenticationToken jwt = (JwtAuthenticationToken) authentication;
-         cachedUser = authenticationService.getAuthenticatedUserWithResearchGroup(jwt);
-      } else {
-         throw new AccessDeniedException("Please login first.");
-      }
-   }
-
    public User getUser() {
+      if (cachedUser == null) {
+         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+         if (authentication instanceof JwtAuthenticationToken jwt) {
+            cachedUser = authenticationService.getAuthenticatedUserWithResearchGroup(jwt);
+         } else {
+            throw new AccessDeniedException("Please login first.");
+         }
+      }
       return cachedUser;
    }
 
    public ResearchGroup getResearchGroupOrThrow() {
-      ResearchGroup researchGroup = cachedUser.getResearchGroup();
+      ResearchGroup researchGroup = getUser().getResearchGroup();
       if (!canSeeAllResearchGroups() && researchGroup == null) {
          throw new AccessDeniedException("Your account must be assigned to a research group.");
       }
@@ -47,19 +43,19 @@ public class CurrentUserProvider {
    }
 
    public boolean isStudent() {
-      return cachedUser.hasAnyGroup("student");
+      return getUser().hasAnyGroup("student");
    }
-   
+
    public boolean isAdvisor() {
-      return cachedUser.hasAnyGroup("advisor");
+      return getUser().hasAnyGroup("advisor");
    }
-   
+
    public boolean isSupervisor() {
-      return cachedUser.hasAnyGroup("supervisor");
+      return getUser().hasAnyGroup("supervisor");
    }
-   
+
    public boolean isAdmin() {
-      return cachedUser.hasAnyGroup("admin");
+      return getUser().hasAnyGroup("admin");
    }
 
    public boolean canSeeAllResearchGroups() {
