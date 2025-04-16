@@ -80,7 +80,7 @@ A ready-to-use Postman Collection is included: [`TUMApply API.postman_collection
 ### How to Use
 
 1. Open Postman and click **Import** on the top left.
-2. Upload the provided [`TUMApply API.postman_collection.json`](./Thesis%20Management%20API.
+2. Upload the provided [`TUMApply API.postman_collection.json`](./Thesis%20Management%20API.postman_collection.json).
    postman_collection.json).
 3. The collection will appear in the sidebar.
 4. Start sending requests — OAuth2 authentication will be handled automatically.

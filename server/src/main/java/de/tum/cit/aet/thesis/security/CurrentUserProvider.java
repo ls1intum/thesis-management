@@ -59,7 +59,7 @@ public class CurrentUserProvider {
    }
 
    public boolean canSeeAllResearchGroups() {
-      return isStudent();
+      return isStudent() || isAdmin();
    }
 
    public void assertSameResearchGroupIfNotPrivileged(ResearchGroup target) {

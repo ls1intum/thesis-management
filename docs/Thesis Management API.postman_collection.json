@@ -717,6 +717,36 @@
 								}
 							},
 							"response": []
+						},
+						{
+							"name": "Assign User to Research Group",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/research-groups/:researchGroupId/assign/:userId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"research-groups",
+										":researchGroupId",
+										"assign",
+										":userId"
+									],
+									"variable": [
+										{
+											"key": "researchGroupId",
+											"value": "df062fe9-1072-4fe4-af01-858d315af30d"
+										},
+										{
+											"key": "userId",
+											"value": "b8d13e55-0b27-4b58-9b57-ca3c726f8a70"
+										}
+									]
+								}
+							},
+							"response": []
 						}
 					]
 				},

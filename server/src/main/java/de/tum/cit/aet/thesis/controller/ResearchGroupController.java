@@ -119,4 +119,14 @@ public class ResearchGroupController {
 
     return ResponseEntity.noContent().build();
   }
+
+  @PutMapping("/{researchGroupId}/assign/{userId}")
+  @PreAuthorize("hasRole('admin')")
+  public ResponseEntity<Void> assignUserToResearchGroup(
+      @PathVariable("researchGroupId") UUID researchGroupId,
+      @PathVariable("userId") UUID userId
+  ) {
+    researchGroupService.assignUserToResearchGroup(userId, researchGroupId);
+    return ResponseEntity.noContent().build();
+  }
 }
