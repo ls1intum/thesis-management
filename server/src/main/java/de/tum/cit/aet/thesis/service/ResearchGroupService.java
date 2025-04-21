@@ -161,6 +161,10 @@ public class ResearchGroupService {
       throw new AccessDeniedException("User is already assigned to a research group.");
     }
 
+    if(researchGroup != null && researchGroup.isArchived()){
+      throw new AccessDeniedException("Cannot assign user to an archived research group.");
+    }
+
     user.setResearchGroup(researchGroup);
     userRepository.save(user);
   }

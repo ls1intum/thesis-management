@@ -39,6 +39,9 @@ public class CurrentUserProvider {
       if (!canSeeAllResearchGroups() && researchGroup == null) {
          throw new AccessDeniedException("Your account must be assigned to a research group.");
       }
+      if(researchGroup != null && researchGroup.isArchived()){
+         throw new AccessDeniedException("The research group is archived.");
+      }
       return researchGroup;
    }
 
@@ -69,6 +72,10 @@ public class CurrentUserProvider {
    }
    
    public void assertCanAccessResearchGroup(ResearchGroup target) {
+      if(target != null && target.isArchived()){
+         throw new AccessDeniedException("The research group is archived.");
+      }
+
       if (canSeeAllResearchGroups()) {
          return;
       }
