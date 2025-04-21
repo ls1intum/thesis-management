@@ -12,4 +12,5 @@
     <include file="changes/06_topics.sql" relativeToChangelogFile="true" />
     <include file="changes/07_cleanup.sql" relativeToChangelogFile="true" />
     <include file="changes/08_research_groups.sql" relativeToChangelogFile="true"/>
+    <include file="changes/09_email_templates.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>
