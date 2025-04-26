@@ -12,6 +12,8 @@ import { GLOBAL_CONFIG } from '../../../../config/global'
 import { IApplication } from '../../../../requests/responses/application'
 import TopicAccordionItem from '../../../../components/TopicAccordionItem/TopicAccordionItem'
 import { formatThesisType } from '../../../../utils/format'
+import { PaginationResponse } from '../../../../requests/responses/pagination'
+import { IResearchGroup } from '../../../../requests/responses/researchGroup'
 
 interface IMotivationStepProps {
   topic: ITopic | undefined
@@ -21,6 +23,7 @@ interface IMotivationStepProps {
 
 interface IMotivationStepForm {
   thesisTitle: string
+  researchGroup: string
   thesisType: string | null
   desiredStartDate: DateValue
   motivation: string
@@ -29,6 +32,7 @@ interface IMotivationStepForm {
 const MotivationStep = (props: IMotivationStepProps) => {
   const { topic, application, onComplete } = props
 
+  const [researchGroups, setResearchGroups] = useState<PaginationResponse<IResearchGroup>>()
   const [loading, setLoading] = useState(false)
 
   const mergedTopic = application?.topic || topic
@@ -37,6 +41,7 @@ const MotivationStep = (props: IMotivationStepProps) => {
     mode: 'controlled',
     initialValues: {
       thesisTitle: '',
+      researchGroup: mergedTopic?.researchGroup.id ?? '',
       thesisType: null,
       desiredStartDate: new Date(),
       motivation: '',
@@ -66,10 +71,45 @@ const MotivationStep = (props: IMotivationStepProps) => {
         motivation: application.motivation,
         desiredStartDate: new Date(application.desiredStartDate),
         thesisType: application.thesisType,
-        thesisTitle: application.thesisTitle || '',
+        thesisTitle: application.thesisTitle ?? '',
       })
     }
   }, [application?.applicationId])
+
+  useEffect(() => {
+    setLoading(true)
+    return doRequest<PaginationResponse<IResearchGroup>>(
+      '/v2/research-groups',
+      {
+        method: 'GET',
+        requiresAuth: true,
+        params: {
+          page: 0,
+          limit: -1,
+        },
+      },
+      (res) => {
+        if (res.ok) {
+          setResearchGroups({
+            ...res.data,
+            content: res.data.content,
+          })
+        } else {
+          showSimpleError(getApiResponseErrorMessage(res))
+
+          setResearchGroups({
+            content: [],
+            totalPages: 0,
+            totalElements: 0,
+            last: true,
+            pageNumber: 0,
+            pageSize: -1,
+          })
+        }
+        setLoading(false)
+      },
+    )
+  }, [])
 
   const onSubmit = async (values: IMotivationStepForm) => {
     setLoading(true)
@@ -82,6 +122,7 @@ const MotivationStep = (props: IMotivationStepProps) => {
           requiresAuth: true,
           data: {
             topicId: mergedTopic?.topicId,
+            researchGroupId: values.researchGroup,
             thesisTitle: values.thesisTitle || null,
             thesisType: values.thesisType,
             desiredStartDate: values.desiredStartDate,
@@ -114,6 +155,19 @@ const MotivationStep = (props: IMotivationStepProps) => {
             {...form.getInputProps('thesisTitle')}
           />
         )}
+        <Select
+          label='Research Group'
+          required={true}
+          disabled={
+            loading || !researchGroups || !!mergedTopic || researchGroups.totalElements <= 1
+          }
+          data={researchGroups?.content.map((researchGroup: IResearchGroup) => ({
+            label: researchGroup.name,
+            value: researchGroup.id,
+          }))}
+          searchable
+          {...form.getInputProps('researchGroup')}
+        />
         <Select
           label='Thesis Type'
           required={true}

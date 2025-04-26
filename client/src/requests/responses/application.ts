@@ -1,5 +1,6 @@
 import { ILightUser, IUser } from './user'
 import { ITopic } from './topic'
+import { ILightResearchGroup } from './researchGroup'
 
 export enum ApplicationState {
   NOT_ASSESSED = 'NOT_ASSESSED',
@@ -24,4 +25,5 @@ export interface IApplication {
     reviewedAt: string
   }> | null
   reviewedAt: string | null
+  researchGroup: ILightResearchGroup
 }

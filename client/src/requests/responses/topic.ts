@@ -1,3 +1,4 @@
+import { ILightResearchGroup } from './researchGroup'
 import { ILightUser } from './user'
 
 export interface ITopic {
@@ -12,6 +13,7 @@ export interface ITopic {
   updatedAt: string
   createdAt: string
   createdBy: ILightUser
+  researchGroup: ILightResearchGroup
   advisors: ILightUser[]
   supervisors: ILightUser[]
 }

@@ -1,5 +1,6 @@
 package de.tum.cit.aet.thesis.controller;
 
+import de.tum.cit.aet.thesis.security.CurrentUserProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,18 +20,17 @@ import java.util.List;
 @RequestMapping("/v2/dashboard")
 public class DashboardController {
     private final DashboardService dashboardService;
-    private final AuthenticationService authenticationService;
+    private final CurrentUserProvider currentUserProvider;
 
     @Autowired
-    public DashboardController(DashboardService dashboardService, AuthenticationService authenticationService) {
+    public DashboardController(DashboardService dashboardService,
+        CurrentUserProvider currentUserProvider) {
         this.dashboardService = dashboardService;
-        this.authenticationService = authenticationService;
+       this.currentUserProvider = currentUserProvider;
     }
 
     @GetMapping("/tasks")
-    public ResponseEntity<List<TaskDto>> getTasks(JwtAuthenticationToken jwt) {
-        User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
-
-        return ResponseEntity.ok(dashboardService.getTasks(authenticatedUser));
+    public ResponseEntity<List<TaskDto>> getTasks() {
+        return ResponseEntity.ok(dashboardService.getTasks(currentUserProvider.getUser()));
     }
 }

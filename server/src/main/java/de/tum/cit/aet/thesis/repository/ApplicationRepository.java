@@ -19,7 +19,7 @@ import java.util.UUID;
 public interface ApplicationRepository extends JpaRepository<Application, UUID> {
     @Query(
             "SELECT DISTINCT a FROM Application a WHERE " +
-            "(:userId IS NULL OR a.user.id = :userId) AND " +
+            "(:userId IS NULL OR a.user.id = :userId) AND " + "(:researchGroupId IS NULL OR a.researchGroup.id = :researchGroupId) AND " +
             "(:states IS NULL OR a.state IN :states OR (:previousIds IS NOT NULL AND a.id IN :previousIds)) AND " +
             "(:reviewerId IS NULL OR NOT EXISTS (SELECT ar FROM ApplicationReviewer ar WHERE a.id = ar.application.id AND ar.user.id = :reviewerId AND ar.reason = 'NOT_INTERESTED') OR (:previousIds IS NOT NULL AND a.id IN :previousIds)) AND " +
             "(:includeSuggestedTopics = true OR a.topic IS NOT NULL) AND " +
@@ -31,6 +31,7 @@ public interface ApplicationRepository extends JpaRepository<Application, UUID> 
             "LOWER(a.user.universityId) LIKE %:searchQuery%)"
     )
     Page<Application> searchApplications(
+            @Param("researchGroupId") UUID researchGroupId,
             @Param("userId") UUID userId,
             @Param("reviewerId") UUID reviewerId,
             @Param("searchQuery") String searchQuery,
@@ -43,15 +44,17 @@ public interface ApplicationRepository extends JpaRepository<Application, UUID> 
     );
 
     @Query(
-            "SELECT COUNT(DISTINCT a) FROM Application a " +
+        "SELECT COUNT(DISTINCT a) FROM Application a " +
             "LEFT JOIN Topic t ON (a.topic.id = t.id) " +
             "LEFT JOIN TopicRole r ON (t.id = r.topic.id) " +
-            "WHERE " +
-                    "(a.topic IS NULL OR :userId IS NULL OR r.user.id = :userId) AND " +
-                    "a.state = 'NOT_ASSESSED' AND " +
-                    "(:userId IS NULL OR NOT EXISTS(SELECT ar FROM ApplicationReviewer ar WHERE ar.application.id = a.id AND ar.user.id = :userId))"
+            "WHERE (a.researchGroup.id IS NULL OR a.researchGroup.id = :researchGroupId) AND " +
+            "(t.researchGroup.id IS NULL OR t.researchGroup.id = :researchGroupId) AND" +
+            "(a.topic IS NULL OR :userId IS NULL OR r.user.id = :userId) AND " +
+            "a.state = 'NOT_ASSESSED' AND " +
+            "(:userId IS NULL OR NOT EXISTS(SELECT ar FROM ApplicationReviewer ar WHERE ar.application.id = a.id AND ar.user.id = :userId))"
     )
-    long countUnreviewedApplications(@Param("userId") UUID userId);
+    long countUnreviewedApplications(@Param("userId") UUID userId,
+        @Param("researchGroupId") UUID researchGroupId);
 
     @Query(
             "SELECT EXISTS (" +

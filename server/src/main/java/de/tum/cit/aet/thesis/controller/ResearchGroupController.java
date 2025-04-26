@@ -29,13 +29,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class ResearchGroupController {
 
   private final ResearchGroupService researchGroupService;
-  private final AuthenticationService authenticationService;
 
   @Autowired
-  public ResearchGroupController(ResearchGroupService researchGroupService,
-      AuthenticationService authenticationService) {
+  public ResearchGroupController(ResearchGroupService researchGroupService) {
     this.researchGroupService = researchGroupService;
-    this.authenticationService = authenticationService;
   }
 
   @GetMapping
@@ -66,7 +63,8 @@ public class ResearchGroupController {
 
   @GetMapping("/{researchGroupId}")
   public ResponseEntity<ResearchGroupDto> getResearchGroup(
-      @PathVariable("researchGroupId") UUID researchGroupId) {
+      @PathVariable("researchGroupId") UUID researchGroupId
+  ) {
     ResearchGroup researchGroup = researchGroupService.findById(researchGroupId);
 
     return ResponseEntity.ok(ResearchGroupDto.fromResearchGroupEntity(researchGroup));
@@ -75,13 +73,9 @@ public class ResearchGroupController {
   @PostMapping
   @PreAuthorize("hasRole('admin')")
   public ResponseEntity<ResearchGroupDto> createResearchGroup(
-      @RequestBody CreateResearchGroupPayload payload,
-      JwtAuthenticationToken jwt
+      @RequestBody CreateResearchGroupPayload payload
   ) {
-    User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
-
     ResearchGroup researchGroup = researchGroupService.createResearchGroup(
-        authenticatedUser,
         RequestValidator.validateNotNull(payload.headId()),
         RequestValidator.validateNotNull(payload.name()),
         payload.abbreviation(),
@@ -97,14 +91,11 @@ public class ResearchGroupController {
   @PreAuthorize("hasRole('admin')")
   public ResponseEntity<ResearchGroupDto> updateResearchGroup(
       @PathVariable("researchGroupId") UUID researchGroupId,
-      @RequestBody CreateResearchGroupPayload payload,
-      JwtAuthenticationToken jwt
+      @RequestBody CreateResearchGroupPayload payload
   ) {
-    User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
     ResearchGroup researchGroup = researchGroupService.findById(researchGroupId);
 
     researchGroup = researchGroupService.updateResearchGroup(
-        authenticatedUser,
         researchGroup,
         RequestValidator.validateNotNull(payload.headId()),
         RequestValidator.validateNotNull(payload.name()),
@@ -123,10 +114,19 @@ public class ResearchGroupController {
       @PathVariable("researchGroupId") UUID researchGroupId,
       JwtAuthenticationToken jwt
   ) {
-    User authenticatedUser = authenticationService.getAuthenticatedUser(jwt);
     ResearchGroup researchGroup = researchGroupService.findById(researchGroupId);
-    researchGroupService.archiveResearchGroup(authenticatedUser, researchGroup);
+    researchGroupService.archiveResearchGroup(researchGroup);
 
+    return ResponseEntity.noContent().build();
+  }
+
+  @PutMapping("/{researchGroupId}/assign/{userId}")
+  @PreAuthorize("hasRole('admin')")
+  public ResponseEntity<Void> assignUserToResearchGroup(
+      @PathVariable("researchGroupId") UUID researchGroupId,
+      @PathVariable("userId") UUID userId
+  ) {
+    researchGroupService.assignUserToResearchGroup(userId, researchGroupId);
     return ResponseEntity.noContent().build();
   }
 }

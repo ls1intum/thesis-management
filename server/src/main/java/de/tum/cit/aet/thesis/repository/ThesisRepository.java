@@ -18,8 +18,9 @@ import java.util.UUID;
 @Repository
 public interface ThesisRepository extends JpaRepository<Thesis, UUID> {
     @Query(
-            "SELECT DISTINCT t FROM Thesis t LEFT JOIN ThesisRole r ON (t.id = r.thesis.id) WHERE " +
+        "SELECT DISTINCT t FROM Thesis t LEFT JOIN ThesisRole r ON (t.id = r.thesis.id) WHERE " +
             "(:userId IS NULL OR r.user.id = :userId) AND " +
+            "(:researchGroupId IS NULL OR t.researchGroup.id = :researchGroupId) AND " +
             "(:visibilities IS NULL OR t.visibility IN :visibilities OR r.user.id = :userId) AND " +
             "(:states IS NULL OR t.state IN :states) AND " +
             "(:types IS NULL OR t.type IN :types) AND " +
@@ -30,6 +31,7 @@ public interface ThesisRepository extends JpaRepository<Thesis, UUID> {
             "LOWER(r.user.universityId) LIKE %:searchQuery%)"
     )
     Page<Thesis> searchTheses(
+            @Param("researchGroupId") UUID researchGroupId,
             @Param("userId") UUID userId,
             @Param("visibilities") Set<ThesisVisibility> visibilities,
             @Param("searchQuery") String searchQuery,
@@ -39,14 +41,16 @@ public interface ThesisRepository extends JpaRepository<Thesis, UUID> {
     );
 
     @Query(
-            "SELECT DISTINCT t FROM Thesis t LEFT JOIN ThesisRole r ON (t.id = r.thesis.id) WHERE " +
-            "(t.state != 'FINISHED' AND t.state != 'DROPPED_OUT') AND " +
+        "SELECT DISTINCT t FROM Thesis t LEFT JOIN ThesisRole r ON (t.id = r.thesis.id) WHERE " +
             "(:userId IS NULL OR r.user.id = :userId) AND " +
+            "(:researchGroupId IS NULL OR t.researchGroup.id = :researchGroupId) AND " +
+            "(t.state != 'FINISHED' AND t.state != 'DROPPED_OUT') AND " +
             "(:roleNames IS NULL OR r.id.role IN :roleNames) AND " +
             "(:states IS NULL OR t.state IN :states)"
     )
     List<Thesis> findActiveThesesForRole(
             @Param("userId") UUID userId,
+            @Param("researchGroupId") UUID researchGroupId,
             @Param("roleNames") Set<ThesisRoleName> roleNames,
             @Param("states") Set<ThesisState> states
     );

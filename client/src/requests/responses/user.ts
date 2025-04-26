@@ -14,6 +14,7 @@ export interface ILightUser {
 }
 
 export interface IUser extends ILightUser {
+  researchGroupName: string | null
   gender: string | null
   nationality: string | null
   projects: string | null

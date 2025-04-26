@@ -2,14 +2,18 @@ package de.tum.cit.aet.thesis.service;
 
 import de.tum.cit.aet.thesis.entity.ResearchGroup;
 import de.tum.cit.aet.thesis.entity.User;
+import de.tum.cit.aet.thesis.exception.request.AccessDeniedException;
 import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.repository.ResearchGroupRepository;
+import de.tum.cit.aet.thesis.repository.UserRepository;
+import de.tum.cit.aet.thesis.security.CurrentUserProvider;
 import de.tum.cit.aet.thesis.utility.HibernateHelper;
 import java.time.Instant;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,12 +23,17 @@ public class ResearchGroupService {
 
   private final ResearchGroupRepository researchGroupRepository;
   private final UserService userService;
+  private final CurrentUserProvider currentUserProvider;
+  private final UserRepository userRepository;
 
   @Autowired
   public ResearchGroupService(ResearchGroupRepository researchGroupRepository,
-      UserService userService) {
-    this.researchGroupRepository = researchGroupRepository;
-    this.userService = userService;
+      UserService userService, CurrentUserProvider currentUserProvider,
+      UserRepository userRepository) {
+      this.researchGroupRepository = researchGroupRepository;
+      this.userService = userService;
+      this.currentUserProvider = currentUserProvider;
+      this.userRepository = userRepository;
   }
 
   public Page<ResearchGroup> getAll(
@@ -37,6 +46,9 @@ public class ResearchGroupService {
       String sortBy,
       String sortOrder
   ) {
+    if (!currentUserProvider.canSeeAllResearchGroups()) {
+      heads = new String[]{currentUserProvider.getUser().getId().toString()};
+    }
     Sort.Order order = new Sort.Order(
         sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,
         HibernateHelper.getColumnName(ResearchGroup.class, sortBy)
@@ -47,16 +59,21 @@ public class ResearchGroupService {
     String[] headsFilter = heads == null || heads.length == 0 ? null : heads;
     String[] campusesFilter = campuses == null || campuses.length == 0 ? null : campuses;
 
+    Pageable pageable = limit == -1
+        ? PageRequest.of(0, Integer.MAX_VALUE, Sort.by(order))
+        : PageRequest.of(page, limit, Sort.by(order));
+
     return researchGroupRepository.searchResearchGroup(
         headsFilter,
         campusesFilter,
         includeArchived,
         searchQueryFilter,
-        PageRequest.of(page, limit, Sort.by(order))
+        pageable
     );
   }
 
   public ResearchGroup findById(UUID researchGroupId) {
+    currentUserProvider.assertCanAccessResearchGroup(researchGroupId);
     return researchGroupRepository.findById(researchGroupId)
         .orElseThrow(() -> new ResourceNotFoundException(
             String.format("Research Group with id %s not found.", researchGroupId)));
@@ -64,7 +81,6 @@ public class ResearchGroupService {
 
   @Transactional
   public ResearchGroup createResearchGroup(
-      User creator,
       UUID headId,
       String name,
       String abbreviation,
@@ -74,12 +90,7 @@ public class ResearchGroupService {
   ) {
     User head = userService.findById(headId);
 
-    if (head == null) {
-      throw new ResourceNotFoundException(String.format("Head with id %s not found.", headId));
-    }
-
     ResearchGroup researchGroup = new ResearchGroup();
-
     researchGroup.setHead(head);
     researchGroup.setName(name);
     researchGroup.setAbbreviation(abbreviation);
@@ -88,16 +99,20 @@ public class ResearchGroupService {
     researchGroup.setCampus(campus);
     researchGroup.setCreatedAt(Instant.now());
     researchGroup.setUpdatedAt(Instant.now());
-    researchGroup.setCreatedBy(creator);
-    researchGroup.setUpdatedBy(creator);
+    researchGroup.setCreatedBy(currentUserProvider.getUser());
+    researchGroup.setUpdatedBy(currentUserProvider.getUser());
     researchGroup.setArchived(false);
 
-    return researchGroupRepository.save(researchGroup);
+    ResearchGroup savedResearchGroup =  researchGroupRepository.save(researchGroup);
+
+    head.setResearchGroup(savedResearchGroup);
+    userRepository.save(head);
+
+    return savedResearchGroup;
   }
 
   @Transactional
   public ResearchGroup updateResearchGroup(
-      User updater,
       ResearchGroup researchGroup,
       UUID headId,
       String name,
@@ -106,11 +121,11 @@ public class ResearchGroupService {
       String websiteUrl,
       String campus
   ) {
-    User head = userService.findById(headId);
-
-    if (head == null) {
-      throw new ResourceNotFoundException(String.format("Head with id %s not found.", headId));
+    if(researchGroup.isArchived()) {
+      throw new AccessDeniedException("Cannot update an archived research group.");
     }
+    currentUserProvider.assertCanAccessResearchGroup(researchGroup);
+    User head = userService.findById(headId);
 
     researchGroup.setHead(head);
     researchGroup.setName(name);
@@ -119,16 +134,34 @@ public class ResearchGroupService {
     researchGroup.setWebsiteUrl(websiteUrl);
     researchGroup.setCampus(campus);
     researchGroup.setUpdatedAt(Instant.now());
-    researchGroup.setUpdatedBy(updater);
+    researchGroup.setUpdatedBy(currentUserProvider.getUser());
 
-    return researchGroupRepository.save(researchGroup);
+    ResearchGroup savedResearchGroup =  researchGroupRepository.save(researchGroup);
+
+    head.setResearchGroup(savedResearchGroup);
+    userRepository.save(head);
+
+    return savedResearchGroup;
   }
 
-  public void archiveResearchGroup(User updater, ResearchGroup researchGroup) {
+  public void archiveResearchGroup(ResearchGroup researchGroup) {
+    currentUserProvider.assertCanAccessResearchGroup(researchGroup);
     researchGroup.setUpdatedAt(Instant.now());
-    researchGroup.setUpdatedBy(updater);
+    researchGroup.setUpdatedBy(currentUserProvider.getUser());
     researchGroup.setArchived(true);
 
     researchGroupRepository.save(researchGroup);
+  }
+
+  public void assignUserToResearchGroup(UUID userId, UUID researchGroupId) {
+    User user = userService.findById(userId);
+    ResearchGroup researchGroup = findById(researchGroupId);
+
+    if (user.getResearchGroup() != null) {
+      throw new AccessDeniedException("User is already assigned to a research group.");
+    }
+
+    user.setResearchGroup(researchGroup);
+    userRepository.save(user);
   }
 }

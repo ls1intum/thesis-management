@@ -90,7 +90,7 @@ public class Application {
   private List<ApplicationReviewer> reviewers = new ArrayList<>();
 
   public boolean hasReadAccess(User user) {
-    if (user.hasAnyGroup("admin", "advisor", "supervisor")) {
+    if (user.hasAnyGroup("admin", "advisor", "supervisor") ) {
       return true;
     }
 

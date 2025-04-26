@@ -140,8 +140,8 @@ public class MailBuilder {
 
     }
 
-    public MailBuilder sendToChairMembers() {
-        for (User user : config.getChairMembers()) {
+    public MailBuilder sendToChairMembers(UUID researchGroupId) {
+        for (User user : config.getChairMembers(researchGroupId)) {
             addPrimaryRecipient(user);
         }
 

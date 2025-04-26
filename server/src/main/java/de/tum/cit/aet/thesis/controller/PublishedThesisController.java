@@ -39,6 +39,7 @@ public class PublishedThesisController {
     ) {
         Page<Thesis> theses = thesisService.getAll(
                 null,
+                false,
                 Set.of(ThesisVisibility.PUBLIC),
                 null,
                 new ThesisState[]{ThesisState.FINISHED},

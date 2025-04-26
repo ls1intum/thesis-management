@@ -78,4 +78,8 @@ public class ThesisPresentation {
     public boolean hasManagementAccess(User user) {
         return thesis.hasAdvisorAccess(user) || createdBy.getId().equals(user.getId());
     }
+
+    public ResearchGroup getResearchGroup() {
+        return thesis != null ? thesis.getResearchGroup() : null;
+    }
 }

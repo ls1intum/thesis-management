@@ -1,5 +1,6 @@
 package de.tum.cit.aet.thesis.service;
 
+import de.tum.cit.aet.thesis.security.CurrentUserProvider;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -10,7 +11,6 @@ import de.tum.cit.aet.thesis.constants.ThesisCommentType;
 import de.tum.cit.aet.thesis.constants.UploadFileType;
 import de.tum.cit.aet.thesis.entity.Thesis;
 import de.tum.cit.aet.thesis.entity.ThesisComment;
-import de.tum.cit.aet.thesis.entity.User;
 import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.repository.ThesisCommentRepository;
 
@@ -22,14 +22,18 @@ public class ThesisCommentService {
     private final ThesisCommentRepository thesisCommentRepository;
     private final UploadService uploadService;
     private final MailingService mailingService;
+    private final CurrentUserProvider currentUserProvider;
 
-    public ThesisCommentService(ThesisCommentRepository thesisCommentRepository, UploadService uploadService, MailingService mailingService) {
+    public ThesisCommentService(ThesisCommentRepository thesisCommentRepository, UploadService uploadService, MailingService mailingService,
+        CurrentUserProvider currentUserProvider) {
         this.thesisCommentRepository = thesisCommentRepository;
         this.uploadService = uploadService;
         this.mailingService = mailingService;
+        this.currentUserProvider = currentUserProvider;
     }
 
     public Page<ThesisComment> getComments(Thesis thesis, ThesisCommentType commentType, Integer page, Integer limit) {
+        currentUserProvider.assertCanAccessResearchGroup(thesis.getResearchGroup());
         return thesisCommentRepository.searchComments(
                 thesis.getId(),
                 commentType,
@@ -38,14 +42,15 @@ public class ThesisCommentService {
     }
 
     @Transactional
-    public ThesisComment postComment(User postingUser, Thesis thesis, ThesisCommentType commentType, String message, MultipartFile file) {
+    public ThesisComment postComment(Thesis thesis, ThesisCommentType commentType, String message, MultipartFile file) {
+        currentUserProvider.assertCanAccessResearchGroup(thesis.getResearchGroup());
         ThesisComment comment = new ThesisComment();
 
         comment.setType(commentType);
         comment.setThesis(thesis);
         comment.setMessage(message);
         comment.setCreatedAt(Instant.now());
-        comment.setCreatedBy(postingUser);
+        comment.setCreatedBy(currentUserProvider.getUser());
 
         if (file != null) {
             comment.setUploadName(file.getOriginalFilename());
@@ -60,11 +65,13 @@ public class ThesisCommentService {
     }
 
     public Resource getCommentFile(ThesisComment comment) {
+        currentUserProvider.assertCanAccessResearchGroup(comment.getResearchGroup());
         return uploadService.load(comment.getFilename());
     }
 
     @Transactional
     public ThesisComment deleteComment(ThesisComment comment) {
+        currentUserProvider.assertCanAccessResearchGroup(comment.getResearchGroup());
         thesisCommentRepository.deleteById(comment.getId());
 
         return comment;
@@ -73,8 +80,10 @@ public class ThesisCommentService {
     public ThesisComment findById(UUID thesisId, UUID commentId) {
         ThesisComment comment = thesisCommentRepository.findById(commentId)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Comment with id %s not found", commentId)));
+        Thesis thesis = comment.getThesis();
+        currentUserProvider.assertCanAccessResearchGroup(thesis.getResearchGroup());
 
-        if (!comment.getThesis().getId().equals(thesisId)) {
+        if (!thesis.getId().equals(thesisId)) {
             throw new ResourceNotFoundException(String.format("Comment does not belong to thesis id %s", thesisId));
         }
 

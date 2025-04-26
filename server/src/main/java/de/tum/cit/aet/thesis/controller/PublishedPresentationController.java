@@ -25,7 +25,7 @@ public class PublishedPresentationController {
 
     @GetMapping()
     public ResponseEntity<PaginationDto<PublishedPresentationDto>> getPresentations(
-            @RequestParam(required = false, defaultValue = "false") Boolean includeDrafts,
+            @RequestParam(required = false, defaultValue = "false") boolean includeDrafts,
             @RequestParam(required = false, defaultValue = "0") Integer page,
             @RequestParam(required = false, defaultValue = "50") Integer limit,
             @RequestParam(required = false, defaultValue = "scheduledAt") String sortBy,

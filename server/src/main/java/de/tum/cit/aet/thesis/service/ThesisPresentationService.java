@@ -1,11 +1,13 @@
 package de.tum.cit.aet.thesis.service;
 
+import de.tum.cit.aet.thesis.security.CurrentUserProvider;
 import jakarta.mail.internet.InternetAddress;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.property.ProdId;
 import net.fortuna.ical4j.model.property.immutable.ImmutableCalScale;
 import net.fortuna.ical4j.model.property.immutable.ImmutableMethod;
 import net.fortuna.ical4j.model.property.immutable.ImmutableVersion;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -36,6 +38,7 @@ public class ThesisPresentationService {
     private final ThesisRepository thesisRepository;
     private final MailingService mailingService;
     private final ThesisPresentationRepository thesisPresentationRepository;
+    private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
 
     private final String clientHost;
     private final InternetAddress applicationMail;
@@ -48,6 +51,7 @@ public class ThesisPresentationService {
             ThesisRepository thesisRepository,
             MailingService mailingService,
             ThesisPresentationRepository thesisPresentationRepository,
+            ObjectProvider<CurrentUserProvider> currentUserProviderProvider,
             @Value("${thesis-management.client.host}") String clientHost,
             @Value("${thesis-management.mail.sender}") InternetAddress applicationMail,
             UserRepository userRepository, ThesisPresentationInviteRepository thesisPresentationInviteRepository) {
@@ -55,6 +59,7 @@ public class ThesisPresentationService {
         this.thesisRepository = thesisRepository;
         this.mailingService = mailingService;
         this.thesisPresentationRepository = thesisPresentationRepository;
+        this.currentUserProviderProvider = currentUserProviderProvider;
 
         this.clientHost = clientHost;
         this.applicationMail = applicationMail;
@@ -62,7 +67,12 @@ public class ThesisPresentationService {
         this.thesisPresentationInviteRepository = thesisPresentationInviteRepository;
     }
 
-    public Page<ThesisPresentation> getPublicPresentations(Boolean includeDrafts, Integer page, Integer limit, String sortBy, String sortOrder) {
+    private CurrentUserProvider currentUserProvider() {
+        return currentUserProviderProvider.getObject();
+    }
+
+    public Page<ThesisPresentation> getPublicPresentations(boolean includeDrafts, Integer page,
+        Integer limit, String sortBy, String sortOrder) {
         Sort.Order order = new Sort.Order(sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
 
         return thesisPresentationRepository.findFuturePresentations(
@@ -112,7 +122,6 @@ public class ThesisPresentationService {
 
     @Transactional
     public Thesis createPresentation(
-            User creatingUser,
             Thesis thesis,
             ThesisPresentationType type,
             ThesisPresentationVisibility visibility,
@@ -121,6 +130,7 @@ public class ThesisPresentationService {
             String language,
             Instant date
     ) {
+        currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
         ThesisPresentation presentation = new ThesisPresentation();
 
         presentation.setThesis(thesis);
@@ -131,7 +141,7 @@ public class ThesisPresentationService {
         presentation.setStreamUrl(streamUrl);
         presentation.setLanguage(language);
         presentation.setScheduledAt(date);
-        presentation.setCreatedBy(creatingUser);
+        presentation.setCreatedBy(currentUserProvider().getUser());
         presentation.setCreatedAt(Instant.now());
 
         presentation = thesisPresentationRepository.save(presentation);
@@ -155,6 +165,7 @@ public class ThesisPresentationService {
             Instant date
     ) {
         Thesis thesis = presentation.getThesis();
+        currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
         presentation = thesis.getPresentation(presentation.getId()).orElseThrow();
 
         presentation.setType(type);
@@ -183,6 +194,8 @@ public class ThesisPresentationService {
             List<InternetAddress> additionalInvites
     ) {
         Thesis thesis = presentation.getThesis();
+        UUID researchGroupId = thesis.getResearchGroup().getId();
+        currentUserProvider().assertCanAccessResearchGroup(researchGroupId);
         presentation = thesis.getPresentation(presentation.getId()).orElseThrow();
 
         if (presentation.getState() == ThesisPresentationState.SCHEDULED) {
@@ -206,7 +219,8 @@ public class ThesisPresentationService {
         }
 
         if (inviteChairMembers) {
-            for (User user : userRepository.getRoleMembers(Set.of("admin", "supervisor", "advisor"))) {
+            for (User user : userRepository.getRoleMembers(Set.of("admin", "supervisor",
+                "advisor"), researchGroupId)) {
                 if (!user.isNotificationEnabled("presentation-invitations")) {
                     continue;
                 }
@@ -216,7 +230,7 @@ public class ThesisPresentationService {
         }
 
         if (inviteThesisStudents) {
-            for (User user : userRepository.getRoleMembers(Set.of("student"))) {
+            for (User user : userRepository.getRoleMembers(Set.of("student"), null)) {
                 if (!user.isNotificationEnabled("presentation-invitations")) {
                     continue;
                 }
@@ -251,8 +265,9 @@ public class ThesisPresentationService {
     }
 
     @Transactional
-    public Thesis deletePresentation(User deletingUser, ThesisPresentation presentation) {
+    public Thesis deletePresentation(ThesisPresentation presentation) {
         Thesis thesis = presentation.getThesis();
+        currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
 
         thesisPresentationInviteRepository.deleteByPresentationId(presentation.getId());
         thesisPresentationRepository.deleteById(presentation.getId());
@@ -268,13 +283,14 @@ public class ThesisPresentationService {
         calendarService.deleteEvent(presentation.getCalendarEvent());
 
         if (presentation.getState() == ThesisPresentationState.SCHEDULED) {
-            mailingService.sendPresentationDeletedEmail(deletingUser, presentation);
+            mailingService.sendPresentationDeletedEmail(currentUserProvider().getUser(), presentation);
         }
 
         return thesis;
     }
 
     public void updateThesisCalendarEvents(Thesis thesis) {
+        currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
         for (ThesisPresentation presentation : thesis.getPresentations()) {
             String eventId = presentation.getCalendarEvent();
 
@@ -287,6 +303,8 @@ public class ThesisPresentationService {
     public ThesisPresentation findById(UUID thesisId, UUID presentationId) {
         ThesisPresentation presentation = thesisPresentationRepository.findById(presentationId)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Presentation with id %s not found.", presentationId)));
+
+        currentUserProvider().assertCanAccessResearchGroup(presentation.getResearchGroup());
 
         if (!presentation.getThesis().getId().equals(thesisId)) {
             throw new ResourceNotFoundException(String.format("Presentation with id %s not found for thesis with id %s.", presentationId, thesisId));
@@ -306,21 +324,23 @@ public class ThesisPresentationService {
     }
 
     private CalendarService.CalendarEvent createPresentationCalendarEvent(ThesisPresentation presentation) {
+        Thesis thesis = presentation.getThesis();
+        currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
         String location = presentation.getLocation();
         String streamUrl = presentation.getStreamUrl();
 
         return new CalendarService.CalendarEvent(
-                "Thesis Presentation \"" + presentation.getThesis().getTitle() + "\"",
+                "Thesis Presentation \"" + thesis.getTitle() + "\"",
                 location == null || location.isBlank() ? streamUrl : location,
-                "Title: " + presentation.getThesis().getTitle() + "\n" +
+                "Title: " + thesis.getTitle() + "\n" +
                         (streamUrl != null && !streamUrl.isBlank() ? "Stream URL: " + streamUrl + "\n" : "") + "\n" +
                         "Language: " + presentation.getLanguage() + "\n\n" +
                         "Details: " + clientHost + "/presentations/" + presentation.getId() + "\n\n" +
-                        "Abstract:\n" + presentation.getThesis().getAbstractField(),
+                        "Abstract:\n" + thesis.getAbstractField(),
                 presentation.getScheduledAt(),
                 presentation.getScheduledAt().plus(45, ChronoUnit.MINUTES),
                 this.applicationMail,
-                presentation.getThesis().getRoles().stream().map((role) -> role.getUser().getEmail()).toList(),
+                thesis.getRoles().stream().map(role -> role.getUser().getEmail()).toList(),
                 presentation.getInvites().stream().map(ThesisPresentationInvite::getEmail).toList()
         );
     }
