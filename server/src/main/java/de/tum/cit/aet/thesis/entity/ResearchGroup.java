@@ -30,9 +30,8 @@ public class ResearchGroup {
   @Column(name = "research_group_id", nullable = false)
   private UUID id;
 
-  @NotNull
   @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "head_user_id", nullable = false, unique = true)
+  @JoinColumn(name = "head_user_id", unique = true)
   private User head;
 
   @NotBlank
@@ -55,18 +54,16 @@ public class ResearchGroup {
   @Column(name = "created_at", nullable = false, updatable = false)
   private Instant createdAt;
 
-  @NotNull
-  @ManyToOne(fetch = FetchType.LAZY, optional = false)
-  @JoinColumn(name = "created_by", nullable = false)
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "created_by")
   private User createdBy;
 
   @UpdateTimestamp
   @Column(name = "updated_at", nullable = false)
   private Instant updatedAt;
 
-  @NotNull
-  @ManyToOne(fetch = FetchType.LAZY, optional = false)
-  @JoinColumn(name = "updated_by", nullable = false)
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "updated_by")
   private User updatedBy;
 
   @NotNull
