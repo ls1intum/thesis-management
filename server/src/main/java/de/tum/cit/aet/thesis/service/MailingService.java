@@ -1,27 +1,31 @@
 package de.tum.cit.aet.thesis.service;
 
+import de.tum.cit.aet.thesis.constants.ApplicationRejectReason;
+import de.tum.cit.aet.thesis.constants.ThesisCommentType;
+import de.tum.cit.aet.thesis.constants.ThesisFeedbackType;
+import de.tum.cit.aet.thesis.constants.ThesisPresentationVisibility;
+import de.tum.cit.aet.thesis.entity.*;
+import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
+import de.tum.cit.aet.thesis.repository.EmailTemplateRepository;
+import de.tum.cit.aet.thesis.utility.DataFormatter;
+import de.tum.cit.aet.thesis.utility.MailBuilder;
+import de.tum.cit.aet.thesis.utility.MailConfig;
 import jakarta.mail.util.ByteArrayDataSource;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-import de.tum.cit.aet.thesis.constants.ThesisCommentType;
-import de.tum.cit.aet.thesis.constants.ApplicationRejectReason;
-import de.tum.cit.aet.thesis.constants.ThesisFeedbackType;
-import de.tum.cit.aet.thesis.constants.ThesisPresentationVisibility;
-import de.tum.cit.aet.thesis.entity.*;
-import de.tum.cit.aet.thesis.utility.DataFormatter;
-import de.tum.cit.aet.thesis.utility.MailBuilder;
-import de.tum.cit.aet.thesis.utility.MailConfig;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.UUID;
 
 @Service
 public class MailingService {
     private final JavaMailSender javaMailSender;
     private final UploadService uploadService;
     private final MailConfig config;
+    private final EmailTemplateRepository emailTemplateRepository;
 
     private static final String NOTIFICATION_NAME_START = "thesis-";
 
@@ -29,20 +33,23 @@ public class MailingService {
     public MailingService(
             JavaMailSender javaMailSender,
             UploadService uploadService,
-            MailConfig config
+            MailConfig config,
+            EmailTemplateRepository emailTemplateRepository
     ) {
         this.javaMailSender = javaMailSender;
         this.uploadService = uploadService;
         this.config = config;
+        this.emailTemplateRepository = emailTemplateRepository;
     }
 
     public void sendApplicationCreatedEmail(Application application) {
-        MailBuilder chairMailBuilder = new MailBuilder(
-                config,
-                "New Thesis Application",
-                "application-created-chair"
-        );
-        chairMailBuilder
+        EmailTemplate researchGroupEmailTemplate = loadTemplate(
+                application.getResearchGroup().getId(),
+                "APPLICATION_CREATED_CHAIR",
+                "en");
+        MailBuilder researchGroupMailBuilder = new MailBuilder(config, researchGroupEmailTemplate.getSubject(),
+                researchGroupEmailTemplate.getBodyHtml());
+        researchGroupMailBuilder
                 .sendToChairMembers(application.getResearchGroup().getId())
                 .addNotificationName("new-applications")
                 .addStoredAttachment(application.getUser().getCvFilename(), getUserFilename(application.getUser(), "CV", application.getUser().getCvFilename()))
@@ -51,7 +58,11 @@ public class MailingService {
                 .fillApplicationPlaceholders(application)
                 .send(javaMailSender, uploadService);
 
-        MailBuilder studentMailBuilder = new MailBuilder(config, "Thesis Application Confirmation", "application-created-student");
+        EmailTemplate studentEmailTemplate = loadTemplate(
+                application.getResearchGroup().getId(),
+                "APPLICATION_CREATED_STUDENT",
+                "en");
+        MailBuilder studentMailBuilder = new MailBuilder(config, studentEmailTemplate.getSubject(), studentEmailTemplate.getBodyHtml());
         studentMailBuilder
                 .addPrimaryRecipient(application.getUser())
                 .addStoredAttachment(application.getUser().getCvFilename(), getUserFilename(application.getUser(), "CV", application.getUser().getCvFilename()))
@@ -65,10 +76,15 @@ public class MailingService {
         User advisor = thesis.getAdvisors().getFirst();
         User supervisor = thesis.getSupervisors().getFirst();
 
-        String template = advisor.getId().equals(supervisor.getId()) ? "application-accepted-no-advisor" : "application-accepted";
+        String templateCase = advisor.getId().equals(supervisor.getId()) ? "APPLICATION_ACCEPTED_NO_ADVISOR" :
+                "APPLICATION_ACCEPTED";
 
-        MailBuilder builder = new MailBuilder(config, "Thesis Application Acceptance", template);
-        builder
+        EmailTemplate emailTemplate = loadTemplate(
+                application.getResearchGroup().getId(),
+                templateCase,
+                "en");
+        MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(), emailTemplate.getBodyHtml());
+        mailBuilder
                 .addPrimaryRecipient(application.getUser())
                 .addSecondaryRecipient(advisor)
                 .addDefaultBccRecipients()
@@ -79,8 +95,12 @@ public class MailingService {
     }
 
     public void sendApplicationRejectionEmail(Application application, ApplicationRejectReason reason) {
-        MailBuilder builder = new MailBuilder(config, "Thesis Application Rejection", reason.getMailTemplate());
-        builder
+        EmailTemplate emailTemplate = loadTemplate(
+                application.getResearchGroup().getId(),
+                reason.getTemplateCase(),
+                "en");
+        MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(), emailTemplate.getBodyHtml());
+        mailBuilder
                 .addPrimaryRecipient(application.getUser())
                 .addDefaultBccRecipients()
                 .fillApplicationPlaceholders(application)
@@ -88,8 +108,12 @@ public class MailingService {
     }
 
     public void sendApplicationReminderEmail(User user, long unreviewedApplications) {
-        MailBuilder builder = new MailBuilder(config, "Unreviewed Thesis Applications", "application-reminder");
-        builder
+        EmailTemplate emailTemplate = loadTemplate(
+                user.getResearchGroup().getId(),
+                "APPLICATION_REMINDER",
+                "en");
+        MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(), emailTemplate.getBodyHtml());
+        mailBuilder
                 .addPrimaryRecipient(user)
                 .addNotificationName("unreviewed-application-reminder")
                 .fillPlaceholder("unreviewedApplications", String.valueOf(unreviewedApplications))
@@ -98,8 +122,12 @@ public class MailingService {
     }
 
     public void sendThesisCreatedEmail(User creatingUser, Thesis thesis) {
-        MailBuilder builder = new MailBuilder(config, "Thesis Created", "thesis-created");
-        builder
+        EmailTemplate emailTemplate = loadTemplate(
+                thesis.getResearchGroup().getId(),
+                "THESIS_CREATED",
+                "en");
+        MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(), emailTemplate.getBodyHtml());
+        mailBuilder
                 .sendToThesisStudents(thesis)
                 .addDefaultBccRecipients()
                 .addNotificationName(NOTIFICATION_NAME_START + thesis.getId())
@@ -109,8 +137,12 @@ public class MailingService {
     }
 
     public void sendThesisClosedEmail(User deletingUser, Thesis thesis) {
-        MailBuilder builder = new MailBuilder(config, "Thesis Closed", "thesis-closed");
-        builder
+        EmailTemplate emailTemplate = loadTemplate(
+                thesis.getResearchGroup().getId(),
+                "THESIS_CLOSED",
+                "en");
+        MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(), emailTemplate.getBodyHtml());
+        mailBuilder
                 .sendToThesisStudents(thesis)
                 .addDefaultBccRecipients()
                 .addNotificationName(NOTIFICATION_NAME_START + thesis.getId())
@@ -120,8 +152,12 @@ public class MailingService {
     }
 
     public void sendProposalUploadedEmail(ThesisProposal proposal) {
-        MailBuilder builder = new MailBuilder(config, "Thesis Proposal Added", "thesis-proposal-uploaded");
-        builder
+        EmailTemplate emailTemplate = loadTemplate(
+            proposal.getResearchGroup().getId(),
+            "THESIS_PROPOSAL_UPLOADED",
+            "en");
+        MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(), emailTemplate.getBodyHtml());
+        mailBuilder
                 .addPrimarySender(proposal.getCreatedBy())
                 .sendToThesisAdvisors(proposal.getThesis())
                 .addNotificationName(NOTIFICATION_NAME_START + proposal.getThesis().getId())
@@ -131,8 +167,12 @@ public class MailingService {
     }
 
     public void sendProposalAcceptedEmail(ThesisProposal proposal) {
-        MailBuilder builder = new MailBuilder(config, "Thesis Proposal Accepted", "thesis-proposal-accepted");
-        builder
+        EmailTemplate emailTemplate = loadTemplate(
+                proposal.getResearchGroup().getId(),
+                "THESIS_PROPOSAL_ACCEPTED",
+                "en");
+        MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(), emailTemplate.getBodyHtml());
+        mailBuilder
                 .addPrimarySender(proposal.getApprovedBy())
                 .sendToThesisStudents(proposal.getThesis())
                 .addNotificationName(NOTIFICATION_NAME_START + proposal.getThesis().getId())
@@ -142,12 +182,12 @@ public class MailingService {
     }
 
     public void sendProposalChangeRequestEmail(User reviewingUser, Thesis thesis) {
-        MailBuilder builder = new MailBuilder(
-                config,
-                "Changes were requested for Proposal",
-                "thesis-proposal-rejected"
-        );
-        builder
+        EmailTemplate emailTemplate = loadTemplate(
+                thesis.getResearchGroup().getId(),
+                "THESIS_PROPOSAL_REJECTED",
+                "en");
+        MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(), emailTemplate.getBodyHtml());
+        mailBuilder
                 .sendToThesisStudents(thesis)
                 .addNotificationName(NOTIFICATION_NAME_START + thesis.getId())
                 .fillUserPlaceholders(reviewingUser, "reviewingUser")
@@ -164,19 +204,19 @@ public class MailingService {
     }
 
     public void sendNewCommentEmail(ThesisComment comment) {
-        MailBuilder builder = new MailBuilder(
-                config,
-                "A Comment was posted",
-                "thesis-comment-posted"
-        );
+        EmailTemplate emailTemplate = loadTemplate(
+                comment.getResearchGroup().getId(),
+                "THESIS_COMMENT_POSTED",
+                "en");
+        MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(), emailTemplate.getBodyHtml());
 
         if (comment.getType() == ThesisCommentType.ADVISOR) {
-            builder.sendToThesisAdvisors(comment.getThesis());
+            mailBuilder.sendToThesisAdvisors(comment.getThesis());
         } else {
-            builder.sendToThesisStudents(comment.getThesis());
+            mailBuilder.sendToThesisStudents(comment.getThesis());
         }
 
-        builder
+        mailBuilder
                 .addPrimarySender(comment.getCreatedBy())
                 .addNotificationName("thesis-comments")
                 .addNotificationName(NOTIFICATION_NAME_START + comment.getThesis().getId())
@@ -192,12 +232,13 @@ public class MailingService {
 
         String updatedString = "UPDATED";
 
-        MailBuilder privateBuilder = new MailBuilder(
-                config,
-                action.equals(updatedString) ? "Presentation updated" : "New Presentation scheduled",
-                action.equals(updatedString) ? "thesis-presentation-updated" : "thesis-presentation-scheduled"
-        );
-        privateBuilder
+        EmailTemplate privateEmailTemplate = loadTemplate(
+                presentation.getResearchGroup().getId(),
+                action.equals(updatedString) ? "THESIS_PRESENTATION_UPDATED" : "THESIS_PRESENTATION_SCHEDULED",
+                "en");
+        MailBuilder privateMailBuilder = new MailBuilder(config, privateEmailTemplate.getSubject(),
+                privateEmailTemplate.getBodyHtml());
+        privateMailBuilder
                 .addPrimarySender(presentation.getCreatedBy())
                 .sendToThesisStudents(presentation.getThesis())
                 .addNotificationName(NOTIFICATION_NAME_START + presentation.getThesis().getId())
@@ -205,27 +246,28 @@ public class MailingService {
                 .send(javaMailSender, uploadService);
 
         if (presentation.getVisibility() == ThesisPresentationVisibility.PUBLIC) {
-            MailBuilder publicBuilder = new MailBuilder(
-                    config,
-                    action.equals(updatedString) ? "Thesis Presentation Updated" : "Thesis Presentation Invitation",
-                    action.equals(updatedString) ? "thesis-presentation-invitation-updated" : "thesis-presentation-invitation"
-            );
-            publicBuilder
+            EmailTemplate publicEmailTemplate = loadTemplate(
+                    presentation.getResearchGroup().getId(),
+                    action.equals(updatedString) ? "THESIS_PRESENTATION_INVITATION_UPDATED" : "THESIS_PRESENTATION_INVITATION",
+                    "en");
+            MailBuilder publicMailBuilder = new MailBuilder(config, publicEmailTemplate.getSubject(),
+                    publicEmailTemplate.getBodyHtml());
+            publicMailBuilder
                     .addPrimaryRecipient(presentation.getThesis().getStudents().getFirst())
                     .fillThesisPresentationPlaceholders(presentation);
 
             for (ThesisPresentationInvite invite : presentation.getInvites()) {
-                publicBuilder.addBccRecipient(invite.getEmail());
+                publicMailBuilder.addBccRecipient(invite.getEmail());
             }
 
             if (icsFile != null && !icsFile.isBlank()) {
-                publicBuilder.addRawAttatchment(
+                publicMailBuilder.addRawAttatchment(
                         new ByteArrayDataSource(icsFile.getBytes(StandardCharsets.UTF_8), "application/octet-stream"),
                         "event.ics"
                 );
             }
 
-            publicBuilder.send(javaMailSender, uploadService);
+            publicMailBuilder.send(javaMailSender, uploadService);
         }
     }
 
@@ -234,8 +276,13 @@ public class MailingService {
             return;
         }
 
-        MailBuilder builder = new MailBuilder(config, "Presentation deleted", "thesis-presentation-deleted");
-        builder
+        EmailTemplate emailTemplate = loadTemplate(
+                presentation.getResearchGroup().getId(),
+                "THESIS_PRESENTATION_DELETED",
+                "en");
+        MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(),
+                emailTemplate.getBodyHtml());
+        mailBuilder
                 .sendToThesisStudents(presentation.getThesis())
                 .addNotificationName(NOTIFICATION_NAME_START + presentation.getThesis().getId())
                 .fillThesisPresentationPlaceholders(presentation)
@@ -243,22 +290,32 @@ public class MailingService {
                 .send(javaMailSender, uploadService);
 
         if (presentation.getVisibility() == ThesisPresentationVisibility.PUBLIC) {
-            MailBuilder publicBuilder = new MailBuilder(config, "Thesis Presentation Cancelled ", "thesis-presentation-invitation-cancelled");
-            publicBuilder
+            EmailTemplate publicEmailTemplate = loadTemplate(
+                    presentation.getResearchGroup().getId(),
+                    "THESIS_PRESENTATION_INVITATION_CANCELLED",
+                    "en");
+            MailBuilder publicMailBuilder = new MailBuilder(config, publicEmailTemplate.getSubject(),
+                    publicEmailTemplate.getBodyHtml());
+            publicMailBuilder
                     .addPrimaryRecipient(presentation.getThesis().getStudents().getFirst())
                     .fillThesisPresentationPlaceholders(presentation);
 
             for (ThesisPresentationInvite invite : presentation.getInvites()) {
-                publicBuilder.addBccRecipient(invite.getEmail());
+                publicMailBuilder.addBccRecipient(invite.getEmail());
             }
 
-            publicBuilder.send(javaMailSender, uploadService);
+            publicMailBuilder.send(javaMailSender, uploadService);
         }
     }
 
     public void sendFinalSubmissionEmail(Thesis thesis) {
-        MailBuilder builder = new MailBuilder(config, "Thesis Submitted", "thesis-final-submission");
-        builder
+        EmailTemplate emailTemplate = loadTemplate(
+                thesis.getResearchGroup().getId(),
+                "THESIS_FINAL_SUBMISSION",
+                "en");
+        MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(),
+                emailTemplate.getBodyHtml());
+        mailBuilder
                 .sendToThesisAdvisors(thesis)
                 .addNotificationName(NOTIFICATION_NAME_START + thesis.getId())
                 .fillThesisPlaceholders(thesis)
@@ -268,8 +325,13 @@ public class MailingService {
     }
 
     public void sendAssessmentAddedEmail(ThesisAssessment assessment) {
-        MailBuilder builder = new MailBuilder(config, "Assessment added", "thesis-assessment-added");
-        builder
+        EmailTemplate emailTemplate = loadTemplate(
+                assessment.getThesis().getResearchGroup().getId(),
+                "THESIS_ASSESSMENT_ADDED",
+                "en");
+        MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(),
+                emailTemplate.getBodyHtml());
+        mailBuilder
                 .addPrimarySender(assessment.getCreatedBy())
                 .sendToThesisSupervisors(assessment.getThesis())
                 .addNotificationName(NOTIFICATION_NAME_START + assessment.getThesis().getId())
@@ -278,12 +340,26 @@ public class MailingService {
     }
 
     public void sendFinalGradeEmail(Thesis thesis) {
-        MailBuilder builder = new MailBuilder(config, "Final Grade available for Thesis", "thesis-final-grade");
-        builder
+        EmailTemplate emailTemplate = loadTemplate(
+                thesis.getResearchGroup().getId(),
+                "THESIS_FINAL_GRADE",
+                "en");
+        MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(),
+                emailTemplate.getBodyHtml());
+        mailBuilder
                 .sendToThesisStudents(thesis)
                 .addNotificationName(NOTIFICATION_NAME_START + thesis.getId())
                 .fillThesisPlaceholders(thesis)
                 .send(javaMailSender, uploadService);
+    }
+
+    private EmailTemplate loadTemplate(UUID researchGroupId, String templateCase, String language) {
+        return emailTemplateRepository
+                .findTemplateWithFallback(researchGroupId, templateCase, language)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format("Email template not found (researchGroupId=%s, templateCase=%s, language=%s)",
+                                researchGroupId, templateCase, language)
+                ));
     }
 
     private String getUserFilename(User user, String name, String originalFilename) {
