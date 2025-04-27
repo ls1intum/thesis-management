@@ -1,5 +1,16 @@
 package de.tum.cit.aet.thesis.service;
 
+import de.tum.cit.aet.thesis.constants.ApplicationRejectReason;
+import de.tum.cit.aet.thesis.constants.ApplicationReviewReason;
+import de.tum.cit.aet.thesis.constants.ApplicationState;
+import de.tum.cit.aet.thesis.entity.*;
+import de.tum.cit.aet.thesis.entity.key.ApplicationReviewerId;
+import de.tum.cit.aet.thesis.exception.request.ResourceInvalidParametersException;
+import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
+import de.tum.cit.aet.thesis.repository.ApplicationRepository;
+import de.tum.cit.aet.thesis.repository.ApplicationReviewerRepository;
+import de.tum.cit.aet.thesis.repository.ResearchGroupRepository;
+import de.tum.cit.aet.thesis.repository.TopicRepository;
 import de.tum.cit.aet.thesis.security.CurrentUserProvider;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,16 +19,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import de.tum.cit.aet.thesis.constants.ApplicationRejectReason;
-import de.tum.cit.aet.thesis.constants.ApplicationReviewReason;
-import de.tum.cit.aet.thesis.entity.*;
-import de.tum.cit.aet.thesis.constants.ApplicationState;
-import de.tum.cit.aet.thesis.entity.key.ApplicationReviewerId;
-import de.tum.cit.aet.thesis.exception.request.ResourceInvalidParametersException;
-import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
-import de.tum.cit.aet.thesis.repository.ApplicationRepository;
-import de.tum.cit.aet.thesis.repository.ApplicationReviewerRepository;
-import de.tum.cit.aet.thesis.repository.TopicRepository;
 
 import java.time.Instant;
 import java.util.*;
@@ -31,6 +32,7 @@ public class ApplicationService {
     private final TopicService topicService;
     private final ApplicationReviewerRepository applicationReviewerRepository;
     private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
+    private final ResearchGroupRepository researchGroupRepository;
 
     @Autowired
     public ApplicationService(
@@ -40,7 +42,7 @@ public class ApplicationService {
             ThesisService thesisService,
             TopicService topicService,
             ApplicationReviewerRepository applicationReviewerRepository,
-            ObjectProvider<CurrentUserProvider> currentUserProviderProvider
+            ObjectProvider<CurrentUserProvider> currentUserProviderProvider, ResearchGroupRepository researchGroupRepository
     ) {
         this.applicationRepository = applicationRepository;
         this.mailingService = mailingService;
@@ -48,10 +50,13 @@ public class ApplicationService {
         this.thesisService = thesisService;
         this.topicService = topicService;
         this.applicationReviewerRepository = applicationReviewerRepository;
-       this.currentUserProviderProvider = currentUserProviderProvider;
+        this.currentUserProviderProvider = currentUserProviderProvider;
+        this.researchGroupRepository = researchGroupRepository;
     }
 
-    private CurrentUserProvider currentUserProvider(){return currentUserProviderProvider.getObject();}
+    private CurrentUserProvider currentUserProvider() {
+        return currentUserProviderProvider.getObject();
+    }
 
     public Page<Application> getAll(
             UUID userId,
@@ -91,8 +96,8 @@ public class ApplicationService {
     }
 
     @Transactional
-    public Application createApplication(User user, UUID topicId, String thesisTitle,
-        String thesisType, Instant desiredStartDate, String motivation) {
+    public Application createApplication(User user, UUID researchGroupId, UUID topicId, String thesisTitle,
+                                         String thesisType, Instant desiredStartDate, String motivation) {
         Topic topic = topicId == null ? null : topicService.findById(topicId);
 
         if (topic != null && topic.getClosedAt() != null) {
@@ -110,7 +115,11 @@ public class ApplicationService {
         application.setState(ApplicationState.NOT_ASSESSED);
         application.setDesiredStartDate(desiredStartDate);
         application.setCreatedAt(Instant.now());
-        application.setResearchGroup(currentUserProvider().getResearchGroupOrThrow());
+        ResearchGroup researchGroup = topic != null
+                ? topic.getResearchGroup()
+                : researchGroupRepository.findById(researchGroupId).orElseThrow(() -> new ResourceNotFoundException(
+                String.format("Research Group with id %s not found.", researchGroupId)));
+        application.setResearchGroup(researchGroup);
 
         application = applicationRepository.save(application);
 
@@ -151,8 +160,7 @@ public class ApplicationService {
         application.setState(ApplicationState.ACCEPTED);
         application.setReviewedAt(Instant.now());
 
-        application = reviewApplication(application, reviewingUser,
-            ApplicationReviewReason.INTERESTED);
+        application = reviewApplication(application, reviewingUser, ApplicationReviewReason.INTERESTED);
 
         Thesis thesis = thesisService.createThesis(
                 thesisTitle,
@@ -172,8 +180,7 @@ public class ApplicationService {
         if (topic != null && closeTopic) {
             topic.setClosedAt(Instant.now());
 
-            result.addAll(rejectApplicationsForTopic(reviewingUser, topic,
-                ApplicationRejectReason.TOPIC_FILLED, true));
+            result.addAll(rejectApplicationsForTopic(reviewingUser, topic, ApplicationRejectReason.TOPIC_FILLED, true));
 
             application.setTopic(topicRepository.save(topic));
         }
@@ -194,8 +201,7 @@ public class ApplicationService {
         application.setRejectReason(reason);
         application.setReviewedAt(Instant.now());
 
-        application = reviewApplication(application, reviewingUser,
-            ApplicationReviewReason.NOT_INTERESTED);
+        application = reviewApplication(application, reviewingUser, ApplicationReviewReason.NOT_INTERESTED);
 
         List<Application> result = new ArrayList<>();
 
@@ -208,8 +214,7 @@ public class ApplicationService {
                     item.setRejectReason(reason);
                     item.setReviewedAt(Instant.now());
 
-                    item = reviewApplication(item, reviewingUser,
-                        ApplicationReviewReason.NOT_INTERESTED);
+                    item = reviewApplication(item, reviewingUser, ApplicationReviewReason.NOT_INTERESTED);
 
                     result.add(applicationRepository.save(item));
                 }
