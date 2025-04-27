@@ -20,9 +20,6 @@ spring:
     properties:
       hibernate:
         format_sql: ${DEBUG_MODE:false}
-  thymeleaf:
-    prefix: ${MAIL_TEMPLATE_FOLDER:classpath:/mail-templates/}
-    suffix: .html
   servlet:
     multipart:
       max-file-size: 20MB
