@@ -92,9 +92,10 @@ public class ApplicationController {
         User authenticatedUser = currentUserProvider().getUser();
 
         Page<Application> applications = applicationService.getAll(
-                fetchAll && !currentUserProvider().canSeeAllResearchGroups() ? null :
+                fetchAll && authenticatedUser.hasAnyGroup("admin", "supervisor", "advisor") ? null :
                     authenticatedUser.getId(),
-                fetchAll && !currentUserProvider().canSeeAllResearchGroups() ? authenticatedUser.getId() :
+                fetchAll && authenticatedUser.hasAnyGroup("admin", "supervisor", "advisor") ?
+                        authenticatedUser.getId() :
                     null,
                 search,
                 state,
