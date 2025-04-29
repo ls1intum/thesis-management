@@ -4,6 +4,8 @@ logging:
     net.fortuna.ical4j.util.Configurator: INFO
 
 spring:
+  thymeleaf:
+    check-template-location: false
   datasource:
     url: jdbc:postgresql://unreachable:5432/thesis-management
     username: ""

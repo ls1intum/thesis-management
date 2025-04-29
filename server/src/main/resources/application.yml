@@ -4,6 +4,8 @@ logging:
     net.fortuna.ical4j.util.Configurator: INFO
 
 spring:
+  thymeleaf:
+    check-template-location: false
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5144/thesis-management}
     username: ${SPRING_DATASOURCE_USERNAME:thesis-management-postgres}
