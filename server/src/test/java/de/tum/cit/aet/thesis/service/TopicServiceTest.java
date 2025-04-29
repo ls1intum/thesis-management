@@ -1,10 +1,13 @@
 package de.tum.cit.aet.thesis.service;
 
+import de.tum.cit.aet.thesis.entity.ResearchGroup;
+import de.tum.cit.aet.thesis.security.CurrentUserProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -21,6 +24,7 @@ import de.tum.cit.aet.thesis.repository.UserRepository;
 
 import java.util.*;
 
+import static de.tum.cit.aet.thesis.mock.CurrentUserMockUtil.mockCurrentUser;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -33,9 +37,10 @@ class TopicServiceTest {
     private TopicRoleRepository topicRoleRepository;
     @Mock
     private UserRepository userRepository;
+    @Mock
+    private ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
 
     private TopicService topicService;
-    private User testUser;
     private Topic testTopic;
 
     @BeforeEach
@@ -43,11 +48,15 @@ class TopicServiceTest {
         topicService = new TopicService(
                 topicRepository,
                 topicRoleRepository,
-                userRepository
+                userRepository,
+                currentUserProviderProvider
         );
 
-        testUser = EntityMockFactory.createUserWithGroup("Test", "supervisor");
-        testTopic = EntityMockFactory.createTopic("Test Topic");
+        User testUser = EntityMockFactory.createUser("Test User");
+        ResearchGroup testResearchGroup = EntityMockFactory.createResearchGroup("Test Research Group");
+        testUser.setResearchGroup(testResearchGroup);
+        mockCurrentUser(currentUserProviderProvider, testUser);
+        testTopic = EntityMockFactory.createTopic("Test Topic", testResearchGroup);
     }
 
     @Test
@@ -56,12 +65,14 @@ class TopicServiceTest {
         Page<Topic> expectedPage = new PageImpl<>(topics);
         when(topicRepository.searchTopics(
                 any(),
+                any(),
                 anyBoolean(),
                 any(),
                 any(PageRequest.class)
         )).thenReturn(expectedPage);
 
         Page<Topic> result = topicService.getAll(
+                false,
                 null,
                 true,
                 null,
@@ -74,6 +85,7 @@ class TopicServiceTest {
         assertNotNull(result);
         assertEquals(1, result.getContent().size());
         verify(topicRepository).searchTopics(
+                eq(null),
                 eq(null),
                 eq(true),
                 eq(null),
@@ -94,7 +106,6 @@ class TopicServiceTest {
         when(topicRepository.save(any(Topic.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         Topic result = topicService.createTopic(
-                testUser,
                 "Test Topic",
                 Set.of("Bachelor"),
                 "Problem Statement",
@@ -124,7 +135,6 @@ class TopicServiceTest {
 
         assertThrows(ResourceInvalidParametersException.class, () ->
                 topicService.createTopic(
-                        testUser,
                         "Test Topic",
                         Set.of("Bachelor"),
                         "Problem Statement",
@@ -150,7 +160,6 @@ class TopicServiceTest {
         when(topicRepository.save(any(Topic.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         Topic result = topicService.updateTopic(
-                testUser,
                 testTopic,
                 "Updated Topic",
                 Set.of("Master"),

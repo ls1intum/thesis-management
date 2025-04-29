@@ -43,6 +43,7 @@ class UserServiceTest {
         when(userRepository.searchUsers(
                 any(),
                 any(),
+                any(),
                 any(PageRequest.class)
         )).thenReturn(expectedPage);
 
@@ -59,6 +60,7 @@ class UserServiceTest {
         assertEquals(1, result.getContent().size());
         assertEquals(testUser, result.getContent().getFirst());
         verify(userRepository).searchUsers(
+                any(),
                 any(),
                 any(),
                 eq(PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id")))

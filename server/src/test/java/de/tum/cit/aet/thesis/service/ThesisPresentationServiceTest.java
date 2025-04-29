@@ -1,5 +1,6 @@
 package de.tum.cit.aet.thesis.service;
 
+import de.tum.cit.aet.thesis.security.CurrentUserProvider;
 import jakarta.mail.internet.InternetAddress;
 import net.fortuna.ical4j.model.Calendar;
 import org.junit.jupiter.api.BeforeEach;
@@ -7,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -26,6 +28,7 @@ import de.tum.cit.aet.thesis.repository.UserRepository;
 import java.time.Instant;
 import java.util.*;
 
+import static de.tum.cit.aet.thesis.mock.CurrentUserMockUtil.mockCurrentUser;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -36,6 +39,7 @@ class ThesisPresentationServiceTest {
     @Mock private ThesisRepository thesisRepository;
     @Mock private MailingService mailingService;
     @Mock private ThesisPresentationRepository thesisPresentationRepository;
+    @Mock private ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
     @Mock private UserRepository userRepository;
     @Mock private ThesisPresentationInviteRepository thesisPresentationInviteRepository;
 
@@ -53,6 +57,7 @@ class ThesisPresentationServiceTest {
                 thesisRepository,
                 mailingService,
                 thesisPresentationRepository,
+                currentUserProviderProvider,
                 clientHost,
                 applicationMail,
                 userRepository,
@@ -60,8 +65,9 @@ class ThesisPresentationServiceTest {
         );
 
         testUser = EntityMockFactory.createUser("Test");
-
-        testThesis = EntityMockFactory.createThesis("Test Thesis");
+        ResearchGroup testResearchGroup = EntityMockFactory.createResearchGroup("Test Research Group");
+        testUser.setResearchGroup(testResearchGroup);
+        testThesis = EntityMockFactory.createThesis("Test Thesis", testResearchGroup);
 
         testPresentation = new ThesisPresentation();
         testPresentation.setId(UUID.randomUUID());
@@ -134,13 +140,13 @@ class ThesisPresentationServiceTest {
 
     @Test
     void createPresentation_WithValidData_CreatesPresentation() {
+        mockCurrentUser(currentUserProviderProvider, testUser);
         when(thesisPresentationRepository.save(any(ThesisPresentation.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
         when(thesisRepository.save(any(Thesis.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
         Thesis result = presentationService.createPresentation(
-                testUser,
                 testThesis,
                 ThesisPresentationType.FINAL,
                 ThesisPresentationVisibility.PRIVATE,
@@ -159,6 +165,7 @@ class ThesisPresentationServiceTest {
 
     @Test
     void schedulePresentation_WithAlreadyScheduledPresentation_ThrowsException() {
+        mockCurrentUser(currentUserProviderProvider, testUser);
         testPresentation.setState(ThesisPresentationState.SCHEDULED);
         testThesis.setPresentations(List.of(testPresentation));
 
@@ -174,11 +181,12 @@ class ThesisPresentationServiceTest {
 
     @Test
     void deletePresentation_WithScheduledPresentation_DeletesAndNotifies() {
+        mockCurrentUser(currentUserProviderProvider, testUser);
         testPresentation.setState(ThesisPresentationState.SCHEDULED);
         testThesis.setPresentations(List.of(testPresentation));
         when(thesisRepository.save(any(Thesis.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        Thesis result = presentationService.deletePresentation(testUser, testPresentation);
+        Thesis result = presentationService.deletePresentation(testPresentation);
 
         assertNotNull(result);
         assertTrue(result.getPresentations().isEmpty());
@@ -190,6 +198,7 @@ class ThesisPresentationServiceTest {
 
     @Test
     void updatePresentation_WithScheduledPresentation_UpdatesAndNotifies() {
+        mockCurrentUser(currentUserProviderProvider, testUser);
         when(thesisPresentationRepository.save(any(ThesisPresentation.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -209,6 +218,7 @@ class ThesisPresentationServiceTest {
 
     @Test
     void findById_WithInvalidThesisId_ThrowsException() {
+        mockCurrentUser(currentUserProviderProvider, testUser);
         UUID differentThesisId = UUID.randomUUID();
         when(thesisPresentationRepository.findById(testPresentation.getId()))
                 .thenReturn(Optional.of(testPresentation));

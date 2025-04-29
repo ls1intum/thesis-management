@@ -1,10 +1,13 @@
 package de.tum.cit.aet.thesis.service;
 
+import de.tum.cit.aet.thesis.entity.ResearchGroup;
+import de.tum.cit.aet.thesis.security.CurrentUserProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -26,6 +29,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static de.tum.cit.aet.thesis.mock.CurrentUserMockUtil.mockCurrentUser;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -42,6 +46,9 @@ class ThesisCommentServiceTest {
     private MailingService mailingService;
 
     @Mock
+    private ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
+
+    @Mock
     private FileSystemResource mockResource;
 
     private ThesisCommentService commentService;
@@ -54,11 +61,14 @@ class ThesisCommentServiceTest {
         commentService = new ThesisCommentService(
                 thesisCommentRepository,
                 uploadService,
-                mailingService
+                mailingService,
+                currentUserProviderProvider
         );
 
         testUser = EntityMockFactory.createUser("Test");
-        testThesis = EntityMockFactory.createThesis("Test Thesis");
+        mockCurrentUser(currentUserProviderProvider, testUser);
+        ResearchGroup testResearchGroup = EntityMockFactory.createResearchGroup("Test Research Group");
+        testThesis = EntityMockFactory.createThesis("Test Thesis", testResearchGroup);
 
         testComment = new ThesisComment();
         testComment.setId(UUID.randomUUID());
@@ -104,7 +114,6 @@ class ThesisCommentServiceTest {
         });
 
         ThesisComment result = commentService.postComment(
-                testUser,
                 testThesis,
                 ThesisCommentType.THESIS,
                 "Test Message",
@@ -138,7 +147,6 @@ class ThesisCommentServiceTest {
         when(uploadService.store(any(), any(), any())).thenReturn("stored-file-name");
 
         ThesisComment result = commentService.postComment(
-                testUser,
                 testThesis,
                 ThesisCommentType.THESIS,
                 "Test Message",
