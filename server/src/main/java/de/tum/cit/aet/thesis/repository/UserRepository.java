@@ -37,4 +37,16 @@ public interface UserRepository extends JpaRepository<User, UUID> {
         + ":researchGroupId)")
     List<User> getRoleMembers(@Param("roles") Set<String> roles,
         @Param("researchGroupId") UUID researchGroupId);
+
+    @Query("""
+                SELECT DISTINCT u FROM User u
+                WHERE u.id IN (
+                    SELECT tr.user.id FROM ThesisRole tr
+                    JOIN tr.thesis t
+                    WHERE t.researchGroup.id = :researchGroupId
+                      AND t.state NOT IN ('FINISHED', 'DROPPED_OUT')
+                      AND tr.id.role = 'STUDENT'
+                )
+            """)
+    List<User> findStudentsWithActiveThesesByResearchGroupId(@Param("researchGroupId") UUID researchGroupId);
 }

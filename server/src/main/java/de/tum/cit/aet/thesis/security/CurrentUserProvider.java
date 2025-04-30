@@ -4,7 +4,6 @@ import de.tum.cit.aet.thesis.entity.ResearchGroup;
 import de.tum.cit.aet.thesis.entity.User;
 import de.tum.cit.aet.thesis.exception.request.AccessDeniedException;
 import de.tum.cit.aet.thesis.service.AuthenticationService;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -82,17 +81,6 @@ public class CurrentUserProvider {
 
       ResearchGroup own = getResearchGroupOrThrow();
       if (target == null || !own.getId().equals(target.getId())) {
-         throw new AccessDeniedException("This resource is not part of your research group.");
-      }
-   }
-   
-   public void assertCanAccessResearchGroup(UUID target) {
-      if (canSeeAllResearchGroups()) {
-         return;
-      }
-
-      ResearchGroup own = getResearchGroupOrThrow();
-      if (!own.getId().equals(target)) {
          throw new AccessDeniedException("This resource is not part of your research group.");
       }
    }
