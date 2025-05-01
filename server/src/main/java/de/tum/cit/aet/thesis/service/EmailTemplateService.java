@@ -100,8 +100,11 @@ public class EmailTemplateService {
         emailTemplate.setBodyHtml(bodyHtml);
         emailTemplate.setLanguage(language);
         emailTemplate.setResearchGroup(researchGroup);
+        emailTemplate.setCreatedAt(Instant.now());
+        emailTemplate.setUpdatedAt(Instant.now());
+        emailTemplate.setUpdatedBy(currentUserProvider().getUser());
 
-        return emailTemplate;
+        return emailTemplateRepository.save(emailTemplate);
     }
 
     @Transactional
@@ -120,6 +123,7 @@ public class EmailTemplateService {
         emailTemplate.setBodyHtml(bodyHtml);
         emailTemplate.setLanguage(language);
         emailTemplate.setUpdatedAt(Instant.now());
+        emailTemplate.setUpdatedBy(currentUserProvider().getUser());
 
         return emailTemplateRepository.save(emailTemplate);
     }
