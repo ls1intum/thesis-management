@@ -4,8 +4,6 @@ import de.tum.cit.aet.thesis.controller.payload.CreateResearchGroupPayload;
 import de.tum.cit.aet.thesis.dto.PaginationDto;
 import de.tum.cit.aet.thesis.dto.ResearchGroupDto;
 import de.tum.cit.aet.thesis.entity.ResearchGroup;
-import de.tum.cit.aet.thesis.entity.User;
-import de.tum.cit.aet.thesis.service.AuthenticationService;
 import de.tum.cit.aet.thesis.service.ResearchGroupService;
 import de.tum.cit.aet.thesis.utility.RequestValidator;
 import java.util.UUID;
@@ -13,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -111,8 +108,7 @@ public class ResearchGroupController {
   @PatchMapping("/{researchGroupId}/archive")
   @PreAuthorize("hasRole('admin')")
   public ResponseEntity<Void> archiveResearchGroup(
-      @PathVariable("researchGroupId") UUID researchGroupId,
-      JwtAuthenticationToken jwt
+      @PathVariable("researchGroupId") UUID researchGroupId
   ) {
     ResearchGroup researchGroup = researchGroupService.findById(researchGroupId);
     researchGroupService.archiveResearchGroup(researchGroup);
