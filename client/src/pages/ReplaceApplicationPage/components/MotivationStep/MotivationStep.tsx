@@ -94,6 +94,10 @@ const MotivationStep = (props: IMotivationStepProps) => {
             ...res.data,
             content: res.data.content,
           })
+
+          if (res.data.content.length === 1) {
+            form.setFieldValue('researchGroup', res.data.content[0].id)
+          }
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
 
