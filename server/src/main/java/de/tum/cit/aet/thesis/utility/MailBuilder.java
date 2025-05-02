@@ -36,7 +36,7 @@ public class MailBuilder {
     private final String subject;
 
     @Getter
-    private final String template;
+    private final String templateHtml;
 
     @Getter
     private final Map<String, Object> variables;
@@ -53,7 +53,7 @@ public class MailBuilder {
     private record RawAttachment(String filename, ByteArrayDataSource file) {}
     private record StoredAttachment(String filename, String file) {}
 
-    public MailBuilder(MailConfig config, String subject, String template) {
+    public MailBuilder(MailConfig config, String subject, String templateHtml) {
         this.config = config;
 
         this.primarySenders = new ArrayList<>();
@@ -62,7 +62,7 @@ public class MailBuilder {
         this.bccRecipients = new ArrayList<>();
 
         this.subject = subject;
-        this.template = template;
+        this.templateHtml = templateHtml;
 
         this.variables = new HashMap<>();
         this.variables.put("config", config.getConfigDto());
@@ -301,7 +301,7 @@ public class MailBuilder {
                 Multipart messageContent = new MimeMultipart();
 
                 BodyPart messageBody = new MimeBodyPart();
-                messageBody.setContent(config.getTemplateEngine().process(template, templateContext), "text/html; charset=utf-8");
+                messageBody.setContent(config.getTemplateEngine().process(templateHtml, templateContext), "text/html; charset=utf-8");
                 messageContent.addBodyPart(messageBody);
 
                 for (StoredAttachment data : fileAttachments) {

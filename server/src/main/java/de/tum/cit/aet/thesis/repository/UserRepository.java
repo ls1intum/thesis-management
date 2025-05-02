@@ -20,15 +20,19 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     @Query("SELECT u FROM User u LEFT JOIN FETCH u.researchGroup WHERE u.universityId = :universityId")
     Optional<User> findByUniversityIdWithResearchGroup(@Param("universityId") String universityId);
 
-    @Query(
-        "SELECT DISTINCT u FROM User u LEFT JOIN UserGroup g ON (u.id = g.id.userId) WHERE " +
-            "(:researchGroupId IS NULL OR u.researchGroup.id = :researchGroupId) AND " +
-            "(:groups IS NULL OR g.id.group IN :groups) AND " +
-            "(:searchQuery IS NULL OR LOWER(u.firstName) || ' ' || LOWER(u.lastName) LIKE %:searchQuery% OR " +
-            "LOWER(u.email) LIKE %:searchQuery% OR " +
-            "LOWER(u.matriculationNumber) LIKE %:searchQuery% OR " +
-            "LOWER(u.universityId) LIKE %:searchQuery%)"
-    )
+    @Query("""
+            SELECT DISTINCT u FROM User u
+            LEFT JOIN UserGroup g ON (u.id = g.id.userId)
+            WHERE (:researchGroupId IS NULL OR u.researchGroup.id = :researchGroupId)
+              AND (:groups IS NULL OR g.id.group IN :groups)
+              AND (
+                :searchQuery IS NULL OR
+                LOWER(CONCAT(u.firstName, ' ', u.lastName)) LIKE LOWER(CONCAT('%', :searchQuery, '%')) OR
+                LOWER(u.email) LIKE LOWER(CONCAT('%', :searchQuery, '%')) OR
+                LOWER(u.matriculationNumber) LIKE LOWER(CONCAT('%', :searchQuery, '%')) OR
+                LOWER(u.universityId) LIKE LOWER(CONCAT('%', :searchQuery, '%'))
+              )
+            """)
     Page<User> searchUsers(@Param("researchGroupId") UUID researchGroupId,
         @Param("searchQuery") String searchQuery, @Param("groups") Set<String> groups, Pageable page);
 
@@ -37,4 +41,16 @@ public interface UserRepository extends JpaRepository<User, UUID> {
         + ":researchGroupId)")
     List<User> getRoleMembers(@Param("roles") Set<String> roles,
         @Param("researchGroupId") UUID researchGroupId);
+
+    @Query("""
+                SELECT DISTINCT u FROM User u
+                WHERE u.id IN (
+                    SELECT tr.user.id FROM ThesisRole tr
+                    JOIN tr.thesis t
+                    WHERE t.researchGroup.id = :researchGroupId
+                      AND t.state NOT IN ('FINISHED', 'DROPPED_OUT')
+                      AND tr.id.role = 'STUDENT'
+                )
+            """)
+    List<User> findStudentsWithActiveThesesByResearchGroupId(@Param("researchGroupId") UUID researchGroupId);
 }

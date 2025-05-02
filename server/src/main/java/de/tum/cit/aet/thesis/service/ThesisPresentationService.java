@@ -194,8 +194,8 @@ public class ThesisPresentationService {
             List<InternetAddress> additionalInvites
     ) {
         Thesis thesis = presentation.getThesis();
-        UUID researchGroupId = thesis.getResearchGroup().getId();
-        currentUserProvider().assertCanAccessResearchGroup(researchGroupId);
+        ResearchGroup researchGroup = thesis.getResearchGroup();
+        currentUserProvider().assertCanAccessResearchGroup(researchGroup);
         presentation = thesis.getPresentation(presentation.getId()).orElseThrow();
 
         if (presentation.getState() == ThesisPresentationState.SCHEDULED) {
@@ -220,7 +220,7 @@ public class ThesisPresentationService {
 
         if (inviteChairMembers) {
             for (User user : userRepository.getRoleMembers(Set.of("admin", "supervisor",
-                "advisor"), researchGroupId)) {
+                "advisor"), researchGroup.getId())) {
                 if (!user.isNotificationEnabled("presentation-invitations")) {
                     continue;
                 }
@@ -230,7 +230,7 @@ public class ThesisPresentationService {
         }
 
         if (inviteThesisStudents) {
-            for (User user : userRepository.getRoleMembers(Set.of("student"), null)) {
+            for (User user : userRepository.findStudentsWithActiveThesesByResearchGroupId(researchGroup.getId())) {
                 if (!user.isNotificationEnabled("presentation-invitations")) {
                     continue;
                 }

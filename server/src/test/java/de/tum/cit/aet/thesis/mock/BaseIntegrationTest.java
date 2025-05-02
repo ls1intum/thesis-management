@@ -4,6 +4,10 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
+import de.tum.cit.aet.thesis.controller.payload.CreateApplicationPayload;
+import de.tum.cit.aet.thesis.controller.payload.CreateThesisPayload;
+import de.tum.cit.aet.thesis.controller.payload.ReplaceTopicPayload;
+import de.tum.cit.aet.thesis.repository.*;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,10 +23,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
-import de.tum.cit.aet.thesis.controller.payload.CreateApplicationPayload;
-import de.tum.cit.aet.thesis.controller.payload.CreateThesisPayload;
-import de.tum.cit.aet.thesis.controller.payload.ReplaceTopicPayload;
-import de.tum.cit.aet.thesis.repository.*;
 
 import java.time.Instant;
 import java.util.*;
@@ -171,13 +171,30 @@ public abstract class BaseIntegrationTest {
         return UUID.fromString(JsonPath.parse(response).read("$.userId", String.class));
     }
 
+    protected UUID createTestResearchGroup(String name, UUID headUserId) throws Exception {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("name", name);
+        payload.put("headUserId", headUserId);
+
+        String response = mockMvc.perform(MockMvcRequestBuilders.post("/v2/research-groups")
+                        .header("Authorization", createRandomAdminAuthentication())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(payload)))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        return UUID.fromString(JsonPath.parse(response).read("$.researchGroupId", String.class));
+    }
+
     protected UUID createTestApplication(String authorization, String title) throws Exception {
         CreateApplicationPayload payload = new CreateApplicationPayload(
                 null,
                 title,
                 "BACHELOR",
                 Instant.now(),
-                "Test motivation"
+                "Test motivation",
+                createDefaultResearchGroup()
         );
 
         String response = mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
@@ -189,6 +206,11 @@ public abstract class BaseIntegrationTest {
                 .getContentAsString();
 
         return UUID.fromString(JsonPath.parse(response).read("$.applicationId", String.class));
+    }
+
+    protected UUID createDefaultResearchGroup() throws Exception {
+        UUID headUserId = createTestUser("defaultSupervisor", List.of("supervisor"));
+        return createTestResearchGroup("Default Research Group", headUserId);
     }
 
     protected UUID createTestTopic(String title) throws Exception {

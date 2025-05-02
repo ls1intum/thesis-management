@@ -1,10 +1,13 @@
 package de.tum.cit.aet.thesis.service;
 
+import de.tum.cit.aet.thesis.repository.ResearchGroupRepository;
+import de.tum.cit.aet.thesis.security.CurrentUserProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -41,9 +44,14 @@ class ApplicationServiceTest {
     private TopicService topicService;
     @Mock
     private ApplicationReviewerRepository applicationReviewerRepository;
+    @Mock
+    private ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
+    @Mock
+    private ResearchGroupRepository researchGroupRepository;
 
     private ApplicationService applicationService;
     private User testUser;
+    private ResearchGroup testResearchGroup;
     private Topic testTopic;
     private Application testApplication;
 
@@ -55,19 +63,22 @@ class ApplicationServiceTest {
                 topicRepository,
                 thesisService,
                 topicService,
-                applicationReviewerRepository
+                applicationReviewerRepository,
+                currentUserProviderProvider,
+                researchGroupRepository
         );
 
         testUser = EntityMockFactory.createUser("Test");
-        testTopic = EntityMockFactory.createTopic("Test Topic");
-        testApplication = EntityMockFactory.createApplication();
+        testResearchGroup = EntityMockFactory.createResearchGroup("Test Research Group");
+        testTopic = EntityMockFactory.createTopic("Test Topic", testResearchGroup);
+        testApplication = EntityMockFactory.createApplication(testResearchGroup);
     }
 
     @Test
     void getAll_WithValidParameters_ReturnsPageOfApplications() {
         Page<Application> expectedPage = new PageImpl<>(List.of(testApplication));
         when(applicationRepository.searchApplications(
-                any(), any(), any(), any(), any(), any(), any(), anyBoolean(), any(PageRequest.class)
+                any(), any(), any(), any(), any(), any(), any(), any(), anyBoolean(), any(PageRequest.class)
         )).thenReturn(expectedPage);
 
         Page<Application> result = applicationService.getAll(
@@ -88,7 +99,7 @@ class ApplicationServiceTest {
         assertNotNull(result);
         assertEquals(1, result.getContent().size());
         verify(applicationRepository).searchApplications(
-                any(), any(), any(), any(), any(), any(), any(), anyBoolean(), any(PageRequest.class)
+                any(), any(), any(), any(), any(), any(), any(), any(), anyBoolean(), any(PageRequest.class)
         );
     }
 
@@ -99,6 +110,7 @@ class ApplicationServiceTest {
 
         Application result = applicationService.createApplication(
                 testUser,
+                testResearchGroup.getId(),
                 testTopic.getId(),
                 "Test Thesis",
                 "Bachelor",
@@ -119,6 +131,7 @@ class ApplicationServiceTest {
         assertThrows(ResourceInvalidParametersException.class, () ->
                 applicationService.createApplication(
                         testUser,
+                        testResearchGroup.getId(),
                         testTopic.getId(),
                         "Test Thesis",
                         "Bachelor",
@@ -133,8 +146,8 @@ class ApplicationServiceTest {
         User reviewer = new User();
         reviewer.setId(UUID.randomUUID());
         when(applicationRepository.save(any(Application.class))).thenAnswer(invocation -> invocation.getArgument(0));
-        when(thesisService.createThesis(any(), any(), any(), any(), any(), any(), any(), any(), anyBoolean()))
-                .thenReturn(EntityMockFactory.createThesis("Test Thesis"));
+        when(thesisService.createThesis(any(), any(), any(), any(), any(), any(), any(), anyBoolean()))
+                .thenReturn(EntityMockFactory.createThesis("Test Thesis", testResearchGroup));
 
         List<Application> results = applicationService.accept(
                 reviewer,
@@ -150,7 +163,7 @@ class ApplicationServiceTest {
 
         assertFalse(results.isEmpty());
         assertEquals(ApplicationState.ACCEPTED, results.getFirst().getState());
-        verify(thesisService).createThesis(any(), any(), any(), any(), any(), any(), any(), any(), anyBoolean());
+        verify(thesisService).createThesis(any(), any(), any(), any(), any(), any(), any(), anyBoolean());
         verify(mailingService).sendApplicationAcceptanceEmail(any(), any());
     }
 
@@ -200,7 +213,6 @@ class ApplicationServiceTest {
         when(topicRepository.save(any(Topic.class))).thenReturn(testTopic);
 
         Topic result = applicationService.closeTopic(
-                closer,
                 testTopic,
                 ApplicationRejectReason.TOPIC_FILLED,
                 true
@@ -257,7 +269,7 @@ class ApplicationServiceTest {
         );
 
         assertNotNull(result);
-        assertEquals(result.getThesisTitle(), "Updated Title");
+        assertEquals("Updated Title", result.getThesisTitle());
         verify(applicationRepository).save(any(Application.class));
     }
 }

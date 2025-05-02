@@ -132,10 +132,8 @@ public class TopicService {
     }
 
     public Topic findById(UUID topicId) {
-        Topic topic = topicRepository.findById(topicId)
+        return topicRepository.findById(topicId)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Topic with id %s not found.", topicId)));
-        currentUserProvider().assertCanAccessResearchGroup(topic.getResearchGroup());
-        return topic;
     }
 
     private void assignTopicRoles(Topic topic, List<UUID> advisorIds, List<UUID> supervisorIds) {

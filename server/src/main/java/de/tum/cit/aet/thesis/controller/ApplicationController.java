@@ -61,6 +61,7 @@ public class ApplicationController {
         }
 
         Application application = applicationService.createApplication(authenticatedUser,
+                payload.researchGroupId(),
                 payload.topicId(),
                 RequestValidator.validateStringMaxLengthAllowNull(payload.thesisTitle(),
                         StringLimits.THESIS_TITLE.getLimit()),
@@ -81,8 +82,8 @@ public class ApplicationController {
             @RequestParam(required = false) String[] topic,
             @RequestParam(required = false) String[] types,
             @RequestParam(required = false) String[] previous,
-            @RequestParam(required = false, defaultValue = "true") Boolean includeSuggestedTopics,
-            @RequestParam(required = false, defaultValue = "false") Boolean fetchAll,
+            @RequestParam(required = false, defaultValue = "true") boolean includeSuggestedTopics,
+            @RequestParam(required = false, defaultValue = "false") boolean fetchAll,
             @RequestParam(required = false, defaultValue = "0") Integer page,
             @RequestParam(required = false, defaultValue = "50") Integer limit,
             @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
@@ -91,9 +92,10 @@ public class ApplicationController {
         User authenticatedUser = currentUserProvider().getUser();
 
         Page<Application> applications = applicationService.getAll(
-                fetchAll && !currentUserProvider().canSeeAllResearchGroups() ? null :
+                fetchAll && authenticatedUser.hasAnyGroup("admin", "supervisor", "advisor") ? null :
                     authenticatedUser.getId(),
-                fetchAll && !currentUserProvider().canSeeAllResearchGroups() ? authenticatedUser.getId() :
+                fetchAll && authenticatedUser.hasAnyGroup("admin", "supervisor", "advisor") ?
+                        authenticatedUser.getId() :
                     null,
                 search,
                 state,

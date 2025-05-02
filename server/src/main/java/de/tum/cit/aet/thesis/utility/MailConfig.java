@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
 import de.tum.cit.aet.thesis.entity.User;
 import de.tum.cit.aet.thesis.repository.UserRepository;
-
 import java.util.*;
 
 @Component
@@ -44,8 +43,8 @@ public class MailConfig {
             @Value("${thesis-management.mail.signature}") String mailSignature,
             @Value("${thesis-management.mail.workspace-url}") String workspaceUrl,
             @Value("${thesis-management.client.host}") String clientHost,
-            TemplateEngine templateEngine,
-            UserRepository userRepository
+            UserRepository userRepository,
+            TemplateEngine templateEngine
     ) {
         this.enabled = enabled;
         this.sender = sender;

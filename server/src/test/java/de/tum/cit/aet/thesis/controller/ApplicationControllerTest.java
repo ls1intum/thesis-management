@@ -34,7 +34,8 @@ class ApplicationControllerTest extends BaseIntegrationTest {
                 "Test Thesis",
                 "MASTER",
                 Instant.now(),
-                "Test motivation"
+                "Test motivation",
+                createDefaultResearchGroup()
         );
 
         mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
@@ -58,7 +59,8 @@ class ApplicationControllerTest extends BaseIntegrationTest {
                 "Updated Thesis",
                 "BACHELOR",
                 Instant.now(),
-                "Updated motivation"
+                "Updated motivation",
+                createDefaultResearchGroup()
         );
 
         mockMvc.perform(MockMvcRequestBuilders.put("/v2/applications/" + applicationId)
