@@ -14,12 +14,15 @@ import java.util.UUID;
 @Repository
 public interface EmailTemplateRepository extends JpaRepository<EmailTemplate, UUID> {
 
-    @Query(value = "SELECT et.* FROM email_templates et "
-            + "WHERE (:researchGroupId IS NULL OR et.research_group_id = :researchGroupId)"
-            + "AND (:searchQuery IS NULL OR et.description ILIKE CONCAT('%', :searchQuery, '%') OR et.subject ILIKE  " +
-            "CONCAT('%', :searchQuery, '%')) OR et.body_html ILIKE CONCAT('%', :searchQuery, '%')"
-            + "AND (CAST(:templateCases AS TEXT[]) IS NULL OR et.template_case = ANY(CAST(:templateCases AS TEXT[]))) "
-            + "AND (CAST(:languages AS TEXT[]) IS NULL OR et.language = ANY(CAST(:languages AS TEXT[]))) ", nativeQuery = true)
+    @Query(value = """
+            SELECT et.* FROM email_templates et
+            WHERE (:researchGroupId IS NULL OR et.research_group_id = :researchGroupId)
+              AND (:searchQuery IS NULL OR et.description ILIKE CONCAT('%', :searchQuery, '%')
+                OR et.subject ILIKE CONCAT('%', :searchQuery, '%')
+                OR et.body_html ILIKE CONCAT('%', :searchQuery, '%'))
+              AND (CAST(:templateCases AS TEXT[]) IS NULL OR et.template_case = ANY(CAST(:templateCases AS TEXT[])))
+              AND (CAST(:languages AS TEXT[]) IS NULL OR et.language = ANY(CAST(:languages AS TEXT[])))
+            """, nativeQuery = true)
     Page<EmailTemplate> searchEmailTemplate(
             @Param("researchGroupId") UUID researchGroupId,
             @Param("templateCases") String[] templateCases,
@@ -32,8 +35,8 @@ public interface EmailTemplateRepository extends JpaRepository<EmailTemplate, UU
             SELECT e FROM EmailTemplate e
             WHERE (:researchGroupId IS NULL AND e.researchGroup.id IS NULL
                    OR e.researchGroup.id = :researchGroupId)
-            AND e.templateCase = :templateCase
-            AND e.language = :language
+              AND e.templateCase = :templateCase
+              AND e.language = :language
             """)
     Optional<EmailTemplate> findByResearchGroupIdAndTemplateCaseAndLanguage(
             @Param("researchGroupId") UUID researchGroupId,
