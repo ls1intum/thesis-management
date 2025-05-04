@@ -8,17 +8,15 @@ import de.tum.cit.aet.thesis.repository.ResearchGroupRepository;
 import de.tum.cit.aet.thesis.repository.UserRepository;
 import de.tum.cit.aet.thesis.security.CurrentUserProvider;
 import de.tum.cit.aet.thesis.utility.HibernateHelper;
-import java.time.Instant;
-import java.util.UUID;
-
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ResearchGroupService {
@@ -53,7 +51,9 @@ public class ResearchGroupService {
       String sortOrder
   ) {
     if (!currentUserProvider().canSeeAllResearchGroups()) {
-      heads = new String[]{currentUserProvider().getUser().getId().toString()};
+      return new PageImpl<>(List.of(currentUserProvider().getResearchGroupOrThrow()),
+              PageRequest.of(0, 1),
+              1);
     }
     Sort.Order order = new Sort.Order(
         sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,

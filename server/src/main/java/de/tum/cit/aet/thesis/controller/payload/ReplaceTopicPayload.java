@@ -12,5 +12,6 @@ public record ReplaceTopicPayload(
         String goals,
         String references,
         List<UUID> supervisorIds,
-        List<UUID> advisorIds
+        List<UUID> advisorIds,
+        UUID researchGroupId
 ) { }

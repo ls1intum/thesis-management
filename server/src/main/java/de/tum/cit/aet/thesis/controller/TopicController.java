@@ -1,11 +1,5 @@
 package de.tum.cit.aet.thesis.controller;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
 import de.tum.cit.aet.thesis.constants.StringLimits;
 import de.tum.cit.aet.thesis.controller.payload.CloseTopicPayload;
 import de.tum.cit.aet.thesis.controller.payload.ReplaceTopicPayload;
@@ -15,6 +9,12 @@ import de.tum.cit.aet.thesis.entity.Topic;
 import de.tum.cit.aet.thesis.service.ApplicationService;
 import de.tum.cit.aet.thesis.service.TopicService;
 import de.tum.cit.aet.thesis.utility.RequestValidator;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
@@ -76,7 +76,8 @@ public class TopicController {
                 RequestValidator.validateStringMaxLength(payload.goals(), StringLimits.UNLIMITED_TEXT.getLimit()),
                 RequestValidator.validateStringMaxLength(payload.references(), StringLimits.UNLIMITED_TEXT.getLimit()),
                 RequestValidator.validateNotNull(payload.supervisorIds()),
-                RequestValidator.validateNotNull(payload.advisorIds())
+                RequestValidator.validateNotNull(payload.advisorIds()),
+                RequestValidator.validateNotNull(payload.researchGroupId())
         );
 
         return ResponseEntity.ok(TopicDto.fromTopicEntity(topic));
