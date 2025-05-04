@@ -100,7 +100,8 @@ public class TopicController {
                 RequestValidator.validateStringMaxLength(payload.goals(), StringLimits.UNLIMITED_TEXT.getLimit()),
                 RequestValidator.validateStringMaxLength(payload.references(), StringLimits.UNLIMITED_TEXT.getLimit()),
                 RequestValidator.validateNotNull(payload.supervisorIds()),
-                RequestValidator.validateNotNull(payload.advisorIds())
+                RequestValidator.validateNotNull(payload.advisorIds()),
+                RequestValidator.validateNotNull(payload.researchGroupId())
         );
 
         return ResponseEntity.ok(TopicDto.fromTopicEntity(topic));

@@ -122,9 +122,13 @@ public class TopicService {
             String goals,
             String references,
             List<UUID> supervisorIds,
-            List<UUID> advisorIds
+            List<UUID> advisorIds,
+            UUID researchGroupId
     ) {
-        currentUserProvider().assertCanAccessResearchGroup(topic.getResearchGroup());
+        ResearchGroup researchGroup = researchGroupRepository.findById(researchGroupId).orElseThrow(
+                () -> new ResourceNotFoundException("Research group not found")
+        );
+        currentUserProvider().assertCanAccessResearchGroup(researchGroup);
         topic.setTitle(title);
         topic.setThesisTypes(thesisTypes);
         topic.setProblemStatement(problemStatement);
@@ -132,6 +136,7 @@ public class TopicService {
         topic.setGoals(goals);
         topic.setReferences(references);
         topic.setUpdatedAt(Instant.now());
+        topic.setResearchGroup(researchGroup);
 
         assignTopicRoles(topic, advisorIds, supervisorIds);
 
