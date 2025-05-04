@@ -170,7 +170,8 @@ public class ApplicationService {
                 advisorIds,
                 List.of(application.getUser().getId()),
                 application,
-                false
+                false,
+                application.getResearchGroup().getId()
         );
 
         application = applicationRepository.save(application);

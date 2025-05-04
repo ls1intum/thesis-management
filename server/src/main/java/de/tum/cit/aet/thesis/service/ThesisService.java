@@ -1,15 +1,5 @@
 package de.tum.cit.aet.thesis.service;
 
-import de.tum.cit.aet.thesis.security.CurrentUserProvider;
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 import de.tum.cit.aet.thesis.constants.*;
 import de.tum.cit.aet.thesis.controller.payload.RequestChangesPayload;
 import de.tum.cit.aet.thesis.controller.payload.ThesisStatePayload;
@@ -20,9 +10,19 @@ import de.tum.cit.aet.thesis.entity.key.ThesisStateChangeId;
 import de.tum.cit.aet.thesis.exception.request.ResourceInvalidParametersException;
 import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.repository.*;
+import de.tum.cit.aet.thesis.security.CurrentUserProvider;
 import de.tum.cit.aet.thesis.utility.DataFormatter;
 import de.tum.cit.aet.thesis.utility.PDFBuilder;
 import de.tum.cit.aet.thesis.utility.RequestValidator;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
 import java.util.*;
@@ -42,6 +42,7 @@ public class ThesisService {
     private final ThesisFeedbackRepository thesisFeedbackRepository;
     private final ThesisFileRepository thesisFileRepository;
     private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
+    private final ResearchGroupRepository researchGroupRepository;
 
     @Autowired
     public ThesisService(
@@ -56,7 +57,7 @@ public class ThesisService {
             AccessManagementService accessManagementService,
             ThesisPresentationService thesisPresentationService,
             ThesisFeedbackRepository thesisFeedbackRepository, ThesisFileRepository thesisFileRepository,
-            ObjectProvider<CurrentUserProvider> currentUserProviderProvider
+            ObjectProvider<CurrentUserProvider> currentUserProviderProvider, ResearchGroupRepository researchGroupRepository
     ) {
         this.thesisRoleRepository = thesisRoleRepository;
         this.thesisRepository = thesisRepository;
@@ -71,6 +72,7 @@ public class ThesisService {
         this.thesisFeedbackRepository = thesisFeedbackRepository;
         this.thesisFileRepository = thesisFileRepository;
         this.currentUserProviderProvider = currentUserProviderProvider;
+        this.researchGroupRepository = researchGroupRepository;
     }
 
     private CurrentUserProvider currentUserProvider() {
@@ -117,8 +119,11 @@ public class ThesisService {
             List<UUID> advisorIds,
             List<UUID> studentIds,
             Application application,
-            boolean notifyUser
+            boolean notifyUser,
+            UUID researchGroupId
     ) {
+        ResearchGroup researchGroup = researchGroupRepository.findById(researchGroupId)
+                .orElseThrow(() -> new ResourceNotFoundException("Research group not found"));
         Thesis thesis = new Thesis();
 
         thesis.setTitle(thesisTitle);
@@ -132,7 +137,7 @@ public class ThesisService {
         thesis.setState(ThesisState.PROPOSAL);
         thesis.setApplication(application);
         thesis.setCreatedAt(Instant.now());
-        thesis.setResearchGroup(currentUserProvider().getResearchGroupOrThrow());
+        thesis.setResearchGroup(researchGroup);
 
         thesis = thesisRepository.save(thesis);
 
@@ -186,14 +191,18 @@ public class ThesisService {
             List<UUID> studentIds,
             List<UUID> advisorIds,
             List<UUID> supervisorIds,
-            List<ThesisStatePayload> states
+            List<ThesisStatePayload> states,
+            UUID researchGroupId
     ) {
-        currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+        ResearchGroup researchGroup = researchGroupRepository.findById(researchGroupId)
+                .orElseThrow(() -> new ResourceNotFoundException("Research group not found"));
+        currentUserProvider().assertCanAccessResearchGroup(researchGroup);
         thesis.setTitle(thesisTitle);
         thesis.setType(thesisType);
         thesis.setLanguage(language);
         thesis.setVisibility(visibility);
         thesis.setKeywords(keywords);
+        thesis.setResearchGroup(researchGroup);
 
         if ((startDate == null && endDate != null) || (startDate != null && endDate == null)) {
             throw new ResourceInvalidParametersException("Both start and end date must be provided.");

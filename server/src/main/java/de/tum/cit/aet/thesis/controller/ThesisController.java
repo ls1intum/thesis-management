@@ -1,6 +1,16 @@
 package de.tum.cit.aet.thesis.controller;
 
+import de.tum.cit.aet.thesis.constants.*;
+import de.tum.cit.aet.thesis.controller.payload.*;
+import de.tum.cit.aet.thesis.dto.PaginationDto;
+import de.tum.cit.aet.thesis.dto.ThesisCommentDto;
+import de.tum.cit.aet.thesis.dto.ThesisDto;
+import de.tum.cit.aet.thesis.entity.*;
 import de.tum.cit.aet.thesis.security.CurrentUserProvider;
+import de.tum.cit.aet.thesis.service.ThesisCommentService;
+import de.tum.cit.aet.thesis.service.ThesisPresentationService;
+import de.tum.cit.aet.thesis.service.ThesisService;
+import de.tum.cit.aet.thesis.utility.RequestValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,16 +24,6 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import de.tum.cit.aet.thesis.constants.*;
-import de.tum.cit.aet.thesis.controller.payload.*;
-import de.tum.cit.aet.thesis.dto.PaginationDto;
-import de.tum.cit.aet.thesis.dto.ThesisCommentDto;
-import de.tum.cit.aet.thesis.dto.ThesisDto;
-import de.tum.cit.aet.thesis.entity.*;
-import de.tum.cit.aet.thesis.service.ThesisCommentService;
-import de.tum.cit.aet.thesis.service.ThesisPresentationService;
-import de.tum.cit.aet.thesis.service.ThesisService;
-import de.tum.cit.aet.thesis.utility.RequestValidator;
 
 import java.util.Set;
 import java.util.UUID;
@@ -130,7 +130,8 @@ public class ThesisController {
                 RequestValidator.validateNotNull(payload.advisorIds()),
                 RequestValidator.validateNotNull(payload.studentIds()),
                 null,
-                true
+                true,
+                RequestValidator.validateNotNull(payload.researchGroupId())
         );
         return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
     }
@@ -159,7 +160,8 @@ public class ThesisController {
                 RequestValidator.validateNotNull(payload.studentIds()),
                 RequestValidator.validateNotNull(payload.advisorIds()),
                 RequestValidator.validateNotNull(payload.supervisorIds()),
-                RequestValidator.validateNotNull(payload.states())
+                RequestValidator.validateNotNull(payload.states()),
+                RequestValidator.validateNotNull(payload.researchGroupId())
         );
 
         return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
