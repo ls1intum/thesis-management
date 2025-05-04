@@ -20,6 +20,19 @@ public class EntityMockFactory {
         return user;
     }
 
+    public static User createUserWithDefaultResearchGroup(String name) {
+        ResearchGroup researchGroup = createResearchGroup("Default Research Group");
+        User user = createUser(name);
+        user.setResearchGroup(researchGroup);
+        return user;
+    }
+
+    public static User createUserWithResearchGroup(String name, ResearchGroup researchGroup) {
+        User user = createUser(name);
+        user.setResearchGroup(researchGroup);
+        return user;
+    }
+
     public static User createUserWithGroup(String name, String... groups) {
         User user = createUser(name);
 
@@ -46,9 +59,9 @@ public class EntityMockFactory {
     }
 
     public static ResearchGroup createResearchGroup(String name) {
+        ResearchGroup researchGroup = new ResearchGroup();
         User user = createUserWithGroup(name, "supervisor");
 
-        ResearchGroup researchGroup = new ResearchGroup();
         researchGroup.setId(UUID.randomUUID());
         researchGroup.setHead(user);
         researchGroup.setName(name);
@@ -77,7 +90,7 @@ public class EntityMockFactory {
         Application application = new Application();
 
         application.setId(UUID.randomUUID());
-        application.setUser(createUser("user"));
+        application.setUser(createUserWithResearchGroup("user", researchGroup));
         application.setTopic(createTopic("title", researchGroup));
         application.setState(ApplicationState.NOT_ASSESSED);
         application.setResearchGroup(researchGroup);

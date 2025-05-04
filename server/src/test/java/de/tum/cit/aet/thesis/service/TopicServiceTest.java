@@ -1,6 +1,15 @@
 package de.tum.cit.aet.thesis.service;
 
 import de.tum.cit.aet.thesis.entity.ResearchGroup;
+import de.tum.cit.aet.thesis.entity.Topic;
+import de.tum.cit.aet.thesis.entity.TopicRole;
+import de.tum.cit.aet.thesis.entity.User;
+import de.tum.cit.aet.thesis.exception.request.ResourceInvalidParametersException;
+import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
+import de.tum.cit.aet.thesis.mock.EntityMockFactory;
+import de.tum.cit.aet.thesis.repository.TopicRepository;
+import de.tum.cit.aet.thesis.repository.TopicRoleRepository;
+import de.tum.cit.aet.thesis.repository.UserRepository;
 import de.tum.cit.aet.thesis.security.CurrentUserProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,19 +21,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import de.tum.cit.aet.thesis.entity.Topic;
-import de.tum.cit.aet.thesis.entity.TopicRole;
-import de.tum.cit.aet.thesis.entity.User;
-import de.tum.cit.aet.thesis.exception.request.ResourceInvalidParametersException;
-import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
-import de.tum.cit.aet.thesis.mock.EntityMockFactory;
-import de.tum.cit.aet.thesis.repository.TopicRepository;
-import de.tum.cit.aet.thesis.repository.TopicRoleRepository;
-import de.tum.cit.aet.thesis.repository.UserRepository;
 
 import java.util.*;
 
-import static de.tum.cit.aet.thesis.mock.CurrentUserMockUtil.mockCurrentUser;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -39,9 +38,12 @@ class TopicServiceTest {
     private UserRepository userRepository;
     @Mock
     private ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
+    @Mock
+    private CurrentUserProvider currentUserProvider;
 
     private TopicService topicService;
     private Topic testTopic;
+    private User testUser;
 
     @BeforeEach
     void setUp() {
@@ -52,10 +54,9 @@ class TopicServiceTest {
                 currentUserProviderProvider
         );
 
-        User testUser = EntityMockFactory.createUser("Test User");
+        testUser = EntityMockFactory.createUser("Test User");
         ResearchGroup testResearchGroup = EntityMockFactory.createResearchGroup("Test Research Group");
         testUser.setResearchGroup(testResearchGroup);
-        mockCurrentUser(currentUserProviderProvider, testUser);
         testTopic = EntityMockFactory.createTopic("Test Topic", testResearchGroup);
     }
 
@@ -104,6 +105,9 @@ class TopicServiceTest {
         when(userRepository.findAllById(supervisorIds)).thenReturn(new ArrayList<>(List.of(supervisor)));
         when(userRepository.findAllById(advisorIds)).thenReturn(new ArrayList<>(List.of(advisor)));
         when(topicRepository.save(any(Topic.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
+        when(currentUserProvider.getUser()).thenReturn(testUser);
+
 
         Topic result = topicService.createTopic(
                 "Test Topic",
@@ -132,6 +136,8 @@ class TopicServiceTest {
         when(userRepository.findAllById(supervisorIds)).thenReturn(new ArrayList<>(List.of(invalidSupervisor)));
         when(userRepository.findAllById(advisorIds)).thenReturn(new ArrayList<>(List.of(advisor)));
         when(topicRepository.save(any(Topic.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
+        when(currentUserProvider.getUser()).thenReturn(testUser);
 
         assertThrows(ResourceInvalidParametersException.class, () ->
                 topicService.createTopic(
@@ -158,6 +164,8 @@ class TopicServiceTest {
         when(userRepository.findAllById(supervisorIds)).thenReturn(new ArrayList<>(List.of(supervisor)));
         when(userRepository.findAllById(advisorIds)).thenReturn(new ArrayList<>(List.of(advisor)));
         when(topicRepository.save(any(Topic.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
+        when(currentUserProvider.getUser()).thenReturn(testUser);
 
         Topic result = topicService.updateTopic(
                 testTopic,
