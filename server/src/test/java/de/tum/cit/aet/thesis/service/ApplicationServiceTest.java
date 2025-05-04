@@ -153,7 +153,7 @@ class ApplicationServiceTest {
         User reviewer = new User();
         reviewer.setId(UUID.randomUUID());
         when(applicationRepository.save(any(Application.class))).thenAnswer(invocation -> invocation.getArgument(0));
-        when(thesisService.createThesis(any(), any(), any(), any(), any(), any(), any(), anyBoolean()))
+        when(thesisService.createThesis(any(), any(), any(), any(), any(), any(), any(), anyBoolean(), any()))
                 .thenReturn(EntityMockFactory.createThesis("Test Thesis", testResearchGroup));
         when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
 
@@ -171,7 +171,7 @@ class ApplicationServiceTest {
 
         assertFalse(results.isEmpty());
         assertEquals(ApplicationState.ACCEPTED, results.getFirst().getState());
-        verify(thesisService).createThesis(any(), any(), any(), any(), any(), any(), any(), anyBoolean());
+        verify(thesisService).createThesis(any(), any(), any(), any(), any(), any(), any(), anyBoolean(), any());
         verify(mailingService).sendApplicationAcceptanceEmail(any(), any());
     }
 
