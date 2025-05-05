@@ -161,7 +161,7 @@ public abstract class BaseIntegrationTest {
     }
 
     protected UUID createTestUser(String universityId, List<String> roles) throws Exception {
-        String response = mockMvc.perform(MockMvcRequestBuilders.post("/v2/user-info")
+        String response = mockMvc.perform(MockMvcRequestBuilders.get("/v2/user-info")
                         .header("Authorization", generateTestAuthenticationHeader(universityId, roles))
                 )
                 .andReturn()
@@ -173,8 +173,8 @@ public abstract class BaseIntegrationTest {
 
     protected UUID createTestResearchGroup(String name, UUID headUserId) throws Exception {
         Map<String, Object> payload = new HashMap<>();
-        payload.put("name", name);
-        payload.put("headUserId", headUserId);
+        payload.put("name", name + " " + UUID.randomUUID());
+        payload.put("headId", headUserId);
 
         String response = mockMvc.perform(MockMvcRequestBuilders.post("/v2/research-groups")
                         .header("Authorization", createRandomAdminAuthentication())
@@ -184,7 +184,7 @@ public abstract class BaseIntegrationTest {
                 .getResponse()
                 .getContentAsString();
 
-        return UUID.fromString(JsonPath.parse(response).read("$.researchGroupId", String.class));
+        return UUID.fromString(JsonPath.parse(response).read("$.id", String.class));
     }
 
     protected UUID createTestApplication(String authorization, String title) throws Exception {
@@ -215,6 +215,7 @@ public abstract class BaseIntegrationTest {
 
     protected UUID createTestTopic(String title) throws Exception {
         UUID advisorId = createTestUser("supervisor", List.of("supervisor", "advisor"));
+        UUID researchGroupId = createTestResearchGroup("Test Research Group " + UUID.randomUUID(), advisorId);
 
         ReplaceTopicPayload payload = new ReplaceTopicPayload(
                 title,
@@ -224,7 +225,8 @@ public abstract class BaseIntegrationTest {
                 "Test Goals",
                 "Test References",
                 List.of(advisorId),
-                List.of(advisorId)
+                List.of(advisorId),
+                researchGroupId
         );
 
         String response = mockMvc.perform(MockMvcRequestBuilders.post("/v2/topics")
@@ -240,6 +242,8 @@ public abstract class BaseIntegrationTest {
 
     protected UUID createTestThesis(String title) throws Exception {
         UUID advisorId = createTestUser("supervisor", List.of("supervisor", "advisor"));
+        UUID researchGroupId = createTestResearchGroup("Test Research Group", advisorId);
+        createTestEmailTemplate("THESIS_CREATED");
 
         CreateThesisPayload payload = new CreateThesisPayload(
                 title,
@@ -247,7 +251,8 @@ public abstract class BaseIntegrationTest {
                 "ENGLISH",
                 List.of(advisorId),
                 List.of(advisorId),
-                List.of(advisorId)
+                List.of(advisorId),
+                researchGroupId
         );
 
         String response = mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses")
@@ -260,4 +265,23 @@ public abstract class BaseIntegrationTest {
 
         return objectMapper.readTree(response).get("thesisId").asText().transform(UUID::fromString);
     }
+
+    protected void createTestEmailTemplate(String templateCase) throws Exception {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("researchGroupId", null);
+        payload.put("templateCase", templateCase);
+        payload.put("description", "Test description");
+        payload.put("subject", "Test Subject");
+        payload.put("bodyHtml", "<p>Test Body</p>");
+        payload.put("language", "en");
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/v2/email-templates")
+                        .header("Authorization", createRandomAdminAuthentication())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(payload)))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+    }
+
 }
