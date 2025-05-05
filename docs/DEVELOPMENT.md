@@ -39,7 +39,7 @@ To apply the latest database schema changes using Liquibase, run the following c
 
 ```bash
 cd ../server
-./gradlew update
+./gradlew bootRun
 ```
 
 This will apply all migrations defined under `server/src/main/resources/db/changelog/changes`.
@@ -53,6 +53,9 @@ cd ../server/src/main/resources/db/changelog/manual/
 ```
 
 And execute all files that you need.
+> 💡 Tip: Check the prerequisites !
+
+> 💡 Tip: Default Templates are needed for many API calls.
 
 ## Postfix
 

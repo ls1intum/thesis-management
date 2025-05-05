@@ -8,6 +8,7 @@
 --
 -- IMPORTANT:
 -- This script is NOT part of the standard Liquibase migration process.
+-- Import the AET research group first!
 --
 -- Author: Marc Fett
 -- Date: 2025/04/21
