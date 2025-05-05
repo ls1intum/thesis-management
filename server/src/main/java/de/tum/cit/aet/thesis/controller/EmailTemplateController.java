@@ -66,7 +66,7 @@ public class EmailTemplateController {
             @RequestBody CreateEmailTemplatePayload payload
     ) {
         EmailTemplate emailTemplate = emailTemplateService.createEmailTemplate(
-                RequestValidator.validateNotNull(payload.researchGroupId()),
+                payload.researchGroupId(),
                 RequestValidator.validateNotNull(payload.templateCase()),
                 payload.description(),
                 RequestValidator.validateNotNull(payload.subject()),
