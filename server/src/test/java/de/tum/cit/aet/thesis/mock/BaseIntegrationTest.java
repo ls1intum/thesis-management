@@ -188,6 +188,8 @@ public abstract class BaseIntegrationTest {
     }
 
     protected UUID createTestApplication(String authorization, String title) throws Exception {
+        createTestEmailTemplate("APPLICATION_CREATED_CHAIR");
+        createTestEmailTemplate("APPLICATION_CREATED_STUDENT");
         CreateApplicationPayload payload = new CreateApplicationPayload(
                 null,
                 title,
