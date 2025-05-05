@@ -55,7 +55,6 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
       problemStatement: isNotEmpty('Problem statement is required'),
       supervisorIds: isNotEmptyUserList('supervisor'),
       advisorIds: isNotEmptyUserList('advisor'),
-      researchGroupId: isNotEmpty('Research group is required'),
     },
   })
 
@@ -190,19 +189,17 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
             initialUsers={topic?.advisors}
             {...form.getInputProps('advisorIds')}
           />
-          {researchGroups && researchGroups.content.length > 1 && (
-            <Select
-              label='Research Group'
-              required={true}
-              disabled={loading || !researchGroups || researchGroups.totalElements <= 1}
-              data={researchGroups?.content.map((researchGroup: IResearchGroup) => ({
-                label: researchGroup.name,
-                value: researchGroup.id,
-              }))}
-              searchable
-              {...form.getInputProps('researchGroupId')}
-            />
-          )}
+          <Select
+            label='Research Group'
+            required={true}
+            disabled={loading || !researchGroups}
+            data={researchGroups?.content.map((researchGroup: IResearchGroup) => ({
+              label: researchGroup.name,
+              value: researchGroup.id,
+            }))}
+            searchable
+            {...form.getInputProps('researchGroupId')}
+          />
           <DocumentEditor
             label='Problem Statement'
             required
