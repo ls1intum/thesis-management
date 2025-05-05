@@ -33,7 +33,7 @@ interface IThesisConfigSectionFormValues {
   students: string[]
   advisors: string[]
   supervisors: string[]
-  researchGroup: string
+  researchGroupId: string
   states: Array<{ state: ThesisState; changedAt: DateValue }>
 }
 
@@ -74,7 +74,7 @@ const ThesisConfigSection = () => {
       students: thesis.students.map((student) => student.userId),
       advisors: thesis.advisors.map((advisor) => advisor.userId),
       supervisors: thesis.supervisors.map((supervisor) => supervisor.userId),
-      researchGroup: thesis.researchGroup?.id,
+      researchGroupId: thesis.researchGroup?.id,
       states: thesis.states.map((state) => ({
         state: state.state,
         changedAt: new Date(state.startedAt),
@@ -94,7 +94,7 @@ const ThesisConfigSection = () => {
       students: isNotEmptyUserList('student'),
       advisors: isNotEmptyUserList('advisor'),
       supervisors: isNotEmptyUserList('supervisor'),
-      researchGroup: isNotEmpty('Research group must not be empty'),
+      researchGroupId: isNotEmpty('Research group must not be empty'),
       startDate: thesisDatesValidator,
       endDate: thesisDatesValidator,
       states: (value) => {
@@ -131,7 +131,7 @@ const ThesisConfigSection = () => {
       students: thesis.students.map((student) => student.userId),
       advisors: thesis.advisors.map((advisor) => advisor.userId),
       supervisors: thesis.supervisors.map((supervisor) => supervisor.userId),
-      researchGroup: thesis.researchGroup?.id,
+      researchGroupId: thesis.researchGroup?.id,
       states: thesis.states.map((state) => ({
         state: state.state,
         changedAt: new Date(state.startedAt),
@@ -158,10 +158,6 @@ const ThesisConfigSection = () => {
             ...res.data,
             content: res.data.content,
           })
-
-          if (res.data.content.length === 1) {
-            form.setFieldValue('researchGroup', res.data.content[0].id)
-          }
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
 
@@ -208,7 +204,7 @@ const ThesisConfigSection = () => {
         studentIds: values.students,
         advisorIds: values.advisors,
         supervisorIds: values.supervisors,
-        researchGroupId: values.researchGroup,
+        researchGroupId: values.researchGroupId,
         states: values.states.map((state) => ({
           state: state.state,
           changedAt: state.changedAt,
@@ -300,19 +296,17 @@ const ThesisConfigSection = () => {
                 maxValues={1}
                 {...form.getInputProps('supervisors')}
               />
-              {researchGroups && researchGroups.content.length > 1 && (
-                <Select
-                  label='Research Group'
-                  required={true}
-                  disabled={!researchGroups || researchGroups.totalElements <= 1}
-                  data={researchGroups?.content.map((researchGroup: IResearchGroup) => ({
-                    label: researchGroup.name,
-                    value: researchGroup.id,
-                  }))}
-                  searchable
-                  {...form.getInputProps('researchGroup')}
-                />
-              )}
+              <Select
+                label='Research Group'
+                required={true}
+                disabled={!researchGroups || researchGroups.totalElements <= 1}
+                data={researchGroups?.content.map((researchGroup: IResearchGroup) => ({
+                  label: researchGroup.name,
+                  value: researchGroup.id,
+                }))}
+                searchable
+                {...form.getInputProps('researchGroup')}
+              />
               {form.values.states.map((item, index) => (
                 <Group key={item.state} grow>
                   <Group justify='center'>

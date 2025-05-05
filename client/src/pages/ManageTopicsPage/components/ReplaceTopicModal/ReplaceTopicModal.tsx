@@ -55,6 +55,7 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
       problemStatement: isNotEmpty('Problem statement is required'),
       supervisorIds: isNotEmptyUserList('supervisor'),
       advisorIds: isNotEmptyUserList('advisor'),
+      researchGroupId: isNotEmpty('Research group is required'),
     },
   })
 
@@ -96,10 +97,6 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
             ...res.data,
             content: res.data.content,
           })
-
-          if (res.data.content.length === 1) {
-            form.setFieldValue('researchGroupId', res.data.content[0].id)
-          }
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
 
@@ -197,7 +194,6 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
               label: researchGroup.name,
               value: researchGroup.id,
             }))}
-            searchable
             {...form.getInputProps('researchGroupId')}
           />
           <DocumentEditor

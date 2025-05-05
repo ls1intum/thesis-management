@@ -73,10 +73,6 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
             ...res.data,
             content: res.data.content,
           })
-
-          if (res.data.content.length === 1) {
-            form.setFieldValue('researchGroupId', res.data.content[0].id)
-          }
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
 
@@ -172,12 +168,11 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
           <Select
             label='Research Group'
             required={true}
-            disabled={loading || !researchGroups || researchGroups.totalElements <= 1}
+            disabled={loading || !researchGroups}
             data={researchGroups?.content.map((researchGroup: IResearchGroup) => ({
               label: researchGroup.name,
               value: researchGroup.id,
             }))}
-            searchable
             {...form.getInputProps('researchGroupId')}
           />
           <Button type='submit' loading={loading} disabled={!form.isValid()}>
