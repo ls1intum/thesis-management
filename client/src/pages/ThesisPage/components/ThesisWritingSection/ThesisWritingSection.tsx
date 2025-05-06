@@ -54,10 +54,14 @@ const ThesisWritingSection = () => {
 
     if (response.ok) {
       showSimpleSuccess('File uploaded successfully')
-
       updateThesis(response.data)
     } else {
-      showSimpleError(getApiResponseErrorMessage(response))
+      if (access.student && thesis.state === ThesisState.SUBMITTED) {
+        // It is not possible to return this message in the endpoint, because the frontend already catches that the student is not permitted to submit
+        showSimpleError('Cannot upload files after final submission. Please contact your advisor.')
+      } else {
+        showSimpleError(getApiResponseErrorMessage(response))
+      }
     }
   }
 
@@ -201,8 +205,7 @@ const ThesisWritingSection = () => {
                                       </AuthenticatedFileDownloadButton>
                                     )}
                                     {((access.student && thesis.state === ThesisState.WRITING) ||
-                                      access.advisor ||
-                                      (access.student && !value.required)) &&
+                                      access.advisor) &&
                                       !isThesisClosed(thesis) && (
                                         <UploadFileButton
                                           onUpload={(file) => onFileUpload(key, file)}
