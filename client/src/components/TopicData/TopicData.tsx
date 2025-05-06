@@ -34,7 +34,7 @@ const TopicData = (props: ITopicDataProps) => {
             value={<Text size='sm'>{topic.researchGroup.name}</Text>}
           />
         </Grid.Col>
-        <Grid.Col span={{ md: 2 }}>
+        <Grid.Col span={{ md: 3 }}>
           <LabeledItem
             label={pluralize('Thesis Type', topic.thesisTypes?.length || 0)}
             value={
@@ -52,7 +52,7 @@ const TopicData = (props: ITopicDataProps) => {
             }
           />
         </Grid.Col>
-        <Grid.Col span={{ md: 1 }}>
+        <Grid.Col span={{ md: 3 }}>
           <LabeledItem
             label='Published At'
             value={formatDate(topic.createdAt, { withTime: false })}

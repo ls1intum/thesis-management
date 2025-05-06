@@ -72,6 +72,7 @@ const DashboardPage = () => {
             columns={[
               'state',
               'thesis_title',
+              'research_group',
               'thesis_type',
               'user',
               'reviewed_at',
