@@ -111,6 +111,7 @@ export interface IPublishedThesis {
   students: ILightUser[]
   advisors: ILightUser[]
   supervisors: ILightUser[]
+  researchGroup: ILightResearchGroup
 }
 
 export interface IPublishedPresentation {

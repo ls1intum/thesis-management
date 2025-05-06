@@ -17,7 +17,8 @@ public record PublishedThesisDto(
         String abstractText,
         List<LightUserDto> students,
         List<LightUserDto> advisors,
-        List<LightUserDto> supervisors
+        List<LightUserDto> supervisors,
+        LightResearchGroupDto researchGroup
 ) {
     public static PublishedThesisDto fromThesisEntity(Thesis thesis) {
         if (thesis == null) {
@@ -34,7 +35,8 @@ public record PublishedThesisDto(
                 thesis.getAbstractField(),
                 thesis.getStudents().stream().map(LightUserDto::fromUserEntity).toList(),
                 thesis.getAdvisors().stream().map(LightUserDto::fromUserEntity).toList(),
-                thesis.getSupervisors().stream().map(LightUserDto::fromUserEntity).toList()
+                thesis.getSupervisors().stream().map(LightUserDto::fromUserEntity).toList(),
+                LightResearchGroupDto.fromResearchGroupEntity(thesis.getResearchGroup())
         );
     }
 }

@@ -54,6 +54,9 @@ const ThesisData = (props: IThesisDataProps) => {
           />
         </Grid.Col>
         <Grid.Col span={{ md: 4 }}>
+          <LabeledItem label='Research Group' value={thesis.researchGroup.name} />
+        </Grid.Col>
+        <Grid.Col span={{ md: 4 }}>
           <LabeledItem label='Thesis Type' value={formatThesisType(thesis.type)} />
         </Grid.Col>
         {thesis.startDate && (
