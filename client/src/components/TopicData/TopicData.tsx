@@ -30,6 +30,12 @@ const TopicData = (props: ITopicDataProps) => {
         </Grid.Col>
         <Grid.Col span={{ md: 3 }}>
           <LabeledItem
+            label={'Research Group'}
+            value={<Text size='sm'>{topic.researchGroup.name}</Text>}
+          />
+        </Grid.Col>
+        <Grid.Col span={{ md: 2 }}>
+          <LabeledItem
             label={pluralize('Thesis Type', topic.thesisTypes?.length || 0)}
             value={
               <Stack gap={2}>
@@ -46,7 +52,7 @@ const TopicData = (props: ITopicDataProps) => {
             }
           />
         </Grid.Col>
-        <Grid.Col span={{ md: 3 }}>
+        <Grid.Col span={{ md: 1 }}>
           <LabeledItem
             label='Published At'
             value={formatDate(topic.createdAt, { withTime: false })}
