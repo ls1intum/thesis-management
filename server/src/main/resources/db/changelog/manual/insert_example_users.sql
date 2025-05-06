@@ -1,20 +1,22 @@
 -- ============================================================================
--- Manual insert script to add example users to the database for testing purposes.
+-- Conditional insert/update script to complement example users in the database.
 --
 -- This script:
---   - Inserts six example users with varying study programs, genders, and nationalities,
---   - Uses mixed realistic data for interests, projects, and skills,
---   - Demonstrates nullable fields like matriculation_number and research_group_id.
+--   - Inserts six example users with diverse study programs, genders, and nationalities,
+--   - Ensures compatibility with Keycloak-managed users: existing values (e.g. name, email, user_id)
+--     are preserved and only fields not set by Keycloak are added,
+--   - Uses ON CONFLICT logic to avoid overwriting Keycloak-populated fields.
 --
 -- IMPORTANT:
 -- This script is NOT part of the standard Liquibase migration process,
 -- and must only be used for local development or manual test environments.
+-- These users do NOT exist on the production server and must NEVER be inserted there.
 --
 -- Author: Marc Fett
 -- Date: 2025/05/06
 -- ============================================================================
 
-insert into users (user_id,
+INSERT INTO users (user_id,
                    university_id,
                    matriculation_number,
                    email,
@@ -36,8 +38,8 @@ insert into users (user_id,
                    custom_data,
                    avatar,
                    research_group_id)
-values (gen_random_uuid(),
-        'gb12abc',
+VALUES (gen_random_uuid(),
+        'sam_fischer',
         06000001,
         'sam_fischer@gmail.com',
         'Sam',
@@ -59,7 +61,7 @@ values (gen_random_uuid(),
         NULL,
         NULL),
        (gen_random_uuid(),
-        'gb34def',
+        'jane_doe',
         06000002,
         'jane_doe@gmail.com',
         'Jane',
@@ -81,7 +83,7 @@ values (gen_random_uuid(),
         NULL,
         NULL),
        (gen_random_uuid(),
-        'gb56ghi',
+        'joey_read',
         06000003,
         'joey_read@gmail.com',
         'Joey',
@@ -103,7 +105,7 @@ values (gen_random_uuid(),
         NULL,
         NULL),
        (gen_random_uuid(),
-        'gb78jkl',
+        'barney_young',
         NULL,
         'barney_young@gmail.com',
         'Barney',
@@ -125,7 +127,7 @@ values (gen_random_uuid(),
         NULL,
         NULL),
        (gen_random_uuid(),
-        'gb90mno',
+        'chloe_mitchell',
         06000005,
         'chloe_mitchell@gmail.com',
         'Chloe',
@@ -147,7 +149,7 @@ values (gen_random_uuid(),
         NULL,
         NULL),
        (gen_random_uuid(),
-        'gb23pqr',
+        'kelly_wilkins',
         NULL,
         'kelly_wilkins@gmail.com',
         'Kelly',
@@ -167,4 +169,18 @@ values (gen_random_uuid(),
         NOW(),
         NULL,
         NULL,
-        NULL);
+        NULL)
+ON CONFLICT (university_id) DO UPDATE SET matriculation_number = COALESCE(users.matriculation_number, EXCLUDED.matriculation_number),
+                                          gender               = COALESCE(users.gender, EXCLUDED.gender),
+                                          nationality          = COALESCE(users.nationality, EXCLUDED.nationality),
+                                          cv_filename          = COALESCE(users.cv_filename, EXCLUDED.cv_filename),
+                                          degree_filename      = COALESCE(users.degree_filename, EXCLUDED.degree_filename),
+                                          examination_filename = COALESCE(users.examination_filename, EXCLUDED.examination_filename),
+                                          study_degree         = COALESCE(users.study_degree, EXCLUDED.study_degree),
+                                          study_program        = COALESCE(users.study_program, EXCLUDED.study_program),
+                                          projects             = COALESCE(users.projects, EXCLUDED.projects),
+                                          interests            = COALESCE(users.interests, EXCLUDED.interests),
+                                          special_skills       = COALESCE(users.special_skills, EXCLUDED.special_skills),
+                                          enrolled_at          = COALESCE(users.enrolled_at, EXCLUDED.enrolled_at),
+                                          avatar               = COALESCE(users.avatar, EXCLUDED.avatar),
+                                          research_group_id    = COALESCE(users.research_group_id, EXCLUDED.research_group_id);
