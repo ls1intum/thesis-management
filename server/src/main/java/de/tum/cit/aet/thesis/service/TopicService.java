@@ -1,7 +1,19 @@
 package de.tum.cit.aet.thesis.service;
 
+import de.tum.cit.aet.thesis.constants.ThesisRoleName;
 import de.tum.cit.aet.thesis.entity.ResearchGroup;
+import de.tum.cit.aet.thesis.entity.Topic;
+import de.tum.cit.aet.thesis.entity.TopicRole;
+import de.tum.cit.aet.thesis.entity.User;
+import de.tum.cit.aet.thesis.entity.key.TopicRoleId;
+import de.tum.cit.aet.thesis.exception.request.ResourceInvalidParametersException;
+import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
+import de.tum.cit.aet.thesis.repository.ResearchGroupRepository;
+import de.tum.cit.aet.thesis.repository.TopicRepository;
+import de.tum.cit.aet.thesis.repository.TopicRoleRepository;
+import de.tum.cit.aet.thesis.repository.UserRepository;
 import de.tum.cit.aet.thesis.security.CurrentUserProvider;
+import de.tum.cit.aet.thesis.utility.HibernateHelper;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -9,17 +21,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import de.tum.cit.aet.thesis.constants.ThesisRoleName;
-import de.tum.cit.aet.thesis.entity.Topic;
-import de.tum.cit.aet.thesis.entity.TopicRole;
-import de.tum.cit.aet.thesis.entity.User;
-import de.tum.cit.aet.thesis.entity.key.TopicRoleId;
-import de.tum.cit.aet.thesis.exception.request.ResourceInvalidParametersException;
-import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
-import de.tum.cit.aet.thesis.repository.TopicRepository;
-import de.tum.cit.aet.thesis.repository.TopicRoleRepository;
-import de.tum.cit.aet.thesis.repository.UserRepository;
-import de.tum.cit.aet.thesis.utility.HibernateHelper;
 
 import java.time.Instant;
 import java.util.*;
@@ -30,14 +31,16 @@ public class TopicService {
     private final TopicRoleRepository topicRoleRepository;
     private final UserRepository userRepository;
     private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
+    private final ResearchGroupRepository researchGroupRepository;
 
     @Autowired
     public TopicService(TopicRepository topicRepository, TopicRoleRepository topicRoleRepository, UserRepository userRepository,
-        ObjectProvider<CurrentUserProvider> currentUserProviderProvider) {
+                        ObjectProvider<CurrentUserProvider> currentUserProviderProvider, ResearchGroupRepository researchGroupRepository) {
         this.topicRepository = topicRepository;
         this.topicRoleRepository = topicRoleRepository;
         this.userRepository = userRepository;
        this.currentUserProviderProvider = currentUserProviderProvider;
+        this.researchGroupRepository = researchGroupRepository;
     }
 
     private CurrentUserProvider currentUserProvider() {
@@ -82,9 +85,13 @@ public class TopicService {
             String goals,
             String references,
             List<UUID> supervisorIds,
-            List<UUID> advisorIds
+            List<UUID> advisorIds,
+            UUID researchGroupId
     ) {
         User creator = currentUserProvider().getUser();
+        ResearchGroup researchGroup = researchGroupRepository.findById(researchGroupId).orElseThrow(
+                () -> new ResourceNotFoundException("Research group not found")
+        );
         Topic topic = new Topic();
 
         topic.setTitle(title);
@@ -96,7 +103,7 @@ public class TopicService {
         topic.setUpdatedAt(Instant.now());
         topic.setCreatedAt(Instant.now());
         topic.setCreatedBy(creator);
-        topic.setResearchGroup(creator.getResearchGroup());
+        topic.setResearchGroup(researchGroup);
 
         topic = topicRepository.save(topic);
 
@@ -115,9 +122,13 @@ public class TopicService {
             String goals,
             String references,
             List<UUID> supervisorIds,
-            List<UUID> advisorIds
+            List<UUID> advisorIds,
+            UUID researchGroupId
     ) {
-        currentUserProvider().assertCanAccessResearchGroup(topic.getResearchGroup());
+        ResearchGroup researchGroup = researchGroupRepository.findById(researchGroupId).orElseThrow(
+                () -> new ResourceNotFoundException("Research group not found")
+        );
+        currentUserProvider().assertCanAccessResearchGroup(researchGroup);
         topic.setTitle(title);
         topic.setThesisTypes(thesisTypes);
         topic.setProblemStatement(problemStatement);
@@ -125,6 +136,7 @@ public class TopicService {
         topic.setGoals(goals);
         topic.setReferences(references);
         topic.setUpdatedAt(Instant.now());
+        topic.setResearchGroup(researchGroup);
 
         assignTopicRoles(topic, advisorIds, supervisorIds);
 

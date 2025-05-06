@@ -89,10 +89,14 @@ public class EmailTemplateService {
             String bodyHtml,
             String language
     ) {
-        ResearchGroup researchGroup = researchGroupRepository.findById(researchGroupId)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        String.format("Research Group with id %s not found.", researchGroupId)));
+        ResearchGroup researchGroup = null;
+        if (researchGroupId != null) {
+            researchGroup = researchGroupRepository.findById(researchGroupId)
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            String.format("Research Group with id %s not found.", researchGroupId)));
+        }
         currentUserProvider().assertCanAccessResearchGroup(researchGroup);
+
         EmailTemplate emailTemplate = new EmailTemplate();
         emailTemplate.setTemplateCase(templateCase);
         emailTemplate.setDescription(description);

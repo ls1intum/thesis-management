@@ -1,12 +1,5 @@
 package de.tum.cit.aet.thesis.service;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import de.tum.cit.aet.thesis.constants.UploadFileType;
 import de.tum.cit.aet.thesis.entity.NotificationSetting;
 import de.tum.cit.aet.thesis.entity.User;
@@ -15,11 +8,21 @@ import de.tum.cit.aet.thesis.mock.EntityMockFactory;
 import de.tum.cit.aet.thesis.repository.NotificationSettingRepository;
 import de.tum.cit.aet.thesis.repository.UserGroupRepository;
 import de.tum.cit.aet.thesis.repository.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -42,7 +45,6 @@ class AuthenticationServiceTest {
 
     private AuthenticationService authenticationService;
     private User testUser;
-    private Map<String, Object> tokenAttributes;
 
     @BeforeEach
     void setUp() {
@@ -53,7 +55,7 @@ class AuthenticationServiceTest {
                 notificationSettingRepository
         );
 
-        testUser = EntityMockFactory.createUser("Test");
+        testUser = EntityMockFactory.createUser("Test User");
     }
 
     @Test

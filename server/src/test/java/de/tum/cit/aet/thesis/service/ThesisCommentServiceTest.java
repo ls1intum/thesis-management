@@ -1,6 +1,14 @@
 package de.tum.cit.aet.thesis.service;
 
+import de.tum.cit.aet.thesis.constants.ThesisCommentType;
+import de.tum.cit.aet.thesis.constants.UploadFileType;
 import de.tum.cit.aet.thesis.entity.ResearchGroup;
+import de.tum.cit.aet.thesis.entity.Thesis;
+import de.tum.cit.aet.thesis.entity.ThesisComment;
+import de.tum.cit.aet.thesis.entity.User;
+import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
+import de.tum.cit.aet.thesis.mock.EntityMockFactory;
+import de.tum.cit.aet.thesis.repository.ThesisCommentRepository;
 import de.tum.cit.aet.thesis.security.CurrentUserProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,23 +23,15 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
-import de.tum.cit.aet.thesis.constants.ThesisCommentType;
-import de.tum.cit.aet.thesis.constants.UploadFileType;
-import de.tum.cit.aet.thesis.entity.Thesis;
-import de.tum.cit.aet.thesis.entity.ThesisComment;
-import de.tum.cit.aet.thesis.entity.User;
-import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
-import de.tum.cit.aet.thesis.mock.EntityMockFactory;
-import de.tum.cit.aet.thesis.repository.ThesisCommentRepository;
 
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static de.tum.cit.aet.thesis.mock.CurrentUserMockUtil.mockCurrentUser;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -47,6 +47,9 @@ class ThesisCommentServiceTest {
 
     @Mock
     private ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
+
+    @Mock
+    private CurrentUserProvider currentUserProvider;
 
     @Mock
     private FileSystemResource mockResource;
@@ -65,9 +68,9 @@ class ThesisCommentServiceTest {
                 currentUserProviderProvider
         );
 
-        testUser = EntityMockFactory.createUser("Test");
-        mockCurrentUser(currentUserProviderProvider, testUser);
+        testUser = EntityMockFactory.createUser("Test User");
         ResearchGroup testResearchGroup = EntityMockFactory.createResearchGroup("Test Research Group");
+        testUser.setResearchGroup(testResearchGroup);
         testThesis = EntityMockFactory.createThesis("Test Thesis", testResearchGroup);
 
         testComment = new ThesisComment();
@@ -87,6 +90,7 @@ class ThesisCommentServiceTest {
                 eq(ThesisCommentType.THESIS),
                 any(PageRequest.class)
         )).thenReturn(expectedPage);
+        when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
 
         Page<ThesisComment> result = commentService.getComments(
                 testThesis,
@@ -112,6 +116,8 @@ class ThesisCommentServiceTest {
             savedComment.setId(UUID.randomUUID());
             return savedComment;
         });
+        when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
+        when(currentUserProvider.getUser()).thenReturn(testUser);
 
         ThesisComment result = commentService.postComment(
                 testThesis,
@@ -145,6 +151,7 @@ class ThesisCommentServiceTest {
             return savedComment;
         });
         when(uploadService.store(any(), any(), any())).thenReturn("stored-file-name");
+        when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
 
         ThesisComment result = commentService.postComment(
                 testThesis,
@@ -165,6 +172,7 @@ class ThesisCommentServiceTest {
     void getCommentFile_ReturnsResource() {
         testComment.setFilename("test-file.pdf");
         when(uploadService.load("test-file.pdf")).thenReturn(mockResource);
+        when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
 
         Resource result = commentService.getCommentFile(testComment);
 
@@ -176,6 +184,7 @@ class ThesisCommentServiceTest {
     @Test
     void deleteComment_DeletesComment() {
         doNothing().when(thesisCommentRepository).deleteById(testComment.getId());
+        when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
 
         ThesisComment result = commentService.deleteComment(testComment);
 
@@ -188,6 +197,7 @@ class ThesisCommentServiceTest {
     void findById_WithValidIds_ReturnsComment() {
         when(thesisCommentRepository.findById(testComment.getId()))
                 .thenReturn(Optional.of(testComment));
+        when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
 
         ThesisComment result = commentService.findById(testThesis.getId(), testComment.getId());
 
@@ -211,6 +221,7 @@ class ThesisCommentServiceTest {
         UUID differentThesisId = UUID.randomUUID();
         when(thesisCommentRepository.findById(testComment.getId()))
                 .thenReturn(Optional.of(testComment));
+        when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
 
         assertThrows(ResourceNotFoundException.class, () ->
                 commentService.findById(differentThesisId, testComment.getId())

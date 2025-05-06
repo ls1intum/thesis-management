@@ -23,7 +23,7 @@ interface IMotivationStepProps {
 
 interface IMotivationStepForm {
   thesisTitle: string
-  researchGroup: string
+  researchGroupId: string
   thesisType: string | null
   desiredStartDate: DateValue
   motivation: string
@@ -41,7 +41,7 @@ const MotivationStep = (props: IMotivationStepProps) => {
     mode: 'controlled',
     initialValues: {
       thesisTitle: '',
-      researchGroup: mergedTopic?.researchGroup.id ?? '',
+      researchGroupId: mergedTopic?.researchGroup.id ?? '',
       thesisType: null,
       desiredStartDate: new Date(),
       motivation: '',
@@ -122,7 +122,7 @@ const MotivationStep = (props: IMotivationStepProps) => {
           requiresAuth: true,
           data: {
             topicId: mergedTopic?.topicId,
-            researchGroupId: values.researchGroup,
+            researchGroupId: values.researchGroupId,
             thesisTitle: values.thesisTitle || null,
             thesisType: values.thesisType,
             desiredStartDate: values.desiredStartDate,
@@ -158,15 +158,12 @@ const MotivationStep = (props: IMotivationStepProps) => {
         <Select
           label='Research Group'
           required={true}
-          disabled={
-            loading || !researchGroups || !!mergedTopic || researchGroups.totalElements <= 1
-          }
+          disabled={loading || !researchGroups || !!mergedTopic}
           data={researchGroups?.content.map((researchGroup: IResearchGroup) => ({
             label: researchGroup.name,
             value: researchGroup.id,
           }))}
-          searchable
-          {...form.getInputProps('researchGroup')}
+          {...form.getInputProps('researchGroupId')}
         />
         <Select
           label='Thesis Type'

@@ -1,22 +1,23 @@
 package de.tum.cit.aet.thesis.controller;
 
+import de.tum.cit.aet.thesis.constants.ApplicationRejectReason;
+import de.tum.cit.aet.thesis.controller.payload.CloseTopicPayload;
+import de.tum.cit.aet.thesis.controller.payload.ReplaceTopicPayload;
+import de.tum.cit.aet.thesis.mock.BaseIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import de.tum.cit.aet.thesis.constants.ApplicationRejectReason;
-import de.tum.cit.aet.thesis.controller.payload.CloseTopicPayload;
-import de.tum.cit.aet.thesis.controller.payload.ReplaceTopicPayload;
-import de.tum.cit.aet.thesis.mock.BaseIntegrationTest;
 
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Testcontainers
 class TopicControllerTest extends BaseIntegrationTest {
@@ -52,6 +53,7 @@ class TopicControllerTest extends BaseIntegrationTest {
     @Test
     void createTopic_Success() throws Exception {
         UUID advisorId = createTestUser("supervisor", List.of("supervisor", "advisor"));
+        UUID researchGroupId = createTestResearchGroup("Test Research Group", advisorId);
 
         ReplaceTopicPayload payload = new ReplaceTopicPayload(
                 "Test Topic",
@@ -61,7 +63,8 @@ class TopicControllerTest extends BaseIntegrationTest {
                 "Goals",
                 "References",
                 List.of(advisorId),
-                List.of(advisorId)
+                List.of(advisorId),
+                researchGroupId
         );
 
         mockMvc.perform(MockMvcRequestBuilders.post("/v2/topics")
@@ -75,6 +78,7 @@ class TopicControllerTest extends BaseIntegrationTest {
 
     @Test
     void createTopic_AsStudent_Forbidden() throws Exception {
+        UUID researchGroupId = createTestResearchGroup("Test Research Group", createTestUser("supervisor", List.of("supervisor", "advisor")));
         ReplaceTopicPayload payload = new ReplaceTopicPayload(
                 "Test Topic",
                 Set.of("MASTER"),
@@ -83,7 +87,8 @@ class TopicControllerTest extends BaseIntegrationTest {
                 "Goals",
                 "References",
                 List.of(UUID.randomUUID()),
-                List.of(UUID.randomUUID())
+                List.of(UUID.randomUUID()),
+                researchGroupId
         );
 
         mockMvc.perform(MockMvcRequestBuilders.post("/v2/topics")
@@ -97,6 +102,7 @@ class TopicControllerTest extends BaseIntegrationTest {
     void updateTopic_Success() throws Exception {
         UUID topicId = createTestTopic("Test Topic");
         UUID advisorId = createTestUser("supervisor", List.of("supervisor", "advisor"));
+        UUID researchGroupId = createTestResearchGroup("Test Research Group", advisorId);
 
         ReplaceTopicPayload updatePayload = new ReplaceTopicPayload(
                 "Updated Topic",
@@ -106,7 +112,8 @@ class TopicControllerTest extends BaseIntegrationTest {
                 "Updated Goals",
                 "Updated References",
                 List.of(advisorId),
-                List.of(advisorId)
+                List.of(advisorId),
+                researchGroupId
         );
 
         mockMvc.perform(MockMvcRequestBuilders.put("/v2/topics/{topicId}", topicId)

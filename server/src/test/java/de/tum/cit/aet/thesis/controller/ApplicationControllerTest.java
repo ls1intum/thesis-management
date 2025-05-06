@@ -1,17 +1,20 @@
 package de.tum.cit.aet.thesis.controller;
 
+import de.tum.cit.aet.thesis.constants.ApplicationState;
+import de.tum.cit.aet.thesis.controller.payload.AcceptApplicationPayload;
+import de.tum.cit.aet.thesis.controller.payload.CreateApplicationPayload;
+import de.tum.cit.aet.thesis.controller.payload.UpdateApplicationCommentPayload;
+import de.tum.cit.aet.thesis.mock.BaseIntegrationTest;
+import de.tum.cit.aet.thesis.repository.EmailTemplateRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import de.tum.cit.aet.thesis.constants.ApplicationState;
-import de.tum.cit.aet.thesis.controller.payload.AcceptApplicationPayload;
-import de.tum.cit.aet.thesis.controller.payload.CreateApplicationPayload;
-import de.tum.cit.aet.thesis.controller.payload.UpdateApplicationCommentPayload;
-import de.tum.cit.aet.thesis.mock.BaseIntegrationTest;
 
 import java.time.Instant;
 import java.util.List;
@@ -27,6 +30,14 @@ class ApplicationControllerTest extends BaseIntegrationTest {
         configureProperties(registry);
     }
 
+    @Autowired
+    private EmailTemplateRepository emailTemplateRepository;
+
+    @BeforeEach
+    void cleanUpTemplates() {
+        emailTemplateRepository.deleteAll();
+    }
+
     @Test
     void createApplication_Success() throws Exception {
         CreateApplicationPayload payload = new CreateApplicationPayload(
@@ -37,6 +48,8 @@ class ApplicationControllerTest extends BaseIntegrationTest {
                 "Test motivation",
                 createDefaultResearchGroup()
         );
+        createTestEmailTemplate("APPLICATION_CREATED_CHAIR");
+        createTestEmailTemplate("APPLICATION_CREATED_STUDENT");
 
         mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
                         .header("Authorization", createRandomAdminAuthentication())
@@ -95,6 +108,7 @@ class ApplicationControllerTest extends BaseIntegrationTest {
         UUID applicationId = createTestApplication(createRandomAdminAuthentication(), "Application");
         UUID advisorId = createTestUser("advisor", List.of("advisor"));
         UUID supervisorId = createTestUser("supervisor", List.of("supervisor"));
+        createTestEmailTemplate("APPLICATION_ACCEPTED");
 
         AcceptApplicationPayload payload = new AcceptApplicationPayload(
                 "Final Thesis Title",

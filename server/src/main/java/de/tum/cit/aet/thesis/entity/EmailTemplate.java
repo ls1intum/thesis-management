@@ -23,9 +23,8 @@ public class EmailTemplate {
     @Column(name = "email_template_id", nullable = false)
     private UUID id;
 
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "research_group_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "research_group_id")
     private ResearchGroup researchGroup;
 
     @NotBlank

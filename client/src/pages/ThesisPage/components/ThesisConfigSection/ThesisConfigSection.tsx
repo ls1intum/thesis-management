@@ -1,6 +1,6 @@
 import { IThesis, ThesisState } from '../../../../requests/responses/thesis'
 import { Accordion, Button, Group, Select, Stack, TagsInput, Text, TextInput } from '@mantine/core'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { isNotEmpty, useForm } from '@mantine/form'
 import { DateInput, DateTimePicker, DateValue } from '@mantine/dates'
 import UserMultiSelect from '../../../../components/UserMultiSelect/UserMultiSelect'
@@ -13,11 +13,14 @@ import {
   useThesisUpdateAction,
 } from '../../../../providers/ThesisProvider/hooks'
 import { GLOBAL_CONFIG } from '../../../../config/global'
-import { ApiError } from '../../../../requests/handler'
+import { ApiError, getApiResponseErrorMessage } from '../../../../requests/handler'
 import ThesisStateBadge from '../../../../components/ThesisStateBadge/ThesisStateBadge'
 import ThesisVisibilitySelect from '../ThesisVisibilitySelect/ThesisVisibilitySelect'
 import { formatThesisType } from '../../../../utils/format'
 import LanguageSelect from '../../../../components/LanguageSelect/LanguageSelect'
+import { PaginationResponse } from '../../../../requests/responses/pagination'
+import { IResearchGroup } from '../../../../requests/responses/researchGroup'
+import { showSimpleError } from '../../../../utils/notification'
 
 interface IThesisConfigSectionFormValues {
   title: string
@@ -30,6 +33,7 @@ interface IThesisConfigSectionFormValues {
   students: string[]
   advisors: string[]
   supervisors: string[]
+  researchGroupId: string
   states: Array<{ state: ThesisState; changedAt: DateValue }>
 }
 
@@ -55,6 +59,7 @@ const thesisDatesValidator = (
 
 const ThesisConfigSection = () => {
   const { thesis, access } = useLoadedThesisContext()
+  const [researchGroups, setResearchGroups] = useState<PaginationResponse<IResearchGroup>>()
 
   const form = useForm<IThesisConfigSectionFormValues>({
     mode: 'controlled',
@@ -69,6 +74,7 @@ const ThesisConfigSection = () => {
       students: thesis.students.map((student) => student.userId),
       advisors: thesis.advisors.map((advisor) => advisor.userId),
       supervisors: thesis.supervisors.map((supervisor) => supervisor.userId),
+      researchGroupId: thesis.researchGroup?.id,
       states: thesis.states.map((state) => ({
         state: state.state,
         changedAt: new Date(state.startedAt),
@@ -88,6 +94,7 @@ const ThesisConfigSection = () => {
       students: isNotEmptyUserList('student'),
       advisors: isNotEmptyUserList('advisor'),
       supervisors: isNotEmptyUserList('supervisor'),
+      researchGroupId: isNotEmpty('Research group must not be empty'),
       startDate: thesisDatesValidator,
       endDate: thesisDatesValidator,
       states: (value) => {
@@ -124,6 +131,7 @@ const ThesisConfigSection = () => {
       students: thesis.students.map((student) => student.userId),
       advisors: thesis.advisors.map((advisor) => advisor.userId),
       supervisors: thesis.supervisors.map((supervisor) => supervisor.userId),
+      researchGroupId: thesis.researchGroup?.id,
       states: thesis.states.map((state) => ({
         state: state.state,
         changedAt: new Date(state.startedAt),
@@ -132,6 +140,39 @@ const ThesisConfigSection = () => {
 
     form.reset()
   }, [thesis])
+
+  useEffect(() => {
+    return doRequest<PaginationResponse<IResearchGroup>>(
+      '/v2/research-groups',
+      {
+        method: 'GET',
+        requiresAuth: true,
+        params: {
+          page: 0,
+          limit: -1,
+        },
+      },
+      (res) => {
+        if (res.ok) {
+          setResearchGroups({
+            ...res.data,
+            content: res.data.content,
+          })
+        } else {
+          showSimpleError(getApiResponseErrorMessage(res))
+
+          setResearchGroups({
+            content: [],
+            totalPages: 0,
+            totalElements: 0,
+            last: true,
+            pageNumber: 0,
+            pageSize: -1,
+          })
+        }
+      },
+    )
+  }, [])
 
   const [closing, onClose] = useThesisUpdateAction(async () => {
     const response = await doRequest<IThesis>(`/v2/theses/${thesis.thesisId}`, {
@@ -163,6 +204,7 @@ const ThesisConfigSection = () => {
         studentIds: values.students,
         advisorIds: values.advisors,
         supervisorIds: values.supervisors,
+        researchGroupId: values.researchGroupId,
         states: values.states.map((state) => ({
           state: state.state,
           changedAt: state.changedAt,
@@ -253,6 +295,17 @@ const ThesisConfigSection = () => {
                 initialUsers={thesis.supervisors}
                 maxValues={1}
                 {...form.getInputProps('supervisors')}
+              />
+              <Select
+                label='Research Group'
+                required={true}
+                disabled={!researchGroups || researchGroups.totalElements <= 1}
+                data={researchGroups?.content.map((researchGroup: IResearchGroup) => ({
+                  label: researchGroup.name,
+                  value: researchGroup.id,
+                }))}
+                searchable
+                {...form.getInputProps('researchGroup')}
               />
               {form.values.states.map((item, index) => (
                 <Group key={item.state} grow>

@@ -1,5 +1,20 @@
 package de.tum.cit.aet.thesis.service;
 
+import de.tum.cit.aet.thesis.constants.ThesisPresentationState;
+import de.tum.cit.aet.thesis.constants.ThesisPresentationType;
+import de.tum.cit.aet.thesis.constants.ThesisPresentationVisibility;
+import de.tum.cit.aet.thesis.entity.ResearchGroup;
+import de.tum.cit.aet.thesis.entity.Thesis;
+import de.tum.cit.aet.thesis.entity.ThesisPresentation;
+import de.tum.cit.aet.thesis.entity.User;
+import de.tum.cit.aet.thesis.exception.request.AccessDeniedException;
+import de.tum.cit.aet.thesis.exception.request.ResourceInvalidParametersException;
+import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
+import de.tum.cit.aet.thesis.mock.EntityMockFactory;
+import de.tum.cit.aet.thesis.repository.ThesisPresentationInviteRepository;
+import de.tum.cit.aet.thesis.repository.ThesisPresentationRepository;
+import de.tum.cit.aet.thesis.repository.ThesisRepository;
+import de.tum.cit.aet.thesis.repository.UserRepository;
 import de.tum.cit.aet.thesis.security.CurrentUserProvider;
 import jakarta.mail.internet.InternetAddress;
 import net.fortuna.ical4j.model.Calendar;
@@ -12,26 +27,14 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import de.tum.cit.aet.thesis.constants.ThesisPresentationState;
-import de.tum.cit.aet.thesis.constants.ThesisPresentationType;
-import de.tum.cit.aet.thesis.constants.ThesisPresentationVisibility;
-import de.tum.cit.aet.thesis.entity.*;
-import de.tum.cit.aet.thesis.exception.request.AccessDeniedException;
-import de.tum.cit.aet.thesis.exception.request.ResourceInvalidParametersException;
-import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
-import de.tum.cit.aet.thesis.mock.EntityMockFactory;
-import de.tum.cit.aet.thesis.repository.ThesisPresentationInviteRepository;
-import de.tum.cit.aet.thesis.repository.ThesisPresentationRepository;
-import de.tum.cit.aet.thesis.repository.ThesisRepository;
-import de.tum.cit.aet.thesis.repository.UserRepository;
 
 import java.time.Instant;
 import java.util.*;
 
-import static de.tum.cit.aet.thesis.mock.CurrentUserMockUtil.mockCurrentUser;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ThesisPresentationServiceTest {
@@ -40,6 +43,8 @@ class ThesisPresentationServiceTest {
     @Mock private MailingService mailingService;
     @Mock private ThesisPresentationRepository thesisPresentationRepository;
     @Mock private ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
+    @Mock
+    private CurrentUserProvider currentUserProvider;
     @Mock private UserRepository userRepository;
     @Mock private ThesisPresentationInviteRepository thesisPresentationInviteRepository;
 
@@ -64,7 +69,7 @@ class ThesisPresentationServiceTest {
                 thesisPresentationInviteRepository
         );
 
-        testUser = EntityMockFactory.createUser("Test");
+        testUser = EntityMockFactory.createUser("Test User");
         ResearchGroup testResearchGroup = EntityMockFactory.createResearchGroup("Test Research Group");
         testUser.setResearchGroup(testResearchGroup);
         testThesis = EntityMockFactory.createThesis("Test Thesis", testResearchGroup);
@@ -140,11 +145,11 @@ class ThesisPresentationServiceTest {
 
     @Test
     void createPresentation_WithValidData_CreatesPresentation() {
-        mockCurrentUser(currentUserProviderProvider, testUser);
         when(thesisPresentationRepository.save(any(ThesisPresentation.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
         when(thesisRepository.save(any(Thesis.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
+        when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
 
         Thesis result = presentationService.createPresentation(
                 testThesis,
@@ -165,9 +170,9 @@ class ThesisPresentationServiceTest {
 
     @Test
     void schedulePresentation_WithAlreadyScheduledPresentation_ThrowsException() {
-        mockCurrentUser(currentUserProviderProvider, testUser);
         testPresentation.setState(ThesisPresentationState.SCHEDULED);
         testThesis.setPresentations(List.of(testPresentation));
+        when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
 
         assertThrows(ResourceInvalidParametersException.class, () ->
                 presentationService.schedulePresentation(
@@ -181,10 +186,11 @@ class ThesisPresentationServiceTest {
 
     @Test
     void deletePresentation_WithScheduledPresentation_DeletesAndNotifies() {
-        mockCurrentUser(currentUserProviderProvider, testUser);
         testPresentation.setState(ThesisPresentationState.SCHEDULED);
         testThesis.setPresentations(List.of(testPresentation));
         when(thesisRepository.save(any(Thesis.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
+        when(currentUserProvider.getUser()).thenReturn(testUser);
 
         Thesis result = presentationService.deletePresentation(testPresentation);
 
@@ -198,9 +204,9 @@ class ThesisPresentationServiceTest {
 
     @Test
     void updatePresentation_WithScheduledPresentation_UpdatesAndNotifies() {
-        mockCurrentUser(currentUserProviderProvider, testUser);
         when(thesisPresentationRepository.save(any(ThesisPresentation.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
+        when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
 
         Thesis result = presentationService.updatePresentation(
                 testPresentation,
@@ -218,10 +224,10 @@ class ThesisPresentationServiceTest {
 
     @Test
     void findById_WithInvalidThesisId_ThrowsException() {
-        mockCurrentUser(currentUserProviderProvider, testUser);
         UUID differentThesisId = UUID.randomUUID();
         when(thesisPresentationRepository.findById(testPresentation.getId()))
                 .thenReturn(Optional.of(testPresentation));
+        when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
 
         assertThrows(ResourceNotFoundException.class, () ->
                 presentationService.findById(differentThesisId, testPresentation.getId())
@@ -235,6 +241,7 @@ class ThesisPresentationServiceTest {
                 .thenReturn(List.of(testPresentation));
         when(calendarService.createVEvent(anyString(), any()))
                 .thenReturn(null);
+        when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
 
         Calendar result = presentationService.getPresentationCalendar();
 

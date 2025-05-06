@@ -1,21 +1,31 @@
 package de.tum.cit.aet.thesis.controller;
 
-import org.junit.jupiter.api.*;
+import de.tum.cit.aet.thesis.constants.ThesisCommentType;
+import de.tum.cit.aet.thesis.constants.ThesisPresentationType;
+import de.tum.cit.aet.thesis.constants.ThesisPresentationVisibility;
+import de.tum.cit.aet.thesis.constants.ThesisVisibility;
+import de.tum.cit.aet.thesis.controller.payload.*;
+import de.tum.cit.aet.thesis.mock.BaseIntegrationTest;
+import de.tum.cit.aet.thesis.repository.EmailTemplateRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import de.tum.cit.aet.thesis.constants.*;
-import de.tum.cit.aet.thesis.controller.payload.*;
-import de.tum.cit.aet.thesis.mock.BaseIntegrationTest;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 import static org.hamcrest.Matchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Testcontainers
 class ThesisControllerTest extends BaseIntegrationTest {
@@ -23,6 +33,14 @@ class ThesisControllerTest extends BaseIntegrationTest {
     @DynamicPropertySource
     static void configureDynamicProperties(DynamicPropertyRegistry registry) {
         configureProperties(registry);
+    }
+
+    @Autowired
+    private EmailTemplateRepository emailTemplateRepository;
+
+    @BeforeEach
+    void cleanUpTemplates() {
+        emailTemplateRepository.deleteAll();
     }
 
     @Nested
@@ -43,6 +61,8 @@ class ThesisControllerTest extends BaseIntegrationTest {
         @Test
         void createThesis_Success() throws Exception {
             UUID advisorId = createTestUser("supervisor", List.of("supervisor", "advisor"));
+            UUID researchGroupId = createTestResearchGroup("Test Research Group", advisorId);
+            createTestEmailTemplate("THESIS_CREATED");
 
             CreateThesisPayload payload = new CreateThesisPayload(
                     "Test Thesis",
@@ -50,7 +70,8 @@ class ThesisControllerTest extends BaseIntegrationTest {
                     "ENGLISH",
                     List.of(advisorId),
                     List.of(advisorId),
-                    List.of(advisorId)
+                    List.of(advisorId),
+                    researchGroupId
             );
 
             mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses")
@@ -65,6 +86,7 @@ class ThesisControllerTest extends BaseIntegrationTest {
         @Test
         void updateThesis_Success() throws Exception {
             UUID advisorId = createTestUser("supervisor", List.of("supervisor", "advisor"));
+            UUID researchGroupId = createTestResearchGroup("Test Research Group", advisorId);
             UUID thesisId = createTestThesis("Test Thesis");
 
             UpdateThesisPayload payload = new UpdateThesisPayload(
@@ -78,7 +100,8 @@ class ThesisControllerTest extends BaseIntegrationTest {
                     List.of(advisorId),
                     List.of(advisorId),
                     List.of(advisorId),
-                    List.of()
+                    List.of(),
+                    researchGroupId
             );
 
             mockMvc.perform(MockMvcRequestBuilders.put("/v2/theses/{thesisId}", thesisId)
@@ -102,6 +125,7 @@ class ThesisControllerTest extends BaseIntegrationTest {
                     MediaType.APPLICATION_PDF_VALUE,
                     "test content".getBytes()
             );
+            createTestEmailTemplate("THESIS_PROPOSAL_UPLOADED");
 
             mockMvc.perform(MockMvcRequestBuilders.multipart("/v2/theses/{thesisId}/proposal", thesisId)
                             .file(proposalFile)
@@ -113,6 +137,8 @@ class ThesisControllerTest extends BaseIntegrationTest {
         void acceptProposal_Success() throws Exception {
             String authorization = createRandomAdminAuthentication();
             UUID thesisId = createTestThesis("Test Thesis");
+            createTestEmailTemplate("THESIS_PROPOSAL_UPLOADED");
+            createTestEmailTemplate("THESIS_PROPOSAL_ACCEPTED");
 
             MockMultipartFile proposalFile = new MockMultipartFile(
                     "proposal",
@@ -148,6 +174,7 @@ class ThesisControllerTest extends BaseIntegrationTest {
         @Test
         void createComment_WithFile_Success() throws Exception {
             UUID thesisId = createTestThesis("Test Thesis");
+            createTestEmailTemplate("THESIS_COMMENT_POSTED");
 
             PostThesisCommentPayload payload = new PostThesisCommentPayload(
                     "Test comment",
@@ -181,6 +208,7 @@ class ThesisControllerTest extends BaseIntegrationTest {
         @Test
         void createAssessment_Success() throws Exception {
             UUID thesisId = createTestThesis("Test Thesis");
+            createTestEmailTemplate("THESIS_ASSESSMENT_ADDED");
 
             CreateAssessmentPayload payload = new CreateAssessmentPayload(
                     "Test summary",
@@ -199,6 +227,7 @@ class ThesisControllerTest extends BaseIntegrationTest {
         @Test
         void addGrade_Success() throws Exception {
             UUID thesisId = createTestThesis("Test Thesis");
+            createTestEmailTemplate("THESIS_FINAL_GRADE");
 
             AddThesisGradePayload payload = new AddThesisGradePayload(
                     "1.0",
