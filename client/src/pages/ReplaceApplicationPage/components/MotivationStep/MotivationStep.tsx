@@ -53,6 +53,7 @@ const MotivationStep = (props: IMotivationStepProps) => {
           return 'Please state your suggested thesis title'
         }
       },
+      researchGroupId: isNotEmpty('Please select a research group'),
       thesisType: isNotEmpty('Please state your thesis type'),
       desiredStartDate: isNotEmpty('Please state your desired start date'),
       motivation: (value) => {
@@ -72,11 +73,16 @@ const MotivationStep = (props: IMotivationStepProps) => {
         desiredStartDate: new Date(application.desiredStartDate),
         thesisType: application.thesisType,
         thesisTitle: application.thesisTitle ?? '',
+        researchGroupId: application.researchGroup.id,
       })
     }
   }, [application?.applicationId])
 
   useEffect(() => {
+    if (application) return
+
+    if (topic) form.setValues({ researchGroupId: topic.researchGroup.id })
+
     setLoading(true)
     return doRequest<PaginationResponse<IResearchGroup>>(
       '/v2/research-groups',
@@ -94,6 +100,10 @@ const MotivationStep = (props: IMotivationStepProps) => {
             ...res.data,
             content: res.data.content,
           })
+
+          if (res.data.content.length === 1) {
+            form.setValues({ researchGroupId: res.data.content[0].id })
+          }
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
 
@@ -109,7 +119,7 @@ const MotivationStep = (props: IMotivationStepProps) => {
         setLoading(false)
       },
     )
-  }, [])
+  }, [mergedTopic])
 
   const onSubmit = async (values: IMotivationStepForm) => {
     setLoading(true)
@@ -158,7 +168,8 @@ const MotivationStep = (props: IMotivationStepProps) => {
         <Select
           label='Research Group'
           required={true}
-          disabled={loading || !researchGroups || !!mergedTopic}
+          nothingFoundMessage={!loading ? 'Nothing found...' : 'Loading...'}
+          disabled={!!mergedTopic}
           data={researchGroups?.content.map((researchGroup: IResearchGroup) => ({
             label: researchGroup.name,
             value: researchGroup.id,
