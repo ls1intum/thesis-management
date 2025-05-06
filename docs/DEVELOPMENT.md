@@ -21,7 +21,6 @@ docker compose up keycloak -d
 7. Go to "Role mapping" and assign the client roles `admin`, `supervisor`, `advisor` to the new user
    * Select "Filter by clients" and search for "thesis-management-app" to find the roles
 
-
 ## PostgreSQL Database
 
 For local development start a database container by executing the following command from the project root:
@@ -56,6 +55,17 @@ And execute all files that you need.
 > 💡 Tip: Check the prerequisites !
 
 > 💡 Tip: Default Templates are needed for many API calls.
+
+#### Example Users and Roles
+
+| Username       | First Name | Last Name | Email                    | Role       |
+|----------------|------------|-----------|--------------------------|------------|
+| sam_fischer    | Sam        | Fischer   | sam_fischer@gmail.com    | supervisor |
+| jane_doe       | Jane       | Doe       | jane_doe@gmail.com       | supervisor |
+| joey_read      | Joey       | Read      | joey_read@gmail.com      | advisor    |
+| barney_young   | Barney     | Young     | barney_young@gmail.com   | advisor    |
+| chloe_mitchell | Chloe      | Mitchell  | chloe_mitchell@gmail.com | student    |
+| kelly_wilkins  | Kelly      | Wilkins   | kelly_wilkins@gmail.com  | student    |
 
 ## Postfix
 
