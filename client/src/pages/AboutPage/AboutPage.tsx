@@ -44,8 +44,9 @@ const AboutPage = () => {
         <Text>
           Thesis Management addresses inefficient manual thesis management processes at large
           universities through a web-based platform. The system digitizes the entire lifecycle from
-          student applications to final grading, serving three key stakeholders: supervisors
-          (professors), advisors (doctoral candidates), and students. Key features include:
+          student applications to final grading and supports multiple research groups within an
+          institution. The platform serves three stakeholders: supervisors (professors), advisors
+          (doctoral candidates), and students. Key features include:
         </Text>
         <List>
           <List.Item>
@@ -64,6 +65,14 @@ const AboutPage = () => {
             supervisors
           </List.Item>
           <List.Item>Automated notifications for important milestones and updates</List.Item>
+          <List.Item>
+            Multi-research-group support, allowing different research groups to manage their topics,
+            users, and data independently
+          </List.Item>
+          <List.Item>
+            Customizable email templates, which enable group-specific communication for key events
+            in multiple languages
+          </List.Item>
         </List>
         <Title order={3}>Project Managers</Title>
         <List>
@@ -83,6 +92,11 @@ const AboutPage = () => {
           <List.Item>
             <Anchor href='https://github.com/airelawaleria' target='_blank' rel='noreferrer'>
               Valeryia Andraichuk
+            </Anchor>
+          </List.Item>
+          <List.Item>
+            <Anchor href='https://github.com/marc-fett' target='_blank' rel='noreferrer'>
+              Marc Fett
             </Anchor>
           </List.Item>
         </List>
