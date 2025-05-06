@@ -13,7 +13,7 @@ import { IApplication } from '../../../../requests/responses/application'
 import TopicAccordionItem from '../../../../components/TopicAccordionItem/TopicAccordionItem'
 import { formatThesisType } from '../../../../utils/format'
 import { PaginationResponse } from '../../../../requests/responses/pagination'
-import { IResearchGroup } from '../../../../requests/responses/researchGroup'
+import { ILightResearchGroup } from '../../../../requests/responses/researchGroup'
 
 interface IMotivationStepProps {
   topic: ITopic | undefined
@@ -32,7 +32,7 @@ interface IMotivationStepForm {
 const MotivationStep = (props: IMotivationStepProps) => {
   const { topic, application, onComplete } = props
 
-  const [researchGroups, setResearchGroups] = useState<PaginationResponse<IResearchGroup>>()
+  const [researchGroups, setResearchGroups] = useState<PaginationResponse<ILightResearchGroup>>()
   const [loading, setLoading] = useState(false)
 
   const mergedTopic = application?.topic || topic
@@ -41,7 +41,7 @@ const MotivationStep = (props: IMotivationStepProps) => {
     mode: 'controlled',
     initialValues: {
       thesisTitle: '',
-      researchGroupId: mergedTopic?.researchGroup.id ?? '',
+      researchGroupId: '',
       thesisType: null,
       desiredStartDate: new Date(),
       motivation: '',
@@ -79,12 +79,21 @@ const MotivationStep = (props: IMotivationStepProps) => {
   }, [application?.applicationId])
 
   useEffect(() => {
-    if (application) return
-
-    if (topic) form.setValues({ researchGroupId: topic.researchGroup.id })
+    if (mergedTopic) {
+      setResearchGroups({
+        content: mergedTopic.researchGroup ? [mergedTopic.researchGroup] : [],
+        totalPages: 1,
+        totalElements: mergedTopic.researchGroup ? 1 : 0,
+        last: true,
+        pageNumber: 0,
+        pageSize: -1,
+      })
+      form.setValues({ researchGroupId: mergedTopic.researchGroup.id })
+      return
+    }
 
     setLoading(true)
-    return doRequest<PaginationResponse<IResearchGroup>>(
+    return doRequest<PaginationResponse<ILightResearchGroup>>(
       '/v2/research-groups',
       {
         method: 'GET',
@@ -170,7 +179,7 @@ const MotivationStep = (props: IMotivationStepProps) => {
           required={true}
           nothingFoundMessage={!loading ? 'Nothing found...' : 'Loading...'}
           disabled={!!mergedTopic}
-          data={researchGroups?.content.map((researchGroup: IResearchGroup) => ({
+          data={researchGroups?.content.map((researchGroup: ILightResearchGroup) => ({
             label: researchGroup.name,
             value: researchGroup.id,
           }))}

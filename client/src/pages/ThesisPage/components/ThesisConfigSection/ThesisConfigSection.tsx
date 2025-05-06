@@ -19,8 +19,9 @@ import ThesisVisibilitySelect from '../ThesisVisibilitySelect/ThesisVisibilitySe
 import { formatThesisType } from '../../../../utils/format'
 import LanguageSelect from '../../../../components/LanguageSelect/LanguageSelect'
 import { PaginationResponse } from '../../../../requests/responses/pagination'
-import { IResearchGroup } from '../../../../requests/responses/researchGroup'
+import { ILightResearchGroup } from '../../../../requests/responses/researchGroup'
 import { showSimpleError } from '../../../../utils/notification'
+import { useHasGroupAccess } from '../../../../hooks/authentication'
 
 interface IThesisConfigSectionFormValues {
   title: string
@@ -59,7 +60,8 @@ const thesisDatesValidator = (
 
 const ThesisConfigSection = () => {
   const { thesis, access } = useLoadedThesisContext()
-  const [researchGroups, setResearchGroups] = useState<PaginationResponse<IResearchGroup>>()
+  const hasAdminAccess = useHasGroupAccess('admin')
+  const [researchGroups, setResearchGroups] = useState<PaginationResponse<ILightResearchGroup>>()
 
   const form = useForm<IThesisConfigSectionFormValues>({
     mode: 'controlled',
@@ -74,7 +76,7 @@ const ThesisConfigSection = () => {
       students: thesis.students.map((student) => student.userId),
       advisors: thesis.advisors.map((advisor) => advisor.userId),
       supervisors: thesis.supervisors.map((supervisor) => supervisor.userId),
-      researchGroupId: thesis.researchGroup?.id,
+      researchGroupId: thesis.researchGroup?.id ?? '',
       states: thesis.states.map((state) => ({
         state: state.state,
         changedAt: new Date(state.startedAt),
@@ -131,7 +133,7 @@ const ThesisConfigSection = () => {
       students: thesis.students.map((student) => student.userId),
       advisors: thesis.advisors.map((advisor) => advisor.userId),
       supervisors: thesis.supervisors.map((supervisor) => supervisor.userId),
-      researchGroupId: thesis.researchGroup?.id,
+      researchGroupId: thesis.researchGroup?.id ?? '',
       states: thesis.states.map((state) => ({
         state: state.state,
         changedAt: new Date(state.startedAt),
@@ -142,7 +144,20 @@ const ThesisConfigSection = () => {
   }, [thesis])
 
   useEffect(() => {
-    return doRequest<PaginationResponse<IResearchGroup>>(
+    if (!hasAdminAccess) {
+      setResearchGroups({
+        content: [thesis.researchGroup],
+        totalPages: 1,
+        totalElements: 1,
+        last: true,
+        pageNumber: 0,
+        pageSize: -1,
+      })
+      form.setValues({ researchGroupId: thesis.researchGroup.id })
+      return
+    }
+
+    return doRequest<PaginationResponse<ILightResearchGroup>>(
       '/v2/research-groups',
       {
         method: 'GET',
@@ -158,6 +173,10 @@ const ThesisConfigSection = () => {
             ...res.data,
             content: res.data.content,
           })
+
+          if (res.data.content.length === 1) {
+            form.setValues({ researchGroupId: res.data.content[0].id })
+          }
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
 
@@ -299,13 +318,13 @@ const ThesisConfigSection = () => {
               <Select
                 label='Research Group'
                 required={true}
-                disabled={!researchGroups || researchGroups.totalElements <= 1}
-                data={researchGroups?.content.map((researchGroup: IResearchGroup) => ({
+                nothingFoundMessage={'Nothing found...'}
+                disabled={!hasAdminAccess}
+                data={researchGroups?.content.map((researchGroup: ILightResearchGroup) => ({
                   label: researchGroup.name,
                   value: researchGroup.id,
                 }))}
-                searchable
-                {...form.getInputProps('researchGroup')}
+                {...form.getInputProps('researchGroupId')}
               />
               {form.values.states.map((item, index) => (
                 <Group key={item.state} grow>
