@@ -1,5 +1,10 @@
 package de.tum.cit.aet.thesis.controller;
 
+import de.tum.cit.aet.thesis.constants.ThesisState;
+import de.tum.cit.aet.thesis.dto.PaginationDto;
+import de.tum.cit.aet.thesis.dto.PublishedThesisDto;
+import de.tum.cit.aet.thesis.entity.Thesis;
+import de.tum.cit.aet.thesis.service.ThesisService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -9,14 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
-import de.tum.cit.aet.thesis.constants.ThesisState;
-import de.tum.cit.aet.thesis.constants.ThesisVisibility;
-import de.tum.cit.aet.thesis.dto.PaginationDto;
-import de.tum.cit.aet.thesis.dto.PublishedThesisDto;
-import de.tum.cit.aet.thesis.entity.Thesis;
-import de.tum.cit.aet.thesis.service.ThesisService;
 
-import java.util.Set;
 import java.util.UUID;
 
 @Slf4j
@@ -39,7 +37,7 @@ public class PublishedThesisController {
     ) {
         Page<Thesis> theses = thesisService.getAll(
                 null,
-                Set.of(ThesisVisibility.PUBLIC),
+                true,
                 null,
                 new ThesisState[]{ThesisState.FINISHED},
                 null,

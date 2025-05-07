@@ -20,6 +20,19 @@ public class EntityMockFactory {
         return user;
     }
 
+    public static User createUserWithDefaultResearchGroup(String name) {
+        ResearchGroup researchGroup = createResearchGroup("Default Research Group");
+        User user = createUser(name);
+        user.setResearchGroup(researchGroup);
+        return user;
+    }
+
+    public static User createUserWithResearchGroup(String name, ResearchGroup researchGroup) {
+        User user = createUser(name);
+        user.setResearchGroup(researchGroup);
+        return user;
+    }
+
     public static User createUserWithGroup(String name, String... groups) {
         User user = createUser(name);
 
@@ -45,33 +58,53 @@ public class EntityMockFactory {
         user.setGroups(userGroups);
     }
 
-    public static Topic createTopic(String title) {
+    public static ResearchGroup createResearchGroup(String name) {
+        ResearchGroup researchGroup = new ResearchGroup();
+        User user = createUserWithGroup(name, "supervisor");
+
+        researchGroup.setId(UUID.randomUUID());
+        researchGroup.setHead(user);
+        researchGroup.setName(name);
+        researchGroup.setArchived(false);
+        researchGroup.setCreatedAt(java.time.Instant.now());
+        researchGroup.setUpdatedAt(java.time.Instant.now());
+        researchGroup.setCreatedBy(user);
+        researchGroup.setUpdatedBy(user);
+
+        user.setResearchGroup(researchGroup);
+        return researchGroup;
+    }
+
+    public static Topic createTopic(String title, ResearchGroup researchGroup) {
         Topic topic = new Topic();
 
         topic.setId(UUID.randomUUID());
         topic.setTitle(title);
         topic.setRoles(new ArrayList<>());
+        topic.setResearchGroup(researchGroup);
 
         return topic;
     }
 
-    public static Application createApplication() {
+    public static Application createApplication(ResearchGroup researchGroup) {
         Application application = new Application();
 
         application.setId(UUID.randomUUID());
-        application.setUser(createUser("user"));
-        application.setTopic(createTopic("title"));
+        application.setUser(createUserWithResearchGroup("user", researchGroup));
+        application.setTopic(createTopic("title", researchGroup));
         application.setState(ApplicationState.NOT_ASSESSED);
+        application.setResearchGroup(researchGroup);
 
         return application;
     }
 
-    public static Thesis createThesis(String title) {
+    public static Thesis createThesis(String title, ResearchGroup researchGroup) {
         Thesis thesis = new Thesis();
 
         thesis.setId(UUID.randomUUID());
         thesis.setTitle(title);
         thesis.setState(ThesisState.PROPOSAL);
+        thesis.setResearchGroup(researchGroup);
 
         return thesis;
     }

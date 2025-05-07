@@ -103,7 +103,15 @@ const NotificationSettings = () => {
       </Group>
       <ThesesProvider limit={10}>
         <ThesesTable
-          columns={['title', 'type', 'students', 'advisors', 'supervisors', 'actions']}
+          columns={[
+            'title',
+            'type',
+            'students',
+            'advisors',
+            'supervisors',
+            'researchGroup',
+            'actions',
+          ]}
           extraColumns={{
             actions: {
               accessor: 'actions',

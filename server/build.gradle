@@ -38,6 +38,7 @@ dependencies {
 	implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
 	implementation "org.springframework.boot:spring-boot-starter-thymeleaf"
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
 	// Avoid outdated version of netty to prevent security issues
 	implementation("io.netty:netty-buffer") { version { 				strictly netty_version } }
@@ -119,7 +120,8 @@ test {
 }
 
 tasks.withType(JavaCompile).configureEach {
-	options.compilerArgs << "-Xlint:deprecation"
+    options.compilerArgs << "-Xlint:deprecation"
+    options.compilerArgs << "-parameters"
 }
 
 def isNonStable = { String version ->

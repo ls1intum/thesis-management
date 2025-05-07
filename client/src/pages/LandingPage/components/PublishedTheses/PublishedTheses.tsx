@@ -1,5 +1,15 @@
 import { DataTable } from 'mantine-datatable'
-import { ActionIcon, Anchor, Center, Group, Modal, Stack, Title } from '@mantine/core'
+import {
+  ActionIcon,
+  Anchor,
+  Center,
+  Group,
+  Modal,
+  Stack,
+  Text,
+  Title,
+  Tooltip,
+} from '@mantine/core'
 import React, { useEffect, useState } from 'react'
 import { PaginationResponse } from '../../../../requests/responses/pagination'
 import { IPublishedThesis } from '../../../../requests/responses/thesis'
@@ -89,6 +99,19 @@ const PublishedTheses = () => {
             ellipsis: true,
             width: 180,
             render: (thesis) => <AvatarUserList users={thesis.advisors} />,
+          },
+          {
+            accessor: 'researchGroup.name',
+            title: 'Research Group',
+            width: 180,
+            ellipsis: true,
+            render: (thesis) => (
+              <Tooltip openDelay={500} label={thesis.researchGroup?.name ?? ''} withArrow>
+                <Text size='sm' truncate>
+                  {thesis.researchGroup?.name ?? ''}
+                </Text>
+              </Tooltip>
+            ),
           },
           {
             accessor: 'actions',

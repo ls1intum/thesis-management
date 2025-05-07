@@ -15,27 +15,27 @@ public enum ApplicationRejectReason {
 
     private final String value;
 
-    public String getMailTemplate() {
+    public String getTemplateCase() {
         if (value.equals(TOPIC_FILLED.getValue())) {
-            return "application-rejected-topic-filled";
+            return "APPLICATION_REJECTED_TOPIC_FILLED";
         }
 
         if (value.equals(TOPIC_OUTDATED.getValue())) {
-            return "application-rejected-topic-outdated";
+            return "APPLICATION_REJECTED_TOPIC_OUTDATED";
         }
 
         if (value.equals(FAILED_STUDENT_REQUIREMENTS.getValue())) {
-            return "application-rejected-student-requirements";
+            return "APPLICATION_REJECTED_STUDENT_REQUIREMENTS";
         }
 
         if (value.equals(FAILED_TOPIC_REQUIREMENTS.getValue())) {
-            return "application-rejected-topic-requirements";
+            return "APPLICATION_REJECTED_TOPIC_REQUIREMENTS";
         }
 
         if (value.equals(TITLE_NOT_INTERESTING.getValue())) {
-            return "application-rejected-title-not-interesting";
+            return "APPLICATION_REJECTED_TITLE_NOT_INTERESTING";
         }
 
-        return "application-rejected";
+        return "APPLICATION_REJECTED";
     }
 }

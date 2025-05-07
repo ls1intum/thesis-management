@@ -9,6 +9,7 @@ public record CreateThesisPayload(
         String language,
         List<UUID> studentIds,
         List<UUID> advisorIds,
-        List<UUID> supervisorIds
+        List<UUID> supervisorIds,
+        UUID researchGroupId
 ) {
 }

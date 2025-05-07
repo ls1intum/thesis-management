@@ -4,6 +4,8 @@ logging:
     net.fortuna.ical4j.util.Configurator: INFO
 
 spring:
+  thymeleaf:
+    check-template-location: false
   datasource:
     url: jdbc:postgresql://unreachable:5432/thesis-management
     username: ""
@@ -20,9 +22,6 @@ spring:
     properties:
       hibernate:
         format_sql: false
-  thymeleaf:
-    prefix: classpath:/mail-templates/
-    suffix: .html
   servlet:
     multipart:
       max-file-size: 20MB

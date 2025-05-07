@@ -1,4 +1,4 @@
-import { Button, Modal, MultiSelect, Stack, TextInput } from '@mantine/core'
+import { Button, Modal, MultiSelect, Select, Stack, TextInput } from '@mantine/core'
 import { ITopic } from '../../../../requests/responses/topic'
 import { isNotEmpty, useForm } from '@mantine/form'
 import { isNotEmptyUserList } from '../../../../utils/validation'
@@ -11,6 +11,9 @@ import { getApiResponseErrorMessage } from '../../../../requests/handler'
 import UserMultiSelect from '../../../../components/UserMultiSelect/UserMultiSelect'
 import { useTopicsContext } from '../../../../providers/TopicsProvider/hooks'
 import { formatThesisType } from '../../../../utils/format'
+import { PaginationResponse } from '../../../../requests/responses/pagination'
+import { ILightResearchGroup } from '../../../../requests/responses/researchGroup'
+import { useHasGroupAccess } from '../../../../hooks/authentication'
 
 interface ICreateTopicModalProps {
   opened: boolean
@@ -22,6 +25,8 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
   const { topic, opened, onClose } = props
 
   const { addTopic, updateTopic } = useTopicsContext()
+  const [researchGroups, setResearchGroups] = useState<PaginationResponse<ILightResearchGroup>>()
+  const hasAdminAccess = useHasGroupAccess('admin')
 
   const form = useForm<{
     title: string
@@ -32,6 +37,7 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
     thesisTypes: string[]
     supervisorIds: string[]
     advisorIds: string[]
+    researchGroupId: string
   }>({
     mode: 'controlled',
     initialValues: {
@@ -41,8 +47,9 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
       requirements: '',
       goals: '',
       references: '',
-      supervisorIds: GLOBAL_CONFIG.default_supervisors,
+      supervisorIds: [],
       advisorIds: [],
+      researchGroupId: '',
     },
     validateInputOnBlur: true,
     validate: {
@@ -50,6 +57,7 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
       problemStatement: isNotEmpty('Problem statement is required'),
       supervisorIds: isNotEmptyUserList('supervisor'),
       advisorIds: isNotEmptyUserList('advisor'),
+      researchGroupId: isNotEmpty('Research group is required'),
     },
   })
 
@@ -66,11 +74,66 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
         references: topic.references,
         supervisorIds: topic.supervisors.map((supervisor) => supervisor.userId),
         advisorIds: topic.advisors.map((advisor) => advisor.userId),
+        researchGroupId: topic.researchGroup.id,
       })
     }
 
     form.reset()
   }, [topic, opened])
+
+  useEffect(() => {
+    if (!hasAdminAccess && topic?.researchGroup) {
+      setResearchGroups({
+        content: [topic.researchGroup],
+        totalPages: 1,
+        totalElements: 1,
+        last: true,
+        pageNumber: 0,
+        pageSize: -1,
+      })
+      form.setValues({ researchGroupId: topic?.researchGroup.id })
+      return
+    }
+    setLoading(true)
+    return doRequest<PaginationResponse<ILightResearchGroup>>(
+      '/v2/research-groups',
+      {
+        method: 'GET',
+        requiresAuth: true,
+        params: {
+          page: 0,
+          limit: -1,
+        },
+      },
+      (res) => {
+        if (res.ok) {
+          setResearchGroups({
+            ...res.data,
+            content: res.data.content,
+          })
+
+          if (res.data.content.length === 1) {
+            form.setValues({
+              researchGroupId: res.data.content[0].id,
+              supervisorIds: [res.data.content[0].head.userId],
+            })
+          }
+        } else {
+          showSimpleError(getApiResponseErrorMessage(res))
+
+          setResearchGroups({
+            content: [],
+            totalPages: 0,
+            totalElements: 0,
+            last: true,
+            pageNumber: 0,
+            pageSize: -1,
+          })
+        }
+        setLoading(false)
+      },
+    )
+  }, [opened])
 
   const onSubmit = async () => {
     setLoading(true)
@@ -88,6 +151,7 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
           references: form.values.references,
           supervisorIds: form.values.supervisorIds,
           advisorIds: form.values.advisorIds,
+          researchGroupId: form.values.researchGroupId,
         },
       })
 
@@ -142,6 +206,17 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
             groups={['advisor', 'supervisor']}
             initialUsers={topic?.advisors}
             {...form.getInputProps('advisorIds')}
+          />
+          <Select
+            label='Research Group'
+            required
+            nothingFoundMessage={!loading ? 'Nothing found...' : 'Loading...'}
+            disabled={loading || !researchGroups || !hasAdminAccess}
+            data={researchGroups?.content.map((researchGroup: ILightResearchGroup) => ({
+              label: researchGroup.name,
+              value: researchGroup.id,
+            }))}
+            {...form.getInputProps('researchGroupId')}
           />
           <DocumentEditor
             label='Problem Statement'

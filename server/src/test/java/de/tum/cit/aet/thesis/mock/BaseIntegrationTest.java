@@ -4,6 +4,10 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
+import de.tum.cit.aet.thesis.controller.payload.CreateApplicationPayload;
+import de.tum.cit.aet.thesis.controller.payload.CreateThesisPayload;
+import de.tum.cit.aet.thesis.controller.payload.ReplaceTopicPayload;
+import de.tum.cit.aet.thesis.repository.*;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,10 +23,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
-import de.tum.cit.aet.thesis.controller.payload.CreateApplicationPayload;
-import de.tum.cit.aet.thesis.controller.payload.CreateThesisPayload;
-import de.tum.cit.aet.thesis.controller.payload.ReplaceTopicPayload;
-import de.tum.cit.aet.thesis.repository.*;
 
 import java.time.Instant;
 import java.util.*;
@@ -161,7 +161,7 @@ public abstract class BaseIntegrationTest {
     }
 
     protected UUID createTestUser(String universityId, List<String> roles) throws Exception {
-        String response = mockMvc.perform(MockMvcRequestBuilders.post("/v2/user-info")
+        String response = mockMvc.perform(MockMvcRequestBuilders.get("/v2/user-info")
                         .header("Authorization", generateTestAuthenticationHeader(universityId, roles))
                 )
                 .andReturn()
@@ -171,13 +171,32 @@ public abstract class BaseIntegrationTest {
         return UUID.fromString(JsonPath.parse(response).read("$.userId", String.class));
     }
 
+    protected UUID createTestResearchGroup(String name, UUID headUserId) throws Exception {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("name", name + " " + UUID.randomUUID());
+        payload.put("headId", headUserId);
+
+        String response = mockMvc.perform(MockMvcRequestBuilders.post("/v2/research-groups")
+                        .header("Authorization", createRandomAdminAuthentication())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(payload)))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        return UUID.fromString(JsonPath.parse(response).read("$.id", String.class));
+    }
+
     protected UUID createTestApplication(String authorization, String title) throws Exception {
+        createTestEmailTemplate("APPLICATION_CREATED_CHAIR");
+        createTestEmailTemplate("APPLICATION_CREATED_STUDENT");
         CreateApplicationPayload payload = new CreateApplicationPayload(
                 null,
                 title,
                 "BACHELOR",
                 Instant.now(),
-                "Test motivation"
+                "Test motivation",
+                createDefaultResearchGroup()
         );
 
         String response = mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
@@ -191,8 +210,14 @@ public abstract class BaseIntegrationTest {
         return UUID.fromString(JsonPath.parse(response).read("$.applicationId", String.class));
     }
 
+    protected UUID createDefaultResearchGroup() throws Exception {
+        UUID headUserId = createTestUser("defaultSupervisor", List.of("supervisor"));
+        return createTestResearchGroup("Default Research Group", headUserId);
+    }
+
     protected UUID createTestTopic(String title) throws Exception {
         UUID advisorId = createTestUser("supervisor", List.of("supervisor", "advisor"));
+        UUID researchGroupId = createTestResearchGroup("Test Research Group " + UUID.randomUUID(), advisorId);
 
         ReplaceTopicPayload payload = new ReplaceTopicPayload(
                 title,
@@ -202,7 +227,8 @@ public abstract class BaseIntegrationTest {
                 "Test Goals",
                 "Test References",
                 List.of(advisorId),
-                List.of(advisorId)
+                List.of(advisorId),
+                researchGroupId
         );
 
         String response = mockMvc.perform(MockMvcRequestBuilders.post("/v2/topics")
@@ -218,6 +244,8 @@ public abstract class BaseIntegrationTest {
 
     protected UUID createTestThesis(String title) throws Exception {
         UUID advisorId = createTestUser("supervisor", List.of("supervisor", "advisor"));
+        UUID researchGroupId = createTestResearchGroup("Test Research Group", advisorId);
+        createTestEmailTemplate("THESIS_CREATED");
 
         CreateThesisPayload payload = new CreateThesisPayload(
                 title,
@@ -225,7 +253,8 @@ public abstract class BaseIntegrationTest {
                 "ENGLISH",
                 List.of(advisorId),
                 List.of(advisorId),
-                List.of(advisorId)
+                List.of(advisorId),
+                researchGroupId
         );
 
         String response = mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses")
@@ -238,4 +267,23 @@ public abstract class BaseIntegrationTest {
 
         return objectMapper.readTree(response).get("thesisId").asText().transform(UUID::fromString);
     }
+
+    protected void createTestEmailTemplate(String templateCase) throws Exception {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("researchGroupId", null);
+        payload.put("templateCase", templateCase);
+        payload.put("description", "Test description");
+        payload.put("subject", "Test Subject");
+        payload.put("bodyHtml", "<p>Test Body</p>");
+        payload.put("language", "en");
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/v2/email-templates")
+                        .header("Authorization", createRandomAdminAuthentication())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(payload)))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+    }
+
 }

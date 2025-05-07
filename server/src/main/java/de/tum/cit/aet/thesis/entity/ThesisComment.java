@@ -53,4 +53,8 @@ public class ThesisComment {
     public boolean hasManagementAccess(User user) {
         return user.hasAnyGroup("admin") || createdBy.getId().equals(user.getId());
     }
+
+    public ResearchGroup getResearchGroup() {
+        return thesis.getResearchGroup();
+    }
 }

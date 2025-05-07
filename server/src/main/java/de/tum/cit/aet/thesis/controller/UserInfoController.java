@@ -30,14 +30,14 @@ public class UserInfoController {
         this.authenticationService = authenticationService;
     }
 
-    @PostMapping
+    @GetMapping
     public ResponseEntity<UserDto> getInfo(JwtAuthenticationToken jwt) {
         User user = this.authenticationService.updateAuthenticatedUser(jwt);
 
         return ResponseEntity.ok(UserDto.fromUserEntity(user));
     }
 
-    @RequestMapping(method = RequestMethod.PUT, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<UserDto> updateInfo(
             @RequestPart("data") UpdateUserInformationPayload payload,
             @RequestPart(value = "examinationReport", required = false) MultipartFile examinationReport,

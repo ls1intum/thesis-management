@@ -9,15 +9,23 @@ interface ITopicsProviderProps {
   includeClosedTopics?: boolean
   limit: number
   hideIfEmpty?: boolean
+  researchSpecific?: boolean
 }
 
 const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
-  const { children, includeClosedTopics = false, limit, hideIfEmpty = false } = props
+  const {
+    children,
+    includeClosedTopics = false,
+    limit,
+    hideIfEmpty = false,
+    researchSpecific = true,
+  } = props
 
   const [topics, setTopics] = useState<PaginationResponse<ITopic>>()
   const [page, setPage] = useState(0)
   const [filters, setFilters] = useState<ITopicsFilters>({
     includeClosed: includeClosedTopics,
+    researchSpecific: researchSpecific,
   })
 
   useEffect(() => {
@@ -27,12 +35,13 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
       `/v2/topics`,
       {
         method: 'GET',
-        requiresAuth: false,
+        requiresAuth: filters.researchSpecific ? true : false,
         params: {
           page,
           limit,
           type: filters.types?.join(',') || '',
           includeClosed: filters.includeClosed ? 'true' : 'false',
+          onlyOwnResearchGroup: filters.researchSpecific ? 'true' : 'false',
         },
       },
       (res) => {

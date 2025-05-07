@@ -1,8 +1,17 @@
 package de.tum.cit.aet.thesis.utility;
 
+import de.tum.cit.aet.thesis.constants.ThesisRoleName;
+import de.tum.cit.aet.thesis.dto.ApplicationDto;
+import de.tum.cit.aet.thesis.dto.ThesisCommentDto;
+import de.tum.cit.aet.thesis.dto.ThesisDto;
+import de.tum.cit.aet.thesis.dto.UserDto;
+import de.tum.cit.aet.thesis.entity.*;
+import de.tum.cit.aet.thesis.service.UploadService;
 import jakarta.activation.DataHandler;
 import jakarta.activation.FileDataSource;
-import jakarta.mail.*;
+import jakarta.mail.BodyPart;
+import jakarta.mail.Message;
+import jakarta.mail.Multipart;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
@@ -13,13 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.thymeleaf.context.Context;
-import de.tum.cit.aet.thesis.constants.ThesisRoleName;
-import de.tum.cit.aet.thesis.dto.ApplicationDto;
-import de.tum.cit.aet.thesis.dto.ThesisCommentDto;
-import de.tum.cit.aet.thesis.dto.ThesisDto;
-import de.tum.cit.aet.thesis.dto.UserDto;
-import de.tum.cit.aet.thesis.entity.*;
-import de.tum.cit.aet.thesis.service.UploadService;
 
 import java.util.*;
 
@@ -36,7 +38,7 @@ public class MailBuilder {
     private final String subject;
 
     @Getter
-    private final String template;
+    private final String templateHtml;
 
     @Getter
     private final Map<String, Object> variables;
@@ -53,7 +55,7 @@ public class MailBuilder {
     private record RawAttachment(String filename, ByteArrayDataSource file) {}
     private record StoredAttachment(String filename, String file) {}
 
-    public MailBuilder(MailConfig config, String subject, String template) {
+    public MailBuilder(MailConfig config, String subject, String templateHtml) {
         this.config = config;
 
         this.primarySenders = new ArrayList<>();
@@ -62,7 +64,7 @@ public class MailBuilder {
         this.bccRecipients = new ArrayList<>();
 
         this.subject = subject;
-        this.template = template;
+        this.templateHtml = templateHtml;
 
         this.variables = new HashMap<>();
         this.variables.put("config", config.getConfigDto());
@@ -103,11 +105,11 @@ public class MailBuilder {
         return this;
     }
 
-    public MailBuilder addDefaultBccRecipients() {
-        for (InternetAddress address : config.getDefaultBccRecipients()) {
-            addBccRecipient(address);
+    public MailBuilder addDefaultBccRecipients(InternetAddress researchGroupHeadMail) {
+        if (researchGroupHeadMail == null || researchGroupHeadMail.getAddress().isBlank()) {
+            return this;
         }
-
+        addBccRecipient(researchGroupHeadMail);
         return this;
     }
 
@@ -140,8 +142,8 @@ public class MailBuilder {
 
     }
 
-    public MailBuilder sendToChairMembers() {
-        for (User user : config.getChairMembers()) {
+    public MailBuilder sendToChairMembers(UUID researchGroupId) {
+        for (User user : config.getChairMembers(researchGroupId)) {
             addPrimaryRecipient(user);
         }
 
@@ -301,7 +303,7 @@ public class MailBuilder {
                 Multipart messageContent = new MimeMultipart();
 
                 BodyPart messageBody = new MimeBodyPart();
-                messageBody.setContent(config.getTemplateEngine().process(template, templateContext), "text/html; charset=utf-8");
+                messageBody.setContent(config.getTemplateEngine().process(templateHtml, templateContext), "text/html; charset=utf-8");
                 messageContent.addBodyPart(messageBody);
 
                 for (StoredAttachment data : fileAttachments) {

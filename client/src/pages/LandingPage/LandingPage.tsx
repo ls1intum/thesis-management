@@ -14,11 +14,11 @@ const LandingPage = () => {
   return (
     <PublicArea hero={<HeroSection />}>
       <Stack>
-        <TopicsProvider limit={10}>
+        <TopicsProvider limit={10} researchSpecific={false}>
           <Stack gap='xs'>
             <Title order={2}>Open Topics</Title>
             <TopicsTable
-              columns={['title', 'types', 'advisor', 'actions']}
+              columns={['title', 'types', 'advisor', 'researchGroup', 'actions']}
               noBorder
               extraColumns={{
                 actions: {

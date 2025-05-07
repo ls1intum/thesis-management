@@ -1,25 +1,32 @@
 package de.tum.cit.aet.thesis.service;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
-import de.tum.cit.aet.thesis.constants.*;
+import de.tum.cit.aet.thesis.constants.ThesisRoleName;
+import de.tum.cit.aet.thesis.constants.ThesisState;
+import de.tum.cit.aet.thesis.constants.ThesisVisibility;
+import de.tum.cit.aet.thesis.constants.UploadFileType;
 import de.tum.cit.aet.thesis.entity.*;
 import de.tum.cit.aet.thesis.exception.request.ResourceInvalidParametersException;
 import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.mock.EntityMockFactory;
 import de.tum.cit.aet.thesis.repository.*;
+import de.tum.cit.aet.thesis.security.CurrentUserProvider;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ThesisServiceTest {
@@ -35,10 +42,16 @@ class ThesisServiceTest {
     @Mock private ThesisPresentationService thesisPresentationService;
     @Mock private ThesisFeedbackRepository thesisFeedbackRepository;
     @Mock private ThesisFileRepository thesisFileRepository;
+    @Mock private ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
+    @Mock
+    private ResearchGroupRepository researchGroupRepository;
+    @Mock
+    private CurrentUserProvider currentUserProvider;
 
     private ThesisService thesisService;
-    private User testUser;
     private Thesis testThesis;
+    private User testUser;
+    private ResearchGroup testResearchGroup;
 
     @BeforeEach
     void setUp() {
@@ -46,12 +59,15 @@ class ThesisServiceTest {
                 thesisRoleRepository, thesisRepository, thesisStateChangeRepository,
                 userRepository, thesisProposalRepository, thesisAssessmentRepository,
                 uploadService, mailingService, accessManagementService,
-                thesisPresentationService, thesisFeedbackRepository, thesisFileRepository
+                thesisPresentationService, thesisFeedbackRepository, thesisFileRepository,
+                currentUserProviderProvider, researchGroupRepository
         );
+        when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
 
         testUser = EntityMockFactory.createUser("Test");
-        testThesis = EntityMockFactory.createThesis("Test Thesis");
-
+        testResearchGroup = EntityMockFactory.createResearchGroup("Test Research Group");
+        testUser.setResearchGroup(testResearchGroup);
+        testThesis = EntityMockFactory.createThesis("Test Thesis", testResearchGroup);
         EntityMockFactory.setupThesisRole(testThesis, testUser, ThesisRoleName.SUPERVISOR);
     }
 
@@ -64,14 +80,16 @@ class ThesisServiceTest {
         List<UUID> supervisorIds = new ArrayList<>(List.of(supervisor.getId()));
         List<UUID> advisorIds = new ArrayList<>(List.of(advisor.getId()));
         List<UUID> studentIds = new ArrayList<>(List.of(student.getId()));
+        UUID researchGroupId = testResearchGroup.getId();
 
         when(userRepository.findAllById(supervisorIds)).thenReturn(new ArrayList<>(List.of(supervisor)));
         when(userRepository.findAllById(advisorIds)).thenReturn(new ArrayList<>(List.of(advisor)));
         when(userRepository.findAllById(studentIds)).thenReturn(new ArrayList<>(List.of(student)));
         when(thesisRepository.save(any(Thesis.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(currentUserProvider.getUser()).thenReturn(testUser);
+        when(researchGroupRepository.findById(researchGroupId)).thenReturn(Optional.ofNullable(testResearchGroup));
 
         Thesis result = thesisService.createThesis(
-                testUser,
                 "Test Thesis",
                 "Bachelor",
                 "ENGLISH",
@@ -79,7 +97,8 @@ class ThesisServiceTest {
                 advisorIds,
                 studentIds,
                 null,
-                true
+                true,
+                researchGroupId
         );
 
         assertNotNull(result);
@@ -124,7 +143,7 @@ class ThesisServiceTest {
         when(uploadService.store(any(), any(), any())).thenReturn("stored-file");
         when(thesisRepository.save(any(Thesis.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        Thesis result = thesisService.uploadProposal(testUser, testThesis, file);
+        Thesis result = thesisService.uploadProposal(testThesis, file);
 
         assertNotNull(result);
         verify(uploadService).store(eq(file), any(), eq(UploadFileType.PDF));
@@ -137,7 +156,7 @@ class ThesisServiceTest {
         testThesis.setProposals(new ArrayList<>());
 
         assertThrows(ResourceNotFoundException.class, () ->
-                thesisService.acceptProposal(testUser, testThesis)
+                thesisService.acceptProposal(testThesis)
         );
     }
 
@@ -147,7 +166,7 @@ class ThesisServiceTest {
         testThesis.setProposals(List.of(proposal));
         when(thesisRepository.save(any(Thesis.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        Thesis result = thesisService.acceptProposal(testUser, testThesis);
+        Thesis result = thesisService.acceptProposal(testThesis);
 
         assertEquals(ThesisState.WRITING, result.getState());
         verify(thesisProposalRepository).save(any(ThesisProposal.class));
@@ -159,7 +178,6 @@ class ThesisServiceTest {
         when(thesisRepository.save(any(Thesis.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         Thesis result = thesisService.submitAssessment(
-                testUser,
                 testThesis,
                 "Summary",
                 "Positives",
@@ -198,7 +216,7 @@ class ThesisServiceTest {
 
         when(thesisRepository.save(any(Thesis.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(thesisRepository.searchTheses(
-                any(), any(), any(), any(), any(), any()
+                any(), any(), any(), any(), any(), any(), any()
         )).thenReturn(new PageImpl<>(Collections.emptyList()));
 
         Thesis result = thesisService.completeThesis(testThesis);

@@ -98,7 +98,7 @@ export function useAllTopics() {
       `/v2/topics`,
       {
         method: 'GET',
-        requiresAuth: false,
+        requiresAuth: true,
         params: {
           limit: 1000,
           includeClosed: 'false',
