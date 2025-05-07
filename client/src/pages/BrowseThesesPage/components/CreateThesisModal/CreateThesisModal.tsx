@@ -12,7 +12,8 @@ import { getApiResponseErrorMessage } from '../../../../requests/handler'
 import { formatThesisType, getDefaultLanguage } from '../../../../utils/format'
 import LanguageSelect from '../../../../components/LanguageSelect/LanguageSelect'
 import { PaginationResponse } from '../../../../requests/responses/pagination'
-import { IResearchGroup } from '../../../../requests/responses/researchGroup'
+import { ILightResearchGroup } from '../../../../requests/responses/researchGroup'
+import { useHasGroupAccess } from '../../../../hooks/authentication'
 
 interface ICreateThesisModalProps {
   opened: boolean
@@ -23,6 +24,10 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
   const { opened, onClose } = props
 
   const navigate = useNavigate()
+
+  const [loading, setLoading] = useState(false)
+  const [researchGroups, setResearchGroups] = useState<PaginationResponse<ILightResearchGroup>>()
+  const hasAdminAccess = useHasGroupAccess('admin')
 
   const form = useForm<{
     title: string
@@ -40,7 +45,7 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
       language: getDefaultLanguage(),
       students: [],
       advisors: [],
-      supervisors: GLOBAL_CONFIG.default_supervisors,
+      supervisors: [],
       researchGroupId: '',
     },
     validateInputOnBlur: true,
@@ -57,7 +62,7 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
 
   useEffect(() => {
     setLoading(true)
-    return doRequest<PaginationResponse<IResearchGroup>>(
+    return doRequest<PaginationResponse<ILightResearchGroup>>(
       '/v2/research-groups',
       {
         method: 'GET',
@@ -73,6 +78,13 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
             ...res.data,
             content: res.data.content,
           })
+
+          if (res.data.content.length === 1) {
+            form.setValues({
+              researchGroupId: res.data.content[0].id,
+              supervisors: [res.data.content[0].head.userId],
+            })
+          }
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
 
@@ -88,10 +100,7 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
         setLoading(false)
       },
     )
-  }, [])
-
-  const [loading, setLoading] = useState(false)
-  const [researchGroups, setResearchGroups] = useState<PaginationResponse<IResearchGroup>>()
+  }, [opened])
 
   return (
     <Modal opened={opened} onClose={onClose} title='Create Thesis'>
@@ -149,7 +158,7 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
           <UserMultiSelect
             label='Student(s)'
             required={true}
-            groups={[]}
+            groups={['student']}
             {...form.getInputProps('students')}
           />
           <UserMultiSelect
@@ -167,9 +176,10 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
           />
           <Select
             label='Research Group'
-            required={true}
-            disabled={loading || !researchGroups}
-            data={researchGroups?.content.map((researchGroup: IResearchGroup) => ({
+            required
+            nothingFoundMessage={!loading ? 'Nothing found...' : 'Loading...'}
+            disabled={loading || !researchGroups || !hasAdminAccess}
+            data={researchGroups?.content.map((researchGroup: ILightResearchGroup) => ({
               label: researchGroup.name,
               value: researchGroup.id,
             }))}

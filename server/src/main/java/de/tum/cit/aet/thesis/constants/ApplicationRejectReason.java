@@ -17,7 +17,7 @@ public enum ApplicationRejectReason {
 
     public String getTemplateCase() {
         if (value.equals(TOPIC_FILLED.getValue())) {
-            return "APPLICATION_REJECTED_TOPIC_FILLEd";
+            return "APPLICATION_REJECTED_TOPIC_FILLED";
         }
 
         if (value.equals(TOPIC_OUTDATED.getValue())) {

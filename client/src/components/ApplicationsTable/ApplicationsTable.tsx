@@ -12,6 +12,7 @@ type ApplicationColumn =
   | 'state'
   | 'user'
   | 'thesis_title'
+  | 'research_group'
   | 'thesis_type'
   | 'reviewed_at'
   | 'created_at'
@@ -59,6 +60,12 @@ const ApplicationsTable = (props: IApplicationsTableProps) => {
       title: 'Topic',
       cellsStyle: () => ({ minWidth: 200 }),
       render: (application) => application.thesisTitle,
+    },
+    research_group: {
+      accessor: 'researchGroup.name',
+      title: 'Research Group',
+      cellsStyle: () => ({ minWidth: 150 }),
+      render: (application) => application.researchGroup.name,
     },
     thesis_type: {
       accessor: 'thesisType',

@@ -6,7 +6,7 @@ import { IThesesSort } from '../../providers/ThesesProvider/context'
 import { useNavigate } from 'react-router'
 import { IThesis } from '../../requests/responses/thesis'
 import ThesisStateBadge from '../ThesisStateBadge/ThesisStateBadge'
-import { Center } from '@mantine/core'
+import { Center, Text, Tooltip } from '@mantine/core'
 import AvatarUserList from '../AvatarUserList/AvatarUserList'
 
 type ThesisColumn =
@@ -14,6 +14,7 @@ type ThesisColumn =
   | 'supervisors'
   | 'advisors'
   | 'students'
+  | 'researchGroup'
   | 'type'
   | 'title'
   | 'start_date'
@@ -27,7 +28,16 @@ interface IThesesTableProps {
 
 const ThesesTable = (props: IThesesTableProps) => {
   const {
-    columns = ['state', 'title', 'type', 'students', 'advisors', 'start_date', 'end_date'],
+    columns = [
+      'state',
+      'title',
+      'type',
+      'students',
+      'advisors',
+      'researchGroup',
+      'start_date',
+      'end_date',
+    ],
     extraColumns = {},
   } = props
 
@@ -72,6 +82,19 @@ const ThesesTable = (props: IThesesTableProps) => {
       ellipsis: true,
       width: 180,
       render: (thesis) => <AvatarUserList users={thesis.students} />,
+    },
+    researchGroup: {
+      accessor: 'researchGroup.name',
+      title: 'Research Group',
+      width: 180,
+      ellipsis: true,
+      render: (thesis) => (
+        <Tooltip openDelay={500} label={thesis.researchGroup?.name ?? ''} withArrow>
+          <Text size='sm' truncate>
+            {thesis.researchGroup?.name ?? ''}
+          </Text>
+        </Tooltip>
+      ),
     },
     type: {
       accessor: 'type',

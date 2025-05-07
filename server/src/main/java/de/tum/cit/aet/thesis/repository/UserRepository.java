@@ -21,13 +21,20 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findByUniversityIdWithResearchGroup(@Param("universityId") String universityId);
 
     @Query("""
-            SELECT DISTINCT u FROM User u LEFT JOIN UserGroup g ON (u.id = g.id.userId) WHERE
-            (:researchGroupId IS NULL OR u.researchGroup.id = :researchGroupId) AND
-            (:groups IS NULL OR g.id.group IN :groups) AND
-            (:searchQuery IS NULL OR LOWER(u.firstName) || ' ' || LOWER(u.lastName) LIKE %:searchQuery% OR
-            LOWER(u.email) LIKE %:searchQuery% OR
-            LOWER(u.matriculationNumber) LIKE %:searchQuery% OR
-            LOWER(u.universityId) LIKE %:searchQuery%)
+            SELECT DISTINCT u
+            FROM User u
+            LEFT JOIN UserGroup g ON (u.id = g.id.userId)
+            WHERE (:researchGroupId IS NULL
+                   OR NOT ('advisor' IN :groups
+                           OR 'supervisor' IN :groups)
+                   OR u.researchGroup.id = :researchGroupId)
+              AND (:groups IS NULL
+                   OR g.id.group IN :groups)
+              AND (:searchQuery IS NULL
+                   OR LOWER(u.firstName) || ' ' || LOWER(u.lastName) LIKE %:searchQuery%
+                   OR LOWER(u.email) LIKE %:searchQuery%
+                   OR LOWER(u.matriculationNumber) LIKE %:searchQuery%
+                   OR LOWER(u.universityId) LIKE %:searchQuery%)
             """)
     Page<User> searchUsers(@Param("researchGroupId") UUID researchGroupId,
                            @Param("searchQuery") String searchQuery, @Param("groups") Set<String> groups, Pageable page);

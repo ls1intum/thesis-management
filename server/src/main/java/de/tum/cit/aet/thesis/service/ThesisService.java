@@ -81,8 +81,7 @@ public class ThesisService {
 
     public Page<Thesis> getAll(
         UUID userId,
-        boolean onlyOwnResearchGroup,
-        Set<ThesisVisibility> visibilities,
+        boolean fetchAll,
         String searchQuery,
         ThesisState[] states,
         String[] types,
@@ -92,21 +91,33 @@ public class ThesisService {
         String sortOrder
     ) {
         Sort.Order order = new Sort.Order(sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
-
-        ResearchGroup researchGroup = onlyOwnResearchGroup ?
-            currentUserProvider().getResearchGroupOrThrow() : null;
         String searchQueryFilter = searchQuery == null || searchQuery.isEmpty() ? null : searchQuery.toLowerCase();
         Set<ThesisState> statesFilter = states == null || states.length == 0 ? null : new HashSet<>(Arrays.asList(states));
         Set<String> typesFilter = types == null || types.length == 0 ? null : new HashSet<>(Arrays.asList(types));
 
+        UUID researchGroupId = null;
+        Set<ThesisVisibility> visibilitySet = Set.of();
+
+        if (userId == null) {
+            visibilitySet = Set.of(ThesisVisibility.PUBLIC);
+        } else if (currentUserProvider().isAdmin()) {
+            userId = null; // Admins can see all theses
+            visibilitySet = null;
+        } else if ((currentUserProvider().isAdvisor() || currentUserProvider().isSupervisor()) && fetchAll) {
+            researchGroupId = currentUserProvider().getResearchGroupOrThrow().getId();
+            visibilitySet = Set.of(ThesisVisibility.PUBLIC, ThesisVisibility.STUDENT, ThesisVisibility.INTERNAL);
+        } else if (currentUserProvider().isStudent() && fetchAll) {
+            visibilitySet = Set.of(ThesisVisibility.PUBLIC, ThesisVisibility.STUDENT);
+        }
+
         return thesisRepository.searchTheses(
-            researchGroup == null ? null : researchGroup.getId(),
-            userId,
-            visibilities,
-            searchQueryFilter,
-            statesFilter,
-            typesFilter,
-            PageRequest.of(page, limit, Sort.by(order))
+                researchGroupId,
+                userId,
+                visibilitySet,
+                searchQueryFilter,
+                statesFilter,
+                typesFilter,
+                PageRequest.of(page, limit, Sort.by(order))
         );
     }
 

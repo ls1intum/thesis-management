@@ -3,11 +3,19 @@ import { formatDate, formatThesisType } from '../../utils/format'
 import { useTopicsContext } from '../../providers/TopicsProvider/hooks'
 import { ITopic } from '../../requests/responses/topic'
 import { useNavigate } from 'react-router'
-import { Badge, Center, Stack, Text } from '@mantine/core'
+import { Badge, Center, Stack, Text, Tooltip } from '@mantine/core'
 import AvatarUserList from '../AvatarUserList/AvatarUserList'
 import React from 'react'
 
-type TopicColumn = 'title' | 'types' | 'advisor' | 'supervisor' | 'state' | 'createdAt' | string
+type TopicColumn =
+  | 'title'
+  | 'types'
+  | 'advisor'
+  | 'supervisor'
+  | 'researchGroup'
+  | 'state'
+  | 'createdAt'
+  | string
 
 interface ITopicsTableProps {
   columns?: TopicColumn[]
@@ -75,6 +83,19 @@ const TopicsTable = (props: ITopicsTableProps) => {
       width: 180,
       ellipsis: true,
       render: (topic) => <AvatarUserList users={topic.advisors} />,
+    },
+    researchGroup: {
+      accessor: 'researchGroup.name',
+      title: 'Research Group',
+      width: 180,
+      ellipsis: true,
+      render: (topic) => (
+        <Tooltip openDelay={500} label={topic.researchGroup?.name ?? ''} withArrow>
+          <Text size='sm' truncate>
+            {topic.researchGroup?.name ?? ''}
+          </Text>
+        </Tooltip>
+      ),
     },
     createdAt: {
       accessor: 'createdAt',

@@ -18,7 +18,7 @@ const LandingPage = () => {
           <Stack gap='xs'>
             <Title order={2}>Open Topics</Title>
             <TopicsTable
-              columns={['title', 'types', 'advisor', 'actions']}
+              columns={['title', 'types', 'advisor', 'researchGroup', 'actions']}
               noBorder
               extraColumns={{
                 actions: {

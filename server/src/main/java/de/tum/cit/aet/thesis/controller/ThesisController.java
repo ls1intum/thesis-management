@@ -1,6 +1,9 @@
 package de.tum.cit.aet.thesis.controller;
 
-import de.tum.cit.aet.thesis.constants.*;
+import de.tum.cit.aet.thesis.constants.StringLimits;
+import de.tum.cit.aet.thesis.constants.ThesisCommentType;
+import de.tum.cit.aet.thesis.constants.ThesisPresentationState;
+import de.tum.cit.aet.thesis.constants.ThesisState;
 import de.tum.cit.aet.thesis.controller.payload.*;
 import de.tum.cit.aet.thesis.dto.PaginationDto;
 import de.tum.cit.aet.thesis.dto.ThesisCommentDto;
@@ -25,7 +28,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -54,7 +56,6 @@ public class ThesisController {
     @GetMapping
     public ResponseEntity<PaginationDto<ThesisDto>> getTheses(
             @RequestParam(required = false) String search,
-            @RequestParam(required = false, defaultValue = "true") boolean onlyOwnResearchGroup,
             @RequestParam(required = false) ThesisState[] state,
             @RequestParam(required = false) String[] type,
             @RequestParam(required = false, defaultValue = "false") boolean fetchAll,
@@ -64,32 +65,10 @@ public class ThesisController {
             @RequestParam(required = false, defaultValue = "desc") String sortOrder
     ) {
         User currentUser = currentUserProvider().getUser();
-        UUID userId = currentUser.getId();
-        Set<ThesisVisibility> visibilities = Set.of(
-                ThesisVisibility.PUBLIC,
-                ThesisVisibility.STUDENT,
-                ThesisVisibility.INTERNAL,
-                ThesisVisibility.PRIVATE
-        );
-
-        if (fetchAll) {
-            userId = null;
-
-            if (currentUserProvider().isAdmin()) {
-                visibilities = null;
-            } else if (currentUserProvider().isAdvisor() || currentUserProvider().isSupervisor()) {
-                visibilities = Set.of(ThesisVisibility.PUBLIC, ThesisVisibility.STUDENT, ThesisVisibility.INTERNAL);
-            } else if (currentUserProvider().isStudent()) {
-                visibilities = Set.of(ThesisVisibility.PUBLIC, ThesisVisibility.STUDENT);
-            } else {
-                visibilities = Set.of(ThesisVisibility.PUBLIC);
-            }
-        }
 
         Page<Thesis> theses = thesisService.getAll(
-                userId,
-                onlyOwnResearchGroup,
-                visibilities,
+                currentUser.getId(),
+                fetchAll,
                 search,
                 state,
                 type,

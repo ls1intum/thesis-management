@@ -69,6 +69,7 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
       type: isNotEmpty('Thesis type must not be empty'),
       advisors: isNotEmptyUserList('advisor'),
       supervisors: isNotEmptyUserList('supervisor'),
+      language: isNotEmpty('Thesis language must not be empty'),
     },
   })
 
@@ -84,9 +85,9 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
             : null,
         language: getDefaultLanguage(),
         advisors: application.topic?.advisors.map((advisor) => advisor.userId) ?? [],
-        supervisors:
-          application.topic?.supervisors.map((supervisor) => supervisor.userId) ??
-          GLOBAL_CONFIG.default_supervisors,
+        supervisors: application.topic?.supervisors.map((supervisor) => supervisor.userId) ?? [
+          application.researchGroup.head.userId,
+        ],
         notifyUser: true,
         closeTopic: false,
       })
