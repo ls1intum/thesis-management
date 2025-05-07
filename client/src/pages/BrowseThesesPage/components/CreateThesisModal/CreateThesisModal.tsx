@@ -158,7 +158,7 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
           <UserMultiSelect
             label='Student(s)'
             required={true}
-            groups={[]}
+            groups={['student']}
             {...form.getInputProps('students')}
           />
           <UserMultiSelect
