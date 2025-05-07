@@ -92,7 +92,10 @@ public class ThesisService {
     ) {
         Sort.Order order = new Sort.Order(sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
 
-        ResearchGroup researchGroup = currentUserProvider().getResearchGroupOrThrow();
+        ResearchGroup researchGroup = null;
+        if (visibilities == null || visibilities.isEmpty() || !visibilities.equals(Set.of(ThesisVisibility.PUBLIC))) {
+            researchGroup = currentUserProvider().getResearchGroupOrThrow();
+        }
         String searchQueryFilter = searchQuery == null || searchQuery.isEmpty() ? null : searchQuery.toLowerCase();
         Set<ThesisState> statesFilter = states == null || states.length == 0 ? null : new HashSet<>(Arrays.asList(states));
         Set<String> typesFilter = types == null || types.length == 0 ? null : new HashSet<>(Arrays.asList(types));
