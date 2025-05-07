@@ -69,6 +69,7 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
       type: isNotEmpty('Thesis type must not be empty'),
       advisors: isNotEmptyUserList('advisor'),
       supervisors: isNotEmptyUserList('supervisor'),
+      language: isNotEmpty('Thesis language must not be empty'),
     },
   })
 
