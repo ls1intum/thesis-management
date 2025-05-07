@@ -176,7 +176,7 @@ const MotivationStep = (props: IMotivationStepProps) => {
         )}
         <Select
           label='Research Group'
-          required={true}
+          required
           nothingFoundMessage={!loading ? 'Nothing found...' : 'Loading...'}
           disabled={!!mergedTopic}
           data={researchGroups?.content.map((researchGroup: ILightResearchGroup) => ({

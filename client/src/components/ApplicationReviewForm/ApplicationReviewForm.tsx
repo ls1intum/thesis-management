@@ -84,9 +84,9 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
             : null,
         language: getDefaultLanguage(),
         advisors: application.topic?.advisors.map((advisor) => advisor.userId) ?? [],
-        supervisors:
-          application.topic?.supervisors.map((supervisor) => supervisor.userId) ??
-          GLOBAL_CONFIG.default_supervisors,
+        supervisors: application.topic?.supervisors.map((supervisor) => supervisor.userId) ?? [
+          application.researchGroup.head.userId,
+        ],
         notifyUser: true,
         closeTopic: false,
       })

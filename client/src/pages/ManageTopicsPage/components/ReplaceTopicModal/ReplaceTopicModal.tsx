@@ -47,7 +47,7 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
       requirements: '',
       goals: '',
       references: '',
-      supervisorIds: GLOBAL_CONFIG.default_supervisors,
+      supervisorIds: [],
       advisorIds: [],
       researchGroupId: '',
     },
@@ -113,7 +113,10 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
           })
 
           if (res.data.content.length === 1) {
-            form.setValues({ researchGroupId: res.data.content[0].id })
+            form.setValues({
+              researchGroupId: res.data.content[0].id,
+              supervisorIds: [res.data.content[0].head.userId],
+            })
           }
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
@@ -130,7 +133,7 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
         setLoading(false)
       },
     )
-  }, [])
+  }, [opened])
 
   const onSubmit = async () => {
     setLoading(true)
@@ -206,7 +209,7 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
           />
           <Select
             label='Research Group'
-            required={true}
+            required
             nothingFoundMessage={!loading ? 'Nothing found...' : 'Loading...'}
             disabled={loading || !researchGroups || !hasAdminAccess}
             data={researchGroups?.content.map((researchGroup: ILightResearchGroup) => ({

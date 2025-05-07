@@ -317,7 +317,7 @@ const ThesisConfigSection = () => {
               />
               <Select
                 label='Research Group'
-                required={true}
+                required
                 nothingFoundMessage={'Nothing found...'}
                 disabled={!hasAdminAccess}
                 data={researchGroups?.content.map((researchGroup: ILightResearchGroup) => ({
