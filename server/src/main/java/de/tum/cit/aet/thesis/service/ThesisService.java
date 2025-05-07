@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ThesisService {
@@ -99,15 +100,17 @@ public class ThesisService {
         String searchQueryFilter = searchQuery == null || searchQuery.isEmpty() ? null : searchQuery.toLowerCase();
         Set<ThesisState> statesFilter = states == null || states.length == 0 ? null : new HashSet<>(Arrays.asList(states));
         Set<String> typesFilter = types == null || types.length == 0 ? null : new HashSet<>(Arrays.asList(types));
+        Set<String> visibilityFilter = visibilities == null ? null :
+                visibilities.stream().map(ThesisVisibility::getValue).collect(Collectors.toSet());
 
         return thesisRepository.searchTheses(
-            researchGroup == null ? null : researchGroup.getId(),
-            userId,
-            visibilities,
-            searchQueryFilter,
-            statesFilter,
-            typesFilter,
-            PageRequest.of(page, limit, Sort.by(order))
+                researchGroup == null ? null : researchGroup.getId(),
+                userId,
+                visibilityFilter,
+                searchQueryFilter,
+                statesFilter,
+                typesFilter,
+                PageRequest.of(page, limit, Sort.by(order))
         );
     }
 
