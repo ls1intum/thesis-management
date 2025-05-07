@@ -12,7 +12,8 @@ import UserMultiSelect from '../../../../components/UserMultiSelect/UserMultiSel
 import { useTopicsContext } from '../../../../providers/TopicsProvider/hooks'
 import { formatThesisType } from '../../../../utils/format'
 import { PaginationResponse } from '../../../../requests/responses/pagination'
-import { IResearchGroup } from '../../../../requests/responses/researchGroup'
+import { ILightResearchGroup } from '../../../../requests/responses/researchGroup'
+import { useHasGroupAccess } from '../../../../hooks/authentication'
 
 interface ICreateTopicModalProps {
   opened: boolean
@@ -24,7 +25,8 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
   const { topic, opened, onClose } = props
 
   const { addTopic, updateTopic } = useTopicsContext()
-  const [researchGroups, setResearchGroups] = useState<PaginationResponse<IResearchGroup>>()
+  const [researchGroups, setResearchGroups] = useState<PaginationResponse<ILightResearchGroup>>()
+  const hasAdminAccess = useHasGroupAccess('admin')
 
   const form = useForm<{
     title: string
@@ -80,8 +82,20 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
   }, [topic, opened])
 
   useEffect(() => {
+    if (!hasAdminAccess && topic?.researchGroup) {
+      setResearchGroups({
+        content: [topic.researchGroup],
+        totalPages: 1,
+        totalElements: 1,
+        last: true,
+        pageNumber: 0,
+        pageSize: -1,
+      })
+      form.setValues({ researchGroupId: topic?.researchGroup.id })
+      return
+    }
     setLoading(true)
-    return doRequest<PaginationResponse<IResearchGroup>>(
+    return doRequest<PaginationResponse<ILightResearchGroup>>(
       '/v2/research-groups',
       {
         method: 'GET',
@@ -97,6 +111,10 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
             ...res.data,
             content: res.data.content,
           })
+
+          if (res.data.content.length === 1) {
+            form.setValues({ researchGroupId: res.data.content[0].id })
+          }
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
 
@@ -189,8 +207,9 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
           <Select
             label='Research Group'
             required={true}
-            disabled={loading || !researchGroups}
-            data={researchGroups?.content.map((researchGroup: IResearchGroup) => ({
+            nothingFoundMessage={!loading ? 'Nothing found...' : 'Loading...'}
+            disabled={loading || !researchGroups || !hasAdminAccess}
+            data={researchGroups?.content.map((researchGroup: ILightResearchGroup) => ({
               label: researchGroup.name,
               value: researchGroup.id,
             }))}
