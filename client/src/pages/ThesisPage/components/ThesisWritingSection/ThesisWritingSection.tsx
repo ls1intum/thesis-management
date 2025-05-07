@@ -1,5 +1,5 @@
 import { IThesis, ThesisState } from '../../../../requests/responses/thesis'
-import { Accordion, Center, Grid, Group, Stack, Text, Table } from '@mantine/core'
+import { Accordion, Center, Grid, Group, Stack, Text, Table, Alert } from '@mantine/core'
 import ConfirmationButton from '../../../../components/ConfirmationButton/ConfirmationButton'
 import { doRequest } from '../../../../requests/request'
 import { checkMinimumThesisState, isThesisClosed } from '../../../../utils/thesis'
@@ -18,7 +18,7 @@ import UploadFileButton from '../../../../components/UploadFileButton/UploadFile
 import AuthenticatedFilePreview from '../../../../components/AuthenticatedFilePreview/AuthenticatedFilePreview'
 import AuthenticatedFileDownloadButton from '../../../../components/AuthenticatedFileDownloadButton/AuthenticatedFileDownloadButton'
 import AuthenticatedFilePreviewButton from '../../../../components/AuthenticatedFilePreviewButton/AuthenticatedFilePreviewButton'
-import { DownloadSimple, Eye, UploadSimple } from 'phosphor-react'
+import { DownloadSimple, Eye, UploadSimple, WarningCircle } from 'phosphor-react'
 import FileHistoryTable from '../FileHistoryTable/FileHistoryTable'
 
 const ThesisWritingSection = () => {
@@ -87,6 +87,16 @@ const ThesisWritingSection = () => {
     !Object.entries(GLOBAL_CONFIG.thesis_files)
       .filter(([, value]) => value.required)
       .some(([key]) => !customFiles[key])
+
+  const thesisSubmissionReminder = (
+    <>
+      This is not the official submission website. Please also make sure to submit your thesis{' '}
+      <a href='https://portal.cit.tum.de/' target='_blank' rel='noopener noreferrer'>
+        here
+      </a>
+      .
+    </>
+  )
 
   return (
     <Accordion variant='separated' defaultValue='open'>
@@ -279,11 +289,27 @@ const ThesisWritingSection = () => {
               </Accordion.Panel>
             </Accordion.Item>
           </Accordion>
+
+          {access.student && (
+            <Alert
+              variant='light'
+              color='orange'
+              title='Important'
+              icon={<WarningCircle size={16} />}
+              mt='md'
+            >
+              {thesisSubmissionReminder}
+            </Alert>
+          )}
+
           <Stack mt='md'>
             {access.student && thesis.state === ThesisState.WRITING && (
               <ConfirmationButton
                 confirmationTitle='Final Submission'
                 confirmationText='Are you sure you want to submit your thesis? This action cannot be undone.'
+                confirmationAddiitionalInformation={
+                  access.student ? <Text c='red'>{thesisSubmissionReminder}</Text> : undefined
+                }
                 ml='auto'
                 onClick={onFinalSubmission}
                 disabled={!requiredFilesUploaded}
