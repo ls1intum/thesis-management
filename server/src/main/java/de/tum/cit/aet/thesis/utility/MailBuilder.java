@@ -1,8 +1,17 @@
 package de.tum.cit.aet.thesis.utility;
 
+import de.tum.cit.aet.thesis.constants.ThesisRoleName;
+import de.tum.cit.aet.thesis.dto.ApplicationDto;
+import de.tum.cit.aet.thesis.dto.ThesisCommentDto;
+import de.tum.cit.aet.thesis.dto.ThesisDto;
+import de.tum.cit.aet.thesis.dto.UserDto;
+import de.tum.cit.aet.thesis.entity.*;
+import de.tum.cit.aet.thesis.service.UploadService;
 import jakarta.activation.DataHandler;
 import jakarta.activation.FileDataSource;
-import jakarta.mail.*;
+import jakarta.mail.BodyPart;
+import jakarta.mail.Message;
+import jakarta.mail.Multipart;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
@@ -13,13 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.thymeleaf.context.Context;
-import de.tum.cit.aet.thesis.constants.ThesisRoleName;
-import de.tum.cit.aet.thesis.dto.ApplicationDto;
-import de.tum.cit.aet.thesis.dto.ThesisCommentDto;
-import de.tum.cit.aet.thesis.dto.ThesisDto;
-import de.tum.cit.aet.thesis.dto.UserDto;
-import de.tum.cit.aet.thesis.entity.*;
-import de.tum.cit.aet.thesis.service.UploadService;
 
 import java.util.*;
 
@@ -103,11 +105,11 @@ public class MailBuilder {
         return this;
     }
 
-    public MailBuilder addDefaultBccRecipients() {
-        for (InternetAddress address : config.getDefaultBccRecipients()) {
-            addBccRecipient(address);
+    public MailBuilder addDefaultBccRecipients(InternetAddress researchGroupHeadMail) {
+        if (researchGroupHeadMail == null || researchGroupHeadMail.getAddress().isBlank()) {
+            return this;
         }
-
+        addBccRecipient(researchGroupHeadMail);
         return this;
     }
 

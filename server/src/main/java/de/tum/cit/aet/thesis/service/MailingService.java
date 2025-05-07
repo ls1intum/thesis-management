@@ -87,7 +87,7 @@ public class MailingService {
         mailBuilder
                 .addPrimaryRecipient(application.getUser())
                 .addSecondaryRecipient(advisor)
-                .addDefaultBccRecipients()
+                .addDefaultBccRecipients(application.getResearchGroup().getHead().getEmail())
                 .fillUserPlaceholders(advisor, "advisor")
                 .fillApplicationPlaceholders(application)
                 .fillThesisPlaceholders(thesis)
@@ -102,7 +102,7 @@ public class MailingService {
         MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(), emailTemplate.getBodyHtml());
         mailBuilder
                 .addPrimaryRecipient(application.getUser())
-                .addDefaultBccRecipients()
+                .addDefaultBccRecipients(application.getResearchGroup().getHead().getEmail())
                 .fillApplicationPlaceholders(application)
                 .send(javaMailSender, uploadService);
     }
@@ -129,7 +129,7 @@ public class MailingService {
         MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(), emailTemplate.getBodyHtml());
         mailBuilder
                 .sendToThesisStudents(thesis)
-                .addDefaultBccRecipients()
+                .addDefaultBccRecipients(thesis.getResearchGroup().getHead().getEmail())
                 .addNotificationName(NOTIFICATION_NAME_START + thesis.getId())
                 .fillThesisPlaceholders(thesis)
                 .fillUserPlaceholders(creatingUser, "creatingUser")
@@ -144,7 +144,7 @@ public class MailingService {
         MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(), emailTemplate.getBodyHtml());
         mailBuilder
                 .sendToThesisStudents(thesis)
-                .addDefaultBccRecipients()
+                .addDefaultBccRecipients(thesis.getResearchGroup().getHead().getEmail())
                 .addNotificationName(NOTIFICATION_NAME_START + thesis.getId())
                 .fillThesisPlaceholders(thesis)
                 .fillUserPlaceholders(deletingUser, "deletingUser")

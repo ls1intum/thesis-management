@@ -1,15 +1,18 @@
 package de.tum.cit.aet.thesis.utility;
 
-import jakarta.mail.internet.AddressException;
+import de.tum.cit.aet.thesis.entity.User;
+import de.tum.cit.aet.thesis.repository.UserRepository;
 import jakarta.mail.internet.InternetAddress;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
-import de.tum.cit.aet.thesis.entity.User;
-import de.tum.cit.aet.thesis.repository.UserRepository;
-import java.util.*;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 
 @Component
 public class MailConfig {
@@ -28,9 +31,6 @@ public class MailConfig {
 
     @Getter
     private final String workspaceUrl;
-
-    @Getter
-    private final List<InternetAddress> defaultBccRecipients;
 
     @Getter
     private final TemplateEngine templateEngine;
@@ -54,21 +54,6 @@ public class MailConfig {
 
         this.templateEngine = templateEngine;
         this.userRepository = userRepository;
-
-        if (bccRecipientsList != null && !bccRecipientsList.isEmpty()) {
-            List<String> addresses = Arrays.asList(bccRecipientsList.split(";"));
-            addresses.removeIf(String::isEmpty);
-
-            this.defaultBccRecipients = addresses.stream().map(address -> {
-                try {
-                    return new InternetAddress(address);
-                } catch (AddressException e) {
-                    throw new IllegalArgumentException("Invalid email address", e);
-                }
-            }).toList();
-        } else {
-            this.defaultBccRecipients = new ArrayList<>();
-        }
     }
 
     public boolean isEnabled() {
