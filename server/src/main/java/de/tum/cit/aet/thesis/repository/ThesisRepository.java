@@ -2,6 +2,7 @@ package de.tum.cit.aet.thesis.repository;
 
 import de.tum.cit.aet.thesis.constants.ThesisRoleName;
 import de.tum.cit.aet.thesis.constants.ThesisState;
+import de.tum.cit.aet.thesis.constants.ThesisVisibility;
 import de.tum.cit.aet.thesis.entity.Thesis;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,48 +19,31 @@ import java.util.UUID;
 public interface ThesisRepository extends JpaRepository<Thesis, UUID> {
     @Query("""
             SELECT DISTINCT t FROM Thesis t
-            LEFT JOIN ThesisRole r ON (t.id = r.thesis.id)
-            WHERE
-            (
-              (:userId IS NOT NULL AND r.user.id = :userId) OR
-              (:visibilities IS NULL) OR
-              (
-                :visibilities IS NOT NULL AND (
-                  'PUBLIC' IN (:visibilities) AND t.visibility = 'PUBLIC'
-                  OR
-                  (
-                    t.researchGroup.id = :researchGroupId AND (
-                      EXISTS (
-                        SELECT 1 FROM ThesisRole ar
-                        WHERE ar.thesis.id = t.id AND ar.user.id = :userId AND ar.id.role IN ('ADVISOR', 'SUPERVISOR')
-                      )
-                      OR
-                      (
-                        'STUDENT' IN (:visibilities) AND EXISTS (
-                          SELECT 1 FROM ThesisRole sr
-                          WHERE sr.thesis.id = t.id AND sr.user.id = :userId AND sr.id.role = 'STUDENT'
-                        ) AND t.state NOT IN ('FINISHED', 'DROPPED_OUT')
-                      )
-                    )
-                  )
-                )
-              )
-            )
-            AND (:states IS NULL OR t.state IN :states)
-            AND (:types IS NULL OR t.type IN :types)
-            AND (
-              :searchQuery IS NULL OR
-              LOWER(t.title) LIKE %:searchQuery% OR
-              LOWER(r.user.firstName) || ' ' || LOWER(r.user.lastName) LIKE %:searchQuery% OR
-              LOWER(r.user.email) LIKE %:searchQuery% OR
-              LOWER(r.user.matriculationNumber) LIKE %:searchQuery% OR
-              LOWER(r.user.universityId) LIKE %:searchQuery%
-            )
+             LEFT JOIN ThesisRole r ON t.id = r.thesis.id
+             WHERE (
+                 :visibilities IS NULL
+                 OR (
+                     t.visibility IN :visibilities
+                     AND (:researchGroupId IS NULL OR t.researchGroup.id = :researchGroupId)
+                 )
+                 OR (:userId IS NOT NULL AND r.user.id = :userId )
+             )
+             AND (:states IS NULL OR t.state IN :states)
+             AND (:types IS NULL OR t.type IN :types)
+             AND (
+                 :searchQuery IS NULL OR (
+                     LOWER(t.title) LIKE %:searchQuery%
+                     OR LOWER(r.user.firstName || ' ' || r.user.lastName) LIKE %:searchQuery%
+                     OR LOWER(r.user.email) LIKE %:searchQuery%
+                     OR LOWER(r.user.matriculationNumber) LIKE %:searchQuery%
+                     OR LOWER(r.user.universityId) LIKE %:searchQuery%
+                 )
+             )
             """)
     Page<Thesis> searchTheses(
             @Param("researchGroupId") UUID researchGroupId,
             @Param("userId") UUID userId,
-            @Param("visibilities") Set<String> visibilities,
+            @Param("visibilities") Set<ThesisVisibility> visibilities,
             @Param("searchQuery") String searchQuery,
             @Param("states") Set<ThesisState> states,
             @Param("types") Set<String> types,

@@ -26,7 +26,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class ThesisService {
@@ -82,7 +81,7 @@ public class ThesisService {
 
     public Page<Thesis> getAll(
         UUID userId,
-        Set<ThesisVisibility> visibilities,
+        boolean fetchAll,
         String searchQuery,
         ThesisState[] states,
         String[] types,
@@ -92,21 +91,28 @@ public class ThesisService {
         String sortOrder
     ) {
         Sort.Order order = new Sort.Order(sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
-
-        ResearchGroup researchGroup = null;
-        if (visibilities == null || visibilities.isEmpty() || !visibilities.equals(Set.of(ThesisVisibility.PUBLIC))) {
-            researchGroup = currentUserProvider().getResearchGroupOrThrow();
-        }
         String searchQueryFilter = searchQuery == null || searchQuery.isEmpty() ? null : searchQuery.toLowerCase();
         Set<ThesisState> statesFilter = states == null || states.length == 0 ? null : new HashSet<>(Arrays.asList(states));
         Set<String> typesFilter = types == null || types.length == 0 ? null : new HashSet<>(Arrays.asList(types));
-        Set<String> visibilityFilter = visibilities == null ? null :
-                visibilities.stream().map(ThesisVisibility::getValue).collect(Collectors.toSet());
+
+        UUID researchGroupId = null;
+        Set<ThesisVisibility> visibilitySet = Set.of();
+
+        if (userId == null) {
+            visibilitySet = Set.of(ThesisVisibility.PUBLIC);
+        } else if (currentUserProvider().isAdmin()) {
+            userId = null; // Admins can see all theses
+        } else if ((currentUserProvider().isAdvisor() || currentUserProvider().isSupervisor()) && fetchAll) {
+            researchGroupId = currentUserProvider().getResearchGroupOrThrow().getId();
+            visibilitySet = Set.of(ThesisVisibility.PUBLIC, ThesisVisibility.STUDENT, ThesisVisibility.INTERNAL);
+        } else if (currentUserProvider().isStudent() && fetchAll) {
+            visibilitySet = Set.of(ThesisVisibility.PUBLIC, ThesisVisibility.STUDENT);
+        }
 
         return thesisRepository.searchTheses(
-                researchGroup == null ? null : researchGroup.getId(),
+                researchGroupId,
                 userId,
-                visibilityFilter,
+                visibilitySet,
                 searchQueryFilter,
                 statesFilter,
                 typesFilter,
