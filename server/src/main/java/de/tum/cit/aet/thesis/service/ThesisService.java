@@ -102,6 +102,7 @@ public class ThesisService {
             visibilitySet = Set.of(ThesisVisibility.PUBLIC);
         } else if (currentUserProvider().isAdmin()) {
             userId = null; // Admins can see all theses
+            visibilitySet = null;
         } else if ((currentUserProvider().isAdvisor() || currentUserProvider().isSupervisor()) && fetchAll) {
             researchGroupId = currentUserProvider().getResearchGroupOrThrow().getId();
             visibilitySet = Set.of(ThesisVisibility.PUBLIC, ThesisVisibility.STUDENT, ThesisVisibility.INTERNAL);
