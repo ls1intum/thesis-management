@@ -72,8 +72,6 @@ public class ThesisController {
         );
 
         if (fetchAll) {
-            userId = null;
-
             if (currentUserProvider().isAdmin()) {
                 visibilities = null;
             } else if (currentUserProvider().isAdvisor() || currentUserProvider().isSupervisor()) {

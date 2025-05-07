@@ -21,8 +21,8 @@ public interface ThesisRepository extends JpaRepository<Thesis, UUID> {
             LEFT JOIN ThesisRole r ON (t.id = r.thesis.id)
             WHERE
             (
-              (:userId IS NOT NULL AND r.user.id = :userId)
-              OR
+              (:userId IS NOT NULL AND r.user.id = :userId) OR
+              (:visibilities IS NULL) OR
               (
                 :visibilities IS NOT NULL AND (
                   'PUBLIC' IN (:visibilities) AND t.visibility = 'PUBLIC'
