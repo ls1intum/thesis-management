@@ -44,6 +44,10 @@ public class CurrentUserProvider {
       return researchGroup;
    }
 
+   public boolean isAnonymous() {
+      return getUser().hasNoGroup();
+   }
+
    public boolean isStudent() {
       return getUser().hasAnyGroup("student");
    }
@@ -61,7 +65,7 @@ public class CurrentUserProvider {
    }
 
    public boolean canSeeAllResearchGroups() {
-      return isStudent() || isAdmin();
+      return isAnonymous() || isStudent() || isAdmin();
    }
 
    public void assertSameResearchGroupIfNotPrivileged(ResearchGroup target) {
