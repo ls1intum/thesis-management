@@ -108,6 +108,8 @@ public class ThesisService {
             visibilitySet = Set.of(ThesisVisibility.PUBLIC, ThesisVisibility.STUDENT, ThesisVisibility.INTERNAL);
         } else if (currentUserProvider().isStudent() && fetchAll) {
             visibilitySet = Set.of(ThesisVisibility.PUBLIC, ThesisVisibility.STUDENT);
+        } else if (currentUserProvider().isAnonymous() && fetchAll) {
+            visibilitySet = Set.of(ThesisVisibility.PUBLIC);
         }
 
         return thesisRepository.searchTheses(
