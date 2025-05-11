@@ -79,7 +79,7 @@ const ThesisProposalSection = () => {
                   !isThesisClosed(thesis) ? (
                     <UploadFileButton
                       onUpload={onUpload}
-                      maxSize={20 * 1024 * 1024}
+                      maxSize={25 * 1024 * 1024}
                       accept='pdf'
                       ml='auto'
                     >
@@ -93,7 +93,7 @@ const ThesisProposalSection = () => {
               <Stack>
                 <Text ta='center'>No proposal uploaded yet</Text>
                 <Center>
-                  <UploadFileButton onUpload={onUpload} maxSize={20 * 1024 * 1024} accept='pdf'>
+                  <UploadFileButton onUpload={onUpload} maxSize={25 * 1024 * 1024} accept='pdf'>
                     Upload Proposal
                   </UploadFileButton>
                 </Center>

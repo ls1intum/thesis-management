@@ -118,7 +118,7 @@ const ThesisWritingSection = () => {
                                 access.advisor) &&
                               !isThesisClosed(thesis) ? (
                                 <UploadFileButton
-                                  maxSize={20 * 1024 * 1024}
+                                  maxSize={25 * 1024 * 1024}
                                   accept='pdf'
                                   onUpload={(file) => onFileUpload('THESIS', file)}
                                 >
@@ -132,7 +132,7 @@ const ThesisWritingSection = () => {
                             <Text ta='center'>No thesis uploaded yet</Text>
                             <Center>
                               <UploadFileButton
-                                maxSize={20 * 1024 * 1024}
+                                maxSize={25 * 1024 * 1024}
                                 accept='pdf'
                                 onUpload={(file) => onFileUpload('THESIS', file)}
                               >
@@ -206,7 +206,7 @@ const ThesisWritingSection = () => {
                                       !isThesisClosed(thesis) && (
                                         <UploadFileButton
                                           onUpload={(file) => onFileUpload(key, file)}
-                                          maxSize={20 * 1024 * 1024}
+                                          maxSize={25 * 1024 * 1024}
                                           accept={value.accept}
                                           size='xs'
                                         >
