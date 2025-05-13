@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "de.tum.cit.aet.thesis"
-version = "3.0.9"
+version = "4.0.1"
 description = "Thesis Management"
 
 springBoot {
