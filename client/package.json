@@ -1,6 +1,6 @@
 {
   "name": "thesis-management",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "Management of the Thesis Lifecycle in Universities",
   "private": true,
   "license": "MIT",
@@ -17,7 +17,7 @@
   "packageManager": "npm@10.9.0",
   "engines": {
     "node": ">=22.10.0"
-  },  
+  },
   "scripts": {
     "build": "webpack --env NODE_ENV=production",
     "check-bundle-size": "webpack --env NODE_ENV=production --env BUNDLE_SIZE=true",
