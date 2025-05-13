@@ -28,8 +28,9 @@ public interface UserRepository extends JpaRepository<User, UUID> {
                    OR NOT ('advisor' IN :groups
                            OR 'supervisor' IN :groups)
                    OR u.researchGroup.id = :researchGroupId)
-              AND (:groups IS NULL
-                   OR g.id.group IN :groups)
+              AND ((:groups IS NULL)
+                     OR ('student' IN :groups AND (g.id.group IN :groups OR g.id.group IS NULL))
+                     OR g.id.group IN :groups)
               AND (:searchQuery IS NULL
                    OR LOWER(u.firstName) || ' ' || LOWER(u.lastName) LIKE %:searchQuery%
                    OR LOWER(u.email) LIKE %:searchQuery%
