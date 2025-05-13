@@ -1,16 +1,27 @@
 import { Button, createPolymorphicComponent, Group, Modal, Stack, Text } from '@mantine/core'
-import { forwardRef, useState } from 'react'
+import { forwardRef, ReactNode, useState } from 'react'
 import { ButtonProps } from '@mantine/core/lib/components/Button/Button'
 
 interface IConfirmationButtonProps extends ButtonProps {
   confirmationTitle: string
   confirmationText: string
+  confirmationAddiitionalInformation?: ReactNode
   onClick?: () => unknown
 }
 
 const ConfirmationButton = createPolymorphicComponent<'button', IConfirmationButtonProps>(
   forwardRef<HTMLButtonElement, IConfirmationButtonProps>(
-    ({ confirmationTitle, confirmationText, children, onClick, ...others }, ref) => {
+    (
+      {
+        confirmationTitle,
+        confirmationText,
+        confirmationAddiitionalInformation,
+        children,
+        onClick,
+        ...others
+      },
+      ref,
+    ) => {
       const [opened, setOpened] = useState(false)
 
       return (
@@ -23,6 +34,7 @@ const ConfirmationButton = createPolymorphicComponent<'button', IConfirmationBut
           >
             <Stack>
               <Text>{confirmationText}</Text>
+              {confirmationAddiitionalInformation && confirmationAddiitionalInformation}
               <Group grow>
                 <Button variant='outline' color='red' onClick={() => setOpened(false)}>
                   Cancel
