@@ -227,7 +227,7 @@ public class ThesisService {
         assignThesisRoles(thesis, supervisorIds, advisorIds, studentIds);
 
         for (ThesisStatePayload state : states) {
-            saveStateChange(thesis, state.state());
+            saveStateChange(thesis, state.state(), state.changedAt());
         }
 
         thesis = thesisRepository.save(thesis);
@@ -662,6 +662,10 @@ public class ThesisService {
     }
 
     private void saveStateChange(Thesis thesis, ThesisState state) {
+        saveStateChange(thesis, state, Instant.now());
+    }
+
+    private void saveStateChange(Thesis thesis, ThesisState state, Instant changedAt) {
         currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
         ThesisStateChangeId stateChangeId = new ThesisStateChangeId();
         stateChangeId.setThesisId(thesis.getId());
@@ -670,7 +674,7 @@ public class ThesisService {
         ThesisStateChange stateChange = new ThesisStateChange();
         stateChange.setId(stateChangeId);
         stateChange.setThesis(thesis);
-        stateChange.setChangedAt(Instant.now());
+        stateChange.setChangedAt(changedAt);
 
         thesisStateChangeRepository.save(stateChange);
 
