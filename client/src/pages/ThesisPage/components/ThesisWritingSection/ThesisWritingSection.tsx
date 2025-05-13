@@ -1,5 +1,5 @@
 import { IThesis, ThesisState } from '../../../../requests/responses/thesis'
-import { Accordion, Center, Grid, Group, Stack, Text, Table } from '@mantine/core'
+import { Accordion, Center, Grid, Group, Stack, Table, Text } from '@mantine/core'
 import ConfirmationButton from '../../../../components/ConfirmationButton/ConfirmationButton'
 import { doRequest } from '../../../../requests/request'
 import { checkMinimumThesisState, isThesisClosed } from '../../../../utils/thesis'
@@ -54,10 +54,14 @@ const ThesisWritingSection = () => {
 
     if (response.ok) {
       showSimpleSuccess('File uploaded successfully')
-
       updateThesis(response.data)
     } else {
-      showSimpleError(getApiResponseErrorMessage(response))
+      if (access.student && thesis.state === ThesisState.SUBMITTED) {
+        // It is not possible to return this message in the endpoint, the client already catches that the student is not permitted to submit and returns a 403
+        showSimpleError('Cannot upload files after final submission. Please contact your advisor.')
+      } else {
+        showSimpleError(getApiResponseErrorMessage(response))
+      }
     }
   }
 
@@ -118,7 +122,7 @@ const ThesisWritingSection = () => {
                                 access.advisor) &&
                               !isThesisClosed(thesis) ? (
                                 <UploadFileButton
-                                  maxSize={20 * 1024 * 1024}
+                                  maxSize={25 * 1024 * 1024}
                                   accept='pdf'
                                   onUpload={(file) => onFileUpload('THESIS', file)}
                                 >
@@ -132,7 +136,7 @@ const ThesisWritingSection = () => {
                             <Text ta='center'>No thesis uploaded yet</Text>
                             <Center>
                               <UploadFileButton
-                                maxSize={20 * 1024 * 1024}
+                                maxSize={25 * 1024 * 1024}
                                 accept='pdf'
                                 onUpload={(file) => onFileUpload('THESIS', file)}
                               >
@@ -201,12 +205,11 @@ const ThesisWritingSection = () => {
                                       </AuthenticatedFileDownloadButton>
                                     )}
                                     {((access.student && thesis.state === ThesisState.WRITING) ||
-                                      access.advisor ||
-                                      (access.student && !value.required)) &&
+                                      access.advisor) &&
                                       !isThesisClosed(thesis) && (
                                         <UploadFileButton
                                           onUpload={(file) => onFileUpload(key, file)}
-                                          maxSize={20 * 1024 * 1024}
+                                          maxSize={25 * 1024 * 1024}
                                           accept={value.accept}
                                           size='xs'
                                         >

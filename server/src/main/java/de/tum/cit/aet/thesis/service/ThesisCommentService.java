@@ -1,5 +1,11 @@
 package de.tum.cit.aet.thesis.service;
 
+import de.tum.cit.aet.thesis.constants.ThesisCommentType;
+import de.tum.cit.aet.thesis.constants.UploadFileType;
+import de.tum.cit.aet.thesis.entity.Thesis;
+import de.tum.cit.aet.thesis.entity.ThesisComment;
+import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
+import de.tum.cit.aet.thesis.repository.ThesisCommentRepository;
 import de.tum.cit.aet.thesis.security.CurrentUserProvider;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.core.io.Resource;
@@ -8,12 +14,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import de.tum.cit.aet.thesis.constants.ThesisCommentType;
-import de.tum.cit.aet.thesis.constants.UploadFileType;
-import de.tum.cit.aet.thesis.entity.Thesis;
-import de.tum.cit.aet.thesis.entity.ThesisComment;
-import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
-import de.tum.cit.aet.thesis.repository.ThesisCommentRepository;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -59,7 +59,7 @@ public class ThesisCommentService {
 
         if (file != null) {
             comment.setUploadName(file.getOriginalFilename());
-            comment.setFilename(uploadService.store(file, 20 * 1024 * 1024, UploadFileType.ANY));
+            comment.setFilename(uploadService.store(file, 25 * 1024 * 1024, UploadFileType.ANY));
         }
 
         comment = thesisCommentRepository.save(comment);

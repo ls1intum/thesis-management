@@ -227,7 +227,7 @@ public class ThesisService {
         assignThesisRoles(thesis, supervisorIds, advisorIds, studentIds);
 
         for (ThesisStatePayload state : states) {
-            saveStateChange(thesis, state.state());
+            saveStateChange(thesis, state.state(), state.changedAt());
         }
 
         thesis = thesisRepository.save(thesis);
@@ -355,7 +355,7 @@ public class ThesisService {
         ThesisProposal proposal = new ThesisProposal();
 
         proposal.setThesis(thesis);
-        proposal.setProposalFilename(uploadService.store(proposalFile, 20 * 1024 * 1024, UploadFileType.PDF));
+        proposal.setProposalFilename(uploadService.store(proposalFile, 25 * 1024 * 1024, UploadFileType.PDF));
         proposal.setCreatedAt(Instant.now());
         proposal.setCreatedBy(currentUserProvider().getUser());
 
@@ -435,7 +435,7 @@ public class ThesisService {
         ThesisFile thesisFile = new ThesisFile();
 
         thesisFile.setUploadName(file.getOriginalFilename());
-        thesisFile.setFilename(uploadService.store(file, 20 * 1024 * 1024, UploadFileType.ANY));
+        thesisFile.setFilename(uploadService.store(file, 25 * 1024 * 1024, UploadFileType.ANY));
         thesisFile.setUploadedBy(currentUserProvider().getUser());
         thesisFile.setUploadedAt(Instant.now());
         thesisFile.setThesis(thesis);
@@ -662,6 +662,10 @@ public class ThesisService {
     }
 
     private void saveStateChange(Thesis thesis, ThesisState state) {
+        saveStateChange(thesis, state, Instant.now());
+    }
+
+    private void saveStateChange(Thesis thesis, ThesisState state, Instant changedAt) {
         currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
         ThesisStateChangeId stateChangeId = new ThesisStateChangeId();
         stateChangeId.setThesisId(thesis.getId());
@@ -670,7 +674,7 @@ public class ThesisService {
         ThesisStateChange stateChange = new ThesisStateChange();
         stateChange.setId(stateChangeId);
         stateChange.setThesis(thesis);
-        stateChange.setChangedAt(Instant.now());
+        stateChange.setChangedAt(changedAt);
 
         thesisStateChangeRepository.save(stateChange);
 

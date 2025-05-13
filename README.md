@@ -5,7 +5,8 @@ Developed to address challenges in managing large volumes of theses, it facilita
 Key features include a centralized application process, guided workflows for thesis writing, automated notifications, and a comprehensive Gantt chart for tracking progress. 
 By consolidating communication, feedback, and file management, ThesisManagement enhances transparency, reduces administrative burdens, and fosters efficient thesis supervision and assessment.
 
-Thesis Management was developed as part of this [bachelor's thesis](docs/files/ba-thesis-fabian-emilius.pdf).
+Thesis Management was developed as part of multiple bachelor's and master's thesis,
+e.g. [Development of a Thesis Management System](docs/files/ba-thesis-fabian-emilius.pdf).
 
 ## User Documentation
 
