@@ -24,8 +24,8 @@ spring:
         format_sql: false
   servlet:
     multipart:
-      max-file-size: 20MB
-      max-request-size: 20MB
+      max-file-size: 25MB
+      max-request-size: 25MB
   mail:
     host: localhost
     port: 25
