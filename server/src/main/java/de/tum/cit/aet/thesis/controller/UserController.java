@@ -1,6 +1,8 @@
 package de.tum.cit.aet.thesis.controller;
 
 import de.tum.cit.aet.thesis.security.CurrentUserProvider;
+import de.tum.cit.aet.thesis.service.AccessManagementService;
+import de.tum.cit.aet.thesis.service.AuthenticationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import de.tum.cit.aet.thesis.dto.PaginationDto;
 import de.tum.cit.aet.thesis.entity.User;
 import de.tum.cit.aet.thesis.service.UserService;
 
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -26,11 +29,14 @@ public class UserController {
     private final UserService userService;
     private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
 
+    private final AccessManagementService accessManagementService;
+
     @Autowired
     public UserController(UserService userService,
-        ObjectProvider<CurrentUserProvider> currentUserProviderProvider) {
+        ObjectProvider<CurrentUserProvider> currentUserProviderProvider, AccessManagementService accessManagementService) {
         this.userService = userService;
         this.currentUserProviderProvider = currentUserProviderProvider;
+        this.accessManagementService = accessManagementService;
     }
 
     private CurrentUserProvider currentUserProvider() {
@@ -50,6 +56,15 @@ public class UserController {
         Page<User> users = userService.getAll(searchQuery, groups, page, limit, sortBy, sortOrder);
 
         return ResponseEntity.ok(PaginationDto.fromSpringPage(users.map(LightUserDto::fromUserEntity)));
+    }
+
+    @GetMapping("/keycloak-users")
+    @PreAuthorize("hasRole('admin')")
+    public ResponseEntity<List<AccessManagementService.KeycloakUserElement>> getKeycloakUsers(
+            @RequestParam(required = false, defaultValue = "") String searchKey
+    ) {
+        List<AccessManagementService.KeycloakUserElement> users = accessManagementService.getAllUsers(searchKey);
+        return ResponseEntity.ok(users);
     }
 
     @GetMapping("/{userId}/examination-report")

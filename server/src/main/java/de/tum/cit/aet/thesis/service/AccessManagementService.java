@@ -14,6 +14,7 @@ import org.springframework.http.HttpHeaders;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -180,5 +181,28 @@ public class AccessManagementService {
                 .findFirst()
                 .map(UserElement::id)
                 .orElseThrow(() -> new RuntimeException("User not found: " + username));
+    }
+
+    public record KeycloakUserElement(UUID id, String firstName, String lastName , String email) {}
+
+    public List<KeycloakUserElement> getAllUsers(String searchKey) {
+        try {
+            List<KeycloakUserElement> users = webClient.method(HttpMethod.GET)
+                    .uri(uriBuilder -> uriBuilder
+                            .path("/admin/realms/" + keycloakRealmName + "/users")
+                            .queryParam("search", searchKey)
+                            .build()
+                    )
+                    .headers(headers -> headers.addAll(getAuthenticationHeaders()))
+                    .retrieve()
+                    .bodyToFlux(KeycloakUserElement.class)
+                    .collectList()
+                    .block();
+
+            return users;
+        } catch (RuntimeException exception) {
+            log.warn("Could not fetch users from keycloak", exception);
+            return new ArrayList<>();
+        }
     }
 }
