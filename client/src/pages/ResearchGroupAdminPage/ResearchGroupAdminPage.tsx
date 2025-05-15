@@ -8,14 +8,21 @@ import { IResearchGroup } from '../../requests/responses/researchGroup'
 import { showSimpleError } from '../../utils/notification'
 import { getApiResponseErrorMessage } from '../../requests/handler'
 import ResearchGroupCard from './components/ResearchGroupCard'
+import CreateResearchGroupModal, {
+  ResearchGroupFormValues,
+} from './components/CreateResearchGroupModal'
+import { useDebouncedValue } from '@mantine/hooks'
 
 const ResearchGroupAdminPage = () => {
   usePageTitle('Theses Overview')
 
   const [searchKey, setSearchKey] = React.useState('')
+  const [debouncedSearch] = useDebouncedValue(searchKey, 300)
   const [researchGroupsLoading, setResearchGroupsLoading] = useState(false)
 
   const [researchGroups, setResearchGroups] = useState<PaginationResponse<IResearchGroup>>()
+
+  const [createResearchGroupModalOpened, setCreateResearchGroupModalOpened] = useState(false)
 
   useEffect(() => {
     setResearchGroupsLoading(true)
@@ -27,6 +34,7 @@ const ResearchGroupAdminPage = () => {
         params: {
           page: 0,
           limit: -1,
+          search: debouncedSearch.trim(),
         },
       },
       (res) => {
@@ -52,7 +60,7 @@ const ResearchGroupAdminPage = () => {
         setResearchGroupsLoading(false)
       },
     )
-  }, [])
+  }, [debouncedSearch])
 
   return (
     <Stack>
@@ -75,7 +83,7 @@ const ResearchGroupAdminPage = () => {
         <Button
           w={{ base: '100%', sm: 'auto' }}
           leftSection={<Plus />}
-          onClick={() => console.log('Create new research group')}
+          onClick={() => setCreateResearchGroupModalOpened(true)}
         >
           Create Research Group
         </Button>
@@ -93,6 +101,11 @@ const ResearchGroupAdminPage = () => {
           ))}
         </Grid>
       )}
+      <CreateResearchGroupModal
+        opened={createResearchGroupModalOpened}
+        onClose={() => setCreateResearchGroupModalOpened(false)}
+        onSubmit={() => console.log('Submitted')}
+      ></CreateResearchGroupModal>
     </Stack>
   )
 }

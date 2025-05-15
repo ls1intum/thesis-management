@@ -183,7 +183,7 @@ public class AccessManagementService {
                 .orElseThrow(() -> new RuntimeException("User not found: " + username));
     }
 
-    public record KeycloakUserElement(UUID id, String firstName, String lastName , String email) {}
+    public record KeycloakUserElement(UUID id, String username, String firstName, String lastName , String email) {}
 
     public List<KeycloakUserElement> getAllUsers(String searchKey) {
         try {
