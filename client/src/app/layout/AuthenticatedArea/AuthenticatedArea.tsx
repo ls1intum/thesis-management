@@ -25,6 +25,7 @@ import {
   PaperPlaneTilt,
   Table,
   Presentation,
+  UsersThree,
 } from 'phosphor-react'
 import { useIsSmallerBreakpoint } from '../../../hooks/theme'
 import { useAuthenticationContext, useUser } from '../../../hooks/authentication'
@@ -88,6 +89,12 @@ const links: Array<{
     label: 'Theses Overview',
     icon: Kanban,
     groups: ['admin', 'advisor', 'supervisor'],
+  },
+  {
+    link: '/research-groups',
+    label: 'Research Groups',
+    icon: UsersThree,
+    groups: ['admin'],
   },
 ]
 
