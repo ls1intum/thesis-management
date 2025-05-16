@@ -11,6 +11,10 @@ const ThesisOverviewPage = lazy(() => import('../pages/ThesisOverviewPage/Thesis
 const ResearchGroupAdminPage = lazy(
   () => import('../pages/ResearchGroupAdminPage/ResearchGroupAdminPage'),
 )
+const ResearchGroupSettingPage = lazy(
+  () => import('../pages/ResearchGroupSettingPage/ResearchGroupSettingPage'),
+)
+
 const PresentationOverviewPage = lazy(
   () => import('../pages/PresentationOverviewPage/PresentationOverviewPage'),
 )
@@ -144,6 +148,14 @@ const AppRoutes = () => {
             element={
               <AuthenticatedArea>
                 <ResearchGroupAdminPage />
+              </AuthenticatedArea>
+            }
+          />
+          <Route
+            path='/research-groups/:researchGroupId'
+            element={
+              <AuthenticatedArea>
+                <ResearchGroupSettingPage />
               </AuthenticatedArea>
             }
           />

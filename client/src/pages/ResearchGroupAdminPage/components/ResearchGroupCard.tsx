@@ -4,8 +4,15 @@ import React from 'react'
 import { IResearchGroup } from '../../../requests/responses/researchGroup'
 import CustomAvatar from '../../../components/CustomAvatar/CustomAvatar'
 import { formatUser } from '../../../utils/format'
+import { useNavigate } from 'react-router'
 
 const ResearchGroupCard = (props: IResearchGroup) => {
+  const navigate = useNavigate()
+
+  const onResearchGroupCardClick = () => {
+    navigate(`/research-groups/${props.id}`)
+  }
+
   return (
     <Card
       withBorder
@@ -14,6 +21,7 @@ const ResearchGroupCard = (props: IResearchGroup) => {
       h='100%'
       w='100%'
       style={{ display: 'flex', flexDirection: 'column' }}
+      onClick={onResearchGroupCardClick}
     >
       <Flex
         justify={{ base: 'flex-start', sm: 'space-between' }}

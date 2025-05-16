@@ -63,7 +63,7 @@ const ResearchGroupAdminPage = () => {
 
   const handleCreateResearchGroup = async (values: ResearchGroupFormValues) => {
     const body = {
-      headUsername: values.headId,
+      headUsername: values.headUsername,
       name: values.name,
       abbreviation: values.abbreviation,
       campus: values.campus,
@@ -127,7 +127,7 @@ const ResearchGroupAdminPage = () => {
       ) : (
         <Grid>
           {researchGroups?.content.map((group) => (
-            <Grid.Col span={{ base: 12, sm: 6 }} key={group.id} style={{ display: 'flex' }}>
+            <Grid.Col span={{ base: 12, sm: 6, lg: 4 }} key={group.id} style={{ display: 'flex' }}>
               <ResearchGroupCard {...group} />
             </Grid.Col>
           ))}

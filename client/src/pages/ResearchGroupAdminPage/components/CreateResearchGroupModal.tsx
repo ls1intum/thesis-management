@@ -1,19 +1,7 @@
-import {
-  Autocomplete,
-  Button,
-  Modal,
-  Select,
-  Stack,
-  Text,
-  Textarea,
-  TextInput,
-} from '@mantine/core'
+import { Button, Modal, Select, Stack, Text, Textarea, TextInput } from '@mantine/core'
 import { useForm } from '@mantine/form'
-import { useDebouncedValue } from '@mantine/hooks'
-import React, { useEffect, useState } from 'react'
-import { doRequest } from '../../../requests/request'
-import { showSimpleError } from '../../../utils/notification'
-import { getApiResponseErrorMessage } from '../../../requests/handler'
+import { useState } from 'react'
+import KeycloakUserAutocomplete from '../../../components/KeycloakUserAutocomplete.tsx/KeycloakUserAutocomplete'
 
 interface ICreateResearchGroupModalProps {
   opened: boolean
@@ -27,15 +15,7 @@ export interface ResearchGroupFormValues {
   campus: string
   description: string
   websiteUrl: string
-  headId: string
-}
-
-interface KeycloakUserElement {
-  id: string
-  username: string
-  firstName: string
-  lastName: string
-  email: string
+  headUsername: string
 }
 
 const CreateResearchGroupModal = ({
@@ -50,45 +30,16 @@ const CreateResearchGroupModal = ({
       campus: '',
       description: '',
       websiteUrl: '',
-      headId: '',
+      headUsername: '',
     },
     validateInputOnChange: true,
     validate: {
       name: (value) => (value.length < 2 ? 'Name must be at least 2 characters' : null),
-      headId: (value) => (!value ? 'Please select a group head' : null),
+      headUsername: (value) => (!value ? 'Please select a group head' : null),
     },
   })
 
-  const [headSearchKey, setHeadSearchKey] = useState('')
-  const [debouncedSearch] = useDebouncedValue(headSearchKey, 300)
-
-  const [headOptions, setHeadOptions] = useState<KeycloakUserElement[]>([])
-
-  useEffect(() => {
-    if (!debouncedSearch.trim()) {
-      setHeadOptions([])
-      return
-    }
-
-    doRequest<KeycloakUserElement[]>(
-      '/v2/users/keycloak-users',
-      {
-        method: 'GET',
-        requiresAuth: true,
-        params: {
-          searchKey: debouncedSearch.trim(),
-        },
-      },
-      (res) => {
-        if (res.ok) {
-          setHeadOptions(res.data)
-        } else {
-          setHeadOptions([])
-          showSimpleError(getApiResponseErrorMessage(res))
-        }
-      },
-    )
-  }, [debouncedSearch])
+  const [headDisplayLabel, setHeadDisplayLabel] = useState('')
 
   return (
     <Modal opened={opened} onClose={onClose} title='Create Research Group' centered>
@@ -100,30 +51,22 @@ const CreateResearchGroupModal = ({
             withAsterisk
             {...form.getInputProps('name')}
           />
-          <Autocomplete
+
+          <KeycloakUserAutocomplete
+            username={form.values.headUsername}
+            selectedLabel={headDisplayLabel}
+            onSelect={(username, label) => {
+              form.setFieldValue('headUsername', username)
+              setHeadDisplayLabel(label)
+            }}
             label='Group Head'
             placeholder='Search by name or email...'
-            value={headSearchKey}
-            onChange={setHeadSearchKey}
             withAsterisk
-            data={headOptions.map((user) => ({
-              value: `${user.firstName} ${user.lastName} (${user.username}): ${user.email}`,
-            }))}
-            limit={10}
-            onOptionSubmit={(val) => {
-              const selected = headOptions.find(
-                (u) => `${u.firstName} ${u.lastName} (${u.username}): ${u.email}` === val,
-              )
-              if (selected) {
-                form.setFieldValue('headId', selected.username)
-                setHeadSearchKey(val)
-              }
-            }}
           />
 
-          {form.values.headId && (
+          {form.values.headUsername && (
             <Text size='xs' c='dimmed'>
-              Selected Head ID: {form.values.headId}
+              Selected Head Username: {form.values.headUsername}
             </Text>
           )}
 
