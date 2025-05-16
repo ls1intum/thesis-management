@@ -12,6 +12,7 @@ import CreateResearchGroupModal, {
   ResearchGroupFormValues,
 } from './components/CreateResearchGroupModal'
 import { useDebouncedValue } from '@mantine/hooks'
+import { showNotification } from '@mantine/notifications'
 
 const ResearchGroupAdminPage = () => {
   usePageTitle('Theses Overview')
@@ -43,8 +44,6 @@ const ResearchGroupAdminPage = () => {
             ...res.data,
             content: res.data.content,
           })
-
-          console.log('Research groups:', res.data.content)
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
 
@@ -61,6 +60,39 @@ const ResearchGroupAdminPage = () => {
       },
     )
   }, [debouncedSearch])
+
+  const handleCreateResearchGroup = async (values: ResearchGroupFormValues) => {
+    const body = {
+      headUsername: values.headId,
+      name: values.name,
+      abbreviation: values.abbreviation,
+      campus: values.campus,
+      description: values.description,
+      websiteUrl: values.websiteUrl,
+    }
+
+    doRequest(
+      '/v2/research-groups',
+      {
+        method: 'POST',
+        requiresAuth: true,
+        data: body,
+      },
+      (res) => {
+        if (res.ok) {
+          showNotification({
+            title: 'Success',
+            message: 'Research group created.',
+            color: 'green',
+          })
+          setCreateResearchGroupModalOpened(false)
+          //TODO: Refresh the list of research groups
+        } else {
+          showSimpleError(getApiResponseErrorMessage(res))
+        }
+      },
+    )
+  }
 
   return (
     <Stack>
@@ -104,7 +136,7 @@ const ResearchGroupAdminPage = () => {
       <CreateResearchGroupModal
         opened={createResearchGroupModalOpened}
         onClose={() => setCreateResearchGroupModalOpened(false)}
-        onSubmit={() => console.log('Submitted')}
+        onSubmit={handleCreateResearchGroup}
       ></CreateResearchGroupModal>
     </Stack>
   )

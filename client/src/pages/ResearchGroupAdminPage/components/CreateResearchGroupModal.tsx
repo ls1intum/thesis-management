@@ -55,12 +55,6 @@ const CreateResearchGroupModal = ({
     validateInputOnChange: true,
     validate: {
       name: (value) => (value.length < 2 ? 'Name must be at least 2 characters' : null),
-      abbreviation: (value) => (!value ? 'Abbreviation is required' : null),
-      campus: (value) => (!value ? 'Campus is required' : null),
-      websiteUrl: (value) =>
-        value && !/^https?:\/\/.+\..+/.test(value)
-          ? 'Enter a valid website URL starting with http:// or https://'
-          : null,
       headId: (value) => (!value ? 'Please select a group head' : null),
     },
   })
@@ -109,19 +103,16 @@ const CreateResearchGroupModal = ({
           <TextInput
             label='Abbreviation'
             placeholder='e.g., IS'
-            withAsterisk
             {...form.getInputProps('abbreviation')}
           />
           <Select
             label='Campus'
             placeholder='Select a campus'
-            withAsterisk
             data={['Garching', 'Munich', 'Heilbronn', 'Weihenstephan']}
             {...form.getInputProps('campus')}
           />
           <TextInput
             label='Website'
-            withAsterisk
             type='url'
             placeholder='https://group-website.example.com'
             {...form.getInputProps('websiteUrl')}
@@ -131,7 +122,6 @@ const CreateResearchGroupModal = ({
             autosize
             minRows={3}
             maxLength={300}
-            withAsterisk
             {...form.getInputProps('description')}
           />
           <Text size='xs' c='dimmed'>

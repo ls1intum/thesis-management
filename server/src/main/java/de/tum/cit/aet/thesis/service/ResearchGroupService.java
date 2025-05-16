@@ -99,6 +99,7 @@ public class ResearchGroupService {
   ) {
     //Get the User by universityId else create the user
     // TODO: Refactor for reuse
+    // TODO: Check if the user is already in a research group(throw error else)
     User head = userRepository.findByUniversityId(headUsername).orElseGet(() -> {
       User newUser = new User();
       Instant currentTime = Instant.now();
