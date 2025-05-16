@@ -1,4 +1,4 @@
-import { Autocomplete, Loader } from '@mantine/core'
+import { Autocomplete, Group, Loader, Text } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { useEffect, useState } from 'react'
 import { showSimpleError } from '../../utils/notification'
@@ -86,6 +86,26 @@ const KeycloakUserAutocomplete = ({
       }))}
       limit={10}
       rightSection={loadingUsers ? <Loader size='xs' /> : null}
+      renderOption={({ option }) => {
+        const user = userOptions.find(
+          (u) => `${u.firstName} ${u.lastName} (${u.username}): ${u.email}` === option.value,
+        )
+
+        return (
+          <div>
+            <Group gap='xs' wrap='nowrap'>
+              <div>
+                <Text size='sm' fw={500}>
+                  {user?.firstName} {user?.lastName}
+                </Text>
+                <Text size='xs' c='dimmed'>
+                  @{user?.username} • {user?.email}
+                </Text>
+              </div>
+            </Group>
+          </div>
+        )
+      }}
       onOptionSubmit={(val) => {
         const selected = userOptions.find(
           (u) => `${u.firstName} ${u.lastName} (${u.username}): ${u.email}` === val,
