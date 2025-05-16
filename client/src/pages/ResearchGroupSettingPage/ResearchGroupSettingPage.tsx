@@ -4,7 +4,18 @@ import { IResearchGroup } from '../../requests/responses/researchGroup'
 import { doRequest } from '../../requests/request'
 import { showSimpleError } from '../../utils/notification'
 import { getApiResponseErrorMessage } from '../../requests/handler'
-import { Button, Loader, Select, Stack, Textarea, TextInput, Title, Text } from '@mantine/core'
+import {
+  Button,
+  Loader,
+  Select,
+  Stack,
+  Textarea,
+  TextInput,
+  Title,
+  Text,
+  Card,
+  Grid,
+} from '@mantine/core'
 import KeycloakUserAutocomplete from '../../components/KeycloakUserAutocomplete.tsx/KeycloakUserAutocomplete'
 import { useForm } from '@mantine/form'
 import { showNotification } from '@mantine/notifications'
@@ -101,55 +112,104 @@ const ResearchGroupSettingPage = () => {
   return (
     <Stack>
       <Title>Research Group Settings</Title>
-
-      <form onSubmit={form.onSubmit(handleSubmit)}>
+      <Card
+        bg='transparent'
+        withBorder
+        shadow='sm'
+        radius='md'
+        w='100%'
+        style={{ display: 'flex', flexDirection: 'column' }}
+      >
         <Stack>
-          <TextInput label='Name' withAsterisk {...form.getInputProps('name')} />
+          <Stack gap={5}>
+            <Title order={3}>Group Information</Title>
+            <Text size='sm' c='dimmed'>
+              Edit the basic information about your research group.
+            </Text>
+          </Stack>
 
-          <KeycloakUserAutocomplete
-            username={form.values.headUsername}
-            selectedLabel={headDisplayLabel}
-            onSelect={(username, label) => {
-              form.setFieldValue('headUsername', username)
-              setHeadDisplayLabel(label)
-            }}
-            label='Group Head'
-            placeholder='Search by name or email...'
-            withAsterisk
-          />
+          <form onSubmit={form.onSubmit(handleSubmit)}>
+            <Grid gutter='md'>
+              <Grid.Col span={{ base: 12, md: 6 }}>
+                <TextInput label='Name' withAsterisk {...form.getInputProps('name')} />
+              </Grid.Col>
 
-          <TextInput label='Abbreviation' {...form.getInputProps('abbreviation')} />
+              <Grid.Col span={{ base: 12, md: 6 }}>
+                <KeycloakUserAutocomplete
+                  username={form.values.headUsername}
+                  selectedLabel={headDisplayLabel}
+                  onSelect={(username, label) => {
+                    form.setFieldValue('headUsername', username)
+                    setHeadDisplayLabel(label)
+                  }}
+                  label='Group Head'
+                  placeholder='Search by name or email...'
+                  withAsterisk
+                />
+              </Grid.Col>
 
-          <Select
-            label='Campus'
-            placeholder='Select a campus'
-            data={['Garching', 'Munich', 'Heilbronn', 'Weihenstephan']}
-            {...form.getInputProps('campus')}
-          />
+              <Grid.Col span={{ base: 12, md: 6 }}>
+                <TextInput label='Abbreviation' {...form.getInputProps('abbreviation')} />
+              </Grid.Col>
 
-          <TextInput
-            label='Website'
-            type='url'
-            placeholder='https://group-website.example.com'
-            {...form.getInputProps('websiteUrl')}
-          />
+              <Grid.Col span={{ base: 12, md: 6 }}>
+                <Select
+                  label='Campus'
+                  placeholder='Select a campus'
+                  data={['Garching', 'Munich', 'Heilbronn', 'Weihenstephan']}
+                  {...form.getInputProps('campus')}
+                />
+              </Grid.Col>
 
-          <Textarea
-            label='Description'
-            autosize
-            minRows={3}
-            maxLength={300}
-            {...form.getInputProps('description')}
-          />
-          <Text size='xs' c='dimmed'>
-            {form.values.description.length}/300 characters
-          </Text>
+              <Grid.Col span={12}>
+                <TextInput
+                  label='Website'
+                  type='url'
+                  placeholder='https://group-website.example.com'
+                  {...form.getInputProps('websiteUrl')}
+                />
+              </Grid.Col>
 
-          <Button type='submit' fullWidth mt='md' disabled={!form.isValid()}>
-            Save Changes
-          </Button>
+              <Grid.Col span={12}>
+                <Textarea
+                  label='Description'
+                  autosize
+                  minRows={3}
+                  maxLength={300}
+                  {...form.getInputProps('description')}
+                />
+                <Text size='xs' c='dimmed'>
+                  {form.values.description.length}/300 characters
+                </Text>
+              </Grid.Col>
+
+              <Grid.Col span={12}>
+                <Button type='submit' fullWidth mt='md' disabled={!form.isValid()}>
+                  Save Changes
+                </Button>
+              </Grid.Col>
+            </Grid>
+          </form>
         </Stack>
-      </form>
+      </Card>
+
+      <Card
+        bg='transparent'
+        withBorder
+        shadow='sm'
+        radius='md'
+        w='100%'
+        style={{ display: 'flex', flexDirection: 'column' }}
+      >
+        <Stack>
+          <Stack gap={5}>
+            <Title order={3}>Group Members</Title>
+            <Text size='sm' c='dimmed'>
+              Manage the members of your research group.
+            </Text>
+          </Stack>
+        </Stack>
+      </Card>
     </Stack>
   )
 }

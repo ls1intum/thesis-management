@@ -25,9 +25,9 @@ const ResearchGroupAdminPage = () => {
 
   const [createResearchGroupModalOpened, setCreateResearchGroupModalOpened] = useState(false)
 
-  useEffect(() => {
+  const fetchResearchGroups = () => {
     setResearchGroupsLoading(true)
-    return doRequest<PaginationResponse<IResearchGroup>>(
+    doRequest<PaginationResponse<IResearchGroup>>(
       '/v2/research-groups',
       {
         method: 'GET',
@@ -46,7 +46,6 @@ const ResearchGroupAdminPage = () => {
           })
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
-
           setResearchGroups({
             content: [],
             totalPages: 0,
@@ -59,6 +58,10 @@ const ResearchGroupAdminPage = () => {
         setResearchGroupsLoading(false)
       },
     )
+  }
+
+  useEffect(() => {
+    fetchResearchGroups()
   }, [debouncedSearch])
 
   const handleCreateResearchGroup = async (values: ResearchGroupFormValues) => {
@@ -86,7 +89,7 @@ const ResearchGroupAdminPage = () => {
             color: 'green',
           })
           setCreateResearchGroupModalOpened(false)
-          //TODO: Refresh the list of research groups
+          fetchResearchGroups()
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
         }
