@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { usePageTitle } from '../../hooks/theme'
-import { Box, Button, Flex, Grid, Loader, Stack, TextInput, Title } from '@mantine/core'
+import { Box, Button, Flex, Grid, Loader, SimpleGrid, Stack, TextInput, Title } from '@mantine/core'
 import { MagnifyingGlass, Plus } from 'phosphor-react'
 import { doRequest } from '../../requests/request'
 import { PaginationResponse } from '../../requests/responses/pagination'
@@ -125,13 +125,13 @@ const ResearchGroupAdminPage = () => {
           <Loader color='blue' />
         </Flex>
       ) : (
-        <Grid>
-          {researchGroups?.content.map((group) => (
-            <Grid.Col span={{ base: 12, sm: 6, lg: 4 }} key={group.id} style={{ display: 'flex' }}>
-              <ResearchGroupCard {...group} />
-            </Grid.Col>
-          ))}
-        </Grid>
+        <SimpleGrid
+          cols={{ base: 1, sm: 2, xl: 3 }}
+          spacing={{ base: 'xs', sm: 'sm', xl: 'md' }}
+          verticalSpacing={{ base: 'xs', sm: 'sm', xl: 'md' }}
+        >
+          {researchGroups?.content.map((group) => <ResearchGroupCard {...group} />)}
+        </SimpleGrid>
       )}
       <CreateResearchGroupModal
         opened={createResearchGroupModalOpened}
