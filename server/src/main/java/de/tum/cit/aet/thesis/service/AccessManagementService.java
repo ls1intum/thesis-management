@@ -158,10 +158,8 @@ public class AccessManagementService {
                 .orElseThrow(() -> new RuntimeException("Group not found: " + groupName));
     }
 
-    private record UserElement(UUID id) {}
-
-    private UUID getUserId(String username) {
-        List<UserElement> users = webClient.method(HttpMethod.GET)
+    public KeycloakUserElement getUserByUsername(String username) {
+        List<KeycloakUserElement> users = webClient.method(HttpMethod.GET)
                 .uri(uriBuilder -> uriBuilder
                         .path("/admin/realms/" + keycloakRealmName + "/users")
                         .queryParam("username", username)
@@ -169,7 +167,7 @@ public class AccessManagementService {
                 )
                 .headers(headers -> headers.addAll(getAuthenticationHeaders()))
                 .retrieve()
-                .bodyToFlux(UserElement.class)
+                .bodyToFlux(KeycloakUserElement.class)
                 .collectList()
                 .block();
 
@@ -179,8 +177,11 @@ public class AccessManagementService {
 
         return users.stream()
                 .findFirst()
-                .map(UserElement::id)
                 .orElseThrow(() -> new RuntimeException("User not found: " + username));
+    }
+
+    private UUID getUserId(String username) {
+        return getUserByUsername(username).id;
     }
 
     public record KeycloakUserElement(UUID id, String username, String firstName, String lastName , String email) {}

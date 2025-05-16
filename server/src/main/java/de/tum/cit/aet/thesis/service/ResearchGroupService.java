@@ -25,15 +25,17 @@ public class ResearchGroupService {
   private final UserService userService;
   private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
   private final UserRepository userRepository;
+  private final AccessManagementService accessManagementService;
 
   @Autowired
   public ResearchGroupService(ResearchGroupRepository researchGroupRepository,
       UserService userService, ObjectProvider<CurrentUserProvider> currentUserProviderProvider,
-      UserRepository userRepository) {
+      UserRepository userRepository, AccessManagementService accessManagementService) {
       this.researchGroupRepository = researchGroupRepository;
       this.userService = userService;
       this.currentUserProviderProvider = currentUserProviderProvider;
       this.userRepository = userRepository;
+      this.accessManagementService = accessManagementService;
   }
 
   private CurrentUserProvider currentUserProvider() {
@@ -88,14 +90,32 @@ public class ResearchGroupService {
 
   @Transactional
   public ResearchGroup createResearchGroup(
-      UUID headId,
+      String headUsername,
       String name,
       String abbreviation,
       String description,
       String websiteUrl,
       String campus
   ) {
-    User head = userService.findById(headId);
+    //Get the User by universityId else create the user
+    // TODO: Refactor for reuse
+    User head = userRepository.findByUniversityId(headUsername).orElseGet(() -> {
+      User newUser = new User();
+      Instant currentTime = Instant.now();
+
+      newUser.setJoinedAt(currentTime);
+      newUser.setUpdatedAt(currentTime);
+
+      // Load user data from Keycloak
+      AccessManagementService.KeycloakUserElement userElement = accessManagementService.getUserByUsername(headUsername);
+
+      newUser.setUniversityId(userElement.username());
+      newUser.setFirstName(userElement.firstName());
+      newUser.setLastName(userElement.lastName());
+      newUser.setEmail(userElement.email());
+
+      return newUser;
+    });
 
     ResearchGroup researchGroup = new ResearchGroup();
     researchGroup.setHead(head);
@@ -121,7 +141,7 @@ public class ResearchGroupService {
   @Transactional
   public ResearchGroup updateResearchGroup(
       ResearchGroup researchGroup,
-      UUID headId,
+      String headUsername,
       String name,
       String abbreviation,
       String description,
@@ -132,7 +152,24 @@ public class ResearchGroupService {
       throw new AccessDeniedException("Cannot update an archived research group.");
     }
     currentUserProvider().assertCanAccessResearchGroup(researchGroup);
-    User head = userService.findById(headId);
+    //Get the User by universityId else create the user
+    User head = userRepository.findByUniversityId(headUsername).orElseGet(() -> {
+      User newUser = new User();
+      Instant currentTime = Instant.now();
+
+      newUser.setJoinedAt(currentTime);
+      newUser.setUpdatedAt(currentTime);
+
+      // Load user data from Keycloak
+      AccessManagementService.KeycloakUserElement userElement = accessManagementService.getUserByUsername(headUsername);
+
+      newUser.setUniversityId(userElement.username());
+      newUser.setFirstName(userElement.firstName());
+      newUser.setLastName(userElement.lastName());
+      newUser.setEmail(userElement.email());
+
+      return newUser;
+    });
 
     researchGroup.setHead(head);
     researchGroup.setName(name);

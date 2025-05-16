@@ -52,7 +52,7 @@ const CreateResearchGroupModal = ({
       websiteUrl: '',
       headId: '',
     },
-
+    validateInputOnChange: true,
     validate: {
       name: (value) => (value.length < 2 ? 'Name must be at least 2 characters' : null),
       abbreviation: (value) => (!value ? 'Abbreviation is required' : null),
@@ -165,7 +165,7 @@ const CreateResearchGroupModal = ({
             </Text>
           )}
 
-          <Button type='submit' fullWidth mt='md'>
+          <Button type='submit' fullWidth mt='md' disabled={!form.isValid()}>
             Create Research Group
           </Button>
         </Stack>

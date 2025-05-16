@@ -73,7 +73,7 @@ public class ResearchGroupController {
       @RequestBody CreateResearchGroupPayload payload
   ) {
     ResearchGroup researchGroup = researchGroupService.createResearchGroup(
-        RequestValidator.validateNotNull(payload.headId()),
+        RequestValidator.validateNotNull(payload.headUsername()),
         RequestValidator.validateNotNull(payload.name()),
         payload.abbreviation(),
         payload.description(),
@@ -94,7 +94,7 @@ public class ResearchGroupController {
 
     researchGroup = researchGroupService.updateResearchGroup(
         researchGroup,
-        RequestValidator.validateNotNull(payload.headId()),
+        RequestValidator.validateNotNull(payload.headUsername()),
         RequestValidator.validateNotNull(payload.name()),
         payload.abbreviation(),
         payload.description(),
