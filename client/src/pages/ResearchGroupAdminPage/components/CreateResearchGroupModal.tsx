@@ -100,6 +100,33 @@ const CreateResearchGroupModal = ({
             withAsterisk
             {...form.getInputProps('name')}
           />
+          <Autocomplete
+            label='Group Head'
+            placeholder='Search by name or email...'
+            value={headSearchKey}
+            onChange={setHeadSearchKey}
+            withAsterisk
+            data={headOptions.map((user) => ({
+              value: `${user.firstName} ${user.lastName} (${user.username}): ${user.email}`,
+            }))}
+            limit={10}
+            onOptionSubmit={(val) => {
+              const selected = headOptions.find(
+                (u) => `${u.firstName} ${u.lastName} (${u.username}): ${u.email}` === val,
+              )
+              if (selected) {
+                form.setFieldValue('headId', selected.username)
+                setHeadSearchKey(val)
+              }
+            }}
+          />
+
+          {form.values.headId && (
+            <Text size='xs' c='dimmed'>
+              Selected Head ID: {form.values.headId}
+            </Text>
+          )}
+
           <TextInput
             label='Abbreviation'
             placeholder='e.g., IS'
@@ -127,33 +154,6 @@ const CreateResearchGroupModal = ({
           <Text size='xs' c='dimmed'>
             {form.values.description.length}/300 characters
           </Text>
-
-          <Autocomplete
-            label='Group Head'
-            placeholder='Search by name or email...'
-            value={headSearchKey}
-            onChange={setHeadSearchKey}
-            withAsterisk
-            data={headOptions.map((user) => ({
-              value: `${user.firstName} ${user.lastName} (${user.username}): ${user.email}`,
-            }))}
-            limit={10}
-            onOptionSubmit={(val) => {
-              const selected = headOptions.find(
-                (u) => `${u.firstName} ${u.lastName} (${u.username}): ${u.email}` === val,
-              )
-              if (selected) {
-                form.setFieldValue('headId', selected.username)
-                setHeadSearchKey(val)
-              }
-            }}
-          />
-
-          {form.values.headId && (
-            <Text size='xs' c='dimmed'>
-              Selected Head ID: {form.values.headId}
-            </Text>
-          )}
 
           <Button type='submit' fullWidth mt='md' disabled={!form.isValid()}>
             Create Research Group

@@ -34,12 +34,12 @@ const ResearchGroupCard = (props: IResearchGroup) => {
         <Text size='sm' c='dimmed' py={5}>
           <Flex justify={'start'} align={'center'} gap={5}>
             <Buildings size={16} />
-            {props.campus}
+            {props.campus ? props.campus : 'No campus specified'}
           </Flex>
         </Text>
 
         <Text size='sm' c='dimmed'>
-          {props.description}
+          {props.description ? props.description : 'No description provided'}
         </Text>
 
         <Box style={{ flexGrow: 1 }} />
