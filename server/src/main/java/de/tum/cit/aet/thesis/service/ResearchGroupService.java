@@ -15,8 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class ResearchGroupService {
@@ -100,6 +99,7 @@ public class ResearchGroupService {
     //Get the User by universityId else create the user
     // TODO: Refactor for reuse
     // TODO: Check if the user is already in a research group(throw error else)
+    // TODO: Give HeadUser Keycloak Role
     User head = userRepository.findByUniversityId(headUsername).orElseGet(() -> {
       User newUser = new User();
       Instant currentTime = Instant.now();
@@ -153,6 +153,7 @@ public class ResearchGroupService {
       throw new AccessDeniedException("Cannot update an archived research group.");
     }
     currentUserProvider().assertCanAccessResearchGroup(researchGroup);
+
     //Get the User by universityId else create the user
     User head = userRepository.findByUniversityId(headUsername).orElseGet(() -> {
       User newUser = new User();
@@ -172,7 +173,11 @@ public class ResearchGroupService {
       return newUser;
     });
 
+    //Remove ResearchGroup from old head and set it to the new head
+    User oldHead = researchGroup.getHead();
+    oldHead.setResearchGroup(null);
     researchGroup.setHead(head);
+
     researchGroup.setName(name);
     researchGroup.setAbbreviation(abbreviation);
     researchGroup.setDescription(description);
@@ -184,9 +189,17 @@ public class ResearchGroupService {
     ResearchGroup savedResearchGroup =  researchGroupRepository.save(researchGroup);
 
     head.setResearchGroup(savedResearchGroup);
+    userRepository.save(oldHead);
     userRepository.save(head);
 
     return savedResearchGroup;
+  }
+
+  public Page<User> getAllResearchGroupMembers(UUID researchGroupId, Integer page, Integer limit, String sortBy, String sortOrder) {
+    Sort.Order order = new Sort.Order(sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
+
+    return userRepository
+            .searchUsers(researchGroupId, null, null, PageRequest.of(page, limit, Sort.by(order)));
   }
 
   public void archiveResearchGroup(ResearchGroup researchGroup) {

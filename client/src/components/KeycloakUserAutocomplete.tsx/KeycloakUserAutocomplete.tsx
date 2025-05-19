@@ -14,7 +14,6 @@ interface KeycloakUserElement {
 }
 
 interface KeycloakUserAutocompleteProps {
-  username: string
   selectedLabel: string
   onSelect: (username: string, label: string) => void
   label?: string
@@ -23,10 +22,9 @@ interface KeycloakUserAutocompleteProps {
 }
 
 const KeycloakUserAutocomplete = ({
-  username,
   selectedLabel,
   onSelect,
-  label = 'User',
+  label,
   placeholder = 'Search by name or email...',
   withAsterisk = false,
 }: KeycloakUserAutocompleteProps) => {

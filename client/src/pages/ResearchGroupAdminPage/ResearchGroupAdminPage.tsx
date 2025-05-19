@@ -17,7 +17,7 @@ import { showNotification } from '@mantine/notifications'
 const ResearchGroupAdminPage = () => {
   usePageTitle('Theses Overview')
 
-  const [searchKey, setSearchKey] = React.useState('')
+  const [searchKey, setSearchKey] = useState('')
   const [debouncedSearch] = useDebouncedValue(searchKey, 300)
   const [researchGroupsLoading, setResearchGroupsLoading] = useState(false)
 

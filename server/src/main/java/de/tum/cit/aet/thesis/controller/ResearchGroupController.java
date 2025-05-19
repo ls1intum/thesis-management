@@ -1,9 +1,12 @@
 package de.tum.cit.aet.thesis.controller;
 
 import de.tum.cit.aet.thesis.controller.payload.CreateResearchGroupPayload;
+import de.tum.cit.aet.thesis.dto.LightUserDto;
 import de.tum.cit.aet.thesis.dto.PaginationDto;
 import de.tum.cit.aet.thesis.dto.ResearchGroupDto;
+import de.tum.cit.aet.thesis.dto.UserDto;
 import de.tum.cit.aet.thesis.entity.ResearchGroup;
+import de.tum.cit.aet.thesis.entity.User;
 import de.tum.cit.aet.thesis.service.ResearchGroupService;
 import de.tum.cit.aet.thesis.utility.RequestValidator;
 import java.util.UUID;
@@ -66,6 +69,20 @@ public class ResearchGroupController {
 
     return ResponseEntity.ok(ResearchGroupDto.fromResearchGroupEntity(researchGroup));
   }
+
+    @GetMapping("/{researchGroupId}/members")
+    @PreAuthorize("hasRole('admin')")
+    public ResponseEntity<PaginationDto<LightUserDto>> getResearchGroupMembers(
+        @PathVariable("researchGroupId") UUID researchGroupId,
+        @RequestParam(required = false, defaultValue = "0") Integer page,
+        @RequestParam(required = false, defaultValue = "50") Integer limit,
+        @RequestParam(required = false, defaultValue = "joinedAt") String sortBy,
+        @RequestParam(required = false, defaultValue = "desc") String sortOrder
+    ) {
+      Page<User> users = researchGroupService.getAllResearchGroupMembers(researchGroupId, page, limit, sortBy, sortOrder);
+
+      return ResponseEntity.ok(PaginationDto.fromSpringPage(users.map(LightUserDto::fromUserEntity)));
+    }
 
   @PostMapping
   @PreAuthorize("hasRole('admin')")

@@ -53,7 +53,6 @@ const CreateResearchGroupModal = ({
           />
 
           <KeycloakUserAutocomplete
-            username={form.values.headUsername}
             selectedLabel={headDisplayLabel}
             onSelect={(username, label) => {
               form.setFieldValue('headUsername', username)
