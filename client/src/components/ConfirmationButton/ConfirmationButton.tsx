@@ -5,7 +5,7 @@ import { ButtonProps } from '@mantine/core/lib/components/Button/Button'
 interface IConfirmationButtonProps extends ButtonProps {
   confirmationTitle: string
   confirmationText: string
-  confirmationAddiitionalInformation?: ReactNode
+  confirmationAdditionalInformation?: ReactNode
   onClick?: () => unknown
 }
 
@@ -15,7 +15,7 @@ const ConfirmationButton = createPolymorphicComponent<'button', IConfirmationBut
       {
         confirmationTitle,
         confirmationText,
-        confirmationAddiitionalInformation,
+        confirmationAdditionalInformation: confirmationAdditionalInformation,
         children,
         onClick,
         ...others
@@ -34,7 +34,7 @@ const ConfirmationButton = createPolymorphicComponent<'button', IConfirmationBut
           >
             <Stack>
               <Text>{confirmationText}</Text>
-              {confirmationAddiitionalInformation && confirmationAddiitionalInformation}
+              {confirmationAdditionalInformation && confirmationAdditionalInformation}
               <Group grow>
                 <Button variant='outline' color='red' onClick={() => setOpened(false)}>
                   Cancel

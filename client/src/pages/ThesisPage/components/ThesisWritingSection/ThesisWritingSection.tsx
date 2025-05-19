@@ -307,7 +307,7 @@ const ThesisWritingSection = () => {
               <ConfirmationButton
                 confirmationTitle='Final Submission'
                 confirmationText='Are you sure you want to submit your thesis? This action cannot be undone.'
-                confirmationAddiitionalInformation={
+                confirmationAdditionalInformation={
                   access.student ? <Text c='red'>{thesisSubmissionReminder}</Text> : undefined
                 }
                 ml='auto'
