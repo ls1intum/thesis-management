@@ -8,6 +8,8 @@ import { ILightUser } from '../../../requests/responses/user'
 import { doRequest } from '../../../requests/request'
 import { showSimpleError } from '../../../utils/notification'
 import { getApiResponseErrorMessage } from '../../../requests/handler'
+import { useParams } from 'react-router'
+import { showNotification } from '@mantine/notifications'
 
 interface IAddResearchGroupMemberProps {
   researchGroupData: IResearchGroup | undefined
@@ -20,13 +22,13 @@ const AddResearchGroupMember = ({ researchGroupData }: IAddResearchGroupMemberPr
   const [members, setMembers] = useState<ILightUser[]>([])
   const [membersLoading, setMembersLoading] = useState(false)
 
-  useEffect(() => {
+  const fetchMembers = () => {
     if (!researchGroupData?.id) return
 
     setMembersLoading(true)
 
     doRequest<{ content: ILightUser[] }>(
-      `/v2/research-groups/${researchGroupData?.id}/members`,
+      `/v2/research-groups/${researchGroupData.id}/members`,
       {
         method: 'GET',
         requiresAuth: true,
@@ -40,7 +42,36 @@ const AddResearchGroupMember = ({ researchGroupData }: IAddResearchGroupMemberPr
         setMembersLoading(false)
       },
     )
+  }
+
+  useEffect(() => {
+    fetchMembers()
   }, [researchGroupData])
+
+  const handleAddMember = async (username: string) => {
+    if (!researchGroupData?.id) return
+
+    doRequest<ILightUser>(
+      `/v2/research-groups/${researchGroupData.id}/assign/${username}`,
+      {
+        method: 'PUT',
+        requiresAuth: true,
+      },
+      (res) => {
+        if (res.ok) {
+          showNotification({
+            title: 'Success',
+            message: `${username} was successfully added to the group.`,
+            color: 'green',
+          })
+          setAddResearchGroupMemberModalOpened(false)
+          members.push(res.data)
+        } else {
+          showSimpleError(getApiResponseErrorMessage(res))
+        }
+      },
+    )
+  }
 
   return (
     <ResearchGroupSettingsCard
@@ -90,6 +121,7 @@ const AddResearchGroupMember = ({ researchGroupData }: IAddResearchGroupMemberPr
         opened={addResearchGroupMemberModalOpened}
         onClose={() => setAddResearchGroupMemberModalOpened(false)}
         researchGroupName={researchGroupData?.name ?? ''}
+        handleAddMember={handleAddMember}
       ></AddResearchGroupMemberModal>
     </ResearchGroupSettingsCard>
   )

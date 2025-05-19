@@ -133,13 +133,14 @@ public class ResearchGroupController {
     return ResponseEntity.noContent().build();
   }
 
-  @PutMapping("/{researchGroupId}/assign/{userId}")
+  @PutMapping("/{researchGroupId}/assign/{username}")
   @PreAuthorize("hasRole('admin')")
-  public ResponseEntity<Void> assignUserToResearchGroup(
+  public ResponseEntity<LightUserDto> assignUserToResearchGroup(
       @PathVariable("researchGroupId") UUID researchGroupId,
-      @PathVariable("userId") UUID userId
+      @PathVariable("username") String username
   ) {
-    researchGroupService.assignUserToResearchGroup(userId, researchGroupId);
-    return ResponseEntity.noContent().build();
+    User user = researchGroupService.assignUserToResearchGroup(username, researchGroupId);
+
+    return ResponseEntity.ok(LightUserDto.fromUserEntity(user));
   }
 }

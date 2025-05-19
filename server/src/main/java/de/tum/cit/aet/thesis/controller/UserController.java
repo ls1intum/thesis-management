@@ -63,6 +63,7 @@ public class UserController {
     public ResponseEntity<List<AccessManagementService.KeycloakUserElement>> getKeycloakUsers(
             @RequestParam(required = false, defaultValue = "") String searchKey
     ) {
+        //TODO: Check if user exists in our System, if yes check if he has a research group
         List<AccessManagementService.KeycloakUserElement> users = accessManagementService.getAllUsers(searchKey);
         return ResponseEntity.ok(users);
     }

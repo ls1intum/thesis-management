@@ -100,23 +100,7 @@ public class ResearchGroupService {
     // TODO: Refactor for reuse
     // TODO: Check if the user is already in a research group(throw error else)
     // TODO: Give HeadUser Keycloak Role
-    User head = userRepository.findByUniversityId(headUsername).orElseGet(() -> {
-      User newUser = new User();
-      Instant currentTime = Instant.now();
-
-      newUser.setJoinedAt(currentTime);
-      newUser.setUpdatedAt(currentTime);
-
-      // Load user data from Keycloak
-      AccessManagementService.KeycloakUserElement userElement = accessManagementService.getUserByUsername(headUsername);
-
-      newUser.setUniversityId(userElement.username());
-      newUser.setFirstName(userElement.firstName());
-      newUser.setLastName(userElement.lastName());
-      newUser.setEmail(userElement.email());
-
-      return newUser;
-    });
+    User head = getUserByUsernameOrCreate(headUsername);
 
     ResearchGroup researchGroup = new ResearchGroup();
     researchGroup.setHead(head);
@@ -139,6 +123,28 @@ public class ResearchGroupService {
     return savedResearchGroup;
   }
 
+  private User getUserByUsernameOrCreate(String username) {
+    User user = userRepository.findByUniversityId(username).orElseGet(() -> {
+      User newUser = new User();
+      Instant currentTime = Instant.now();
+
+      newUser.setJoinedAt(currentTime);
+      newUser.setUpdatedAt(currentTime);
+
+      // Load user data from Keycloak
+      AccessManagementService.KeycloakUserElement userElement = accessManagementService.getUserByUsername(username);
+
+      newUser.setUniversityId(userElement.username());
+      newUser.setFirstName(userElement.firstName());
+      newUser.setLastName(userElement.lastName());
+      newUser.setEmail(userElement.email());
+
+      return newUser;
+    });
+
+    return user;
+  }
+
   @Transactional
   public ResearchGroup updateResearchGroup(
       ResearchGroup researchGroup,
@@ -155,23 +161,7 @@ public class ResearchGroupService {
     currentUserProvider().assertCanAccessResearchGroup(researchGroup);
 
     //Get the User by universityId else create the user
-    User head = userRepository.findByUniversityId(headUsername).orElseGet(() -> {
-      User newUser = new User();
-      Instant currentTime = Instant.now();
-
-      newUser.setJoinedAt(currentTime);
-      newUser.setUpdatedAt(currentTime);
-
-      // Load user data from Keycloak
-      AccessManagementService.KeycloakUserElement userElement = accessManagementService.getUserByUsername(headUsername);
-
-      newUser.setUniversityId(userElement.username());
-      newUser.setFirstName(userElement.firstName());
-      newUser.setLastName(userElement.lastName());
-      newUser.setEmail(userElement.email());
-
-      return newUser;
-    });
+    User head = getUserByUsernameOrCreate(headUsername);
 
     //Remove ResearchGroup from old head and set it to the new head
     User oldHead = researchGroup.getHead();
@@ -211,8 +201,9 @@ public class ResearchGroupService {
     researchGroupRepository.save(researchGroup);
   }
 
-  public void assignUserToResearchGroup(UUID userId, UUID researchGroupId) {
-    User user = userService.findById(userId);
+  public User assignUserToResearchGroup(String username, UUID researchGroupId) {
+
+    User user = getUserByUsernameOrCreate(username);
     ResearchGroup researchGroup = findById(researchGroupId);
 
     if (user.getResearchGroup() != null) {
@@ -224,6 +215,8 @@ public class ResearchGroupService {
     }
 
     user.setResearchGroup(researchGroup);
+    //TODO: Add role to user in Keycloak
     userRepository.save(user);
+    return user;
   }
 }

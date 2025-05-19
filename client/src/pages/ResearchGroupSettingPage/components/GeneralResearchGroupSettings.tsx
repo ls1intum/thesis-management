@@ -19,8 +19,6 @@ const GeneralResearchGroupSettings = ({
   researchGroupData,
   setResearchGroupData,
 }: IGeneralResearchGroupSettingsProps) => {
-  const { researchGroupId } = useParams<{ researchGroupId: string }>()
-
   const [headDisplayLabel, setHeadDisplayLabel] = useState(
     `${researchGroupData?.head.firstName} ${researchGroupData?.head.lastName}`,
   )
@@ -42,10 +40,10 @@ const GeneralResearchGroupSettings = ({
   })
 
   const handleSubmit = (values: typeof form.values) => {
-    if (!researchGroupId) return
+    if (!researchGroupData?.id) return
 
     doRequest<IResearchGroup>(
-      `/v2/research-groups/${researchGroupId}`,
+      `/v2/research-groups/${researchGroupData.id}`,
       {
         method: 'PUT',
         requiresAuth: true,
