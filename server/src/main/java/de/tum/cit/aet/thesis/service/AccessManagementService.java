@@ -30,11 +30,13 @@ public class AccessManagementService {
     private final String serviceClientId;
     private final String serviceClientSecret;
 
-    private final UUID serviceClientUUID;
+    private final UUID clientUUID;
     private final UUID studentGroupId;
 
     private String accessToken;
     private Instant tokenExpiration;
+
+    private String clientId;
 
     private final UserGroupRepository userGroupRepository;
 
@@ -45,24 +47,26 @@ public class AccessManagementService {
             @Value("${thesis-management.keycloak.service-client.id}") String serviceClientId,
             @Value("${thesis-management.keycloak.service-client.secret}") String serviceClientSecret,
             @Value("${thesis-management.keycloak.service-client.student-group-name}") String studentGroupName,
+            @Value("${thesis-management.keycloak.client-id}") String clientId,
             UserGroupRepository userGroupRepository
     ) {
         this.userGroupRepository = userGroupRepository;
         this.keycloakRealmName = keycloakRealmName;
         this.serviceClientId = serviceClientId;
         this.serviceClientSecret = serviceClientSecret;
+        this.clientId = clientId;
 
         this.webClient = WebClient.builder()
                 .baseUrl(keycloakHost)
                 .build();
 
-        UUID serviceClientUUID = null;
+        UUID clientUUID = null;
         try {
-            serviceClientUUID = serviceClientId.isBlank() || serviceClientSecret.isBlank() ? null : getServiceClientUUID();
+            clientUUID = clientId.isBlank() || serviceClientSecret.isBlank() ? null : getServiceClientUUID();
         } catch (RuntimeException exception) {
             log.warn("Could not fetch client id from configured service client", exception);
         }
-        this.serviceClientUUID = serviceClientUUID;
+        this.clientUUID = clientUUID;
 
         UUID studentGroupId = null;
         try {
@@ -176,7 +180,7 @@ public class AccessManagementService {
         Role roleObject = getClientRoleByName(roleName);
 
         webClient.method(HttpMethod.DELETE)
-                .uri("/admin/realms/" + keycloakRealmName + "/users/" + userId + "/role-mappings/clients/" + serviceClientUUID)
+                .uri("/admin/realms/" + keycloakRealmName + "/users/" + userId + "/role-mappings/clients/" + clientUUID)
                 .headers(headers -> headers.addAll(getAuthenticationHeaders()))
                 .bodyValue(List.of(roleObject))
                 .retrieve()
@@ -192,7 +196,7 @@ public class AccessManagementService {
         Role roleObject = getClientRoleByName(role);
 
         webClient.post()
-                .uri("/admin/realms/" + keycloakRealmName + "/users/" + userId + "/role-mappings/clients/" + serviceClientUUID)
+                .uri("/admin/realms/" + keycloakRealmName + "/users/" + userId + "/role-mappings/clients/" + clientUUID)
                 .headers(headers -> headers.addAll(getAuthenticationHeaders()))
                 .bodyValue(List.of(roleObject))
                 .retrieve()
@@ -210,7 +214,7 @@ public class AccessManagementService {
 
         // Fetch all client roles from Keycloak for the given user
         List<Role> keycloakRoles = webClient.get()
-                .uri("/admin/realms/" + keycloakRealmName + "/users/" + keycloakUserId + "/role-mappings/clients/" + serviceClientUUID)
+                .uri("/admin/realms/" + keycloakRealmName + "/users/" + keycloakUserId + "/role-mappings/clients/" + clientUUID)
                 .headers(headers -> headers.addAll(getAuthenticationHeaders()))
                 .retrieve()
                 .bodyToFlux(Role.class)
@@ -245,7 +249,7 @@ public class AccessManagementService {
 
     private Role getClientRoleByName(String roleName) {
         return webClient.get()
-                .uri("/admin/realms/" + keycloakRealmName + "/clients/" + serviceClientUUID + "/roles/" + roleName)
+                .uri("/admin/realms/" + keycloakRealmName + "/clients/" + clientUUID + "/roles/" + roleName)
                 .headers(headers -> headers.addAll(getAuthenticationHeaders()))
                 .retrieve()
                 .bodyToMono(Role.class)
@@ -305,9 +309,6 @@ public class AccessManagementService {
 
     private record ClientElement(UUID id, String clientId, String name) {}
     private UUID getServiceClientUUID() {
-        //TODO: application.yml?
-        String clientId = "thesis-management-app";
-
         ClientElement client = webClient.method(HttpMethod.GET)
                 .uri(uriBuilder -> uriBuilder
                         .path("/admin/realms/" + keycloakRealmName + "/clients")

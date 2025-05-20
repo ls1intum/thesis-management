@@ -1,7 +1,20 @@
-import { Box, Button, Card, Divider, Flex, Loader, Stack, Table, TextInput } from '@mantine/core'
+import {
+  ActionIcon,
+  Box,
+  Button,
+  Card,
+  Divider,
+  Flex,
+  Loader,
+  Select,
+  Stack,
+  Table,
+  TextInput,
+  Tooltip,
+} from '@mantine/core'
 import { IResearchGroup } from '../../../requests/responses/researchGroup'
 import { ResearchGroupSettingsCard } from './ResearchGroupSettingsCard'
-import { MagnifyingGlass, Plus, User } from 'phosphor-react'
+import { MagnifyingGlass, Plus, Trash, User } from 'phosphor-react'
 import AddResearchGroupMemberModal from './AddResearchGroupMemberModal'
 import { useEffect, useState } from 'react'
 import { ILightUser } from '../../../requests/responses/user'
@@ -11,6 +24,7 @@ import { getApiResponseErrorMessage } from '../../../requests/handler'
 import { useParams } from 'react-router'
 import { showNotification } from '@mantine/notifications'
 import UserInformationRow from '../../../components/UserInformationRow/UserInformationRow'
+import DeleteButton from '../../../components/DeleteButton/DeleteButton'
 
 interface IAddResearchGroupMemberProps {
   researchGroupData: IResearchGroup | undefined
@@ -102,6 +116,7 @@ const AddResearchGroupMember = ({ researchGroupData }: IAddResearchGroupMemberPr
           Add Member
         </Button>
       </Flex>
+
       {membersLoading ? (
         <Loader />
       ) : (
@@ -109,7 +124,7 @@ const AddResearchGroupMember = ({ researchGroupData }: IAddResearchGroupMemberPr
           <Table.Tbody>
             {members.map((member) => (
               <Table.Tr key={member.userId}>
-                <Table.Td>
+                <Table.Td style={{ width: '100%' }}>
                   <UserInformationRow
                     firstName={member.firstName ?? ''}
                     lastName={member.lastName ?? ''}
@@ -118,11 +133,33 @@ const AddResearchGroupMember = ({ researchGroupData }: IAddResearchGroupMemberPr
                     user={member}
                   />
                 </Table.Td>
+                <Table.Td style={{ whiteSpace: 'nowrap' }}>
+                  <Box style={{ minWidth: 140, maxWidth: 200 }}>
+                    <Select
+                      data={[
+                        { value: 'advisor', label: 'Advisor' },
+                        { value: 'supervisor', label: 'Supervisor' },
+                      ]}
+                      value={''}
+                      onChange={(val) => {}}
+                      placeholder='Select role'
+                      variant='filled'
+                      size='xs'
+                    />
+                  </Box>
+                </Table.Td>
+                <Table.Td style={{ width: '1%', whiteSpace: 'nowrap', textAlign: 'right' }}>
+                  <DeleteButton
+                    onClick={() => {}}
+                    disabled={member.userId === researchGroupData?.head.userId}
+                  />
+                </Table.Td>
               </Table.Tr>
             ))}
           </Table.Tbody>
         </Table>
       )}
+
       <AddResearchGroupMemberModal
         opened={addResearchGroupMemberModalOpened}
         onClose={() => setAddResearchGroupMemberModalOpened(false)}
