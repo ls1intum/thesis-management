@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react'
 import { showSimpleError } from '../../utils/notification'
 import { doRequest } from '../../requests/request'
 import { getApiResponseErrorMessage } from '../../requests/handler'
+import UserInformationForm from '../UserInformationForm/UserInformationForm'
+import UserInformationRow from '../UserInformationRow/UserInformationRow'
 
 interface KeycloakUserElement {
   id: string
@@ -33,6 +35,15 @@ const KeycloakUserAutocomplete = ({
   const [debouncedSearchKey] = useDebouncedValue(searchKey, 300)
   const [userOptions, setUserOptions] = useState<KeycloakUserElement[]>([])
   const [loadingUsers, setLoadingUsers] = useState(false)
+
+  const getUserOptionValue = (user: {
+    firstName: string
+    lastName: string
+    username: string
+    email: string
+    hasResearchGroup: boolean
+  }) =>
+    `${user.firstName} ${user.lastName} (${user.username}): ${user.email} -> ${user.hasResearchGroup}`
 
   // Sync initial selectedLabel into searchKey
   useEffect(() => {
@@ -81,44 +92,28 @@ const KeycloakUserAutocomplete = ({
         }
       }}
       data={userOptions.map((user) => ({
-        value: `${user.firstName} ${user.lastName} (${user.username}): ${user.email} -> ${user.hasResearchGroup}`,
+        value: getUserOptionValue(user),
         disabled: user.hasResearchGroup,
       }))}
       limit={10}
       rightSection={loadingUsers ? <Loader size='xs' /> : null}
       renderOption={({ option }) => {
-        const user = userOptions.find(
-          (u) =>
-            `${u.firstName} ${u.lastName} (${u.username}): ${u.email} -> ${u.hasResearchGroup}` ===
-            option.value,
-        )
+        const user = userOptions.find((u) => getUserOptionValue(u) === option.value)
 
         return (
-          <div>
-            <Group gap='xs' wrap='nowrap'>
-              <div>
-                <Group>
-                  <Text size='sm' fw={500}>
-                    {user?.firstName} {user?.lastName}
-                  </Text>
-                  {user?.hasResearchGroup && (
-                    <Text size='xs' c='red'>
-                      User already has a research group
-                    </Text>
-                  )}
-                </Group>
-                <Text size='xs' c='dimmed'>
-                  @{user?.username} • {user?.email}
-                </Text>
-              </div>
-            </Group>
-          </div>
+          <UserInformationRow
+            firstName={user?.firstName}
+            lastName={user?.lastName}
+            username={user?.username}
+            email={user?.email}
+            disableMessage={
+              user?.hasResearchGroup ? 'User already has a research group' : undefined
+            }
+          />
         )
       }}
       onOptionSubmit={(val) => {
-        const selected = userOptions.find(
-          (u) => `${u.firstName} ${u.lastName} (${u.username}): ${u.email}` === val,
-        )
+        const selected = userOptions.find((u) => getUserOptionValue(u) === val)
         if (selected) {
           const labelString = `${selected.firstName} ${selected.lastName}`
           onSelect(selected.username, labelString)

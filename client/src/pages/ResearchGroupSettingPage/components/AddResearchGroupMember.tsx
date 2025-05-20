@@ -1,7 +1,7 @@
-import { Box, Button, Flex, Loader, TextInput } from '@mantine/core'
+import { Box, Button, Card, Divider, Flex, Loader, Stack, Table, TextInput } from '@mantine/core'
 import { IResearchGroup } from '../../../requests/responses/researchGroup'
 import { ResearchGroupSettingsCard } from './ResearchGroupSettingsCard'
-import { MagnifyingGlass, Plus } from 'phosphor-react'
+import { MagnifyingGlass, Plus, User } from 'phosphor-react'
 import AddResearchGroupMemberModal from './AddResearchGroupMemberModal'
 import { useEffect, useState } from 'react'
 import { ILightUser } from '../../../requests/responses/user'
@@ -10,6 +10,7 @@ import { showSimpleError } from '../../../utils/notification'
 import { getApiResponseErrorMessage } from '../../../requests/handler'
 import { useParams } from 'react-router'
 import { showNotification } from '@mantine/notifications'
+import UserInformationRow from '../../../components/UserInformationRow/UserInformationRow'
 
 interface IAddResearchGroupMemberProps {
   researchGroupData: IResearchGroup | undefined
@@ -101,22 +102,27 @@ const AddResearchGroupMember = ({ researchGroupData }: IAddResearchGroupMemberPr
           Add Member
         </Button>
       </Flex>
-
-      <Flex
-        justify='center'
-        align='center'
-        style={{ height: '100%', width: '100%' }}
-        direction='column'
-      >
-        {membersLoading ? (
-          <Loader />
-        ) : (
-          members.map((member) => (
-            <div key={member.firstName}>{`${member.lastName} ${member.groups}`}</div>
-          ))
-        )}
-      </Flex>
-
+      {membersLoading ? (
+        <Loader />
+      ) : (
+        <Table verticalSpacing='sm'>
+          <Table.Tbody>
+            {members.map((member) => (
+              <Table.Tr key={member.userId}>
+                <Table.Td>
+                  <UserInformationRow
+                    firstName={member.firstName ?? ''}
+                    lastName={member.lastName ?? ''}
+                    username={member.universityId ?? ''}
+                    email={member.email ?? ''}
+                    user={member}
+                  />
+                </Table.Td>
+              </Table.Tr>
+            ))}
+          </Table.Tbody>
+        </Table>
+      )}
       <AddResearchGroupMemberModal
         opened={addResearchGroupMemberModalOpened}
         onClose={() => setAddResearchGroupMemberModalOpened(false)}
