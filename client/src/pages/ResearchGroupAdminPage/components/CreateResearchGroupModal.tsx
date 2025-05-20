@@ -63,12 +63,6 @@ const CreateResearchGroupModal = ({
             withAsterisk
           />
 
-          {form.values.headUsername && (
-            <Text size='xs' c='dimmed'>
-              Selected Head Username: {form.values.headUsername}
-            </Text>
-          )}
-
           <TextInput
             label='Abbreviation'
             placeholder='e.g., IS'

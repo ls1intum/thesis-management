@@ -1,5 +1,9 @@
 package de.tum.cit.aet.thesis.service;
 
+import de.tum.cit.aet.thesis.entity.UserGroup;
+import de.tum.cit.aet.thesis.entity.key.UserGroupId;
+import de.tum.cit.aet.thesis.repository.UserGroupRepository;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +19,7 @@ import org.springframework.http.HttpHeaders;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class AccessManagementService {
@@ -36,14 +37,18 @@ public class AccessManagementService {
     private String accessToken;
     private Instant tokenExpiration;
 
+    private final UserGroupRepository userGroupRepository;
+
     @Autowired
     public AccessManagementService(
             @Value("${thesis-management.keycloak.host}") String keycloakHost,
             @Value("${thesis-management.keycloak.realm-name}") String keycloakRealmName,
             @Value("${thesis-management.keycloak.service-client.id}") String serviceClientId,
             @Value("${thesis-management.keycloak.service-client.secret}") String serviceClientSecret,
-            @Value("${thesis-management.keycloak.service-client.student-group-name}") String studentGroupName
+            @Value("${thesis-management.keycloak.service-client.student-group-name}") String studentGroupName,
+            UserGroupRepository userGroupRepository
     ) {
+        this.userGroupRepository = userGroupRepository;
         this.keycloakRealmName = keycloakRealmName;
         this.serviceClientId = serviceClientId;
         this.serviceClientSecret = serviceClientSecret;
@@ -196,6 +201,47 @@ public class AccessManagementService {
                 .block();
     }
 
+    @Transactional
+    public Set<UserGroup> syncRolesFromKeycloakToDatabase(User user) {
+        if (user == null) {
+            throw new IllegalArgumentException("User cannot be null");
+        }
+
+        UUID keycloakUserId = getUserId(user.getUniversityId());
+
+        // Fetch all client roles from Keycloak for the given user
+        List<Role> keycloakRoles = webClient.get()
+                .uri("/admin/realms/" + keycloakRealmName + "/users/" + keycloakUserId + "/role-mappings/clients/" + serviceClientUUID)
+                .headers(headers -> headers.addAll(getAuthenticationHeaders()))
+                .retrieve()
+                .bodyToFlux(Role.class)
+                .collectList()
+                .block();
+
+        // Delete old group assignments
+        userGroupRepository.deleteByUserId(user.getId());
+
+        // Create and persist new user groups
+        Set<UserGroup> userGroups = new HashSet<>();
+
+        if (keycloakRoles != null && !keycloakRoles.isEmpty()) {
+            for (Role role : keycloakRoles) {
+                UserGroup entity = new UserGroup();
+                UserGroupId entityId = new UserGroupId();
+
+                entityId.setUserId(user.getId());
+                entityId.setGroup(role.name());
+
+                entity.setUser(user);
+                entity.setId(entityId);
+
+                userGroups.add(userGroupRepository.save(entity));
+            }
+        }
+
+        return userGroups;
+    }
+
     private record Role(String id, String name, String description, boolean composite, boolean clientRole, String containerId) {}
 
     private Role getClientRoleByName(String roleName) {
@@ -309,6 +355,7 @@ public class AccessManagementService {
 
     public record KeycloakUserElement(UUID id, String username, String firstName, String lastName , String email) {}
 
+    //TODO: Add if user is in researchgroup allready
     public List<KeycloakUserElement> getAllUsers(String searchKey) {
         try {
             List<KeycloakUserElement> users = webClient.method(HttpMethod.GET)

@@ -2,6 +2,7 @@ package de.tum.cit.aet.thesis.service;
 
 import de.tum.cit.aet.thesis.entity.ResearchGroup;
 import de.tum.cit.aet.thesis.entity.User;
+import de.tum.cit.aet.thesis.entity.UserGroup;
 import de.tum.cit.aet.thesis.exception.request.AccessDeniedException;
 import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.repository.ResearchGroupRepository;
@@ -97,12 +98,15 @@ public class ResearchGroupService {
       String campus
   ) {
     //Get the User by universityId else create the user
-    // TODO: Refactor for reuse
-    // TODO: Check if the user is already in a research group(throw error else)
-    // TODO: Give HeadUser Database role
     User head = getUserByUsernameOrCreate(headUsername);
+    if (head.getResearchGroup() != null) {
+        throw new AccessDeniedException("User is already assigned to a research group.");
+    }
+
     //Add supervisor role in keycloak
     accessManagementService.assignSupervisorRole(head);
+    Set<UserGroup> updatedGroupsHead = accessManagementService.syncRolesFromKeycloakToDatabase(head);
+    head.setGroups(updatedGroupsHead);
 
     ResearchGroup researchGroup = new ResearchGroup();
     researchGroup.setHead(head);
@@ -164,16 +168,22 @@ public class ResearchGroupService {
 
     //Get the User by universityId else create the user
     User head = getUserByUsernameOrCreate(headUsername);
+    if (head.getResearchGroup() != null) {
+      throw new AccessDeniedException("User is already assigned to a research group.");
+    }
 
     //Remove ResearchGroup from old head and set it to the new head
     User oldHead = researchGroup.getHead();
     oldHead.setResearchGroup(null);
     researchGroup.setHead(head);
 
-    //TODO: change roles it in database, also remove other roles besides admin, supervisor of head
     //Give new head supervisor as role and remove the role from the old head
     accessManagementService.assignSupervisorRole(head);
     accessManagementService.removeResearchGroupRoles(oldHead);
+    Set<UserGroup> updatedGroupsHead = accessManagementService.syncRolesFromKeycloakToDatabase(head);
+    head.setGroups(updatedGroupsHead);
+    Set<UserGroup> updatedGroupsOldHead = accessManagementService.syncRolesFromKeycloakToDatabase(oldHead);
+    oldHead.setGroups(updatedGroupsOldHead);
 
     researchGroup.setName(name);
     researchGroup.setAbbreviation(abbreviation);
@@ -222,8 +232,12 @@ public class ResearchGroupService {
     }
 
     user.setResearchGroup(researchGroup);
-    //TODO: Change role in database
+
+    //Assign member the advisor role in keycloak and update database
     accessManagementService.assignAdvisorRole(user);
+    Set<UserGroup> updatedGroups = accessManagementService.syncRolesFromKeycloakToDatabase(user);
+    user.setGroups(updatedGroups);
+
     userRepository.save(user);
     return user;
   }
