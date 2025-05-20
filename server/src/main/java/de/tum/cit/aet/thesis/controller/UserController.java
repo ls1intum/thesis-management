@@ -1,8 +1,8 @@
 package de.tum.cit.aet.thesis.controller;
 
+import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.security.CurrentUserProvider;
 import de.tum.cit.aet.thesis.service.AccessManagementService;
-import de.tum.cit.aet.thesis.service.AuthenticationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,13 +58,37 @@ public class UserController {
         return ResponseEntity.ok(PaginationDto.fromSpringPage(users.map(LightUserDto::fromUserEntity)));
     }
 
+    public record KeycloakUserElement(UUID id, String username, String firstName, String lastName , String email, boolean hasResearchGroup) {}
     @GetMapping("/keycloak-users")
     @PreAuthorize("hasRole('admin')")
-    public ResponseEntity<List<AccessManagementService.KeycloakUserElement>> getKeycloakUsers(
+    public ResponseEntity<List<KeycloakUserElement>> getKeycloakUsers(
             @RequestParam(required = false, defaultValue = "") String searchKey
     ) {
-        //TODO: Check if user exists in our System, if yes check if he has a research group
-        List<AccessManagementService.KeycloakUserElement> users = accessManagementService.getAllUsers(searchKey);
+        List<AccessManagementService.KeycloakUserInformation> keycloakUserInformations = accessManagementService.getAllUsers(searchKey);
+
+        //Check if user exists in our System, if yes check if he has a research group and set the flag
+        List<KeycloakUserElement> users = keycloakUserInformations.stream()
+                .map(user -> {
+                    boolean hasResearchGroup = false;
+
+                    try {
+                        User systemUser = userService.findByUniversityId(user.username());
+                        hasResearchGroup = systemUser.getResearchGroup() != null;
+                    } catch (ResourceNotFoundException e) {
+                        // User not found — keep flags as false
+                    }
+
+                    return new KeycloakUserElement(
+                            user.id(),
+                            user.username(),
+                            user.firstName(),
+                            user.lastName(),
+                            user.email(),
+                            hasResearchGroup
+                    );
+                })
+                .toList();
+
         return ResponseEntity.ok(users);
     }
 

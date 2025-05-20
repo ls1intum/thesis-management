@@ -138,7 +138,7 @@ public class ResearchGroupService {
       newUser.setUpdatedAt(currentTime);
 
       // Load user data from Keycloak
-      AccessManagementService.KeycloakUserElement userElement = accessManagementService.getUserByUsername(username);
+      AccessManagementService.KeycloakUserInformation userElement = accessManagementService.getUserByUsername(username);
 
       newUser.setUniversityId(userElement.username());
       newUser.setFirstName(userElement.firstName());

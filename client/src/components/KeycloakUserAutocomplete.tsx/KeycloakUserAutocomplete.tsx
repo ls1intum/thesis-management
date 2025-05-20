@@ -11,6 +11,7 @@ interface KeycloakUserElement {
   firstName: string
   lastName: string
   email: string
+  hasResearchGroup: boolean
 }
 
 interface KeycloakUserAutocompleteProps {
@@ -80,22 +81,32 @@ const KeycloakUserAutocomplete = ({
         }
       }}
       data={userOptions.map((user) => ({
-        value: `${user.firstName} ${user.lastName} (${user.username}): ${user.email}`,
+        value: `${user.firstName} ${user.lastName} (${user.username}): ${user.email} -> ${user.hasResearchGroup}`,
+        disabled: user.hasResearchGroup,
       }))}
       limit={10}
       rightSection={loadingUsers ? <Loader size='xs' /> : null}
       renderOption={({ option }) => {
         const user = userOptions.find(
-          (u) => `${u.firstName} ${u.lastName} (${u.username}): ${u.email}` === option.value,
+          (u) =>
+            `${u.firstName} ${u.lastName} (${u.username}): ${u.email} -> ${u.hasResearchGroup}` ===
+            option.value,
         )
 
         return (
           <div>
             <Group gap='xs' wrap='nowrap'>
               <div>
-                <Text size='sm' fw={500}>
-                  {user?.firstName} {user?.lastName}
-                </Text>
+                <Group>
+                  <Text size='sm' fw={500}>
+                    {user?.firstName} {user?.lastName}
+                  </Text>
+                  {user?.hasResearchGroup && (
+                    <Text size='xs' c='red'>
+                      User already has a research group
+                    </Text>
+                  )}
+                </Group>
                 <Text size='xs' c='dimmed'>
                   @{user?.username} • {user?.email}
                 </Text>

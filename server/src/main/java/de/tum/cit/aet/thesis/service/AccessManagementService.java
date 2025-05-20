@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -327,8 +326,8 @@ public class AccessManagementService {
         return client.id();
     }
 
-    public KeycloakUserElement getUserByUsername(String username) {
-        List<KeycloakUserElement> users = webClient.method(HttpMethod.GET)
+    public KeycloakUserInformation getUserByUsername(String username) {
+        List<KeycloakUserInformation> users = webClient.method(HttpMethod.GET)
                 .uri(uriBuilder -> uriBuilder
                         .path("/admin/realms/" + keycloakRealmName + "/users")
                         .queryParam("username", username)
@@ -336,7 +335,7 @@ public class AccessManagementService {
                 )
                 .headers(headers -> headers.addAll(getAuthenticationHeaders()))
                 .retrieve()
-                .bodyToFlux(KeycloakUserElement.class)
+                .bodyToFlux(KeycloakUserInformation.class)
                 .collectList()
                 .block();
 
@@ -353,12 +352,10 @@ public class AccessManagementService {
         return getUserByUsername(username).id;
     }
 
-    public record KeycloakUserElement(UUID id, String username, String firstName, String lastName , String email) {}
-
-    //TODO: Add if user is in researchgroup allready
-    public List<KeycloakUserElement> getAllUsers(String searchKey) {
+    public record KeycloakUserInformation(UUID id, String username, String firstName, String lastName , String email) {}
+    public List<KeycloakUserInformation> getAllUsers(String searchKey) {
         try {
-            List<KeycloakUserElement> users = webClient.method(HttpMethod.GET)
+            List<KeycloakUserInformation> users = webClient.method(HttpMethod.GET)
                     .uri(uriBuilder -> uriBuilder
                             .path("/admin/realms/" + keycloakRealmName + "/users")
                             .queryParam("search", searchKey)
@@ -366,7 +363,7 @@ public class AccessManagementService {
                     )
                     .headers(headers -> headers.addAll(getAuthenticationHeaders()))
                     .retrieve()
-                    .bodyToFlux(KeycloakUserElement.class)
+                    .bodyToFlux(KeycloakUserInformation.class)
                     .collectList()
                     .block();
             return users;
