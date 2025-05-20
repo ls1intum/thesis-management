@@ -99,8 +99,10 @@ public class ResearchGroupService {
     //Get the User by universityId else create the user
     // TODO: Refactor for reuse
     // TODO: Check if the user is already in a research group(throw error else)
-    // TODO: Give HeadUser Keycloak Role
+    // TODO: Give HeadUser Database role
     User head = getUserByUsernameOrCreate(headUsername);
+    //Add supervisor role in keycloak
+    accessManagementService.assignSupervisorRole(head);
 
     ResearchGroup researchGroup = new ResearchGroup();
     researchGroup.setHead(head);
@@ -168,6 +170,11 @@ public class ResearchGroupService {
     oldHead.setResearchGroup(null);
     researchGroup.setHead(head);
 
+    //TODO: change roles it in database, also remove other roles besides admin, supervisor of head
+    //Give new head supervisor as role and remove the role from the old head
+    accessManagementService.assignSupervisorRole(head);
+    accessManagementService.removeResearchGroupRoles(oldHead);
+
     researchGroup.setName(name);
     researchGroup.setAbbreviation(abbreviation);
     researchGroup.setDescription(description);
@@ -215,7 +222,8 @@ public class ResearchGroupService {
     }
 
     user.setResearchGroup(researchGroup);
-    //TODO: Add role to user in Keycloak
+    //TODO: Change role in database
+    accessManagementService.assignAdvisorRole(user);
     userRepository.save(user);
     return user;
   }
