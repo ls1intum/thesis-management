@@ -276,7 +276,7 @@ public class AccessManagementService {
             }
 
             accessToken = response.access_token();
-            tokenExpiration = Instant.now().plus(300, ChronoUnit.SECONDS);
+            tokenExpiration = Instant.now().plus(30, ChronoUnit.SECONDS);
         }
 
         HttpHeaders authenticationHeaders = new HttpHeaders();
