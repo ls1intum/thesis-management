@@ -18,10 +18,10 @@ spring:
     open-in-view: true
     hibernate:
       ddl-auto: validate
-    show-sql: ${DEBUG_MODE:true}
+    show-sql: ${DEBUG_MODE:false}
     properties:
       hibernate:
-        format_sql: ${DEBUG_MODE:true}
+        format_sql: ${DEBUG_MODE:false}
   servlet:
     multipart:
       max-file-size: 25MB

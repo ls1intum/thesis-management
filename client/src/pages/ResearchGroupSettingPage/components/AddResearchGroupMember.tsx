@@ -25,6 +25,7 @@ import { useParams } from 'react-router'
 import { showNotification } from '@mantine/notifications'
 import UserInformationRow from '../../../components/UserInformationRow/UserInformationRow'
 import DeleteButton from '../../../components/DeleteButton/DeleteButton'
+import DeleteMemberModal from './DeleteMemberModal'
 
 interface IAddResearchGroupMemberProps {
   researchGroupData: IResearchGroup | undefined
@@ -36,6 +37,14 @@ const AddResearchGroupMember = ({ researchGroupData }: IAddResearchGroupMemberPr
 
   const [members, setMembers] = useState<ILightUser[]>([])
   const [membersLoading, setMembersLoading] = useState(false)
+
+  const [deleteMemberModalOpened, setDeleteMemberModalOpened] = useState(false)
+
+  const getPrimaryRoleFromGroups = (groups: string[]): '' | 'advisor' | 'supervisor' => {
+    if (groups.includes('supervisor')) return 'supervisor'
+    if (groups.includes('advisor')) return 'advisor'
+    return ''
+  }
 
   const fetchMembers = () => {
     if (!researchGroupData?.id) return
@@ -88,6 +97,66 @@ const AddResearchGroupMember = ({ researchGroupData }: IAddResearchGroupMemberPr
     )
   }
 
+  const handleRemoveMember = async (userId: string) => {
+    if (!researchGroupData?.id) return
+
+    doRequest<ILightUser>(
+      `/v2/research-groups/${researchGroupData.id}/remove/${userId}`,
+      {
+        method: 'PUT',
+        requiresAuth: true,
+      },
+      (res) => {
+        if (res.ok) {
+          showNotification({
+            title: 'Success',
+            message: `User was successfully removed from the group.`,
+            color: 'green',
+          })
+
+          setMembers((prev) => prev.filter((m) => m.userId !== userId))
+        } else {
+          showSimpleError(getApiResponseErrorMessage(res))
+        }
+      },
+    )
+  }
+
+  const updateMemberRole = async (userId: string, newRole: string) => {
+    if (!researchGroupData?.id) return
+
+    doRequest<ILightUser>(
+      `/v2/research-groups/${researchGroupData.id}/member/${userId}/role`,
+      {
+        method: 'PUT',
+        requiresAuth: true,
+        params: {
+          role: newRole,
+        },
+      },
+      (res) => {
+        if (res.ok) {
+          showNotification({
+            title: 'Success',
+            message: `Role updated to ${newRole}.`,
+            color: 'green',
+          })
+
+          setMembers((prev) =>
+            prev.map((member) => {
+              if (member.userId === userId) {
+                return { ...member, groups: res.data.groups }
+              }
+              return member
+            }),
+          )
+        } else {
+          showSimpleError(getApiResponseErrorMessage(res))
+        }
+      },
+    )
+  }
+
   return (
     <ResearchGroupSettingsCard
       title='Group Members'
@@ -122,40 +191,72 @@ const AddResearchGroupMember = ({ researchGroupData }: IAddResearchGroupMemberPr
       ) : (
         <Table verticalSpacing='sm'>
           <Table.Tbody>
-            {members.map((member) => (
-              <Table.Tr key={member.userId}>
-                <Table.Td style={{ width: '100%' }}>
-                  <UserInformationRow
-                    firstName={member.firstName ?? ''}
-                    lastName={member.lastName ?? ''}
-                    username={member.universityId ?? ''}
-                    email={member.email ?? ''}
-                    user={member}
-                  />
-                </Table.Td>
-                <Table.Td style={{ whiteSpace: 'nowrap' }}>
-                  <Box style={{ minWidth: 140, maxWidth: 200 }}>
-                    <Select
-                      data={[
-                        { value: 'advisor', label: 'Advisor' },
-                        { value: 'supervisor', label: 'Supervisor' },
-                      ]}
-                      value={''}
-                      onChange={(val) => {}}
-                      placeholder='Select role'
-                      variant='filled'
-                      size='xs'
+            {members
+              .slice()
+              .sort((a, b) => {
+                // Sort head to first position
+                const headId = researchGroupData?.head?.userId
+                const isAHead = a.userId === headId
+                const isBHead = b.userId === headId
+
+                if (isAHead && !isBHead) return -1
+                if (!isAHead && isBHead) return 1
+                return 0
+              })
+              .filter((member) => {
+                const key = searchKey.toLowerCase().replaceAll(' ', '')
+
+                const searchTarget =
+                  `${member.firstName ?? ''}${member.lastName ?? ''}${member.universityId ?? ''}${member.email ?? ''}${member.lastName ?? ''}${member.firstName ?? ''}`
+                    .toLowerCase()
+                    .replaceAll(' ', '')
+
+                return searchTarget.includes(key)
+              })
+              .map((member) => (
+                <Table.Tr key={member.userId}>
+                  <Table.Td style={{ width: '100%' }}>
+                    <UserInformationRow
+                      firstName={member.firstName ?? ''}
+                      lastName={member.lastName ?? ''}
+                      username={member.universityId ?? ''}
+                      email={member.email ?? ''}
+                      user={member}
                     />
-                  </Box>
-                </Table.Td>
-                <Table.Td style={{ width: '1%', whiteSpace: 'nowrap', textAlign: 'right' }}>
-                  <DeleteButton
-                    onClick={() => {}}
-                    disabled={member.userId === researchGroupData?.head.userId}
-                  />
-                </Table.Td>
-              </Table.Tr>
-            ))}
+                  </Table.Td>
+                  <Table.Td style={{ whiteSpace: 'nowrap' }}>
+                    <Box style={{ minWidth: 140, maxWidth: 200 }}>
+                      <Select
+                        data={[
+                          { value: 'advisor', label: 'Advisor' },
+                          { value: 'supervisor', label: 'Supervisor' },
+                        ]}
+                        value={getPrimaryRoleFromGroups(member.groups)}
+                        onChange={(val) => {
+                          updateMemberRole(member.userId, val ?? '')
+                        }}
+                        placeholder='Select role'
+                        size='xs'
+                      />
+                    </Box>
+                  </Table.Td>
+                  <Table.Td style={{ width: '1%', whiteSpace: 'nowrap', textAlign: 'right' }}>
+                    <DeleteButton
+                      onClick={() => {
+                        setDeleteMemberModalOpened(true)
+                      }}
+                      disabled={member.userId === researchGroupData?.head.userId}
+                    />
+
+                    <DeleteMemberModal
+                      opened={deleteMemberModalOpened}
+                      onClose={() => setDeleteMemberModalOpened(false)}
+                      onConfirm={() => handleRemoveMember(member.userId)}
+                      member={member}
+                    />
+                  </Table.Td>
+                </Table.Tr>
+              ))}
           </Table.Tbody>
         </Table>
       )}

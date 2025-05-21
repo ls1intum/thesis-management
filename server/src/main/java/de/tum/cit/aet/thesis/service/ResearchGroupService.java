@@ -267,4 +267,36 @@ public class ResearchGroupService {
 
         return user;
     }
+
+    public User updateResearchGroupMemberRole(
+            UUID researchGroupId,
+            UUID userId,
+            String role
+    ) {
+        User user = userService.findById(userId);
+        ResearchGroup researchGroup = findById(researchGroupId);
+
+        if (!user.getResearchGroup().getId().equals(researchGroup.getId())) {
+            throw new AccessDeniedException("User is not assigned to this research group.");
+        }
+
+        if (user.getResearchGroup().isArchived()) {
+            throw new AccessDeniedException("Cannot update role of a user in an archived research group.");
+        }
+
+        if ("advisor".equalsIgnoreCase(role)) {
+            accessManagementService.assignAdvisorRole(user);
+        } else if ("supervisor".equalsIgnoreCase(role)) {
+            accessManagementService.assignSupervisorRole(user);
+        } else {
+            throw new IllegalArgumentException("Invalid role: " + role);
+        }
+
+        Set<UserGroup> updatedGroups = accessManagementService.syncRolesFromKeycloakToDatabase(user);
+        user.setGroups(updatedGroups);
+
+        userRepository.save(user);
+
+        return user;
+    }
 }

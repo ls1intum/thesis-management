@@ -152,7 +152,18 @@ public class ResearchGroupController {
     ) {
         User user = researchGroupService.removeUserFromResearchGroup(userId, researchGroupId);
 
-        //TODO: Decide if user needs to be removed as advisor from running thesis and topics
+        //User can be removed no matter if they have open topic/thesis or not
         return ResponseEntity.ok(LightUserDto.fromUserEntity(user));
     }
+
+  @PutMapping("/{researchGroupId}/member/{userId}/role")
+  @PreAuthorize("hasRole('admin')")
+  public ResponseEntity<LightUserDto> updateResearchGroupMemberRole(
+          @PathVariable UUID researchGroupId,
+          @PathVariable UUID userId,
+          @RequestParam("role") String role
+  ) {
+    User user = researchGroupService.updateResearchGroupMemberRole(researchGroupId, userId, role);
+    return ResponseEntity.ok(LightUserDto.fromUserEntity(user));
+  }
 }
