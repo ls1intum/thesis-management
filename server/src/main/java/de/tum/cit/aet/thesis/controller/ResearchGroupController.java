@@ -143,4 +143,16 @@ public class ResearchGroupController {
 
     return ResponseEntity.ok(LightUserDto.fromUserEntity(user));
   }
+
+    @PutMapping("/{researchGroupId}/remove/{userId}")
+    @PreAuthorize("hasRole('admin')")
+    public ResponseEntity<LightUserDto> removeUserFromResearchGroup(
+        @PathVariable("researchGroupId") UUID researchGroupId,
+        @PathVariable("userId") UUID userId
+    ) {
+        User user = researchGroupService.removeUserFromResearchGroup(userId, researchGroupId);
+
+        //TODO: Decide if user needs to be removed as advisor from running thesis and topics
+        return ResponseEntity.ok(LightUserDto.fromUserEntity(user));
+    }
 }

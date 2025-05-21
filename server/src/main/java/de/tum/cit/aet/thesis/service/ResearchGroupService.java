@@ -145,6 +145,7 @@ public class ResearchGroupService {
       newUser.setLastName(userElement.lastName());
       newUser.setEmail(userElement.email());
 
+      userRepository.save(newUser);
       return newUser;
     });
 
@@ -241,4 +242,29 @@ public class ResearchGroupService {
     userRepository.save(user);
     return user;
   }
+
+    public User removeUserFromResearchGroup(UUID userId, UUID researchGroupId) {
+        User user = userService.findById(userId);
+
+        if (!user.getResearchGroup().getId().equals(researchGroupId)) {
+          throw new AccessDeniedException("User is not assigned to this research group.");
+        }
+        if (user.getResearchGroup().isArchived()) {
+            throw new AccessDeniedException("Cannot remove user from an archived research group.");
+        }
+        if (user.getResearchGroup().getHead() == user) {
+            throw new AccessDeniedException("Cannot remove the head of the research group.");
+        }
+
+
+        //Remove advisor role in keycloak and update database
+        accessManagementService.removeResearchGroupRoles(user);
+        Set<UserGroup> updatedGroups = accessManagementService.syncRolesFromKeycloakToDatabase(user);
+        user.setGroups(updatedGroups);
+        user.setResearchGroup(null);
+
+        userRepository.save(user);
+
+        return user;
+    }
 }
