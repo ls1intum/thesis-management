@@ -167,24 +167,28 @@ public class ResearchGroupService {
     }
     currentUserProvider().assertCanAccessResearchGroup(researchGroup);
 
+    User oldHead = researchGroup.getHead();
     //Get the User by universityId else create the user
     User head = getUserByUsernameOrCreate(headUsername);
-    if (head.getResearchGroup() != null) {
-      throw new AccessDeniedException("User is already assigned to a research group.");
+
+    //Update head only on change
+    if (oldHead != head) {
+        if (head.getResearchGroup() != null) {
+          throw new AccessDeniedException("User is already assigned to a research group.");
+        }
+
+        //Remove ResearchGroup from old head and set it to the new head
+        oldHead.setResearchGroup(null);
+        researchGroup.setHead(head);
+
+        //Give new head supervisor as role and remove the role from the old head
+        accessManagementService.assignSupervisorRole(head);
+        accessManagementService.removeResearchGroupRoles(oldHead);
+        Set<UserGroup> updatedGroupsHead = accessManagementService.syncRolesFromKeycloakToDatabase(head);
+        head.setGroups(updatedGroupsHead);
+        Set<UserGroup> updatedGroupsOldHead = accessManagementService.syncRolesFromKeycloakToDatabase(oldHead);
+        oldHead.setGroups(updatedGroupsOldHead);
     }
-
-    //Remove ResearchGroup from old head and set it to the new head
-    User oldHead = researchGroup.getHead();
-    oldHead.setResearchGroup(null);
-    researchGroup.setHead(head);
-
-    //Give new head supervisor as role and remove the role from the old head
-    accessManagementService.assignSupervisorRole(head);
-    accessManagementService.removeResearchGroupRoles(oldHead);
-    Set<UserGroup> updatedGroupsHead = accessManagementService.syncRolesFromKeycloakToDatabase(head);
-    head.setGroups(updatedGroupsHead);
-    Set<UserGroup> updatedGroupsOldHead = accessManagementService.syncRolesFromKeycloakToDatabase(oldHead);
-    oldHead.setGroups(updatedGroupsOldHead);
 
     researchGroup.setName(name);
     researchGroup.setAbbreviation(abbreviation);
