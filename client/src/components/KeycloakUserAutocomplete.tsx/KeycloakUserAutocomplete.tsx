@@ -1,0 +1,127 @@
+import { Autocomplete, Group, Loader, Text } from '@mantine/core'
+import { useDebouncedValue } from '@mantine/hooks'
+import { useEffect, useState } from 'react'
+import { showSimpleError } from '../../utils/notification'
+import { doRequest } from '../../requests/request'
+import { getApiResponseErrorMessage } from '../../requests/handler'
+import UserInformationForm from '../UserInformationForm/UserInformationForm'
+import UserInformationRow from '../UserInformationRow/UserInformationRow'
+
+interface KeycloakUserElement {
+  id: string
+  username: string
+  firstName: string
+  lastName: string
+  email: string
+  hasResearchGroup: boolean
+}
+
+interface KeycloakUserAutocompleteProps {
+  selectedLabel: string
+  onSelect: (username: string, label: string) => void
+  label?: string
+  placeholder?: string
+  withAsterisk?: boolean
+}
+
+const KeycloakUserAutocomplete = ({
+  selectedLabel,
+  onSelect,
+  label,
+  placeholder = 'Search by name or email...',
+  withAsterisk = false,
+}: KeycloakUserAutocompleteProps) => {
+  const [searchKey, setSearchKey] = useState('')
+  const [debouncedSearchKey] = useDebouncedValue(searchKey, 300)
+  const [userOptions, setUserOptions] = useState<KeycloakUserElement[]>([])
+  const [loadingUsers, setLoadingUsers] = useState(false)
+
+  const getUserOptionValue = (user: {
+    firstName: string
+    lastName: string
+    username: string
+    email: string
+    hasResearchGroup: boolean
+  }) =>
+    `${user.firstName} ${user.lastName} (${user.username}): ${user.email} -> ${user.hasResearchGroup}`
+
+  // Sync initial selectedLabel into searchKey
+  useEffect(() => {
+    setSearchKey(selectedLabel)
+  }, [selectedLabel])
+
+  useEffect(() => {
+    if (!debouncedSearchKey.trim()) {
+      setUserOptions([])
+      return
+    }
+
+    setLoadingUsers(true)
+
+    doRequest<KeycloakUserElement[]>(
+      '/v2/users/keycloak-users',
+      {
+        method: 'GET',
+        requiresAuth: true,
+        params: { searchKey: debouncedSearchKey },
+      },
+      (res) => {
+        setLoadingUsers(false)
+        if (res.ok) {
+          setUserOptions(res.data)
+        } else {
+          setUserOptions([])
+          showSimpleError(getApiResponseErrorMessage(res))
+        }
+      },
+    )
+  }, [debouncedSearchKey])
+
+  return (
+    <Autocomplete
+      label={label}
+      placeholder={placeholder}
+      withAsterisk={withAsterisk}
+      value={searchKey}
+      onChange={(val) => {
+        setSearchKey(val)
+
+        // Clear selected user if input is cleared
+        if (val.trim() === '') {
+          onSelect('', '')
+        }
+      }}
+      data={userOptions.map((user) => ({
+        value: getUserOptionValue(user),
+        disabled: user.hasResearchGroup,
+      }))}
+      limit={10}
+      rightSection={loadingUsers ? <Loader size='xs' /> : null}
+      renderOption={({ option }) => {
+        const user = userOptions.find((u) => getUserOptionValue(u) === option.value)
+
+        return (
+          <UserInformationRow
+            firstName={user?.firstName}
+            lastName={user?.lastName}
+            username={user?.username}
+            email={user?.email}
+            disableMessage={
+              user?.hasResearchGroup ? 'User already has a research group' : undefined
+            }
+          />
+        )
+      }}
+      onOptionSubmit={(val) => {
+        const selected = userOptions.find((u) => getUserOptionValue(u) === val)
+        if (selected) {
+          const labelString = `${selected.firstName} ${selected.lastName}`
+          onSelect(selected.username, labelString)
+          setSearchKey(labelString)
+        }
+      }}
+    />
+  )
+}
+
+export default KeycloakUserAutocomplete

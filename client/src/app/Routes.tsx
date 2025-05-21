@@ -8,6 +8,13 @@ const PrivacyPage = lazy(() => import('../pages/PrivacyPage/PrivacyPage'))
 const ImprintPage = lazy(() => import('../pages/ImprintPage/ImprintPage'))
 const AboutPage = lazy(() => import('../pages/AboutPage/AboutPage'))
 const ThesisOverviewPage = lazy(() => import('../pages/ThesisOverviewPage/ThesisOverviewPage'))
+const ResearchGroupAdminPage = lazy(
+  () => import('../pages/ResearchGroupAdminPage/ResearchGroupAdminPage'),
+)
+const ResearchGroupSettingPage = lazy(
+  () => import('../pages/ResearchGroupSettingPage/ResearchGroupSettingPage'),
+)
+
 const PresentationOverviewPage = lazy(
   () => import('../pages/PresentationOverviewPage/PresentationOverviewPage'),
 )
@@ -133,6 +140,22 @@ const AppRoutes = () => {
             element={
               <AuthenticatedArea>
                 <ThesisOverviewPage />
+              </AuthenticatedArea>
+            }
+          />
+          <Route
+            path='/research-groups'
+            element={
+              <AuthenticatedArea>
+                <ResearchGroupAdminPage />
+              </AuthenticatedArea>
+            }
+          />
+          <Route
+            path='/research-groups/:researchGroupId'
+            element={
+              <AuthenticatedArea>
+                <ResearchGroupSettingPage />
               </AuthenticatedArea>
             }
           />

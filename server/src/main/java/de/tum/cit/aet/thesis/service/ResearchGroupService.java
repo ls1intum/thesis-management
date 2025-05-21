@@ -2,6 +2,7 @@ package de.tum.cit.aet.thesis.service;
 
 import de.tum.cit.aet.thesis.entity.ResearchGroup;
 import de.tum.cit.aet.thesis.entity.User;
+import de.tum.cit.aet.thesis.entity.UserGroup;
 import de.tum.cit.aet.thesis.exception.request.AccessDeniedException;
 import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.repository.ResearchGroupRepository;
@@ -15,8 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class ResearchGroupService {
@@ -25,15 +25,17 @@ public class ResearchGroupService {
   private final UserService userService;
   private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
   private final UserRepository userRepository;
+  private final AccessManagementService accessManagementService;
 
   @Autowired
   public ResearchGroupService(ResearchGroupRepository researchGroupRepository,
       UserService userService, ObjectProvider<CurrentUserProvider> currentUserProviderProvider,
-      UserRepository userRepository) {
+      UserRepository userRepository, AccessManagementService accessManagementService) {
       this.researchGroupRepository = researchGroupRepository;
       this.userService = userService;
       this.currentUserProviderProvider = currentUserProviderProvider;
       this.userRepository = userRepository;
+      this.accessManagementService = accessManagementService;
   }
 
   private CurrentUserProvider currentUserProvider() {
@@ -88,14 +90,23 @@ public class ResearchGroupService {
 
   @Transactional
   public ResearchGroup createResearchGroup(
-      UUID headId,
+      String headUsername,
       String name,
       String abbreviation,
       String description,
       String websiteUrl,
       String campus
   ) {
-    User head = userService.findById(headId);
+    //Get the User by universityId else create the user
+    User head = getUserByUsernameOrCreate(headUsername);
+    if (head.getResearchGroup() != null) {
+        throw new AccessDeniedException("User is already assigned to a research group.");
+    }
+
+    //Add supervisor role in keycloak
+    accessManagementService.assignSupervisorRole(head);
+    Set<UserGroup> updatedGroupsHead = accessManagementService.syncRolesFromKeycloakToDatabase(head);
+    head.setGroups(updatedGroupsHead);
 
     ResearchGroup researchGroup = new ResearchGroup();
     researchGroup.setHead(head);
@@ -118,10 +129,33 @@ public class ResearchGroupService {
     return savedResearchGroup;
   }
 
+  private User getUserByUsernameOrCreate(String username) {
+    User user = userRepository.findByUniversityId(username).orElseGet(() -> {
+      User newUser = new User();
+      Instant currentTime = Instant.now();
+
+      newUser.setJoinedAt(currentTime);
+      newUser.setUpdatedAt(currentTime);
+
+      // Load user data from Keycloak
+      AccessManagementService.KeycloakUserInformation userElement = accessManagementService.getUserByUsername(username);
+
+      newUser.setUniversityId(userElement.username());
+      newUser.setFirstName(userElement.firstName());
+      newUser.setLastName(userElement.lastName());
+      newUser.setEmail(userElement.email());
+
+      userRepository.save(newUser);
+      return newUser;
+    });
+
+    return user;
+  }
+
   @Transactional
   public ResearchGroup updateResearchGroup(
       ResearchGroup researchGroup,
-      UUID headId,
+      String headUsername,
       String name,
       String abbreviation,
       String description,
@@ -132,9 +166,30 @@ public class ResearchGroupService {
       throw new AccessDeniedException("Cannot update an archived research group.");
     }
     currentUserProvider().assertCanAccessResearchGroup(researchGroup);
-    User head = userService.findById(headId);
 
-    researchGroup.setHead(head);
+    User oldHead = researchGroup.getHead();
+    //Get the User by universityId else create the user
+    User head = getUserByUsernameOrCreate(headUsername);
+
+    //Update head only on change
+    if (oldHead != head) {
+        if (head.getResearchGroup() != null) {
+          throw new AccessDeniedException("User is already assigned to a research group.");
+        }
+
+        //Remove ResearchGroup from old head and set it to the new head
+        oldHead.setResearchGroup(null);
+        researchGroup.setHead(head);
+
+        //Give new head supervisor as role and remove the role from the old head
+        accessManagementService.assignSupervisorRole(head);
+        accessManagementService.removeResearchGroupRoles(oldHead);
+        Set<UserGroup> updatedGroupsHead = accessManagementService.syncRolesFromKeycloakToDatabase(head);
+        head.setGroups(updatedGroupsHead);
+        Set<UserGroup> updatedGroupsOldHead = accessManagementService.syncRolesFromKeycloakToDatabase(oldHead);
+        oldHead.setGroups(updatedGroupsOldHead);
+    }
+
     researchGroup.setName(name);
     researchGroup.setAbbreviation(abbreviation);
     researchGroup.setDescription(description);
@@ -146,9 +201,17 @@ public class ResearchGroupService {
     ResearchGroup savedResearchGroup =  researchGroupRepository.save(researchGroup);
 
     head.setResearchGroup(savedResearchGroup);
+    userRepository.save(oldHead);
     userRepository.save(head);
 
     return savedResearchGroup;
+  }
+
+  public Page<User> getAllResearchGroupMembers(UUID researchGroupId, Integer page, Integer limit, String sortBy, String sortOrder) {
+    Sort.Order order = new Sort.Order(sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
+
+    return userRepository
+            .searchUsers(researchGroupId, null, null, PageRequest.of(page, limit, Sort.by(order)));
   }
 
   public void archiveResearchGroup(ResearchGroup researchGroup) {
@@ -160,8 +223,9 @@ public class ResearchGroupService {
     researchGroupRepository.save(researchGroup);
   }
 
-  public void assignUserToResearchGroup(UUID userId, UUID researchGroupId) {
-    User user = userService.findById(userId);
+  public User assignUserToResearchGroup(String username, UUID researchGroupId) {
+
+    User user = getUserByUsernameOrCreate(username);
     ResearchGroup researchGroup = findById(researchGroupId);
 
     if (user.getResearchGroup() != null) {
@@ -173,6 +237,70 @@ public class ResearchGroupService {
     }
 
     user.setResearchGroup(researchGroup);
+
+    //Assign member the advisor role in keycloak and update database
+    accessManagementService.assignAdvisorRole(user);
+    Set<UserGroup> updatedGroups = accessManagementService.syncRolesFromKeycloakToDatabase(user);
+    user.setGroups(updatedGroups);
+
     userRepository.save(user);
+    return user;
   }
+
+    public User removeUserFromResearchGroup(UUID userId, UUID researchGroupId) {
+        User user = userService.findById(userId);
+
+        if (!user.getResearchGroup().getId().equals(researchGroupId)) {
+          throw new AccessDeniedException("User is not assigned to this research group.");
+        }
+        if (user.getResearchGroup().isArchived()) {
+            throw new AccessDeniedException("Cannot remove user from an archived research group.");
+        }
+        if (user.getResearchGroup().getHead() == user) {
+            throw new AccessDeniedException("Cannot remove the head of the research group.");
+        }
+
+
+        //Remove advisor role in keycloak and update database
+        accessManagementService.removeResearchGroupRoles(user);
+        Set<UserGroup> updatedGroups = accessManagementService.syncRolesFromKeycloakToDatabase(user);
+        user.setGroups(updatedGroups);
+        user.setResearchGroup(null);
+
+        userRepository.save(user);
+
+        return user;
+    }
+
+    public User updateResearchGroupMemberRole(
+            UUID researchGroupId,
+            UUID userId,
+            String role
+    ) {
+        User user = userService.findById(userId);
+        ResearchGroup researchGroup = findById(researchGroupId);
+
+        if (!user.getResearchGroup().getId().equals(researchGroup.getId())) {
+            throw new AccessDeniedException("User is not assigned to this research group.");
+        }
+
+        if (user.getResearchGroup().isArchived()) {
+            throw new AccessDeniedException("Cannot update role of a user in an archived research group.");
+        }
+
+        if ("advisor".equalsIgnoreCase(role)) {
+            accessManagementService.assignAdvisorRole(user);
+        } else if ("supervisor".equalsIgnoreCase(role)) {
+            accessManagementService.assignSupervisorRole(user);
+        } else {
+            throw new IllegalArgumentException("Invalid role: " + role);
+        }
+
+        Set<UserGroup> updatedGroups = accessManagementService.syncRolesFromKeycloakToDatabase(user);
+        user.setGroups(updatedGroups);
+
+        userRepository.save(user);
+
+        return user;
+    }
 }

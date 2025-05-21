@@ -63,4 +63,9 @@ public class UserService {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("User with id %s not found.", userId)));
     }
+
+    public User findByUniversityId(String universityId) {
+        return userRepository.findByUniversityId(universityId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("User with universityId %s not found.", universityId)));
+    }
 }
