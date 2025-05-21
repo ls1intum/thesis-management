@@ -38,8 +38,6 @@ const AddResearchGroupMember = ({ researchGroupData }: IAddResearchGroupMemberPr
   const [members, setMembers] = useState<ILightUser[]>([])
   const [membersLoading, setMembersLoading] = useState(false)
 
-  const [deleteMemberModalOpened, setDeleteMemberModalOpened] = useState(false)
-
   const getPrimaryRoleFromGroups = (groups: string[]): '' | 'advisor' | 'supervisor' => {
     if (groups.includes('supervisor')) return 'supervisor'
     if (groups.includes('advisor')) return 'advisor'
@@ -241,18 +239,12 @@ const AddResearchGroupMember = ({ researchGroupData }: IAddResearchGroupMemberPr
                     </Box>
                   </Table.Td>
                   <Table.Td style={{ width: '1%', whiteSpace: 'nowrap', textAlign: 'right' }}>
-                    <DeleteButton
-                      onClick={() => {
-                        setDeleteMemberModalOpened(true)
-                      }}
-                      disabled={member.userId === researchGroupData?.head.userId}
-                    />
-
                     <DeleteMemberModal
-                      opened={deleteMemberModalOpened}
-                      onClose={() => setDeleteMemberModalOpened(false)}
-                      onConfirm={() => handleRemoveMember(member.userId)}
+                      onConfirm={() => {
+                        handleRemoveMember(member.userId)
+                      }}
                       member={member}
+                      disabled={member.userId === researchGroupData?.head.userId}
                     />
                   </Table.Td>
                 </Table.Tr>
