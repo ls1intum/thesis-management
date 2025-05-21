@@ -1,10 +1,12 @@
 import { Badge, Box, Card, Flex, Group, Stack, Text } from '@mantine/core'
 import { Buildings, Users } from 'phosphor-react'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { IResearchGroup } from '../../../requests/responses/researchGroup'
 import CustomAvatar from '../../../components/CustomAvatar/CustomAvatar'
 import { formatUser } from '../../../utils/format'
 import { useNavigate } from 'react-router'
+import { doRequest } from '../../../requests/request'
+import { ILightUser } from '../../../requests/responses/user'
 
 const ResearchGroupCard = (props: IResearchGroup) => {
   const navigate = useNavigate()
@@ -12,6 +14,28 @@ const ResearchGroupCard = (props: IResearchGroup) => {
   const onResearchGroupCardClick = () => {
     navigate(`/research-groups/${props.id}`)
   }
+
+  const [researchGroupMemberNumber, setResearchGroupMemberNumber] = React.useState(0)
+
+  const fetchMemberAmount = () => {
+    //TODO: Add this information maybe into the getAllResearchGroups call
+    doRequest<{ content: ILightUser[] }>(
+      `/v2/research-groups/${props.id}/members`,
+      {
+        method: 'GET',
+        requiresAuth: true,
+      },
+      (res) => {
+        if (res.ok) {
+          setResearchGroupMemberNumber(res.data.content.length)
+        }
+      },
+    )
+  }
+
+  useEffect(() => {
+    fetchMemberAmount()
+  }, [])
 
   return (
     <Card
@@ -33,9 +57,11 @@ const ResearchGroupCard = (props: IResearchGroup) => {
         <Text fw={500} lineClamp={2}>
           {props.name}
         </Text>
-        <Badge leftSection={<Users />} variant='outline' mb={5} my={5}>
-          5 Members {/*TODO: Use actuall data*/}
-        </Badge>
+        {
+          <Badge leftSection={<Users />} variant='outline' mb={5} my={5}>
+            {researchGroupMemberNumber}
+          </Badge>
+        }
       </Flex>
 
       <Stack gap={5} style={{ flexGrow: 1 }}>
