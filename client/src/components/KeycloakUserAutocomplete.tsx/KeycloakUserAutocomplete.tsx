@@ -4,18 +4,9 @@ import { useEffect, useState } from 'react'
 import { showSimpleError } from '../../utils/notification'
 import { doRequest } from '../../requests/request'
 import { getApiResponseErrorMessage } from '../../requests/handler'
-import UserInformationForm from '../UserInformationForm/UserInformationForm'
 import UserInformationRow from '../UserInformationRow/UserInformationRow'
 import { ILightUser } from '../../requests/responses/user'
-
-interface KeycloakUserElement {
-  id: string
-  username: string
-  firstName: string
-  lastName: string
-  email: string
-  hasResearchGroup: boolean
-}
+import { IKeycloakUserElement } from '../../requests/responses/keycloakUser'
 
 interface KeycloakUserAutocompleteProps {
   selectedLabel: string
@@ -36,7 +27,7 @@ const KeycloakUserAutocomplete = ({
 }: KeycloakUserAutocompleteProps) => {
   const [searchKey, setSearchKey] = useState('')
   const [debouncedSearchKey] = useDebouncedValue(searchKey, 300)
-  const [userOptions, setUserOptions] = useState<KeycloakUserElement[]>([])
+  const [userOptions, setUserOptions] = useState<IKeycloakUserElement[]>([])
   const [loadingUsers, setLoadingUsers] = useState(false)
   const [selectedUsername, setSelectedUsername] = useState<string>(previousUser?.universityId || '')
 
@@ -62,7 +53,7 @@ const KeycloakUserAutocomplete = ({
 
     setLoadingUsers(true)
 
-    doRequest<KeycloakUserElement[]>(
+    doRequest<IKeycloakUserElement[]>(
       '/v2/users/keycloak',
       {
         method: 'GET',

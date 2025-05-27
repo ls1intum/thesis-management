@@ -29,14 +29,12 @@ public class AccessManagementService {
     private final String keycloakRealmName;
     private final String serviceClientId;
     private final String serviceClientSecret;
-
-    private final UUID clientUUID;
+    private final String clientId;
+    private final UUID applicationClientUUID;
     private final UUID studentGroupId;
 
     private String accessToken;
     private Instant tokenExpiration;
-
-    private String clientId;
 
     private final UserGroupRepository userGroupRepository;
 
@@ -60,13 +58,13 @@ public class AccessManagementService {
                 .baseUrl(keycloakHost)
                 .build();
 
-        UUID clientUUID = null;
+        UUID applicationClientUUID = null;
         try {
-            clientUUID = clientId.isBlank() || serviceClientSecret.isBlank() ? null : getServiceClientUUID();
+            applicationClientUUID = clientId.isBlank() || serviceClientSecret.isBlank() ? null : getApplicationClientUUID();
         } catch (RuntimeException exception) {
             log.warn("Could not fetch client id from configured service client", exception);
         }
-        this.clientUUID = clientUUID;
+        this.applicationClientUUID = applicationClientUUID;
 
         UUID studentGroupId = null;
         try {
@@ -181,7 +179,7 @@ public class AccessManagementService {
         Role roleObject = getClientRoleByName(roleName);
 
         webClient.method(HttpMethod.DELETE)
-                .uri("/admin/realms/" + keycloakRealmName + "/users/" + userId + "/role-mappings/clients/" + clientUUID)
+                .uri("/admin/realms/" + keycloakRealmName + "/users/" + userId + "/role-mappings/clients/" + applicationClientUUID)
                 .headers(headers -> headers.addAll(getAuthenticationHeaders()))
                 .bodyValue(List.of(roleObject))
                 .retrieve()
@@ -197,7 +195,7 @@ public class AccessManagementService {
         Role roleObject = getClientRoleByName(role);
 
         webClient.post()
-                .uri("/admin/realms/" + keycloakRealmName + "/users/" + userId + "/role-mappings/clients/" + clientUUID)
+                .uri("/admin/realms/" + keycloakRealmName + "/users/" + userId + "/role-mappings/clients/" + applicationClientUUID)
                 .headers(headers -> headers.addAll(getAuthenticationHeaders()))
                 .bodyValue(List.of(roleObject))
                 .retrieve()
@@ -215,7 +213,7 @@ public class AccessManagementService {
 
         // Fetch all client roles from Keycloak for the given user
         List<Role> keycloakRoles = webClient.get()
-                .uri("/admin/realms/" + keycloakRealmName + "/users/" + keycloakUserId + "/role-mappings/clients/" + clientUUID)
+                .uri("/admin/realms/" + keycloakRealmName + "/users/" + keycloakUserId + "/role-mappings/clients/" + applicationClientUUID)
                 .headers(headers -> headers.addAll(getAuthenticationHeaders()))
                 .retrieve()
                 .bodyToFlux(Role.class)
@@ -250,7 +248,7 @@ public class AccessManagementService {
 
     private Role getClientRoleByName(String roleName) {
         return webClient.get()
-                .uri("/admin/realms/" + keycloakRealmName + "/clients/" + clientUUID + "/roles/" + roleName)
+                .uri("/admin/realms/" + keycloakRealmName + "/clients/" + applicationClientUUID + "/roles/" + roleName)
                 .headers(headers -> headers.addAll(getAuthenticationHeaders()))
                 .retrieve()
                 .bodyToMono(Role.class)
@@ -309,7 +307,7 @@ public class AccessManagementService {
     }
 
     private record ClientElement(UUID id, String clientId, String name) {}
-    private UUID getServiceClientUUID() {
+    private UUID getApplicationClientUUID() {
         ClientElement client = webClient.method(HttpMethod.GET)
                 .uri(uriBuilder -> uriBuilder
                         .path("/admin/realms/" + keycloakRealmName + "/clients")
@@ -374,8 +372,7 @@ public class AccessManagementService {
                     .block();
             return users;
         } catch (RuntimeException exception) {
-            log.warn("Could not fetch users from keycloak", exception);
-            return new ArrayList<>();
+            throw new RuntimeException("Could not fetch users from keycloak", exception);
         }
     }
 }

@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { usePageTitle } from '../../hooks/theme'
-import { Box, Button, Flex, Grid, Loader, SimpleGrid, Stack, TextInput, Title } from '@mantine/core'
-import { MagnifyingGlass, Plus } from 'phosphor-react'
+import { Box, Button, Flex, Loader, SimpleGrid, Stack, TextInput, Title } from '@mantine/core'
+import { MagnifyingGlass, Plus, UsersThree } from 'phosphor-react'
 import { doRequest } from '../../requests/request'
 import { PaginationResponse } from '../../requests/responses/pagination'
 import { IResearchGroup } from '../../requests/responses/researchGroup'
@@ -13,6 +13,7 @@ import CreateResearchGroupModal, {
 } from './components/CreateResearchGroupModal'
 import { useDebouncedValue } from '@mantine/hooks'
 import { showNotification } from '@mantine/notifications'
+import NoContentFoundCard from '../../components/NoContentFoundCard/NoContentFoundCard'
 
 const ResearchGroupAdminPage = () => {
   usePageTitle('Theses Overview')
@@ -127,6 +128,16 @@ const ResearchGroupAdminPage = () => {
         <Flex justify='center' align='center'>
           <Loader color='blue' />
         </Flex>
+      ) : researchGroups && researchGroups.content.length === 0 ? (
+        <NoContentFoundCard
+          title={searchKey.length === 0 ? 'No Research Groups Found' : 'No Research Groups Found'}
+          subtle={
+            searchKey.length === 0
+              ? 'There are no research groups yet. Create one to get started.'
+              : 'Try changing the search term or create a new research group.'
+          }
+          icon={searchKey.length === 0 ? <UsersThree size={32} /> : <MagnifyingGlass size={32} />}
+        />
       ) : (
         <SimpleGrid
           cols={{ base: 1, sm: 2, xl: 3 }}
@@ -136,6 +147,7 @@ const ResearchGroupAdminPage = () => {
           {researchGroups?.content.map((group) => <ResearchGroupCard {...group} />)}
         </SimpleGrid>
       )}
+
       <CreateResearchGroupModal
         opened={createResearchGroupModalOpened}
         onClose={() => setCreateResearchGroupModalOpened(false)}

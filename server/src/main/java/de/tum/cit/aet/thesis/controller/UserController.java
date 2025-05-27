@@ -1,5 +1,6 @@
 package de.tum.cit.aet.thesis.controller;
 
+import de.tum.cit.aet.thesis.dto.KeycloakUserDto;
 import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.security.CurrentUserProvider;
 import de.tum.cit.aet.thesis.service.AccessManagementService;
@@ -62,10 +63,9 @@ public class UserController {
         return ResponseEntity.ok(PaginationDto.fromSpringPage(users.map(LightUserDto::fromUserEntity)));
     }
 
-    public record KeycloakUserElement(UUID id, String username, String firstName, String lastName , String email, boolean hasResearchGroup) {}
     @GetMapping("/keycloak")
     @PreAuthorize("hasRole('admin')")
-    public ResponseEntity<List<KeycloakUserElement>> getKeycloakUsers(
+    public ResponseEntity<List<KeycloakUserDto>> getKeycloakUsers(
             @RequestParam(required = false, defaultValue = "") String searchKey
     ) {
         List<KeycloakUserInformation> keycloakUserInformation = accessManagementService.getAllUsers(searchKey);
@@ -74,27 +74,13 @@ public class UserController {
                 .map(KeycloakUserInformation::username)
                 .toList();
 
-        //Get all Users that are already in our database
         List<User> existingUsers = userService.findAllByUniversityIdIn(universityIds);
 
         Map<String, User> userLookup = existingUsers.stream()
                 .collect(Collectors.toMap(User::getUniversityId, Function.identity()));
 
-        //Check if user exists in our System, if yes check if he has a research group and set the flag using a lookupTable
-        List<KeycloakUserElement> users = keycloakUserInformation.stream()
-                .map(user -> {
-                    User systemUser = userLookup.get(user.username());
-                    boolean hasResearchGroup = systemUser != null && systemUser.getResearchGroup() != null;
-
-                    return new KeycloakUserElement(
-                            user.id(),
-                            user.username(),
-                            user.firstName(),
-                            user.lastName(),
-                            user.email(),
-                            hasResearchGroup
-                    );
-                })
+        List<KeycloakUserDto> users = keycloakUserInformation.stream()
+                .map(user -> KeycloakUserDto.from(user, userLookup.get(user.username())))
                 .toList();
 
         return ResponseEntity.ok(users);
