@@ -33,6 +33,20 @@ const ResearchGroupForm = ({
     validate: {
       name: (value) => (value.trim().length < 2 ? 'Name must be at least 2 characters' : null),
       headUsername: (value) => (!value ? 'Please select a group head' : null),
+      websiteUrl: (value) => {
+        if (value && !/^https?:\/\/[^\s/$.?#].[^\s]*$/.test(value)) {
+          return 'Please enter a valid URL'
+        }
+        return null
+      },
+      description: (value) =>
+        value.length > 300 ? 'Description must be 300 characters or less' : null,
+      abbreviation: (value) => {
+        if (value && value.length > 10) {
+          return 'Abbreviation must be 10 characters or less'
+        }
+        return null
+      },
     },
   })
 
@@ -108,7 +122,7 @@ const ResearchGroupForm = ({
 
         <Grid.Col span={12}>
           <Button type='submit' fullWidth mt='md' disabled={!form.isValid()}>
-            Save Changes
+            {submitLabel}
           </Button>
         </Grid.Col>
       </Grid>
