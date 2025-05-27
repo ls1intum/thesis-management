@@ -1,5 +1,9 @@
 package de.tum.cit.aet.thesis.service;
 
+import de.tum.cit.aet.thesis.entity.UserGroup;
+import de.tum.cit.aet.thesis.entity.key.UserGroupId;
+import de.tum.cit.aet.thesis.repository.UserGroupRepository;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +18,7 @@ import org.springframework.http.HttpHeaders;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class AccessManagementService {
@@ -26,10 +29,14 @@ public class AccessManagementService {
     private final String keycloakRealmName;
     private final String serviceClientId;
     private final String serviceClientSecret;
+    private final String clientId;
+    private final UUID applicationClientUUID;
     private final UUID studentGroupId;
 
     private String accessToken;
     private Instant tokenExpiration;
+
+    private final UserGroupRepository userGroupRepository;
 
     @Autowired
     public AccessManagementService(
@@ -37,15 +44,27 @@ public class AccessManagementService {
             @Value("${thesis-management.keycloak.realm-name}") String keycloakRealmName,
             @Value("${thesis-management.keycloak.service-client.id}") String serviceClientId,
             @Value("${thesis-management.keycloak.service-client.secret}") String serviceClientSecret,
-            @Value("${thesis-management.keycloak.service-client.student-group-name}") String studentGroupName
+            @Value("${thesis-management.keycloak.service-client.student-group-name}") String studentGroupName,
+            @Value("${thesis-management.keycloak.client-id}") String clientId,
+            UserGroupRepository userGroupRepository
     ) {
+        this.userGroupRepository = userGroupRepository;
         this.keycloakRealmName = keycloakRealmName;
         this.serviceClientId = serviceClientId;
         this.serviceClientSecret = serviceClientSecret;
+        this.clientId = clientId;
 
         this.webClient = WebClient.builder()
                 .baseUrl(keycloakHost)
                 .build();
+
+        UUID applicationClientUUID = null;
+        try {
+            applicationClientUUID = clientId.isBlank() || serviceClientSecret.isBlank() ? null : getApplicationClientUUID();
+        } catch (RuntimeException exception) {
+            log.warn("Could not fetch client id from configured service client", exception);
+        }
+        this.applicationClientUUID = applicationClientUUID;
 
         UUID studentGroupId = null;
         try {
@@ -106,6 +125,136 @@ public class AccessManagementService {
                 .block();
     }
 
+
+    public void assignAdvisorRole(User user) {
+        if (user == null) {
+            throw new RuntimeException("User is null");
+        }
+
+        try {
+            UUID userId = getUserId(user.getUniversityId());
+            assignKeycloakRole(userId, "advisor");
+
+            removeKeycloakRole(userId, "supervisor");
+            removeKeycloakRole(userId, "student");
+        } catch (RuntimeException exception) {
+            log.warn("Could not assign advisor role to user", exception);
+        }
+    }
+
+    public void assignSupervisorRole(User user) {
+        if (user == null) {
+            throw new RuntimeException("User is null");
+        }
+
+        try {
+            UUID userId = getUserId(user.getUniversityId());
+            // As of right now supervisors also get the role advisor by default
+            assignKeycloakRole(userId, "supervisor");
+            assignKeycloakRole(userId, "advisor");
+
+            removeKeycloakRole(userId, "student");
+        } catch (RuntimeException exception) {
+            log.warn("Could not assign supervisor role to user", exception);
+        }
+    }
+
+    public void removeResearchGroupRoles(User user) {
+        if (user == null) {
+            throw new RuntimeException("User is null");
+        }
+
+        try {
+            UUID userId = getUserId(user.getUniversityId());
+            assignKeycloakRole(userId, "student");
+
+            removeKeycloakRole(userId, "advisor");
+            removeKeycloakRole(userId, "supervisor");
+        } catch (RuntimeException exception) {
+            log.warn("Could not remove supervisor and/or advisor role from user", exception);
+        }
+    }
+
+    private void removeKeycloakRole(UUID userId, String roleName) {
+        Role roleObject = getClientRoleByName(roleName);
+
+        webClient.method(HttpMethod.DELETE)
+                .uri("/admin/realms/" + keycloakRealmName + "/users/" + userId + "/role-mappings/clients/" + applicationClientUUID)
+                .headers(headers -> headers.addAll(getAuthenticationHeaders()))
+                .bodyValue(List.of(roleObject))
+                .retrieve()
+                .toBodilessEntity()
+                .block();
+    }
+
+    private void assignKeycloakRole(UUID userId, String role) {
+        if (userId == null || role == null) {
+            throw new RuntimeException("User id or role is null");
+        }
+
+        Role roleObject = getClientRoleByName(role);
+
+        webClient.post()
+                .uri("/admin/realms/" + keycloakRealmName + "/users/" + userId + "/role-mappings/clients/" + applicationClientUUID)
+                .headers(headers -> headers.addAll(getAuthenticationHeaders()))
+                .bodyValue(List.of(roleObject))
+                .retrieve()
+                .toBodilessEntity()
+                .block();
+    }
+
+    @Transactional
+    public Set<UserGroup> syncRolesFromKeycloakToDatabase(User user) {
+        if (user == null) {
+            throw new IllegalArgumentException("User cannot be null");
+        }
+
+        UUID keycloakUserId = getUserId(user.getUniversityId());
+
+        // Fetch all client roles from Keycloak for the given user
+        List<Role> keycloakRoles = webClient.get()
+                .uri("/admin/realms/" + keycloakRealmName + "/users/" + keycloakUserId + "/role-mappings/clients/" + applicationClientUUID)
+                .headers(headers -> headers.addAll(getAuthenticationHeaders()))
+                .retrieve()
+                .bodyToFlux(Role.class)
+                .collectList()
+                .block();
+
+        // Delete old group assignments
+        userGroupRepository.deleteByUserId(user.getId());
+
+        // Create and persist new user groups
+        Set<UserGroup> userGroups = new HashSet<>();
+
+        if (keycloakRoles != null && !keycloakRoles.isEmpty()) {
+            for (Role role : keycloakRoles) {
+                UserGroup entity = new UserGroup();
+                UserGroupId entityId = new UserGroupId();
+
+                entityId.setUserId(user.getId());
+                entityId.setGroup(role.name());
+
+                entity.setUser(user);
+                entity.setId(entityId);
+
+                userGroups.add(userGroupRepository.save(entity));
+            }
+        }
+
+        return userGroups;
+    }
+
+    private record Role(String id, String name, String description, boolean composite, boolean clientRole, String containerId) {}
+
+    private Role getClientRoleByName(String roleName) {
+        return webClient.get()
+                .uri("/admin/realms/" + keycloakRealmName + "/clients/" + applicationClientUUID + "/roles/" + roleName)
+                .headers(headers -> headers.addAll(getAuthenticationHeaders()))
+                .retrieve()
+                .bodyToMono(Role.class)
+                .block();
+    }
+
     private record TokensResponse(String access_token) { }
 
     private HttpHeaders getAuthenticationHeaders() {
@@ -157,10 +306,32 @@ public class AccessManagementService {
                 .orElseThrow(() -> new RuntimeException("Group not found: " + groupName));
     }
 
-    private record UserElement(UUID id) {}
+    private record ClientElement(UUID id, String clientId, String name) {}
+    private UUID getApplicationClientUUID() {
+        ClientElement client = webClient.method(HttpMethod.GET)
+                .uri(uriBuilder -> uriBuilder
+                        .path("/admin/realms/" + keycloakRealmName + "/clients")
+                        .queryParam("clientId", clientId)
+                        .build())
+                .headers(headers -> headers.addAll(getAuthenticationHeaders()))
+                .retrieve()
+                .bodyToFlux(ClientElement.class)
+                .next()
+                .block();
 
-    private UUID getUserId(String username) {
-        List<UserElement> users = webClient.method(HttpMethod.GET)
+        if (client == null) {
+            throw new IllegalStateException("Client not found: " + clientId);
+        }
+
+        return client.id();
+    }
+
+    /**
+     * Fetches a user by their username from Keycloak.
+     * In case of Tum the username is the university ID.
+     */
+    public KeycloakUserInformation getUserByUsername(String username) {
+        List<KeycloakUserInformation> users = webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/admin/realms/" + keycloakRealmName + "/users")
                         .queryParam("username", username)
@@ -168,7 +339,7 @@ public class AccessManagementService {
                 )
                 .headers(headers -> headers.addAll(getAuthenticationHeaders()))
                 .retrieve()
-                .bodyToFlux(UserElement.class)
+                .bodyToFlux(KeycloakUserInformation.class)
                 .collectList()
                 .block();
 
@@ -178,7 +349,30 @@ public class AccessManagementService {
 
         return users.stream()
                 .findFirst()
-                .map(UserElement::id)
                 .orElseThrow(() -> new RuntimeException("User not found: " + username));
+    }
+
+    private UUID getUserId(String username) {
+        return getUserByUsername(username).id;
+    }
+
+    public record KeycloakUserInformation(UUID id, String username, String firstName, String lastName , String email) {}
+    public List<KeycloakUserInformation> getAllUsers(String searchKey) {
+        try {
+            List<KeycloakUserInformation> users = webClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .path("/admin/realms/" + keycloakRealmName + "/users")
+                            .queryParam("search", searchKey)
+                            .build()
+                    )
+                    .headers(headers -> headers.addAll(getAuthenticationHeaders()))
+                    .retrieve()
+                    .bodyToFlux(KeycloakUserInformation.class)
+                    .collectList()
+                    .block();
+            return users;
+        } catch (RuntimeException exception) {
+            throw new RuntimeException("Could not fetch users from keycloak", exception);
+        }
     }
 }
