@@ -101,7 +101,7 @@ class TopicControllerTest extends BaseIntegrationTest {
     @Test
     void updateTopic_Success() throws Exception {
         UUID topicId = createTestTopic("Test Topic");
-        TestUser advisor = createTestUser("supervisor", List.of("supervisor", "advisor"));
+        TestUser advisor = createRandomTestUser(List.of("supervisor", "advisor"));
         UUID researchGroupId = createTestResearchGroup("Test Research Group", advisor.universityId());
 
         ReplaceTopicPayload updatePayload = new ReplaceTopicPayload(

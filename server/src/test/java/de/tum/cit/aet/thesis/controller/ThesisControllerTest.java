@@ -85,7 +85,7 @@ class ThesisControllerTest extends BaseIntegrationTest {
 
         @Test
         void updateThesis_Success() throws Exception {
-            TestUser advisor = createTestUser("supervisor", List.of("supervisor", "advisor"));
+            TestUser advisor = createRandomTestUser(List.of("supervisor", "advisor"));
             UUID researchGroupId = createTestResearchGroup("Test Research Group", advisor.universityId());
             UUID thesisId = createTestThesis("Test Thesis");
 

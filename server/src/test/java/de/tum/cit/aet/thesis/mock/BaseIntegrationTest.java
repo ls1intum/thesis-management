@@ -179,6 +179,11 @@ public abstract class BaseIntegrationTest {
         return new TestUser(userId, actualUniversityId);
     }
 
+    protected TestUser createRandomTestUser(List<String> roles) throws Exception {
+        String universityId = UUID.randomUUID().toString().replace("-", "").substring(0, 12);
+        return createTestUser(universityId, roles);
+    }
+
     protected UUID createTestResearchGroup(String name, String headUniversityId) throws Exception {
         Map<String, Object> payload = new HashMap<>();
         payload.put("name", name + " " + UUID.randomUUID());
@@ -219,12 +224,12 @@ public abstract class BaseIntegrationTest {
     }
 
     protected UUID createDefaultResearchGroup() throws Exception {
-        TestUser headUser = createTestUser("defaultSupervisor", List.of("supervisor"));
+        TestUser headUser = createRandomTestUser(List.of("supervisor"));
         return createTestResearchGroup("Default Research Group", headUser.universityId());
     }
 
     protected UUID createTestTopic(String title) throws Exception {
-        TestUser advisor = createTestUser("supervisor", List.of("supervisor", "advisor"));
+        TestUser advisor = createRandomTestUser(List.of("supervisor", "advisor"));
         UUID researchGroupId = createTestResearchGroup("Test Research Group " + UUID.randomUUID(), advisor.universityId());
 
         ReplaceTopicPayload payload = new ReplaceTopicPayload(
