@@ -15,7 +15,7 @@ const AddResearchGroupMemberModal = ({
   researchGroupName,
   handleAddMember,
 }: IAddResearchGroupMemberModalProps) => {
-  const [userDisplayLable, setUserDisplayLabel] = useState('')
+  const [userDisplayLabel, setUserDisplayLabel] = useState('')
   const [selectedUsername, setSelectedUsername] = useState('')
 
   return (
@@ -32,7 +32,7 @@ const AddResearchGroupMemberModal = ({
         </Text>
 
         <KeycloakUserAutocomplete
-          selectedLabel={userDisplayLable}
+          selectedLabel={userDisplayLabel}
           onSelect={(username, label) => {
             setUserDisplayLabel(label)
             setSelectedUsername(username)

@@ -78,6 +78,7 @@ const ResearchGroupForm = ({
             label='Group Head'
             placeholder='Search by name or email...'
             withAsterisk
+            previousUser={initialFormValues.head}
           />
         </Grid.Col>
 

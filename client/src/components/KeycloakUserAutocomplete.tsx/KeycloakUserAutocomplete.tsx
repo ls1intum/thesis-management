@@ -6,6 +6,7 @@ import { doRequest } from '../../requests/request'
 import { getApiResponseErrorMessage } from '../../requests/handler'
 import UserInformationForm from '../UserInformationForm/UserInformationForm'
 import UserInformationRow from '../UserInformationRow/UserInformationRow'
+import { ILightUser } from '../../requests/responses/user'
 
 interface KeycloakUserElement {
   id: string
@@ -22,6 +23,7 @@ interface KeycloakUserAutocompleteProps {
   label?: string
   placeholder?: string
   withAsterisk?: boolean
+  previousUser?: ILightUser
 }
 
 const KeycloakUserAutocomplete = ({
@@ -30,11 +32,13 @@ const KeycloakUserAutocomplete = ({
   label,
   placeholder = 'Search by name or email...',
   withAsterisk = false,
+  previousUser,
 }: KeycloakUserAutocompleteProps) => {
   const [searchKey, setSearchKey] = useState('')
   const [debouncedSearchKey] = useDebouncedValue(searchKey, 300)
   const [userOptions, setUserOptions] = useState<KeycloakUserElement[]>([])
   const [loadingUsers, setLoadingUsers] = useState(false)
+  const [selectedUsername, setSelectedUsername] = useState<string>(previousUser?.universityId || '')
 
   const getUserOptionValue = (user: {
     firstName: string
@@ -66,13 +70,13 @@ const KeycloakUserAutocomplete = ({
         params: { searchKey: debouncedSearchKey },
       },
       (res) => {
-        setLoadingUsers(false)
         if (res.ok) {
           setUserOptions(res.data)
         } else {
           setUserOptions([])
           showSimpleError(getApiResponseErrorMessage(res))
         }
+        setLoadingUsers(false)
       },
     )
   }, [debouncedSearchKey])
@@ -93,7 +97,9 @@ const KeycloakUserAutocomplete = ({
       }}
       data={userOptions.map((user) => ({
         value: getUserOptionValue(user),
-        disabled: user.hasResearchGroup,
+        disabled:
+          (user.hasResearchGroup && user.username !== previousUser?.universityId) ||
+          selectedUsername === user.username,
       }))}
       limit={10}
       rightSection={loadingUsers ? <Loader size='xs' /> : null}
@@ -107,7 +113,11 @@ const KeycloakUserAutocomplete = ({
             username={user?.username}
             email={user?.email}
             disableMessage={
-              user?.hasResearchGroup ? 'User already has a research group' : undefined
+              user?.hasResearchGroup && user?.username !== previousUser?.universityId
+                ? 'User already has a research group'
+                : selectedUsername === user?.username
+                  ? 'User is already selected'
+                  : undefined
             }
           />
         )
@@ -118,6 +128,7 @@ const KeycloakUserAutocomplete = ({
           const labelString = `${selected.firstName} ${selected.lastName}`
           onSelect(selected.username, labelString)
           setSearchKey(labelString)
+          setSelectedUsername(selected.username)
         }
       }}
     />

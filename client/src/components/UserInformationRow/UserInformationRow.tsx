@@ -1,4 +1,4 @@
-import { Group, Text } from '@mantine/core'
+import { Group, Stack, Text } from '@mantine/core'
 import { ILightUser } from '../../requests/responses/user'
 import CustomAvatar from '../CustomAvatar/CustomAvatar'
 
@@ -13,8 +13,8 @@ type IUserInformationRowProps = {
 const UserInformationRow = ({
   firstName,
   lastName,
-  username,
-  email,
+  username = 'No username',
+  email = 'No email',
   disableMessage,
   user,
 }: IUserInformationRowProps) => {
@@ -22,10 +22,10 @@ const UserInformationRow = ({
     <Group gap='xs' wrap='nowrap' align='center' justify='flex-start'>
       {user && <CustomAvatar user={user} size={30} />}
 
-      <div>
+      <Stack gap={0}>
         <Group gap='xs'>
           <Text size='sm' fw={500}>
-            {firstName} {lastName}
+            {firstName && lastName ? `${firstName} ${lastName}` : 'No Name Provided'}
           </Text>
           {disableMessage && (
             <Text size='xs' c='red'>
@@ -36,7 +36,7 @@ const UserInformationRow = ({
         <Text size='xs' c='dimmed'>
           @{username} • {email}
         </Text>
-      </div>
+      </Stack>
     </Group>
   )
 }

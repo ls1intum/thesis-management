@@ -1,17 +1,4 @@
-import {
-  ActionIcon,
-  Box,
-  Button,
-  Card,
-  Divider,
-  Flex,
-  Loader,
-  Select,
-  Stack,
-  Table,
-  TextInput,
-  Tooltip,
-} from '@mantine/core'
+import { Box, Button, Flex, Loader, Select, Table, TextInput } from '@mantine/core'
 import { IResearchGroup } from '../../../requests/responses/researchGroup'
 import { ResearchGroupSettingsCard } from './ResearchGroupSettingsCard'
 import { MagnifyingGlass, Plus, Trash, User } from 'phosphor-react'
@@ -21,17 +8,15 @@ import { ILightUser } from '../../../requests/responses/user'
 import { doRequest } from '../../../requests/request'
 import { showSimpleError } from '../../../utils/notification'
 import { getApiResponseErrorMessage } from '../../../requests/handler'
-import { useParams } from 'react-router'
 import { showNotification } from '@mantine/notifications'
 import UserInformationRow from '../../../components/UserInformationRow/UserInformationRow'
-import DeleteButton from '../../../components/DeleteButton/DeleteButton'
 import DeleteMemberModal from './DeleteMemberModal'
 
-interface IAddResearchGroupMemberProps {
+interface IResearchGroupMembersProps {
   researchGroupData: IResearchGroup | undefined
 }
 
-const AddResearchGroupMember = ({ researchGroupData }: IAddResearchGroupMemberProps) => {
+const ResearchGroupMembers = ({ researchGroupData }: IResearchGroupMembersProps) => {
   const [addResearchGroupMemberModalOpened, setAddResearchGroupMemberModalOpened] = useState(false)
   const [searchKey, setSearchKey] = useState('')
 
@@ -263,4 +248,4 @@ const AddResearchGroupMember = ({ researchGroupData }: IAddResearchGroupMemberPr
   )
 }
 
-export default AddResearchGroupMember
+export default ResearchGroupMembers

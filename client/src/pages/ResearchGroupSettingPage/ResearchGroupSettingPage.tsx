@@ -6,7 +6,7 @@ import { showSimpleError } from '../../utils/notification'
 import { getApiResponseErrorMessage } from '../../requests/handler'
 import { Loader, Stack, Title } from '@mantine/core'
 import GeneralResearchGroupSettings from './components/GeneralResearchGroupSettings'
-import AddResearchGroupMember from './components/AddResearchGroupMember'
+import ResearchGroupMembers from './components/ResearchGroupMembers'
 
 const ResearchGroupSettingPage = () => {
   const { researchGroupId } = useParams<{ researchGroupId: string }>()
@@ -48,7 +48,7 @@ const ResearchGroupSettingPage = () => {
         researchGroupData={researchGroupData}
         setResearchGroupData={setResearchGroupData}
       />
-      <AddResearchGroupMember researchGroupData={researchGroupData} />
+      <ResearchGroupMembers researchGroupData={researchGroupData} />
     </Stack>
   )
 }
