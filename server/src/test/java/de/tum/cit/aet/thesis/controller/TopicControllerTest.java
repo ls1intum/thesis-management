@@ -52,8 +52,8 @@ class TopicControllerTest extends BaseIntegrationTest {
 
     @Test
     void createTopic_Success() throws Exception {
-        UUID advisorId = createTestUser("supervisor", List.of("supervisor", "advisor"));
-        UUID researchGroupId = createTestResearchGroup("Test Research Group", advisorId);
+        TestUser advisor = createTestUser("supervisor", List.of("supervisor", "advisor"));
+        UUID researchGroupId = createTestResearchGroup("Test Research Group", advisor.universityId());
 
         ReplaceTopicPayload payload = new ReplaceTopicPayload(
                 "Test Topic",
@@ -62,8 +62,8 @@ class TopicControllerTest extends BaseIntegrationTest {
                 "Requirements",
                 "Goals",
                 "References",
-                List.of(advisorId),
-                List.of(advisorId),
+                List.of(advisor.userId()),
+                List.of(advisor.userId()),
                 researchGroupId
         );
 
@@ -78,7 +78,7 @@ class TopicControllerTest extends BaseIntegrationTest {
 
     @Test
     void createTopic_AsStudent_Forbidden() throws Exception {
-        UUID researchGroupId = createTestResearchGroup("Test Research Group", createTestUser("supervisor", List.of("supervisor", "advisor")));
+        UUID researchGroupId = createTestResearchGroup("Test Research Group", createTestUser("supervisor", List.of("supervisor", "advisor")).universityId());
         ReplaceTopicPayload payload = new ReplaceTopicPayload(
                 "Test Topic",
                 Set.of("MASTER"),
@@ -101,8 +101,8 @@ class TopicControllerTest extends BaseIntegrationTest {
     @Test
     void updateTopic_Success() throws Exception {
         UUID topicId = createTestTopic("Test Topic");
-        UUID advisorId = createTestUser("supervisor", List.of("supervisor", "advisor"));
-        UUID researchGroupId = createTestResearchGroup("Test Research Group", advisorId);
+        TestUser advisor = createTestUser("supervisor", List.of("supervisor", "advisor"));
+        UUID researchGroupId = createTestResearchGroup("Test Research Group", advisor.universityId());
 
         ReplaceTopicPayload updatePayload = new ReplaceTopicPayload(
                 "Updated Topic",
@@ -111,8 +111,8 @@ class TopicControllerTest extends BaseIntegrationTest {
                 "Updated Requirements",
                 "Updated Goals",
                 "Updated References",
-                List.of(advisorId),
-                List.of(advisorId),
+                List.of(advisor.userId()),
+                List.of(advisor.userId()),
                 researchGroupId
         );
 

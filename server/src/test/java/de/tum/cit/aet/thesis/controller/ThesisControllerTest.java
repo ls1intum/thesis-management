@@ -60,17 +60,17 @@ class ThesisControllerTest extends BaseIntegrationTest {
 
         @Test
         void createThesis_Success() throws Exception {
-            UUID advisorId = createTestUser("supervisor", List.of("supervisor", "advisor"));
-            UUID researchGroupId = createTestResearchGroup("Test Research Group", advisorId);
+            TestUser advisor = createTestUser("supervisor", List.of("supervisor", "advisor"));
+            UUID researchGroupId = createTestResearchGroup("Test Research Group", advisor.universityId());
             createTestEmailTemplate("THESIS_CREATED");
 
             CreateThesisPayload payload = new CreateThesisPayload(
                     "Test Thesis",
                     "MASTER",
                     "ENGLISH",
-                    List.of(advisorId),
-                    List.of(advisorId),
-                    List.of(advisorId),
+                    List.of(advisor.userId()),
+                    List.of(advisor.userId()),
+                    List.of(advisor.userId()),
                     researchGroupId
             );
 
@@ -85,8 +85,8 @@ class ThesisControllerTest extends BaseIntegrationTest {
 
         @Test
         void updateThesis_Success() throws Exception {
-            UUID advisorId = createTestUser("supervisor", List.of("supervisor", "advisor"));
-            UUID researchGroupId = createTestResearchGroup("Test Research Group", advisorId);
+            TestUser advisor = createTestUser("supervisor", List.of("supervisor", "advisor"));
+            UUID researchGroupId = createTestResearchGroup("Test Research Group", advisor.universityId());
             UUID thesisId = createTestThesis("Test Thesis");
 
             UpdateThesisPayload payload = new UpdateThesisPayload(
@@ -97,9 +97,9 @@ class ThesisControllerTest extends BaseIntegrationTest {
                     Set.of("keyword1", "keyword2"),
                     Instant.now(),
                     Instant.now().plusSeconds(3600),
-                    List.of(advisorId),
-                    List.of(advisorId),
-                    List.of(advisorId),
+                    List.of(advisor.userId()),
+                    List.of(advisor.userId()),
+                    List.of(advisor.userId()),
                     List.of(),
                     researchGroupId
             );

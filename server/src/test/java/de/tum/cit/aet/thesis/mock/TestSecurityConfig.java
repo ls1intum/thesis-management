@@ -1,6 +1,8 @@
 package de.tum.cit.aet.thesis.mock;
 
 import com.auth0.jwt.JWT;
+import de.tum.cit.aet.thesis.service.AccessManagementService;
+import org.mockito.Mockito;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
@@ -23,6 +25,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 
 @TestConfiguration
 @EnableWebSecurity
@@ -82,5 +88,18 @@ public class TestSecurityConfig {
         });
 
         return converter;
+    }
+
+    @Bean
+    public AccessManagementService accessManagementService() {
+        AccessManagementService mock = Mockito.mock(AccessManagementService.class);
+
+        // Mock behavior
+        doNothing().when(mock).assignSupervisorRole(any());
+
+        when(mock.syncRolesFromKeycloakToDatabase(any()))
+                .thenReturn(Collections.emptySet());
+
+        return mock;
     }
 }
