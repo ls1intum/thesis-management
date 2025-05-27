@@ -7,6 +7,7 @@ import { formatUser } from '../../../utils/format'
 import { useNavigate } from 'react-router'
 import { doRequest } from '../../../requests/request'
 import { ILightUser } from '../../../requests/responses/user'
+import { useHover } from '@mantine/hooks'
 
 const ResearchGroupCard = (props: IResearchGroup) => {
   const navigate = useNavigate()
@@ -37,15 +38,18 @@ const ResearchGroupCard = (props: IResearchGroup) => {
     fetchMemberAmount()
   }, [])
 
+  const { hovered, ref } = useHover()
+
   return (
     <Card
       withBorder
-      shadow='sm'
+      shadow={hovered ? 'md' : 'xs'}
       radius='md'
       h='100%'
       w='100%'
-      style={{ display: 'flex', flexDirection: 'column' }}
+      style={{ cursor: 'pointer' }}
       onClick={onResearchGroupCardClick}
+      ref={ref}
     >
       <Flex
         justify={{ base: 'flex-start', sm: 'space-between' }}
