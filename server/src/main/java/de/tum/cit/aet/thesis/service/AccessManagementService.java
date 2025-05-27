@@ -151,9 +151,10 @@ public class AccessManagementService {
 
         try {
             UUID userId = getUserId(user.getUniversityId());
+            // As of right now supervisors also get the role advisor by default
             assignKeycloakRole(userId, "supervisor");
+            assignKeycloakRole(userId, "advisor");
 
-            removeKeycloakRole(userId, "advisor");
             removeKeycloakRole(userId, "student");
         } catch (RuntimeException exception) {
             log.warn("Could not assign supervisor role to user", exception);
@@ -327,8 +328,12 @@ public class AccessManagementService {
         return client.id();
     }
 
+    /**
+     * Fetches a user by their username from Keycloak.
+     * In case of Tum the username is the university ID.
+     */
     public KeycloakUserInformation getUserByUsername(String username) {
-        List<KeycloakUserInformation> users = webClient.method(HttpMethod.GET)
+        List<KeycloakUserInformation> users = webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/admin/realms/" + keycloakRealmName + "/users")
                         .queryParam("username", username)
@@ -356,7 +361,7 @@ public class AccessManagementService {
     public record KeycloakUserInformation(UUID id, String username, String firstName, String lastName , String email) {}
     public List<KeycloakUserInformation> getAllUsers(String searchKey) {
         try {
-            List<KeycloakUserInformation> users = webClient.method(HttpMethod.GET)
+            List<KeycloakUserInformation> users = webClient.get()
                     .uri(uriBuilder -> uriBuilder
                             .path("/admin/realms/" + keycloakRealmName + "/users")
                             .queryParam("search", searchKey)

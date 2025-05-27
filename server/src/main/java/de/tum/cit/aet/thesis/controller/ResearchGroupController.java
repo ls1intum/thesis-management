@@ -4,7 +4,6 @@ import de.tum.cit.aet.thesis.controller.payload.CreateResearchGroupPayload;
 import de.tum.cit.aet.thesis.dto.LightUserDto;
 import de.tum.cit.aet.thesis.dto.PaginationDto;
 import de.tum.cit.aet.thesis.dto.ResearchGroupDto;
-import de.tum.cit.aet.thesis.dto.UserDto;
 import de.tum.cit.aet.thesis.entity.ResearchGroup;
 import de.tum.cit.aet.thesis.entity.User;
 import de.tum.cit.aet.thesis.service.ResearchGroupService;

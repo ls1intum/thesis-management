@@ -7,7 +7,7 @@ type IUserInformationRowProps = {
   lastName?: string
   username?: string
   email?: string
-  disableMessage?: String
+  disableMessage?: string
   user?: ILightUser
 }
 const UserInformationRow = ({

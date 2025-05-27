@@ -18,6 +18,7 @@ import de.tum.cit.aet.thesis.dto.LightUserDto;
 import de.tum.cit.aet.thesis.dto.PaginationDto;
 import de.tum.cit.aet.thesis.entity.User;
 import de.tum.cit.aet.thesis.service.UserService;
+import de.tum.cit.aet.thesis.service.AccessManagementService.KeycloakUserInformation;
 
 import java.util.List;
 import java.util.UUID;
@@ -59,15 +60,15 @@ public class UserController {
     }
 
     public record KeycloakUserElement(UUID id, String username, String firstName, String lastName , String email, boolean hasResearchGroup) {}
-    @GetMapping("/keycloak-users")
+    @GetMapping("/keycloak")
     @PreAuthorize("hasRole('admin')")
     public ResponseEntity<List<KeycloakUserElement>> getKeycloakUsers(
             @RequestParam(required = false, defaultValue = "") String searchKey
     ) {
-        List<AccessManagementService.KeycloakUserInformation> keycloakUserInformations = accessManagementService.getAllUsers(searchKey);
+        List<KeycloakUserInformation> keycloakUserInformation = accessManagementService.getAllUsers(searchKey);
 
         //Check if user exists in our System, if yes check if he has a research group and set the flag
-        List<KeycloakUserElement> users = keycloakUserInformations.stream()
+        List<KeycloakUserElement> users = keycloakUserInformation.stream()
                 .map(user -> {
                     boolean hasResearchGroup = false;
 

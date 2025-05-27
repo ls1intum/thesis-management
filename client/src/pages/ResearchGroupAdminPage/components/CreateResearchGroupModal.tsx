@@ -2,6 +2,7 @@ import { Button, Modal, Select, Stack, Text, Textarea, TextInput } from '@mantin
 import { useForm } from '@mantine/form'
 import { useState } from 'react'
 import KeycloakUserAutocomplete from '../../../components/KeycloakUserAutocomplete.tsx/KeycloakUserAutocomplete'
+import { GLOBAL_CONFIG } from '../../../config/global'
 
 interface ICreateResearchGroupModalProps {
   opened: boolean
@@ -71,7 +72,7 @@ const CreateResearchGroupModal = ({
           <Select
             label='Campus'
             placeholder='Select a campus'
-            data={['Garching', 'Munich', 'Heilbronn', 'Weihenstephan']}
+            data={Object.values(GLOBAL_CONFIG.research_groups_location)}
             {...form.getInputProps('campus')}
           />
           <TextInput

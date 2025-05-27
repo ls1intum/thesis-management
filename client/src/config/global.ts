@@ -41,7 +41,12 @@ export const GLOBAL_CONFIG: IGlobalConfig = {
     MANAGEMENT_AND_TECHNOLOGY: 'Management and Technology',
     OTHER: 'Other',
   },
-
+  research_groups_location: getEnvironmentVariable('RESEARCH_GROUPS_LOCATION') || {
+    GARCHING: 'Garching',
+    MUNICH: 'Munich',
+    HEILBRONN: 'Heilbronn',
+    WEIHENSTEPHAN: 'Weihenstephan',
+  },
   thesis_types: getEnvironmentVariable<IGlobalConfig['thesis_types']>('THESIS_TYPES', true) || {
     BACHELOR: {
       long: 'Bachelor Thesis',

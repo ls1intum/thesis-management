@@ -1,4 +1,4 @@
-import { Autocomplete, Group, Loader, Text } from '@mantine/core'
+import { Autocomplete, Loader } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { useEffect, useState } from 'react'
 import { showSimpleError } from '../../utils/notification'
@@ -59,7 +59,7 @@ const KeycloakUserAutocomplete = ({
     setLoadingUsers(true)
 
     doRequest<KeycloakUserElement[]>(
-      '/v2/users/keycloak-users',
+      '/v2/users/keycloak',
       {
         method: 'GET',
         requiresAuth: true,

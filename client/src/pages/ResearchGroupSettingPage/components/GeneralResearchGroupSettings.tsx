@@ -4,11 +4,11 @@ import { doRequest } from '../../../requests/request'
 import { showNotification } from '@mantine/notifications'
 import { showSimpleError } from '../../../utils/notification'
 import { getApiResponseErrorMessage } from '../../../requests/handler'
-import { useParams } from 'react-router'
-import { Button, Grid, Select, Textarea, TextInput, Text, Loader } from '@mantine/core'
+import { Button, Grid, Select, Textarea, TextInput, Text } from '@mantine/core'
 import KeycloakUserAutocomplete from '../../../components/KeycloakUserAutocomplete.tsx/KeycloakUserAutocomplete'
 import { useState } from 'react'
 import { IResearchGroup } from '../../../requests/responses/researchGroup'
+import { GLOBAL_CONFIG } from '../../../config/global'
 
 interface IGeneralResearchGroupSettingsProps {
   researchGroupData: IResearchGroup | undefined
@@ -34,7 +34,7 @@ const GeneralResearchGroupSettings = ({
     },
     validateInputOnChange: true,
     validate: {
-      name: (value) => (value.length < 2 ? 'Name must be at least 2 characters' : null),
+      name: (value) => (value.trim().length < 2 ? 'Name must be at least 2 characters' : null),
       headUsername: (value) => (!value ? 'Please select a group head' : null),
     },
   })
@@ -103,7 +103,7 @@ const GeneralResearchGroupSettings = ({
             <Select
               label='Campus'
               placeholder='Select a campus'
-              data={['Garching', 'Munich', 'Heilbronn', 'Weihenstephan']}
+              data={Object.values(GLOBAL_CONFIG.research_groups_location)}
               {...form.getInputProps('campus')}
             />
           </Grid.Col>
