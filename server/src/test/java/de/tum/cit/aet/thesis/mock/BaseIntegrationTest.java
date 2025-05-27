@@ -8,6 +8,7 @@ import de.tum.cit.aet.thesis.controller.payload.CreateApplicationPayload;
 import de.tum.cit.aet.thesis.controller.payload.CreateThesisPayload;
 import de.tum.cit.aet.thesis.controller.payload.ReplaceTopicPayload;
 import de.tum.cit.aet.thesis.repository.*;
+import de.tum.cit.aet.thesis.service.AccessManagementService;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -91,6 +92,9 @@ public abstract class BaseIntegrationTest {
     @Autowired
     protected ObjectMapper objectMapper;
 
+    @Autowired
+    private AccessManagementService accessManagementService;
+
     @Container
     protected static PostgreSQLContainer<?> dbContainer = new PostgreSQLContainer<>("postgres:17.3-alpine");
 
@@ -160,7 +164,8 @@ public abstract class BaseIntegrationTest {
                 .sign(Algorithm.HMAC256("test-secret-key-for-jwt-tokens"));
     }
 
-    protected UUID createTestUser(String universityId, List<String> roles) throws Exception {
+    public record TestUser(UUID userId, String universityId) {}
+    protected TestUser createTestUser(String universityId, List<String> roles) throws Exception {
         String response = mockMvc.perform(MockMvcRequestBuilders.get("/v2/user-info")
                         .header("Authorization", generateTestAuthenticationHeader(universityId, roles))
                 )
@@ -168,13 +173,21 @@ public abstract class BaseIntegrationTest {
                 .getResponse()
                 .getContentAsString();
 
-        return UUID.fromString(JsonPath.parse(response).read("$.userId", String.class));
+        UUID userId = UUID.fromString(JsonPath.parse(response).read("$.userId", String.class));
+        String actualUniversityId = JsonPath.parse(response).read("$.universityId", String.class);
+
+        return new TestUser(userId, actualUniversityId);
     }
 
-    protected UUID createTestResearchGroup(String name, UUID headUserId) throws Exception {
+    protected TestUser createRandomTestUser(List<String> roles) throws Exception {
+        String universityId = UUID.randomUUID().toString().replace("-", "").substring(0, 12);
+        return createTestUser(universityId, roles);
+    }
+
+    protected UUID createTestResearchGroup(String name, String headUniversityId) throws Exception {
         Map<String, Object> payload = new HashMap<>();
         payload.put("name", name + " " + UUID.randomUUID());
-        payload.put("headId", headUserId);
+        payload.put("headUsername", headUniversityId);
 
         String response = mockMvc.perform(MockMvcRequestBuilders.post("/v2/research-groups")
                         .header("Authorization", createRandomAdminAuthentication())
@@ -211,13 +224,13 @@ public abstract class BaseIntegrationTest {
     }
 
     protected UUID createDefaultResearchGroup() throws Exception {
-        UUID headUserId = createTestUser("defaultSupervisor", List.of("supervisor"));
-        return createTestResearchGroup("Default Research Group", headUserId);
+        TestUser headUser = createRandomTestUser(List.of("supervisor"));
+        return createTestResearchGroup("Default Research Group", headUser.universityId());
     }
 
     protected UUID createTestTopic(String title) throws Exception {
-        UUID advisorId = createTestUser("supervisor", List.of("supervisor", "advisor"));
-        UUID researchGroupId = createTestResearchGroup("Test Research Group " + UUID.randomUUID(), advisorId);
+        TestUser advisor = createRandomTestUser(List.of("supervisor", "advisor"));
+        UUID researchGroupId = createTestResearchGroup("Test Research Group " + UUID.randomUUID(), advisor.universityId());
 
         ReplaceTopicPayload payload = new ReplaceTopicPayload(
                 title,
@@ -226,8 +239,8 @@ public abstract class BaseIntegrationTest {
                 "Test Requirements",
                 "Test Goals",
                 "Test References",
-                List.of(advisorId),
-                List.of(advisorId),
+                List.of(advisor.userId()),
+                List.of(advisor.userId()),
                 researchGroupId
         );
 
@@ -243,17 +256,17 @@ public abstract class BaseIntegrationTest {
     }
 
     protected UUID createTestThesis(String title) throws Exception {
-        UUID advisorId = createTestUser("supervisor", List.of("supervisor", "advisor"));
-        UUID researchGroupId = createTestResearchGroup("Test Research Group", advisorId);
+        TestUser advisor = createTestUser("supervisor", List.of("supervisor", "advisor"));
+        UUID researchGroupId = createTestResearchGroup("Test Research Group", advisor.universityId());
         createTestEmailTemplate("THESIS_CREATED");
 
         CreateThesisPayload payload = new CreateThesisPayload(
                 title,
                 "MASTER",
                 "ENGLISH",
-                List.of(advisorId),
-                List.of(advisorId),
-                List.of(advisorId),
+                List.of(advisor.userId()),
+                List.of(advisor.userId()),
+                List.of(advisor.userId()),
                 researchGroupId
         );
 

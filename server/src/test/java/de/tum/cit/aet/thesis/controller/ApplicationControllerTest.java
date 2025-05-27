@@ -106,16 +106,16 @@ class ApplicationControllerTest extends BaseIntegrationTest {
     @Test
     void acceptApplication_Success() throws Exception {
         UUID applicationId = createTestApplication(createRandomAdminAuthentication(), "Application");
-        UUID advisorId = createTestUser("advisor", List.of("advisor"));
-        UUID supervisorId = createTestUser("supervisor", List.of("supervisor"));
+        TestUser advisor = createTestUser("advisor", List.of("advisor"));
+        TestUser supervisor = createTestUser("supervisor", List.of("supervisor"));
         createTestEmailTemplate("APPLICATION_ACCEPTED");
 
         AcceptApplicationPayload payload = new AcceptApplicationPayload(
                 "Final Thesis Title",
                 "MASTER",
                 "ENGLISH",
-                List.of(advisorId),
-                List.of(supervisorId),
+                List.of(advisor.userId()),
+                List.of(supervisor.userId()),
                 true,
                 true
         );
