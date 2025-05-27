@@ -43,7 +43,11 @@ const AddResearchGroupMemberModal = ({
         <Flex justify='flex-end'>
           <Button
             ml='sm'
-            onClick={() => handleAddMember(selectedUsername)}
+            onClick={() => {
+              handleAddMember(selectedUsername)
+              setUserDisplayLabel('')
+              setSelectedUsername('')
+            }}
             disabled={!selectedUsername}
           >
             Add Member

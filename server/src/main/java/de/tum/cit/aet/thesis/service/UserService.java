@@ -13,10 +13,7 @@ import de.tum.cit.aet.thesis.entity.User;
 import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.repository.UserRepository;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class UserService {
@@ -67,5 +64,9 @@ public class UserService {
     public User findByUniversityId(String universityId) {
         return userRepository.findByUniversityId(universityId)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("User with universityId %s not found.", universityId)));
+    }
+
+    public List<User> findAllByUniversityIdIn(List<String> universityIds) {
+        return userRepository.findAllByUniversityIdIn(universityIds);
     }
 }

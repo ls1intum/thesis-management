@@ -21,7 +21,10 @@ import de.tum.cit.aet.thesis.service.UserService;
 import de.tum.cit.aet.thesis.service.AccessManagementService.KeycloakUserInformation;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -67,17 +70,21 @@ public class UserController {
     ) {
         List<KeycloakUserInformation> keycloakUserInformation = accessManagementService.getAllUsers(searchKey);
 
-        //Check if user exists in our System, if yes check if he has a research group and set the flag
+        List<String> universityIds = keycloakUserInformation.stream()
+                .map(KeycloakUserInformation::username)
+                .toList();
+
+        //Get all Users that are already in our database
+        List<User> existingUsers = userService.findAllByUniversityIdIn(universityIds);
+
+        Map<String, User> userLookup = existingUsers.stream()
+                .collect(Collectors.toMap(User::getUniversityId, Function.identity()));
+
+        //Check if user exists in our System, if yes check if he has a research group and set the flag using a lookupTable
         List<KeycloakUserElement> users = keycloakUserInformation.stream()
                 .map(user -> {
-                    boolean hasResearchGroup = false;
-
-                    try {
-                        User systemUser = userService.findByUniversityId(user.username());
-                        hasResearchGroup = systemUser.getResearchGroup() != null;
-                    } catch (ResourceNotFoundException e) {
-                        // User not found — keep flags as false
-                    }
+                    User systemUser = userLookup.get(user.username());
+                    boolean hasResearchGroup = systemUser != null && systemUser.getResearchGroup() != null;
 
                     return new KeycloakUserElement(
                             user.id(),
