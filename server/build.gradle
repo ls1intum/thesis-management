@@ -64,8 +64,8 @@ dependencies {
 	implementation "commons-io:commons-io:2.19.0"
 	implementation "com.github.vladimir-bukhtoyarov:bucket4j-core:8.0.1"
 	implementation "org.mnode.ical4j:ical4j:4.1.1"
-	implementation "com.itextpdf:itext-core:9.1.0"
-	implementation "com.itextpdf:html2pdf:6.1.0"
+	implementation "com.itextpdf:itext-core:9.2.0"
+	implementation "com.itextpdf:html2pdf:6.2.0"
 	implementation "com.auth0:java-jwt:4.5.0"
 
 	implementation "ch.qos.logback:logback-classic:${logback_version}"
@@ -82,8 +82,8 @@ dependencies {
 		exclude group: "com.vaadin.external.google", module: "android-json"
 		exclude group: "org.xmlunit", module: "xmlunit-core"
 	}
-	testImplementation "org.mockito:mockito-core:5.17.0"
-	testImplementation "org.mockito:mockito-junit-jupiter:5.17.0"
+	testImplementation "org.mockito:mockito-core:5.18.0"
+	testImplementation "org.mockito:mockito-junit-jupiter:5.18.0"
 
 	testImplementation "org.testcontainers:testcontainers:${test_container_version}"
 	testImplementation "org.testcontainers:junit-jupiter:${test_container_version}"
