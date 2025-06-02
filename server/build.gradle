@@ -59,7 +59,7 @@ dependencies {
 	implementation("net.minidev:json-smart") { version { 				strictly "2.5.2" } }
 
 	implementation "org.liquibase:liquibase-core:4.31.1"
-	implementation "org.postgresql:postgresql:42.7.5"
+	implementation "org.postgresql:postgresql:42.7.6"
 
 	implementation "commons-io:commons-io:2.19.0"
 	implementation "com.github.vladimir-bukhtoyarov:bucket4j-core:8.0.1"
