@@ -96,7 +96,7 @@ public abstract class BaseIntegrationTest {
     private AccessManagementService accessManagementService;
 
     @Container
-    protected static PostgreSQLContainer<?> dbContainer = new PostgreSQLContainer<>("postgres:17.3-alpine");
+    protected static PostgreSQLContainer<?> dbContainer = new PostgreSQLContainer<>("postgres:17.5-alpine");
 
     protected static void configureProperties(DynamicPropertyRegistry registry) {
         dbContainer.start();
