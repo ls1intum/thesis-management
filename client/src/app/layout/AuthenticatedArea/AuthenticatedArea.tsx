@@ -182,7 +182,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
         <AppShell.Section grow mb='md'>
           {!minimized && (
             <Group preventGrowOverflow={false}>
-              <Logo className={classes.logo} />
+              <Logo />
               <Text
                 className={classes.siteName}
                 fw='bold'

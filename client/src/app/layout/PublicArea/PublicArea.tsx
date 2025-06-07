@@ -1,48 +1,50 @@
-import React, { PropsWithChildren, ReactNode } from 'react'
+import { PropsWithChildren, ReactNode } from 'react'
 import Footer from '../../../components/Footer/Footer'
-import { Link, useNavigate } from 'react-router'
-import { CaretLeft } from 'phosphor-react'
-import { Anchor, MantineSize } from '@mantine/core'
-import ContentContainer from '../ContentContainer/ContentContainer'
+import { AppShell, Box, Container, Flex, MantineSize } from '@mantine/core'
 import ScrollToTop from '../ScrollToTop/ScrollToTop'
-import * as classes from './PublicArea.module.css'
+import Header from '../../../components/Header/Header'
 
 interface IPublicAreaProps {
   size?: MantineSize
   withBackButton?: boolean
-  hero?: ReactNode
 }
 
 const PublicArea = (props: PropsWithChildren<IPublicAreaProps>) => {
-  const { withBackButton = false, size = 'md', hero, children } = props
+  const { size = 'md', children } = props
 
-  const navigate = useNavigate()
+  const HEADER_HEIGHT = 50
+  const FOOTER_HEIGHT = 50
 
   return (
-    <div>
-      <div className={classes.mainHeight}>
-        {hero}
-        <ContentContainer size={size}>
-          {withBackButton && (
-            <Anchor
-              component={Link}
-              c='dimmed'
-              fz='xs'
-              to='/'
-              onClick={(e) => {
-                e.preventDefault()
-                navigate(-1)
-              }}
+    <AppShell header={{ height: HEADER_HEIGHT }}>
+      <AppShell.Header>
+        <Container size={size} fluid={!size} h='100%' p={0}>
+          <Header size={size}></Header>
+        </Container>
+      </AppShell.Header>
+
+      <AppShell.Main>
+        <Box h={`calc(100vh - ${HEADER_HEIGHT}px)`}>
+          <Flex direction='column' h='100%' w='100%'>
+            <Box flex={1}>
+              <Container size={size} fluid={!size} px={30} py={20} h='100%'>
+                {children}
+              </Container>
+              <ScrollToTop />
+            </Box>
+
+            <Box
+              h={`${FOOTER_HEIGHT}px`}
+              style={{ borderTop: '1px solid var(--mantine-color-gray-3)' }}
             >
-              <CaretLeft size={10} /> Back
-            </Anchor>
-          )}
-          {children}
-        </ContentContainer>
-      </div>
-      <Footer size={size} />
-      <ScrollToTop />
-    </div>
+              <Container fluid={!size} size={size} h='100%' p={0}>
+                <Footer size={size} />
+              </Container>
+            </Box>
+          </Flex>
+        </Box>
+      </AppShell.Main>
+    </AppShell>
   )
 }
 

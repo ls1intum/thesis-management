@@ -6,11 +6,6 @@ import { Link } from 'react-router'
 export function HeroSection() {
   return (
     <Container className={classes.wrapper} size={1400}>
-      <HeroDots className={classes.dots} style={{ left: 0, top: 10 }} />
-      <HeroDots className={classes.dots} style={{ left: 60, top: 10 }} />
-      <HeroDots className={classes.dots} style={{ left: 0, top: 150 }} />
-      <HeroDots className={classes.dots} style={{ right: 0, top: 70 }} />
-
       <div className={classes.inner}>
         <Title className={classes.title}>
           Find a{' '}
