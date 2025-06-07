@@ -62,7 +62,7 @@ const ResearchGroupCard = (props: IResearchGroup) => {
           {props.name}
         </Text>
         {
-          <Badge leftSection={<Users />} variant='outline' mb={5} my={5}>
+          <Badge leftSection={<Users />} variant='outline' mb={5} my={5} style={{ flexShrink: 0 }}>
             {researchGroupMemberNumber}
           </Badge>
         }
