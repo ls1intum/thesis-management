@@ -18,8 +18,8 @@ const PublicArea = (props: PropsWithChildren<IPublicAreaProps>) => {
   return (
     <AppShell header={{ height: HEADER_HEIGHT }}>
       <AppShell.Header>
-        <Container size={size} fluid={!size} h='100%' p={0}>
-          <Header size={size}></Header>
+        <Container size={size} fluid={!size} h='100%'>
+          <Header></Header>
         </Container>
       </AppShell.Header>
 
@@ -27,7 +27,7 @@ const PublicArea = (props: PropsWithChildren<IPublicAreaProps>) => {
         <Box h={`calc(100vh - ${HEADER_HEIGHT}px)`}>
           <Flex direction='column' h='100%' w='100%'>
             <Box flex={1}>
-              <Container size={size} fluid={!size} px={30} py={20} h='100%'>
+              <Container size={size} fluid={!size} px={40} py={20} h='100%'>
                 {children}
               </Container>
               <ScrollToTop />
@@ -35,9 +35,9 @@ const PublicArea = (props: PropsWithChildren<IPublicAreaProps>) => {
 
             <Box
               h={`${FOOTER_HEIGHT}px`}
-              style={{ borderTop: '1px solid var(--mantine-color-gray-3)' }}
+              style={{ borderTop: '1px solid var(--mantine-color-gray-3)', flexShrink: 0 }}
             >
-              <Container fluid={!size} size={size} h='100%' p={0}>
+              <Container fluid={!size} size={size} h='100%'>
                 <Footer size={size} />
               </Container>
             </Box>

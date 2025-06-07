@@ -1,7 +1,6 @@
-import { Anchor, Container, Flex, Group, MantineSize } from '@mantine/core'
+import { Anchor, Flex, Group, MantineSize } from '@mantine/core'
 import { GLOBAL_CONFIG } from '../../config/global'
 import { Link } from 'react-router'
-import ColorSchemeToggleButton from '../ColorSchemeToggleButton/ColorSchemeToggleButton'
 import packageJson from '../../../package.json'
 
 const links = [
@@ -20,8 +19,19 @@ const Footer = (props: IFooterProps) => {
   const version = packageJson.version
 
   return (
-    <Flex justify='space-between' align='center' h='100%'>
-      <Group>
+    <Flex
+      justify='space-between'
+      align='center'
+      h='100%'
+      gap={{ base: 'xs', xs: 'md' }}
+      direction={{ base: 'column', sm: 'row' }}
+    >
+      <Flex
+        gap={{ base: 'xs', xs: 'sm' }}
+        direction={{ base: 'column', xs: 'row' }}
+        justify='center'
+        align='center'
+      >
         <Anchor href={GLOBAL_CONFIG.chair_url} target='_blank' c='dimmed'>
           {GLOBAL_CONFIG.chair_name}
         </Anchor>
@@ -32,8 +42,13 @@ const Footer = (props: IFooterProps) => {
         >
           v{version}
         </Anchor>
-      </Group>
-      <Group>
+      </Flex>
+      <Flex
+        gap={{ base: 'xs', xs: 'sm' }}
+        direction={{ base: 'column', xs: 'row' }}
+        justify='center'
+        align='center'
+      >
         {links
           .filter((link) => link.visible)
           .map((link) => (
@@ -41,8 +56,7 @@ const Footer = (props: IFooterProps) => {
               {link.label}
             </Anchor>
           ))}
-        <ColorSchemeToggleButton />
-      </Group>
+      </Flex>
     </Flex>
   )
 }

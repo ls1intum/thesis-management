@@ -1,6 +1,10 @@
 import { useMantineTheme, useComputedColorScheme } from '@mantine/core'
 
-const Logo = () => {
+interface ILogoProps {
+  size?: number | string
+}
+
+const Logo = ({ size = 44 }: ILogoProps) => {
   const theme = useMantineTheme()
   const computedColorScheme = useComputedColorScheme()
 
@@ -9,8 +13,8 @@ const Logo = () => {
   return (
     <svg
       xmlns='http://www.w3.org/2000/svg'
-      width='44'
-      height='44'
+      width={size}
+      height={size}
       viewBox='0 0 24 24'
       strokeWidth='1.5'
       stroke={strokeColor}
