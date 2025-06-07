@@ -6,7 +6,6 @@ import Header from '../../../components/Header/Header'
 
 interface IPublicAreaProps {
   size?: MantineSize
-  withBackButton?: boolean
 }
 
 const PublicArea = (props: PropsWithChildren<IPublicAreaProps>) => {

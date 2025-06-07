@@ -160,9 +160,30 @@ const AppRoutes = () => {
               </AuthenticatedArea>
             }
           />
-          <Route path='/about' element={<AboutPage />} />
-          <Route path='/imprint' element={<ImprintPage />} />
-          <Route path='/privacy' element={<PrivacyPage />} />
+          <Route
+            path='/about'
+            element={
+              <PublicArea>
+                <AboutPage />
+              </PublicArea>
+            }
+          />
+          <Route
+            path='/imprint'
+            element={
+              <PublicArea>
+                <ImprintPage />
+              </PublicArea>
+            }
+          />
+          <Route
+            path='/privacy'
+            element={
+              <PublicArea>
+                <PrivacyPage />
+              </PublicArea>
+            }
+          />
           <Route path='/logout' element={<LogoutPage />} />
           <Route
             path='/'
