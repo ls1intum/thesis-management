@@ -6,6 +6,7 @@ export interface ITopicsFilters {
   types?: string[]
   includeClosed?: boolean
   researchSpecific?: boolean
+  search?: string
 }
 
 export interface ITopicsContext {

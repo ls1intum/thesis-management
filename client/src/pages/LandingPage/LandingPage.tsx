@@ -1,21 +1,56 @@
-import HeroSection from './components/HeroSection/HeroSection'
 import TopicsProvider from '../../providers/TopicsProvider/TopicsProvider'
 import TopicsTable from '../../components/TopicsTable/TopicsTable'
-import { Button, Group, Stack, Title } from '@mantine/core'
-import React from 'react'
-import { Link } from 'react-router'
+import { Box, Button, Flex, Group, Stack, TextInput, Title } from '@mantine/core'
+import { Link, useSearchParams } from 'react-router'
 import PublishedTheses from './components/PublishedTheses/PublishedTheses'
 import { usePageTitle } from '../../hooks/theme'
-import PublicArea from '../../app/layout/PublicArea/PublicArea'
+import LandingPageHeader from './components/LandingPageHeader/LandingPageHeader'
+import { MagnifyingGlass } from 'phosphor-react'
+import { useEffect, useState } from 'react'
+import { useDebouncedValue } from '@mantine/hooks'
 
 const LandingPage = () => {
   usePageTitle('Find a Thesis Topic')
 
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [searchKey, setSearchKey] = useState(searchParams.get('search') ?? '')
+  const [debouncedSearch] = useDebouncedValue(searchKey, 300)
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams)
+    if (debouncedSearch) {
+      params.set('search', debouncedSearch)
+    } else {
+      params.delete('search')
+    }
+    setSearchParams(params, { replace: true })
+  }, [debouncedSearch])
+
   return (
     <Stack>
-      <TopicsProvider limit={10} researchSpecific={false}>
+      <LandingPageHeader />
+      <Flex
+        justify='space-between'
+        align='stretch'
+        gap='md'
+        direction={{ base: 'column', sm: 'row' }}
+      >
+        <Box style={{ flex: 1 }}>
+          <TextInput
+            w='100%'
+            placeholder='Search Thesis Topics...'
+            leftSection={<MagnifyingGlass size={16} />}
+            value={searchKey}
+            onChange={(x) => setSearchKey(x.currentTarget.value)}
+          />
+        </Box>
+      </Flex>
+      <TopicsProvider
+        limit={10}
+        researchSpecific={false}
+        initialFilters={{ search: debouncedSearch }}
+      >
         <Stack gap='xs'>
-          <Title order={2}>Open Topics</Title>
           <TopicsTable
             columns={['title', 'types', 'advisor', 'researchGroup', 'actions']}
             noBorder

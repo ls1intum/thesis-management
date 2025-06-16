@@ -26,7 +26,13 @@ const PublicArea = (props: PropsWithChildren<IPublicAreaProps>) => {
         <Box h={`calc(100vh - ${HEADER_HEIGHT}px)`}>
           <Flex direction='column' h='100%' w='100%'>
             <Box flex={1}>
-              <Container size={size} fluid={!size} px={40} py={20} h='100%'>
+              <Container
+                size={size}
+                fluid={!size}
+                px={{ base: 20, sm: 40 }}
+                py={{ base: 10, sm: 20 }}
+                h='100%'
+              >
                 {children}
               </Container>
               <ScrollToTop />

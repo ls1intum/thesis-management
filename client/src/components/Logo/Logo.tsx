@@ -2,13 +2,15 @@ import { useMantineTheme, useComputedColorScheme } from '@mantine/core'
 
 interface ILogoProps {
   size?: number | string
+  color?: string
 }
 
-const Logo = ({ size = 44 }: ILogoProps) => {
+const Logo = ({ size = 44, color }: ILogoProps) => {
   const theme = useMantineTheme()
   const computedColorScheme = useComputedColorScheme()
 
-  const strokeColor = computedColorScheme === 'dark' ? theme.colors.dark[2] : theme.colors.gray[8]
+  const strokeColor =
+    color ?? (computedColorScheme === 'dark' ? theme.colors.dark[2] : theme.colors.gray[8])
 
   return (
     <svg

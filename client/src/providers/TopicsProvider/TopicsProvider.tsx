@@ -10,6 +10,7 @@ interface ITopicsProviderProps {
   limit: number
   hideIfEmpty?: boolean
   researchSpecific?: boolean
+  initialFilters?: Partial<ITopicsFilters>
 }
 
 const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
@@ -19,6 +20,7 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
     limit,
     hideIfEmpty = false,
     researchSpecific = true,
+    initialFilters = {},
   } = props
 
   const [topics, setTopics] = useState<PaginationResponse<ITopic>>()
@@ -26,6 +28,7 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
   const [filters, setFilters] = useState<ITopicsFilters>({
     includeClosed: includeClosedTopics,
     researchSpecific: researchSpecific,
+    ...initialFilters,
   })
 
   useEffect(() => {
@@ -42,6 +45,7 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
           type: filters.types?.join(',') || '',
           includeClosed: filters.includeClosed ? 'true' : 'false',
           onlyOwnResearchGroup: filters.researchSpecific ? 'true' : 'false',
+          search: filters.search ?? '',
         },
       },
       (res) => {
@@ -62,6 +66,16 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
       },
     )
   }, [filters, page, limit])
+
+  useEffect(() => {
+    setFilters((prev) => ({
+      ...prev,
+      includeClosed: includeClosedTopics,
+      researchSpecific: researchSpecific,
+      ...initialFilters,
+    }))
+    setPage(0)
+  }, [initialFilters])
 
   const contextState = useMemo<ITopicsContext>(() => {
     return {
