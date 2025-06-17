@@ -31,8 +31,10 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
     ...initialFilters,
   })
 
+  const [isLoading, setIsLoading] = useState(false)
+
   useEffect(() => {
-    setTopics(undefined)
+    setIsLoading(true)
 
     return doRequest<PaginationResponse<ITopic>>(
       `/v2/topics`,
@@ -49,6 +51,8 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
         },
       },
       (res) => {
+        setIsLoading(false)
+
         if (!res.ok) {
           showSimpleError(`Could not fetch topics: ${res.status}`)
 
@@ -85,6 +89,7 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
       page,
       setPage,
       limit,
+      isLoading,
       updateTopic: (newTopic) => {
         setTopics((prev) => {
           if (!prev) {
@@ -114,7 +119,7 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
         })
       },
     }
-  }, [topics, filters, page, limit])
+  }, [topics, filters, page, limit, isLoading])
 
   if (hideIfEmpty && page === 0 && (!topics || topics.content.length === 0)) {
     return <></>

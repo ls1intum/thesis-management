@@ -32,7 +32,7 @@ const TopicsTable = (props: ITopicsTableProps) => {
 
   const navigate = useNavigate()
 
-  const { topics, page, setPage, limit } = useTopicsContext()
+  const { topics, page, setPage, limit, isLoading } = useTopicsContext()
 
   const columnConfig: Record<TopicColumn, DataTableColumn<ITopic>> = {
     state: {
@@ -109,7 +109,7 @@ const TopicsTable = (props: ITopicsTableProps) => {
 
   return (
     <DataTable
-      fetching={!topics}
+      fetching={isLoading}
       withTableBorder={!noBorder}
       minHeight={200}
       noRecordsText='No topics to show'

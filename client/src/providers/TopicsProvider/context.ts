@@ -18,6 +18,7 @@ export interface ITopicsContext {
   limit: number
   updateTopic: (thesis: ITopic) => unknown
   addTopic: (thesis: ITopic) => unknown
+  isLoading: boolean
 }
 
 export const TopicsContext = React.createContext<ITopicsContext | undefined>(undefined)
