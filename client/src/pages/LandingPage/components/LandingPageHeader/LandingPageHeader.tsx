@@ -1,11 +1,16 @@
-import { Card, Title, Flex, Center, useMantineTheme, useComputedColorScheme } from '@mantine/core'
+import { Card, Title, Flex, useComputedColorScheme } from '@mantine/core'
 import LogoCircle from './LogoCircle'
 
 const LandingPageHeader = () => {
   const computedColorScheme = useComputedColorScheme()
 
   return (
-    <Card radius='md' bg={computedColorScheme === 'dark' ? 'dark.6' : 'gray.1'} p='xl'>
+    <Card
+      radius='md'
+      bg={computedColorScheme === 'dark' ? 'dark.6' : 'gray.1'}
+      p='xl'
+      style={{ flexShrink: 0 }}
+    >
       <Flex justify='flex-start' align='center' gap='xl' wrap='nowrap'>
         <Flex direction='column' gap='xs' flex={1}>
           <Flex justify='space-between' align='flex-start' gap='xs'>

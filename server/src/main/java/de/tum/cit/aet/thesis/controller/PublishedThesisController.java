@@ -33,12 +33,13 @@ public class PublishedThesisController {
             @RequestParam(required = false, defaultValue = "0") Integer page,
             @RequestParam(required = false, defaultValue = "50") Integer limit,
             @RequestParam(required = false, defaultValue = "endDate") String sortBy,
-            @RequestParam(required = false, defaultValue = "desc") String sortOrder
+            @RequestParam(required = false, defaultValue = "desc") String sortOrder,
+            @RequestParam(required = false) String search
     ) {
         Page<Thesis> theses = thesisService.getAll(
                 null,
                 true,
-                null,
+                search,
                 new ThesisState[]{ThesisState.FINISHED},
                 null,
                 page,

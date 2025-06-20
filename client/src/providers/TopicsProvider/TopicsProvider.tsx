@@ -20,7 +20,7 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
     limit,
     hideIfEmpty = false,
     researchSpecific = true,
-    initialFilters = {},
+    initialFilters,
   } = props
 
   const [topics, setTopics] = useState<PaginationResponse<ITopic>>()

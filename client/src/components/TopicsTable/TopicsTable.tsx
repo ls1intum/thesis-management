@@ -54,13 +54,13 @@ const TopicsTable = (props: ITopicsTableProps) => {
     types: {
       accessor: 'thesisTypes',
       title: 'Thesis Types',
-      width: 150,
+      width: 180,
       ellipsis: true,
       render: (topic) => (
         <Stack gap={2}>
           {topic.thesisTypes ? (
             topic.thesisTypes.map((type) => (
-              <Text key={type} size='sm'>
+              <Text key={type} size='sm' style={{ whiteSpace: 'normal', wordBreak: 'break-word' }}>
                 {formatThesisType(type)}
               </Text>
             ))
@@ -90,11 +90,9 @@ const TopicsTable = (props: ITopicsTableProps) => {
       width: 180,
       ellipsis: true,
       render: (topic) => (
-        <Tooltip openDelay={500} label={topic.researchGroup?.name ?? ''} withArrow>
-          <Text size='sm' truncate>
-            {topic.researchGroup?.name ?? ''}
-          </Text>
-        </Tooltip>
+        <Text size='sm' style={{ whiteSpace: 'normal', wordBreak: 'break-word' }}>
+          {topic.researchGroup?.name ?? ''}
+        </Text>
       ),
     },
     createdAt: {

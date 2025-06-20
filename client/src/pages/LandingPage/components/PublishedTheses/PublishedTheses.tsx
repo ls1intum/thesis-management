@@ -1,15 +1,5 @@
 import { DataTable } from 'mantine-datatable'
-import {
-  ActionIcon,
-  Anchor,
-  Center,
-  Group,
-  Modal,
-  Stack,
-  Text,
-  Title,
-  Tooltip,
-} from '@mantine/core'
+import { ActionIcon, Anchor, Center, Group, Modal, Stack, Text, Tooltip } from '@mantine/core'
 import React, { useEffect, useState } from 'react'
 import { PaginationResponse } from '../../../../requests/responses/pagination'
 import { IPublishedThesis } from '../../../../requests/responses/thesis'
@@ -23,7 +13,11 @@ import { formatThesisType } from '../../../../utils/format'
 import { GLOBAL_CONFIG } from '../../../../config/global'
 import AuthenticatedFilePreview from '../../../../components/AuthenticatedFilePreview/AuthenticatedFilePreview'
 
-const PublishedTheses = () => {
+interface PublishedThesesProps {
+  search: string
+}
+
+const PublishedTheses = ({ search }: PublishedThesesProps) => {
   const [page, setPage] = useState(0)
   const limit = 10
 
@@ -39,6 +33,7 @@ const PublishedTheses = () => {
         params: {
           page,
           limit,
+          search: search,
         },
       },
       (response) => {
@@ -49,15 +44,14 @@ const PublishedTheses = () => {
         }
       },
     )
-  }, [page, limit])
+  }, [page, limit, search])
 
   if (page === 0 && !theses?.content.length) {
     return null
   }
 
   return (
-    <Stack gap='xs'>
-      <Title order={2}>Published Theses</Title>
+    <>
       <DataTable
         fetching={!theses}
         withTableBorder={false}
@@ -155,7 +149,7 @@ const PublishedTheses = () => {
           </Stack>
         )}
       </Modal>
-    </Stack>
+    </>
   )
 }
 
