@@ -1,17 +1,6 @@
 import TopicsProvider from '../../providers/TopicsProvider/TopicsProvider'
 import TopicsTable from '../../components/TopicsTable/TopicsTable'
-import {
-  Box,
-  Button,
-  Flex,
-  Group,
-  SegmentedControl,
-  Stack,
-  TextInput,
-  Title,
-  Text,
-  Center,
-} from '@mantine/core'
+import { Box, Button, Flex, Group, SegmentedControl, Stack, TextInput, Center } from '@mantine/core'
 import { Link, useSearchParams } from 'react-router'
 import PublishedTheses from './components/PublishedTheses/PublishedTheses'
 import { usePageTitle } from '../../hooks/theme'
@@ -20,6 +9,7 @@ import { List, MagnifyingGlass, SquaresFour } from 'phosphor-react'
 import { useEffect, useState } from 'react'
 import { useDebouncedValue } from '@mantine/hooks'
 import { GLOBAL_CONFIG } from '../../config/global'
+import TopicCardGrid from './components/TopicCardGrid/TopicCardGrid'
 
 const LandingPage = () => {
   usePageTitle('Find a Thesis Topic')
@@ -118,36 +108,40 @@ const LandingPage = () => {
       >
         <Stack gap='xs' h={'100%'}>
           {topicView === GLOBAL_CONFIG.topic_views_options.OPEN ? (
-            <TopicsTable
-              columns={['title', 'types', 'advisor', 'researchGroup', 'actions']}
-              noBorder
-              extraColumns={{
-                actions: {
-                  accessor: 'actions',
-                  title: 'Actions',
-                  textAlign: 'center',
-                  noWrap: true,
-                  width: 120,
-                  render: (topic) => (
-                    <Group
-                      preventGrowOverflow={false}
-                      justify='center'
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      {!topic.closedAt && (
-                        <Button
-                          component={Link}
-                          to={`/submit-application/${topic.topicId}`}
-                          size='xs'
-                        >
-                          Apply
-                        </Button>
-                      )}
-                    </Group>
-                  ),
-                },
-              }}
-            />
+            listRepresentation === 'list' ? (
+              <TopicsTable
+                columns={['title', 'types', 'advisor', 'researchGroup', 'actions']}
+                noBorder
+                extraColumns={{
+                  actions: {
+                    accessor: 'actions',
+                    title: 'Actions',
+                    textAlign: 'center',
+                    noWrap: true,
+                    width: 120,
+                    render: (topic) => (
+                      <Group
+                        preventGrowOverflow={false}
+                        justify='center'
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {!topic.closedAt && (
+                          <Button
+                            component={Link}
+                            to={`/submit-application/${topic.topicId}`}
+                            size='xs'
+                          >
+                            Apply
+                          </Button>
+                        )}
+                      </Group>
+                    ),
+                  },
+                }}
+              />
+            ) : (
+              <TopicCardGrid></TopicCardGrid>
+            )
           ) : (
             <PublishedTheses search={debouncedSearch} />
           )}
