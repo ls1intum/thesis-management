@@ -12,12 +12,14 @@ import AvatarUserList from '../../../../components/AvatarUserList/AvatarUserList
 import { formatThesisType } from '../../../../utils/format'
 import { GLOBAL_CONFIG } from '../../../../config/global'
 import AuthenticatedFilePreview from '../../../../components/AuthenticatedFilePreview/AuthenticatedFilePreview'
+import TopicCardGrid from '../TopicCardGrid/TopicCardGrid'
 
 interface PublishedThesesProps {
   search: string
+  representationType: string
 }
 
-const PublishedTheses = ({ search }: PublishedThesesProps) => {
+const PublishedTheses = ({ search, representationType }: PublishedThesesProps) => {
   const [page, setPage] = useState(0)
   const limit = 10
 
@@ -50,8 +52,8 @@ const PublishedTheses = ({ search }: PublishedThesesProps) => {
     return null
   }
 
-  return (
-    <>
+  const content =
+    representationType === 'list' ? (
       <DataTable
         fetching={!theses}
         withTableBorder={false}
@@ -132,6 +134,28 @@ const PublishedTheses = ({ search }: PublishedThesesProps) => {
         ]}
         onRowClick={({ record }) => setOpenedThesis(record)}
       />
+    ) : (
+      <TopicCardGrid
+        gridContent={{
+          topics: theses ?? {
+            content: [],
+            totalPages: 0,
+            totalElements: 0,
+            last: true,
+            pageNumber: page,
+            pageSize: limit,
+          },
+          page,
+          setPage,
+          limit,
+          isLoading: !theses,
+        }}
+      />
+    )
+
+  return (
+    <>
+      {content}
       <Modal
         title={openedThesis?.title}
         opened={!!openedThesis}

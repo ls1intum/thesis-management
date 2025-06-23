@@ -1,20 +1,54 @@
-import { Box, Flex, Pagination, SimpleGrid, Text } from '@mantine/core'
+import { Box, Center, Flex, Pagination, SimpleGrid, Text } from '@mantine/core'
 import TopicCard from './TopicCard/TopicCard'
 import { useTopicsContext } from '../../../../providers/TopicsProvider/hooks'
+import { Spinner } from 'phosphor-react'
+import { useEffect, useState } from 'react'
+import { ITopic } from '../../../../requests/responses/topic'
+import { IPublishedThesis } from '../../../../requests/responses/thesis'
+import { PaginationResponse } from '../../../../requests/responses/pagination'
 
-const TopicCardGrid = () => {
-  const { topics, page, setPage, limit, isLoading } = useTopicsContext()
+interface ITopicCardGridProps {
+  topics: PaginationResponse<ITopic> | PaginationResponse<IPublishedThesis>
+  page: number
+  setPage: (page: number) => void
+  limit: number
+  isLoading?: boolean
+}
+
+interface ITopicCardGridContentProps {
+  gridContent?: ITopicCardGridProps
+}
+
+const TopicCardGrid = ({ gridContent }: ITopicCardGridContentProps) => {
+  const { topics, page, setPage, limit, isLoading } = gridContent ?? useTopicsContext()
+
+  //Prevent flickering spinner for short loading times
+  const [showSpinner, setShowSpinner] = useState(false)
+  useEffect(() => {
+    if (isLoading) {
+      const timeout = setTimeout(() => setShowSpinner(true), 200)
+      return () => clearTimeout(timeout) // cancel if loading ends early
+    } else {
+      setShowSpinner(false)
+    }
+  }, [isLoading])
 
   return (
     <Flex direction={'column'} gap='md' w='100%' h='100%'>
       <Box flex={1}>
-        <SimpleGrid
-          cols={{ base: 1, sm: 2, xl: 3 }}
-          spacing={{ base: 'xs', sm: 'sm', xl: 'md' }}
-          verticalSpacing={{ base: 'xs', sm: 'sm', xl: 'md' }}
-        >
-          {topics?.content.map((topic) => <TopicCard key={topic.topicId} topic={topic} />)}
-        </SimpleGrid>
+        {showSpinner ? (
+          <Center>
+            <Spinner size={32} weight='bold' />
+          </Center>
+        ) : (
+          <SimpleGrid
+            cols={{ base: 1, sm: 2, xl: 3 }}
+            spacing={{ base: 'xs', sm: 'sm', xl: 'md' }}
+            verticalSpacing={{ base: 'xs', sm: 'sm', xl: 'md' }}
+          >
+            {topics?.content.map((topic) => <TopicCard key={topic.title} topic={topic} />)}
+          </SimpleGrid>
+        )}
       </Box>
       <Flex justify={'space-between'} align={'center'} gap='md'>
         <Text size='sm'>

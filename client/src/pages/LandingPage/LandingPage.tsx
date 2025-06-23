@@ -143,7 +143,7 @@ const LandingPage = () => {
               <TopicCardGrid></TopicCardGrid>
             )
           ) : (
-            <PublishedTheses search={debouncedSearch} />
+            <PublishedTheses search={debouncedSearch} representationType={listRepresentation} />
           )}
         </Stack>
       </TopicsProvider>
