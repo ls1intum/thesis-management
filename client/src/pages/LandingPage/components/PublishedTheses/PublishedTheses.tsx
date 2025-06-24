@@ -17,16 +17,23 @@ import TopicCardGrid from '../TopicCardGrid/TopicCardGrid'
 interface PublishedThesesProps {
   search: string
   representationType: string
+  filters?: {
+    researchGroupIds?: string[]
+    types?: string[]
+  }
 }
 
-const PublishedTheses = ({ search, representationType }: PublishedThesesProps) => {
+const PublishedTheses = ({ search, representationType, filters }: PublishedThesesProps) => {
   const [page, setPage] = useState(0)
   const limit = 10
 
   const [theses, setTheses] = useState<PaginationResponse<IPublishedThesis>>()
   const [openedThesis, setOpenedThesis] = useState<IPublishedThesis>()
 
+  const [isLoading, setIsLoading] = useState(false)
+
   useEffect(() => {
+    setIsLoading(true)
     return doRequest<PaginationResponse<IPublishedThesis>>(
       '/v2/published-theses',
       {
@@ -36,17 +43,30 @@ const PublishedTheses = ({ search, representationType }: PublishedThesesProps) =
           page,
           limit,
           search: search,
+          researchGroupIds: filters?.researchGroupIds?.join(',') ?? '',
+          types: filters?.types?.join(',') ?? '',
         },
       },
       (response) => {
+        setIsLoading(false)
+
         if (response.ok) {
           setTheses(response.data)
         } else {
           showSimpleError(getApiResponseErrorMessage(response))
+
+          return setTheses({
+            content: [],
+            totalPages: 0,
+            totalElements: 0,
+            last: true,
+            pageNumber: 0,
+            pageSize: limit,
+          })
         }
       },
     )
-  }, [page, limit, search])
+  }, [page, limit, search, filters])
 
   if (page === 0 && !theses?.content.length) {
     return null
@@ -55,7 +75,7 @@ const PublishedTheses = ({ search, representationType }: PublishedThesesProps) =
   const content =
     representationType === 'list' ? (
       <DataTable
-        fetching={!theses}
+        fetching={isLoading}
         withTableBorder={false}
         minHeight={200}
         noRecordsText='No theses published yet'
@@ -150,6 +170,7 @@ const PublishedTheses = ({ search, representationType }: PublishedThesesProps) =
           limit,
           isLoading: !theses,
         }}
+        setOpenTopic={setOpenedThesis}
       />
     )
 

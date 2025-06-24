@@ -48,6 +48,7 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
           includeClosed: filters.includeClosed ? 'true' : 'false',
           onlyOwnResearchGroup: filters.researchSpecific ? 'true' : 'false',
           search: filters.search ?? '',
+          researchGroupIds: filters.researchGroupIds?.join(',') || '',
         },
       },
       (res) => {

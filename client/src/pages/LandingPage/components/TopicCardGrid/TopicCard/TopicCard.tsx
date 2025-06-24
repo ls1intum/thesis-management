@@ -1,36 +1,24 @@
-import { Card, Flex, Text, Badge, Group, Box, Stack, Button, Tooltip } from '@mantine/core'
+import { Card, Flex, Text, Badge, Group, Box, Stack, Button, Tooltip, Anchor } from '@mantine/core'
 import { ITopic } from '../../../../../requests/responses/topic'
-import { useHover } from '@mantine/hooks'
-import { formatThesisType } from '../../../../../utils/format'
-import { Users } from 'phosphor-react'
-import CustomAvatar from '../../../../../components/CustomAvatar/CustomAvatar'
+import { useHover, useMediaQuery } from '@mantine/hooks'
+import { DownloadSimple, Users } from 'phosphor-react'
 import AvatarUserList from '../../../../../components/AvatarUserList/AvatarUserList'
 import { IPublishedThesis } from '../../../../../requests/responses/thesis'
-import { useEffect, useState } from 'react'
+import { Dispatch, useEffect, useState } from 'react'
 import { ILightUser } from '../../../../../requests/responses/user'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
+import { GLOBAL_CONFIG } from '../../../../../config/global'
+import ThesisTypeBadge from '../../ThesisTypBadge/ThesisTypBadge'
 
 interface ITopicCardProps {
   topic: ITopic | IPublishedThesis
+  setOpenTopic?: Dispatch<React.SetStateAction<IPublishedThesis | undefined>>
 }
 
-const TopicCard = ({ topic }: ITopicCardProps) => {
+const TopicCard = ({ topic, setOpenTopic }: ITopicCardProps) => {
   const { hovered, ref } = useHover()
 
-  const getTypeColor = (type: string): string => {
-    switch (type.toLowerCase()) {
-      case 'bachelor':
-        return 'indigo.3'
-      case 'master':
-        return 'pink.3'
-      case 'guided_research':
-        return 'yellow.3'
-      case 'interdisciplinary_project':
-        return 'lime.3'
-      default:
-        return 'gray.3'
-    }
-  }
+  const navigate = useNavigate()
 
   const [thesisTypes, setThesisTypes] = useState<string[]>([])
   const [students, setStudents] = useState<ILightUser[]>([])
@@ -43,12 +31,15 @@ const TopicCard = ({ topic }: ITopicCardProps) => {
       setThesisTypes([topic.type])
       setStudents(topic.students)
       setIsPublished(true)
+      setTopicId(topic.thesisId)
     } else {
       setThesisTypes(topic.thesisTypes ?? [])
       setIsPublished(false)
       setTopicId(topic.topicId)
     }
   }, [topic])
+
+  const largerThanXs = useMediaQuery('(min-width: 36em)')
 
   return (
     <Card
@@ -59,9 +50,16 @@ const TopicCard = ({ topic }: ITopicCardProps) => {
       w='100%'
       style={{ cursor: 'pointer' }}
       ref={ref}
+      onClick={() => {
+        if (!isPublished) {
+          navigate(`/topics/${topicId}`)
+        } else if (setOpenTopic) {
+          setOpenTopic(topic as IPublishedThesis)
+        }
+      }}
     >
       <Card.Section withBorder inheritPadding p='1rem'>
-        <Stack gap='0.5rem'>
+        <Stack gap={'0.25rem'}>
           <Flex
             justify={'space-between'}
             align={'center'}
@@ -69,19 +67,11 @@ const TopicCard = ({ topic }: ITopicCardProps) => {
             style={{
               minHeight: '3.5rem',
             }}
+            pb={'0.25rem'}
           >
             <Flex wrap='wrap' gap={5}>
               {thesisTypes?.length ? (
-                thesisTypes.map((type) => (
-                  <Group key={type} gap={3} wrap='nowrap'>
-                    <Box w={15} h={15} style={{ borderRadius: '50%' }} bg={getTypeColor(type)} />
-                    <Text size='sm'>
-                      {type.toLowerCase() === 'interdisciplinary_project'
-                        ? formatThesisType(type, true)
-                        : formatThesisType(type)}
-                    </Text>
-                  </Group>
-                ))
+                thesisTypes.map((type) => <ThesisTypeBadge type={type}></ThesisTypeBadge>)
               ) : (
                 <Group key={'any'} gap={3} wrap='nowrap'>
                   <Box w={15} h={15} style={{ borderRadius: '50%' }} bg={'gray.3'} />
@@ -89,15 +79,11 @@ const TopicCard = ({ topic }: ITopicCardProps) => {
                 </Group>
               )}
             </Flex>
-            <Badge variant='outline' style={{ flexShrink: 0 }}>
-              {/*TODO: SEND ACTUALL abbriviation*/}
-              {'AET'}
-            </Badge>
           </Flex>
           <Tooltip openDelay={500} label={topic.title} withArrow>
             <Flex
               style={{
-                minHeight: '4rem',
+                minHeight: largerThanXs ? '4rem' : undefined,
               }}
               align={'flex-start'}
             >
@@ -129,9 +115,22 @@ const TopicCard = ({ topic }: ITopicCardProps) => {
         </Stack>
       )}
 
-      <Button fullWidth mt='md' component={Link} to={`/submit-application/${topicId}`}>
-        Apply
-      </Button>
+      {isPublished ? (
+        <Group gap={5} mt='md' w={'100%'} align='center'>
+          <Button flex={1}>More Information</Button>
+          <Button
+            component={Anchor<'a'>}
+            href={`${GLOBAL_CONFIG.server_host}/api/v2/published-theses/${topicId}/thesis`}
+            target='_blank'
+          >
+            <DownloadSimple />
+          </Button>
+        </Group>
+      ) : (
+        <Button fullWidth mt='md' component={Link} to={`/submit-application/${topicId}`}>
+          Apply
+        </Button>
+      )}
     </Card>
   )
 }

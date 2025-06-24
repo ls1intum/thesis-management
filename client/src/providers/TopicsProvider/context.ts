@@ -7,6 +7,7 @@ export interface ITopicsFilters {
   includeClosed?: boolean
   researchSpecific?: boolean
   search?: string
+  researchGroupIds?: string[]
 }
 
 export interface ITopicsContext {

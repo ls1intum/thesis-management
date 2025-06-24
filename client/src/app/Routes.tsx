@@ -104,7 +104,7 @@ const AppRoutes = () => {
           <Route
             path='/topics/:topicId'
             element={
-              <AuthenticatedArea size='md' requireAuthentication={false}>
+              <AuthenticatedArea size='xl' requireAuthentication={false}>
                 <TopicPage />
               </AuthenticatedArea>
             }
@@ -187,6 +187,14 @@ const AppRoutes = () => {
           <Route path='/logout' element={<LogoutPage />} />
           <Route
             path='/'
+            element={
+              <PublicArea size='xl'>
+                <LandingPage />
+              </PublicArea>
+            }
+          />
+          <Route
+            path='/:researchGroupId'
             element={
               <PublicArea size='xl'>
                 <LandingPage />

@@ -64,7 +64,7 @@ public class ResearchGroupController {
   public ResponseEntity<ResearchGroupDto> getResearchGroup(
       @PathVariable("researchGroupId") UUID researchGroupId
   ) {
-    ResearchGroup researchGroup = researchGroupService.findById(researchGroupId);
+    ResearchGroup researchGroup = researchGroupService.findById(researchGroupId, true);
 
     return ResponseEntity.ok(ResearchGroupDto.fromResearchGroupEntity(researchGroup));
   }

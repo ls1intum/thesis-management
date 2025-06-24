@@ -1,7 +1,18 @@
 import TopicsProvider from '../../providers/TopicsProvider/TopicsProvider'
 import TopicsTable from '../../components/TopicsTable/TopicsTable'
-import { Box, Button, Flex, Group, SegmentedControl, Stack, TextInput, Center } from '@mantine/core'
-import { Link, useSearchParams } from 'react-router'
+import {
+  Box,
+  Button,
+  Flex,
+  Group,
+  SegmentedControl,
+  Stack,
+  TextInput,
+  Center,
+  Text,
+  Checkbox,
+} from '@mantine/core'
+import { Link, useParams, useSearchParams } from 'react-router'
 import PublishedTheses from './components/PublishedTheses/PublishedTheses'
 import { usePageTitle } from '../../hooks/theme'
 import LandingPageHeader from './components/LandingPageHeader/LandingPageHeader'
@@ -10,9 +21,13 @@ import { useEffect, useState } from 'react'
 import { useDebouncedValue } from '@mantine/hooks'
 import { GLOBAL_CONFIG } from '../../config/global'
 import TopicCardGrid from './components/TopicCardGrid/TopicCardGrid'
+import DropDownMultiSelect from '../../components/DropDownMultiSelect/DropDownMultiSelect'
+import ThesisTypeBadge from './components/ThesisTypBadge/ThesisTypBadge'
 
 const LandingPage = () => {
   usePageTitle('Find a Thesis Topic')
+
+  const { researchGroupId } = useParams<{ researchGroupId: string }>()
 
   const [searchParams, setSearchParams] = useSearchParams()
   const [searchKey, setSearchKey] = useState(searchParams.get('search') ?? '')
@@ -21,6 +36,20 @@ const LandingPage = () => {
   const [topicView, setTopicView] = useState<string>(
     searchParams.get('view') ?? GLOBAL_CONFIG.topic_views_options.OPEN,
   )
+
+  const [selectedThesisTypes, setSelectedThesisTypes] = useState<string[]>(
+    searchParams.get('types')?.split(',') ?? [],
+  )
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams)
+    if (selectedThesisTypes.length > 0) {
+      params.set('types', selectedThesisTypes.join(','))
+    } else {
+      params.delete('types')
+    }
+    setSearchParams(params, { replace: true })
+  }, [selectedThesisTypes])
 
   const listRepresentationOptions = [
     {
@@ -64,10 +93,10 @@ const LandingPage = () => {
         <Flex
           justify='space-between'
           align='stretch'
-          gap='md'
+          gap={5}
           direction={{ base: 'column', sm: 'row' }}
         >
-          <Box style={{ flex: 1 }}>
+          <Box flex={1}>
             <TextInput
               w='100%'
               placeholder='Search Thesis Topics...'
@@ -76,6 +105,37 @@ const LandingPage = () => {
               onChange={(x) => setSearchKey(x.currentTarget.value)}
             />
           </Box>
+          <DropDownMultiSelect
+            data={[]}
+            searchPlaceholder='Search Research Groups'
+            dropdownLable='Research Groups'
+            selectedItems={[]}
+            setSelectedItem={function (item: string): void {
+              throw new Error('Function not implemented.')
+            }}
+          ></DropDownMultiSelect>
+          <DropDownMultiSelect
+            data={Object.keys(GLOBAL_CONFIG.thesis_types)}
+            searchPlaceholder='Search Thesis Type'
+            dropdownLable='Thesis Types'
+            renderOption={(type) => (
+              <Group gap='xs'>
+                <Checkbox checked={selectedThesisTypes.includes(type)} readOnly />
+                <ThesisTypeBadge type={type} />
+              </Group>
+            )}
+            selectedItems={selectedThesisTypes}
+            setSelectedItem={(type) => {
+              setSelectedThesisTypes((prev) => {
+                if (prev.includes(type)) {
+                  return prev.filter((t) => t !== type)
+                } else {
+                  return [...prev, type]
+                }
+              })
+            }}
+            withSearch={false}
+          ></DropDownMultiSelect>
         </Flex>
 
         <Flex justify='space-between' gap='md' direction={{ base: 'column', sm: 'row' }}>
@@ -104,7 +164,11 @@ const LandingPage = () => {
       <TopicsProvider
         limit={10}
         researchSpecific={false}
-        initialFilters={{ search: debouncedSearch }}
+        initialFilters={{
+          researchGroupIds: researchGroupId ? [researchGroupId] : [],
+          search: debouncedSearch,
+          types: selectedThesisTypes,
+        }}
       >
         <Stack gap='xs' h={'100%'}>
           {topicView === GLOBAL_CONFIG.topic_views_options.OPEN ? (
@@ -143,7 +207,14 @@ const LandingPage = () => {
               <TopicCardGrid></TopicCardGrid>
             )
           ) : (
-            <PublishedTheses search={debouncedSearch} representationType={listRepresentation} />
+            <PublishedTheses
+              search={debouncedSearch}
+              representationType={listRepresentation}
+              filters={{
+                researchGroupIds: researchGroupId ? [researchGroupId] : [],
+                types: selectedThesisTypes,
+              }}
+            />
           )}
         </Stack>
       </TopicsProvider>

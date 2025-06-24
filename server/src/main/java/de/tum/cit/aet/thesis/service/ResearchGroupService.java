@@ -80,11 +80,17 @@ public class ResearchGroupService {
     );
   }
 
-  public ResearchGroup findById(UUID researchGroupId) {
+    public ResearchGroup findById(UUID researchGroupId) {
+        return findById(researchGroupId, false);
+    }
+
+  public ResearchGroup findById(UUID researchGroupId, boolean noAuthentication) {
     ResearchGroup researchGroup = researchGroupRepository.findById(researchGroupId)
         .orElseThrow(() -> new ResourceNotFoundException(
             String.format("Research Group with id %s not found.", researchGroupId)));
-    currentUserProvider().assertCanAccessResearchGroup(researchGroup);
+      if (!noAuthentication) {
+          currentUserProvider().assertCanAccessResearchGroup(researchGroup);
+      }
     return researchGroup;
   }
 
