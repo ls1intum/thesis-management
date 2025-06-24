@@ -8,18 +8,19 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Set;
 import java.util.UUID;
 
 @Repository
 public interface TopicRepository extends JpaRepository<Topic, UUID> {
     @Query(value = """
-            SELECT t.* FROM topics t WHERE (:researchGroupId IS NULL OR t.research_group_id = :researchGroupId) AND
+            SELECT t.* FROM topics t WHERE ( :researchGroupIds IS NULL OR t.research_group_id IN (:researchGroupIds)) AND
                     (:searchQuery IS NULL OR t.title ILIKE CONCAT('%', :searchQuery, '%')) AND
                     (t.thesis_types IS NULL OR CAST(:types AS TEXT[]) IS NULL OR t.thesis_types && CAST(:types AS TEXT[])) AND
                     (:includeClosed = TRUE OR t.closed_at IS NULL)
             """, nativeQuery = true)
     Page<Topic> searchTopics(
-            @Param("researchGroupId") UUID researchGroupId,
+            @Param("researchGroupIds") Set<UUID> researchGroupIds,
             @Param("types") String[] types,
             @Param("includeClosed") boolean includeClosed,
             @Param("searchQuery") String searchQuery,
