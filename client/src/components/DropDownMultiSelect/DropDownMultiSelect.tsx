@@ -1,6 +1,6 @@
 import { Button, Combobox, Group, useCombobox } from '@mantine/core'
 import { CaretDown, CaretUp, MagnifyingGlass } from 'phosphor-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 interface IDropDownMultiSelectProps {
   data: string[]
@@ -10,6 +10,7 @@ interface IDropDownMultiSelectProps {
   renderOption?: (item: string) => React.ReactNode
   selectedItems: string[]
   setSelectedItem: (item: string) => void
+  showSelectedOnTop?: boolean
 }
 
 const DropDownMultiSelect = ({
@@ -20,8 +21,10 @@ const DropDownMultiSelect = ({
   renderOption,
   selectedItems,
   setSelectedItem,
+  showSelectedOnTop = true,
 }: IDropDownMultiSelectProps) => {
   const [search, setSearch] = useState('')
+  const [displayData, setDisplayData] = useState<string[]>(data)
 
   const combobox = useCombobox({
     onDropdownClose: () => {
@@ -36,6 +39,16 @@ const DropDownMultiSelect = ({
       }
     },
   })
+
+  useEffect(() => {
+    const filteredData = data.filter((item) => item.toLowerCase().includes(search.toLowerCase()))
+
+    setDisplayData(
+      showSelectedOnTop
+        ? filteredData.filter((item) => !selectedItems.includes(item))
+        : filteredData,
+    )
+  }, [data, search, selectedItems])
 
   return (
     <>
@@ -68,18 +81,37 @@ const DropDownMultiSelect = ({
             />
           )}
 
-          <Combobox.Options>
-            {data.length > 0 ? (
-              data
-                .filter((item) => item.toLowerCase().includes(search.toLowerCase()))
-                .map((item) => (
+          <Combobox.Options mah={200} style={{ overflowY: 'auto' }}>
+            {showSelectedOnTop && selectedItems.length > 0 && (
+              <Combobox.Group label='Selected' pb={10}>
+                {selectedItems.length > 0 &&
+                  selectedItems.map((item) => (
+                    <Combobox.Option key={item} value={item}>
+                      {renderOption ? renderOption(item) : item}
+                    </Combobox.Option>
+                  ))}
+              </Combobox.Group>
+            )}
+
+            <Combobox.Group
+              label={selectedItems.length > 0 && showSelectedOnTop ? 'Suggestions' : undefined}
+              styles={{
+                groupLabel: {
+                  backgroundColor: 'var(--mantine-color-gray-2)',
+                  color: 'var(--mantine-color-gray-9)',
+                },
+              }}
+            >
+              {displayData.length > 0 ? (
+                displayData.map((item) => (
                   <Combobox.Option key={item} value={item}>
                     {renderOption ? renderOption(item) : item}
                   </Combobox.Option>
                 ))
-            ) : (
-              <Combobox.Empty>Nothing found</Combobox.Empty>
-            )}
+              ) : (
+                <Combobox.Empty>Nothing found</Combobox.Empty>
+              )}
+            </Combobox.Group>
           </Combobox.Options>
         </Combobox.Dropdown>
       </Combobox>

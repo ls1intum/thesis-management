@@ -80,6 +80,21 @@ public class ResearchGroupService {
     );
   }
 
+  public Page<ResearchGroup> getAllLight(String searchQuery) {
+      String searchQueryFilter =
+              searchQuery == null || searchQuery.isEmpty() ? null : searchQuery.toLowerCase();
+
+      Sort.Order order = new Sort.Order(Sort.Direction.DESC, HibernateHelper.getColumnName(ResearchGroup.class, "name"));
+
+      return researchGroupRepository.searchResearchGroup(
+              null,
+              null,
+              false,
+              searchQueryFilter,
+              PageRequest.of(0, Integer.MAX_VALUE, Sort.by(order))
+      );
+  }
+
     public ResearchGroup findById(UUID researchGroupId) {
         return findById(researchGroupId, false);
     }

@@ -16,13 +16,17 @@ import { Link, useParams, useSearchParams } from 'react-router'
 import PublishedTheses from './components/PublishedTheses/PublishedTheses'
 import { usePageTitle } from '../../hooks/theme'
 import LandingPageHeader from './components/LandingPageHeader/LandingPageHeader'
-import { List, MagnifyingGlass, SquaresFour } from 'phosphor-react'
+import { Check, List, MagnifyingGlass, SquaresFour } from 'phosphor-react'
 import { useEffect, useState } from 'react'
 import { useDebouncedValue } from '@mantine/hooks'
 import { GLOBAL_CONFIG } from '../../config/global'
 import TopicCardGrid from './components/TopicCardGrid/TopicCardGrid'
 import DropDownMultiSelect from '../../components/DropDownMultiSelect/DropDownMultiSelect'
 import ThesisTypeBadge from './components/ThesisTypBadge/ThesisTypBadge'
+import { ILightResearchGroup } from '../../requests/responses/researchGroup'
+import { doRequest } from '../../requests/request'
+import { showSimpleError } from '../../utils/notification'
+import { getApiResponseErrorMessage } from '../../requests/handler'
 
 const LandingPage = () => {
   usePageTitle('Find a Thesis Topic')
@@ -41,15 +45,48 @@ const LandingPage = () => {
     searchParams.get('types')?.split(',') ?? [],
   )
 
+  const [researchGroups, setResearchGroups] = useState<ILightResearchGroup[]>([])
+  const [selectedGroups, setSelectedGroups] = useState<string[]>(
+    searchParams.get('groups')?.split(',') ?? [],
+  )
+
   useEffect(() => {
     const params = new URLSearchParams(searchParams)
+
     if (selectedThesisTypes.length > 0) {
       params.set('types', selectedThesisTypes.join(','))
     } else {
       params.delete('types')
     }
+
+    if (selectedGroups.length > 0) {
+      params.set('groups', selectedGroups.join(','))
+    } else {
+      params.delete('groups')
+    }
+
     setSearchParams(params, { replace: true })
-  }, [selectedThesisTypes])
+  }, [selectedThesisTypes, selectedGroups])
+
+  useEffect(() => {
+    return doRequest<ILightResearchGroup[]>(
+      '/v2/research-groups/light',
+      {
+        method: 'GET',
+        requiresAuth: false,
+        params: {
+          search: '',
+        },
+      },
+      (response) => {
+        if (response.ok) {
+          setResearchGroups(response.data)
+        } else {
+          showSimpleError(getApiResponseErrorMessage(response))
+        }
+      },
+    )
+  }, [])
 
   const listRepresentationOptions = [
     {
@@ -106,12 +143,25 @@ const LandingPage = () => {
             />
           </Box>
           <DropDownMultiSelect
-            data={[]}
+            data={researchGroups.map((group) => group.id)}
             searchPlaceholder='Search Research Groups'
             dropdownLable='Research Groups'
-            selectedItems={[]}
-            setSelectedItem={function (item: string): void {
-              throw new Error('Function not implemented.')
+            selectedItems={selectedGroups}
+            setSelectedItem={(groupId: string) => {
+              setSelectedGroups((prev) =>
+                prev.includes(groupId) ? prev.filter((id) => id !== groupId) : [...prev, groupId],
+              )
+            }}
+            renderOption={(groupId) => {
+              const group = researchGroups.find((g) => g.id === groupId)
+              return group ? (
+                <Flex align='center' gap='xs'>
+                  {selectedGroups.includes(group.id) && (
+                    <Check size={16} style={{ flexShrink: 0 }} />
+                  )}
+                  <Text size='sm'>{group.name}</Text>{' '}
+                </Flex>
+              ) : null
             }}
           ></DropDownMultiSelect>
           <DropDownMultiSelect
@@ -165,7 +215,7 @@ const LandingPage = () => {
         limit={10}
         researchSpecific={false}
         initialFilters={{
-          researchGroupIds: researchGroupId ? [researchGroupId] : [],
+          researchGroupIds: researchGroupId ? [researchGroupId] : selectedGroups,
           search: debouncedSearch,
           types: selectedThesisTypes,
         }}
@@ -211,7 +261,7 @@ const LandingPage = () => {
               search={debouncedSearch}
               representationType={listRepresentation}
               filters={{
-                researchGroupIds: researchGroupId ? [researchGroupId] : [],
+                researchGroupIds: researchGroupId ? [researchGroupId] : selectedGroups,
                 types: selectedThesisTypes,
               }}
             />
