@@ -69,10 +69,6 @@ const PublishedTheses = ({ search, representationType, filters }: PublishedThese
     )
   }, [page, limit, search, filters])
 
-  if (page === 0 && !theses?.content.length) {
-    return null
-  }
-
   const content =
     representationType === 'list' ? (
       <DataTable
