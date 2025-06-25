@@ -13,6 +13,8 @@ export interface IGlobalConfig {
   study_degrees: Record<string, string>
   languages: Record<string, string>
 
+  topic_views_options: Record<string, string>
+
   research_groups_location: Record<string, string>
 
   thesis_types: Record<

@@ -24,7 +24,7 @@ public interface ThesisRepository extends JpaRepository<Thesis, UUID> {
                  :visibilities IS NULL
                  OR (
                      t.visibility IN :visibilities
-                     AND (:researchGroupId IS NULL OR t.researchGroup.id = :researchGroupId)
+                     AND (:researchGroupIds IS NULL OR t.researchGroup.id IN :researchGroupIds)
                  )
                  OR (:userId IS NOT NULL AND r.user.id = :userId )
              )
@@ -41,7 +41,7 @@ public interface ThesisRepository extends JpaRepository<Thesis, UUID> {
              )
             """)
     Page<Thesis> searchTheses(
-            @Param("researchGroupId") UUID researchGroupId,
+            @Param("researchGroupIds") Set<UUID> researchGroupIds,
             @Param("userId") UUID userId,
             @Param("visibilities") Set<ThesisVisibility> visibilities,
             @Param("searchQuery") String searchQuery,

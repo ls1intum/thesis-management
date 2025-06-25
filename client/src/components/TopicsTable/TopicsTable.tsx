@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router'
 import { Badge, Center, Stack, Text, Tooltip } from '@mantine/core'
 import AvatarUserList from '../AvatarUserList/AvatarUserList'
 import React from 'react'
+import ThesisTypeBadge from '../../pages/LandingPage/components/ThesisTypBadge/ThesisTypBadge'
 
 type TopicColumn =
   | 'title'
@@ -32,7 +33,7 @@ const TopicsTable = (props: ITopicsTableProps) => {
 
   const navigate = useNavigate()
 
-  const { topics, page, setPage, limit } = useTopicsContext()
+  const { topics, page, setPage, limit, isLoading } = useTopicsContext()
 
   const columnConfig: Record<TopicColumn, DataTableColumn<ITopic>> = {
     state: {
@@ -54,18 +55,14 @@ const TopicsTable = (props: ITopicsTableProps) => {
     types: {
       accessor: 'thesisTypes',
       title: 'Thesis Types',
-      width: 150,
+      width: 180,
       ellipsis: true,
       render: (topic) => (
         <Stack gap={2}>
           {topic.thesisTypes ? (
-            topic.thesisTypes.map((type) => (
-              <Text key={type} size='sm'>
-                {formatThesisType(type)}
-              </Text>
-            ))
+            topic.thesisTypes.map((type) => <ThesisTypeBadge type={type} key={type} />)
           ) : (
-            <Text size='sm'>Any</Text>
+            <ThesisTypeBadge type='Any' key='any' />
           )}
         </Stack>
       ),
@@ -90,11 +87,9 @@ const TopicsTable = (props: ITopicsTableProps) => {
       width: 180,
       ellipsis: true,
       render: (topic) => (
-        <Tooltip openDelay={500} label={topic.researchGroup?.name ?? ''} withArrow>
-          <Text size='sm' truncate>
-            {topic.researchGroup?.name ?? ''}
-          </Text>
-        </Tooltip>
+        <Text size='sm' style={{ whiteSpace: 'normal', wordBreak: 'break-word' }}>
+          {topic.researchGroup?.name ?? ''}
+        </Text>
       ),
     },
     createdAt: {
@@ -109,7 +104,7 @@ const TopicsTable = (props: ITopicsTableProps) => {
 
   return (
     <DataTable
-      fetching={!topics}
+      fetching={isLoading}
       withTableBorder={!noBorder}
       minHeight={200}
       noRecordsText='No topics to show'

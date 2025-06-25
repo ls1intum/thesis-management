@@ -88,14 +88,19 @@ public class ThesisService {
         int page,
         int limit,
         String sortBy,
-        String sortOrder
+        String sortOrder,
+        UUID[] researchGroupIds
     ) {
         Sort.Order order = new Sort.Order(sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
         String searchQueryFilter = searchQuery == null || searchQuery.isEmpty() ? null : searchQuery.toLowerCase();
         Set<ThesisState> statesFilter = states == null || states.length == 0 ? null : new HashSet<>(Arrays.asList(states));
         Set<String> typesFilter = types == null || types.length == 0 ? null : new HashSet<>(Arrays.asList(types));
 
-        UUID researchGroupId = null;
+        Set<UUID> researchGroupIdsFilter = null;
+
+        if (researchGroupIds != null && researchGroupIds.length > 0) {
+            researchGroupIdsFilter = new HashSet<>(Arrays.asList(researchGroupIds));
+        }
         Set<ThesisVisibility> visibilitySet = Set.of();
 
         if (userId == null) {
@@ -104,7 +109,7 @@ public class ThesisService {
             userId = null; // Admins can see all theses
             visibilitySet = null;
         } else if ((currentUserProvider().isAdvisor() || currentUserProvider().isSupervisor()) && fetchAll) {
-            researchGroupId = currentUserProvider().getResearchGroupOrThrow().getId();
+            researchGroupIdsFilter = new HashSet<>(Arrays.asList(currentUserProvider().getResearchGroupOrThrow().getId()));
             visibilitySet = Set.of(ThesisVisibility.PUBLIC, ThesisVisibility.STUDENT, ThesisVisibility.INTERNAL);
         } else if (currentUserProvider().isStudent() && fetchAll) {
             visibilitySet = Set.of(ThesisVisibility.PUBLIC, ThesisVisibility.STUDENT);
@@ -113,7 +118,7 @@ public class ThesisService {
         }
 
         return thesisRepository.searchTheses(
-                researchGroupId,
+                researchGroupIdsFilter,
                 userId,
                 visibilitySet,
                 searchQueryFilter,

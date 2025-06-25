@@ -55,7 +55,8 @@ public class TopicService {
             int page,
             int limit,
             String sortBy,
-            String sortOrder
+            String sortOrder,
+            UUID[] researchGroupIds
     ) {
         Sort.Order order = new Sort.Order(
                 sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,
@@ -68,7 +69,7 @@ public class TopicService {
         String[] typesFilter = types == null || types.length == 0 ? null : types;
 
         return topicRepository.searchTopics(
-                researchGroup == null ? null : researchGroup.getId(),
+                researchGroup == null ? ( researchGroupIds == null ? null : new HashSet<>(Arrays.asList(researchGroupIds))) : new HashSet<UUID>(Arrays.asList(researchGroup.getId())),
                 typesFilter,
                 includeClosed,
                 searchQueryFilter,

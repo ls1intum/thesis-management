@@ -2,6 +2,7 @@ import React, { lazy, Suspense } from 'react'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
 import AuthenticatedArea from './layout/AuthenticatedArea/AuthenticatedArea'
 import PageLoader from '../components/PageLoader/PageLoader'
+import PublicArea from './layout/PublicArea/PublicArea'
 
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage/NotFoundPage'))
 const PrivacyPage = lazy(() => import('../pages/PrivacyPage/PrivacyPage'))
@@ -103,7 +104,7 @@ const AppRoutes = () => {
           <Route
             path='/topics/:topicId'
             element={
-              <AuthenticatedArea size='md' requireAuthentication={false}>
+              <AuthenticatedArea size='xl' requireAuthentication={false}>
                 <TopicPage />
               </AuthenticatedArea>
             }
@@ -159,11 +160,47 @@ const AppRoutes = () => {
               </AuthenticatedArea>
             }
           />
-          <Route path='/about' element={<AboutPage />} />
-          <Route path='/imprint' element={<ImprintPage />} />
-          <Route path='/privacy' element={<PrivacyPage />} />
+          <Route
+            path='/about'
+            element={
+              <PublicArea>
+                <AboutPage />
+              </PublicArea>
+            }
+          />
+          <Route
+            path='/imprint'
+            element={
+              <PublicArea>
+                <ImprintPage />
+              </PublicArea>
+            }
+          />
+          <Route
+            path='/privacy'
+            element={
+              <PublicArea>
+                <PrivacyPage />
+              </PublicArea>
+            }
+          />
           <Route path='/logout' element={<LogoutPage />} />
-          <Route path='/' element={<LandingPage />} />
+          <Route
+            path='/'
+            element={
+              <PublicArea size='xl'>
+                <LandingPage />
+              </PublicArea>
+            }
+          />
+          <Route
+            path='/:researchGroupId'
+            element={
+              <PublicArea size='xl'>
+                <LandingPage />
+              </PublicArea>
+            }
+          />
           <Route path='*' element={<NotFoundPage />} />
         </Routes>
       </BrowserRouter>

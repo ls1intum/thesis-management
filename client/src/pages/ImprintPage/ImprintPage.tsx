@@ -15,10 +15,10 @@ const ImprintPage = () => {
   }, [])
 
   return (
-    <PublicArea withBackButton={true}>
+    <div>
       <Title mb='md'>Imprint</Title>
       <div dangerouslySetInnerHTML={{ __html: content }} />
-    </PublicArea>
+    </div>
   )
 }
 

@@ -17,7 +17,8 @@
     margin-right: var(--mantine-spacing-sm);
   }
 
-  &[data-active], &:hover {
+  &[data-active],
+  &:hover {
     background-color: var(--mantine-primary-color-filled);
     color: var(--mantine-primary-color-0);
 
@@ -36,7 +37,8 @@
   border-radius: var(--mantine-radius-sm);
   margin-bottom: 5px;
 
-  &[data-active], &:hover {
+  &[data-active],
+  &:hover {
     background-color: var(--mantine-primary-color-5);
     color: var(--mantine-primary-color-0);
 
@@ -51,17 +53,13 @@
 }
 
 .fullHeight {
-    height: 100vh;
+  height: 100vh;
 }
 
 .mainHeight {
   min-height: calc(100vh - 100px);
 }
 
-.logo {
-  stroke: light-dark(var(--mantine-color-gray-8), var(--mantine-color-dark-2))
-}
-
 .siteName {
-  color: light-dark(var(--mantine-color-gray-8), var(--mantine-color-dark-2))
+  color: light-dark(var(--mantine-color-gray-8), var(--mantine-color-dark-2));
 }
