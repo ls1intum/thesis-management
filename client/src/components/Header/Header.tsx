@@ -5,8 +5,6 @@ import ColorSchemeToggleButton from '../ColorSchemeToggleButton/ColorSchemeToggl
 import { useUser } from '../../hooks/authentication'
 
 const Header = () => {
-  let navigate = useNavigate()
-
   //TODO: THIS ALLWAYS THROWS AND ERROR WHEN USER IS NOT LOGGED IN I DONT WANT THAT HERE
   const user = useUser()
 
@@ -18,7 +16,7 @@ const Header = () => {
         align='center'
         h='100%'
         style={{ cursor: 'pointer' }}
-        onClick={() => navigate('/')}
+        onClick={() => (window.location.href = '/')}
       >
         <Logo size={40} />
         <Text fw='bold' visibleFrom='sm' pt='2px'>
