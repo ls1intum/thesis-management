@@ -13,6 +13,7 @@ import { formatThesisType } from '../../../../utils/format'
 import { GLOBAL_CONFIG } from '../../../../config/global'
 import AuthenticatedFilePreview from '../../../../components/AuthenticatedFilePreview/AuthenticatedFilePreview'
 import TopicCardGrid from '../TopicCardGrid/TopicCardGrid'
+import ThesisTypeBadge from '../ThesisTypBadge/ThesisTypBadge'
 
 interface PublishedThesesProps {
   search: string
@@ -100,7 +101,9 @@ const PublishedTheses = ({ search, representationType, filters }: PublishedThese
             title: 'Type',
             ellipsis: true,
             width: 140,
-            render: (thesis: IPublishedThesis) => formatThesisType(thesis.type),
+            render: (thesis: IPublishedThesis) => (
+              <ThesisTypeBadge type={thesis.type}></ThesisTypeBadge>
+            ),
           },
           {
             accessor: 'students',

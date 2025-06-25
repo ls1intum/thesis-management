@@ -1,4 +1,4 @@
-import { Card, Flex, Text, Badge, Group, Box, Stack, Button, Tooltip, Anchor } from '@mantine/core'
+import { Card, Flex, Text, Group, Stack, Button, Tooltip, Anchor } from '@mantine/core'
 import { ITopic } from '../../../../../requests/responses/topic'
 import { useHover, useMediaQuery } from '@mantine/hooks'
 import { DownloadSimple, Users } from 'phosphor-react'
@@ -73,10 +73,7 @@ const TopicCard = ({ topic, setOpenTopic }: ITopicCardProps) => {
               {thesisTypes?.length ? (
                 thesisTypes.map((type) => <ThesisTypeBadge type={type}></ThesisTypeBadge>)
               ) : (
-                <Group key={'any'} gap={3} wrap='nowrap'>
-                  <Box w={15} h={15} style={{ borderRadius: '50%' }} bg={'gray.3'} />
-                  <Text size='sm'>Any</Text>
-                </Group>
+                <ThesisTypeBadge type='Any' key={'any'} />
               )}
             </Flex>
           </Flex>

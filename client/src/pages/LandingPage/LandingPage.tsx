@@ -16,7 +16,7 @@ import { Link, useParams, useSearchParams } from 'react-router'
 import PublishedTheses from './components/PublishedTheses/PublishedTheses'
 import { usePageTitle } from '../../hooks/theme'
 import LandingPageHeader from './components/LandingPageHeader/LandingPageHeader'
-import { Check, List, MagnifyingGlass, SquaresFour } from 'phosphor-react'
+import { List, MagnifyingGlass, SquaresFour } from 'phosphor-react'
 import { useEffect, useState } from 'react'
 import { useDebouncedValue } from '@mantine/hooks'
 import { GLOBAL_CONFIG } from '../../config/global'
@@ -156,9 +156,7 @@ const LandingPage = () => {
               const group = researchGroups.find((g) => g.id === groupId)
               return group ? (
                 <Flex align='center' gap='xs'>
-                  {selectedGroups.includes(group.id) && (
-                    <Check size={16} style={{ flexShrink: 0 }} />
-                  )}
+                  <Checkbox checked={selectedGroups.includes(group.id)} readOnly />
                   <Text size='sm'>{group.name}</Text>{' '}
                 </Flex>
               ) : null

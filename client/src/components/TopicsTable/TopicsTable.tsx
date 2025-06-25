@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router'
 import { Badge, Center, Stack, Text, Tooltip } from '@mantine/core'
 import AvatarUserList from '../AvatarUserList/AvatarUserList'
 import React from 'react'
+import ThesisTypeBadge from '../../pages/LandingPage/components/ThesisTypBadge/ThesisTypBadge'
 
 type TopicColumn =
   | 'title'
@@ -59,13 +60,9 @@ const TopicsTable = (props: ITopicsTableProps) => {
       render: (topic) => (
         <Stack gap={2}>
           {topic.thesisTypes ? (
-            topic.thesisTypes.map((type) => (
-              <Text key={type} size='sm' style={{ whiteSpace: 'normal', wordBreak: 'break-word' }}>
-                {formatThesisType(type)}
-              </Text>
-            ))
+            topic.thesisTypes.map((type) => <ThesisTypeBadge type={type} key={type} />)
           ) : (
-            <Text size='sm'>Any</Text>
+            <ThesisTypeBadge type='Any' key='any' />
           )}
         </Stack>
       ),
