@@ -154,27 +154,29 @@ const LandingPage = () => {
 
   const multiSelectDropdowns = () => (
     <>
-      <DropDownMultiSelect
-        data={researchGroups.map((group) => group.id)}
-        searchPlaceholder='Search Research Groups'
-        dropdownLable='Research Groups'
-        selectedItems={selectedGroups}
-        setSelectedItem={(groupId: string) => {
-          setSelectedGroups((prev) =>
-            prev.includes(groupId) ? prev.filter((id) => id !== groupId) : [...prev, groupId],
-          )
-        }}
-        renderOption={(groupId) => {
-          const group = researchGroups.find((g) => g.id === groupId)
-          return group ? (
-            <Flex align='center' gap='xs'>
-              <Checkbox checked={selectedGroups.includes(group.id)} readOnly />
-              <Text size='sm'>{group.name}</Text>{' '}
-            </Flex>
-          ) : null
-        }}
-        withoutDropdown={isMobile}
-      ></DropDownMultiSelect>
+      {!researchGroupId && (
+        <DropDownMultiSelect
+          data={researchGroups.map((group) => group.id)}
+          searchPlaceholder='Search Research Groups'
+          dropdownLable='Research Groups'
+          selectedItems={selectedGroups}
+          setSelectedItem={(groupId: string) => {
+            setSelectedGroups((prev) =>
+              prev.includes(groupId) ? prev.filter((id) => id !== groupId) : [...prev, groupId],
+            )
+          }}
+          renderOption={(groupId) => {
+            const group = researchGroups.find((g) => g.id === groupId)
+            return group ? (
+              <Flex align='center' gap='xs'>
+                <Checkbox checked={selectedGroups.includes(group.id)} readOnly />
+                <Text size='sm'>{group.name}</Text>{' '}
+              </Flex>
+            ) : null
+          }}
+          withoutDropdown={isMobile}
+        ></DropDownMultiSelect>
+      )}
       <DropDownMultiSelect
         data={Object.keys(GLOBAL_CONFIG.thesis_types)}
         searchPlaceholder='Search Thesis Type'

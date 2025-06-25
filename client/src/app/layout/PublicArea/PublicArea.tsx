@@ -1,6 +1,6 @@
 import { PropsWithChildren, ReactNode } from 'react'
 import Footer from '../../../components/Footer/Footer'
-import { AppShell, Box, Container, Flex, MantineSize } from '@mantine/core'
+import { AppShell, Box, Container, Flex, MantineSize, useComputedColorScheme } from '@mantine/core'
 import ScrollToTop from '../ScrollToTop/ScrollToTop'
 import Header from '../../../components/Header/Header'
 
@@ -10,6 +10,8 @@ interface IPublicAreaProps {
 
 const PublicArea = (props: PropsWithChildren<IPublicAreaProps>) => {
   const { size = 'md', children } = props
+
+  const computedColorScheme = useComputedColorScheme()
 
   const HEADER_HEIGHT = 50
   const FOOTER_HEIGHT = 50
@@ -40,7 +42,14 @@ const PublicArea = (props: PropsWithChildren<IPublicAreaProps>) => {
 
             <Box
               h={`${FOOTER_HEIGHT}px`}
-              style={{ borderTop: '1px solid var(--mantine-color-gray-3)', flexShrink: 0 }}
+              style={{
+                borderTop: `1px solid ${
+                  computedColorScheme === 'dark'
+                    ? 'var(--mantine-color-dark-4)'
+                    : 'var(--mantine-color-gray-3)'
+                }`,
+                flexShrink: 0,
+              }}
             >
               <Container fluid={!size} size={size} h='100%'>
                 <Footer size={size} />

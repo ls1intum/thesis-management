@@ -1,4 +1,4 @@
-import { Button, Combobox, Group, useCombobox } from '@mantine/core'
+import { Button, Combobox, Group, useCombobox, useComputedColorScheme } from '@mantine/core'
 import { CaretDown, CaretUp, MagnifyingGlass } from 'phosphor-react'
 import { useEffect, useState } from 'react'
 
@@ -41,6 +41,8 @@ const DropDownMultiSelect = ({
       }
     },
   })
+
+  const computedColorScheme = useComputedColorScheme()
 
   useEffect(() => {
     const filteredData = data.filter((item) => item.toLowerCase().includes(search.toLowerCase()))
@@ -85,8 +87,14 @@ const DropDownMultiSelect = ({
           label={selectedItems.length > 0 && showSelectedOnTop ? 'Suggestions' : undefined}
           styles={{
             groupLabel: {
-              backgroundColor: 'var(--mantine-color-gray-2)',
-              color: 'var(--mantine-color-gray-9)',
+              backgroundColor:
+                computedColorScheme === 'dark'
+                  ? 'var(--mantine-color-dark-4)'
+                  : 'var(--mantine-color-gray-2)',
+              color:
+                computedColorScheme === 'dark'
+                  ? 'var(--mantine-color-dark-0)'
+                  : 'var(--mantine-color-gray-9)',
             },
           }}
         >
