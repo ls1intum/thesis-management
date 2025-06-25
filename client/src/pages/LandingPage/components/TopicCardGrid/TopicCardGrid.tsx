@@ -1,7 +1,7 @@
-import { Box, Center, Flex, Pagination, SimpleGrid, Text } from '@mantine/core'
+import { Box, Center, Flex, Pagination, SimpleGrid, Stack, Text, ThemeIcon } from '@mantine/core'
 import TopicCard from './TopicCard/TopicCard'
 import { useTopicsContext } from '../../../../providers/TopicsProvider/hooks'
-import { Spinner } from 'phosphor-react'
+import { Database, Spinner } from 'phosphor-react'
 import { Dispatch, useEffect, useState } from 'react'
 import { ITopic } from '../../../../requests/responses/topic'
 import { IPublishedThesis } from '../../../../requests/responses/thesis'
@@ -36,6 +36,18 @@ const TopicCardGrid = ({ gridContent, setOpenTopic }: ITopicCardGridContentProps
 
   return (
     <Flex direction={'column'} gap='md' w='100%' h='100%'>
+      {topics?.content.length === 0 && (
+        <Center h='100%'>
+          <Stack align='center' gap='xs'>
+            <ThemeIcon radius='xl' size={50} color='gray' variant='light'>
+              <Database size={24} weight='duotone' />
+            </ThemeIcon>
+            <Text size='sm' color='dimmed'>
+              No topics found
+            </Text>
+          </Stack>
+        </Center>
+      )}
       <Box flex={1}>
         {showSpinner ? (
           <Center>

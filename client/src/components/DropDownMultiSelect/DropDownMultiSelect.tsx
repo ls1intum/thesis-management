@@ -11,6 +11,7 @@ interface IDropDownMultiSelectProps {
   selectedItems: string[]
   setSelectedItem: (item: string) => void
   showSelectedOnTop?: boolean
+  withoutDropdown?: boolean
 }
 
 const DropDownMultiSelect = ({
@@ -22,6 +23,7 @@ const DropDownMultiSelect = ({
   selectedItems,
   setSelectedItem,
   showSelectedOnTop = true,
+  withoutDropdown = false,
 }: IDropDownMultiSelectProps) => {
   const [search, setSearch] = useState('')
   const [displayData, setDisplayData] = useState<string[]>(data)
@@ -50,6 +52,58 @@ const DropDownMultiSelect = ({
     )
   }, [data, search, selectedItems])
 
+  const content = () => (
+    <>
+      {withSearch && (
+        <Combobox.Search
+          styles={{
+            input: {
+              display: 'block',
+              width: '100%',
+            },
+          }}
+          value={search}
+          onChange={(event) => setSearch(event.currentTarget.value)}
+          placeholder={searchPlaceholder ?? 'Search...'}
+          leftSection={<MagnifyingGlass size={16} />}
+        />
+      )}
+
+      <Combobox.Options mah={withoutDropdown ? undefined : 200} style={{ overflowY: 'auto' }}>
+        {showSelectedOnTop && selectedItems.length > 0 && (
+          <Combobox.Group label='Selected' pb={10}>
+            {selectedItems.length > 0 &&
+              selectedItems.map((item) => (
+                <Combobox.Option key={item} value={item}>
+                  {renderOption ? renderOption(item) : item}
+                </Combobox.Option>
+              ))}
+          </Combobox.Group>
+        )}
+
+        <Combobox.Group
+          label={selectedItems.length > 0 && showSelectedOnTop ? 'Suggestions' : undefined}
+          styles={{
+            groupLabel: {
+              backgroundColor: 'var(--mantine-color-gray-2)',
+              color: 'var(--mantine-color-gray-9)',
+            },
+          }}
+        >
+          {displayData.length > 0 ? (
+            displayData.map((item) => (
+              <Combobox.Option key={item} value={item}>
+                {renderOption ? renderOption(item) : item}
+              </Combobox.Option>
+            ))
+          ) : (
+            <Combobox.Empty>Nothing found</Combobox.Empty>
+          )}
+        </Combobox.Group>
+      </Combobox.Options>
+    </>
+  )
+
   return (
     <>
       <Combobox
@@ -71,49 +125,13 @@ const DropDownMultiSelect = ({
           </Button>
         </Combobox.Target>
 
-        <Combobox.Dropdown>
-          {withSearch && (
-            <Combobox.Search
-              value={search}
-              onChange={(event) => setSearch(event.currentTarget.value)}
-              placeholder={searchPlaceholder ?? 'Search...'}
-              leftSection={<MagnifyingGlass size={16} />}
-            />
-          )}
-
-          <Combobox.Options mah={200} style={{ overflowY: 'auto' }}>
-            {showSelectedOnTop && selectedItems.length > 0 && (
-              <Combobox.Group label='Selected' pb={10}>
-                {selectedItems.length > 0 &&
-                  selectedItems.map((item) => (
-                    <Combobox.Option key={item} value={item}>
-                      {renderOption ? renderOption(item) : item}
-                    </Combobox.Option>
-                  ))}
-              </Combobox.Group>
-            )}
-
-            <Combobox.Group
-              label={selectedItems.length > 0 && showSelectedOnTop ? 'Suggestions' : undefined}
-              styles={{
-                groupLabel: {
-                  backgroundColor: 'var(--mantine-color-gray-2)',
-                  color: 'var(--mantine-color-gray-9)',
-                },
-              }}
-            >
-              {displayData.length > 0 ? (
-                displayData.map((item) => (
-                  <Combobox.Option key={item} value={item}>
-                    {renderOption ? renderOption(item) : item}
-                  </Combobox.Option>
-                ))
-              ) : (
-                <Combobox.Empty>Nothing found</Combobox.Empty>
-              )}
-            </Combobox.Group>
-          </Combobox.Options>
-        </Combobox.Dropdown>
+        {withoutDropdown ? (
+          combobox.dropdownOpened ? (
+            content()
+          ) : undefined
+        ) : (
+          <Combobox.Dropdown>{content()}</Combobox.Dropdown>
+        )}
       </Combobox>
     </>
   )
