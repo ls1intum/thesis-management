@@ -1,15 +1,5 @@
 import { DataTable } from 'mantine-datatable'
-import {
-  ActionIcon,
-  Anchor,
-  Center,
-  Group,
-  Modal,
-  Stack,
-  Text,
-  Title,
-  Tooltip,
-} from '@mantine/core'
+import { ActionIcon, Anchor, Center, Group, Modal, Stack, Text, Tooltip } from '@mantine/core'
 import React, { useEffect, useState } from 'react'
 import { PaginationResponse } from '../../../../requests/responses/pagination'
 import { IPublishedThesis } from '../../../../requests/responses/thesis'
@@ -22,15 +12,29 @@ import AvatarUserList from '../../../../components/AvatarUserList/AvatarUserList
 import { formatThesisType } from '../../../../utils/format'
 import { GLOBAL_CONFIG } from '../../../../config/global'
 import AuthenticatedFilePreview from '../../../../components/AuthenticatedFilePreview/AuthenticatedFilePreview'
+import TopicCardGrid from '../TopicCardGrid/TopicCardGrid'
+import ThesisTypeBadge from '../ThesisTypBadge/ThesisTypBadge'
 
-const PublishedTheses = () => {
+interface PublishedThesesProps {
+  search: string
+  representationType: string
+  filters?: {
+    researchGroupIds?: string[]
+    types?: string[]
+  }
+}
+
+const PublishedTheses = ({ search, representationType, filters }: PublishedThesesProps) => {
   const [page, setPage] = useState(0)
   const limit = 10
 
   const [theses, setTheses] = useState<PaginationResponse<IPublishedThesis>>()
   const [openedThesis, setOpenedThesis] = useState<IPublishedThesis>()
 
+  const [isLoading, setIsLoading] = useState(false)
+
   useEffect(() => {
+    setIsLoading(true)
     return doRequest<PaginationResponse<IPublishedThesis>>(
       '/v2/published-theses',
       {
@@ -39,27 +43,36 @@ const PublishedTheses = () => {
         params: {
           page,
           limit,
+          search: search,
+          researchGroupIds: filters?.researchGroupIds?.join(',') ?? '',
+          types: filters?.types?.join(',') ?? '',
         },
       },
       (response) => {
+        setIsLoading(false)
+
         if (response.ok) {
           setTheses(response.data)
         } else {
           showSimpleError(getApiResponseErrorMessage(response))
+
+          return setTheses({
+            content: [],
+            totalPages: 0,
+            totalElements: 0,
+            last: true,
+            pageNumber: 0,
+            pageSize: limit,
+          })
         }
       },
     )
-  }, [page, limit])
+  }, [page, limit, search, filters])
 
-  if (page === 0 && !theses?.content.length) {
-    return null
-  }
-
-  return (
-    <Stack gap='xs'>
-      <Title order={2}>Published Theses</Title>
+  const content =
+    representationType === 'list' ? (
       <DataTable
-        fetching={!theses}
+        fetching={isLoading}
         withTableBorder={false}
         minHeight={200}
         noRecordsText='No theses published yet'
@@ -84,7 +97,9 @@ const PublishedTheses = () => {
             title: 'Type',
             ellipsis: true,
             width: 140,
-            render: (thesis: IPublishedThesis) => formatThesisType(thesis.type),
+            render: (thesis: IPublishedThesis) => (
+              <ThesisTypeBadge type={thesis.type}></ThesisTypeBadge>
+            ),
           },
           {
             accessor: 'students',
@@ -138,6 +153,29 @@ const PublishedTheses = () => {
         ]}
         onRowClick={({ record }) => setOpenedThesis(record)}
       />
+    ) : (
+      <TopicCardGrid
+        gridContent={{
+          topics: theses ?? {
+            content: [],
+            totalPages: 0,
+            totalElements: 0,
+            last: true,
+            pageNumber: page,
+            pageSize: limit,
+          },
+          page,
+          setPage,
+          limit,
+          isLoading: !theses,
+        }}
+        setOpenTopic={setOpenedThesis}
+      />
+    )
+
+  return (
+    <>
+      {content}
       <Modal
         title={openedThesis?.title}
         opened={!!openedThesis}
@@ -155,7 +193,7 @@ const PublishedTheses = () => {
           </Stack>
         )}
       </Modal>
-    </Stack>
+    </>
   )
 }
 

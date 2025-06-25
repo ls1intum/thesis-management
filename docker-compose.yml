@@ -1,6 +1,6 @@
 services:
   db:
-    image: 'postgres:17.3-alpine'
+    image: 'postgres:17.5-alpine'
     container_name: thesis-management-db
     volumes:
       - ./db_backups:/db_backups

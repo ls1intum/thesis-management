@@ -1,6 +1,7 @@
 package de.tum.cit.aet.thesis.controller;
 
 import de.tum.cit.aet.thesis.controller.payload.CreateResearchGroupPayload;
+import de.tum.cit.aet.thesis.dto.LightResearchGroupDto;
 import de.tum.cit.aet.thesis.dto.LightUserDto;
 import de.tum.cit.aet.thesis.dto.PaginationDto;
 import de.tum.cit.aet.thesis.dto.ResearchGroupDto;
@@ -8,6 +9,8 @@ import de.tum.cit.aet.thesis.entity.ResearchGroup;
 import de.tum.cit.aet.thesis.entity.User;
 import de.tum.cit.aet.thesis.service.ResearchGroupService;
 import de.tum.cit.aet.thesis.utility.RequestValidator;
+
+import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -60,11 +63,25 @@ public class ResearchGroupController {
         researchGroups.map(ResearchGroupDto::fromResearchGroupEntity)));
   }
 
+  @GetMapping("/light")
+  public ResponseEntity<List<LightResearchGroupDto>> getLightResearchGroups(
+          @RequestParam(required = false) String search
+  ) {
+    Page<ResearchGroup> groups = researchGroupService.getAllLight(search);
+
+    List<LightResearchGroupDto> dtos = groups.getContent()
+            .stream()
+            .map(LightResearchGroupDto::fromResearchGroupEntity)
+            .toList();
+
+    return ResponseEntity.ok(dtos);
+  }
+
   @GetMapping("/{researchGroupId}")
   public ResponseEntity<ResearchGroupDto> getResearchGroup(
       @PathVariable("researchGroupId") UUID researchGroupId
   ) {
-    ResearchGroup researchGroup = researchGroupService.findById(researchGroupId);
+    ResearchGroup researchGroup = researchGroupService.findById(researchGroupId, true);
 
     return ResponseEntity.ok(ResearchGroupDto.fromResearchGroupEntity(researchGroup));
   }

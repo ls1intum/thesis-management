@@ -85,7 +85,8 @@ class TopicServiceTest {
                 0,
                 10,
                 "title",
-                "asc"
+                "asc",
+                null
         );
 
         assertNotNull(result);

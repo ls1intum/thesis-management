@@ -6,6 +6,8 @@ export interface ITopicsFilters {
   types?: string[]
   includeClosed?: boolean
   researchSpecific?: boolean
+  search?: string
+  researchGroupIds?: string[]
 }
 
 export interface ITopicsContext {
@@ -17,6 +19,7 @@ export interface ITopicsContext {
   limit: number
   updateTopic: (thesis: ITopic) => unknown
   addTopic: (thesis: ITopic) => unknown
+  isLoading: boolean
 }
 
 export const TopicsContext = React.createContext<ITopicsContext | undefined>(undefined)

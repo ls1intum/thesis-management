@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "de.tum.cit.aet.thesis"
-version = "4.1.1"
+version = "4.2.0"
 description = "Thesis Management"
 
 springBoot {
@@ -28,17 +28,42 @@ repositories {
 }
 
 dependencies {
-	implementation "org.springframework.boot:spring-boot-starter-data-jpa"
-	implementation "org.springframework.boot:spring-boot-starter-web"
-	implementation "org.springframework.boot:spring-boot-starter-validation"
-	implementation "org.springframework.boot:spring-boot-starter-mail"
-	implementation "org.springframework.boot:spring-boot-starter-webflux"
-	implementation "org.springframework.boot:spring-boot-starter-security"
-	implementation "org.springframework.boot:spring-boot-starter-oauth2-client"
-	implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
-	implementation "org.springframework.boot:spring-boot-starter-thymeleaf"
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	implementation "org.springframework.boot:spring-boot-starter-data-jpa:${spring_boot_version}"
+	implementation "org.springframework.boot:spring-boot-starter-web:${spring_boot_version}"
+	implementation "org.springframework.boot:spring-boot-starter-validation:${spring_boot_version}"
+	implementation "org.springframework.boot:spring-boot-starter-mail:${spring_boot_version}"
+	implementation "org.springframework.boot:spring-boot-starter-webflux:${spring_boot_version}"
+	implementation "org.springframework.boot:spring-boot-starter-security:${spring_boot_version}"
+	implementation "org.springframework.boot:spring-boot-starter-oauth2-client:${spring_boot_version}"
+	implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server:${spring_boot_version}"
+	implementation "org.springframework.boot:spring-boot-starter-thymeleaf:${spring_boot_version}"
+	implementation "org.springframework.boot:spring-boot-starter-actuator:${spring_boot_version}"
+
+	// use the latest version to avoid security vulnerabilities
+	implementation "org.springframework:spring-aop:${spring_framework_version}"
+	implementation "org.springframework:spring-aspects:${spring_framework_version}"
+	implementation "org.springframework:spring-beans:${spring_framework_version}"
+	implementation "org.springframework:spring-context:${spring_framework_version}"
+	implementation "org.springframework:spring-context-support:${spring_framework_version}"
+	implementation "org.springframework:spring-core:${spring_framework_version}"
+	implementation "org.springframework:spring-expression:${spring_framework_version}"
+	implementation "org.springframework:spring-jcl:${spring_framework_version}"
+	implementation "org.springframework:spring-jdbc:${spring_framework_version}"
+	implementation "org.springframework:spring-messaging:${spring_framework_version}"
+	implementation "org.springframework:spring-orm:${spring_framework_version}"
+	implementation "org.springframework:spring-tx:${spring_framework_version}"
+	implementation "org.springframework:spring-webmvc:${spring_framework_version}"
+	implementation "org.springframework:spring-web:${spring_framework_version}"
+	implementation "org.springframework:spring-webflux:${spring_framework_version}"
+	implementation "org.springframework:spring-websocket:${spring_framework_version}"
+
+	developmentOnly "org.springframework.boot:spring-boot-devtools:${spring_boot_version}"
+	developmentOnly "org.springframework:spring-aop:${spring_framework_version}"
+	developmentOnly "org.springframework:spring-beans:${spring_framework_version}"
+	developmentOnly "org.springframework:spring-context:${spring_framework_version}"
+	developmentOnly "org.springframework:spring-core:${spring_framework_version}"
+	developmentOnly "org.springframework:spring-expression:${spring_framework_version}"
+	developmentOnly "org.springframework:spring-jcl:${spring_framework_version}"
 
 	// Avoid outdated version of netty to prevent security issues
 	implementation("io.netty:netty-buffer") { version { 				strictly netty_version } }
@@ -58,8 +83,8 @@ dependencies {
 	// Avoid outdated version to prevent security issues
 	implementation("net.minidev:json-smart") { version { 				strictly "2.5.2" } }
 
-	implementation "org.liquibase:liquibase-core:4.31.1"
-	implementation "org.postgresql:postgresql:42.7.5"
+	implementation "org.liquibase:liquibase-core:4.32.0"
+	implementation "org.postgresql:postgresql:42.7.7"
 
 	implementation "commons-io:commons-io:2.19.0"
 	implementation "com.github.vladimir-bukhtoyarov:bucket4j-core:8.0.1"
@@ -82,6 +107,9 @@ dependencies {
 		exclude group: "com.vaadin.external.google", module: "android-json"
 		exclude group: "org.xmlunit", module: "xmlunit-core"
 	}
+
+	testImplementation "org.springframework:spring-test:${spring_framework_version}"
+
 	testImplementation "org.mockito:mockito-core:5.18.0"
 	testImplementation "org.mockito:mockito-junit-jupiter:5.18.0"
 

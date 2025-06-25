@@ -2,9 +2,12 @@ import React, { PropsWithChildren, Suspense, useEffect } from 'react'
 import {
   ActionIcon,
   AppShell,
+  Box,
   Burger,
   Center,
+  Container,
   Divider,
+  Flex,
   Group,
   MantineSize,
   Stack,
@@ -128,6 +131,8 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
   const showHeader = useIsSmallerBreakpoint('md')
   const auth = useAuthenticationContext()
 
+  const FOOTER_HEIGHT = 50
+
   useEffect(() => {
     if (requireAuthentication && !auth.isAuthenticated) {
       auth.login()
@@ -150,10 +155,31 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
 
   if (!requireAuthentication && !auth.isAuthenticated) {
     return (
-      <ContentContainer size={size}>
-        {children}
-        <ScrollToTop />
-      </ContentContainer>
+      <Box h={`100vh`}>
+        <Flex direction='column' h='100%' w='100%'>
+          <Box flex={1}>
+            <Container
+              size={size}
+              fluid={!size}
+              px={{ base: 20, sm: 40 }}
+              py={{ base: 10, sm: 20 }}
+              h='100%'
+            >
+              {children}
+            </Container>
+            <ScrollToTop />
+          </Box>
+
+          <Box
+            h={`${FOOTER_HEIGHT}px`}
+            style={{ borderTop: '1px solid var(--mantine-color-gray-3)', flexShrink: 0 }}
+          >
+            <Container fluid={!size} size={size} h='100%'>
+              <Footer size={size} />
+            </Container>
+          </Box>
+        </Flex>
+      </Box>
     )
   }
 
@@ -182,7 +208,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
         <AppShell.Section grow mb='md'>
           {!minimized && (
             <Group preventGrowOverflow={false}>
-              <Logo className={classes.logo} />
+              <Logo />
               <Text
                 className={classes.siteName}
                 fw='bold'
@@ -264,24 +290,43 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
       </AppShell.Navbar>
 
       <AppShell.Main>
-        <div className={classes.mainHeight}>
-          {auth.user ? (
-            <Suspense fallback={<PageLoader />}>
-              {!requiredGroups ||
-              requiredGroups.some((role) => auth.user?.groups.includes(role)) ? (
-                <ContentContainer size={size}>{children}</ContentContainer>
-              ) : (
-                <Center className={classes.fullHeight}>
-                  <h1>403 - Unauthorized</h1>
-                </Center>
-              )}
-            </Suspense>
-          ) : (
-            <PageLoader />
-          )}
-        </div>
-        <Footer />
-        <ScrollToTop />
+        <Box h={`100vh`}>
+          <Flex direction='column' h='100%' w='100%'>
+            <Box flex={1}>
+              <Container
+                size={size}
+                fluid={!size}
+                px={{ base: 20, sm: 40 }}
+                py={{ base: 10, sm: 20 }}
+                h='100%'
+              >
+                {auth.user ? (
+                  <Suspense fallback={<PageLoader />}>
+                    {!requiredGroups ||
+                    requiredGroups.some((role) => auth.user?.groups.includes(role)) ? (
+                      <ContentContainer size={size}>{children}</ContentContainer>
+                    ) : (
+                      <Center className={classes.fullHeight}>
+                        <h1>403 - Unauthorized</h1>
+                      </Center>
+                    )}
+                  </Suspense>
+                ) : (
+                  <PageLoader />
+                )}
+              </Container>
+              <ScrollToTop />
+            </Box>
+            <Box
+              h={`${FOOTER_HEIGHT}px`}
+              style={{ borderTop: '1px solid var(--mantine-color-gray-3)', flexShrink: 0 }}
+            >
+              <Container fluid={!size} size={size} h='100%'>
+                <Footer size={size} />
+              </Container>
+            </Box>
+          </Flex>
+        </Box>
       </AppShell.Main>
     </AppShell>
   )

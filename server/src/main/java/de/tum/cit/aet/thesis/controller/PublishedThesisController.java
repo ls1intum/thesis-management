@@ -33,18 +33,22 @@ public class PublishedThesisController {
             @RequestParam(required = false, defaultValue = "0") Integer page,
             @RequestParam(required = false, defaultValue = "50") Integer limit,
             @RequestParam(required = false, defaultValue = "endDate") String sortBy,
-            @RequestParam(required = false, defaultValue = "desc") String sortOrder
+            @RequestParam(required = false, defaultValue = "desc") String sortOrder,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false, defaultValue = "") UUID[] researchGroupIds,
+            @RequestParam(required = false) String[] types
     ) {
         Page<Thesis> theses = thesisService.getAll(
                 null,
                 true,
-                null,
+                search,
                 new ThesisState[]{ThesisState.FINISHED},
-                null,
+                types,
                 page,
                 limit,
                 sortBy,
-                sortOrder
+                sortOrder,
+                researchGroupIds
         );
 
         return ResponseEntity.ok(PaginationDto.fromSpringPage(theses.map(PublishedThesisDto::fromThesisEntity)));

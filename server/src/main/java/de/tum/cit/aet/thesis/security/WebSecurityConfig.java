@@ -43,6 +43,7 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/v2/topics/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/v2/published-theses/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/v2/published-presentations/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/v2/research-groups/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/v2/calendar/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/v2/avatars/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/actuator/info").permitAll()

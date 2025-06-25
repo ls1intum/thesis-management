@@ -40,7 +40,8 @@ public class TopicController {
             @RequestParam(required = false, defaultValue = "0") Integer page,
             @RequestParam(required = false, defaultValue = "50") Integer limit,
             @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
-            @RequestParam(required = false, defaultValue = "desc") String sortOrder
+            @RequestParam(required = false, defaultValue = "desc") String sortOrder,
+            @RequestParam(required = false, defaultValue = "") UUID[] researchGroupIds
     ) {
         Page<Topic> topics = topicService.getAll(
                 onlyOwnResearchGroup,
@@ -50,7 +51,8 @@ public class TopicController {
                 page,
                 limit,
                 sortBy,
-                sortOrder
+                sortOrder,
+                researchGroupIds
         );
 
         return ResponseEntity.ok(PaginationDto.fromSpringPage(topics.map(TopicDto::fromTopicEntity)));

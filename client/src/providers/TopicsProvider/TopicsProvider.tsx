@@ -10,6 +10,7 @@ interface ITopicsProviderProps {
   limit: number
   hideIfEmpty?: boolean
   researchSpecific?: boolean
+  initialFilters?: Partial<ITopicsFilters>
 }
 
 const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
@@ -19,6 +20,7 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
     limit,
     hideIfEmpty = false,
     researchSpecific = true,
+    initialFilters,
   } = props
 
   const [topics, setTopics] = useState<PaginationResponse<ITopic>>()
@@ -26,10 +28,13 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
   const [filters, setFilters] = useState<ITopicsFilters>({
     includeClosed: includeClosedTopics,
     researchSpecific: researchSpecific,
+    ...initialFilters,
   })
 
+  const [isLoading, setIsLoading] = useState(false)
+
   useEffect(() => {
-    setTopics(undefined)
+    setIsLoading(true)
 
     return doRequest<PaginationResponse<ITopic>>(
       `/v2/topics`,
@@ -42,9 +47,13 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
           type: filters.types?.join(',') || '',
           includeClosed: filters.includeClosed ? 'true' : 'false',
           onlyOwnResearchGroup: filters.researchSpecific ? 'true' : 'false',
+          search: filters.search ?? '',
+          researchGroupIds: filters.researchGroupIds?.join(',') || '',
         },
       },
       (res) => {
+        setIsLoading(false)
+
         if (!res.ok) {
           showSimpleError(`Could not fetch topics: ${res.status}`)
 
@@ -63,6 +72,16 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
     )
   }, [filters, page, limit])
 
+  useEffect(() => {
+    setFilters((prev) => ({
+      ...prev,
+      includeClosed: includeClosedTopics,
+      researchSpecific: researchSpecific,
+      ...initialFilters,
+    }))
+    setPage(0)
+  }, [initialFilters])
+
   const contextState = useMemo<ITopicsContext>(() => {
     return {
       topics,
@@ -71,6 +90,7 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
       page,
       setPage,
       limit,
+      isLoading,
       updateTopic: (newTopic) => {
         setTopics((prev) => {
           if (!prev) {
@@ -100,7 +120,7 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
         })
       },
     }
-  }, [topics, filters, page, limit])
+  }, [topics, filters, page, limit, isLoading])
 
   if (hideIfEmpty && page === 0 && (!topics || topics.content.length === 0)) {
     return <></>

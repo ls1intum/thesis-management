@@ -15,10 +15,10 @@ const PrivacyPage = () => {
   }, [])
 
   return (
-    <PublicArea withBackButton={true}>
+    <div>
       <Title mb='md'>Privacy</Title>
       <div dangerouslySetInnerHTML={{ __html: content }} />
-    </PublicArea>
+    </div>
   )
 }
 

@@ -41,6 +41,10 @@ export const GLOBAL_CONFIG: IGlobalConfig = {
     MANAGEMENT_AND_TECHNOLOGY: 'Management and Technology',
     OTHER: 'Other',
   },
+  topic_views_options: getEnvironmentVariable('TOPIC_VIEWS_OPTIONS', true) || {
+    OPEN: 'Open Topics',
+    PUBLISHED: 'Published Topics',
+  },
   research_groups_location: getEnvironmentVariable('RESEARCH_GROUPS_LOCATION') || {
     GARCHING: 'Garching',
     MUNICH: 'Munich',
