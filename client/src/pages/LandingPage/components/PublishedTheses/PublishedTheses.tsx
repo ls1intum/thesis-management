@@ -22,11 +22,12 @@ interface PublishedThesesProps {
     researchGroupIds?: string[]
     types?: string[]
   }
+  limit?: number
 }
 
-const PublishedTheses = ({ search, representationType, filters }: PublishedThesesProps) => {
+const PublishedTheses = ({ search, representationType, filters, limit }: PublishedThesesProps) => {
   const [page, setPage] = useState(0)
-  const limit = 10
+  limit = limit ?? 10
 
   const [theses, setTheses] = useState<PaginationResponse<IPublishedThesis>>()
   const [openedThesis, setOpenedThesis] = useState<IPublishedThesis>()

@@ -60,7 +60,11 @@ const TopicCardGrid = ({ gridContent, setOpenTopic }: ITopicCardGridContentProps
             verticalSpacing={{ base: 'xs', sm: 'sm', xl: 'md' }}
           >
             {topics?.content.map((topic) => (
-              <TopicCard key={topic.title} topic={topic} setOpenTopic={setOpenTopic} />
+              <TopicCard
+                key={'topicId' in topic ? topic.topicId : topic.thesisId}
+                topic={topic}
+                setOpenTopic={setOpenTopic}
+              />
             ))}
           </SimpleGrid>
         )}

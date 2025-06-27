@@ -51,6 +51,8 @@ const LandingPage = () => {
     searchParams.get('groups')?.split(',') ?? [],
   )
 
+  let pageItemLimit = 12
+
   useEffect(() => {
     const params = new URLSearchParams(searchParams)
 
@@ -256,7 +258,7 @@ const LandingPage = () => {
         )}
       </Flex>
       <TopicsProvider
-        limit={10}
+        limit={pageItemLimit}
         researchSpecific={false}
         initialFilters={{
           researchGroupIds: researchGroupId ? [researchGroupId] : selectedGroups,
@@ -308,6 +310,7 @@ const LandingPage = () => {
                 researchGroupIds: researchGroupId ? [researchGroupId] : selectedGroups,
                 types: selectedThesisTypes,
               }}
+              limit={pageItemLimit}
             />
           )}
         </Stack>
