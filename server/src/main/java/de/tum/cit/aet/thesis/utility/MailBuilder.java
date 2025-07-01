@@ -150,6 +150,33 @@ public class MailBuilder {
         return this;
     }
 
+    public MailBuilder filterChairMembersNewApplicationNotifications(Topic topic, String notificationName) {
+        List<User> filteredMembers = new ArrayList<>();
+        for (User user : primaryRecipients) {
+            String notificationEmail = user.getNotificationEmail(notificationName);
+
+            System.out.println("Notification Email for " + user.getFirstName() + " " + user.getLastName() + ": " + notificationEmail);
+
+            switch (notificationEmail) {
+                case "all":
+                    filteredMembers.add(user);
+                    break;
+                case "own":
+                    if (topic.getRoles().stream().map(TopicRole::getUser).anyMatch(u -> u.getId().equals(user.getId()))) {
+                        filteredMembers.add(user);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        primaryRecipients.clear();
+        primaryRecipients.addAll(filteredMembers);
+
+        return this;
+    }
+
     public MailBuilder sendToThesisSupervisors(Thesis thesis) {
         for (ThesisRole role : thesis.getRoles()) {
             if (role.getId().getRole() == ThesisRoleName.SUPERVISOR) {

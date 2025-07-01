@@ -168,4 +168,19 @@ public class User {
 
         return true;
     }
+
+    public String getNotificationEmail(String name) {
+        for (NotificationSetting setting : getNotificationSettings()) {
+            if (setting.getId().getName().equals(name)) {
+                return setting.getEmail();
+            }
+        }
+
+        //Default value when it is not in the database
+        if (name.equals("new-applications")) {
+            return "own";
+        } else {
+            return "all";
+        }
+    }
 }

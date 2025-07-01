@@ -7,6 +7,7 @@ import React, { useEffect, useState } from 'react'
 import { doRequest } from '../../../../requests/request'
 import PageLoader from '../../../../components/PageLoader/PageLoader'
 import NotificationToggleSwitch from './components/NotificationToggleSwitch/NotificationToggleSwitch'
+import { NotificationSelect } from './components/NotificationSelect/NotificationSelect'
 
 const NotificationSettings = () => {
   usePageTitle('Notification Settings')
@@ -43,21 +44,26 @@ const NotificationSettings = () => {
     <Stack>
       {managementAccess && (
         <Stack>
-          <Group>
+          <Group justify='space-between'>
             <Stack gap={2}>
               <Text size='sm'>New Applications</Text>
               <Text size='xs' c='dimmed'>
                 Receive a summary email on every new application
               </Text>
             </Stack>
-            <NotificationToggleSwitch
+            <NotificationSelect
               name='new-applications'
               settings={settings}
               setSettings={setSettings}
-              ml='auto'
+              options={[
+                { value: 'none', label: 'None' },
+                { value: 'own', label: 'Own' },
+                { value: 'all', label: 'All' },
+              ]}
+              defaultValue='own'
             />
           </Group>
-          <Group>
+          <Group justify='space-between'>
             <Stack gap={2}>
               <Text size='sm'>Application Review Reminder</Text>
               <Text size='xs' c='dimmed'>
@@ -68,12 +74,11 @@ const NotificationSettings = () => {
               name='unreviewed-application-reminder'
               settings={settings}
               setSettings={setSettings}
-              ml='auto'
             />
           </Group>
         </Stack>
       )}
-      <Group>
+      <Group justify='space-between'>
         <Stack gap={2}>
           <Text size='sm'>Presentation Invitations</Text>
           <Text size='xs' c='dimmed'>
@@ -84,10 +89,9 @@ const NotificationSettings = () => {
           name='presentation-invitations'
           settings={settings}
           setSettings={setSettings}
-          ml='auto'
         />
       </Group>
-      <Group>
+      <Group justify='space-between'>
         <Stack gap={2}>
           <Text size='sm'>Thesis Comments</Text>
           <Text size='xs' c='dimmed'>
@@ -98,7 +102,6 @@ const NotificationSettings = () => {
           name='thesis-comments'
           settings={settings}
           setSettings={setSettings}
-          ml='auto'
         />
       </Group>
       <ThesesProvider limit={10}>

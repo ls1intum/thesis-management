@@ -7,11 +7,12 @@ export const useNotificationSetting = (
   name: string,
   settings: Array<{ name: string; email: string }>,
   setSettings: Dispatch<SetStateAction<Array<{ name: string; email: string }> | undefined>>,
+  defaultValue?: string,
 ) => {
   const [loading, setLoading] = useState(false)
 
   const currentSetting = settings.find((setting) => setting.name === name)
-  const currentEmail = currentSetting?.email ?? 'all'
+  const currentEmail = currentSetting?.email ?? defaultValue ?? 'all'
 
   const updateSetting = async (newEmail: string) => {
     setLoading(true)
