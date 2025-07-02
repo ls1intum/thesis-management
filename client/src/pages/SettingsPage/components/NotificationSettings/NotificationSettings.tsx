@@ -58,17 +58,19 @@ const NotificationSettings = () => {
             ]}
             defaultValue='own'
           />
-          <Group ml={'1rem'}>
-            <Divider orientation='vertical' />
-            <NotificationOption
-              name='include-suggested-topics'
-              settings={settings}
-              setSettings={setSettings}
-              heading='Include Suggested Topics'
-              description='Receive notifications for student-suggested topics in your group'
-              flex={1}
-            />
-          </Group>
+          {settings.find((s) => s.name === 'new-applications')?.email !== 'none' && (
+            <Group ml={'1rem'}>
+              <Divider orientation='vertical' />
+              <NotificationOption
+                name='include-suggested-topics'
+                settings={settings}
+                setSettings={setSettings}
+                heading='Include Suggested Topics'
+                description='Receive notifications for student-suggested topics in your group'
+                flex={1}
+              />
+            </Group>
+          )}
           <NotificationOption
             name='application-review-reminder'
             settings={settings}

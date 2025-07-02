@@ -24,6 +24,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.thymeleaf.context.Context;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class MailBuilder {
     private static final Logger log = LoggerFactory.getLogger(MailBuilder.class);
@@ -158,7 +159,7 @@ public class MailBuilder {
 
             switch (notificationEmail) {
                 case "all":
-                    if (notificationEmailSuggested == "none") {
+                    if (notificationEmailSuggested.equals("none")) {
                         if (topic != null) {
                             filteredMembers.add(user);
                         }
@@ -167,7 +168,7 @@ public class MailBuilder {
                     }
                     break;
                 case "own":
-                    if (notificationEmailSuggested == "none") {
+                    if (notificationEmailSuggested.equals("none")) {
                         if (topic != null && topic.getRoles().stream().map(TopicRole::getUser).anyMatch(u -> u.getId().equals(user.getId()))) {
                             filteredMembers.add(user);
                         }
