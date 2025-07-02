@@ -169,15 +169,15 @@ public class User {
         return true;
     }
 
-    public String getNotificationEmail(String name) {
+    public String getNotificationEmail(String notificationName) {
         for (NotificationSetting setting : getNotificationSettings()) {
-            if (setting.getId().getName().equals(name)) {
+            if (setting.getId().getName().equals(notificationName)) {
                 return setting.getEmail();
             }
         }
 
-        //Default value when it is not in the database
-        if (name.equals("new-applications")) {
+        //Default value when it is not in the database -> For new applications, we need a diffrent value since it is not a true or false toggle
+        if (notificationName.equals("new-applications")) {
             return "own";
         } else {
             return "all";

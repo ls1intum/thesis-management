@@ -154,16 +154,27 @@ public class MailBuilder {
         List<User> filteredMembers = new ArrayList<>();
         for (User user : primaryRecipients) {
             String notificationEmail = user.getNotificationEmail(notificationName);
-
-            System.out.println("Notification Email for " + user.getFirstName() + " " + user.getLastName() + ": " + notificationEmail);
+            String notificationEmailSuggested = user.getNotificationEmail("include-suggested-topics");
 
             switch (notificationEmail) {
                 case "all":
-                    filteredMembers.add(user);
+                    if (notificationEmailSuggested == "none") {
+                        if (topic != null) {
+                            filteredMembers.add(user);
+                        }
+                    } else {
+                        filteredMembers.add(user);
+                    }
                     break;
                 case "own":
-                    if (topic.getRoles().stream().map(TopicRole::getUser).anyMatch(u -> u.getId().equals(user.getId()))) {
-                        filteredMembers.add(user);
+                    if (notificationEmailSuggested == "none") {
+                        if (topic != null && topic.getRoles().stream().map(TopicRole::getUser).anyMatch(u -> u.getId().equals(user.getId()))) {
+                            filteredMembers.add(user);
+                        }
+                    } else {
+                        if (topic == null || topic.getRoles().stream().map(TopicRole::getUser).anyMatch(u -> u.getId().equals(user.getId()))) {
+                            filteredMembers.add(user);
+                        }
                     }
                     break;
                 default:
