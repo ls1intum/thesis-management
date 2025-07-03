@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class MailingService {
@@ -47,11 +48,13 @@ public class MailingService {
                 application.getResearchGroup().getId(),
                 "APPLICATION_CREATED_CHAIR",
                 "en");
+
         MailBuilder researchGroupMailBuilder = new MailBuilder(config, researchGroupEmailTemplate.getSubject(),
                 researchGroupEmailTemplate.getBodyHtml());
         researchGroupMailBuilder
                 .sendToChairMembers(application.getResearchGroup().getId())
                 .addNotificationName("new-applications")
+                .filterChairMembersNewApplicationNotifications(application.getTopic(), "new-applications")
                 .addStoredAttachment(application.getUser().getCvFilename(), getUserFilename(application.getUser(), "CV", application.getUser().getCvFilename()))
                 .addStoredAttachment(application.getUser().getExaminationFilename(), getUserFilename(application.getUser(), "Examination Report", application.getUser().getExaminationFilename()))
                 .addStoredAttachment(application.getUser().getDegreeFilename(), getUserFilename(application.getUser(), "Degree Report", application.getUser().getDegreeFilename()))

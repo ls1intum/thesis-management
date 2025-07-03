@@ -4,6 +4,7 @@ import { doRequest } from '../../../../../../requests/request'
 import { showSimpleError } from '../../../../../../utils/notification'
 import { getApiResponseErrorMessage } from '../../../../../../requests/handler'
 import { BoxProps } from '@mantine/core/lib/core'
+import { useNotificationSetting } from '../../../../../../hooks/notification'
 
 interface INotificationToggleSwitchProps extends BoxProps {
   name: string
@@ -14,34 +15,16 @@ interface INotificationToggleSwitchProps extends BoxProps {
 const NotificationToggleSwitch = (props: INotificationToggleSwitchProps) => {
   const { name, settings, setSettings, ...other } = props
 
-  const [loading, setLoading] = useState(false)
+  const { loading, currentEmail, updateSetting } = useNotificationSetting(
+    name,
+    settings,
+    setSettings,
+  )
 
-  const isChecked = !settings.some((setting) => setting.name === name && setting.email === 'none')
+  const isChecked = currentEmail !== 'none'
 
   const toggleSetting = async () => {
-    setLoading(true)
-
-    try {
-      const response = await doRequest<Array<{ name: string; email: string }>>(
-        '/v2/user-info/notifications',
-        {
-          method: 'PUT',
-          requiresAuth: true,
-          data: {
-            name,
-            email: isChecked ? 'none' : 'all',
-          },
-        },
-      )
-
-      if (response.ok) {
-        setSettings(response.data)
-      } else {
-        showSimpleError(getApiResponseErrorMessage(response))
-      }
-    } finally {
-      setLoading(false)
-    }
+    updateSetting(isChecked ? 'none' : 'all')
   }
 
   return <Switch checked={isChecked} onChange={toggleSetting} disabled={loading} {...other} />
