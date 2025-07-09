@@ -52,9 +52,9 @@ const NotificationSettings = () => {
             heading='New Applications'
             description='Receive a summary email on every new application'
             options={[
-              { value: 'none', label: 'None' },
-              { value: 'own', label: 'Own' },
-              { value: 'all', label: 'All' },
+              { value: 'none', label: 'No topics' },
+              { value: 'own', label: 'Only my topics' },
+              { value: 'all', label: 'All topics' },
             ]}
             defaultValue='own'
           />
