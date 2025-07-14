@@ -83,7 +83,7 @@ dependencies {
 	// Avoid outdated version to prevent security issues
 	implementation("net.minidev:json-smart") { version { 				strictly "2.5.2" } }
 
-	implementation "org.liquibase:liquibase-core:4.32.0"
+	implementation "org.liquibase:liquibase-core:4.33.0"
 	implementation "org.postgresql:postgresql:42.7.7"
 
 	implementation "commons-io:commons-io:2.19.0"
