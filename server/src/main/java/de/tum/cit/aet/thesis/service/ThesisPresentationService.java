@@ -104,7 +104,7 @@ public class ThesisPresentationService {
         );
 
         for (ThesisPresentation presentation : presentations) {
-            calendar.add(calendarService.createVEvent(presentation.getId().toString(), createPresentationCalendarEvent(presentation)));
+            calendar.add(calendarService.createVEvent(presentation.getId().toString(), createPresentationCalendarEventWithoutAccessCheck(presentation)));
         }
 
         return calendar;
@@ -220,7 +220,7 @@ public class ThesisPresentationService {
 
         if (inviteChairMembers) {
             for (User user : userRepository.getRoleMembers(Set.of("admin", "supervisor",
-                "advisor"), researchGroup.getId())) {
+                    "advisor"), researchGroup.getId())) {
                 if (!user.isNotificationEnabled("presentation-invitations")) {
                     continue;
                 }
@@ -326,6 +326,11 @@ public class ThesisPresentationService {
     private CalendarService.CalendarEvent createPresentationCalendarEvent(ThesisPresentation presentation) {
         Thesis thesis = presentation.getThesis();
         currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+        return createPresentationCalendarEventWithoutAccessCheck(presentation);
+    }
+
+    private CalendarService.CalendarEvent createPresentationCalendarEventWithoutAccessCheck(ThesisPresentation presentation) {
+        Thesis thesis = presentation.getThesis();
         String location = presentation.getLocation();
         String streamUrl = presentation.getStreamUrl();
 
