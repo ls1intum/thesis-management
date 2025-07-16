@@ -237,7 +237,7 @@ class ThesisPresentationServiceTest {
 
     @Test
     void getPresentationCalendar_ReturnsCalendarWithEvents() {
-        when(thesisPresentationRepository.findAllPresentations(anySet()))
+        when(thesisPresentationRepository.findAllPresentations(isNull(), anySet()))
                 .thenReturn(List.of(testPresentation));
         when(calendarService.createVEvent(anyString(), any()))
                 .thenReturn(null);
@@ -246,6 +246,6 @@ class ThesisPresentationServiceTest {
 
         assertNotNull(result);
         verify(calendarService).createVEvent(anyString(), any());
-        verify(thesisPresentationRepository).findAllPresentations(anySet());
+        verify(thesisPresentationRepository).findAllPresentations(isNull(), anySet());
     }
 }

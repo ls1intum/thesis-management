@@ -101,16 +101,10 @@ public class ThesisPresentationService {
 
         List<ThesisPresentation> presentations;
 
-        if (researchGroupId != null) {
-            presentations = thesisPresentationRepository.findAllByResearchGroupAndVisibility(
-                    researchGroupId,
-                    Set.of(ThesisPresentationVisibility.PUBLIC)
-            );
-        } else {
-            presentations = thesisPresentationRepository.findAllPresentations(
-                    Set.of(ThesisPresentationVisibility.PUBLIC)
-            );
-        }
+        presentations = thesisPresentationRepository.findAllPresentations(
+                researchGroupId,
+                Set.of(ThesisPresentationVisibility.PUBLIC)
+        );
 
         for (ThesisPresentation presentation : presentations) {
             calendar.add(calendarService.createVEvent(presentation.getId().toString(), createPresentationCalendarEventWithoutAccessCheck(presentation)));
