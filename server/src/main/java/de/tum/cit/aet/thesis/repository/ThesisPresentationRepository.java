@@ -22,11 +22,13 @@ public interface ThesisPresentationRepository extends JpaRepository<ThesisPresen
             p.scheduledAt >= :time AND
             (:states IS NULL OR p.state IN :states) AND
             (:visibilities IS NULL OR p.visibility IN :visibilities)
+            AND (:researchGroupId IS NULL OR p.thesis.researchGroup.id = :researchGroupId)
             """)
     Page<ThesisPresentation> findFuturePresentations(
             @Param("time") Instant time,
             @Param("states") Set<ThesisPresentationState> states,
             @Param("visibilities") Set<ThesisPresentationVisibility> visibilities,
+            @Param("researchGroupId") UUID researchGroupId,
             Pageable page
     );
 

@@ -72,13 +72,14 @@ public class ThesisPresentationService {
     }
 
     public Page<ThesisPresentation> getPublicPresentations(boolean includeDrafts, Integer page,
-        Integer limit, String sortBy, String sortOrder) {
+        Integer limit, String sortBy, String sortOrder, UUID researchGroupId) {
         Sort.Order order = new Sort.Order(sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
 
         return thesisPresentationRepository.findFuturePresentations(
                 Instant.now(),
                 includeDrafts ? Set.of(ThesisPresentationState.DRAFTED, ThesisPresentationState.SCHEDULED) : Set.of(ThesisPresentationState.SCHEDULED),
                 Set.of(ThesisPresentationVisibility.PUBLIC),
+                researchGroupId,
                 PageRequest.of(page, limit, Sort.by(order))
         );
     }

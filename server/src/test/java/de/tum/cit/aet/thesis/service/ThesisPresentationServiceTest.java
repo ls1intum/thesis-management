@@ -97,6 +97,7 @@ class ThesisPresentationServiceTest {
                 any(Instant.class),
                 anySet(),
                 anySet(),
+                isNull(),
                 any(PageRequest.class)
         )).thenReturn(expectedPage);
 
@@ -105,7 +106,8 @@ class ThesisPresentationServiceTest {
                 0,
                 10,
                 "scheduledAt",
-                "asc"
+                "asc",
+                null
         );
 
         assertNotNull(result);
@@ -115,6 +117,7 @@ class ThesisPresentationServiceTest {
                 any(Instant.class),
                 eq(Set.of(ThesisPresentationState.SCHEDULED, ThesisPresentationState.DRAFTED)),
                 eq(Set.of(ThesisPresentationVisibility.PUBLIC)),
+                isNull(),
                 any(PageRequest.class)
         );
     }
