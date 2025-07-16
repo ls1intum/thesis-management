@@ -37,4 +37,14 @@ public interface ThesisPresentationRepository extends JpaRepository<ThesisPresen
     List<ThesisPresentation> findAllPresentations(
             @Param("visibilities") Set<ThesisPresentationVisibility> visibilities
     );
+
+    @Query("""
+    SELECT p FROM ThesisPresentation p
+    WHERE (:visibilities IS NULL OR p.visibility IN :visibilities)
+    AND p.thesis.researchGroup.id = :researchGroupId
+""")
+    List<ThesisPresentation> findAllByResearchGroupAndVisibility(
+            @Param("researchGroupId") UUID researchGroupId,
+            @Param("visibilities") Set<ThesisPresentationVisibility> visibilities
+    );
 }

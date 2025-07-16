@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import de.tum.cit.aet.thesis.service.*;
 
+import java.util.UUID;
+
 @Slf4j
 @RestController
 @RequestMapping("/v2/calendar")
@@ -19,11 +21,12 @@ public class CalendarController {
         this.thesisPresentationService = thesisPresentationService;
     }
 
-    @GetMapping("/presentations")
-    public ResponseEntity<String> getCalendar() {
+    @GetMapping({"/presentations", "/presentations/{researchGroupId}"})
+    public ResponseEntity<String> getCalendar(@PathVariable(required = false) UUID researchGroupId) {
+
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType("text/calendar"))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=calendar.ics")
-                .body(thesisPresentationService.getPresentationCalendar().toString());
+                .body(thesisPresentationService.getPresentationCalendar(researchGroupId).toString());
     }
 }

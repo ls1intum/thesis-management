@@ -242,7 +242,7 @@ class ThesisPresentationServiceTest {
         when(calendarService.createVEvent(anyString(), any()))
                 .thenReturn(null);
 
-        Calendar result = presentationService.getPresentationCalendar();
+        Calendar result = presentationService.getPresentationCalendar(null);
 
         assertNotNull(result);
         verify(calendarService).createVEvent(anyString(), any());

@@ -94,14 +94,23 @@ public class ThesisPresentationService {
         return presentation;
     }
 
-    public Calendar getPresentationCalendar() {
+    public Calendar getPresentationCalendar(UUID researchGroupId) {
         Calendar calendar = createEmptyCalendar();
 
         calendar.add(ImmutableMethod.PUBLISH);
 
-        List<ThesisPresentation> presentations = thesisPresentationRepository.findAllPresentations(
-                Set.of(ThesisPresentationVisibility.PUBLIC)
-        );
+        List<ThesisPresentation> presentations;
+
+        if (researchGroupId != null) {
+            presentations = thesisPresentationRepository.findAllByResearchGroupAndVisibility(
+                    researchGroupId,
+                    Set.of(ThesisPresentationVisibility.PUBLIC)
+            );
+        } else {
+            presentations = thesisPresentationRepository.findAllPresentations(
+                    Set.of(ThesisPresentationVisibility.PUBLIC)
+            );
+        }
 
         for (ThesisPresentation presentation : presentations) {
             calendar.add(calendarService.createVEvent(presentation.getId().toString(), createPresentationCalendarEventWithoutAccessCheck(presentation)));
