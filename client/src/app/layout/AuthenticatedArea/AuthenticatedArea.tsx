@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, Suspense, useEffect } from 'react'
+import React, { PropsWithChildren, Suspense, useEffect, useState } from 'react'
 import {
   ActionIcon,
   AppShell,
@@ -42,6 +42,8 @@ import CustomAvatar from '../../../components/CustomAvatar/CustomAvatar'
 import { formatUser } from '../../../utils/format'
 import ContentContainer from '../ContentContainer/ContentContainer'
 import Footer from '../../../components/Footer/Footer'
+import { doRequest } from '../../../requests/request'
+import { ILightResearchGroup } from '../../../requests/responses/researchGroup'
 
 export interface IAuthenticatedAreaProps {
   size?: MantineSize
@@ -49,57 +51,6 @@ export interface IAuthenticatedAreaProps {
   collapseNavigation?: boolean
   requiredGroups?: string[]
 }
-
-const links: Array<{
-  link: string
-  label: string
-  icon: any
-  groups: string[] | undefined
-}> = [
-  { link: '/dashboard', label: 'Dashboard', icon: NewspaperClipping, groups: undefined },
-  {
-    link: '/presentations',
-    label: 'Presentations',
-    icon: Presentation,
-    groups: undefined,
-  },
-  {
-    link: '/submit-application',
-    label: 'Submit Application',
-    icon: PaperPlaneTilt,
-    groups: undefined,
-  },
-  {
-    link: '/applications',
-    label: 'Review Applications',
-    icon: Scroll,
-    groups: ['admin', 'advisor', 'supervisor'],
-  },
-  {
-    link: '/topics',
-    label: 'Manage Topics',
-    icon: FolderSimplePlus,
-    groups: ['admin', 'advisor', 'supervisor'],
-  },
-  {
-    link: '/theses',
-    label: 'Browse Theses',
-    icon: Table,
-    groups: undefined,
-  },
-  {
-    link: '/overview',
-    label: 'Theses Overview',
-    icon: Kanban,
-    groups: ['admin', 'advisor', 'supervisor'],
-  },
-  {
-    link: '/research-groups',
-    label: 'Research Groups',
-    icon: UsersThree,
-    groups: ['admin'],
-  },
-]
 
 const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) => {
   const {
@@ -110,6 +61,81 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
     requiredGroups,
   } = props
 
+  const auth = useAuthenticationContext()
+
+  const [hasActiveResearchGroups, setHasActiveResearchGroups] = useState(false)
+
+  useEffect(() => {
+    if (auth.user === undefined) return
+
+    return doRequest<ILightResearchGroup[]>(
+      `/v2/research-groups/light/active`,
+      {
+        method: 'GET',
+        requiresAuth: true,
+      },
+      (res) => {
+        if (res.ok) {
+          setHasActiveResearchGroups(res.data.length > 0)
+        } else {
+          console.error('Error fetching research groups:', res)
+        }
+      },
+    )
+  }, [auth])
+
+  const links: Array<{
+    link: string
+    label: string
+    icon: any
+    groups: string[] | undefined
+    showTab?: boolean
+  }> = [
+    { link: '/dashboard', label: 'Dashboard', icon: NewspaperClipping, groups: undefined },
+    {
+      link: '/presentations',
+      label: 'Presentations',
+      icon: Presentation,
+      groups: undefined,
+      showTab: hasActiveResearchGroups,
+    },
+    {
+      link: '/submit-application',
+      label: 'Submit Application',
+      icon: PaperPlaneTilt,
+      groups: undefined,
+    },
+    {
+      link: '/applications',
+      label: 'Review Applications',
+      icon: Scroll,
+      groups: ['admin', 'advisor', 'supervisor'],
+    },
+    {
+      link: '/topics',
+      label: 'Manage Topics',
+      icon: FolderSimplePlus,
+      groups: ['admin', 'advisor', 'supervisor'],
+    },
+    {
+      link: '/theses',
+      label: 'Browse Theses',
+      icon: Table,
+      groups: undefined,
+    },
+    {
+      link: '/overview',
+      label: 'Theses Overview',
+      icon: Kanban,
+      groups: ['admin', 'advisor', 'supervisor'],
+    },
+    {
+      link: '/research-groups',
+      label: 'Research Groups',
+      icon: UsersThree,
+      groups: ['admin'],
+    },
+  ]
   const navigate = useNavigate()
   const user = useUser()
   const [opened, { toggle, close }] = useDisclosure()
@@ -129,7 +155,6 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
   const navigationType = useNavigationType()
 
   const showHeader = useIsSmallerBreakpoint('md')
-  const auth = useAuthenticationContext()
 
   const FOOTER_HEIGHT = 50
 
@@ -231,6 +256,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
               (item) =>
                 !item.groups || item.groups.some((role) => auth.user?.groups.includes(role)),
             )
+            .filter((item) => item.showTab !== false)
             .map((item) => (
               <Link
                 className={minimized ? classes.minimizedLink : classes.fullLink}
