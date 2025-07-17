@@ -1,9 +1,21 @@
-import { Burger, Button, Flex, Group, Text } from '@mantine/core'
+import {
+  Burger,
+  Button,
+  Divider,
+  Flex,
+  Group,
+  Menu,
+  Stack,
+  Text,
+  UnstyledButton,
+} from '@mantine/core'
 import Logo from '../Logo/Logo'
 import { Link } from 'react-router'
 import ColorSchemeToggleButton from '../ColorSchemeToggleButton/ColorSchemeToggleButton'
 import { useUser } from '../../hooks/authentication'
 import CustomAvatar from '../CustomAvatar/CustomAvatar'
+import { formatUser } from '../../utils/format'
+import { CaretDown, Divide, GearSix, NewspaperClipping, SignOut } from 'phosphor-react'
 
 interface HeaderProps {
   authenticatedArea: boolean
@@ -35,14 +47,45 @@ const Header = ({ opened, toggle, authenticatedArea }: HeaderProps) => {
         justify='space-between'
         align='center'
         h='100%'
-        gap='sm'
+        gap='md'
         visibleFrom={authenticatedArea ? 'md' : undefined}
       >
-        <ColorSchemeToggleButton iconSize={'70%'} />
+        <ColorSchemeToggleButton iconSize={'70%'} size={'md'} />
         {user ? (
-          <Link to='/dashboard'>
-            <CustomAvatar user={user} size={30} />
-          </Link>
+          <Menu
+            shadow='md'
+            width={200}
+            position='bottom-end'
+            withArrow
+            transitionProps={{ transition: 'scale-y', duration: 200 }}
+          >
+            <Menu.Target>
+              <UnstyledButton>
+                <Group gap='xs' align='center'>
+                  <CustomAvatar user={user} size={30} />
+                </Group>
+              </UnstyledButton>
+            </Menu.Target>
+
+            <Menu.Dropdown>
+              {!authenticatedArea && (
+                <Menu.Item
+                  component={Link}
+                  to='/dashboard'
+                  leftSection={<NewspaperClipping size={16} />}
+                >
+                  Dashboard
+                </Menu.Item>
+              )}
+              <Menu.Item component={Link} to='/settings' leftSection={<GearSix size={16} />}>
+                Settings
+              </Menu.Item>
+              <Divider />
+              <Menu.Item component={Link} to='/logout' leftSection={<SignOut size={16} />}>
+                Logout
+              </Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
         ) : (
           <Button component={Link} to='/dashboard'>
             Login

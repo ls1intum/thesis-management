@@ -209,25 +209,35 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
               className={minimized ? classes.minimizedLink : classes.fullLink}
               data-active={location.pathname.startsWith('/settings') || undefined}
             >
-              <Tooltip label='Settings' disabled={!minimized} position='right' offset={15}>
-                <CustomAvatar
-                  user={user}
-                  size={minimized ? 18 : 32}
-                  className={classes.linkAvatar}
-                />
-              </Tooltip>
-              {!minimized && (
-                <Stack gap={2}>
-                  <Text size='sm'>{formatUser(user)}</Text>
-                  <Text size='xs'>Settings</Text>
-                </Stack>
-              )}
+              <Group hiddenFrom='md' gap={5} align='center'>
+                <Tooltip
+                  label='Settings'
+                  disabled={!minimized}
+                  position='right'
+                  offset={15}
+                  hiddenFrom='md'
+                >
+                  <CustomAvatar
+                    user={user}
+                    size={minimized ? 18 : 32}
+                    className={classes.linkAvatar}
+                  />
+                </Tooltip>
+                {!minimized && (
+                  <Stack gap={2}>
+                    <Text size='sm'>{formatUser(user)}</Text>
+                    <Text size='xs'>Settings</Text>
+                  </Stack>
+                )}
+              </Group>
             </Link>
             <Link to='/logout' className={minimized ? classes.minimizedLink : classes.fullLink}>
-              <Tooltip label='Logout' disabled={!minimized} position='right' offset={15}>
-                <SignOut className={classes.linkIcon} size={25} />
-              </Tooltip>
-              {!minimized && <span>Logout</span>}
+              <Group hiddenFrom='md' gap={5} align='center'>
+                <Tooltip label='Logout' disabled={!minimized} position='right' offset={15}>
+                  <SignOut className={classes.linkIcon} size={25} />
+                </Tooltip>
+                {!minimized && <span>Logout</span>}
+              </Group>
             </Link>
             {!collapseNavigation && (
               <Group>
