@@ -12,7 +12,6 @@ interface IDropDownMultiSelectProps {
   setSelectedItem: (item: string) => void
   showSelectedOnTop?: boolean
   withoutDropdown?: boolean
-  searchFunction?: (search: string) => string[]
 }
 
 const DropDownMultiSelect = ({
@@ -25,7 +24,6 @@ const DropDownMultiSelect = ({
   setSelectedItem,
   showSelectedOnTop = true,
   withoutDropdown = false,
-  searchFunction,
 }: IDropDownMultiSelectProps) => {
   const [search, setSearch] = useState('')
   const [displayData, setDisplayData] = useState<string[]>(data)
@@ -47,12 +45,7 @@ const DropDownMultiSelect = ({
   const computedColorScheme = useComputedColorScheme()
 
   useEffect(() => {
-    let filteredData = data
-    if (searchFunction) {
-      filteredData = searchFunction(search)
-    } else {
-      filteredData = data.filter((item) => item.toLowerCase().includes(search.toLowerCase()))
-    }
+    const filteredData = data.filter((item) => item.toLowerCase().includes(search.toLowerCase()))
 
     setDisplayData(
       showSelectedOnTop

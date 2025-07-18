@@ -84,7 +84,7 @@ public class ResearchGroupService {
       String searchQueryFilter =
               searchQuery == null || searchQuery.isEmpty() ? null : searchQuery.toLowerCase();
 
-      Sort.Order order = new Sort.Order(Sort.Direction.ASC, HibernateHelper.getColumnName(ResearchGroup.class, "name"));
+      Sort.Order order = new Sort.Order(Sort.Direction.DESC, HibernateHelper.getColumnName(ResearchGroup.class, "name"));
 
       return researchGroupRepository.searchResearchGroup(
               null,
