@@ -177,6 +177,11 @@ const LandingPage = () => {
             ) : null
           }}
           withoutDropdown={isMobile}
+          searchFunction={(search) =>
+            researchGroups
+              .filter((group) => group.name.toLowerCase().includes(search.toLowerCase()))
+              .map((group) => group.id)
+          }
         ></DropDownMultiSelect>
       )}
       <DropDownMultiSelect
