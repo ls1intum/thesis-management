@@ -42,6 +42,8 @@ import CustomAvatar from '../../../components/CustomAvatar/CustomAvatar'
 import { formatUser } from '../../../utils/format'
 import ContentContainer from '../ContentContainer/ContentContainer'
 import Footer from '../../../components/Footer/Footer'
+import PublicArea from '../PublicArea/PublicArea'
+import Header from '../../../components/Header/Header'
 
 export interface IAuthenticatedAreaProps {
   size?: MantineSize
@@ -131,6 +133,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
   const showHeader = useIsSmallerBreakpoint('md')
   const auth = useAuthenticationContext()
 
+  const HEADER_HEIGHT = 50
   const FOOTER_HEIGHT = 50
 
   useEffect(() => {
@@ -154,38 +157,12 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
   }, [location.pathname, navigationType])
 
   if (!requireAuthentication && !auth.isAuthenticated) {
-    return (
-      <Box h={`100vh`}>
-        <Flex direction='column' h='100%' w='100%'>
-          <Box flex={1}>
-            <Container
-              size={size}
-              fluid={!size}
-              px={{ base: 20, sm: 40 }}
-              py={{ base: 10, sm: 20 }}
-              h='100%'
-            >
-              {children}
-            </Container>
-            <ScrollToTop />
-          </Box>
-
-          <Box
-            h={`${FOOTER_HEIGHT}px`}
-            style={{ borderTop: '1px solid var(--mantine-color-gray-3)', flexShrink: 0 }}
-          >
-            <Container fluid={!size} size={size} h='100%'>
-              <Footer size={size} />
-            </Container>
-          </Box>
-        </Flex>
-      </Box>
-    )
+    return <PublicArea size={size}>{children}</PublicArea>
   }
 
   return (
     <AppShell
-      header={{ collapsed: !showHeader, height: 60 }}
+      header={{ height: HEADER_HEIGHT }}
       navbar={{
         width: collapseNavigation || minimizedState ? 70 : 300,
         breakpoint: 'md',
@@ -199,33 +176,13 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
       padding={0}
     >
       <AppShell.Header>
-        <Group h='100%' px='md'>
-          <Burger opened={opened} onClick={toggle} hiddenFrom='md' size='md' />
-        </Group>
+        <Container size={size} fluid={!size} h='100%'>
+          <Header opened={opened} toggle={toggle} authenticatedArea={true} />
+        </Container>
       </AppShell.Header>
 
       <AppShell.Navbar p='md'>
         <AppShell.Section grow mb='md'>
-          {!minimized && (
-            <Group preventGrowOverflow={false}>
-              <Logo />
-              <Text
-                className={classes.siteName}
-                fw='bold'
-                style={{ cursor: 'pointer' }}
-                onClick={() => navigate('/')}
-              >
-                Thesis Management
-              </Text>
-              <ColorSchemeToggleButton ml='auto' />
-            </Group>
-          )}
-          {!minimized && <Divider my='sm' />}
-          {minimized && (
-            <Center mb='md'>
-              <ColorSchemeToggleButton />
-            </Center>
-          )}
           {links
             .filter(
               (item) =>
@@ -252,25 +209,35 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
               className={minimized ? classes.minimizedLink : classes.fullLink}
               data-active={location.pathname.startsWith('/settings') || undefined}
             >
-              <Tooltip label='Settings' disabled={!minimized} position='right' offset={15}>
-                <CustomAvatar
-                  user={user}
-                  size={minimized ? 18 : 32}
-                  className={classes.linkAvatar}
-                />
-              </Tooltip>
-              {!minimized && (
-                <Stack gap={2}>
-                  <Text size='sm'>{formatUser(user)}</Text>
-                  <Text size='xs'>Settings</Text>
-                </Stack>
-              )}
+              <Group hiddenFrom='md' gap={5} align='center'>
+                <Tooltip
+                  label='Settings'
+                  disabled={!minimized}
+                  position='right'
+                  offset={15}
+                  hiddenFrom='md'
+                >
+                  <CustomAvatar
+                    user={user}
+                    size={minimized ? 18 : 32}
+                    className={classes.linkAvatar}
+                  />
+                </Tooltip>
+                {!minimized && (
+                  <Stack gap={2}>
+                    <Text size='sm'>{formatUser(user)}</Text>
+                    <Text size='xs'>Settings</Text>
+                  </Stack>
+                )}
+              </Group>
             </Link>
             <Link to='/logout' className={minimized ? classes.minimizedLink : classes.fullLink}>
-              <Tooltip label='Logout' disabled={!minimized} position='right' offset={15}>
-                <SignOut className={classes.linkIcon} size={25} />
-              </Tooltip>
-              {!minimized && <span>Logout</span>}
+              <Group hiddenFrom='md' gap={5} align='center'>
+                <Tooltip label='Logout' disabled={!minimized} position='right' offset={15}>
+                  <SignOut className={classes.linkIcon} size={25} />
+                </Tooltip>
+                {!minimized && <span>Logout</span>}
+              </Group>
             </Link>
             {!collapseNavigation && (
               <Group>
@@ -290,7 +257,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
       </AppShell.Navbar>
 
       <AppShell.Main>
-        <Box h={`100vh`}>
+        <Box h={`calc(100vh - ${HEADER_HEIGHT}px)`}>
           <Flex direction='column' h='100%' w='100%'>
             <Box flex={1}>
               <Container
@@ -317,14 +284,19 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
               </Container>
               <ScrollToTop />
             </Box>
-            <Box
-              h={`${FOOTER_HEIGHT}px`}
-              style={{ borderTop: '1px solid var(--mantine-color-gray-3)', flexShrink: 0 }}
-            >
-              <Container fluid={!size} size={size} h='100%'>
+
+            <Stack style={{ flexShrink: 0 }} gap={0} w='100%'>
+              <Divider />
+              <Box
+                h={`${FOOTER_HEIGHT}px`}
+                mih={'fit-content'}
+                style={{
+                  flexShrink: 0,
+                }}
+              >
                 <Footer size={size} />
-              </Container>
-            </Box>
+              </Box>
+            </Stack>
           </Flex>
         </Box>
       </AppShell.Main>
