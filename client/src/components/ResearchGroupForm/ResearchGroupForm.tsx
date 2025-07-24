@@ -41,7 +41,10 @@ const ResearchGroupForm = ({
       description: (value) =>
         value.length > 300 ? 'Description must be 300 characters or less' : null,
       abbreviation: (value) => {
-        if (value && value.length > 10) {
+        if (!value) {
+          return 'Abbreviation is required'
+        }
+        if (value.length > 10) {
           return 'Abbreviation must be 10 characters or less'
         }
         return null
@@ -86,6 +89,7 @@ const ResearchGroupForm = ({
             label='Abbreviation'
             placeholder='e.g., IS'
             {...form.getInputProps('abbreviation')}
+            withAsterisk
           />
         </Grid.Col>
 
