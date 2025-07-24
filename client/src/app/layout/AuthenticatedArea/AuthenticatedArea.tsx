@@ -1,9 +1,8 @@
-import React, { PropsWithChildren, Suspense, useEffect } from 'react'
+import { PropsWithChildren, Suspense, useEffect } from 'react'
 import {
   ActionIcon,
   AppShell,
   Box,
-  Burger,
   Center,
   Container,
   Divider,
@@ -15,7 +14,7 @@ import {
   Tooltip,
 } from '@mantine/core'
 import * as classes from './AuthenticatedArea.module.css'
-import { Link, useLocation, useNavigate } from 'react-router'
+import { Link, useLocation } from 'react-router'
 import { useDebouncedValue, useDisclosure } from '@mantine/hooks'
 import {
   CaretDoubleLeft,
@@ -30,20 +29,18 @@ import {
   Presentation,
   UsersThree,
 } from 'phosphor-react'
-import { useIsSmallerBreakpoint } from '../../../hooks/theme'
 import { useAuthenticationContext, useUser } from '../../../hooks/authentication'
 import { useNavigationType } from 'react-router'
 import ScrollToTop from '../ScrollToTop/ScrollToTop'
 import PageLoader from '../../../components/PageLoader/PageLoader'
 import { useLocalStorage } from '../../../hooks/local-storage'
-import Logo from '../../../components/Logo/Logo'
-import ColorSchemeToggleButton from '../../../components/ColorSchemeToggleButton/ColorSchemeToggleButton'
 import CustomAvatar from '../../../components/CustomAvatar/CustomAvatar'
 import { formatUser } from '../../../utils/format'
 import ContentContainer from '../ContentContainer/ContentContainer'
 import Footer from '../../../components/Footer/Footer'
 import PublicArea from '../PublicArea/PublicArea'
 import Header from '../../../components/Header/Header'
+import { useIsSmallerBreakpoint } from '../../../hooks/theme'
 
 export interface IAuthenticatedAreaProps {
   size?: MantineSize
@@ -112,7 +109,6 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
     requiredGroups,
   } = props
 
-  const navigate = useNavigate()
   const user = useUser()
   const [opened, { toggle, close }] = useDisclosure()
 
@@ -130,11 +126,12 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
   const location = useLocation()
   const navigationType = useNavigationType()
 
-  const showHeader = useIsSmallerBreakpoint('md')
   const auth = useAuthenticationContext()
 
   const HEADER_HEIGHT = 50
   const FOOTER_HEIGHT = 50
+
+  const isSmallerBreakpoint = useIsSmallerBreakpoint('md')
 
   useEffect(() => {
     if (requireAuthentication && !auth.isAuthenticated) {
@@ -204,41 +201,37 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
         </AppShell.Section>
         {user && (
           <AppShell.Section>
-            <Link
-              to='/settings'
-              className={minimized ? classes.minimizedLink : classes.fullLink}
-              data-active={location.pathname.startsWith('/settings') || undefined}
-            >
-              <Group hiddenFrom='md' gap={5} align='center'>
-                <Tooltip
-                  label='Settings'
-                  disabled={!minimized}
-                  position='right'
-                  offset={15}
-                  hiddenFrom='md'
-                >
+            {isSmallerBreakpoint && (
+              <Link
+                to='/settings'
+                className={minimized ? classes.minimizedLink : classes.fullLink}
+                data-active={location.pathname.startsWith('/settings') || undefined}
+              >
+                <Group gap={5} align='center'>
                   <CustomAvatar
                     user={user}
                     size={minimized ? 18 : 32}
                     className={classes.linkAvatar}
                   />
-                </Tooltip>
-                {!minimized && (
-                  <Stack gap={2}>
-                    <Text size='sm'>{formatUser(user)}</Text>
-                    <Text size='xs'>Settings</Text>
-                  </Stack>
-                )}
-              </Group>
-            </Link>
-            <Link to='/logout' className={minimized ? classes.minimizedLink : classes.fullLink}>
-              <Group hiddenFrom='md' gap={5} align='center'>
-                <Tooltip label='Logout' disabled={!minimized} position='right' offset={15}>
-                  <SignOut className={classes.linkIcon} size={25} />
-                </Tooltip>
-                {!minimized && <span>Logout</span>}
-              </Group>
-            </Link>
+                  {!minimized && (
+                    <Stack gap={2}>
+                      <Text size='sm'>{formatUser(user)}</Text>
+                      <Text size='xs'>Settings</Text>
+                    </Stack>
+                  )}
+                </Group>
+              </Link>
+            )}
+            {isSmallerBreakpoint && (
+              <Link to='/logout' className={minimized ? classes.minimizedLink : classes.fullLink}>
+                <Group gap={5} align='center'>
+                  <Tooltip label='Logout' disabled={!minimized} position='right' offset={15}>
+                    <SignOut className={classes.linkIcon} size={25} />
+                  </Tooltip>
+                  {!minimized && <span>Logout</span>}
+                </Group>
+              </Link>
+            )}
             {!collapseNavigation && (
               <Group>
                 <ActionIcon

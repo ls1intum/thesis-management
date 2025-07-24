@@ -1,17 +1,10 @@
-import { PropsWithChildren } from 'react'
+import { PropsWithChildren, useEffect } from 'react'
 import Footer from '../../../components/Footer/Footer'
-import {
-  AppShell,
-  Box,
-  Container,
-  Divider,
-  Flex,
-  MantineSize,
-  Stack,
-  useComputedColorScheme,
-} from '@mantine/core'
+import { AppShell, Box, Container, Divider, Flex, MantineSize, Stack } from '@mantine/core'
 import ScrollToTop from '../ScrollToTop/ScrollToTop'
 import Header from '../../../components/Header/Header'
+import { useAuthenticationContext } from '../../../hooks/authentication'
+import { useNavigate } from 'react-router'
 
 interface IPublicAreaProps {
   size?: MantineSize
@@ -22,6 +15,15 @@ const PublicArea = (props: PropsWithChildren<IPublicAreaProps>) => {
 
   const HEADER_HEIGHT = 50
   const FOOTER_HEIGHT = 50
+
+  const authContext = useAuthenticationContext()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (authContext.isAuthenticated) {
+      navigate('/submit-application')
+    }
+  }, [authContext.isAuthenticated])
 
   return (
     <AppShell header={{ height: HEADER_HEIGHT }}>

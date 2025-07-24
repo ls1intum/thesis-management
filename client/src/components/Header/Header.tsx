@@ -5,17 +5,16 @@ import {
   Flex,
   Group,
   Menu,
-  Stack,
+  Skeleton,
   Text,
   UnstyledButton,
 } from '@mantine/core'
 import Logo from '../Logo/Logo'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import ColorSchemeToggleButton from '../ColorSchemeToggleButton/ColorSchemeToggleButton'
-import { useUser } from '../../hooks/authentication'
+import { useAuthenticationContext, useUser } from '../../hooks/authentication'
 import CustomAvatar from '../CustomAvatar/CustomAvatar'
-import { formatUser } from '../../utils/format'
-import { CaretDown, Divide, GearSix, NewspaperClipping, SignOut } from 'phosphor-react'
+import { GearSix, NewspaperClipping, SignOut } from 'phosphor-react'
 
 interface HeaderProps {
   authenticatedArea: boolean
@@ -24,8 +23,10 @@ interface HeaderProps {
 }
 
 const Header = ({ opened, toggle, authenticatedArea }: HeaderProps) => {
-  //TODO: THIS ALLWAYS THROWS AND ERROR WHEN USER IS NOT LOGGED IN I DONT WANT THAT HERE
   const user = useUser()
+  const context = useAuthenticationContext()
+
+  const navigate = useNavigate()
 
   return (
     <Flex justify='space-between' align='center' h='100%' w='100%'>
@@ -35,7 +36,7 @@ const Header = ({ opened, toggle, authenticatedArea }: HeaderProps) => {
         align='center'
         h='100%'
         style={{ cursor: 'pointer' }}
-        onClick={() => (window.location.href = '/')}
+        onClick={() => (authenticatedArea ? navigate('/dashboard') : navigate('/'))}
       >
         <Logo size={40} />
         <Text fw='bold' visibleFrom='sm' pt='2px'>
@@ -50,8 +51,8 @@ const Header = ({ opened, toggle, authenticatedArea }: HeaderProps) => {
         gap='md'
         visibleFrom={authenticatedArea ? 'md' : undefined}
       >
-        <ColorSchemeToggleButton iconSize={'70%'} size={'md'} />
-        {user ? (
+        <ColorSchemeToggleButton iconSize={'70%'} size={'lg'} />
+        {context.isAuthenticated ? (
           <Menu
             shadow='md'
             width={200}
@@ -62,7 +63,7 @@ const Header = ({ opened, toggle, authenticatedArea }: HeaderProps) => {
             <Menu.Target>
               <UnstyledButton>
                 <Group gap='xs' align='center'>
-                  <CustomAvatar user={user} size={30} />
+                  {user ? <CustomAvatar user={user} size={35} /> : <Skeleton height={35} circle />}
                 </Group>
               </UnstyledButton>
             </Menu.Target>
