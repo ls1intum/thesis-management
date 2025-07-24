@@ -188,7 +188,7 @@ const AppRoutes = () => {
           <Route
             path='/'
             element={
-              <PublicArea size='xl' redirectAuthenticated={true}>
+              <PublicArea size='xl'>
                 <LandingPage />
               </PublicArea>
             }
