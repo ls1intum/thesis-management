@@ -188,6 +188,7 @@ public abstract class BaseIntegrationTest {
         Map<String, Object> payload = new HashMap<>();
         payload.put("name", name + " " + UUID.randomUUID());
         payload.put("headUsername", headUniversityId);
+        payload.put("abbreviation", UUID.randomUUID().toString());
 
         String response = mockMvc.perform(MockMvcRequestBuilders.post("/v2/research-groups")
                         .header("Authorization", createRandomAdminAuthentication())
