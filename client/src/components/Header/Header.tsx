@@ -14,7 +14,7 @@ import { Link, useNavigate } from 'react-router'
 import ColorSchemeToggleButton from '../ColorSchemeToggleButton/ColorSchemeToggleButton'
 import { useAuthenticationContext, useUser } from '../../hooks/authentication'
 import CustomAvatar from '../CustomAvatar/CustomAvatar'
-import { GearSix, NewspaperClipping, SignOut } from 'phosphor-react'
+import { GearSix, SignOut } from 'phosphor-react'
 
 interface HeaderProps {
   authenticatedArea: boolean
@@ -69,15 +69,6 @@ const Header = ({ opened, toggle, authenticatedArea }: HeaderProps) => {
             </Menu.Target>
 
             <Menu.Dropdown>
-              {!authenticatedArea && (
-                <Menu.Item
-                  component={Link}
-                  to='/dashboard'
-                  leftSection={<NewspaperClipping size={16} />}
-                >
-                  Dashboard
-                </Menu.Item>
-              )}
               <Menu.Item component={Link} to='/settings' leftSection={<GearSix size={16} />}>
                 Settings
               </Menu.Item>
