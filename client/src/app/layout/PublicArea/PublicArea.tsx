@@ -8,10 +8,11 @@ import { useNavigate } from 'react-router'
 
 interface IPublicAreaProps {
   size?: MantineSize
+  redirectAuthenticated?: boolean
 }
 
 const PublicArea = (props: PropsWithChildren<IPublicAreaProps>) => {
-  const { size = 'md', children } = props
+  const { size = 'md', children, redirectAuthenticated = false } = props
 
   const HEADER_HEIGHT = 50
   const FOOTER_HEIGHT = 50
@@ -20,10 +21,10 @@ const PublicArea = (props: PropsWithChildren<IPublicAreaProps>) => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (authContext.isAuthenticated) {
+    if (authContext.isAuthenticated && redirectAuthenticated) {
       navigate('/submit-application')
     }
-  }, [authContext.isAuthenticated])
+  }, [authContext])
 
   return (
     <AppShell header={{ height: HEADER_HEIGHT }}>
