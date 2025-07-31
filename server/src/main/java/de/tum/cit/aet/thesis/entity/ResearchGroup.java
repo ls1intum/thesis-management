@@ -38,7 +38,8 @@ public class ResearchGroup {
   @Column(name = "name", nullable = false, unique = true)
   private String name;
 
-  @Column(name = "abbreviation")
+  @NotBlank
+  @Column(name = "abbreviation", nullable = false, unique = true)
   private String abbreviation;
 
   @Column(name = "description")
