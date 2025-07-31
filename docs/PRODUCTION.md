@@ -103,7 +103,7 @@ There are 2 places that require backups:
   - Example import command: `psql -U thesismanagement -d thesismanagement -f backup_thesismanagement.sql`
 - The files stored at `/uploads`. In the docker example, these files are mounted to `./thesis_uploads` and backup system should collect the files from the mounted folder
 
-There is an example script [thesis-management-backup.sh](../thesis-management-backup.sh) that you can call in a cronjob to create regular backups.
+There is an example script [thesis-management-backup.sh](../supporting_scripts/thesis-management-backup.sh) that you can call in a cronjob to create regular backups.
 
 ## Further Configuration
 

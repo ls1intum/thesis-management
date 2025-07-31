@@ -20,9 +20,10 @@ const TopicsFilters = (props: ITopicsFiltersProps) => {
           label='Show Closed Topics'
           checked={!!filters.includeClosed}
           onChange={(e) => {
-            setFilters({
+            setFilters((prev) => ({
+              ...prev,
               includeClosed: e.target.checked,
-            })
+            }))
           }}
         />
       )}
