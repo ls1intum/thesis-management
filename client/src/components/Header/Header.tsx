@@ -1,12 +1,32 @@
-import { Button, Flex, Text } from '@mantine/core'
+import {
+  Burger,
+  Button,
+  Divider,
+  Flex,
+  Group,
+  Menu,
+  Skeleton,
+  Text,
+  UnstyledButton,
+} from '@mantine/core'
 import Logo from '../Logo/Logo'
 import { Link, useNavigate } from 'react-router'
 import ColorSchemeToggleButton from '../ColorSchemeToggleButton/ColorSchemeToggleButton'
-import { useUser } from '../../hooks/authentication'
+import { useAuthenticationContext, useUser } from '../../hooks/authentication'
+import CustomAvatar from '../CustomAvatar/CustomAvatar'
+import { GearSix, NewspaperClipping, SignOut } from 'phosphor-react'
 
-const Header = () => {
-  //TODO: THIS ALLWAYS THROWS AND ERROR WHEN USER IS NOT LOGGED IN I DONT WANT THAT HERE
+interface HeaderProps {
+  authenticatedArea: boolean
+  opened?: boolean | undefined
+  toggle?: () => void
+}
+
+const Header = ({ opened, toggle, authenticatedArea }: HeaderProps) => {
   const user = useUser()
+  const context = useAuthenticationContext()
+
+  const navigate = useNavigate()
 
   return (
     <Flex justify='space-between' align='center' h='100%' w='100%'>
@@ -16,7 +36,7 @@ const Header = () => {
         align='center'
         h='100%'
         style={{ cursor: 'pointer' }}
-        onClick={() => (window.location.href = '/')}
+        onClick={() => (authenticatedArea ? navigate('/dashboard') : navigate('/'))}
       >
         <Logo size={40} />
         <Text fw='bold' visibleFrom='sm' pt='2px'>
@@ -24,13 +44,60 @@ const Header = () => {
         </Text>
       </Flex>
 
-      <Flex justify='space-between' align='center' h='100%' gap='sm'>
-        <ColorSchemeToggleButton iconSize={25} />
+      <Flex
+        justify='space-between'
+        align='center'
+        h='100%'
+        gap='md'
+        visibleFrom={authenticatedArea ? 'md' : undefined}
+      >
+        <ColorSchemeToggleButton iconSize={'70%'} size={'lg'} />
+        {context.isAuthenticated ? (
+          <Menu
+            shadow='md'
+            width={200}
+            position='bottom-end'
+            withArrow
+            transitionProps={{ transition: 'scale-y', duration: 200 }}
+          >
+            <Menu.Target>
+              <UnstyledButton>
+                <Group gap='xs' align='center'>
+                  {user ? <CustomAvatar user={user} size={35} /> : <Skeleton height={35} circle />}
+                </Group>
+              </UnstyledButton>
+            </Menu.Target>
 
-        <Button component={Link} to='/dashboard'>
-          Login
-        </Button>
+            <Menu.Dropdown>
+              {!authenticatedArea && (
+                <Menu.Item
+                  component={Link}
+                  to='/dashboard'
+                  leftSection={<NewspaperClipping size={16} />}
+                >
+                  Go to Dashboard
+                </Menu.Item>
+              )}
+              <Menu.Item component={Link} to='/settings' leftSection={<GearSix size={16} />}>
+                Settings
+              </Menu.Item>
+              <Divider />
+              <Menu.Item component={Link} to='/logout' leftSection={<SignOut size={16} />}>
+                Logout
+              </Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
+        ) : (
+          <Button component={Link} to='/dashboard'>
+            Login
+          </Button>
+        )}
       </Flex>
+      {authenticatedArea && opened !== undefined && (
+        <Group h='100%' hiddenFrom='md'>
+          <Burger opened={opened} onClick={toggle} size='md' />
+        </Group>
+      )}
     </Flex>
   )
 }
