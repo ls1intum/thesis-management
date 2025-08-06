@@ -118,6 +118,10 @@ public class ResearchGroupService {
       return findById(researchGroupId, false);
   }
 
+  public ResearchGroup findByAbbreviation(String abbreviation) {
+    return researchGroupRepository.findByAbbreviation(abbreviation);
+  }
+
   public ResearchGroup findById(UUID researchGroupId, boolean noAuthentication) {
     ResearchGroup researchGroup = researchGroupRepository.findById(researchGroupId)
         .orElseThrow(() -> new ResourceNotFoundException(

@@ -23,7 +23,7 @@ const PresentationOverviewPage = () => {
   usePageTitle('Presentations')
 
   const [researchGroups, setResearchGroups] = useState<ILightResearchGroup[]>([])
-  const [selectedGroup, setSelectedGroup] = useState<string | null>(null)
+  const [selectedGroup, setSelectedGroup] = useState<ILightResearchGroup | undefined>(undefined)
 
   useEffect(() => {
     return doRequest<ILightResearchGroup[]>(
@@ -34,8 +34,10 @@ const PresentationOverviewPage = () => {
       },
       (res) => {
         if (res.ok) {
-          setResearchGroups(res.data)
-          setSelectedGroup(res.data[0].id || null)
+          const sortedGroups = res.data.sort((a, b) => a.name.localeCompare(b.name))
+
+          setResearchGroups(sortedGroups)
+          setSelectedGroup(sortedGroups[0] || undefined)
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
         }
@@ -45,16 +47,22 @@ const PresentationOverviewPage = () => {
 
   const calendarUrl =
     GLOBAL_CONFIG.calendar_url ||
-    `${GLOBAL_CONFIG.server_host}/api/v2/calendar/presentations${selectedGroup ? `/${selectedGroup}` : ''}`
+    `${GLOBAL_CONFIG.server_host}/api/v2/calendar/presentations${selectedGroup ? `/${selectedGroup.abbreviation}` : ''}`
 
   return (
     <Stack>
       <Title>Presentations</Title>
       {researchGroups.length > 1 && (
-        <Tabs value={selectedGroup} onChange={setSelectedGroup}>
+        <Tabs
+          value={selectedGroup?.abbreviation}
+          onChange={(value) => {
+            const group = researchGroups.find((g) => g.abbreviation === value)
+            setSelectedGroup(group)
+          }}
+        >
           <Tabs.List>
             {researchGroups.map((group) => (
-              <Tabs.Tab key={group.id} value={group.id}>
+              <Tabs.Tab key={group.id} value={group.abbreviation}>
                 {group.name}
               </Tabs.Tab>
             ))}
@@ -82,7 +90,7 @@ const PresentationOverviewPage = () => {
           </CopyButton>
         </div>
       </Group>
-      <PublicPresentationsTable includeDrafts={true} researchGroupId={selectedGroup} />
+      <PublicPresentationsTable includeDrafts={true} researchGroupId={selectedGroup?.id} />
     </Stack>
   )
 }
