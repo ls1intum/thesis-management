@@ -77,6 +77,19 @@ public class ResearchGroupController {
     return ResponseEntity.ok(dtos);
   }
 
+  @GetMapping("/light/active")
+  public ResponseEntity<List<LightResearchGroupDto>> getActiveLightResearchGroups(
+  ) {
+    List<ResearchGroup> activeGroups = researchGroupService.getActiveResearchGroupsForUser();
+
+    return ResponseEntity.ok(
+            activeGroups.stream()
+                    .map(LightResearchGroupDto::fromResearchGroupEntity)
+                    .distinct()
+                    .toList()
+    );
+  }
+
   @GetMapping("/{researchGroupId}")
   public ResponseEntity<ResearchGroupDto> getResearchGroup(
       @PathVariable("researchGroupId") UUID researchGroupId

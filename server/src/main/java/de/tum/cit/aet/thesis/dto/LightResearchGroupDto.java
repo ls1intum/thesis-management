@@ -6,7 +6,8 @@ import java.util.UUID;
 public record LightResearchGroupDto(
     UUID id,
     LightUserDto head,
-    String name
+    String name,
+    String abbreviation
 ) {
 
   public static LightResearchGroupDto fromResearchGroupEntity(ResearchGroup group) {
@@ -17,7 +18,8 @@ public record LightResearchGroupDto(
     return new LightResearchGroupDto(
         group.getId(),
         LightUserDto.fromUserEntity(group.getHead()),
-        group.getName()
+        group.getName(),
+            group.getAbbreviation()
     );
   }
 }

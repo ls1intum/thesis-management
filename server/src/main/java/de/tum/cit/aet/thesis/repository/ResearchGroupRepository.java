@@ -29,4 +29,7 @@ public interface ResearchGroupRepository extends JpaRepository<ResearchGroup, UU
       @Param("searchQuery") String searchQuery,
       Pageable page
   );
+
+    @Query("SELECT r FROM ResearchGroup r WHERE r.abbreviation = :abbreviation")
+  ResearchGroup findByAbbreviation(String abbreviation);
 }
