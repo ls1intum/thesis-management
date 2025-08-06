@@ -163,7 +163,7 @@ const AppRoutes = () => {
           <Route
             path='/about'
             element={
-              <PublicArea>
+              <PublicArea size='xl'>
                 <AboutPage />
               </PublicArea>
             }
@@ -171,7 +171,7 @@ const AppRoutes = () => {
           <Route
             path='/imprint'
             element={
-              <PublicArea>
+              <PublicArea size='xl'>
                 <ImprintPage />
               </PublicArea>
             }
@@ -179,7 +179,7 @@ const AppRoutes = () => {
           <Route
             path='/privacy'
             element={
-              <PublicArea>
+              <PublicArea size='xl'>
                 <PrivacyPage />
               </PublicArea>
             }
