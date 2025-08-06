@@ -1,5 +1,6 @@
 package de.tum.cit.aet.thesis.controller;
 
+import de.tum.cit.aet.thesis.entity.ResearchGroup;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -25,15 +26,15 @@ public class CalendarController {
 
     @GetMapping({"/presentations", "/presentations/{researchGroupAbbreviation}"})
     public ResponseEntity<String> getCalendar(@PathVariable(required = false) String researchGroupAbbreviation) {
-        UUID researchGroupId = researchGroupService.findByAbbreviation(researchGroupAbbreviation).getId();
-        if (researchGroupId == null) {
+        ResearchGroup researchGroup = researchGroupService.findByAbbreviation(researchGroupAbbreviation);
+        if (researchGroup == null) {
             log.error("Research group with abbreviation '{}' not found", researchGroupAbbreviation);
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(404).body("Research group with abbreviation '" + researchGroupAbbreviation + " not found");
         }
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType("text/calendar"))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=calendar.ics")
-                .body(thesisPresentationService.getPresentationCalendar(researchGroupId).toString());
+                .body(thesisPresentationService.getPresentationCalendar(researchGroup.getId()).toString());
     }
 }
