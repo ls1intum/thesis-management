@@ -29,7 +29,7 @@ public class CalendarController {
         ResearchGroup researchGroup = researchGroupService.findByAbbreviation(researchGroupAbbreviation);
         if (researchGroup == null) {
             log.error("Research group with abbreviation '{}' not found", researchGroupAbbreviation);
-            return ResponseEntity.status(404).body("Research group with abbreviation '" + researchGroupAbbreviation + " not found");
+            return ResponseEntity.status(404).body("Research group with abbreviation '" + researchGroupAbbreviation + "' not found");
         }
 
         return ResponseEntity.ok()
