@@ -32,7 +32,7 @@
   "dependencies": {
     "@mantine/core": "7.17.7",
     "@mantine/dates": "7.17.7",
-    "@mantine/dropzone": "7.17.7",
+    "@mantine/dropzone": "8.2.5",
     "@mantine/form": "7.17.7",
     "@mantine/hooks": "7.17.7",
     "@mantine/notifications": "7.17.7",
