@@ -103,6 +103,25 @@ public class ResearchGroupService {
 
       User currentUser = currentUserProviderProvider.getObject().getUser();
 
+      if (currentUser == null) {
+          throw new AccessDeniedException("User is not authenticated.");
+      }
+
+      // Return all groups if the person is admin
+      if (currentUser.hasAnyGroup("admin")) {
+          Sort.Order order = new Sort.Order(Sort.Direction.ASC, HibernateHelper.getColumnName(ResearchGroup.class, "name"));
+
+          Page<ResearchGroup> allResearchGroups = researchGroupRepository.searchResearchGroup(
+                  null,
+                  null,
+                  false,
+                  "",
+                  PageRequest.of(0, Integer.MAX_VALUE, Sort.by(order))
+          );
+
+          return allResearchGroups.stream().toList();
+      }
+
       Set<ResearchGroup> result = new HashSet<>();
       if (currentUser.getResearchGroup() != null) {
           result.add(currentUser.getResearchGroup());

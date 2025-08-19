@@ -8,6 +8,7 @@ import {
   Tooltip,
   Text,
   Tabs,
+  Select,
 } from '@mantine/core'
 import { usePageTitle } from '../../hooks/theme'
 import { GLOBAL_CONFIG } from '../../config/global'
@@ -18,6 +19,7 @@ import { doRequest } from '../../requests/request'
 import { ILightResearchGroup } from '../../requests/responses/researchGroup'
 import { showSimpleError } from '../../utils/notification'
 import { getApiResponseErrorMessage } from '../../requests/handler'
+import { useAuthenticationContext } from '../../hooks/authentication'
 
 const PresentationOverviewPage = () => {
   usePageTitle('Presentations')
@@ -25,25 +27,14 @@ const PresentationOverviewPage = () => {
   const [researchGroups, setResearchGroups] = useState<ILightResearchGroup[]>([])
   const [selectedGroup, setSelectedGroup] = useState<ILightResearchGroup | undefined>(undefined)
 
-  useEffect(() => {
-    return doRequest<ILightResearchGroup[]>(
-      `/v2/research-groups/light/active`,
-      {
-        method: 'GET',
-        requiresAuth: true,
-      },
-      (res) => {
-        if (res.ok) {
-          const sortedGroups = res.data.sort((a, b) => a.name.localeCompare(b.name))
+  const context = useAuthenticationContext()
 
-          setResearchGroups(sortedGroups)
-          setSelectedGroup(sortedGroups[0] || undefined)
-        } else {
-          showSimpleError(getApiResponseErrorMessage(res))
-        }
-      },
-    )
-  }, [])
+  useEffect(() => {
+    if (context.researchGroups.length > 0) {
+      setResearchGroups(context.researchGroups)
+      setSelectedGroup(context.researchGroups[0])
+    }
+  }, [context.researchGroups])
 
   const calendarUrl =
     GLOBAL_CONFIG.calendar_url ||

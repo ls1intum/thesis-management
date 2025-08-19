@@ -3,6 +3,7 @@ import { JwtPayload } from 'jwt-decode'
 import { IUser } from '../../requests/responses/user'
 import { IUpdateUserInformationPayload } from '../../requests/payloads/user'
 import { PartialNull } from '../../utils/validation'
+import { ILightResearchGroup } from '../../requests/responses/researchGroup'
 
 export interface IAuthenticationContext {
   isAuthenticated: boolean
@@ -17,6 +18,7 @@ export interface IAuthenticationContext {
   ) => Promise<unknown>
   login: () => unknown
   logout: (redirectUrl: string) => unknown
+  researchGroups: ILightResearchGroup[]
 }
 
 export const AuthenticationContext = createContext<IAuthenticationContext | undefined>(undefined)

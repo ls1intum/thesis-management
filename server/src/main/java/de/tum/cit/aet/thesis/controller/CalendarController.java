@@ -24,7 +24,7 @@ public class CalendarController {
         this.researchGroupService = researchGroupService;
     }
 
-    @GetMapping({"/presentations", "/presentations/{researchGroupAbbreviation}"})
+    @GetMapping( "/presentations/{researchGroupAbbreviation}")
     public ResponseEntity<String> getCalendar(@PathVariable(required = false) String researchGroupAbbreviation) {
         ResearchGroup researchGroup = researchGroupService.findByAbbreviation(researchGroupAbbreviation);
         if (researchGroup == null) {

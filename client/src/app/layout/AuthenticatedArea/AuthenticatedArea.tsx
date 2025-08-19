@@ -49,57 +49,6 @@ export interface IAuthenticatedAreaProps {
   requiredGroups?: string[]
 }
 
-const links: Array<{
-  link: string
-  label: string
-  icon: any
-  groups: string[] | undefined
-}> = [
-  { link: '/dashboard', label: 'Dashboard', icon: NewspaperClipping, groups: undefined },
-  {
-    link: '/presentations',
-    label: 'Presentations',
-    icon: Presentation,
-    groups: undefined,
-  },
-  {
-    link: '/submit-application',
-    label: 'Submit Application',
-    icon: PaperPlaneTilt,
-    groups: undefined,
-  },
-  {
-    link: '/applications',
-    label: 'Review Applications',
-    icon: Scroll,
-    groups: ['admin', 'advisor', 'supervisor'],
-  },
-  {
-    link: '/topics',
-    label: 'Manage Topics',
-    icon: FolderSimplePlus,
-    groups: ['admin', 'advisor', 'supervisor'],
-  },
-  {
-    link: '/theses',
-    label: 'Browse Theses',
-    icon: Table,
-    groups: undefined,
-  },
-  {
-    link: '/overview',
-    label: 'Theses Overview',
-    icon: Kanban,
-    groups: ['admin', 'advisor', 'supervisor'],
-  },
-  {
-    link: '/research-groups',
-    label: 'Research Groups',
-    icon: UsersThree,
-    groups: ['admin'],
-  },
-]
-
 const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) => {
   const {
     children,
@@ -108,6 +57,59 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
     collapseNavigation = false,
     requiredGroups,
   } = props
+
+  const links: Array<{
+    link: string
+    label: string
+    icon: any
+    groups: string[] | undefined
+    display?: boolean
+  }> = [
+    { link: '/dashboard', label: 'Dashboard', icon: NewspaperClipping, groups: undefined },
+    {
+      link: '/presentations',
+      label: 'Presentations',
+      icon: Presentation,
+      groups: undefined,
+      display: useAuthenticationContext().researchGroups.length > 0,
+    },
+    {
+      link: '/submit-application',
+      label: 'Submit Application',
+      icon: PaperPlaneTilt,
+      groups: undefined,
+    },
+    {
+      link: '/applications',
+      label: 'Review Applications',
+      icon: Scroll,
+      groups: ['admin', 'advisor', 'supervisor'],
+    },
+    {
+      link: '/topics',
+      label: 'Manage Topics',
+      icon: FolderSimplePlus,
+      groups: ['admin', 'advisor', 'supervisor'],
+    },
+    {
+      link: '/theses',
+      label: 'Browse Theses',
+      icon: Table,
+      groups: undefined,
+    },
+    {
+      link: '/overview',
+      label: 'Theses Overview',
+      icon: Kanban,
+      groups: ['admin', 'advisor', 'supervisor'],
+    },
+    {
+      link: '/research-groups',
+      label: 'Research Groups',
+      icon: UsersThree,
+      groups: ['admin'],
+    },
+  ]
 
   const user = useUser()
   const [opened, { toggle, close }] = useDisclosure()
@@ -185,6 +187,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
               (item) =>
                 !item.groups || item.groups.some((role) => auth.user?.groups.includes(role)),
             )
+            .filter((item) => item.display == undefined || item.display === true)
             .map((item) => (
               <Link
                 className={minimized ? classes.minimizedLink : classes.fullLink}
