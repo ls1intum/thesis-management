@@ -6,6 +6,7 @@ import de.tum.cit.aet.thesis.entity.UserGroup;
 import de.tum.cit.aet.thesis.exception.request.AccessDeniedException;
 import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.repository.ResearchGroupRepository;
+import de.tum.cit.aet.thesis.repository.ThesisRepository;
 import de.tum.cit.aet.thesis.repository.UserRepository;
 import de.tum.cit.aet.thesis.security.CurrentUserProvider;
 import de.tum.cit.aet.thesis.utility.HibernateHelper;
@@ -27,15 +28,18 @@ public class ResearchGroupService {
   private final UserRepository userRepository;
   private final AccessManagementService accessManagementService;
 
+  private final ThesisRepository thesisRepository;
+
   @Autowired
   public ResearchGroupService(ResearchGroupRepository researchGroupRepository,
       UserService userService, ObjectProvider<CurrentUserProvider> currentUserProviderProvider,
-      UserRepository userRepository, AccessManagementService accessManagementService) {
+      UserRepository userRepository, AccessManagementService accessManagementService, ThesisRepository thesisRepository) {
       this.researchGroupRepository = researchGroupRepository;
       this.userService = userService;
       this.currentUserProviderProvider = currentUserProviderProvider;
       this.userRepository = userRepository;
       this.accessManagementService = accessManagementService;
+      this.thesisRepository = thesisRepository;
   }
 
   private CurrentUserProvider currentUserProvider() {
@@ -95,9 +99,47 @@ public class ResearchGroupService {
       );
   }
 
-    public ResearchGroup findById(UUID researchGroupId) {
-        return findById(researchGroupId, false);
-    }
+  public List<ResearchGroup> getActiveResearchGroupsForUser() {
+
+      User currentUser = currentUserProviderProvider.getObject().getUser();
+
+      if (currentUser == null) {
+          throw new AccessDeniedException("User is not authenticated.");
+      }
+
+      // Return all groups if the person is admin
+      if (currentUser.hasAnyGroup("admin")) {
+          Sort.Order order = new Sort.Order(Sort.Direction.ASC, HibernateHelper.getColumnName(ResearchGroup.class, "name"));
+
+          Page<ResearchGroup> allResearchGroups = researchGroupRepository.searchResearchGroup(
+                  null,
+                  null,
+                  false,
+                  "",
+                  PageRequest.of(0, Integer.MAX_VALUE, Sort.by(order))
+          );
+
+          return allResearchGroups.stream().toList();
+      }
+
+      Set<ResearchGroup> result = new HashSet<>();
+      if (currentUser.getResearchGroup() != null) {
+          result.add(currentUser.getResearchGroup());
+      }
+
+      List<ResearchGroup> viaTheses = thesisRepository.findActiveStudentThesisResearchGroups(currentUser.getId());
+      result.addAll(viaTheses);
+
+      return new ArrayList<>(result);
+  }
+
+  public ResearchGroup findById(UUID researchGroupId) {
+      return findById(researchGroupId, false);
+  }
+
+  public ResearchGroup findByAbbreviation(String abbreviation) {
+    return researchGroupRepository.findByAbbreviation(abbreviation);
+  }
 
   public ResearchGroup findById(UUID researchGroupId, boolean noAuthentication) {
     ResearchGroup researchGroup = researchGroupRepository.findById(researchGroupId)

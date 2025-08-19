@@ -29,14 +29,16 @@ public class PublishedPresentationController {
             @RequestParam(required = false, defaultValue = "0") Integer page,
             @RequestParam(required = false, defaultValue = "50") Integer limit,
             @RequestParam(required = false, defaultValue = "scheduledAt") String sortBy,
-            @RequestParam(required = false, defaultValue = "asc") String sortOrder
+            @RequestParam(required = false, defaultValue = "asc") String sortOrder,
+            @RequestParam(required = false) UUID researchGroupId
     ) {
         Page<ThesisPresentation> presentations = thesisPresentationService.getPublicPresentations(
                 includeDrafts,
                 page,
                 limit,
                 sortBy,
-                sortOrder
+                sortOrder,
+                researchGroupId
         );
 
         return ResponseEntity.ok(PaginationDto.fromSpringPage(

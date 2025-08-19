@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react'
+import { PropsWithChildren, useEffect, useMemo, useState } from 'react'
 import {
   AuthenticationContext,
   IAuthenticationContext,
@@ -14,6 +14,7 @@ import { IUser } from '../../requests/responses/user'
 import { doRequest } from '../../requests/request'
 import { showSimpleError } from '../../utils/notification'
 import { ApiError, getApiResponseErrorMessage } from '../../requests/handler'
+import { ILightResearchGroup } from '../../requests/responses/researchGroup'
 
 export const keycloak = new Keycloak({
   realm: GLOBAL_CONFIG.keycloak.realm,
@@ -32,6 +33,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
     triggerSignal: triggerReadySignal,
     ref: { isTriggerred: isReady },
   } = useSignal()
+  const [researchGroups, setResearchGroups] = useState<ILightResearchGroup[]>([])
 
   useEffect(() => {
     setUser(undefined)
@@ -169,6 +171,28 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
     }
   }, [universityId, isReady])
 
+  useEffect(() => {
+    if (!isReady || !universityId) {
+      return
+    }
+
+    return doRequest<ILightResearchGroup[]>(
+      '/v2/research-groups/light/active',
+      {
+        method: 'GET',
+        requiresAuth: true,
+      },
+      (res) => {
+        if (res.ok) {
+          const sortedGroups = res.data.sort((a, b) => a.name.localeCompare(b.name))
+          setResearchGroups(sortedGroups)
+        } else {
+          showSimpleError(getApiResponseErrorMessage(res))
+        }
+      },
+    )
+  }, [isReady, universityId])
+
   const contextValue = useMemo<IAuthenticationContext>(() => {
     return {
       isAuthenticated: !!authenticationTokens?.access_token,
@@ -232,6 +256,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
           }
         })
       },
+      researchGroups: researchGroups,
     }
   }, [
     user,

@@ -72,13 +72,14 @@ public class ThesisPresentationService {
     }
 
     public Page<ThesisPresentation> getPublicPresentations(boolean includeDrafts, Integer page,
-        Integer limit, String sortBy, String sortOrder) {
+        Integer limit, String sortBy, String sortOrder, UUID researchGroupId) {
         Sort.Order order = new Sort.Order(sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
 
         return thesisPresentationRepository.findFuturePresentations(
                 Instant.now(),
                 includeDrafts ? Set.of(ThesisPresentationState.DRAFTED, ThesisPresentationState.SCHEDULED) : Set.of(ThesisPresentationState.SCHEDULED),
                 Set.of(ThesisPresentationVisibility.PUBLIC),
+                researchGroupId,
                 PageRequest.of(page, limit, Sort.by(order))
         );
     }
@@ -94,12 +95,15 @@ public class ThesisPresentationService {
         return presentation;
     }
 
-    public Calendar getPresentationCalendar() {
+    public Calendar getPresentationCalendar(UUID researchGroupId) {
         Calendar calendar = createEmptyCalendar();
 
         calendar.add(ImmutableMethod.PUBLISH);
 
-        List<ThesisPresentation> presentations = thesisPresentationRepository.findAllPresentations(
+        List<ThesisPresentation> presentations;
+
+        presentations = thesisPresentationRepository.findAllPresentations(
+                researchGroupId,
                 Set.of(ThesisPresentationVisibility.PUBLIC)
         );
 
