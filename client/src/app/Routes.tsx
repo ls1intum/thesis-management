@@ -194,7 +194,7 @@ const AppRoutes = () => {
             }
           />
           <Route
-            path='/:researchGroupId'
+            path='/:researchGroupAbbreviation'
             element={
               <PublicArea size='xl'>
                 <LandingPage />
