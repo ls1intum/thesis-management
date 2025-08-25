@@ -32,7 +32,7 @@ import { getApiResponseErrorMessage } from '../../requests/handler'
 const LandingPage = () => {
   usePageTitle('Find a Thesis Topic')
 
-  const { researchGroupId } = useParams<{ researchGroupId: string }>()
+  const { researchGroupAbbreviation } = useParams<{ researchGroupAbbreviation: string }>()
 
   const [searchParams, setSearchParams] = useSearchParams()
   const [searchKey, setSearchKey] = useState(searchParams.get('search') ?? '')
@@ -47,11 +47,26 @@ const LandingPage = () => {
   )
 
   const [researchGroups, setResearchGroups] = useState<ILightResearchGroup[]>([])
+  const [researchGroupsLoaded, setResearchGroupsLoaded] = useState(false)
   const [selectedGroups, setSelectedGroups] = useState<string[]>(
     searchParams.get('groups')?.split(',') ?? [],
   )
 
   let pageItemLimit = 12
+
+  const createResearchGroupFilter = () => {
+    if (researchGroupAbbreviation) {
+      const group = researchGroups.find((g) => g.abbreviation === researchGroupAbbreviation)
+      if (group) {
+        return [group.id]
+      } else if (researchGroupsLoaded) {
+        showSimpleError(
+          `Research group ${researchGroupAbbreviation} not found - showing all topics`,
+        )
+      }
+    }
+    return selectedGroups
+  }
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams)
@@ -84,6 +99,7 @@ const LandingPage = () => {
       (response) => {
         if (response.ok) {
           setResearchGroups(response.data)
+          setResearchGroupsLoaded(true)
         } else {
           showSimpleError(getApiResponseErrorMessage(response))
         }
@@ -156,7 +172,7 @@ const LandingPage = () => {
 
   const multiSelectDropdowns = () => (
     <>
-      {!researchGroupId && (
+      {!researchGroupAbbreviation && (
         <DropDownMultiSelect
           data={researchGroups.map((group) => group.id)}
           searchPlaceholder='Search Research Groups'
@@ -266,7 +282,7 @@ const LandingPage = () => {
         limit={pageItemLimit}
         researchSpecific={false}
         initialFilters={{
-          researchGroupIds: researchGroupId ? [researchGroupId] : selectedGroups,
+          researchGroupIds: createResearchGroupFilter(),
           search: debouncedSearch,
           types: selectedThesisTypes,
         }}
@@ -312,7 +328,7 @@ const LandingPage = () => {
               search={debouncedSearch}
               representationType={listRepresentation}
               filters={{
-                researchGroupIds: researchGroupId ? [researchGroupId] : selectedGroups,
+                researchGroupIds: createResearchGroupFilter(),
                 types: selectedThesisTypes,
               }}
               limit={pageItemLimit}
