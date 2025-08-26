@@ -53,6 +53,7 @@ const PublicPresentationsTable = (props: IPublicPresentationsTableProps) => {
           ? [includeDrafts ? 'state' : '', 'students', 'location', 'scheduledAt']
           : [
               includeDrafts ? 'state' : '',
+              'thesisTitle',
               'students',
               'type',
               'location',
