@@ -6,7 +6,7 @@ import NotFound from '../../components/NotFound/NotFound'
 import PageLoader from '../../components/PageLoader/PageLoader'
 import { Button, Divider, Group, Stack, Title } from '@mantine/core'
 import TopicData from '../../components/TopicData/TopicData'
-import { useManagementAccess } from '../../hooks/authentication'
+import { useManagementAccess, useUser } from '../../hooks/authentication'
 import ApplicationsProvider from '../../providers/ApplicationsProvider/ApplicationsProvider'
 import ApplicationsTable from '../../components/ApplicationsTable/ApplicationsTable'
 
@@ -19,6 +19,8 @@ const TopicPage = () => {
   const topic = useTopic(topicId)
 
   usePageTitle(topic ? topic.title : 'Topic')
+
+  const user = useUser()
 
   if (topic === false) {
     return <NotFound />
@@ -42,7 +44,7 @@ const TopicPage = () => {
           Apply Now
         </Button>
       </Group>
-      {managementAccess && (
+      {managementAccess && (user ? topic.researchGroup.name === user.researchGroupName : false) && (
         <Stack>
           <Divider />
           <ApplicationsProvider fetchAll={true} limit={10} defaultTopics={[topic.topicId]}>
