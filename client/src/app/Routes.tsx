@@ -3,6 +3,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
 import AuthenticatedArea from './layout/AuthenticatedArea/AuthenticatedArea'
 import PageLoader from '../components/PageLoader/PageLoader'
 import PublicArea from './layout/PublicArea/PublicArea'
+import { useAuthenticationContext } from '../hooks/authentication'
 
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage/NotFoundPage'))
 const PrivacyPage = lazy(() => import('../pages/PrivacyPage/PrivacyPage'))
@@ -36,6 +37,8 @@ const ThesisPage = lazy(() => import('../pages/ThesisPage/ThesisPage'))
 const LandingPage = lazy(() => import('../pages/LandingPage/LandingPage'))
 
 const AppRoutes = () => {
+  const auth = useAuthenticationContext()
+
   return (
     <Suspense fallback={<PageLoader />}>
       <BrowserRouter>
@@ -80,7 +83,7 @@ const AppRoutes = () => {
           <Route
             path='/presentations'
             element={
-              <AuthenticatedArea requireAuthentication={false}>
+              <AuthenticatedArea>
                 <PresentationOverviewPage />
               </AuthenticatedArea>
             }
@@ -88,9 +91,15 @@ const AppRoutes = () => {
           <Route
             path='/presentations/:presentationId'
             element={
-              <AuthenticatedArea size='md' requireAuthentication={false}>
-                <PresentationPage />
-              </AuthenticatedArea>
+              auth.isAuthenticated ? (
+                <AuthenticatedArea>
+                  <PresentationPage />
+                </AuthenticatedArea>
+              ) : (
+                <PublicArea size='xl'>
+                  <PresentationPage />
+                </PublicArea>
+              )
             }
           />
           <Route
@@ -104,9 +113,15 @@ const AppRoutes = () => {
           <Route
             path='/topics/:topicId'
             element={
-              <AuthenticatedArea size='xl' requireAuthentication={false}>
-                <TopicPage />
-              </AuthenticatedArea>
+              auth.isAuthenticated ? (
+                <AuthenticatedArea>
+                  <TopicPage />
+                </AuthenticatedArea>
+              ) : (
+                <PublicArea size='xl'>
+                  <TopicPage />
+                </PublicArea>
+              )
             }
           />
           <Route
