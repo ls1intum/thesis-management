@@ -38,25 +38,17 @@ import CustomAvatar from '../../../components/CustomAvatar/CustomAvatar'
 import { formatUser } from '../../../utils/format'
 import ContentContainer from '../ContentContainer/ContentContainer'
 import Footer from '../../../components/Footer/Footer'
-import PublicArea from '../PublicArea/PublicArea'
 import Header from '../../../components/Header/Header'
 import { useIsSmallerBreakpoint } from '../../../hooks/theme'
 
 export interface IAuthenticatedAreaProps {
   size?: MantineSize
-  requireAuthentication?: boolean
   collapseNavigation?: boolean
   requiredGroups?: string[]
 }
 
 const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) => {
-  const {
-    children,
-    size,
-    requireAuthentication = true,
-    collapseNavigation = false,
-    requiredGroups,
-  } = props
+  const { children, size, collapseNavigation = false, requiredGroups } = props
 
   const links: Array<{
     link: string
@@ -136,7 +128,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
   const isSmallerBreakpoint = useIsSmallerBreakpoint('md')
 
   useEffect(() => {
-    if (requireAuthentication && !auth.isAuthenticated) {
+    if (!auth.isAuthenticated) {
       auth.login()
 
       const interval = setInterval(() => {
@@ -145,7 +137,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
 
       return () => clearInterval(interval)
     }
-  }, [requireAuthentication, auth.isAuthenticated])
+  }, [auth.isAuthenticated])
 
   useEffect(() => {
     if (navigationType === 'POP') {
@@ -154,10 +146,6 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
 
     close()
   }, [location.pathname, navigationType])
-
-  if (!requireAuthentication && !auth.isAuthenticated) {
-    return <PublicArea size={size}>{children}</PublicArea>
-  }
 
   return (
     <AppShell
