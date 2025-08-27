@@ -76,7 +76,7 @@ const TopicPage = () => {
           <TopicAdittionalInformationCard topic={topic} />
         </Grid.Col>
       </Grid>
-      {managementAccess && (
+      {managementAccess && (user ? topic.researchGroup.name === user.researchGroupName : false) && (
         <Stack>
           <Divider />
           <ApplicationsProvider fetchAll={true} limit={10} defaultTopics={[topic.topicId]}>
