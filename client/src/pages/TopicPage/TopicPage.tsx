@@ -4,11 +4,13 @@ import { Link, useNavigate, useParams } from 'react-router'
 import { useTopic } from '../../hooks/fetcher'
 import NotFound from '../../components/NotFound/NotFound'
 import PageLoader from '../../components/PageLoader/PageLoader'
-import { Button, Divider, Group, Stack, Title } from '@mantine/core'
+import { Button, Divider, Grid, Group, Stack, Title } from '@mantine/core'
 import TopicData from '../../components/TopicData/TopicData'
 import { useManagementAccess } from '../../hooks/authentication'
 import ApplicationsProvider from '../../providers/ApplicationsProvider/ApplicationsProvider'
 import ApplicationsTable from '../../components/ApplicationsTable/ApplicationsTable'
+import { NotePencil } from 'phosphor-react'
+import TopicAdittionalInformationCard from './components/TopicAdittionalInformationCard'
 
 const TopicPage = () => {
   const { topicId } = useParams<{ topicId: string }>()
@@ -29,8 +31,29 @@ const TopicPage = () => {
   }
 
   return (
-    <Stack>
-      <Title>{topic.title}</Title>
+    <Stack gap={'2rem'}>
+      <Stack gap={'1rem'}>
+        <Title>{topic.title}</Title>
+        <Button
+          component={Link}
+          to={`/submit-application/${topic.topicId}`}
+          mr={'auto'}
+          leftSection={<NotePencil size={24} />}
+          size='md'
+        >
+          Apply Now
+        </Button>
+      </Stack>
+
+      <Grid>
+        <Grid.Col span={{ base: 12, md: 9 }} order={{ base: 2, md: 1 }}>
+          <div>Left</div>
+        </Grid.Col>
+        <Grid.Col span={{ base: 12, md: 3 }} order={{ base: 1, md: 2 }}>
+          <TopicAdittionalInformationCard topic={topic} />
+        </Grid.Col>
+      </Grid>
+
       <TopicData topic={topic} />
       <Group>
         {managementAccess && (
