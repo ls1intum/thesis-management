@@ -5,6 +5,7 @@ import TopicAdittionalInformationSection from './TopicAdditionalInformationSecti
 import ThesisTypeBadge from '../../LandingPage/components/ThesisTypBadge/ThesisTypBadge'
 import AvatarUserList from '../../../components/AvatarUserList/AvatarUserList'
 import { formatDate } from '../../../utils/format'
+import DateItemAdditionalInformation from './DateItemAdditonalInformation'
 
 interface ITopicAdittionalInformationCardProps {
   topic: ITopic
@@ -26,14 +27,17 @@ const TopicAdittionalInformationCard = ({ topic }: ITopicAdittionalInformationCa
           icon={<Clock size={iconSize} />}
           title='Dates'
           content={
-            <Stack gap={'0.5rem'}>
-              <Title order={6} c={'gray.7'}>
-                Created At
-              </Title>
-              <Group gap={'0.5rem'}>
-                <CalendarBlank size={16} />
-                <Text>{formatDate(topic.createdAt, { withTime: false })}</Text>
-              </Group>
+            <Stack gap={'1rem'}>
+              <DateItemAdditionalInformation label='Created At' date={topic.createdAt} />
+              {topic.intendedStart && (
+                <DateItemAdditionalInformation label='Intended Start' date={topic.intendedStart} />
+              )}
+              {topic.applicationDeadline && (
+                <DateItemAdditionalInformation
+                  label='Application Deadline'
+                  date={topic.applicationDeadline}
+                />
+              )}
             </Stack>
           }
         />

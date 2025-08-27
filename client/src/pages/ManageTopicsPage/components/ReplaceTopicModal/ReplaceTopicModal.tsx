@@ -14,6 +14,7 @@ import { formatThesisType } from '../../../../utils/format'
 import { PaginationResponse } from '../../../../requests/responses/pagination'
 import { ILightResearchGroup } from '../../../../requests/responses/researchGroup'
 import { useHasGroupAccess } from '../../../../hooks/authentication'
+import { DateInput } from '@mantine/dates'
 
 interface ICreateTopicModalProps {
   opened: boolean
@@ -38,6 +39,8 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
     supervisorIds: string[]
     advisorIds: string[]
     researchGroupId: string
+    intendedStart: Date | undefined
+    applicationDeadline: Date | undefined
   }>({
     mode: 'controlled',
     initialValues: {
@@ -50,6 +53,8 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
       supervisorIds: [],
       advisorIds: [],
       researchGroupId: '',
+      intendedStart: undefined,
+      applicationDeadline: undefined,
     },
     validateInputOnBlur: true,
     validate: {
@@ -75,6 +80,10 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
         supervisorIds: topic.supervisors.map((supervisor) => supervisor.userId),
         advisorIds: topic.advisors.map((advisor) => advisor.userId),
         researchGroupId: topic.researchGroup.id,
+        intendedStart: topic.intendedStart ? new Date(topic.intendedStart) : undefined,
+        applicationDeadline: topic.applicationDeadline
+          ? new Date(topic.applicationDeadline)
+          : undefined,
       })
     }
 
@@ -152,6 +161,8 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
           supervisorIds: form.values.supervisorIds,
           advisorIds: form.values.advisorIds,
           researchGroupId: form.values.researchGroupId,
+          intendedStart: form.values.intendedStart ?? null,
+          applicationDeadline: form.values.applicationDeadline ?? null,
         },
       })
 
@@ -217,6 +228,20 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
               value: researchGroup.id,
             }))}
             {...form.getInputProps('researchGroupId')}
+          />
+          <DateInput
+            clearable
+            minDate={new Date()}
+            label='Intended Start'
+            placeholder='Select intended start date'
+            {...form.getInputProps('intendedStart')}
+          />
+          <DateInput
+            clearable
+            minDate={new Date()}
+            label='Application Deadline'
+            placeholder='Select application deadline'
+            {...form.getInputProps('applicationDeadline')}
           />
           <DocumentEditor
             label='Problem Statement'
