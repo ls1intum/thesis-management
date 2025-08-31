@@ -14,7 +14,7 @@
   ],
   "main": "src/index.tsx",
   "sideEffects": false,
-  "packageManager": "npm@10.9.0",
+  "packageManager": "npm@10.9.3",
   "engines": {
     "node": ">=22.10.0"
   },
