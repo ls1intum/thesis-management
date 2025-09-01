@@ -8,6 +8,7 @@ import {
   Skeleton,
   Text,
   UnstyledButton,
+  useMantineColorScheme,
 } from '@mantine/core'
 import Logo from '../Logo/Logo'
 import { Link, useNavigate } from 'react-router'
@@ -23,6 +24,7 @@ interface HeaderProps {
 }
 
 const Header = ({ opened, toggle, authenticatedArea }: HeaderProps) => {
+  const { colorScheme } = useMantineColorScheme()
   const user = useUser()
   const context = useAuthenticationContext()
 
@@ -52,6 +54,19 @@ const Header = ({ opened, toggle, authenticatedArea }: HeaderProps) => {
         visibleFrom={authenticatedArea ? 'md' : undefined}
       >
         <ColorSchemeToggleButton iconSize={'70%'} size={'lg'} />
+        {!authenticatedArea && (
+          <Button
+            component={Link}
+            to='/dashboard'
+            variant='outline'
+            color={colorScheme === 'dark' ? 'gray.4' : 'dark.2'}
+          >
+            <Group gap='xs' align='center'>
+              <NewspaperClipping size={16} />
+              <Text>To Dashboard</Text>
+            </Group>
+          </Button>
+        )}
         {context.isAuthenticated ? (
           <Menu
             shadow='md'
@@ -69,15 +84,6 @@ const Header = ({ opened, toggle, authenticatedArea }: HeaderProps) => {
             </Menu.Target>
 
             <Menu.Dropdown>
-              {!authenticatedArea && (
-                <Menu.Item
-                  component={Link}
-                  to='/dashboard'
-                  leftSection={<NewspaperClipping size={16} />}
-                >
-                  Go to Dashboard
-                </Menu.Item>
-              )}
               <Menu.Item component={Link} to='/settings' leftSection={<GearSix size={16} />}>
                 Settings
               </Menu.Item>
