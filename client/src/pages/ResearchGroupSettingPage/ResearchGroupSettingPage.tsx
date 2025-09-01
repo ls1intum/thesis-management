@@ -4,15 +4,18 @@ import { IResearchGroup } from '../../requests/responses/researchGroup'
 import { doRequest } from '../../requests/request'
 import { showSimpleError } from '../../utils/notification'
 import { getApiResponseErrorMessage } from '../../requests/handler'
-import { Loader, Stack, Title } from '@mantine/core'
+import { Center, Loader, Stack, Title } from '@mantine/core'
 import GeneralResearchGroupSettings from './components/GeneralResearchGroupSettings'
 import ResearchGroupMembers from './components/ResearchGroupMembers'
+import { useUser } from '../../hooks/authentication'
 
 const ResearchGroupSettingPage = () => {
   const { researchGroupId } = useParams<{ researchGroupId: string }>()
 
   const [loading, setLoading] = useState(true)
   const [researchGroupData, setResearchGroupData] = useState<IResearchGroup | undefined>(undefined)
+
+  const user = useUser()
 
   useEffect(() => {
     if (!researchGroupId) return
@@ -41,15 +44,24 @@ const ResearchGroupSettingPage = () => {
   if (loading) return <Loader />
 
   return (
-    <Stack>
-      <Title>Research Group Settings</Title>
+    <>
+      {user &&
+      (user.groups.includes('admin') ? false : user.researchGroupId !== researchGroupId) ? (
+        <Center h={'100%'}>
+          <h1>403 - Unauthorized</h1>
+        </Center>
+      ) : (
+        <Stack>
+          <Title>Research Group Settings</Title>
 
-      <GeneralResearchGroupSettings
-        researchGroupData={researchGroupData}
-        setResearchGroupData={setResearchGroupData}
-      />
-      <ResearchGroupMembers researchGroupData={researchGroupData} />
-    </Stack>
+          <GeneralResearchGroupSettings
+            researchGroupData={researchGroupData}
+            setResearchGroupData={setResearchGroupData}
+          />
+          <ResearchGroupMembers researchGroupData={researchGroupData} />
+        </Stack>
+      )}
+    </>
   )
 }
 

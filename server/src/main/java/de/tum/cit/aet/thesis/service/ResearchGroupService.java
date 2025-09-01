@@ -274,10 +274,13 @@ public class ResearchGroupService {
   }
 
   public Page<User> getAllResearchGroupMembers(UUID researchGroupId, Integer page, Integer limit, String sortBy, String sortOrder) {
-    Sort.Order order = new Sort.Order(sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
+      ResearchGroup researchGroup = findById(researchGroupId);
+      currentUserProvider().assertCanAccessResearchGroup(researchGroup);
 
-    return userRepository
-            .searchUsers(researchGroupId, null, null, PageRequest.of(page, limit, Sort.by(order)));
+      Sort.Order order = new Sort.Order(sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
+
+      return userRepository
+              .searchUsers(researchGroupId, null, null, PageRequest.of(page, limit, Sort.by(order)));
   }
 
   public void archiveResearchGroup(ResearchGroup researchGroup) {

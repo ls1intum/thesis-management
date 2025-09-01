@@ -162,7 +162,7 @@ const AppRoutes = () => {
           <Route
             path='/research-groups'
             element={
-              <AuthenticatedArea>
+              <AuthenticatedArea requiredGroups={['admin']}>
                 <ResearchGroupAdminPage />
               </AuthenticatedArea>
             }
@@ -170,7 +170,7 @@ const AppRoutes = () => {
           <Route
             path='/research-groups/:researchGroupId'
             element={
-              <AuthenticatedArea>
+              <AuthenticatedArea requiredGroups={['admin', 'group-admin']}>
                 <ResearchGroupSettingPage />
               </AuthenticatedArea>
             }

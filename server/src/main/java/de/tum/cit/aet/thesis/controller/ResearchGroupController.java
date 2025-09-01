@@ -100,7 +100,7 @@ public class ResearchGroupController {
   }
 
     @GetMapping("/{researchGroupId}/members")
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasAnyRole('admin', 'group-admin')")
     public ResponseEntity<PaginationDto<LightUserDto>> getResearchGroupMembers(
         @PathVariable("researchGroupId") UUID researchGroupId,
         @RequestParam(required = false, defaultValue = "0") Integer page,
