@@ -54,12 +54,13 @@ const Header = ({ opened, toggle, authenticatedArea }: HeaderProps) => {
         visibleFrom={authenticatedArea ? 'md' : undefined}
       >
         <ColorSchemeToggleButton iconSize={'70%'} size={'lg'} />
-        {!authenticatedArea && (
+        {!authenticatedArea && context.isAuthenticated && (
           <Button
             component={Link}
             to='/dashboard'
             variant='outline'
             color={colorScheme === 'dark' ? 'gray.4' : 'dark.2'}
+            visibleFrom='md'
           >
             <Group gap='xs' align='center'>
               <NewspaperClipping size={16} />
@@ -84,6 +85,17 @@ const Header = ({ opened, toggle, authenticatedArea }: HeaderProps) => {
             </Menu.Target>
 
             <Menu.Dropdown>
+              {!authenticatedArea && (
+                <Menu.Item
+                  component={Link}
+                  to='/dashboard'
+                  leftSection={<NewspaperClipping size={16} />}
+                  hiddenFrom='md'
+                >
+                  Go to Dashboard
+                </Menu.Item>
+              )}
+
               <Menu.Item component={Link} to='/settings' leftSection={<GearSix size={16} />}>
                 Settings
               </Menu.Item>
