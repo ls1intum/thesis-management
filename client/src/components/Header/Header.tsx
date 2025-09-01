@@ -61,10 +61,11 @@ const Header = ({ opened, toggle, authenticatedArea }: HeaderProps) => {
             variant='outline'
             color={colorScheme === 'dark' ? 'gray.4' : 'dark.2'}
             visibleFrom='md'
+            p={'xs'}
           >
-            <Group gap='xs' align='center'>
+            <Group gap='xs' align='center' p={0}>
               <NewspaperClipping size={16} />
-              <Text>To Dashboard</Text>
+              <Text>Dashboard</Text>
             </Group>
           </Button>
         )}
