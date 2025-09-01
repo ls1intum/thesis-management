@@ -60,7 +60,7 @@ const Header = ({ opened, toggle, authenticatedArea }: HeaderProps) => {
             to='/dashboard'
             variant='outline'
             color={colorScheme === 'dark' ? 'gray.4' : 'dark.2'}
-            visibleFrom='md'
+            visibleFrom='xs'
             p={'xs'}
           >
             <Group gap='xs' align='center' p={0}>
@@ -91,7 +91,7 @@ const Header = ({ opened, toggle, authenticatedArea }: HeaderProps) => {
                   component={Link}
                   to='/dashboard'
                   leftSection={<NewspaperClipping size={16} />}
-                  hiddenFrom='md'
+                  hiddenFrom='xs'
                 >
                   Go to Dashboard
                 </Menu.Item>
