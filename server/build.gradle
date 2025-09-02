@@ -4,7 +4,7 @@ plugins {
 	id "com.github.andygoossens.modernizer" version "1.11.0"
 
 	// TODO: Cannot update to 2.5.0 because then the git repo is not found
-	id "com.gorylenko.gradle-git-properties" version "2.4.2"
+	id "com.gorylenko.gradle-git-properties" version "2.5.2"
 	id "org.springframework.boot" version "${spring_boot_version}"
 	id "io.spring.dependency-management" version "1.1.7"
 	id "com.github.ben-manes.versions" version "0.52.0"
