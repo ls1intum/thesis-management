@@ -1,18 +1,34 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router'
+import { useParams, useSearchParams } from 'react-router'
 import { IResearchGroup } from '../../requests/responses/researchGroup'
 import { doRequest } from '../../requests/request'
 import { showSimpleError } from '../../utils/notification'
 import { getApiResponseErrorMessage } from '../../requests/handler'
-import { Loader, Stack, Title } from '@mantine/core'
+import { Loader, Stack, Tabs, Title } from '@mantine/core'
 import GeneralResearchGroupSettings from './components/GeneralResearchGroupSettings'
-import ResearchGroupMembers from './components/ResearchGroupMembers'
+import ResearchGroupMembers from './components/MemberSettings/ResearchGroupMembers'
+import EmailTemplatesOverview from './components/EmailTemplateSettings/EmailTemplatesOverview'
 
 const ResearchGroupSettingPage = () => {
   const { researchGroupId } = useParams<{ researchGroupId: string }>()
 
   const [loading, setLoading] = useState(true)
   const [researchGroupData, setResearchGroupData] = useState<IResearchGroup | undefined>(undefined)
+
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [selectedTab, setSelectedTab] = useState(searchParams.get('setting') ?? 'general')
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams)
+
+    if (selectedTab != 'general') {
+      params.set('setting', selectedTab)
+    } else {
+      params.delete('setting')
+    }
+
+    setSearchParams(params, { replace: true })
+  }, [selectedTab])
 
   useEffect(() => {
     if (!researchGroupId) return
@@ -44,11 +60,30 @@ const ResearchGroupSettingPage = () => {
     <Stack>
       <Title>Research Group Settings</Title>
 
-      <GeneralResearchGroupSettings
-        researchGroupData={researchGroupData}
-        setResearchGroupData={setResearchGroupData}
-      />
-      <ResearchGroupMembers researchGroupData={researchGroupData} />
+      <Tabs
+        value={selectedTab}
+        onChange={(value) => {
+          setSelectedTab(value || 'general')
+        }}
+      >
+        <Tabs.List>
+          <Tabs.Tab value='general'>General</Tabs.Tab>
+          <Tabs.Tab value='email-templates'>Email Templates</Tabs.Tab>
+        </Tabs.List>
+
+        <Tabs.Panel value='general' pt='md'>
+          <Stack>
+            <GeneralResearchGroupSettings
+              researchGroupData={researchGroupData}
+              setResearchGroupData={setResearchGroupData}
+            />
+            <ResearchGroupMembers researchGroupData={researchGroupData} />
+          </Stack>
+        </Tabs.Panel>
+        <Tabs.Panel value='email-templates' pt='md'>
+          <EmailTemplatesOverview />
+        </Tabs.Panel>
+      </Tabs>
     </Stack>
   )
 }

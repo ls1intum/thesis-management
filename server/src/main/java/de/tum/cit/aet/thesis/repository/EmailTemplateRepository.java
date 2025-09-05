@@ -16,7 +16,7 @@ public interface EmailTemplateRepository extends JpaRepository<EmailTemplate, UU
 
     @Query(value = """
             SELECT et.* FROM email_templates et
-            WHERE (:researchGroupId IS NULL OR et.research_group_id = :researchGroupId)
+            WHERE (:researchGroupId IS NULL OR et.research_group_id = :researchGroupId OR et.research_group_id IS NULL)
               AND (:searchQuery IS NULL OR et.description ILIKE CONCAT('%', :searchQuery, '%')
                 OR et.subject ILIKE CONCAT('%', :searchQuery, '%')
                 OR et.body_html ILIKE CONCAT('%', :searchQuery, '%'))
@@ -42,6 +42,16 @@ public interface EmailTemplateRepository extends JpaRepository<EmailTemplate, UU
             @Param("researchGroupId") UUID researchGroupId,
             @Param("templateCase") String templateCase,
             @Param("language") String language
+    );
+
+    @Query("""
+    SELECT e FROM EmailTemplate e
+    WHERE (e.researchGroup.id = :researchGroupId)
+      AND e.templateCase = :templateCase
+""")
+    Optional<EmailTemplate> findByResearchGroupAndTemplateCase(
+            @Param("researchGroupId") UUID researchGroupId,
+            @Param("templateCase") String templateCase
     );
 
     default Optional<EmailTemplate> findTemplateWithFallback(UUID researchGroupId, String templateCase, String language) {

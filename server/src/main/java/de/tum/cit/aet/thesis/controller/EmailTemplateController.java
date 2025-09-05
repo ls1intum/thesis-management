@@ -32,9 +32,10 @@ public class EmailTemplateController {
             @RequestParam(required = false, defaultValue = "") String[] templateCases,
             @RequestParam(required = false, defaultValue = "") String[] languages,
             @RequestParam(required = false, defaultValue = "0") Integer page,
-            @RequestParam(required = false, defaultValue = "50") Integer limit,
+            @RequestParam(required = false, defaultValue = "-1") Integer limit,
             @RequestParam(required = false, defaultValue = "templateCase") String sortBy,
-            @RequestParam(required = false, defaultValue = "desc") String sortOrder
+            @RequestParam(required = false, defaultValue = "desc") String sortOrder,
+            @RequestParam(required = false) UUID researchGroupId
     ) {
         Page<EmailTemplate> emailTemplates = emailTemplateService.getAll(
                 templateCases,
@@ -43,7 +44,8 @@ public class EmailTemplateController {
                 page,
                 limit,
                 sortBy,
-                sortOrder
+                sortOrder,
+                researchGroupId
         );
 
         return ResponseEntity.ok(PaginationDto.fromSpringPage(
