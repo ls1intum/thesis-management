@@ -79,6 +79,11 @@ const EmailTemplateCard = ({ emailTemplate }: IEmailTemplatesOverviewProps) => {
         opened={templateModalOpened}
         onClose={() => setTemplateModalOpened(false)}
         mode={mode}
+        setMode={setMode}
+        defaultTemplate={emailTemplate.default ?? undefined}
+        researchGroupTemplate={emailTemplate.researchGroupTemplate ?? undefined}
+        editingTemplate={editingTemplate}
+        setEditingTemplate={setEditingTemplate}
       />
     </>
   )
