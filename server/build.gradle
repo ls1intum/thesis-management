@@ -2,9 +2,7 @@ plugins {
 	id "java"
 	id "idea"
 	id "com.github.andygoossens.modernizer" version "1.11.0"
-
-	// TODO: Cannot update to 2.5.0 because then the git repo is not found
-	id "com.gorylenko.gradle-git-properties" version "2.4.2"
+	id "com.gorylenko.gradle-git-properties" version "2.5.3"
 	id "org.springframework.boot" version "${spring_boot_version}"
 	id "io.spring.dependency-management" version "1.1.7"
 	id "com.github.ben-manes.versions" version "0.52.0"
@@ -13,6 +11,10 @@ plugins {
 group = "de.tum.cit.aet.thesis"
 version = "4.3.0"
 description = "Thesis Management"
+
+gitProperties {
+    dotGitDirectory = file("../.git")
+}
 
 springBoot {
 	mainClass = "de.tum.cit.aet.thesis.ThesisManagementApplication"
@@ -81,7 +83,7 @@ dependencies {
 	implementation("io.netty:netty-handler-proxy") { version { 			strictly netty_version } }
 	
 	// Avoid outdated version to prevent security issues
-	implementation("net.minidev:json-smart") { version { 				strictly "2.5.2" } }
+	implementation("net.minidev:json-smart") { version { 				strictly "2.6.0" } }
 
 	implementation "org.liquibase:liquibase-core:4.33.0"
 	implementation "org.postgresql:postgresql:42.7.7"
@@ -89,8 +91,8 @@ dependencies {
 	implementation "commons-io:commons-io:2.20.0"
 	implementation "com.github.vladimir-bukhtoyarov:bucket4j-core:8.0.1"
 	implementation "org.mnode.ical4j:ical4j:4.1.1"
-	implementation "com.itextpdf:itext-core:9.2.0"
-	implementation "com.itextpdf:html2pdf:6.2.0"
+	implementation "com.itextpdf:itext-core:9.3.0"
+	implementation "com.itextpdf:html2pdf:6.2.1"
 	implementation "com.auth0:java-jwt:4.5.0"
 
 	// Use the latest version of commons-lang3 to avoid security issues
@@ -100,10 +102,10 @@ dependencies {
 	implementation "ch.qos.logback:logback-core:${logback_version}"
 
 	// use newest version of commons-compress to avoid security issues through outdated dependencies
-	implementation "org.apache.commons:commons-compress:1.27.1"
+	implementation "org.apache.commons:commons-compress:1.28.0"
 
-	compileOnly "org.projectlombok:lombok:1.18.38"
-	annotationProcessor "org.projectlombok:lombok:1.18.38"
+	compileOnly "org.projectlombok:lombok:1.18.40"
+	annotationProcessor "org.projectlombok:lombok:1.18.40"
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test:${spring_boot_version}") {
 		exclude group: "org.junit.vintage", module: "junit-vintage-engine"
@@ -113,8 +115,8 @@ dependencies {
 
 	testImplementation "org.springframework:spring-test:${spring_framework_version}"
 
-	testImplementation "org.mockito:mockito-core:5.18.0"
-	testImplementation "org.mockito:mockito-junit-jupiter:5.18.0"
+	testImplementation "org.mockito:mockito-core:5.19.0"
+	testImplementation "org.mockito:mockito-junit-jupiter:5.19.0"
 
 	testImplementation "org.testcontainers:testcontainers:${test_container_version}"
 	testImplementation "org.testcontainers:junit-jupiter:${test_container_version}"
