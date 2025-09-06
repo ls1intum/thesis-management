@@ -1,7 +1,7 @@
 import { Box, Button, Flex, Loader, Select, Table, TextInput } from '@mantine/core'
 import { IResearchGroup } from '../../../requests/responses/researchGroup'
 import { ResearchGroupSettingsCard } from './ResearchGroupSettingsCard'
-import { MagnifyingGlass, Plus, Trash, User } from 'phosphor-react'
+import { MagnifyingGlass, Plus } from 'phosphor-react'
 import AddResearchGroupMemberModal from './AddResearchGroupMemberModal'
 import { useEffect, useState } from 'react'
 import { ILightUser } from '../../../requests/responses/user'

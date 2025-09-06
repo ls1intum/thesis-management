@@ -1,4 +1,4 @@
-import { Divider, Group, Stack, Switch, Text } from '@mantine/core'
+import { Divider, Group, Stack } from '@mantine/core'
 import { usePageTitle } from '../../../../hooks/theme'
 import { useLoggedInUser, useManagementAccess } from '../../../../hooks/authentication'
 import ThesesTable from '../../../../components/ThesesTable/ThesesTable'
@@ -7,7 +7,6 @@ import React, { useEffect, useState } from 'react'
 import { doRequest } from '../../../../requests/request'
 import PageLoader from '../../../../components/PageLoader/PageLoader'
 import NotificationToggleSwitch from './components/NotificationToggleSwitch/NotificationToggleSwitch'
-import { NotificationSelect } from './components/NotificationSelect/NotificationSelect'
 import { NotificationOption } from './components/NotificationOption/NotificationOption'
 
 const NotificationSettings = () => {

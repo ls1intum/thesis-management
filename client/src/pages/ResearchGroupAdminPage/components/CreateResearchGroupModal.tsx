@@ -1,8 +1,4 @@
-import { Button, Modal, Select, Stack, Text, Textarea, TextInput } from '@mantine/core'
-import { useForm } from '@mantine/form'
-import { useState } from 'react'
-import KeycloakUserAutocomplete from '../../../components/KeycloakUserAutocomplete.tsx/KeycloakUserAutocomplete'
-import { GLOBAL_CONFIG } from '../../../config/global'
+import { Modal } from '@mantine/core'
 import ResearchGroupForm from '../../../components/ResearchGroupForm/ResearchGroupForm'
 
 interface ICreateResearchGroupModalProps {
