@@ -20,7 +20,7 @@ import {
   Trash,
   UserMinus,
   UserPlus,
-} from 'phosphor-react'
+} from '@phosphor-icons/react'
 import AddResearchGroupMemberModal from './AddResearchGroupMemberModal'
 import { useEffect, useState } from 'react'
 import { ILightUser } from '../../../requests/responses/user'

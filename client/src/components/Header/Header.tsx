@@ -15,7 +15,7 @@ import { Link, useNavigate } from 'react-router'
 import ColorSchemeToggleButton from '../ColorSchemeToggleButton/ColorSchemeToggleButton'
 import { useAuthenticationContext, useUser } from '../../hooks/authentication'
 import CustomAvatar from '../CustomAvatar/CustomAvatar'
-import { GearSix, NewspaperClipping, SignOut } from 'phosphor-react'
+import { GearSix, NewspaperClipping, SignOut } from '@phosphor-icons/react'
 
 interface HeaderProps {
   authenticatedArea: boolean

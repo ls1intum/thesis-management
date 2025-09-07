@@ -13,7 +13,7 @@ import { Anchor, Badge, Button, Center, Group, Stack, Text, Tooltip } from '@man
 import AvatarUserList from '../AvatarUserList/AvatarUserList'
 import ReplacePresentationModal from './components/ReplacePresentationModal/ReplacePresentationModal'
 import SchedulePresentationModal from './components/SchedulePresentationModal/SchedulePresentationModal'
-import { Check, Pencil, Trash } from 'phosphor-react'
+import { Check, Pencil, Trash } from '@phosphor-icons/react'
 import { useThesisUpdateAction } from '../../providers/ThesisProvider/hooks'
 import { doRequest } from '../../requests/request'
 import { ApiError } from '../../requests/handler'

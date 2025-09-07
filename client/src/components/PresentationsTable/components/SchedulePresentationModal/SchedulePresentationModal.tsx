@@ -10,7 +10,7 @@ import { ApiError } from '../../../../requests/handler'
 import { useEffect, useState } from 'react'
 import { randomId } from '@mantine/hooks'
 import { isEmail } from '@mantine/form'
-import { X } from 'phosphor-react'
+import { X } from '@phosphor-icons/react'
 
 interface ISchedulePresentationModalProps {
   presentation: IPublishedPresentation | IThesisPresentation | undefined

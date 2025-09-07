@@ -29,7 +29,7 @@ import {
   Presentation,
   UsersThree,
   Gear,
-} from 'phosphor-react'
+} from '@phosphor-icons/react'
 import { useAuthenticationContext, useUser } from '../../../hooks/authentication'
 import { useNavigationType } from 'react-router'
 import ScrollToTop from '../ScrollToTop/ScrollToTop'

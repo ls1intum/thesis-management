@@ -1,7 +1,7 @@
 import { Box, Center, Flex, Pagination, SimpleGrid, Stack, Text, ThemeIcon } from '@mantine/core'
 import TopicCard from './TopicCard/TopicCard'
 import { useTopicsContext } from '../../../../providers/TopicsProvider/hooks'
-import { Database, Spinner } from 'phosphor-react'
+import { Database, Spinner } from '@phosphor-icons/react'
 import { Dispatch, useEffect, useState } from 'react'
 import { ITopic } from '../../../../requests/responses/topic'
 import { IPublishedThesis } from '../../../../requests/responses/thesis'
