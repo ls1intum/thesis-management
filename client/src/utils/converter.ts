@@ -1,5 +1,3 @@
-import { DateValue } from '@mantine/dates'
-
 export function semesterToEnrollmentDate(semester: string | number): Date | null {
   if (!semester) {
     return null

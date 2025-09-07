@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'
 import { doRequest } from '../../../../requests/request'
 import { showSimpleError } from '../../../../utils/notification'
 import { getApiResponseErrorMessage } from '../../../../requests/handler'
-import { DateInput, DateValue } from '@mantine/dates'
+import { DateInput } from '@mantine/dates'
 import { getHtmlTextLength } from '../../../../utils/validation'
 import { GLOBAL_CONFIG } from '../../../../config/global'
 import { IApplication } from '../../../../requests/responses/application'
@@ -25,7 +25,7 @@ interface IMotivationStepForm {
   thesisTitle: string
   researchGroupId: string
   thesisType: string | null
-  desiredStartDate: DateValue
+  desiredStartDate: Date | null
   motivation: string
 }
 
@@ -200,6 +200,7 @@ const MotivationStep = (props: IMotivationStepProps) => {
           label='Desired Start Date'
           required={true}
           {...form.getInputProps('desiredStartDate')}
+          onChange={(date) => form.setFieldValue('desiredStartDate', date ? new Date(date) : null)}
         />
         <DocumentEditor
           label='Motivation'
