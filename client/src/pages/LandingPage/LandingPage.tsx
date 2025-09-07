@@ -52,7 +52,7 @@ const LandingPage = () => {
     searchParams.get('groups')?.split(',') ?? [],
   )
 
-  let pageItemLimit = 12
+  const pageItemLimit = 12
 
   const createResearchGroupFilter = () => {
     if (researchGroupAbbreviation) {

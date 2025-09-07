@@ -49,7 +49,8 @@ const LandingPageHeader = () => {
           <Title order={5} c='dimmed'>
             {researchGroup
               ? researchGroup.description
-              : "Whether you're looking for inspiration or have a unique idea in mind, Thesis Management makes it easy. Explore topics posted by instructors or suggest your own."}
+              : 'Whether you are looking for inspiration or have a unique idea in mind, ' +
+                'Thesis Management makes it easy. Explore topics posted by instructors or suggest your own.'}
           </Title>
         </Flex>
 
