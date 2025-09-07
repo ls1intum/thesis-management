@@ -8,19 +8,19 @@ type IDeleteMemberModalProps = {
   onConfirm: () => void
   member?: ILightUser
   disabled?: boolean
+  deleteMemberModalOpened: boolean
+  setDeleteMemberModalOpened: (opened: boolean) => void
 }
 
-const DeleteMemberModal = ({ onConfirm, member, disabled }: IDeleteMemberModalProps) => {
-  const [deleteMemberModalOpened, setDeleteMemberModalOpened] = useState(false)
-
+const DeleteMemberModal = ({
+  onConfirm,
+  member,
+  disabled,
+  deleteMemberModalOpened,
+  setDeleteMemberModalOpened,
+}: IDeleteMemberModalProps) => {
   return (
     <div>
-      <DeleteButton
-        onClick={() => {
-          setDeleteMemberModalOpened(true)
-        }}
-        disabled={disabled}
-      />
       <Modal
         opened={deleteMemberModalOpened}
         onClose={() => setDeleteMemberModalOpened(false)}
