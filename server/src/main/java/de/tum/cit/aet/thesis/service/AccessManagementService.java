@@ -164,10 +164,6 @@ public class AccessManagementService {
             throw new RuntimeException("User is null");
         }
 
-        if (user.getResearchGroup() == null) {
-            throw new RuntimeException("User is not part of a research group");
-        }
-
         try {
             UUID userId = getUserId(user.getUniversityId());
             assignKeycloakRole(userId, "group-admin");
