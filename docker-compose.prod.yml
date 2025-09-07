@@ -1,6 +1,6 @@
 services:
   reverse-proxy:
-    image: traefik:v3.4
+    image: traefik:v3.5
     command:
       - "--providers.docker=true"
       - "--providers.docker.exposedByDefault=false"
