@@ -145,7 +145,7 @@ const ResearchGroupAdminPage = () => {
           verticalSpacing={{ base: 'xs', sm: 'sm', xl: 'md' }}
         >
           {researchGroups?.content.map((group) => (
-            <ResearchGroupCard {...group} />
+            <ResearchGroupCard {...group} key={group.id} />
           ))}
         </SimpleGrid>
       )}

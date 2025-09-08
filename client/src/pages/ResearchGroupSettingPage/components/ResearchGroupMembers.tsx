@@ -246,7 +246,8 @@ const ResearchGroupMembers = ({ researchGroupData }: IResearchGroupMembersProps)
                 const key = searchKey.toLowerCase().replaceAll(' ', '')
 
                 const searchTarget =
-                  `${member.firstName ?? ''}${member.lastName ?? ''}${member.universityId ?? ''}${member.email ?? ''}${member.lastName ?? ''}${member.firstName ?? ''}`
+                  `${member.firstName ?? ''}${member.lastName ?? ''}${member.universityId ?? ''}
+                  ${member.email ?? ''}${member.lastName ?? ''}${member.firstName ?? ''}`
                     .toLowerCase()
                     .replaceAll(' ', '')
 

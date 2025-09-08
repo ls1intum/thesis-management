@@ -1,8 +1,6 @@
 import { Modal, Text, Button, Group, Alert, Stack } from '@mantine/core'
 import { ILightUser } from '../../../requests/responses/user'
 import { WarningCircle } from 'phosphor-react'
-import DeleteButton from '../../../components/DeleteButton/DeleteButton'
-import { useState } from 'react'
 
 type IDeleteMemberModalProps = {
   onConfirm: () => void
@@ -15,7 +13,6 @@ type IDeleteMemberModalProps = {
 const DeleteMemberModal = ({
   onConfirm,
   member,
-  disabled,
   deleteMemberModalOpened,
   setDeleteMemberModalOpened,
 }: IDeleteMemberModalProps) => {

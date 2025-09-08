@@ -1,4 +1,4 @@
-import { PropsWithChildren, Suspense, useEffect, useState } from 'react'
+import { PropsWithChildren, Suspense, useEffect } from 'react'
 import {
   ActionIcon,
   AppShell,
@@ -41,7 +41,6 @@ import ContentContainer from '../ContentContainer/ContentContainer'
 import Footer from '../../../components/Footer/Footer'
 import Header from '../../../components/Header/Header'
 import { useIsSmallerBreakpoint } from '../../../hooks/theme'
-import { IUser } from '../../../requests/responses/user'
 
 export interface IAuthenticatedAreaProps {
   size?: MantineSize
