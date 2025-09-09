@@ -1,4 +1,4 @@
-import { Modal, SegmentedControl, Stack, Text } from '@mantine/core'
+import { Button, Group, Modal, SegmentedControl, Stack, Text, TextInput } from '@mantine/core'
 import { IEmailTemplate } from '../../../../requests/responses/emailtemplate'
 import EmailTextEditor from './EmailTextEditor/EmailTextEditor'
 
@@ -49,13 +49,56 @@ const EmailTemplateModal = ({
           size='xs'
         ></SegmentedControl>
         {mode === 'edit' ? (
-          <EmailTextEditor
-            editingTemplate={editingTemplate}
-            setEditingTemplate={setEditingTemplate}
-          />
+          <Stack>
+            <TextInput
+              label='Subject'
+              placeholder='Enter subject of your email...'
+              value={editingTemplate?.subject ?? ''}
+              onChange={(event) => {
+                setEditingTemplate &&
+                  setEditingTemplate({
+                    ...editingTemplate!,
+                    subject: event.currentTarget.value,
+                  })
+              }}
+            />
+            <EmailTextEditor
+              editingTemplate={editingTemplate}
+              setEditingTemplate={setEditingTemplate}
+            />
+          </Stack>
         ) : (
           <div dangerouslySetInnerHTML={{ __html: editingTemplate?.bodyHtml ?? '' }} />
         )}
+        <Group justify='space-between'>
+          <Button
+            variant='default'
+            onClick={() => {
+              setEditingTemplate && setEditingTemplate(defaultTemplate ?? null)
+            }}
+            disabled={!defaultTemplate || editingTemplate === defaultTemplate}
+          >
+            Reset to default
+          </Button>
+          {mode === 'edit' && (
+            <Group>
+              {!(
+                researchGroupTemplate === editingTemplate || defaultTemplate === editingTemplate
+              ) && (
+                <Button
+                  variant='default'
+                  onClick={() =>
+                    setEditingTemplate &&
+                    setEditingTemplate(researchGroupTemplate ?? defaultTemplate ?? null)
+                  }
+                >
+                  Discard changes
+                </Button>
+              )}
+              <Button>Save changes</Button>
+            </Group>
+          )}
+        </Group>
       </Stack>
     </Modal>
   )

@@ -1,10 +1,11 @@
-import { Badge, Button, Popover, Stack } from '@mantine/core'
-import { RichTextEditor } from '@mantine/tiptap'
+import { Badge, Button, Group, Popover, Stack, TextInput } from '@mantine/core'
 import { NodeViewWrapper, NodeViewProps } from '@tiptap/react'
+import { CaretDown } from 'phosphor-react'
 import { useState } from 'react'
 
 export default (props: NodeViewProps) => {
   const { node, updateAttributes } = props
+  const [newVariable, setNewVariable] = useState(node.attrs.variable || '')
   const [variable, setVariable] = useState(node.attrs.variable || '')
 
   return (
@@ -12,19 +13,25 @@ export default (props: NodeViewProps) => {
       <Popover width={200} position='bottom' withArrow shadow='md'>
         <Popover.Target>
           <Badge variant='light' color='grape' radius='xs'>
-            {variable ? variable : 'Add variable'}
+            <Group gap={5}>
+              {variable ? variable : 'Add variable'}
+              <CaretDown size={12} />
+            </Group>
           </Badge>
         </Popover.Target>
         <Popover.Dropdown>
           <Stack>
+            <TextInput
+              value={newVariable}
+              onChange={(e) => setNewVariable(e.currentTarget.value)}
+            />
             <Button
               onClick={() => {
-                const newVariable = 'test.test'
                 setVariable(newVariable)
                 updateAttributes({ variable: newVariable })
               }}
             >
-              change variable
+              Change Variable
             </Button>
           </Stack>
         </Popover.Dropdown>

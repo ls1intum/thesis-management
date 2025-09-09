@@ -1,14 +1,14 @@
 import { Link, RichTextEditor, useRichTextEditorContext } from '@mantine/tiptap'
 import TextAlign from '@tiptap/extension-text-align'
 import Underline from '@tiptap/extension-underline'
-import { BubbleMenu, useEditor } from '@tiptap/react'
+import { useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import TextStyle from '@tiptap/extension-text-style'
-import { Button, Group, Popover, Stack, Text } from '@mantine/core'
-import { useState } from 'react'
+import { TextStyle } from '@tiptap/extension-text-style'
+import { Button, Group, Popover, Stack, TextInput } from '@mantine/core'
 import ReactComponent from './Extension'
 import { IEmailTemplate } from '../../../../../requests/responses/emailtemplate'
 import { Plus } from 'phosphor-react'
+import { useEffect, useState } from 'react'
 
 // Function to convert HTML react-component tags to template variables
 const convertHtmlToTemplateVariables = (html: string): string => {
@@ -42,10 +42,19 @@ const EmailTextEditor = ({ editingTemplate, setEditingTemplate }: IEmailTextEdit
           ...editingTemplate!,
           bodyHtml: convertHtmlToTemplateVariables(editor.getHTML()),
         })
-
-      console.log(convertHtmlToTemplateVariables(editor.getHTML()))
     },
   })
+
+  // Update editor content if editingTemplate.bodyHtml changes
+  useEffect(() => {
+    if (
+      editor &&
+      editingTemplate &&
+      convertTemplateVariablesToHtml(editingTemplate.bodyHtml ?? '') !== editor.getHTML()
+    ) {
+      editor.commands.setContent(convertTemplateVariablesToHtml(editingTemplate.bodyHtml ?? ''))
+    }
+  }, [editingTemplate?.bodyHtml, editor])
 
   return (
     <RichTextEditor editor={editor}>
@@ -74,17 +83,13 @@ const EmailTextEditor = ({ editingTemplate, setEditingTemplate }: IEmailTextEdit
           <RichTextEditor.Redo />
         </RichTextEditor.ControlsGroup>
 
+        <RichTextEditor.ControlsGroup>
+          <RichTextEditor.Link />
+          <RichTextEditor.Unlink />
+        </RichTextEditor.ControlsGroup>
+
         <InsertVariableButton />
       </RichTextEditor.Toolbar>
-
-      {editor && (
-        <BubbleMenu editor={editor}>
-          <RichTextEditor.ControlsGroup>
-            <RichTextEditor.Link />
-            <RichTextEditor.Unlink />
-          </RichTextEditor.ControlsGroup>
-        </BubbleMenu>
-      )}
 
       <RichTextEditor.Content />
     </RichTextEditor>
@@ -94,11 +99,17 @@ const EmailTextEditor = ({ editingTemplate, setEditingTemplate }: IEmailTextEdit
 function InsertVariableButton() {
   const { editor } = useRichTextEditorContext()
 
+  const [variable, setVariable] = useState('')
+
+  const insertVariable = () => {
+    editor?.commands.insertContent(`<react-component variable="${variable}"></react-component>`)
+  }
+
   return (
     <Popover width={200} position='bottom' withArrow shadow='md'>
       <Popover.Target>
         <RichTextEditor.Control aria-label='Insert variable' title='Insert variable'>
-          <Group py={2} px={5} gap={5}>
+          <Group gap={5} p={5}>
             <Plus size={14} />
             Add variable
           </Group>
@@ -106,15 +117,8 @@ function InsertVariableButton() {
       </Popover.Target>
       <Popover.Dropdown>
         <Stack>
-          <Button
-            onClick={() =>
-              editor?.commands.insertContent(
-                '<react-component variable="proposal.createBy.firstName"></react-component>',
-              )
-            }
-          >
-            Insert testcomponent
-          </Button>
+          <TextInput value={variable} onChange={(e) => setVariable(e.currentTarget.value)} />
+          <Button onClick={() => insertVariable()}>Insert Variable</Button>
         </Stack>
       </Popover.Dropdown>
     </Popover>
