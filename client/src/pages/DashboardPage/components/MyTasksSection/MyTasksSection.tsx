@@ -6,7 +6,7 @@ import { getApiResponseErrorMessage } from '../../../../requests/handler'
 import { ITask } from '../../../../requests/responses/dashboard'
 import { DataTable } from 'mantine-datatable'
 import { useNavigate } from 'react-router'
-import { Link as LinkIcon } from 'phosphor-react'
+import { Link as LinkIcon } from '@phosphor-icons/react'
 
 const MyTasksSection = () => {
   const navigate = useNavigate()

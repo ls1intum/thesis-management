@@ -1,5 +1,5 @@
 import { Center, Group, Text } from '@mantine/core'
-import { SmileySad } from 'phosphor-react'
+import { SmileySad } from '@phosphor-icons/react'
 
 const NotFound = () => {
   return (

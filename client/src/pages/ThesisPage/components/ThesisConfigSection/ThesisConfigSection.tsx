@@ -2,7 +2,7 @@ import { IThesis, ThesisState } from '../../../../requests/responses/thesis'
 import { Accordion, Button, Group, Select, Stack, TagsInput, Text, TextInput } from '@mantine/core'
 import { useEffect, useState } from 'react'
 import { isNotEmpty, useForm } from '@mantine/form'
-import { DateInput, DateTimePicker, DateValue } from '@mantine/dates'
+import { DateInput, DateTimePicker } from '@mantine/dates'
 import UserMultiSelect from '../../../../components/UserMultiSelect/UserMultiSelect'
 import { isNotEmptyUserList } from '../../../../utils/validation'
 import { isThesisClosed } from '../../../../utils/thesis'
@@ -29,17 +29,17 @@ interface IThesisConfigSectionFormValues {
   language: string
   visibility: string
   keywords: string[]
-  startDate: DateValue | undefined
-  endDate: DateValue | undefined
+  startDate: Date | undefined
+  endDate: Date | undefined
   students: string[]
   advisors: string[]
   supervisors: string[]
   researchGroupId: string
-  states: Array<{ state: ThesisState; changedAt: DateValue }>
+  states: Array<{ state: ThesisState; changedAt: Date | null }>
 }
 
 const thesisDatesValidator = (
-  _value: DateValue | undefined,
+  _value: Date | undefined,
   values: IThesisConfigSectionFormValues,
 ): string | undefined => {
   const startDate = values.startDate
@@ -283,11 +283,17 @@ const ThesisConfigSection = () => {
                   label='Start Date'
                   disabled={!access.advisor}
                   {...form.getInputProps('startDate')}
+                  onChange={(date) =>
+                    form.setFieldValue('startDate', date ? new Date(date) : undefined)
+                  }
                 />
                 <DateInput
                   label='End Date'
                   disabled={!access.advisor}
                   {...form.getInputProps('endDate')}
+                  onChange={(date) =>
+                    form.setFieldValue('endDate', date ? new Date(date) : undefined)
+                  }
                 />
               </Group>
               <UserMultiSelect
@@ -343,7 +349,10 @@ const ThesisConfigSection = () => {
                     value={item.changedAt}
                     error={form.errors.states}
                     onChange={(value) => {
-                      form.values.states[index] = { state: item.state, changedAt: value }
+                      form.values.states[index] = {
+                        state: item.state,
+                        changedAt: value ? new Date(value) : null,
+                      }
                       form.setFieldValue('states', [...form.values.states])
                     }}
                   />

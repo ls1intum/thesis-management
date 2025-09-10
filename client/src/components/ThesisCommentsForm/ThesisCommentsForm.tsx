@@ -1,7 +1,7 @@
 import { Button, Stack, Textarea } from '@mantine/core'
 import { useState } from 'react'
 import { useThesisCommentsContext } from '../../providers/ThesisCommentsProvider/hooks'
-import { Upload } from 'phosphor-react'
+import { Upload } from '@phosphor-icons/react'
 import UploadFileButton from '../UploadFileButton/UploadFileButton'
 import { isThesisClosed } from '../../utils/thesis'
 

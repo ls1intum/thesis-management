@@ -11,7 +11,7 @@ import {
 } from '@mantine/core'
 import { usePageTitle } from '../../hooks/theme'
 import { GLOBAL_CONFIG } from '../../config/global'
-import { Check, Copy } from 'phosphor-react'
+import { Check, Copy } from '@phosphor-icons/react'
 import PublicPresentationsTable from '../../components/PublicPresentationsTable/PublicPresentationsTable'
 import { useEffect, useState } from 'react'
 import { ILightResearchGroup } from '../../requests/responses/researchGroup'

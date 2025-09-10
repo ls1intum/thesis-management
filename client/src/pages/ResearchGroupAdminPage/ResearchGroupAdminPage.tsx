@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { usePageTitle } from '../../hooks/theme'
 import { Box, Button, Flex, Loader, SimpleGrid, Stack, TextInput, Title } from '@mantine/core'
-import { MagnifyingGlass, Plus, UsersThree } from 'phosphor-react'
+import { MagnifyingGlass, Plus, UsersThree } from '@phosphor-icons/react'
 import { doRequest } from '../../requests/request'
 import { PaginationResponse } from '../../requests/responses/pagination'
 import { IResearchGroup } from '../../requests/responses/researchGroup'

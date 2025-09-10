@@ -1,5 +1,5 @@
 import { isNotEmpty, useForm } from '@mantine/form'
-import { DateTimePicker, DateValue } from '@mantine/dates'
+import { DateTimePicker } from '@mantine/dates'
 import { useEffect } from 'react'
 import { useThesisUpdateAction } from '../../../../providers/ThesisProvider/hooks'
 import { Accordion, Alert, Button, Modal, Select, Stack, TextInput } from '@mantine/core'
@@ -29,7 +29,7 @@ interface IFormValues {
   location: string
   streamUrl: string
   language: string | null
-  date: DateValue
+  date: Date | null
 }
 
 const ReplacePresentationModal = (props: IReplacePresentationModalProps) => {
@@ -178,7 +178,12 @@ const ReplacePresentationModal = (props: IReplacePresentationModalProps) => {
           <TextInput label='Location' {...form.getInputProps('location')} />
           <TextInput type='url' label='Stream URL' {...form.getInputProps('streamUrl')} />
           <LanguageSelect label='Language' required {...form.getInputProps('language')} />
-          <DateTimePicker label='Scheduled At' required {...form.getInputProps('date')} />
+          <DateTimePicker
+            label='Scheduled At'
+            required
+            {...form.getInputProps('date')}
+            onChange={(date) => form.setFieldValue('date', date ? new Date(date) : null)}
+          />
           <Button
             fullWidth
             onClick={onReplacePresentation}
