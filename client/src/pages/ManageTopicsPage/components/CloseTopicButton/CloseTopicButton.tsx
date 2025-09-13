@@ -1,5 +1,5 @@
 import { ITopic } from '../../../../requests/responses/topic'
-import { X } from 'phosphor-react'
+import { X } from '@phosphor-icons/react'
 import React, { useEffect, useState } from 'react'
 import { useTopicsContext } from '../../../../providers/TopicsProvider/hooks'
 import { doRequest } from '../../../../requests/request'

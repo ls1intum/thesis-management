@@ -9,7 +9,7 @@ import AvatarUser from '../../../../components/AvatarUser/AvatarUser'
 import { formatDate } from '../../../../utils/format'
 import { doRequest } from '../../../../requests/request'
 import { ApiError } from '../../../../requests/handler'
-import { Trash } from 'phosphor-react'
+import { Trash } from '@phosphor-icons/react'
 
 interface IThesisFeedbackOverviewProps {
   type: string

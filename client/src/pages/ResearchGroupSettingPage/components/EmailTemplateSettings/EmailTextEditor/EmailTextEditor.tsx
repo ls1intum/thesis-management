@@ -3,12 +3,11 @@ import TextAlign from '@tiptap/extension-text-align'
 import Underline from '@tiptap/extension-underline'
 import { useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import { TextStyle } from '@tiptap/extension-text-style'
 import { Button, Group, Popover, Stack, TextInput } from '@mantine/core'
 import ReactComponent from './Extension'
 import { IEmailTemplate } from '../../../../../requests/responses/emailtemplate'
-import { Plus } from 'phosphor-react'
 import { useEffect, useState } from 'react'
+import { Plus } from '@phosphor-icons/react'
 
 // Function to convert HTML react-component tags to template variables
 const convertHtmlToTemplateVariables = (html: string): string => {
@@ -31,7 +30,6 @@ const EmailTextEditor = ({ editingTemplate, setEditingTemplate }: IEmailTextEdit
       StarterKit,
       Underline,
       Link,
-      TextStyle,
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
       ReactComponent,
     ],

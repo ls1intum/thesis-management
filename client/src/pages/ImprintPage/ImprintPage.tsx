@@ -1,6 +1,5 @@
 import { Title } from '@mantine/core'
 import { usePageTitle } from '../../hooks/theme'
-import PublicArea from '../../app/layout/PublicArea/PublicArea'
 import { useEffect, useState } from 'react'
 
 const ImprintPage = () => {

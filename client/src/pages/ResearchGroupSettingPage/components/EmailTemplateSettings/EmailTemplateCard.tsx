@@ -1,8 +1,8 @@
 import { Badge, Card, Text, Stack, Title, Group, Button, Flex, Modal } from '@mantine/core'
 import { IEmailTemplate } from '../../../../requests/responses/emailtemplate'
-import { Eye, NotePencil } from 'phosphor-react'
 import { useState } from 'react'
 import EmailTemplateModal from './EmailTemplateModal'
+import { Eye, NotePencil } from '@phosphor-icons/react'
 
 interface IEmailTemplatesOverviewProps {
   emailTemplate: {

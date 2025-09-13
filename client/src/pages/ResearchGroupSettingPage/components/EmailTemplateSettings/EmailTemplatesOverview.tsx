@@ -6,9 +6,9 @@ import { PaginationResponse } from '../../../../requests/responses/pagination'
 import { showSimpleError } from '../../../../utils/notification'
 import { Box, Divider, Flex, SimpleGrid, Stack, TextInput, Text } from '@mantine/core'
 import { ResearchGroupSettingsCard } from '../ResearchGroupSettingsCard'
-import { MagnifyingGlass, Spinner } from 'phosphor-react'
 import EmailTemplateCard from './EmailTemplateCard'
 import { useSearchParams } from 'react-router'
+import { MagnifyingGlass, Spinner } from '@phosphor-icons/react'
 
 const EmailTemplatesOverview = () => {
   const [loading, setLoading] = useState(true)

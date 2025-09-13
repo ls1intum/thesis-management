@@ -11,7 +11,7 @@ import { useManagementAccess } from '../../hooks/authentication'
 import { Link } from 'react-router'
 import ApplicationModal from '../../components/ApplicationModal/ApplicationModal'
 import MyTasksSection from './components/MyTasksSection/MyTasksSection'
-import { Pencil } from 'phosphor-react'
+import { Pencil } from '@phosphor-icons/react'
 import { ThesisState } from '../../requests/responses/thesis'
 
 const DashboardPage = () => {

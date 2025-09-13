@@ -18,7 +18,7 @@ import UploadFileButton from '../../../../components/UploadFileButton/UploadFile
 import AuthenticatedFilePreview from '../../../../components/AuthenticatedFilePreview/AuthenticatedFilePreview'
 import AuthenticatedFileDownloadButton from '../../../../components/AuthenticatedFileDownloadButton/AuthenticatedFileDownloadButton'
 import AuthenticatedFilePreviewButton from '../../../../components/AuthenticatedFilePreviewButton/AuthenticatedFilePreviewButton'
-import { DownloadSimple, Eye, UploadSimple, WarningCircle } from 'phosphor-react'
+import { DownloadSimple, Eye, UploadSimple, WarningCircle } from '@phosphor-icons/react'
 import FileHistoryTable from '../FileHistoryTable/FileHistoryTable'
 
 const ThesisWritingSection = () => {

@@ -1,7 +1,24 @@
-import { Box, Button, Flex, Loader, Select, Table, TextInput } from '@mantine/core'
-import { IResearchGroup } from '../../../../requests/responses/researchGroup'
-import { ResearchGroupSettingsCard } from '../ResearchGroupSettingsCard'
-import { MagnifyingGlass, Plus, Trash, User } from 'phosphor-react'
+import {
+  Box,
+  Button,
+  Flex,
+  Group,
+  Loader,
+  Menu,
+  Select,
+  Table,
+  TextInput,
+  UnstyledButton,
+  Text,
+} from '@mantine/core'
+import {
+  DotsThreeVertical,
+  MagnifyingGlass,
+  Plus,
+  Trash,
+  UserMinus,
+  UserPlus,
+} from '@phosphor-icons/react'
 import AddResearchGroupMemberModal from './AddResearchGroupMemberModal'
 import { useEffect, useState } from 'react'
 import { ILightUser } from '../../../../requests/responses/user'
@@ -11,6 +28,8 @@ import { getApiResponseErrorMessage } from '../../../../requests/handler'
 import { showNotification } from '@mantine/notifications'
 import UserInformationRow from '../../../../components/UserInformationRow/UserInformationRow'
 import DeleteMemberModal from './DeleteMemberModal'
+import { ResearchGroupSettingsCard } from '../ResearchGroupSettingsCard'
+import { IResearchGroup } from '../../../../requests/responses/researchGroup'
 
 interface IResearchGroupMembersProps {
   researchGroupData: IResearchGroup | undefined
@@ -140,6 +159,43 @@ const ResearchGroupMembers = ({ researchGroupData }: IResearchGroupMembersProps)
     )
   }
 
+  const updateGroupAdminForUser = async (userId: string, userName: string) => {
+    if (!researchGroupData?.id) return
+
+    doRequest<ILightUser>(
+      `/v2/research-groups/${researchGroupData.id}/member/${userId}/group-admin`,
+      {
+        method: 'PUT',
+        requiresAuth: true,
+      },
+      (res) => {
+        if (res.ok) {
+          showNotification({
+            title: 'Success',
+            message: res.data.groups.includes('group-admin')
+              ? `${userName} is now a group admin.`
+              : `${userName} is no longer a group admin.`,
+            color: 'green',
+          })
+
+          setMembers((prev) =>
+            prev.map((member) => {
+              if (member.userId === userId) {
+                return { ...member, groups: res.data.groups }
+              }
+              return member
+            }),
+          )
+        } else {
+          showSimpleError(getApiResponseErrorMessage(res))
+        }
+      },
+    )
+  }
+
+  const [deleteMemberModalOpened, setDeleteMemberModalOpened] = useState(false)
+  const [memberForDelete, setMemberForDelete] = useState<ILightUser>({} as ILightUser)
+
   return (
     <ResearchGroupSettingsCard
       title='Group Members'
@@ -205,6 +261,7 @@ const ResearchGroupMembers = ({ researchGroupData }: IResearchGroupMembersProps)
                       username={member.universityId ?? ''}
                       email={member.email ?? ''}
                       user={member}
+                      researchGroupAdmin={member.groups.includes('group-admin')}
                     />
                   </Table.Td>
                   <Table.Td style={{ whiteSpace: 'nowrap' }}>
@@ -223,14 +280,74 @@ const ResearchGroupMembers = ({ researchGroupData }: IResearchGroupMembersProps)
                       />
                     </Box>
                   </Table.Td>
-                  <Table.Td style={{ width: '1%', whiteSpace: 'nowrap', textAlign: 'right' }}>
-                    <DeleteMemberModal
-                      onConfirm={() => {
-                        handleRemoveMember(member.userId)
-                      }}
-                      member={member}
-                      disabled={member.userId === researchGroupData?.head.userId}
-                    />
+                  <Table.Td
+                    style={{
+                      width: '1%',
+                      whiteSpace: 'nowrap',
+                      textAlign: 'right',
+                    }}
+                  >
+                    <Menu
+                      shadow='md'
+                      width={200}
+                      position='bottom-end'
+                      withArrow
+                      transitionProps={{ transition: 'scale-y', duration: 200 }}
+                    >
+                      <Menu.Target>
+                        <UnstyledButton
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          <DotsThreeVertical size={24} />
+                        </UnstyledButton>
+                      </Menu.Target>
+
+                      <Menu.Dropdown>
+                        <Menu.Item disabled={member.userId === researchGroupData?.head.userId}>
+                          <Group
+                            justify='flex-start'
+                            align='center'
+                            gap='xs'
+                            onClick={() => {
+                              updateGroupAdminForUser(
+                                member.userId,
+                                `${member.firstName ?? ''} ${member.lastName ?? ''}`,
+                              )
+                            }}
+                          >
+                            {member.groups.includes('group-admin') ? (
+                              <>
+                                <UserMinus size={16} />
+                                <Text size='xs'>Remove Group Admin</Text>
+                              </>
+                            ) : (
+                              <>
+                                <UserPlus size={16} />
+                                <Text size='xs'>Make Group Admin</Text>
+                              </>
+                            )}
+                          </Group>
+                        </Menu.Item>
+                        <Menu.Item disabled={member.userId === researchGroupData?.head.userId}>
+                          <Group
+                            justify='flex-start'
+                            align='center'
+                            gap='xs'
+                            onClick={() => {
+                              setDeleteMemberModalOpened(true)
+                              setMemberForDelete(member)
+                            }}
+                          >
+                            <Trash size={16} color='red' />
+                            <Text size='xs'>Remove from Group</Text>
+                          </Group>
+                        </Menu.Item>
+                      </Menu.Dropdown>
+                    </Menu>
                   </Table.Td>
                 </Table.Tr>
               ))}
@@ -244,6 +361,16 @@ const ResearchGroupMembers = ({ researchGroupData }: IResearchGroupMembersProps)
         researchGroupName={researchGroupData?.name ?? ''}
         handleAddMember={handleAddMember}
       ></AddResearchGroupMemberModal>
+      <DeleteMemberModal
+        onConfirm={() => {
+          handleRemoveMember(memberForDelete.userId)
+          setMemberForDelete({} as ILightUser)
+        }}
+        member={memberForDelete}
+        disabled={memberForDelete.userId === researchGroupData?.head.userId}
+        deleteMemberModalOpened={deleteMemberModalOpened}
+        setDeleteMemberModalOpened={setDeleteMemberModalOpened}
+      />
     </ResearchGroupSettingsCard>
   )
 }

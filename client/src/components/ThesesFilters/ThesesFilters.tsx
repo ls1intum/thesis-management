@@ -2,7 +2,7 @@ import React from 'react'
 import { Grid, MultiSelect, Select, TextInput } from '@mantine/core'
 import { useThesesContext } from '../../providers/ThesesProvider/hooks'
 import { ThesisState } from '../../requests/responses/thesis'
-import { MagnifyingGlass } from 'phosphor-react'
+import { MagnifyingGlass } from '@phosphor-icons/react'
 import { formatThesisState, formatThesisType } from '../../utils/format'
 import { GLOBAL_CONFIG } from '../../config/global'
 

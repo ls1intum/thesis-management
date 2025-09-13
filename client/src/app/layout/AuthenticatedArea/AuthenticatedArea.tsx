@@ -1,4 +1,4 @@
-import { PropsWithChildren, Suspense, useEffect } from 'react'
+import { PropsWithChildren, Suspense, useEffect, useState } from 'react'
 import {
   ActionIcon,
   AppShell,
@@ -28,7 +28,8 @@ import {
   Table,
   Presentation,
   UsersThree,
-} from 'phosphor-react'
+  Gear,
+} from '@phosphor-icons/react'
 import { useAuthenticationContext, useUser } from '../../../hooks/authentication'
 import { useNavigationType } from 'react-router'
 import ScrollToTop from '../ScrollToTop/ScrollToTop'
@@ -40,6 +41,7 @@ import ContentContainer from '../ContentContainer/ContentContainer'
 import Footer from '../../../components/Footer/Footer'
 import Header from '../../../components/Header/Header'
 import { useIsSmallerBreakpoint } from '../../../hooks/theme'
+import { IUser } from '../../../requests/responses/user'
 
 export interface IAuthenticatedAreaProps {
   size?: MantineSize
@@ -225,6 +227,23 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
             )}
             {!collapseNavigation && (
               <Group>
+                {user.groups.includes('group-admin') && (
+                  <Link
+                    to={`/research-groups/${user.researchGroupId}`}
+                    className={minimized ? classes.minimizedLink : classes.fullLink}
+                    data-active={location.pathname.startsWith('/research-groups') || undefined}
+                  >
+                    <Tooltip
+                      label='Group Settings'
+                      disabled={!minimized}
+                      position='right'
+                      offset={15}
+                    >
+                      <Gear className={classes.linkIcon} size={25} />
+                    </Tooltip>
+                    {!minimized && <span>Group Settings</span>}
+                  </Link>
+                )}
                 <ActionIcon
                   visibleFrom='md'
                   ml='auto'

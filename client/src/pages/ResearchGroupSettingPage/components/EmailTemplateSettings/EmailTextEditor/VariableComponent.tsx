@@ -1,6 +1,6 @@
 import { Badge, Button, Group, Popover, Stack, TextInput } from '@mantine/core'
+import { CaretDown } from '@phosphor-icons/react'
 import { NodeViewWrapper, NodeViewProps } from '@tiptap/react'
-import { CaretDown } from 'phosphor-react'
 import { useState } from 'react'
 
 export default (props: NodeViewProps) => {

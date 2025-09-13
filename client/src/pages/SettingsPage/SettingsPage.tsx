@@ -1,6 +1,6 @@
 import React from 'react'
 import { Space, Tabs } from '@mantine/core'
-import { EnvelopeOpen, User } from 'phosphor-react'
+import { EnvelopeOpen, User } from '@phosphor-icons/react'
 import MyInformation from './components/MyInformation/MyInformation'
 import NotificationSettings from './components/NotificationSettings/NotificationSettings'
 import { useNavigate, useParams } from 'react-router'

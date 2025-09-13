@@ -1,26 +1,24 @@
 import { Modal, Text, Button, Group, Alert, Stack } from '@mantine/core'
-import { WarningCircle } from 'phosphor-react'
-import { useState } from 'react'
-import DeleteButton from '../../../../components/DeleteButton/DeleteButton'
 import { ILightUser } from '../../../../requests/responses/user'
+import { WarningCircleIcon } from '@phosphor-icons/react'
 
 type IDeleteMemberModalProps = {
   onConfirm: () => void
   member?: ILightUser
   disabled?: boolean
+  deleteMemberModalOpened: boolean
+  setDeleteMemberModalOpened: (opened: boolean) => void
 }
 
-const DeleteMemberModal = ({ onConfirm, member, disabled }: IDeleteMemberModalProps) => {
-  const [deleteMemberModalOpened, setDeleteMemberModalOpened] = useState(false)
-
+const DeleteMemberModal = ({
+  onConfirm,
+  member,
+  disabled,
+  deleteMemberModalOpened,
+  setDeleteMemberModalOpened,
+}: IDeleteMemberModalProps) => {
   return (
     <div>
-      <DeleteButton
-        onClick={() => {
-          setDeleteMemberModalOpened(true)
-        }}
-        disabled={disabled}
-      />
       <Modal
         opened={deleteMemberModalOpened}
         onClose={() => setDeleteMemberModalOpened(false)}
@@ -38,7 +36,7 @@ const DeleteMemberModal = ({ onConfirm, member, disabled }: IDeleteMemberModalPr
             variant='light'
             color='orange'
             title='Important'
-            icon={<WarningCircle size={16} />}
+            icon={<WarningCircleIcon size={16} />}
           >
             The removed member might have open theses and topics. Please ensure that you have
             considered this before proceeding.

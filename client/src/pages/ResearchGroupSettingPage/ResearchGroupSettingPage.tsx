@@ -4,13 +4,16 @@ import { IResearchGroup } from '../../requests/responses/researchGroup'
 import { doRequest } from '../../requests/request'
 import { showSimpleError } from '../../utils/notification'
 import { getApiResponseErrorMessage } from '../../requests/handler'
-import { Loader, Stack, Tabs, Title } from '@mantine/core'
+import { Center, Loader, Stack, Tabs, Title } from '@mantine/core'
 import GeneralResearchGroupSettings from './components/GeneralResearchGroupSettings'
 import ResearchGroupMembers from './components/MemberSettings/ResearchGroupMembers'
 import EmailTemplatesOverview from './components/EmailTemplateSettings/EmailTemplatesOverview'
+import { useUser } from '../../hooks/authentication'
 
 const ResearchGroupSettingPage = () => {
   const { researchGroupId } = useParams<{ researchGroupId: string }>()
+
+  const user = useUser()
 
   const [loading, setLoading] = useState(true)
   const [researchGroupData, setResearchGroupData] = useState<IResearchGroup | undefined>(undefined)
@@ -57,34 +60,43 @@ const ResearchGroupSettingPage = () => {
   if (loading) return <Loader />
 
   return (
-    <Stack>
-      <Title>Research Group Settings</Title>
+    <>
+      {user &&
+      (user.groups.includes('admin') ? false : user.researchGroupId !== researchGroupId) ? (
+        <Center h={'100%'}>
+          <h1>403 - Unauthorized</h1>
+        </Center>
+      ) : (
+        <Stack>
+          <Title>Research Group Settings</Title>
 
-      <Tabs
-        value={selectedTab}
-        onChange={(value) => {
-          setSelectedTab(value || 'general')
-        }}
-      >
-        <Tabs.List>
-          <Tabs.Tab value='general'>General</Tabs.Tab>
-          <Tabs.Tab value='email-templates'>Email Templates</Tabs.Tab>
-        </Tabs.List>
+          <Tabs
+            value={selectedTab}
+            onChange={(value) => {
+              setSelectedTab(value || 'general')
+            }}
+          >
+            <Tabs.List>
+              <Tabs.Tab value='general'>General</Tabs.Tab>
+              <Tabs.Tab value='email-templates'>Email Templates</Tabs.Tab>
+            </Tabs.List>
 
-        <Tabs.Panel value='general' pt='md'>
-          <Stack>
-            <GeneralResearchGroupSettings
-              researchGroupData={researchGroupData}
-              setResearchGroupData={setResearchGroupData}
-            />
-            <ResearchGroupMembers researchGroupData={researchGroupData} />
-          </Stack>
-        </Tabs.Panel>
-        <Tabs.Panel value='email-templates' pt='md'>
-          <EmailTemplatesOverview />
-        </Tabs.Panel>
-      </Tabs>
-    </Stack>
+            <Tabs.Panel value='general' pt='md'>
+              <Stack>
+                <GeneralResearchGroupSettings
+                  researchGroupData={researchGroupData}
+                  setResearchGroupData={setResearchGroupData}
+                />
+                <ResearchGroupMembers researchGroupData={researchGroupData} />
+              </Stack>
+            </Tabs.Panel>
+            <Tabs.Panel value='email-templates' pt='md'>
+              <EmailTemplatesOverview />
+            </Tabs.Panel>
+          </Tabs>
+        </Stack>
+      )}
+    </>
   )
 }
 

@@ -1,4 +1,4 @@
-import { Moon, Sun } from 'phosphor-react'
+import { Moon, Sun } from '@phosphor-icons/react'
 import { ActionIcon, useMantineColorScheme } from '@mantine/core'
 import { BoxProps } from '@mantine/core/lib/core'
 
