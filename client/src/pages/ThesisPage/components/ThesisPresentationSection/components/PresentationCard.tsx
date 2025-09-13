@@ -54,6 +54,7 @@ interface IPresentationCardProps {
   thesis: IThesis
   thesisName?: string
   thesisType?: string
+  hasEditAccess: boolean
 }
 
 const PresentationCard = ({
@@ -61,6 +62,7 @@ const PresentationCard = ({
   thesis,
   thesisName,
   thesisType,
+  hasEditAccess,
 }: IPresentationCardProps) => {
   const [deleting, deletePresentation] = useThesisUpdateAction(
     async (presentation: IThesisPresentation) => {
@@ -162,6 +164,14 @@ const PresentationCard = ({
     )
   }
 
+  const showNoteWhenEmpty = () => {
+    if (!presentation.presentationNoteHtml || presentation.presentationNoteHtml === '') {
+      return hasEditAccess
+    } else {
+      return true
+    }
+  }
+
   return (
     <Card
       withBorder
@@ -198,7 +208,8 @@ const PresentationCard = ({
                 </Badge>
               </Group>
             </Stack>
-            <Group gap={'0.5rem'}>
+
+            {hasEditAccess && (
               <Menu
                 shadow='md'
                 width={200}
@@ -247,7 +258,7 @@ const PresentationCard = ({
                   )}
                 </Menu.Dropdown>
               </Menu>
-            </Group>
+            )}
           </Group>
           <Group pt={'0.5rem'} gap={'0.5rem'}>
             {getThesisInfoItem(
@@ -267,8 +278,8 @@ const PresentationCard = ({
               formatLanguage(presentation.language),
             )}
           </Group>
-          <Divider />
-          {presentation.state !== 'DRAFTED' ? (
+          {showNoteWhenEmpty() && <Divider />}
+          {presentation.state !== 'DRAFTED' && showNoteWhenEmpty() ? (
             <Stack>
               <Group justify={'space-between'} gap={'0.5rem'} align='center'>
                 {getThesisInfoItem(
@@ -276,7 +287,7 @@ const PresentationCard = ({
                   'Presentation Note',
                 )}
                 <Group gap={'0.5rem'} align='center'>
-                  {presentationNoteOpen && !editMode && (
+                  {presentationNoteOpen && !editMode && hasEditAccess && (
                     <Button
                       size='xs'
                       variant='outline'
@@ -289,7 +300,7 @@ const PresentationCard = ({
                       Edit
                     </Button>
                   )}
-                  {editMode && presentationNoteOpen ? (
+                  {editMode && presentationNoteOpen && hasEditAccess ? (
                     <>
                       <Button
                         variant='default'
@@ -373,7 +384,7 @@ const PresentationCard = ({
                 )}
               </Transition>
             </Stack>
-          ) : (
+          ) : hasEditAccess ? (
             <Group justify={'flex-end'} gap={'0.5rem'} align='center'>
               <Button
                 variant='outline'
@@ -385,7 +396,7 @@ const PresentationCard = ({
                 Accept
               </Button>
             </Group>
-          )}
+          ) : undefined}
         </Stack>
       </Card>
       <Modal

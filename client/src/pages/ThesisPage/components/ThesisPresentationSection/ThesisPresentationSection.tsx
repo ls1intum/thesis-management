@@ -39,6 +39,7 @@ const ThesisPresentationSection = () => {
                 presentation={presentation}
                 thesis={thesis}
                 thesisType={thesis.type}
+                hasEditAccess={access.student || false}
               />
             ))}
           </Stack>
