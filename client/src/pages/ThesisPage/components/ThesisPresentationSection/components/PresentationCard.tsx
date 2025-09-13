@@ -11,6 +11,8 @@ import {
   UnstyledButton,
   Modal,
   Alert,
+  Accordion,
+  Transition,
 } from '@mantine/core'
 import { IThesis, IThesisPresentation } from '../../../../../requests/responses/thesis'
 import {
@@ -22,8 +24,11 @@ import {
 } from '../../../../../utils/format'
 import {
   CalendarBlankIcon,
+  CaretDownIcon,
+  CaretUpIcon,
   CheckIcon,
   DotsThreeVerticalIcon,
+  FloppyDiskIcon,
   GlobeSimpleIcon,
   MapPinIcon,
   NotepadIcon,
@@ -32,6 +37,7 @@ import {
   TrashIcon,
   WarningCircleIcon,
   WebcamIcon,
+  XIcon,
 } from '@phosphor-icons/react'
 import { useThesisUpdateAction } from '../../../../../providers/ThesisProvider/hooks'
 import { doRequest } from '../../../../../requests/request'
@@ -41,6 +47,7 @@ import { useUser } from '../../../../../hooks/authentication'
 import { useState } from 'react'
 import ReplacePresentationModal from '../../../../../components/PresentationsTable/components/ReplacePresentationModal/ReplacePresentationModal'
 import SchedulePresentationModal from '../../../../../components/PresentationsTable/components/SchedulePresentationModal/SchedulePresentationModal'
+import DocumentEditor from '../../../../../components/DocumentEditor/DocumentEditor'
 
 interface IPresentationCardProps {
   presentation: IThesisPresentation
@@ -81,7 +88,35 @@ const PresentationCard = ({
     IThesisPresentation | undefined
   >(undefined)
 
+  const [presentationNoteOpen, setPresentationNoteOpen] = useState<boolean>(false)
+  const [editMode, setEditMode] = useState(presentation.presentationNoteHtml ? false : true)
+
   const user = useUser()
+
+  const [editingPresentationNote, setEditingPresentationNote] = useState<string>(
+    presentation.presentationNoteHtml ?? '',
+  )
+
+  const [updating, updatePresentationNote] = useThesisUpdateAction(
+    async (presentationId: string, note: string, onSuccess?: () => void) => {
+      const response = await doRequest<IThesis>(
+        `/v2/theses/${thesis.thesisId}/presentations/${presentationId}/note`,
+        {
+          method: 'PUT',
+          requiresAuth: true,
+          data: { note },
+        },
+      )
+
+      if (response.ok) {
+        onSuccess?.()
+        return response.data
+      } else {
+        throw new ApiError(response)
+      }
+    },
+    'Presentation note updated successfully',
+  )
 
   const getPresentationColor = (state: string) => {
     if (state === 'SCHEDULED') {
@@ -234,12 +269,110 @@ const PresentationCard = ({
           </Group>
           <Divider />
           {presentation.state !== 'DRAFTED' ? (
-            <Group justify='space-between' gap={'0.5rem'} align='center'>
-              {getThesisInfoItem(<NotepadIcon color={'gray'} weight='bold' />, 'Presentation Note')}
-              <Button variant='default' size='xs' c={'gray'} leftSection={<PlusIcon size={14} />}>
-                Add
-              </Button>
-            </Group>
+            <Stack>
+              <Group justify={'space-between'} gap={'0.5rem'} align='center'>
+                {getThesisInfoItem(
+                  <NotepadIcon color={'gray'} weight='bold' />,
+                  'Presentation Note',
+                )}
+                <Group gap={'0.5rem'} align='center'>
+                  {presentationNoteOpen && !editMode && (
+                    <Button
+                      size='xs'
+                      variant='outline'
+                      c={'primary'}
+                      leftSection={<NotePencilIcon size={14} />}
+                      onClick={() => {
+                        setEditMode(true)
+                      }}
+                    >
+                      Edit
+                    </Button>
+                  )}
+                  {editMode && presentationNoteOpen ? (
+                    <>
+                      <Button
+                        variant='default'
+                        size='xs'
+                        c={'gray'}
+                        leftSection={<XIcon size={14} />}
+                        onClick={() => {
+                          setEditingPresentationNote(presentation.presentationNoteHtml ?? '')
+                          if (
+                            !presentation.presentationNoteHtml ||
+                            presentation.presentationNoteHtml === ''
+                          ) {
+                            setPresentationNoteOpen(false)
+                          } else {
+                            setEditMode(false)
+                          }
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        size='xs'
+                        variant='outline'
+                        c={'primary'}
+                        leftSection={<FloppyDiskIcon size={14} />}
+                        loading={updating}
+                        onClick={() => {
+                          updatePresentationNote(
+                            presentation.presentationId,
+                            editingPresentationNote,
+                            () => {
+                              if (editingPresentationNote && editingPresentationNote !== '') {
+                                setEditMode(false)
+                              } else {
+                                setPresentationNoteOpen(false)
+                              }
+                            },
+                          )
+                        }}
+                      >
+                        Save
+                      </Button>
+                    </>
+                  ) : (
+                    <Button
+                      variant='default'
+                      size='xs'
+                      c={'gray'}
+                      leftSection={
+                        presentation.presentationNoteHtml ? (
+                          presentationNoteOpen ? (
+                            <CaretUpIcon size={14} />
+                          ) : (
+                            <CaretDownIcon size={14} />
+                          )
+                        ) : (
+                          <PlusIcon size={14} />
+                        )
+                      }
+                      onClick={() => {
+                        setPresentationNoteOpen(!presentationNoteOpen)
+                      }}
+                    >
+                      {presentation.presentationNoteHtml
+                        ? presentationNoteOpen
+                          ? 'Hide'
+                          : 'Show'
+                        : 'Add presentation note'}
+                    </Button>
+                  )}
+                </Group>
+              </Group>
+              <Transition mounted={presentationNoteOpen} transition='scale-y' duration={100}>
+                {(styles) => (
+                  <DocumentEditor
+                    value={editingPresentationNote}
+                    onChange={(e) => setEditingPresentationNote(e.target.value)}
+                    editMode={editMode}
+                    style={styles}
+                  />
+                )}
+              </Transition>
+            </Stack>
           ) : (
             <Group justify={'flex-end'} gap={'0.5rem'} align='center'>
               <Button

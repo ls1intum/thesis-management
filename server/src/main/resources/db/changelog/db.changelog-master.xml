@@ -14,4 +14,5 @@
     <include file="changes/08_research_groups.sql" relativeToChangelogFile="true"/>
     <include file="changes/09_email_templates.sql" relativeToChangelogFile="true"/>
     <include file="changes/10_unique_abbreviation_research_group.sql" relativeToChangelogFile="true"/>
+    <include file="changes/12_add_presentation_note.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>
