@@ -1,7 +1,7 @@
 import { Card, Flex, Text, Group, Stack, Button, Tooltip, Anchor } from '@mantine/core'
 import { ITopic } from '../../../../../requests/responses/topic'
 import { useHover, useMediaQuery } from '@mantine/hooks'
-import { DownloadSimple, Users } from 'phosphor-react'
+import { DownloadSimple, Users } from '@phosphor-icons/react'
 import AvatarUserList from '../../../../../components/AvatarUserList/AvatarUserList'
 import { IPublishedThesis } from '../../../../../requests/responses/thesis'
 import { Dispatch, useEffect, useState } from 'react'

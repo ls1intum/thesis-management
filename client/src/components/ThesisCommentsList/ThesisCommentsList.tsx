@@ -2,7 +2,7 @@ import { useThesisCommentsContext } from '../../providers/ThesisCommentsProvider
 import { Center, Group, Pagination, Paper, Skeleton, Stack, Text } from '@mantine/core'
 import { useLoggedInUser } from '../../hooks/authentication'
 import { formatDate, formatUser } from '../../utils/format'
-import { Download, Eye } from 'phosphor-react'
+import { Download, Eye } from '@phosphor-icons/react'
 import { useHighlightedBackgroundColor } from '../../hooks/theme'
 import AuthenticatedFileDownloadButton from '../AuthenticatedFileDownloadButton/AuthenticatedFileDownloadButton'
 import AuthenticatedFilePreviewButton from '../AuthenticatedFilePreviewButton/AuthenticatedFilePreviewButton'

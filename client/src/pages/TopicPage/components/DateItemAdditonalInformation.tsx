@@ -1,6 +1,6 @@
 import { Group, Stack, Title, Text } from '@mantine/core'
-import { CalendarBlank } from 'phosphor-react'
 import { formatDate } from '../../../utils/format'
+import { CalendarBlankIcon } from '@phosphor-icons/react'
 
 interface IDateItemAdditionalInformationProps {
   label: string
@@ -14,7 +14,7 @@ const DateItemAdditionalInformation = ({ label, date }: IDateItemAdditionalInfor
         {label}
       </Title>
       <Group gap={'0.5rem'}>
-        <CalendarBlank size={16} />
+        <CalendarBlankIcon size={16} />
         <Text>{formatDate(date, { withTime: false })}</Text>
       </Group>
     </Stack>

@@ -1,5 +1,5 @@
 import { Grid, MultiSelect, Select, TextInput } from '@mantine/core'
-import { MagnifyingGlass } from 'phosphor-react'
+import { MagnifyingGlass } from '@phosphor-icons/react'
 import { ApplicationState } from '../../requests/responses/application'
 import { useApplicationsContext } from '../../providers/ApplicationsProvider/hooks'
 import React from 'react'

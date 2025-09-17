@@ -159,6 +159,32 @@ public class AccessManagementService {
         }
     }
 
+    public void assignGroupAdminRole(User user) {
+        if (user == null) {
+            throw new RuntimeException("User is null");
+        }
+
+        try {
+            UUID userId = getUserId(user.getUniversityId());
+            assignKeycloakRole(userId, "group-admin");
+        } catch (RuntimeException exception) {
+            log.warn("Could not assign groupadmin role to user", exception);
+        }
+    }
+
+    public void removeGroupAdminRole(User user) {
+        if (user == null) {
+            throw new RuntimeException("User is null");
+        }
+
+        try {
+            UUID userId = getUserId(user.getUniversityId());
+            removeKeycloakRole(userId, "group-admin");
+        } catch (RuntimeException exception) {
+            log.warn("Could not remove groupadmin role from user", exception);
+        }
+    }
+
     public void removeResearchGroupRoles(User user) {
         if (user == null) {
             throw new RuntimeException("User is null");
@@ -170,6 +196,7 @@ public class AccessManagementService {
 
             removeKeycloakRole(userId, "advisor");
             removeKeycloakRole(userId, "supervisor");
+            removeKeycloakRole(userId, "group-admin");
         } catch (RuntimeException exception) {
             log.warn("Could not remove supervisor and/or advisor role from user", exception);
         }

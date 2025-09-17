@@ -9,7 +9,7 @@ import {
   Text,
   useMantineTheme,
 } from '@mantine/core'
-import { ImageSquare, UploadSimple, X } from 'phosphor-react'
+import { ImageSquare, UploadSimple, X } from '@phosphor-icons/react'
 import { Dropzone, IMAGE_MIME_TYPE, PDF_MIME_TYPE } from '@mantine/dropzone'
 import { showSimpleError } from '../../utils/notification'
 import { UploadFileType } from '../../config/types'

@@ -1,10 +1,9 @@
-import { Card, Stack, Text, Divider, Title, Group } from '@mantine/core'
+import { Card, Stack, Text, Divider } from '@mantine/core'
 import { ITopic } from '../../../requests/responses/topic'
-import { Buildings, CalendarBlank, Clock, GraduationCap, Users } from 'phosphor-react'
+import { Buildings, Clock, GraduationCapIcon, Users } from '@phosphor-icons/react'
 import TopicAdittionalInformationSection from './TopicAdditionalInformationSection'
 import ThesisTypeBadge from '../../LandingPage/components/ThesisTypBadge/ThesisTypBadge'
 import AvatarUserList from '../../../components/AvatarUserList/AvatarUserList'
-import { formatDate } from '../../../utils/format'
 import DateItemAdditionalInformation from './DateItemAdditonalInformation'
 
 interface ITopicAdittionalInformationCardProps {
@@ -43,7 +42,7 @@ const TopicAdittionalInformationCard = ({ topic }: ITopicAdittionalInformationCa
         />
         <Divider />
         <TopicAdittionalInformationSection
-          icon={<GraduationCap size={iconSize} />}
+          icon={<GraduationCapIcon size={iconSize} />}
           title='Thesis Types'
           content={
             <Stack gap={'0.5rem'}>

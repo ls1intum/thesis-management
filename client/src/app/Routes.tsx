@@ -4,6 +4,7 @@ import AuthenticatedArea from './layout/AuthenticatedArea/AuthenticatedArea'
 import PageLoader from '../components/PageLoader/PageLoader'
 import PublicArea from './layout/PublicArea/PublicArea'
 import { useAuthenticationContext } from '../hooks/authentication'
+import ResearchGroupSettingPage from '../pages/ResearchGroupSettingPage/ResearchGroupSettingPage'
 
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage/NotFoundPage'))
 const PrivacyPage = lazy(() => import('../pages/PrivacyPage/PrivacyPage'))
@@ -12,9 +13,6 @@ const AboutPage = lazy(() => import('../pages/AboutPage/AboutPage'))
 const ThesisOverviewPage = lazy(() => import('../pages/ThesisOverviewPage/ThesisOverviewPage'))
 const ResearchGroupAdminPage = lazy(
   () => import('../pages/ResearchGroupAdminPage/ResearchGroupAdminPage'),
-)
-const ResearchGroupSettingPage = lazy(
-  () => import('../pages/ResearchGroupSettingPage/ResearchGroupSettingPage'),
 )
 
 const PresentationOverviewPage = lazy(
@@ -162,7 +160,7 @@ const AppRoutes = () => {
           <Route
             path='/research-groups'
             element={
-              <AuthenticatedArea>
+              <AuthenticatedArea requiredGroups={['admin']}>
                 <ResearchGroupAdminPage />
               </AuthenticatedArea>
             }
@@ -170,7 +168,7 @@ const AppRoutes = () => {
           <Route
             path='/research-groups/:researchGroupId'
             element={
-              <AuthenticatedArea>
+              <AuthenticatedArea requiredGroups={['admin', 'group-admin']}>
                 <ResearchGroupSettingPage />
               </AuthenticatedArea>
             }

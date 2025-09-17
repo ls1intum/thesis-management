@@ -1,8 +1,5 @@
-import React, { Dispatch, SetStateAction, useState } from 'react'
+import React, { Dispatch, SetStateAction } from 'react'
 import { Switch } from '@mantine/core'
-import { doRequest } from '../../../../../../requests/request'
-import { showSimpleError } from '../../../../../../utils/notification'
-import { getApiResponseErrorMessage } from '../../../../../../requests/handler'
 import { BoxProps } from '@mantine/core/lib/core'
 import { useNotificationSetting } from '../../../../../../hooks/notification'
 

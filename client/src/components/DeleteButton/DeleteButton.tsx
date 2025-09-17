@@ -1,5 +1,5 @@
 import { ActionIcon } from '@mantine/core'
-import { Trash } from 'phosphor-react'
+import { Trash } from '@phosphor-icons/react'
 
 type IDeleteButtonProps = {
   onClick: () => void

@@ -17,7 +17,7 @@ import { Link, useParams, useSearchParams } from 'react-router'
 import PublishedTheses from './components/PublishedTheses/PublishedTheses'
 import { usePageTitle } from '../../hooks/theme'
 import LandingPageHeader from './components/LandingPageHeader/LandingPageHeader'
-import { FadersHorizontal, List, MagnifyingGlass, SquaresFour } from 'phosphor-react'
+import { FadersHorizontal, List, MagnifyingGlass, SquaresFour } from '@phosphor-icons/react'
 import { useEffect, useState } from 'react'
 import { useDebouncedValue, useMediaQuery } from '@mantine/hooks'
 import { GLOBAL_CONFIG } from '../../config/global'
@@ -52,7 +52,7 @@ const LandingPage = () => {
     searchParams.get('groups')?.split(',') ?? [],
   )
 
-  let pageItemLimit = 12
+  const pageItemLimit = 12
 
   const createResearchGroupFilter = () => {
     if (researchGroupAbbreviation) {

@@ -100,7 +100,7 @@ public class ResearchGroupController {
   }
 
     @GetMapping("/{researchGroupId}/members")
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasAnyRole('admin', 'group-admin')")
     public ResponseEntity<PaginationDto<LightUserDto>> getResearchGroupMembers(
         @PathVariable("researchGroupId") UUID researchGroupId,
         @RequestParam(required = false, defaultValue = "0") Integer page,
@@ -131,7 +131,7 @@ public class ResearchGroupController {
   }
 
   @PutMapping("/{researchGroupId}")
-  @PreAuthorize("hasRole('admin')")
+  @PreAuthorize("hasAnyRole('admin', 'group-admin')")
   public ResponseEntity<ResearchGroupDto> updateResearchGroup(
       @PathVariable("researchGroupId") UUID researchGroupId,
       @RequestBody CreateResearchGroupPayload payload
@@ -163,7 +163,7 @@ public class ResearchGroupController {
   }
 
   @PutMapping("/{researchGroupId}/assign/{username}")
-  @PreAuthorize("hasRole('admin')")
+  @PreAuthorize("hasAnyRole('admin', 'group-admin')")
   public ResponseEntity<LightUserDto> assignUserToResearchGroup(
       @PathVariable("researchGroupId") UUID researchGroupId,
       @PathVariable("username") String username
@@ -174,7 +174,7 @@ public class ResearchGroupController {
   }
 
     @PutMapping("/{researchGroupId}/remove/{userId}")
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasAnyRole('admin', 'group-admin')")
     public ResponseEntity<LightUserDto> removeUserFromResearchGroup(
         @PathVariable("researchGroupId") UUID researchGroupId,
         @PathVariable("userId") UUID userId
@@ -186,13 +186,23 @@ public class ResearchGroupController {
     }
 
   @PutMapping("/{researchGroupId}/member/{userId}/role")
-  @PreAuthorize("hasRole('admin')")
+  @PreAuthorize("hasAnyRole('admin', 'group-admin')")
   public ResponseEntity<LightUserDto> updateResearchGroupMemberRole(
           @PathVariable UUID researchGroupId,
           @PathVariable UUID userId,
           @RequestParam("role") String role
   ) {
     User user = researchGroupService.updateResearchGroupMemberRole(researchGroupId, userId, role);
+    return ResponseEntity.ok(LightUserDto.fromUserEntity(user));
+  }
+
+  @PutMapping("/{researchGroupId}/member/{userId}/group-admin")
+  @PreAuthorize("hasAnyRole('admin', 'group-admin')")
+  public ResponseEntity<LightUserDto> updateResearchGroupAdminRole(
+          @PathVariable UUID researchGroupId,
+          @PathVariable UUID userId
+  ) {
+    User user = researchGroupService.changeResearchGroupAdminRole(researchGroupId, userId);
     return ResponseEntity.ok(LightUserDto.fromUserEntity(user));
   }
 }

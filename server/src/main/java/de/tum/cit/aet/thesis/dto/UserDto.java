@@ -26,6 +26,7 @@ public record UserDto (
         Instant joinedAt,
         Set<String> groups,
         String researchGroupName,
+        UUID researchGroupId,
         boolean hasCv,
         boolean hasExaminationReport,
         boolean hasDegreeReport
@@ -42,6 +43,7 @@ public record UserDto (
                 user.getSpecialSkills(), user.getCustomData(), user.getEnrolledAt(), user.getUpdatedAt(), user.getJoinedAt(),
                 user.getGroups() == null ? Collections.emptySet() : new HashSet<>(user.getGroups().stream().map(x -> x.getId().getGroup()).toList()),
                 user.getResearchGroup() == null ? "" : user.getResearchGroup().getName(),
+                user.getResearchGroup() == null ? null :user.getResearchGroup().getId(),
             user.getCvFilename() != null,user.getExaminationFilename() != null, user.getDegreeFilename() != null
         );
     }

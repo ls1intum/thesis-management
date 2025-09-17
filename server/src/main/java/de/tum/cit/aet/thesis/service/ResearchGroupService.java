@@ -168,6 +168,7 @@ public class ResearchGroupService {
 
     //Add supervisor role in keycloak
     accessManagementService.assignSupervisorRole(head);
+    accessManagementService.assignGroupAdminRole(head);
     Set<UserGroup> updatedGroupsHead = accessManagementService.syncRolesFromKeycloakToDatabase(head);
     head.setGroups(updatedGroupsHead);
 
@@ -228,6 +229,7 @@ public class ResearchGroupService {
     if(researchGroup.isArchived()) {
       throw new AccessDeniedException("Cannot update an archived research group.");
     }
+    //If user has group-admin rights he still needs to be part of the specific research group
     currentUserProvider().assertCanAccessResearchGroup(researchGroup);
 
     User oldHead = researchGroup.getHead();
@@ -246,6 +248,7 @@ public class ResearchGroupService {
 
         //Give new head supervisor as role and remove the role from the old head
         accessManagementService.assignSupervisorRole(head);
+        accessManagementService.assignGroupAdminRole(head);
         accessManagementService.removeResearchGroupRoles(oldHead);
         Set<UserGroup> updatedGroupsHead = accessManagementService.syncRolesFromKeycloakToDatabase(head);
         head.setGroups(updatedGroupsHead);
@@ -271,10 +274,13 @@ public class ResearchGroupService {
   }
 
   public Page<User> getAllResearchGroupMembers(UUID researchGroupId, Integer page, Integer limit, String sortBy, String sortOrder) {
-    Sort.Order order = new Sort.Order(sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
+      ResearchGroup researchGroup = findById(researchGroupId);
+      currentUserProvider().assertCanAccessResearchGroup(researchGroup);
 
-    return userRepository
-            .searchUsers(researchGroupId, null, null, PageRequest.of(page, limit, Sort.by(order)));
+      Sort.Order order = new Sort.Order(sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
+
+      return userRepository
+              .searchUsers(researchGroupId, null, null, PageRequest.of(page, limit, Sort.by(order)));
   }
 
   public void archiveResearchGroup(ResearchGroup researchGroup) {
@@ -288,30 +294,36 @@ public class ResearchGroupService {
 
   public User assignUserToResearchGroup(String username, UUID researchGroupId) {
 
-    User user = getUserByUsernameOrCreate(username);
-    ResearchGroup researchGroup = findById(researchGroupId);
+      ResearchGroup researchGroup = findById(researchGroupId);
+      //If user has group-admin rights he still needs to be part of the specific research group
+      currentUserProvider().assertCanAccessResearchGroup(researchGroup);
 
-    if (user.getResearchGroup() != null) {
-      throw new AccessDeniedException("User is already assigned to a research group.");
-    }
+      User user = getUserByUsernameOrCreate(username);
 
-    if(researchGroup != null && researchGroup.isArchived()){
-      throw new AccessDeniedException("Cannot assign user to an archived research group.");
-    }
+      if (user.getResearchGroup() != null) {
+          throw new AccessDeniedException("User is already assigned to a research group.");
+      }
 
-    user.setResearchGroup(researchGroup);
+      if(researchGroup != null && researchGroup.isArchived()){
+          throw new AccessDeniedException("Cannot assign user to an archived research group.");
+      }
 
-    //Assign member the advisor role in keycloak and update database
-    accessManagementService.assignAdvisorRole(user);
-    Set<UserGroup> updatedGroups = accessManagementService.syncRolesFromKeycloakToDatabase(user);
-    user.setGroups(updatedGroups);
+      user.setResearchGroup(researchGroup);
 
-    userRepository.save(user);
-    return user;
+      //Assign member the advisor role in keycloak and update database
+      accessManagementService.assignAdvisorRole(user);
+      Set<UserGroup> updatedGroups = accessManagementService.syncRolesFromKeycloakToDatabase(user);
+      user.setGroups(updatedGroups);
+
+      userRepository.save(user);
+      return user;
   }
 
     public User removeUserFromResearchGroup(UUID userId, UUID researchGroupId) {
         User user = userService.findById(userId);
+
+        ResearchGroup researchGroup = findById(researchGroupId);
+        currentUserProvider().assertCanAccessResearchGroup(researchGroup);
 
         if (!user.getResearchGroup().getId().equals(researchGroupId)) {
           throw new AccessDeniedException("User is not assigned to this research group.");
@@ -342,6 +354,7 @@ public class ResearchGroupService {
     ) {
         User user = userService.findById(userId);
         ResearchGroup researchGroup = findById(researchGroupId);
+        currentUserProvider().assertCanAccessResearchGroup(researchGroup);
 
         if (!user.getResearchGroup().getId().equals(researchGroup.getId())) {
             throw new AccessDeniedException("User is not assigned to this research group.");
@@ -363,6 +376,25 @@ public class ResearchGroupService {
         user.setGroups(updatedGroups);
 
         userRepository.save(user);
+
+        return user;
+    }
+
+    public User changeResearchGroupAdminRole(UUID researchGroupId, UUID userId) {
+        User user = userService.findById(userId);
+
+        ResearchGroup researchGroup = findById(researchGroupId);
+        //If the user has group-admin rights he still needs to be part of the specific research group
+        currentUserProvider().assertCanAccessResearchGroup(researchGroup);
+
+        if (user.hasAnyGroup("group-admin")) {
+            accessManagementService.removeGroupAdminRole(user);
+        } else {
+            accessManagementService.assignGroupAdminRole(user);
+        }
+
+        Set<UserGroup> newGroups = accessManagementService.syncRolesFromKeycloakToDatabase(user);
+        user.setGroups(newGroups);
 
         return user;
     }
