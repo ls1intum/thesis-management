@@ -21,8 +21,9 @@ springBoot {
 }
 
 java {
-	sourceCompatibility = JavaVersion.VERSION_21
-	targetCompatibility = JavaVersion.VERSION_21
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
 }
 
 repositories {
@@ -59,6 +60,20 @@ dependencies {
 	implementation "org.springframework:spring-webflux:${spring_framework_version}"
 	implementation "org.springframework:spring-websocket:${spring_framework_version}"
 
+    // Consistently use the latest version of all spring security modules to avoid vulnerabilities
+    implementation "org.springframework.security:spring-security-config:${spring_security_version}"
+    implementation "org.springframework.security:spring-security-data:${spring_security_version}"
+    implementation "org.springframework.security:spring-security-core:${spring_security_version}"
+    implementation "org.springframework.security:spring-security-oauth2-core:${spring_security_version}"
+    implementation "org.springframework.security:spring-security-oauth2-client:${spring_security_version}"
+    implementation "org.springframework.security:spring-security-oauth2-jose:${spring_security_version}"
+    implementation "org.springframework.security:spring-security-oauth2-resource-server:${spring_security_version}"
+    implementation "org.springframework.security:spring-security-crypto:${spring_security_version}"
+    implementation "org.springframework.security:spring-security-web:${spring_security_version}"
+    implementation "org.springframework.security:spring-security-messaging:${spring_security_version}"
+    implementation "org.springframework.security:spring-security-ldap:${spring_security_version}"
+    testImplementation "org.springframework.security:spring-security-test:${spring_security_version}"
+
 	developmentOnly "org.springframework.boot:spring-boot-devtools:${spring_boot_version}"
 	developmentOnly "org.springframework:spring-aop:${spring_framework_version}"
 	developmentOnly "org.springframework:spring-beans:${spring_framework_version}"
@@ -81,6 +96,9 @@ dependencies {
 	implementation("io.netty:netty-transport-native-epoll") { version {	strictly netty_version } }
 	implementation("io.netty:netty-handler") { version { 				strictly netty_version } }
 	implementation("io.netty:netty-handler-proxy") { version { 			strictly netty_version } }
+
+    implementation "org.hibernate.orm:hibernate-core:${hibernate_version}"
+    implementation "org.hibernate.orm:hibernate-envers:${hibernate_version}"
 	
 	// Avoid outdated version to prevent security issues
 	implementation("net.minidev:json-smart") { version { 				strictly "2.6.0" } }
