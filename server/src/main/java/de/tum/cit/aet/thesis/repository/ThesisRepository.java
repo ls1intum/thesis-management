@@ -27,6 +27,14 @@ public interface ThesisRepository extends JpaRepository<Thesis, UUID> {
                      t.visibility IN :visibilities
                      AND (:researchGroupIds IS NULL OR t.researchGroup.id IN :researchGroupIds)
                  )
+                 OR (
+                     t.visibility = 'PRIVATE'
+                     AND EXISTS (
+                             SELECT 1
+                             FROM t.roles as tr
+                             WHERE tr.user.id = :userId
+                         )
+                 )
                  OR (:userId IS NOT NULL AND r.user.id = :userId )
              )
              AND (:states IS NULL OR t.state IN :states)
