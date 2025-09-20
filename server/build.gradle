@@ -71,7 +71,7 @@ dependencies {
     implementation "org.springframework.security:spring-security-crypto:${spring_security_version}"
     implementation "org.springframework.security:spring-security-web:${spring_security_version}"
     implementation "org.springframework.security:spring-security-messaging:${spring_security_version}"
-    implementation "org.springframework.security:spring-security-ldap:${spring_security_version}"
+//    implementation "org.springframework.security:spring-security-ldap:${spring_security_version}"
     testImplementation "org.springframework.security:spring-security-test:${spring_security_version}"
 
 	developmentOnly "org.springframework.boot:spring-boot-devtools:${spring_boot_version}"
