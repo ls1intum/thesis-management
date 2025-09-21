@@ -3,6 +3,7 @@ package de.tum.cit.aet.thesis.service;
 import de.tum.cit.aet.thesis.constants.ApplicationRejectReason;
 import de.tum.cit.aet.thesis.constants.ApplicationReviewReason;
 import de.tum.cit.aet.thesis.constants.ApplicationState;
+import de.tum.cit.aet.thesis.constants.ThesisRoleName;
 import de.tum.cit.aet.thesis.entity.*;
 import de.tum.cit.aet.thesis.entity.key.ApplicationReviewerId;
 import de.tum.cit.aet.thesis.exception.request.ResourceInvalidParametersException;
@@ -196,8 +197,11 @@ public class ApplicationService {
     }
 
     @Transactional
-    public List<Application> reject(User reviewingUser, Application application, ApplicationRejectReason reason, boolean notifyUser) {
-        currentUserProvider().assertCanAccessResearchGroup(application.getResearchGroup());
+    public List<Application> reject(User reviewingUser, Application application, ApplicationRejectReason reason, boolean notifyUser, boolean... auto) {
+        // if auto is provided and true, skip access check (used for automatic rejects)
+        if (auto == null || !auto[0]) {
+            currentUserProvider().assertCanAccessResearchGroup(application.getResearchGroup());
+        }
         application.setState(ApplicationState.REJECTED);
         application.setRejectReason(reason);
         application.setReviewedAt(Instant.now());
@@ -229,6 +233,22 @@ public class ApplicationService {
         result.add(applicationRepository.save(application));
 
         return result;
+    }
+
+    @Transactional
+    public void rejectAllApplicationsAutomatically(Topic topic, int afterDuration) {
+        List<Application> applications = applicationRepository.findAllByTopic(topic);
+        int referenceDuration = afterDuration >= 0 && afterDuration * 7 >= 14 ? afterDuration * 7 : 14;
+
+        for (Application application : applications) {
+            if (application.getState() == ApplicationState.NOT_ASSESSED && !application.getCreatedAt().isBefore(Instant.now().plus(java.time.Duration.ofDays(referenceDuration)))) {
+                topic.getRoles().stream().filter((role) -> role.getId().getRole() == ThesisRoleName.SUPERVISOR).findFirst().ifPresent((role) -> {
+                    User supervisor = role.getUser();
+                    reject(supervisor, application, ApplicationRejectReason.TOPIC_OUTDATED, true);
+                });
+                reject(null , application, ApplicationRejectReason.TOPIC_OUTDATED, true, true);
+            }
+        }
     }
 
     @Transactional

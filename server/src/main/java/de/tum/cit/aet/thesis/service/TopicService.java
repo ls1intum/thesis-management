@@ -69,12 +69,22 @@ public class TopicService {
         String[] typesFilter = types == null || types.length == 0 ? null : types;
 
         return topicRepository.searchTopics(
-                researchGroup == null ? ( researchGroupIds == null ? null : new HashSet<>(Arrays.asList(researchGroupIds))) : new HashSet<UUID>(Arrays.asList(researchGroup.getId())),
+                researchGroup == null ? ( researchGroupIds == null ? null : new HashSet<>(Arrays.asList(researchGroupIds))) : new HashSet<UUID>(Collections.singleton(researchGroup.getId())),
                 typesFilter,
                 includeClosed,
                 searchQueryFilter,
                 PageRequest.of(page, limit, Sort.by(order))
         );
+    }
+
+    public List<Topic> getOpenFromResearchGroup(UUID researchGroupId) {
+        return topicRepository.searchTopics(
+                Collections.singleton(researchGroupId),
+                null,
+                false,
+                null,
+                PageRequest.of(0, Integer.MAX_VALUE, Sort.unsorted())
+        ).toList();
     }
 
     @Transactional
