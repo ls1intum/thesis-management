@@ -132,8 +132,8 @@ dependencies {
 
 	testImplementation "org.springframework:spring-test:${spring_framework_version}"
 
-	testImplementation "org.mockito:mockito-core:5.19.0"
-	testImplementation "org.mockito:mockito-junit-jupiter:5.19.0"
+	testImplementation "org.mockito:mockito-core:5.20.0"
+	testImplementation "org.mockito:mockito-junit-jupiter:5.20.0"
 
 	testImplementation "org.testcontainers:testcontainers:${test_container_version}"
 	testImplementation "org.testcontainers:junit-jupiter:${test_container_version}"
