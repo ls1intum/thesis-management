@@ -9,7 +9,7 @@ const ContentContainer = (props: PropsWithChildren<IContentContainerProps>) => {
   const { size, children } = props
 
   return (
-    <Container size={size} fluid={!size}>
+    <Container size={size} fluid={!size} h={'100%'}>
       {children}
     </Container>
   )
