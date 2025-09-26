@@ -30,7 +30,7 @@ jobs:
       client_image_tag: "${{ steps.output-tag-client.outputs.client_image_tag }}"
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 1
 
