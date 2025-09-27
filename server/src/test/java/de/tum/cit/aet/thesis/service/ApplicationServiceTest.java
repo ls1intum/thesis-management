@@ -185,6 +185,7 @@ class ApplicationServiceTest {
                 reviewer,
                 testApplication,
                 ApplicationRejectReason.TOPIC_FILLED,
+                true,
                 true
         );
 

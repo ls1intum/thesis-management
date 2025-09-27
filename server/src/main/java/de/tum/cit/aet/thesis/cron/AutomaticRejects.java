@@ -5,6 +5,8 @@ import de.tum.cit.aet.thesis.entity.Topic;
 import de.tum.cit.aet.thesis.repository.ResearchGroupSettingsRepository;
 import de.tum.cit.aet.thesis.service.ApplicationService;
 import de.tum.cit.aet.thesis.service.TopicService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +15,7 @@ import java.util.List;
 
 @Component
 public class AutomaticRejects {
+    private static final Logger log = LoggerFactory.getLogger(ApplicationReminder.class);
     private final ResearchGroupSettingsRepository researchGroupSettingsRepository;
     private final TopicService topicService;
     private final ApplicationService applicationService;
@@ -36,14 +39,16 @@ public class AutomaticRejects {
                 } else if (topic.getIntendedStart() != null) {
                     referenceDate = topic.getIntendedStart();
                 } else {
-                    applicationService.rejectAllApplicationsAutomatically(topic, settings.getRejectDuration());
-                    return;
+                    referenceDate = null;
                 }
 
-                if (!referenceDate.isBefore(java.time.Instant.now().plus(java.time.Duration.ofDays((long) settings.getRejectDuration() * 7)))) {
-                    applicationService.rejectAllApplicationsAutomatically(topic, -1);
-                };
+                applicationService.rejectAllApplicationsAutomatically(topic, settings.getRejectDuration(), referenceDate, settings.getResearchGroupId());
             }
+
+            // Check All Unreviewed Suggested Topics and reject them if older than the duration
+            applicationService.rejectListOfApplicationsIfOlderThan(applicationService.getNotAssesedSuggestedOfResearchGroup(settings.getResearchGroupId()), settings.getRejectDuration() * 7, settings.getResearchGroupId());
         }
+
+        log.info("Scheduled Task to automatically reject application ran at ", Instant.now());
     }
 }

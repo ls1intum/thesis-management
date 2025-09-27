@@ -234,14 +234,20 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
             minDate={new Date()}
             label='Intended Start'
             placeholder='Select intended start date'
-            {...form.getInputProps('intendedStart')}
+            value={form.values.intendedStart ?? null}
+            onChange={(date) => {
+              form.setFieldValue('intendedStart', date ? new Date(date) : undefined)
+            }}
           />
           <DateInput
             clearable
             minDate={new Date()}
             label='Application Deadline'
             placeholder='Select application deadline'
-            {...form.getInputProps('applicationDeadline')}
+            value={form.values.applicationDeadline ?? null}
+            onChange={(date) => {
+              form.setFieldValue('applicationDeadline', date ? new Date(date) : undefined)
+            }}
           />
           <DocumentEditor
             label='Problem Statement'

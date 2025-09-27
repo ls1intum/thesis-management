@@ -96,6 +96,10 @@ public class ApplicationService {
         );
     }
 
+    public List<Application> getNotAssesedSuggestedOfResearchGroup(UUID researchGroupId) {
+        return applicationRepository.findNotReviewedSuggestedByResearchGroup(researchGroupId);
+    }
+
     @Transactional
     public Application createApplication(User user, UUID researchGroupId, UUID topicId, String thesisTitle,
                                          String thesisType, Instant desiredStartDate, String motivation) {
@@ -197,16 +201,16 @@ public class ApplicationService {
     }
 
     @Transactional
-    public List<Application> reject(User reviewingUser, Application application, ApplicationRejectReason reason, boolean notifyUser, boolean... auto) {
+    public List<Application> reject(User reviewingUser, Application application, ApplicationRejectReason reason, boolean notifyUser, boolean authenticated) {
         // if auto is provided and true, skip access check (used for automatic rejects)
-        if (auto == null || !auto[0]) {
+        if (authenticated) {
             currentUserProvider().assertCanAccessResearchGroup(application.getResearchGroup());
         }
         application.setState(ApplicationState.REJECTED);
         application.setRejectReason(reason);
         application.setReviewedAt(Instant.now());
 
-        application = reviewApplication(application, reviewingUser, ApplicationReviewReason.NOT_INTERESTED);
+        application = authenticated ? reviewApplication(application, reviewingUser, ApplicationReviewReason.NOT_INTERESTED) : reviewApplicationWithoutAuth(application, reviewingUser, ApplicationReviewReason.NOT_INTERESTED);
 
         List<Application> result = new ArrayList<>();
 
@@ -219,7 +223,7 @@ public class ApplicationService {
                     item.setRejectReason(reason);
                     item.setReviewedAt(Instant.now());
 
-                    item = reviewApplication(item, reviewingUser, ApplicationReviewReason.NOT_INTERESTED);
+                    item = authenticated ? reviewApplication(item, reviewingUser, ApplicationReviewReason.NOT_INTERESTED) : reviewApplicationWithoutAuth(item, reviewingUser, ApplicationReviewReason.NOT_INTERESTED);
 
                     result.add(applicationRepository.save(item));
                 }
@@ -236,17 +240,40 @@ public class ApplicationService {
     }
 
     @Transactional
-    public void rejectAllApplicationsAutomatically(Topic topic, int afterDuration) {
+    public void rejectAllApplicationsAutomatically(Topic topic, int afterDuration, Instant referenceDate, UUID researchGroupId) {
         List<Application> applications = applicationRepository.findAllByTopic(topic);
-        int referenceDuration = afterDuration >= 0 && afterDuration * 7 >= 14 ? afterDuration * 7 : 14;
+
+        int minimalRejectDuration = 14;
+        int referenceDuration = Math.max(afterDuration * 7, minimalRejectDuration);
 
         for (Application application : applications) {
-            if (application.getState() == ApplicationState.NOT_ASSESSED && !application.getCreatedAt().isBefore(Instant.now().plus(java.time.Duration.ofDays(referenceDuration)))) {
-                topic.getRoles().stream().filter((role) -> role.getId().getRole() == ThesisRoleName.SUPERVISOR).findFirst().ifPresent((role) -> {
-                    User supervisor = role.getUser();
-                    reject(supervisor, application, ApplicationRejectReason.TOPIC_OUTDATED, true);
-                });
-                reject(null , application, ApplicationRejectReason.TOPIC_OUTDATED, true, true);
+            if (referenceDate == null) {
+                referenceDate = application.getCreatedAt();
+            }
+
+            if (application.getState() == ApplicationState.NOT_ASSESSED &&  Instant.now().isAfter(application.getCreatedAt().plus(java.time.Duration.ofDays(minimalRejectDuration))) &&  Instant.now().isAfter(referenceDate.plus(java.time.Duration.ofDays(referenceDuration)))) { //Check if the application is older than two weeks and the reference date + duration is in the past
+                ResearchGroup topicGroup = researchGroupRepository.findById(researchGroupId).orElseThrow(() -> new ResourceNotFoundException("Research Group not found: " + researchGroupId));
+                User reviewingUser = topicGroup.getHead();
+
+                Optional<TopicRole> supervisor = topic.getRoles().stream().filter((role) -> role.getId().getRole() == ThesisRoleName.SUPERVISOR).findFirst();
+
+                if (supervisor.isPresent()) {
+                    reviewingUser = supervisor.get().getUser();
+                }
+
+                reject(reviewingUser , application, ApplicationRejectReason.TOPIC_OUTDATED, true, false);
+            }
+        }
+    }
+
+    @Transactional
+    public void rejectListOfApplicationsIfOlderThan(List<Application> applications, int afterDuration, UUID researchGroupId) {
+        ResearchGroup topicGroup = researchGroupRepository.findById(researchGroupId).orElseThrow(() -> new ResourceNotFoundException("Research Group not found: " + researchGroupId));
+        User reviewingUser = topicGroup.getHead();
+
+        for (Application application : applications) {
+            if (application.getState() == ApplicationState.NOT_ASSESSED &&  Instant.now().isAfter(application.getCreatedAt().plus(java.time.Duration.ofDays(Math.max(afterDuration, 14))))) { //Check if the application is older than rejection duration, but minimal 14days
+                reject(reviewingUser , application, ApplicationRejectReason.TOPIC_OUTDATED, true, false);
             }
         }
     }
@@ -272,7 +299,7 @@ public class ApplicationService {
                 continue;
             }
 
-            result.addAll(reject(closer, application, reason, notifyUser));
+            result.addAll(reject(closer, application, reason, notifyUser, true));
         }
 
         return result;
@@ -281,6 +308,12 @@ public class ApplicationService {
     @Transactional
     public Application reviewApplication(Application application, User reviewer, ApplicationReviewReason reason) {
         currentUserProvider().assertCanAccessResearchGroup(application.getResearchGroup());
+
+        return reviewApplicationWithoutAuth(application, reviewer, reason);
+    }
+
+    @Transactional
+    public Application reviewApplicationWithoutAuth(Application application, User reviewer, ApplicationReviewReason reason) {
         ApplicationReviewer entity = application.getReviewer(reviewer).orElseGet(() -> {
             ApplicationReviewerId id = new ApplicationReviewerId();
             id.setApplicationId(application.getId());
