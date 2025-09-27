@@ -96,6 +96,18 @@ const PresentationOverviewPage = () => {
     )
   }, [selectedGroup?.id])
 
+  const scrollTo = (targetDate: string) => {
+    if (!scrollRef.current) return
+
+    // Format the date the same way you use as key (`date` is ISO string in your map)
+    const selector = `[data-date="${dayjs(targetDate).format('YYYY-MM-DD')}"]`
+    const el = scrollRef.current.querySelector(selector)
+
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }
+
   return (
     <Stack h={'100%'} gap='md'>
       <Title>Presentations</Title>
@@ -152,7 +164,7 @@ const PresentationOverviewPage = () => {
                 Array.from(presentations.entries())
                   .sort(([dateA], [dateB]) => (dayjs(dateA).isAfter(dayjs(dateB)) ? 1 : -1))
                   .map(([date, list]) => (
-                    <Grid key={`datesection-${date}`} h={'fit-content'}>
+                    <Grid key={`datesection-${date}`} h={'fit-content'} data-date={date}>
                       <Grid.Col span='content'>
                         <Stack
                           h={'100%'}
@@ -186,33 +198,41 @@ const PresentationOverviewPage = () => {
             </Stack>
           </ScrollArea>
         ) : (
-          <Stack h={'100%'}>
-            {presentations &&
-              Array.from(presentations.entries())
-                .sort(([dateA], [dateB]) => (dayjs(dateA).isAfter(dayjs(dateB)) ? 1 : -1))
-                .map(([date, list]) => (
-                  <Stack key={`datesection-${date}`}>
-                    <Divider label={dayjs(date).format('MMM D')} />
-                    <Grid key={`datesection-${date}`} h={'fit-content'}>
-                      <Grid.Col span='auto'>
-                        <Stack>
-                          {list.map((p) => (
-                            <PresentationCard
-                              key={p.presentationId}
-                              presentation={p}
-                              thesis={p.thesis}
-                              hasEditAccess={false}
-                              thesisName={p.thesis.title}
-                              titleOrder={6}
-                              includeStudents={true}
-                            />
-                          ))}
-                        </Stack>
-                      </Grid.Col>
-                    </Grid>
-                  </Stack>
-                ))}
-          </Stack>
+          <ScrollArea
+            h={'100%'}
+            style={{ flex: 1, minWidth: 0 }}
+            offsetScrollbars
+            viewportRef={scrollRef}
+            type='scroll'
+          >
+            <Stack h={'100%'}>
+              {presentations &&
+                Array.from(presentations.entries())
+                  .sort(([dateA], [dateB]) => (dayjs(dateA).isAfter(dayjs(dateB)) ? 1 : -1))
+                  .map(([date, list]) => (
+                    <Stack key={`datesection-${date}`}>
+                      <Divider label={dayjs(date).format('MMM D')} data-date={date} />
+                      <Grid key={`datesection-${date}`} h={'fit-content'}>
+                        <Grid.Col span='auto'>
+                          <Stack>
+                            {list.map((p) => (
+                              <PresentationCard
+                                key={p.presentationId}
+                                presentation={p}
+                                thesis={p.thesis}
+                                hasEditAccess={false}
+                                thesisName={p.thesis.title}
+                                titleOrder={6}
+                                includeStudents={true}
+                              />
+                            ))}
+                          </Stack>
+                        </Grid.Col>
+                      </Grid>
+                    </Stack>
+                  ))}
+            </Stack>
+          </ScrollArea>
         )}
         <Flex
           h={{ base: 'fit-content', md: '100%' }}
@@ -243,7 +263,7 @@ const PresentationOverviewPage = () => {
               renderDay={(date) => {
                 const day = dayjs(date).date()
                 return (
-                  <Flex align='center' gap={3} direction='column'>
+                  <Flex align='center' gap={3} direction='column' onClick={() => scrollTo(date)}>
                     <Text size='xl'>{day}</Text>
                     <Group gap={8}>
                       {presentations?.has(dayjs(date).format('YYYY-MM-DD')) && (
