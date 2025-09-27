@@ -12,11 +12,11 @@ import {
   ActionIcon,
   Indicator,
   Divider,
+  Grid,
 } from '@mantine/core'
 import { useIsSmallerBreakpoint, usePageTitle } from '../../hooks/theme'
 import { GLOBAL_CONFIG } from '../../config/global'
 import { CopyIcon, CheckIcon } from '@phosphor-icons/react'
-import PublicPresentationsTable from '../../components/PublicPresentationsTable/PublicPresentationsTable'
 import { useEffect, useRef, useState } from 'react'
 import { ILightResearchGroup } from '../../requests/responses/researchGroup'
 import { useAuthenticationContext } from '../../hooks/authentication'
@@ -39,7 +39,6 @@ const PresentationOverviewPage = () => {
 
   const isSmaller = useIsSmallerBreakpoint('md')
   const isSmallerLG = useIsSmallerBreakpoint('lg')
-  const isSmallerXS = useIsSmallerBreakpoint('xs')
 
   useEffect(() => {
     if (context.researchGroups.length > 0) {
@@ -66,7 +65,7 @@ const PresentationOverviewPage = () => {
     return () => window.removeEventListener('wheel', onWheel)
   }, [])
 
-  const [presentations, setPresentations] = useState<PaginationResponse<IPublishedPresentation>>()
+  const [presentations, setPresentations] = useState<Map<string, IPublishedPresentation[]>>()
 
   useEffect(() => {
     return doRequest<PaginationResponse<IPublishedPresentation>>(
@@ -81,7 +80,15 @@ const PresentationOverviewPage = () => {
       },
       (res) => {
         if (res.ok) {
-          setPresentations(res.data)
+          const presentationsByDate = new Map<string, IPublishedPresentation[]>()
+          res.data.content.forEach((presentation) => {
+            const date = dayjs(presentation.scheduledAt).format('YYYY-MM-DD')
+            if (!presentationsByDate.has(date)) {
+              presentationsByDate.set(date, [])
+            }
+            presentationsByDate.get(date)!.push(presentation)
+          })
+          setPresentations(presentationsByDate)
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
         }
@@ -141,30 +148,70 @@ const PresentationOverviewPage = () => {
             type='scroll'
           >
             <Stack h={'100%'}>
-              {presentations?.content.map((p) => (
-                <PresentationCard
-                  key={p.presentationId}
-                  presentation={p}
-                  thesis={p.thesis}
-                  hasEditAccess={false}
-                  thesisName={p.thesis.title}
-                  titleOrder={6}
-                />
-              ))}
+              {presentations &&
+                Array.from(presentations.entries())
+                  .sort(([dateA], [dateB]) => (dayjs(dateA).isAfter(dayjs(dateB)) ? 1 : -1))
+                  .map(([date, list]) => (
+                    <Grid key={`datesection-${date}`} h={'fit-content'}>
+                      <Grid.Col span='content'>
+                        <Stack
+                          h={'100%'}
+                          bg={'gray.1'}
+                          p='xs'
+                          style={{ borderRadius: 8 }}
+                          w={'100px'}
+                          gap={5}
+                        >
+                          <Title order={5}>{dayjs(date).format('MMM D')}</Title>
+                          <Text c='dimmed'>{dayjs(date).format('dddd')}</Text>
+                        </Stack>
+                      </Grid.Col>
+                      <Grid.Col span='auto'>
+                        <Stack>
+                          {list.map((p) => (
+                            <PresentationCard
+                              key={p.presentationId}
+                              presentation={p}
+                              thesis={p.thesis}
+                              hasEditAccess={false}
+                              thesisName={p.thesis.title}
+                              titleOrder={6}
+                              includeStudents={true}
+                            />
+                          ))}
+                        </Stack>
+                      </Grid.Col>
+                    </Grid>
+                  ))}
             </Stack>
           </ScrollArea>
         ) : (
           <Stack h={'100%'}>
-            {presentations?.content.map((p) => (
-              <PresentationCard
-                key={p.presentationId}
-                presentation={p}
-                thesis={p.thesis}
-                hasEditAccess={false}
-                thesisName={p.thesis.title}
-                titleOrder={6}
-              />
-            ))}
+            {presentations &&
+              Array.from(presentations.entries())
+                .sort(([dateA], [dateB]) => (dayjs(dateA).isAfter(dayjs(dateB)) ? 1 : -1))
+                .map(([date, list]) => (
+                  <Stack key={`datesection-${date}`}>
+                    <Divider label={dayjs(date).format('MMM D')} />
+                    <Grid key={`datesection-${date}`} h={'fit-content'}>
+                      <Grid.Col span='auto'>
+                        <Stack>
+                          {list.map((p) => (
+                            <PresentationCard
+                              key={p.presentationId}
+                              presentation={p}
+                              thesis={p.thesis}
+                              hasEditAccess={false}
+                              thesisName={p.thesis.title}
+                              titleOrder={6}
+                              includeStudents={true}
+                            />
+                          ))}
+                        </Stack>
+                      </Grid.Col>
+                    </Grid>
+                  </Stack>
+                ))}
           </Stack>
         )}
         <Flex
@@ -173,12 +220,14 @@ const PresentationOverviewPage = () => {
           style={{ minWidth: 'fit-content', overflow: 'unset' }}
           direction={{ base: 'column-reverse', md: 'row' }}
         >
-          <Divider
-            orientation={isSmaller ? 'horizontal' : 'vertical'}
-            h={{ base: '1px', md: '100%' }}
-            w={{ base: '100%', md: '1px' }}
-            pb={{ base: 'sm', md: 0 }}
-          />
+          {!isSmaller && (
+            <Divider
+              orientation={isSmaller ? 'horizontal' : 'vertical'}
+              h={{ base: '1px', md: '100%' }}
+              w={{ base: '100%', md: '1px' }}
+              pb={{ base: 'sm', md: 0 }}
+            />
+          )}
           <Flex
             h={'100%'}
             w={'100%'}
@@ -190,15 +239,16 @@ const PresentationOverviewPage = () => {
           >
             <Calendar
               size={isSmallerLG ? 'sm' : isSmaller ? 'md' : 'lg'}
+              pb={{ base: 'xs', md: 0 }}
               renderDay={(date) => {
                 const day = dayjs(date).date()
                 return (
                   <Flex align='center' gap={3} direction='column'>
                     <Text size='xl'>{day}</Text>
                     <Group gap={8}>
-                      {presentations?.content.find((p) =>
-                        dayjs(p.scheduledAt).isSame(dayjs(date), 'date'),
-                      ) && <Indicator color={'blue'} size={5} />}
+                      {presentations?.has(dayjs(date).format('YYYY-MM-DD')) && (
+                        <Indicator color={'blue'} size={5} />
+                      )}
                     </Group>
                   </Flex>
                 )
@@ -207,10 +257,6 @@ const PresentationOverviewPage = () => {
           </Flex>
         </Flex>
       </Flex>
-
-      {/*
-      <PublicPresentationsTable includeDrafts={true} researchGroupId={selectedGroup?.id} />
-      */}
     </Stack>
   )
 }

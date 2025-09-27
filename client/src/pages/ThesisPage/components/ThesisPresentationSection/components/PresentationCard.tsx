@@ -52,6 +52,7 @@ import { useState } from 'react'
 import ReplacePresentationModal from '../../../../../components/PresentationsTable/components/ReplacePresentationModal/ReplacePresentationModal'
 import SchedulePresentationModal from '../../../../../components/PresentationsTable/components/SchedulePresentationModal/SchedulePresentationModal'
 import DocumentEditor from '../../../../../components/DocumentEditor/DocumentEditor'
+import AvatarUserList from '../../../../../components/AvatarUserList/AvatarUserList'
 
 interface IPresentationCardProps {
   presentation: IThesisPresentation | IPublishedPresentation
@@ -60,6 +61,7 @@ interface IPresentationCardProps {
   thesisType?: string
   hasEditAccess: boolean
   titleOrder?: 4 | 5 | 6
+  includeStudents?: boolean
 }
 
 const PresentationCard = ({
@@ -69,6 +71,7 @@ const PresentationCard = ({
   thesisType,
   hasEditAccess,
   titleOrder,
+  includeStudents = false,
 }: IPresentationCardProps) => {
   const [deleting, deletePresentation] = useThesisUpdateAction(
     async (presentation: IThesisPresentation) => {
@@ -194,7 +197,7 @@ const PresentationCard = ({
       p={0}
     >
       <Card radius='md' h='100%' w='100%' ml={5}>
-        <Stack gap={'1rem'}>
+        <Stack gap={'0.5rem'}>
           <Group justify='space-between' align={'flex-start'} gap={'0.5rem'} wrap='nowrap'>
             <Stack gap={'0.5rem'}>
               <Title order={titleOrder ?? 5}>
@@ -273,7 +276,8 @@ const PresentationCard = ({
               </Menu>
             )}
           </Group>
-          <Group pt={'0.5rem'} gap={'0.5rem'}>
+          <Group pt={'0.5rem'} gap={'0.75rem'}>
+            {includeStudents && <AvatarUserList users={thesis.students} size='xs' />}
             {getThesisInfoItem(
               <CalendarBlankIcon color={'gray'} weight='bold' />,
               formatDate(presentation.scheduledAt, { withTime: true }),
