@@ -42,7 +42,7 @@ public class ResearchGroup {
   @Column(name = "abbreviation", nullable = false, unique = true)
   private String abbreviation;
 
-  @Column(name = "description")
+  @Column(name = "description", length = 500)
   private String description;
 
   @Column(name = "website_url")
