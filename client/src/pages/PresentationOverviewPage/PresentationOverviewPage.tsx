@@ -28,6 +28,7 @@ import { doRequest } from '../../requests/request'
 import { showSimpleError } from '../../utils/notification'
 import { getApiResponseErrorMessage } from '../../requests/handler'
 import PresentationCard from '../ThesisPage/components/ThesisPresentationSection/components/PresentationCard'
+import { CalendarXIcon } from '@phosphor-icons/react/dist/ssr'
 
 const PresentationOverviewPage = () => {
   usePageTitle('Presentations')
@@ -151,6 +152,13 @@ const PresentationOverviewPage = () => {
         </div>
       </Group>
       <Flex h={{ md: '85%' }} w={'100%'} direction={{ base: 'column-reverse', md: 'row' }}>
+        {presentations && presentations.size === 0 && (
+          <Flex h={'100%'} w={'100%'} align={'center'} justify={'center'} direction={'column'}>
+            <CalendarXIcon size={64} color={'gray'} />
+            <Title order={4}>No Presentations Scheduled</Title>
+            <Text ta='center'>There are currently no presentations planned for the future.</Text>
+          </Flex>
+        )}
         {!isSmaller ? (
           <ScrollArea
             h={'100%'}
