@@ -3,6 +3,7 @@ package de.tum.cit.aet.thesis.service;
 import de.tum.cit.aet.thesis.constants.ApplicationRejectReason;
 import de.tum.cit.aet.thesis.constants.ApplicationReviewReason;
 import de.tum.cit.aet.thesis.constants.ApplicationState;
+import de.tum.cit.aet.thesis.constants.ThesisRoleName;
 import de.tum.cit.aet.thesis.entity.*;
 import de.tum.cit.aet.thesis.entity.key.ApplicationReviewerId;
 import de.tum.cit.aet.thesis.exception.request.ResourceInvalidParametersException;
@@ -93,6 +94,10 @@ public class ApplicationService {
                 includeSuggestedTopics,
                 PageRequest.of(page, limit, Sort.by(order))
         );
+    }
+
+    public List<Application> getNotAssesedSuggestedOfResearchGroup(UUID researchGroupId) {
+        return applicationRepository.findNotReviewedSuggestedByResearchGroup(researchGroupId);
     }
 
     @Transactional
@@ -196,13 +201,16 @@ public class ApplicationService {
     }
 
     @Transactional
-    public List<Application> reject(User reviewingUser, Application application, ApplicationRejectReason reason, boolean notifyUser) {
-        currentUserProvider().assertCanAccessResearchGroup(application.getResearchGroup());
+    public List<Application> reject(User reviewingUser, Application application, ApplicationRejectReason reason, boolean notifyUser, boolean authenticated) {
+        // if auto is provided and true, skip access check (used for automatic rejects)
+        if (authenticated) {
+            currentUserProvider().assertCanAccessResearchGroup(application.getResearchGroup());
+        }
         application.setState(ApplicationState.REJECTED);
         application.setRejectReason(reason);
         application.setReviewedAt(Instant.now());
 
-        application = reviewApplication(application, reviewingUser, ApplicationReviewReason.NOT_INTERESTED);
+        application = authenticated ? reviewApplication(application, reviewingUser, ApplicationReviewReason.NOT_INTERESTED) : reviewApplicationWithoutAuth(application, reviewingUser, ApplicationReviewReason.NOT_INTERESTED);
 
         List<Application> result = new ArrayList<>();
 
@@ -215,7 +223,7 @@ public class ApplicationService {
                     item.setRejectReason(reason);
                     item.setReviewedAt(Instant.now());
 
-                    item = reviewApplication(item, reviewingUser, ApplicationReviewReason.NOT_INTERESTED);
+                    item = authenticated ? reviewApplication(item, reviewingUser, ApplicationReviewReason.NOT_INTERESTED) : reviewApplicationWithoutAuth(item, reviewingUser, ApplicationReviewReason.NOT_INTERESTED);
 
                     result.add(applicationRepository.save(item));
                 }
@@ -229,6 +237,45 @@ public class ApplicationService {
         result.add(applicationRepository.save(application));
 
         return result;
+    }
+
+    @Transactional
+    public void rejectAllApplicationsAutomatically(Topic topic, int afterDuration, Instant referenceDate, UUID researchGroupId) {
+        List<Application> applications = applicationRepository.findAllByTopic(topic);
+
+        int minimalRejectDuration = 14;
+        int referenceDuration = Math.max(afterDuration * 7, minimalRejectDuration);
+
+        for (Application application : applications) {
+            if (referenceDate == null) {
+                referenceDate = application.getCreatedAt();
+            }
+
+            if (application.getState() == ApplicationState.NOT_ASSESSED &&  Instant.now().isAfter(application.getCreatedAt().plus(java.time.Duration.ofDays(minimalRejectDuration))) &&  Instant.now().isAfter(referenceDate.plus(java.time.Duration.ofDays(referenceDuration)))) { //Check if the application is older than two weeks and the reference date + duration is in the past
+                ResearchGroup topicGroup = researchGroupRepository.findById(researchGroupId).orElseThrow(() -> new ResourceNotFoundException("Research Group not found: " + researchGroupId));
+                User reviewingUser = topicGroup.getHead();
+
+                Optional<TopicRole> supervisor = topic.getRoles().stream().filter((role) -> role.getId().getRole() == ThesisRoleName.SUPERVISOR).findFirst();
+
+                if (supervisor.isPresent()) {
+                    reviewingUser = supervisor.get().getUser();
+                }
+
+                reject(reviewingUser , application, ApplicationRejectReason.GENERAL, true, false);
+            }
+        }
+    }
+
+    @Transactional
+    public void rejectListOfApplicationsIfOlderThan(List<Application> applications, int afterDuration, UUID researchGroupId) {
+        ResearchGroup topicGroup = researchGroupRepository.findById(researchGroupId).orElseThrow(() -> new ResourceNotFoundException("Research Group not found: " + researchGroupId));
+        User reviewingUser = topicGroup.getHead();
+
+        for (Application application : applications) {
+            if (application.getState() == ApplicationState.NOT_ASSESSED &&  Instant.now().isAfter(application.getCreatedAt().plus(java.time.Duration.ofDays(Math.max(afterDuration, 14))))) { //Check if the application is older than rejection duration, but minimal 14days
+                reject(reviewingUser , application, ApplicationRejectReason.GENERAL, true, false);
+            }
+        }
     }
 
     @Transactional
@@ -252,7 +299,7 @@ public class ApplicationService {
                 continue;
             }
 
-            result.addAll(reject(closer, application, reason, notifyUser));
+            result.addAll(reject(closer, application, reason, notifyUser, true));
         }
 
         return result;
@@ -261,6 +308,12 @@ public class ApplicationService {
     @Transactional
     public Application reviewApplication(Application application, User reviewer, ApplicationReviewReason reason) {
         currentUserProvider().assertCanAccessResearchGroup(application.getResearchGroup());
+
+        return reviewApplicationWithoutAuth(application, reviewer, reason);
+    }
+
+    @Transactional
+    public Application reviewApplicationWithoutAuth(Application application, User reviewer, ApplicationReviewReason reason) {
         ApplicationReviewer entity = application.getReviewer(reviewer).orElseGet(() -> {
             ApplicationReviewerId id = new ApplicationReviewerId();
             id.setApplicationId(application.getId());

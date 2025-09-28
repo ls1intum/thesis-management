@@ -79,7 +79,9 @@ public class TopicController {
                 RequestValidator.validateStringMaxLength(payload.references(), StringLimits.UNLIMITED_TEXT.getLimit()),
                 RequestValidator.validateNotNull(payload.supervisorIds()),
                 RequestValidator.validateNotNull(payload.advisorIds()),
-                RequestValidator.validateNotNull(payload.researchGroupId())
+                RequestValidator.validateNotNull(payload.researchGroupId()),
+                payload.intendedStart(),
+                payload.applicationDeadline()
         );
 
         return ResponseEntity.ok(TopicDto.fromTopicEntity(topic));
@@ -103,7 +105,9 @@ public class TopicController {
                 RequestValidator.validateStringMaxLength(payload.references(), StringLimits.UNLIMITED_TEXT.getLimit()),
                 RequestValidator.validateNotNull(payload.supervisorIds()),
                 RequestValidator.validateNotNull(payload.advisorIds()),
-                RequestValidator.validateNotNull(payload.researchGroupId())
+                RequestValidator.validateNotNull(payload.researchGroupId()),
+                payload.intendedStart(),
+                payload.applicationDeadline()
         );
 
         return ResponseEntity.ok(TopicDto.fromTopicEntity(topic));

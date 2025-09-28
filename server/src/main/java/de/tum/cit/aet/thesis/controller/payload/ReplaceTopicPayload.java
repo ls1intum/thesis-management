@@ -1,5 +1,6 @@
 package de.tum.cit.aet.thesis.controller.payload;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -13,5 +14,7 @@ public record ReplaceTopicPayload(
         String references,
         List<UUID> supervisorIds,
         List<UUID> advisorIds,
-        UUID researchGroupId
+        UUID researchGroupId,
+        Instant intendedStart,
+        Instant applicationDeadline
 ) { }

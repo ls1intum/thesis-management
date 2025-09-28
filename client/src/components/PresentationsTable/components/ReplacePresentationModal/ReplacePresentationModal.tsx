@@ -135,6 +135,7 @@ const ReplacePresentationModal = (props: IReplacePresentationModalProps) => {
       opened={opened}
       onClose={onClose}
       title={presentation ? 'Update Presentation' : 'Create Presentation'}
+      centered
     >
       <form>
         <Stack gap='md'>

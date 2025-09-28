@@ -20,6 +20,8 @@ public record TopicDto(
     Instant closedAt,
     Instant updatedAt,
     Instant createdAt,
+    Instant intendedStart,
+    Instant applicationDeadline,
     LightUserDto createdBy,
     LightResearchGroupDto researchGroup,
 
@@ -55,6 +57,8 @@ public record TopicDto(
         topic.getClosedAt(),
         topic.getUpdatedAt(),
         topic.getCreatedAt(),
+        topic.getIntendedStart(),
+        topic.getApplicationDeadline(),
         LightUserDto.fromUserEntity(topic.getCreatedBy()),
         LightResearchGroupDto.fromResearchGroupEntity(topic.getResearchGroup()),
         advisors,

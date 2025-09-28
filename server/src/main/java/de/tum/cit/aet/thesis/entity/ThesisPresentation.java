@@ -54,6 +54,9 @@ public class ThesisPresentation {
     @Column(name = "language")
     private String language;
 
+    @Column(name = "presentation_note_html")
+    private String presentationNoteHtml;
+
     @Column(name = "calendar_event")
     private String calendarEvent;
 
