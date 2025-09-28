@@ -1,4 +1,4 @@
-import { Divider, Group, NumberInput, Stack, Switch, Text } from '@mantine/core'
+import { Alert, Divider, Group, NumberInput, Stack, Switch, Text } from '@mantine/core'
 import { ResearchGroupSettingsCard } from './ResearchGroupSettingsCard'
 import { useState, useEffect } from 'react'
 import { useDebouncedValue } from '@mantine/hooks'
@@ -7,6 +7,7 @@ import { useParams } from 'react-router'
 import { showSimpleError } from '../../../utils/notification'
 import { getApiResponseErrorMessage } from '../../../requests/handler'
 import { IResearchGroupSettings } from '../../../requests/responses/researchGroupSettings'
+import { WarningCircleIcon } from '@phosphor-icons/react'
 
 interface AutomaticRejectionCardProps {
   automaticRejectionEnabledSettings: boolean
@@ -71,6 +72,20 @@ const AutomaticRejectionCard = ({
             onChange={(event) => setAutomaticRejectionEnabledSettings(event.currentTarget.checked)}
           />
         </Group>
+        {!automaticRejectionEnabledSettings && (
+          <Alert
+            variant='light'
+            color='orange'
+            title='Automatic Rejection Warning'
+            icon={<WarningCircleIcon size={16} />}
+            mt='md'
+          >
+            Enabling automatic rejection will cause all open applications older than your set
+            rejection time period to be rejected daily at 9:00 AM. Please review your application
+            list before activating this feature to ensure no suitable candidates are unintentionally
+            rejected.
+          </Alert>
+        )}
         {automaticRejectionEnabledSettings && (
           <Group ml={'1rem'} wrap='nowrap'>
             <Divider orientation='vertical' />
