@@ -242,7 +242,9 @@ public abstract class BaseIntegrationTest {
                 "Test References",
                 List.of(advisor.userId()),
                 List.of(advisor.userId()),
-                researchGroupId
+                researchGroupId,
+                null,
+                null
         );
 
         String response = mockMvc.perform(MockMvcRequestBuilders.post("/v2/topics")
