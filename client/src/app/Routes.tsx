@@ -4,7 +4,7 @@ import AuthenticatedArea from './layout/AuthenticatedArea/AuthenticatedArea'
 import PageLoader from '../components/PageLoader/PageLoader'
 import PublicArea from './layout/PublicArea/PublicArea'
 import { useAuthenticationContext } from '../hooks/authentication'
-import ResearchGroupSettingPage from '../pages/ResearchGroupSettingPage/ResearchGroupSettingPage'
+import { useIsSmallerBreakpoint } from '../hooks/theme'
 
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage/NotFoundPage'))
 const PrivacyPage = lazy(() => import('../pages/PrivacyPage/PrivacyPage'))
@@ -17,6 +17,10 @@ const ResearchGroupAdminPage = lazy(
 
 const PresentationOverviewPage = lazy(
   () => import('../pages/PresentationOverviewPage/PresentationOverviewPage'),
+)
+
+const ResearchGroupSettingPage = lazy(
+  () => import('../pages/ResearchGroupSettingPage/ResearchGroupSettingPage'),
 )
 const BrowseThesesPage = lazy(() => import('../pages/BrowseThesesPage/BrowseThesesPage'))
 const DashboardPage = lazy(() => import('../pages/DashboardPage/DashboardPage'))
@@ -36,6 +40,7 @@ const LandingPage = lazy(() => import('../pages/LandingPage/LandingPage'))
 
 const AppRoutes = () => {
   const auth = useAuthenticationContext()
+  const isSmaller = useIsSmallerBreakpoint('md')
 
   return (
     <Suspense fallback={<PageLoader />}>
@@ -81,7 +86,7 @@ const AppRoutes = () => {
           <Route
             path='/presentations'
             element={
-              <AuthenticatedArea>
+              <AuthenticatedArea handleScrollInView={!isSmaller}>
                 <PresentationOverviewPage />
               </AuthenticatedArea>
             }

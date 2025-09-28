@@ -11,10 +11,14 @@ import {
   UnstyledButton,
   Modal,
   Alert,
-  Accordion,
   Transition,
 } from '@mantine/core'
-import { IThesis, IThesisPresentation } from '../../../../../requests/responses/thesis'
+import {
+  IPublishedPresentation,
+  IPublishedThesis,
+  IThesis,
+  IThesisPresentation,
+} from '../../../../../requests/responses/thesis'
 import {
   formatDate,
   formatLanguage,
@@ -48,13 +52,16 @@ import { useState } from 'react'
 import ReplacePresentationModal from '../../../../../components/PresentationsTable/components/ReplacePresentationModal/ReplacePresentationModal'
 import SchedulePresentationModal from '../../../../../components/PresentationsTable/components/SchedulePresentationModal/SchedulePresentationModal'
 import DocumentEditor from '../../../../../components/DocumentEditor/DocumentEditor'
+import AvatarUserList from '../../../../../components/AvatarUserList/AvatarUserList'
 
 interface IPresentationCardProps {
-  presentation: IThesisPresentation
-  thesis: IThesis
+  presentation: IThesisPresentation | IPublishedPresentation
+  thesis: IThesis | IPublishedThesis
   thesisName?: string
   thesisType?: string
   hasEditAccess: boolean
+  titleOrder?: 4 | 5 | 6
+  includeStudents?: boolean
 }
 
 const PresentationCard = ({
@@ -63,6 +70,8 @@ const PresentationCard = ({
   thesisName,
   thesisType,
   hasEditAccess,
+  titleOrder,
+  includeStudents = false,
 }: IPresentationCardProps) => {
   const [deleting, deletePresentation] = useThesisUpdateAction(
     async (presentation: IThesisPresentation) => {
@@ -91,12 +100,14 @@ const PresentationCard = ({
   >(undefined)
 
   const [presentationNoteOpen, setPresentationNoteOpen] = useState<boolean>(false)
-  const [editMode, setEditMode] = useState(presentation.presentationNoteHtml ? false : true)
+  const [editMode, setEditMode] = useState(
+    'presentationNoteHtml' in presentation && presentation.presentationNoteHtml ? false : true,
+  )
 
   const user = useUser()
 
   const [editingPresentationNote, setEditingPresentationNote] = useState<string>(
-    presentation.presentationNoteHtml ?? '',
+    'presentationNoteHtml' in presentation ? (presentation.presentationNoteHtml ?? '') : '',
   )
 
   const [updating, updatePresentationNote] = useThesisUpdateAction(
@@ -165,11 +176,14 @@ const PresentationCard = ({
   }
 
   const showNoteWhenEmpty = () => {
-    if (!presentation.presentationNoteHtml || presentation.presentationNoteHtml === '') {
-      return hasEditAccess
-    } else {
-      return true
+    if ('presentationNoteHtml' in presentation) {
+      if (!presentation.presentationNoteHtml || presentation.presentationNoteHtml === '') {
+        return hasEditAccess
+      } else {
+        return true
+      }
     }
+    return false
   }
 
   return (
@@ -183,10 +197,10 @@ const PresentationCard = ({
       p={0}
     >
       <Card radius='md' h='100%' w='100%' ml={5}>
-        <Stack gap={'1rem'}>
+        <Stack gap={'0.5rem'}>
           <Group justify='space-between' align={'flex-start'} gap={'0.5rem'} wrap='nowrap'>
             <Stack gap={'0.5rem'}>
-              <Title order={5}>
+              <Title order={titleOrder ?? 5}>
                 {thesisName ? thesisName : `${formatThesisType(thesisType)} Presentation`}
               </Title>
               <Group gap={'0.5rem'}>
@@ -241,26 +255,29 @@ const PresentationCard = ({
                       <Text size='xs'>Edit Presentation</Text>
                     </Group>
                   </Menu.Item>
-                  {hasAdvisorAccess(thesis, user) && (
-                    <Menu.Item>
-                      <Group
-                        justify='flex-start'
-                        align='center'
-                        gap='xs'
-                        onClick={() => setOpenDeleteModal(true)}
-                      >
-                        <TrashIcon size={16} color='red' />
-                        <Text size='xs' c={'red'}>
-                          Delete Presentation
-                        </Text>
-                      </Group>
-                    </Menu.Item>
-                  )}
+                  {'advisors' in thesis &&
+                    'supervisors' in thesis &&
+                    hasAdvisorAccess(thesis, user) && (
+                      <Menu.Item>
+                        <Group
+                          justify='flex-start'
+                          align='center'
+                          gap='xs'
+                          onClick={() => setOpenDeleteModal(true)}
+                        >
+                          <TrashIcon size={16} color='red' />
+                          <Text size='xs' c={'red'}>
+                            Delete Presentation
+                          </Text>
+                        </Group>
+                      </Menu.Item>
+                    )}
                 </Menu.Dropdown>
               </Menu>
             )}
           </Group>
-          <Group pt={'0.5rem'} gap={'0.5rem'}>
+          <Group pt={'0.5rem'} gap={'0.75rem'}>
+            {includeStudents && <AvatarUserList users={thesis.students} size='xs' />}
             {getThesisInfoItem(
               <CalendarBlankIcon color={'gray'} weight='bold' />,
               formatDate(presentation.scheduledAt, { withTime: true }),
@@ -279,7 +296,9 @@ const PresentationCard = ({
             )}
           </Group>
           {showNoteWhenEmpty() && <Divider />}
-          {presentation.state !== 'DRAFTED' && showNoteWhenEmpty() ? (
+          {'presentationNoteHtml' in presentation &&
+          presentation.state !== 'DRAFTED' &&
+          showNoteWhenEmpty() ? (
             <Stack>
               <Group justify={'space-between'} gap={'0.5rem'} align='center'>
                 {getThesisInfoItem(
@@ -384,7 +403,7 @@ const PresentationCard = ({
                 )}
               </Transition>
             </Stack>
-          ) : hasEditAccess ? (
+          ) : 'presentationNoteHtml' in presentation && hasEditAccess ? (
             <Group justify={'flex-end'} gap={'0.5rem'} align='center'>
               <Button
                 variant='outline'
@@ -432,12 +451,14 @@ const PresentationCard = ({
           </Group>
         </Stack>
       </Modal>
-      <ReplacePresentationModal
-        thesis={thesis}
-        presentation={presentation}
-        opened={editPresentationModal}
-        onClose={() => setEditPresentationModal(false)}
-      />
+      {thesis && 'title' in thesis && (
+        <ReplacePresentationModal
+          thesis={thesis}
+          presentation={presentation}
+          opened={editPresentationModal}
+          onClose={() => setEditPresentationModal(false)}
+        />
+      )}
       <SchedulePresentationModal
         presentation={schedulePresentationModal}
         onClose={() => setSchedulePresentationModal(undefined)}
