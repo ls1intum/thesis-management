@@ -122,7 +122,7 @@ public class ResearchGroupController {
         RequestValidator.validateNotNull(payload.headUsername()),
         RequestValidator.validateNotNull(payload.name()),
         RequestValidator.validateNotNull(payload.abbreviation()),
-        RequestValidator.validateStringMaxLength(payload.description(), 500),
+        RequestValidator.validateStringMaxLengthAllowNull(payload.description(), 500),
         payload.websiteUrl(),
         payload.campus()
     );
@@ -143,7 +143,7 @@ public class ResearchGroupController {
         RequestValidator.validateNotNull(payload.headUsername()),
         RequestValidator.validateNotNull(payload.name()),
         RequestValidator.validateNotNull(payload.abbreviation()),
-        RequestValidator.validateStringMaxLength(payload.description(), 500),
+        RequestValidator.validateStringMaxLengthAllowNull(payload.description(), 500),
         payload.websiteUrl(),
         payload.campus()
     );
