@@ -4,6 +4,7 @@ import de.tum.cit.aet.thesis.constants.ApplicationRejectReason;
 import de.tum.cit.aet.thesis.constants.ThesisCommentType;
 import de.tum.cit.aet.thesis.constants.ThesisFeedbackType;
 import de.tum.cit.aet.thesis.constants.ThesisPresentationVisibility;
+import de.tum.cit.aet.thesis.cron.model.ApplicationRejectObject;
 import de.tum.cit.aet.thesis.entity.*;
 import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.repository.EmailTemplateRepository;
@@ -18,6 +19,8 @@ import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -121,6 +124,31 @@ public class MailingService {
                 .addNotificationName("unreviewed-application-reminder")
                 .fillPlaceholder("unreviewedApplications", String.valueOf(unreviewedApplications))
                 .fillPlaceholder("reviewApplicationsLink", config.getClientHost() + "/applications")
+                .send(javaMailSender, uploadService);
+    }
+
+    public void sendApplicationAutomaticRejectReminderEmail(User user, List<ApplicationRejectObject> applications) {
+        EmailTemplate emailTemplate = loadTemplate(
+                user.getResearchGroup().getId(),
+                "APPLICATION_AUTOMATIC_REJECT_REMINDER",
+                "en");
+
+        MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(), emailTemplate.getBodyHtml());
+        mailBuilder
+                .addPrimaryRecipient(user)
+                .addNotificationName(emailTemplate.getSubject())
+                .fillPlaceholder("applications_list",
+                        applications.isEmpty()
+                                ? "No pending applications."
+                                : applications.stream()
+                                .map(app -> String.format(
+                                        "- %s (applying for: %s) - to be rejected on %s - <a href=\"%s\">Application Link</a>",
+                                        app.name(),
+                                        app.topicTitle(),
+                                        DataFormatter.formatDate(app.rejectionDate()),
+                                        config.getClientHost() + "/applications/" + app.applicationId()
+                                )).collect(Collectors.joining("<br/>"))
+                )
                 .send(javaMailSender, uploadService);
     }
 

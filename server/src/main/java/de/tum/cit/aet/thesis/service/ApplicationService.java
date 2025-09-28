@@ -4,6 +4,7 @@ import de.tum.cit.aet.thesis.constants.ApplicationRejectReason;
 import de.tum.cit.aet.thesis.constants.ApplicationReviewReason;
 import de.tum.cit.aet.thesis.constants.ApplicationState;
 import de.tum.cit.aet.thesis.constants.ThesisRoleName;
+import de.tum.cit.aet.thesis.cron.model.ApplicationRejectObject;
 import de.tum.cit.aet.thesis.entity.*;
 import de.tum.cit.aet.thesis.entity.key.ApplicationReviewerId;
 import de.tum.cit.aet.thesis.exception.request.ResourceInvalidParametersException;
@@ -266,26 +267,27 @@ public class ApplicationService {
         }
     }
 
-    public List<Application> getListOfApplicationsThatWillBeRejected(Topic topic, int afterDuration, Instant referenceDate) {
+    public List<ApplicationRejectObject> getListOfApplicationsThatWillBeRejected(Topic topic, int afterDuration, Instant referenceDate) {
         List<Application> applications = applicationRepository.findAllByTopic(topic);
-        List<Application> result = new ArrayList<>();
+        List<ApplicationRejectObject> result = new ArrayList<>();
 
         int minimalRejectDuration = 14;
         int referenceDuration = Math.max(afterDuration * 7, minimalRejectDuration);
         int timeTillRejection = 7;
 
         for (Application application : applications) {
-            if (referenceDate == null) {
-                referenceDate = application.getCreatedAt();
+            Instant applicationReferenceDate = referenceDate;
+            if (applicationReferenceDate == null) {
+                applicationReferenceDate = application.getCreatedAt();
             }
 
             if (application.getState() == ApplicationState.NOT_ASSESSED) {
                 Instant rejectionOption1 = application.getCreatedAt().plus(java.time.Duration.ofDays(minimalRejectDuration));
-                Instant rejectionOption2 = referenceDate.plus(java.time.Duration.ofDays(referenceDuration));
+                Instant rejectionOption2 = applicationReferenceDate.plus(java.time.Duration.ofDays(referenceDuration));
                 Instant dateOfRejection = rejectionOption1.isAfter(rejectionOption2) ? rejectionOption1 : rejectionOption2;
 
                 if (Instant.now().isAfter(dateOfRejection.minus(java.time.Duration.ofDays(timeTillRejection)))) {
-                    result.add(application);
+                    result.add(new ApplicationRejectObject(application.getUser().getFirstName() + " " + application.getUser().getLastName(), topic.getTitle(), dateOfRejection, application.getId()) );
                 }
             }
         }
