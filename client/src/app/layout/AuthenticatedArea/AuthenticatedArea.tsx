@@ -47,10 +47,11 @@ export interface IAuthenticatedAreaProps {
   size?: MantineSize
   collapseNavigation?: boolean
   requiredGroups?: string[]
+  handleScrollInView?: boolean
 }
 
 const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) => {
-  const { children, size, collapseNavigation = false, requiredGroups } = props
+  const { children, size, collapseNavigation = false, requiredGroups, handleScrollInView } = props
 
   const links: Array<{
     link: string
@@ -262,7 +263,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
       <AppShell.Main>
         <Box h={`calc(100vh - ${HEADER_HEIGHT}px)`}>
           <Flex direction='column' h='100%' w='100%'>
-            <Box flex={1}>
+            <Box flex={1} style={{ overflow: handleScrollInView ? 'hidden' : undefined }}>
               <Container
                 size={size}
                 fluid={!size}
