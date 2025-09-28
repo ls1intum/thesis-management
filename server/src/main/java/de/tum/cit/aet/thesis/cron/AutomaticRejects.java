@@ -39,7 +39,7 @@ public class AutomaticRejects {
         this.userService = userService;
     }
 
-    @Scheduled(cron = "0 32 00 * * *")
+    @Scheduled(cron = "0 00 09 * * *")
     @Transactional
     public void rejectOldApplications() {
         List<ResearchGroupSettings> enabledResearchGroups = researchGroupSettingsRepository.findAllByAutomaticRejectEnabled();

@@ -223,6 +223,11 @@ public class MailBuilder {
         return this;
     }
 
+    public MailBuilder fillPlaceholders(Map<String, Object> model) {
+        this.variables.putAll(model);
+        return this;
+    }
+
     public MailBuilder fillPlaceholder(String placeholder, Object value) {
         this.variables.put(placeholder, value);
 

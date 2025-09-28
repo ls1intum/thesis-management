@@ -19,9 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -133,22 +131,15 @@ public class MailingService {
                 "APPLICATION_AUTOMATIC_REJECT_REMINDER",
                 "en");
 
+        Map<String, Object> model = new HashMap<>();
+        model.put("applications", applications);
+        model.put("clientHost", config.getClientHost());
+
         MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(), emailTemplate.getBodyHtml());
         mailBuilder
                 .addPrimaryRecipient(user)
                 .addNotificationName(emailTemplate.getSubject())
-                .fillPlaceholder("applications_list",
-                        applications.isEmpty()
-                                ? "No pending applications."
-                                : applications.stream()
-                                .map(app -> String.format(
-                                        "- %s (applying for: %s) - to be rejected on %s - <a href=\"%s\">Application Link</a>",
-                                        app.name(),
-                                        app.topicTitle(),
-                                        DataFormatter.formatDate(app.rejectionDate()),
-                                        config.getClientHost() + "/applications/" + app.applicationId()
-                                )).collect(Collectors.joining("<br/>"))
-                )
+                .fillPlaceholders(model)
                 .send(javaMailSender, uploadService);
     }
 
