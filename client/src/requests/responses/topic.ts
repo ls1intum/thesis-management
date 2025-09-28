@@ -12,6 +12,8 @@ export interface ITopic {
   closedAt: string | null
   updatedAt: string
   createdAt: string
+  intendedStart: string | null
+  applicationDeadline: string | null
   createdBy: ILightUser
   researchGroup: ILightResearchGroup
   advisors: ILightUser[]

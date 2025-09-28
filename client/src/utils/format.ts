@@ -23,8 +23,8 @@ export function formatDate(
   const item = new Date(date)
 
   return item.toLocaleDateString(undefined, {
-    year: 'numeric',
-    month: 'numeric',
+    year: '2-digit',
+    month: '2-digit',
     day: 'numeric',
     hour: withTime ? 'numeric' : undefined,
     minute: withTime ? 'numeric' : undefined,

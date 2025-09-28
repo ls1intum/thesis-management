@@ -69,12 +69,22 @@ public class TopicService {
         String[] typesFilter = types == null || types.length == 0 ? null : types;
 
         return topicRepository.searchTopics(
-                researchGroup == null ? ( researchGroupIds == null ? null : new HashSet<>(Arrays.asList(researchGroupIds))) : new HashSet<UUID>(Arrays.asList(researchGroup.getId())),
+                researchGroup == null ? ( researchGroupIds == null ? null : new HashSet<>(Arrays.asList(researchGroupIds))) : new HashSet<UUID>(Collections.singleton(researchGroup.getId())),
                 typesFilter,
                 includeClosed,
                 searchQueryFilter,
                 PageRequest.of(page, limit, Sort.by(order))
         );
+    }
+
+    public List<Topic> getOpenFromResearchGroup(UUID researchGroupId) {
+        return topicRepository.searchTopics(
+                Collections.singleton(researchGroupId),
+                null,
+                false,
+                null,
+                PageRequest.of(0, Integer.MAX_VALUE, Sort.unsorted())
+        ).toList();
     }
 
     @Transactional
@@ -87,7 +97,9 @@ public class TopicService {
             String references,
             List<UUID> supervisorIds,
             List<UUID> advisorIds,
-            UUID researchGroupId
+            UUID researchGroupId,
+            Instant intendedStart,
+            Instant applicationDeadline
     ) {
         User creator = currentUserProvider().getUser();
         ResearchGroup researchGroup = researchGroupRepository.findById(researchGroupId).orElseThrow(
@@ -105,6 +117,8 @@ public class TopicService {
         topic.setCreatedAt(Instant.now());
         topic.setCreatedBy(creator);
         topic.setResearchGroup(researchGroup);
+        topic.setIntendedStart(intendedStart);
+        topic.setApplicationDeadline(applicationDeadline);
 
         topic = topicRepository.save(topic);
 
@@ -124,7 +138,9 @@ public class TopicService {
             String references,
             List<UUID> supervisorIds,
             List<UUID> advisorIds,
-            UUID researchGroupId
+            UUID researchGroupId,
+            Instant intendedStart,
+            Instant applicationDeadline
     ) {
         ResearchGroup researchGroup = researchGroupRepository.findById(researchGroupId).orElseThrow(
                 () -> new ResourceNotFoundException("Research group not found")
@@ -138,6 +154,8 @@ public class TopicService {
         topic.setReferences(references);
         topic.setUpdatedAt(Instant.now());
         topic.setResearchGroup(researchGroup);
+        topic.setIntendedStart(intendedStart);
+        topic.setApplicationDeadline(applicationDeadline);
 
         assignTopicRoles(topic, advisorIds, supervisorIds);
 

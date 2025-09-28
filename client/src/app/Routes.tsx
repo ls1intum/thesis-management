@@ -14,12 +14,13 @@ const ThesisOverviewPage = lazy(() => import('../pages/ThesisOverviewPage/Thesis
 const ResearchGroupAdminPage = lazy(
   () => import('../pages/ResearchGroupAdminPage/ResearchGroupAdminPage'),
 )
-const ResearchGroupSettingPage = lazy(
-  () => import('../pages/ResearchGroupSettingPage/ResearchGroupSettingPage'),
-)
 
 const PresentationOverviewPage = lazy(
   () => import('../pages/PresentationOverviewPage/PresentationOverviewPage'),
+)
+
+const ResearchGroupSettingPage = lazy(
+  () => import('../pages/ResearchGroupSettingPage/ResearchGroupSettingPage'),
 )
 const BrowseThesesPage = lazy(() => import('../pages/BrowseThesesPage/BrowseThesesPage'))
 const DashboardPage = lazy(() => import('../pages/DashboardPage/DashboardPage'))
