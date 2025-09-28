@@ -266,6 +266,33 @@ public class ApplicationService {
         }
     }
 
+    public List<Application> getListOfApplicationsThatWillBeRejected(Topic topic, int afterDuration, Instant referenceDate) {
+        List<Application> applications = applicationRepository.findAllByTopic(topic);
+        List<Application> result = new ArrayList<>();
+
+        int minimalRejectDuration = 14;
+        int referenceDuration = Math.max(afterDuration * 7, minimalRejectDuration);
+        int timeTillRejection = 7;
+
+        for (Application application : applications) {
+            if (referenceDate == null) {
+                referenceDate = application.getCreatedAt();
+            }
+
+            if (application.getState() == ApplicationState.NOT_ASSESSED) {
+                Instant rejectionOption1 = application.getCreatedAt().plus(java.time.Duration.ofDays(minimalRejectDuration));
+                Instant rejectionOption2 = referenceDate.plus(java.time.Duration.ofDays(referenceDuration));
+                Instant dateOfRejection = rejectionOption1.isAfter(rejectionOption2) ? rejectionOption1 : rejectionOption2;
+
+                if (Instant.now().isAfter(dateOfRejection.minus(java.time.Duration.ofDays(timeTillRejection)))) {
+                    result.add(application);
+                }
+            }
+        }
+
+        return result;
+    }
+
     @Transactional
     public void rejectListOfApplicationsIfOlderThan(List<Application> applications, int afterDuration, UUID researchGroupId) {
         ResearchGroup topicGroup = researchGroupRepository.findById(researchGroupId).orElseThrow(() -> new ResourceNotFoundException("Research Group not found: " + researchGroupId));
