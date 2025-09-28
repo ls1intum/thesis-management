@@ -5,6 +5,7 @@ import { checkMinimumThesisState, isThesisClosed } from '../../../../utils/thesi
 import { useLoadedThesisContext } from '../../../../providers/ThesisProvider/hooks'
 import ReplacePresentationModal from '../../../../components/PresentationsTable/components/ReplacePresentationModal/ReplacePresentationModal'
 import PresentationsTable from '../../../../components/PresentationsTable/PresentationsTable'
+import PresentationCard from './components/PresentationCard'
 
 const ThesisPresentationSection = () => {
   const { thesis, access } = useLoadedThesisContext()
@@ -26,24 +27,21 @@ const ThesisPresentationSection = () => {
               opened={createPresentationModal}
               onClose={() => setCreatePresentationModal(false)}
             />
-            <PresentationsTable
-              presentations={thesis.presentations}
-              theses={[thesis]}
-              columns={[
-                'state',
-                'type',
-                'location',
-                'streamUrl',
-                'language',
-                'scheduledAt',
-                'actions',
-              ]}
-            />
             {access.student && !isThesisClosed(thesis) && (
               <Button ml='auto' onClick={() => setCreatePresentationModal(true)}>
                 Create Presentation Draft
               </Button>
             )}
+
+            {thesis.presentations.map((presentation, index) => (
+              <PresentationCard
+                key={`presentation-${index}`}
+                presentation={presentation}
+                thesis={thesis}
+                thesisType={thesis.type}
+                hasEditAccess={access.student || false}
+              />
+            ))}
           </Stack>
         </Accordion.Panel>
       </Accordion.Item>

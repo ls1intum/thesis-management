@@ -7,10 +7,12 @@ import { doRequest } from '../../../../requests/request'
 import { showSimpleError } from '../../../../utils/notification'
 import { getApiResponseErrorMessage } from '../../../../requests/handler'
 
-const LandingPageHeader = () => {
-  const computedColorScheme = useComputedColorScheme()
+interface LandingPageHeaderProps {
+  researchGroupId?: string
+}
 
-  const { researchGroupId } = useParams<{ researchGroupId: string }>()
+const LandingPageHeader = ({ researchGroupId }: LandingPageHeaderProps) => {
+  const computedColorScheme = useComputedColorScheme()
 
   const [researchGroup, setResearchGroup] = useState<IResearchGroup | undefined>()
 

@@ -1,6 +1,8 @@
 package de.tum.cit.aet.thesis.service;
 
+import de.tum.cit.aet.thesis.constants.StringLimits;
 import de.tum.cit.aet.thesis.security.CurrentUserProvider;
+import de.tum.cit.aet.thesis.utility.RequestValidator;
 import jakarta.mail.internet.InternetAddress;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.property.ProdId;
@@ -186,6 +188,21 @@ public class ThesisPresentationService {
         }
 
         updateThesisCalendarEvents(thesis);
+
+        return thesis;
+    }
+
+    @Transactional
+    public Thesis updatePresentationNote(ThesisPresentation presentation, String note) {
+        Thesis thesis = presentation.getThesis();
+        currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+
+        if (note.isEmpty()) {
+            note = null;
+        }
+        presentation.setPresentationNoteHtml(note);
+
+        thesisPresentationRepository.save(presentation);
 
         return thesis;
     }

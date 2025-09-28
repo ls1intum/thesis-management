@@ -176,3 +176,15 @@ export function pluralize(word: string, count: number) {
 
   return `${word}s`
 }
+
+export function formatPresentationState(state: string) {
+  if (state === 'DRAFTED') {
+    return 'Draft'
+  }
+
+  if (state === 'SCHEDULED') {
+    return 'Scheduled'
+  }
+
+  return state
+}
