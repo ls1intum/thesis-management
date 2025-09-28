@@ -190,16 +190,12 @@ public class AccessManagementService {
             throw new RuntimeException("User is null");
         }
 
-        try {
-            UUID userId = getUserId(user.getUniversityId());
-            assignKeycloakRole(userId, "student");
+        UUID userId = getUserId(user.getUniversityId());
+        assignKeycloakRole(userId, "student");
 
-            removeKeycloakRole(userId, "advisor");
-            removeKeycloakRole(userId, "supervisor");
-            removeKeycloakRole(userId, "group-admin");
-        } catch (RuntimeException exception) {
-            log.warn("Could not remove supervisor and/or advisor role from user", exception);
-        }
+        removeKeycloakRole(userId, "advisor");
+        removeKeycloakRole(userId, "supervisor");
+        removeKeycloakRole(userId, "group-admin");
     }
 
     private void removeKeycloakRole(UUID userId, String roleName) {
