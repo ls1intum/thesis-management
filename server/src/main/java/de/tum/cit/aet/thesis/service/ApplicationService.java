@@ -261,7 +261,7 @@ public class ApplicationService {
                     reviewingUser = supervisor.get().getUser();
                 }
 
-                reject(reviewingUser , application, ApplicationRejectReason.TOPIC_OUTDATED, true, false);
+                reject(reviewingUser , application, ApplicationRejectReason.GENERAL, true, false);
             }
         }
     }
@@ -273,7 +273,7 @@ public class ApplicationService {
 
         for (Application application : applications) {
             if (application.getState() == ApplicationState.NOT_ASSESSED &&  Instant.now().isAfter(application.getCreatedAt().plus(java.time.Duration.ofDays(Math.max(afterDuration, 14))))) { //Check if the application is older than rejection duration, but minimal 14days
-                reject(reviewingUser , application, ApplicationRejectReason.TOPIC_OUTDATED, true, false);
+                reject(reviewingUser , application, ApplicationRejectReason.GENERAL, true, false);
             }
         }
     }
