@@ -247,13 +247,17 @@ public class ResearchGroupService {
         researchGroup.setHead(head);
 
         //Give new head supervisor as role and remove the role from the old head
-        accessManagementService.assignSupervisorRole(head);
-        accessManagementService.assignGroupAdminRole(head);
-        accessManagementService.removeResearchGroupRoles(oldHead);
-        Set<UserGroup> updatedGroupsHead = accessManagementService.syncRolesFromKeycloakToDatabase(head);
-        head.setGroups(updatedGroupsHead);
-        Set<UserGroup> updatedGroupsOldHead = accessManagementService.syncRolesFromKeycloakToDatabase(oldHead);
-        oldHead.setGroups(updatedGroupsOldHead);
+        try {
+            accessManagementService.assignSupervisorRole(head);
+            accessManagementService.assignGroupAdminRole(head);
+            accessManagementService.removeResearchGroupRoles(oldHead);
+            Set<UserGroup> updatedGroupsHead = accessManagementService.syncRolesFromKeycloakToDatabase(head);
+            head.setGroups(updatedGroupsHead);
+            Set<UserGroup> updatedGroupsOldHead = accessManagementService.syncRolesFromKeycloakToDatabase(oldHead);
+            oldHead.setGroups(updatedGroupsOldHead);
+        } catch (Exception e) {
+            throw new AccessDeniedException("There was an error changing the head of the group, please try again.");
+        }
     }
 
     researchGroup.setName(name);
@@ -337,12 +341,16 @@ public class ResearchGroupService {
 
 
         //Remove advisor role in keycloak and update database
-        accessManagementService.removeResearchGroupRoles(user);
-        Set<UserGroup> updatedGroups = accessManagementService.syncRolesFromKeycloakToDatabase(user);
-        user.setGroups(updatedGroups);
-        user.setResearchGroup(null);
+        try {
+            accessManagementService.removeResearchGroupRoles(user);
+            Set<UserGroup> updatedGroups = accessManagementService.syncRolesFromKeycloakToDatabase(user);
+            user.setGroups(updatedGroups);
+            user.setResearchGroup(null);
 
-        userRepository.save(user);
+            userRepository.save(user);
+        } catch (Exception e) {
+            throw new AccessDeniedException("There was an error removing the user from the group, please try again.");
+        }
 
         return user;
     }
