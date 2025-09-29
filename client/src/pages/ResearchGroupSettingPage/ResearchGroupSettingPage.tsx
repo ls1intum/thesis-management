@@ -25,6 +25,8 @@ const ResearchGroupSettingPage = () => {
   const [searchParams, setSearchParams] = useSearchParams()
   const [selectedTab, setSelectedTab] = useState(searchParams.get('setting') ?? 'general')
 
+  const [researchGroupSettingsLoading, setResearchGroupSettingsLoading] = useState(true)
+
   useEffect(() => {
     const params = new URLSearchParams(searchParams)
 
@@ -60,6 +62,8 @@ const ResearchGroupSettingPage = () => {
       },
     )
 
+    setResearchGroupSettingsLoading(true)
+
     doRequest<IResearchGroupSettings>(
       `/v2/research-group-settings/${researchGroupId}`,
       { method: 'GET', requiresAuth: true },
@@ -73,6 +77,7 @@ const ResearchGroupSettingPage = () => {
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
         }
+        setResearchGroupSettingsLoading(false)
       },
     )
   }, [researchGroupId])
@@ -107,30 +112,32 @@ const ResearchGroupSettingPage = () => {
                   researchGroupData={researchGroupData}
                   setResearchGroupData={setResearchGroupData}
                 />
-                <AutomaticRejectionCard
-                  automaticRejectionEnabledSettings={
-                    researchGroupSettings?.automaticRejectEnabled || false
-                  }
-                  rejectDurationSettings={researchGroupSettings?.rejectDuration || 8}
-                  setAutomaticRejectionEnabledSettings={(value: boolean) =>
-                    setResearchGroupSettings(
-                      (prev) =>
-                        ({
-                          ...prev,
-                          automaticRejectEnabled: value,
-                        }) as IResearchGroupSettings,
-                    )
-                  }
-                  setRejectDurationSettings={(value: number) =>
-                    setResearchGroupSettings(
-                      (prev) =>
-                        ({
-                          ...prev,
-                          rejectDuration: value,
-                        }) as IResearchGroupSettings,
-                    )
-                  }
-                />
+                {!researchGroupSettingsLoading && (
+                  <AutomaticRejectionCard
+                    automaticRejectionEnabledSettings={
+                      researchGroupSettings?.automaticRejectEnabled || false
+                    }
+                    rejectDurationSettings={researchGroupSettings?.rejectDuration || 8}
+                    setAutomaticRejectionEnabledSettings={(value: boolean) =>
+                      setResearchGroupSettings(
+                        (prev) =>
+                          ({
+                            ...prev,
+                            automaticRejectEnabled: value,
+                          }) as IResearchGroupSettings,
+                      )
+                    }
+                    setRejectDurationSettings={(value: number) =>
+                      setResearchGroupSettings(
+                        (prev) =>
+                          ({
+                            ...prev,
+                            rejectDuration: value,
+                          }) as IResearchGroupSettings,
+                      )
+                    }
+                  />
+                )}
               </Stack>
             </Tabs.Panel>
             <Tabs.Panel value='members' pt='md'>
