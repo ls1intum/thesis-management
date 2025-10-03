@@ -62,6 +62,7 @@ interface IPresentationCardProps {
   hasEditAccess: boolean
   titleOrder?: 4 | 5 | 6
   includeStudents?: boolean
+  onClick?: () => void
 }
 
 const PresentationCard = ({
@@ -72,6 +73,7 @@ const PresentationCard = ({
   hasEditAccess,
   titleOrder,
   includeStudents = false,
+  onClick,
 }: IPresentationCardProps) => {
   const [deleting, deletePresentation] = useThesisUpdateAction(
     async (presentation: IThesisPresentation) => {
@@ -195,6 +197,7 @@ const PresentationCard = ({
       w='100%'
       bg={getPresentationColor(presentation.state)}
       p={0}
+      onClick={onClick}
     >
       <Card radius='md' h='100%' w='100%' ml={5}>
         <Stack gap={'0.5rem'}>
