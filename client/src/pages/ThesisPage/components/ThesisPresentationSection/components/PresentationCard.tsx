@@ -100,7 +100,7 @@ const PresentationCard = ({
 
   const [editPresentationModal, setEditPresentationModal] = useState(false)
   const [schedulePresentationModal, setSchedulePresentationModal] = useState<
-    IThesisPresentation | undefined
+    IThesisPresentation | IPublishedPresentation | undefined
   >(undefined)
 
   const [presentationNoteOpen, setPresentationNoteOpen] = useState<boolean>(false)
@@ -187,7 +187,7 @@ const PresentationCard = ({
         return true
       }
     }
-    return false
+    return presentation.state === 'DRAFTED' ? hasAcceptAccess : false
   }
 
   return (
@@ -309,9 +309,7 @@ const PresentationCard = ({
               formatLanguage(presentation.language),
             )}
           </Group>
-          {showNoteWhenEmpty() && (presentation.state === 'DRAFTED' ? hasAcceptAccess : true) && (
-            <Divider />
-          )}
+          {showNoteWhenEmpty() && <Divider />}
           {'presentationNoteHtml' in presentation &&
           presentation.state !== 'DRAFTED' &&
           showNoteWhenEmpty() ? (
@@ -423,7 +421,7 @@ const PresentationCard = ({
                 )}
               </Transition>
             </Stack>
-          ) : 'presentationNoteHtml' in presentation && hasAcceptAccess ? (
+          ) : presentation.state === 'DRAFTED' && hasAcceptAccess ? (
             <Group justify={'flex-end'} gap={'0.5rem'} align='center'>
               <Button
                 variant='outline'
