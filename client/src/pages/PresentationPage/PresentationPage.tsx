@@ -90,13 +90,13 @@ const PresentationPage = () => {
       </Grid>
       <Divider />
       <ThesisData thesis={presentation.thesis} additionalInformation={['abstract']} />
-      {(user?.groups.some((role) => ['admin', 'advisor', 'supervisor'].includes(role)) &&
-        user?.researchGroupId === presentation.thesis.researchGroup.id) ||
-        (presentation.thesis.students.some((student) => student.userId === user?.userId) && (
-          <Button component={Link} to={`/theses/${presentation.thesis.thesisId}`}>
-            View Thesis Page
-          </Button>
-        ))}
+      {(user?.groups.includes('admin') ||
+        user?.researchGroupId === presentation.thesis.researchGroup.id ||
+        presentation.thesis.students.some((student) => student.userId === user?.userId)) && (
+        <Button component={Link} to={`/theses/${presentation.thesis.thesisId}`}>
+          View Thesis Page
+        </Button>
+      )}
     </Stack>
   )
 }
