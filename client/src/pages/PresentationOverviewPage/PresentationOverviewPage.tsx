@@ -210,6 +210,7 @@ const PresentationOverviewPage = () => {
                               thesisName={p.thesis.title}
                               titleOrder={6}
                               includeStudents={true}
+                              includeThesisStatus={true}
                               onClick={() => navigate(`/presentations/${p.presentationId}`)}
                             />
                           ))}
@@ -254,6 +255,7 @@ const PresentationOverviewPage = () => {
                                   user?.researchGroupId === p.thesis.researchGroup.id
                                 }
                                 thesisName={p.thesis.title}
+                                includeThesisStatus={true}
                                 titleOrder={6}
                                 includeStudents={true}
                                 onClick={() => navigate(`/presentations/${p.presentationId}`)}

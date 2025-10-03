@@ -53,6 +53,7 @@ import ReplacePresentationModal from '../../../../../components/PresentationsTab
 import SchedulePresentationModal from '../../../../../components/PresentationsTable/components/SchedulePresentationModal/SchedulePresentationModal'
 import DocumentEditor from '../../../../../components/DocumentEditor/DocumentEditor'
 import AvatarUserList from '../../../../../components/AvatarUserList/AvatarUserList'
+import ThesisTypeBadge from '../../../../LandingPage/components/ThesisTypBadge/ThesisTypBadge'
 
 interface IPresentationCardProps {
   presentation: IThesisPresentation | IPublishedPresentation
@@ -63,6 +64,7 @@ interface IPresentationCardProps {
   hasAcceptAccess: boolean
   titleOrder?: 4 | 5 | 6
   includeStudents?: boolean
+  includeThesisStatus?: boolean
   onClick?: () => void
 }
 
@@ -75,6 +77,7 @@ const PresentationCard = ({
   hasAcceptAccess,
   titleOrder,
   includeStudents = false,
+  includeThesisStatus = false,
   onClick,
 }: IPresentationCardProps) => {
   const [deleting, deletePresentation] = useThesisUpdateAction(
@@ -291,6 +294,9 @@ const PresentationCard = ({
             )}
           </Group>
           <Group pt={'0.5rem'} gap={'0.75rem'}>
+            {includeThesisStatus && (
+              <ThesisTypeBadge type={thesis.type} textColor='gray' fontWeight={500} />
+            )}
             {includeStudents && <AvatarUserList users={thesis.students} size='xs' />}
             {getThesisInfoItem(
               <CalendarBlankIcon color={'gray'} weight='bold' />,
