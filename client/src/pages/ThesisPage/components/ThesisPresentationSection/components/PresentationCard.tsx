@@ -200,7 +200,7 @@ const PresentationCard = ({
       bg={getPresentationColor(presentation.state)}
       p={0}
       onClick={() => {
-        !editPresentationModal && onClick ? onClick() : undefined
+        !editPresentationModal && !schedulePresentationModal && onClick ? onClick() : undefined
       }}
     >
       <Card radius='md' h='100%' w='100%' ml={5}>
