@@ -297,7 +297,15 @@ const PresentationCard = ({
             {includeThesisStatus && (
               <ThesisTypeBadge type={thesis.type} textColor='gray' fontWeight={500} />
             )}
-            {includeStudents && <AvatarUserList users={thesis.students} size='xs' />}
+            {includeStudents && (
+              <AvatarUserList
+                users={thesis.students}
+                size='xs'
+                textSize='sm'
+                textColor='gray'
+                fontWeight={500}
+              />
+            )}
             {getThesisInfoItem(
               <CalendarBlankIcon color={'gray'} weight='bold' />,
               formatDate(presentation.scheduledAt, { withTime: true }),
