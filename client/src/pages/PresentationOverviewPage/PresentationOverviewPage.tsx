@@ -203,7 +203,10 @@ const PresentationOverviewPage = () => {
                                 user?.researchGroupId === p.thesis.researchGroup.id ||
                                 p.thesis.students.some((student) => student.userId === user?.userId)
                               }
-                              hasAcceptAccess={true}
+                              hasAcceptAccess={
+                                user?.groups.includes('admin') ||
+                                user?.researchGroupId === p.thesis.researchGroup.id
+                              }
                               thesisName={p.thesis.title}
                               titleOrder={6}
                               includeStudents={true}
