@@ -60,6 +60,7 @@ interface IPresentationCardProps {
   thesisName?: string
   thesisType?: string
   hasEditAccess: boolean
+  hasAcceptAccess: boolean
   titleOrder?: 4 | 5 | 6
   includeStudents?: boolean
   onClick?: () => void
@@ -71,6 +72,7 @@ const PresentationCard = ({
   thesisName,
   thesisType,
   hasEditAccess,
+  hasAcceptAccess,
   titleOrder,
   includeStudents = false,
   onClick,
@@ -298,7 +300,9 @@ const PresentationCard = ({
               formatLanguage(presentation.language),
             )}
           </Group>
-          {showNoteWhenEmpty() && <Divider />}
+          {showNoteWhenEmpty() && (presentation.state === 'DRAFTED' ? hasAcceptAccess : true) && (
+            <Divider />
+          )}
           {'presentationNoteHtml' in presentation &&
           presentation.state !== 'DRAFTED' &&
           showNoteWhenEmpty() ? (
@@ -406,7 +410,7 @@ const PresentationCard = ({
                 )}
               </Transition>
             </Stack>
-          ) : 'presentationNoteHtml' in presentation && hasEditAccess ? (
+          ) : 'presentationNoteHtml' in presentation && hasAcceptAccess ? (
             <Group justify={'flex-end'} gap={'0.5rem'} align='center'>
               <Button
                 variant='outline'

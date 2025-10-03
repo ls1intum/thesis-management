@@ -197,6 +197,7 @@ const PresentationOverviewPage = () => {
                               presentation={p}
                               thesis={p.thesis}
                               hasEditAccess={false}
+                              hasAcceptAccess={false}
                               thesisName={p.thesis.title}
                               titleOrder={6}
                               includeStudents={true}
@@ -233,6 +234,7 @@ const PresentationOverviewPage = () => {
                                 presentation={p}
                                 thesis={p.thesis}
                                 hasEditAccess={false}
+                                hasAcceptAccess={false}
                                 thesisName={p.thesis.title}
                                 titleOrder={6}
                                 includeStudents={true}
