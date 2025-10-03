@@ -13,6 +13,7 @@ import {
   Indicator,
   Divider,
   Grid,
+  useMantineColorScheme,
 } from '@mantine/core'
 import { useIsSmallerBreakpoint, usePageTitle } from '../../hooks/theme'
 import { GLOBAL_CONFIG } from '../../config/global'
@@ -45,6 +46,8 @@ const PresentationOverviewPage = () => {
   const navigate = useNavigate()
 
   const user = useUser()
+
+  const { colorScheme } = useMantineColorScheme()
 
   useEffect(() => {
     if (context.researchGroups.length > 0) {
@@ -181,7 +184,7 @@ const PresentationOverviewPage = () => {
                       <Grid.Col span='content'>
                         <Stack
                           h={'100%'}
-                          bg={'gray.1'}
+                          bg={colorScheme === 'dark' ? 'dark.6' : 'gray.1'}
                           p='xs'
                           style={{ borderRadius: 8 }}
                           w={'100px'}
