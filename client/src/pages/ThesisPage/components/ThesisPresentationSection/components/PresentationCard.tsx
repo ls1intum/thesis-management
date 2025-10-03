@@ -199,7 +199,9 @@ const PresentationCard = ({
       w='100%'
       bg={getPresentationColor(presentation.state)}
       p={0}
-      onClick={onClick}
+      onClick={() => {
+        !editPresentationModal && onClick ? onClick() : undefined
+      }}
     >
       <Card radius='md' h='100%' w='100%' ml={5}>
         <Stack gap={'0.5rem'}>
@@ -243,6 +245,7 @@ const PresentationCard = ({
                       alignItems: 'center',
                       justifyContent: 'center',
                     }}
+                    onClick={(e) => e.stopPropagation()}
                   >
                     <DotsThreeVerticalIcon size={24} />
                   </UnstyledButton>
@@ -254,7 +257,10 @@ const PresentationCard = ({
                       justify='flex-start'
                       align='center'
                       gap='xs'
-                      onClick={() => setEditPresentationModal(true)}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setEditPresentationModal(true)
+                      }}
                     >
                       <NotePencilIcon size={16} />
                       <Text size='xs'>Edit Presentation</Text>
@@ -268,7 +274,10 @@ const PresentationCard = ({
                           justify='flex-start'
                           align='center'
                           gap='xs'
-                          onClick={() => setOpenDeleteModal(true)}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setOpenDeleteModal(true)
+                          }}
                         >
                           <TrashIcon size={16} color='red' />
                           <Text size='xs' c={'red'}>
@@ -319,7 +328,8 @@ const PresentationCard = ({
                       variant='outline'
                       c={'primary'}
                       leftSection={<NotePencilIcon size={14} />}
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation()
                         setEditMode(true)
                       }}
                     >
@@ -333,7 +343,8 @@ const PresentationCard = ({
                         size='xs'
                         c={'gray'}
                         leftSection={<XIcon size={14} />}
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.stopPropagation()
                           setEditingPresentationNote(presentation.presentationNoteHtml ?? '')
                           if (
                             !presentation.presentationNoteHtml ||
@@ -353,7 +364,8 @@ const PresentationCard = ({
                         c={'primary'}
                         leftSection={<FloppyDiskIcon size={14} />}
                         loading={updating}
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.stopPropagation()
                           updatePresentationNote(
                             presentation.presentationId,
                             editingPresentationNote,
@@ -386,7 +398,8 @@ const PresentationCard = ({
                           <PlusIcon size={14} />
                         )
                       }
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation()
                         setPresentationNoteOpen(!presentationNoteOpen)
                       }}
                     >
@@ -417,7 +430,10 @@ const PresentationCard = ({
                 size='xs'
                 color={'green'}
                 leftSection={<CheckIcon size={14} />}
-                onClick={() => setSchedulePresentationModal(presentation)}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setSchedulePresentationModal(presentation)
+                }}
               >
                 Accept
               </Button>

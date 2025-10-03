@@ -19,7 +19,7 @@ import { GLOBAL_CONFIG } from '../../config/global'
 import { CopyIcon, CheckIcon } from '@phosphor-icons/react'
 import { useEffect, useRef, useState } from 'react'
 import { ILightResearchGroup } from '../../requests/responses/researchGroup'
-import { useAuthenticationContext } from '../../hooks/authentication'
+import { useAuthenticationContext, useUser } from '../../hooks/authentication'
 import { Calendar } from '@mantine/dates'
 import dayjs from 'dayjs'
 import { PaginationResponse } from '../../requests/responses/pagination'
@@ -43,6 +43,8 @@ const PresentationOverviewPage = () => {
   const isSmallerLG = useIsSmallerBreakpoint('lg')
 
   const navigate = useNavigate()
+
+  const user = useUser()
 
   useEffect(() => {
     if (context.researchGroups.length > 0) {
@@ -196,8 +198,12 @@ const PresentationOverviewPage = () => {
                               key={p.presentationId}
                               presentation={p}
                               thesis={p.thesis}
-                              hasEditAccess={false}
-                              hasAcceptAccess={false}
+                              hasEditAccess={
+                                user?.groups.includes('admin') ||
+                                user?.researchGroupId === p.thesis.researchGroup.id ||
+                                p.thesis.students.some((student) => student.userId === user?.userId)
+                              }
+                              hasAcceptAccess={true}
                               thesisName={p.thesis.title}
                               titleOrder={6}
                               includeStudents={true}
@@ -233,8 +239,17 @@ const PresentationOverviewPage = () => {
                                 key={p.presentationId}
                                 presentation={p}
                                 thesis={p.thesis}
-                                hasEditAccess={false}
-                                hasAcceptAccess={false}
+                                hasEditAccess={
+                                  user?.groups.includes('admin') ||
+                                  user?.researchGroupId === p.thesis.researchGroup.id ||
+                                  p.thesis.students.some(
+                                    (student) => student.userId === user?.userId,
+                                  )
+                                }
+                                hasAcceptAccess={
+                                  user?.groups.includes('admin') ||
+                                  user?.researchGroupId === p.thesis.researchGroup.id
+                                }
                                 thesisName={p.thesis.title}
                                 titleOrder={6}
                                 includeStudents={true}
