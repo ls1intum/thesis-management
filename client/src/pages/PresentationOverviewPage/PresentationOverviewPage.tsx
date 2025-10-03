@@ -29,6 +29,7 @@ import { showSimpleError } from '../../utils/notification'
 import { getApiResponseErrorMessage } from '../../requests/handler'
 import PresentationCard from '../ThesisPage/components/ThesisPresentationSection/components/PresentationCard'
 import { CalendarXIcon } from '@phosphor-icons/react/dist/ssr'
+import { useNavigate } from 'react-router'
 
 const PresentationOverviewPage = () => {
   usePageTitle('Presentations')
@@ -40,6 +41,8 @@ const PresentationOverviewPage = () => {
 
   const isSmaller = useIsSmallerBreakpoint('md')
   const isSmallerLG = useIsSmallerBreakpoint('lg')
+
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (context.researchGroups.length > 0) {
@@ -197,6 +200,7 @@ const PresentationOverviewPage = () => {
                               thesisName={p.thesis.title}
                               titleOrder={6}
                               includeStudents={true}
+                              onClick={() => navigate(`/presentations/${p.presentationId}`)}
                             />
                           ))}
                         </Stack>
@@ -232,6 +236,7 @@ const PresentationOverviewPage = () => {
                                 thesisName={p.thesis.title}
                                 titleOrder={6}
                                 includeStudents={true}
+                                onClick={() => navigate(`/presentations/${p.presentationId}`)}
                               />
                             ))}
                           </Stack>
