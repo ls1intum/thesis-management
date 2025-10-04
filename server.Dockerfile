@@ -1,11 +1,11 @@
-FROM gradle:8.11.1-jdk21 AS build
+FROM azul/zulu-openjdk:25.0.0-jdk AS build
 
 COPY --chown=gradle:gradle . /home/gradle/thesis-management
 WORKDIR /home/gradle/thesis-management/server
 
 RUN gradle build -x test --no-daemon
 
-FROM eclipse-temurin:21
+FROM azul/zulu-openjdk:25.0.0-jre
 
 EXPOSE 8080
 
