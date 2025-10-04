@@ -1,4 +1,4 @@
-FROM gradle:8.11.1-jdk21 AS build
+FROM gradle:8.14.3-jdk21 AS build
 
 COPY --chown=gradle:gradle . /home/gradle/thesis-management
 WORKDIR /home/gradle/thesis-management/server
