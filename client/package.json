@@ -41,7 +41,7 @@
     "@phosphor-icons/react": "2.1.10",
     "@tiptap/extension-highlight": "3.4.1",
     "@tiptap/extension-subscript": "3.4.1",
-    "@tiptap/extension-superscript": "3.4.1",
+    "@tiptap/extension-superscript": "3.6.1",
     "@tiptap/extension-text-align": "3.4.1",
     "@tiptap/extension-underline": "3.4.1",
     "@tiptap/starter-kit": "3.4.1",
