@@ -1,11 +1,12 @@
 import { useThesisCommentsContext } from '../../providers/ThesisCommentsProvider/hooks'
-import { Center, Group, Pagination, Paper, Skeleton, Stack, Text } from '@mantine/core'
+import { Center, Group, Pagination, Paper, Skeleton, Stack, Text, Title } from '@mantine/core'
 import { useLoggedInUser } from '../../hooks/authentication'
 import { formatDate, formatUser } from '../../utils/format'
 import { Download, Eye } from '@phosphor-icons/react'
 import { useHighlightedBackgroundColor } from '../../hooks/theme'
 import AuthenticatedFileDownloadButton from '../AuthenticatedFileDownloadButton/AuthenticatedFileDownloadButton'
 import AuthenticatedFilePreviewButton from '../AuthenticatedFilePreviewButton/AuthenticatedFilePreviewButton'
+import { NoteIcon } from '@phosphor-icons/react/dist/ssr'
 
 const ThesisCommentsList = () => {
   const { thesis, comments, deleteComment, limit, page, setPage } = useThesisCommentsContext()
@@ -18,7 +19,17 @@ const ThesisCommentsList = () => {
     <Stack>
       {!comments &&
         Array.from(Array(limit).keys()).map((index) => <Skeleton key={index} height={50} />)}
-      {comments && comments.content.length === 0 && <Text ta='center'>No comments added yet</Text>}
+      {comments && comments.content.length === 0 && (
+        <Stack align='center' justify='center' py='lg' gap={'0.5rem'}>
+          <NoteIcon size={48} color='gray' />
+          <Stack gap={'0.25rem'} align='center'>
+            <Title order={5}>No comments yet</Title>
+            <Text ta='center' variant='dimmed' size='sm'>
+              Be the first to add a comment to this thesis.
+            </Text>
+          </Stack>
+        </Stack>
+      )}
       {comments &&
         comments.content.map((comment) => (
           <Stack gap={0} key={comment.commentId}>
