@@ -56,7 +56,7 @@ import AvatarUserList from '../../../../../components/AvatarUserList/AvatarUserL
 import ThesisTypeBadge from '../../../../LandingPage/components/ThesisTypBadge/ThesisTypBadge'
 
 interface IPresentationCardProps {
-  presentationProp: IThesisPresentation | IPublishedPresentation
+  presentation: IThesisPresentation | IPublishedPresentation
   thesis: IThesis | IPublishedThesis
   thesisName?: string
   thesisType?: string
@@ -71,7 +71,7 @@ interface IPresentationCardProps {
 }
 
 const PresentationCard = ({
-  presentationProp,
+  presentation,
   thesis,
   thesisName,
   thesisType,
@@ -102,8 +102,6 @@ const PresentationCard = ({
     },
     'Presentation deleted successfully',
   )
-
-  const [presentation, setPresentation] = useState(presentationProp)
 
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
 
@@ -517,7 +515,6 @@ const PresentationCard = ({
                 ? updatedPresentation.scheduledAt
                 : presentation.scheduledAt,
             }
-            setPresentation(updatedPresentation2 ?? presentation)
             onChange?.(updatedPresentation2)
           }}
         />
@@ -533,7 +530,6 @@ const PresentationCard = ({
             state: updatedPresentation ? updatedPresentation.state : presentation.state,
           }
 
-          setPresentation(updatedPresentation2)
           onChange?.(updatedPresentation2)
         }}
       />

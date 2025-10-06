@@ -36,7 +36,7 @@ const ThesisPresentationSection = () => {
             {thesis.presentations.map((presentation, index) => (
               <PresentationCard
                 key={`presentation-${index}`}
-                presentationProp={presentation}
+                presentation={presentation}
                 thesis={thesis}
                 thesisType={thesis.type}
                 hasEditAccess={access.student || false}

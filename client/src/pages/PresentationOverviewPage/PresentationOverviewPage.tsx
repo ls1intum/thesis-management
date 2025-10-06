@@ -249,7 +249,7 @@ const PresentationOverviewPage = () => {
                           {list.map((p) => (
                             <PresentationCard
                               key={p.presentationId}
-                              presentationProp={p}
+                              presentation={p}
                               thesis={p.thesis}
                               hasEditAccess={
                                 user?.groups.includes('admin') ||
@@ -300,7 +300,7 @@ const PresentationOverviewPage = () => {
                             {list.map((p) => (
                               <PresentationCard
                                 key={p.presentationId}
-                                presentationProp={p}
+                                presentation={p}
                                 thesis={p.thesis}
                                 hasEditAccess={
                                   user?.groups.includes('admin') ||
