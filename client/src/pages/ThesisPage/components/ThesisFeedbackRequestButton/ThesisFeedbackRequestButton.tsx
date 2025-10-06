@@ -3,7 +3,7 @@ import {
   useLoadedThesisContext,
   useThesisUpdateAction,
 } from '../../../../providers/ThesisProvider/hooks'
-import { Button, Checkbox, Modal, Stack, Textarea } from '@mantine/core'
+import { Button, Checkbox, Modal, Stack, Textarea, Text, Title, Group } from '@mantine/core'
 import { doRequest } from '../../../../requests/request'
 import { IThesis } from '../../../../requests/responses/thesis'
 import { ApiError } from '../../../../requests/handler'
@@ -32,6 +32,8 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
   }, [opened])
 
   const newChanges = changes.split('\n').filter((x) => x.trim())
+
+  const [showDisregardChanges, setShowDisregardChanges] = useState(false)
 
   const [loading, onSave] = useThesisUpdateAction(async () => {
     for (const editChange of editChanges) {
@@ -70,50 +72,98 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
       <Modal
         title='Request Changes'
         opened={opened}
-        onClose={() => setOpened(false)}
+        onClose={() => {
+          if (editChanges.length === 0 && newChanges.length === 0) {
+            setOpened(false)
+          } else if (!showDisregardChanges) {
+            setShowDisregardChanges(true)
+          }
+        }}
         onClick={(e) => e.stopPropagation()}
         size='xl'
+        centered
       >
-        <Stack>
-          {thesis.feedback
-            .filter((change) => change.type === type)
-            .map((change) => (
-              <Checkbox
-                key={change.feedbackId}
-                label={change.feedback}
-                checked={
-                  editChanges.find((item) => item.feedbackId === change.feedbackId)?.completed ??
-                  !!change.completedAt
-                }
-                onChange={(e) => {
-                  if (e.target.checked === !!change.completedAt) {
-                    setEditChanges((prev) =>
-                      prev.filter((item) => item.feedbackId !== change.feedbackId),
-                    )
-                  } else {
-                    setEditChanges((prev) => [
-                      ...prev,
-                      { feedbackId: change.feedbackId, completed: e.target.checked },
-                    ])
-                  }
+        {showDisregardChanges ? (
+          <Stack align='center' gap={'2rem'} w={400} mx='auto'>
+            <Stack gap={'0.25rem'} align='center'>
+              <Title order={4}>Unsaved changes</Title>
+              <Text c='dimmed' ta={'center'}>
+                You have unsaved changes. Do you want to discard them or keep editing?
+              </Text>
+            </Stack>
+
+            <Stack gap={'0.25rem'} align='center'>
+              <Group gap={'0.5rem'}>
+                <Button onClick={() => setShowDisregardChanges(false)} variant='outline'>
+                  Keep editing
+                </Button>
+                <Button
+                  loading={loading}
+                  onClick={() => {
+                    onSave()
+                    setShowDisregardChanges(false)
+                  }}
+                >
+                  Save & close
+                </Button>
+              </Group>
+              <Button
+                onClick={() => {
+                  setOpened(false)
+                  setChanges('')
+                  setEditChanges([])
+                  setShowDisregardChanges(false)
                 }}
-              />
-            ))}
-          <Textarea
-            label='New Change Requests (one request per line)'
-            rows={10}
-            value={changes}
-            onChange={(e) => setChanges(e.target.value)}
-          />
-          <Button
-            fullWidth
-            loading={loading}
-            disabled={editChanges.length === 0 && newChanges.length === 0}
-            onClick={onSave}
-          >
-            Request Changes
-          </Button>
-        </Stack>
+                variant='transparent'
+                color='gray'
+                size='sm'
+              >
+                Discard
+              </Button>
+            </Stack>
+          </Stack>
+        ) : (
+          <Stack>
+            {thesis.feedback
+              .filter((change) => change.type === type)
+              .map((change) => (
+                <Checkbox
+                  key={change.feedbackId}
+                  label={change.feedback}
+                  checked={
+                    editChanges.find((item) => item.feedbackId === change.feedbackId)?.completed ??
+                    !!change.completedAt
+                  }
+                  onChange={(e) => {
+                    if (e.target.checked === !!change.completedAt) {
+                      setEditChanges((prev) =>
+                        prev.filter((item) => item.feedbackId !== change.feedbackId),
+                      )
+                    } else {
+                      setEditChanges((prev) => [
+                        ...prev,
+                        { feedbackId: change.feedbackId, completed: e.target.checked },
+                      ])
+                    }
+                  }}
+                />
+              ))}
+            <Textarea
+              label='New Change Requests (one request per line)'
+              rows={10}
+              value={changes}
+              onChange={(e) => setChanges(e.target.value)}
+            />
+            <Button
+              fullWidth
+              loading={loading}
+              disabled={editChanges.length === 0 && newChanges.length === 0}
+              onClick={onSave}
+            >
+              Request Changes
+            </Button>
+          </Stack>
+        )}
       </Modal>
       Request Changes
     </Button>
