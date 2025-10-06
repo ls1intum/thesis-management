@@ -578,6 +578,8 @@ public class ThesisController {
         User currentUser = currentUserProvider().getUser();
         Thesis thesis = thesisService.findById(thesisId);
 
+        System.out.println("Message: " + payload.message() + " , Comment: " + payload.commentType() + " , File: " + (file != null ? file.getOriginalFilename() : "No File"));
+
         if (payload.commentType() == ThesisCommentType.ADVISOR && !thesis.hasAdvisorAccess(currentUser)) {
             throw new AccessDeniedException("You need to be an advisor of this thesis to add an advisor comment");
         }
