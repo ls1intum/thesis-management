@@ -158,6 +158,8 @@ const PresentationCard = ({
     return 'gray'
   }
 
+  const [editMenuOpened, setEditMenuOpened] = useState(false)
+
   const getThesisInfoItem = (icon: React.ReactNode, text: string, link?: string) => {
     return (
       <Group gap={'0.25rem'}>
@@ -203,8 +205,11 @@ const PresentationCard = ({
       bg={getPresentationColor(presentation.state)}
       p={0}
       onClick={() => {
-        !editPresentationModal && !schedulePresentationModal && onClick ? onClick() : undefined
+        !editPresentationModal && !schedulePresentationModal && !editMenuOpened && onClick
+          ? onClick()
+          : undefined
       }}
+      style={{ cursor: onClick ? 'pointer' : 'default' }}
     >
       <Card radius='md' h='100%' w='100%' ml={5}>
         <Stack gap={'0.5rem'}>
@@ -240,6 +245,8 @@ const PresentationCard = ({
                 position='bottom-end'
                 withArrow
                 transitionProps={{ transition: 'scale-y', duration: 200 }}
+                onOpen={() => setEditMenuOpened(true)}
+                onClose={() => setEditMenuOpened(false)}
               >
                 <Menu.Target>
                   <UnstyledButton
@@ -261,7 +268,6 @@ const PresentationCard = ({
                       align='center'
                       gap='xs'
                       onClick={(e) => {
-                        e.stopPropagation()
                         setEditPresentationModal(true)
                       }}
                     >
@@ -278,7 +284,6 @@ const PresentationCard = ({
                           align='center'
                           gap='xs'
                           onClick={(e) => {
-                            e.stopPropagation()
                             setOpenDeleteModal(true)
                           }}
                         >
