@@ -502,7 +502,7 @@ const PresentationCard = ({
           onChange={(updatedPresentation) => {
             const updatedPresentation2 = {
               ...presentation,
-              presentationType: updatedPresentation ? updatedPresentation.type : presentation.type,
+              type: updatedPresentation ? updatedPresentation.type : presentation.type,
               visibility: updatedPresentation
                 ? updatedPresentation.visibility
                 : presentation.visibility,

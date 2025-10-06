@@ -159,9 +159,14 @@ const PresentationOverviewPage = () => {
           } else {
             list.push(updated)
           }
+          list.sort((a, b) => (dayjs(a.scheduledAt).isAfter(dayjs(b.scheduledAt)) ? 1 : -1))
           updatedMap.set(key, list)
         }
       })
+
+      if (!updatedMap.has(date)) {
+        updatedMap.set(date, [updated])
+      }
 
       setPresentations(updatedMap)
     }
