@@ -66,6 +66,8 @@ interface IPresentationCardProps {
   includeStudents?: boolean
   includeThesisStatus?: boolean
   onClick?: () => void
+  onDelete?: () => void
+  onChange?: (presentation: IThesisPresentation | IPublishedPresentation) => void
 }
 
 const PresentationCard = ({
@@ -79,6 +81,8 @@ const PresentationCard = ({
   includeStudents = false,
   includeThesisStatus = false,
   onClick,
+  onDelete,
+  onChange,
 }: IPresentationCardProps) => {
   const [deleting, deletePresentation] = useThesisUpdateAction(
     async (presentation: IThesisPresentation) => {
@@ -158,6 +162,8 @@ const PresentationCard = ({
     return 'gray'
   }
 
+  const [editMenuOpened, setEditMenuOpened] = useState(false)
+
   const getThesisInfoItem = (icon: React.ReactNode, text: string, link?: string) => {
     return (
       <Group gap={'0.25rem'}>
@@ -203,8 +209,15 @@ const PresentationCard = ({
       bg={getPresentationColor(presentation.state)}
       p={0}
       onClick={() => {
-        !editPresentationModal && !schedulePresentationModal && onClick ? onClick() : undefined
+        editPresentationModal ||
+        schedulePresentationModal ||
+        openDeleteModal ||
+        editMenuOpened ||
+        !onClick
+          ? undefined
+          : onClick()
       }}
+      style={{ cursor: onClick ? 'pointer' : 'default' }}
     >
       <Card radius='md' h='100%' w='100%' ml={5}>
         <Stack gap={'0.5rem'}>
@@ -240,6 +253,8 @@ const PresentationCard = ({
                 position='bottom-end'
                 withArrow
                 transitionProps={{ transition: 'scale-y', duration: 200 }}
+                onOpen={() => setEditMenuOpened(true)}
+                onClose={() => setEditMenuOpened(false)}
               >
                 <Menu.Target>
                   <UnstyledButton
@@ -249,22 +264,17 @@ const PresentationCard = ({
                       justifyContent: 'center',
                     }}
                     onClick={(e) => e.stopPropagation()}
+                    pl={8}
+                    pr={4}
+                    pb={4}
                   >
                     <DotsThreeVerticalIcon size={24} />
                   </UnstyledButton>
                 </Menu.Target>
 
                 <Menu.Dropdown>
-                  <Menu.Item>
-                    <Group
-                      justify='flex-start'
-                      align='center'
-                      gap='xs'
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        setEditPresentationModal(true)
-                      }}
-                    >
+                  <Menu.Item onClick={() => setEditPresentationModal(true)}>
+                    <Group justify='flex-start' align='center' gap='xs'>
                       <NotePencilIcon size={16} />
                       <Text size='xs'>Edit Presentation</Text>
                     </Group>
@@ -272,16 +282,12 @@ const PresentationCard = ({
                   {'advisors' in thesis &&
                     'supervisors' in thesis &&
                     hasAdvisorAccess(thesis, user) && (
-                      <Menu.Item>
-                        <Group
-                          justify='flex-start'
-                          align='center'
-                          gap='xs'
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            setOpenDeleteModal(true)
-                          }}
-                        >
+                      <Menu.Item
+                        onClick={(e) => {
+                          setOpenDeleteModal(true)
+                        }}
+                      >
+                        <Group justify='flex-start' align='center' gap='xs'>
                           <TrashIcon size={16} color='red' />
                           <Text size='xs' c={'red'}>
                             Delete Presentation
@@ -477,6 +483,7 @@ const PresentationCard = ({
               variant='outline'
               color='red'
               onClick={() => {
+                onDelete?.()
                 deletePresentation(presentation)
                 setOpenDeleteModal(false)
               }}
@@ -492,11 +499,39 @@ const PresentationCard = ({
           presentation={presentation}
           opened={editPresentationModal}
           onClose={() => setEditPresentationModal(false)}
+          onChange={(updatedPresentation) => {
+            const updatedPresentation2 = {
+              ...presentation,
+              type: updatedPresentation ? updatedPresentation.type : presentation.type,
+              visibility: updatedPresentation
+                ? updatedPresentation.visibility
+                : presentation.visibility,
+              location: updatedPresentation ? updatedPresentation.location : presentation.location,
+              streamUrl: updatedPresentation
+                ? updatedPresentation.streamUrl
+                : presentation.streamUrl,
+              language: updatedPresentation ? updatedPresentation.language : presentation.language,
+              scheduledAt: updatedPresentation
+                ? updatedPresentation.scheduledAt
+                : presentation.scheduledAt,
+            }
+            onChange?.(updatedPresentation2)
+          }}
         />
       )}
       <SchedulePresentationModal
         presentation={schedulePresentationModal}
-        onClose={() => setSchedulePresentationModal(undefined)}
+        onClose={() => {
+          setSchedulePresentationModal(undefined)
+        }}
+        onChange={(updatedPresentation) => {
+          const updatedPresentation2 = {
+            ...presentation,
+            state: updatedPresentation ? updatedPresentation.state : presentation.state,
+          }
+
+          onChange?.(updatedPresentation2)
+        }}
       />
     </Card>
   )

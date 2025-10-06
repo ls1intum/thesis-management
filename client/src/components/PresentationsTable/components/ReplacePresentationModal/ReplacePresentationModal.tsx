@@ -20,7 +20,7 @@ interface IReplacePresentationModalProps {
   onClose: () => unknown
   thesis: IPublishedThesis | IThesis | undefined
   presentation?: IThesisPresentation | IPublishedPresentation
-  onChange?: () => unknown
+  onChange?: (presentation: IThesisPresentation | IPublishedPresentation | undefined) => unknown
 }
 
 interface IFormValues {
@@ -119,7 +119,19 @@ const ReplacePresentationModal = (props: IReplacePresentationModalProps) => {
 
       if (response.ok) {
         onClose()
-        onChange?.()
+
+        // Find the updated or newly created presentation
+        const updatedPresentation = response.data.presentations?.find((p) =>
+          presentation
+            ? p.presentationId === presentation.presentationId
+            : // For new presentation, pick the one with the latest scheduledAt
+              p.scheduledAt ===
+              (form.values.date instanceof Date
+                ? form.values.date.toISOString()
+                : new Date(form.values.date as any).toISOString()),
+        )
+
+        onChange?.(updatedPresentation)
 
         return response.data
       } else {

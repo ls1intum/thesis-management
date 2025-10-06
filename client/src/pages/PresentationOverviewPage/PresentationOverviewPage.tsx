@@ -24,7 +24,7 @@ import { useAuthenticationContext, useUser } from '../../hooks/authentication'
 import { Calendar } from '@mantine/dates'
 import dayjs from 'dayjs'
 import { PaginationResponse } from '../../requests/responses/pagination'
-import { IPublishedPresentation } from '../../requests/responses/thesis'
+import { IPublishedPresentation, IThesisPresentation } from '../../requests/responses/thesis'
 import { doRequest } from '../../requests/request'
 import { showSimpleError } from '../../utils/notification'
 import { getApiResponseErrorMessage } from '../../requests/handler'
@@ -64,7 +64,14 @@ const PresentationOverviewPage = () => {
 
   useEffect(() => {
     const onWheel = (e: WheelEvent) => {
-      if (scrollRef.current) {
+      // Check if body has modal-open class or if any modal backdrop is present
+      const hasModalBackdrop = document.querySelector(
+        '.mantine-Modal-overlay, .mantine-Drawer-overlay, [data-mantine-modal]',
+      )
+      const bodyHasModalOpen = document.body.style.overflow === 'hidden'
+
+      // Only handle wheel events if no modal is open and we have scrollRef
+      if (!hasModalBackdrop && !bodyHasModalOpen && scrollRef.current) {
         scrollRef.current.scrollTop += e.deltaY
         e.preventDefault()
       }
@@ -114,6 +121,54 @@ const PresentationOverviewPage = () => {
 
     if (el) {
       el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }
+
+  const onDelete = (presentationId: string, date: string) => {
+    const updatedMap = new Map(presentations)
+    const updatedList =
+      updatedMap.get(date)?.filter((item) => item.presentationId !== presentationId) || []
+    if (updatedList.length === 0) {
+      updatedMap.delete(date)
+    } else {
+      updatedMap.set(date, updatedList)
+    }
+    setPresentations(updatedMap)
+  }
+
+  const onUpdate = (updated: IPublishedPresentation | IThesisPresentation) => {
+    if ('presentationNoteHtml' in updated) {
+      return
+    } else {
+      const updatedMap = new Map(presentations)
+      const date = dayjs(updated.scheduledAt).format('YYYY-MM-DD')
+
+      //Check if the Date changed
+      updatedMap.forEach((list, key) => {
+        if (list.find((p) => p.presentationId === updated.presentationId) && key !== date) {
+          const newList = list.filter((p) => p.presentationId !== updated.presentationId)
+          if (newList.length === 0) {
+            updatedMap.delete(key)
+          } else {
+            updatedMap.set(key, newList)
+          }
+        } else if (key === date) {
+          const index = list.findIndex((p) => p.presentationId === updated.presentationId)
+          if (index !== -1) {
+            list[index] = updated
+          } else {
+            list.push(updated)
+          }
+          list.sort((a, b) => (dayjs(a.scheduledAt).isAfter(dayjs(b.scheduledAt)) ? 1 : -1))
+          updatedMap.set(key, list)
+        }
+      })
+
+      if (!updatedMap.has(date)) {
+        updatedMap.set(date, [updated])
+      }
+
+      setPresentations(updatedMap)
     }
   }
 
@@ -215,6 +270,12 @@ const PresentationOverviewPage = () => {
                               includeStudents={true}
                               includeThesisStatus={true}
                               onClick={() => navigate(`/presentations/${p.presentationId}`)}
+                              onDelete={() => {
+                                onDelete(p.presentationId, date)
+                              }}
+                              onChange={(updated) => {
+                                onUpdate(updated)
+                              }}
                             />
                           ))}
                         </Stack>
@@ -262,6 +323,12 @@ const PresentationOverviewPage = () => {
                                 titleOrder={6}
                                 includeStudents={true}
                                 onClick={() => navigate(`/presentations/${p.presentationId}`)}
+                                onDelete={() => {
+                                  onDelete(p.presentationId, date)
+                                }}
+                                onChange={(updated) => {
+                                  onUpdate(updated)
+                                }}
                               />
                             ))}
                           </Stack>
