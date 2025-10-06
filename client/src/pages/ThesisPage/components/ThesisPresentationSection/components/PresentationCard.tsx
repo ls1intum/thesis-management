@@ -66,6 +66,8 @@ interface IPresentationCardProps {
   includeStudents?: boolean
   includeThesisStatus?: boolean
   onClick?: () => void
+  onDelete?: () => void
+  onChange?: (presentation: IThesisPresentation | IPublishedPresentation) => void
 }
 
 const PresentationCard = ({
@@ -79,6 +81,8 @@ const PresentationCard = ({
   includeStudents = false,
   includeThesisStatus = false,
   onClick,
+  onDelete,
+  onChange,
 }: IPresentationCardProps) => {
   const [deleting, deletePresentation] = useThesisUpdateAction(
     async (presentation: IThesisPresentation) => {
@@ -207,9 +211,13 @@ const PresentationCard = ({
       bg={getPresentationColor(presentation.state)}
       p={0}
       onClick={() => {
-        !editPresentationModal && !schedulePresentationModal && !editMenuOpened && onClick
-          ? onClick()
-          : undefined
+        editPresentationModal ||
+        schedulePresentationModal ||
+        openDeleteModal ||
+        editMenuOpened ||
+        !onClick
+          ? undefined
+          : onClick()
       }}
       style={{ cursor: onClick ? 'pointer' : 'default' }}
     >
@@ -258,21 +266,17 @@ const PresentationCard = ({
                       justifyContent: 'center',
                     }}
                     onClick={(e) => e.stopPropagation()}
+                    pl={8}
+                    pr={4}
+                    pb={4}
                   >
                     <DotsThreeVerticalIcon size={24} />
                   </UnstyledButton>
                 </Menu.Target>
 
                 <Menu.Dropdown>
-                  <Menu.Item>
-                    <Group
-                      justify='flex-start'
-                      align='center'
-                      gap='xs'
-                      onClick={(e) => {
-                        setEditPresentationModal(true)
-                      }}
-                    >
+                  <Menu.Item onClick={() => setEditPresentationModal(true)}>
+                    <Group justify='flex-start' align='center' gap='xs'>
                       <NotePencilIcon size={16} />
                       <Text size='xs'>Edit Presentation</Text>
                     </Group>
@@ -280,15 +284,12 @@ const PresentationCard = ({
                   {'advisors' in thesis &&
                     'supervisors' in thesis &&
                     hasAdvisorAccess(thesis, user) && (
-                      <Menu.Item>
-                        <Group
-                          justify='flex-start'
-                          align='center'
-                          gap='xs'
-                          onClick={(e) => {
-                            setOpenDeleteModal(true)
-                          }}
-                        >
+                      <Menu.Item
+                        onClick={(e) => {
+                          setOpenDeleteModal(true)
+                        }}
+                      >
+                        <Group justify='flex-start' align='center' gap='xs'>
                           <TrashIcon size={16} color='red' />
                           <Text size='xs' c={'red'}>
                             Delete Presentation
@@ -484,6 +485,7 @@ const PresentationCard = ({
               variant='outline'
               color='red'
               onClick={() => {
+                onDelete?.()
                 deletePresentation(presentation)
                 setOpenDeleteModal(false)
               }}
@@ -516,6 +518,7 @@ const PresentationCard = ({
                 : presentation.scheduledAt,
             }
             setPresentation(updatedPresentation2 ?? presentation)
+            onChange?.(updatedPresentation2)
           }}
         />
       )}
@@ -531,6 +534,7 @@ const PresentationCard = ({
           }
 
           setPresentation(updatedPresentation2)
+          onChange?.(updatedPresentation2)
         }}
       />
     </Card>
