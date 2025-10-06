@@ -61,7 +61,7 @@ const ThesisCommentElement = ({ comment, thesisId, deleteComment }: IThesisComme
   const { hovered, ref } = useHover()
 
   return (
-    <div ref={ref}>
+    <Stack ref={ref} gap={'1rem'}>
       <Group justify='space-between'>
         <Group>
           <CustomAvatar user={comment.createdBy} />
@@ -76,12 +76,10 @@ const ThesisCommentElement = ({ comment, thesisId, deleteComment }: IThesisComme
           <DeleteButton onClick={() => deleteComment(comment)} />
         )}
       </Group>
-      <Stack pl={54} pt='sm' gap={'0.5rem'}>
-        <Group></Group>
+      <Stack pl={54} gap={'0.5rem'}>
         {comment.message && comment.message.trim() !== '' && (
           <Text size='sm'>{comment.message}</Text>
         )}
-
         {comment.uploadName && (
           <FileElement
             file={
@@ -121,7 +119,7 @@ const ThesisCommentElement = ({ comment, thesisId, deleteComment }: IThesisComme
           />
         )}
       </Stack>
-    </div>
+    </Stack>
   )
 }
 

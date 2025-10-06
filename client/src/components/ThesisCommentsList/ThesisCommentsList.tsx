@@ -1,5 +1,5 @@
 import { useThesisCommentsContext } from '../../providers/ThesisCommentsProvider/hooks'
-import { Center, Pagination, Skeleton, Stack, Text, Title } from '@mantine/core'
+import { Center, Divider, Pagination, Skeleton, Stack, Text, Title } from '@mantine/core'
 import { NoteIcon } from '@phosphor-icons/react/dist/ssr'
 import ThesisCommentElement from './components/ThesisCommentElement'
 
@@ -7,7 +7,7 @@ const ThesisCommentsList = () => {
   const { thesis, comments, deleteComment, limit, page, setPage } = useThesisCommentsContext()
 
   return (
-    <Stack>
+    <Stack pb={'0.5rem'}>
       {!comments &&
         Array.from(Array(limit).keys()).map((index) => <Skeleton key={index} height={50} />)}
       {comments && comments.content.length === 0 && (
@@ -21,15 +21,18 @@ const ThesisCommentsList = () => {
           </Stack>
         </Stack>
       )}
-      <Stack gap={'2rem'}>
+      <Stack gap={'1rem'}>
         {comments &&
-          comments.content.map((comment) => (
-            <ThesisCommentElement
-              key={comment.commentId}
-              comment={comment}
-              thesisId={thesis.thesisId}
-              deleteComment={deleteComment}
-            />
+          comments.content.map((comment, idx) => (
+            <>
+              <ThesisCommentElement
+                key={comment.commentId}
+                comment={comment}
+                thesisId={thesis.thesisId}
+                deleteComment={deleteComment}
+              />
+              {idx < comments.content.length - 1 && <Divider />}
+            </>
           ))}
       </Stack>
       {comments && comments.totalPages > 1 && (
