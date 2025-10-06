@@ -7,7 +7,7 @@ import TextAlign from '@tiptap/extension-text-align'
 import Superscript from '@tiptap/extension-superscript'
 import SubScript from '@tiptap/extension-subscript'
 import { ChangeEvent, useEffect, useRef } from 'react'
-import { Group, Input, Text } from '@mantine/core'
+import { Group, Input, Text, useMantineColorScheme } from '@mantine/core'
 import { InputWrapperProps } from '@mantine/core/lib/components/Input/InputWrapper/InputWrapper'
 
 interface IDocumentEditorProps extends InputWrapperProps {
@@ -90,6 +90,8 @@ const DocumentEditor = (props: IDocumentEditorProps) => {
     }
   }, [value, editMode, editor])
 
+  const colorScheme = useMantineColorScheme()
+
   return (
     <Input.Wrapper
       {...wrapperProps}
@@ -113,6 +115,8 @@ const DocumentEditor = (props: IDocumentEditorProps) => {
         onBlur={onBlur}
         onFocus={onFocus}
         style={{
+          backgroundColor:
+            colorScheme.colorScheme === 'dark' ? 'var(--mantine-color-dark-7)' : 'white',
           minHeight: editMode ? '170px' : undefined,
           borderColor: wrapperProps.error ? 'var(--mantine-color-error)' : undefined,
           borderStyle: editMode ? 'solid' : 'dashed',
