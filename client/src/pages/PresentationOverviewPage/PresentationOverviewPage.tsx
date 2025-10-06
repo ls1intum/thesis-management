@@ -64,7 +64,14 @@ const PresentationOverviewPage = () => {
 
   useEffect(() => {
     const onWheel = (e: WheelEvent) => {
-      if (scrollRef.current) {
+      // Check if body has modal-open class or if any modal backdrop is present
+      const hasModalBackdrop = document.querySelector(
+        '.mantine-Modal-overlay, .mantine-Drawer-overlay, [data-mantine-modal]',
+      )
+      const bodyHasModalOpen = document.body.style.overflow === 'hidden'
+
+      // Only handle wheel events if no modal is open and we have scrollRef
+      if (!hasModalBackdrop && !bodyHasModalOpen && scrollRef.current) {
         scrollRef.current.scrollTop += e.deltaY
         e.preventDefault()
       }
