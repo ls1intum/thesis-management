@@ -479,6 +479,32 @@ public class ThesisController {
         return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
     }
 
+    @PutMapping("/{thesisId}/presentations/{presentationId}/note")
+    public ResponseEntity<ThesisDto> updateNote(
+            @PathVariable UUID thesisId,
+            @PathVariable UUID presentationId,
+            @RequestBody UpdateNotePayload payload
+    ) {
+        User currentUser = currentUserProvider().getUser();
+        ThesisPresentation presentation = thesisPresentationService.findById(thesisId, presentationId);
+        Thesis thesis = presentation.getThesis();
+
+        if (!thesis.hasStudentAccess(currentUser)) {
+            throw new AccessDeniedException("You need to be a student of this thesis to update the presentation note");
+        }
+
+        if (presentation.getState() == ThesisPresentationState.DRAFTED) {
+            throw new AccessDeniedException("The Presentation note can only be updated for scheduled presentations");
+        }
+
+        thesis = thesisPresentationService.updatePresentationNote(
+                presentation,
+                RequestValidator.validateStringMaxLength(payload.note(), StringLimits.UNLIMITED_TEXT.getLimit())
+        );
+
+        return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
+    }
+
     @PostMapping("/{thesisId}/presentations/{presentationId}/schedule")
     public ResponseEntity<ThesisDto> schedulePresentation(
             @PathVariable UUID thesisId,
@@ -551,6 +577,8 @@ public class ThesisController {
     ) {
         User currentUser = currentUserProvider().getUser();
         Thesis thesis = thesisService.findById(thesisId);
+
+        System.out.println("Message: " + payload.message() + " , Comment: " + payload.commentType() + " , File: " + (file != null ? file.getOriginalFilename() : "No File"));
 
         if (payload.commentType() == ThesisCommentType.ADVISOR && !thesis.hasAdvisorAccess(currentUser)) {
             throw new AccessDeniedException("You need to be an advisor of this thesis to add an advisor comment");

@@ -7,15 +7,38 @@ interface IAvatarUserProps {
   user: ILightUser
   withUniversityId?: boolean
   size?: MantineSize
+  textSize?: MantineSize
+  textColor?: string
+  fontWeight?: number | string
 }
 
 const AvatarUser = (props: IAvatarUserProps) => {
-  const { user, withUniversityId = false, size = 'sm' } = props
+  const {
+    user,
+    withUniversityId = false,
+    size = 'sm',
+    textSize = 'sm',
+    textColor,
+    fontWeight,
+  } = props
 
   return (
-    <Group gap={5} preventGrowOverflow wrap='nowrap' style={{ overflow: 'hidden' }}>
+    <Group
+      gap={5}
+      preventGrowOverflow
+      wrap='nowrap'
+      style={{ overflow: 'hidden' }}
+      justify='center'
+      align='center'
+    >
       <CustomAvatar user={user} size={size} />
-      <Text size={size} truncate style={{ flex: 1, minWidth: 0 }}>
+      <Text
+        size={textSize ?? size ?? undefined}
+        truncate
+        style={{ flex: 1, minWidth: 0 }}
+        c={textColor}
+        fw={fontWeight}
+      >
         {formatUser(user, { withUniversityId })}
       </Text>
     </Group>

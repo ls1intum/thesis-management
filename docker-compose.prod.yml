@@ -40,6 +40,7 @@ services:
         condition: service_healthy
     volumes:
       - ./thesis_uploads:/uploads
+    restart: unless-stopped
     expose:
       - "8080"
     environment:
@@ -88,6 +89,7 @@ services:
       - "traefik.http.middlewares.client-compress.compress=true"
       - "traefik.http.routers.client.middlewares=client-compress"
       - "traefik.http.routers.client.priority=1"
+    restart: unless-stopped
     expose:
       - "80"
     environment:
@@ -125,16 +127,17 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
     networks:
       - thesis-management-network
 
   postfix:
     image: ghcr.io/ls1admin/postfix:latest
     container_name: thesis-management-postfix
-    restart: unless-stopped
     volumes:
       - ./postfix-config:/config
     hostname: ${APP_HOSTNAME}
+    restart: unless-stopped
     networks:
       - thesis-management-network
 

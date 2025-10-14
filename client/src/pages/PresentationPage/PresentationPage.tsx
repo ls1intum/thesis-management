@@ -12,6 +12,7 @@ import LabeledItem from '../../components/LabeledItem/LabeledItem'
 import { formatDate, formatPresentationType } from '../../utils/format'
 import { GLOBAL_CONFIG } from '../../config/global'
 import { usePageTitle } from '../../hooks/theme'
+import { useUser } from '../../hooks/authentication'
 
 const PresentationPage = () => {
   const { presentationId } = useParams<{ presentationId: string }>()
@@ -19,6 +20,8 @@ const PresentationPage = () => {
   const [presentation, setPresentation] = useState<IPublishedPresentation | false>()
 
   usePageTitle(presentation ? presentation.thesis.title : 'Presentation')
+
+  const user = useUser()
 
   useEffect(() => {
     setPresentation(undefined)
@@ -87,9 +90,13 @@ const PresentationPage = () => {
       </Grid>
       <Divider />
       <ThesisData thesis={presentation.thesis} additionalInformation={['abstract']} />
-      <Button component={Link} to={`/theses/${presentation.thesis.thesisId}`}>
-        View Thesis Page
-      </Button>
+      {(user?.groups.includes('admin') ||
+        user?.researchGroupId === presentation.thesis.researchGroup.id ||
+        presentation.thesis.students.some((student) => student.userId === user?.userId)) && (
+        <Button component={Link} to={`/theses/${presentation.thesis.thesisId}`}>
+          View Thesis Page
+        </Button>
+      )}
     </Stack>
   )
 }

@@ -9,6 +9,8 @@ import GeneralResearchGroupSettings from './components/GeneralResearchGroupSetti
 import ResearchGroupMembers from './components/MemberSettings/ResearchGroupMembers'
 import EmailTemplatesOverview from './components/EmailTemplateSettings/EmailTemplatesOverview'
 import { useUser } from '../../hooks/authentication'
+import AutomaticRejectionCard from './components/AutomaticRejectionCard'
+import { IResearchGroupSettings } from '../../requests/responses/researchGroupSettings'
 
 const ResearchGroupSettingPage = () => {
   const { researchGroupId } = useParams<{ researchGroupId: string }>()
@@ -17,9 +19,14 @@ const ResearchGroupSettingPage = () => {
 
   const [loading, setLoading] = useState(true)
   const [researchGroupData, setResearchGroupData] = useState<IResearchGroup | undefined>(undefined)
+  const [researchGroupSettings, setResearchGroupSettings] = useState<
+    IResearchGroupSettings | undefined
+  >(undefined)
 
   const [searchParams, setSearchParams] = useSearchParams()
   const [selectedTab, setSelectedTab] = useState(searchParams.get('setting') ?? 'general')
+
+  const [researchGroupSettingsLoading, setResearchGroupSettingsLoading] = useState(true)
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams)
@@ -55,6 +62,25 @@ const ResearchGroupSettingPage = () => {
         setLoading(false)
       },
     )
+
+    setResearchGroupSettingsLoading(true)
+
+    doRequest<IResearchGroupSettings>(
+      `/v2/research-group-settings/${researchGroupId}`,
+      { method: 'GET', requiresAuth: true },
+      (res) => {
+        if (res.ok) {
+          if (res.ok) {
+            setResearchGroupSettings(res.data)
+          }
+        } else if (res.status === 404) {
+          setResearchGroupData(undefined)
+        } else {
+          showSimpleError(getApiResponseErrorMessage(res))
+        }
+        setResearchGroupSettingsLoading(false)
+      },
+    )
   }, [researchGroupId])
 
   if (loading) return <Loader />
@@ -78,17 +104,45 @@ const ResearchGroupSettingPage = () => {
           >
             <Tabs.List>
               <Tabs.Tab value='general'>General</Tabs.Tab>
+              <Tabs.Tab value='members'>Members</Tabs.Tab>
               <Tabs.Tab value='email-templates'>Email Templates</Tabs.Tab>
             </Tabs.List>
-
             <Tabs.Panel value='general' pt='md'>
               <Stack>
                 <GeneralResearchGroupSettings
                   researchGroupData={researchGroupData}
                   setResearchGroupData={setResearchGroupData}
                 />
-                <ResearchGroupMembers researchGroupData={researchGroupData} />
+                {!researchGroupSettingsLoading && (
+                  <AutomaticRejectionCard
+                    automaticRejectionEnabledSettings={
+                      researchGroupSettings?.automaticRejectEnabled || false
+                    }
+                    rejectDurationSettings={researchGroupSettings?.rejectDuration || 8}
+                    setAutomaticRejectionEnabledSettings={(value: boolean) =>
+                      setResearchGroupSettings(
+                        (prev) =>
+                          ({
+                            ...prev,
+                            automaticRejectEnabled: value,
+                          }) as IResearchGroupSettings,
+                      )
+                    }
+                    setRejectDurationSettings={(value: number) =>
+                      setResearchGroupSettings(
+                        (prev) =>
+                          ({
+                            ...prev,
+                            rejectDuration: value,
+                          }) as IResearchGroupSettings,
+                      )
+                    }
+                  />
+                )}
               </Stack>
+            </Tabs.Panel>
+            <Tabs.Panel value='members' pt='md'>
+              <ResearchGroupMembers researchGroupData={researchGroupData} />
             </Tabs.Panel>
             <Tabs.Panel value='email-templates' pt='md'>
               <EmailTemplatesOverview />

@@ -4,6 +4,7 @@ import de.tum.cit.aet.thesis.constants.ApplicationRejectReason;
 import de.tum.cit.aet.thesis.constants.ThesisCommentType;
 import de.tum.cit.aet.thesis.constants.ThesisFeedbackType;
 import de.tum.cit.aet.thesis.constants.ThesisPresentationVisibility;
+import de.tum.cit.aet.thesis.cron.model.ApplicationRejectObject;
 import de.tum.cit.aet.thesis.entity.*;
 import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.repository.EmailTemplateRepository;
@@ -18,7 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -121,6 +122,24 @@ public class MailingService {
                 .addNotificationName("unreviewed-application-reminder")
                 .fillPlaceholder("unreviewedApplications", String.valueOf(unreviewedApplications))
                 .fillPlaceholder("reviewApplicationsLink", config.getClientHost() + "/applications")
+                .send(javaMailSender, uploadService);
+    }
+
+    public void sendApplicationAutomaticRejectReminderEmail(User user, List<ApplicationRejectObject> applications) {
+        EmailTemplate emailTemplate = loadTemplate(
+                user.getResearchGroup().getId(),
+                "APPLICATION_AUTOMATIC_REJECT_REMINDER",
+                "en");
+
+        Map<String, Object> model = new HashMap<>();
+        model.put("applications", applications);
+        model.put("clientHost", config.getClientHost());
+
+        MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(), emailTemplate.getBodyHtml());
+        mailBuilder
+                .addPrimaryRecipient(user)
+                .addNotificationName(emailTemplate.getSubject())
+                .fillPlaceholders(model)
                 .send(javaMailSender, uploadService);
     }
 
