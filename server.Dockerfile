@@ -3,7 +3,7 @@ FROM azul/zulu-openjdk:25.0.0-jdk AS build
 COPY --chown=gradle:gradle . /home/gradle/thesis-management
 WORKDIR /home/gradle/thesis-management/server
 
-RUN gradle build -x test --no-daemon
+RUN ./gradlew build -x test --no-daemon
 
 FROM azul/zulu-openjdk:25.0.0-jre
 
