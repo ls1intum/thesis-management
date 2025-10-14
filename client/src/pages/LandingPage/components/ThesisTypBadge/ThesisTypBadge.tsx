@@ -3,6 +3,8 @@ import { formatThesisType } from '../../../../utils/format'
 
 interface ThesisTypeBadgeProps {
   type: string
+  textColor?: string
+  fontWeight?: number | string
 }
 
 const getTypeColor = (type: string): string => {
@@ -20,10 +22,10 @@ const getTypeColor = (type: string): string => {
   }
 }
 
-const ThesisTypeBadge = ({ type }: ThesisTypeBadgeProps) => (
+const ThesisTypeBadge = ({ type, textColor, fontWeight }: ThesisTypeBadgeProps) => (
   <Group key={type} gap={3} wrap='nowrap'>
     <Box w={15} h={15} style={{ borderRadius: '50%' }} bg={getTypeColor(type)} />
-    <Text size='sm'>
+    <Text size='sm' c={textColor} fw={fontWeight}>
       {type.toLowerCase() === 'interdisciplinary_project'
         ? formatThesisType(type, true)
         : formatThesisType(type)}

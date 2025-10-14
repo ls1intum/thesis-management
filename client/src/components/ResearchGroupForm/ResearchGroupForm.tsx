@@ -19,6 +19,8 @@ const ResearchGroupForm = ({
   submitLabel = 'Submit',
   layout = 'stack',
 }: IResearchGroupFormProps) => {
+  const descriptionMaxLength = 500
+
   const form = useForm({
     initialValues: {
       name: initialFormValues?.name || '',
@@ -39,7 +41,9 @@ const ResearchGroupForm = ({
         return null
       },
       description: (value) =>
-        value.length > 300 ? 'Description must be 300 characters or less' : null,
+        value.length > descriptionMaxLength
+          ? `Description must be ${descriptionMaxLength} characters or less`
+          : null,
       abbreviation: (value) => {
         if (!value) {
           return 'Abbreviation is required'
@@ -116,11 +120,11 @@ const ResearchGroupForm = ({
             label='Description'
             autosize
             minRows={3}
-            maxLength={300}
+            maxLength={descriptionMaxLength}
             {...form.getInputProps('description')}
           />
           <Text size='xs' c='dimmed'>
-            {form.values.description.length}/300 characters
+            {form.values.description.length}/{descriptionMaxLength} characters
           </Text>
         </Grid.Col>
 

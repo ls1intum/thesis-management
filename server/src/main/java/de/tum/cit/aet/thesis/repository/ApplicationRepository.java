@@ -51,6 +51,10 @@ public interface ApplicationRepository extends JpaRepository<Application, UUID> 
             Pageable page
     );
 
+    @Query
+            ("SELECT a FROM Application a WHERE a.state = 'NOT_ASSESSED' AND a.topic IS NULL AND a.researchGroup.id = :researchGroupID")
+    List<Application> findNotReviewedSuggestedByResearchGroup(@Param("researchGroupID") UUID researchGroupID);
+
     @Query("""
             SELECT COUNT(DISTINCT a) FROM Application a
               LEFT JOIN Topic t ON (a.topic.id = t.id)

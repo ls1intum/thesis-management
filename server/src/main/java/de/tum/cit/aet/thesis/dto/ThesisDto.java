@@ -176,11 +176,11 @@ public record ThesisDto(
       String location,
       String streamUrl,
       String language,
+      String presentationNoteHtml,
       Instant scheduledAt,
       Instant createdAt,
       LightUserDto createdBy
   ) {
-
     public static ThesisPresentationDto fromPresentationEntity(ThesisPresentation presentation) {
       if (presentation == null) {
         return null;
@@ -195,6 +195,7 @@ public record ThesisDto(
           presentation.getLocation(),
           presentation.getStreamUrl(),
           presentation.getLanguage(),
+          presentation.getPresentationNoteHtml(),
           presentation.getScheduledAt(),
           presentation.getCreatedAt(),
           LightUserDto.fromUserEntity(presentation.getCreatedBy())

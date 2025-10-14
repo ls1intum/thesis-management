@@ -14,4 +14,8 @@
     <include file="changes/08_research_groups.sql" relativeToChangelogFile="true"/>
     <include file="changes/09_email_templates.sql" relativeToChangelogFile="true"/>
     <include file="changes/10_unique_abbreviation_research_group.sql" relativeToChangelogFile="true"/>
+    <include file="changes/11_add_intendedStart_and_applicationDeadline_to_topic.sql" relativeToChangelogFile="true"/>
+    <include file="changes/12_add_presentation_note.sql" relativeToChangelogFile="true"/>
+    <include file="changes/13_check_max_limit_research_group_description.sql" relativeToChangelogFile="true"/>
+    <include file="changes/14_add_automatic_rejection_reminder_email_template.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>

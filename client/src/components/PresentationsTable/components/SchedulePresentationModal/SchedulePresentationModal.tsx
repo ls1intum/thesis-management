@@ -15,7 +15,7 @@ import { X } from '@phosphor-icons/react'
 interface ISchedulePresentationModalProps {
   presentation: IPublishedPresentation | IThesisPresentation | undefined
   onClose: () => unknown
-  onChange?: () => unknown
+  onChange?: (presentation: IPublishedPresentation | IThesisPresentation | undefined) => unknown
 }
 
 const SchedulePresentationModal = (props: ISchedulePresentationModalProps) => {
@@ -45,7 +45,12 @@ const SchedulePresentationModal = (props: ISchedulePresentationModalProps) => {
 
     if (response.ok) {
       onClose()
-      onChange?.()
+
+      const updatedPresentation = response.data.presentations?.find(
+        (p) => p.presentationId === presentation.presentationId,
+      )
+
+      onChange?.(updatedPresentation)
 
       return response.data
     } else {
@@ -60,7 +65,7 @@ const SchedulePresentationModal = (props: ISchedulePresentationModalProps) => {
   }, [presentation?.presentationId])
 
   return (
-    <Modal title='Schedule Presentation' opened={!!presentation} onClose={onClose}>
+    <Modal title='Schedule Presentation' opened={!!presentation} onClose={() => onClose()} centered>
       <Stack>
         <Checkbox
           checked={inviteChairMembers}

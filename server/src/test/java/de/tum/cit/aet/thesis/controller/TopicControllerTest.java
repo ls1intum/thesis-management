@@ -64,7 +64,9 @@ class TopicControllerTest extends BaseIntegrationTest {
                 "References",
                 List.of(advisor.userId()),
                 List.of(advisor.userId()),
-                researchGroupId
+                researchGroupId,
+                null,
+                null
         );
 
         mockMvc.perform(MockMvcRequestBuilders.post("/v2/topics")
@@ -88,7 +90,9 @@ class TopicControllerTest extends BaseIntegrationTest {
                 "References",
                 List.of(UUID.randomUUID()),
                 List.of(UUID.randomUUID()),
-                researchGroupId
+                researchGroupId,
+                null,
+                null
         );
 
         mockMvc.perform(MockMvcRequestBuilders.post("/v2/topics")
@@ -113,7 +117,9 @@ class TopicControllerTest extends BaseIntegrationTest {
                 "Updated References",
                 List.of(advisor.userId()),
                 List.of(advisor.userId()),
-                researchGroupId
+                researchGroupId,
+                null,
+                null
         );
 
         mockMvc.perform(MockMvcRequestBuilders.put("/v2/topics/{topicId}", topicId)

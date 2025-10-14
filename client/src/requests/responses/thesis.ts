@@ -20,6 +20,7 @@ export interface IThesisPresentation {
   location: string | null
   streamUrl: string | null
   language: string
+  presentationNoteHtml: string | null
   scheduledAt: string
   createdAt: string
   createdBy: ILightUser

@@ -17,7 +17,12 @@ import { Link, useParams, useSearchParams } from 'react-router'
 import PublishedTheses from './components/PublishedTheses/PublishedTheses'
 import { usePageTitle } from '../../hooks/theme'
 import LandingPageHeader from './components/LandingPageHeader/LandingPageHeader'
-import { FadersHorizontal, List, MagnifyingGlass, SquaresFour } from '@phosphor-icons/react'
+import {
+  FadersHorizontalIcon,
+  ListIcon,
+  MagnifyingGlassIcon,
+  SquaresFourIcon,
+} from '@phosphor-icons/react'
 import { useEffect, useState } from 'react'
 import { useDebouncedValue, useMediaQuery } from '@mantine/hooks'
 import { GLOBAL_CONFIG } from '../../config/global'
@@ -111,7 +116,7 @@ const LandingPage = () => {
     {
       label: (
         <Center style={{ gap: 10 }}>
-          <List size={18} />
+          <ListIcon size={18} />
           <span>List</span>
         </Center>
       ),
@@ -120,7 +125,7 @@ const LandingPage = () => {
     {
       label: (
         <Center style={{ gap: 10 }}>
-          <SquaresFour size={18} />
+          <SquaresFourIcon size={18} />
           <span>Grid</span>
         </Center>
       ),
@@ -228,14 +233,18 @@ const LandingPage = () => {
 
   return (
     <Stack h={'100%'}>
-      <LandingPageHeader />
+      <LandingPageHeader
+        researchGroupId={
+          researchGroups.find((group) => group.abbreviation === researchGroupAbbreviation)?.id
+        }
+      />
       <Flex direction={'column'} gap={'xs'}>
         <Flex justify='space-between' align='stretch' gap={5} direction='row'>
           <Box flex={1}>
             <TextInput
               w='100%'
               placeholder='Search Thesis Topics...'
-              leftSection={<MagnifyingGlass size={16} />}
+              leftSection={<MagnifyingGlassIcon size={16} />}
               value={searchKey}
               onChange={(x) => setSearchKey(x.currentTarget.value)}
             />
@@ -246,7 +255,7 @@ const LandingPage = () => {
                 variant='default'
                 onClick={() => setFilterDrawerOpen(true)}
                 style={{ flexShrink: 0 }}
-                leftSection={<FadersHorizontal size={16} />}
+                leftSection={<FadersHorizontalIcon size={16} />}
               >
                 Filter
               </Button>
