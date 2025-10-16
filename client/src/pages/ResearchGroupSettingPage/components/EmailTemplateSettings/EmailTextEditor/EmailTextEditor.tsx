@@ -8,6 +8,7 @@ import ReactComponent from './Extension'
 import { IEmailTemplate } from '../../../../../requests/responses/emailtemplate'
 import { useEffect, useState } from 'react'
 import { Plus } from '@phosphor-icons/react'
+import { FontSize, TextStyle } from '@tiptap/extension-text-style'
 
 // Function to convert HTML react-component tags to template variables
 const convertHtmlToTemplateVariables = (html: string): string => {
@@ -30,8 +31,10 @@ const EmailTextEditor = ({ editingTemplate, setEditingTemplate }: IEmailTextEdit
       StarterKit,
       Underline,
       Link,
-      TextAlign.configure({ types: ['heading', 'paragraph'] }),
+      TextAlign.configure({ types: ['heading', 'paragraph', 'div'] }),
       ReactComponent,
+      TextStyle,
+      FontSize,
     ],
     content: convertTemplateVariablesToHtml(editingTemplate?.bodyHtml ?? ''),
     onUpdate: ({ editor }) => {
@@ -45,6 +48,8 @@ const EmailTextEditor = ({ editingTemplate, setEditingTemplate }: IEmailTextEdit
 
   // Update editor content if editingTemplate.bodyHtml changes
   useEffect(() => {
+    console.log('useEffect triggered with bodyHtml:', editingTemplate?.bodyHtml)
+
     if (
       editor &&
       editingTemplate &&
