@@ -121,8 +121,8 @@ dependencies {
 	// use newest version of commons-compress to avoid security issues through outdated dependencies
 	implementation "org.apache.commons:commons-compress:1.28.0"
 
-	compileOnly "org.projectlombok:lombok:1.18.40"
-	annotationProcessor "org.projectlombok:lombok:1.18.40"
+	compileOnly "org.projectlombok:lombok:1.18.42"
+	annotationProcessor "org.projectlombok:lombok:1.18.42"
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test:${spring_boot_version}") {
 		exclude group: "org.junit.vintage", module: "junit-vintage-engine"
