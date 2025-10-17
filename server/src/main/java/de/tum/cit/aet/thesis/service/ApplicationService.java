@@ -242,7 +242,7 @@ public class ApplicationService {
 
     @Transactional
     public void rejectAllApplicationsAutomatically(Topic topic, int afterDuration, Instant referenceDate, UUID researchGroupId) {
-        List<Application> applications = applicationRepository.findAllByTopic(topic).stream().filter(app -> app.getState() == ApplicationState.NOT_ASSESSED).toList();
+        List<Application> applications = applicationRepository.findAllByTopic(topic);
 
         int minimalRejectDuration = 14;
         int referenceDuration = Math.max(afterDuration * 7, minimalRejectDuration);
@@ -266,7 +266,7 @@ public class ApplicationService {
     }
 
     public List<ApplicationRejectObject> getListOfApplicationsThatWillBeRejected(Topic topic, int afterDuration, Instant referenceDate) {
-        List<Application> applications = applicationRepository.findAllByTopic(topic).stream().filter(app -> app.getState() == ApplicationState.NOT_ASSESSED).toList();
+        List<Application> applications = applicationRepository.findAllByTopic(topic);
         List<ApplicationRejectObject> result = new ArrayList<>();
 
         int minimalRejectDuration = 14;
