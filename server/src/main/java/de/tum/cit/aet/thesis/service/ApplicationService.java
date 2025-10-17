@@ -242,17 +242,15 @@ public class ApplicationService {
 
     @Transactional
     public void rejectAllApplicationsAutomatically(Topic topic, int afterDuration, Instant referenceDate, UUID researchGroupId) {
-        List<Application> applications = applicationRepository.findAllByTopic(topic);
+        List<Application> applications = applicationRepository.findAllByTopic(topic).stream().filter(app -> app.getState() == ApplicationState.NOT_ASSESSED).toList();
 
         int minimalRejectDuration = 14;
         int referenceDuration = Math.max(afterDuration * 7, minimalRejectDuration);
 
         for (Application application : applications) {
-            if (referenceDate == null) {
-                referenceDate = application.getCreatedAt();
-            }
+            Instant referenceDateLocal = referenceDate == null ? application.getCreatedAt() : referenceDate;
 
-            if (application.getState() == ApplicationState.NOT_ASSESSED &&  Instant.now().isAfter(application.getCreatedAt().plus(java.time.Duration.ofDays(minimalRejectDuration))) &&  Instant.now().isAfter(referenceDate.plus(java.time.Duration.ofDays(referenceDuration)))) { //Check if the application is older than two weeks and the reference date + duration is in the past
+            if (application.getState() == ApplicationState.NOT_ASSESSED &&  Instant.now().isAfter(application.getCreatedAt().plus(java.time.Duration.ofDays(minimalRejectDuration))) &&  Instant.now().isAfter(referenceDateLocal.plus(java.time.Duration.ofDays(referenceDuration)))) { //Check if the application is older than two weeks and the reference date + duration is in the past
                 ResearchGroup topicGroup = researchGroupRepository.findById(researchGroupId).orElseThrow(() -> new ResourceNotFoundException("Research Group not found: " + researchGroupId));
                 User reviewingUser = topicGroup.getHead();
 
@@ -268,7 +266,7 @@ public class ApplicationService {
     }
 
     public List<ApplicationRejectObject> getListOfApplicationsThatWillBeRejected(Topic topic, int afterDuration, Instant referenceDate) {
-        List<Application> applications = applicationRepository.findAllByTopic(topic);
+        List<Application> applications = applicationRepository.findAllByTopic(topic).stream().filter(app -> app.getState() == ApplicationState.NOT_ASSESSED).toList();
         List<ApplicationRejectObject> result = new ArrayList<>();
 
         int minimalRejectDuration = 14;
