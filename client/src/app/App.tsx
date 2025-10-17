@@ -28,6 +28,7 @@ const theme = createTheme({
       '#504c97',
       '#464388',
       '#3b3979',
+      '#302F66',
     ],
   },
   primaryColor: 'primary',

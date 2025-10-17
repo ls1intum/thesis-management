@@ -38,6 +38,10 @@ const ReviewApplicationPage = lazy(
 const ThesisPage = lazy(() => import('../pages/ThesisPage/ThesisPage'))
 const LandingPage = lazy(() => import('../pages/LandingPage/LandingPage'))
 
+const InterviewOverviewPage = lazy(
+  () => import('../pages/InterviewOverviewPage/InterviewOverviewPage'),
+)
+
 const AppRoutes = () => {
   const auth = useAuthenticationContext()
   const isSmaller = useIsSmallerBreakpoint('md')
@@ -175,6 +179,17 @@ const AppRoutes = () => {
             element={
               <AuthenticatedArea requiredGroups={['admin', 'group-admin']}>
                 <ResearchGroupSettingPage />
+              </AuthenticatedArea>
+            }
+          />
+          <Route
+            path='/interviews'
+            element={
+              <AuthenticatedArea
+                requiredGroups={['admin', 'advisor', 'supervisor']}
+                handleScrollInView={true}
+              >
+                <InterviewOverviewPage />
               </AuthenticatedArea>
             }
           />
