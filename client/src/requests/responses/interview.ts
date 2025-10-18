@@ -1,3 +1,5 @@
+import { ILightUser } from './user'
+
 export enum InterviewState {
   UNCONTACTED = 'Uncontacted',
   INVITED = 'Invited',
@@ -15,11 +17,10 @@ export interface IInterviewProcess {
 
 export interface IUpcomingInterview {
   intervieweeId: string
-  firstName: string
-  lastName: string
-  avatarLink: string
+  user: ILightUser
   startDate: Date
   endDate: Date
+  topicTitle: string
   location?: string
   streamUrl?: string
 }

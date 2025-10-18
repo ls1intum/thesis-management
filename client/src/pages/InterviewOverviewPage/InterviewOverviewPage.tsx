@@ -3,6 +3,7 @@ import { PlusIcon } from '@phosphor-icons/react'
 import { IInterviewProcess, IUpcomingInterview } from '../../requests/responses/interview'
 import InterviewProcessCard from './components/InterviewProcessCard'
 import { useIsSmallerBreakpoint } from '../../hooks/theme'
+import UpcomingInterviewCard from './components/UpcomingInterviewCard'
 
 const InterviewOverviewPage = () => {
   // TODO: Replace with real data from API
@@ -60,20 +61,86 @@ const InterviewOverviewPage = () => {
   const upcomingInterviews: IUpcomingInterview[] = [
     {
       intervieweeId: '1',
-      firstName: 'Alice',
-      lastName: 'Johnson',
-      avatarLink: '',
+      user: {
+        userId: '2',
+        universityId: 'ge45toc',
+        avatar: null,
+        matriculationNumber: '087262524',
+        firstName: 'Alice',
+        lastName: 'Smith',
+        email: 'alice.smith@example.com',
+        studyDegree: 'Master',
+        studyProgram: 'Computer Science',
+        customData: null,
+        joinedAt: '2024-07-11T14:30:00',
+        groups: [],
+      },
+      topicTitle: 'Integrating Gender Sensitivity and Adaptive Learning in Education Games',
       startDate: new Date('2024-07-10T10:00:00'),
       endDate: new Date('2024-07-10T11:00:00'),
       location: 'Room 101',
     },
     {
       intervieweeId: '2',
-      firstName: 'Bob',
-      lastName: 'Smith',
-      avatarLink: '',
+      user: {
+        userId: '2',
+        universityId: 'ge45toc',
+        avatar: null,
+        matriculationNumber: '087262524',
+        firstName: 'Bob',
+        lastName: 'Smith',
+        email: 'bob.smith@example.com',
+        studyDegree: 'Master',
+        studyProgram: 'Computer Science',
+        customData: null,
+        joinedAt: '2024-07-11T14:30:00',
+        groups: [],
+      },
       startDate: new Date('2024-07-11T14:30:00'),
       endDate: new Date('2024-07-11T15:30:00'),
+      topicTitle: 'Sustainable Software Engineering for RAG based Knowledge Management',
+      streamUrl: 'https://example.com/stream/bob-smith',
+    },
+    {
+      intervieweeId: '3',
+      user: {
+        userId: '2',
+        universityId: 'ge45toc',
+        avatar: null,
+        matriculationNumber: '087262524',
+        firstName: 'Charlie',
+        lastName: 'Smith',
+        email: 'charlie.smith@example.com',
+        studyDegree: 'Master',
+        studyProgram: 'Computer Science',
+        customData: null,
+        joinedAt: '2024-07-11T14:30:00',
+        groups: [],
+      },
+      startDate: new Date('2024-07-11T14:30:00'),
+      endDate: new Date('2024-07-11T15:30:00'),
+      topicTitle: 'Sustainable Software Engineering for RAG based Knowledge Management',
+      streamUrl: 'https://example.com/stream/bob-smith',
+    },
+    {
+      intervieweeId: '4',
+      user: {
+        userId: '2',
+        universityId: 'ge45toc',
+        avatar: null,
+        matriculationNumber: '087262524',
+        firstName: 'Diana',
+        lastName: 'Smith',
+        email: 'diana.smith@example.com',
+        studyDegree: 'Master',
+        studyProgram: 'Computer Science',
+        customData: null,
+        joinedAt: '2024-07-11T14:30:00',
+        groups: [],
+      },
+      startDate: new Date('2024-07-11T14:30:00'),
+      endDate: new Date('2024-07-11T15:30:00'),
+      topicTitle: 'Sustainable Software Engineering for RAG based Knowledge Management',
       streamUrl: 'https://example.com/stream/bob-smith',
     },
   ]
@@ -84,7 +151,14 @@ const InterviewOverviewPage = () => {
     <Stack h={'100%'} gap={'2rem'}>
       <Title>Interviews</Title>
 
-      <Flex h={'100%'} w={'100%'} direction={'row'} justify={'space-between'} gap={'2rem'}>
+      <Flex
+        h={'100%'}
+        w={'100%'}
+        direction={{ base: 'column', md: 'row' }}
+        justify={'space-between'}
+        gap={{ base: '1rem', md: '2rem' }}
+        style={{ overflow: 'auto' }}
+      >
         <Stack h={'100%'} flex={1} gap={'1.5rem'}>
           <Group w={'100%'} justify='space-between' align='center' gap={5}>
             <Title order={3}>Interview Topics</Title>
@@ -95,7 +169,7 @@ const InterviewOverviewPage = () => {
               </Group>
             </Button>
           </Group>
-          <ScrollArea h={'100%'} w={'100%'}>
+          <ScrollArea h={'100%'} w={'100%'} type={isSmaller ? 'never' : 'hover'}>
             <Stack p={0} gap={'1rem'}>
               {interviewProcesses.map((process) => (
                 <InterviewProcessCard key={process.interviewProcessId} interviewProcess={process} />
@@ -104,8 +178,20 @@ const InterviewOverviewPage = () => {
           </ScrollArea>
         </Stack>
         <Divider orientation='vertical' />
-        <Stack w={{ base: '40%', md: '33%' }} h={'100%'}>
-          <Title order={3}>Upcoming Interviews</Title>
+        <Stack w={{ base: '100%', md: '33%' }} h={'100%'} gap={'1.5rem'}>
+          <Title order={3} h={36}>
+            Upcoming Interviews
+          </Title>
+          <ScrollArea h={'100%'} w={'100%'} type={isSmaller ? 'never' : 'hover'}>
+            <Stack p={0} gap={'1rem'}>
+              {upcomingInterviews.map((interview) => (
+                <UpcomingInterviewCard
+                  key={interview.intervieweeId}
+                  upcomingInterview={interview}
+                />
+              ))}
+            </Stack>
+          </ScrollArea>
         </Stack>
       </Flex>
     </Stack>
