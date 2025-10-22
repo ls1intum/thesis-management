@@ -16,9 +16,10 @@ import { useHover } from '@mantine/hooks'
 
 interface IInterviewProcessCardProps {
   interviewProcess: IInterviewProcess
+  onClick?: () => void
 }
 
-const InterviewProcessCard = ({ interviewProcess }: IInterviewProcessCardProps) => {
+const InterviewProcessCard = ({ interviewProcess, onClick }: IInterviewProcessCardProps) => {
   const { hovered, ref } = useHover()
 
   const colorScheme = useMantineColorScheme()
@@ -47,7 +48,7 @@ const InterviewProcessCard = ({ interviewProcess }: IInterviewProcessCardProps) 
       w='100%'
       style={{ cursor: 'pointer' }}
       ref={ref}
-      onClick={() => {}}
+      onClick={onClick}
     >
       {interviewProcess.completed && (
         <Overlay

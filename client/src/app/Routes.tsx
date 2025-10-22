@@ -41,6 +41,9 @@ const LandingPage = lazy(() => import('../pages/LandingPage/LandingPage'))
 const InterviewOverviewPage = lazy(
   () => import('../pages/InterviewOverviewPage/InterviewOverviewPage'),
 )
+const InterviewTopicOverviewPage = lazy(
+  () => import('../pages/InterviewTopicOverviewPage/InterviewTopicOverviewPage'),
+)
 
 const AppRoutes = () => {
   const auth = useAuthenticationContext()
@@ -190,6 +193,14 @@ const AppRoutes = () => {
                 handleScrollInView={true}
               >
                 <InterviewOverviewPage />
+              </AuthenticatedArea>
+            }
+          />
+          <Route
+            path='/interviews/:topicProcessId'
+            element={
+              <AuthenticatedArea requiredGroups={['admin', 'advisor', 'supervisor']}>
+                <InterviewTopicOverviewPage />
               </AuthenticatedArea>
             }
           />

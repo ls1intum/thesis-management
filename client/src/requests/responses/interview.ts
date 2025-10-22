@@ -24,3 +24,21 @@ export interface IUpcomingInterview {
   location?: string
   streamUrl?: string
 }
+
+export interface IIntervieweeSlot {
+  slotId: string
+  startDate: Date
+  endDate: Date
+  bookedBy: IIntervieweeLight | null
+}
+
+export interface IIntervieweeLight {
+  intervieweeId: string
+  firstName: string
+  lastName: string
+  grade: number | null
+}
+
+export interface IInterviewee extends IIntervieweeLight {
+  lastInvited: Date | null
+}

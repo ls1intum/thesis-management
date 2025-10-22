@@ -160,7 +160,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
     <AppShell
       header={{ height: HEADER_HEIGHT }}
       navbar={{
-        width: collapseNavigation || minimizedState ? 70 : 300,
+        width: collapseNavigation || minimizedState ? 70 : 250,
         breakpoint: 'md',
         collapsed: { mobile: !opened, desktop: false },
       }}

@@ -4,6 +4,7 @@ import { IInterviewProcess, IUpcomingInterview } from '../../requests/responses/
 import InterviewProcessCard from './components/InterviewProcessCard'
 import { useIsSmallerBreakpoint } from '../../hooks/theme'
 import UpcomingInterviewCard from './components/UpcomingInterviewCard'
+import { useNavigate } from 'react-router'
 
 const InterviewOverviewPage = () => {
   // TODO: Replace with real data from API
@@ -45,7 +46,7 @@ const InterviewOverviewPage = () => {
       },
     },
     {
-      interviewProcessId: '3',
+      interviewProcessId: '4',
       topicTitle: 'LLM Based Feedback Suggestion',
       completed: true,
       totalInterviewees: 6,
@@ -147,6 +148,8 @@ const InterviewOverviewPage = () => {
 
   const isSmaller = useIsSmallerBreakpoint('sm')
 
+  const navigate = useNavigate()
+
   return (
     <Stack h={'100%'} gap={'2rem'}>
       <Title>Interviews</Title>
@@ -169,10 +172,16 @@ const InterviewOverviewPage = () => {
               </Group>
             </Button>
           </Group>
-          <ScrollArea h={'100%'} w={'100%'} type={isSmaller ? 'never' : 'hover'}>
+          <ScrollArea h={'100%'} w={'100%'} type={isSmaller ? 'never' : 'hover'} offsetScrollbars>
             <Stack p={0} gap={'1rem'}>
               {interviewProcesses.map((process) => (
-                <InterviewProcessCard key={process.interviewProcessId} interviewProcess={process} />
+                <InterviewProcessCard
+                  key={process.interviewProcessId}
+                  interviewProcess={process}
+                  onClick={() => {
+                    navigate(`/interviews/${process.interviewProcessId}`)
+                  }}
+                />
               ))}
             </Stack>
           </ScrollArea>
@@ -182,7 +191,7 @@ const InterviewOverviewPage = () => {
           <Title order={3} h={36}>
             Upcoming Interviews
           </Title>
-          <ScrollArea h={'100%'} w={'100%'} type={isSmaller ? 'never' : 'hover'}>
+          <ScrollArea h={'100%'} w={'100%'} type={isSmaller ? 'never' : 'hover'} offsetScrollbars>
             <Stack p={0} gap={'1rem'}>
               {upcomingInterviews.map((interview) => (
                 <UpcomingInterviewCard
