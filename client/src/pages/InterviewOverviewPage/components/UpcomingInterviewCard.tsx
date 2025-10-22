@@ -7,9 +7,10 @@ import { MapPinIcon } from '@phosphor-icons/react/dist/ssr'
 
 interface IUpcomingInterviewCardProps {
   upcomingInterview: IUpcomingInterview
+  onClick?: () => void
 }
 
-const UpcomingInterviewCard = ({ upcomingInterview }: IUpcomingInterviewCardProps) => {
+const UpcomingInterviewCard = ({ upcomingInterview, onClick }: IUpcomingInterviewCardProps) => {
   const { hovered, ref } = useHover()
 
   const getInterviewInfoItem = (icon: React.ReactNode, text: string, link?: string) => {
@@ -40,7 +41,7 @@ const UpcomingInterviewCard = ({ upcomingInterview }: IUpcomingInterviewCardProp
       w='100%'
       style={{ cursor: 'pointer' }}
       ref={ref}
-      onClick={() => {}}
+      onClick={onClick}
     >
       <Stack gap={'1rem'}>
         <Group wrap='nowrap' gap={'1rem'} align='center'>

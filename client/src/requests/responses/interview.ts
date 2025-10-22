@@ -1,3 +1,4 @@
+import { IApplicationSummary } from './application'
 import { ILightUser } from './user'
 
 export enum InterviewState {
@@ -17,6 +18,7 @@ export interface IInterviewProcess {
 
 export interface IUpcomingInterview {
   intervieweeId: string
+  interviewProcessId: string
   user: ILightUser
   startDate: Date
   endDate: Date
@@ -36,9 +38,11 @@ export interface IIntervieweeLight {
   intervieweeId: string
   firstName: string
   lastName: string
-  grade: number | null
+  score: number | null
+  lastInvited: Date | null
 }
 
 export interface IInterviewee extends IIntervieweeLight {
-  lastInvited: Date | null
+  interviewNote: string | null
+  application: IApplicationSummary | null
 }

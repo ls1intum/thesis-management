@@ -44,6 +44,9 @@ const InterviewOverviewPage = lazy(
 const InterviewTopicOverviewPage = lazy(
   () => import('../pages/InterviewTopicOverviewPage/InterviewTopicOverviewPage'),
 )
+const IntervieweeAssesmentPage = lazy(
+  () => import('../pages/IntervieweeAssementPage/IntervieweeAssesmentPage'),
+)
 
 const AppRoutes = () => {
   const auth = useAuthenticationContext()
@@ -201,6 +204,14 @@ const AppRoutes = () => {
             element={
               <AuthenticatedArea requiredGroups={['admin', 'advisor', 'supervisor']}>
                 <InterviewTopicOverviewPage />
+              </AuthenticatedArea>
+            }
+          />
+          <Route
+            path='/interviews/:topicProcessId/interviewee/:intervieweeId'
+            element={
+              <AuthenticatedArea requiredGroups={['admin', 'advisor', 'supervisor']}>
+                <IntervieweeAssesmentPage />
               </AuthenticatedArea>
             }
           />

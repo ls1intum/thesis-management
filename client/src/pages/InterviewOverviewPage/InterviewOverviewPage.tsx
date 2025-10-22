@@ -62,6 +62,7 @@ const InterviewOverviewPage = () => {
   const upcomingInterviews: IUpcomingInterview[] = [
     {
       intervieweeId: '1',
+      interviewProcessId: '1',
       user: {
         userId: '2',
         universityId: 'ge45toc',
@@ -83,6 +84,7 @@ const InterviewOverviewPage = () => {
     },
     {
       intervieweeId: '2',
+      interviewProcessId: '2',
       user: {
         userId: '2',
         universityId: 'ge45toc',
@@ -104,6 +106,7 @@ const InterviewOverviewPage = () => {
     },
     {
       intervieweeId: '3',
+      interviewProcessId: '2',
       user: {
         userId: '2',
         universityId: 'ge45toc',
@@ -125,6 +128,7 @@ const InterviewOverviewPage = () => {
     },
     {
       intervieweeId: '4',
+      interviewProcessId: '2',
       user: {
         userId: '2',
         universityId: 'ge45toc',
@@ -197,6 +201,11 @@ const InterviewOverviewPage = () => {
                 <UpcomingInterviewCard
                   key={interview.intervieweeId}
                   upcomingInterview={interview}
+                  onClick={() => {
+                    navigate(
+                      `/interviews/${interview.interviewProcessId}/interviewee/${interview.intervieweeId}`,
+                    )
+                  }}
                 />
               ))}
             </Stack>

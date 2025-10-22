@@ -27,3 +27,11 @@ export interface IApplication {
   reviewedAt: string | null
   researchGroup: ILightResearchGroup
 }
+
+export interface IApplicationSummary {
+  applicationId: string
+  studyDegree: string
+  studyProgram: string
+  thesisTitle: string
+  motivation: string
+}
