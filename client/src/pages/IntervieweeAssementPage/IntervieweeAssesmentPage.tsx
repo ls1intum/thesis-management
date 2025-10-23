@@ -1,9 +1,12 @@
 import { Divider, Flex, ScrollArea, Stack, Title } from '@mantine/core'
 import { IInterviewee } from '../../requests/responses/interview'
 import { useIsSmallerBreakpoint } from '../../hooks/theme'
+import ScoreCard from './components/ScoreCard'
+import { useState } from 'react'
+import InterviewNoteCard from './components/InterviewNoteCard'
 
 const IntervieweeAssesmentPage = () => {
-  const interviewee: IInterviewee = {
+  const [interviewee, setInterviewee] = useState<IInterviewee>({
     //TODO: replace with real data
     intervieweeId: 'u1',
     firstName: 'Alice',
@@ -18,7 +21,7 @@ const IntervieweeAssesmentPage = () => {
       thesisTitle: 'Integrating Gender Sensitivity and Adaptive Learning in Education Games',
       motivation: 'I want to explore the use of AI to enhance learning experiences.',
     },
-  }
+  })
 
   const isSmaller = useIsSmallerBreakpoint('sm')
 
@@ -45,7 +48,22 @@ const IntervieweeAssesmentPage = () => {
           <Title order={3}>Interview Assesment</Title>
 
           <ScrollArea h={'100%'} w={'100%'} type={isSmaller ? 'never' : 'hover'} offsetScrollbars>
-            <div>TODO</div>
+            <Stack h={'100%'} gap={'1rem'}>
+              <ScoreCard
+                score={interviewee.score}
+                onScoreChange={(newScore) => {
+                  setInterviewee((prev) => ({ ...prev, score: newScore }))
+                  //TODO: send to server
+                }}
+              />
+              <InterviewNoteCard
+                interviewNote={interviewee.interviewNote}
+                onInterviewNoteChange={(newNote) => {
+                  setInterviewee((prev) => ({ ...prev, interviewNote: newNote }))
+                  //TODO: send to server & delay for auto save
+                }}
+              />
+            </Stack>
           </ScrollArea>
         </Stack>
         <Divider orientation='vertical' />
