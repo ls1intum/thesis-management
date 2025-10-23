@@ -4,7 +4,6 @@ import { ClockIcon } from '@phosphor-icons/react'
 
 interface ISlotItemProps {
   slot: IIntervieweeSlot
-
   withTimeSpan?: boolean
 }
 

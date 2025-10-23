@@ -11,6 +11,7 @@ import '@mantine/notifications/styles.css'
 import '@mantine/tiptap/styles.css'
 import '@mantine/dropzone/styles.css'
 import 'mantine-datatable/styles.layer.css'
+import '@mantine/carousel/styles.css'
 
 import * as buttonClasses from './styles/Buttons.module.css'
 

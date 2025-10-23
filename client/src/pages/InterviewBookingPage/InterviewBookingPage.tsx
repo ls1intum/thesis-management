@@ -1,9 +1,9 @@
-import { Divider, Flex, Grid, ScrollArea, Stack, Title } from '@mantine/core'
+import { Divider, Flex, ScrollArea, Stack, Title } from '@mantine/core'
 import { useIsSmallerBreakpoint } from '../../hooks/theme'
 import { IIntervieweeSlot } from '../../requests/responses/interview'
-import { useState } from 'react'
 import { DateHeaderItem } from '../InterviewTopicOverviewPage/components/DateHeaderItem'
 import SlotItem from '../InterviewTopicOverviewPage/components/SlotItem'
+import { Carousel } from '@mantine/carousel'
 
 const InterviewBookingPage = () => {
   const interviewSlotItems: Record<string, IIntervieweeSlot[]> = {
@@ -96,23 +96,41 @@ const InterviewBookingPage = () => {
         bookedBy: null,
       },
     ],
+    '2025-11-28': [
+      {
+        slotId: '14',
+        startDate: new Date('2025-11-28T10:00:00Z'),
+        endDate: new Date('2025-11-28T10:30:00Z'),
+        bookedBy: null,
+      },
+      {
+        slotId: '15',
+        startDate: new Date('2025-11-28T11:00:00Z'),
+        endDate: new Date('2025-11-28T11:30:00Z'),
+        bookedBy: null,
+      },
+      {
+        slotId: '16',
+        startDate: new Date('2025-11-28T11:00:00Z'),
+        endDate: new Date('2025-11-28T11:30:00Z'),
+        bookedBy: null,
+      },
+      {
+        slotId: '17',
+        startDate: new Date('2025-11-28T12:00:00Z'),
+        endDate: new Date('2025-11-28T12:30:00Z'),
+        bookedBy: null,
+      },
+      {
+        slotId: '18',
+        startDate: new Date('2025-11-28T12:30:00Z'),
+        endDate: new Date('2025-11-28T13:00:00Z'),
+        bookedBy: null,
+      },
+    ],
   }
-
-  const [selectedSlot, setSelectedSlot] = useState<IIntervieweeSlot | null>(null)
-
-  const [slotPage, setSlotPage] = useState(1)
 
   const isSmaller = useIsSmallerBreakpoint('sm')
-
-  const getEntriesPage = (page = 0, pageSize = 4) => {
-    const entries = Object.entries(interviewSlotItems)
-    const total = entries.length
-    const normalizedPage = Math.max(0, page)
-    const requestedStart = normalizedPage * pageSize
-
-    const start = Math.min(requestedStart, Math.max(0, total - pageSize))
-    return entries.slice(start, start + pageSize)
-  }
 
   return (
     <Stack gap={'2rem'} h={'100%'}>
@@ -127,26 +145,32 @@ const InterviewBookingPage = () => {
       >
         <Stack h={'100%'} flex={1} gap={'1.5rem'}>
           <ScrollArea h={'100%'} w={'100%'} type={isSmaller ? 'never' : 'hover'} offsetScrollbars>
-            <Grid>
-              {(() => {
-                return getEntriesPage(slotPage).map(([date, slots]) => (
-                  <Grid.Col span={3} key={date}>
-                    <Stack gap={'1.5rem'}>
-                      <DateHeaderItem date={date} size={'lg'} />{' '}
+            <Carousel
+              slideGap='sm'
+              controlsOffset={'-100px'}
+              controlSize={32}
+              withControls
+              withIndicators={false}
+              slideSize={'23%'}
+              emblaOptions={{ align: 'start', slidesToScroll: 4 }}
+            >
+              {Object.entries(interviewSlotItems).map(([date, slots]) => (
+                <Carousel.Slide key={date}>
+                  <Stack gap={'1.5rem'}>
+                    <DateHeaderItem date={date} size={'lg'} />
+                    {/*TODO: Add this to general components*/}
+                    <Stack>
+                      {slots
+                        .sort((a, b) => a.startDate.getTime() - b.startDate.getTime())
+                        .map((slot) => (
+                          <SlotItem key={slot.slotId} slot={slot} withTimeSpan />
+                        ))}
                       {/*TODO: Add this to general components*/}
-                      {/*TODO: Add this to general components*/}
-                      <Stack>
-                        {slots
-                          .sort((a, b) => a.startDate.getTime() - b.startDate.getTime())
-                          .map((slot) => (
-                            <SlotItem key={slot.slotId} slot={slot} withTimeSpan />
-                          ))}
-                      </Stack>
                     </Stack>
-                  </Grid.Col>
-                ))
-              })()}
-            </Grid>
+                  </Stack>
+                </Carousel.Slide>
+              ))}
+            </Carousel>
           </ScrollArea>
         </Stack>
         <Divider orientation='vertical' />
