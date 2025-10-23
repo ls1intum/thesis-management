@@ -4,6 +4,7 @@ import { IIntervieweeSlot } from '../../requests/responses/interview'
 import { DateHeaderItem } from '../InterviewTopicOverviewPage/components/DateHeaderItem'
 import SlotItem from '../InterviewTopicOverviewPage/components/SlotItem'
 import { Carousel } from '@mantine/carousel'
+import { useState } from 'react'
 
 const InterviewBookingPage = () => {
   const interviewSlotItems: Record<string, IIntervieweeSlot[]> = {
@@ -132,6 +133,8 @@ const InterviewBookingPage = () => {
 
   const isSmaller = useIsSmallerBreakpoint('sm')
 
+  const [selectedSlot, setSelectedSlot] = useState<IIntervieweeSlot | null>(null)
+
   return (
     <Stack gap={'2rem'} h={'100%'}>
       <Title>Select your Interview Slot</Title>
@@ -153,6 +156,7 @@ const InterviewBookingPage = () => {
               withIndicators={false}
               slideSize={'23%'}
               emblaOptions={{ align: 'start', slidesToScroll: 4 }}
+              onSlideChange={(index) => console.log('slide changed to index:', index)}
             >
               {Object.entries(interviewSlotItems).map(([date, slots]) => (
                 <Carousel.Slide key={date}>
@@ -163,7 +167,13 @@ const InterviewBookingPage = () => {
                       {slots
                         .sort((a, b) => a.startDate.getTime() - b.startDate.getTime())
                         .map((slot) => (
-                          <SlotItem key={slot.slotId} slot={slot} withTimeSpan />
+                          <SlotItem
+                            key={slot.slotId}
+                            slot={slot}
+                            withTimeSpan
+                            selected={selectedSlot?.slotId === slot.slotId}
+                            onClick={() => setSelectedSlot(slot)}
+                          />
                         ))}
                       {/*TODO: Add this to general components*/}
                     </Stack>
