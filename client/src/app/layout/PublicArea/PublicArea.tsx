@@ -6,7 +6,7 @@ import Header from '../../../components/Header/Header'
 import ContentContainer from '../ContentContainer/ContentContainer'
 
 interface IPublicAreaProps {
-  size?: MantineSize
+  size?: number | MantineSize | (string & {}) | undefined
   handleScrollInView?: boolean
 }
 

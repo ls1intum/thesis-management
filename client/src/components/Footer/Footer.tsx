@@ -10,7 +10,7 @@ const links = [
 ]
 
 interface IFooterProps {
-  size?: MantineSize
+  size?: number | MantineSize | (string & {}) | undefined
 }
 
 const Footer = (props: IFooterProps) => {

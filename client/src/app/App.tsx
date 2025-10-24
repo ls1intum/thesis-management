@@ -39,6 +39,9 @@ const theme = createTheme({
       classNames: buttonClasses,
     }),
   },
+  breakpoints: {
+    xxl: '88rem',
+  },
 })
 
 const App = () => {

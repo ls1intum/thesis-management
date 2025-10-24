@@ -55,6 +55,8 @@ const AppRoutes = () => {
   const auth = useAuthenticationContext()
   const isSmaller = useIsSmallerBreakpoint('md')
 
+  const publicBreakpointSize = '100rem'
+
   return (
     <Suspense fallback={<PageLoader />}>
       <BrowserRouter>
@@ -112,7 +114,7 @@ const AppRoutes = () => {
                   <PresentationPage />
                 </AuthenticatedArea>
               ) : (
-                <PublicArea size='xl'>
+                <PublicArea size={publicBreakpointSize}>
                   <PresentationPage />
                 </PublicArea>
               )
@@ -134,7 +136,7 @@ const AppRoutes = () => {
                   <TopicPage />
                 </AuthenticatedArea>
               ) : (
-                <PublicArea size='xl'>
+                <PublicArea size={publicBreakpointSize}>
                   <TopicPage />
                 </PublicArea>
               )
@@ -221,7 +223,7 @@ const AppRoutes = () => {
           <Route
             path='/interview_booking/:processId'
             element={
-              <PublicArea size='xl' handleScrollInView={true}>
+              <PublicArea size={publicBreakpointSize} handleScrollInView={true}>
                 <InterviewBookingPage />
               </PublicArea>
             }
@@ -229,7 +231,7 @@ const AppRoutes = () => {
           <Route
             path='/about'
             element={
-              <PublicArea size='xl'>
+              <PublicArea size={publicBreakpointSize}>
                 <AboutPage />
               </PublicArea>
             }
@@ -237,7 +239,7 @@ const AppRoutes = () => {
           <Route
             path='/imprint'
             element={
-              <PublicArea size='xl'>
+              <PublicArea size={publicBreakpointSize}>
                 <ImprintPage />
               </PublicArea>
             }
@@ -245,7 +247,7 @@ const AppRoutes = () => {
           <Route
             path='/privacy'
             element={
-              <PublicArea size='xl'>
+              <PublicArea size={publicBreakpointSize}>
                 <PrivacyPage />
               </PublicArea>
             }
@@ -254,7 +256,7 @@ const AppRoutes = () => {
           <Route
             path='/'
             element={
-              <PublicArea size='xl'>
+              <PublicArea size={publicBreakpointSize}>
                 <LandingPage />
               </PublicArea>
             }
@@ -262,7 +264,7 @@ const AppRoutes = () => {
           <Route
             path='/:researchGroupAbbreviation'
             element={
-              <PublicArea size='xl'>
+              <PublicArea size={publicBreakpointSize}>
                 <LandingPage />
               </PublicArea>
             }
