@@ -32,6 +32,8 @@ export interface IIntervieweeSlot {
   startDate: Date
   endDate: Date
   bookedBy: IIntervieweeLight | null
+  location?: string
+  streamUrl?: string
 }
 
 export interface IIntervieweeLight {

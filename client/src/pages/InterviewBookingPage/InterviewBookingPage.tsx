@@ -1,10 +1,12 @@
-import { Divider, Flex, ScrollArea, Stack, Title } from '@mantine/core'
+import { Button, Divider, Flex, Group, ScrollArea, Stack, Title, Text } from '@mantine/core'
 import { useIsSmallerBreakpoint } from '../../hooks/theme'
 import { IIntervieweeSlot } from '../../requests/responses/interview'
 import { DateHeaderItem } from '../InterviewTopicOverviewPage/components/DateHeaderItem'
 import SlotItem from '../InterviewTopicOverviewPage/components/SlotItem'
 import { Carousel } from '@mantine/carousel'
 import { useState } from 'react'
+import SummaryCard from './components/SummaryCard'
+import { CalendarDotsIcon, ClockIcon, MapPinIcon } from '@phosphor-icons/react'
 
 const InterviewBookingPage = () => {
   const interviewSlotItems: Record<string, IIntervieweeSlot[]> = {
@@ -169,7 +171,13 @@ const InterviewBookingPage = () => {
         style={{ overflow: 'auto' }}
       >
         <Stack h={'100%'} flex={1} gap={'1.5rem'}>
-          <ScrollArea h={'100%'} w={'100%'} type={isSmaller ? 'never' : 'hover'} offsetScrollbars>
+          <ScrollArea
+            h={'100%'}
+            w={'100%'}
+            type={isSmaller ? 'never' : 'hover'}
+            offsetScrollbars
+            flex={1}
+          >
             <Carousel
               slideGap='sm'
               controlsOffset={'-100px'}
@@ -205,15 +213,61 @@ const InterviewBookingPage = () => {
               ))}
             </Carousel>
           </ScrollArea>
+          <Group justify='end' align='center' py={2}>
+            <Button variant='outline'>Not available on any slot</Button>
+          </Group>
         </Stack>
         <Divider orientation='vertical' />
         <Stack w={{ base: '100%', md: '25%' }} h={'100%'} gap={'1.5rem'}>
           <Title order={3}>Summary</Title>
-          <ScrollArea h={'100%'} w={'100%'} type={isSmaller ? 'never' : 'hover'} offsetScrollbars>
-            <Stack p={0} gap={'1rem'}>
-              <div>TODO</div>
+          <ScrollArea
+            h={'100%'}
+            w={'100%'}
+            type={isSmaller ? 'never' : 'hover'}
+            offsetScrollbars
+            flex={1}
+          >
+            <Stack p={0} h={'100%'}>
+              {selectedSlot && (
+                <SummaryCard
+                  title={'Selected Interview'}
+                  sections={[
+                    {
+                      title: 'Date',
+                      content: (
+                        <Text size='xs' pl={'xs'}>
+                          {selectedSlot.startDate.toLocaleDateString()}
+                        </Text>
+                      ),
+                      icon: <CalendarDotsIcon />,
+                    },
+                    {
+                      title: 'Time',
+                      content: (
+                        <Text size='xs' pl={'xs'}>
+                          {`${selectedSlot.startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${selectedSlot.endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}, ${`${Math.round(
+                            (selectedSlot.endDate.getTime() - selectedSlot.startDate.getTime()) /
+                              60000,
+                          )} min`}`}
+                        </Text>
+                      ),
+                      icon: <ClockIcon />,
+                    },
+                    {
+                      title: 'Location',
+                      content: (
+                        <Text size='xs' pl={'xs'}>
+                          {selectedSlot.location || selectedSlot.streamUrl || 'Not specified'}
+                        </Text>
+                      ),
+                      icon: <MapPinIcon />,
+                    },
+                  ]}
+                ></SummaryCard>
+              )}
             </Stack>
           </ScrollArea>
+          <Button fullWidth>Reserve Interview Slot</Button>
         </Stack>
       </Flex>
     </Stack>
