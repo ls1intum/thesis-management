@@ -8,9 +8,16 @@ interface ISlotItemProps {
   withTimeSpan?: boolean
   selected?: boolean
   onClick?: () => void
+  disabled?: boolean
 }
 
-const SlotItem = ({ slot, withTimeSpan = false, selected = false, onClick }: ISlotItemProps) => {
+const SlotItem = ({
+  slot,
+  withTimeSpan = false,
+  selected = false,
+  onClick,
+  disabled = false,
+}: ISlotItemProps) => {
   const { ref, hovered } = useHover()
   const { colorScheme } = useMantineColorScheme()
 
@@ -19,23 +26,30 @@ const SlotItem = ({ slot, withTimeSpan = false, selected = false, onClick }: ISl
       withBorder
       radius='md'
       p={'0.5rem'}
-      onClick={onClick}
+      onClick={disabled ? undefined : onClick}
       bg={
         selected
           ? 'primary'
-          : hovered
+          : hovered && !disabled
             ? colorScheme === 'dark'
               ? 'primary.2'
               : 'primary.0'
             : undefined
       }
-      style={{ cursor: onClick ? 'pointer' : 'default' }}
+      style={{ cursor: onClick && !disabled ? 'pointer' : 'default' }}
       ref={ref}
+      opacity={disabled ? 0.35 : 1}
     >
       <Stack gap={'0.25rem'}>
         <Title
           order={6}
-          c={selected ? 'white' : hovered && colorScheme === 'dark' ? 'dark.9' : undefined}
+          c={
+            selected
+              ? 'white'
+              : hovered && colorScheme === 'dark' && !disabled
+                ? 'dark.9'
+                : undefined
+          }
         >
           {`${slot.startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${slot.endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
         </Title>
@@ -43,11 +57,23 @@ const SlotItem = ({ slot, withTimeSpan = false, selected = false, onClick }: ISl
           <Group gap={'0.25rem'} align='center'>
             <ClockIcon
               size={14}
-              color={!selected ? (hovered && colorScheme === 'dark' ? 'dark.9' : 'gray') : 'white'}
+              color={
+                !selected
+                  ? hovered && colorScheme === 'dark' && !disabled
+                    ? 'dark.9'
+                    : 'gray'
+                  : 'white'
+              }
             />
             <Text
               size='xs'
-              c={!selected ? (hovered && colorScheme === 'dark' ? 'dark.9' : 'dimmed') : 'white'}
+              c={
+                !selected
+                  ? hovered && colorScheme === 'dark' && !disabled
+                    ? 'dark.9'
+                    : 'dimmed'
+                  : 'white'
+              }
             >
               {(() => {
                 const minutes = Math.round(

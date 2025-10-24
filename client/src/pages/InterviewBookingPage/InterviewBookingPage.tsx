@@ -135,6 +135,28 @@ const InterviewBookingPage = () => {
 
   const [selectedSlot, setSelectedSlot] = useState<IIntervieweeSlot | null>(null)
 
+  const [carouselSlide, setCarouselSlide] = useState(0)
+
+  const dateRowDisabled = (itemsPerPage: number, rowKey: string) => {
+    const keys = Object.keys(interviewSlotItems)
+    const totalSlides = keys.length
+    const index = keys.indexOf(rowKey)
+    if (index === -1) return true
+
+    const lastSlideIndex = Math.max(0, Math.ceil(totalSlides / itemsPerPage) - 1)
+
+    let visibleSlidesStart = carouselSlide * itemsPerPage
+    let visibleSlidesEnd = visibleSlidesStart + itemsPerPage
+
+    // If we're on the last carousel page, ensure the last `itemsPerPage` items are visible
+    if (carouselSlide >= lastSlideIndex) {
+      visibleSlidesStart = Math.max(0, totalSlides - itemsPerPage)
+      visibleSlidesEnd = totalSlides
+    }
+
+    return index < visibleSlidesStart || index >= visibleSlidesEnd
+  }
+
   return (
     <Stack gap={'2rem'} h={'100%'}>
       <Title>Select your Interview Slot</Title>
@@ -156,12 +178,12 @@ const InterviewBookingPage = () => {
               withIndicators={false}
               slideSize={'23%'}
               emblaOptions={{ align: 'start', slidesToScroll: 4 }}
-              onSlideChange={(index) => console.log('slide changed to index:', index)}
+              onSlideChange={(index) => setCarouselSlide(index)}
             >
               {Object.entries(interviewSlotItems).map(([date, slots]) => (
                 <Carousel.Slide key={date}>
                   <Stack gap={'1.5rem'}>
-                    <DateHeaderItem date={date} size={'lg'} />
+                    <DateHeaderItem date={date} size={'lg'} disabled={dateRowDisabled(4, date)} />
                     {/*TODO: Add this to general components*/}
                     <Stack>
                       {slots
@@ -173,6 +195,7 @@ const InterviewBookingPage = () => {
                             withTimeSpan
                             selected={selectedSlot?.slotId === slot.slotId}
                             onClick={() => setSelectedSlot(slot)}
+                            disabled={dateRowDisabled(4, date)}
                           />
                         ))}
                       {/*TODO: Add this to general components*/}
