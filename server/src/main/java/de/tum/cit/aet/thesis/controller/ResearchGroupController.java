@@ -77,6 +77,19 @@ public class ResearchGroupController {
     return ResponseEntity.ok(dtos);
   }
 
+  @GetMapping("/light/active")
+  public ResponseEntity<List<LightResearchGroupDto>> getActiveLightResearchGroups(
+  ) {
+    List<ResearchGroup> activeGroups = researchGroupService.getActiveResearchGroupsForUser();
+
+    return ResponseEntity.ok(
+            activeGroups.stream()
+                    .map(LightResearchGroupDto::fromResearchGroupEntity)
+                    .distinct()
+                    .toList()
+    );
+  }
+
   @GetMapping("/{researchGroupId}")
   public ResponseEntity<ResearchGroupDto> getResearchGroup(
       @PathVariable("researchGroupId") UUID researchGroupId
@@ -87,7 +100,7 @@ public class ResearchGroupController {
   }
 
     @GetMapping("/{researchGroupId}/members")
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasAnyRole('admin', 'group-admin')")
     public ResponseEntity<PaginationDto<LightUserDto>> getResearchGroupMembers(
         @PathVariable("researchGroupId") UUID researchGroupId,
         @RequestParam(required = false, defaultValue = "0") Integer page,
@@ -109,7 +122,7 @@ public class ResearchGroupController {
         RequestValidator.validateNotNull(payload.headUsername()),
         RequestValidator.validateNotNull(payload.name()),
         RequestValidator.validateNotNull(payload.abbreviation()),
-        payload.description(),
+        RequestValidator.validateStringMaxLengthAllowNull(payload.description(), 500),
         payload.websiteUrl(),
         payload.campus()
     );
@@ -118,7 +131,7 @@ public class ResearchGroupController {
   }
 
   @PutMapping("/{researchGroupId}")
-  @PreAuthorize("hasRole('admin')")
+  @PreAuthorize("hasAnyRole('admin', 'group-admin')")
   public ResponseEntity<ResearchGroupDto> updateResearchGroup(
       @PathVariable("researchGroupId") UUID researchGroupId,
       @RequestBody CreateResearchGroupPayload payload
@@ -130,7 +143,7 @@ public class ResearchGroupController {
         RequestValidator.validateNotNull(payload.headUsername()),
         RequestValidator.validateNotNull(payload.name()),
         RequestValidator.validateNotNull(payload.abbreviation()),
-        payload.description(),
+        RequestValidator.validateStringMaxLengthAllowNull(payload.description(), 500),
         payload.websiteUrl(),
         payload.campus()
     );
@@ -150,7 +163,7 @@ public class ResearchGroupController {
   }
 
   @PutMapping("/{researchGroupId}/assign/{username}")
-  @PreAuthorize("hasRole('admin')")
+  @PreAuthorize("hasAnyRole('admin', 'group-admin')")
   public ResponseEntity<LightUserDto> assignUserToResearchGroup(
       @PathVariable("researchGroupId") UUID researchGroupId,
       @PathVariable("username") String username
@@ -161,7 +174,7 @@ public class ResearchGroupController {
   }
 
     @PutMapping("/{researchGroupId}/remove/{userId}")
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasAnyRole('admin', 'group-admin')")
     public ResponseEntity<LightUserDto> removeUserFromResearchGroup(
         @PathVariable("researchGroupId") UUID researchGroupId,
         @PathVariable("userId") UUID userId
@@ -173,13 +186,23 @@ public class ResearchGroupController {
     }
 
   @PutMapping("/{researchGroupId}/member/{userId}/role")
-  @PreAuthorize("hasRole('admin')")
+  @PreAuthorize("hasAnyRole('admin', 'group-admin')")
   public ResponseEntity<LightUserDto> updateResearchGroupMemberRole(
           @PathVariable UUID researchGroupId,
           @PathVariable UUID userId,
           @RequestParam("role") String role
   ) {
     User user = researchGroupService.updateResearchGroupMemberRole(researchGroupId, userId, role);
+    return ResponseEntity.ok(LightUserDto.fromUserEntity(user));
+  }
+
+  @PutMapping("/{researchGroupId}/member/{userId}/group-admin")
+  @PreAuthorize("hasAnyRole('admin', 'group-admin')")
+  public ResponseEntity<LightUserDto> updateResearchGroupAdminRole(
+          @PathVariable UUID researchGroupId,
+          @PathVariable UUID userId
+  ) {
+    User user = researchGroupService.changeResearchGroupAdminRole(researchGroupId, userId);
     return ResponseEntity.ok(LightUserDto.fromUserEntity(user));
   }
 }

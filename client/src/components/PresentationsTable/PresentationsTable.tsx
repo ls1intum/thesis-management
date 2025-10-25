@@ -9,11 +9,11 @@ import {
 } from '../../requests/responses/thesis'
 import { formatDate, formatPresentationType } from '../../utils/format'
 import { GLOBAL_CONFIG } from '../../config/global'
-import { Anchor, Badge, Button, Center, Group, Stack } from '@mantine/core'
+import { Anchor, Badge, Button, Center, Group, Stack, Text, Tooltip } from '@mantine/core'
 import AvatarUserList from '../AvatarUserList/AvatarUserList'
 import ReplacePresentationModal from './components/ReplacePresentationModal/ReplacePresentationModal'
 import SchedulePresentationModal from './components/SchedulePresentationModal/SchedulePresentationModal'
-import { Check, Pencil, Trash } from 'phosphor-react'
+import { Check, Pencil, Trash } from '@phosphor-icons/react'
 import { useThesisUpdateAction } from '../../providers/ThesisProvider/hooks'
 import { doRequest } from '../../requests/request'
 import { ApiError } from '../../requests/handler'
@@ -22,6 +22,7 @@ import { hasAdvisorAccess, hasStudentAccess, isThesisClosed } from '../../utils/
 
 type PresentationColumn =
   | 'state'
+  | 'thesisTitle'
   | 'students'
   | 'type'
   | 'location'
@@ -97,6 +98,22 @@ const PresentationsTable = <T extends IThesisPresentation | IPublishedPresentati
           </Badge>
         </Center>
       ),
+    },
+    thesisTitle: {
+      accessor: 'thesisTitle',
+      title: 'Thesis Title',
+      width: 250,
+      render: (presentation) => {
+        const thesis = theses.find((row) => row.thesisId === presentation.thesisId)
+
+        return (
+          <Tooltip openDelay={500} label={thesis?.title ?? 'Unknown'} withArrow>
+            <Text lineClamp={3} style={{ whiteSpace: 'normal', wordBreak: 'break-word' }}>
+              {thesis?.title ?? 'Unknown'}
+            </Text>
+          </Tooltip>
+        )
+      },
     },
     students: {
       accessor: 'students',

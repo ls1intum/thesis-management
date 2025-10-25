@@ -11,10 +11,11 @@ interface IPublicPresentationsTableProps {
   includeDrafts?: boolean
   limit?: number
   reducedData?: boolean
+  researchGroupId?: string | null
 }
 
 const PublicPresentationsTable = (props: IPublicPresentationsTableProps) => {
-  const { includeDrafts = false, limit = 10, reducedData = false } = props
+  const { includeDrafts = false, limit = 10, reducedData = false, researchGroupId } = props
 
   const navigate = useNavigate()
 
@@ -23,8 +24,6 @@ const PublicPresentationsTable = (props: IPublicPresentationsTableProps) => {
   const [version, setVersion] = useState(0)
 
   useEffect(() => {
-    setPresentations(undefined)
-
     return doRequest<PaginationResponse<IPublishedPresentation>>(
       `/v2/published-presentations`,
       {
@@ -34,6 +33,7 @@ const PublicPresentationsTable = (props: IPublicPresentationsTableProps) => {
           page,
           limit,
           includeDrafts,
+          ...(researchGroupId ? { researchGroupId } : {}),
         },
       },
       (res) => {
@@ -44,7 +44,7 @@ const PublicPresentationsTable = (props: IPublicPresentationsTableProps) => {
         }
       },
     )
-  }, [page, limit, includeDrafts, version])
+  }, [page, limit, includeDrafts, version, researchGroupId])
 
   return (
     <PresentationsTable
@@ -53,6 +53,7 @@ const PublicPresentationsTable = (props: IPublicPresentationsTableProps) => {
           ? [includeDrafts ? 'state' : '', 'students', 'location', 'scheduledAt']
           : [
               includeDrafts ? 'state' : '',
+              'thesisTitle',
               'students',
               'type',
               'location',

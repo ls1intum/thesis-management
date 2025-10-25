@@ -1,5 +1,5 @@
 import { isNotEmpty, useForm } from '@mantine/form'
-import { DateTimePicker, DateValue } from '@mantine/dates'
+import { DateTimePicker } from '@mantine/dates'
 import { useEffect } from 'react'
 import { useThesisUpdateAction } from '../../../../providers/ThesisProvider/hooks'
 import { Accordion, Alert, Button, Modal, Select, Stack, TextInput } from '@mantine/core'
@@ -20,7 +20,7 @@ interface IReplacePresentationModalProps {
   onClose: () => unknown
   thesis: IPublishedThesis | IThesis | undefined
   presentation?: IThesisPresentation | IPublishedPresentation
-  onChange?: () => unknown
+  onChange?: (presentation: IThesisPresentation | IPublishedPresentation | undefined) => unknown
 }
 
 interface IFormValues {
@@ -29,7 +29,7 @@ interface IFormValues {
   location: string
   streamUrl: string
   language: string | null
-  date: DateValue
+  date: Date | null
 }
 
 const ReplacePresentationModal = (props: IReplacePresentationModalProps) => {
@@ -119,7 +119,19 @@ const ReplacePresentationModal = (props: IReplacePresentationModalProps) => {
 
       if (response.ok) {
         onClose()
-        onChange?.()
+
+        // Find the updated or newly created presentation
+        const updatedPresentation = response.data.presentations?.find((p) =>
+          presentation
+            ? p.presentationId === presentation.presentationId
+            : // For new presentation, pick the one with the latest scheduledAt
+              p.scheduledAt ===
+              (form.values.date instanceof Date
+                ? form.values.date.toISOString()
+                : new Date(form.values.date as any).toISOString()),
+        )
+
+        onChange?.(updatedPresentation)
 
         return response.data
       } else {
@@ -135,6 +147,7 @@ const ReplacePresentationModal = (props: IReplacePresentationModalProps) => {
       opened={opened}
       onClose={onClose}
       title={presentation ? 'Update Presentation' : 'Create Presentation'}
+      centered
     >
       <form>
         <Stack gap='md'>
@@ -178,7 +191,12 @@ const ReplacePresentationModal = (props: IReplacePresentationModalProps) => {
           <TextInput label='Location' {...form.getInputProps('location')} />
           <TextInput type='url' label='Stream URL' {...form.getInputProps('streamUrl')} />
           <LanguageSelect label='Language' required {...form.getInputProps('language')} />
-          <DateTimePicker label='Scheduled At' required {...form.getInputProps('date')} />
+          <DateTimePicker
+            label='Scheduled At'
+            required
+            {...form.getInputProps('date')}
+            onChange={(date) => form.setFieldValue('date', date ? new Date(date) : null)}
+          />
           <Button
             fullWidth
             onClick={onReplacePresentation}

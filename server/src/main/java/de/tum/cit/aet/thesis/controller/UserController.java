@@ -64,7 +64,7 @@ public class UserController {
     }
 
     @GetMapping("/keycloak")
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasAnyRole('admin', 'group-admin')")
     public ResponseEntity<List<KeycloakUserDto>> getKeycloakUsers(
             @RequestParam(required = false, defaultValue = "") String searchKey
     ) {

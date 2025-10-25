@@ -1,4 +1,4 @@
-import { PropsWithChildren, Suspense, useEffect } from 'react'
+import { PropsWithChildren, Suspense, useEffect, useState } from 'react'
 import {
   ActionIcon,
   AppShell,
@@ -28,7 +28,8 @@ import {
   Table,
   Presentation,
   UsersThree,
-} from 'phosphor-react'
+  Gear,
+} from '@phosphor-icons/react'
 import { useAuthenticationContext, useUser } from '../../../hooks/authentication'
 import { useNavigationType } from 'react-router'
 import ScrollToTop from '../ScrollToTop/ScrollToTop'
@@ -38,76 +39,72 @@ import CustomAvatar from '../../../components/CustomAvatar/CustomAvatar'
 import { formatUser } from '../../../utils/format'
 import ContentContainer from '../ContentContainer/ContentContainer'
 import Footer from '../../../components/Footer/Footer'
-import PublicArea from '../PublicArea/PublicArea'
 import Header from '../../../components/Header/Header'
 import { useIsSmallerBreakpoint } from '../../../hooks/theme'
+import { IUser } from '../../../requests/responses/user'
 
 export interface IAuthenticatedAreaProps {
   size?: MantineSize
-  requireAuthentication?: boolean
   collapseNavigation?: boolean
   requiredGroups?: string[]
+  handleScrollInView?: boolean
 }
 
-const links: Array<{
-  link: string
-  label: string
-  icon: any
-  groups: string[] | undefined
-}> = [
-  { link: '/dashboard', label: 'Dashboard', icon: NewspaperClipping, groups: undefined },
-  {
-    link: '/presentations',
-    label: 'Presentations',
-    icon: Presentation,
-    groups: undefined,
-  },
-  {
-    link: '/submit-application',
-    label: 'Submit Application',
-    icon: PaperPlaneTilt,
-    groups: undefined,
-  },
-  {
-    link: '/applications',
-    label: 'Review Applications',
-    icon: Scroll,
-    groups: ['admin', 'advisor', 'supervisor'],
-  },
-  {
-    link: '/topics',
-    label: 'Manage Topics',
-    icon: FolderSimplePlus,
-    groups: ['admin', 'advisor', 'supervisor'],
-  },
-  {
-    link: '/theses',
-    label: 'Browse Theses',
-    icon: Table,
-    groups: undefined,
-  },
-  {
-    link: '/overview',
-    label: 'Theses Overview',
-    icon: Kanban,
-    groups: ['admin', 'advisor', 'supervisor'],
-  },
-  {
-    link: '/research-groups',
-    label: 'Research Groups',
-    icon: UsersThree,
-    groups: ['admin'],
-  },
-]
-
 const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) => {
-  const {
-    children,
-    size,
-    requireAuthentication = true,
-    collapseNavigation = false,
-    requiredGroups,
-  } = props
+  const { children, size, collapseNavigation = false, requiredGroups, handleScrollInView } = props
+
+  const links: Array<{
+    link: string
+    label: string
+    icon: any
+    groups: string[] | undefined
+    display?: boolean
+  }> = [
+    { link: '/dashboard', label: 'Dashboard', icon: NewspaperClipping, groups: undefined },
+    {
+      link: '/presentations',
+      label: 'Presentations',
+      icon: Presentation,
+      groups: undefined,
+      display: useAuthenticationContext().researchGroups.length > 0,
+    },
+    {
+      link: '/submit-application',
+      label: 'Submit Application',
+      icon: PaperPlaneTilt,
+      groups: undefined,
+    },
+    {
+      link: '/applications',
+      label: 'Review Applications',
+      icon: Scroll,
+      groups: ['admin', 'advisor', 'supervisor'],
+    },
+    {
+      link: '/topics',
+      label: 'Manage Topics',
+      icon: FolderSimplePlus,
+      groups: ['admin', 'advisor', 'supervisor'],
+    },
+    {
+      link: '/theses',
+      label: 'Browse Theses',
+      icon: Table,
+      groups: undefined,
+    },
+    {
+      link: '/overview',
+      label: 'Theses Overview',
+      icon: Kanban,
+      groups: ['admin', 'advisor', 'supervisor'],
+    },
+    {
+      link: '/research-groups',
+      label: 'Research Groups',
+      icon: UsersThree,
+      groups: ['admin'],
+    },
+  ]
 
   const user = useUser()
   const [opened, { toggle, close }] = useDisclosure()
@@ -134,7 +131,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
   const isSmallerBreakpoint = useIsSmallerBreakpoint('md')
 
   useEffect(() => {
-    if (requireAuthentication && !auth.isAuthenticated) {
+    if (!auth.isAuthenticated) {
       auth.login()
 
       const interval = setInterval(() => {
@@ -143,7 +140,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
 
       return () => clearInterval(interval)
     }
-  }, [requireAuthentication, auth.isAuthenticated])
+  }, [auth.isAuthenticated])
 
   useEffect(() => {
     if (navigationType === 'POP') {
@@ -152,10 +149,6 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
 
     close()
   }, [location.pathname, navigationType])
-
-  if (!requireAuthentication && !auth.isAuthenticated) {
-    return <PublicArea size={size}>{children}</PublicArea>
-  }
 
   return (
     <AppShell
@@ -185,6 +178,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
               (item) =>
                 !item.groups || item.groups.some((role) => auth.user?.groups.includes(role)),
             )
+            .filter((item) => item.display == undefined || item.display === true)
             .map((item) => (
               <Link
                 className={minimized ? classes.minimizedLink : classes.fullLink}
@@ -234,6 +228,23 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
             )}
             {!collapseNavigation && (
               <Group>
+                {user.groups.includes('group-admin') && (
+                  <Link
+                    to={`/research-groups/${user.researchGroupId}`}
+                    className={minimized ? classes.minimizedLink : classes.fullLink}
+                    data-active={location.pathname.startsWith('/research-groups') || undefined}
+                  >
+                    <Tooltip
+                      label='Group Settings'
+                      disabled={!minimized}
+                      position='right'
+                      offset={15}
+                    >
+                      <Gear className={classes.linkIcon} size={25} />
+                    </Tooltip>
+                    {!minimized && <span>Group Settings</span>}
+                  </Link>
+                )}
                 <ActionIcon
                   visibleFrom='md'
                   ml='auto'
@@ -252,7 +263,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
       <AppShell.Main>
         <Box h={`calc(100vh - ${HEADER_HEIGHT}px)`}>
           <Flex direction='column' h='100%' w='100%'>
-            <Box flex={1}>
+            <Box flex={1} style={{ overflow: handleScrollInView ? 'hidden' : undefined }}>
               <Container
                 size={size}
                 fluid={!size}

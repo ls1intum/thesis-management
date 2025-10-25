@@ -125,7 +125,9 @@ class TopicServiceTest {
                 "References",
                 supervisorIds,
                 advisorIds,
-                researchGroupId
+                researchGroupId,
+                null,
+                null
         );
 
         assertNotNull(result);
@@ -159,7 +161,9 @@ class TopicServiceTest {
                         "References",
                         supervisorIds,
                         advisorIds,
-                        researchGroupId
+                        researchGroupId,
+                        null,
+                        null
                 )
         );
     }
@@ -190,7 +194,9 @@ class TopicServiceTest {
                 "Updated References",
                 supervisorIds,
                 advisorIds,
-                researchGroupId
+                researchGroupId,
+                null,
+                null
         );
 
         assertNotNull(result);

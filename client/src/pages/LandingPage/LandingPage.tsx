@@ -17,7 +17,12 @@ import { Link, useParams, useSearchParams } from 'react-router'
 import PublishedTheses from './components/PublishedTheses/PublishedTheses'
 import { usePageTitle } from '../../hooks/theme'
 import LandingPageHeader from './components/LandingPageHeader/LandingPageHeader'
-import { FadersHorizontal, List, MagnifyingGlass, SquaresFour } from 'phosphor-react'
+import {
+  FadersHorizontalIcon,
+  ListIcon,
+  MagnifyingGlassIcon,
+  SquaresFourIcon,
+} from '@phosphor-icons/react'
 import { useEffect, useState } from 'react'
 import { useDebouncedValue, useMediaQuery } from '@mantine/hooks'
 import { GLOBAL_CONFIG } from '../../config/global'
@@ -32,7 +37,7 @@ import { getApiResponseErrorMessage } from '../../requests/handler'
 const LandingPage = () => {
   usePageTitle('Find a Thesis Topic')
 
-  const { researchGroupId } = useParams<{ researchGroupId: string }>()
+  const { researchGroupAbbreviation } = useParams<{ researchGroupAbbreviation: string }>()
 
   const [searchParams, setSearchParams] = useSearchParams()
   const [searchKey, setSearchKey] = useState(searchParams.get('search') ?? '')
@@ -47,11 +52,26 @@ const LandingPage = () => {
   )
 
   const [researchGroups, setResearchGroups] = useState<ILightResearchGroup[]>([])
+  const [researchGroupsLoaded, setResearchGroupsLoaded] = useState(false)
   const [selectedGroups, setSelectedGroups] = useState<string[]>(
     searchParams.get('groups')?.split(',') ?? [],
   )
 
-  let pageItemLimit = 12
+  const pageItemLimit = 12
+
+  const createResearchGroupFilter = () => {
+    if (researchGroupAbbreviation) {
+      const group = researchGroups.find((g) => g.abbreviation === researchGroupAbbreviation)
+      if (group) {
+        return [group.id]
+      } else if (researchGroupsLoaded) {
+        showSimpleError(
+          `Research group ${researchGroupAbbreviation} not found - showing all topics`,
+        )
+      }
+    }
+    return selectedGroups
+  }
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams)
@@ -84,6 +104,7 @@ const LandingPage = () => {
       (response) => {
         if (response.ok) {
           setResearchGroups(response.data)
+          setResearchGroupsLoaded(true)
         } else {
           showSimpleError(getApiResponseErrorMessage(response))
         }
@@ -95,7 +116,7 @@ const LandingPage = () => {
     {
       label: (
         <Center style={{ gap: 10 }}>
-          <List size={18} />
+          <ListIcon size={18} />
           <span>List</span>
         </Center>
       ),
@@ -104,7 +125,7 @@ const LandingPage = () => {
     {
       label: (
         <Center style={{ gap: 10 }}>
-          <SquaresFour size={18} />
+          <SquaresFourIcon size={18} />
           <span>Grid</span>
         </Center>
       ),
@@ -156,7 +177,7 @@ const LandingPage = () => {
 
   const multiSelectDropdowns = () => (
     <>
-      {!researchGroupId && (
+      {!researchGroupAbbreviation && (
         <DropDownMultiSelect
           data={researchGroups.map((group) => group.id)}
           searchPlaceholder='Search Research Groups'
@@ -212,14 +233,18 @@ const LandingPage = () => {
 
   return (
     <Stack h={'100%'}>
-      <LandingPageHeader />
+      <LandingPageHeader
+        researchGroupId={
+          researchGroups.find((group) => group.abbreviation === researchGroupAbbreviation)?.id
+        }
+      />
       <Flex direction={'column'} gap={'xs'}>
         <Flex justify='space-between' align='stretch' gap={5} direction='row'>
           <Box flex={1}>
             <TextInput
               w='100%'
               placeholder='Search Thesis Topics...'
-              leftSection={<MagnifyingGlass size={16} />}
+              leftSection={<MagnifyingGlassIcon size={16} />}
               value={searchKey}
               onChange={(x) => setSearchKey(x.currentTarget.value)}
             />
@@ -230,7 +255,7 @@ const LandingPage = () => {
                 variant='default'
                 onClick={() => setFilterDrawerOpen(true)}
                 style={{ flexShrink: 0 }}
-                leftSection={<FadersHorizontal size={16} />}
+                leftSection={<FadersHorizontalIcon size={16} />}
               >
                 Filter
               </Button>
@@ -266,7 +291,7 @@ const LandingPage = () => {
         limit={pageItemLimit}
         researchSpecific={false}
         initialFilters={{
-          researchGroupIds: researchGroupId ? [researchGroupId] : selectedGroups,
+          researchGroupIds: createResearchGroupFilter(),
           search: debouncedSearch,
           types: selectedThesisTypes,
         }}
@@ -312,7 +337,7 @@ const LandingPage = () => {
               search={debouncedSearch}
               representationType={listRepresentation}
               filters={{
-                researchGroupIds: researchGroupId ? [researchGroupId] : selectedGroups,
+                researchGroupIds: createResearchGroupFilter(),
                 types: selectedThesisTypes,
               }}
               limit={pageItemLimit}

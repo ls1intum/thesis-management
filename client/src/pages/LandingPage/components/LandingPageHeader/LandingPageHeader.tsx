@@ -7,10 +7,12 @@ import { doRequest } from '../../../../requests/request'
 import { showSimpleError } from '../../../../utils/notification'
 import { getApiResponseErrorMessage } from '../../../../requests/handler'
 
-const LandingPageHeader = () => {
-  const computedColorScheme = useComputedColorScheme()
+interface LandingPageHeaderProps {
+  researchGroupId?: string
+}
 
-  const { researchGroupId } = useParams<{ researchGroupId: string }>()
+const LandingPageHeader = ({ researchGroupId }: LandingPageHeaderProps) => {
+  const computedColorScheme = useComputedColorScheme()
 
   const [researchGroup, setResearchGroup] = useState<IResearchGroup | undefined>()
 
@@ -49,7 +51,8 @@ const LandingPageHeader = () => {
           <Title order={5} c='dimmed'>
             {researchGroup
               ? researchGroup.description
-              : "Whether you're looking for inspiration or have a unique idea in mind, Thesis Management makes it easy. Explore topics posted by instructors or suggest your own."}
+              : 'Whether you are looking for inspiration or have a unique idea in mind, ' +
+                'Thesis Management makes it easy. Explore topics posted by instructors or suggest your own.'}
           </Title>
         </Flex>
 

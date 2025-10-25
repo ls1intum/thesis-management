@@ -73,6 +73,12 @@ public class Topic {
   @Column(name = "created_at", nullable = false)
   private Instant createdAt;
 
+  @Column(name="intended_start")
+  private Instant intendedStart;
+
+  @Column(name="application_deadline")
+  private Instant applicationDeadline;
+
   @NotNull
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "created_by", nullable = false)

@@ -1,76 +1,40 @@
 import { useThesisCommentsContext } from '../../providers/ThesisCommentsProvider/hooks'
-import { Center, Group, Pagination, Paper, Skeleton, Stack, Text } from '@mantine/core'
-import { useLoggedInUser } from '../../hooks/authentication'
-import { formatDate, formatUser } from '../../utils/format'
-import { Download, Eye } from 'phosphor-react'
-import { useHighlightedBackgroundColor } from '../../hooks/theme'
-import AuthenticatedFileDownloadButton from '../AuthenticatedFileDownloadButton/AuthenticatedFileDownloadButton'
-import AuthenticatedFilePreviewButton from '../AuthenticatedFilePreviewButton/AuthenticatedFilePreviewButton'
+import { Center, Divider, Pagination, Skeleton, Stack, Text, Title } from '@mantine/core'
+import { NoteIcon } from '@phosphor-icons/react/dist/ssr'
+import ThesisCommentElement from './components/ThesisCommentElement'
 
 const ThesisCommentsList = () => {
   const { thesis, comments, deleteComment, limit, page, setPage } = useThesisCommentsContext()
 
-  const user = useLoggedInUser()
-
-  const commentBackgroundColor = useHighlightedBackgroundColor(false)
-
   return (
-    <Stack>
+    <Stack pb={'0.5rem'}>
       {!comments &&
         Array.from(Array(limit).keys()).map((index) => <Skeleton key={index} height={50} />)}
-      {comments && comments.content.length === 0 && <Text ta='center'>No comments added yet</Text>}
-      {comments &&
-        comments.content.map((comment) => (
-          <Stack gap={0} key={comment.commentId}>
-            <Paper p='md' radius='sm' style={{ backgroundColor: commentBackgroundColor }}>
-              <Group style={{ width: '100%' }}>
-                <Text>{comment.message}</Text>
-                {comment.uploadName && (
-                  <Group gap='xs' ml='auto'>
-                    <AuthenticatedFilePreviewButton
-                      url={`/v2/theses/${thesis.thesisId}/comments/${comment.commentId}/file`}
-                      filename={comment.uploadName}
-                      type='any'
-                      size='xs'
-                    >
-                      <Eye />
-                    </AuthenticatedFilePreviewButton>
-                    <AuthenticatedFileDownloadButton
-                      url={`/v2/theses/${thesis.thesisId}/comments/${comment.commentId}/file`}
-                      filename={comment.uploadName}
-                      size='xs'
-                    >
-                      <Download />
-                    </AuthenticatedFileDownloadButton>
-                  </Group>
-                )}
-              </Group>
-            </Paper>
-            <Group ml='auto'>
-              <Text size='xs' c='dimmed'>
-                {formatDate(comment.createdAt)}
-              </Text>
-              <Text size='xs' c='dimmed'>
-                {formatUser(comment.createdBy, { withUniversityId: true })}
-              </Text>
-              {(user.groups.includes('admin') || user.userId === comment.createdBy.userId) && (
-                <Text
-                  component='a'
-                  href='#'
-                  size='xs'
-                  c='dimmed'
-                  style={{ textDecoration: 'underline' }}
-                  onClick={(e) => {
-                    e.preventDefault()
-                    deleteComment(comment)
-                  }}
-                >
-                  Delete
-                </Text>
-              )}
-            </Group>
+      {comments && comments.content.length === 0 && (
+        <Stack align='center' justify='center' py='lg' gap={'0.5rem'}>
+          <NoteIcon size={48} color='gray' />
+          <Stack gap={'0.25rem'} align='center'>
+            <Title order={5}>No comments yet</Title>
+            <Text ta='center' variant='dimmed' size='sm'>
+              Be the first to add a comment to this thesis.
+            </Text>
           </Stack>
-        ))}
+        </Stack>
+      )}
+      <Stack gap={'1rem'}>
+        {comments &&
+          comments.content.map((comment, idx) => (
+            <>
+              <ThesisCommentElement
+                key={comment.commentId}
+                comment={comment}
+                thesisId={thesis.thesisId}
+                deleteComment={deleteComment}
+              />
+              {idx < comments.content.length - 1 && <Divider />}
+            </>
+          ))}
+      </Stack>
       {comments && comments.totalPages > 1 && (
         <Center>
           <Pagination

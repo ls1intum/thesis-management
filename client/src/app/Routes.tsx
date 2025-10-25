@@ -3,6 +3,8 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
 import AuthenticatedArea from './layout/AuthenticatedArea/AuthenticatedArea'
 import PageLoader from '../components/PageLoader/PageLoader'
 import PublicArea from './layout/PublicArea/PublicArea'
+import { useAuthenticationContext } from '../hooks/authentication'
+import { useIsSmallerBreakpoint } from '../hooks/theme'
 
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage/NotFoundPage'))
 const PrivacyPage = lazy(() => import('../pages/PrivacyPage/PrivacyPage'))
@@ -12,12 +14,13 @@ const ThesisOverviewPage = lazy(() => import('../pages/ThesisOverviewPage/Thesis
 const ResearchGroupAdminPage = lazy(
   () => import('../pages/ResearchGroupAdminPage/ResearchGroupAdminPage'),
 )
-const ResearchGroupSettingPage = lazy(
-  () => import('../pages/ResearchGroupSettingPage/ResearchGroupSettingPage'),
-)
 
 const PresentationOverviewPage = lazy(
   () => import('../pages/PresentationOverviewPage/PresentationOverviewPage'),
+)
+
+const ResearchGroupSettingPage = lazy(
+  () => import('../pages/ResearchGroupSettingPage/ResearchGroupSettingPage'),
 )
 const BrowseThesesPage = lazy(() => import('../pages/BrowseThesesPage/BrowseThesesPage'))
 const DashboardPage = lazy(() => import('../pages/DashboardPage/DashboardPage'))
@@ -36,6 +39,9 @@ const ThesisPage = lazy(() => import('../pages/ThesisPage/ThesisPage'))
 const LandingPage = lazy(() => import('../pages/LandingPage/LandingPage'))
 
 const AppRoutes = () => {
+  const auth = useAuthenticationContext()
+  const isSmaller = useIsSmallerBreakpoint('md')
+
   return (
     <Suspense fallback={<PageLoader />}>
       <BrowserRouter>
@@ -80,7 +86,7 @@ const AppRoutes = () => {
           <Route
             path='/presentations'
             element={
-              <AuthenticatedArea requireAuthentication={false}>
+              <AuthenticatedArea handleScrollInView={!isSmaller}>
                 <PresentationOverviewPage />
               </AuthenticatedArea>
             }
@@ -88,9 +94,15 @@ const AppRoutes = () => {
           <Route
             path='/presentations/:presentationId'
             element={
-              <AuthenticatedArea size='md' requireAuthentication={false}>
-                <PresentationPage />
-              </AuthenticatedArea>
+              auth.isAuthenticated ? (
+                <AuthenticatedArea>
+                  <PresentationPage />
+                </AuthenticatedArea>
+              ) : (
+                <PublicArea size='xl'>
+                  <PresentationPage />
+                </PublicArea>
+              )
             }
           />
           <Route
@@ -104,9 +116,15 @@ const AppRoutes = () => {
           <Route
             path='/topics/:topicId'
             element={
-              <AuthenticatedArea size='xl' requireAuthentication={false}>
-                <TopicPage />
-              </AuthenticatedArea>
+              auth.isAuthenticated ? (
+                <AuthenticatedArea>
+                  <TopicPage />
+                </AuthenticatedArea>
+              ) : (
+                <PublicArea size='xl'>
+                  <TopicPage />
+                </PublicArea>
+              )
             }
           />
           <Route
@@ -147,7 +165,7 @@ const AppRoutes = () => {
           <Route
             path='/research-groups'
             element={
-              <AuthenticatedArea>
+              <AuthenticatedArea requiredGroups={['admin']}>
                 <ResearchGroupAdminPage />
               </AuthenticatedArea>
             }
@@ -155,7 +173,7 @@ const AppRoutes = () => {
           <Route
             path='/research-groups/:researchGroupId'
             element={
-              <AuthenticatedArea>
+              <AuthenticatedArea requiredGroups={['admin', 'group-admin']}>
                 <ResearchGroupSettingPage />
               </AuthenticatedArea>
             }
@@ -194,7 +212,7 @@ const AppRoutes = () => {
             }
           />
           <Route
-            path='/:researchGroupId'
+            path='/:researchGroupAbbreviation'
             element={
               <PublicArea size='xl'>
                 <LandingPage />

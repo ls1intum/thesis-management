@@ -1,5 +1,5 @@
 import { Button, Combobox, Group, useCombobox, useComputedColorScheme } from '@mantine/core'
-import { CaretDown, CaretUp, MagnifyingGlass } from 'phosphor-react'
+import { CaretDown, CaretUp, MagnifyingGlass } from '@phosphor-icons/react'
 import { useEffect, useState } from 'react'
 
 interface IDropDownMultiSelectProps {

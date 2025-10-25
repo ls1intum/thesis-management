@@ -97,6 +97,7 @@ class ThesisPresentationServiceTest {
                 any(Instant.class),
                 anySet(),
                 anySet(),
+                isNull(),
                 any(PageRequest.class)
         )).thenReturn(expectedPage);
 
@@ -105,7 +106,8 @@ class ThesisPresentationServiceTest {
                 0,
                 10,
                 "scheduledAt",
-                "asc"
+                "asc",
+                null
         );
 
         assertNotNull(result);
@@ -115,6 +117,7 @@ class ThesisPresentationServiceTest {
                 any(Instant.class),
                 eq(Set.of(ThesisPresentationState.SCHEDULED, ThesisPresentationState.DRAFTED)),
                 eq(Set.of(ThesisPresentationVisibility.PUBLIC)),
+                isNull(),
                 any(PageRequest.class)
         );
     }
@@ -237,15 +240,15 @@ class ThesisPresentationServiceTest {
 
     @Test
     void getPresentationCalendar_ReturnsCalendarWithEvents() {
-        when(thesisPresentationRepository.findAllPresentations(anySet()))
+        when(thesisPresentationRepository.findAllPresentations(isNull(), anySet()))
                 .thenReturn(List.of(testPresentation));
         when(calendarService.createVEvent(anyString(), any()))
                 .thenReturn(null);
 
-        Calendar result = presentationService.getPresentationCalendar();
+        Calendar result = presentationService.getPresentationCalendar(null);
 
         assertNotNull(result);
         verify(calendarService).createVEvent(anyString(), any());
-        verify(thesisPresentationRepository).findAllPresentations(anySet());
+        verify(thesisPresentationRepository).findAllPresentations(isNull(), anySet());
     }
 }

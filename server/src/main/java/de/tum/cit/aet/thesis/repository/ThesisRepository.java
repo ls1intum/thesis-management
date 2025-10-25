@@ -3,6 +3,7 @@ package de.tum.cit.aet.thesis.repository;
 import de.tum.cit.aet.thesis.constants.ThesisRoleName;
 import de.tum.cit.aet.thesis.constants.ThesisState;
 import de.tum.cit.aet.thesis.constants.ThesisVisibility;
+import de.tum.cit.aet.thesis.entity.ResearchGroup;
 import de.tum.cit.aet.thesis.entity.Thesis;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +26,14 @@ public interface ThesisRepository extends JpaRepository<Thesis, UUID> {
                  OR (
                      t.visibility IN :visibilities
                      AND (:researchGroupIds IS NULL OR t.researchGroup.id IN :researchGroupIds)
+                 )
+                 OR (
+                     t.visibility = 'PRIVATE'
+                     AND EXISTS (
+                             SELECT 1
+                             FROM t.roles as tr
+                             WHERE tr.user.id = :userId
+                         )
                  )
                  OR (:userId IS NOT NULL AND r.user.id = :userId )
              )
@@ -64,4 +73,13 @@ public interface ThesisRepository extends JpaRepository<Thesis, UUID> {
             @Param("roleNames") Set<ThesisRoleName> roleNames,
             @Param("states") Set<ThesisState> states
     );
+
+    @Query("""
+    SELECT DISTINCT t.researchGroup FROM Thesis t
+    JOIN t.roles r
+    WHERE r.id.userId = :userId
+      AND r.id.role = 'STUDENT'
+      AND t.state <> 'FINISHED'
+""")
+    List<ResearchGroup> findActiveStudentThesisResearchGroups(@Param("userId") UUID userId);
 }

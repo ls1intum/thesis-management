@@ -244,7 +244,8 @@ public class ApplicationController {
                 authenticatedUser,
                 application,
                 RequestValidator.validateNotNull(payload.reason()),
-                RequestValidator.validateNotNull(payload.notifyUser())
+                RequestValidator.validateNotNull(payload.notifyUser()),
+                true
         );
 
         return ResponseEntity.ok(

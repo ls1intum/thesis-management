@@ -1,6 +1,8 @@
 package de.tum.cit.aet.thesis.service;
 
+import de.tum.cit.aet.thesis.constants.StringLimits;
 import de.tum.cit.aet.thesis.security.CurrentUserProvider;
+import de.tum.cit.aet.thesis.utility.RequestValidator;
 import jakarta.mail.internet.InternetAddress;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.property.ProdId;
@@ -72,13 +74,14 @@ public class ThesisPresentationService {
     }
 
     public Page<ThesisPresentation> getPublicPresentations(boolean includeDrafts, Integer page,
-        Integer limit, String sortBy, String sortOrder) {
+        Integer limit, String sortBy, String sortOrder, UUID researchGroupId) {
         Sort.Order order = new Sort.Order(sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
 
         return thesisPresentationRepository.findFuturePresentations(
                 Instant.now(),
                 includeDrafts ? Set.of(ThesisPresentationState.DRAFTED, ThesisPresentationState.SCHEDULED) : Set.of(ThesisPresentationState.SCHEDULED),
                 Set.of(ThesisPresentationVisibility.PUBLIC),
+                researchGroupId,
                 PageRequest.of(page, limit, Sort.by(order))
         );
     }
@@ -94,12 +97,15 @@ public class ThesisPresentationService {
         return presentation;
     }
 
-    public Calendar getPresentationCalendar() {
+    public Calendar getPresentationCalendar(UUID researchGroupId) {
         Calendar calendar = createEmptyCalendar();
 
         calendar.add(ImmutableMethod.PUBLISH);
 
-        List<ThesisPresentation> presentations = thesisPresentationRepository.findAllPresentations(
+        List<ThesisPresentation> presentations;
+
+        presentations = thesisPresentationRepository.findAllPresentations(
+                researchGroupId,
                 Set.of(ThesisPresentationVisibility.PUBLIC)
         );
 
@@ -182,6 +188,21 @@ public class ThesisPresentationService {
         }
 
         updateThesisCalendarEvents(thesis);
+
+        return thesis;
+    }
+
+    @Transactional
+    public Thesis updatePresentationNote(ThesisPresentation presentation, String note) {
+        Thesis thesis = presentation.getThesis();
+        currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+
+        if (note.isEmpty()) {
+            note = null;
+        }
+        presentation.setPresentationNoteHtml(note);
+
+        thesisPresentationRepository.save(presentation);
 
         return thesis;
     }
