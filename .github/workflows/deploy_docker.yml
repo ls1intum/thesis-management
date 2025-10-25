@@ -42,7 +42,7 @@ jobs:
           echo "${{ vars.POSTFIX_MASTER_CF }}" > master.cf
 
       - name: Copy Docker Compose File From Repo to VM Host
-        uses: appleboy/scp-action@v0.1.7
+        uses: appleboy/scp-action@v1.0.0
         with:
           host: ${{ vars.VM_HOST }}
           username: ${{ vars.VM_USERNAME }}
@@ -55,7 +55,7 @@ jobs:
           target: /home/${{ vars.VM_USERNAME }}
 
       - name: Copy main.cf to VM Host
-        uses: appleboy/scp-action@v0.1.7
+        uses: appleboy/scp-action@v1.0.0
         with:
           host: ${{ vars.VM_HOST }}
           username: ${{ vars.VM_USERNAME }}
@@ -68,7 +68,7 @@ jobs:
           target: /home/${{ vars.VM_USERNAME }}/postfix-config/
 
       - name: Copy master.cf to VM Host
-        uses: appleboy/scp-action@v0.1.7
+        uses: appleboy/scp-action@v1.0.0
         with:
           host: ${{ vars.VM_HOST }}
           username: ${{ vars.VM_USERNAME }}
