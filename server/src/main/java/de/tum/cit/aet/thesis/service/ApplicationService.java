@@ -257,7 +257,7 @@ public class ApplicationService {
                 Optional<TopicRole> supervisor = topic.getRoles().stream().filter((role) -> role.getId().getRole() == ThesisRoleName.SUPERVISOR).findFirst();
 
                 if (supervisor.isPresent()) {
-                    reviewingUser = supervisor.get().getUser();
+                    reviewingUser = supervisor.orElseThrow().getUser();
                 }
 
                 reject(reviewingUser , application, ApplicationRejectReason.GENERAL, true, false);
