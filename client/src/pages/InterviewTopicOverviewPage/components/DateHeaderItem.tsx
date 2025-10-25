@@ -4,9 +4,15 @@ interface IDateHeaderItemProps {
   date: string
   size?: 'md' | 'lg'
   disabled?: boolean
+  h?: string | number
 }
 
-export const DateHeaderItem = ({ date, size = 'md', disabled = false }: IDateHeaderItemProps) => {
+export const DateHeaderItem = ({
+  date,
+  size = 'md',
+  disabled = false,
+  h,
+}: IDateHeaderItemProps) => {
   const getTextSize = () => {
     switch (size) {
       case 'lg':
@@ -26,7 +32,7 @@ export const DateHeaderItem = ({ date, size = 'md', disabled = false }: IDateHea
   }
 
   return (
-    <Stack gap={0} p={0} opacity={disabled ? 0.35 : 1}>
+    <Stack gap={0} p={0} opacity={disabled ? 0.35 : 1} h={h ? h : undefined}>
       <Text fw={600} c={'dimmed'} size={getTextSize()}>
         {new Date(date).toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase()}
       </Text>

@@ -2,6 +2,8 @@ import { Grid, Stack, Title } from '@mantine/core'
 import { IIntervieweeSlot } from '../../requests/responses/interview'
 import { DateHeaderItem } from './components/DateHeaderItem'
 import SlotItem from './components/SlotItem'
+import { Carousel } from '@mantine/carousel'
+import { useState } from 'react'
 
 const InterviewTopicOverviewPage = () => {
   const interviewSlotItems: Record<string, IIntervieweeSlot[]> = {
@@ -89,7 +91,35 @@ const InterviewTopicOverviewPage = () => {
         endDate: new Date('2025-11-12T15:30:00Z'),
         bookedBy: null,
       },
+      {
+        slotId: '10',
+        startDate: new Date('2025-11-12T16:00:00Z'),
+        endDate: new Date('2025-11-12T16:30:00Z'),
+        bookedBy: null,
+      },
     ],
+  }
+
+  const [carouselSlide, setCarouselSlide] = useState(0)
+
+  const dateRowDisabled = (itemsPerPage: number, rowKey: string) => {
+    const keys = Object.keys(interviewSlotItems)
+    const totalSlides = keys.length
+    const index = keys.indexOf(rowKey)
+    if (index === -1) return true
+
+    const lastSlideIndex = Math.max(0, Math.ceil(totalSlides / itemsPerPage) - 1)
+
+    let visibleSlidesStart = carouselSlide * itemsPerPage
+    let visibleSlidesEnd = visibleSlidesStart + itemsPerPage
+
+    // If we're on the last carousel page, ensure the last `itemsPerPage` items are visible
+    if (carouselSlide >= lastSlideIndex) {
+      visibleSlidesStart = Math.max(0, totalSlides - itemsPerPage)
+      visibleSlidesEnd = totalSlides
+    }
+
+    return index < visibleSlidesStart || index >= visibleSlidesEnd
   }
 
   return (
@@ -101,18 +131,43 @@ const InterviewTopicOverviewPage = () => {
         </Title>
       </Stack>
 
-      <Grid gutter={'xs'}>
-        {Object.entries(interviewSlotItems).map(([date, slots]) => (
-          <Grid.Col span={3} key={`dateitem-${date}`}>
-            <Stack gap={'0.25rem'}>
-              <DateHeaderItem date={date} />
-              {slots.map((slot) => (
-                <SlotItem slot={slot} key={slot.slotId} />
+      <Carousel
+        slideGap='sm'
+        controlsOffset={'-100px'}
+        controlSize={32}
+        withControls
+        withIndicators={false}
+        slideSize={'23%'}
+        emblaOptions={{ align: 'start', slidesToScroll: 4 }}
+        onSlideChange={(index) => setCarouselSlide(index)}
+      >
+        {Object.entries(interviewSlotItems).map(([date, slots]) => {
+          const rowAmount = 3
+          const chunks: IIntervieweeSlot[][] = []
+          for (let i = 0; i < slots.length; i += rowAmount) {
+            chunks.push(slots.slice(i, i + rowAmount))
+          }
+
+          return (
+            <>
+              {chunks.map((chunk, chunkIndex) => (
+                <Carousel.Slide key={`${date}-${chunkIndex}`}>
+                  <Stack gap={'0.25rem'}>
+                    {chunkIndex === 0 ? (
+                      <DateHeaderItem date={date} h={50} disabled={dateRowDisabled(4, date)} />
+                    ) : (
+                      <Stack h={50} />
+                    )}
+                    {chunk.map((slot) => (
+                      <SlotItem slot={slot} key={slot.slotId} />
+                    ))}
+                  </Stack>
+                </Carousel.Slide>
               ))}
-            </Stack>
-          </Grid.Col>
-        ))}
-      </Grid>
+            </>
+          )
+        })}
+      </Carousel>
     </Stack>
   )
 }
