@@ -27,7 +27,7 @@ services:
   #    - "25:25"
 
   caldav:
-    image: tomsquest/docker-radicale:3.3.0.1
+    image: tomsquest/docker-radicale:3.5.7.0
     container_name: thesis-management-caldav
     ports:
       - "5232:5232"
