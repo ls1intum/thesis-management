@@ -10,11 +10,8 @@ import {
   Text,
   ThemeIcon,
 } from '@mantine/core'
-import { useTopicsContext } from '../../../../providers/TopicsProvider/hooks'
 import React, { useEffect, useState } from 'react'
-import TopicAccordionItem from '../../../../components/TopicAccordionItem/TopicAccordionItem'
 import { GLOBAL_CONFIG } from '../../../../config/global'
-import { DatabaseIcon } from '@phosphor-icons/react'
 import { useSearchParams } from 'react-router'
 import { useDebouncedValue } from '@mantine/hooks'
 import TopicsProvider from '../../../../providers/TopicsProvider/TopicsProvider'
@@ -30,10 +27,6 @@ interface ISelectTopicStepProps {
 }
 
 const SelectTopicStep = (props: ISelectTopicStepProps) => {
-  const { onComplete } = props
-
-  const { topics, page, setPage, limit, isLoading } = useTopicsContext()
-
   const [searchParams, setSearchParams] = useSearchParams()
   const [searchKey, setSearchKey] = useState(searchParams.get('search') ?? '')
   const [debouncedSearch] = useDebouncedValue(searchKey, 300)
@@ -81,27 +74,8 @@ const SelectTopicStep = (props: ISelectTopicStepProps) => {
     setSearchParams(params, { replace: true })
   }, [debouncedSearch])
 
-  if (
-    !GLOBAL_CONFIG.allow_suggested_topics &&
-    topics?.content.length === 0 &&
-    topics?.pageNumber === 0
-  ) {
-    return (
-      <Center h='100%'>
-        <Stack align='center' gap='xs'>
-          <ThemeIcon radius='xl' size={50} color='gray' variant='light'>
-            <DatabaseIcon size={24} weight='duotone' />
-          </ThemeIcon>
-          <Text size='sm' color='dimmed'>
-            No topics found
-          </Text>
-        </Stack>
-      </Center>
-    )
-  }
-
   return (
-    <Stack>
+    <Stack gap={'0rem'} pt={'1rem'}>
       <TopicSearchFilters
         searchKey={searchKey}
         setSearchKey={setSearchKey}
@@ -122,7 +96,10 @@ const SelectTopicStep = (props: ISelectTopicStepProps) => {
           types: selectedThesisTypes,
         }}
       >
-        <TopicCardGrid collapsibleTopics={true} />
+        <TopicCardGrid
+          collapsibleTopics={true}
+          showSuggestedTopic={GLOBAL_CONFIG.allow_suggested_topics}
+        />
       </TopicsProvider>
     </Stack>
   )

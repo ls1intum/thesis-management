@@ -33,12 +33,14 @@ interface ITopicCardGridContentProps {
   gridContent?: ITopicCardGridProps
   setOpenTopic?: Dispatch<React.SetStateAction<IPublishedThesis | undefined>>
   collapsibleTopics?: boolean
+  showSuggestedTopic?: boolean
 }
 
 const TopicCardGrid = ({
   gridContent,
   setOpenTopic,
   collapsibleTopics = false,
+  showSuggestedTopic = false,
 }: ITopicCardGridContentProps) => {
   const { topics, page, setPage, limit, isLoading } = gridContent ?? useTopicsContext()
 
@@ -59,7 +61,7 @@ const TopicCardGrid = ({
 
   return (
     <Flex direction={'column'} gap='md' w='100%' h='100%'>
-      {topics?.content.length === 0 && (
+      {topics?.content.length === 0 && !showSuggestedTopic && (
         <Center h='100%'>
           <Stack align='center' gap='xs'>
             <ThemeIcon radius='xl' size={50} color='gray' variant='light'>
@@ -77,7 +79,12 @@ const TopicCardGrid = ({
             <Loader size={32} />
           </Center>
         ) : collapsibleTopics ? (
-          <Accordion chevronPosition='right' variant={'separated'} radius='md'>
+          <Accordion
+            chevronPosition={'right'}
+            variant={'unstyled'}
+            radius='md'
+            chevronIconSize={20}
+          >
             {topics?.content.map((topic) => (
               <CollapsibleTopicElement
                 key={'topicId' in topic ? topic.topicId : topic.thesisId}
