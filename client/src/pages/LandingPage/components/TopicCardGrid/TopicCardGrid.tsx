@@ -1,11 +1,25 @@
-import { Box, Center, Flex, Pagination, SimpleGrid, Stack, Text, ThemeIcon } from '@mantine/core'
+import {
+  Accordion,
+  Box,
+  Button,
+  Center,
+  Flex,
+  Loader,
+  Pagination,
+  SimpleGrid,
+  Stack,
+  Text,
+  ThemeIcon,
+} from '@mantine/core'
 import TopicCard from './TopicCard/TopicCard'
 import { useTopicsContext } from '../../../../providers/TopicsProvider/hooks'
-import { Database, Spinner } from '@phosphor-icons/react'
+import { Database } from '@phosphor-icons/react'
 import { Dispatch, useEffect, useState } from 'react'
 import { ITopic } from '../../../../requests/responses/topic'
 import { IPublishedThesis } from '../../../../requests/responses/thesis'
 import { PaginationResponse } from '../../../../requests/responses/pagination'
+import CollapsibleTopicElement from '../../../ReplaceApplicationPage/components/SelectTopicStep/components/CollapsibleTopicElement'
+import { GLOBAL_CONFIG } from '../../../../config/global'
 
 interface ITopicCardGridProps {
   topics: PaginationResponse<ITopic> | PaginationResponse<IPublishedThesis>
@@ -18,9 +32,14 @@ interface ITopicCardGridProps {
 interface ITopicCardGridContentProps {
   gridContent?: ITopicCardGridProps
   setOpenTopic?: Dispatch<React.SetStateAction<IPublishedThesis | undefined>>
+  collapsibleTopics?: boolean
 }
 
-const TopicCardGrid = ({ gridContent, setOpenTopic }: ITopicCardGridContentProps) => {
+const TopicCardGrid = ({
+  gridContent,
+  setOpenTopic,
+  collapsibleTopics = false,
+}: ITopicCardGridContentProps) => {
   const { topics, page, setPage, limit, isLoading } = gridContent ?? useTopicsContext()
 
   //Prevent flickering spinner for short loading times
@@ -33,6 +52,10 @@ const TopicCardGrid = ({ gridContent, setOpenTopic }: ITopicCardGridContentProps
       setShowSpinner(false)
     }
   }, [isLoading])
+
+  function onComplete(undefined: undefined): void {
+    throw new Error('Function not implemented.')
+  }
 
   return (
     <Flex direction={'column'} gap='md' w='100%' h='100%'>
@@ -51,8 +74,28 @@ const TopicCardGrid = ({ gridContent, setOpenTopic }: ITopicCardGridContentProps
       <Box flex={1}>
         {showSpinner ? (
           <Center>
-            <Spinner size={32} weight='bold' />
+            <Loader size={32} />
           </Center>
+        ) : collapsibleTopics ? (
+          <Accordion chevronPosition='right' variant={'separated'} radius='md'>
+            {topics?.content.map((topic) => (
+              <CollapsibleTopicElement
+                key={'topicId' in topic ? topic.topicId : topic.thesisId}
+                topic={topic}
+              />
+            ))}
+
+            {GLOBAL_CONFIG.allow_suggested_topics && topics?.last && (
+              <Accordion.Item value='custom'>
+                <Accordion.Control>Suggest Topic</Accordion.Control>
+                <Accordion.Panel>
+                  <Center>
+                    <Button onClick={() => onComplete(undefined)}>Suggest your own topic</Button>
+                  </Center>
+                </Accordion.Panel>
+              </Accordion.Item>
+            )}
+          </Accordion>
         ) : (
           <SimpleGrid
             cols={{ base: 1, sm: 2, xl: 3 }}
