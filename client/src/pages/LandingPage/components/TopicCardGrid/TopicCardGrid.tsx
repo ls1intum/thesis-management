@@ -2,6 +2,7 @@ import {
   Accordion,
   Box,
   Button,
+  Card,
   Center,
   Flex,
   Loader,
@@ -10,6 +11,7 @@ import {
   Stack,
   Text,
   ThemeIcon,
+  Title,
 } from '@mantine/core'
 import TopicCard from './TopicCard/TopicCard'
 import { useTopicsContext } from '../../../../providers/TopicsProvider/hooks'
@@ -34,6 +36,7 @@ interface ITopicCardGridContentProps {
   setOpenTopic?: Dispatch<React.SetStateAction<IPublishedThesis | undefined>>
   collapsibleTopics?: boolean
   showSuggestedTopic?: boolean
+  onApply?: (topic: ITopic | undefined) => unknown
 }
 
 const TopicCardGrid = ({
@@ -41,6 +44,7 @@ const TopicCardGrid = ({
   setOpenTopic,
   collapsibleTopics = false,
   showSuggestedTopic = false,
+  onApply,
 }: ITopicCardGridContentProps) => {
   const { topics, page, setPage, limit, isLoading } = gridContent ?? useTopicsContext()
 
@@ -54,10 +58,6 @@ const TopicCardGrid = ({
       setShowSpinner(false)
     }
   }, [isLoading])
-
-  function onComplete(undefined: undefined): void {
-    throw new Error('Function not implemented.')
-  }
 
   return (
     <Flex direction={'column'} gap='md' w='100%' h='100%'>
@@ -89,18 +89,30 @@ const TopicCardGrid = ({
               <CollapsibleTopicElement
                 key={'topicId' in topic ? topic.topicId : topic.thesisId}
                 topic={topic}
+                onApply={'topicId' in topic ? onApply : undefined}
               />
             ))}
 
             {GLOBAL_CONFIG.allow_suggested_topics && topics?.last && (
-              <Accordion.Item value='custom'>
-                <Accordion.Control>Suggest Topic</Accordion.Control>
-                <Accordion.Panel>
-                  <Center>
-                    <Button onClick={() => onComplete(undefined)}>Suggest your own topic</Button>
-                  </Center>
-                </Accordion.Panel>
-              </Accordion.Item>
+              <Card withBorder shadow='xs' radius='md' my='sm' p={0} style={{ cursor: 'pointer' }}>
+                <Accordion.Item value='custom'>
+                  <Accordion.Control>
+                    <Stack gap={'0.5rem'}>
+                      <Title order={5}>Suggest your own topic</Title>
+                      <Title c={'dimmed'} order={6}>
+                        Can't find a suitable topic? Suggest your own thesis topic to a group.
+                      </Title>
+                    </Stack>
+                  </Accordion.Control>
+                  <Accordion.Panel>
+                    <Center>
+                      <Button onClick={() => (onApply ? onApply(undefined) : null)} fullWidth>
+                        Suggest topic
+                      </Button>
+                    </Center>
+                  </Accordion.Panel>
+                </Accordion.Item>
+              </Card>
             )}
           </Accordion>
         ) : (

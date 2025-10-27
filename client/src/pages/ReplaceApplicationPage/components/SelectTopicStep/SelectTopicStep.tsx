@@ -99,6 +99,7 @@ const SelectTopicStep = (props: ISelectTopicStepProps) => {
         <TopicCardGrid
           collapsibleTopics={true}
           showSuggestedTopic={GLOBAL_CONFIG.allow_suggested_topics}
+          onApply={props.onComplete}
         />
       </TopicsProvider>
     </Stack>

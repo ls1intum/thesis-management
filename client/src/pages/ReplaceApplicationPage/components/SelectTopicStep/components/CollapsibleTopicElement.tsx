@@ -1,10 +1,19 @@
-import { Accordion, Card, Group, Stack, Title, Text } from '@mantine/core'
+import { Accordion, Card, Group, Stack, Title, Text, Button, Divider } from '@mantine/core'
 import { ITopic } from '../../../../../requests/responses/topic'
 import ThesisTypeBadge from '../../../../LandingPage/components/ThesisTypBadge/ThesisTypBadge'
 import { IPublishedThesis } from '../../../../../requests/responses/thesis'
 import { useHover } from '@mantine/hooks'
+import AvatarUserList from '../../../../../components/AvatarUserList/AvatarUserList'
+import DocumentEditor from '../../../../../components/DocumentEditor/DocumentEditor'
+import LabeledItem from '../../../../../components/LabeledItem/LabeledItem'
+import { pluralize } from '../../../../../utils/format'
 
-const CollapsibleTopicElement = ({ topic }: { topic: IPublishedThesis | ITopic }) => {
+interface ICollapsibleTopicElementProps {
+  topic: IPublishedThesis | ITopic
+  onApply?: (topic: ITopic | undefined) => unknown
+}
+
+const CollapsibleTopicElement = ({ topic, onApply }: ICollapsibleTopicElementProps) => {
   const { hovered, ref } = useHover()
   return (
     <Card
@@ -12,7 +21,7 @@ const CollapsibleTopicElement = ({ topic }: { topic: IPublishedThesis | ITopic }
       shadow={hovered ? 'md' : 'xs'}
       radius='md'
       my='sm'
-      p={'0.25rem'}
+      p={0}
       style={{ cursor: 'pointer' }}
       ref={ref}
     >
@@ -23,7 +32,12 @@ const CollapsibleTopicElement = ({ topic }: { topic: IPublishedThesis | ITopic }
               {'topicId' in topic ? (
                 topic.thesisTypes?.length ? (
                   topic.thesisTypes.map((type) => (
-                    <ThesisTypeBadge type={type} textColor='gray' textSize='xs' />
+                    <ThesisTypeBadge
+                      type={type}
+                      textColor='gray'
+                      textSize='xs'
+                      key={`${topic.topicId}-${type}`}
+                    />
                   ))
                 ) : (
                   <ThesisTypeBadge type='Any' key={'any'} textSize='xs' />
@@ -41,7 +55,38 @@ const CollapsibleTopicElement = ({ topic }: { topic: IPublishedThesis | ITopic }
           </Stack>
         </Accordion.Control>
         <Accordion.Panel>
-          {'topicId' in topic ? <Stack></Stack> : <Stack>{topic.abstractText}</Stack>}
+          <Stack>
+            <Divider />
+            {'topicId' in topic ? (
+              <>
+                {topic.advisors.length > 0 && (
+                  <LabeledItem
+                    label={pluralize('Advisor', topic.advisors.length)}
+                    value={<AvatarUserList users={topic.advisors} size='xs' />}
+                  />
+                )}
+                {topic.supervisors.length > 0 && (
+                  <LabeledItem
+                    label={pluralize('Supervisor', topic.supervisors.length)}
+                    value={<AvatarUserList users={topic.supervisors} size='xs' />}
+                  />
+                )}
+                <DocumentEditor label='Problem Statement' value={topic.problemStatement} />
+                {topic.requirements && (
+                  <DocumentEditor label='Requirements' value={topic.requirements} />
+                )}
+                {topic.goals && <DocumentEditor label='Goals' value={topic.goals} />}
+                {topic.references && <DocumentEditor label='References' value={topic.references} />}
+              </>
+            ) : (
+              <></>
+            )}
+            {onApply && 'topicId' in topic && (
+              <Button onClick={() => onApply(topic)} fullWidth>
+                Apply
+              </Button>
+            )}
+          </Stack>
         </Accordion.Panel>
       </Accordion.Item>
     </Card>
