@@ -1,4 +1,4 @@
-import { Accordion, Card, Group, Stack, Title, Text, Button, Divider } from '@mantine/core'
+import { Accordion, Card, Group, Stack, Title, Text, Button, Divider, Grid } from '@mantine/core'
 import { ITopic } from '../../../../../requests/responses/topic'
 import ThesisTypeBadge from '../../../../LandingPage/components/ThesisTypBadge/ThesisTypBadge'
 import { IPublishedThesis } from '../../../../../requests/responses/thesis'
@@ -59,18 +59,46 @@ const CollapsibleTopicElement = ({ topic, onApply }: ICollapsibleTopicElementPro
             <Divider />
             {'topicId' in topic ? (
               <>
-                {topic.advisors.length > 0 && (
-                  <LabeledItem
-                    label={pluralize('Advisor', topic.advisors.length)}
-                    value={<AvatarUserList users={topic.advisors} size='xs' />}
-                  />
-                )}
-                {topic.supervisors.length > 0 && (
-                  <LabeledItem
-                    label={pluralize('Supervisor', topic.supervisors.length)}
-                    value={<AvatarUserList users={topic.supervisors} size='xs' />}
-                  />
-                )}
+                <Grid>
+                  <Grid.Col span={4}>
+                    {topic.supervisors.length > 0 && (
+                      <LabeledItem
+                        label={pluralize('Supervisor', topic.supervisors.length)}
+                        value={<AvatarUserList users={topic.supervisors} size='xs' />}
+                      />
+                    )}
+                  </Grid.Col>
+                  <Grid.Col span={8}>
+                    {topic.advisors.length > 0 && (
+                      <LabeledItem
+                        label={pluralize('Advisor', topic.advisors.length)}
+                        value={<AvatarUserList users={topic.advisors} size='xs' />}
+                      />
+                    )}
+                  </Grid.Col>
+                  <Grid.Col span={4}>
+                    <LabeledItem
+                      label={'Published At'}
+                      value={new Date(topic.createdAt).toLocaleDateString()}
+                    />
+                  </Grid.Col>
+                  {topic.applicationDeadline && (
+                    <Grid.Col span={4}>
+                      <LabeledItem
+                        label={'Application Deadline'}
+                        value={new Date(topic.applicationDeadline).toLocaleDateString()}
+                      />
+                    </Grid.Col>
+                  )}
+                  {topic.intendedStart && (
+                    <Grid.Col span={4}>
+                      <LabeledItem
+                        label={'Intended Start'}
+                        value={new Date(topic.intendedStart).toLocaleDateString()}
+                      />
+                    </Grid.Col>
+                  )}
+                </Grid>
                 <DocumentEditor label='Problem Statement' value={topic.problemStatement} />
                 {topic.requirements && (
                   <DocumentEditor label='Requirements' value={topic.requirements} />

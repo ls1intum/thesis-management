@@ -22,7 +22,7 @@ const DocumentEditor = (props: IDocumentEditorProps) => {
   const {
     value,
     maxLength,
-    onChange,
+    onChange = () => {},
     editMode = false,
     noBorder = false,
     onBlur,
