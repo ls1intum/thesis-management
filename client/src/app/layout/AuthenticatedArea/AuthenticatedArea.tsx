@@ -58,6 +58,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
     label: string
     icon: any
     groups: string[] | undefined
+    hideFromGroups?: string[]
     display?: boolean
   }> = [
     { link: '/dashboard', label: 'Dashboard', icon: NewspaperClipping, groups: undefined },
@@ -73,6 +74,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
       label: 'Submit Application',
       icon: PaperPlaneTilt,
       groups: undefined,
+      hideFromGroups: ['advisor', 'supervisor'],
     },
     {
       link: '/applications',
@@ -179,6 +181,11 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
                 !item.groups || item.groups.some((role) => auth.user?.groups.includes(role)),
             )
             .filter((item) => item.display == undefined || item.display === true)
+            .filter((item) =>
+              item.hideFromGroups
+                ? !item.hideFromGroups.some((role) => auth.user?.groups.includes(role))
+                : true,
+            )
             .map((item) => (
               <Link
                 className={minimized ? classes.minimizedLink : classes.fullLink}
