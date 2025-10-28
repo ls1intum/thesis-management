@@ -15,8 +15,20 @@ const InterviewTopicOverviewPage = () => {
         endDate: new Date('2025-11-10T10:30:00Z'),
         bookedBy: {
           intervieweeId: 'u1',
-          firstName: 'Alice',
-          lastName: 'Smith',
+          user: {
+            userId: 'u1',
+            firstName: 'Alice',
+            lastName: 'Smith',
+            avatar: null,
+            universityId: '',
+            matriculationNumber: null,
+            email: null,
+            studyDegree: null,
+            studyProgram: null,
+            customData: null,
+            joinedAt: '',
+            groups: [],
+          },
           score: 4,
           lastInvited: null,
         },
@@ -35,8 +47,20 @@ const InterviewTopicOverviewPage = () => {
         endDate: new Date('2025-11-11T12:30:00Z'),
         bookedBy: {
           intervieweeId: 'u2',
-          firstName: 'Bob',
-          lastName: 'Johnson',
+          user: {
+            userId: 'u2',
+            firstName: 'Bob',
+            lastName: 'Johnson',
+            avatar: null,
+            universityId: '',
+            matriculationNumber: null,
+            email: null,
+            studyDegree: null,
+            studyProgram: null,
+            customData: null,
+            joinedAt: '',
+            groups: [],
+          },
           score: 5,
           lastInvited: null,
         },
@@ -49,8 +73,20 @@ const InterviewTopicOverviewPage = () => {
         endDate: new Date('2025-11-12T10:30:00Z'),
         bookedBy: {
           intervieweeId: 'u3',
-          firstName: 'Charlie',
-          lastName: 'Brown',
+          user: {
+            userId: 'u3',
+            firstName: 'Charlie',
+            lastName: 'Brown',
+            avatar: null,
+            universityId: '',
+            matriculationNumber: null,
+            email: null,
+            studyDegree: null,
+            studyProgram: null,
+            customData: null,
+            joinedAt: '',
+            groups: [],
+          },
           score: 1,
           lastInvited: null,
         },
@@ -61,8 +97,20 @@ const InterviewTopicOverviewPage = () => {
         endDate: new Date('2025-11-12T11:30:00Z'),
         bookedBy: {
           intervieweeId: 'u4',
-          firstName: 'David',
-          lastName: 'Wilson',
+          user: {
+            userId: 'u4',
+            firstName: 'Diana',
+            lastName: 'Prince',
+            avatar: null,
+            universityId: '',
+            matriculationNumber: null,
+            email: null,
+            studyDegree: null,
+            studyProgram: null,
+            customData: null,
+            joinedAt: '',
+            groups: [],
+          },
           score: null,
           lastInvited: null,
         },
@@ -159,7 +207,7 @@ const InterviewTopicOverviewPage = () => {
                       <Stack h={50} />
                     )}
                     {chunk.map((slot) => (
-                      <SlotItem slot={slot} key={slot.slotId} />
+                      <SlotItem slot={slot} key={slot.slotId} withInterviewee />
                     ))}
                   </Stack>
                 </Carousel.Slide>

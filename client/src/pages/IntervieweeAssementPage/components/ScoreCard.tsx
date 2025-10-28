@@ -1,4 +1,5 @@
 import { Card, SegmentedControl, Stack, Title, Text } from '@mantine/core'
+import { createScoreLabel, scoreColorTranslate } from '../../../utils/format'
 
 interface IScoreCardProps {
   score: number | null
@@ -6,44 +7,6 @@ interface IScoreCardProps {
 }
 
 const ScoreCard = ({ score, onScoreChange }: IScoreCardProps) => {
-  //TODO: MOVE TO FORMATTER FILE
-  function scoreColorTranslate(score: number | null): string {
-    switch (score) {
-      case 1:
-        return 'red.2'
-      case 2:
-        return 'orange.2'
-      case 3:
-        return 'yellow.2'
-      case 4:
-        return 'lime.2'
-      case 5:
-        return 'green.2'
-      default:
-        return 'gray.3'
-    }
-  }
-
-  //TODO: MOVE TO FORMATTER FILE
-  function createScoreLabel(score: number): string {
-    switch (score) {
-      case 0:
-        return 'No Show'
-      case 1:
-        return 'Not a Fit'
-      case 2:
-        return 'Some Concerns'
-      case 3:
-        return 'Meets expectations'
-      case 4:
-        return 'Great Candidate'
-      case 5:
-        return 'Excelent'
-      default:
-        return 'No Score'
-    }
-  }
-
   //TODO: Think about better design for each label
   function createScoreData(labelScore: number): { label: React.ReactNode; value: string } {
     return {

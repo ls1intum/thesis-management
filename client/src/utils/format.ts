@@ -188,3 +188,39 @@ export function formatPresentationState(state: string) {
 
   return state
 }
+
+export function scoreColorTranslate(score: number | null, light: boolean = true): string {
+  switch (score) {
+    case 1:
+      return light ? 'red.2' : 'red.9'
+    case 2:
+      return light ? 'orange.2' : 'orange.9'
+    case 3:
+      return light ? 'yellow.2' : 'yellow.9'
+    case 4:
+      return light ? 'lime.2' : 'lime.9'
+    case 5:
+      return light ? 'green.2' : 'green.9'
+    default:
+      return light ? 'gray.2' : 'gray.9'
+  }
+}
+
+export function createScoreLabel(score: number): string {
+  switch (score) {
+    case 0:
+      return 'No Show'
+    case 1:
+      return 'Not a Fit'
+    case 2:
+      return 'Some Concerns'
+    case 3:
+      return 'Meets expectations'
+    case 4:
+      return 'Great Candidate'
+    case 5:
+      return 'Excelent'
+    default:
+      return 'No Score'
+  }
+}

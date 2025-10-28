@@ -1,11 +1,14 @@
-import { Card, Group, Stack, Title, Text, useMantineColorScheme } from '@mantine/core'
+import { Card, Group, Stack, Title, Text, useMantineColorScheme, Badge } from '@mantine/core'
 import { IIntervieweeSlot } from '../../../requests/responses/interview'
 import { ClockIcon } from '@phosphor-icons/react'
 import { useHover } from '@mantine/hooks'
+import AvatarUser from '../../../components/AvatarUser/AvatarUser'
+import { createScoreLabel, scoreColorTranslate } from '../../../utils/format'
 
 interface ISlotItemProps {
   slot: IIntervieweeSlot
   withTimeSpan?: boolean
+  withInterviewee?: boolean
   selected?: boolean
   onClick?: () => void
   disabled?: boolean
@@ -14,6 +17,7 @@ interface ISlotItemProps {
 const SlotItem = ({
   slot,
   withTimeSpan = false,
+  withInterviewee = false,
   selected = false,
   onClick,
   disabled = false,
@@ -25,7 +29,8 @@ const SlotItem = ({
     <Card
       withBorder
       radius='md'
-      p={'0.5rem'}
+      py={'0.5rem'}
+      px={'0.75rem'}
       onClick={disabled ? undefined : onClick}
       bg={
         selected
@@ -53,6 +58,31 @@ const SlotItem = ({
         >
           {`${slot.startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${slot.endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
         </Title>
+        {withInterviewee && (
+          <Group wrap='nowrap' align='center' justify='space-between' h={30}>
+            {slot.bookedBy ? (
+              <AvatarUser
+                user={slot.bookedBy.user}
+                textColor='dimmed'
+                textSize='sm'
+                fontWeight={500}
+              />
+            ) : (
+              <Text c={'dimmed'} size='sm' fw={500}>
+                No interview yet
+              </Text>
+            )}
+            {slot.bookedBy ? (
+              slot.bookedBy.score ? (
+                <Badge
+                  variant='light'
+                  color={scoreColorTranslate(slot.bookedBy.score, false)}
+                  size='sm'
+                >{`${createScoreLabel(slot.bookedBy.score)}`}</Badge>
+              ) : null
+            ) : null}
+          </Group>
+        )}
         {withTimeSpan && (
           <Group gap={'0.25rem'} align='center'>
             <ClockIcon

@@ -9,8 +9,20 @@ const IntervieweeAssesmentPage = () => {
   const [interviewee, setInterviewee] = useState<IInterviewee>({
     //TODO: replace with real data
     intervieweeId: 'u1',
-    firstName: 'Alice',
-    lastName: 'Smith',
+    user: {
+      userId: 'u1',
+      firstName: 'Alice',
+      lastName: 'Smith',
+      avatar: null,
+      universityId: '',
+      matriculationNumber: null,
+      email: null,
+      studyDegree: null,
+      studyProgram: null,
+      customData: null,
+      joinedAt: '',
+      groups: [],
+    },
     score: 4,
     lastInvited: new Date('2023-01-01'),
     interviewNote: '',
@@ -28,7 +40,7 @@ const IntervieweeAssesmentPage = () => {
   return (
     <Stack h={'100%'} gap={'1.5rem'}>
       <Stack gap={'0.5rem'}>
-        <Title>{`Interview - ${interviewee.firstName} ${interviewee.lastName}`}</Title>
+        <Title>{`Interview - ${interviewee.user.firstName} ${interviewee.user.lastName}`}</Title>
         {interviewee.application && (
           <Title order={4} c={'dimmed'}>
             {interviewee.application?.thesisTitle}

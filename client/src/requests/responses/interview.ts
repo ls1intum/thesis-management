@@ -38,8 +38,7 @@ export interface IIntervieweeSlot {
 
 export interface IIntervieweeLight {
   intervieweeId: string
-  firstName: string
-  lastName: string
+  user: ILightUser
   score: number | null
   lastInvited: Date | null
 }
