@@ -1,4 +1,4 @@
-import { Group, SegmentedControl, Stack, Title, Text } from '@mantine/core'
+import { Group, SegmentedControl, Stack, Title, Text, Divider, Badge } from '@mantine/core'
 import { IIntervieweeSlot, InterviewState } from '../../requests/responses/interview'
 import { DateHeaderItem } from './components/DateHeaderItem'
 import SlotItem from './components/SlotItem'
@@ -198,6 +198,7 @@ const InterviewTopicOverviewPage = () => {
   }
 
   const calendarHeader = () => {
+    //TODO: LOGIC DOES NOT WORK YET DUE TO MULTIPLE ROWS PER DATE
     const keys = Object.keys(interviewSlotItems)
     const itemsPerPage = getSlideDisplayAmount()
     const totalSlides = keys.length
@@ -214,6 +215,19 @@ const InterviewTopicOverviewPage = () => {
       : ''
   }
 
+  const dateBeforeIsDiffrentMonth = (date: string): boolean => {
+    const indexOfDate = Object.keys(interviewSlotItems).indexOf(date)
+    if (indexOfDate <= 0) return false
+
+    const previousDate = Object.keys(interviewSlotItems)[indexOfDate - 1]
+    const currentDateObj = new Date(date)
+    const previousDateObj = new Date(previousDate)
+    return (
+      currentDateObj.getMonth() !== previousDateObj.getMonth() ||
+      currentDateObj.getFullYear() !== previousDateObj.getFullYear()
+    )
+  }
+
   return (
     <Stack h={'100%'} gap={'2rem'}>
       <Stack gap={'0.5rem'}>
@@ -223,7 +237,7 @@ const InterviewTopicOverviewPage = () => {
         </Title>
       </Stack>
 
-      <Stack>
+      <Stack gap={0}>
         <Group>
           <Title order={3}>{calendarHeader()}</Title>
         </Group>
@@ -249,13 +263,33 @@ const InterviewTopicOverviewPage = () => {
                   <Carousel.Slide key={`${date}-${chunkIndex}`}>
                     <Stack gap={'0.5rem'}>
                       {chunkIndex === 0 ? (
-                        <DateHeaderItem
-                          date={date}
-                          h={50}
-                          disabled={dateRowDisabled(date, chunkIndex)}
-                        />
+                        <Group align={'end'} justify={'flex-start'} gap={'0.25rem'} h={70}>
+                          {dateBeforeIsDiffrentMonth(date) && (
+                            <Stack gap={0} w={50} ml={-29}>
+                              <Group justify='center' w={50}>
+                                <Badge h={20} mb={5} size='sm'>
+                                  {new Date(date).toLocaleString(undefined, { month: 'short' })}
+                                </Badge>
+                              </Group>
+                              <Group justify='center' w={50}>
+                                <Divider
+                                  orientation='vertical'
+                                  size='md'
+                                  h={40}
+                                  mb={5}
+                                  color='primary'
+                                />
+                              </Group>
+                            </Stack>
+                          )}
+                          <DateHeaderItem
+                            date={date}
+                            h={50}
+                            disabled={dateRowDisabled(date, chunkIndex)}
+                          />
+                        </Group>
                       ) : (
-                        <Stack h={50} />
+                        <Stack h={70} />
                       )}
                       {chunk.map((slot) => (
                         <SlotItem
