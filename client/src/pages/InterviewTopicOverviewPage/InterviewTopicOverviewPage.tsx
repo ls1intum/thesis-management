@@ -1,9 +1,10 @@
-import { Grid, Stack, Title } from '@mantine/core'
-import { IIntervieweeSlot } from '../../requests/responses/interview'
+import { Group, SegmentedControl, Stack, Title, Text } from '@mantine/core'
+import { IIntervieweeSlot, InterviewState } from '../../requests/responses/interview'
 import { DateHeaderItem } from './components/DateHeaderItem'
 import SlotItem from './components/SlotItem'
 import { Carousel } from '@mantine/carousel'
 import { useState } from 'react'
+import { useIsSmallerBreakpoint } from '../../hooks/theme'
 
 const InterviewTopicOverviewPage = () => {
   const interviewSlotItems: Record<string, IIntervieweeSlot[]> = {
@@ -170,8 +171,18 @@ const InterviewTopicOverviewPage = () => {
     return index < visibleSlidesStart || index >= visibleSlidesEnd
   }
 
+  const [state, setState] = useState<string>('ALL')
+
+  const getSlideDisplayAmount = () => {
+    const isMobile = useIsSmallerBreakpoint('sm')
+    const isSmallScreen = useIsSmallerBreakpoint('lg')
+    const isMediumScreen = useIsSmallerBreakpoint('xl')
+
+    return isMobile ? 1 : isSmallScreen ? 2 : isMediumScreen ? 3 : 4
+  }
+
   return (
-    <Stack h={'100%'} gap={'1.5rem'}>
+    <Stack h={'100%'} gap={'2rem'}>
       <Stack gap={'0.5rem'}>
         <Title>Interview Management</Title>
         <Title order={4} c={'dimmed'}>
@@ -180,13 +191,13 @@ const InterviewTopicOverviewPage = () => {
       </Stack>
 
       <Carousel
-        slideGap='sm'
+        slideGap={'0.5rem'}
         controlsOffset={'-100px'}
         controlSize={32}
         withControls
         withIndicators={false}
-        slideSize={'23%'}
-        emblaOptions={{ align: 'start', slidesToScroll: 4 }}
+        slideSize={`${(100 - 10) / getSlideDisplayAmount()}%`}
+        emblaOptions={{ align: 'start', slidesToScroll: getSlideDisplayAmount() }}
         onSlideChange={(index) => setCarouselSlide(index)}
       >
         {Object.entries(interviewSlotItems).map(([date, slots]) => {
@@ -200,7 +211,7 @@ const InterviewTopicOverviewPage = () => {
             <>
               {chunks.map((chunk, chunkIndex) => (
                 <Carousel.Slide key={`${date}-${chunkIndex}`}>
-                  <Stack gap={'0.25rem'}>
+                  <Stack gap={'0.5rem'}>
                     {chunkIndex === 0 ? (
                       <DateHeaderItem date={date} h={50} disabled={dateRowDisabled(4, date)} />
                     ) : (
@@ -216,6 +227,22 @@ const InterviewTopicOverviewPage = () => {
           )
         })}
       </Carousel>
+
+      <Stack>
+        <Title order={3}>Interviewees</Title>
+        <Group justify='space-between' align='center'>
+          <SegmentedControl
+            value={state}
+            onChange={(value) => setState(value)}
+            data={[
+              { value: 'ALL', label: 'All' },
+              ...Object.entries(InterviewState).map(([value, label]) => ({ value, label })),
+            ]}
+            radius={'md'}
+          />
+          <Group></Group>
+        </Group>
+      </Stack>
     </Stack>
   )
 }

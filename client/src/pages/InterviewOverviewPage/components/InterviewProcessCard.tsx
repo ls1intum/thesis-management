@@ -13,6 +13,7 @@ import {
 } from '@mantine/core'
 import { IInterviewProcess, InterviewState } from '../../../requests/responses/interview'
 import { useHover } from '@mantine/hooks'
+import { getInterviewStateColor } from '../../../utils/format'
 
 interface IInterviewProcessCardProps {
   interviewProcess: IInterviewProcess
@@ -23,21 +24,6 @@ const InterviewProcessCard = ({ interviewProcess, onClick }: IInterviewProcessCa
   const { hovered, ref } = useHover()
 
   const colorScheme = useMantineColorScheme()
-
-  function getDividerColor(state: InterviewState): string {
-    switch (state) {
-      case InterviewState.UNCONTACTED:
-        return 'primary.1'
-      case InterviewState.INVITED:
-        return 'primary.3'
-      case InterviewState.SCHEDULED:
-        return 'primary.5'
-      case InterviewState.COMPLETED:
-        return colorScheme.colorScheme === 'dark' ? 'primary.8' : 'primary.10'
-      default:
-        return 'gray'
-    }
-  }
 
   return (
     <Card
@@ -75,7 +61,7 @@ const InterviewProcessCard = ({ interviewProcess, onClick }: IInterviewProcessCa
                   <Divider
                     orientation='vertical'
                     size='lg'
-                    color={getDividerColor(state as InterviewState)}
+                    color={getInterviewStateColor(state as InterviewState)}
                   />
                   <Stack gap={0}>
                     <Text size='lg' fw={700}>
@@ -99,7 +85,7 @@ const InterviewProcessCard = ({ interviewProcess, onClick }: IInterviewProcessCa
               return (
                 <Progress.Section
                   value={(number / interviewProcess.totalInterviewees) * 100}
-                  color={getDividerColor(state as InterviewState)}
+                  color={getInterviewStateColor(state as InterviewState)}
                 ></Progress.Section>
               )
             })}

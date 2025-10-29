@@ -59,7 +59,7 @@ const SlotItem = ({
           {`${slot.startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${slot.endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
         </Title>
         {withInterviewee && (
-          <Group wrap='nowrap' align='center' justify='space-between' h={30}>
+          <Group align='center' justify='space-between' mih={30}>
             {slot.bookedBy ? (
               <AvatarUser
                 user={slot.bookedBy.user}

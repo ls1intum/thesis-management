@@ -2,6 +2,8 @@ import { ILightUser } from '../requests/responses/user'
 import { IThesis, ThesisState } from '../requests/responses/thesis'
 import { ApplicationState, IApplication } from '../requests/responses/application'
 import { GLOBAL_CONFIG } from '../config/global'
+import { InterviewState } from '../requests/responses/interview'
+import { useMantineColorScheme } from '@mantine/core'
 
 interface IFormatDateOptions {
   withTime: boolean
@@ -222,5 +224,39 @@ export function createScoreLabel(score: number): string {
       return 'Excelent'
     default:
       return 'No Score'
+  }
+}
+
+export function createInterviewStageLabel(score: number): string {
+  switch (score) {
+    case 1:
+      return 'Uncontacted'
+    case 2:
+      return 'Invited'
+    case 3:
+      return 'Scheduled'
+    case 4:
+      return 'Great Candidate'
+    case 5:
+      return 'Completed'
+    default:
+      return 'All'
+  }
+}
+
+export function getInterviewStateColor(state: InterviewState): string {
+  const colorScheme = useMantineColorScheme()
+
+  switch (state) {
+    case InterviewState.UNCONTACTED:
+      return 'primary.1'
+    case InterviewState.INVITED:
+      return 'primary.3'
+    case InterviewState.SCHEDULED:
+      return 'primary.5'
+    case InterviewState.COMPLETED:
+      return colorScheme.colorScheme === 'dark' ? 'primary.8' : 'primary.10'
+    default:
+      return 'gray'
   }
 }
