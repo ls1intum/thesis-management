@@ -3,7 +3,7 @@ import { IIntervieweeSlot, InterviewState } from '../../requests/responses/inter
 import { DateHeaderItem } from './components/DateHeaderItem'
 import SlotItem from './components/SlotItem'
 import { Carousel } from '@mantine/carousel'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useIsSmallerBreakpoint } from '../../hooks/theme'
 
 const InterviewTopicOverviewPage = () => {
@@ -67,11 +67,11 @@ const InterviewTopicOverviewPage = () => {
         },
       },
     ],
-    '2025-11-12': [
+    '2025-12-12': [
       {
         slotId: '4',
-        startDate: new Date('2025-11-12T10:00:00Z'),
-        endDate: new Date('2025-11-12T10:30:00Z'),
+        startDate: new Date('2025-12-12T10:00:00Z'),
+        endDate: new Date('2025-12-12T10:30:00Z'),
         bookedBy: {
           intervieweeId: 'u3',
           user: {
@@ -94,8 +94,8 @@ const InterviewTopicOverviewPage = () => {
       },
       {
         slotId: '5',
-        startDate: new Date('2025-11-12T11:00:00Z'),
-        endDate: new Date('2025-11-12T11:30:00Z'),
+        startDate: new Date('2025-12-12T11:00:00Z'),
+        endDate: new Date('2025-12-12T11:30:00Z'),
         bookedBy: {
           intervieweeId: 'u4',
           user: {
@@ -118,32 +118,32 @@ const InterviewTopicOverviewPage = () => {
       },
       {
         slotId: '6',
-        startDate: new Date('2025-11-12T12:00:00Z'),
-        endDate: new Date('2025-11-12T12:30:00Z'),
+        startDate: new Date('2025-12-12T12:00:00Z'),
+        endDate: new Date('2025-12-12T12:30:00Z'),
         bookedBy: null,
       },
       {
         slotId: '7',
-        startDate: new Date('2025-11-12T13:00:00Z'),
-        endDate: new Date('2025-11-12T13:30:00Z'),
+        startDate: new Date('2025-12-12T13:00:00Z'),
+        endDate: new Date('2025-12-12T13:30:00Z'),
         bookedBy: null,
       },
       {
         slotId: '8',
-        startDate: new Date('2025-11-12T14:00:00Z'),
-        endDate: new Date('2025-11-12T14:30:00Z'),
+        startDate: new Date('2025-12-12T14:00:00Z'),
+        endDate: new Date('2025-12-12T14:30:00Z'),
         bookedBy: null,
       },
       {
         slotId: '9',
-        startDate: new Date('2025-11-12T15:00:00Z'),
-        endDate: new Date('2025-11-12T15:30:00Z'),
+        startDate: new Date('2025-12-12T15:00:00Z'),
+        endDate: new Date('2025-12-12T15:30:00Z'),
         bookedBy: null,
       },
       {
         slotId: '10',
-        startDate: new Date('2025-11-12T16:00:00Z'),
-        endDate: new Date('2025-11-12T16:30:00Z'),
+        startDate: new Date('2025-12-12T16:00:00Z'),
+        endDate: new Date('2025-12-12T16:30:00Z'),
         bookedBy: null,
       },
     ],
@@ -151,11 +151,27 @@ const InterviewTopicOverviewPage = () => {
 
   const [carouselSlide, setCarouselSlide] = useState(0)
 
-  const dateRowDisabled = (itemsPerPage: number, rowKey: string) => {
-    const keys = Object.keys(interviewSlotItems)
-    const totalSlides = keys.length
-    const index = keys.indexOf(rowKey)
+  const rowAmount = 3
+
+  const [firstSlideIndexForDate, setFirstSlideIndexForDate] = useState<Record<string, number>>({})
+  const [totalSlides, setTotalSlides] = useState(0)
+  useEffect(() => {
+    let slideIndex = 0
+    const firstSlideIndexForDateTemp: Record<string, number> = {}
+    Object.entries(interviewSlotItems).forEach(([date, slots]) => {
+      const chunks = Math.ceil(slots.length / rowAmount)
+      firstSlideIndexForDateTemp[date] = slideIndex
+      slideIndex += chunks
+    })
+    setFirstSlideIndexForDate(firstSlideIndexForDateTemp)
+    setTotalSlides(slideIndex)
+  }, [])
+
+  const dateRowDisabled = (rowKey: string, chunkIndex: number) => {
+    const index = firstSlideIndexForDate[rowKey] + chunkIndex
     if (index === -1) return true
+
+    const itemsPerPage = getSlideDisplayAmount()
 
     const lastSlideIndex = Math.max(0, Math.ceil(totalSlides / itemsPerPage) - 1)
 
@@ -181,52 +197,82 @@ const InterviewTopicOverviewPage = () => {
     return isMobile ? 1 : isSmallScreen ? 2 : isMediumScreen ? 3 : 4
   }
 
+  const calendarHeader = () => {
+    const keys = Object.keys(interviewSlotItems)
+    const itemsPerPage = getSlideDisplayAmount()
+    const totalSlides = keys.length
+    const lastSlideIndex = Math.max(0, Math.ceil(totalSlides / itemsPerPage) - 1)
+
+    let visibleStart = carouselSlide * itemsPerPage
+    if (carouselSlide >= lastSlideIndex) {
+      visibleStart = Math.max(0, totalSlides - itemsPerPage)
+    }
+
+    const firstKey = keys[visibleStart]
+    return firstKey
+      ? new Date(firstKey).toLocaleString(undefined, { month: 'long', year: 'numeric' })
+      : ''
+  }
+
   return (
     <Stack h={'100%'} gap={'2rem'}>
       <Stack gap={'0.5rem'}>
         <Title>Interview Management</Title>
-        <Title order={4} c={'dimmed'}>
+        <Title order={5} c={'dimmed'}>
           Integrating Gender Sensitivity and Adaptive Learning in Education Games
         </Title>
       </Stack>
 
-      <Carousel
-        slideGap={'0.5rem'}
-        controlsOffset={'-100px'}
-        controlSize={32}
-        withControls
-        withIndicators={false}
-        slideSize={`${(100 - 10) / getSlideDisplayAmount()}%`}
-        emblaOptions={{ align: 'start', slidesToScroll: getSlideDisplayAmount() }}
-        onSlideChange={(index) => setCarouselSlide(index)}
-      >
-        {Object.entries(interviewSlotItems).map(([date, slots]) => {
-          const rowAmount = 3
-          const chunks: IIntervieweeSlot[][] = []
-          for (let i = 0; i < slots.length; i += rowAmount) {
-            chunks.push(slots.slice(i, i + rowAmount))
-          }
+      <Stack>
+        <Group>
+          <Title order={3}>{calendarHeader()}</Title>
+        </Group>
+        <Carousel
+          slideGap={'0.5rem'}
+          controlsOffset={'-100px'}
+          controlSize={32}
+          withControls
+          withIndicators={false}
+          slideSize={`${(100 - 10) / getSlideDisplayAmount()}%`}
+          emblaOptions={{ align: 'start', slidesToScroll: getSlideDisplayAmount() }}
+          onSlideChange={(index) => setCarouselSlide(index)}
+        >
+          {Object.entries(interviewSlotItems).map(([date, slots]) => {
+            const chunks: IIntervieweeSlot[][] = []
+            for (let i = 0; i < slots.length; i += rowAmount) {
+              chunks.push(slots.slice(i, i + rowAmount))
+            }
 
-          return (
-            <>
-              {chunks.map((chunk, chunkIndex) => (
-                <Carousel.Slide key={`${date}-${chunkIndex}`}>
-                  <Stack gap={'0.5rem'}>
-                    {chunkIndex === 0 ? (
-                      <DateHeaderItem date={date} h={50} disabled={dateRowDisabled(4, date)} />
-                    ) : (
-                      <Stack h={50} />
-                    )}
-                    {chunk.map((slot) => (
-                      <SlotItem slot={slot} key={slot.slotId} withInterviewee />
-                    ))}
-                  </Stack>
-                </Carousel.Slide>
-              ))}
-            </>
-          )
-        })}
-      </Carousel>
+            return (
+              <>
+                {chunks.map((chunk, chunkIndex) => (
+                  <Carousel.Slide key={`${date}-${chunkIndex}`}>
+                    <Stack gap={'0.5rem'}>
+                      {chunkIndex === 0 ? (
+                        <DateHeaderItem
+                          date={date}
+                          h={50}
+                          disabled={dateRowDisabled(date, chunkIndex)}
+                        />
+                      ) : (
+                        <Stack h={50} />
+                      )}
+                      {chunk.map((slot) => (
+                        <SlotItem
+                          slot={slot}
+                          key={slot.slotId}
+                          withInterviewee
+                          disabled={dateRowDisabled(date, chunkIndex)}
+                        />
+                      ))}
+                    </Stack>
+                  </Carousel.Slide>
+                ))}
+              </>
+            )
+          })}
+        </Carousel>
+      </Stack>
 
       <Stack>
         <Title order={3}>Interviewees</Title>
@@ -242,6 +288,7 @@ const InterviewTopicOverviewPage = () => {
           />
           <Group></Group>
         </Group>
+        <Stack></Stack>
       </Stack>
     </Stack>
   )
