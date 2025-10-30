@@ -12,6 +12,7 @@ interface ISlotItemProps {
   selected?: boolean
   onClick?: () => void
   disabled?: boolean
+  hoverEffect?: boolean
 }
 
 const SlotItem = ({
@@ -21,9 +22,12 @@ const SlotItem = ({
   selected = false,
   onClick,
   disabled = false,
+  hoverEffect = true,
 }: ISlotItemProps) => {
   const { ref, hovered } = useHover()
   const { colorScheme } = useMantineColorScheme()
+
+  const showHover = hoverEffect ? hovered : false
 
   return (
     <Card
@@ -35,7 +39,7 @@ const SlotItem = ({
       bg={
         selected
           ? 'primary'
-          : hovered && !disabled
+          : showHover && !disabled
             ? colorScheme === 'dark'
               ? 'primary.2'
               : 'primary.0'
@@ -51,7 +55,7 @@ const SlotItem = ({
           c={
             selected
               ? 'white'
-              : hovered && colorScheme === 'dark' && !disabled
+              : showHover && colorScheme === 'dark' && !disabled
                 ? 'dark.9'
                 : undefined
           }
@@ -89,7 +93,7 @@ const SlotItem = ({
               size={14}
               color={
                 !selected
-                  ? hovered && colorScheme === 'dark' && !disabled
+                  ? showHover && colorScheme === 'dark' && !disabled
                     ? 'dark.9'
                     : 'gray'
                   : 'white'
@@ -99,7 +103,7 @@ const SlotItem = ({
               size='xs'
               c={
                 !selected
-                  ? hovered && colorScheme === 'dark' && !disabled
+                  ? showHover && colorScheme === 'dark' && !disabled
                     ? 'dark.9'
                     : 'dimmed'
                   : 'white'

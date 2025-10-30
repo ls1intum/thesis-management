@@ -237,7 +237,7 @@ const InterviewTopicOverviewPage = () => {
         </Title>
       </Stack>
 
-      <Stack gap={0}>
+      <Stack gap={'0.25rem'}>
         <Group>
           <Title order={3}>{calendarHeader()}</Title>
         </Group>
@@ -247,9 +247,10 @@ const InterviewTopicOverviewPage = () => {
           controlSize={32}
           withControls
           withIndicators={false}
-          slideSize={`${(100 - 10) / getSlideDisplayAmount()}%`}
-          emblaOptions={{ align: 'start', slidesToScroll: getSlideDisplayAmount() }}
+          slideSize={`${(100 - 14) / getSlideDisplayAmount()}%`}
+          emblaOptions={{ align: 'center', slidesToScroll: getSlideDisplayAmount() }}
           onSlideChange={(index) => setCarouselSlide(index)}
+          px={20}
         >
           {Object.entries(interviewSlotItems).map(([date, slots]) => {
             const chunks: IIntervieweeSlot[][] = []
@@ -297,6 +298,7 @@ const InterviewTopicOverviewPage = () => {
                           key={slot.slotId}
                           withInterviewee
                           disabled={dateRowDisabled(date, chunkIndex)}
+                          hoverEffect={false}
                         />
                       ))}
                     </Stack>
