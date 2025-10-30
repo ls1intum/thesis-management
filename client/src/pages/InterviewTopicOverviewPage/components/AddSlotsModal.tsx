@@ -16,6 +16,7 @@ import { Calendar } from '@mantine/dates'
 import { useState } from 'react'
 import dayjs from 'dayjs'
 import { CalendarBlankIcon } from '@phosphor-icons/react'
+import CollapsibleDateCard from './CollapsibleDateCard'
 
 interface IAddSlotsModalProps {
   slotModalOpen: boolean
@@ -29,10 +30,14 @@ const AddSlotsModal = ({ slotModalOpen, setSlotModalOpen }: IAddSlotsModalProps)
     const isSelected = selected.some((s) => dayjs(s).isSame(date, 'day'))
     if (isSelected) {
       setSelected((current) => current.filter((d) => !dayjs(d).isSame(date, 'day')))
+      setOpenDates((current) => current.filter((d) => d !== date.toDateString()))
     } else {
       setSelected((current) => [...current, date])
+      setOpenDates((current) => [...current, date.toDateString()])
     }
   }
+
+  const [openDates, setOpenDates] = useState<string[]>([])
 
   return (
     <Modal
@@ -111,21 +116,17 @@ const AddSlotsModal = ({ slotModalOpen, setSlotModalOpen }: IAddSlotsModalProps)
               <ScrollArea h={'100%'} w={'100%'} type={'hover'} offsetScrollbars>
                 <Stack mih={'350px'} justify='space-between'>
                   {/* TODO: FIGURE OUT HOW TO USE 100% of the height */}
-                  <Accordion chevronPosition='left' variant={'separated'}>
+                  <Accordion
+                    chevronPosition='left'
+                    variant={'unstyled'}
+                    multiple
+                    value={openDates}
+                    onChange={setOpenDates}
+                  >
                     {selected
                       .sort((a, b) => a.getTime() - b.getTime())
                       .map((date) => (
-                        <Accordion.Item key={date.toDateString()} value={date.toDateString()}>
-                          <Accordion.Control>
-                            <Text>{dayjs(date).format('DD.MM.YYYY')}</Text>
-                          </Accordion.Control>
-                          <Accordion.Panel>
-                            <Stack>
-                              <Text>Interview Length:</Text>
-                              <Text>Interview Break:</Text>
-                            </Stack>
-                          </Accordion.Panel>
-                        </Accordion.Item>
+                        <CollapsibleDateCard key={date.toDateString()} date={date} />
                       ))}
                   </Accordion>
                   <Button variant='outline' size='xs'>
