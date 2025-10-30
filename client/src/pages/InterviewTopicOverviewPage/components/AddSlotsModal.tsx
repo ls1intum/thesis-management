@@ -17,6 +17,7 @@ import { useState } from 'react'
 import dayjs from 'dayjs'
 import { CalendarBlankIcon } from '@phosphor-icons/react'
 import CollapsibleDateCard from './CollapsibleDateCard'
+import { useIsSmallerBreakpoint } from '../../../hooks/theme'
 
 interface IAddSlotsModalProps {
   slotModalOpen: boolean
@@ -39,6 +40,8 @@ const AddSlotsModal = ({ slotModalOpen, setSlotModalOpen }: IAddSlotsModalProps)
 
   const [openDates, setOpenDates] = useState<string[]>([])
 
+  const isSmaller = useIsSmallerBreakpoint('sm')
+
   return (
     <Modal
       centered
@@ -51,7 +54,7 @@ const AddSlotsModal = ({ slotModalOpen, setSlotModalOpen }: IAddSlotsModalProps)
       title={<Title order={3}>Add Interview Slot</Title>}
     >
       <Stack gap={'2.5rem'} h={'100%'}>
-        <Group justify='flex-start' align='center' gap={'2rem'}>
+        <Group justify='flex-start' align='center' gap={isSmaller ? '0.5rem' : '2rem'}>
           <Stack gap={'0.25rem'}>
             <Title order={6} c={'dimmed'}>
               Interview Length
@@ -82,21 +85,23 @@ const AddSlotsModal = ({ slotModalOpen, setSlotModalOpen }: IAddSlotsModalProps)
           gap={{ base: '1rem', md: '2rem' }}
           style={{ overflow: 'auto' }}
         >
-          <Stack w={{ base: '100%', sm: 'fit-content' }} h={'100%'} align='center'>
+          <Stack w={{ base: '100%', sm: 'fit-content' }} h={'100%'}>
             <Title order={5}>Select Dates</Title>
-            <Calendar
-              minDate={new Date()}
-              getDayProps={(date) => {
-                const isPast = dayjs(date).isBefore(dayjs(), 'day')
-                return {
-                  disabled: isPast,
-                  selected: selected.some((s) => dayjs(s).isSame(date, 'day')),
-                  onClick: isPast ? undefined : () => handleSelect(new Date(date)),
-                }
-              }}
-              highlightToday
-              size={'md'}
-            />
+            <Center w={'100%'}>
+              <Calendar
+                minDate={new Date()}
+                getDayProps={(date) => {
+                  const isPast = dayjs(date).isBefore(dayjs(), 'day')
+                  return {
+                    disabled: isPast,
+                    selected: selected.some((s) => dayjs(s).isSame(date, 'day')),
+                    onClick: isPast ? undefined : () => handleSelect(new Date(date)),
+                  }
+                }}
+                highlightToday
+                size={'md'}
+              />
+            </Center>
           </Stack>
           <Divider orientation='vertical' />
           <Stack h={'100%'} flex={1}>
