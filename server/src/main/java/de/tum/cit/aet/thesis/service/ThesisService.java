@@ -468,7 +468,9 @@ public class ThesisService {
     }
 
     public Resource getThesisFile(ThesisFile file) {
-        currentUserProvider().assertCanAccessResearchGroup(file.getResearchGroup());
+        if (!file.getThesis().hasReadAccess(null)) {
+            currentUserProvider().assertCanAccessResearchGroup(file.getResearchGroup());
+        }
         return uploadService.load(file.getFilename());
     }
 
@@ -606,7 +608,11 @@ public class ThesisService {
     public Thesis findById(UUID thesisId) {
         Thesis thesis = thesisRepository.findById(thesisId)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Thesis with id %s not found.", thesisId)));
-        currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+
+        if (!thesis.hasReadAccess(null)) {
+            currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+        }
+
         return thesis;
     }
 
