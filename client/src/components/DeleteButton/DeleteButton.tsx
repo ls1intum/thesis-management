@@ -1,15 +1,22 @@
 import { ActionIcon } from '@mantine/core'
-import { Trash } from '@phosphor-icons/react'
+import { TrashIcon } from '@phosphor-icons/react'
 
 type IDeleteButtonProps = {
   onClick: () => void
   disabled?: boolean
+  iconSize?: number
+  buttonSize?: number
 }
 
-const DeleteButton = ({ onClick, disabled = false }: IDeleteButtonProps) => {
+const DeleteButton = ({
+  onClick,
+  disabled = false,
+  iconSize = 16,
+  buttonSize,
+}: IDeleteButtonProps) => {
   return (
-    <ActionIcon color='red' variant='light' onClick={onClick} disabled={disabled}>
-      <Trash size={16} />
+    <ActionIcon color='red' variant='light' onClick={onClick} disabled={disabled} size={buttonSize}>
+      <TrashIcon size={iconSize} />
     </ActionIcon>
   )
 }

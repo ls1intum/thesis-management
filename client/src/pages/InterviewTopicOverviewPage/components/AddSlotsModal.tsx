@@ -42,6 +42,8 @@ const AddSlotsModal = ({ slotModalOpen, setSlotModalOpen }: IAddSlotsModalProps)
 
   const isSmaller = useIsSmallerBreakpoint('sm')
 
+  const [duration, setDuration] = useState<number>(30) // in minutes
+
   return (
     <Modal
       centered
@@ -60,8 +62,15 @@ const AddSlotsModal = ({ slotModalOpen, setSlotModalOpen }: IAddSlotsModalProps)
               Interview Length
             </Title>
             <SegmentedControl
-              data={['15min', '30min', '45min', '60min', '90min']}
-              onChange={() => {}}
+              data={['30min', '45min', '60min', '90min', 'Custome']}
+              onChange={(durationString) => {
+                if (durationString === 'Custome') {
+                  return
+                }
+                const durationValue = parseInt(durationString.replace('min', ''))
+                setDuration(durationValue)
+              }}
+              defaultValue={[30, 45, 60, 90].includes(duration) ? `${duration}min` : 'Custome'}
               color='primary'
             />
           </Stack>
@@ -70,7 +79,7 @@ const AddSlotsModal = ({ slotModalOpen, setSlotModalOpen }: IAddSlotsModalProps)
               Interview Breaks
             </Title>
             <SegmentedControl
-              data={['0min', '5min', '10min', '15min', '30min']}
+              data={['0min', '5min', '10min', '15min', '30min', 'Custome']}
               onChange={() => {}}
               color='primary'
             />
@@ -131,7 +140,11 @@ const AddSlotsModal = ({ slotModalOpen, setSlotModalOpen }: IAddSlotsModalProps)
                     {selected
                       .sort((a, b) => a.getTime() - b.getTime())
                       .map((date) => (
-                        <CollapsibleDateCard key={date.toDateString()} date={date} />
+                        <CollapsibleDateCard
+                          key={date.toDateString()}
+                          date={date}
+                          duration={duration}
+                        />
                       ))}
                   </Accordion>
                   <Button variant='outline' size='xs'>
