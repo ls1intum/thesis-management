@@ -1,10 +1,13 @@
-import { Group, SegmentedControl, Stack, Title, Text, Divider, Badge } from '@mantine/core'
+import { Group, SegmentedControl, Stack, Title, Divider, Badge, Button } from '@mantine/core'
 import { IIntervieweeSlot, InterviewState } from '../../requests/responses/interview'
 import { DateHeaderItem } from './components/DateHeaderItem'
 import SlotItem from './components/SlotItem'
 import { Carousel } from '@mantine/carousel'
 import { useEffect, useState } from 'react'
 import { useIsSmallerBreakpoint } from '../../hooks/theme'
+import { PlusIcon } from '@phosphor-icons/react'
+import { CalendarDotsIcon } from '@phosphor-icons/react/dist/ssr'
+import AddSlotsModal from './components/AddSlotsModal'
 
 const InterviewTopicOverviewPage = () => {
   const interviewSlotItems: Record<string, IIntervieweeSlot[]> = {
@@ -189,6 +192,10 @@ const InterviewTopicOverviewPage = () => {
 
   const [state, setState] = useState<string>('ALL')
 
+  const isSmaller = useIsSmallerBreakpoint('md')
+
+  const [slotModalOpen, setSlotModalOpen] = useState(false)
+
   const getSlideDisplayAmount = () => {
     const isMobile = useIsSmallerBreakpoint('sm')
     const isSmallScreen = useIsSmallerBreakpoint('lg')
@@ -238,8 +245,20 @@ const InterviewTopicOverviewPage = () => {
       </Stack>
 
       <Stack gap={'0.25rem'}>
-        <Group>
+        <Group justify='space-between' align='center' gap={'0.5rem'}>
           <Title order={3}>{calendarHeader()}</Title>
+          <Group gap={'0.5rem'}>
+            <Button variant='outline' size='xs' leftSection={<CalendarDotsIcon size={16} />}>
+              {isSmaller ? 'Subscribe' : 'Subscribe to Calendar'}
+            </Button>
+            <Button
+              size='xs'
+              leftSection={<PlusIcon size={16} />}
+              onClick={() => setSlotModalOpen(true)}
+            >
+              {isSmaller ? 'Add' : 'Add Slot'}
+            </Button>
+          </Group>
         </Group>
         <Carousel
           slideGap={'0.5rem'}
@@ -311,7 +330,7 @@ const InterviewTopicOverviewPage = () => {
       </Stack>
 
       <Stack>
-        <Title order={3}>Interviewees</Title>
+        <Title order={2}>Interviewees</Title>
         <Group justify='space-between' align='center'>
           <SegmentedControl
             value={state}
@@ -326,6 +345,8 @@ const InterviewTopicOverviewPage = () => {
         </Group>
         <Stack></Stack>
       </Stack>
+
+      <AddSlotsModal slotModalOpen={slotModalOpen} setSlotModalOpen={setSlotModalOpen} />
     </Stack>
   )
 }

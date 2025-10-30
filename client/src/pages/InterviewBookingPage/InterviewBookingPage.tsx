@@ -187,6 +187,7 @@ const InterviewBookingPage = () => {
               slideSize={'23%'}
               emblaOptions={{ align: 'start', slidesToScroll: 4 }}
               onSlideChange={(index) => setCarouselSlide(index)}
+              px={20}
             >
               {Object.entries(interviewSlotItems).map(([date, slots]) => (
                 <Carousel.Slide key={date}>
