@@ -1,11 +1,27 @@
-import { Box, Center, Flex, Pagination, SimpleGrid, Stack, Text, ThemeIcon } from '@mantine/core'
+import {
+  Accordion,
+  Box,
+  Button,
+  Card,
+  Center,
+  Flex,
+  Loader,
+  Pagination,
+  SimpleGrid,
+  Stack,
+  Text,
+  ThemeIcon,
+  Title,
+} from '@mantine/core'
 import TopicCard from './TopicCard/TopicCard'
 import { useTopicsContext } from '../../../../providers/TopicsProvider/hooks'
-import { Database, Spinner } from '@phosphor-icons/react'
+import { Database } from '@phosphor-icons/react'
 import { Dispatch, useEffect, useState } from 'react'
 import { ITopic } from '../../../../requests/responses/topic'
 import { IPublishedThesis } from '../../../../requests/responses/thesis'
 import { PaginationResponse } from '../../../../requests/responses/pagination'
+import CollapsibleTopicElement from '../../../ReplaceApplicationPage/components/SelectTopicStep/components/CollapsibleTopicElement'
+import { GLOBAL_CONFIG } from '../../../../config/global'
 
 interface ITopicCardGridProps {
   topics: PaginationResponse<ITopic> | PaginationResponse<IPublishedThesis>
@@ -18,9 +34,18 @@ interface ITopicCardGridProps {
 interface ITopicCardGridContentProps {
   gridContent?: ITopicCardGridProps
   setOpenTopic?: Dispatch<React.SetStateAction<IPublishedThesis | undefined>>
+  collapsibleTopics?: boolean
+  showSuggestedTopic?: boolean
+  onApply?: (topic: ITopic | undefined) => unknown
 }
 
-const TopicCardGrid = ({ gridContent, setOpenTopic }: ITopicCardGridContentProps) => {
+const TopicCardGrid = ({
+  gridContent,
+  setOpenTopic,
+  collapsibleTopics = false,
+  showSuggestedTopic = false,
+  onApply,
+}: ITopicCardGridContentProps) => {
   const { topics, page, setPage, limit, isLoading } = gridContent ?? useTopicsContext()
 
   //Prevent flickering spinner for short loading times
@@ -36,7 +61,7 @@ const TopicCardGrid = ({ gridContent, setOpenTopic }: ITopicCardGridContentProps
 
   return (
     <Flex direction={'column'} gap='md' w='100%' h='100%'>
-      {topics?.content.length === 0 && (
+      {topics?.content.length === 0 && !showSuggestedTopic && (
         <Center h='100%'>
           <Stack align='center' gap='xs'>
             <ThemeIcon radius='xl' size={50} color='gray' variant='light'>
@@ -51,8 +76,45 @@ const TopicCardGrid = ({ gridContent, setOpenTopic }: ITopicCardGridContentProps
       <Box flex={1}>
         {showSpinner ? (
           <Center>
-            <Spinner size={32} weight='bold' />
+            <Loader size={32} />
           </Center>
+        ) : collapsibleTopics ? (
+          <Accordion
+            chevronPosition={'right'}
+            variant={'unstyled'}
+            radius='md'
+            chevronIconSize={20}
+          >
+            {topics?.content.map((topic) => (
+              <CollapsibleTopicElement
+                key={'topicId' in topic ? topic.topicId : topic.thesisId}
+                topic={topic}
+                onApply={'topicId' in topic ? onApply : undefined}
+              />
+            ))}
+
+            {GLOBAL_CONFIG.allow_suggested_topics && topics?.last && (
+              <Card withBorder shadow='xs' radius='md' my='sm' p={0} style={{ cursor: 'pointer' }}>
+                <Accordion.Item value='custom'>
+                  <Accordion.Control>
+                    <Stack gap={'0.5rem'}>
+                      <Title order={5}>Suggest your own topic</Title>
+                      <Title c={'dimmed'} order={6}>
+                        Can't find a suitable topic? Suggest your own thesis topic to a group.
+                      </Title>
+                    </Stack>
+                  </Accordion.Control>
+                  <Accordion.Panel>
+                    <Center>
+                      <Button onClick={() => (onApply ? onApply(undefined) : null)} fullWidth>
+                        Suggest topic
+                      </Button>
+                    </Center>
+                  </Accordion.Panel>
+                </Accordion.Item>
+              </Card>
+            )}
+          </Accordion>
         ) : (
           <SimpleGrid
             cols={{ base: 1, sm: 2, xl: 3 }}
