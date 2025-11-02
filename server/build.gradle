@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "de.tum.cit.aet.thesis"
-version = "4.4.2"
+version = "4.5.0"
 description = "Thesis Management"
 
 gitProperties {
