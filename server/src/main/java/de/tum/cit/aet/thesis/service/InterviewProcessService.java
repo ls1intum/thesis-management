@@ -2,6 +2,7 @@ package de.tum.cit.aet.thesis.service;
 
 import de.tum.cit.aet.thesis.entity.InterviewProcess;
 import de.tum.cit.aet.thesis.entity.Topic;
+import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.repository.InterviewProcessRepository;
 import de.tum.cit.aet.thesis.security.CurrentUserProvider;
 import org.springframework.beans.factory.ObjectProvider;
@@ -29,6 +30,11 @@ public class InterviewProcessService {
     }
 
     public InterviewProcess createInterviewProcess(UUID topicId) {
+
+        if (existsByTopicId(topicId)) {
+            throw new IllegalStateException("An interview process for the given topic already exists.");
+        }
+
         Topic topic = topicService.findById(topicId);
 
         if (topic == null) {
@@ -47,5 +53,13 @@ public class InterviewProcessService {
         interviewProcessRepository.save(interviewProcess);
 
         return interviewProcess;
+    }
+
+    public InterviewProcess findById(UUID interviewProcessId) {
+        return interviewProcessRepository.findById(interviewProcessId).orElseThrow(() -> new ResourceNotFoundException(String.format("InterviewProcess with id %s not found.", interviewProcessId)));
+    }
+
+    public boolean existsByTopicId(UUID topicId) {
+        return interviewProcessRepository.existsByTopicId(topicId);
     }
 }
