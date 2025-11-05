@@ -5,6 +5,8 @@ import InterviewProcessCard from './components/InterviewProcessCard'
 import { useIsSmallerBreakpoint } from '../../hooks/theme'
 import UpcomingInterviewCard from './components/UpcomingInterviewCard'
 import { useNavigate } from 'react-router'
+import CreateInterviewProcess from './components/CreateInterviewProcess'
+import { useState } from 'react'
 
 const InterviewOverviewPage = () => {
   // TODO: Replace with real data from API
@@ -154,6 +156,8 @@ const InterviewOverviewPage = () => {
 
   const navigate = useNavigate()
 
+  const [createModalOpened, setCreateModalOpened] = useState(false)
+
   return (
     <Stack h={'100%'} gap={'2rem'}>
       <Title>Interviews</Title>
@@ -169,7 +173,11 @@ const InterviewOverviewPage = () => {
         <Stack h={'100%'} flex={1} gap={'1.5rem'}>
           <Group w={'100%'} justify='space-between' align='center' gap={5}>
             <Title order={3}>Interview Topics</Title>
-            <Button size={isSmaller ? 'xs' : 'sm'} radius={isSmaller ? 'xl' : 'sm'}>
+            <Button
+              size={isSmaller ? 'xs' : 'sm'}
+              radius={isSmaller ? 'xl' : 'sm'}
+              onClick={() => setCreateModalOpened(true)}
+            >
               <Group wrap='nowrap'>
                 <PlusIcon size={'16px'} />
                 {isSmaller ? undefined : 'New Interview Process'}
@@ -212,6 +220,10 @@ const InterviewOverviewPage = () => {
           </ScrollArea>
         </Stack>
       </Flex>
+      <CreateInterviewProcess
+        opened={createModalOpened}
+        onClose={() => setCreateModalOpened(false)}
+      />
     </Stack>
   )
 }

@@ -55,7 +55,7 @@ const AddSlotsModal = ({ slotModalOpen, setSlotModalOpen }: IAddSlotsModalProps)
       }}
       title={<Title order={3}>Add Interview Slot</Title>}
     >
-      <Stack gap={'2.5rem'} h={'100%'}>
+      <Stack gap={'2.5rem'} h={'70vh'} mih={'fit-content'}>
         <Group justify='flex-start' align='center' gap={isSmaller ? '0.5rem' : '2rem'}>
           <Stack gap={'0.25rem'}>
             <Title order={6} c={'dimmed'}>

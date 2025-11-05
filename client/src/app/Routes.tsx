@@ -198,7 +198,7 @@ const AppRoutes = () => {
             element={
               <AuthenticatedArea
                 requiredGroups={['admin', 'advisor', 'supervisor']}
-                handleScrollInView={true}
+                handleScrollInView={!isSmaller}
               >
                 <InterviewOverviewPage />
               </AuthenticatedArea>
