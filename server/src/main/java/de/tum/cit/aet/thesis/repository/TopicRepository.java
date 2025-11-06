@@ -27,6 +27,20 @@ public interface TopicRepository extends JpaRepository<Topic, UUID> {
             Pageable page
     );
 
+    @Query("SELECT DISTINCT t FROM Topic t " +
+            "WHERE (:searchQuery IS NULL OR LOWER(t.title) LIKE :searchQuery) " +
+            "AND t.closedAt IS NULL " +
+            "AND ( :userId IS NULL " +
+            "      OR ( :excludeSupervised = true AND EXISTS (SELECT 1 FROM TopicRole r WHERE r.topic = t AND r.id.userId = :userId AND r.id.role = 'ADVISOR')) " +
+            "      OR ( :excludeSupervised = false AND EXISTS (SELECT 1 FROM TopicRole r WHERE r.topic = t AND r.id.userId = :userId AND (r.id.role = 'ADVISOR' OR r.id.role = 'SUPERVISOR')) )" +
+            "    )")
+    Page<Topic> findOpenTopicsForUserByRoles(
+            @Param("searchQuery") String searchQuery,
+            @Param("userId") UUID userId,
+            @Param("excludeSupervised") boolean excludeSupervised,
+            Pageable pageable
+    );
+
     @Query("""
                 SELECT COUNT(*)
                 FROM Topic t

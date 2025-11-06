@@ -7,6 +7,7 @@ import de.tum.cit.aet.thesis.service.InterviewProcessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,6 +21,7 @@ public class InterviewProcessController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
     public ResponseEntity<Page<InterviewProcessDto>> getMyInterviewProcesses(
             @RequestParam(required = false) String searchQuery,
             @RequestParam(required = false, defaultValue = "0") int page,
@@ -42,6 +44,7 @@ public class InterviewProcessController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
     public ResponseEntity<InterviewProcessDto> createInterviewProcess(@RequestBody CreateInterviewProcessPayload payload) {
         InterviewProcessDto interviewProcessDto = InterviewProcessDto.fromInterviewProcessEntity(
                 interviewProcessService.createInterviewProcess(payload.topicId())

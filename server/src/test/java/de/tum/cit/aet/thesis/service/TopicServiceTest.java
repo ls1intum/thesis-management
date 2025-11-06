@@ -7,10 +7,7 @@ import de.tum.cit.aet.thesis.entity.User;
 import de.tum.cit.aet.thesis.exception.request.ResourceInvalidParametersException;
 import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.mock.EntityMockFactory;
-import de.tum.cit.aet.thesis.repository.ResearchGroupRepository;
-import de.tum.cit.aet.thesis.repository.TopicRepository;
-import de.tum.cit.aet.thesis.repository.TopicRoleRepository;
-import de.tum.cit.aet.thesis.repository.UserRepository;
+import de.tum.cit.aet.thesis.repository.*;
 import de.tum.cit.aet.thesis.security.CurrentUserProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,6 +40,8 @@ class TopicServiceTest {
     private CurrentUserProvider currentUserProvider;
     @Mock
     private ResearchGroupRepository researchGroupRepository;
+    @Mock
+    private InterviewProcessRepository interviewProcessRepository;
 
     private TopicService topicService;
     private Topic testTopic;
@@ -56,7 +55,8 @@ class TopicServiceTest {
                 topicRoleRepository,
                 userRepository,
                 currentUserProviderProvider,
-                researchGroupRepository
+                researchGroupRepository,
+                interviewProcessRepository
         );
 
         testUser = EntityMockFactory.createUser("Test User");

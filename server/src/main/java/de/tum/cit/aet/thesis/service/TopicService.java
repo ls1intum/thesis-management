@@ -1,6 +1,8 @@
 package de.tum.cit.aet.thesis.service;
 
 import de.tum.cit.aet.thesis.constants.ThesisRoleName;
+import de.tum.cit.aet.thesis.dto.InterviewProcessDto;
+import de.tum.cit.aet.thesis.dto.TopicInterviewProcessDto;
 import de.tum.cit.aet.thesis.entity.ResearchGroup;
 import de.tum.cit.aet.thesis.entity.Topic;
 import de.tum.cit.aet.thesis.entity.TopicRole;
@@ -8,10 +10,7 @@ import de.tum.cit.aet.thesis.entity.User;
 import de.tum.cit.aet.thesis.entity.key.TopicRoleId;
 import de.tum.cit.aet.thesis.exception.request.ResourceInvalidParametersException;
 import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
-import de.tum.cit.aet.thesis.repository.ResearchGroupRepository;
-import de.tum.cit.aet.thesis.repository.TopicRepository;
-import de.tum.cit.aet.thesis.repository.TopicRoleRepository;
-import de.tum.cit.aet.thesis.repository.UserRepository;
+import de.tum.cit.aet.thesis.repository.*;
 import de.tum.cit.aet.thesis.security.CurrentUserProvider;
 import de.tum.cit.aet.thesis.utility.HibernateHelper;
 import org.springframework.beans.factory.ObjectProvider;
@@ -32,15 +31,17 @@ public class TopicService {
     private final UserRepository userRepository;
     private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
     private final ResearchGroupRepository researchGroupRepository;
+    private final InterviewProcessRepository interviewProcessRepository;
 
     @Autowired
     public TopicService(TopicRepository topicRepository, TopicRoleRepository topicRoleRepository, UserRepository userRepository,
-                        ObjectProvider<CurrentUserProvider> currentUserProviderProvider, ResearchGroupRepository researchGroupRepository) {
+                        ObjectProvider<CurrentUserProvider> currentUserProviderProvider, ResearchGroupRepository researchGroupRepository, InterviewProcessRepository interviewProcessRepository) {
         this.topicRepository = topicRepository;
         this.topicRoleRepository = topicRoleRepository;
         this.userRepository = userRepository;
        this.currentUserProviderProvider = currentUserProviderProvider;
         this.researchGroupRepository = researchGroupRepository;
+        this.interviewProcessRepository = interviewProcessRepository;
     }
 
     private CurrentUserProvider currentUserProvider() {
@@ -74,6 +75,31 @@ public class TopicService {
                 includeClosed,
                 searchQueryFilter,
                 PageRequest.of(page, limit, Sort.by(order))
+        );
+    }
+
+    public Page<TopicInterviewProcessDto> getPossibleInterviewTopics(
+            String searchQuery,
+            int page,
+            int limit,
+            boolean excludeSupervised
+    ) {
+        if (currentUserProvider().getResearchGroupOrThrow().getId() == null && !currentUserProvider().isAdmin()) {
+            throw new IllegalStateException("Current user is not assigned to any research group.");
+        }
+
+        UUID userId = currentUserProvider().isAdmin() ?
+                null : currentUserProvider().getUser().getId();
+
+        Sort.Order order = new Sort.Order(
+                Sort.Direction.DESC,
+                HibernateHelper.getColumnName(Topic.class, "title")
+        );
+
+        Page<Topic> topics = topicRepository.findOpenTopicsForUserByRoles(searchQuery, userId, excludeSupervised, PageRequest.of(page, limit, Sort.by(order)));
+
+        return topics.map(topic ->
+            TopicInterviewProcessDto.from(topic, interviewProcessRepository.existsByTopicId(topic.getId()))
         );
     }
 
