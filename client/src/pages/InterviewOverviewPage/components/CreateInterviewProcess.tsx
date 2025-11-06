@@ -136,8 +136,8 @@ const CreateInterviewProcess = ({ opened, onClose }: CreateInterviewProcessProps
           {selectedTopic ? (
             <Paper
               withBorder
-              bg={colorScheme.colorScheme === 'dark' ? 'primary.10' : 'primary.0'}
-              c={colorScheme.colorScheme === 'dark' ? 'primary.0' : 'primary'}
+              bg={colorScheme.colorScheme === 'dark' ? 'primary.3' : 'primary.0'}
+              c={colorScheme.colorScheme === 'dark' ? 'primary.10' : 'primary'}
               m={'xs'}
             >
               <Group p={'xs'} justify='space-between' align='center' wrap='nowrap'>
@@ -151,6 +151,7 @@ const CreateInterviewProcess = ({ opened, onClose }: CreateInterviewProcessProps
                   variant={'subtle'}
                   onClick={() => setSelectedTopic(null)}
                   style={{ flexShrink: 0 }}
+                  c={colorScheme.colorScheme === 'dark' ? 'primary.10' : 'primary'}
                 >
                   Change
                 </Button>
@@ -180,7 +181,7 @@ const CreateInterviewProcess = ({ opened, onClose }: CreateInterviewProcessProps
                 bg={colorScheme.colorScheme === 'dark' ? 'dark.8' : 'gray.0'}
               >
                 {filteredTopics.map((topic, index) => (
-                  <Stack key={topic.topicTitle} gap={0} pr={5}>
+                  <Stack key={topic.topicTitle} gap={0} pr={5} style={{ cursor: 'pointer' }}>
                     <Group
                       justify='space-between'
                       align='center'
