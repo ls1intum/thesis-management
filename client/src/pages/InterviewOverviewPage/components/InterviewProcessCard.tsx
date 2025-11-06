@@ -57,7 +57,7 @@ const InterviewProcessCard = ({ interviewProcess, onClick }: IInterviewProcessCa
           <SimpleGrid cols={{ base: 2, lg: 4 }} spacing='sm'>
             {Object.entries(interviewProcess.statesNumbers).map(([state, number]) => {
               return (
-                <Group key={state} gap={'0.5rem'}>
+                <Group key={`${interviewProcess.interviewProcessId}-${state}`} gap={'0.5rem'}>
                   <Divider
                     orientation='vertical'
                     size='lg'
@@ -84,6 +84,7 @@ const InterviewProcessCard = ({ interviewProcess, onClick }: IInterviewProcessCa
             {Object.entries(interviewProcess.statesNumbers).map(([state, number]) => {
               return (
                 <Progress.Section
+                  key={`${interviewProcess.interviewProcessId}-${state}-${number}`}
                   value={(number / interviewProcess.totalInterviewees) * 100}
                   color={getInterviewStateColor(state as InterviewState)}
                 ></Progress.Section>

@@ -188,7 +188,7 @@ const InterviewOverviewPage = () => {
             <Stack p={0} gap={'1rem'}>
               {interviewProcesses.map((process) => (
                 <InterviewProcessCard
-                  key={process.interviewProcessId}
+                  key={`card-${process.interviewProcessId}`}
                   interviewProcess={process}
                   onClick={() => {
                     navigate(`/interviews/${process.interviewProcessId}`)

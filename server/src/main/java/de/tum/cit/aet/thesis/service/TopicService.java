@@ -96,7 +96,7 @@ public class TopicService {
                 HibernateHelper.getColumnName(Topic.class, "title")
         );
 
-        Page<Topic> topics = topicRepository.findOpenTopicsForUserByRoles(searchQuery, userId, excludeSupervised, PageRequest.of(page, limit, Sort.by(order)));
+        Page<Topic> topics = topicRepository.findOpenTopicsForUserByRoles(searchQuery, userId, excludeSupervised, PageRequest.of(page, limit <= 0 ? Integer.MAX_VALUE : limit, Sort.by(order)));
 
         return topics.map(topic ->
             TopicInterviewProcessDto.from(topic, interviewProcessRepository.existsByTopicId(topic.getId()))

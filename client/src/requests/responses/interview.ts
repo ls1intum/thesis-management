@@ -47,3 +47,9 @@ export interface IInterviewee extends IIntervieweeLight {
   interviewNote: string | null
   application: IApplicationSummary | null
 }
+
+export interface ITopicInterviewProcess {
+  topicId: string
+  topicTitle: string
+  interviewProcessExists: boolean
+}
