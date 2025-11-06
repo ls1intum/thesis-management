@@ -291,15 +291,48 @@ const CreateInterviewProcess = ({ opened, onClose }: CreateInterviewProcessProps
                   </Center>
                 </Paper>
               ) : (
-                <Stack>
-                  <ScrollArea.Autosize
+                <Stack
+                  bg={colorScheme.colorScheme === 'dark' ? 'dark.8' : 'gray.0'}
+                  bdrs={'md'}
+                  gap={0}
+                >
+                  <Group
                     w={'100%'}
-                    type='hover'
-                    bdrs={'md'}
-                    bg={colorScheme.colorScheme === 'dark' ? 'dark.8' : 'gray.0'}
-                    mih={'50px'}
-                    mah={'30vh'}
+                    justify='space-between'
+                    px={'1rem'}
+                    py={'0.5rem'}
+                    bg={
+                      selectedApplicants.length > 0
+                        ? colorScheme.colorScheme === 'dark'
+                          ? 'primary.11'
+                          : 'primary.2'
+                        : colorScheme.colorScheme === 'dark'
+                          ? 'dark.9'
+                          : 'gray.2'
+                    }
                   >
+                    <Text fw={500}>{`${selectedApplicants.length} selected`}</Text>
+                    <Button
+                      variant={'subtle'}
+                      onClick={() => {
+                        if (selectedApplicants.length === possibleInterviewApplicants.length) {
+                          setSelectedApplicants([])
+                        } else {
+                          setSelectedApplicants(
+                            possibleInterviewApplicants.map((applicant) => applicant.applicationId),
+                          )
+                        }
+                      }}
+                      style={{ flexShrink: 0 }}
+                      c={colorScheme.colorScheme === 'dark' ? 'primary.3' : 'primary'}
+                      size='xs'
+                    >
+                      {selectedApplicants.length === possibleInterviewApplicants.length
+                        ? 'Deselect All'
+                        : 'Select All'}
+                    </Button>
+                  </Group>
+                  <ScrollArea.Autosize w={'100%'} type='hover' mih={'50px'} mah={'30vh'}>
                     {possibleInterviewApplicants.map((applicant, index) => (
                       <Stack
                         key={applicant.applicationId}

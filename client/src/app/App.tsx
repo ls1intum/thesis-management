@@ -30,6 +30,7 @@ const theme = createTheme({
       '#464388',
       '#3b3979',
       '#302F66',
+      '#17172aff',
     ],
   },
   primaryColor: 'primary',

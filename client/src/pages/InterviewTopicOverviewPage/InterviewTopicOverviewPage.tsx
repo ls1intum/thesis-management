@@ -1,11 +1,20 @@
-import { Group, SegmentedControl, Stack, Title, Divider, Badge, Button } from '@mantine/core'
+import {
+  Group,
+  SegmentedControl,
+  Stack,
+  Title,
+  Divider,
+  Badge,
+  Button,
+  TextInput,
+} from '@mantine/core'
 import { IIntervieweeSlot, InterviewState } from '../../requests/responses/interview'
 import { DateHeaderItem } from './components/DateHeaderItem'
 import SlotItem from './components/SlotItem'
 import { Carousel } from '@mantine/carousel'
 import { useEffect, useState } from 'react'
 import { useIsSmallerBreakpoint } from '../../hooks/theme'
-import { PlusIcon } from '@phosphor-icons/react'
+import { MagnifyingGlassIcon, PaperPlaneTiltIcon, PlusIcon } from '@phosphor-icons/react'
 import { CalendarDotsIcon } from '@phosphor-icons/react/dist/ssr'
 import AddSlotsModal from './components/AddSlotsModal'
 
@@ -151,6 +160,8 @@ const InterviewTopicOverviewPage = () => {
       },
     ],
   }
+
+  const [searchIntervieweeKey, setSearchIntervieweeKey] = useState('')
 
   const [carouselSlide, setCarouselSlide] = useState(0)
 
@@ -329,8 +340,19 @@ const InterviewTopicOverviewPage = () => {
         </Carousel>
       </Stack>
 
-      <Stack>
-        <Title order={2}>Interviewees</Title>
+      <Stack gap={'1.5rem'}>
+        <Group justify='space-between' align='center' gap={'0.5rem'}>
+          <Title order={2}>Interviewees</Title>
+          <Group gap={'0.5rem'}>
+            <Button variant='outline' size='xs' leftSection={<PaperPlaneTiltIcon size={16} />}>
+              {isSmaller ? 'Invites' : 'Send Invites'}
+            </Button>
+            <Button size='xs' leftSection={<PlusIcon size={16} />}>
+              {isSmaller ? 'Add' : 'Add Interviewee'}
+            </Button>
+          </Group>
+        </Group>
+
         <Group justify='space-between' align='center'>
           <SegmentedControl
             value={state}
@@ -341,7 +363,15 @@ const InterviewTopicOverviewPage = () => {
             ]}
             radius={'md'}
           />
-          <Group></Group>
+          <Group>
+            <TextInput
+              placeholder='Search name...'
+              leftSection={<MagnifyingGlassIcon size={16} />}
+              value={searchIntervieweeKey}
+              onChange={(x) => setSearchIntervieweeKey(x.target.value || '')}
+              w={300}
+            />
+          </Group>
         </Group>
         <Stack></Stack>
       </Stack>
