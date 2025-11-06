@@ -242,10 +242,18 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
             {form.values.comment !== application.comment ? 'Saving...' : 'Saved!'}
           </Text>
         </Stack>
-        <Button onClick={() => {}} variant='outline' color='primary' mb={'sm'}>
+        <Button
+          onClick={() => {}}
+          variant='outline'
+          color='primary'
+          mb={'sm'}
+          disabled={application.state !== ApplicationState.NOT_ASSESSED}
+        >
           Add to Interview Process
         </Button>
       </Stack>
+
+      {/*TODO: Also allow accept and reject, wehen they are interviewing*/}
       {application?.state === ApplicationState.NOT_ASSESSED && (
         <Stack gap='sm'>
           <Space />

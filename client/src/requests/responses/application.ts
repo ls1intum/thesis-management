@@ -6,6 +6,7 @@ export enum ApplicationState {
   NOT_ASSESSED = 'NOT_ASSESSED',
   ACCEPTED = 'ACCEPTED',
   REJECTED = 'REJECTED',
+  INTERVIEWING = 'INTERVIEWING',
 }
 
 export interface IApplication {

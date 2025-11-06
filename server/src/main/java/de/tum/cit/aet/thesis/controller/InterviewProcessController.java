@@ -47,7 +47,7 @@ public class InterviewProcessController {
     @PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
     public ResponseEntity<InterviewProcessDto> createInterviewProcess(@RequestBody CreateInterviewProcessPayload payload) {
         InterviewProcessDto interviewProcessDto = InterviewProcessDto.fromInterviewProcessEntity(
-                interviewProcessService.createInterviewProcess(payload.topicId())
+                interviewProcessService.createInterviewProcess(payload.topicId(), payload.intervieweeApplicationIds())
         );
         return ResponseEntity.ok(interviewProcessDto);
     }

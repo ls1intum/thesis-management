@@ -128,6 +128,7 @@ export function formatApplicationState(state: ApplicationState) {
     [ApplicationState.ACCEPTED]: 'Accepted',
     [ApplicationState.REJECTED]: 'Rejected',
     [ApplicationState.NOT_ASSESSED]: 'Not assessed',
+    [ApplicationState.INTERVIEWING]: 'Interviewing',
   }
 
   return stateMap[state]

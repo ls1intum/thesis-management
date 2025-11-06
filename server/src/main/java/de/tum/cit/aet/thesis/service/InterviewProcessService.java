@@ -1,8 +1,7 @@
 package de.tum.cit.aet.thesis.service;
 
-import de.tum.cit.aet.thesis.entity.EmailTemplate;
-import de.tum.cit.aet.thesis.entity.InterviewProcess;
-import de.tum.cit.aet.thesis.entity.Topic;
+import de.tum.cit.aet.thesis.constants.ApplicationState;
+import de.tum.cit.aet.thesis.entity.*;
 import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.repository.InterviewProcessRepository;
 import de.tum.cit.aet.thesis.security.CurrentUserProvider;
@@ -15,6 +14,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -22,12 +23,14 @@ public class InterviewProcessService {
     private final TopicService topicService;
     private final InterviewProcessRepository interviewProcessRepository;
     private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
+    private final ApplicationService applicationService;
 
     @Autowired
-    public InterviewProcessService(TopicService topicService, InterviewProcessRepository interviewProcessRepository, ObjectProvider<CurrentUserProvider> currentUserProviderProvider) {
+    public InterviewProcessService(TopicService topicService, InterviewProcessRepository interviewProcessRepository, ObjectProvider<CurrentUserProvider> currentUserProviderProvider, ApplicationService applicationService) {
         this.topicService = topicService;
         this.interviewProcessRepository = interviewProcessRepository;
         this.currentUserProviderProvider = currentUserProviderProvider;
+        this.applicationService = applicationService;
     }
 
     private CurrentUserProvider currentUserProvider() {
@@ -69,7 +72,7 @@ public class InterviewProcessService {
         );
     }
 
-    public InterviewProcess createInterviewProcess(UUID topicId) {
+    public InterviewProcess createInterviewProcess(UUID topicId, List<UUID> intervieweeApplicationIds) {
 
         if (existsByTopicId(topicId)) {
             throw new IllegalStateException("An interview process for the given topic already exists.");
@@ -89,6 +92,29 @@ public class InterviewProcessService {
 
         InterviewProcess interviewProcess = new InterviewProcess();
         interviewProcess.setTopic(topic);
+
+        if (intervieweeApplicationIds != null && !intervieweeApplicationIds.isEmpty()) {
+            List<Interviewee> interviewees = new ArrayList<>();
+            for (UUID intervieweeApplicationId : intervieweeApplicationIds) {
+                Application application = applicationService.findById(intervieweeApplicationId);
+                if (application == null) {
+                    throw new IllegalArgumentException("Application with ID " + intervieweeApplicationId + " does not exist.");
+                }
+                if(!application.getTopic().getId().equals(topicId)) {
+                    throw new IllegalArgumentException("Application with ID " + intervieweeApplicationId + " does not belong to the specified topic.");
+                }
+
+                application.setState(ApplicationState.INTERVIEWING);
+
+                Interviewee interviewee = new Interviewee();
+                interviewee.setApplication(application);
+                interviewee.setInterviewProcess(interviewProcess);
+
+                interviewees.add(interviewee);
+            }
+
+            interviewProcess.setInterviewees(interviewees);
+        }
 
         interviewProcessRepository.save(interviewProcess);
 
