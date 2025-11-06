@@ -1,4 +1,15 @@
-import { Button, Divider, Flex, Group, ScrollArea, Stack, Title } from '@mantine/core'
+import {
+  Button,
+  Center,
+  Divider,
+  Flex,
+  Group,
+  Loader,
+  ScrollArea,
+  Stack,
+  Title,
+  Text,
+} from '@mantine/core'
 import { PlusIcon } from '@phosphor-icons/react'
 import { IInterviewProcess, IUpcomingInterview } from '../../requests/responses/interview'
 import InterviewProcessCard from './components/InterviewProcessCard'
@@ -6,61 +17,14 @@ import { useIsSmallerBreakpoint } from '../../hooks/theme'
 import UpcomingInterviewCard from './components/UpcomingInterviewCard'
 import { useNavigate } from 'react-router'
 import CreateInterviewProcess from './components/CreateInterviewProcess'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { showSimpleError } from '../../utils/notification'
+import { getApiResponseErrorMessage } from '../../requests/handler'
+import { doRequest } from '../../requests/request'
+import { PaginationResponse } from '../../requests/responses/pagination'
 
 const InterviewOverviewPage = () => {
   // TODO: Replace with real data from API
-  const interviewProcesses: IInterviewProcess[] = [
-    {
-      interviewProcessId: '1',
-      topicTitle: 'Integrating Gender Sensitivity and Adaptive Learning in Education Games',
-      completed: false,
-      totalInterviewees: 17,
-      statesNumbers: {
-        Uncontacted: 3,
-        Invited: 4,
-        Scheduled: 1,
-        Completed: 9,
-      },
-    },
-    {
-      interviewProcessId: '2',
-      topicTitle: 'Sustainable Software Engineering for RAG based Knowledge Management',
-      completed: false,
-      totalInterviewees: 18,
-      statesNumbers: {
-        Uncontacted: 9,
-        Invited: 0,
-        Scheduled: 4,
-        Completed: 5,
-      },
-    },
-    {
-      interviewProcessId: '3',
-      topicTitle: 'Benchmarking LLMs in an Educational Setting',
-      completed: false,
-      totalInterviewees: 6,
-      statesNumbers: {
-        Uncontacted: 3,
-        Invited: 3,
-        Scheduled: 2,
-        Completed: 0,
-      },
-    },
-    {
-      interviewProcessId: '4',
-      topicTitle: 'LLM Based Feedback Suggestion',
-      completed: true,
-      totalInterviewees: 6,
-      statesNumbers: {
-        Uncontacted: 3,
-        Invited: 3,
-        Scheduled: 2,
-        Completed: 0,
-      },
-    },
-  ]
-
   const upcomingInterviews: IUpcomingInterview[] = [
     {
       intervieweeId: '1',
@@ -152,11 +116,55 @@ const InterviewOverviewPage = () => {
     },
   ]
 
+  const [interviewProcessesLoading, setInterviewProcessesLoading] = useState(false)
+  const [interviewProcesses, setInterviewProcesses] = useState<IInterviewProcess[]>([])
+
   const isSmaller = useIsSmallerBreakpoint('sm')
 
   const navigate = useNavigate()
 
   const [createModalOpened, setCreateModalOpened] = useState(false)
+
+  const fetchMyInterviewProcesses = async () => {
+    setInterviewProcessesLoading(true)
+    doRequest<PaginationResponse<IInterviewProcess>>(
+      '/v2/interview-process',
+      {
+        method: 'GET',
+        requiresAuth: true,
+      },
+      (res) => {
+        if (res.ok) {
+          const interviewProcessesSorted = res.data.content.map((process) => ({
+            ...process,
+            statesNumbers: Object.fromEntries(
+              Object.entries(process.statesNumbers).sort(
+                (a: [string, number], b: [string, number]) => {
+                  const aState = a[0]
+                  const bState = b[0]
+                  const order = ['uncontacted', 'invited', 'scheduled', 'completed']
+                  const ai = order.indexOf(aState.toLowerCase())
+                  const bi = order.indexOf(bState.toLowerCase())
+                  if (ai === -1 && bi === -1) return aState.localeCompare(bState)
+                  if (ai === -1) return 1
+                  if (bi === -1) return -1
+                  return ai - bi
+                },
+              ),
+            ) as typeof process.statesNumbers,
+          }))
+          setInterviewProcesses(interviewProcessesSorted)
+        } else {
+          showSimpleError(getApiResponseErrorMessage(res))
+        }
+        setInterviewProcessesLoading(false)
+      },
+    )
+  }
+
+  useEffect(() => {
+    fetchMyInterviewProcesses()
+  }, [])
 
   return (
     <Stack h={'100%'} gap={'2rem'}>
@@ -186,15 +194,23 @@ const InterviewOverviewPage = () => {
           </Group>
           <ScrollArea h={'100%'} w={'100%'} type={isSmaller ? 'never' : 'hover'} offsetScrollbars>
             <Stack p={0} gap={'1rem'}>
-              {interviewProcesses.map((process) => (
-                <InterviewProcessCard
-                  key={`card-${process.interviewProcessId}`}
-                  interviewProcess={process}
-                  onClick={() => {
-                    navigate(`/interviews/${process.interviewProcessId}`)
-                  }}
-                />
-              ))}
+              {interviewProcessesLoading ? (
+                <Center>
+                  <Loader />
+                </Center>
+              ) : interviewProcesses.length === 0 ? (
+                <Text c='dimmed'>No interview processes found.</Text>
+              ) : (
+                interviewProcesses.map((process) => (
+                  <InterviewProcessCard
+                    key={`card-${process.interviewProcessId}`}
+                    interviewProcess={process}
+                    onClick={() => {
+                      navigate(`/interviews/${process.interviewProcessId}`)
+                    }}
+                  />
+                ))
+              )}
             </Stack>
           </ScrollArea>
         </Stack>
