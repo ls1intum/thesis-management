@@ -1,4 +1,4 @@
-import { IApplicationSummary } from './application'
+import { ApplicationState, IApplicationSummary } from './application'
 import { ILightUser } from './user'
 
 export enum InterviewState {
@@ -52,4 +52,10 @@ export interface ITopicInterviewProcess {
   topicId: string
   topicTitle: string
   interviewProcessExists: boolean
+}
+
+export interface IApplicationInterviewProcess {
+  applicationId: string
+  applicantName: string
+  state: ApplicationState
 }

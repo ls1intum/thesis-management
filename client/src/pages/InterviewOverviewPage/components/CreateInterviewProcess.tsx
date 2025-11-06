@@ -18,12 +18,16 @@ import {
 } from '@mantine/core'
 import { useEffect, useState } from 'react'
 import { PaginationResponse } from '../../../requests/responses/pagination'
-import { ITopicInterviewProcess } from '../../../requests/responses/interview'
+import {
+  IApplicationInterviewProcess,
+  ITopicInterviewProcess,
+} from '../../../requests/responses/interview'
 import { doRequest } from '../../../requests/request'
 import { showSimpleError } from '../../../utils/notification'
 import { getApiResponseErrorMessage } from '../../../requests/handler'
-import { CheckCircleIcon, MagnifyingGlassIcon } from '@phosphor-icons/react'
+import { CheckCircleIcon, CircleIcon, MagnifyingGlassIcon } from '@phosphor-icons/react'
 import { showNotification } from '@mantine/notifications'
+import { ApplicationState } from '../../../requests/responses/application'
 
 interface CreateInterviewProcessProps {
   opened: boolean
@@ -38,6 +42,13 @@ const CreateInterviewProcess = ({ opened, onClose }: CreateInterviewProcessProps
 
   const [selectedTopic, setSelectedTopic] = useState<ITopicInterviewProcess | null>(null)
   const [searchKey, setSearchKey] = useState('')
+
+  const [possibleInterviewApplicants, setPossibleInterviewApplicants] = useState<
+    IApplicationInterviewProcess[]
+  >([])
+  const [applicantsLoading, setApplicantsLoading] = useState(false)
+
+  const [selectedApplicants, setSelectedApplicants] = useState<string[]>([])
 
   const fetchPossibleInterviewTopics = async () => {
     setTopicsLoading(true)
@@ -57,6 +68,34 @@ const CreateInterviewProcess = ({ opened, onClose }: CreateInterviewProcessProps
           showSimpleError(getApiResponseErrorMessage(res))
         }
         setTopicsLoading(false)
+      },
+    )
+  }
+
+  const fetchPossibleInterviewApplicantsByTopic = async () => {
+    if (!selectedTopic) {
+      setPossibleInterviewApplicants([])
+      return
+    }
+
+    setApplicantsLoading(true)
+    doRequest<PaginationResponse<IApplicationInterviewProcess>>(
+      `/v2/applications/interview-applications`,
+      {
+        method: 'GET',
+        requiresAuth: true,
+        params: {
+          topicId: selectedTopic.topicId,
+          limit: -1,
+        },
+      },
+      (res) => {
+        if (res.ok) {
+          setPossibleInterviewApplicants(res.data.content)
+        } else {
+          showSimpleError(getApiResponseErrorMessage(res))
+        }
+        setApplicantsLoading(false)
       },
     )
   }
@@ -104,11 +143,16 @@ const CreateInterviewProcess = ({ opened, onClose }: CreateInterviewProcessProps
     onClose()
     setSelectedTopic(null)
     setSearchKey('')
+    setSelectedApplicants([])
   }
 
   useEffect(() => {
     fetchPossibleInterviewTopics()
   }, [])
+
+  useEffect(() => {
+    fetchPossibleInterviewApplicantsByTopic()
+  }, [selectedTopic])
 
   useEffect(() => {
     if (searchKey.trim() !== '') {
@@ -149,7 +193,11 @@ const CreateInterviewProcess = ({ opened, onClose }: CreateInterviewProcessProps
                 </Group>
                 <Button
                   variant={'subtle'}
-                  onClick={() => setSelectedTopic(null)}
+                  onClick={() => {
+                    setSelectedTopic(null)
+                    setSearchKey('')
+                    setSelectedApplicants([])
+                  }}
                   style={{ flexShrink: 0 }}
                   c={colorScheme.colorScheme === 'dark' ? 'primary.10' : 'primary'}
                 >
@@ -172,8 +220,9 @@ const CreateInterviewProcess = ({ opened, onClose }: CreateInterviewProcessProps
                 <Loader />
               </Center>
             ) : (
-              <ScrollArea
-                h={'30vh'}
+              <ScrollArea.Autosize
+                mih={'50px'}
+                mah={'30vh'}
                 w={'100%'}
                 type='hover'
                 offsetScrollbars
@@ -208,9 +257,105 @@ const CreateInterviewProcess = ({ opened, onClose }: CreateInterviewProcessProps
                     {index < filteredTopics.length - 1 && <Divider />}
                   </Stack>
                 ))}
-              </ScrollArea>
+              </ScrollArea.Autosize>
             )}
           </Collapse>
+        </Input.Wrapper>
+
+        <Input.Wrapper
+          label='Select Applicants (optional)'
+          description='Select applicants for this interview process. You can also add them later.'
+        >
+          {applicantsLoading ? (
+            <Center h={'10vh'} w={'100%'}>
+              <Loader />
+            </Center>
+          ) : (
+            <Collapse
+              in={selectedTopic !== null}
+              m={'xs'}
+              h={
+                selectedTopic !== null
+                  ? possibleInterviewApplicants.length === 0
+                    ? '50px'
+                    : 'fit-content'
+                  : '0'
+              }
+            >
+              {possibleInterviewApplicants.length === 0 ? (
+                <Paper bg={colorScheme.colorScheme === 'dark' ? 'dark.8' : 'gray.0'} h={'50px'}>
+                  <Center>
+                    <Text c='dimmed' m={'xs'}>
+                      No applicants found for the selected topic.
+                    </Text>
+                  </Center>
+                </Paper>
+              ) : (
+                <Stack>
+                  <ScrollArea.Autosize
+                    w={'100%'}
+                    type='hover'
+                    bdrs={'md'}
+                    bg={colorScheme.colorScheme === 'dark' ? 'dark.8' : 'gray.0'}
+                    mih={'50px'}
+                    mah={'30vh'}
+                  >
+                    {possibleInterviewApplicants.map((applicant, index) => (
+                      <Stack
+                        key={applicant.applicationId}
+                        gap={0}
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => {
+                          if (selectedApplicants.includes(applicant.applicationId)) {
+                            setSelectedApplicants(
+                              selectedApplicants.filter((id) => id !== applicant.applicationId),
+                            )
+                          } else {
+                            setSelectedApplicants([...selectedApplicants, applicant.applicationId])
+                          }
+                        }}
+                        bg={
+                          selectedApplicants.includes(applicant.applicationId)
+                            ? colorScheme.colorScheme === 'dark'
+                              ? 'primary.3'
+                              : 'primary.0'
+                            : undefined
+                        }
+                        c={
+                          selectedApplicants.includes(applicant.applicationId)
+                            ? colorScheme.colorScheme === 'dark'
+                              ? 'primary.10'
+                              : 'primary'
+                            : undefined
+                        }
+                      >
+                        <Group justify='space-between' align='center' p={'1rem'}>
+                          <Group wrap='nowrap' justify='center' align='center' gap={'0.5rem'}>
+                            {selectedApplicants.includes(applicant.applicationId) ? (
+                              <CheckCircleIcon
+                                size={24}
+                                style={{ flexShrink: 0 }}
+                                weight={'bold'}
+                              />
+                            ) : (
+                              <CircleIcon size={24} style={{ flexShrink: 0 }} weight={'bold'} />
+                            )}
+                            <Text fw={500}>{applicant.applicantName}</Text>
+                          </Group>
+                          {applicant.state === ApplicationState.INTERVIEWING && (
+                            <Badge color='gray' radius='sm'>
+                              Already Invited
+                            </Badge>
+                          )}
+                        </Group>
+                        {index < possibleInterviewApplicants.length - 1 && <Divider />}
+                      </Stack>
+                    ))}
+                  </ScrollArea.Autosize>
+                </Stack>
+              )}
+            </Collapse>
+          )}
         </Input.Wrapper>
         <Button
           onClick={() => {
