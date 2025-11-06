@@ -1,14 +1,19 @@
 package de.tum.cit.aet.thesis.service;
 
+import de.tum.cit.aet.thesis.entity.EmailTemplate;
 import de.tum.cit.aet.thesis.entity.InterviewProcess;
 import de.tum.cit.aet.thesis.entity.Topic;
 import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.repository.InterviewProcessRepository;
 import de.tum.cit.aet.thesis.security.CurrentUserProvider;
+import de.tum.cit.aet.thesis.utility.HibernateHelper;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.data.domain.Page;
 
 import java.util.UUID;
 
@@ -27,6 +32,41 @@ public class InterviewProcessService {
 
     private CurrentUserProvider currentUserProvider() {
         return currentUserProviderProvider.getObject();
+    }
+
+    public Page<InterviewProcess> findAllMyProcesses(
+            String searchQuery,
+            int page,
+            int limit,
+            String sortBy,
+            String sortOrder,
+            boolean excludeSupervised
+    ) {
+        if (currentUserProvider().getUser().getResearchGroup() == null && !currentUserProvider().isAdmin()) {
+            throw new IllegalStateException("Current user is not assigned to any research group.");
+        }
+
+        UUID userId = currentUserProvider().isAdmin() ?
+                null : currentUserProvider().getUser().getId();
+        String searchQueryFilter = (searchQuery == null || searchQuery.isBlank())
+                ? null
+                : "%" + searchQuery.toLowerCase() + "%";
+
+        Sort.Order order = new Sort.Order(
+                sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,
+                HibernateHelper.getColumnName(InterviewProcess.class, sortBy)
+        );
+
+        Pageable pageable = limit == -1
+                ? PageRequest.of(0, Integer.MAX_VALUE, Sort.by(order))
+                : PageRequest.of(page, limit, Sort.by(order));
+
+        return interviewProcessRepository.searchMyInterviewProcesses(
+                userId,
+                searchQueryFilter,
+                excludeSupervised,
+                pageable
+        );
     }
 
     public InterviewProcess createInterviewProcess(UUID topicId) {
