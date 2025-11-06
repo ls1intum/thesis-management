@@ -14,6 +14,7 @@ import {
   Input,
   Badge,
   Divider,
+  useMantineColorScheme,
 } from '@mantine/core'
 import { useEffect, useState } from 'react'
 import { PaginationResponse } from '../../../requests/responses/pagination'
@@ -120,6 +121,8 @@ const CreateInterviewProcess = ({ opened, onClose }: CreateInterviewProcessProps
     }
   }, [searchKey, possibleInterviewTopics])
 
+  const colorScheme = useMantineColorScheme()
+
   return (
     <Modal
       opened={opened}
@@ -131,7 +134,12 @@ const CreateInterviewProcess = ({ opened, onClose }: CreateInterviewProcessProps
       <Stack>
         <Input.Wrapper label='Select Topic' withAsterisk>
           {selectedTopic ? (
-            <Paper withBorder bg={'primary.0'} c={'primary'} m={'xs'}>
+            <Paper
+              withBorder
+              bg={colorScheme.colorScheme === 'dark' ? 'primary.10' : 'primary.0'}
+              c={colorScheme.colorScheme === 'dark' ? 'primary.0' : 'primary'}
+              m={'xs'}
+            >
               <Group p={'xs'} justify='space-between' align='center' wrap='nowrap'>
                 <Group wrap='nowrap' justify='center' align='center' gap={'0.5rem'}>
                   <CheckCircleIcon size={24} weight={'bold'} style={{ flexShrink: 0 }} />
@@ -169,7 +177,7 @@ const CreateInterviewProcess = ({ opened, onClose }: CreateInterviewProcessProps
                 type='hover'
                 offsetScrollbars
                 bdrs={'md'}
-                bg={'gray.0'}
+                bg={colorScheme.colorScheme === 'dark' ? 'dark.8' : 'gray.0'}
               >
                 {filteredTopics.map((topic, index) => (
                   <Stack key={topic.topicTitle} gap={0} pr={5}>
