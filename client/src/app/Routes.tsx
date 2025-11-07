@@ -205,7 +205,7 @@ const AppRoutes = () => {
             }
           />
           <Route
-            path='/interviews/:topicProcessId'
+            path='/interviews/:processId'
             element={
               <AuthenticatedArea requiredGroups={['admin', 'advisor', 'supervisor']}>
                 <InterviewTopicOverviewPage />
@@ -213,7 +213,7 @@ const AppRoutes = () => {
             }
           />
           <Route
-            path='/interviews/:topicProcessId/interviewee/:intervieweeId'
+            path='/interviews/:processId/interviewee/:intervieweeId'
             element={
               <AuthenticatedArea requiredGroups={['admin', 'advisor', 'supervisor']}>
                 <IntervieweeAssesmentPage />

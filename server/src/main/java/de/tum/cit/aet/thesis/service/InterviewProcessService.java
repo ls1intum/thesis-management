@@ -60,7 +60,7 @@ public class InterviewProcessService {
 
         Sort.Order order = new Sort.Order(
                 sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,
-                HibernateHelper.getColumnName(InterviewProcess.class, sortBy)
+                sortBy
         );
 
         Pageable pageable = limit == -1
@@ -157,7 +157,7 @@ public class InterviewProcessService {
 
         Sort.Order order = new Sort.Order(
                 sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,
-                HibernateHelper.getColumnName(Interviewee.class, sortBy)
+                sortBy
         );
 
        return intervieweeRepository.findAllInterviewees( interviewProcessId, searchQueryFilter, stateFilter, PageRequest.of(page, limit <= 0 ? Integer.MAX_VALUE : limit, Sort.by(order)) );

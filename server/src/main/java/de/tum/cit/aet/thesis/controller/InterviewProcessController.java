@@ -1,10 +1,7 @@
 package de.tum.cit.aet.thesis.controller;
 
 import de.tum.cit.aet.thesis.controller.payload.CreateInterviewProcessPayload;
-import de.tum.cit.aet.thesis.dto.InterviewProcessDto;
-import de.tum.cit.aet.thesis.dto.IntervieweeLightDto;
-import de.tum.cit.aet.thesis.dto.PaginationDto;
-import de.tum.cit.aet.thesis.dto.ResearchGroupDto;
+import de.tum.cit.aet.thesis.dto.*;
 import de.tum.cit.aet.thesis.entity.InterviewProcess;
 import de.tum.cit.aet.thesis.entity.Interviewee;
 import de.tum.cit.aet.thesis.service.InterviewProcessService;
@@ -60,18 +57,18 @@ public class InterviewProcessController {
 
     @GetMapping("/{interviewProcessId}/interviewees")
     @PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
-    public ResponseEntity<PaginationDto<IntervieweeLightDto>> getInterviewProcessInterviewees(
+    public ResponseEntity<PaginationDto<IntervieweeLightWithNextSlotDto>> getInterviewProcessInterviewees(
             @PathVariable("interviewProcessId") UUID interviewProcessId,
             @RequestParam(required = false) String searchQuery,
             @RequestParam(required = false, defaultValue = "0") int page,
             @RequestParam(required = false, defaultValue = "50") int limit,
-            @RequestParam(required = false, defaultValue = "score") String sortBy,
+            @RequestParam(required = false, defaultValue = "lastInvited") String sortBy,
             @RequestParam(required = false, defaultValue = "asc") String sortOrder,
             @RequestParam(required = false, defaultValue = "") String state
     ) {
 
         Page<Interviewee> interviewProcessDto = interviewProcessService.getInterviewProcessInterviewees(interviewProcessId, searchQuery, page, limit, sortBy, sortOrder, state);
 
-        return ResponseEntity.ok(PaginationDto.fromSpringPage(interviewProcessDto.map(IntervieweeLightDto::fromIntervieweeEntity)));
+        return ResponseEntity.ok(PaginationDto.fromSpringPage(interviewProcessDto.map(IntervieweeLightWithNextSlotDto::fromIntervieweeEntity)));
     }
 }

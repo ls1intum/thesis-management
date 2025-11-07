@@ -43,6 +43,10 @@ export interface IIntervieweeLight {
   lastInvited: Date | null
 }
 
+export interface IIntervieweeLightWithNextSlot extends IIntervieweeLight {
+  nextSlot: IIntervieweeSlot | null
+}
+
 export interface IInterviewee extends IIntervieweeLight {
   interviewNote: string | null
   application: IApplicationSummary | null

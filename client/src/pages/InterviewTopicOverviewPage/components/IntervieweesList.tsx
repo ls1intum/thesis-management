@@ -1,15 +1,63 @@
 import { Button, Group, SegmentedControl, Stack, TextInput, Title } from '@mantine/core'
 import { MagnifyingGlassIcon, PaperPlaneTiltIcon, PlusIcon } from '@phosphor-icons/react'
-import { useState } from 'react'
-import { InterviewState } from '../../../requests/responses/interview'
+import { useEffect, useState } from 'react'
+import {
+  IIntervieweeLightWithNextSlot,
+  InterviewState,
+} from '../../../requests/responses/interview'
 import { useIsSmallerBreakpoint } from '../../../hooks/theme'
+import { doRequest } from '../../../requests/request'
+import { PaginationResponse } from '../../../requests/responses/pagination'
+import { useParams } from 'react-router'
+import { showSimpleError } from '../../../utils/notification'
+import { getApiResponseErrorMessage } from '../../../requests/handler'
+import { useDebouncedValue } from '@mantine/hooks'
+import IntervieweeCard from './IntervieweeCard'
 
 const IntervieweesList = () => {
+  const { processId } = useParams<{ processId: string }>()
   const [searchIntervieweeKey, setSearchIntervieweeKey] = useState('')
+  const [debouncedSearch] = useDebouncedValue(searchIntervieweeKey, 300)
 
   const [state, setState] = useState<string>('ALL')
 
   const isSmaller = useIsSmallerBreakpoint('md')
+
+  const [interviewees, setInterviewees] = useState<IIntervieweeLightWithNextSlot[]>([])
+  const [intervieweesLoading, setIntervieweesLoading] = useState(false)
+
+  const fetchMyInterviewProcesses = async () => {
+    setIntervieweesLoading(true)
+    console.log('Fetching interviewees for processId:', processId, 'with state:', state)
+    doRequest<PaginationResponse<IIntervieweeLightWithNextSlot>>(
+      `/v2/interview-process/${processId}/interviewees`,
+      {
+        method: 'GET',
+        requiresAuth: true,
+        params: {
+          searchQuery: searchIntervieweeKey,
+          limit: 50,
+          state: state !== 'ALL' ? state : '',
+        },
+      },
+      (res) => {
+        if (res.ok) {
+          setInterviewees(res.data.content)
+        } else {
+          showSimpleError(getApiResponseErrorMessage(res))
+        }
+        setIntervieweesLoading(false)
+      },
+    )
+
+    {
+      /*TODO: In UI show the pagination if it is more than one page*/
+    }
+  }
+
+  useEffect(() => {
+    fetchMyInterviewProcesses()
+  }, [state, debouncedSearch])
 
   return (
     <Stack gap={'1.5rem'}>
@@ -45,7 +93,11 @@ const IntervieweesList = () => {
           />
         </Group>
       </Group>
-      <Stack></Stack>
+      <Stack>
+        {interviewees.map((interviewee) => (
+          <IntervieweeCard key={interviewee.intervieweeId} interviewee={interviewee} />
+        ))}
+      </Stack>
     </Stack>
   )
 }

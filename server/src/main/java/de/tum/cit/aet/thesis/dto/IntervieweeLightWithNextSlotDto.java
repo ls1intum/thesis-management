@@ -6,19 +6,21 @@ import de.tum.cit.aet.thesis.entity.Interviewee;
 import java.time.Instant;
 import java.util.UUID;
 
-public record IntervieweeLightDto(
+public record IntervieweeLightWithNextSlotDto(
     UUID intervieweeId,
     LightUserDto user,
     int score,
-    Instant lastInvited
+    Instant lastInvited,
+    InterviewSlot nextSlot
 ) {
-    public static IntervieweeLightDto fromIntervieweeEntity(Interviewee interviewee) {
+    public static IntervieweeLightWithNextSlotDto fromIntervieweeEntity(Interviewee interviewee) {
         int score = interviewee.getScore() != null ? interviewee.getScore() : -1;
-        return new IntervieweeLightDto(
+        return new IntervieweeLightWithNextSlotDto(
                 interviewee.getIntervieweeId(),
                 LightUserDto.fromUserEntity(interviewee.getApplication().getUser()),
                 score,
-                interviewee.getLastInvited()
+                interviewee.getLastInvited(),
+                interviewee.getNextSlot()
         );
 
     }

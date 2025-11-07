@@ -41,4 +41,11 @@ public class Interviewee {
 
     @OneToMany(mappedBy = "interviewee", fetch = FetchType.LAZY)
     private List<InterviewSlot> slots = new ArrayList<>();
+
+    public InterviewSlot getNextSlot() {
+        return slots.stream()
+                .filter(slot -> slot.getStartDate().isAfter(Instant.now()))
+                .min((slot1, slot2) -> slot1.getStartDate().compareTo(slot2.getStartDate()))
+                .orElse(null);
+    }
 }
