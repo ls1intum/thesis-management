@@ -29,6 +29,7 @@ import { getApiResponseErrorMessage } from '../../../requests/handler'
 import { CheckCircleIcon, MagnifyingGlassIcon } from '@phosphor-icons/react'
 import { showNotification } from '@mantine/notifications'
 import SelectApplicantsList from './SelectApplicantsList'
+import SelectTopicInterviewProcessItem from './SelectTopicInterviewProcessItem'
 
 interface CreateInterviewProcessProps {
   opened: boolean
@@ -127,6 +128,18 @@ const CreateInterviewProcess = ({
             color: 'green',
           })
           setInterviewProcesses((prev) => [res.data, ...prev])
+          setPossibleInterviewTopics((prev) => {
+            if (!prev) return prev
+            return {
+              ...prev,
+              content: prev.content.map((topic) => {
+                if (topic.topicId === selectedTopic.topicId) {
+                  return { ...topic, interviewProcessExists: true }
+                }
+                return topic
+              }),
+            }
+          })
           closeModal()
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
@@ -221,38 +234,27 @@ const CreateInterviewProcess = ({
                 mah={'30vh'}
                 w={'100%'}
                 type='hover'
-                offsetScrollbars
                 bdrs={'md'}
                 bg={colorScheme.colorScheme === 'dark' ? 'dark.8' : 'gray.0'}
               >
-                {filteredTopics.map((topic, index) => (
-                  <Stack key={topic.topicTitle} gap={0} pr={5} style={{ cursor: 'pointer' }}>
-                    <Group
-                      justify='space-between'
-                      align='center'
-                      onClick={() => {
-                        if (!topic.interviewProcessExists) {
-                          setSelectedTopic(topic)
-                        }
-                      }}
-                      p={'1rem'}
-                    >
-                      <Text
-                        size='sm'
-                        fw={600}
-                        c={topic.interviewProcessExists ? 'dimmed' : undefined}
-                      >
-                        {topic.topicTitle}
+                {filteredTopics.length === 0 ? (
+                  <Paper bg={colorScheme.colorScheme === 'dark' ? 'dark.8' : 'gray.0'} h={'50px'}>
+                    <Center>
+                      <Text c='dimmed' m={'xs'}>
+                        No topics found.
                       </Text>
-                      {topic.interviewProcessExists && (
-                        <Badge color={'gray'} radius={'sm'}>
-                          Process exists
-                        </Badge>
-                      )}
-                    </Group>
-                    {index < filteredTopics.length - 1 && <Divider />}
-                  </Stack>
-                ))}
+                    </Center>
+                  </Paper>
+                ) : (
+                  filteredTopics.map((topic, index) => (
+                    <SelectTopicInterviewProcessItem
+                      key={topic.topicTitle}
+                      topic={topic}
+                      setSelectedTopic={setSelectedTopic}
+                      isLastItem={index === filteredTopics.length - 1}
+                    />
+                  ))
+                )}
               </ScrollArea.Autosize>
             )}
           </Collapse>
@@ -260,7 +262,7 @@ const CreateInterviewProcess = ({
 
         <Input.Wrapper
           label='Select Applicants (optional)'
-          description='Select applicants for this interview process. You can also add them later.'
+          description='Select applicants for this interview process. You can also add them later or while reviewing applications.'
         >
           {applicantsLoading ? (
             <Center h={'10vh'} w={'100%'}>

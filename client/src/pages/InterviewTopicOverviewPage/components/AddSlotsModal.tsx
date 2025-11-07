@@ -44,6 +44,8 @@ const AddSlotsModal = ({ slotModalOpen, setSlotModalOpen }: IAddSlotsModalProps)
 
   const [duration, setDuration] = useState<number>(30) // in minutes
 
+  const [sameSlotsForAllDays, setSameSlotsForAllDays] = useState(false)
+
   return (
     <Modal
       centered
@@ -147,7 +149,13 @@ const AddSlotsModal = ({ slotModalOpen, setSlotModalOpen }: IAddSlotsModalProps)
                         />
                       ))}
                   </Accordion>
-                  <Button variant='outline' size='xs'>
+                  <Button
+                    variant='outline'
+                    size='xs'
+                    onClick={() => {
+                      setSameSlotsForAllDays(!sameSlotsForAllDays)
+                    }}
+                  >
                     Same Slots for all days
                   </Button>
                 </Stack>

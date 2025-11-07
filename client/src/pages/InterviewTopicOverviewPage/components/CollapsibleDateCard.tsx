@@ -1,11 +1,9 @@
 import { Accordion, Button, Card, Divider, Group, Stack, Text, Title } from '@mantine/core'
-import { useHover } from '@mantine/hooks'
 import dayjs from 'dayjs'
 import { IIntervieweeSlot } from '../../../requests/responses/interview'
 import { useState } from 'react'
 import { CardsIcon } from '@phosphor-icons/react'
 import { TimeInput } from '@mantine/dates'
-import { n } from 'react-router/dist/development/index-react-server-client-BKpa2trA'
 import SlotItem from './SlotItem'
 import DeleteButton from '../../../components/DeleteButton/DeleteButton'
 
