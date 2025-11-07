@@ -10,7 +10,7 @@ import {
   Title,
   Text,
 } from '@mantine/core'
-import { PlusIcon } from '@phosphor-icons/react'
+import { ChatCircleSlashIcon, PlusIcon } from '@phosphor-icons/react'
 import { IInterviewProcess, IUpcomingInterview } from '../../requests/responses/interview'
 import InterviewProcessCard from './components/InterviewProcessCard'
 import { useIsSmallerBreakpoint } from '../../hooks/theme'
@@ -135,25 +135,7 @@ const InterviewOverviewPage = () => {
       },
       (res) => {
         if (res.ok) {
-          const interviewProcessesSorted = res.data.content.map((process) => ({
-            ...process,
-            statesNumbers: Object.fromEntries(
-              Object.entries(process.statesNumbers).sort(
-                (a: [string, number], b: [string, number]) => {
-                  const aState = a[0]
-                  const bState = b[0]
-                  const order = ['uncontacted', 'invited', 'scheduled', 'completed']
-                  const ai = order.indexOf(aState.toLowerCase())
-                  const bi = order.indexOf(bState.toLowerCase())
-                  if (ai === -1 && bi === -1) return aState.localeCompare(bState)
-                  if (ai === -1) return 1
-                  if (bi === -1) return -1
-                  return ai - bi
-                },
-              ),
-            ) as typeof process.statesNumbers,
-          }))
-          setInterviewProcesses(interviewProcessesSorted)
+          setInterviewProcesses(res.data.content)
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
         }
@@ -199,7 +181,18 @@ const InterviewOverviewPage = () => {
                   <Loader />
                 </Center>
               ) : interviewProcesses.length === 0 ? (
-                <Text c='dimmed'>No interview processes found.</Text>
+                <Center h={'100%'} mih={isSmaller ? '30vh' : '50vh'}>
+                  <Stack justify='center' align='center' h={'100%'}>
+                    <ChatCircleSlashIcon size={60} />
+                    <Stack gap={'0.5rem'} justify='center' align='center'>
+                      <Title order={5}>No Interview Processes Found</Title>
+                      <Text c='dimmed' ta={'center'}>
+                        Add a interviewee while reviewing application or just create a process
+                        directly
+                      </Text>
+                    </Stack>
+                  </Stack>
+                </Center>
               ) : (
                 interviewProcesses.map((process) => (
                   <InterviewProcessCard
@@ -239,6 +232,7 @@ const InterviewOverviewPage = () => {
       <CreateInterviewProcess
         opened={createModalOpened}
         onClose={() => setCreateModalOpened(false)}
+        setInterviewProcesses={setInterviewProcesses}
       />
       {/*TODO: ADD PAGINATION*/}
     </Stack>

@@ -25,6 +25,25 @@ const InterviewProcessCard = ({ interviewProcess, onClick }: IInterviewProcessCa
 
   const colorScheme = useMantineColorScheme()
 
+  const interviewProcessSorted = {
+    ...interviewProcess,
+    statesNumbers: Object.fromEntries(
+      Object.entries(interviewProcess.statesNumbers).sort(
+        (a: [string, number], b: [string, number]) => {
+          const aState = a[0]
+          const bState = b[0]
+          const order = ['uncontacted', 'invited', 'scheduled', 'completed']
+          const ai = order.indexOf(aState.toLowerCase())
+          const bi = order.indexOf(bState.toLowerCase())
+          if (ai === -1 && bi === -1) return aState.localeCompare(bState)
+          if (ai === -1) return 1
+          if (bi === -1) return -1
+          return ai - bi
+        },
+      ),
+    ),
+  }
+
   return (
     <Card
       withBorder
@@ -36,7 +55,7 @@ const InterviewProcessCard = ({ interviewProcess, onClick }: IInterviewProcessCa
       ref={ref}
       onClick={onClick}
     >
-      {interviewProcess.completed && (
+      {interviewProcessSorted.completed && (
         <Overlay
           color={colorScheme.colorScheme === 'dark' ? 'black' : 'gray.0'}
           backgroundOpacity={colorScheme.colorScheme === 'dark' ? 0.3 : 0.1}
@@ -45,9 +64,9 @@ const InterviewProcessCard = ({ interviewProcess, onClick }: IInterviewProcessCa
       <Stack pb={'1rem'} gap={'1.5rem'}>
         <Group>
           <Title order={5} flex={1}>
-            {interviewProcess.topicTitle}
+            {interviewProcessSorted.topicTitle}
           </Title>
-          {interviewProcess.completed && (
+          {interviewProcessSorted.completed && (
             <Badge variant='filled' color='gray.6' size='md' radius='sm'>
               Completed
             </Badge>
@@ -55,9 +74,9 @@ const InterviewProcessCard = ({ interviewProcess, onClick }: IInterviewProcessCa
         </Group>
         <Stack gap={'0.75rem'}>
           <SimpleGrid cols={{ base: 2, lg: 4 }} spacing='sm'>
-            {Object.entries(interviewProcess.statesNumbers).map(([state, number]) => {
+            {Object.entries(interviewProcessSorted.statesNumbers).map(([state, number]) => {
               return (
-                <Group key={`${interviewProcess.interviewProcessId}-${state}`} gap={'0.5rem'}>
+                <Group key={`${interviewProcessSorted.interviewProcessId}-${state}`} gap={'0.5rem'}>
                   <Divider
                     orientation='vertical'
                     size='lg'
@@ -81,11 +100,11 @@ const InterviewProcessCard = ({ interviewProcess, onClick }: IInterviewProcessCa
           </SimpleGrid>
 
           <Progress.Root size={16} radius='lg' w='100%'>
-            {Object.entries(interviewProcess.statesNumbers).map(([state, number]) => {
+            {Object.entries(interviewProcessSorted.statesNumbers).map(([state, number]) => {
               return (
                 <Progress.Section
-                  key={`${interviewProcess.interviewProcessId}-${state}-${number}`}
-                  value={(number / interviewProcess.totalInterviewees) * 100}
+                  key={`${interviewProcessSorted.interviewProcessId}-${state}-${number}`}
+                  value={(number / interviewProcessSorted.totalInterviewees) * 100}
                   color={getInterviewStateColor(state as InterviewState)}
                 ></Progress.Section>
               )
@@ -99,7 +118,7 @@ const InterviewProcessCard = ({ interviewProcess, onClick }: IInterviewProcessCa
             Total Interviewees
           </Text>
           <Text size='sm' fw={700}>
-            {interviewProcess.totalInterviewees}
+            {interviewProcessSorted.totalInterviewees}
           </Text>
         </Group>
       </Card.Section>

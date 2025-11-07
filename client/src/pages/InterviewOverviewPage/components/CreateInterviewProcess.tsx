@@ -16,25 +16,31 @@ import {
   Divider,
   useMantineColorScheme,
 } from '@mantine/core'
-import { useEffect, useState } from 'react'
+import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { PaginationResponse } from '../../../requests/responses/pagination'
 import {
   IApplicationInterviewProcess,
+  IInterviewProcess,
   ITopicInterviewProcess,
 } from '../../../requests/responses/interview'
 import { doRequest } from '../../../requests/request'
 import { showSimpleError } from '../../../utils/notification'
 import { getApiResponseErrorMessage } from '../../../requests/handler'
-import { CheckCircleIcon, CircleIcon, MagnifyingGlassIcon } from '@phosphor-icons/react'
+import { CheckCircleIcon, MagnifyingGlassIcon } from '@phosphor-icons/react'
 import { showNotification } from '@mantine/notifications'
-import { ApplicationState } from '../../../requests/responses/application'
+import SelectApplicantsList from './SelectApplicantsList'
 
 interface CreateInterviewProcessProps {
   opened: boolean
   onClose: () => void
+  setInterviewProcesses: Dispatch<SetStateAction<IInterviewProcess[]>>
 }
 
-const CreateInterviewProcess = ({ opened, onClose }: CreateInterviewProcessProps) => {
+const CreateInterviewProcess = ({
+  opened,
+  onClose,
+  setInterviewProcesses,
+}: CreateInterviewProcessProps) => {
   const [possibleInterviewTopics, setPossibleInterviewTopics] =
     useState<PaginationResponse<ITopicInterviewProcess>>()
   const [filteredTopics, setFilteredTopics] = useState<ITopicInterviewProcess[]>([])
@@ -103,34 +109,24 @@ const CreateInterviewProcess = ({ opened, onClose }: CreateInterviewProcessProps
   const createInterviewProcess = () => {
     if (!selectedTopic) return
 
-    doRequest(
+    doRequest<IInterviewProcess>(
       '/v2/interview-process',
       {
         method: 'POST',
         requiresAuth: true,
         data: {
           topicId: selectedTopic.topicId,
+          intervieweeApplicationIds: selectedApplicants,
         },
       },
       (res) => {
         if (res.ok) {
           showNotification({
             title: 'Success',
-            message: 'Research group created.',
+            message: 'Interview process created successfully.',
             color: 'green',
           })
-          setPossibleInterviewTopics((prev) => {
-            if (!prev) return prev
-            const updatedContent = prev.content.map((topic) =>
-              topic.topicId === selectedTopic.topicId
-                ? { ...topic, interviewProcessExists: true }
-                : topic,
-            )
-            return {
-              ...prev,
-              content: updatedContent,
-            }
-          })
+          setInterviewProcesses((prev) => [res.data, ...prev])
           closeModal()
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
@@ -291,101 +287,11 @@ const CreateInterviewProcess = ({ opened, onClose }: CreateInterviewProcessProps
                   </Center>
                 </Paper>
               ) : (
-                <Stack
-                  bg={colorScheme.colorScheme === 'dark' ? 'dark.8' : 'gray.0'}
-                  bdrs={'md'}
-                  gap={0}
-                >
-                  <Group
-                    w={'100%'}
-                    justify='space-between'
-                    px={'1rem'}
-                    py={'0.5rem'}
-                    bg={
-                      selectedApplicants.length > 0
-                        ? colorScheme.colorScheme === 'dark'
-                          ? 'primary.11'
-                          : 'primary.2'
-                        : colorScheme.colorScheme === 'dark'
-                          ? 'dark.9'
-                          : 'gray.2'
-                    }
-                  >
-                    <Text fw={500}>{`${selectedApplicants.length} selected`}</Text>
-                    <Button
-                      variant={'subtle'}
-                      onClick={() => {
-                        if (selectedApplicants.length === possibleInterviewApplicants.length) {
-                          setSelectedApplicants([])
-                        } else {
-                          setSelectedApplicants(
-                            possibleInterviewApplicants.map((applicant) => applicant.applicationId),
-                          )
-                        }
-                      }}
-                      style={{ flexShrink: 0 }}
-                      c={colorScheme.colorScheme === 'dark' ? 'primary.3' : 'primary'}
-                      size='xs'
-                    >
-                      {selectedApplicants.length === possibleInterviewApplicants.length
-                        ? 'Deselect All'
-                        : 'Select All'}
-                    </Button>
-                  </Group>
-                  <ScrollArea.Autosize w={'100%'} type='hover' mih={'50px'} mah={'30vh'}>
-                    {possibleInterviewApplicants.map((applicant, index) => (
-                      <Stack
-                        key={applicant.applicationId}
-                        gap={0}
-                        style={{ cursor: 'pointer' }}
-                        onClick={() => {
-                          if (selectedApplicants.includes(applicant.applicationId)) {
-                            setSelectedApplicants(
-                              selectedApplicants.filter((id) => id !== applicant.applicationId),
-                            )
-                          } else {
-                            setSelectedApplicants([...selectedApplicants, applicant.applicationId])
-                          }
-                        }}
-                        bg={
-                          selectedApplicants.includes(applicant.applicationId)
-                            ? colorScheme.colorScheme === 'dark'
-                              ? 'primary.3'
-                              : 'primary.0'
-                            : undefined
-                        }
-                        c={
-                          selectedApplicants.includes(applicant.applicationId)
-                            ? colorScheme.colorScheme === 'dark'
-                              ? 'primary.10'
-                              : 'primary'
-                            : undefined
-                        }
-                      >
-                        <Group justify='space-between' align='center' p={'1rem'}>
-                          <Group wrap='nowrap' justify='center' align='center' gap={'0.5rem'}>
-                            {selectedApplicants.includes(applicant.applicationId) ? (
-                              <CheckCircleIcon
-                                size={24}
-                                style={{ flexShrink: 0 }}
-                                weight={'bold'}
-                              />
-                            ) : (
-                              <CircleIcon size={24} style={{ flexShrink: 0 }} weight={'bold'} />
-                            )}
-                            <Text fw={500}>{applicant.applicantName}</Text>
-                          </Group>
-                          {applicant.state === ApplicationState.INTERVIEWING && (
-                            <Badge color='gray' radius='sm'>
-                              Already Invited
-                            </Badge>
-                          )}
-                        </Group>
-                        {index < possibleInterviewApplicants.length - 1 && <Divider />}
-                      </Stack>
-                    ))}
-                  </ScrollArea.Autosize>
-                </Stack>
+                <SelectApplicantsList
+                  possibleInterviewApplicants={possibleInterviewApplicants}
+                  selectedApplicants={selectedApplicants}
+                  setSelectedApplicants={setSelectedApplicants}
+                />
               )}
             </Collapse>
           )}
