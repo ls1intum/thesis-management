@@ -19,7 +19,6 @@ const ResearchGroupCard = (props: IResearchGroup) => {
   const [researchGroupMemberNumber, setResearchGroupMemberNumber] = React.useState(0)
 
   const fetchMemberAmount = () => {
-    //TODO: Add this information maybe into the getAllResearchGroups call
     doRequest<{ content: ILightUser[] }>(
       `/v2/research-groups/${props.id}/members`,
       {
