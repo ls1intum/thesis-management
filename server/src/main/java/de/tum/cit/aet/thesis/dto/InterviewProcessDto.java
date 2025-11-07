@@ -26,8 +26,10 @@ public record InterviewProcessDto(
                 if (interviewee.getLastInvited() == null) {
                     uncontactedCount++;
                 } else if (!interviewee.getSlots().isEmpty()) {
-                    //TODO: CHECK IF INTERVIEW IS COMPLETED
                     scheduledCount++;
+                } else if(interviewee.getScore() != null) {
+                    //TODO: Think about if this makes sense to use the score for this
+                    completedCount++;
                 } else {
                     invitedCount++;
                 }

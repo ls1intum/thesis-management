@@ -2,13 +2,19 @@ package de.tum.cit.aet.thesis.controller;
 
 import de.tum.cit.aet.thesis.controller.payload.CreateInterviewProcessPayload;
 import de.tum.cit.aet.thesis.dto.InterviewProcessDto;
+import de.tum.cit.aet.thesis.dto.IntervieweeLightDto;
+import de.tum.cit.aet.thesis.dto.PaginationDto;
+import de.tum.cit.aet.thesis.dto.ResearchGroupDto;
 import de.tum.cit.aet.thesis.entity.InterviewProcess;
+import de.tum.cit.aet.thesis.entity.Interviewee;
 import de.tum.cit.aet.thesis.service.InterviewProcessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/v2/interview-process")
@@ -22,7 +28,7 @@ public class InterviewProcessController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
-    public ResponseEntity<Page<InterviewProcessDto>> getMyInterviewProcesses(
+    public ResponseEntity<PaginationDto<InterviewProcessDto>> getMyInterviewProcesses(
             @RequestParam(required = false) String searchQuery,
             @RequestParam(required = false, defaultValue = "0") int page,
             @RequestParam(required = false, defaultValue = "20") int limit,
@@ -40,7 +46,7 @@ public class InterviewProcessController {
                 excludeSupervised
         );
 
-        return ResponseEntity.ok(result.map(InterviewProcessDto::fromInterviewProcessEntity));
+        return ResponseEntity.ok(PaginationDto.fromSpringPage(result.map(InterviewProcessDto::fromInterviewProcessEntity)));
     }
 
     @PostMapping
@@ -50,5 +56,22 @@ public class InterviewProcessController {
                 interviewProcessService.createInterviewProcess(payload.topicId(), payload.intervieweeApplicationIds())
         );
         return ResponseEntity.ok(interviewProcessDto);
+    }
+
+    @GetMapping("/{interviewProcessId}/interviewees")
+    @PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
+    public ResponseEntity<PaginationDto<IntervieweeLightDto>> getInterviewProcessInterviewees(
+            @PathVariable("interviewProcessId") UUID interviewProcessId,
+            @RequestParam(required = false) String searchQuery,
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "50") int limit,
+            @RequestParam(required = false, defaultValue = "score") String sortBy,
+            @RequestParam(required = false, defaultValue = "asc") String sortOrder,
+            @RequestParam(required = false, defaultValue = "") String state
+    ) {
+
+        Page<Interviewee> interviewProcessDto = interviewProcessService.getInterviewProcessInterviewees(interviewProcessId, searchQuery, page, limit, sortBy, sortOrder, state);
+
+        return ResponseEntity.ok(PaginationDto.fromSpringPage(interviewProcessDto.map(IntervieweeLightDto::fromIntervieweeEntity)));
     }
 }

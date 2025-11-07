@@ -18,7 +18,7 @@ public class Interviewee {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "interviewee_id", nullable = false)
-    private UUID id;
+    private UUID intervieweeId;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

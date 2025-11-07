@@ -4,6 +4,7 @@ import de.tum.cit.aet.thesis.constants.ApplicationState;
 import de.tum.cit.aet.thesis.entity.*;
 import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.repository.InterviewProcessRepository;
+import de.tum.cit.aet.thesis.repository.IntervieweeRepository;
 import de.tum.cit.aet.thesis.security.CurrentUserProvider;
 import de.tum.cit.aet.thesis.utility.HibernateHelper;
 import org.springframework.beans.factory.ObjectProvider;
@@ -24,13 +25,15 @@ public class InterviewProcessService {
     private final InterviewProcessRepository interviewProcessRepository;
     private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
     private final ApplicationService applicationService;
+    private final IntervieweeRepository intervieweeRepository;
 
     @Autowired
-    public InterviewProcessService(TopicService topicService, InterviewProcessRepository interviewProcessRepository, ObjectProvider<CurrentUserProvider> currentUserProviderProvider, ApplicationService applicationService) {
+    public InterviewProcessService(TopicService topicService, InterviewProcessRepository interviewProcessRepository, ObjectProvider<CurrentUserProvider> currentUserProviderProvider, ApplicationService applicationService, IntervieweeRepository intervieweeRepository) {
         this.topicService = topicService;
         this.interviewProcessRepository = interviewProcessRepository;
         this.currentUserProviderProvider = currentUserProviderProvider;
         this.applicationService = applicationService;
+        this.intervieweeRepository = intervieweeRepository;
     }
 
     private CurrentUserProvider currentUserProvider() {
@@ -127,5 +130,36 @@ public class InterviewProcessService {
 
     public boolean existsByTopicId(UUID topicId) {
         return interviewProcessRepository.existsByTopicId(topicId);
+    }
+
+    public Page<Interviewee> getInterviewProcessInterviewees(
+            UUID interviewProcessId,
+            String searchQuery,
+            int page,
+            int limit,
+            String sortBy,
+            String sortOrder,
+            String state
+    ) {
+        if (currentUserProvider().getUser().getResearchGroup() == null && !currentUserProvider().isAdmin()) {
+            throw new IllegalStateException("Current user is not assigned to any research group.");
+        }
+
+        InterviewProcess interviewProcess = findById(interviewProcessId);
+
+        currentUserProvider().assertCanAccessResearchGroup(interviewProcess.getTopic().getResearchGroup());
+
+        String searchQueryFilter = (searchQuery == null || searchQuery.isBlank())
+                ? null
+                : "%" + searchQuery.toLowerCase() + "%";
+
+        String stateFilter = (state == null || state.isBlank()) ? null : state;
+
+        Sort.Order order = new Sort.Order(
+                sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,
+                HibernateHelper.getColumnName(Interviewee.class, sortBy)
+        );
+
+       return intervieweeRepository.findAllInterviewees( interviewProcessId, searchQueryFilter, stateFilter, PageRequest.of(page, limit <= 0 ? Integer.MAX_VALUE : limit, Sort.by(order)) );
     }
 }
