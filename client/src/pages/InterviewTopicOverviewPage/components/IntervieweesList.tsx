@@ -1,5 +1,20 @@
-import { Button, Group, SegmentedControl, Stack, TextInput, Title } from '@mantine/core'
-import { MagnifyingGlassIcon, PaperPlaneTiltIcon, PlusIcon } from '@phosphor-icons/react'
+import {
+  Button,
+  Center,
+  Group,
+  Loader,
+  SegmentedControl,
+  Stack,
+  TextInput,
+  Title,
+  Text,
+} from '@mantine/core'
+import {
+  MagnifyingGlassIcon,
+  PaperPlaneTiltIcon,
+  PlusIcon,
+  UsersFourIcon,
+} from '@phosphor-icons/react'
 import { useEffect, useState } from 'react'
 import {
   IIntervieweeLightWithNextSlot,
@@ -8,7 +23,7 @@ import {
 import { useIsSmallerBreakpoint } from '../../../hooks/theme'
 import { doRequest } from '../../../requests/request'
 import { PaginationResponse } from '../../../requests/responses/pagination'
-import { useParams } from 'react-router'
+import { useNavigate, useParams } from 'react-router'
 import { showSimpleError } from '../../../utils/notification'
 import { getApiResponseErrorMessage } from '../../../requests/handler'
 import { useDebouncedValue } from '@mantine/hooks'
@@ -17,7 +32,7 @@ import IntervieweeCard from './IntervieweeCard'
 const IntervieweesList = () => {
   const { processId } = useParams<{ processId: string }>()
   const [searchIntervieweeKey, setSearchIntervieweeKey] = useState('')
-  const [debouncedSearch] = useDebouncedValue(searchIntervieweeKey, 300)
+  const [debouncedSearch] = useDebouncedValue(searchIntervieweeKey, 500)
 
   const [state, setState] = useState<string>('ALL')
 
@@ -25,6 +40,8 @@ const IntervieweesList = () => {
 
   const [interviewees, setInterviewees] = useState<IIntervieweeLightWithNextSlot[]>([])
   const [intervieweesLoading, setIntervieweesLoading] = useState(false)
+
+  const navigate = useNavigate()
 
   const fetchMyInterviewProcesses = async () => {
     setIntervieweesLoading(true)
@@ -83,19 +100,40 @@ const IntervieweesList = () => {
           ]}
           radius={'md'}
         />
-        <Group>
-          <TextInput
-            placeholder='Search name...'
-            leftSection={<MagnifyingGlassIcon size={16} />}
-            value={searchIntervieweeKey}
-            onChange={(x) => setSearchIntervieweeKey(x.target.value || '')}
-            w={300}
-          />
-        </Group>
+        <TextInput
+          placeholder='Search name...'
+          leftSection={<MagnifyingGlassIcon size={16} />}
+          value={searchIntervieweeKey}
+          onChange={(x) => setSearchIntervieweeKey(x.target.value || '')}
+          w={isSmaller ? '100%' : 300}
+        />
       </Group>
+      {intervieweesLoading ? (
+        <Center h={'100%'} mih={'30vh'}>
+          <Loader />
+        </Center>
+      ) : interviewees.length === 0 ? (
+        <Center h={'100%'} mih={'30vh'}>
+          <Stack justify='center' align='center' h={'100%'}>
+            <UsersFourIcon size={60} />
+            <Stack gap={'0.5rem'} justify='center' align='center'>
+              <Title order={5}>No Interviewees Found</Title>
+              <Text c='dimmed' ta={'center'}>
+                Add a interviewee while reviewing application or just add them here
+              </Text>
+            </Stack>
+          </Stack>
+        </Center>
+      ) : null}
       <Stack>
         {interviewees.map((interviewee) => (
-          <IntervieweeCard key={interviewee.intervieweeId} interviewee={interviewee} />
+          <IntervieweeCard
+            key={interviewee.intervieweeId}
+            interviewee={interviewee}
+            onClick={() =>
+              navigate(`interviewee/${interviewee.intervieweeId}`, { relative: 'path' })
+            }
+          />
         ))}
       </Stack>
     </Stack>

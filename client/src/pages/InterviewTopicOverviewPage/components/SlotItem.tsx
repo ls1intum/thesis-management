@@ -76,15 +76,6 @@ const SlotItem = ({
                 No interview yet
               </Text>
             )}
-            {slot.bookedBy ? (
-              slot.bookedBy.score ? (
-                <Badge
-                  variant='light'
-                  color={scoreColorTranslate(slot.bookedBy.score, false)}
-                  size='sm'
-                >{`${createScoreLabel(slot.bookedBy.score)}`}</Badge>
-              ) : null
-            ) : null}
           </Group>
         )}
         {withTimeSpan && (

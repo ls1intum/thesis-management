@@ -17,9 +17,10 @@ import { getInterviewStateColor } from '../../../utils/format'
 
 interface IIntervieweeCardProps {
   interviewee: IIntervieweeLightWithNextSlot
+  onClick?: () => void
 }
 
-const IntervieweeCard = ({ interviewee }: IIntervieweeCardProps) => {
+const IntervieweeCard = ({ interviewee, onClick }: IIntervieweeCardProps) => {
   const checkState = () => {
     return interviewee.lastInvited != null
       ? interviewee.score
@@ -46,7 +47,13 @@ const IntervieweeCard = ({ interviewee }: IIntervieweeCardProps) => {
     >
       <Card p={0} ml={8} radius='md'>
         <Stack p={0} gap={0}>
-          <Group px={'1.5rem'} py={'0.75rem'} justify='space-between' align='center'>
+          <Group
+            px={'1.5rem'}
+            py={'0.75rem'}
+            justify='space-between'
+            align='center'
+            onClick={onClick}
+          >
             <Group miw={350} gap={'0.75rem'}>
               <CustomAvatar user={interviewee.user} size={32} />
               <Title order={5} lineClamp={1}>
