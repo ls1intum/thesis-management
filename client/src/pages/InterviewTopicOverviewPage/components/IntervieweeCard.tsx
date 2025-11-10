@@ -53,6 +53,7 @@ const IntervieweeCard = ({ interviewee, onClick }: IIntervieweeCardProps) => {
             justify='space-between'
             align='center'
             onClick={onClick}
+            style={{ cursor: 'pointer' }}
           >
             <Group miw={350} gap={'0.75rem'}>
               <CustomAvatar user={interviewee.user} size={32} />

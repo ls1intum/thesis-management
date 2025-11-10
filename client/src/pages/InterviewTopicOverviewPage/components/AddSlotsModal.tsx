@@ -18,14 +18,35 @@ import dayjs from 'dayjs'
 import { CalendarBlankIcon } from '@phosphor-icons/react'
 import CollapsibleDateCard from './CollapsibleDateCard'
 import { useIsSmallerBreakpoint } from '../../../hooks/theme'
+import { IIntervieweeSlot } from '../../../requests/responses/interview'
 
 interface IAddSlotsModalProps {
   slotModalOpen: boolean
   setSlotModalOpen: (open: boolean) => void
+  interviewSlotItems?: Record<string, IIntervieweeSlot[]>
 }
 
-const AddSlotsModal = ({ slotModalOpen, setSlotModalOpen }: IAddSlotsModalProps) => {
-  const [selected, setSelected] = useState<Date[]>([])
+const AddSlotsModal = ({
+  slotModalOpen,
+  setSlotModalOpen,
+  interviewSlotItems,
+}: IAddSlotsModalProps) => {
+  //Show existing slots on selected dates or just selected dates
+  const [selected, setSelected] = useState<Date[]>(
+    interviewSlotItems ? Object.keys(interviewSlotItems).map((key) => new Date(key)) : [],
+  )
+
+  const [openDates, setOpenDates] = useState<string[]>(
+    interviewSlotItems
+      ? Object.keys(interviewSlotItems).map((key) => new Date(key).toDateString())
+      : [],
+  )
+
+  const isSmaller = useIsSmallerBreakpoint('sm')
+
+  const [duration, setDuration] = useState<number>(30) // in minutes
+
+  const [sameSlotsForAllDays, setSameSlotsForAllDays] = useState(false)
 
   const handleSelect = (date: Date) => {
     const isSelected = selected.some((s) => dayjs(s).isSame(date, 'day'))
@@ -38,13 +59,17 @@ const AddSlotsModal = ({ slotModalOpen, setSlotModalOpen }: IAddSlotsModalProps)
     }
   }
 
-  const [openDates, setOpenDates] = useState<string[]>([])
-
-  const isSmaller = useIsSmallerBreakpoint('sm')
-
-  const [duration, setDuration] = useState<number>(30) // in minutes
-
-  const [sameSlotsForAllDays, setSameSlotsForAllDays] = useState(false)
+  const onClose = () => {
+    setSlotModalOpen(false)
+    setSelected(
+      interviewSlotItems ? Object.keys(interviewSlotItems).map((key) => new Date(key)) : [],
+    )
+    setOpenDates(
+      interviewSlotItems
+        ? Object.keys(interviewSlotItems).map((key) => new Date(key).toDateString())
+        : [],
+    )
+  }
 
   return (
     <Modal
@@ -52,8 +77,7 @@ const AddSlotsModal = ({ slotModalOpen, setSlotModalOpen }: IAddSlotsModalProps)
       size='1000px'
       opened={slotModalOpen}
       onClose={() => {
-        setSlotModalOpen(false)
-        setSelected([])
+        onClose()
       }}
       title={<Title order={3}>Add Interview Slot</Title>}
     >
@@ -146,6 +170,7 @@ const AddSlotsModal = ({ slotModalOpen, setSlotModalOpen }: IAddSlotsModalProps)
                           key={date.toDateString()}
                           date={date}
                           duration={duration}
+                          slots={interviewSlotItems?.[date.toISOString().split('T')[0]]}
                         />
                       ))}
                   </Accordion>

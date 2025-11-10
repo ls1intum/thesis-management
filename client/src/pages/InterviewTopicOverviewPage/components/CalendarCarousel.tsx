@@ -72,8 +72,8 @@ const CalendarCarousel = () => {
     '2025-12-12': [
       {
         slotId: '4',
-        startDate: new Date('2025-12-12T10:00:00Z'),
-        endDate: new Date('2025-12-12T10:30:00Z'),
+        startDate: new Date('2025-12-12T09:00:00Z'),
+        endDate: new Date('2025-12-12T09:30:00Z'),
         bookedBy: {
           intervieweeId: 'u3',
           user: {
@@ -153,8 +153,6 @@ const CalendarCarousel = () => {
 
   const [carouselSlide, setCarouselSlide] = useState(0)
 
-  const rowAmount = 3
-
   const [firstSlideIndexForDate, setFirstSlideIndexForDate] = useState<Record<string, number>>({})
   const [totalSlides, setTotalSlides] = useState(0)
   useEffect(() => {
@@ -192,6 +190,8 @@ const CalendarCarousel = () => {
   const isSmaller = useIsSmallerBreakpoint('md')
 
   const [slotModalOpen, setSlotModalOpen] = useState(false)
+
+  const rowAmount = isSmaller ? 2 : 3
 
   const getSlideDisplayAmount = () => {
     const isMobile = useIsSmallerBreakpoint('sm')
@@ -316,7 +316,11 @@ const CalendarCarousel = () => {
           )
         })}
       </Carousel>
-      <AddSlotsModal slotModalOpen={slotModalOpen} setSlotModalOpen={setSlotModalOpen} />
+      <AddSlotsModal
+        slotModalOpen={slotModalOpen}
+        setSlotModalOpen={setSlotModalOpen}
+        interviewSlotItems={interviewSlotItems}
+      />
     </Stack>
   )
 }
