@@ -16,7 +16,7 @@ interface ICollapsibleDateCardProps {
 interface ISlotRange {
   startTime: Date | null
   endTime: Date | null
-  type: 'single' | 'range'
+  type: 'single' | 'range' | 'scheduled'
   duration: number
   slots?: IIntervieweeSlot[]
 }
@@ -57,7 +57,6 @@ const CollapsibleDateCard = ({ date, duration = 30, slots }: ICollapsibleDateCar
   //These next functions build slot ranges from existing slots, we do this in the client, because saving it to the server does not make sense since it is extra overhead to manage and changes frequently when slots are scheduled
   // For the user it is only important to be able to change them as quickly as possible and the range is just a representation of that
 
-  // helper that assumes all slots are "range-eligible" (e.g. unscheduled)
   function buildRangesForUnscheduled(slots: IIntervieweeSlot[]): ISlotRange[] {
     if (!slots.length) return []
 
@@ -166,7 +165,7 @@ const CollapsibleDateCard = ({ date, duration = 30, slots }: ICollapsibleDateCar
     const scheduledRanges: ISlotRange[] = scheduledSlots.map((s) => ({
       startTime: s.startDate,
       endTime: s.endDate,
-      type: 'single',
+      type: 'scheduled',
       duration: s.endDate.getTime() - s.startDate.getTime(),
       slots: [s],
     }))
@@ -269,12 +268,10 @@ const CollapsibleDateCard = ({ date, duration = 30, slots }: ICollapsibleDateCar
                     <Group justify='space-between' align='center'>
                       <Text fw={500} size={'xs'} c={'dimmed'}>
                         {slotRange.type === 'single'
-                          ? slotRange.slots &&
-                            slotRange.slots.length > 0 &&
-                            slotRange.slots[0].bookedBy
+                          ? 'Single'
+                          : slotRange.type === 'scheduled'
                             ? 'Booked'
-                            : 'Single'
-                          : 'Range'}{' '}
+                            : 'Range'}
                         Slot
                       </Text>
 
@@ -300,19 +297,15 @@ const CollapsibleDateCard = ({ date, duration = 30, slots }: ICollapsibleDateCar
                         size={'lg'}
                         color={
                           slotRange.type === 'single'
-                            ? slotRange.slots &&
-                              slotRange.slots.length > 0 &&
-                              slotRange.slots[0].bookedBy
+                            ? 'green'
+                            : slotRange.type === 'scheduled'
                               ? 'primary'
-                              : 'green'
-                            : `blue`
+                              : 'blue'
                         }
                       />
 
                       <Stack w={'100%'}>
-                        {slotRange.slots &&
-                        slotRange.slots.length > 0 &&
-                        slotRange.slots[0].bookedBy ? undefined : (
+                        {slotRange.type !== 'scheduled' && (
                           <Group>
                             <TimeInput
                               value={slotRange.startTime?.toTimeString().slice(0, 5) ?? ''}
