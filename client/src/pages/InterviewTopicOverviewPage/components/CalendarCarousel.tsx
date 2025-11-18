@@ -1,15 +1,21 @@
 import { Carousel } from '@mantine/carousel'
-import { Badge, Button, Divider, Group, Stack, Title } from '@mantine/core'
-import { CalendarDotsIcon, PlusIcon } from '@phosphor-icons/react'
-import { IIntervieweeSlot } from '../../../requests/responses/interview'
+import { Badge, Button, Center, Divider, Group, Loader, Stack, Title, Text } from '@mantine/core'
+import { CalendarDotsIcon, ClockUserIcon, PlusIcon } from '@phosphor-icons/react'
+import { IInterviewSlot } from '../../../requests/responses/interview'
 import { DateHeaderItem } from './DateHeaderItem'
 import SlotItem from './SlotItem'
 import { useIsSmallerBreakpoint } from '../../../hooks/theme'
 import { useEffect, useState } from 'react'
 import AddSlotsModal from './AddSlotsModal'
+import { doRequest } from '../../../requests/request'
+import { useParams } from 'react-router'
+import { showSimpleError } from '../../../utils/notification'
+import { getApiResponseErrorMessage } from '../../../requests/handler'
 
 const CalendarCarousel = () => {
-  const interviewSlotItems: Record<string, IIntervieweeSlot[]> = {
+  const { processId } = useParams<{ processId: string }>()
+
+  /*const interviewSlotItems: Record<string, IInterviewSlot[]> = {
     //TODO: replace with real data
     '2025-11-10': [
       {
@@ -149,23 +155,66 @@ const CalendarCarousel = () => {
         bookedBy: null,
       },
     ],
-  }
+  }*/
+
+  const [interviewSlots, setInterviewSlots] = useState<Record<string, IInterviewSlot[]>>({})
+  const [interviewSlotsLoading, setInterviewSlotsLoading] = useState(false)
 
   const [carouselSlide, setCarouselSlide] = useState(0)
 
   const [firstSlideIndexForDate, setFirstSlideIndexForDate] = useState<Record<string, number>>({})
   const [totalSlides, setTotalSlides] = useState(0)
+
+  const fetchInterviewSlots = async () => {
+    setInterviewSlotsLoading(true)
+
+    doRequest<IInterviewSlot[]>(
+      `/v2/interview-process/${processId}/interview-slots`,
+      {
+        method: 'GET',
+        requiresAuth: true,
+      },
+      (res) => {
+        if (res.ok) {
+          setInterviewSlots(groupSlotsByDate(res.data))
+        } else {
+          showSimpleError(getApiResponseErrorMessage(res))
+        }
+        setInterviewSlotsLoading(false)
+      },
+    )
+  }
+
+  function groupSlotsByDate(slots: IInterviewSlot[]): Record<string, IInterviewSlot[]> {
+    return slots.reduce(
+      (acc, slot) => {
+        const startDate = new Date(slot.startDate)
+        const endDate = new Date(slot.endDate)
+        const dateKey = startDate.toISOString().slice(0, 10)
+        const slotWithDates = { ...slot, startDate, endDate }
+        if (!acc[dateKey]) acc[dateKey] = []
+        acc[dateKey].push(slotWithDates)
+        return acc
+      },
+      {} as Record<string, IInterviewSlot[]>,
+    )
+  }
+
+  useEffect(() => {
+    fetchInterviewSlots()
+  }, [])
+
   useEffect(() => {
     let slideIndex = 0
     const firstSlideIndexForDateTemp: Record<string, number> = {}
-    Object.entries(interviewSlotItems).forEach(([date, slots]) => {
+    Object.entries(interviewSlots).forEach(([date, slots]) => {
       const chunks = Math.ceil(slots.length / rowAmount)
       firstSlideIndexForDateTemp[date] = slideIndex
       slideIndex += chunks
     })
     setFirstSlideIndexForDate(firstSlideIndexForDateTemp)
     setTotalSlides(slideIndex)
-  }, [])
+  }, [interviewSlots])
 
   const dateRowDisabled = (rowKey: string, chunkIndex: number) => {
     const index = firstSlideIndexForDate[rowKey] + chunkIndex
@@ -188,22 +237,21 @@ const CalendarCarousel = () => {
   }
 
   const isSmaller = useIsSmallerBreakpoint('md')
+  const isMobile = useIsSmallerBreakpoint('sm')
+  const isSmallScreen = useIsSmallerBreakpoint('lg')
+  const isMediumScreen = useIsSmallerBreakpoint('xl')
 
   const [slotModalOpen, setSlotModalOpen] = useState(false)
 
   const rowAmount = isSmaller ? 2 : 3
 
   const getSlideDisplayAmount = () => {
-    const isMobile = useIsSmallerBreakpoint('sm')
-    const isSmallScreen = useIsSmallerBreakpoint('lg')
-    const isMediumScreen = useIsSmallerBreakpoint('xl')
-
     return isMobile ? 1 : isSmallScreen ? 2 : isMediumScreen ? 3 : 4
   }
 
   const calendarHeader = () => {
     //TODO: LOGIC DOES NOT WORK YET DUE TO MULTIPLE ROWS PER DATE
-    const keys = Object.keys(interviewSlotItems)
+    const keys = Object.keys(interviewSlots)
     const itemsPerPage = getSlideDisplayAmount()
     const totalSlides = keys.length
     const lastSlideIndex = Math.max(0, Math.ceil(totalSlides / itemsPerPage) - 1)
@@ -220,10 +268,10 @@ const CalendarCarousel = () => {
   }
 
   const dateBeforeIsDiffrentMonth = (date: string): boolean => {
-    const indexOfDate = Object.keys(interviewSlotItems).indexOf(date)
+    const indexOfDate = Object.keys(interviewSlots).indexOf(date)
     if (indexOfDate <= 0) return false
 
-    const previousDate = Object.keys(interviewSlotItems)[indexOfDate - 1]
+    const previousDate = Object.keys(interviewSlots)[indexOfDate - 1]
     const currentDateObj = new Date(date)
     const previousDateObj = new Date(previousDate)
     return (
@@ -249,77 +297,98 @@ const CalendarCarousel = () => {
           </Button>
         </Group>
       </Group>
-      <Carousel
-        slideGap={'0.5rem'}
-        controlsOffset={'-100px'}
-        controlSize={32}
-        withControls
-        withIndicators={false}
-        slideSize={`${(100 - 14) / getSlideDisplayAmount()}%`}
-        emblaOptions={{ align: 'center', slidesToScroll: getSlideDisplayAmount() }}
-        onSlideChange={(index) => setCarouselSlide(index)}
-        px={20}
-      >
-        {Object.entries(interviewSlotItems).map(([date, slots]) => {
-          const chunks: IIntervieweeSlot[][] = []
-          for (let i = 0; i < slots.length; i += rowAmount) {
-            chunks.push(slots.slice(i, i + rowAmount))
-          }
+      {interviewSlotsLoading ? (
+        <Center h={'100%'} mih={'30vh'}>
+          <Loader />
+        </Center>
+      ) : Object.keys(interviewSlots).length === 0 ? (
+        <Center h={'100%'} mih={'20vh'}>
+          <Stack justify='center' align='center' h={'100%'} gap={'0.5rem'}>
+            <ClockUserIcon size={50} />
+            <Stack gap={'0.25rem'} justify='center' align='center'>
+              <Title order={5}>No Slots Found</Title>
+              <Text c='dimmed' ta={'center'}>
+                Add a new slot to get started
+              </Text>
+            </Stack>
+          </Stack>
+        </Center>
+      ) : (
+        <Carousel
+          slideGap={'0.5rem'}
+          controlsOffset={'-100px'}
+          controlSize={32}
+          withControls
+          withIndicators={false}
+          slideSize={`${(100 - 14) / getSlideDisplayAmount()}%`}
+          emblaOptions={{ align: 'center', slidesToScroll: getSlideDisplayAmount() }}
+          onSlideChange={(index) => setCarouselSlide(index)}
+          px={20}
+        >
+          {Object.entries(interviewSlots).map(([date, slots]) => {
+            const chunks: IInterviewSlot[][] = []
+            for (let i = 0; i < slots.length; i += rowAmount) {
+              chunks.push(slots.slice(i, i + rowAmount))
+            }
 
-          return (
-            <>
-              {chunks.map((chunk, chunkIndex) => (
-                <Carousel.Slide key={`${date}-${chunkIndex}`}>
-                  <Stack gap={'0.5rem'}>
-                    {chunkIndex === 0 ? (
-                      <Group align={'end'} justify={'flex-start'} gap={'0.25rem'} h={70}>
-                        {dateBeforeIsDiffrentMonth(date) && (
-                          <Stack gap={0} w={50} ml={-29}>
-                            <Group justify='center' w={50}>
-                              <Badge h={20} mb={5} size='sm'>
-                                {new Date(date).toLocaleString(undefined, { month: 'short' })}
-                              </Badge>
-                            </Group>
-                            <Group justify='center' w={50}>
-                              <Divider
-                                orientation='vertical'
-                                size='md'
-                                h={40}
-                                mb={5}
-                                color='primary'
-                              />
-                            </Group>
-                          </Stack>
-                        )}
-                        <DateHeaderItem
-                          date={date}
-                          h={50}
+            return (
+              <>
+                {chunks.map((chunk, chunkIndex) => (
+                  <Carousel.Slide key={`${date}-${chunkIndex}`}>
+                    <Stack gap={'0.5rem'}>
+                      {chunkIndex === 0 ? (
+                        <Group align={'end'} justify={'flex-start'} gap={'0.25rem'} h={70}>
+                          {dateBeforeIsDiffrentMonth(date) && (
+                            <Stack gap={0} w={50} ml={-29}>
+                              <Group justify='center' w={50}>
+                                <Badge h={20} mb={5} size='sm'>
+                                  {new Date(date).toLocaleString(undefined, { month: 'short' })}
+                                </Badge>
+                              </Group>
+                              <Group justify='center' w={50}>
+                                <Divider
+                                  orientation='vertical'
+                                  size='md'
+                                  h={40}
+                                  mb={5}
+                                  color='primary'
+                                />
+                              </Group>
+                            </Stack>
+                          )}
+                          <DateHeaderItem
+                            date={date}
+                            h={50}
+                            disabled={dateRowDisabled(date, chunkIndex)}
+                          />
+                        </Group>
+                      ) : (
+                        <Stack h={70} />
+                      )}
+                      {chunk.map((slot) => (
+                        <SlotItem
+                          slot={slot}
+                          key={slot.slotId}
+                          withInterviewee
                           disabled={dateRowDisabled(date, chunkIndex)}
+                          hoverEffect={false}
                         />
-                      </Group>
-                    ) : (
-                      <Stack h={70} />
-                    )}
-                    {chunk.map((slot) => (
-                      <SlotItem
-                        slot={slot}
-                        key={slot.slotId}
-                        withInterviewee
-                        disabled={dateRowDisabled(date, chunkIndex)}
-                        hoverEffect={false}
-                      />
-                    ))}
-                  </Stack>
-                </Carousel.Slide>
-              ))}
-            </>
-          )
-        })}
-      </Carousel>
+                      ))}
+                    </Stack>
+                  </Carousel.Slide>
+                ))}
+              </>
+            )
+          })}
+        </Carousel>
+      )}
       <AddSlotsModal
         slotModalOpen={slotModalOpen}
         setSlotModalOpen={setSlotModalOpen}
-        interviewSlotItems={interviewSlotItems}
+        interviewSlotItems={interviewSlots}
+        updateInterviewSlots={(newSlots: IInterviewSlot[]) =>
+          setInterviewSlots(groupSlotsByDate(newSlots))
+        }
       />
     </Stack>
   )

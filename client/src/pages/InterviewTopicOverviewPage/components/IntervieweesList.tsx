@@ -45,7 +45,6 @@ const IntervieweesList = () => {
 
   const fetchMyInterviewProcesses = async () => {
     setIntervieweesLoading(true)
-    console.log('Fetching interviewees for processId:', processId, 'with state:', state)
     doRequest<PaginationResponse<IIntervieweeLightWithNextSlot>>(
       `/v2/interview-process/${processId}/interviewees`,
       {

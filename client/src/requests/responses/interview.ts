@@ -27,7 +27,7 @@ export interface IUpcomingInterview {
   streamUrl?: string
 }
 
-export interface IIntervieweeSlot {
+export interface IInterviewSlot {
   slotId: string
   startDate: Date
   endDate: Date
@@ -44,7 +44,7 @@ export interface IIntervieweeLight {
 }
 
 export interface IIntervieweeLightWithNextSlot extends IIntervieweeLight {
-  nextSlot: IIntervieweeSlot | null
+  nextSlot: IInterviewSlot | null
 }
 
 export interface IInterviewee extends IIntervieweeLight {

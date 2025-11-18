@@ -13,24 +13,32 @@ import {
   Center,
 } from '@mantine/core'
 import { Calendar } from '@mantine/dates'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import dayjs from 'dayjs'
 import { CalendarBlankIcon } from '@phosphor-icons/react'
 import CollapsibleDateCard from './CollapsibleDateCard'
 import { useIsSmallerBreakpoint } from '../../../hooks/theme'
-import { IIntervieweeSlot } from '../../../requests/responses/interview'
+import { IInterviewSlot } from '../../../requests/responses/interview'
+import { doRequest } from '../../../requests/request'
+import { useParams } from 'react-router'
+import { showSimpleError } from '../../../utils/notification'
+import { getApiResponseErrorMessage } from '../../../requests/handler'
 
 interface IAddSlotsModalProps {
   slotModalOpen: boolean
   setSlotModalOpen: (open: boolean) => void
-  interviewSlotItems?: Record<string, IIntervieweeSlot[]>
+  interviewSlotItems?: Record<string, IInterviewSlot[]>
+  updateInterviewSlots: (newSlots: IInterviewSlot[]) => void
 }
 
 const AddSlotsModal = ({
   slotModalOpen,
   setSlotModalOpen,
   interviewSlotItems,
+  updateInterviewSlots,
 }: IAddSlotsModalProps) => {
+  const { processId } = useParams<{ processId: string }>()
+
   //Show existing slots on selected dates or just selected dates
   const [selected, setSelected] = useState<Date[]>(
     interviewSlotItems ? Object.keys(interviewSlotItems).map((key) => new Date(key)) : [],
@@ -41,6 +49,17 @@ const AddSlotsModal = ({
       ? Object.keys(interviewSlotItems).map((key) => new Date(key).toDateString())
       : [],
   )
+
+  useEffect(() => {
+    setSelected(
+      interviewSlotItems ? Object.keys(interviewSlotItems).map((key) => new Date(key)) : [],
+    )
+    setOpenDates(
+      interviewSlotItems
+        ? Object.keys(interviewSlotItems).map((key) => new Date(key).toDateString())
+        : [],
+    )
+  }, [interviewSlotItems])
 
   const isSmaller = useIsSmallerBreakpoint('sm')
 
@@ -68,6 +87,33 @@ const AddSlotsModal = ({
       interviewSlotItems
         ? Object.keys(interviewSlotItems).map((key) => new Date(key).toDateString())
         : [],
+    )
+  }
+
+  const [saveLoading, setSaveLoading] = useState(false)
+
+  const saveNewSlots = async () => {
+    setSaveLoading(true)
+    doRequest<IInterviewSlot[]>(
+      `/v2/interview-process/interview-slots`,
+      {
+        method: 'POST',
+        requiresAuth: true,
+        data: {
+          interviewProcessId: processId,
+          interviewSlots: interviewSlotItems ? Object.values(selected).flat() : [],
+          //TODO: USE THE NEW SLOTS FROM THE CARDS INSTEAD OF SELECTED
+        },
+      },
+      (res) => {
+        if (res.ok) {
+          updateInterviewSlots(res.data)
+          onClose()
+        } else {
+          showSimpleError(getApiResponseErrorMessage(res))
+        }
+        setSaveLoading(false)
+      },
     )
   }
 
@@ -189,7 +235,14 @@ const AddSlotsModal = ({
           </Stack>
         </Flex>
 
-        <Button fullWidth>Save Slots</Button>
+        <Button
+          fullWidth
+          onClick={() => {
+            saveNewSlots()
+          }}
+        >
+          Save Slots
+        </Button>
       </Stack>
     </Modal>
   )

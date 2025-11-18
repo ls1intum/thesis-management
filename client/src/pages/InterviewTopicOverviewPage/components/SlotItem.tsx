@@ -1,12 +1,12 @@
 import { Card, Group, Stack, Title, Text, useMantineColorScheme, Badge } from '@mantine/core'
-import { IIntervieweeSlot } from '../../../requests/responses/interview'
+import { IInterviewSlot } from '../../../requests/responses/interview'
 import { ClockIcon } from '@phosphor-icons/react'
 import { useHover } from '@mantine/hooks'
 import AvatarUser from '../../../components/AvatarUser/AvatarUser'
 import { createScoreLabel, scoreColorTranslate } from '../../../utils/format'
 
 interface ISlotItemProps {
-  slot: IIntervieweeSlot
+  slot: IInterviewSlot
   withTimeSpan?: boolean
   withInterviewee?: boolean
   selected?: boolean

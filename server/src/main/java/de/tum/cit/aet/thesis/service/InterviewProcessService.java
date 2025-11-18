@@ -1,6 +1,7 @@
 package de.tum.cit.aet.thesis.service;
 
 import de.tum.cit.aet.thesis.constants.ApplicationState;
+import de.tum.cit.aet.thesis.dto.InterviewSlotDto;
 import de.tum.cit.aet.thesis.entity.*;
 import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.repository.InterviewProcessRepository;
@@ -15,9 +16,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class InterviewProcessService {
@@ -161,5 +162,92 @@ public class InterviewProcessService {
         );
 
        return intervieweeRepository.findAllInterviewees( interviewProcessId, searchQueryFilter, stateFilter, PageRequest.of(page, limit <= 0 ? Integer.MAX_VALUE : limit, Sort.by(order)) );
+    }
+
+    public List<InterviewSlot> addInterviewSlotsToProcess(UUID interviewProcessId, List<InterviewSlotDto> interviewSlots) {
+        if (currentUserProvider().getUser().getResearchGroup() == null && !currentUserProvider().isAdmin()) {
+            throw new IllegalStateException("Current user is not assigned to any research group.");
+        }
+
+        InterviewProcess interviewProcess = findById(interviewProcessId);
+
+        currentUserProvider().assertCanAccessResearchGroup(interviewProcess.getTopic().getResearchGroup());
+
+
+        if (interviewProcess.getSlots() == null) {
+            interviewProcess.setSlots(new ArrayList<>());
+        }
+
+        List<InterviewSlot> existing = interviewProcess.getSlots();
+
+        // Delete all existing slots if incoming is null (modify in-place)
+        if (interviewSlots == null) {
+            existing.clear();
+            interviewProcessRepository.save(interviewProcess);
+            return existing;
+        }
+
+        Map<UUID, InterviewSlot> existingById = existing.stream()
+                .filter(s -> s.getId() != null)
+                .collect(Collectors.toMap(InterviewSlot::getId, Function.identity()));
+
+        Set<UUID> incomingIds = interviewSlots.stream()
+                .map(InterviewSlotDto::getSlotId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+
+        // Delete no longer existing slots (only if not booked) — modify the persistent collection via iterator
+        Iterator<InterviewSlot> it = existing.iterator();
+        while (it.hasNext()) {
+            InterviewSlot s = it.next();
+            if (s.getId() != null && !incomingIds.contains(s.getId()) && s.getInterviewee() == null) {
+                it.remove();
+            }
+        }
+
+        // Update existing or add new slots (operate on the same collection)
+        for (InterviewSlotDto incoming : interviewSlots) {
+            if (incoming.getSlotId() != null && existingById.containsKey(incoming.getSlotId())) {
+                InterviewSlot toUpdate = existingById.get(incoming.getSlotId());
+
+                // Only allow updating unbooked slots
+                if (toUpdate.getInterviewee() == null) {
+                    toUpdate.setStartDate(incoming.startDate());
+                    toUpdate.setEndDate(incoming.endDate());
+                    toUpdate.setLocation(incoming.location());
+                    toUpdate.setStreamLink(incoming.streamUrl());
+                }
+            } else {
+                // Create new slot and add to the persistent collection
+                InterviewSlot newSlot = new InterviewSlot();
+                newSlot.setInterviewProcess(interviewProcess);
+                newSlot.setStartDate(incoming.startDate());
+                newSlot.setEndDate(incoming.endDate());
+                newSlot.setLocation(incoming.location());
+                newSlot.setStreamLink(incoming.streamUrl());
+
+                existing.add(newSlot);
+            }
+        }
+
+        interviewProcessRepository.save(interviewProcess);
+
+        return interviewProcess.getSlots();
+    }
+
+    public List<InterviewSlot> getInterviewProcessInterviewSlots(
+            UUID interviewProcessId
+    ) {
+        if (currentUserProvider().getUser().getResearchGroup() == null && !currentUserProvider().isAdmin()) {
+            throw new IllegalStateException("Current user is not assigned to any research group.");
+        }
+
+        InterviewProcess interviewProcess = findById(interviewProcessId);
+
+        currentUserProvider().assertCanAccessResearchGroup(interviewProcess.getTopic().getResearchGroup());
+
+        return interviewProcess.getSlots() == null
+                ? new ArrayList<>()
+                : interviewProcess.getSlots();
     }
 }

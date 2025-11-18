@@ -1,8 +1,10 @@
 package de.tum.cit.aet.thesis.controller;
 
 import de.tum.cit.aet.thesis.controller.payload.CreateInterviewProcessPayload;
+import de.tum.cit.aet.thesis.controller.payload.CreateInterviewSlotsPayload;
 import de.tum.cit.aet.thesis.dto.*;
 import de.tum.cit.aet.thesis.entity.InterviewProcess;
+import de.tum.cit.aet.thesis.entity.InterviewSlot;
 import de.tum.cit.aet.thesis.entity.Interviewee;
 import de.tum.cit.aet.thesis.service.InterviewProcessService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -70,5 +73,28 @@ public class InterviewProcessController {
         Page<Interviewee> interviewProcessDto = interviewProcessService.getInterviewProcessInterviewees(interviewProcessId, searchQuery, page, limit, sortBy, sortOrder, state);
 
         return ResponseEntity.ok(PaginationDto.fromSpringPage(interviewProcessDto.map(IntervieweeLightWithNextSlotDto::fromIntervieweeEntity)));
+    }
+
+    @PostMapping("/interview-slots")
+    @PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
+    public ResponseEntity<List<InterviewSlotDto>> addInterviewProcess(@RequestBody CreateInterviewSlotsPayload payload) {
+        List<InterviewSlot> adaptedInterviewSlots = interviewProcessService.addInterviewSlotsToProcess(
+                payload.interviewProcessId(),
+                payload.interviewSlots()
+        );
+
+        List<InterviewSlotDto> interviewSlotDtos = adaptedInterviewSlots.stream().map((InterviewSlotDto::fromInterviewSlot)).toList();
+
+        return ResponseEntity.ok(interviewSlotDtos );
+    }
+
+    @GetMapping("/{interviewProcessId}/interview-slots")
+    @PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
+    public ResponseEntity<List<InterviewSlotDto>> getInterviewProcessInterviewSlots(
+            @PathVariable("interviewProcessId") UUID interviewProcessId
+    ) {
+        List<InterviewSlot> interviewSlots = interviewProcessService.getInterviewProcessInterviewSlots(interviewProcessId);
+        List<InterviewSlotDto> interviewSlotDtos = interviewSlots.stream().map((InterviewSlotDto::fromInterviewSlot)).toList();
+        return ResponseEntity.ok(interviewSlotDtos);
     }
 }

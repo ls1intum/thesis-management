@@ -1,6 +1,6 @@
 import { Accordion, Button, Card, Divider, Group, Stack, Text, Title } from '@mantine/core'
 import dayjs from 'dayjs'
-import { IIntervieweeSlot } from '../../../requests/responses/interview'
+import { IInterviewSlot } from '../../../requests/responses/interview'
 import { useEffect, useState } from 'react'
 import { CardsIcon } from '@phosphor-icons/react'
 import { TimeInput } from '@mantine/dates'
@@ -10,7 +10,7 @@ import DeleteButton from '../../../components/DeleteButton/DeleteButton'
 interface ICollapsibleDateCardProps {
   date: Date
   duration?: number
-  slots?: IIntervieweeSlot[]
+  slots?: IInterviewSlot[]
 }
 
 interface ISlotRange {
@@ -18,7 +18,7 @@ interface ISlotRange {
   endTime: Date | null
   type: 'single' | 'range' | 'scheduled'
   duration: number
-  slots?: IIntervieweeSlot[]
+  slots?: IInterviewSlot[]
 }
 
 const CollapsibleDateCard = ({ date, duration = 30, slots }: ICollapsibleDateCardProps) => {
@@ -28,8 +28,8 @@ const CollapsibleDateCard = ({ date, duration = 30, slots }: ICollapsibleDateCar
     startTime: Date,
     endTime: Date,
     duration: number,
-  ): IIntervieweeSlot[] => {
-    const slots: IIntervieweeSlot[] = []
+  ): IInterviewSlot[] => {
+    const slots: IInterviewSlot[] = []
 
     let currentTime = new Date(startTime)
     let slotEnd = new Date(currentTime)
@@ -57,7 +57,7 @@ const CollapsibleDateCard = ({ date, duration = 30, slots }: ICollapsibleDateCar
   //These next functions build slot ranges from existing slots, we do this in the client, because saving it to the server does not make sense since it is extra overhead to manage and changes frequently when slots are scheduled
   // For the user it is only important to be able to change them as quickly as possible and the range is just a representation of that
 
-  function buildRangesForUnscheduled(slots: IIntervieweeSlot[]): ISlotRange[] {
+  function buildRangesForUnscheduled(slots: IInterviewSlot[]): ISlotRange[] {
     if (!slots.length) return []
 
     // 1) Sort by start time
@@ -154,7 +154,7 @@ const CollapsibleDateCard = ({ date, duration = 30, slots }: ICollapsibleDateCar
     return ranges
   }
 
-  function buildSlotRanges(slots: IIntervieweeSlot[]): ISlotRange[] {
+  function buildSlotRanges(slots: IInterviewSlot[]): ISlotRange[] {
     if (!slots.length) return []
 
     // 0) split into scheduled vs unscheduled

@@ -1,6 +1,6 @@
 import { Button, Divider, Flex, Group, ScrollArea, Stack, Title, Text } from '@mantine/core'
 import { useIsSmallerBreakpoint } from '../../hooks/theme'
-import { IIntervieweeSlot } from '../../requests/responses/interview'
+import { IInterviewSlot } from '../../requests/responses/interview'
 import { DateHeaderItem } from '../InterviewTopicOverviewPage/components/DateHeaderItem'
 import SlotItem from '../InterviewTopicOverviewPage/components/SlotItem'
 import { Carousel } from '@mantine/carousel'
@@ -9,7 +9,7 @@ import SummaryCard from './components/SummaryCard'
 import { CalendarDotsIcon, ClockIcon, MapPinIcon } from '@phosphor-icons/react'
 
 const InterviewBookingPage = () => {
-  const interviewSlotItems: Record<string, IIntervieweeSlot[]> = {
+  const interviewSlotItems: Record<string, IInterviewSlot[]> = {
     //TODO: replace with real data & make sure only available, in the future and not booked slots are shown
     '2025-11-10': [
       {
@@ -135,7 +135,7 @@ const InterviewBookingPage = () => {
 
   const isSmaller = useIsSmallerBreakpoint('sm')
 
-  const [selectedSlot, setSelectedSlot] = useState<IIntervieweeSlot | null>(null)
+  const [selectedSlot, setSelectedSlot] = useState<IInterviewSlot | null>(null)
 
   const [carouselSlide, setCarouselSlide] = useState(0)
 
