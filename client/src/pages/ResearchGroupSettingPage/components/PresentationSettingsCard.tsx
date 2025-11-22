@@ -35,8 +35,10 @@ const PresentationSettingsCard = ({
       },
       (res) => {
         if (res.ok) {
-          if (res.data.presentationSlotDuration !== presentationDurationSettings) {
-            setPresentationDurationSettings(res.data.presentationSlotDuration)
+          if (
+            res.data.presentationSettings.presentationSlotDuration !== presentationDurationSettings
+          ) {
+            setPresentationDurationSettings(res.data.presentationSettings.presentationSlotDuration)
           }
         } else {
           showSimpleError(getApiResponseErrorMessage(res))

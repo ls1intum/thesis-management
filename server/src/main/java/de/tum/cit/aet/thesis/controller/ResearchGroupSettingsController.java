@@ -1,12 +1,11 @@
 package de.tum.cit.aet.thesis.controller;
 
 import de.tum.cit.aet.thesis.controller.payload.UpdateResearchGroupSettingsPayload;
-import de.tum.cit.aet.thesis.dto.ResearchGroupSettingsRejectDTO;
+import de.tum.cit.aet.thesis.dto.ResearchGroupSettingsDTO;
+import de.tum.cit.aet.thesis.dto.ResearchGroupSettingsPhasesDTO;
 import de.tum.cit.aet.thesis.entity.ResearchGroupSettings;
-import de.tum.cit.aet.thesis.entity.User;
-import de.tum.cit.aet.thesis.security.CurrentUserProvider;
+import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.service.ResearchGroupSettingsService;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -27,14 +26,17 @@ public class ResearchGroupSettingsController {
 
     @GetMapping("/{researchGroupId}")
     @PreAuthorize("hasAnyRole('admin', 'group-admin')")
-    public ResponseEntity<ResearchGroupSettings> getSettings(@PathVariable UUID researchGroupId) {
+    public ResponseEntity<ResearchGroupSettingsDTO> getSettings(@PathVariable UUID researchGroupId) {
         Optional<ResearchGroupSettings> settings = service.getByResearchGroupId(researchGroupId);
-        return settings.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        if (settings.isEmpty()) {
+            throw new ResourceNotFoundException("Research group settings not found");
+        }
+        return ResponseEntity.ok(ResearchGroupSettingsDTO.fromEntity(settings.get()));
     }
 
     @PostMapping("/{researchGroupId}/automatic-reject")
     @PreAuthorize("hasAnyRole('admin', 'group-admin')")
-    public ResponseEntity<ResearchGroupSettings> createOrUpdateRejectSettings(@PathVariable UUID researchGroupId, @RequestBody UpdateResearchGroupSettingsPayload newSettings) {
+    public ResponseEntity<ResearchGroupSettingsDTO> createOrUpdateRejectSettings(@PathVariable UUID researchGroupId, @RequestBody UpdateResearchGroupSettingsPayload newSettings) {
         Optional<ResearchGroupSettings> settings = service.getByResearchGroupId(researchGroupId);
         ResearchGroupSettings toSave = settings.orElseGet(ResearchGroupSettings::new);
 
@@ -48,9 +50,22 @@ public class ResearchGroupSettingsController {
         if (newSettings.presentationSettings() != null) {
             toSave.setPresentationSlotDuration(newSettings.presentationSettings().presentationSlotDuration());
         }
+        if (newSettings.phaseSettings() != null) {
+            toSave.setProposalPhaseActive(newSettings.phaseSettings().proposalPhaseActive());
+        }
 
         ResearchGroupSettings saved = service.saveOrUpdate(toSave);
-        return ResponseEntity.ok(saved);
+        return ResponseEntity.ok(ResearchGroupSettingsDTO.fromEntity(saved));
+    }
+
+    @GetMapping("/{researchGroupId}/phase-settings")
+    @PreAuthorize("hasAnyRole('admin', 'group-admin')")
+    public ResponseEntity<ResearchGroupSettingsPhasesDTO> getPhaseSettings(@PathVariable UUID researchGroupId) {
+        Optional<ResearchGroupSettings> existingSettings = service.getByResearchGroupId(researchGroupId);
+        ResearchGroupSettings settings = existingSettings.orElseGet(ResearchGroupSettings::new);
+
+        return ResponseEntity.ok(
+                ResearchGroupSettingsPhasesDTO.fromEntity(settings));
     }
 }
 

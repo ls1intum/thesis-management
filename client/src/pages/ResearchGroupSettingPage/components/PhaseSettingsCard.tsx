@@ -1,0 +1,68 @@
+import { Divider, Group, NumberInput, Stack, Switch, Text } from '@mantine/core'
+import { ResearchGroupSettingsCard } from './ResearchGroupSettingsCard'
+import { useEffect } from 'react'
+import { useDebouncedValue } from '@mantine/hooks'
+import { doRequest } from '../../../requests/request'
+import { useParams } from 'react-router'
+import { showSimpleError } from '../../../utils/notification'
+import { getApiResponseErrorMessage } from '../../../requests/handler'
+import { IResearchGroupSettings } from '../../../requests/responses/researchGroupSettings'
+
+interface PhaseSettingsProps {
+  proposalPhaseActive: boolean
+  setProposalPhaseActive: (value: boolean) => void
+}
+
+const PhaseSettingsCard = ({ proposalPhaseActive, setProposalPhaseActive }: PhaseSettingsProps) => {
+  const { researchGroupId } = useParams<{ researchGroupId: string }>()
+
+  useEffect(() => {
+    doRequest<IResearchGroupSettings>(
+      `/v2/research-group-settings/${researchGroupId}/automatic-reject`,
+      {
+        method: 'POST',
+        requiresAuth: true,
+        data: {
+          phaseSettings: {
+            proposalPhaseActive: proposalPhaseActive,
+          },
+        },
+      },
+      (res) => {
+        if (res.ok) {
+          if (res.data.phaseSettings.proposalPhaseActive !== proposalPhaseActive) {
+            setProposalPhaseActive(res.data.phaseSettings.proposalPhaseActive)
+          }
+        } else {
+          showSimpleError(getApiResponseErrorMessage(res))
+        }
+      },
+    )
+  }, [proposalPhaseActive])
+
+  return (
+    <ResearchGroupSettingsCard
+      title='Thesis Phase Settings'
+      subtle='Turn off thesis phases for this research group that are not used in this group.'
+    >
+      <Stack>
+        <Group justify='space-between' align='center' wrap='nowrap'>
+          <Stack gap={2}>
+            <Text size='sm' fw={500}>
+              Enable Proposal Phase
+            </Text>
+            <Text size='xs' c='dimmed'>
+              Turn off the proposal phase for this research group if proposals are not used.
+            </Text>
+          </Stack>
+          <Switch
+            checked={proposalPhaseActive}
+            onChange={(event) => setProposalPhaseActive(event.currentTarget.checked)}
+          />
+        </Group>
+      </Stack>
+    </ResearchGroupSettingsCard>
+  )
+}
+
+export default PhaseSettingsCard

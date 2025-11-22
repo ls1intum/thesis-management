@@ -41,11 +41,13 @@ const AutomaticRejectionCard = ({
       },
       (res) => {
         if (res.ok) {
-          if (res.data.automaticRejectEnabled !== automaticRejectionEnabledSettings) {
-            setAutomaticRejectionEnabledSettings(res.data.automaticRejectEnabled)
+          if (
+            res.data.rejectSettings.automaticRejectEnabled !== automaticRejectionEnabledSettings
+          ) {
+            setAutomaticRejectionEnabledSettings(res.data.rejectSettings.automaticRejectEnabled)
           }
-          if (res.data.rejectDuration !== rejectDurationSettings) {
-            setRejectDurationSettings(res.data.rejectDuration)
+          if (res.data.rejectSettings.rejectDuration !== rejectDurationSettings) {
+            setRejectDurationSettings(res.data.rejectSettings.rejectDuration)
           }
         } else {
           showSimpleError(getApiResponseErrorMessage(res))

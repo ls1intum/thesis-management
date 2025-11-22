@@ -11,6 +11,7 @@ import { useUser } from '../../hooks/authentication'
 import AutomaticRejectionCard from './components/AutomaticRejectionCard'
 import { IResearchGroupSettings } from '../../requests/responses/researchGroupSettings'
 import PresentationSettingsCard from './components/PresentationSettingsCard'
+import PhaseSettingsCard from './components/PhaseSettingsCard'
 
 const ResearchGroupSettingPage = () => {
   const { researchGroupId } = useParams<{ researchGroupId: string }>()
@@ -117,15 +118,20 @@ const ResearchGroupSettingPage = () => {
                   <>
                     <AutomaticRejectionCard
                       automaticRejectionEnabledSettings={
-                        researchGroupSettings?.automaticRejectEnabled || false
+                        researchGroupSettings?.rejectSettings.automaticRejectEnabled || false
                       }
-                      rejectDurationSettings={researchGroupSettings?.rejectDuration || 8}
+                      rejectDurationSettings={
+                        researchGroupSettings?.rejectSettings.rejectDuration || 8
+                      }
                       setAutomaticRejectionEnabledSettings={(value: boolean) =>
                         setResearchGroupSettings(
                           (prev) =>
                             ({
                               ...prev,
-                              automaticRejectEnabled: value,
+                              rejectSettings: {
+                                ...prev?.rejectSettings,
+                                automaticRejectEnabled: value,
+                              },
                             }) as IResearchGroupSettings,
                         )
                       }
@@ -134,21 +140,44 @@ const ResearchGroupSettingPage = () => {
                           (prev) =>
                             ({
                               ...prev,
-                              rejectDuration: value,
+                              rejectSettings: {
+                                ...prev?.rejectSettings,
+                                rejectDuration: value,
+                              },
+                            }) as IResearchGroupSettings,
+                        )
+                      }
+                    />
+                    <PhaseSettingsCard
+                      proposalPhaseActive={
+                        researchGroupSettings?.phaseSettings.proposalPhaseActive || false
+                      }
+                      setProposalPhaseActive={(value: boolean) =>
+                        setResearchGroupSettings(
+                          (prev) =>
+                            ({
+                              ...prev,
+                              phaseSettings: {
+                                ...prev?.phaseSettings,
+                                proposalPhaseActive: value,
+                              },
                             }) as IResearchGroupSettings,
                         )
                       }
                     />
                     <PresentationSettingsCard
                       presentationDurationSettings={
-                        researchGroupSettings?.presentationSlotDuration || 30
+                        researchGroupSettings?.presentationSettings.presentationSlotDuration || 30
                       }
                       setPresentationDurationSettings={(value: number) =>
                         setResearchGroupSettings(
                           (prev) =>
                             ({
                               ...prev,
-                              presentationSlotDuration: value,
+                              presentationSettings: {
+                                ...prev?.presentationSettings,
+                                presentationSlotDuration: value,
+                              },
                             }) as IResearchGroupSettings,
                         )
                       }
