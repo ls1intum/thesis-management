@@ -371,7 +371,7 @@ public class ThesisPresentationService {
                         "Details: " + clientHost + "/presentations/" + presentation.getId() + "\n\n" +
                         "Abstract:\n" + thesis.getAbstractField(),
                 presentation.getScheduledAt(),
-                presentation.getScheduledAt().plus(groupSettings != null ? groupSettings.getPresentationSlotDuration() : 45, ChronoUnit.MINUTES),
+                presentation.getScheduledAt().plus(groupSettings != null ? groupSettings.getPresentationSlotDuration() : 30, ChronoUnit.MINUTES),
                 this.applicationMail,
                 thesis.getRoles().stream().map(role -> role.getUser().getEmail()).toList(),
                 presentation.getInvites().stream().map(ThesisPresentationInvite::getEmail).toList()
