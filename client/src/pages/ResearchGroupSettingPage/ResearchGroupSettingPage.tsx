@@ -10,6 +10,7 @@ import ResearchGroupMembers from './components/ResearchGroupMembers'
 import { useUser } from '../../hooks/authentication'
 import AutomaticRejectionCard from './components/AutomaticRejectionCard'
 import { IResearchGroupSettings } from '../../requests/responses/researchGroupSettings'
+import PresentationSettingsCard from './components/PresentationSettingsCard'
 
 const ResearchGroupSettingPage = () => {
   const { researchGroupId } = useParams<{ researchGroupId: string }>()
@@ -113,30 +114,46 @@ const ResearchGroupSettingPage = () => {
                   setResearchGroupData={setResearchGroupData}
                 />
                 {!researchGroupSettingsLoading && (
-                  <AutomaticRejectionCard
-                    automaticRejectionEnabledSettings={
-                      researchGroupSettings?.automaticRejectEnabled || false
-                    }
-                    rejectDurationSettings={researchGroupSettings?.rejectDuration || 8}
-                    setAutomaticRejectionEnabledSettings={(value: boolean) =>
-                      setResearchGroupSettings(
-                        (prev) =>
-                          ({
-                            ...prev,
-                            automaticRejectEnabled: value,
-                          }) as IResearchGroupSettings,
-                      )
-                    }
-                    setRejectDurationSettings={(value: number) =>
-                      setResearchGroupSettings(
-                        (prev) =>
-                          ({
-                            ...prev,
-                            rejectDuration: value,
-                          }) as IResearchGroupSettings,
-                      )
-                    }
-                  />
+                  <>
+                    <AutomaticRejectionCard
+                      automaticRejectionEnabledSettings={
+                        researchGroupSettings?.automaticRejectEnabled || false
+                      }
+                      rejectDurationSettings={researchGroupSettings?.rejectDuration || 8}
+                      setAutomaticRejectionEnabledSettings={(value: boolean) =>
+                        setResearchGroupSettings(
+                          (prev) =>
+                            ({
+                              ...prev,
+                              automaticRejectEnabled: value,
+                            }) as IResearchGroupSettings,
+                        )
+                      }
+                      setRejectDurationSettings={(value: number) =>
+                        setResearchGroupSettings(
+                          (prev) =>
+                            ({
+                              ...prev,
+                              rejectDuration: value,
+                            }) as IResearchGroupSettings,
+                        )
+                      }
+                    />
+                    <PresentationSettingsCard
+                      presentationDurationSettings={
+                        researchGroupSettings?.presentationSlotDuration || 30
+                      }
+                      setPresentationDurationSettings={(value: number) =>
+                        setResearchGroupSettings(
+                          (prev) =>
+                            ({
+                              ...prev,
+                              presentationSlotDuration: value,
+                            }) as IResearchGroupSettings,
+                        )
+                      }
+                    />
+                  </>
                 )}
               </Stack>
             </Tabs.Panel>

@@ -19,5 +19,8 @@ public class ResearchGroupSettings {
 
     @Column(name = "reject_duration")
     private int rejectDuration;
+
+    @Column(name = "presentation_slot_duration")
+    private Integer presentationSlotDuration;
 }
 

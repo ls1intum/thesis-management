@@ -1,6 +1,6 @@
 import { Alert, Divider, Group, NumberInput, Stack, Switch, Text } from '@mantine/core'
 import { ResearchGroupSettingsCard } from './ResearchGroupSettingsCard'
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { useDebouncedValue } from '@mantine/hooks'
 import { doRequest } from '../../../requests/request'
 import { useParams } from 'react-router'
@@ -33,8 +33,10 @@ const AutomaticRejectionCard = ({
         method: 'POST',
         requiresAuth: true,
         data: {
-          automaticRejectEnabled: automaticRejectionEnabledSettings,
-          rejectDuration: debouncedRejectDuration,
+          rejectSettings: {
+            automaticRejectEnabled: automaticRejectionEnabledSettings,
+            rejectDuration: debouncedRejectDuration,
+          },
         },
       },
       (res) => {
@@ -89,7 +91,7 @@ const AutomaticRejectionCard = ({
         {automaticRejectionEnabledSettings && (
           <Group ml={'1rem'} wrap='nowrap'>
             <Divider orientation='vertical' />
-            <Stack gap={2}>
+            <Stack gap={2} w={'100%'}>
               <Text size='sm' fw={500}>
                 Rejection Time Period
               </Text>
@@ -108,6 +110,7 @@ const AutomaticRejectionCard = ({
                 onChange={(value) =>
                   setRejectDurationSettings(typeof value === 'number' ? value : Number(value))
                 }
+                w={'100%'}
               />
             </Stack>
           </Group>
