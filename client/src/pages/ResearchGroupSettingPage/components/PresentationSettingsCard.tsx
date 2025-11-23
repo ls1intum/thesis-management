@@ -21,7 +21,7 @@ const PresentationSettingsCard = ({
     const duration = typeof value === 'number' ? value : Number(value)
     setPresentationDurationSettings(duration)
     doRequest<IResearchGroupSettings>(
-      `/v2/research-group-settings/${researchGroupId}/automatic-reject`,
+      `/v2/research-group-settings/${researchGroupId}`,
       {
         method: 'POST',
         requiresAuth: true,

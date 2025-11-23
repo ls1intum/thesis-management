@@ -32,7 +32,7 @@ public class ResearchGroupSettingsController {
         return ResponseEntity.ok(ResearchGroupSettingsDTO.fromEntity(returnSettings));
     }
 
-    @PostMapping("/{researchGroupId}/automatic-reject")
+    @PostMapping("/{researchGroupId}")
     @PreAuthorize("hasAnyRole('admin', 'group-admin')")
     public ResponseEntity<ResearchGroupSettingsDTO> createOrUpdateRejectSettings(@PathVariable UUID researchGroupId, @RequestBody UpdateResearchGroupSettingsPayload newSettings) {
         Optional<ResearchGroupSettings> settings = service.getByResearchGroupId(researchGroupId);

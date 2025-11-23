@@ -17,7 +17,7 @@ const PhaseSettingsCard = ({ proposalPhaseActive, setProposalPhaseActive }: Phas
 
   const handleProposalPhaseChange = (value: boolean) => {
     doRequest<IResearchGroupSettings>(
-      `/v2/research-group-settings/${researchGroupId}/automatic-reject`,
+      `/v2/research-group-settings/${researchGroupId}`,
       {
         method: 'POST',
         requiresAuth: true,

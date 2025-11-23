@@ -14,7 +14,7 @@ import ThesisFeedbackOverview from '../ThesisFeedbackOverview/ThesisFeedbackOver
 import AuthenticatedFilePreview from '../../../../components/AuthenticatedFilePreview/AuthenticatedFilePreview'
 import UploadFileButton from '../../../../components/UploadFileButton/UploadFileButton'
 import FileHistoryTable from '../FileHistoryTable/FileHistoryTable'
-import { isThesisClosed } from '../../../../utils/thesis'
+import { checkMinimumThesisState, isThesisClosed } from '../../../../utils/thesis'
 
 const ThesisProposalSection = () => {
   const { thesis, access, updateThesis } = useLoadedThesisContext()
@@ -53,6 +53,10 @@ const ThesisProposalSection = () => {
   }
 
   const proposal = thesis.proposals[0]
+
+  if (!checkMinimumThesisState(thesis, ThesisState.PROPOSAL)) {
+    return <></>
+  }
 
   return (
     <Accordion
