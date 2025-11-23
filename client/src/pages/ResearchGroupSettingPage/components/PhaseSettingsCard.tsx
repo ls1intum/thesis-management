@@ -1,7 +1,6 @@
-import { Divider, Group, NumberInput, Stack, Switch, Text } from '@mantine/core'
+import { Group, Stack, Switch, Text } from '@mantine/core'
 import { ResearchGroupSettingsCard } from './ResearchGroupSettingsCard'
 import { useEffect } from 'react'
-import { useDebouncedValue } from '@mantine/hooks'
 import { doRequest } from '../../../requests/request'
 import { useParams } from 'react-router'
 import { showSimpleError } from '../../../utils/notification'
@@ -16,7 +15,7 @@ interface PhaseSettingsProps {
 const PhaseSettingsCard = ({ proposalPhaseActive, setProposalPhaseActive }: PhaseSettingsProps) => {
   const { researchGroupId } = useParams<{ researchGroupId: string }>()
 
-  useEffect(() => {
+  const handleProposalPhaseChange = (value: boolean) => {
     doRequest<IResearchGroupSettings>(
       `/v2/research-group-settings/${researchGroupId}/automatic-reject`,
       {
@@ -24,7 +23,7 @@ const PhaseSettingsCard = ({ proposalPhaseActive, setProposalPhaseActive }: Phas
         requiresAuth: true,
         data: {
           phaseSettings: {
-            proposalPhaseActive: proposalPhaseActive,
+            proposalPhaseActive: value,
           },
         },
       },
@@ -38,7 +37,7 @@ const PhaseSettingsCard = ({ proposalPhaseActive, setProposalPhaseActive }: Phas
         }
       },
     )
-  }, [proposalPhaseActive])
+  }
 
   return (
     <ResearchGroupSettingsCard
@@ -57,7 +56,10 @@ const PhaseSettingsCard = ({ proposalPhaseActive, setProposalPhaseActive }: Phas
           </Stack>
           <Switch
             checked={proposalPhaseActive}
-            onChange={(event) => setProposalPhaseActive(event.currentTarget.checked)}
+            onChange={(event) => {
+              setProposalPhaseActive(event.currentTarget.checked)
+              handleProposalPhaseChange(event.currentTarget.checked)
+            }}
           />
         </Group>
       </Stack>

@@ -23,7 +23,7 @@ public class ResearchGroupSettings {
     @Column(name = "presentation_slot_duration")
     private Integer presentationSlotDuration;
 
-    @Column(name = "proposal_phase_active")
+    @Column(name = "proposal_phase_active", nullable = false)
     private boolean proposalPhaseActive;
 }
 

@@ -22,11 +22,10 @@ const AutomaticRejectionCard = ({
   setAutomaticRejectionEnabledSettings,
   setRejectDurationSettings,
 }: AutomaticRejectionCardProps) => {
-  const [debouncedRejectDuration] = useDebouncedValue(rejectDurationSettings, 300)
-
   const { researchGroupId } = useParams<{ researchGroupId: string }>()
 
-  useEffect(() => {
+  const updateAutiomaticRejectionSettings = (enable: boolean, duration: number | string) => {
+    const durationValue = typeof duration === 'number' ? duration : Number(duration)
     doRequest<IResearchGroupSettings>(
       `/v2/research-group-settings/${researchGroupId}/automatic-reject`,
       {
@@ -34,8 +33,8 @@ const AutomaticRejectionCard = ({
         requiresAuth: true,
         data: {
           rejectSettings: {
-            automaticRejectEnabled: automaticRejectionEnabledSettings,
-            rejectDuration: debouncedRejectDuration,
+            automaticRejectEnabled: enable,
+            rejectDuration: durationValue,
           },
         },
       },
@@ -54,7 +53,7 @@ const AutomaticRejectionCard = ({
         }
       },
     )
-  }, [debouncedRejectDuration, automaticRejectionEnabledSettings])
+  }
 
   return (
     <ResearchGroupSettingsCard
@@ -73,7 +72,10 @@ const AutomaticRejectionCard = ({
           </Stack>
           <Switch
             checked={automaticRejectionEnabledSettings}
-            onChange={(event) => setAutomaticRejectionEnabledSettings(event.currentTarget.checked)}
+            onChange={(event) => {
+              setAutomaticRejectionEnabledSettings(event.currentTarget.checked)
+              updateAutiomaticRejectionSettings(event.currentTarget.checked, rejectDurationSettings)
+            }}
           />
         </Group>
         {!automaticRejectionEnabledSettings && (
@@ -109,9 +111,10 @@ const AutomaticRejectionCard = ({
                 suffix=' weeks'
                 value={rejectDurationSettings}
                 pt={6}
-                onChange={(value) =>
+                onChange={(value) => {
                   setRejectDurationSettings(typeof value === 'number' ? value : Number(value))
-                }
+                  updateAutiomaticRejectionSettings(automaticRejectionEnabledSettings, value)
+                }}
                 w={'100%'}
               />
             </Stack>
