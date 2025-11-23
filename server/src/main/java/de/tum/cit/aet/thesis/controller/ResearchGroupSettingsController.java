@@ -27,10 +27,9 @@ public class ResearchGroupSettingsController {
     @PreAuthorize("hasAnyRole('admin', 'group-admin')")
     public ResponseEntity<ResearchGroupSettingsDTO> getSettings(@PathVariable UUID researchGroupId) {
         Optional<ResearchGroupSettings> settings = service.getByResearchGroupId(researchGroupId);
-        if (settings.isEmpty()) {
-            throw new ResourceNotFoundException("Research group settings not found");
-        }
-        return ResponseEntity.ok(ResearchGroupSettingsDTO.fromEntity(settings.get()));
+        ResearchGroupSettings returnSettings = settings.orElseGet(ResearchGroupSettings::new);
+
+        return ResponseEntity.ok(ResearchGroupSettingsDTO.fromEntity(returnSettings));
     }
 
     @PostMapping("/{researchGroupId}/automatic-reject")

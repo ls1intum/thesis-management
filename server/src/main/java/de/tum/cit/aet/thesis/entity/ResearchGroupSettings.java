@@ -24,6 +24,6 @@ public class ResearchGroupSettings {
     private Integer presentationSlotDuration;
 
     @Column(name = "proposal_phase_active", nullable = false)
-    private boolean proposalPhaseActive;
+    private boolean proposalPhaseActive = true;
 }
 
