@@ -51,7 +51,8 @@ const PhaseSettingsCard = ({ proposalPhaseActive, setProposalPhaseActive }: Phas
               Enable Proposal Phase
             </Text>
             <Text size='xs' c='dimmed'>
-              Turn off the proposal phase for this research group if proposals are not used.
+              Turn off the proposal phase for this research group if proposals are not used. This
+              will only affect new theses that are created or accepted after changing this setting.
             </Text>
           </Stack>
           <Switch
