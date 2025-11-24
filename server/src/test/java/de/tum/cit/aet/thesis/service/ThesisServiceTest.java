@@ -47,6 +47,8 @@ class ThesisServiceTest {
     private ResearchGroupRepository researchGroupRepository;
     @Mock
     private CurrentUserProvider currentUserProvider;
+    @Mock
+    private ResearchGroupSettingsService researchGroupSettingsService;
 
     private ThesisService thesisService;
     private Thesis testThesis;
@@ -60,7 +62,7 @@ class ThesisServiceTest {
                 userRepository, thesisProposalRepository, thesisAssessmentRepository,
                 uploadService, mailingService, accessManagementService,
                 thesisPresentationService, thesisFeedbackRepository, thesisFileRepository,
-                currentUserProviderProvider, researchGroupRepository
+                currentUserProviderProvider, researchGroupRepository, researchGroupSettingsService
         );
         when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
 

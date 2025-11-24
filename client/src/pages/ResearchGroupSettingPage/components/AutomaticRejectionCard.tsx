@@ -1,7 +1,5 @@
 import { Alert, Divider, Group, NumberInput, Stack, Switch, Text } from '@mantine/core'
 import { ResearchGroupSettingsCard } from './ResearchGroupSettingsCard'
-import { useEffect } from 'react'
-import { useDebouncedValue } from '@mantine/hooks'
 import { doRequest } from '../../../requests/request'
 import { useParams } from 'react-router'
 import { showSimpleError } from '../../../utils/notification'
@@ -22,37 +20,38 @@ const AutomaticRejectionCard = ({
   setAutomaticRejectionEnabledSettings,
   setRejectDurationSettings,
 }: AutomaticRejectionCardProps) => {
-  const [debouncedRejectDuration] = useDebouncedValue(rejectDurationSettings, 300)
-
   const { researchGroupId } = useParams<{ researchGroupId: string }>()
 
-  useEffect(() => {
+  const updateAutiomaticRejectionSettings = (enable: boolean, duration: number | string) => {
+    const durationValue = typeof duration === 'number' ? duration : Number(duration)
     doRequest<IResearchGroupSettings>(
-      `/v2/research-group-settings/${researchGroupId}/automatic-reject`,
+      `/v2/research-group-settings/${researchGroupId}`,
       {
         method: 'POST',
         requiresAuth: true,
         data: {
           rejectSettings: {
-            automaticRejectEnabled: automaticRejectionEnabledSettings,
-            rejectDuration: debouncedRejectDuration,
+            automaticRejectEnabled: enable,
+            rejectDuration: durationValue,
           },
         },
       },
       (res) => {
         if (res.ok) {
-          if (res.data.automaticRejectEnabled !== automaticRejectionEnabledSettings) {
-            setAutomaticRejectionEnabledSettings(res.data.automaticRejectEnabled)
+          if (
+            res.data.rejectSettings.automaticRejectEnabled !== automaticRejectionEnabledSettings
+          ) {
+            setAutomaticRejectionEnabledSettings(res.data.rejectSettings.automaticRejectEnabled)
           }
-          if (res.data.rejectDuration !== rejectDurationSettings) {
-            setRejectDurationSettings(res.data.rejectDuration)
+          if (res.data.rejectSettings.rejectDuration !== rejectDurationSettings) {
+            setRejectDurationSettings(res.data.rejectSettings.rejectDuration)
           }
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
         }
       },
     )
-  }, [debouncedRejectDuration, automaticRejectionEnabledSettings])
+  }
 
   return (
     <ResearchGroupSettingsCard
@@ -71,7 +70,10 @@ const AutomaticRejectionCard = ({
           </Stack>
           <Switch
             checked={automaticRejectionEnabledSettings}
-            onChange={(event) => setAutomaticRejectionEnabledSettings(event.currentTarget.checked)}
+            onChange={(event) => {
+              setAutomaticRejectionEnabledSettings(event.currentTarget.checked)
+              updateAutiomaticRejectionSettings(event.currentTarget.checked, rejectDurationSettings)
+            }}
           />
         </Group>
         {!automaticRejectionEnabledSettings && (
@@ -107,9 +109,10 @@ const AutomaticRejectionCard = ({
                 suffix=' weeks'
                 value={rejectDurationSettings}
                 pt={6}
-                onChange={(value) =>
+                onChange={(value) => {
                   setRejectDurationSettings(typeof value === 'number' ? value : Number(value))
-                }
+                  updateAutiomaticRejectionSettings(automaticRejectionEnabledSettings, value)
+                }}
                 w={'100%'}
               />
             </Stack>

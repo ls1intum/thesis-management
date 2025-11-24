@@ -1,7 +1,7 @@
 export interface IResearchGroupSettings {
-  automaticRejectEnabled: boolean
-  rejectDuration: number
-  presentationSlotDuration: number
+  rejectSettings: IResearchGroupSettingsReject
+  presentationSettings: IResearchGroupSettingsPresentation
+  phaseSettings: IResearchGroupSettingsPhase
 }
 
 export interface IResearchGroupSettingsReject {
@@ -10,5 +10,9 @@ export interface IResearchGroupSettingsReject {
 }
 
 export interface IResearchGroupSettingsPresentation {
-  presentationDuration: number
+  presentationSlotDuration: number
+}
+
+export interface IResearchGroupSettingsPhase {
+  proposalPhaseActive: boolean
 }

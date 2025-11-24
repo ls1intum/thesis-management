@@ -1,7 +1,5 @@
-import { Divider, Group, NumberInput, Stack, Switch, Text } from '@mantine/core'
+import { Group, NumberInput, Stack, Switch, Text } from '@mantine/core'
 import { ResearchGroupSettingsCard } from './ResearchGroupSettingsCard'
-import { useEffect } from 'react'
-import { useDebouncedValue } from '@mantine/hooks'
 import { doRequest } from '../../../requests/request'
 import { useParams } from 'react-router'
 import { showSimpleError } from '../../../utils/notification'
@@ -17,33 +15,31 @@ const PresentationSettingsCard = ({
   presentationDurationSettings,
   setPresentationDurationSettings,
 }: PresentaionSettingsProps) => {
-  const [debouncedPresentationDuration] = useDebouncedValue(presentationDurationSettings, 300)
-
   const { researchGroupId } = useParams<{ researchGroupId: string }>()
 
-  useEffect(() => {
+  const handleDurationChange = (value: number | string) => {
+    const duration = typeof value === 'number' ? value : Number(value)
+    setPresentationDurationSettings(duration)
     doRequest<IResearchGroupSettings>(
-      `/v2/research-group-settings/${researchGroupId}/automatic-reject`,
+      `/v2/research-group-settings/${researchGroupId}`,
       {
         method: 'POST',
         requiresAuth: true,
         data: {
           presentationSettings: {
-            presentationSlotDuration: debouncedPresentationDuration,
+            presentationSlotDuration: duration,
           },
         },
       },
       (res) => {
         if (res.ok) {
-          if (res.data.presentationSlotDuration !== presentationDurationSettings) {
-            setPresentationDurationSettings(res.data.presentationSlotDuration)
-          }
+          setPresentationDurationSettings(res.data.presentationSettings.presentationSlotDuration)
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
         }
       },
     )
-  }, [debouncedPresentationDuration])
+  }
 
   return (
     <ResearchGroupSettingsCard
@@ -65,9 +61,10 @@ const PresentationSettingsCard = ({
               suffix=' minutes'
               value={presentationDurationSettings}
               pt={6}
-              onChange={(value) =>
+              onChange={(value) => {
                 setPresentationDurationSettings(typeof value === 'number' ? value : Number(value))
-              }
+                handleDurationChange(value)
+              }}
               w={'100%'}
             />
           </Stack>
