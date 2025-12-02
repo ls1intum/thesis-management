@@ -50,17 +50,14 @@ public class MailingService {
                 "APPLICATION_CREATED_CHAIR",
                 "en");
 
-        MailBuilder researchGroupMailBuilder = new MailBuilder(config, researchGroupEmailTemplate.getSubject(),
-                researchGroupEmailTemplate.getBodyHtml());
+        MailBuilder researchGroupMailBuilder = prepareApplicationCreatedMailBuilder(application, researchGroupEmailTemplate);
         researchGroupMailBuilder
-                .sendToChairMembers(application.getResearchGroup().getId())
-                .addNotificationName("new-applications")
-                .filterChairMembersNewApplicationNotifications(application.getTopic(), "new-applications")
-                .addStoredAttachment(application.getUser().getCvFilename(), getUserFilename(application.getUser(), "CV", application.getUser().getCvFilename()))
-                .addStoredAttachment(application.getUser().getExaminationFilename(), getUserFilename(application.getUser(), "Examination Report", application.getUser().getExaminationFilename()))
-                .addStoredAttachment(application.getUser().getDegreeFilename(), getUserFilename(application.getUser(), "Degree Report", application.getUser().getDegreeFilename()))
-                .fillApplicationPlaceholders(application)
-                .send(javaMailSender, uploadService);
+            .sendToChairMembers(application.getResearchGroup().getId())
+            .addNotificationName("new-applications")
+            .filterChairMembersNewApplicationNotifications(application.getTopic(), "new-applications")
+            .send(javaMailSender, uploadService);
+
+        sendApplicationCreatedNotificationCopy(application, researchGroupEmailTemplate);
 
         EmailTemplate studentEmailTemplate = loadTemplate(
                 application.getResearchGroup().getId(),
@@ -74,6 +71,54 @@ public class MailingService {
                 .addStoredAttachment(application.getUser().getDegreeFilename(), getUserFilename(application.getUser(), "Degree Report", application.getUser().getDegreeFilename()))
                 .fillApplicationPlaceholders(application)
                 .send(javaMailSender, uploadService);
+    }
+
+    private MailBuilder prepareApplicationCreatedMailBuilder(Application application, EmailTemplate template) {
+        return new MailBuilder(config, template.getSubject(), template.getBodyHtml())
+                .addStoredAttachment(application.getUser().getCvFilename(), getUserFilename(application.getUser(), "CV", application.getUser().getCvFilename()))
+                .addStoredAttachment(application.getUser().getExaminationFilename(), getUserFilename(application.getUser(), "Examination Report", application.getUser().getExaminationFilename()))
+                .addStoredAttachment(application.getUser().getDegreeFilename(), getUserFilename(application.getUser(), "Degree Report", application.getUser().getDegreeFilename()))
+                .fillApplicationPlaceholders(application);
+    }
+
+    /**
+     * Sends a copy of the application created notification to an additional email address
+     * when specified in the research group's settings.
+     *
+     * @param application The application for which the notification is sent.
+     * @param template The email template to use for the notification.
+     */
+    private void sendApplicationCreatedNotificationCopy(Application application, EmailTemplate template) {
+        String additionalEmail = application.getResearchGroup().getApplicationNotificationEmail();
+
+        if (additionalEmail == null || additionalEmail.isBlank()) {
+            return;
+        }
+
+        MailBuilder mailBuilder = prepareApplicationCreatedMailBuilder(application, template);
+
+        mailBuilder
+                .addPrimaryRecipient(buildApplicationNotificationRecipient(application.getResearchGroup(), additionalEmail))
+                .send(javaMailSender, uploadService);
+    }
+
+    private User buildApplicationNotificationRecipient(ResearchGroup researchGroup, String email) {
+        User recipient = new User();
+        recipient.setEmail(email);
+        recipient.setResearchGroup(researchGroup);
+
+        if (researchGroup != null && researchGroup.getHead() != null) {
+            recipient.setFirstName(researchGroup.getHead().getFirstName());
+            recipient.setLastName(researchGroup.getHead().getLastName());
+        } else if (researchGroup != null) {
+            recipient.setFirstName(researchGroup.getName());
+            recipient.setLastName("Applications");
+        } else {
+            recipient.setFirstName("Research Group");
+            recipient.setLastName("Applications");
+        }
+
+        return recipient;
     }
 
     public void sendApplicationAcceptanceEmail(Application application, Thesis thesis) {

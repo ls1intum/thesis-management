@@ -11,4 +11,5 @@ export interface IResearchGroup extends ILightResearchGroup {
   description: string
   websiteUrl: string
   campus: string
+  applicationNotificationEmail?: string | null
 }

@@ -51,6 +51,9 @@ public class ResearchGroup {
   @Column(name = "campus")
   private String campus;
 
+  @Column(name = "application_notification_email")
+  private String applicationNotificationEmail;
+
   @CreationTimestamp
   @Column(name = "created_at", nullable = false, updatable = false)
   private Instant createdAt;

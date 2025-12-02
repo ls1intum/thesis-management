@@ -10,7 +10,8 @@ public record ResearchGroupDto(
     String abbreviation,
     String description,
     String websiteUrl,
-    String campus
+    String campus,
+    String applicationNotificationEmail
 ) {
 
   public static ResearchGroupDto fromResearchGroupEntity(ResearchGroup group) {
@@ -25,6 +26,7 @@ public record ResearchGroupDto(
         group.getAbbreviation(),
         group.getDescription(),
         group.getWebsiteUrl(),
-        group.getCampus());
+        group.getCampus(),
+        group.getApplicationNotificationEmail());
   }
 }
