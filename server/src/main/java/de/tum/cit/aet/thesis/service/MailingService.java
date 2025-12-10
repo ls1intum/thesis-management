@@ -88,6 +88,10 @@ public class MailingService {
      * @param mailBuilder The MailBuilder instance used to construct the email.
      */
     private void sendNotificationCopy(ResearchGroup researchGroup, MailBuilder mailBuilder) {
+        if (researchGroup == null || researchGroup.getResearchGroupSettings() == null) {
+            return;
+        }
+
         String additionalEmail = researchGroup.getResearchGroupSettings().getApplicationNotificationEmail();
 
         if (additionalEmail == null || additionalEmail.isBlank()) {
