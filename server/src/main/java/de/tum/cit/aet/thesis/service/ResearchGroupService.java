@@ -277,23 +277,6 @@ public class ResearchGroupService {
     return savedResearchGroup;
   }
 
-  public ResearchGroup updateApplicationNotificationEmail(
-      ResearchGroup researchGroup, String applicationNotificationEmail) {
-    if (researchGroup.isArchived()) {
-      throw new AccessDeniedException("Cannot update an archived research group.");
-    }
-
-    currentUserProvider().assertCanAccessResearchGroup(researchGroup);
-
-    String cleanedEmail = applicationNotificationEmail == null ? null : applicationNotificationEmail.trim();
-    researchGroup.setApplicationNotificationEmail(
-        cleanedEmail == null || cleanedEmail.isEmpty() ? null : cleanedEmail);
-    researchGroup.setUpdatedAt(Instant.now());
-    researchGroup.setUpdatedBy(currentUserProvider().getUser());
-
-    return researchGroupRepository.save(researchGroup);
-  }
-
   public Page<User> getAllResearchGroupMembers(UUID researchGroupId, Integer page, Integer limit, String sortBy, String sortOrder) {
       ResearchGroup researchGroup = findById(researchGroupId);
       currentUserProvider().assertCanAccessResearchGroup(researchGroup);

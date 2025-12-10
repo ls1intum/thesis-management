@@ -7,7 +7,6 @@ import de.tum.cit.aet.thesis.dto.PaginationDto;
 import de.tum.cit.aet.thesis.dto.ResearchGroupDto;
 import de.tum.cit.aet.thesis.entity.ResearchGroup;
 import de.tum.cit.aet.thesis.entity.User;
-import de.tum.cit.aet.thesis.controller.payload.UpdateResearchGroupNotificationEmailPayload;
 import de.tum.cit.aet.thesis.service.ResearchGroupService;
 import de.tum.cit.aet.thesis.utility.RequestValidator;
 
@@ -150,24 +149,6 @@ public class ResearchGroupController {
     );
 
     return ResponseEntity.ok(ResearchGroupDto.fromResearchGroupEntity(researchGroup));
-  }
-
-  @PutMapping("/{researchGroupId}/application-notification-email")
-  @PreAuthorize("hasAnyRole('admin', 'group-admin')")
-  public ResponseEntity<ResearchGroupDto> updateApplicationNotificationEmail(
-      @PathVariable("researchGroupId") UUID researchGroupId,
-      @RequestBody UpdateResearchGroupNotificationEmailPayload payload
-  ) {
-    ResearchGroup researchGroup = researchGroupService.findById(researchGroupId);
-
-    String validatedEmail = RequestValidator.validateEmailAllowNull(
-        payload.applicationNotificationEmail() == null ? null : payload.applicationNotificationEmail().trim());
-
-    ResearchGroup updated = researchGroupService.updateApplicationNotificationEmail(
-        researchGroup,
-        validatedEmail);
-
-    return ResponseEntity.ok(ResearchGroupDto.fromResearchGroupEntity(updated));
   }
 
   @PatchMapping("/{researchGroupId}/archive")

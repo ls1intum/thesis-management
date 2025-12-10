@@ -8,68 +8,72 @@ import { getApiResponseErrorMessage } from '../../../requests/handler'
 import { showSimpleError } from '../../../utils/notification'
 import { showNotification } from '@mantine/notifications'
 import { useParams } from 'react-router'
+import {
+  IResearchGroupSettings,
+  IResearchGroupSettingsEmail,
+} from '../../../requests/responses/researchGroupSettings'
 
 interface ApplicationNotificationEmailCardProps {
-  researchGroupData?: IResearchGroup
-  setResearchGroupData: (data: IResearchGroup) => void
+  researchgroupEmailSettings?: IResearchGroupSettingsEmail
+  setResearchgroupEmailSettings: (data: IResearchGroupSettingsEmail) => void
 }
 
 const ApplicationNotificationEmailCard = ({
-  researchGroupData,
-  setResearchGroupData,
+  researchgroupEmailSettings,
+  setResearchgroupEmailSettings,
 }: ApplicationNotificationEmailCardProps) => {
   const { researchGroupId } = useParams<{ researchGroupId: string }>()
   const [saving, setSaving] = useState(false)
 
   const form = useForm({
     initialValues: {
-      applicationNotificationEmail: researchGroupData?.applicationNotificationEmail ?? '',
+      applicationNotificationEmail: researchgroupEmailSettings?.applicationNotificationEmail ?? '',
     },
     validateInputOnChange: true,
     validate: {
       applicationNotificationEmail: (value) => {
         const trimmed = value.trim()
         if (!trimmed) return null
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)
-          ? null
-          : 'Enter a valid email address'
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed) ? null : 'Enter a valid email address'
       },
     },
   })
 
   useEffect(() => {
     form.setValues({
-      applicationNotificationEmail: researchGroupData?.applicationNotificationEmail ?? '',
+      applicationNotificationEmail: researchgroupEmailSettings?.applicationNotificationEmail ?? '',
     })
-  }, [researchGroupData?.applicationNotificationEmail])
+  }, [researchgroupEmailSettings?.applicationNotificationEmail])
 
   const hasChanges =
-    (researchGroupData?.applicationNotificationEmail ?? '') !==
+    (researchgroupEmailSettings?.applicationNotificationEmail ?? '') !==
     form.values.applicationNotificationEmail
 
-  const handleSubmit = (values: typeof form.values) => {
-    if (!researchGroupId) return
-
+  const updateEmailSettings = () => {
     setSaving(true)
-    const trimmedEmail = values.applicationNotificationEmail.trim()
-
-    doRequest<IResearchGroup>(
-      `/v2/research-groups/${researchGroupId}/application-notification-email`,
+    doRequest<IResearchGroupSettings>(
+      `/v2/research-group-settings/${researchGroupId}`,
       {
-        method: 'PUT',
+        method: 'POST',
         requiresAuth: true,
         data: {
-          applicationNotificationEmail: trimmedEmail.length ? trimmedEmail : null,
+          emailSettings: {
+            applicationNotificationEmail: form.values.applicationNotificationEmail.trim() || null,
+          },
         },
       },
       (res) => {
         setSaving(false)
         if (res.ok) {
-          setResearchGroupData(res.data)
+          if (
+            res.data.emailSettings.applicationNotificationEmail !==
+            researchgroupEmailSettings?.applicationNotificationEmail
+          ) {
+            setResearchgroupEmailSettings(res.data.emailSettings)
+          }
           showNotification({
-            title: 'Notification email saved',
-            message:
-              'New application alerts will also be sent to this address, including attachments.',
+            title: 'Success',
+            message: 'Application notification email settings updated successfully.',
             color: 'green',
           })
         } else {
@@ -84,7 +88,7 @@ const ApplicationNotificationEmailCard = ({
       title='Application Notifications'
       subtle='Send a copy of every new application notification (with attachments) to an additional address, even if advisors or supervisors muted their alerts. Leave empty to turn this off.'
     >
-      <form onSubmit={form.onSubmit(handleSubmit)}>
+      <form onSubmit={form.onSubmit(updateEmailSettings)}>
         <Stack>
           <TextInput
             label='Additional notification email (optional)'
@@ -94,7 +98,7 @@ const ApplicationNotificationEmailCard = ({
               form.setFieldValue('applicationNotificationEmail', event.currentTarget.value)
             }
             error={form.errors.applicationNotificationEmail}
-            disabled={!researchGroupData?.id}
+            disabled={saving}
           />
           <Group justify='flex-end'>
             <Button

@@ -109,15 +109,23 @@ const ResearchGroupSettingPage = () => {
               <Tabs.Tab value='members'>Members</Tabs.Tab>
             </Tabs.List>
 
-              <Tabs.Panel value='general' pt='md'>
+            <Tabs.Panel value='general' pt='md'>
               <Stack>
                 <GeneralResearchGroupSettings
                   researchGroupData={researchGroupData}
                   setResearchGroupData={setResearchGroupData}
                 />
                 <ApplicationNotificationEmailCard
-                  researchGroupData={researchGroupData}
-                  setResearchGroupData={setResearchGroupData}
+                  researchgroupEmailSettings={researchGroupSettings?.emailSettings}
+                  setResearchgroupEmailSettings={(emailSettings) =>
+                    setResearchGroupSettings(
+                      (prev) =>
+                        ({
+                          ...prev,
+                          emailSettings: emailSettings,
+                        }) as IResearchGroupSettings,
+                    )
+                  }
                 />
                 {!researchGroupSettingsLoading && (
                   <>

@@ -89,7 +89,7 @@ public class MailingService {
      * @param template The email template to use for the notification.
      */
     private void sendApplicationCreatedNotificationCopy(Application application, EmailTemplate template) {
-        String additionalEmail = application.getResearchGroup().getApplicationNotificationEmail();
+        String additionalEmail = application.getResearchGroup().getResearchGroupSettings().getApplicationNotificationEmail();
 
         if (additionalEmail == null || additionalEmail.isBlank()) {
             return;
