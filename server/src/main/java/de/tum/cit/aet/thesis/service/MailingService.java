@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class MailingService {
@@ -57,7 +56,7 @@ public class MailingService {
             .filterChairMembersNewApplicationNotifications(application.getTopic(), "new-applications")
             .send(javaMailSender, uploadService);
 
-        sendApplicationCreatedNotificationCopy(application, researchGroupEmailTemplate);
+        sendNotificationCopy(application.getResearchGroup(), prepareApplicationCreatedMailBuilder(application,researchGroupEmailTemplate));
 
         EmailTemplate studentEmailTemplate = loadTemplate(
                 application.getResearchGroup().getId(),
@@ -85,37 +84,32 @@ public class MailingService {
      * Sends a copy of the application created notification to an additional email address
      * when specified in the research group's settings.
      *
-     * @param application The application for which the notification is sent.
-     * @param template The email template to use for the notification.
+     * @param researchGroup The ResearchGroup associated with the email.
+     * @param mailBuilder The MailBuilder instance used to construct the email.
      */
-    private void sendApplicationCreatedNotificationCopy(Application application, EmailTemplate template) {
-        String additionalEmail = application.getResearchGroup().getResearchGroupSettings().getApplicationNotificationEmail();
+    private void sendNotificationCopy(ResearchGroup researchGroup, MailBuilder mailBuilder) {
+        String additionalEmail = researchGroup.getResearchGroupSettings().getApplicationNotificationEmail();
 
         if (additionalEmail == null || additionalEmail.isBlank()) {
             return;
         }
 
-        MailBuilder mailBuilder = prepareApplicationCreatedMailBuilder(application, template);
-
         mailBuilder
-                .addPrimaryRecipient(buildApplicationNotificationRecipient(application.getResearchGroup(), additionalEmail))
+                .addPrimaryRecipient(buildNotificationRecipientForCopy(researchGroup, additionalEmail))
                 .send(javaMailSender, uploadService);
     }
 
-    private User buildApplicationNotificationRecipient(ResearchGroup researchGroup, String email) {
+    private User buildNotificationRecipientForCopy(ResearchGroup researchGroup, String email) {
         User recipient = new User();
         recipient.setEmail(email);
         recipient.setResearchGroup(researchGroup);
 
-        if (researchGroup != null && researchGroup.getHead() != null) {
-            recipient.setFirstName(researchGroup.getHead().getFirstName());
-            recipient.setLastName(researchGroup.getHead().getLastName());
-        } else if (researchGroup != null) {
+        if (researchGroup != null) {
             recipient.setFirstName(researchGroup.getName());
-            recipient.setLastName("Applications");
+            recipient.setLastName("");
         } else {
             recipient.setFirstName("Research Group");
-            recipient.setLastName("Applications");
+            recipient.setLastName("");
         }
 
         return recipient;
