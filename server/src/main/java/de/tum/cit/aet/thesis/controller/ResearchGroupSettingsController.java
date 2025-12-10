@@ -4,8 +4,8 @@ import de.tum.cit.aet.thesis.controller.payload.UpdateResearchGroupSettingsPaylo
 import de.tum.cit.aet.thesis.dto.ResearchGroupSettingsDTO;
 import de.tum.cit.aet.thesis.dto.ResearchGroupSettingsPhasesDTO;
 import de.tum.cit.aet.thesis.entity.ResearchGroupSettings;
-import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.service.ResearchGroupSettingsService;
+import de.tum.cit.aet.thesis.utility.RequestValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -50,6 +50,11 @@ public class ResearchGroupSettingsController {
         }
         if (newSettings.phaseSettings() != null) {
             toSave.setProposalPhaseActive(newSettings.phaseSettings().proposalPhaseActive());
+        }
+        if (newSettings.emailSettings() != null) {
+            String validatedEmail = RequestValidator.validateEmailAllowNull(
+                    newSettings.emailSettings().applicationNotificationEmail() == null ? null : newSettings.emailSettings().applicationNotificationEmail().trim());
+            toSave.setApplicationNotificationEmail(validatedEmail);
         }
 
         ResearchGroupSettings saved = service.saveOrUpdate(toSave);

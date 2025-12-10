@@ -25,6 +25,7 @@ public record ResearchGroupDto(
         group.getAbbreviation(),
         group.getDescription(),
         group.getWebsiteUrl(),
-        group.getCampus());
+        group.getCampus()
+    );
   }
 }

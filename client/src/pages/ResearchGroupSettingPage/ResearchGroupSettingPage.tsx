@@ -12,6 +12,7 @@ import AutomaticRejectionCard from './components/AutomaticRejectionCard'
 import { IResearchGroupSettings } from '../../requests/responses/researchGroupSettings'
 import PresentationSettingsCard from './components/PresentationSettingsCard'
 import PhaseSettingsCard from './components/PhaseSettingsCard'
+import ApplicationNotificationEmailCard from './components/ApplicationNotificationEmailCard'
 
 const ResearchGroupSettingPage = () => {
   const { researchGroupId } = useParams<{ researchGroupId: string }>()
@@ -113,6 +114,18 @@ const ResearchGroupSettingPage = () => {
                 <GeneralResearchGroupSettings
                   researchGroupData={researchGroupData}
                   setResearchGroupData={setResearchGroupData}
+                />
+                <ApplicationNotificationEmailCard
+                  researchgroupEmailSettings={researchGroupSettings?.emailSettings}
+                  setResearchgroupEmailSettings={(emailSettings) =>
+                    setResearchGroupSettings(
+                      (prev) =>
+                        ({
+                          ...prev,
+                          emailSettings: emailSettings,
+                        }) as IResearchGroupSettings,
+                    )
+                  }
                 />
                 {!researchGroupSettingsLoading && (
                   <>

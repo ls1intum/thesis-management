@@ -2,6 +2,7 @@ export interface IResearchGroupSettings {
   rejectSettings: IResearchGroupSettingsReject
   presentationSettings: IResearchGroupSettingsPresentation
   phaseSettings: IResearchGroupSettingsPhase
+  emailSettings: IResearchGroupSettingsEmail
 }
 
 export interface IResearchGroupSettingsReject {
@@ -15,4 +16,8 @@ export interface IResearchGroupSettingsPresentation {
 
 export interface IResearchGroupSettingsPhase {
   proposalPhaseActive: boolean
+}
+
+export interface IResearchGroupSettingsEmail {
+  applicationNotificationEmail?: string | null
 }

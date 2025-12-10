@@ -25,5 +25,13 @@ public class ResearchGroupSettings {
 
     @Column(name = "proposal_phase_active", nullable = false)
     private boolean proposalPhaseActive = true;
+
+    @Column(name = "application_notification_email")
+    private String applicationNotificationEmail;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @MapsId
+    @JoinColumn(name = "research_group_id")
+    private ResearchGroup researchGroup;
 }
 
