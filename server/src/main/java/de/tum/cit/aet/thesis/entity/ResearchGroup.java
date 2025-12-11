@@ -62,6 +62,7 @@ public class ResearchGroup {
   @Column(name = "archived", nullable = false)
   private boolean archived = false;
 
-  @OneToOne(mappedBy = "researchGroup", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, optional = true)
+  @PrimaryKeyJoinColumn
   private ResearchGroupSettings researchGroupSettings;
 }

@@ -28,10 +28,5 @@ public class ResearchGroupSettings {
 
     @Column(name = "application_notification_email")
     private String applicationNotificationEmail;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @MapsId
-    @JoinColumn(name = "research_group_id")
-    private ResearchGroup researchGroup;
 }
 
