@@ -7,12 +7,15 @@ import { showSimpleError } from '../../../utils/notification'
 import { getApiResponseErrorMessage } from '../../../requests/handler'
 import { IResearchGroupSettings } from '../../../requests/responses/researchGroupSettings'
 
-interface PhaseSettingsProps {
+interface ProposalSettingsCardProps {
   proposalPhaseActive: boolean
   setProposalPhaseActive: (value: boolean) => void
 }
 
-const PhaseSettingsCard = ({ proposalPhaseActive, setProposalPhaseActive }: PhaseSettingsProps) => {
+const ProposalSettingsCard = ({
+  proposalPhaseActive,
+  setProposalPhaseActive,
+}: ProposalSettingsCardProps) => {
   const { researchGroupId } = useParams<{ researchGroupId: string }>()
 
   const handleProposalPhaseChange = (value: boolean) => {
@@ -41,18 +44,18 @@ const PhaseSettingsCard = ({ proposalPhaseActive, setProposalPhaseActive }: Phas
 
   return (
     <ResearchGroupSettingsCard
-      title='Thesis Phase Settings'
-      subtle='Turn off thesis phases for this research group that are not used in this group.'
+      title='Proposal Settings'
+      subtle='Configure settings related to the proposal phase of this research group.'
     >
       <Stack>
         <Group justify='space-between' align='center' wrap='nowrap'>
           <Stack gap={2}>
             <Text size='sm' fw={500}>
-              Enable Proposal Phase
+              {`${proposalPhaseActive ? 'Disable' : 'Enable'} Proposal Phase`}
             </Text>
             <Text size='xs' c='dimmed'>
-              Turn off the proposal phase for this research group if proposals are not used. This
-              will only affect new theses that are created or accepted after changing this setting.
+              {`Turn ${proposalPhaseActive ? 'off' : 'on'} the proposal phase for this research group if proposals are not used. This
+              will only affect new theses that are created or accepted after changing this setting.`}
             </Text>
           </Stack>
           <Switch
@@ -68,4 +71,4 @@ const PhaseSettingsCard = ({ proposalPhaseActive, setProposalPhaseActive }: Phas
   )
 }
 
-export default PhaseSettingsCard
+export default ProposalSettingsCard

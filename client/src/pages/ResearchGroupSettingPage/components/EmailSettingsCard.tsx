@@ -3,7 +3,6 @@ import { Button, Group, Stack, TextInput } from '@mantine/core'
 import { ResearchGroupSettingsCard } from './ResearchGroupSettingsCard'
 import { useForm } from '@mantine/form'
 import { doRequest } from '../../../requests/request'
-import { IResearchGroup } from '../../../requests/responses/researchGroup'
 import { getApiResponseErrorMessage } from '../../../requests/handler'
 import { showSimpleError } from '../../../utils/notification'
 import { showNotification } from '@mantine/notifications'
@@ -13,15 +12,15 @@ import {
   IResearchGroupSettingsEmail,
 } from '../../../requests/responses/researchGroupSettings'
 
-interface ApplicationNotificationEmailCardProps {
+interface EmailSettingsCardProps {
   researchgroupEmailSettings?: IResearchGroupSettingsEmail
   setResearchgroupEmailSettings: (data: IResearchGroupSettingsEmail) => void
 }
 
-const ApplicationNotificationEmailCard = ({
+const EmailSettingsCard = ({
   researchgroupEmailSettings,
   setResearchgroupEmailSettings,
-}: ApplicationNotificationEmailCardProps) => {
+}: EmailSettingsCardProps) => {
   const { researchGroupId } = useParams<{ researchGroupId: string }>()
   const [saving, setSaving] = useState(false)
 
@@ -84,14 +83,12 @@ const ApplicationNotificationEmailCard = ({
   }
 
   return (
-    <ResearchGroupSettingsCard
-      title='Application Notifications'
-      subtle='Send a copy of every new application notification (with attachments) to an additional address, even if advisors or supervisors muted their alerts. Leave empty to turn this off.'
-    >
+    <ResearchGroupSettingsCard title='Email Settings' subtle='Manage additional email settings.'>
       <form onSubmit={form.onSubmit(updateEmailSettings)}>
         <Stack>
           <TextInput
-            label='Additional notification email (optional)'
+            label='Additional application notification email (optional)'
+            description='Send a copy of every new application notification (with attachments) to an additional address, even if advisors or supervisors muted their alerts. Leave empty to turn this off.'
             placeholder='notifications@example.edu'
             value={form.values.applicationNotificationEmail}
             onChange={(event) =>
@@ -115,4 +112,4 @@ const ApplicationNotificationEmailCard = ({
   )
 }
 
-export default ApplicationNotificationEmailCard
+export default EmailSettingsCard

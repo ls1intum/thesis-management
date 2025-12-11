@@ -44,7 +44,7 @@ const PresentationSettingsCard = ({
   return (
     <ResearchGroupSettingsCard
       title='Presentation Settings'
-      subtle='Configure default presentation settings.'
+      subtle='Configure settings related to presentations of this research group.'
     >
       <Stack>
         <Group wrap='nowrap' w={'100%'}>
@@ -53,7 +53,7 @@ const PresentationSettingsCard = ({
               Presentation Slot Duration
             </Text>
             <Text size='xs' c='dimmed'>
-              Default duration for presentation when creating a new presentation.
+              Default duration for a presentation slot of this research group.
             </Text>
             <NumberInput
               placeholder="Don't enter less than 2 minutes"

@@ -8,11 +8,11 @@ import { Center, Loader, Stack, Tabs, Title } from '@mantine/core'
 import GeneralResearchGroupSettings from './components/GeneralResearchGroupSettings'
 import ResearchGroupMembers from './components/ResearchGroupMembers'
 import { useUser } from '../../hooks/authentication'
-import AutomaticRejectionCard from './components/AutomaticRejectionCard'
+import ApplicationPhaseSettingsCard from './components/ApplicationPhaseSettingsCard'
 import { IResearchGroupSettings } from '../../requests/responses/researchGroupSettings'
 import PresentationSettingsCard from './components/PresentationSettingsCard'
-import PhaseSettingsCard from './components/PhaseSettingsCard'
-import ApplicationNotificationEmailCard from './components/ApplicationNotificationEmailCard'
+import ProposalSettingsCard from './components/ProposalSettingsCard'
+import EmailSettingsCard from './components/EmailSettingsCard'
 
 const ResearchGroupSettingPage = () => {
   const { researchGroupId } = useParams<{ researchGroupId: string }>()
@@ -115,7 +115,7 @@ const ResearchGroupSettingPage = () => {
                   researchGroupData={researchGroupData}
                   setResearchGroupData={setResearchGroupData}
                 />
-                <ApplicationNotificationEmailCard
+                <EmailSettingsCard
                   researchgroupEmailSettings={researchGroupSettings?.emailSettings}
                   setResearchgroupEmailSettings={(emailSettings) =>
                     setResearchGroupSettings(
@@ -129,7 +129,7 @@ const ResearchGroupSettingPage = () => {
                 />
                 {!researchGroupSettingsLoading && (
                   <>
-                    <AutomaticRejectionCard
+                    <ApplicationPhaseSettingsCard
                       automaticRejectionEnabledSettings={
                         researchGroupSettings?.rejectSettings.automaticRejectEnabled || false
                       }
@@ -161,7 +161,7 @@ const ResearchGroupSettingPage = () => {
                         )
                       }
                     />
-                    <PhaseSettingsCard
+                    <ProposalSettingsCard
                       proposalPhaseActive={
                         researchGroupSettings?.phaseSettings.proposalPhaseActive || false
                       }
