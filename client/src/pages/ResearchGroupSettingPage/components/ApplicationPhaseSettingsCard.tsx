@@ -7,19 +7,19 @@ import { getApiResponseErrorMessage } from '../../../requests/handler'
 import { IResearchGroupSettings } from '../../../requests/responses/researchGroupSettings'
 import { WarningCircleIcon } from '@phosphor-icons/react'
 
-interface AutomaticRejectionCardProps {
+interface ApplicationPhaseSettingsCard {
   automaticRejectionEnabledSettings: boolean
   setAutomaticRejectionEnabledSettings: (value: boolean) => void
   rejectDurationSettings: number
   setRejectDurationSettings: (value: number) => void
 }
 
-const AutomaticRejectionCard = ({
+const ApplicationPhaseSettingsCard = ({
   automaticRejectionEnabledSettings,
   rejectDurationSettings,
   setAutomaticRejectionEnabledSettings,
   setRejectDurationSettings,
-}: AutomaticRejectionCardProps) => {
+}: ApplicationPhaseSettingsCard) => {
   const { researchGroupId } = useParams<{ researchGroupId: string }>()
 
   const updateAutiomaticRejectionSettings = (enable: boolean, duration: number | string) => {
@@ -55,14 +55,14 @@ const AutomaticRejectionCard = ({
 
   return (
     <ResearchGroupSettingsCard
-      title='Automatic Rejects'
-      subtle='Configure automatic rejection settings for applications.'
+      title='Application Settings'
+      subtle='Configure settings related to application handling of this research group.'
     >
       <Stack>
         <Group justify='space-between' align='center' wrap='nowrap'>
           <Stack gap={2}>
             <Text size='sm' fw={500}>
-              Enable automatic rejection
+              {`${automaticRejectionEnabledSettings ? 'Disable' : 'Enable'} automatic rejection`}
             </Text>
             <Text size='xs' c='dimmed'>
               Automatically reject applications after a specified time period.
@@ -123,4 +123,4 @@ const AutomaticRejectionCard = ({
   )
 }
 
-export default AutomaticRejectionCard
+export default ApplicationPhaseSettingsCard
