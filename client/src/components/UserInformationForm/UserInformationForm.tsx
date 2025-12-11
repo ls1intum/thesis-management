@@ -9,6 +9,9 @@ import {
   Select,
   Stack,
   TextInput,
+  Tooltip,
+  useMantineColorScheme,
+  useMantineTheme,
 } from '@mantine/core'
 import { useAuthenticationContext, useLoggedInUser } from '../../hooks/authentication'
 import { GLOBAL_CONFIG } from '../../config/global'
@@ -138,6 +141,9 @@ const UserInformationForm = (props: IUserInformationFormProps) => {
 
   const [loading, setLoading] = useState(false)
 
+  const theme = useMantineTheme()
+  const colorScheme = useMantineColorScheme().colorScheme
+
   useEffect(() => {
     form.setValues({
       email: user?.email || '',
@@ -225,35 +231,65 @@ const UserInformationForm = (props: IUserInformationFormProps) => {
           />
         )}
         <Group grow align='flex-start'>
-          <TextInput
-            type='email'
-            required={requireCompletion}
-            placeholder='your@email.com'
-            label='Email'
-            {...form.getInputProps('email')}
-          />
+          <Tooltip label='This field is not editable because it is synchronized from your university account.'>
+            <TextInput
+              type='text'
+              required={requireCompletion}
+              placeholder='First Name'
+              label='First Name'
+              {...form.getInputProps('firstName')}
+              readOnly={true}
+              styles={() => ({
+                input: {
+                  backgroundColor:
+                    colorScheme === 'dark' ? theme.colors.dark[7] : theme.colors.gray[1],
+                  cursor: 'not-allowed',
+                },
+              })}
+            />
+          </Tooltip>
+          <Tooltip label='This field is not editable because it is synchronized from your university account.'>
+            <TextInput
+              type='text'
+              required={requireCompletion}
+              placeholder='Last Name'
+              label='Last Name'
+              {...form.getInputProps('lastName')}
+              readOnly={true}
+              styles={() => ({
+                input: {
+                  backgroundColor:
+                    colorScheme === 'dark' ? theme.colors.dark[7] : theme.colors.gray[1],
+                  cursor: 'not-allowed',
+                },
+              })}
+            />
+          </Tooltip>
+        </Group>
+        <Group grow align='flex-start'>
+          <Tooltip label='This field is not editable because it is synchronized from your university account.'>
+            <TextInput
+              type='email'
+              required={requireCompletion}
+              placeholder='your@email.com'
+              label='Email'
+              {...form.getInputProps('email')}
+              readOnly={true}
+              styles={() => ({
+                input: {
+                  backgroundColor:
+                    colorScheme === 'dark' ? theme.colors.dark[7] : theme.colors.gray[1],
+                  cursor: 'not-allowed',
+                },
+              })}
+            />
+          </Tooltip>
           <TextInput
             type='text'
             required={requireCompletion}
             placeholder='Matriculation Number'
             label='Matriculation Number'
             {...form.getInputProps('matriculationNumber')}
-          />
-        </Group>
-        <Group grow align='flex-start'>
-          <TextInput
-            type='text'
-            required={requireCompletion}
-            placeholder='First Name'
-            label='First Name'
-            {...form.getInputProps('firstName')}
-          />
-          <TextInput
-            type='text'
-            required={requireCompletion}
-            placeholder='Last Name'
-            label='Last Name'
-            {...form.getInputProps('lastName')}
           />
         </Group>
         <Group grow align='flex-start'>
