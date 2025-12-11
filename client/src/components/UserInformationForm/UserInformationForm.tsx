@@ -351,6 +351,7 @@ const UserInformationForm = (props: IUserInformationFormProps) => {
             required={requireCompletion}
             label='Semester in Current Study Program'
             {...form.getInputProps('semester')}
+            min={1}
           />
         </Group>
         {user?.researchGroupName && (
