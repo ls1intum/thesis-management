@@ -31,6 +31,8 @@ import de.tum.cit.aet.thesis.repository.ThesisRepository;
 import de.tum.cit.aet.thesis.repository.UserRepository;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
@@ -82,8 +84,13 @@ public class ThesisPresentationService {
         Integer limit, String sortBy, String sortOrder, UUID researchGroupId) {
         Sort.Order order = new Sort.Order(sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
 
+        ZoneId zone = ZoneId.systemDefault(); // or ZoneId.of("Europe/Berlin") if you want it explicit
+        Instant startOfToday = LocalDate.now(zone)
+                .atStartOfDay(zone)
+                .toInstant();
+
         return thesisPresentationRepository.findFuturePresentations(
-                Instant.now(),
+                startOfToday,
                 includeDrafts ? Set.of(ThesisPresentationState.DRAFTED, ThesisPresentationState.SCHEDULED) : Set.of(ThesisPresentationState.SCHEDULED),
                 Set.of(ThesisPresentationVisibility.PUBLIC),
                 researchGroupId,
