@@ -354,12 +354,21 @@ const UserInformationForm = (props: IUserInformationFormProps) => {
           />
         </Group>
         {user?.researchGroupName && (
-          <Select
-            label='Research Group'
-            data={[user.researchGroupName]}
-            disabled
-            {...form.getInputProps('researchGroupName')}
-          />
+          <Tooltip label='Your reseach group affiliation can only be changed by a group admin or general administrator.'>
+            <Select
+              label='Research Group'
+              data={[user.researchGroupName]}
+              {...form.getInputProps('researchGroupName')}
+              readOnly={true}
+              styles={() => ({
+                input: {
+                  backgroundColor:
+                    colorScheme === 'dark' ? theme.colors.dark[7] : theme.colors.gray[1],
+                  cursor: 'not-allowed',
+                },
+              })}
+            />
+          </Tooltip>
         )}
         {Object.entries(GLOBAL_CONFIG.custom_data).map(([key, value]) => (
           <TextInput
