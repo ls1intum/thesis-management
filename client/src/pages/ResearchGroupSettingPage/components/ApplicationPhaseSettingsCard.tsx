@@ -1,7 +1,5 @@
 import { Alert, Divider, Group, NumberInput, Stack, Switch, Text } from '@mantine/core'
 import { ResearchGroupSettingsCard } from './ResearchGroupSettingsCard'
-import { useState, useEffect } from 'react'
-import { useDebouncedValue } from '@mantine/hooks'
 import { doRequest } from '../../../requests/request'
 import { useParams } from 'react-router'
 import { showSimpleError } from '../../../utils/notification'
@@ -9,59 +7,62 @@ import { getApiResponseErrorMessage } from '../../../requests/handler'
 import { IResearchGroupSettings } from '../../../requests/responses/researchGroupSettings'
 import { WarningCircleIcon } from '@phosphor-icons/react'
 
-interface AutomaticRejectionCardProps {
+interface ApplicationPhaseSettingsCard {
   automaticRejectionEnabledSettings: boolean
   setAutomaticRejectionEnabledSettings: (value: boolean) => void
   rejectDurationSettings: number
   setRejectDurationSettings: (value: number) => void
 }
 
-const AutomaticRejectionCard = ({
+const ApplicationPhaseSettingsCard = ({
   automaticRejectionEnabledSettings,
   rejectDurationSettings,
   setAutomaticRejectionEnabledSettings,
   setRejectDurationSettings,
-}: AutomaticRejectionCardProps) => {
-  const [debouncedRejectDuration] = useDebouncedValue(rejectDurationSettings, 300)
-
+}: ApplicationPhaseSettingsCard) => {
   const { researchGroupId } = useParams<{ researchGroupId: string }>()
 
-  useEffect(() => {
+  const updateAutiomaticRejectionSettings = (enable: boolean, duration: number | string) => {
+    const durationValue = typeof duration === 'number' ? duration : Number(duration)
     doRequest<IResearchGroupSettings>(
-      `/v2/research-group-settings/${researchGroupId}/automatic-reject`,
+      `/v2/research-group-settings/${researchGroupId}`,
       {
         method: 'POST',
         requiresAuth: true,
         data: {
-          automaticRejectEnabled: automaticRejectionEnabledSettings,
-          rejectDuration: debouncedRejectDuration,
+          rejectSettings: {
+            automaticRejectEnabled: enable,
+            rejectDuration: durationValue,
+          },
         },
       },
       (res) => {
         if (res.ok) {
-          if (res.data.automaticRejectEnabled !== automaticRejectionEnabledSettings) {
-            setAutomaticRejectionEnabledSettings(res.data.automaticRejectEnabled)
+          if (
+            res.data.rejectSettings.automaticRejectEnabled !== automaticRejectionEnabledSettings
+          ) {
+            setAutomaticRejectionEnabledSettings(res.data.rejectSettings.automaticRejectEnabled)
           }
-          if (res.data.rejectDuration !== rejectDurationSettings) {
-            setRejectDurationSettings(res.data.rejectDuration)
+          if (res.data.rejectSettings.rejectDuration !== rejectDurationSettings) {
+            setRejectDurationSettings(res.data.rejectSettings.rejectDuration)
           }
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
         }
       },
     )
-  }, [debouncedRejectDuration, automaticRejectionEnabledSettings])
+  }
 
   return (
     <ResearchGroupSettingsCard
-      title='Automatic Rejects'
-      subtle='Configure automatic rejection settings for applications.'
+      title='Application Settings'
+      subtle='Configure settings related to application handling of this research group.'
     >
       <Stack>
         <Group justify='space-between' align='center' wrap='nowrap'>
           <Stack gap={2}>
             <Text size='sm' fw={500}>
-              Enable automatic rejection
+              {`${automaticRejectionEnabledSettings ? 'Disable' : 'Enable'} automatic rejection`}
             </Text>
             <Text size='xs' c='dimmed'>
               Automatically reject applications after a specified time period.
@@ -69,7 +70,10 @@ const AutomaticRejectionCard = ({
           </Stack>
           <Switch
             checked={automaticRejectionEnabledSettings}
-            onChange={(event) => setAutomaticRejectionEnabledSettings(event.currentTarget.checked)}
+            onChange={(event) => {
+              setAutomaticRejectionEnabledSettings(event.currentTarget.checked)
+              updateAutiomaticRejectionSettings(event.currentTarget.checked, rejectDurationSettings)
+            }}
           />
         </Group>
         {!automaticRejectionEnabledSettings && (
@@ -89,7 +93,7 @@ const AutomaticRejectionCard = ({
         {automaticRejectionEnabledSettings && (
           <Group ml={'1rem'} wrap='nowrap'>
             <Divider orientation='vertical' />
-            <Stack gap={2}>
+            <Stack gap={2} w={'100%'}>
               <Text size='sm' fw={500}>
                 Rejection Time Period
               </Text>
@@ -105,9 +109,11 @@ const AutomaticRejectionCard = ({
                 suffix=' weeks'
                 value={rejectDurationSettings}
                 pt={6}
-                onChange={(value) =>
+                onChange={(value) => {
                   setRejectDurationSettings(typeof value === 'number' ? value : Number(value))
-                }
+                  updateAutiomaticRejectionSettings(automaticRejectionEnabledSettings, value)
+                }}
+                w={'100%'}
               />
             </Stack>
           </Group>
@@ -117,4 +123,4 @@ const AutomaticRejectionCard = ({
   )
 }
 
-export default AutomaticRejectionCard
+export default ApplicationPhaseSettingsCard

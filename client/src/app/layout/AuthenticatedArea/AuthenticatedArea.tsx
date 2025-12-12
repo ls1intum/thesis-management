@@ -58,6 +58,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
     label: string
     icon: any
     groups: string[] | undefined
+    hideFromGroups?: string[]
     display?: boolean
   }> = [
     { link: '/dashboard', label: 'Dashboard', icon: NewspaperClipping, groups: undefined },
@@ -73,6 +74,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
       label: 'Submit Application',
       icon: PaperPlaneTiltIcon,
       groups: undefined,
+      hideFromGroups: ['advisor', 'supervisor'],
     },
     {
       link: '/applications',
@@ -185,6 +187,11 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
                 !item.groups || item.groups.some((role) => auth.user?.groups.includes(role)),
             )
             .filter((item) => item.display == undefined || item.display === true)
+            .filter((item) =>
+              item.hideFromGroups
+                ? !item.hideFromGroups.some((role) => auth.user?.groups.includes(role))
+                : true,
+            )
             .map((item) => (
               <Link
                 className={minimized ? classes.minimizedLink : classes.fullLink}
@@ -232,25 +239,26 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
                 </Group>
               </Link>
             )}
-            {!collapseNavigation && (
-              <Group>
-                {user.groups.includes('group-admin') && (
-                  <Link
-                    to={`/research-groups/${user.researchGroupId}`}
-                    className={minimized ? classes.minimizedLink : classes.fullLink}
-                    data-active={location.pathname.startsWith('/research-groups') || undefined}
+
+            <Group>
+              {user.groups.includes('group-admin') && (
+                <Link
+                  to={`/research-groups/${user.researchGroupId}`}
+                  className={minimized ? classes.minimizedLink : classes.fullLink}
+                  data-active={location.pathname.startsWith('/research-groups') || undefined}
+                >
+                  <Tooltip
+                    label='Group Settings'
+                    disabled={!minimized}
+                    position='right'
+                    offset={15}
                   >
-                    <Tooltip
-                      label='Group Settings'
-                      disabled={!minimized}
-                      position='right'
-                      offset={15}
-                    >
-                      <Gear className={classes.linkIcon} size={25} />
-                    </Tooltip>
-                    {!minimized && <span>Group Settings</span>}
-                  </Link>
-                )}
+                    <Gear className={classes.linkIcon} size={25} />
+                  </Tooltip>
+                  {!minimized && <span>Group Settings</span>}
+                </Link>
+              )}
+              {!collapseNavigation && (
                 <ActionIcon
                   visibleFrom='md'
                   ml='auto'
@@ -260,8 +268,8 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
                 >
                   {minimized ? <CaretDoubleRight /> : <CaretDoubleLeft />}
                 </ActionIcon>
-              </Group>
-            )}
+              )}
+            </Group>
           </AppShell.Section>
         )}
       </AppShell.Navbar>

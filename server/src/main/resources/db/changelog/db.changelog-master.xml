@@ -18,5 +18,8 @@
     <include file="changes/12_add_presentation_note.sql" relativeToChangelogFile="true"/>
     <include file="changes/13_check_max_limit_research_group_description.sql" relativeToChangelogFile="true"/>
     <include file="changes/14_add_automatic_rejection_reminder_email_template.sql" relativeToChangelogFile="true"/>
+    <include file="changes/15_add_presentation_time_to_settings.sql" relativeToChangelogFile="true"/>
+    <include file="changes/16_proposal_phase_turn_off_flag.sql" relativeToChangelogFile="true"/>
+    <include file="changes/17_application_notification_email.sql" relativeToChangelogFile="true"/>
     <include file="changes/15_add_interview_tables.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>

@@ -31,6 +31,8 @@ import de.tum.cit.aet.thesis.repository.ThesisRepository;
 import de.tum.cit.aet.thesis.repository.UserRepository;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
@@ -47,6 +49,8 @@ public class ThesisPresentationService {
     private final UserRepository userRepository;
     private final ThesisPresentationInviteRepository thesisPresentationInviteRepository;
 
+    private final ResearchGroupSettingsService researchGroupSettingsService;
+
     @Autowired
     public ThesisPresentationService(
             CalendarService calendarService,
@@ -56,7 +60,8 @@ public class ThesisPresentationService {
             ObjectProvider<CurrentUserProvider> currentUserProviderProvider,
             @Value("${thesis-management.client.host}") String clientHost,
             @Value("${thesis-management.mail.sender}") InternetAddress applicationMail,
-            UserRepository userRepository, ThesisPresentationInviteRepository thesisPresentationInviteRepository) {
+            UserRepository userRepository, ThesisPresentationInviteRepository thesisPresentationInviteRepository,
+            ResearchGroupSettingsService researchGroupSettingsService){
         this.calendarService = calendarService;
         this.thesisRepository = thesisRepository;
         this.mailingService = mailingService;
@@ -67,6 +72,8 @@ public class ThesisPresentationService {
         this.applicationMail = applicationMail;
         this.userRepository = userRepository;
         this.thesisPresentationInviteRepository = thesisPresentationInviteRepository;
+
+        this.researchGroupSettingsService = researchGroupSettingsService;
     }
 
     private CurrentUserProvider currentUserProvider() {
@@ -77,8 +84,13 @@ public class ThesisPresentationService {
         Integer limit, String sortBy, String sortOrder, UUID researchGroupId) {
         Sort.Order order = new Sort.Order(sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
 
+        ZoneId zone = ZoneId.systemDefault(); // or ZoneId.of("Europe/Berlin") if you want it explicit
+        Instant startOfToday = LocalDate.now(zone)
+                .atStartOfDay(zone)
+                .toInstant();
+
         return thesisPresentationRepository.findFuturePresentations(
-                Instant.now(),
+                startOfToday,
                 includeDrafts ? Set.of(ThesisPresentationState.DRAFTED, ThesisPresentationState.SCHEDULED) : Set.of(ThesisPresentationState.SCHEDULED),
                 Set.of(ThesisPresentationVisibility.PUBLIC),
                 researchGroupId,
@@ -355,6 +367,8 @@ public class ThesisPresentationService {
         String location = presentation.getLocation();
         String streamUrl = presentation.getStreamUrl();
 
+        ResearchGroupSettings groupSettings = researchGroupSettingsService.getByResearchGroupId(thesis.getResearchGroup().getId()).orElse(null);
+
         return new CalendarService.CalendarEvent(
                 "Thesis Presentation \"" + thesis.getTitle() + "\"",
                 location == null || location.isBlank() ? streamUrl : location,
@@ -364,7 +378,7 @@ public class ThesisPresentationService {
                         "Details: " + clientHost + "/presentations/" + presentation.getId() + "\n\n" +
                         "Abstract:\n" + thesis.getAbstractField(),
                 presentation.getScheduledAt(),
-                presentation.getScheduledAt().plus(45, ChronoUnit.MINUTES),
+                presentation.getScheduledAt().plus(groupSettings != null ? groupSettings.getPresentationSlotDuration() : 30, ChronoUnit.MINUTES),
                 this.applicationMail,
                 thesis.getRoles().stream().map(role -> role.getUser().getEmail()).toList(),
                 presentation.getInvites().stream().map(ThesisPresentationInvite::getEmail).toList()
