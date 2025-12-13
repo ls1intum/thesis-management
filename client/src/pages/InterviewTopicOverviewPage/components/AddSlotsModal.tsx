@@ -21,7 +21,7 @@ import { useIsSmallerBreakpoint } from '../../../hooks/theme'
 import { IInterviewSlot } from '../../../requests/responses/interview'
 import { doRequest } from '../../../requests/request'
 import { useParams } from 'react-router'
-import { showSimpleError } from '../../../utils/notification'
+import { showSimpleError, showSimpleSuccess } from '../../../utils/notification'
 import { getApiResponseErrorMessage } from '../../../requests/handler'
 
 interface IAddSlotsModalProps {
@@ -50,6 +50,10 @@ const AddSlotsModal = ({
       : [],
   )
 
+  const [modalSlots, setModalSlots] = useState<Record<string, IInterviewSlot[]>>(
+    interviewSlotItems ? { ...interviewSlotItems } : {},
+  )
+
   useEffect(() => {
     setSelected(
       interviewSlotItems ? Object.keys(interviewSlotItems).map((key) => new Date(key)) : [],
@@ -59,6 +63,7 @@ const AddSlotsModal = ({
         ? Object.keys(interviewSlotItems).map((key) => new Date(key).toDateString())
         : [],
     )
+    setModalSlots(interviewSlotItems ? { ...interviewSlotItems } : {})
   }, [interviewSlotItems])
 
   const isSmaller = useIsSmallerBreakpoint('sm')
@@ -101,14 +106,14 @@ const AddSlotsModal = ({
         requiresAuth: true,
         data: {
           interviewProcessId: processId,
-          interviewSlots: interviewSlotItems ? Object.values(selected).flat() : [],
-          //TODO: USE THE NEW SLOTS FROM THE CARDS INSTEAD OF SELECTED
+          interviewSlots: Object.values(modalSlots).flat(),
         },
       },
       (res) => {
         if (res.ok) {
           updateInterviewSlots(res.data)
           onClose()
+          showSimpleSuccess('Interview slots added successfully')
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
         }
@@ -216,7 +221,13 @@ const AddSlotsModal = ({
                           key={date.toDateString()}
                           date={date}
                           duration={duration}
-                          slots={interviewSlotItems?.[date.toISOString().split('T')[0]]}
+                          slots={modalSlots?.[date.toISOString().split('T')[0]]}
+                          addNewSlots={(newSlots: IInterviewSlot[]) => {
+                            setModalSlots((prev) => ({
+                              ...prev,
+                              [date.toISOString().split('T')[0]]: newSlots,
+                            }))
+                          }}
                         />
                       ))}
                   </Accordion>

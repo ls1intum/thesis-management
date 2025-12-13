@@ -1,7 +1,7 @@
 import { Accordion, Button, Card, Divider, Group, Stack, Text, Title } from '@mantine/core'
 import dayjs from 'dayjs'
 import { IInterviewSlot } from '../../../requests/responses/interview'
-import { useEffect, useState } from 'react'
+import { use, useEffect, useState } from 'react'
 import { CardsIcon } from '@phosphor-icons/react'
 import { TimeInput } from '@mantine/dates'
 import SlotItem from './SlotItem'
@@ -11,6 +11,7 @@ interface ICollapsibleDateCardProps {
   date: Date
   duration?: number
   slots?: IInterviewSlot[]
+  addNewSlots?: (newSlots: IInterviewSlot[]) => void
 }
 
 interface ISlotRange {
@@ -21,8 +22,24 @@ interface ISlotRange {
   slots?: IInterviewSlot[]
 }
 
-const CollapsibleDateCard = ({ date, duration = 30, slots }: ICollapsibleDateCardProps) => {
+const CollapsibleDateCard = ({
+  date,
+  duration = 30,
+  slots,
+  addNewSlots,
+}: ICollapsibleDateCardProps) => {
   const [slotRanges, setSlotRanges] = useState<ISlotRange[]>([])
+
+  const allSlots: IInterviewSlot[] = slotRanges.reduce((acc, range) => {
+    if (range.slots) {
+      acc.push(...range.slots)
+    }
+    return acc
+  }, [] as IInterviewSlot[])
+
+  useEffect(() => {
+    addNewSlots && addNewSlots(allSlots)
+  }, [slotRanges])
 
   const createSlotsForRange = (
     startTime: Date,
@@ -37,7 +54,7 @@ const CollapsibleDateCard = ({ date, duration = 30, slots }: ICollapsibleDateCar
 
     while (slotEnd <= endTime) {
       slots.push({
-        slotId: `slot-${startTime.toDateString()}-${currentTime.toTimeString()}`,
+        slotId: ``,
         startDate: new Date(currentTime),
         endDate: new Date(slotEnd),
         bookedBy: null,
@@ -347,7 +364,7 @@ const CollapsibleDateCard = ({ date, duration = 30, slots }: ICollapsibleDateCar
                                     } else {
                                       newRanges[index].slots = [
                                         {
-                                          slotId: `slot-${date.toDateString()}-${newRanges[index].startTime}`,
+                                          slotId: ``,
                                           startDate: new Date(newRanges[index].startTime),
                                           endDate: new Date(newRanges[index].endTime),
                                           bookedBy: null,
@@ -399,9 +416,9 @@ const CollapsibleDateCard = ({ date, duration = 30, slots }: ICollapsibleDateCar
                         )}
                         {slotRange.slots && slotRange.slots.length > 0 ? (
                           <Stack w={'100%'} pt={6} gap={'0.5rem'}>
-                            {slotRange.slots.map((slot) => (
+                            {slotRange.slots.map((slot, index) => (
                               <SlotItem
-                                key={slot.slotId}
+                                key={`${slot.slotId}-${slot.startDate.toISOString()}-${index}`}
                                 slot={slot}
                                 hoverEffect={false}
                                 withInterviewee={
