@@ -10,6 +10,9 @@ import { showSimpleError } from '../../utils/notification'
 import { getApiResponseErrorMessage } from '../../requests/handler'
 import UserCard from '../../components/UserCard/UserCard'
 import TopicInformationCard from '../TopicPage/components/TopicInformationCard'
+import { s } from 'react-router/dist/development/index-react-server-client-BKpa2trA'
+import { useDebouncedValue } from '@mantine/hooks'
+import { useForm } from '@mantine/form'
 
 const IntervieweeAssesmentPage = () => {
   const { processId } = useParams<{ processId: string }>()
@@ -41,6 +44,36 @@ const IntervieweeAssesmentPage = () => {
   useEffect(() => {
     fetchInterviewee()
   }, [])
+
+  const [saving, setSaving] = useState(false)
+
+  const saveIntervieweeAssesment = async (newScore?: number, newNote?: string) => {
+    if (!interviewee) {
+      return
+    }
+
+    setSaving(true)
+
+    doRequest<IInterviewee>(
+      `/v2/interview-process/${processId}/interviewee/${intervieweeId}`,
+      {
+        method: 'POST',
+        requiresAuth: true,
+        data: {
+          intervieweeNote: newNote,
+          score: newScore ?? -1,
+        },
+      },
+      (res) => {
+        if (res.ok) {
+          setInterviewee(res.data)
+        } else {
+          showSimpleError(getApiResponseErrorMessage(res))
+        }
+        setSaving(false)
+      },
+    )
+  }
 
   const isSmaller = useIsSmallerBreakpoint('sm')
 
@@ -79,8 +112,9 @@ const IntervieweeAssesmentPage = () => {
                     if (!prev) return prev
                     return { ...prev, score: newScore }
                   })
-                  //TODO: send to server
+                  saveIntervieweeAssesment(newScore, undefined)
                 }}
+                disabled={saving}
               />
               <InterviewNoteCard
                 interviewNote={interviewee?.interviewNote ?? ''}
@@ -89,7 +123,8 @@ const IntervieweeAssesmentPage = () => {
                     if (!prev) return prev
                     return { ...prev, interviewNote: newNote }
                   })
-                  //TODO: send to server & delay for auto save
+                  //Debounce happens in card
+                  saveIntervieweeAssesment(undefined, newNote)
                 }}
               />
             </Stack>

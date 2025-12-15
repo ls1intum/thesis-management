@@ -2,6 +2,7 @@ package de.tum.cit.aet.thesis.controller;
 
 import de.tum.cit.aet.thesis.controller.payload.CreateInterviewProcessPayload;
 import de.tum.cit.aet.thesis.controller.payload.CreateInterviewSlotsPayload;
+import de.tum.cit.aet.thesis.controller.payload.UpdateIntervieweeAssessmentPayload;
 import de.tum.cit.aet.thesis.dto.*;
 import de.tum.cit.aet.thesis.entity.InterviewProcess;
 import de.tum.cit.aet.thesis.entity.InterviewSlot;
@@ -100,7 +101,7 @@ public class InterviewProcessController {
 
     @GetMapping("/{interviewProcessId}/interviewee/{intervieweeId}")
     @PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
-    public ResponseEntity<IntervieweeDTO> getInterviewProcessInterviewSlot(
+    public ResponseEntity<IntervieweeDTO> getInterviewee(
             @PathVariable("interviewProcessId") UUID interviewProcessId,
             @PathVariable("intervieweeId") UUID intervieweeId
     ) {
@@ -109,5 +110,21 @@ public class InterviewProcessController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(IntervieweeDTO.fromIntervieweeEntity(interviewee));
+    }
+
+    @PostMapping("/{interviewProcessId}/interviewee/{intervieweeId}")
+    @PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
+    public ResponseEntity<IntervieweeDTO> updateInterviewee(
+            @PathVariable("interviewProcessId") UUID interviewProcessId,
+            @PathVariable("intervieweeId") UUID intervieweeId,
+            @RequestBody UpdateIntervieweeAssessmentPayload payload
+    ) {
+        Interviewee interviewee = interviewProcessService.getInterviewee(intervieweeId);
+        if (!interviewee.getInterviewProcess().getId().equals(interviewProcessId)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Interviewee updatedInterviewee = interviewProcessService.updateIntervieweeAssessment(interviewee, payload.intervieweeNote(), payload.score());
+        return ResponseEntity.ok(IntervieweeDTO.fromIntervieweeEntity(updatedInterviewee));
     }
 }

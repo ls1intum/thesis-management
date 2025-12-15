@@ -4,9 +4,10 @@ import { createScoreLabel, scoreColorTranslate } from '../../../utils/format'
 interface IScoreCardProps {
   score: number | null
   onScoreChange?: (newScore: number) => void
+  disabled?: boolean
 }
 
-const ScoreCard = ({ score, onScoreChange }: IScoreCardProps) => {
+const ScoreCard = ({ score, onScoreChange, disabled = false }: IScoreCardProps) => {
   //TODO: Think about better design for each label
   function createScoreData(labelScore: number): { label: React.ReactNode; value: string } {
     return {
@@ -40,6 +41,7 @@ const ScoreCard = ({ score, onScoreChange }: IScoreCardProps) => {
           ]}
           color={scoreColorTranslate(score)}
           radius={'md'}
+          disabled={disabled}
         ></SegmentedControl>
       </Stack>
     </Card>

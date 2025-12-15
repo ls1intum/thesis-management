@@ -256,4 +256,24 @@ public class InterviewProcessService {
         currentUserProvider().assertCanAccessResearchGroup(interviewee.getApplication().getResearchGroup());
         return interviewee;
     }
+
+    public Interviewee updateIntervieweeAssessment(Interviewee interviewee, String intervieweeNote, int score) {
+        currentUserProvider().assertCanAccessResearchGroup(interviewee.getApplication().getResearchGroup());
+
+        if (score >= 0) {
+            interviewee.setScore(score);
+        }
+
+        if (intervieweeNote != null) {
+            InterviewAssessment assesment = interviewee.getAssessments().isEmpty() ? null : interviewee.getAssessments().getFirst();
+            if (assesment == null) {
+                assesment = new InterviewAssessment();
+                assesment.setInterviewee(interviewee);
+                interviewee.getAssessments().add(assesment);
+            }
+            assesment.setInterviewNote(intervieweeNote);
+        }
+
+        return intervieweeRepository.save(interviewee);
+    }
 }
