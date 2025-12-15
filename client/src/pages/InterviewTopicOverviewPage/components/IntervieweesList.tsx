@@ -8,6 +8,8 @@ import {
   TextInput,
   Title,
   Text,
+  Checkbox,
+  Tooltip,
 } from '@mantine/core'
 import {
   MagnifyingGlassIcon,
@@ -73,13 +75,23 @@ const IntervieweesList = () => {
     fetchMyInterviewProcesses()
   }, [state, debouncedSearch])
 
+  const [selectedIntervieweeIds, setSelectedIntervieweeIds] = useState<string[]>([])
+  const [selectIntervieweeMode, setSelectIntervieweeMode] = useState(false)
+
   return (
     <Stack gap={'1.5rem'}>
       <Group justify='space-between' align='center' gap={'0.5rem'}>
         <Title order={2}>Interviewees</Title>
         <Group gap={'0.5rem'}>
-          <Button variant='outline' size='xs' leftSection={<PaperPlaneTiltIcon size={16} />}>
-            {isSmaller ? 'Invites' : 'Send Invites'}
+          <Button
+            variant='outline'
+            size='xs'
+            leftSection={<PaperPlaneTiltIcon size={16} />}
+            onClick={() => {
+              setSelectIntervieweeMode(true)
+            }}
+          >
+            {isSmaller ? 'Invites' : 'Select for Invites'}
           </Button>
           <Button size='xs' leftSection={<PlusIcon size={16} />}>
             {isSmaller ? 'Add' : 'Add Interviewee'}
@@ -124,11 +136,39 @@ const IntervieweesList = () => {
       ) : null}
       <Stack>
         {interviewees.map((interviewee) => (
-          <IntervieweeCard
-            key={interviewee.intervieweeId}
-            interviewee={interviewee}
-            navigationLink={`interviewee/${interviewee.intervieweeId}`}
-          />
+          <Group key={interviewee.intervieweeId}>
+            {selectIntervieweeMode && (
+              <>
+                {interviewee.score && interviewee.score >= 0 && (
+                  <Tooltip
+                    label={'Can not select completed interviewees'}
+                    target={`#hover-me-${interviewee.intervieweeId}-completed`}
+                  ></Tooltip>
+                )}
+                <Checkbox
+                  checked={selectedIntervieweeIds.includes(interviewee.intervieweeId)}
+                  onChange={(event) => {
+                    const checked = event.currentTarget.checked
+                    setSelectedIntervieweeIds((prev) => {
+                      if (checked) {
+                        return prev.includes(interviewee.intervieweeId)
+                          ? prev
+                          : [...prev, interviewee.intervieweeId]
+                      }
+                      return prev.filter((id) => id !== interviewee.intervieweeId)
+                    })
+                  }}
+                  disabled={interviewee.score ? interviewee.score >= 0 : false}
+                  id={`hover-me-${interviewee.intervieweeId}${interviewee.score && interviewee.score >= 0 ? '-completed' : ''}`}
+                />
+              </>
+            )}
+            <IntervieweeCard
+              interviewee={interviewee}
+              navigationLink={`interviewee/${interviewee.intervieweeId}`}
+              flex={1}
+            />
+          </Group>
         ))}
       </Stack>
     </Stack>

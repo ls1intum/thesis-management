@@ -1,6 +1,7 @@
 import { Card, SegmentedControl, Stack, Title, Text, Group } from '@mantine/core'
 import { createScoreLabel, scoreColorTranslate } from '../../../utils/format'
 import DeleteButton from '../../../components/DeleteButton/DeleteButton'
+import { useIsSmallerBreakpoint } from '../../../hooks/theme'
 
 interface IScoreCardProps {
   score: number | null
@@ -22,6 +23,8 @@ const ScoreCard = ({ score, onScoreChange, disabled = false }: IScoreCardProps) 
       value: labelScore.toString(),
     }
   }
+
+  const isSmallerDisplay = useIsSmallerBreakpoint('sm')
 
   return (
     <Card withBorder radius='md'>
@@ -50,7 +53,8 @@ const ScoreCard = ({ score, onScoreChange, disabled = false }: IScoreCardProps) 
           color={scoreColorTranslate(score)}
           radius={'md'}
           disabled={disabled}
-          orientation='vertical'
+          orientation={isSmallerDisplay ? 'vertical' : 'horizontal'}
+          w={'100%'}
         ></SegmentedControl>
       </Stack>
     </Card>

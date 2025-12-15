@@ -19,15 +19,18 @@ import { Link } from 'react-router'
 interface IIntervieweeCardProps {
   interviewee: IIntervieweeLightWithNextSlot
   navigationLink: string
+  flex?: number
 }
 
-const IntervieweeCard = ({ interviewee, navigationLink }: IIntervieweeCardProps) => {
+const IntervieweeCard = ({ interviewee, navigationLink, flex }: IIntervieweeCardProps) => {
   const checkState = () => {
-    return interviewee.lastInvited != null
-      ? interviewee.score
-        ? InterviewState.COMPLETED
-        : InterviewState.INVITED
-      : InterviewState.UNCONTACTED
+    return interviewee.score && interviewee.score >= 0
+      ? InterviewState.COMPLETED
+      : interviewee.nextSlot != null
+        ? InterviewState.SCHEDULED
+        : interviewee.lastInvited != null
+          ? InterviewState.INVITED
+          : InterviewState.UNCONTACTED
   }
 
   const state: InterviewState = checkState()
@@ -41,6 +44,7 @@ const IntervieweeCard = ({ interviewee, navigationLink }: IIntervieweeCardProps)
       radius='md'
       component={Link}
       to={navigationLink}
+      flex={flex}
     >
       <Card p={0} ml={8} radius='md'>
         <Stack p={0} gap={0}>
