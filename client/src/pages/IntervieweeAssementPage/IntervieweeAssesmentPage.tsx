@@ -2,46 +2,51 @@ import { Divider, Flex, ScrollArea, Stack, Title } from '@mantine/core'
 import { IInterviewee } from '../../requests/responses/interview'
 import { useIsSmallerBreakpoint } from '../../hooks/theme'
 import ScoreCard from './components/ScoreCard'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import InterviewNoteCard from './components/InterviewNoteCard'
+import { doRequest } from '../../requests/request'
+import { useParams } from 'react-router'
+import { showSimpleError } from '../../utils/notification'
+import { getApiResponseErrorMessage } from '../../requests/handler'
 
 const IntervieweeAssesmentPage = () => {
-  const [interviewee, setInterviewee] = useState<IInterviewee>({
-    //TODO: replace with real data
-    intervieweeId: 'u1',
-    user: {
-      userId: 'u1',
-      firstName: 'Alice',
-      lastName: 'Smith',
-      avatar: null,
-      universityId: '',
-      matriculationNumber: null,
-      email: null,
-      studyDegree: null,
-      studyProgram: null,
-      customData: null,
-      joinedAt: '',
-      groups: [],
-    },
-    score: 4,
-    lastInvited: new Date('2023-01-01'),
-    interviewNote: '',
-    application: {
-      applicationId: 'a1',
-      studyDegree: 'Master',
-      studyProgram: 'Computer Science',
-      thesisTitle: 'Integrating Gender Sensitivity and Adaptive Learning in Education Games',
-      motivation: 'I want to explore the use of AI to enhance learning experiences.',
-    },
-  })
+  const { processId } = useParams<{ processId: string }>()
+  const { intervieweeId } = useParams<{ intervieweeId: string }>()
+
+  const [interviewee, setInterviewee] = useState<IInterviewee | null>(null)
+
+  const [intervieweeLoading, setIntervieweeLoading] = useState(false)
+
+  const fetchInterviewee = async () => {
+    setIntervieweeLoading(true)
+    doRequest<IInterviewee>(
+      `/v2/interview-process/${processId}/interviewee/${intervieweeId}`,
+      {
+        method: 'GET',
+        requiresAuth: true,
+      },
+      (res) => {
+        if (res.ok) {
+          setInterviewee(res.data)
+        } else {
+          showSimpleError(getApiResponseErrorMessage(res))
+        }
+        setIntervieweeLoading(false)
+      },
+    )
+  }
+
+  useEffect(() => {
+    fetchInterviewee()
+  }, [])
 
   const isSmaller = useIsSmallerBreakpoint('sm')
 
   return (
     <Stack h={'100%'} gap={'1.5rem'}>
       <Stack gap={'0.5rem'}>
-        <Title>{`Interview - ${interviewee.user.firstName} ${interviewee.user.lastName}`}</Title>
-        {interviewee.application && (
+        <Title>{`Interview - ${interviewee?.user.firstName} ${interviewee?.user.lastName}`}</Title>
+        {interviewee?.application && (
           <Title order={4} c={'dimmed'}>
             {interviewee.application?.thesisTitle}
           </Title>
@@ -62,16 +67,22 @@ const IntervieweeAssesmentPage = () => {
           <ScrollArea h={'100%'} w={'100%'} type={isSmaller ? 'never' : 'hover'} offsetScrollbars>
             <Stack h={'100%'} gap={'1rem'}>
               <ScoreCard
-                score={interviewee.score}
+                score={interviewee?.score ?? 0}
                 onScoreChange={(newScore) => {
-                  setInterviewee((prev) => ({ ...prev, score: newScore }))
+                  setInterviewee((prev) => {
+                    if (!prev) return prev
+                    return { ...prev, score: newScore }
+                  })
                   //TODO: send to server
                 }}
               />
               <InterviewNoteCard
-                interviewNote={interviewee.interviewNote}
+                interviewNote={interviewee?.interviewNote ?? ''}
                 onInterviewNoteChange={(newNote) => {
-                  setInterviewee((prev) => ({ ...prev, interviewNote: newNote }))
+                  setInterviewee((prev) => {
+                    if (!prev) return prev
+                    return { ...prev, interviewNote: newNote }
+                  })
                   //TODO: send to server & delay for auto save
                 }}
               />

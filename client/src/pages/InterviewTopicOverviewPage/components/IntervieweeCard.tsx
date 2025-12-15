@@ -14,13 +14,14 @@ import {
 } from '../../../requests/responses/interview'
 import CustomAvatar from '../../../components/CustomAvatar/CustomAvatar'
 import { getInterviewStateColor } from '../../../utils/format'
+import { Link } from 'react-router'
 
 interface IIntervieweeCardProps {
   interviewee: IIntervieweeLightWithNextSlot
-  onClick?: () => void
+  navigationLink: string
 }
 
-const IntervieweeCard = ({ interviewee, onClick }: IIntervieweeCardProps) => {
+const IntervieweeCard = ({ interviewee, navigationLink }: IIntervieweeCardProps) => {
   const checkState = () => {
     return interviewee.lastInvited != null
       ? interviewee.score
@@ -44,17 +45,12 @@ const IntervieweeCard = ({ interviewee, onClick }: IIntervieweeCardProps) => {
             : 'gray.5'
       }
       radius='md'
+      component={Link}
+      to={navigationLink}
     >
       <Card p={0} ml={8} radius='md'>
         <Stack p={0} gap={0}>
-          <Group
-            px={'1.5rem'}
-            py={'0.75rem'}
-            justify='space-between'
-            align='center'
-            onClick={onClick}
-            style={{ cursor: 'pointer' }}
-          >
+          <Group px={'1.5rem'} py={'0.75rem'} justify='space-between' align='center'>
             <Group miw={350} gap={'0.75rem'}>
               <CustomAvatar user={interviewee.user} size={32} />
               <Title order={5} lineClamp={1}>

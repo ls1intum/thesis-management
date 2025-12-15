@@ -97,4 +97,17 @@ public class InterviewProcessController {
         List<InterviewSlotDto> interviewSlotDtos = interviewSlots.stream().map((InterviewSlotDto::fromInterviewSlot)).toList();
         return ResponseEntity.ok(interviewSlotDtos);
     }
+
+    @GetMapping("/{interviewProcessId}/interviewee/{intervieweeId}")
+    @PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
+    public ResponseEntity<IntervieweeDTO> getInterviewProcessInterviewSlot(
+            @PathVariable("interviewProcessId") UUID interviewProcessId,
+            @PathVariable("intervieweeId") UUID intervieweeId
+    ) {
+        Interviewee interviewee = interviewProcessService.getInterviewee(intervieweeId);
+        if (!interviewee.getInterviewProcess().getId().equals(interviewProcessId)) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(IntervieweeDTO.fromIntervieweeEntity(interviewee));
+    }
 }

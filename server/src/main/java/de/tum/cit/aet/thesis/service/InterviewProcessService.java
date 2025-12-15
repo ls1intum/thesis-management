@@ -250,4 +250,10 @@ public class InterviewProcessService {
                 ? new ArrayList<>()
                 : interviewProcess.getSlots();
     }
+
+    public Interviewee getInterviewee(UUID intervieweeId) {
+        Interviewee interviewee = intervieweeRepository.findById(intervieweeId).orElseThrow(() -> new ResourceNotFoundException(String.format("Interviewee with id %s not found.", intervieweeId)));
+        currentUserProvider().assertCanAccessResearchGroup(interviewee.getApplication().getResearchGroup());
+        return interviewee;
+    }
 }

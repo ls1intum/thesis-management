@@ -23,7 +23,7 @@ import {
 import { useIsSmallerBreakpoint } from '../../../hooks/theme'
 import { doRequest } from '../../../requests/request'
 import { PaginationResponse } from '../../../requests/responses/pagination'
-import { useNavigate, useParams } from 'react-router'
+import { useParams } from 'react-router'
 import { showSimpleError } from '../../../utils/notification'
 import { getApiResponseErrorMessage } from '../../../requests/handler'
 import { useDebouncedValue } from '@mantine/hooks'
@@ -40,8 +40,6 @@ const IntervieweesList = () => {
 
   const [interviewees, setInterviewees] = useState<IIntervieweeLightWithNextSlot[]>([])
   const [intervieweesLoading, setIntervieweesLoading] = useState(false)
-
-  const navigate = useNavigate()
 
   const fetchMyInterviewProcesses = async () => {
     setIntervieweesLoading(true)
@@ -129,9 +127,7 @@ const IntervieweesList = () => {
           <IntervieweeCard
             key={interviewee.intervieweeId}
             interviewee={interviewee}
-            onClick={() =>
-              navigate(`interviewee/${interviewee.intervieweeId}`, { relative: 'path' })
-            }
+            navigationLink={`interviewee/${interviewee.intervieweeId}`}
           />
         ))}
       </Stack>
