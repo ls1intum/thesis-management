@@ -261,3 +261,7 @@ export function getInterviewStateColor(state: InterviewState): string {
       return 'gray'
   }
 }
+
+export function formateStudyProgram(program: string) {
+  return GLOBAL_CONFIG.study_programs[program] ?? program
+}

@@ -1,4 +1,4 @@
-import { Divider, Flex, ScrollArea, Stack, Title } from '@mantine/core'
+import { Center, Divider, Flex, Loader, ScrollArea, Stack, Title } from '@mantine/core'
 import { IInterviewee } from '../../requests/responses/interview'
 import { useIsSmallerBreakpoint } from '../../hooks/theme'
 import ScoreCard from './components/ScoreCard'
@@ -8,6 +8,8 @@ import { doRequest } from '../../requests/request'
 import { useParams } from 'react-router'
 import { showSimpleError } from '../../utils/notification'
 import { getApiResponseErrorMessage } from '../../requests/handler'
+import UserCard from '../../components/UserCard/UserCard'
+import TopicInformationCard from '../TopicPage/components/TopicInformationCard'
 
 const IntervieweeAssesmentPage = () => {
   const { processId } = useParams<{ processId: string }>()
@@ -42,7 +44,11 @@ const IntervieweeAssesmentPage = () => {
 
   const isSmaller = useIsSmallerBreakpoint('sm')
 
-  return (
+  return intervieweeLoading ? (
+    <Center style={{ height: '100%' }}>
+      <Loader />
+    </Center>
+  ) : (
     <Stack h={'100%'} gap={'1.5rem'}>
       <Stack gap={'0.5rem'}>
         <Title>{`Interview - ${interviewee?.user.firstName} ${interviewee?.user.lastName}`}</Title>
@@ -93,7 +99,15 @@ const IntervieweeAssesmentPage = () => {
         <Stack w={{ base: '100%', md: '33%' }} h={'100%'} gap={'1.5rem'}>
           <Title order={3}>Application</Title>
           <ScrollArea h={'100%'} w={'100%'} type={isSmaller ? 'never' : 'hover'} offsetScrollbars>
-            <div>TODO</div>
+            <Stack h={'100%'} gap={'1rem'}>
+              {interviewee && <UserCard user={interviewee.user} />}
+              {interviewee?.application && (
+                <TopicInformationCard
+                  title='Motivation'
+                  content={interviewee.application.motivation}
+                />
+              )}
+            </Stack>
           </ScrollArea>
         </Stack>
       </Flex>
