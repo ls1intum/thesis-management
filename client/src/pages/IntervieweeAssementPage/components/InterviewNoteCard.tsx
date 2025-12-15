@@ -1,9 +1,10 @@
-import { Card, Stack, Title } from '@mantine/core'
+import { Card, Group, Stack, Title, Text } from '@mantine/core'
 import DocumentEditor from '../../../components/DocumentEditor/DocumentEditor'
-import { use, useEffect } from 'react'
+import { useEffect } from 'react'
 import { useIsSmallerBreakpoint } from '../../../hooks/theme'
 import { useForm } from '@mantine/form'
 import { useDebouncedValue } from '@mantine/hooks'
+import { CheckCircleIcon, WarningCircleIcon } from '@phosphor-icons/react/dist/ssr'
 
 interface IInterviewNoteCardProps {
   interviewNote: string | null
@@ -36,10 +37,26 @@ const InterviewNoteCard = ({ interviewNote, onInterviewNoteChange }: IInterviewN
     }
   }, [debouncedInterviewNote])
 
+  const changesSaved = debouncedInterviewNote === form.values.interviewNote
+
   return (
     <Card withBorder radius='md' h={'100%'} flex={1}>
       <Stack h={'100%'}>
-        <Title order={4}>Interview Note</Title>
+        <Group align='center'>
+          <Title order={4} flex={1}>
+            Interview Note
+          </Title>
+          <Group gap={'0.25rem'} align='center' justify='center'>
+            {changesSaved ? (
+              <CheckCircleIcon color='green' size={20} />
+            ) : (
+              <WarningCircleIcon color='orange' size={20} />
+            )}
+            <Text size='sm' c={changesSaved ? 'green' : 'orange'} pt={'1px'}>
+              {changesSaved ? 'Saved' : 'Unsaved Changes'}
+            </Text>
+          </Group>
+        </Group>
         <DocumentEditor
           value={interviewNote || ''}
           editMode
