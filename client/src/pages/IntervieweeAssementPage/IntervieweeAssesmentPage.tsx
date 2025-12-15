@@ -10,9 +10,6 @@ import { showSimpleError } from '../../utils/notification'
 import { getApiResponseErrorMessage } from '../../requests/handler'
 import UserCard from '../../components/UserCard/UserCard'
 import TopicInformationCard from '../TopicPage/components/TopicInformationCard'
-import { s } from 'react-router/dist/development/index-react-server-client-BKpa2trA'
-import { useDebouncedValue } from '@mantine/hooks'
-import { useForm } from '@mantine/form'
 
 const IntervieweeAssesmentPage = () => {
   const { processId } = useParams<{ processId: string }>()

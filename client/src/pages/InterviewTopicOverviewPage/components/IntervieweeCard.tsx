@@ -13,7 +13,7 @@ import {
   InterviewState,
 } from '../../../requests/responses/interview'
 import CustomAvatar from '../../../components/CustomAvatar/CustomAvatar'
-import { getInterviewStateColor } from '../../../utils/format'
+import { getInterviewStateColor, scoreColorTranslate } from '../../../utils/format'
 import { Link } from 'react-router'
 
 interface IIntervieweeCardProps {
@@ -37,13 +37,7 @@ const IntervieweeCard = ({ interviewee, navigationLink }: IIntervieweeCardProps)
   return (
     <Paper
       withBorder
-      bg={
-        state === InterviewState.COMPLETED
-          ? 'green'
-          : colorScheme.colorScheme === 'dark'
-            ? 'dark.3'
-            : 'gray.5'
-      }
+      bg={scoreColorTranslate(interviewee.score ?? -1)}
       radius='md'
       component={Link}
       to={navigationLink}

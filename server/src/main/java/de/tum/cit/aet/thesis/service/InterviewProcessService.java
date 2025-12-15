@@ -262,16 +262,18 @@ public class InterviewProcessService {
 
         if (score >= 0) {
             interviewee.setScore(score);
+        } else {
+            interviewee.setScore(null);
         }
 
         if (intervieweeNote != null) {
-            InterviewAssessment assesment = interviewee.getAssessments().isEmpty() ? null : interviewee.getAssessments().getFirst();
-            if (assesment == null) {
-                assesment = new InterviewAssessment();
-                assesment.setInterviewee(interviewee);
-                interviewee.getAssessments().add(assesment);
-            }
-            assesment.setInterviewNote(intervieweeNote);
+        InterviewAssessment assesment = interviewee.getAssessments().isEmpty() ? null : interviewee.getAssessments().getFirst();
+        if (assesment == null) {
+            assesment = new InterviewAssessment();
+            assesment.setInterviewee(interviewee);
+            interviewee.getAssessments().add(assesment);
+        }
+        assesment.setInterviewNote(intervieweeNote);
         }
 
         return intervieweeRepository.save(interviewee);

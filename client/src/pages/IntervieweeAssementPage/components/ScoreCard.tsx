@@ -1,5 +1,6 @@
-import { Card, SegmentedControl, Stack, Title, Text } from '@mantine/core'
+import { Card, SegmentedControl, Stack, Title, Text, Group } from '@mantine/core'
 import { createScoreLabel, scoreColorTranslate } from '../../../utils/format'
+import DeleteButton from '../../../components/DeleteButton/DeleteButton'
 
 interface IScoreCardProps {
   score: number | null
@@ -25,7 +26,14 @@ const ScoreCard = ({ score, onScoreChange, disabled = false }: IScoreCardProps) 
   return (
     <Card withBorder radius='md'>
       <Stack>
-        <Title order={4}>Score</Title>
+        <Group>
+          <Title order={4} flex={1}>
+            Score
+          </Title>
+          {score !== null && score >= 0 && (
+            <DeleteButton onClick={() => onScoreChange?.(-1)}></DeleteButton>
+          )}
+        </Group>
         <SegmentedControl
           value={score?.toString() || ''}
           onChange={(value) => {
@@ -42,6 +50,7 @@ const ScoreCard = ({ score, onScoreChange, disabled = false }: IScoreCardProps) 
           color={scoreColorTranslate(score)}
           radius={'md'}
           disabled={disabled}
+          orientation='vertical'
         ></SegmentedControl>
       </Stack>
     </Card>
