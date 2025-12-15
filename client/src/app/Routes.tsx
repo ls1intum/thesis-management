@@ -215,7 +215,10 @@ const AppRoutes = () => {
           <Route
             path='/interviews/:processId/interviewee/:intervieweeId'
             element={
-              <AuthenticatedArea requiredGroups={['admin', 'advisor', 'supervisor']}>
+              <AuthenticatedArea
+                requiredGroups={['admin', 'advisor', 'supervisor']}
+                handleScrollInView={!isSmaller}
+              >
                 <IntervieweeAssesmentPage />
               </AuthenticatedArea>
             }

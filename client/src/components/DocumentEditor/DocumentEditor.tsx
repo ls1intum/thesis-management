@@ -16,6 +16,7 @@ interface IDocumentEditorProps extends InputWrapperProps {
   editMode?: boolean
   maxLength?: number
   noBorder?: boolean
+  minHeight?: string | number
 }
 
 const DocumentEditor = (props: IDocumentEditorProps) => {
@@ -27,6 +28,7 @@ const DocumentEditor = (props: IDocumentEditorProps) => {
     noBorder = false,
     onBlur,
     onFocus,
+    minHeight,
     ...wrapperProps
   } = props
 
@@ -117,11 +119,11 @@ const DocumentEditor = (props: IDocumentEditorProps) => {
         style={{
           backgroundColor:
             colorScheme.colorScheme === 'dark' ? 'var(--mantine-color-dark-7)' : 'white',
-          minHeight: editMode ? '170px' : undefined,
           borderColor: wrapperProps.error ? 'var(--mantine-color-error)' : undefined,
           borderStyle: editMode ? 'solid' : 'dashed',
           borderWidth: noBorder ? 0 : 1,
         }}
+        mih={minHeight ?? (editMode ? '170px' : undefined)}
       >
         {editMode && (
           <RichTextEditor.Toolbar>
