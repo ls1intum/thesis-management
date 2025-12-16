@@ -222,7 +222,7 @@ export function createScoreLabel(score: number): string {
     case 4:
       return 'Great Candidate'
     case 5:
-      return 'Excelent'
+      return 'Excellent'
     default:
       return 'No Score'
   }

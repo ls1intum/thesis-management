@@ -10,6 +10,7 @@ import {
   Text,
   Checkbox,
   Tooltip,
+  useMantineColorScheme,
 } from '@mantine/core'
 import {
   MagnifyingGlassIcon,
@@ -52,7 +53,7 @@ const IntervieweesList = () => {
         requiresAuth: true,
         params: {
           searchQuery: searchIntervieweeKey,
-          limit: 50,
+          limit: 100,
           state: state !== 'ALL' ? state : '',
         },
       },
@@ -78,6 +79,12 @@ const IntervieweesList = () => {
   const [selectedIntervieweeIds, setSelectedIntervieweeIds] = useState<string[]>([])
   const [selectIntervieweeMode, setSelectIntervieweeMode] = useState(false)
 
+  const colorScheme = useMantineColorScheme()
+
+  const numberOfSelectableInterviewees = interviewees.filter((interviewee) =>
+    interviewee.score ? interviewee.score < 0 : true,
+  ).length
+
   return (
     <Stack gap={'1.5rem'}>
       <Group justify='space-between' align='center' gap={'0.5rem'}>
@@ -88,10 +95,16 @@ const IntervieweesList = () => {
             size='xs'
             leftSection={<PaperPlaneTiltIcon size={16} />}
             onClick={() => {
-              setSelectIntervieweeMode(true)
+              setSelectIntervieweeMode(!selectIntervieweeMode)
             }}
           >
-            {isSmaller ? 'Invites' : 'Select for Invites'}
+            {isSmaller
+              ? selectIntervieweeMode
+                ? 'Cancel'
+                : 'Invites'
+              : selectIntervieweeMode
+                ? 'Cancel Selection'
+                : 'Select for Invites'}
           </Button>
           <Button size='xs' leftSection={<PlusIcon size={16} />}>
             {isSmaller ? 'Add' : 'Add Interviewee'}
@@ -134,9 +147,65 @@ const IntervieweesList = () => {
           </Stack>
         </Center>
       ) : null}
-      <Stack>
+      <Stack
+        bdrs={'md'}
+        style={
+          selectIntervieweeMode
+            ? {
+                overflow: 'hidden',
+                border: '1px solid',
+                borderColor: colorScheme.colorScheme === 'dark' ? '#2C2E33' : '#E3E5E8',
+              }
+            : undefined
+        }
+      >
+        {selectIntervieweeMode && (
+          <Group
+            w={'100%'}
+            justify='space-between'
+            px={'1rem'}
+            py={'0.5rem'}
+            bg={
+              selectedIntervieweeIds.length > 0
+                ? colorScheme.colorScheme === 'dark'
+                  ? 'primary.11'
+                  : 'primary.2'
+                : colorScheme.colorScheme === 'dark'
+                  ? 'dark.9'
+                  : 'gray.2'
+            }
+          >
+            <Text fw={500}>{`${selectedIntervieweeIds.length} selected`}</Text>
+            <Button
+              variant={'subtle'}
+              style={{ flexShrink: 0 }}
+              c={colorScheme.colorScheme === 'dark' ? 'primary.3' : 'primary.8'}
+              size='xs'
+              onClick={() => {
+                if (selectedIntervieweeIds.length === numberOfSelectableInterviewees) {
+                  setSelectedIntervieweeIds([])
+                } else {
+                  setSelectedIntervieweeIds(
+                    interviewees
+                      .filter((interviewee) => (interviewee.score ? interviewee.score < 0 : true))
+                      .map((interviewee) => interviewee.intervieweeId),
+                  )
+                }
+              }}
+            >
+              {selectedIntervieweeIds.length === numberOfSelectableInterviewees
+                ? 'Deselect All'
+                : 'Select All'}
+            </Button>
+          </Group>
+        )}
         {interviewees.map((interviewee) => (
-          <Group key={interviewee.intervieweeId}>
+          <Group
+            key={interviewee.intervieweeId}
+            px={selectIntervieweeMode ? '1rem' : undefined}
+            pt={selectIntervieweeMode ? '0.5rem' : undefined}
+            pb={selectIntervieweeMode ? '1.5rem' : undefined}
+          >
             {selectIntervieweeMode && (
               <>
                 {interviewee.score && interviewee.score >= 0 && (
@@ -167,6 +236,7 @@ const IntervieweesList = () => {
               interviewee={interviewee}
               navigationLink={`interviewee/${interviewee.intervieweeId}`}
               flex={1}
+              disableLink={selectIntervieweeMode}
             />
           </Group>
         ))}

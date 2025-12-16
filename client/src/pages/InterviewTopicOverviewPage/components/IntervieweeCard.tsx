@@ -20,9 +20,16 @@ interface IIntervieweeCardProps {
   interviewee: IIntervieweeLightWithNextSlot
   navigationLink: string
   flex?: number
+  disableLink?: boolean
+  highlightCard?: boolean
 }
 
-const IntervieweeCard = ({ interviewee, navigationLink, flex }: IIntervieweeCardProps) => {
+const IntervieweeCard = ({
+  interviewee,
+  navigationLink,
+  flex,
+  disableLink,
+}: IIntervieweeCardProps) => {
   const checkState = () => {
     return interviewee.score && interviewee.score >= 0
       ? InterviewState.COMPLETED
@@ -42,8 +49,8 @@ const IntervieweeCard = ({ interviewee, navigationLink, flex }: IIntervieweeCard
       withBorder
       bg={scoreColorTranslate(interviewee.score ?? -1)}
       radius='md'
-      component={Link}
-      to={navigationLink}
+      component={disableLink ? undefined : Link}
+      to={disableLink ? '' : navigationLink}
       flex={flex}
     >
       <Card p={0} ml={8} radius='md'>
