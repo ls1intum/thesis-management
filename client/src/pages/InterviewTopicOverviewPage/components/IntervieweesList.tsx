@@ -11,12 +11,14 @@ import {
   Checkbox,
   Tooltip,
   useMantineColorScheme,
+  useMantineTheme,
 } from '@mantine/core'
 import {
   MagnifyingGlassIcon,
   PaperPlaneTiltIcon,
   PlusIcon,
   UsersFourIcon,
+  XIcon,
 } from '@phosphor-icons/react'
 import { useEffect, useState } from 'react'
 import {
@@ -80,6 +82,7 @@ const IntervieweesList = () => {
   const [selectIntervieweeMode, setSelectIntervieweeMode] = useState(false)
 
   const colorScheme = useMantineColorScheme()
+  const theme = useMantineTheme()
 
   const numberOfSelectableInterviewees = interviewees.filter((interviewee) =>
     interviewee.score ? interviewee.score < 0 : true,
@@ -93,7 +96,9 @@ const IntervieweesList = () => {
           <Button
             variant='outline'
             size='xs'
-            leftSection={<PaperPlaneTiltIcon size={16} />}
+            leftSection={
+              selectIntervieweeMode ? <XIcon size={16} /> : <PaperPlaneTiltIcon size={16} />
+            }
             onClick={() => {
               setSelectIntervieweeMode(!selectIntervieweeMode)
             }}
@@ -154,7 +159,8 @@ const IntervieweesList = () => {
             ? {
                 overflow: 'hidden',
                 border: '1px solid',
-                borderColor: colorScheme.colorScheme === 'dark' ? '#2C2E33' : '#E3E5E8',
+                borderColor:
+                  colorScheme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[3],
               }
             : undefined
         }
@@ -175,7 +181,7 @@ const IntervieweesList = () => {
                   : 'gray.2'
             }
           >
-            <Text fw={500}>{`${selectedIntervieweeIds.length} selected`}</Text>
+            <Text fw={500} flex={1}>{`${selectedIntervieweeIds.length} selected`}</Text>
             <Button
               variant={'subtle'}
               style={{ flexShrink: 0 }}
@@ -196,6 +202,13 @@ const IntervieweesList = () => {
               {selectedIntervieweeIds.length === numberOfSelectableInterviewees
                 ? 'Deselect All'
                 : 'Select All'}
+            </Button>
+            <Button
+              disabled={selectedIntervieweeIds.length === 0}
+              size='xs'
+              leftSection={<PaperPlaneTiltIcon size={16} />}
+            >
+              {`Send ${selectedIntervieweeIds.length > 0 ? selectedIntervieweeIds.length : ''} Invitation${selectedIntervieweeIds.length !== 1 && selectedIntervieweeIds.length > 0 ? 's' : ''}`}
             </Button>
           </Group>
         )}
