@@ -11,16 +11,18 @@ public record IntervieweeLightWithNextSlotDto(
     LightUserDto user,
     int score,
     Instant lastInvited,
-    InterviewSlot nextSlot
+    InterviewSlotDto nextSlot
 ) {
     public static IntervieweeLightWithNextSlotDto fromIntervieweeEntity(Interviewee interviewee) {
         int score = interviewee.getScore() != null ? interviewee.getScore() : -1;
+        InterviewSlot nextSlot = interviewee.getNextSlot();
+
         return new IntervieweeLightWithNextSlotDto(
                 interviewee.getIntervieweeId(),
                 LightUserDto.fromUserEntity(interviewee.getApplication().getUser()),
                 score,
                 interviewee.getLastInvited(),
-                interviewee.getNextSlot()
+                nextSlot != null ? InterviewSlotDto.fromInterviewSlot(nextSlot) : null
         );
 
     }

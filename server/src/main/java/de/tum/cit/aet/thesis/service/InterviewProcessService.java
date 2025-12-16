@@ -319,4 +319,37 @@ public class InterviewProcessService {
 
         return interviewees;
     }
+
+    public InterviewSlot bookInterviewSlot(UUID processID, UUID slotId,UUID intervieweeUserId) {
+        if (intervieweeUserId == null) {
+            throw new IllegalStateException("No Interviewee Id provided.");
+        }
+        InterviewProcess interviewProcess = findById(processID);
+
+        if (currentUserProvider().getUser().getResearchGroup() == null && !currentUserProvider().isAdmin() && !userIsInvitedToInterviewee(interviewProcess)) {
+            throw new IllegalStateException("Current user is not allowed to access the interview slots of this interview process.");
+        }
+
+        if (!interviewProcess.getSlots().stream().map(InterviewSlot::getId).toList().contains(slotId)) {
+            throw new ResourceNotFoundException(String.format("Slot with id %s does not belong to the provided process.", slotId));
+        }
+
+        Interviewee interviewee = interviewProcess.getInterviewees().stream()
+                .filter(ie -> ie.getApplication().getUser().getId().equals(intervieweeUserId))
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Interviewee with user id %s not found in the provided process.", intervieweeUserId)));;
+        InterviewSlot slot = interviewProcess.getSlots().stream()
+                .filter(s -> s.getId().equals(slotId))
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Slot with id %s not found.", slotId)));
+
+        if (slot.getInterviewee() != null) {
+            throw new IllegalStateException("Slot is already booked.");
+        }
+
+        slot.setInterviewee(interviewee);
+        interviewProcessRepository.save(interviewProcess);
+
+        return slot;
+    }
 }

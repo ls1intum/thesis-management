@@ -1,9 +1,6 @@
 package de.tum.cit.aet.thesis.controller;
 
-import de.tum.cit.aet.thesis.controller.payload.CreateInterviewProcessPayload;
-import de.tum.cit.aet.thesis.controller.payload.CreateInterviewSlotsPayload;
-import de.tum.cit.aet.thesis.controller.payload.InviteIntervieweesPayload;
-import de.tum.cit.aet.thesis.controller.payload.UpdateIntervieweeAssessmentPayload;
+import de.tum.cit.aet.thesis.controller.payload.*;
 import de.tum.cit.aet.thesis.dto.*;
 import de.tum.cit.aet.thesis.entity.InterviewProcess;
 import de.tum.cit.aet.thesis.entity.InterviewSlot;
@@ -138,5 +135,15 @@ public class InterviewProcessController {
     ) {
         List<Interviewee> interviewee = interviewProcessService.inviteInterviewees(interviewProcessId, payload.intervieweeIds());
         return ResponseEntity.ok(interviewee.stream().map(IntervieweeLightWithNextSlotDto::fromIntervieweeEntity).toList());
+    }
+
+    @PutMapping("/{interviewProcessId}/slot/{slotId}/book")
+    public ResponseEntity<InterviewSlotDto> bookInterviewSlot(
+            @PathVariable("interviewProcessId") UUID interviewProcessId,
+            @PathVariable("slotId") UUID slotId,
+            @RequestBody BookInterviewSlotPayload payload
+            ) {
+        InterviewSlot interviewSlot = interviewProcessService.bookInterviewSlot(interviewProcessId, slotId, payload.intervieweeUserId());
+        return ResponseEntity.ok(InterviewSlotDto.fromInterviewSlot(interviewSlot));
     }
 }

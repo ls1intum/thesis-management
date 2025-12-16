@@ -104,7 +104,8 @@ const CalendarCarousel = () => {
   const rowAmount = isSmaller ? 2 : 3
 
   const getSlideDisplayAmount = () => {
-    return isMobile ? 1 : isSmallScreen ? 2 : isMediumScreen ? 3 : 4
+    const slideAmount = isMobile ? 1 : isSmallScreen ? 2 : isMediumScreen ? 3 : 4
+    return Math.min(slideAmount, totalSlides)
   }
 
   const calendarHeader = () => {

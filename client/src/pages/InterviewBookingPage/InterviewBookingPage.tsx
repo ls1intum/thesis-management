@@ -24,6 +24,7 @@ import { showSimpleError } from '../../utils/notification'
 import { getApiResponseErrorMessage } from '../../requests/handler'
 import { useAuthenticationContext, useUser } from '../../hooks/authentication'
 import { s } from 'react-router/dist/development/index-react-server-client-BKpa2trA'
+import { ConfettiIcon } from '@phosphor-icons/react/dist/ssr'
 
 const InterviewBookingPage = () => {
   const { processId } = useParams<{ processId: string }>()
@@ -33,6 +34,28 @@ const InterviewBookingPage = () => {
 
   const [showErrorMessage, setShowErrorMessage] = useState(false)
   const [errorMessage, setErrorMessage] = useState('Unable to load interview slots.')
+
+  const isSmaller = useIsSmallerBreakpoint('sm')
+
+  const [selectedSlot, setSelectedSlot] = useState<IInterviewSlot | null>(null)
+
+  const [carouselSlide, setCarouselSlide] = useState(0)
+
+  //Make sure user is logged in
+  const user = useUser()
+  const auth = useAuthenticationContext()
+
+  useEffect(() => {
+    if (!auth.isAuthenticated) {
+      auth.login()
+
+      const interval = setInterval(() => {
+        auth.login()
+      }, 1000)
+
+      return () => clearInterval(interval)
+    }
+  }, [auth.isAuthenticated])
 
   //TODO: move to provider -> currently duplicate code with InterviewTopicOverviewPage
   const fetchInterviewSlots = async () => {
@@ -61,6 +84,31 @@ const InterviewBookingPage = () => {
     )
   }
 
+  const [pageLoading, setPageLoading] = useState(false)
+  const [bookingSuccessful, setBookingSuccessful] = useState(false)
+
+  const bookSlot = async (slotId: string) => {
+    setPageLoading(true)
+    doRequest<IInterviewSlot>(
+      `/v2/interview-process/${processId}/slot/${slotId}/book`,
+      {
+        method: 'PUT',
+        requiresAuth: true,
+        data: {
+          intervieweeUserId: user?.userId,
+        },
+      },
+      (res) => {
+        if (res.ok) {
+          setBookingSuccessful(true)
+        } else {
+          showSimpleError(getApiResponseErrorMessage(res))
+        }
+        setPageLoading(false)
+      },
+    )
+  }
+
   function groupSlotsByDate(slots: IInterviewSlot[]): Record<string, IInterviewSlot[]> {
     return slots.reduce(
       (acc, slot) => {
@@ -79,12 +127,6 @@ const InterviewBookingPage = () => {
   useEffect(() => {
     fetchInterviewSlots()
   }, [])
-
-  const isSmaller = useIsSmallerBreakpoint('sm')
-
-  const [selectedSlot, setSelectedSlot] = useState<IInterviewSlot | null>(null)
-
-  const [carouselSlide, setCarouselSlide] = useState(0)
 
   const dateRowDisabled = (itemsPerPage: number, rowKey: string) => {
     const keys = Object.keys(interviewSlots)
@@ -115,22 +157,6 @@ const InterviewBookingPage = () => {
     return Math.min(slideAmount, Object.keys(interviewSlots).length)
   }
 
-  //Make sure user is logged in
-  const user = useUser()
-  const auth = useAuthenticationContext()
-
-  useEffect(() => {
-    if (!auth.isAuthenticated) {
-      auth.login()
-
-      const interval = setInterval(() => {
-        auth.login()
-      }, 1000)
-
-      return () => clearInterval(interval)
-    }
-  }, [auth.isAuthenticated])
-
   if (!user) {
     return (
       <Center style={{ height: '100%' }}>
@@ -143,6 +169,25 @@ const InterviewBookingPage = () => {
     return (
       <Center style={{ height: '100%' }}>
         <Text>{errorMessage}</Text>
+      </Center>
+    )
+  }
+
+  if (pageLoading) {
+    return (
+      <Center style={{ height: '100%' }}>
+        <Loader />
+      </Center>
+    )
+  }
+
+  if (bookingSuccessful) {
+    return (
+      <Center style={{ height: '100%' }}>
+        <Stack align='center'>
+          <ConfettiIcon size={48} color='green' />
+          <Text>Your interview slot has been successfully booked!</Text>
+        </Stack>
       </Center>
     )
   }
@@ -262,7 +307,9 @@ const InterviewBookingPage = () => {
               )}
             </Stack>
           </ScrollArea>
-          <Button fullWidth>Reserve Interview Slot</Button>
+          <Button fullWidth onClick={() => selectedSlot && bookSlot(selectedSlot.slotId)}>
+            Reserve Interview Slot
+          </Button>
         </Stack>
       </Flex>
     </Stack>
