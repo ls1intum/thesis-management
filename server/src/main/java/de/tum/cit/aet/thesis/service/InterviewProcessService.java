@@ -2,6 +2,7 @@ package de.tum.cit.aet.thesis.service;
 
 import de.tum.cit.aet.thesis.constants.ApplicationState;
 import de.tum.cit.aet.thesis.dto.InterviewSlotDto;
+import de.tum.cit.aet.thesis.dto.IntervieweeLightWithNextSlotDto;
 import de.tum.cit.aet.thesis.entity.*;
 import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.repository.InterviewProcessRepository;
@@ -277,5 +278,26 @@ public class InterviewProcessService {
         }
 
         return intervieweeRepository.save(interviewee);
+    }
+
+    public List<Interviewee> inviteInterviewees(UUID interviewProcessId, List<UUID> intervieweeIds) {
+        if (intervieweeIds == null || intervieweeIds.isEmpty()) {
+            throw new IllegalStateException("Interviewee Ids cannot be null or empty.");
+        }
+
+        InterviewProcess interviewProcess = findById(interviewProcessId);
+        currentUserProvider().assertCanAccessResearchGroup(interviewProcess.getTopic().getResearchGroup());
+
+        List<Interviewee> interviewees = intervieweeRepository.findAllById(intervieweeIds);
+        for (Interviewee interviewee : interviewees) {
+            if (intervieweeIds.contains(interviewee.getIntervieweeId())) {
+                interviewee.setLastInvited(new Date().toInstant());
+                intervieweeRepository.save(interviewee);
+
+                //TODO: Send invitation email
+            }
+        }
+
+        return interviewees;
     }
 }

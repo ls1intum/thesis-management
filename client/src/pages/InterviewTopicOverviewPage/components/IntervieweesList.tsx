@@ -29,7 +29,7 @@ import { useIsSmallerBreakpoint } from '../../../hooks/theme'
 import { doRequest } from '../../../requests/request'
 import { PaginationResponse } from '../../../requests/responses/pagination'
 import { useParams } from 'react-router'
-import { showSimpleError } from '../../../utils/notification'
+import { showSimpleError, showSimpleSuccess } from '../../../utils/notification'
 import { getApiResponseErrorMessage } from '../../../requests/handler'
 import { useDebouncedValue } from '@mantine/hooks'
 import IntervieweeCard from './IntervieweeCard'
@@ -74,6 +74,35 @@ const IntervieweesList = () => {
     }
   }
 
+  const inviteInterviewees = async (intervieweeIds: string[]) => {
+    if (!intervieweeIds.length) return
+
+    doRequest<IIntervieweeLightWithNextSlot[]>(
+      `/v2/interview-process/${processId}/invite`,
+      {
+        method: 'POST',
+        requiresAuth: true,
+        data: {
+          intervieweeIds,
+        },
+      },
+      (res) => {
+        if (res.ok) {
+          showSimpleSuccess('Invitations sent successfully')
+          fetchMyInterviewProcesses()
+        } else {
+          showSimpleError(getApiResponseErrorMessage(res))
+        }
+        setIntervieweesLoading(false)
+      },
+    )
+  }
+
+  const cancelIntervieweeMode = () => {
+    setSelectedIntervieweeIds([])
+    setSelectIntervieweeMode(false)
+  }
+
   useEffect(() => {
     fetchMyInterviewProcesses()
   }, [state, debouncedSearch])
@@ -100,7 +129,11 @@ const IntervieweesList = () => {
               selectIntervieweeMode ? <XIcon size={16} /> : <PaperPlaneTiltIcon size={16} />
             }
             onClick={() => {
-              setSelectIntervieweeMode(!selectIntervieweeMode)
+              if (selectIntervieweeMode) {
+                cancelIntervieweeMode()
+              } else {
+                setSelectIntervieweeMode(true)
+              }
             }}
           >
             {isSmaller
@@ -207,6 +240,10 @@ const IntervieweesList = () => {
               disabled={selectedIntervieweeIds.length === 0}
               size='xs'
               leftSection={<PaperPlaneTiltIcon size={16} />}
+              onClick={() => {
+                inviteInterviewees(selectedIntervieweeIds)
+                cancelIntervieweeMode()
+              }}
             >
               {`Send ${selectedIntervieweeIds.length > 0 ? selectedIntervieweeIds.length : ''} Invitation${selectedIntervieweeIds.length !== 1 && selectedIntervieweeIds.length > 0 ? 's' : ''}`}
             </Button>
