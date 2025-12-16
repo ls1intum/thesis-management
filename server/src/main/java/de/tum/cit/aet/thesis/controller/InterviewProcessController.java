@@ -91,7 +91,7 @@ public class InterviewProcessController {
     }
 
     @GetMapping("/{interviewProcessId}/interview-slots")
-    @PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
+    //Not preauthorized to allow interviewees to fetch available slots -> check inside service method if process is accessible to the user
     public ResponseEntity<List<InterviewSlotDto>> getInterviewProcessInterviewSlots(
             @PathVariable("interviewProcessId") UUID interviewProcessId,
             @RequestParam(required = false, defaultValue = "false") boolean excludeBooked

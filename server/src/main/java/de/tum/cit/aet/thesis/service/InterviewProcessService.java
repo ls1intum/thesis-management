@@ -242,11 +242,11 @@ public class InterviewProcessService {
             UUID interviewProcessId,
             boolean excludeBooked
     ) {
-        if (currentUserProvider().getUser().getResearchGroup() == null && !currentUserProvider().isAdmin()) {
-            throw new IllegalStateException("Current user is not assigned to any research group.");
-        }
-
         InterviewProcess interviewProcess = findById(interviewProcessId);
+
+        if (currentUserProvider().getUser().getResearchGroup() == null && !currentUserProvider().isAdmin() && !userIsInvitedToInterviewee(interviewProcess)) {
+            throw new IllegalStateException("Current user is not allowed to access the interview slots of this interview process.");
+        }
 
         currentUserProvider().assertCanAccessResearchGroup(interviewProcess.getTopic().getResearchGroup());
 
@@ -257,6 +257,17 @@ public class InterviewProcessService {
         return excludeBooked ? slots.stream()
                 .filter(slot -> slot.getInterviewee() == null)
                 .toList() : slots;
+    }
+
+    private Boolean userIsInvitedToInterviewee(InterviewProcess interviewProcess) {
+        UUID currentUserId = currentUserProvider().getUser().getId();
+
+        for (Interviewee interviewee : interviewProcess.getInterviewees()) {
+            if (interviewee.getApplication().getUser().getId().equals(currentUserId) && interviewee.getLastInvited() != null) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public Interviewee getInterviewee(UUID intervieweeId) {

@@ -10,7 +10,6 @@ interface IScoreCardProps {
 }
 
 const ScoreCard = ({ score, onScoreChange, disabled = false }: IScoreCardProps) => {
-  //TODO: Think about better design for each label
   function createScoreData(labelScore: number): { label: React.ReactNode; value: string } {
     return {
       label: (
