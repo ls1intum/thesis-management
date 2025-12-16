@@ -293,10 +293,11 @@ public class InterviewProcessService {
         List<Interviewee> interviewees = intervieweeRepository.findAllById(intervieweeIds);
         for (Interviewee interviewee : interviewees) {
             if (intervieweeIds.contains(interviewee.getIntervieweeId())) {
+                Boolean firstInvitation = interviewee.getLastInvited() == null;
                 interviewee.setLastInvited(new Date().toInstant());
                 intervieweeRepository.save(interviewee);
 
-                mailingService.sendInvitationEmail(interviewee);
+                mailingService.sendInvitationEmail(interviewee, firstInvitation);
             }
         }
 

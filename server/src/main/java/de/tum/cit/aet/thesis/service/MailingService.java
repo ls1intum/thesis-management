@@ -186,10 +186,10 @@ public class MailingService {
                 .send(javaMailSender, uploadService);
     }
 
-    public void sendInvitationEmail(Interviewee interviewee) {
+    public void sendInvitationEmail(Interviewee interviewee, Boolean firstInvitation) {
         EmailTemplate emailTemplate = loadTemplate(
                 interviewee.getApplication().getResearchGroup().getId(),
-                "INTERVIEW_INVITATION",
+                 firstInvitation ? "INTERVIEW_INVITATION" : "INTERVIEW_INVITATION_REMINDER",
                 "en");
 
         MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(), emailTemplate.getBodyHtml());

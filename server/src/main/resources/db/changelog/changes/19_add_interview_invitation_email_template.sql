@@ -27,3 +27,33 @@ VALUES
 The Thesis Coordination Team</p>',
         'Invitation email sent to interviewees with scheduling link, applicant name and thesis title'
     );
+
+INSERT INTO
+    email_templates (email_template_id, template_case, subject, body_html, description)
+VALUES
+    (
+        gen_random_uuid(),
+        'INTERVIEW_INVITATION_REMINDER',
+        'Interview Invitation Reminder',
+        '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline="text">
+  This is a reminder that you were invited to schedule an interview for the thesis <strong>[[${application.thesisTitle}]]</strong>.
+</p>
+
+<p th:inline="text">
+  If you haven''t scheduled yet, please follow the link below to choose a suitable time:
+</p>
+
+<p th:inline="text">
+  <a target="_blank" rel="noopener noreferrer" th:href="${inviteUrl}">Schedule your interview</a>
+</p>
+
+<p th:inline="text">
+  If you already scheduled your interview, please ignore this reminder.
+</p>
+
+<p>Best regards,<br/>
+The Thesis Coordination Team</p>',
+        'Reminder email sent when resending the interview scheduling invitation'
+    );
