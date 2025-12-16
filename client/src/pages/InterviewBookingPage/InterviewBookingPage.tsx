@@ -27,6 +27,9 @@ const InterviewBookingPage = () => {
       {
         method: 'GET',
         requiresAuth: true,
+        params: {
+          excludeBooked: true,
+        },
       },
       (res) => {
         if (res.ok) {

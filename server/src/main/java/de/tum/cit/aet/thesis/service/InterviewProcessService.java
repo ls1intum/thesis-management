@@ -239,7 +239,8 @@ public class InterviewProcessService {
     }
 
     public List<InterviewSlot> getInterviewProcessInterviewSlots(
-            UUID interviewProcessId
+            UUID interviewProcessId,
+            boolean excludeBooked
     ) {
         if (currentUserProvider().getUser().getResearchGroup() == null && !currentUserProvider().isAdmin()) {
             throw new IllegalStateException("Current user is not assigned to any research group.");
@@ -249,9 +250,13 @@ public class InterviewProcessService {
 
         currentUserProvider().assertCanAccessResearchGroup(interviewProcess.getTopic().getResearchGroup());
 
-        return interviewProcess.getSlots() == null
+        List<InterviewSlot> slots =  interviewProcess.getSlots() == null
                 ? new ArrayList<>()
                 : interviewProcess.getSlots();
+
+        return excludeBooked ? slots.stream()
+                .filter(slot -> slot.getInterviewee() == null)
+                .toList() : slots;
     }
 
     public Interviewee getInterviewee(UUID intervieweeId) {
