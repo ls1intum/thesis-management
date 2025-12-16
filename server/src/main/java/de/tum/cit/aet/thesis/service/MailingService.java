@@ -186,7 +186,7 @@ public class MailingService {
                 .send(javaMailSender, uploadService);
     }
 
-    public void sendInvitationEmail(Interviewee interviewee, Boolean firstInvitation) {
+    public void sendInterviewInvitationEmail(Interviewee interviewee, Boolean firstInvitation) {
         EmailTemplate emailTemplate = loadTemplate(
                 interviewee.getApplication().getResearchGroup().getId(),
                  firstInvitation ? "INTERVIEW_INVITATION" : "INTERVIEW_INVITATION_REMINDER",
@@ -198,6 +198,22 @@ public class MailingService {
                 .addNotificationName(emailTemplate.getSubject())
                 .fillApplicationPlaceholders(interviewee.getApplication())
                 .fillIntervieweePlaceholders(interviewee)
+                .send(javaMailSender, uploadService);
+    }
+
+    public void sendInterviewSlotConfirmationEmail(InterviewSlot slot) {
+        EmailTemplate emailTemplate = loadTemplate(
+                slot.getInterviewee().getApplication().getResearchGroup().getId(),
+                "INTERVIEW_SLOT_BOOKED_CONFORMATION",
+                "en");
+
+        MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(), emailTemplate.getBodyHtml());
+        mailBuilder
+                .addPrimaryRecipient(slot.getInterviewee().getApplication().getUser())
+                .addNotificationName(emailTemplate.getSubject())
+                .fillApplicationPlaceholders(slot.getInterviewee().getApplication())
+                .fillIntervieweePlaceholders(slot.getInterviewee())
+                .fillInterviewSlotPlaceholders(slot)
                 .send(javaMailSender, uploadService);
     }
 

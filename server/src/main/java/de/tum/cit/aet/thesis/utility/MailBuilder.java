@@ -251,6 +251,12 @@ public class MailBuilder {
         return this;
     }
 
+    public MailBuilder fillInterviewSlotPlaceholders(InterviewSlot interviewSlot) {
+        fillPlaceholder("slot", InterviewSlotDto.fromInterviewSlot(interviewSlot));
+
+        return this;
+    }
+
     public MailBuilder fillThesisPlaceholders(Thesis thesis) {
         fillPlaceholder("thesis", ThesisDto.fromThesisEntity(thesis, false, true));
         fillPlaceholder("thesisUrl", config.getClientHost() + "/theses/" + thesis.getId());

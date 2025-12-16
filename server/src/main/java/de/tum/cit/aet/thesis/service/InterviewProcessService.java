@@ -2,13 +2,11 @@ package de.tum.cit.aet.thesis.service;
 
 import de.tum.cit.aet.thesis.constants.ApplicationState;
 import de.tum.cit.aet.thesis.dto.InterviewSlotDto;
-import de.tum.cit.aet.thesis.dto.IntervieweeLightWithNextSlotDto;
 import de.tum.cit.aet.thesis.entity.*;
 import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.repository.InterviewProcessRepository;
 import de.tum.cit.aet.thesis.repository.IntervieweeRepository;
 import de.tum.cit.aet.thesis.security.CurrentUserProvider;
-import de.tum.cit.aet.thesis.utility.HibernateHelper;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -313,7 +311,7 @@ public class InterviewProcessService {
                 interviewee.setLastInvited(new Date().toInstant());
                 intervieweeRepository.save(interviewee);
 
-                mailingService.sendInvitationEmail(interviewee, firstInvitation);
+                mailingService.sendInterviewInvitationEmail(interviewee, firstInvitation);
             }
         }
 
@@ -349,6 +347,8 @@ public class InterviewProcessService {
 
         slot.setInterviewee(interviewee);
         interviewProcessRepository.save(interviewProcess);
+
+        mailingService.sendInterviewSlotConfirmationEmail(slot);
 
         return slot;
     }
