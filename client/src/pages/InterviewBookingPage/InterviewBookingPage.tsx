@@ -4,134 +4,59 @@ import { IInterviewSlot } from '../../requests/responses/interview'
 import { DateHeaderItem } from '../InterviewTopicOverviewPage/components/DateHeaderItem'
 import SlotItem from '../InterviewTopicOverviewPage/components/SlotItem'
 import { Carousel } from '@mantine/carousel'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import SummaryCard from './components/SummaryCard'
 import { CalendarDotsIcon, ClockIcon, MapPinIcon } from '@phosphor-icons/react'
+import { doRequest } from '../../requests/request'
+import { useParams } from 'react-router'
+import { showSimpleError } from '../../utils/notification'
+import { getApiResponseErrorMessage } from '../../requests/handler'
 
 const InterviewBookingPage = () => {
-  const interviewSlotItems: Record<string, IInterviewSlot[]> = {
-    //TODO: replace with real data & make sure only available, in the future and not booked slots are shown
-    '2025-11-10': [
+  const { processId } = useParams<{ processId: string }>()
+
+  const [interviewSlots, setInterviewSlots] = useState<Record<string, IInterviewSlot[]>>({})
+  const [interviewSlotsLoading, setInterviewSlotsLoading] = useState(false)
+
+  //TODO: move to provider -> currently duplicate code with InterviewTopicOverviewPage
+  const fetchInterviewSlots = async () => {
+    setInterviewSlotsLoading(true)
+
+    doRequest<IInterviewSlot[]>(
+      `/v2/interview-process/${processId}/interview-slots`,
       {
-        slotId: '1',
-        startDate: new Date('2025-11-10T10:00:00Z'),
-        endDate: new Date('2025-11-10T10:30:00Z'),
-        bookedBy: null,
+        method: 'GET',
+        requiresAuth: true,
       },
-    ],
-    '2025-11-11': [
-      {
-        slotId: '2',
-        startDate: new Date('2025-11-11T11:00:00Z'),
-        endDate: new Date('2025-11-11T11:30:00Z'),
-        bookedBy: null,
+      (res) => {
+        if (res.ok) {
+          setInterviewSlots(groupSlotsByDate(res.data))
+        } else {
+          showSimpleError(getApiResponseErrorMessage(res))
+        }
+        setInterviewSlotsLoading(false)
       },
-      {
-        slotId: '3',
-        startDate: new Date('2025-11-11T12:00:00Z'),
-        endDate: new Date('2025-11-11T12:30:00Z'),
-        bookedBy: null,
-      },
-    ],
-    '2025-11-12': [
-      {
-        slotId: '4',
-        startDate: new Date('2025-11-12T10:00:00Z'),
-        endDate: new Date('2025-11-12T10:30:00Z'),
-        bookedBy: null,
-      },
-      {
-        slotId: '5',
-        startDate: new Date('2025-11-12T11:00:00Z'),
-        endDate: new Date('2025-11-12T11:30:00Z'),
-        bookedBy: null,
-      },
-      {
-        slotId: '6',
-        startDate: new Date('2025-11-12T12:00:00Z'),
-        endDate: new Date('2025-11-12T12:30:00Z'),
-        bookedBy: null,
-      },
-      {
-        slotId: '7',
-        startDate: new Date('2025-11-12T13:00:00Z'),
-        endDate: new Date('2025-11-12T13:30:00Z'),
-        bookedBy: null,
-      },
-      {
-        slotId: '8',
-        startDate: new Date('2025-11-12T14:00:00Z'),
-        endDate: new Date('2025-11-12T14:30:00Z'),
-        bookedBy: null,
-      },
-      {
-        slotId: '9',
-        startDate: new Date('2025-11-12T15:00:00Z'),
-        endDate: new Date('2025-11-12T15:30:00Z'),
-        bookedBy: null,
-      },
-    ],
-    '2025-11-20': [
-      {
-        slotId: '10',
-        startDate: new Date('2025-11-20T10:00:00Z'),
-        endDate: new Date('2025-11-20T10:30:00Z'),
-        bookedBy: null,
-      },
-      {
-        slotId: '11',
-        startDate: new Date('2025-11-20T11:00:00Z'),
-        endDate: new Date('2025-11-20T11:30:00Z'),
-        bookedBy: null,
-      },
-    ],
-    '2025-11-27': [
-      {
-        slotId: '12',
-        startDate: new Date('2025-11-27T10:00:00Z'),
-        endDate: new Date('2025-11-27T10:30:00Z'),
-        bookedBy: null,
-      },
-      {
-        slotId: '13',
-        startDate: new Date('2025-11-27T11:00:00Z'),
-        endDate: new Date('2025-11-27T11:30:00Z'),
-        bookedBy: null,
-      },
-    ],
-    '2025-11-28': [
-      {
-        slotId: '14',
-        startDate: new Date('2025-11-28T10:00:00Z'),
-        endDate: new Date('2025-11-28T10:30:00Z'),
-        bookedBy: null,
-      },
-      {
-        slotId: '15',
-        startDate: new Date('2025-11-28T11:00:00Z'),
-        endDate: new Date('2025-11-28T11:30:00Z'),
-        bookedBy: null,
-      },
-      {
-        slotId: '16',
-        startDate: new Date('2025-11-28T11:00:00Z'),
-        endDate: new Date('2025-11-28T11:30:00Z'),
-        bookedBy: null,
-      },
-      {
-        slotId: '17',
-        startDate: new Date('2025-11-28T12:00:00Z'),
-        endDate: new Date('2025-11-28T12:30:00Z'),
-        bookedBy: null,
-      },
-      {
-        slotId: '18',
-        startDate: new Date('2025-11-28T12:30:00Z'),
-        endDate: new Date('2025-11-28T13:00:00Z'),
-        bookedBy: null,
-      },
-    ],
+    )
   }
+
+  function groupSlotsByDate(slots: IInterviewSlot[]): Record<string, IInterviewSlot[]> {
+    return slots.reduce(
+      (acc, slot) => {
+        const startDate = new Date(slot.startDate)
+        const endDate = new Date(slot.endDate)
+        const dateKey = startDate.toISOString().slice(0, 10)
+        const slotWithDates = { ...slot, startDate, endDate }
+        if (!acc[dateKey]) acc[dateKey] = []
+        acc[dateKey].push(slotWithDates)
+        return acc
+      },
+      {} as Record<string, IInterviewSlot[]>,
+    )
+  }
+
+  useEffect(() => {
+    fetchInterviewSlots()
+  }, [])
 
   const isSmaller = useIsSmallerBreakpoint('sm')
 
@@ -140,7 +65,7 @@ const InterviewBookingPage = () => {
   const [carouselSlide, setCarouselSlide] = useState(0)
 
   const dateRowDisabled = (itemsPerPage: number, rowKey: string) => {
-    const keys = Object.keys(interviewSlotItems)
+    const keys = Object.keys(interviewSlots)
     const totalSlides = keys.length
     const index = keys.indexOf(rowKey)
     if (index === -1) return true
@@ -157,6 +82,15 @@ const InterviewBookingPage = () => {
     }
 
     return index < visibleSlidesStart || index >= visibleSlidesEnd
+  }
+
+  const isMobile = useIsSmallerBreakpoint('sm')
+  const isSmallScreen = useIsSmallerBreakpoint('lg')
+  const isMediumScreen = useIsSmallerBreakpoint('xl')
+
+  const getSlideDisplayAmount = () => {
+    const slideAmount = isMobile ? 1 : isSmallScreen ? 2 : isMediumScreen ? 3 : 4
+    return Math.min(slideAmount, Object.keys(interviewSlots).length)
   }
 
   return (
@@ -184,12 +118,12 @@ const InterviewBookingPage = () => {
               controlSize={32}
               withControls
               withIndicators={false}
-              slideSize={'23%'}
-              emblaOptions={{ align: 'start', slidesToScroll: 4 }}
+              slideSize={`${(100 - 14) / getSlideDisplayAmount()}%`}
+              emblaOptions={{ align: 'center', slidesToScroll: getSlideDisplayAmount() }}
               onSlideChange={(index) => setCarouselSlide(index)}
               px={20}
             >
-              {Object.entries(interviewSlotItems).map(([date, slots]) => (
+              {Object.entries(interviewSlots).map(([date, slots]) => (
                 <Carousel.Slide key={date}>
                   <Stack gap={'1.5rem'}>
                     <DateHeaderItem date={date} size={'lg'} disabled={dateRowDisabled(4, date)} />
