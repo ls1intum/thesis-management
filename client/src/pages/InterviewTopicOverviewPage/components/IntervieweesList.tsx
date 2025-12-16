@@ -45,6 +45,7 @@ const IntervieweesList = () => {
 
   const [interviewees, setInterviewees] = useState<IIntervieweeLightWithNextSlot[]>([])
   const [intervieweesLoading, setIntervieweesLoading] = useState(false)
+  const [showLoader] = useDebouncedValue(intervieweesLoading, 1000)
 
   const fetchMyInterviewProcesses = async () => {
     setIntervieweesLoading(true)
@@ -168,7 +169,7 @@ const IntervieweesList = () => {
           w={isSmaller ? '100%' : 300}
         />
       </Group>
-      {intervieweesLoading ? (
+      {showLoader ? (
         <Center h={'100%'} mih={'30vh'}>
           <Loader />
         </Center>

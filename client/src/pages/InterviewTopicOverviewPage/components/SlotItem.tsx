@@ -45,7 +45,11 @@ const SlotItem = ({
               : 'primary.0'
             : undefined
       }
-      style={{ cursor: onClick && !disabled ? 'pointer' : 'default' }}
+      style={{
+        cursor: onClick && !disabled ? 'pointer' : 'default',
+        userSelect: 'none',
+        WebkitUserSelect: 'none',
+      }}
       ref={ref}
       opacity={disabled ? 0.35 : 1}
     >
