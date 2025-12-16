@@ -44,7 +44,6 @@ public class Interviewee {
 
     public InterviewSlot getNextSlot() {
         return slots.stream()
-                .filter(slot -> slot.getStartDate().isAfter(Instant.now()))
                 .min((slot1, slot2) -> slot1.getStartDate().compareTo(slot2.getStartDate()))
                 .orElse(null);
     }

@@ -23,15 +23,14 @@ public record InterviewProcessDto(
 
         if (totalInterviewees > 0) {
             for (Interviewee interviewee : interviewProcess.getInterviewees()) {
-                if (interviewee.getLastInvited() == null) {
-                    uncontactedCount++;
+                if (interviewee.getScore() != null && interviewee.getScore() >= 0) {
+                    completedCount++;
                 } else if (!interviewee.getSlots().isEmpty()) {
                     scheduledCount++;
-                } else if(interviewee.getScore() != null) {
-                    //TODO: Think about if this makes sense to use the score for this
-                    completedCount++;
-                } else {
+                } else if (interviewee.getLastInvited() != null) {
                     invitedCount++;
+                } else {
+                    uncontactedCount++;
                 }
             }
         }
