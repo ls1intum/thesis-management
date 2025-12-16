@@ -1,10 +1,7 @@
 package de.tum.cit.aet.thesis.utility;
 
 import de.tum.cit.aet.thesis.constants.ThesisRoleName;
-import de.tum.cit.aet.thesis.dto.ApplicationDto;
-import de.tum.cit.aet.thesis.dto.ThesisCommentDto;
-import de.tum.cit.aet.thesis.dto.ThesisDto;
-import de.tum.cit.aet.thesis.dto.UserDto;
+import de.tum.cit.aet.thesis.dto.*;
 import de.tum.cit.aet.thesis.entity.*;
 import de.tum.cit.aet.thesis.service.UploadService;
 import jakarta.activation.DataHandler;
@@ -243,6 +240,13 @@ public class MailBuilder {
     public MailBuilder fillApplicationPlaceholders(Application application) {
         fillPlaceholder("application", ApplicationDto.fromApplicationEntity(application, false));
         fillPlaceholder("applicationUrl", config.getClientHost() + "/applications/" + application.getId());
+
+        return this;
+    }
+
+    public MailBuilder fillIntervieweePlaceholders(Interviewee interviewee) {
+        fillPlaceholder("interviewee", IntervieweeDTO.fromIntervieweeEntity(interviewee));
+        fillPlaceholder("inviteUrl", config.getClientHost() + "/interview_booking/" + interviewee.getInterviewProcess().getId());
 
         return this;
     }

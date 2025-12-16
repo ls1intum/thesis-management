@@ -186,6 +186,21 @@ public class MailingService {
                 .send(javaMailSender, uploadService);
     }
 
+    public void sendInvitationEmail(Interviewee interviewee) {
+        EmailTemplate emailTemplate = loadTemplate(
+                interviewee.getApplication().getResearchGroup().getId(),
+                "INTERVIEW_INVITATION",
+                "en");
+
+        MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(), emailTemplate.getBodyHtml());
+        mailBuilder
+                .addPrimaryRecipient(interviewee.getApplication().getUser())
+                .addNotificationName(emailTemplate.getSubject())
+                .fillApplicationPlaceholders(interviewee.getApplication())
+                .fillIntervieweePlaceholders(interviewee)
+                .send(javaMailSender, uploadService);
+    }
+
     public void sendThesisCreatedEmail(User creatingUser, Thesis thesis) {
         EmailTemplate emailTemplate = loadTemplate(
                 thesis.getResearchGroup().getId(),

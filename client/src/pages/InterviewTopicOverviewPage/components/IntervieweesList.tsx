@@ -249,47 +249,49 @@ const IntervieweesList = () => {
             </Button>
           </Group>
         )}
-        {interviewees.map((interviewee) => (
-          <Group
-            key={interviewee.intervieweeId}
-            px={selectIntervieweeMode ? '1rem' : undefined}
-            pt={selectIntervieweeMode ? '0.5rem' : undefined}
-            pb={selectIntervieweeMode ? '1.5rem' : undefined}
-          >
-            {selectIntervieweeMode && (
-              <>
-                {interviewee.score && interviewee.score >= 0 && (
-                  <Tooltip
-                    label={'Can not select completed interviewees'}
-                    target={`#hover-me-${interviewee.intervieweeId}-completed`}
-                  ></Tooltip>
-                )}
-                <Checkbox
-                  checked={selectedIntervieweeIds.includes(interviewee.intervieweeId)}
-                  onChange={(event) => {
-                    const checked = event.currentTarget.checked
-                    setSelectedIntervieweeIds((prev) => {
-                      if (checked) {
-                        return prev.includes(interviewee.intervieweeId)
-                          ? prev
-                          : [...prev, interviewee.intervieweeId]
-                      }
-                      return prev.filter((id) => id !== interviewee.intervieweeId)
-                    })
-                  }}
-                  disabled={interviewee.score ? interviewee.score >= 0 : false}
-                  id={`hover-me-${interviewee.intervieweeId}${interviewee.score && interviewee.score >= 0 ? '-completed' : ''}`}
-                />
-              </>
-            )}
-            <IntervieweeCard
-              interviewee={interviewee}
-              navigationLink={`interviewee/${interviewee.intervieweeId}`}
-              flex={1}
-              disableLink={selectIntervieweeMode}
-            />
-          </Group>
-        ))}
+        <Stack
+          px={selectIntervieweeMode ? '1rem' : undefined}
+          pt={selectIntervieweeMode ? '0.5rem' : undefined}
+          pb={selectIntervieweeMode ? '1.5rem' : undefined}
+        >
+          {interviewees.map((interviewee) => (
+            <Group key={interviewee.intervieweeId}>
+              {selectIntervieweeMode && (
+                <>
+                  {interviewee.score && interviewee.score >= 0 && (
+                    <Tooltip
+                      label={'Can not select completed interviewees'}
+                      target={`#hover-me-${interviewee.intervieweeId}-completed`}
+                    ></Tooltip>
+                  )}
+                  <Checkbox
+                    checked={selectedIntervieweeIds.includes(interviewee.intervieweeId)}
+                    onChange={(event) => {
+                      const checked = event.currentTarget.checked
+                      setSelectedIntervieweeIds((prev) => {
+                        if (checked) {
+                          return prev.includes(interviewee.intervieweeId)
+                            ? prev
+                            : [...prev, interviewee.intervieweeId]
+                        }
+                        return prev.filter((id) => id !== interviewee.intervieweeId)
+                      })
+                    }}
+                    disabled={interviewee.score ? interviewee.score >= 0 : false}
+                    id={`hover-me-${interviewee.intervieweeId}${interviewee.score && interviewee.score >= 0 ? '-completed' : ''}`}
+                    radius={20}
+                  />
+                </>
+              )}
+              <IntervieweeCard
+                interviewee={interviewee}
+                navigationLink={`interviewee/${interviewee.intervieweeId}`}
+                flex={1}
+                disableLink={selectIntervieweeMode}
+              />
+            </Group>
+          ))}
+        </Stack>
       </Stack>
     </Stack>
   )

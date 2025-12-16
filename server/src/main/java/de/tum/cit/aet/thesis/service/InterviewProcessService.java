@@ -28,14 +28,16 @@ public class InterviewProcessService {
     private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
     private final ApplicationService applicationService;
     private final IntervieweeRepository intervieweeRepository;
+    private final MailingService mailingService;
 
     @Autowired
-    public InterviewProcessService(TopicService topicService, InterviewProcessRepository interviewProcessRepository, ObjectProvider<CurrentUserProvider> currentUserProviderProvider, ApplicationService applicationService, IntervieweeRepository intervieweeRepository) {
+    public InterviewProcessService(TopicService topicService, InterviewProcessRepository interviewProcessRepository, ObjectProvider<CurrentUserProvider> currentUserProviderProvider, ApplicationService applicationService, IntervieweeRepository intervieweeRepository, MailingService mailingService) {
         this.topicService = topicService;
         this.interviewProcessRepository = interviewProcessRepository;
         this.currentUserProviderProvider = currentUserProviderProvider;
         this.applicationService = applicationService;
         this.intervieweeRepository = intervieweeRepository;
+        this.mailingService = mailingService;
     }
 
     private CurrentUserProvider currentUserProvider() {
@@ -294,7 +296,7 @@ public class InterviewProcessService {
                 interviewee.setLastInvited(new Date().toInstant());
                 intervieweeRepository.save(interviewee);
 
-                //TODO: Send invitation email
+                mailingService.sendInvitationEmail(interviewee);
             }
         }
 
