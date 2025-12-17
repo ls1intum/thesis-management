@@ -23,7 +23,6 @@ import { useParams } from 'react-router'
 import { showSimpleError } from '../../utils/notification'
 import { getApiResponseErrorMessage } from '../../requests/handler'
 import { useAuthenticationContext, useUser } from '../../hooks/authentication'
-import { s } from 'react-router/dist/development/index-react-server-client-BKpa2trA'
 import { ConfettiIcon } from '@phosphor-icons/react/dist/ssr'
 
 const InterviewBookingPage = () => {
@@ -227,29 +226,35 @@ const InterviewBookingPage = () => {
                 onSlideChange={(index) => setCarouselSlide(index)}
                 px={20}
               >
-                {Object.entries(interviewSlots).map(([date, slots]) => (
-                  <Carousel.Slide key={date}>
-                    <Stack gap={'1.5rem'}>
-                      <DateHeaderItem date={date} size={'lg'} disabled={dateRowDisabled(4, date)} />
-                      {/*TODO: Add this to general components*/}
-                      <Stack>
-                        {slots
-                          .sort((a, b) => a.startDate.getTime() - b.startDate.getTime())
-                          .map((slot) => (
-                            <SlotItem
-                              key={slot.slotId}
-                              slot={slot}
-                              withTimeSpan
-                              selected={selectedSlot?.slotId === slot.slotId}
-                              onClick={() => setSelectedSlot(slot)}
-                              disabled={dateRowDisabled(4, date)}
-                            />
-                          ))}
+                {Object.entries(interviewSlots)
+                  .sort(([dateA], [dateB]) => new Date(dateA).getTime() - new Date(dateB).getTime())
+                  .map(([date, slots]) => (
+                    <Carousel.Slide key={date}>
+                      <Stack gap={'1.5rem'}>
+                        <DateHeaderItem
+                          date={date}
+                          size={'lg'}
+                          disabled={dateRowDisabled(4, date)}
+                        />
                         {/*TODO: Add this to general components*/}
+                        <Stack>
+                          {slots
+                            .sort((a, b) => a.startDate.getTime() - b.startDate.getTime())
+                            .map((slot) => (
+                              <SlotItem
+                                key={slot.slotId}
+                                slot={slot}
+                                withTimeSpan
+                                selected={selectedSlot?.slotId === slot.slotId}
+                                onClick={() => setSelectedSlot(slot)}
+                                disabled={dateRowDisabled(4, date)}
+                              />
+                            ))}
+                          {/*TODO: Add this to general components*/}
+                        </Stack>
                       </Stack>
-                    </Stack>
-                  </Carousel.Slide>
-                ))}
+                    </Carousel.Slide>
+                  ))}
               </Carousel>
             </ScrollArea>
             <Group justify='end' align='center' py={2}>

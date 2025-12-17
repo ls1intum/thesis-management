@@ -184,61 +184,66 @@ const CalendarCarousel = () => {
           onSlideChange={(index) => setCarouselSlide(index)}
           px={20}
         >
-          {Object.entries(interviewSlots).map(([date, slots]) => {
-            const chunks: IInterviewSlot[][] = []
-            for (let i = 0; i < slots.length; i += rowAmount) {
-              chunks.push(slots.slice(i, i + rowAmount))
-            }
+          {Object.entries(interviewSlots)
+            .sort(([dateA], [dateB]) => new Date(dateA).getTime() - new Date(dateB).getTime())
+            .map(([date, slotsUnsorted]) => {
+              const slots = slotsUnsorted.sort(
+                (a, b) => a.startDate.getTime() - b.startDate.getTime(),
+              )
+              const chunks: IInterviewSlot[][] = []
+              for (let i = 0; i < slots.length; i += rowAmount) {
+                chunks.push(slots.slice(i, i + rowAmount))
+              }
 
-            return (
-              <>
-                {chunks.map((chunk, chunkIndex) => (
-                  <Carousel.Slide key={`${date}-${chunkIndex}`}>
-                    <Stack gap={'0.5rem'}>
-                      {chunkIndex === 0 ? (
-                        <Group align={'end'} justify={'flex-start'} gap={'0.25rem'} h={70}>
-                          {dateBeforeIsDiffrentMonth(date) && (
-                            <Stack gap={0} w={50} ml={-29}>
-                              <Group justify='center' w={50}>
-                                <Badge h={20} mb={5} size='sm'>
-                                  {new Date(date).toLocaleString(undefined, { month: 'short' })}
-                                </Badge>
-                              </Group>
-                              <Group justify='center' w={50}>
-                                <Divider
-                                  orientation='vertical'
-                                  size='md'
-                                  h={40}
-                                  mb={5}
-                                  color='primary'
-                                />
-                              </Group>
-                            </Stack>
-                          )}
-                          <DateHeaderItem
-                            date={date}
-                            h={50}
+              return (
+                <>
+                  {chunks.map((chunk, chunkIndex) => (
+                    <Carousel.Slide key={`${date}-${chunkIndex}`}>
+                      <Stack gap={'0.5rem'}>
+                        {chunkIndex === 0 ? (
+                          <Group align={'end'} justify={'flex-start'} gap={'0.25rem'} h={70}>
+                            {dateBeforeIsDiffrentMonth(date) && (
+                              <Stack gap={0} w={50} ml={-29}>
+                                <Group justify='center' w={50}>
+                                  <Badge h={20} mb={5} size='sm'>
+                                    {new Date(date).toLocaleString(undefined, { month: 'short' })}
+                                  </Badge>
+                                </Group>
+                                <Group justify='center' w={50}>
+                                  <Divider
+                                    orientation='vertical'
+                                    size='md'
+                                    h={40}
+                                    mb={5}
+                                    color='primary'
+                                  />
+                                </Group>
+                              </Stack>
+                            )}
+                            <DateHeaderItem
+                              date={date}
+                              h={50}
+                              disabled={dateRowDisabled(date, chunkIndex)}
+                            />
+                          </Group>
+                        ) : (
+                          <Stack h={70} />
+                        )}
+                        {chunk.map((slot) => (
+                          <SlotItem
+                            slot={slot}
+                            key={slot.slotId}
+                            withInterviewee
                             disabled={dateRowDisabled(date, chunkIndex)}
+                            hoverEffect={false}
                           />
-                        </Group>
-                      ) : (
-                        <Stack h={70} />
-                      )}
-                      {chunk.map((slot) => (
-                        <SlotItem
-                          slot={slot}
-                          key={slot.slotId}
-                          withInterviewee
-                          disabled={dateRowDisabled(date, chunkIndex)}
-                          hoverEffect={false}
-                        />
-                      ))}
-                    </Stack>
-                  </Carousel.Slide>
-                ))}
-              </>
-            )
-          })}
+                        ))}
+                      </Stack>
+                    </Carousel.Slide>
+                  ))}
+                </>
+              )
+            })}
         </Carousel>
       )}
       <AddSlotsModal
