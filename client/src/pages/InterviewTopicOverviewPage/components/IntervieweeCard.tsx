@@ -8,6 +8,7 @@ import {
   Text,
   useMantineColorScheme,
   Badge,
+  Button,
 } from '@mantine/core'
 import {
   IIntervieweeLightWithNextSlot,
@@ -21,6 +22,9 @@ import {
 } from '../../../utils/format'
 import { Link } from 'react-router'
 import InterviewSlotInformation from '../../../components/InterviewSlotInformation/InterviewSlotInformation'
+import { PaperPlaneTiltIcon } from '@phosphor-icons/react'
+import InviteConfirmationModal from './InviteConfirmationModal'
+import { useState } from 'react'
 
 interface IIntervieweeCardProps {
   interviewee: IIntervieweeLightWithNextSlot
@@ -28,6 +32,7 @@ interface IIntervieweeCardProps {
   flex?: number
   disableLink?: boolean
   highlightCard?: boolean
+  inviteInterviewee?: () => void
 }
 
 const IntervieweeCard = ({
@@ -35,6 +40,7 @@ const IntervieweeCard = ({
   navigationLink,
   flex,
   disableLink,
+  inviteInterviewee,
 }: IIntervieweeCardProps) => {
   const checkState = () => {
     return interviewee.score && interviewee.score >= 0
@@ -49,6 +55,8 @@ const IntervieweeCard = ({
   const state: InterviewState = checkState()
 
   const colorScheme = useMantineColorScheme()
+
+  const [inviteModalOpen, setInviteModalOpen] = useState(false)
 
   return (
     <Paper
@@ -97,9 +105,27 @@ const IntervieweeCard = ({
                 </Text>
               </Stack>
             </Group>
+            <Group>
+              {(state === InterviewState.UNCONTACTED || state === InterviewState.INVITED) && (
+                <Button
+                  variant='outline'
+                  size='xs'
+                  leftSection={<PaperPlaneTiltIcon size={16} />}
+                  onClick={inviteInterviewee}
+                >
+                  {state === InterviewState.UNCONTACTED ? 'Invite' : 'Re-invite'}
+                </Button>
+              )}
+            </Group>
           </Group>
         </Stack>
       </Card>
+      <InviteConfirmationModal
+        inviteModalOpen={inviteModalOpen}
+        setInviteModalOpen={setInviteModalOpen}
+        intervieweeNames={[`${interviewee.user.firstName} ${interviewee.user.lastName}`]}
+        sendInvite={inviteInterviewee}
+      />
     </Paper>
   )
 }

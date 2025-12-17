@@ -2,9 +2,6 @@ import { Card, Group, Stack, Title, Text, Divider } from '@mantine/core'
 import { useHover } from '@mantine/hooks'
 import { IUpcomingInterview } from '../../../requests/responses/interview'
 import CustomAvatar from '../../../components/CustomAvatar/CustomAvatar'
-import { CalendarBlankIcon, ClockIcon, WebcamIcon } from '@phosphor-icons/react'
-import { MapPinIcon } from '@phosphor-icons/react/dist/ssr'
-import InterviewInfoItem from '../../../components/InterviewInfoItem/InterviewInfoItem'
 import InterviewSlotInformation from '../../../components/InterviewSlotInformation/InterviewSlotInformation'
 
 interface IUpcomingInterviewCardProps {

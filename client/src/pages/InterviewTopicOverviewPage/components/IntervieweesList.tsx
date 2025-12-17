@@ -33,6 +33,7 @@ import { showSimpleError, showSimpleSuccess } from '../../../utils/notification'
 import { getApiResponseErrorMessage } from '../../../requests/handler'
 import { useDebouncedValue } from '@mantine/hooks'
 import IntervieweeCard from './IntervieweeCard'
+import InviteConfirmationModal from './InviteConfirmationModal'
 
 const IntervieweesList = () => {
   const { processId } = useParams<{ processId: string }>()
@@ -117,6 +118,8 @@ const IntervieweesList = () => {
   const numberOfSelectableInterviewees = interviewees.filter((interviewee) =>
     interviewee.score ? interviewee.score < 0 : true,
   ).length
+
+  const [inviteModalOpen, setInviteModalOpen] = useState(false)
 
   return (
     <Stack gap={'1.5rem'}>
@@ -242,8 +245,7 @@ const IntervieweesList = () => {
               size='xs'
               leftSection={<PaperPlaneTiltIcon size={16} />}
               onClick={() => {
-                inviteInterviewees(selectedIntervieweeIds)
-                cancelIntervieweeMode()
+                setInviteModalOpen(true)
               }}
             >
               {`Send ${selectedIntervieweeIds.length > 0 ? selectedIntervieweeIds.length : ''} Invitation${selectedIntervieweeIds.length !== 1 && selectedIntervieweeIds.length > 0 ? 's' : ''}`}
@@ -289,11 +291,26 @@ const IntervieweesList = () => {
                 navigationLink={`interviewee/${interviewee.intervieweeId}`}
                 flex={1}
                 disableLink={selectIntervieweeMode}
+                inviteInterviewee={() => inviteInterviewees([interviewee.intervieweeId])}
               />
             </Group>
           ))}
         </Stack>
       </Stack>
+
+      <InviteConfirmationModal
+        inviteModalOpen={inviteModalOpen}
+        setInviteModalOpen={setInviteModalOpen}
+        intervieweeNames={selectedIntervieweeIds.map((id) => {
+          const interviewee = interviewees.find((i) => i.intervieweeId === id)
+          return interviewee ? `${interviewee.user.firstName} ${interviewee.user.lastName}` : ''
+        })}
+        sendInvite={() => {
+          inviteInterviewees(selectedIntervieweeIds)
+          cancelIntervieweeMode()
+        }}
+        onCancel={cancelIntervieweeMode}
+      />
     </Stack>
   )
 }
