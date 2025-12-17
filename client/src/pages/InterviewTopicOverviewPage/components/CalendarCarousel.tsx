@@ -44,18 +44,20 @@ const CalendarCarousel = () => {
   }
 
   function groupSlotsByDate(slots: IInterviewSlot[]): Record<string, IInterviewSlot[]> {
-    return slots.reduce(
-      (acc, slot) => {
-        const startDate = new Date(slot.startDate)
-        const endDate = new Date(slot.endDate)
-        const dateKey = startDate.toISOString().slice(0, 10)
-        const slotWithDates = { ...slot, startDate, endDate }
-        if (!acc[dateKey]) acc[dateKey] = []
-        acc[dateKey].push(slotWithDates)
-        return acc
-      },
-      {} as Record<string, IInterviewSlot[]>,
-    )
+    return slots
+      .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())
+      .reduce(
+        (acc, slot) => {
+          const startDate = new Date(slot.startDate)
+          const endDate = new Date(slot.endDate)
+          const dateKey = startDate.toISOString().slice(0, 10)
+          const slotWithDates = { ...slot, startDate, endDate }
+          if (!acc[dateKey]) acc[dateKey] = []
+          acc[dateKey].push(slotWithDates)
+          return acc
+        },
+        {} as Record<string, IInterviewSlot[]>,
+      )
   }
 
   useEffect(() => {
@@ -236,6 +238,7 @@ const CalendarCarousel = () => {
                             withInterviewee
                             disabled={dateRowDisabled(date, chunkIndex)}
                             hoverEffect={false}
+                            assignable
                           />
                         ))}
                       </Stack>

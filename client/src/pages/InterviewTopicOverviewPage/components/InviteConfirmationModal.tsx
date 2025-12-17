@@ -1,10 +1,12 @@
-import { Button, Group, Modal, Paper, Stack, Text, Title } from '@mantine/core'
+import { Button, Group, Modal, Paper, ScrollArea, Stack, Text, Title } from '@mantine/core'
 import { useIsSmallerBreakpoint } from '../../../hooks/theme'
+import AvatarUser from '../../../components/AvatarUser/AvatarUser'
+import { ILightUser } from '../../../requests/responses/user'
 
 interface IinviteConfirmationModalProps {
   inviteModalOpen: boolean
   setInviteModalOpen: (open: boolean) => void
-  intervieweeNames: string[]
+  interviewees: ILightUser[]
   sendInvite: (() => void) | undefined
   onCancel?: () => void
 }
@@ -12,7 +14,7 @@ interface IinviteConfirmationModalProps {
 const InviteConfirmationModal = ({
   inviteModalOpen,
   setInviteModalOpen,
-  intervieweeNames,
+  interviewees,
   sendInvite,
   onCancel,
 }: IinviteConfirmationModalProps) => {
@@ -28,15 +30,17 @@ const InviteConfirmationModal = ({
     >
       <Stack>
         <Text>
-          {`Are you sure you want to send${intervieweeNames.length <= 1 ? ' a' : ''} interview invitation${intervieweeNames.length > 1 ? 's' : ''} to the following interviewee${intervieweeNames.length > 1 ? 's' : ''}?`}
+          {`Are you sure you want to send${interviewees.length <= 1 ? ' a' : ''} interview invitation${interviewees.length > 1 ? 's' : ''} to the following interviewee${interviewees.length > 1 ? 's' : ''}?`}
         </Text>
-        <Stack>
-          {intervieweeNames.map((name) => (
-            <Paper withBorder key={name} p='xs'>
-              <Text>{name}</Text>
-            </Paper>
-          ))}
-        </Stack>
+        <ScrollArea.Autosize mih={'50px'} mah={'30vh'} w={'100%'} type='hover' bdrs={'md'}>
+          <Stack>
+            {interviewees.map((user) => (
+              <Paper withBorder key={`inviteUser - ${user.userId}`} p='xs'>
+                <AvatarUser user={user} />
+              </Paper>
+            ))}
+          </Stack>
+        </ScrollArea.Autosize>
         <Group justify='end' align='center'>
           <Button
             variant='default'

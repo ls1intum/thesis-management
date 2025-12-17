@@ -48,7 +48,6 @@ const IntervieweeAssesmentPage = () => {
     if (!interviewee) {
       return
     }
-    console.log('Saving interviewee assesment...', { newScore, newNote })
 
     setSaving(true)
 
@@ -59,7 +58,7 @@ const IntervieweeAssesmentPage = () => {
         requiresAuth: true,
         data: {
           intervieweeNote: newNote,
-          score: newScore ? newScore : interviewee.score,
+          score: newScore !== undefined ? newScore : interviewee.score,
         },
       },
       (res) => {

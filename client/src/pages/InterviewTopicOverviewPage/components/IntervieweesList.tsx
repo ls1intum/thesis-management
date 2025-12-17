@@ -301,10 +301,9 @@ const IntervieweesList = () => {
       <InviteConfirmationModal
         inviteModalOpen={inviteModalOpen}
         setInviteModalOpen={setInviteModalOpen}
-        intervieweeNames={selectedIntervieweeIds.map((id) => {
-          const interviewee = interviewees.find((i) => i.intervieweeId === id)
-          return interviewee ? `${interviewee.user.firstName} ${interviewee.user.lastName}` : ''
-        })}
+        interviewees={interviewees
+          .filter((interviewee) => selectedIntervieweeIds.includes(interviewee.intervieweeId))
+          .map((interviewee) => interviewee.user)}
         sendInvite={() => {
           inviteInterviewees(selectedIntervieweeIds)
           cancelIntervieweeMode()

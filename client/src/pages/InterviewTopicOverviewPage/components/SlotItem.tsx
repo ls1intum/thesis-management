@@ -1,33 +1,40 @@
-import { Card, Group, Stack, Title, Text, useMantineColorScheme, Badge } from '@mantine/core'
+import { Card, Group, Stack, Title, Text, useMantineColorScheme, Button } from '@mantine/core'
 import { IInterviewSlot } from '../../../requests/responses/interview'
 import { ClockIcon } from '@phosphor-icons/react'
 import { useHover } from '@mantine/hooks'
 import AvatarUser from '../../../components/AvatarUser/AvatarUser'
-import { createScoreLabel, scoreColorTranslate } from '../../../utils/format'
+import AssignIntervieweeToSlotModal from './AssignIntervieweeToSlotModal'
+import { useState } from 'react'
 
 interface ISlotItemProps {
   slot: IInterviewSlot
   withTimeSpan?: boolean
   withInterviewee?: boolean
+  withDate?: boolean
   selected?: boolean
   onClick?: () => void
   disabled?: boolean
   hoverEffect?: boolean
+  assignable?: boolean
 }
 
 const SlotItem = ({
   slot,
   withTimeSpan = false,
   withInterviewee = false,
+  withDate = false,
   selected = false,
   onClick,
   disabled = false,
   hoverEffect = true,
+  assignable = false,
 }: ISlotItemProps) => {
   const { ref, hovered } = useHover()
   const { colorScheme } = useMantineColorScheme()
 
   const showHover = hoverEffect ? hovered : false
+
+  const [assignModalOpen, setAssignModalOpen] = useState(false)
 
   return (
     <Card
@@ -67,7 +74,7 @@ const SlotItem = ({
           {`${slot.startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${slot.endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
         </Title>
         {withInterviewee && (
-          <Group align='center' justify='space-between' mih={30}>
+          <Group align='center' justify='space-between' mih={30} w={'100%'}>
             {slot.bookedBy ? (
               <AvatarUser
                 user={slot.bookedBy.user}
@@ -76,9 +83,16 @@ const SlotItem = ({
                 fontWeight={500}
               />
             ) : (
-              <Text c={'dimmed'} size='sm' fw={500}>
-                No interview yet
-              </Text>
+              <Group align='center' justify='space-between' w={'100%'}>
+                <Text c={'dimmed'} size='sm' fw={500}>
+                  No interview yet
+                </Text>
+                {assignable && (
+                  <Button onClick={() => setAssignModalOpen(true)} size='xs' variant={'subtle'}>
+                    Assign
+                  </Button>
+                )}
+              </Group>
             )}
           </Group>
         )}
@@ -113,7 +127,30 @@ const SlotItem = ({
             </Text>
           </Group>
         )}
+        {withDate && (
+          <Text
+            size='xs'
+            c={
+              !selected
+                ? showHover && colorScheme === 'dark' && !disabled
+                  ? 'dark.9'
+                  : 'dimmed'
+                : 'white'
+            }
+          >
+            {`${new Date(slot.startDate).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}`}
+          </Text>
+        )}
       </Stack>
+      <AssignIntervieweeToSlotModal
+        slot={slot}
+        assignModalOpen={assignModalOpen}
+        setAssignModalOpen={setAssignModalOpen}
+      />
     </Card>
   )
 }

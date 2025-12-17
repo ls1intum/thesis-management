@@ -123,7 +123,7 @@ const IntervieweeCard = ({
       <InviteConfirmationModal
         inviteModalOpen={inviteModalOpen}
         setInviteModalOpen={setInviteModalOpen}
-        intervieweeNames={[`${interviewee.user.firstName} ${interviewee.user.lastName}`]}
+        interviewees={[interviewee.user]}
         sendInvite={inviteInterviewee}
       />
     </Paper>
