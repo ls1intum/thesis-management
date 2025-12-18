@@ -92,6 +92,7 @@ const IntervieweesList = () => {
         if (res.ok) {
           showSimpleSuccess('Invitations sent successfully')
           fetchMyInterviewProcesses()
+          setInviteModalOpen(false)
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
         }

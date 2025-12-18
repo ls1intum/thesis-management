@@ -17,13 +17,22 @@ import SlotItem from '../InterviewTopicOverviewPage/components/SlotItem'
 import { Carousel } from '@mantine/carousel'
 import { useEffect, useState } from 'react'
 import SummaryCard from './components/SummaryCard'
-import { CalendarDotsIcon, ClockIcon, MapPinIcon } from '@phosphor-icons/react'
+import {
+  BuildingOfficeIcon,
+  CalendarDotsIcon,
+  ClockIcon,
+  MapPinIcon,
+  SubtitlesIcon,
+  UsersIcon,
+} from '@phosphor-icons/react'
 import { doRequest } from '../../requests/request'
 import { useParams } from 'react-router'
 import { showSimpleError } from '../../utils/notification'
 import { getApiResponseErrorMessage } from '../../requests/handler'
 import { useAuthenticationContext, useUser } from '../../hooks/authentication'
 import { ConfettiIcon } from '@phosphor-icons/react/dist/ssr'
+import { ITopic } from '../../requests/responses/topic'
+import AvatarUserList from '../../components/AvatarUserList/AvatarUserList'
 
 const InterviewBookingPage = () => {
   const { processId } = useParams<{ processId: string }>()
@@ -83,6 +92,26 @@ const InterviewBookingPage = () => {
     )
   }
 
+  const [topicInformation, setTopicInformation] = useState<ITopic | null>(null)
+
+  const fetchTopicInformation = async () => {
+    doRequest<ITopic>(
+      `/v2/interview-process/${processId}/topic`,
+      {
+        method: 'GET',
+        requiresAuth: true,
+      },
+      (res) => {
+        if (res.ok) {
+          setShowErrorMessage(false)
+          setTopicInformation(res.data)
+        } else {
+          showSimpleError(getApiResponseErrorMessage(res))
+        }
+      },
+    )
+  }
+
   const [pageLoading, setPageLoading] = useState(false)
   const [bookingSuccessful, setBookingSuccessful] = useState(false)
 
@@ -127,6 +156,7 @@ const InterviewBookingPage = () => {
 
   useEffect(() => {
     fetchInterviewSlots()
+    fetchTopicInformation()
   }, [])
 
   const dateRowDisabled = (itemsPerPage: number, rowKey: string) => {
@@ -311,6 +341,41 @@ const InterviewBookingPage = () => {
                     },
                   ]}
                 ></SummaryCard>
+              )}
+              {topicInformation && (
+                <SummaryCard
+                  title={'Thesis Topic'}
+                  sections={[
+                    {
+                      title: 'Title',
+                      content: (
+                        <Text size='xs' pl={'xs'}>
+                          {topicInformation.title}
+                        </Text>
+                      ),
+                      icon: <SubtitlesIcon />,
+                    },
+                    {
+                      title: 'Research Group',
+                      content: (
+                        <Text size='xs' pl={'xs'}>
+                          {topicInformation.researchGroup.name}
+                        </Text>
+                      ),
+                      icon: <BuildingOfficeIcon />,
+                    },
+                    {
+                      title: 'Advisor(s)',
+                      content: <AvatarUserList users={topicInformation.advisors} size='xs' />,
+                      icon: <UsersIcon />,
+                    },
+                    {
+                      title: 'Supervisor(s)',
+                      content: <AvatarUserList users={topicInformation.supervisors} size='xs' />,
+                      icon: <UsersIcon />,
+                    },
+                  ]}
+                />
               )}
             </Stack>
           </ScrollArea>

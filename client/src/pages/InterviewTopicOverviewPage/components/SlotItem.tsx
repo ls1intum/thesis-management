@@ -83,9 +83,9 @@ const SlotItem = ({
                 fontWeight={500}
               />
             ) : (
-              <Group align='center' justify='space-between' w={'100%'}>
+              <Group align='center' justify='space-between' w={'100%'} gap={'0.25rem'}>
                 <Text c={'dimmed'} size='sm' fw={500}>
-                  No interview yet
+                  No interview
                 </Text>
                 {assignable && (
                   <Button onClick={() => setAssignModalOpen(true)} size='xs' variant={'subtle'}>

@@ -74,6 +74,15 @@ public class InterviewProcessController {
         return ResponseEntity.ok(PaginationDto.fromSpringPage(interviewProcessDto.map(IntervieweeLightWithNextSlotDto::fromIntervieweeEntity)));
     }
 
+    @GetMapping("/{interviewProcessId}/topic")
+    public ResponseEntity<TopicDto> getInterviewProcessTopic(
+            @PathVariable("interviewProcessId") UUID interviewProcessId
+    ) {
+        InterviewProcess interviewProcess = interviewProcessService.findById(interviewProcessId);
+
+        return ResponseEntity.ok(TopicDto.fromTopicEntity(interviewProcess.getTopic()));
+    }
+
     @PostMapping("/interview-slots")
     @PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
     public ResponseEntity<List<InterviewSlotDto>> addInterviewProcess(@RequestBody CreateInterviewSlotsPayload payload) {
