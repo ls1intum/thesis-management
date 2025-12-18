@@ -110,7 +110,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
       link: '/interviews',
       label: 'Interviews',
       icon: ChatsCircleIcon,
-      groups: ['admin', 'advisor', 'supervisor'],
+      groups: ['advisor', 'supervisor'],
     },
   ]
 
