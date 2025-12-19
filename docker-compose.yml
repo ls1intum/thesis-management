@@ -1,6 +1,6 @@
 services:
   db:
-    image: 'postgres:17.6-alpine'
+    image: 'postgres:17.7-alpine'
     container_name: thesis-management-db
     volumes:
       - ./db_backups:/db_backups
@@ -27,7 +27,7 @@ services:
   #    - "25:25"
 
   caldav:
-    image: tomsquest/docker-radicale:3.5.7.0
+    image: tomsquest/docker-radicale:3.5.8.0
     container_name: thesis-management-caldav
     ports:
       - "5232:5232"
@@ -38,6 +38,8 @@ services:
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
-    entrypoint: /opt/keycloak/bin/kc.sh start-dev
+    volumes:
+      - ./keycloak/thesis-management-realm.json:/opt/keycloak/data/import/thesis-management-realm.json:ro
+    entrypoint: /opt/keycloak/bin/kc.sh start-dev --import-realm
     ports:
       - "8081:8080"
