@@ -4,30 +4,39 @@
 
 ![Architecture](files/subsystem-decomposition.svg)
 
+## Support Services
+
+The easiest way to set up the development environment is to use Docker Compose. From the project root, run:
+
+```bash
+docker compose up -d
+```
+
+This command will start necessary support services:
+
+- PostgreSQL Database (Port: 5144)
+- Keycloak (Port: 8081)
+- Radicale CalDav Server (Port: 5232)
+
 ## Keycloak
 
-For local development start a keycloak container by following the steps below:
-1. From the project root execute:
-```
-docker compose up keycloak -d
-```
-2. Open http://localhost:8081 and sign in with admin credentials
-    * Username: `admin`
-    * Password: `admin`
-3. Click on the menu in the top left and go to [Manage realm](http://localhost:8081/admin/master/console/#/master/realms)
-4. Click on "Create realm", a popup appears
-5. Import the [keycloak-realm-config-example-json](/keycloak-realm-config-example.json) using drag and drop (alternatively, you can also create a new realm `thesis-management` manually)
-6. Select the newly created realm and create your user in [Users](http://localhost:8081/admin/master/console/#/thesis-management/users) (username, email, first name, last name)
-7. Go to "Credentials" for the new user and set a password (disable "Temporary" to avoid being forced to change it on first login)
-8. Go to "Role mapping" and assign the client roles `admin`, `supervisor`, `advisor` to the new user
-   * Select "Filter by clients" and search for "thesis-management-app" to find the roles
+The Keycloak console is accessible at [http://localhost:8081](http://localhost:8081). \
+Use the following admin credentials to log in:
 
-## PostgreSQL Database
+- **Username:** admin
+- **Password:** admin
 
-For local development start a database container by executing the following command from the project root:
-```
-docker compose up db -d
-```
+On startup, the `thesis-management` realm is automatically imported from [thesis-management-realm.json](/keycloak/thesis-management-realm.json).
+The realm includes test users with the following credentials:
+
+| Username   | Email                   | Password   | Role       |
+|------------|-------------------------|------------|------------|
+| admin      | <admin@test.local>      | admin      | admin      |
+| supervisor | <supervisor@test.local> | supervisor | supervisor |
+| advisor    | <advisor@test.local>    | advisor    | advisor    |
+| student    | <student@test.local>    | student    | student    |
+
+Details can be found in the admin console in the realm [thesis-management](http://localhost:8081/admin/master/console/#/thesis-management).
 
 ## Database Setup and Test Data
 
@@ -59,14 +68,14 @@ And execute all files that you need.
 
 #### Example Users and Roles
 
-| Username       | First Name | Last Name | Email                    | Role       |
-|----------------|------------|-----------|--------------------------|------------|
-| sam_fischer    | Sam        | Fischer   | sam_fischer@gmail.com    | supervisor |
-| jane_doe       | Jane       | Doe       | jane_doe@gmail.com       | supervisor |
-| joey_read      | Joey       | Read      | joey_read@gmail.com      | advisor    |
-| barney_young   | Barney     | Young     | barney_young@gmail.com   | advisor    |
-| chloe_mitchell | Chloe      | Mitchell  | chloe_mitchell@gmail.com | student    |
-| kelly_wilkins  | Kelly      | Wilkins   | kelly_wilkins@gmail.com  | student    |
+| Username       | First Name | Last Name | Email                      | Role       |
+|----------------|------------|-----------|----------------------------|------------|
+| sam_fischer    | Sam        | Fischer   | <sam_fischer@gmail.com>    | supervisor |
+| jane_doe       | Jane       | Doe       | <jane_doe@gmail.com>       | supervisor |
+| joey_read      | Joey       | Read      | <joey_read@gmail.com>      | advisor    |
+| barney_young   | Barney     | Young     | <barney_young@gmail.com>   | advisor    |
+| chloe_mitchell | Chloe      | Mitchell  | <chloe_mitchell@gmail.com> | student    |
+| kelly_wilkins  | Kelly      | Wilkins   | <kelly_wilkins@gmail.com>  | student    |
 
 ## Postfix
 
@@ -75,29 +84,33 @@ Notice: local development does not support mailing functionality. The mails are 
 ## Server
 
 ### Preconditions
-* Database available at `jdbc:postgresql://db:5144/thesis-management`
-* Keycloak realm `thesis-management` is available under http://localhost:8081 (See [Keycloak Setup](#keycloak-setup))
+
+- Database available at `jdbc:postgresql://db:5144/thesis-management`
+- Keycloak realm `thesis-management` is available under <http://localhost:8081>
 
 To start the sever application for local development, navigate to /server folder and execute the following command from the terminal:
-```
+
+```bash
 ./gradlew bootRun
 ```
 
-Server is served at http://localhost:8080.
+Server is served at <http://localhost:8080>.
 
 ## Client
 
-#### Preconditions
-* Server running at http://localhost:8080
-* Keycloak realm `thesis-management` is available under http://localhost:8081 (See [Keycloak Setup](#keycloak-setup))
+### Preconditions
+
+- Server running at <http://localhost:8080>
+- Keycloak realm `thesis-management` is available under <http://localhost:8081>
 
 To start the client application for local development, navigate to /client folder and execute the following command from the terminal:
-```
+
+```bash
 npm install
 npm run dev
 ```
 
-Client is served at http://localhost:3000. 
+Client is served at <http://localhost:3000>.
 
 ## Postman Collection
 
@@ -106,9 +119,9 @@ A ready-to-use Postman Collection is included: [`TUMApply API.postman_collection
 ### Key Features
 
 - ✅ **Pre-configured OAuth2 Authentication**  
-  The collection handles the full OAuth2 flow using Keycloak. When sending a request, Postman 
-  will automatically open a login window (otherwise go to the Collection > Authorization > Click 
-  on "Get New Access Token" at the bottom) if the token is missing or expired. Token refresh is 
+  The collection handles the full OAuth2 flow using Keycloak. When sending a request, Postman
+  will automatically open a login window (otherwise go to the Collection > Authorization > Click
+  on "Get New Access Token" at the bottom) if the token is missing or expired. Token refresh is
   also handled automatically.
 
 - ✅ **Collection-Level Configuration**  
@@ -121,7 +134,6 @@ A ready-to-use Postman Collection is included: [`TUMApply API.postman_collection
 
 1. Open Postman and click **Import** on the top left.
 2. Upload the provided [`TUMApply API.postman_collection.json`](./Thesis%20Management%20API.postman_collection.json).
-   postman_collection.json).
 3. The collection will appear in the sidebar.
 4. Start sending requests — OAuth2 authentication will be handled automatically.
 
