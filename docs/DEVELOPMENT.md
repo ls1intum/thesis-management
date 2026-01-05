@@ -110,7 +110,11 @@ To apply these, navigate to:
 cd ../server/src/main/resources/db/changelog/manual/
 ```
 
-And execute all files that you need.
+And execute all files that you need, e.g.,
+
+```bash
+docker compose exec -T db psql -U thesis-management-postgres -d thesis-management < insert_tum_aet_email_templates.sql
+```
 
 > 💡 Tip: Check the prerequisites !
 
