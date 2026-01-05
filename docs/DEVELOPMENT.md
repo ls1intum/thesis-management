@@ -4,6 +4,43 @@
 
 ![Architecture](files/subsystem-decomposition.svg)
 
+## Quick Start
+To set up the development environment for the Thesis Management System, follow the steps below.
+
+1. Start Support Services using Docker Compose
+
+    ```bash
+    docker compose up -d
+    ```
+
+2. Import Initial Test Data into the Database
+
+    ```bash
+    docker compose exec -T db psql -U thesis-management-postgres -d thesis-management < server/src/main/resources/db/changelog/manual/init.sql
+    ```
+
+3. Start the Server Application
+
+    ```bash
+    cd server
+    ./gradlew bootRun
+    ```
+
+4. Start the Client Application
+
+    ```bash
+    cd ../client
+    npm install
+    npm run dev
+    ```
+
+5. Access the Application
+
+    - Client: [http://localhost:3000](http://localhost:3000)
+    - Server API: [http://localhost:8080](http://localhost:8080)
+    - Keycloak Admin Console: [http://localhost:8081](http://localhost:8081)
+    - **Use the test users provided in section [Keycloak](#keycloak).**
+
 ## Support Services
 
 The easiest way to set up the development environment is to use Docker Compose. From the project root, run:
@@ -42,9 +79,20 @@ Details can be found in the admin console in the realm [thesis-management](http:
 
 > 💡 Tip: Make sure the database container is running (`docker compose up db -d`) before executing the commands.
 
+### Importing Test Data
+
+To use the Keycloak test users, you need to import initial test data into the database.
+Run the following command from the project root:
+
+```bash
+docker compose exec -T db psql -U thesis-management-postgres -d thesis-management < server/src/main/resources/db/changelog/manual/init.sql
+```
+
+This will insert the four test users (admin, supervisor, advisor, student) into the `users` table and creates a sample research group which is led by the supervisor user.
+
 ### Liquibase Migration
 
-To apply the latest database schema changes using Liquibase, run the following command:
+Whenever there are changes to the database schema or initial data, these are managed via Liquibase migrations. To apply the latest migrations to your local database, navigate to the `server` folder and run:
 
 ```bash
 cd ../server
@@ -53,29 +101,20 @@ cd ../server
 
 This will apply all migrations defined under `server/src/main/resources/db/changelog/changes`.
 
-### Importing Test Data
+### Additional Test Data
 
-To populate the database with test data, go to the manual migration folder:
+Optional test data such as more email templates, research groups, and users can be found in the `manual` folder. \
+To apply these, navigate to:
 
 ```bash
 cd ../server/src/main/resources/db/changelog/manual/
 ```
 
 And execute all files that you need.
+
 > 💡 Tip: Check the prerequisites !
 
 > 💡 Tip: Default Templates are needed for many API calls.
-
-#### Example Users and Roles
-
-| Username       | First Name | Last Name | Email                      | Role       |
-|----------------|------------|-----------|----------------------------|------------|
-| sam_fischer    | Sam        | Fischer   | <sam_fischer@gmail.com>    | supervisor |
-| jane_doe       | Jane       | Doe       | <jane_doe@gmail.com>       | supervisor |
-| joey_read      | Joey       | Read      | <joey_read@gmail.com>      | advisor    |
-| barney_young   | Barney     | Young     | <barney_young@gmail.com>   | advisor    |
-| chloe_mitchell | Chloe      | Mitchell  | <chloe_mitchell@gmail.com> | student    |
-| kelly_wilkins  | Kelly      | Wilkins   | <kelly_wilkins@gmail.com>  | student    |
 
 ## Postfix
 
