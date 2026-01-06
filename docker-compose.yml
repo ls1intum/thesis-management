@@ -33,7 +33,7 @@ services:
       - "5232:5232"
 
   keycloak:
-    image: quay.io/keycloak/keycloak:26.0
+    image: quay.io/keycloak/keycloak:26.5
     container_name: thesis-management-keycloak
     environment:
       KEYCLOAK_ADMIN: admin
