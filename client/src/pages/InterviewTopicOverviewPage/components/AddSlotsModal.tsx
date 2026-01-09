@@ -28,14 +28,12 @@ interface IAddSlotsModalProps {
   slotModalOpen: boolean
   setSlotModalOpen: (open: boolean) => void
   interviewSlotItems?: Record<string, IInterviewSlot[]>
-  updateInterviewSlots: (newSlots: IInterviewSlot[]) => void
 }
 
 const AddSlotsModal = ({
   slotModalOpen,
   setSlotModalOpen,
   interviewSlotItems,
-  updateInterviewSlots,
 }: IAddSlotsModalProps) => {
   const { processId } = useParams<{ processId: string }>()
 
@@ -111,7 +109,6 @@ const AddSlotsModal = ({
       },
       (res) => {
         if (res.ok) {
-          updateInterviewSlots(res.data)
           onClose()
           showSimpleSuccess('Interview slots added successfully')
         } else {

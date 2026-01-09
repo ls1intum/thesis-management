@@ -27,13 +27,13 @@ import {
 } from '../../../requests/responses/interview'
 import { useIsSmallerBreakpoint } from '../../../hooks/theme'
 import { doRequest } from '../../../requests/request'
-import { PaginationResponse } from '../../../requests/responses/pagination'
 import { useParams } from 'react-router'
 import { showSimpleError, showSimpleSuccess } from '../../../utils/notification'
 import { getApiResponseErrorMessage } from '../../../requests/handler'
 import { useDebouncedValue } from '@mantine/hooks'
 import IntervieweeCard from './IntervieweeCard'
 import InviteConfirmationModal from './InviteConfirmationModal'
+import { useInterviewProcessContext } from '../../../providers/InterviewProcessProvider/hooks'
 
 const IntervieweesList = () => {
   const { processId } = useParams<{ processId: string }>()
@@ -44,37 +44,10 @@ const IntervieweesList = () => {
 
   const isSmaller = useIsSmallerBreakpoint('md')
 
-  const [interviewees, setInterviewees] = useState<IIntervieweeLightWithNextSlot[]>([])
-  const [intervieweesLoading, setIntervieweesLoading] = useState(false)
+  const { interviewees, intervieweesLoading, fetchPossibleInterviewees } =
+    useInterviewProcessContext()
+
   const [showLoader] = useDebouncedValue(intervieweesLoading, 1000)
-
-  const fetchMyInterviewProcesses = async () => {
-    setIntervieweesLoading(true)
-    doRequest<PaginationResponse<IIntervieweeLightWithNextSlot>>(
-      `/v2/interview-process/${processId}/interviewees`,
-      {
-        method: 'GET',
-        requiresAuth: true,
-        params: {
-          searchQuery: searchIntervieweeKey,
-          limit: 100,
-          state: state !== 'ALL' ? state : '',
-        },
-      },
-      (res) => {
-        if (res.ok) {
-          setInterviewees(res.data.content)
-        } else {
-          showSimpleError(getApiResponseErrorMessage(res))
-        }
-        setIntervieweesLoading(false)
-      },
-    )
-
-    {
-      /*TODO: In UI show the pagination if it is more than one page*/
-    }
-  }
 
   const inviteInterviewees = async (intervieweeIds: string[]) => {
     if (!intervieweeIds.length) return
@@ -91,12 +64,11 @@ const IntervieweesList = () => {
       (res) => {
         if (res.ok) {
           showSimpleSuccess('Invitations sent successfully')
-          fetchMyInterviewProcesses()
+          fetchPossibleInterviewees(debouncedSearch, state)
           setInviteModalOpen(false)
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
         }
-        setIntervieweesLoading(false)
       },
     )
   }
@@ -107,7 +79,7 @@ const IntervieweesList = () => {
   }
 
   useEffect(() => {
-    fetchMyInterviewProcesses()
+    fetchPossibleInterviewees(debouncedSearch, state)
   }, [state, debouncedSearch])
 
   const [selectedIntervieweeIds, setSelectedIntervieweeIds] = useState<string[]>([])

@@ -7,62 +7,15 @@ import SlotItem from './SlotItem'
 import { useIsSmallerBreakpoint } from '../../../hooks/theme'
 import { useEffect, useState } from 'react'
 import AddSlotsModal from './AddSlotsModal'
-import { doRequest } from '../../../requests/request'
-import { useParams } from 'react-router'
-import { showSimpleError } from '../../../utils/notification'
-import { getApiResponseErrorMessage } from '../../../requests/handler'
+import { useInterviewProcessContext } from '../../../providers/InterviewProcessProvider/hooks'
 
 const CalendarCarousel = () => {
-  const { processId } = useParams<{ processId: string }>()
-
-  const [interviewSlots, setInterviewSlots] = useState<Record<string, IInterviewSlot[]>>({})
-  const [interviewSlotsLoading, setInterviewSlotsLoading] = useState(false)
-
   const [carouselSlide, setCarouselSlide] = useState(0)
 
   const [firstSlideIndexForDate, setFirstSlideIndexForDate] = useState<Record<string, number>>({})
   const [totalSlides, setTotalSlides] = useState(0)
 
-  const fetchInterviewSlots = async () => {
-    setInterviewSlotsLoading(true)
-
-    doRequest<IInterviewSlot[]>(
-      `/v2/interview-process/${processId}/interview-slots`,
-      {
-        method: 'GET',
-        requiresAuth: true,
-      },
-      (res) => {
-        if (res.ok) {
-          setInterviewSlots(groupSlotsByDate(res.data))
-        } else {
-          showSimpleError(getApiResponseErrorMessage(res))
-        }
-        setInterviewSlotsLoading(false)
-      },
-    )
-  }
-
-  function groupSlotsByDate(slots: IInterviewSlot[]): Record<string, IInterviewSlot[]> {
-    return slots
-      .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())
-      .reduce(
-        (acc, slot) => {
-          const startDate = new Date(slot.startDate)
-          const endDate = new Date(slot.endDate)
-          const dateKey = startDate.toISOString().slice(0, 10)
-          const slotWithDates = { ...slot, startDate, endDate }
-          if (!acc[dateKey]) acc[dateKey] = []
-          acc[dateKey].push(slotWithDates)
-          return acc
-        },
-        {} as Record<string, IInterviewSlot[]>,
-      )
-  }
-
-  useEffect(() => {
-    fetchInterviewSlots()
-  }, [])
+  const { interviewSlots, interviewSlotsLoading } = useInterviewProcessContext()
 
   useEffect(() => {
     let slideIndex = 0
@@ -253,9 +206,6 @@ const CalendarCarousel = () => {
         slotModalOpen={slotModalOpen}
         setSlotModalOpen={setSlotModalOpen}
         interviewSlotItems={interviewSlots}
-        updateInterviewSlots={(newSlots: IInterviewSlot[]) =>
-          setInterviewSlots(groupSlotsByDate(newSlots))
-        }
       />
     </Stack>
   )

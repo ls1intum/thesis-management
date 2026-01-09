@@ -17,12 +17,8 @@ import {
 } from '../../../requests/responses/interview'
 import SlotItem from './SlotItem'
 import { useEffect, useState } from 'react'
-import { doRequest } from '../../../requests/request'
-import { PaginationResponse } from '../../../requests/responses/pagination'
-import { showSimpleError } from '../../../utils/notification'
-import { getApiResponseErrorMessage } from '../../../requests/handler'
-import { useParams } from 'react-router'
 import AvatarUser from '../../../components/AvatarUser/AvatarUser'
+import { useInterviewProcessContext } from '../../../providers/InterviewProcessProvider/hooks'
 
 interface IAssignIntervieweeToSlotModalProps {
   slot: IInterviewSlot
@@ -35,62 +31,11 @@ const AssignIntervieweeToSlotModal = ({
   assignModalOpen,
   setAssignModalOpen,
 }: IAssignIntervieweeToSlotModalProps) => {
-  const { processId } = useParams<{ processId: string }>()
-  const [interviewees, setInterviewees] = useState<IIntervieweeLightWithNextSlot[]>([])
-  const [intervieweesLoading, setIntervieweesLoading] = useState(false)
-
-  const fetchPossibleInterviewees = async () => {
-    setIntervieweesLoading(true)
-    doRequest<PaginationResponse<IIntervieweeLightWithNextSlot>>(
-      `/v2/interview-process/${processId}/interviewees`,
-      {
-        method: 'GET',
-        requiresAuth: true,
-        params: {
-          limit: 100,
-        },
-      },
-      (res) => {
-        if (res.ok) {
-          setInterviewees(res.data.content)
-        } else {
-          showSimpleError(getApiResponseErrorMessage(res))
-        }
-        setIntervieweesLoading(false)
-      },
-    )
-
-    {
-      /*TODO: Reuse the Interviewees already fetched, instead of fetching them again*/
-    }
-  }
+  const { bookSlot, bookingLoading, interviewees, intervieweesLoading, fetchPossibleInterviewees } =
+    useInterviewProcessContext()
 
   const [selectedInterviewee, setSelectedInterviewee] =
     useState<IIntervieweeLightWithNextSlot | null>(null)
-
-  //TODO: Diplicate Code from InterviewBookingPage - refactor to custom hook
-  const [bookingLoading, setBookingLoading] = useState(false)
-  const bookSlot = async (slotId: string) => {
-    setBookingLoading(true)
-    doRequest<IInterviewSlot>(
-      `/v2/interview-process/${processId}/slot/${slotId}/book`,
-      {
-        method: 'PUT',
-        requiresAuth: true,
-        data: {
-          intervieweeUserId: selectedInterviewee?.user.userId,
-        },
-      },
-      (res) => {
-        setBookingLoading(false)
-        if (res.ok) {
-          setAssignModalOpen(false)
-        } else {
-          showSimpleError(getApiResponseErrorMessage(res))
-        }
-      },
-    )
-  }
 
   useEffect(() => {
     if (assignModalOpen) {
@@ -126,7 +71,11 @@ const AssignIntervieweeToSlotModal = ({
                       key={interviewee.intervieweeId}
                       onClick={() => {
                         if (!intervieweeDisabled) {
-                          setSelectedInterviewee(interviewee)
+                          if (interviewee === selectedInterviewee) {
+                            setSelectedInterviewee(null)
+                          } else {
+                            setSelectedInterviewee(interviewee)
+                          }
                         }
                       }}
                       bg={
@@ -167,7 +116,11 @@ const AssignIntervieweeToSlotModal = ({
             Cancel
           </Button>
           <Button
-            onClick={() => bookSlot(slot.slotId)}
+            onClick={() => {
+              if (selectedInterviewee) {
+                bookSlot(slot.slotId, selectedInterviewee.user.userId)
+              }
+            }}
             loading={bookingLoading}
             disabled={selectedInterviewee === null}
           >
