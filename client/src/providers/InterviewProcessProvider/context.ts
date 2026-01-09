@@ -2,7 +2,7 @@ import React, { Dispatch, SetStateAction } from 'react'
 import { IIntervieweeLightWithNextSlot, IInterviewSlot } from '../../requests/responses/interview' // adjust path if needed
 
 export interface IInterviewProcessContext {
-  processId: string
+  processId: string | undefined
 
   // slots
   interviewSlots: Record<string, IInterviewSlot[]>

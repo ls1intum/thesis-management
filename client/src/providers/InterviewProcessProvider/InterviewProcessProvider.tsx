@@ -5,13 +5,15 @@ import { showSimpleError } from '../../utils/notification'
 import { getApiResponseErrorMessage } from '../../requests/handler'
 import { IIntervieweeLightWithNextSlot, IInterviewSlot } from '../../requests/responses/interview'
 import { PaginationResponse } from '../../requests/responses/pagination'
+import { useParams } from 'react-router'
 
 interface IInterviewProcessProviderProps {
-  processId: string
+  excludeBookedSlots?: boolean
 }
 
 const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProviderProps>) => {
-  const { children, processId } = props
+  const { children, excludeBookedSlots } = props
+  const { processId } = useParams<{ processId: string }>()
 
   const [interviewSlots, setInterviewSlots] = useState<Record<string, IInterviewSlot[]>>({})
   const [interviewSlotsLoading, setInterviewSlotsLoading] = useState(false)
@@ -46,6 +48,9 @@ const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProv
       {
         method: 'GET',
         requiresAuth: true,
+        params: {
+          excludeBooked: excludeBookedSlots ? 'true' : 'false',
+        },
       },
       (res) => {
         if (res.ok) {

@@ -5,8 +5,6 @@ import InterviewProcessProvider from '../../providers/InterviewProcessProvider/I
 import { useParams } from 'react-router'
 
 const InterviewTopicOverviewPage = () => {
-  const { processId } = useParams<{ processId: string }>()
-
   return (
     <Stack h={'100%'} gap={'2rem'}>
       <Stack gap={'0.5rem'}>
@@ -16,7 +14,7 @@ const InterviewTopicOverviewPage = () => {
         </Title>
       </Stack>
 
-      <InterviewProcessProvider processId={processId ?? ''}>
+      <InterviewProcessProvider>
         <CalendarCarousel />
 
         <IntervieweesList />
