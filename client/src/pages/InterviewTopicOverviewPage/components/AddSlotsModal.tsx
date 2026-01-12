@@ -11,6 +11,7 @@ import {
   Accordion,
   Text,
   Center,
+  NumberInput,
 } from '@mantine/core'
 import { Calendar } from '@mantine/dates'
 import { useEffect, useState } from 'react'
@@ -68,6 +69,10 @@ const AddSlotsModal = ({
   const isSmaller = useIsSmallerBreakpoint('sm')
 
   const [duration, setDuration] = useState<number>(30) // in minutes
+  const [customDuration, setCustomDuration] = useState<boolean>(false)
+
+  const [breakDuration, setBreakDuration] = useState<number>(0) // in minutes
+  const [customBreakDuration, setCustomBreakDuration] = useState<boolean>(false)
 
   const [sameSlotsForAllDays, setSameSlotsForAllDays] = useState(false)
 
@@ -139,28 +144,77 @@ const AddSlotsModal = ({
             <Title order={6} c={'dimmed'}>
               Interview Length
             </Title>
-            <SegmentedControl
-              data={['30min', '45min', '60min', '90min', 'Custome']}
-              onChange={(durationString) => {
-                if (durationString === 'Custome') {
-                  return
-                }
-                const durationValue = parseInt(durationString.replace('min', ''))
-                setDuration(durationValue)
-              }}
-              defaultValue={[30, 45, 60, 90].includes(duration) ? `${duration}min` : 'Custome'}
-              color='primary'
-            />
+            <Group>
+              <SegmentedControl
+                data={['30min', '45min', '60min', '90min', 'Custom']}
+                onChange={(durationString) => {
+                  if (durationString === 'Custom') {
+                    setCustomDuration(true)
+                    return
+                  } else {
+                    setCustomDuration(false)
+                  }
+
+                  const durationValue = parseInt(durationString.replace('min', ''))
+                  setDuration(durationValue)
+                }}
+                defaultValue={[30, 45, 60, 90].includes(duration) ? `${duration}min` : 'Custom'}
+                color='primary'
+              />
+
+              {customDuration && (
+                <NumberInput
+                  value={duration}
+                  onChange={(value) => {
+                    if (value) {
+                      setDuration(typeof value === 'string' ? parseInt(value) : value)
+                    }
+                  }}
+                  min={0}
+                  max={240}
+                  placeholder='Duration'
+                  size='xs'
+                  w={75}
+                />
+              )}
+            </Group>
           </Stack>
           <Stack gap={'0.25rem'}>
             <Title order={6} c={'dimmed'}>
               Interview Breaks
             </Title>
-            <SegmentedControl
-              data={['0min', '5min', '10min', '15min', '30min', 'Custome']}
-              onChange={() => {}}
-              color='primary'
-            />
+            <Group>
+              <SegmentedControl
+                data={['0min', '5min', '10min', '15min', '30min', 'Custom']}
+                onChange={(durationString) => {
+                  if (durationString === 'Custom') {
+                    setCustomBreakDuration(true)
+                    return
+                  } else {
+                    setCustomBreakDuration(false)
+                  }
+
+                  const durationValue = parseInt(durationString.replace('min', ''))
+                  setBreakDuration(durationValue)
+                }}
+                color='primary'
+              />
+              {customBreakDuration && (
+                <NumberInput
+                  value={breakDuration}
+                  onChange={(value) => {
+                    if (value) {
+                      setBreakDuration(typeof value === 'string' ? parseInt(value) : value)
+                    }
+                  }}
+                  min={0}
+                  max={240}
+                  placeholder='Break'
+                  size='xs'
+                  w={75}
+                />
+              )}
+            </Group>
           </Stack>
         </Group>
 
