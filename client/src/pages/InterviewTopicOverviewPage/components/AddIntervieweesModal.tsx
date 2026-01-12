@@ -8,9 +8,14 @@ import {
   Text,
   useMantineColorScheme,
 } from '@mantine/core'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { IApplicationInterviewProcess } from '../../../requests/responses/interview'
 import SelectApplicantsList from '../../InterviewOverviewPage/components/SelectApplicantsList'
+import { doRequest } from '../../../requests/request'
+import { PaginationResponse } from '../../../requests/responses/pagination'
+import { showSimpleError } from '../../../utils/notification'
+import { getApiResponseErrorMessage } from '../../../requests/handler'
+import { useParams } from 'react-router'
 
 interface IAddIntervieweesModalProps {
   opened: boolean
@@ -18,6 +23,8 @@ interface IAddIntervieweesModalProps {
 }
 
 const AddIntervieweesModal = ({ opened, closeModal }: IAddIntervieweesModalProps) => {
+  const { processId } = useParams<{ processId: string }>()
+
   const [applicantsLoading, setApplicantsLoading] = useState(false)
   const [possibleInterviewApplicants, setPossibleInterviewApplicants] = useState<
     IApplicationInterviewProcess[]
@@ -25,7 +32,33 @@ const AddIntervieweesModal = ({ opened, closeModal }: IAddIntervieweesModalProps
   const [selectedApplicants, setSelectedApplicants] = useState<string[]>([])
   const { colorScheme } = useMantineColorScheme()
 
-  //TODO: Fetch applicants for the interview topic when opening the modal -> new Endpoint (fetch it with the interview process id)
+  const fetchPossibleInterviewApplicantsByTopic = async () => {
+    setApplicantsLoading(true)
+    doRequest<PaginationResponse<IApplicationInterviewProcess>>(
+      `/v2/interview-process/${processId}/interview-applications`,
+      {
+        method: 'GET',
+        requiresAuth: true,
+        params: {
+          limit: -1,
+        },
+      },
+      (res) => {
+        if (res.ok) {
+          setPossibleInterviewApplicants(res.data.content)
+        } else {
+          showSimpleError(getApiResponseErrorMessage(res))
+        }
+        setApplicantsLoading(false)
+      },
+    )
+  }
+
+  useEffect(() => {
+    if (opened) {
+      fetchPossibleInterviewApplicantsByTopic()
+    }
+  }, [opened])
 
   return (
     <Modal
@@ -35,10 +68,7 @@ const AddIntervieweesModal = ({ opened, closeModal }: IAddIntervieweesModalProps
       size='xl'
       title={<Title order={3}>Add Interviewees to Interview Process</Title>}
     >
-      <Input.Wrapper
-        label='Select Applicants (optional)'
-        description='Select applicants for this interview process. You can also add them later or while reviewing applications.'
-      >
+      <Input.Wrapper label='Select Applicants'>
         {applicantsLoading ? (
           <Center h={'10vh'} w={'100%'}>
             <Loader />
@@ -47,7 +77,7 @@ const AddIntervieweesModal = ({ opened, closeModal }: IAddIntervieweesModalProps
           <Paper bg={colorScheme === 'dark' ? 'dark.8' : 'gray.0'} h={'50px'}>
             <Center>
               <Text c='dimmed' m={'xs'}>
-                No applicants found for the selected topic.
+                No more applicants found for this interview topic.
               </Text>
             </Center>
           </Paper>

@@ -81,7 +81,6 @@ const SelectSlotCarousel = ({ selectedSlot, setSelectedSlot }: ISelectSlotCarous
             <Carousel.Slide key={date}>
               <Stack gap={'1.5rem'}>
                 <DateHeaderItem date={date} size={'lg'} disabled={dateRowDisabled(4, date)} />
-                {/*TODO: Add this to general components*/}
                 <Stack>
                   {slots
                     .sort((a, b) => a.startDate.getTime() - b.startDate.getTime())
@@ -95,7 +94,6 @@ const SelectSlotCarousel = ({ selectedSlot, setSelectedSlot }: ISelectSlotCarous
                         disabled={dateRowDisabled(4, date)}
                       />
                     ))}
-                  {/*TODO: Add this to general components*/}
                 </Stack>
               </Stack>
             </Carousel.Slide>

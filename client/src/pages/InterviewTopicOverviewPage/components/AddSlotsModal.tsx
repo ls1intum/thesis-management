@@ -97,6 +97,12 @@ const AddSlotsModal = ({
         ? Object.keys(interviewSlotItems).map((key) => new Date(key).toDateString())
         : [],
     )
+
+    setCustomBreakDuration(false)
+    setCustomDuration(false)
+    setDuration(30)
+    setBreakDuration(0)
+    setModalSlots(interviewSlotItems ? { ...interviewSlotItems } : {})
   }
 
   const [saveLoading, setSaveLoading] = useState(false)

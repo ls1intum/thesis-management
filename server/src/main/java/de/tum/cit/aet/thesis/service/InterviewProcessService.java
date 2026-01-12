@@ -410,4 +410,24 @@ public class InterviewProcessService {
 
         return slot;
     }
+
+    public Page<Application> getPossibleApplicationsForProcess(UUID interviewProcessId, int page, int limit){
+        InterviewProcess interviewProcess = findById(interviewProcessId);
+        currentUserProvider().assertCanAccessResearchGroup(interviewProcess.getTopic().getResearchGroup());
+
+        return applicationService.getAll(
+                null,
+                null,
+                null,
+                new ApplicationState[]{ApplicationState.NOT_ASSESSED},
+                null,
+                new String[]{interviewProcess.getTopic().getId().toString()},
+                null,
+                false,
+                page,
+                limit <= 0 ? Integer.MAX_VALUE : limit,
+                "createdAt",
+                "desc"
+        );
+    }
 }

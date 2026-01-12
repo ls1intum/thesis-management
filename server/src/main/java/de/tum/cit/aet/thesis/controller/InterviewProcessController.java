@@ -1,7 +1,9 @@
 package de.tum.cit.aet.thesis.controller;
 
+import de.tum.cit.aet.thesis.constants.ApplicationState;
 import de.tum.cit.aet.thesis.controller.payload.*;
 import de.tum.cit.aet.thesis.dto.*;
+import de.tum.cit.aet.thesis.entity.Application;
 import de.tum.cit.aet.thesis.entity.InterviewProcess;
 import de.tum.cit.aet.thesis.entity.InterviewSlot;
 import de.tum.cit.aet.thesis.entity.Interviewee;
@@ -171,5 +173,21 @@ public class InterviewProcessController {
     ) {
         InterviewSlot interviewSlot = interviewProcessService.cancelInterviewSlotBooking(interviewProcessId, slotId);
         return ResponseEntity.ok(InterviewSlotDto.fromInterviewSlot(interviewSlot));
+    }
+
+    @GetMapping("/{interviewProcessId}/interview-applications")
+    @PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
+    public ResponseEntity<PaginationDto<ApplicationInterviewProcessDto>> getInterviewApplications(
+            @PathVariable("interviewProcessId") UUID interviewProcessId,
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "50") Integer limit
+    ) {
+
+        Page<Application> applications = interviewProcessService.getPossibleApplicationsForProcess(interviewProcessId, page, limit);
+
+        return ResponseEntity.ok(PaginationDto.fromSpringPage(
+                applications.map(ApplicationInterviewProcessDto::from)
+        ));
+
     }
 }

@@ -7,6 +7,8 @@ import { TimeInput } from '@mantine/dates'
 import SlotItem from './SlotItem'
 import DeleteButton from '../../../components/DeleteButton/DeleteButton'
 
+//TODO: Missing break duration handling
+
 interface ICollapsibleDateCardProps {
   date: Date
   duration?: number

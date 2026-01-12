@@ -34,6 +34,7 @@ import { useDebouncedValue } from '@mantine/hooks'
 import IntervieweeCard from './IntervieweeCard'
 import InviteConfirmationModal from './InviteConfirmationModal'
 import { useInterviewProcessContext } from '../../../providers/InterviewProcessProvider/hooks'
+import AddIntervieweesModal from './AddIntervieweesModal'
 
 const IntervieweesList = () => {
   const { processId } = useParams<{ processId: string }>()
@@ -48,6 +49,8 @@ const IntervieweesList = () => {
     useInterviewProcessContext()
 
   const [showLoader] = useDebouncedValue(intervieweesLoading, 1000)
+
+  const [addIntervieweesModalOpen, setAddIntervieweesModalOpen] = useState(false)
 
   const inviteInterviewees = async (intervieweeIds: string[]) => {
     if (!intervieweeIds.length) return
@@ -121,7 +124,11 @@ const IntervieweesList = () => {
                 ? 'Cancel Selection'
                 : 'Select for Invites'}
           </Button>
-          <Button size='xs' leftSection={<PlusIcon size={16} />}>
+          <Button
+            size='xs'
+            leftSection={<PlusIcon size={16} />}
+            onClick={() => setAddIntervieweesModalOpen(true)}
+          >
             {isSmaller ? 'Add' : 'Add Interviewee'}
           </Button>
         </Group>
@@ -282,6 +289,11 @@ const IntervieweesList = () => {
           cancelIntervieweeMode()
         }}
         onCancel={cancelIntervieweeMode}
+      />
+
+      <AddIntervieweesModal
+        opened={addIntervieweesModalOpen}
+        closeModal={() => setAddIntervieweesModalOpen(false)}
       />
     </Stack>
   )
