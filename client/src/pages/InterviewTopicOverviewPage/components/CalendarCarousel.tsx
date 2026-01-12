@@ -191,7 +191,7 @@ const CalendarCarousel = () => {
                             withInterviewee
                             disabled={dateRowDisabled(date, chunkIndex)}
                             hoverEffect={false}
-                            assignable
+                            assignable={new Date(slot.startDate) > new Date() ? true : false}
                           />
                         ))}
                       </Stack>

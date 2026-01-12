@@ -15,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 
+import java.time.Instant;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -252,8 +253,11 @@ public class InterviewProcessService {
                 ? new ArrayList<>()
                 : interviewProcess.getSlots();
 
+        Instant now = Instant.now();
+
         return excludeBooked ? slots.stream()
                 .filter(slot -> slot.getInterviewee() == null)
+                .filter(slot -> slot.getStartDate() != null && slot.getStartDate().isAfter(now))
                 .toList() : slots;
     }
 
