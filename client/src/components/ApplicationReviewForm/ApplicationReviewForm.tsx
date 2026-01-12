@@ -26,6 +26,8 @@ import { useLoggedInUser } from '../../hooks/authentication'
 import AvatarUser from '../AvatarUser/AvatarUser'
 import { formatDate, formatThesisType, getDefaultLanguage } from '../../utils/format'
 import LanguageSelect from '../LanguageSelect/LanguageSelect'
+import { IInterviewProcess } from '../../requests/responses/interview'
+import { showNotification } from '@mantine/notifications'
 
 interface IApplicationReviewFormProps {
   application: IApplication
@@ -199,6 +201,34 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
     }
   }
 
+  const createOrUpdateInterviewProcess = () => {
+    if (!application.topic) return
+
+    doRequest<IInterviewProcess>(
+      '/v2/interview-process',
+      {
+        method: 'POST',
+        requiresAuth: true,
+        data: {
+          topicId: application.topic.topicId,
+          intervieweeApplicationIds: [application.applicationId],
+        },
+      },
+      (res) => {
+        if (res.ok) {
+          showNotification({
+            title: 'Success',
+            message: 'Interviewee added to interview process successfully.',
+            color: 'green',
+          })
+          onUpdate({ ...application, state: ApplicationState.INTERVIEWING })
+        } else {
+          showSimpleError(getApiResponseErrorMessage(res))
+        }
+      },
+    )
+  }
+
   const reviewers = application.reviewers || []
 
   if (!reviewers.some((row) => row.user.userId === user.userId)) {
@@ -243,7 +273,9 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
           </Text>
         </Stack>
         <Button
-          onClick={() => {}}
+          onClick={() => {
+            createOrUpdateInterviewProcess()
+          }}
           variant='outline'
           color='primary'
           mb={'sm'}
@@ -253,83 +285,83 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
         </Button>
       </Stack>
 
-      {/*TODO: Also allow accept and reject, wehen they are interviewing*/}
-      {application?.state === ApplicationState.NOT_ASSESSED && (
-        <Stack gap='sm'>
-          <Space />
-          <Divider />
-          <TextInput
-            type='text'
-            required={true}
-            placeholder='Thesis Title'
-            label='Thesis Title'
-            {...form.getInputProps('title')}
-          />
+      {application?.state === ApplicationState.NOT_ASSESSED ||
+        (application?.state === ApplicationState.INTERVIEWING && (
+          <Stack gap='sm'>
+            <Space />
+            <Divider />
+            <TextInput
+              type='text'
+              required={true}
+              placeholder='Thesis Title'
+              label='Thesis Title'
+              {...form.getInputProps('title')}
+            />
 
-          <Select
-            label='Thesis Type'
-            required={true}
-            data={Object.keys(GLOBAL_CONFIG.thesis_types).map((key) => ({
-              value: key,
-              label: formatThesisType(key),
-            }))}
-            {...form.getInputProps('type')}
-          />
+            <Select
+              label='Thesis Type'
+              required={true}
+              data={Object.keys(GLOBAL_CONFIG.thesis_types).map((key) => ({
+                value: key,
+                label: formatThesisType(key),
+              }))}
+              {...form.getInputProps('type')}
+            />
 
-          <LanguageSelect
-            label='Thesis Language'
-            required={true}
-            {...form.getInputProps('language')}
-          />
+            <LanguageSelect
+              label='Thesis Language'
+              required={true}
+              {...form.getInputProps('language')}
+            />
 
-          <UserMultiSelect
-            label='Supervisor'
-            required={true}
-            groups={['supervisor']}
-            maxValues={1}
-            initialUsers={application.topic?.supervisors}
-            {...form.getInputProps('supervisors')}
-          />
-          <UserMultiSelect
-            label='Advisor(s)'
-            required={true}
-            groups={['advisor', 'supervisor']}
-            initialUsers={application.topic?.advisors}
-            {...form.getInputProps('advisors')}
-          />
+            <UserMultiSelect
+              label='Supervisor'
+              required={true}
+              groups={['supervisor']}
+              maxValues={1}
+              initialUsers={application.topic?.supervisors}
+              {...form.getInputProps('supervisors')}
+            />
+            <UserMultiSelect
+              label='Advisor(s)'
+              required={true}
+              groups={['advisor', 'supervisor']}
+              initialUsers={application.topic?.advisors}
+              {...form.getInputProps('advisors')}
+            />
 
-          <Checkbox
-            label='Notify Student'
-            {...form.getInputProps('notifyUser', { type: 'checkbox' })}
-          />
-
-          {application.topic && (
             <Checkbox
-              label='Close Topic (This will reject all applications for this topic)'
-              {...form.getInputProps('closeTopic', { type: 'checkbox' })}
+              label='Notify Student'
+              {...form.getInputProps('notifyUser', { type: 'checkbox' })}
             />
-          )}
 
-          <Group grow>
-            <ApplicationRejectButton
-              key={application.applicationId}
-              application={application}
-              onUpdate={(newApplication) => {
-                onUpdate(newApplication)
-              }}
-            />
-            <Button
-              onClick={() => onAccept(form.getValues())}
-              variant='outline'
-              color='green'
-              loading={loading}
-              disabled={!form.isValid()}
-            >
-              Accept
-            </Button>
-          </Group>
-        </Stack>
-      )}
+            {application.topic && (
+              <Checkbox
+                label='Close Topic (This will reject all applications for this topic)'
+                {...form.getInputProps('closeTopic', { type: 'checkbox' })}
+              />
+            )}
+
+            <Group grow>
+              <ApplicationRejectButton
+                key={application.applicationId}
+                application={application}
+                onUpdate={(newApplication) => {
+                  onUpdate(newApplication)
+                }}
+              />
+              <Button
+                onClick={() => onAccept(form.getValues())}
+                variant='outline'
+                color='green'
+                loading={loading}
+                disabled={!form.isValid()}
+              >
+                Accept
+              </Button>
+            </Group>
+          </Stack>
+        ))}
     </form>
   )
 }

@@ -178,19 +178,33 @@ const InterviewOverviewPage = () => {
             Upcoming Interviews
           </Title>
           <ScrollArea h={'100%'} w={'100%'} type={isSmaller ? 'never' : 'hover'} offsetScrollbars>
-            <Stack p={0} gap={'1rem'}>
-              {upcomingInterviews.map((interview) => (
-                <UpcomingInterviewCard
-                  key={interview.slot.bookedBy?.intervieweeId}
-                  upcomingInterview={interview}
-                  onClick={() => {
-                    navigate(
-                      `/interviews/${interview.interviewProcessId}/interviewee/${interview.slot.bookedBy?.intervieweeId}`,
-                    )
-                  }}
-                />
-              ))}
-            </Stack>
+            {upcomingInterviews.length === 0 ? (
+              <Center h={'100%'} mih={isSmaller ? '30vh' : '50vh'}>
+                <Stack justify='center' align='center' h={'100%'}>
+                  <ChatCircleSlashIcon size={60} />
+                  <Stack gap={'0.5rem'} justify='center' align='center'>
+                    <Title order={5}>No Upcoming Interviews</Title>
+                    <Text c='dimmed' ta={'center'}>
+                      Upcoming interviews will be displayed here
+                    </Text>
+                  </Stack>
+                </Stack>
+              </Center>
+            ) : (
+              <Stack p={0} gap={'1rem'}>
+                {upcomingInterviews.map((interview) => (
+                  <UpcomingInterviewCard
+                    key={interview.slot.bookedBy?.intervieweeId}
+                    upcomingInterview={interview}
+                    onClick={() => {
+                      navigate(
+                        `/interviews/${interview.interviewProcessId}/interviewee/${interview.slot.bookedBy?.intervieweeId}`,
+                      )
+                    }}
+                  />
+                ))}
+              </Stack>
+            )}
           </ScrollArea>
         </Stack>
       </Flex>

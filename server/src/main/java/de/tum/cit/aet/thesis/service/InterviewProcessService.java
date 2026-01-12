@@ -82,10 +82,6 @@ public class InterviewProcessService {
 
     public InterviewProcess createInterviewProcess(UUID topicId, List<UUID> intervieweeApplicationIds) {
 
-        if (existsByTopicId(topicId)) {
-            throw new IllegalStateException("An interview process for the given topic already exists.");
-        }
-
         Topic topic = topicService.findById(topicId);
 
         if (topic == null) {
@@ -98,11 +94,15 @@ public class InterviewProcessService {
             throw new IllegalStateException("Cannot create interview process for a closed topic.");
         }
 
-        InterviewProcess interviewProcess = new InterviewProcess();
-        interviewProcess.setTopic(topic);
+        boolean processExists = interviewProcessRepository.existsByTopicId(topicId);
+
+        InterviewProcess interviewProcess = findByTopicId(topicId);
+        if (!processExists) {
+            interviewProcess.setTopic(topic);
+        }
 
         if (intervieweeApplicationIds != null && !intervieweeApplicationIds.isEmpty()) {
-            List<Interviewee> interviewees = new ArrayList<>();
+            List<Interviewee> interviewees = interviewProcess.getInterviewees();
             for (UUID intervieweeApplicationId : intervieweeApplicationIds) {
                 Application application = applicationService.findById(intervieweeApplicationId);
                 if (application == null) {
@@ -120,8 +120,6 @@ public class InterviewProcessService {
 
                 interviewees.add(interviewee);
             }
-
-            interviewProcess.setInterviewees(interviewees);
         }
 
         interviewProcessRepository.save(interviewProcess);
@@ -131,6 +129,14 @@ public class InterviewProcessService {
 
     public InterviewProcess findById(UUID interviewProcessId) {
         return interviewProcessRepository.findById(interviewProcessId).orElseThrow(() -> new ResourceNotFoundException(String.format("InterviewProcess with id %s not found.", interviewProcessId)));
+    }
+
+    public InterviewProcess findByTopicId(UUID topicId) {
+        InterviewProcess interviewProcess = interviewProcessRepository.findByTopicId(topicId);
+        if (interviewProcess == null) {
+            interviewProcess = new InterviewProcess();
+        }
+        return interviewProcess;
     }
 
     public boolean existsByTopicId(UUID topicId) {

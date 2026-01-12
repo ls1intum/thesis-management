@@ -17,6 +17,10 @@ public interface InterviewProcessRepository extends JpaRepository<InterviewProce
             "WHERE ip.topic.id = :topicId")
     boolean existsByTopicId(@Param("topicId") UUID topicId);
 
+    @Query("SELECT ip FROM InterviewProcess ip " +
+            "WHERE ip.topic.id = :topicId")
+    InterviewProcess findByTopicId(@Param("topicId") UUID topicId);
+
     @Query("SELECT DISTINCT ip FROM InterviewProcess ip " +
             "JOIN ip.topic t " +
             "WHERE (:searchQuery IS NULL OR LOWER(t.title) LIKE :searchQuery) " +
