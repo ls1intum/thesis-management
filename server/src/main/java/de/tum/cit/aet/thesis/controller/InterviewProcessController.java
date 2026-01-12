@@ -57,6 +57,13 @@ public class InterviewProcessController {
         return ResponseEntity.ok(interviewProcessDto);
     }
 
+    @GetMapping("/upcoming-interviews")
+    @PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
+    public ResponseEntity<List<UpcomingInterviewDto>> getUpcomingInterviews() {
+        List<UpcomingInterviewDto> upcomingInterviews = interviewProcessService.getUpcomingInterviewsForCurrentUser();
+        return ResponseEntity.ok(upcomingInterviews);
+    }
+
     @GetMapping("/{interviewProcessId}/interviewees")
     @PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
     public ResponseEntity<PaginationDto<IntervieweeLightWithNextSlotDto>> getInterviewProcessInterviewees(

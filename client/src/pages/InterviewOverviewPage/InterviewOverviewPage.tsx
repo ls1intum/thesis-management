@@ -25,96 +25,7 @@ import { PaginationResponse } from '../../requests/responses/pagination'
 
 const InterviewOverviewPage = () => {
   // TODO: Replace with real data from API
-  const upcomingInterviews: IUpcomingInterview[] = [
-    {
-      intervieweeId: '1',
-      interviewProcessId: '1',
-      user: {
-        userId: '2',
-        universityId: 'ge45toc',
-        avatar: null,
-        matriculationNumber: '087262524',
-        firstName: 'Alice',
-        lastName: 'Smith',
-        email: 'alice.smith@example.com',
-        studyDegree: 'Master',
-        studyProgram: 'Computer Science',
-        customData: null,
-        joinedAt: '2024-07-11T14:30:00',
-        groups: [],
-      },
-      topicTitle: 'Integrating Gender Sensitivity and Adaptive Learning in Education Games',
-      startDate: new Date('2024-07-10T10:00:00'),
-      endDate: new Date('2024-07-10T11:00:00'),
-      location: 'Room 101',
-    },
-    {
-      intervieweeId: '2',
-      interviewProcessId: '2',
-      user: {
-        userId: '2',
-        universityId: 'ge45toc',
-        avatar: null,
-        matriculationNumber: '087262524',
-        firstName: 'Bob',
-        lastName: 'Smith',
-        email: 'bob.smith@example.com',
-        studyDegree: 'Master',
-        studyProgram: 'Computer Science',
-        customData: null,
-        joinedAt: '2024-07-11T14:30:00',
-        groups: [],
-      },
-      startDate: new Date('2024-07-11T14:30:00'),
-      endDate: new Date('2024-07-11T15:30:00'),
-      topicTitle: 'Sustainable Software Engineering for RAG based Knowledge Management',
-      streamUrl: 'https://example.com/stream/bob-smith',
-    },
-    {
-      intervieweeId: '3',
-      interviewProcessId: '2',
-      user: {
-        userId: '2',
-        universityId: 'ge45toc',
-        avatar: null,
-        matriculationNumber: '087262524',
-        firstName: 'Charlie',
-        lastName: 'Smith',
-        email: 'charlie.smith@example.com',
-        studyDegree: 'Master',
-        studyProgram: 'Computer Science',
-        customData: null,
-        joinedAt: '2024-07-11T14:30:00',
-        groups: [],
-      },
-      startDate: new Date('2024-07-11T14:30:00'),
-      endDate: new Date('2024-07-11T15:30:00'),
-      topicTitle: 'Sustainable Software Engineering for RAG based Knowledge Management',
-      streamUrl: 'https://example.com/stream/bob-smith',
-    },
-    {
-      intervieweeId: '4',
-      interviewProcessId: '2',
-      user: {
-        userId: '2',
-        universityId: 'ge45toc',
-        avatar: null,
-        matriculationNumber: '087262524',
-        firstName: 'Diana',
-        lastName: 'Smith',
-        email: 'diana.smith@example.com',
-        studyDegree: 'Master',
-        studyProgram: 'Computer Science',
-        customData: null,
-        joinedAt: '2024-07-11T14:30:00',
-        groups: [],
-      },
-      startDate: new Date('2024-07-11T14:30:00'),
-      endDate: new Date('2024-07-11T15:30:00'),
-      topicTitle: 'Sustainable Software Engineering for RAG based Knowledge Management',
-      streamUrl: 'https://example.com/stream/bob-smith',
-    },
-  ]
+  const [upcomingInterviews, setUpcomingInterviews] = useState<IUpcomingInterview[]>([])
 
   const [interviewProcessesLoading, setInterviewProcessesLoading] = useState(false)
   const [interviewProcesses, setInterviewProcesses] = useState<IInterviewProcess[]>([])
@@ -124,6 +35,26 @@ const InterviewOverviewPage = () => {
   const navigate = useNavigate()
 
   const [createModalOpened, setCreateModalOpened] = useState(false)
+
+  const fetchUpcomingInterviews = async () => {
+    doRequest<IUpcomingInterview[]>(
+      `/v2/interview-process/upcoming-interviews`,
+      {
+        method: 'GET',
+        requiresAuth: true,
+      },
+      (res) => {
+        if (res.ok) {
+          const sorted = res.data.sort((a, b) => {
+            return new Date(a.slot.startDate).getTime() - new Date(b.slot.startDate).getTime()
+          })
+          setUpcomingInterviews(sorted)
+        } else {
+          showSimpleError(getApiResponseErrorMessage(res))
+        }
+      },
+    )
+  }
 
   const fetchMyInterviewProcesses = async () => {
     setInterviewProcessesLoading(true)
@@ -146,6 +77,7 @@ const InterviewOverviewPage = () => {
 
   useEffect(() => {
     fetchMyInterviewProcesses()
+    fetchUpcomingInterviews()
   }, [])
 
   return (
@@ -216,11 +148,11 @@ const InterviewOverviewPage = () => {
             <Stack p={0} gap={'1rem'}>
               {upcomingInterviews.map((interview) => (
                 <UpcomingInterviewCard
-                  key={interview.intervieweeId}
+                  key={interview.slot.bookedBy?.intervieweeId}
                   upcomingInterview={interview}
                   onClick={() => {
                     navigate(
-                      `/interviews/${interview.interviewProcessId}/interviewee/${interview.intervieweeId}`,
+                      `/interviews/${interview.interviewProcessId}/interviewee/${interview.slot.bookedBy?.intervieweeId}`,
                     )
                   }}
                 />

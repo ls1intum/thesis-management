@@ -4,7 +4,7 @@ import InterviewInfoItem from '../InterviewInfoItem/InterviewInfoItem'
 import { CalendarBlankIcon, ClockIcon, MapPinIcon, WebcamIcon } from '@phosphor-icons/react'
 
 interface IInterviewSlotInformationProps {
-  slot: IInterviewSlot | IUpcomingInterview
+  slot: IInterviewSlot
 }
 
 const InterviewSlotInformation = ({ slot }: IInterviewSlotInformationProps) => {

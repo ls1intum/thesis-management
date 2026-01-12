@@ -2,6 +2,7 @@ package de.tum.cit.aet.thesis.service;
 
 import de.tum.cit.aet.thesis.constants.ApplicationState;
 import de.tum.cit.aet.thesis.dto.InterviewSlotDto;
+import de.tum.cit.aet.thesis.dto.UpcomingInterviewDto;
 import de.tum.cit.aet.thesis.entity.*;
 import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.repository.InterviewProcessRepository;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.Instant;
 import java.util.*;
@@ -133,6 +135,29 @@ public class InterviewProcessService {
 
     public boolean existsByTopicId(UUID topicId) {
         return interviewProcessRepository.existsByTopicId(topicId);
+    }
+
+    public List<UpcomingInterviewDto> getUpcomingInterviewsForCurrentUser() {
+        if (currentUserProvider().getUser().getResearchGroup() == null && !currentUserProvider().isAdmin()) {
+            throw new IllegalStateException("Current user is not assigned to any research group.");
+        }
+
+        List<InterviewProcess> myProcesses = findAllMyProcesses("", 0, Integer.MAX_VALUE, "completed", "asc", false).stream().toList();
+
+        Instant now = Instant.now();
+
+        List<UpcomingInterviewDto> upcomingInterviewDtos = new ArrayList<>();
+
+        for (InterviewProcess interviewProcess : myProcesses) {
+            for (InterviewSlot slot : interviewProcess.getSlots()) {
+                if (slot.getStartDate().isAfter(now) && slot.getInterviewee() != null) {
+                    UpcomingInterviewDto dto = UpcomingInterviewDto.fromInterviewSlot(interviewProcess, slot);
+                    upcomingInterviewDtos.add(dto);
+                }
+            }
+        }
+
+        return upcomingInterviewDtos;
     }
 
     public Page<Interviewee> getInterviewProcessInterviewees(

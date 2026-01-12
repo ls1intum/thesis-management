@@ -17,14 +17,9 @@ export interface IInterviewProcess {
 }
 
 export interface IUpcomingInterview {
-  intervieweeId: string
   interviewProcessId: string
-  user: ILightUser
-  startDate: Date
-  endDate: Date
   topicTitle: string
-  location?: string
-  streamUrl?: string
+  slot: IInterviewSlot
 }
 
 export interface IInterviewSlot {

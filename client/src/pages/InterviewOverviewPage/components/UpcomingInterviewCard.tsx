@@ -25,10 +25,12 @@ const UpcomingInterviewCard = ({ upcomingInterview, onClick }: IUpcomingIntervie
     >
       <Stack gap={'1rem'}>
         <Group wrap='nowrap' gap={'1rem'} align='center'>
-          <CustomAvatar user={upcomingInterview.user} size={50} />
+          {upcomingInterview.slot.bookedBy?.user && (
+            <CustomAvatar user={upcomingInterview.slot.bookedBy?.user} size={50} />
+          )}
           <Stack gap={'0.5rem'}>
             <Title order={6}>
-              {`${upcomingInterview.user.firstName} ${upcomingInterview.user.lastName}`}
+              {`${upcomingInterview.slot.bookedBy?.user.firstName} ${upcomingInterview.slot.bookedBy?.user.lastName}`}
             </Title>
             <Text c='dimmed' size='xs'>
               {upcomingInterview.topicTitle}
@@ -37,7 +39,7 @@ const UpcomingInterviewCard = ({ upcomingInterview, onClick }: IUpcomingIntervie
         </Group>
         <Group>
           <Divider orientation='vertical' size={'md'} />
-          <InterviewSlotInformation slot={upcomingInterview} />
+          <InterviewSlotInformation slot={upcomingInterview.slot} />
         </Group>
       </Stack>
     </Card>

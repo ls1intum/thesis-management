@@ -133,7 +133,7 @@ const IntervieweeCard = ({
                     leftSection={<XIcon size={16} />}
                     onClick={() => setCancelModalOpen(true)}
                   >
-                    Cancel
+                    Cancel Interview
                   </Button>
                 )}
             </Group>
