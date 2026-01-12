@@ -14,7 +14,7 @@ import {
   Input,
   useMantineColorScheme,
 } from '@mantine/core'
-import { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { PaginationResponse } from '../../../requests/responses/pagination'
 import {
   IApplicationInterviewProcess,
@@ -32,14 +32,9 @@ import SelectTopicInterviewProcessItem from './SelectTopicInterviewProcessItem'
 interface CreateInterviewProcessProps {
   opened: boolean
   onClose: () => void
-  setInterviewProcesses: Dispatch<SetStateAction<IInterviewProcess[]>>
 }
 
-const CreateInterviewProcess = ({
-  opened,
-  onClose,
-  setInterviewProcesses,
-}: CreateInterviewProcessProps) => {
+const CreateInterviewProcess = ({ opened, onClose }: CreateInterviewProcessProps) => {
   const [possibleInterviewTopics, setPossibleInterviewTopics] =
     useState<PaginationResponse<ITopicInterviewProcess>>()
   const [filteredTopics, setFilteredTopics] = useState<ITopicInterviewProcess[]>([])
@@ -125,7 +120,6 @@ const CreateInterviewProcess = ({
             message: 'Interview process created successfully.',
             color: 'green',
           })
-          setInterviewProcesses((prev) => [res.data, ...prev])
           setPossibleInterviewTopics((prev) => {
             if (!prev) return prev
             return {

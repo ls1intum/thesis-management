@@ -9,6 +9,7 @@ import {
   Stack,
   Title,
   Text,
+  Pagination,
 } from '@mantine/core'
 import { ChatCircleSlashIcon, PlusIcon } from '@phosphor-icons/react'
 import { IInterviewProcess, IUpcomingInterview } from '../../requests/responses/interview'
@@ -24,11 +25,13 @@ import { doRequest } from '../../requests/request'
 import { PaginationResponse } from '../../requests/responses/pagination'
 
 const InterviewOverviewPage = () => {
-  // TODO: Replace with real data from API
   const [upcomingInterviews, setUpcomingInterviews] = useState<IUpcomingInterview[]>([])
 
   const [interviewProcessesLoading, setInterviewProcessesLoading] = useState(false)
-  const [interviewProcesses, setInterviewProcesses] = useState<IInterviewProcess[]>([])
+  const [interviewProcesses, setInterviewProcesses] =
+    useState<PaginationResponse<IInterviewProcess> | null>(null)
+  const [page, setPage] = useState(0)
+  const limit = 20
 
   const isSmaller = useIsSmallerBreakpoint('sm')
 
@@ -63,10 +66,14 @@ const InterviewOverviewPage = () => {
       {
         method: 'GET',
         requiresAuth: true,
+        params: {
+          page: page,
+          limit: limit,
+        },
       },
       (res) => {
         if (res.ok) {
-          setInterviewProcesses(res.data.content)
+          setInterviewProcesses(res.data)
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
         }
@@ -74,6 +81,10 @@ const InterviewOverviewPage = () => {
       },
     )
   }
+
+  useEffect(() => {
+    fetchMyInterviewProcesses()
+  }, [page])
 
   useEffect(() => {
     fetchMyInterviewProcesses()
@@ -112,7 +123,7 @@ const InterviewOverviewPage = () => {
                 <Center>
                   <Loader />
                 </Center>
-              ) : interviewProcesses.length === 0 ? (
+              ) : interviewProcesses?.content.length === 0 ? (
                 <Center h={'100%'} mih={isSmaller ? '30vh' : '50vh'}>
                   <Stack justify='center' align='center' h={'100%'}>
                     <ChatCircleSlashIcon size={60} />
@@ -126,7 +137,7 @@ const InterviewOverviewPage = () => {
                   </Stack>
                 </Center>
               ) : (
-                interviewProcesses.map((process) => (
+                interviewProcesses?.content.map((process) => (
                   <InterviewProcessCard
                     key={`card-${process.interviewProcessId}`}
                     interviewProcess={process}
@@ -138,6 +149,28 @@ const InterviewOverviewPage = () => {
               )}
             </Stack>
           </ScrollArea>
+          {interviewProcesses && interviewProcesses.totalPages > 1 && (
+            <Flex justify={'space-between'} align={'center'} gap='md'>
+              <Text size='sm'>
+                {interviewProcesses && interviewProcesses.totalElements > 0 ? (
+                  <>
+                    {page * limit + 1}–
+                    {Math.min((page + 1) * limit, interviewProcesses.totalElements)} /{' '}
+                    {interviewProcesses.totalElements}
+                  </>
+                ) : (
+                  '0 results'
+                )}
+              </Text>
+
+              <Pagination
+                value={page + 1}
+                onChange={(p) => setPage(p - 1)}
+                total={interviewProcesses ? interviewProcesses.totalPages : 1}
+                size='sm'
+              />
+            </Flex>
+          )}
         </Stack>
         <Divider orientation='vertical' />
         <Stack w={{ base: '100%', md: '33%' }} h={'100%'} gap={'1.5rem'}>
@@ -163,10 +196,11 @@ const InterviewOverviewPage = () => {
       </Flex>
       <CreateInterviewProcess
         opened={createModalOpened}
-        onClose={() => setCreateModalOpened(false)}
-        setInterviewProcesses={setInterviewProcesses}
+        onClose={() => {
+          setCreateModalOpened(false)
+          fetchMyInterviewProcesses()
+        }}
       />
-      {/*TODO: ADD PAGINATION*/}
     </Stack>
   )
 }
