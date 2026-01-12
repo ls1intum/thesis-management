@@ -352,4 +352,27 @@ public class InterviewProcessService {
 
         return slot;
     }
+
+    public InterviewSlot cancelInterviewSlotBooking(UUID interviewProcessId, UUID slotId) {
+        InterviewProcess interviewProcess = findById(interviewProcessId);
+        currentUserProvider().assertCanAccessResearchGroup(interviewProcess.getTopic().getResearchGroup());
+
+        if (!interviewProcess.getSlots().stream().map(InterviewSlot::getId).toList().contains(slotId)) {
+            throw new ResourceNotFoundException(String.format("Slot with id %s does not belong to the provided process.", slotId));
+        }
+
+        InterviewSlot slot = interviewProcess.getSlots().stream()
+                .filter(s -> s.getId().equals(slotId))
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Slot with id %s not found.", slotId)));
+
+        if (slot.getInterviewee() == null) {
+            throw new IllegalStateException("Slot is not booked.");
+        } else {
+            slot.setInterviewee(null);
+            interviewProcessRepository.save(interviewProcess);
+        }
+
+        return slot;
+    }
 }

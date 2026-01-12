@@ -23,6 +23,7 @@ import { doRequest } from '../../../requests/request'
 import { useParams } from 'react-router'
 import { showSimpleError, showSimpleSuccess } from '../../../utils/notification'
 import { getApiResponseErrorMessage } from '../../../requests/handler'
+import { useInterviewProcessContext } from '../../../providers/InterviewProcessProvider/hooks'
 
 interface IAddSlotsModalProps {
   slotModalOpen: boolean
@@ -95,6 +96,8 @@ const AddSlotsModal = ({
 
   const [saveLoading, setSaveLoading] = useState(false)
 
+  const { fetchInterviewSlots } = useInterviewProcessContext()
+
   const saveNewSlots = async () => {
     setSaveLoading(true)
     doRequest<IInterviewSlot[]>(
@@ -111,6 +114,7 @@ const AddSlotsModal = ({
         if (res.ok) {
           onClose()
           showSimpleSuccess('Interview slots added successfully')
+          fetchInterviewSlots()
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
         }

@@ -155,4 +155,14 @@ public class InterviewProcessController {
         InterviewSlot interviewSlot = interviewProcessService.bookInterviewSlot(interviewProcessId, slotId, payload.intervieweeUserId());
         return ResponseEntity.ok(InterviewSlotDto.fromInterviewSlot(interviewSlot));
     }
+
+    @PutMapping("/{interviewProcessId}/slot/{slotId}/cancel")
+    @PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
+    public ResponseEntity<InterviewSlotDto> cancelInterviewSlotBooking(
+            @PathVariable("interviewProcessId") UUID interviewProcessId,
+            @PathVariable("slotId") UUID slotId
+    ) {
+        InterviewSlot interviewSlot = interviewProcessService.cancelInterviewSlotBooking(interviewProcessId, slotId);
+        return ResponseEntity.ok(InterviewSlotDto.fromInterviewSlot(interviewSlot));
+    }
 }

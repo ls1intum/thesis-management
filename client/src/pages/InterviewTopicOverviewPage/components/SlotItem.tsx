@@ -71,7 +71,7 @@ const SlotItem = ({
                 : undefined
           }
         >
-          {`${slot.startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${slot.endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
+          {`${new Date(slot.startDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${new Date(slot.endDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
         </Title>
         {withInterviewee && (
           <Group align='center' justify='space-between' mih={30} w={'100%'}>

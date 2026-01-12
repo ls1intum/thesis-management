@@ -12,8 +12,6 @@ import {
   Title,
   Text,
   Input,
-  Badge,
-  Divider,
   useMantineColorScheme,
 } from '@mantine/core'
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'

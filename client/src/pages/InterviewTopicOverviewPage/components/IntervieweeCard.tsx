@@ -9,6 +9,7 @@ import {
   useMantineColorScheme,
   Badge,
   Button,
+  Box,
 } from '@mantine/core'
 import {
   IIntervieweeLightWithNextSlot,
@@ -25,6 +26,8 @@ import InterviewSlotInformation from '../../../components/InterviewSlotInformati
 import { PaperPlaneTiltIcon } from '@phosphor-icons/react'
 import InviteConfirmationModal from './InviteConfirmationModal'
 import { useState } from 'react'
+import { XIcon } from '@phosphor-icons/react/dist/ssr'
+import CancelSlotConfirmationModal from './CancelSlotConfirmationModal'
 
 interface IIntervieweeCardProps {
   interviewee: IIntervieweeLightWithNextSlot
@@ -57,40 +60,46 @@ const IntervieweeCard = ({
   const colorScheme = useMantineColorScheme()
 
   const [inviteModalOpen, setInviteModalOpen] = useState(false)
+  const [cancelModalOpen, setCancelModalOpen] = useState(false)
 
   return (
-    <Paper
-      withBorder
-      bg={scoreColorTranslate(interviewee.score ?? -1)}
-      radius='md'
-      component={disableLink ? undefined : Link}
-      to={disableLink ? '' : navigationLink}
-      flex={flex}
-    >
+    <Paper withBorder bg={scoreColorTranslate(interviewee.score ?? -1)} radius='md' flex={flex}>
       <Card p={0} ml={8} radius='md'>
         <Stack p={0} gap={0}>
-          <Group px={'1.5rem'} py={'0.75rem'} align='center'>
-            <Group gap={'0.75rem'} wrap={'nowrap'}>
-              <CustomAvatar user={interviewee.user} size={32} />
-              <Title order={5} lineClamp={1} miw={250}>
-                {interviewee.user.firstName} {interviewee.user.lastName}
-              </Title>
-            </Group>
-            <Group flex={1}>
-              <Divider orientation='vertical' size={'sm'} />
-              <Group flex={1} justify='end' align='center'>
-                <Group flex={1} justify='start' align='center'>
-                  {' '}
-                  {interviewee.nextSlot && <InterviewSlotInformation slot={interviewee.nextSlot} />}
+          <Box
+            component={disableLink ? undefined : Link}
+            to={disableLink ? '' : navigationLink}
+            style={{ textDecoration: 'none', color: 'inherit' }}
+          >
+            <Group px={'1.5rem'} py={'0.75rem'} align='center'>
+              <Group gap={'0.75rem'} wrap={'nowrap'}>
+                <CustomAvatar user={interviewee.user} size={32} />
+                <Title order={5} lineClamp={1} miw={250}>
+                  {interviewee.user.firstName} {interviewee.user.lastName}
+                </Title>
+              </Group>
+              <Group flex={1}>
+                <Divider orientation='vertical' size={'sm'} />
+                <Group flex={1} justify='end' align='center'>
+                  <Group flex={1} justify='start' align='center'>
+                    {' '}
+                    {interviewee.nextSlot && (
+                      <InterviewSlotInformation slot={interviewee.nextSlot} />
+                    )}
+                  </Group>
+                  {interviewee.score !== null && interviewee.score >= 0 && (
+                    <Badge
+                      color={scoreColorTranslate(interviewee.score)}
+                      autoContrast
+                      radius={'sm'}
+                    >
+                      {createScoreLabel(interviewee.score)}
+                    </Badge>
+                  )}
                 </Group>
-                {interviewee.score !== null && interviewee.score >= 0 && (
-                  <Badge color={scoreColorTranslate(interviewee.score)} autoContrast radius={'sm'}>
-                    {createScoreLabel(interviewee.score)}
-                  </Badge>
-                )}
               </Group>
             </Group>
-          </Group>
+          </Box>
           <Divider />
           <Group px={'1.5rem'} py={'0.75rem'} justify='space-between' align='center'>
             <Group gap={'0.5rem'}>
@@ -116,6 +125,17 @@ const IntervieweeCard = ({
                   {state === InterviewState.UNCONTACTED ? 'Invite' : 'Re-invite'}
                 </Button>
               )}
+              {interviewee.nextSlot?.startDate &&
+                new Date(interviewee.nextSlot.startDate) > new Date() && (
+                  <Button
+                    variant='outline'
+                    size='xs'
+                    leftSection={<XIcon size={16} />}
+                    onClick={() => setCancelModalOpen(true)}
+                  >
+                    Cancel
+                  </Button>
+                )}
             </Group>
           </Group>
         </Stack>
@@ -125,6 +145,12 @@ const IntervieweeCard = ({
         setInviteModalOpen={setInviteModalOpen}
         interviewees={[interviewee.user]}
         sendInvite={inviteInterviewee}
+      />
+
+      <CancelSlotConfirmationModal
+        cancelModalOpen={cancelModalOpen}
+        setCancelModalOpen={setCancelModalOpen}
+        slot={interviewee.nextSlot ?? undefined}
       />
     </Paper>
   )

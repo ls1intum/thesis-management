@@ -17,6 +17,9 @@ export interface IInterviewProcessContext {
   interviewees: IIntervieweeLightWithNextSlot[]
   intervieweesLoading: boolean
   fetchPossibleInterviewees: (searchQuery?: string, state?: string) => void
+
+  // cancel interview
+  cancelSlot: (slotId: string, onCancelSucessfull?: () => void) => void
 }
 
 export const InterviewProcessContext = React.createContext<IInterviewProcessContext | undefined>(

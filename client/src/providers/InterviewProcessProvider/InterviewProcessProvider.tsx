@@ -19,6 +19,7 @@ const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProv
   const [interviewSlotsLoading, setInterviewSlotsLoading] = useState(false)
 
   const [bookingLoading, setBookingLoading] = useState(false)
+  const [bookingSuccessful, setBookingSuccessful] = useState(false)
 
   const [interviewees, setInterviewees] = useState<IIntervieweeLightWithNextSlot[]>([])
   const [intervieweesLoading, setIntervieweesLoading] = useState(false)
@@ -66,6 +67,7 @@ const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProv
   const bookSlot = useCallback(
     (slotId: string, intervieweeUserId: string) => {
       setBookingLoading(true)
+      setBookingSuccessful(false)
 
       return doRequest<IInterviewSlot>(
         `/v2/interview-process/${processId}/slot/${slotId}/book`,
@@ -81,6 +83,34 @@ const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProv
 
           if (res.ok) {
             fetchInterviewSlots()
+            fetchPossibleInterviewees() // TODO: Missing searchkey and state?
+            setBookingSuccessful(true)
+          } else {
+            showSimpleError(getApiResponseErrorMessage(res))
+          }
+        },
+      )
+    },
+    [processId, fetchInterviewSlots],
+  )
+
+  const cancelSlot = useCallback(
+    (slotId: string, onCancelSucessfull?: () => void) => {
+      setBookingLoading(true)
+
+      return doRequest<IInterviewSlot>(
+        `/v2/interview-process/${processId}/slot/${slotId}/cancel`,
+        {
+          method: 'PUT',
+          requiresAuth: true,
+        },
+        (res) => {
+          setBookingLoading(false)
+
+          if (res.ok) {
+            fetchInterviewSlots()
+            fetchPossibleInterviewees() // TODO: Missing searchkey and state?
+            if (onCancelSucessfull) onCancelSucessfull()
           } else {
             showSimpleError(getApiResponseErrorMessage(res))
           }
@@ -101,7 +131,7 @@ const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProv
           requiresAuth: true,
           params: {
             searchQuery: searchQuery,
-            limit: 100,
+            limit: 100, //TODO: implement pagination?
             state: state !== 'ALL' ? state : '',
           },
         },
@@ -136,11 +166,14 @@ const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProv
       fetchInterviewSlots,
 
       bookingLoading,
+      bookingSuccessful,
       bookSlot,
 
       interviewees,
       intervieweesLoading,
       fetchPossibleInterviewees,
+
+      cancelSlot,
     }
   }, [
     processId,
@@ -152,6 +185,7 @@ const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProv
     interviewees,
     intervieweesLoading,
     fetchPossibleInterviewees,
+    cancelSlot,
   ])
 
   return (
