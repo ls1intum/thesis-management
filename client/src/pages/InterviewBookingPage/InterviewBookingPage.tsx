@@ -9,6 +9,7 @@ import {
   Text,
   Center,
   Loader,
+  Collapse,
 } from '@mantine/core'
 import { useIsSmallerBreakpoint } from '../../hooks/theme'
 import { IInterviewSlot } from '../../requests/responses/interview'
@@ -165,43 +166,46 @@ const InterviewBookingPage = () => {
               flex={1}
             >
               <Stack p={0} h={'100%'}>
-                {selectedSlot && (
-                  <SummaryCard
-                    title={'Selected Interview'}
-                    sections={[
-                      {
-                        title: 'Date',
-                        content: (
-                          <Text size='xs' pl={'xs'}>
-                            {selectedSlot.startDate.toLocaleDateString()}
-                          </Text>
-                        ),
-                        icon: <CalendarDotsIcon />,
-                      },
-                      {
-                        title: 'Time',
-                        content: (
-                          <Text size='xs' pl={'xs'}>
-                            {`${selectedSlot.startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${selectedSlot.endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}, ${`${Math.round(
-                              (selectedSlot.endDate.getTime() - selectedSlot.startDate.getTime()) /
-                                60000,
-                            )} min`}`}
-                          </Text>
-                        ),
-                        icon: <ClockIcon />,
-                      },
-                      {
-                        title: 'Location',
-                        content: (
-                          <Text size='xs' pl={'xs'}>
-                            {selectedSlot.location || selectedSlot.streamUrl || 'Not specified'}
-                          </Text>
-                        ),
-                        icon: <MapPinIcon />,
-                      },
-                    ]}
-                  ></SummaryCard>
-                )}
+                <Collapse in={selectedSlot !== null}>
+                  {selectedSlot && (
+                    <SummaryCard
+                      title={'Selected Interview'}
+                      sections={[
+                        {
+                          title: 'Date',
+                          content: (
+                            <Text size='xs' pl={'xs'}>
+                              {selectedSlot.startDate.toLocaleDateString()}
+                            </Text>
+                          ),
+                          icon: <CalendarDotsIcon />,
+                        },
+                        {
+                          title: 'Time',
+                          content: (
+                            <Text size='xs' pl={'xs'}>
+                              {`${selectedSlot.startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${selectedSlot.endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}, ${`${Math.round(
+                                (selectedSlot.endDate.getTime() -
+                                  selectedSlot.startDate.getTime()) /
+                                  60000,
+                              )} min`}`}
+                            </Text>
+                          ),
+                          icon: <ClockIcon />,
+                        },
+                        {
+                          title: 'Location',
+                          content: (
+                            <Text size='xs' pl={'xs'}>
+                              {selectedSlot.location || selectedSlot.streamUrl || 'Not specified'}
+                            </Text>
+                          ),
+                          icon: <MapPinIcon />,
+                        },
+                      ]}
+                    ></SummaryCard>
+                  )}
+                </Collapse>
                 {topicInformation && (
                   <SummaryCard
                     title={'Thesis Topic'}
