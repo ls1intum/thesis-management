@@ -15,7 +15,10 @@ public record ApplicationSummaryDto(
     String studyDegree,
     String studyProgram,
     String thesisTitle,
-    String motivation
+    String motivation,
+    String interests,
+    String projects,
+    String specialSkills
 ) {
 
     public static ApplicationSummaryDto fromApplicationEntity(Application application) {
@@ -29,7 +32,10 @@ public record ApplicationSummaryDto(
             application.getUser().getStudyProgram(),
             application.getTopic() != null ? application.getTopic().getTitle()
                 : application.getThesisTitle(),
-            application.getMotivation()
+            application.getMotivation(),
+            application.getUser().getInterests(),
+            application.getUser().getProjects(),
+            application.getUser().getSpecialSkills()
         );
     }
 }

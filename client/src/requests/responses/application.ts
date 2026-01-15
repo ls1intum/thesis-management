@@ -35,4 +35,7 @@ export interface IApplicationSummary {
   studyProgram: string
   thesisTitle: string
   motivation: string
+  interests: string
+  projects: string
+  specialSkills: string
 }

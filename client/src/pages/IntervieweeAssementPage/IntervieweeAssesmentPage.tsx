@@ -139,6 +139,21 @@ const IntervieweeAssesmentPage = () => {
                   content={interviewee.application.motivation}
                 />
               )}
+              {interviewee?.application && (
+                <TopicInformationCard
+                  title='Interests'
+                  content={interviewee.application.interests}
+                />
+              )}
+              {interviewee?.application && (
+                <TopicInformationCard title='Projects' content={interviewee.application.projects} />
+              )}
+              {interviewee?.application && (
+                <TopicInformationCard
+                  title='Special Skills'
+                  content={interviewee.application.specialSkills}
+                />
+              )}
             </Stack>
           </ScrollArea>
         </Stack>
