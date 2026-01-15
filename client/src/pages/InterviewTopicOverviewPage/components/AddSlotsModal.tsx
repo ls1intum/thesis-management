@@ -12,6 +12,7 @@ import {
   Text,
   Center,
   NumberInput,
+  Tooltip,
 } from '@mantine/core'
 import { Calendar } from '@mantine/dates'
 import { useEffect, useState } from 'react'
@@ -76,9 +77,17 @@ const AddSlotsModal = ({
 
   const [sameSlotsForAllDays, setSameSlotsForAllDays] = useState(false)
 
+  const dayHasBookedSlots = (date: string) => {
+    return modalSlots[date]?.filter((slot) => slot.bookedBy !== null).length > 0
+  }
+
   const handleSelect = (date: Date) => {
     const isSelected = selected.some((s) => dayjs(s).isSame(date, 'day'))
     if (isSelected) {
+      if (dayHasBookedSlots(date.toISOString().split('T')[0])) {
+        return
+      }
+
       setSelected((current) => current.filter((d) => !dayjs(d).isSame(date, 'day')))
       setOpenDates((current) => current.filter((d) => d !== date.toDateString()))
     } else {
@@ -247,6 +256,18 @@ const AddSlotsModal = ({
                 }}
                 highlightToday
                 size={'md'}
+                renderDay={(date) => {
+                  if (dayHasBookedSlots(date)) {
+                    const day = dayjs(date).date()
+                    return (
+                      <Tooltip label='Can not be removed, slots are already booked' withArrow>
+                        <div>{day}</div>
+                      </Tooltip>
+                    )
+                  } else {
+                    return undefined
+                  }
+                }}
               />
             </Center>
           </Stack>

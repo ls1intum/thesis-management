@@ -132,6 +132,7 @@ const IntervieweeCard = ({
                     size='xs'
                     leftSection={<XIcon size={16} />}
                     onClick={() => setCancelModalOpen(true)}
+                    color={'red'}
                   >
                     Cancel Interview
                   </Button>
