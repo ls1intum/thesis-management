@@ -1,7 +1,7 @@
 import { DataTable, DataTableColumn } from 'mantine-datatable'
 import { formatDate } from '../../utils/format'
 import { useTopicsContext } from '../../providers/TopicsProvider/hooks'
-import { ITopic } from '../../requests/responses/topic'
+import { ITopic, TopicState } from '../../requests/responses/topic'
 import { useNavigate } from 'react-router'
 import { Badge, Center, Stack, Text } from '@mantine/core'
 import AvatarUserList from '../AvatarUserList/AvatarUserList'
@@ -35,6 +35,19 @@ const TopicsTable = (props: ITopicsTableProps) => {
 
   const { topics, page, setPage, limit, isLoading } = useTopicsContext()
 
+  const getTopicColor = (state: TopicState) => {
+    switch (state) {
+      case TopicState.OPEN:
+        return 'gray'
+      case TopicState.CLOSED:
+        return 'red'
+      case TopicState.DRAFT:
+        return 'yellow'
+      default:
+        return 'gray'
+    }
+  }
+
   const columnConfig: Record<TopicColumn, DataTableColumn<ITopic>> = {
     state: {
       accessor: 'state',
@@ -43,7 +56,7 @@ const TopicsTable = (props: ITopicsTableProps) => {
       width: 100,
       render: (topic) => (
         <Center>
-          {topic.closedAt ? <Badge color='red'>Closed</Badge> : <Badge color='gray'>Open</Badge>}
+          <Badge color={getTopicColor(topic.state)}>{topic.state}</Badge>
         </Center>
       ),
     },

@@ -115,6 +115,7 @@ public class TopicService {
         topic.setReferences(references);
         topic.setUpdatedAt(Instant.now());
         topic.setCreatedAt(Instant.now());
+        topic.setPublishedAt(Instant.now());
         topic.setCreatedBy(creator);
         topic.setResearchGroup(researchGroup);
         topic.setIntendedStart(intendedStart);

@@ -10,12 +10,20 @@ export interface ITopic {
   goals: string
   references: string
   closedAt: string | null
+  publishedAt: string | null
   updatedAt: string
   createdAt: string
   intendedStart: string | null
   applicationDeadline: string | null
+  state: TopicState
   createdBy: ILightUser
   researchGroup: ILightResearchGroup
   advisors: ILightUser[]
   supervisors: ILightUser[]
+}
+
+export enum TopicState {
+  OPEN = 'Open',
+  CLOSED = 'Closed',
+  DRAFT = 'Draft',
 }
