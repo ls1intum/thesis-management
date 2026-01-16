@@ -38,7 +38,7 @@ const TopicsTable = (props: ITopicsTableProps) => {
   const getTopicColor = (state: TopicState) => {
     switch (state) {
       case TopicState.OPEN:
-        return 'gray'
+        return 'green'
       case TopicState.CLOSED:
         return 'red'
       case TopicState.DRAFT:
@@ -56,7 +56,9 @@ const TopicsTable = (props: ITopicsTableProps) => {
       width: 100,
       render: (topic) => (
         <Center>
-          <Badge color={getTopicColor(topic.state)}>{topic.state}</Badge>
+          <Badge color={getTopicColor(topic.state)} radius='sm'>
+            {topic.state}
+          </Badge>
         </Center>
       ),
     },

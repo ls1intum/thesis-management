@@ -23,7 +23,7 @@ export interface ITopic {
 }
 
 export enum TopicState {
-  OPEN = 'Open',
-  CLOSED = 'Closed',
-  DRAFT = 'Draft',
+  OPEN = 'OPEN',
+  CLOSED = 'CLOSED',
+  DRAFT = 'DRAFT',
 }

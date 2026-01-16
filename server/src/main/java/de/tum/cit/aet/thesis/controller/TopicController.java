@@ -81,7 +81,8 @@ public class TopicController {
                 RequestValidator.validateNotNull(payload.advisorIds()),
                 RequestValidator.validateNotNull(payload.researchGroupId()),
                 payload.intendedStart(),
-                payload.applicationDeadline()
+                payload.applicationDeadline(),
+                payload.isDraft() != null ? payload.isDraft() : false
         );
 
         return ResponseEntity.ok(TopicDto.fromTopicEntity(topic));

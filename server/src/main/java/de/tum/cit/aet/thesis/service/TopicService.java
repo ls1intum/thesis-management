@@ -99,7 +99,8 @@ public class TopicService {
             List<UUID> advisorIds,
             UUID researchGroupId,
             Instant intendedStart,
-            Instant applicationDeadline
+            Instant applicationDeadline,
+            Boolean isDraft
     ) {
         User creator = currentUserProvider().getUser();
         ResearchGroup researchGroup = researchGroupRepository.findById(researchGroupId).orElseThrow(
@@ -115,7 +116,9 @@ public class TopicService {
         topic.setReferences(references);
         topic.setUpdatedAt(Instant.now());
         topic.setCreatedAt(Instant.now());
-        topic.setPublishedAt(Instant.now());
+        if (isDraft != true) {
+            topic.setPublishedAt(Instant.now());
+        }
         topic.setCreatedBy(creator);
         topic.setResearchGroup(researchGroup);
         topic.setIntendedStart(intendedStart);

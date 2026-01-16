@@ -6,9 +6,9 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum TopicState {
-    OPEN("Open"),
-    CLOSED("Writing"),
-    DRAFT("Draft");
+    OPEN("OPEN"),
+    CLOSED("WRITING"),
+    DRAFT("DRAFT");
 
     private final String value;
 }

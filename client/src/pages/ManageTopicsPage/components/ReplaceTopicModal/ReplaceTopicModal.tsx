@@ -1,4 +1,4 @@
-import { Button, Modal, MultiSelect, Select, Stack, TextInput } from '@mantine/core'
+import { Button, Group, Modal, MultiSelect, Select, Stack, TextInput } from '@mantine/core'
 import { ITopic } from '../../../../requests/responses/topic'
 import { isNotEmpty, useForm } from '@mantine/form'
 import { isNotEmptyUserList } from '../../../../utils/validation'
@@ -144,7 +144,7 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
     )
   }, [opened])
 
-  const onSubmit = async () => {
+  const onSubmit = async (isDraft = false) => {
     setLoading(true)
 
     try {
@@ -163,6 +163,7 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
           researchGroupId: form.values.researchGroupId,
           intendedStart: form.values.intendedStart ?? null,
           applicationDeadline: form.values.applicationDeadline ?? null,
+          isDraft: isDraft,
         },
       })
 
@@ -191,7 +192,7 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
       opened={opened}
       onClose={onClose}
     >
-      <form onSubmit={form.onSubmit(onSubmit)}>
+      <form onSubmit={form.onSubmit(() => onSubmit(false))}>
         <Stack gap='md'>
           <TextInput label='Title' required {...form.getInputProps('title')} />
           <MultiSelect
@@ -266,9 +267,21 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
             editMode={true}
             {...form.getInputProps('references')}
           />
-          <Button type='submit' fullWidth disabled={!form.isValid()} loading={loading}>
-            {topic ? 'Save changes' : 'Create topic'}
-          </Button>
+          <Group>
+            {!props.topic && (
+              <Button
+                variant='default'
+                onClick={() => onSubmit(true)}
+                disabled={!form.isValid()}
+                loading={loading}
+              >
+                Save Draft
+              </Button>
+            )}
+            <Button type='submit' flex={1} disabled={!form.isValid()} loading={loading}>
+              {topic ? 'Save changes' : 'Create topic'}
+            </Button>
+          </Group>
         </Stack>
       </form>
     </Modal>
