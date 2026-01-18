@@ -103,11 +103,14 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
 
           const index = prev.content.findIndex((x) => x.topicId === newTopic.topicId)
 
+          let newFetchRequired = false
+
           if (index >= 0) {
+            newFetchRequired = newTopic.state !== prev.content[index].state
             prev.content[index] = newTopic
           }
 
-          if (newTopic.state !== prev.content[index].state) {
+          if (newFetchRequired) {
             // If state changed, refetch to update based on filters
             fetchTopics()
           }
