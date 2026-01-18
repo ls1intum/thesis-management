@@ -1,5 +1,5 @@
 import { Button, Group, Modal, MultiSelect, Select, Stack, TextInput } from '@mantine/core'
-import { ITopic } from '../../../../requests/responses/topic'
+import { ITopic, TopicState } from '../../../../requests/responses/topic'
 import { isNotEmpty, useForm } from '@mantine/form'
 import { isNotEmptyUserList } from '../../../../utils/validation'
 import { useEffect, useState } from 'react'
@@ -268,18 +268,22 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
             {...form.getInputProps('references')}
           />
           <Group>
-            {!props.topic && (
+            {(!props.topic || props.topic.state === TopicState.DRAFT) && (
               <Button
                 variant='default'
                 onClick={() => onSubmit(true)}
                 disabled={!form.isValid()}
                 loading={loading}
               >
-                Save Draft
+                {props.topic ? 'Save Changes' : 'Create Draft'}
               </Button>
             )}
             <Button type='submit' flex={1} disabled={!form.isValid()} loading={loading}>
-              {topic ? 'Save changes' : 'Create topic'}
+              {topic
+                ? topic.state === TopicState.DRAFT
+                  ? 'Save & Create Topic'
+                  : 'Save Changes'
+                : 'Create Topic'}
             </Button>
           </Group>
         </Stack>

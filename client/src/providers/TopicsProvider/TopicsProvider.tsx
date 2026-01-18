@@ -33,7 +33,7 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
 
   const [isLoading, setIsLoading] = useState(false)
 
-  useEffect(() => {
+  const fetchTopics = async () => {
     setIsLoading(true)
 
     return doRequest<PaginationResponse<ITopic>>(
@@ -70,6 +70,10 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
         setTopics(res.data)
       },
     )
+  }
+
+  useEffect(() => {
+    fetchTopics()
   }, [filters, page, limit])
 
   useEffect(() => {
@@ -101,6 +105,11 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
 
           if (index >= 0) {
             prev.content[index] = newTopic
+          }
+
+          if (newTopic.state !== prev.content[index].state) {
+            // If state changed, refetch to update based on filters
+            fetchTopics()
           }
 
           return { ...prev }

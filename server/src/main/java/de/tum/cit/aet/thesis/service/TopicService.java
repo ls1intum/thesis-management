@@ -150,7 +150,8 @@ public class TopicService {
             List<UUID> advisorIds,
             UUID researchGroupId,
             Instant intendedStart,
-            Instant applicationDeadline
+            Instant applicationDeadline,
+            Boolean isDraft
     ) {
         ResearchGroup researchGroup = researchGroupRepository.findById(researchGroupId).orElseThrow(
                 () -> new ResourceNotFoundException("Research group not found")
@@ -163,6 +164,9 @@ public class TopicService {
         topic.setGoals(goals);
         topic.setReferences(references);
         topic.setUpdatedAt(Instant.now());
+        if (isDraft != true && topic.getPublishedAt() == null) {
+            topic.setPublishedAt(Instant.now());
+        }
         topic.setResearchGroup(researchGroup);
         topic.setIntendedStart(intendedStart);
         topic.setApplicationDeadline(applicationDeadline);

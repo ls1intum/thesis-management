@@ -4,7 +4,7 @@ import { Button, Group, Stack, Title } from '@mantine/core'
 import TopicsProvider from '../../providers/TopicsProvider/TopicsProvider'
 import TopicsTable from '../../components/TopicsTable/TopicsTable'
 import { ITopic } from '../../requests/responses/topic'
-import { Pencil } from '@phosphor-icons/react'
+import { PencilIcon } from '@phosphor-icons/react'
 import CloseTopicButton from './components/CloseTopicButton/CloseTopicButton'
 import ReplaceTopicModal from './components/ReplaceTopicModal/ReplaceTopicModal'
 import TopicsFilters from '../../components/TopicsFilters/TopicsFilters'
@@ -52,7 +52,7 @@ const ManageTopicsPage = () => {
                 >
                   {!topic.closedAt && (
                     <Button size='xs' onClick={() => setEditingTopic(topic)}>
-                      <Pencil />
+                      <PencilIcon />
                     </Button>
                   )}
                   <CloseTopicButton size='xs' topic={topic} />
