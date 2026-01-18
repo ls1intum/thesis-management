@@ -51,7 +51,7 @@ public class TopicService {
     public Page<Topic> getAll(
             boolean onlyOwnResearchGroup,
             String[] types,
-            boolean includeClosed,
+            String[] states,
             String searchQuery,
             int page,
             int limit,
@@ -68,7 +68,11 @@ public class TopicService {
             currentUserProvider().getResearchGroupOrThrow() : null;
         String searchQueryFilter = searchQuery == null || searchQuery.isEmpty() ? null : searchQuery.toLowerCase();
         String[] typesFilter = types == null || types.length == 0 ? null : types;
-        String[] statesFilter = includeClosed ? new String[] { TopicState.OPEN.name(), TopicState.CLOSED.name() } : new String[] { TopicState.OPEN.name() };
+
+        if (Arrays.stream(states).anyMatch(s -> s.equals(TopicState.CLOSED.name()) || s.equals(TopicState.DRAFT.name()))) {
+            currentUserProvider().assertCanAccessResearchGroup(researchGroup);
+        }
+        String[] statesFilter = states.length > 0 ? states : new String[] { TopicState.OPEN.name() };
 
         return topicRepository.searchTopics(
                 researchGroup == null ? ( researchGroupIds == null ? null : new HashSet<>(Arrays.asList(researchGroupIds))) : new HashSet<UUID>(Collections.singleton(researchGroup.getId())),

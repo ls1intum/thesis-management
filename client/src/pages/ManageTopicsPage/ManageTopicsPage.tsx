@@ -33,7 +33,7 @@ const ManageTopicsPage = () => {
         <Button ml='auto' onClick={() => setCreateTopicModal(true)} hiddenFrom='md'>
           Create Topic
         </Button>
-        <TopicsFilters visible={['closed']} />
+        <TopicsFilters visible={['states']} />
         <TopicsTable
           columns={['state', 'title', 'types', 'supervisor', 'advisor', 'createdAt', 'actions']}
           extraColumns={{

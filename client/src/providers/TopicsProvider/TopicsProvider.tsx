@@ -1,32 +1,32 @@
 import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react'
 import { doRequest } from '../../requests/request'
 import { showSimpleError } from '../../utils/notification'
-import { ITopic } from '../../requests/responses/topic'
+import { ITopic, TopicState } from '../../requests/responses/topic'
 import { ITopicsContext, ITopicsFilters, TopicsContext } from './context'
 import { PaginationResponse } from '../../requests/responses/pagination'
 
 interface ITopicsProviderProps {
-  includeClosedTopics?: boolean
   limit: number
   hideIfEmpty?: boolean
   researchSpecific?: boolean
   initialFilters?: Partial<ITopicsFilters>
+  states?: TopicState[]
 }
 
 const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
   const {
     children,
-    includeClosedTopics = false,
     limit,
     hideIfEmpty = false,
     researchSpecific = true,
     initialFilters,
+    states = [],
   } = props
 
   const [topics, setTopics] = useState<PaginationResponse<ITopic>>()
   const [page, setPage] = useState(0)
   const [filters, setFilters] = useState<ITopicsFilters>({
-    includeClosed: includeClosedTopics,
+    states: states,
     researchSpecific: researchSpecific,
     ...initialFilters,
   })
@@ -45,7 +45,7 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
           page,
           limit,
           type: filters.types?.join(',') || '',
-          includeClosed: filters.includeClosed ? 'true' : 'false',
+          states: filters.states?.join(',') || '',
           onlyOwnResearchGroup: filters.researchSpecific ? 'true' : 'false',
           search: filters.search ?? '',
           researchGroupIds: filters.researchGroupIds?.join(',') || '',
@@ -75,7 +75,7 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
   useEffect(() => {
     setFilters((prev) => ({
       ...prev,
-      includeClosed: includeClosedTopics,
+      states: states,
       researchSpecific: researchSpecific,
       ...initialFilters,
     }))

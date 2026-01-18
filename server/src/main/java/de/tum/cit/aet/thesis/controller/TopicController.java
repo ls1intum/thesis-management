@@ -1,6 +1,7 @@
 package de.tum.cit.aet.thesis.controller;
 
 import de.tum.cit.aet.thesis.constants.StringLimits;
+import de.tum.cit.aet.thesis.constants.TopicState;
 import de.tum.cit.aet.thesis.controller.payload.CloseTopicPayload;
 import de.tum.cit.aet.thesis.controller.payload.ReplaceTopicPayload;
 import de.tum.cit.aet.thesis.dto.PaginationDto;
@@ -16,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 @Slf4j
@@ -36,7 +38,7 @@ public class TopicController {
             @RequestParam(required = false) String search,
             @RequestParam(required = false, defaultValue = "true") boolean onlyOwnResearchGroup,
             @RequestParam(required = false, defaultValue = "") String[] type,
-            @RequestParam(required = false, defaultValue = "false") Boolean includeClosed,
+            @RequestParam(required = false, defaultValue = "") String[] states,
             @RequestParam(required = false, defaultValue = "0") Integer page,
             @RequestParam(required = false, defaultValue = "50") Integer limit,
             @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
@@ -46,7 +48,7 @@ public class TopicController {
         Page<Topic> topics = topicService.getAll(
                 onlyOwnResearchGroup,
                 type,
-                includeClosed,
+                states,
                 search,
                 page,
                 limit,
