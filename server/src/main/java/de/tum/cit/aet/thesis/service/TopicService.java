@@ -1,6 +1,7 @@
 package de.tum.cit.aet.thesis.service;
 
 import de.tum.cit.aet.thesis.constants.ThesisRoleName;
+import de.tum.cit.aet.thesis.constants.TopicState;
 import de.tum.cit.aet.thesis.entity.ResearchGroup;
 import de.tum.cit.aet.thesis.entity.Topic;
 import de.tum.cit.aet.thesis.entity.TopicRole;
@@ -67,11 +68,12 @@ public class TopicService {
             currentUserProvider().getResearchGroupOrThrow() : null;
         String searchQueryFilter = searchQuery == null || searchQuery.isEmpty() ? null : searchQuery.toLowerCase();
         String[] typesFilter = types == null || types.length == 0 ? null : types;
+        String[] statesFilter = includeClosed ? new String[] { TopicState.OPEN.name(), TopicState.CLOSED.name() } : new String[] { TopicState.OPEN.name() };
 
         return topicRepository.searchTopics(
                 researchGroup == null ? ( researchGroupIds == null ? null : new HashSet<>(Arrays.asList(researchGroupIds))) : new HashSet<UUID>(Collections.singleton(researchGroup.getId())),
                 typesFilter,
-                includeClosed,
+                statesFilter,
                 searchQueryFilter,
                 PageRequest.of(page, limit, Sort.by(order))
         );
@@ -81,7 +83,7 @@ public class TopicService {
         return topicRepository.searchTopics(
                 Collections.singleton(researchGroupId),
                 null,
-                false,
+                new String[] { TopicState.OPEN.name() },
                 null,
                 PageRequest.of(0, Integer.MAX_VALUE, Sort.unsorted())
         ).toList();

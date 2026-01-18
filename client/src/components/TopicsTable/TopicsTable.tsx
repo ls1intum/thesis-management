@@ -5,7 +5,6 @@ import { ITopic, TopicState } from '../../requests/responses/topic'
 import { useNavigate } from 'react-router'
 import { Badge, Center, Stack, Text } from '@mantine/core'
 import AvatarUserList from '../AvatarUserList/AvatarUserList'
-import React from 'react'
 import ThesisTypeBadge from '../../pages/LandingPage/components/ThesisTypBadge/ThesisTypBadge'
 
 type TopicColumn =
