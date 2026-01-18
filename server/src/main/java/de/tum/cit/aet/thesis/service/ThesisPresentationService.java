@@ -367,7 +367,7 @@ public class ThesisPresentationService {
         String location = presentation.getLocation();
         String streamUrl = presentation.getStreamUrl();
 
-        ResearchGroupSettings groupSettings = researchGroupSettingsService.getByResearchGroupId(thesis.getResearchGroup().getId()).orElse(null);
+        int groupSettingsDuration = researchGroupSettingsService.getPresentationDurationInMinutes(thesis.getResearchGroup().getId());
 
         return new CalendarService.CalendarEvent(
                 "Thesis Presentation \"" + thesis.getTitle() + "\"",
@@ -378,7 +378,7 @@ public class ThesisPresentationService {
                         "Details: " + clientHost + "/presentations/" + presentation.getId() + "\n\n" +
                         "Abstract:\n" + thesis.getAbstractField(),
                 presentation.getScheduledAt(),
-                presentation.getScheduledAt().plus(groupSettings != null && groupSettings.getPresentationSlotDuration() != null  ? groupSettings.getPresentationSlotDuration() : 30, ChronoUnit.MINUTES),
+                presentation.getScheduledAt().plus(groupSettingsDuration, ChronoUnit.MINUTES),
                 this.applicationMail,
                 thesis.getRoles().stream().map(role -> role.getUser().getEmail()).toList(),
                 presentation.getInvites().stream().map(ThesisPresentationInvite::getEmail).toList()

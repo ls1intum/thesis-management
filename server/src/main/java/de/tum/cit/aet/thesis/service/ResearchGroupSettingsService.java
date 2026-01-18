@@ -41,6 +41,9 @@ public class ResearchGroupSettingsService {
         return repository.findById(researchGroupId);
     }
 
-
+    public int getPresentationDurationInMinutes(UUID researchGroupId) {
+        Optional<ResearchGroupSettings> settings = repository.findById(researchGroupId);
+        return settings.isEmpty() || settings.get().getPresentationSlotDuration() == null ? 30 : settings.get().getPresentationSlotDuration();
+    }
 }
 
