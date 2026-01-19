@@ -383,7 +383,7 @@ public class InterviewProcessService {
         slot.setInterviewee(interviewee);
         interviewProcessRepository.save(interviewProcess);
 
-        mailingService.sendInterviewSlotConfirmationEmail(slot);
+        mailingService.sendInterviewSlotConfirmationEmail(slot, "BOOK");
 
         return slot;
     }
@@ -404,6 +404,7 @@ public class InterviewProcessService {
         if (slot.getInterviewee() == null) {
             throw new IllegalStateException("Slot is not booked.");
         } else {
+            mailingService.sendInterviewSlotConfirmationEmail(slot, "CANCEL");
             slot.setInterviewee(null);
             interviewProcessRepository.save(interviewProcess);
         }

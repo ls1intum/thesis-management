@@ -201,15 +201,23 @@ public class MailingService {
                 .send(javaMailSender, uploadService);
     }
 
-    public void sendInterviewSlotConfirmationEmail(InterviewSlot slot) {
+    public void sendInterviewSlotConfirmationEmail(InterviewSlot slot, String type) {
+        String templateCase = switch (type) {
+            case "BOOK" -> "INTERVIEW_SLOT_BOOKED_CONFORMATION";
+            case "CANCEL" -> "INTERVIEW_SLOT_BOOKED_CANCELLATION";
+            default -> throw new IllegalArgumentException("Invalid interview slot email type: " + type);
+        };
         EmailTemplate emailTemplate = loadTemplate(
                 slot.getInterviewee().getApplication().getResearchGroup().getId(),
-                "INTERVIEW_SLOT_BOOKED_CONFORMATION",
+                templateCase,
                 "en");
+
+        User advisor = slot.getInterviewProcess().getTopic().getAdvisors().getFirst();
 
         MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(), emailTemplate.getBodyHtml());
         mailBuilder
                 .addPrimaryRecipient(slot.getInterviewee().getApplication().getUser())
+                .addSecondaryRecipient(advisor)
                 .addNotificationName(emailTemplate.getSubject())
                 .fillApplicationPlaceholders(slot.getInterviewee().getApplication())
                 .fillIntervieweePlaceholders(slot.getInterviewee())

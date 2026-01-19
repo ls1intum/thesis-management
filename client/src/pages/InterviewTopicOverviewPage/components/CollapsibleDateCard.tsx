@@ -1,7 +1,7 @@
 import { Accordion, Button, Card, Divider, Group, Stack, Text, Title } from '@mantine/core'
 import dayjs from 'dayjs'
 import { IInterviewSlot } from '../../../requests/responses/interview'
-import { use, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { CardsIcon } from '@phosphor-icons/react'
 import { TimeInput } from '@mantine/dates'
 import SlotItem from './SlotItem'
@@ -12,6 +12,7 @@ import DeleteButton from '../../../components/DeleteButton/DeleteButton'
 interface ICollapsibleDateCardProps {
   date: Date
   duration?: number
+  breakDuration?: number
   slots?: IInterviewSlot[]
   addNewSlots?: (newSlots: IInterviewSlot[]) => void
 }
@@ -21,12 +22,14 @@ interface ISlotRange {
   endTime: Date | null
   type: 'single' | 'range' | 'scheduled'
   duration: number
+  breakDuration?: number
   slots?: IInterviewSlot[]
 }
 
 const CollapsibleDateCard = ({
   date,
   duration = 30,
+  breakDuration = 0,
   slots,
   addNewSlots,
 }: ICollapsibleDateCardProps) => {
@@ -47,6 +50,7 @@ const CollapsibleDateCard = ({
     startTime: Date,
     endTime: Date,
     duration: number,
+    breakDuration: number,
   ): IInterviewSlot[] => {
     const slots: IInterviewSlot[] = []
 
@@ -62,7 +66,7 @@ const CollapsibleDateCard = ({
         bookedBy: null,
       })
 
-      currentTime.setMinutes(currentTime.getMinutes() + duration)
+      currentTime.setMinutes(currentTime.getMinutes() + duration + breakDuration)
       slotEnd.setMinutes(slotEnd.getMinutes() + duration)
     }
 
@@ -362,6 +366,7 @@ const CollapsibleDateCard = ({
                                         newRanges[index].startTime,
                                         newRanges[index].endTime,
                                         duration,
+                                        breakDuration,
                                       )
                                     } else {
                                       newRanges[index].slots = [
@@ -407,6 +412,7 @@ const CollapsibleDateCard = ({
                                         newRanges[index].startTime,
                                         newRanges[index].endTime,
                                         duration,
+                                        breakDuration,
                                       )
                                     }
                                     return newRanges

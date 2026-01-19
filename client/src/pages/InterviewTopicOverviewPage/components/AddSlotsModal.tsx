@@ -73,7 +73,6 @@ const AddSlotsModal = ({
   const [customDuration, setCustomDuration] = useState<boolean>(false)
 
   const [breakDuration, setBreakDuration] = useState<number>(0) // in minutes
-  const [customBreakDuration, setCustomBreakDuration] = useState<boolean>(false)
 
   const [sameSlotsForAllDays, setSameSlotsForAllDays] = useState(false)
 
@@ -107,7 +106,6 @@ const AddSlotsModal = ({
         : [],
     )
 
-    setCustomBreakDuration(false)
     setCustomDuration(false)
     setDuration(30)
     setBreakDuration(0)
@@ -200,35 +198,13 @@ const AddSlotsModal = ({
             </Title>
             <Group>
               <SegmentedControl
-                data={['0min', '5min', '10min', '15min', '30min', 'Custom']}
+                data={['0min', '5min', '10min', '15min', `20min`, '30min']}
                 onChange={(durationString) => {
-                  if (durationString === 'Custom') {
-                    setCustomBreakDuration(true)
-                    return
-                  } else {
-                    setCustomBreakDuration(false)
-                  }
-
                   const durationValue = parseInt(durationString.replace('min', ''))
                   setBreakDuration(durationValue)
                 }}
                 color='primary'
               />
-              {customBreakDuration && (
-                <NumberInput
-                  value={breakDuration}
-                  onChange={(value) => {
-                    if (value) {
-                      setBreakDuration(typeof value === 'string' ? parseInt(value) : value)
-                    }
-                  }}
-                  min={0}
-                  max={240}
-                  placeholder='Break'
-                  size='xs'
-                  w={75}
-                />
-              )}
             </Group>
           </Stack>
         </Group>
@@ -303,6 +279,7 @@ const AddSlotsModal = ({
                           key={date.toDateString()}
                           date={date}
                           duration={duration}
+                          breakDuration={breakDuration}
                           slots={modalSlots?.[date.toISOString().split('T')[0]]}
                           addNewSlots={(newSlots: IInterviewSlot[]) => {
                             setModalSlots((prev) => ({

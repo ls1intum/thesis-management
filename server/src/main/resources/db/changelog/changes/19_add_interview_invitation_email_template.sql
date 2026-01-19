@@ -87,10 +87,41 @@ VALUES
 </p>
 
 <p th:inline="text">
-  <a target="_blank" rel="noopener noreferrer" th:href="${slotBookingUrl}">View or change your booking</a>
+  <a target="_blank" rel="noopener noreferrer" th:href="${inviteUrl}">View or change your booking</a>
 </p>
 
 <p>Best regards,<br/>
 The Thesis Coordination Team</p>',
         'Confirmation email sent to interviewees when a slot was booked'
+    );
+
+INSERT INTO
+    email_templates (email_template_id, template_case, subject, body_html, description)
+VALUES
+    (
+        gen_random_uuid(),
+        'INTERVIEW_SLOT_BOOKED_CANCELLATION',
+        'Interview Slot Booking Cancellation',
+        '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline="text">
+Your interview slot for the interview process <strong>[[${application.thesisTitle}]]</strong> has been canceled.
+</p>
+
+<p th:inline="text">
+<strong>Details</strong><br/>
+Date and time: <strong th:text="${DataFormatter.formatDateTime(slot.startDate)}">dd.MM.yyyy HH:mm</strong><br/>
+</p>
+
+<p th:inline="text">
+You can book a new slot using the link below:
+</p>
+
+<p th:inline="text">
+<a target="_blank" rel="noopener noreferrer" th:href="${inviteUrl}">Book a new Slot</a>
+</p>
+
+<p>Best regards,<br/>
+The Thesis Coordination Team</p>',
+        'Confirmation email sent to interviewees when a slot was canceled'
     );
