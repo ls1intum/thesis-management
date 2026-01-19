@@ -1,5 +1,6 @@
 package de.tum.cit.aet.thesis.dto;
 
+import de.tum.cit.aet.thesis.constants.ApplicationState;
 import de.tum.cit.aet.thesis.entity.InterviewSlot;
 import de.tum.cit.aet.thesis.entity.Interviewee;
 
@@ -11,7 +12,9 @@ public record IntervieweeLightWithNextSlotDto(
     LightUserDto user,
     int score,
     Instant lastInvited,
-    InterviewSlotDto nextSlot
+    InterviewSlotDto nextSlot,
+    UUID applicationId,
+    ApplicationState applicationState
 ) {
     public static IntervieweeLightWithNextSlotDto fromIntervieweeEntity(Interviewee interviewee) {
         int score = interviewee.getScore() != null ? interviewee.getScore() : -1;
@@ -22,7 +25,9 @@ public record IntervieweeLightWithNextSlotDto(
                 LightUserDto.fromUserEntity(interviewee.getApplication().getUser()),
                 score,
                 interviewee.getLastInvited(),
-                nextSlot != null ? InterviewSlotDto.fromInterviewSlot(nextSlot) : null
+                nextSlot != null ? InterviewSlotDto.fromInterviewSlot(nextSlot) : null,
+                interviewee.getApplication().getId(),
+                interviewee.getApplication().getState()
         );
 
     }

@@ -31,7 +31,9 @@ import { showNotification } from '@mantine/notifications'
 
 interface IApplicationReviewFormProps {
   application: IApplication
-  onUpdate: (application: IApplication) => unknown
+  onUpdate?: (application: IApplication) => unknown
+  includeCommentSection?: boolean
+  acceptOnly?: boolean
 }
 
 interface IApplicationReviewForm {
@@ -47,7 +49,7 @@ interface IApplicationReviewForm {
 }
 
 const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
-  const { application, onUpdate } = props
+  const { application, onUpdate, includeCommentSection = true, acceptOnly = false } = props
 
   const user = useLoggedInUser()
   const updateApplicationContext = useApplicationsContextUpdater()
@@ -121,7 +123,7 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
           if (res.ok) {
             application.comment = res.data.comment
 
-            onUpdate(res.data)
+            onUpdate?.(res.data)
           } else {
             showSimpleError(getApiResponseErrorMessage(res))
           }
@@ -163,7 +165,7 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
         )
 
         if (currentApplication) {
-          onUpdate(currentApplication)
+          onUpdate?.(currentApplication)
         }
       } else {
         showSimpleError(getApiResponseErrorMessage(response))
@@ -192,7 +194,7 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
         showSimpleSuccess('Application review reason updated successfully')
 
         updateApplicationContext(response.data)
-        onUpdate(response.data)
+        onUpdate?.(response.data)
       } else {
         showSimpleError(getApiResponseErrorMessage(response))
       }
@@ -224,7 +226,7 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
           const application = { ...props.application, state: ApplicationState.INTERVIEWING }
 
           updateApplicationContext(application)
-          onUpdate(application)
+          onUpdate?.(application)
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
         }
@@ -244,55 +246,61 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
 
   return (
     <form>
-      <Stack gap='sm'>
-        {reviewers.map((reviewer) => (
-          <Group key={reviewer.user.userId} grow wrap='nowrap'>
-            <AvatarUser user={reviewer.user} />
-            <Select
-              value={reviewer.reason}
-              data={[
-                { value: 'NOT_REVIEWED', label: 'Not reviewed' },
-                { value: 'INTERESTED', label: 'Interested' },
-                { value: 'NOT_INTERESTED', label: 'Not interested' },
-              ]}
-              onChange={(reason) => reason && onReviewReasonChange(reason)}
-              disabled={
-                reviewer.user.userId !== user.userId || application.state !== 'NOT_ASSESSED'
-              }
+      {includeCommentSection && (
+        <Stack gap='sm'>
+          {reviewers.map((reviewer) => (
+            <Group key={reviewer.user.userId} grow wrap='nowrap'>
+              <AvatarUser user={reviewer.user} />
+              <Select
+                value={reviewer.reason}
+                data={[
+                  { value: 'NOT_REVIEWED', label: 'Not reviewed' },
+                  { value: 'INTERESTED', label: 'Interested' },
+                  { value: 'NOT_INTERESTED', label: 'Not interested' },
+                ]}
+                onChange={(reason) => reason && onReviewReasonChange(reason)}
+                disabled={
+                  reviewer.user.userId !== user.userId || application.state !== 'NOT_ASSESSED'
+                }
+              />
+              <Text truncate>{reviewer.reviewedAt && formatDate(reviewer.reviewedAt)}</Text>
+            </Group>
+          ))}
+          <Stack gap='0'>
+            <Textarea
+              label='Comment'
+              placeholder='Add a comment'
+              autosize={true}
+              minRows={5}
+              {...form.getInputProps('comment')}
             />
-            <Text truncate>{reviewer.reviewedAt && formatDate(reviewer.reviewedAt)}</Text>
-          </Group>
-        ))}
-        <Stack gap='0'>
-          <Textarea
-            label='Comment'
-            placeholder='Add a comment'
-            autosize={true}
-            minRows={5}
-            {...form.getInputProps('comment')}
-          />
-          <Text ta='right' fz='xs'>
-            {form.values.comment !== application.comment ? 'Saving...' : 'Saved!'}
-          </Text>
+            <Text ta='right' fz='xs'>
+              {form.values.comment !== application.comment ? 'Saving...' : 'Saved!'}
+            </Text>
+          </Stack>
+          <Button
+            onClick={() => {
+              createOrUpdateInterviewProcess()
+            }}
+            variant='outline'
+            color='primary'
+            mb={'sm'}
+            disabled={application.state !== ApplicationState.NOT_ASSESSED}
+          >
+            Add to Interview Process
+          </Button>
         </Stack>
-        <Button
-          onClick={() => {
-            createOrUpdateInterviewProcess()
-          }}
-          variant='outline'
-          color='primary'
-          mb={'sm'}
-          disabled={application.state !== ApplicationState.NOT_ASSESSED}
-        >
-          Add to Interview Process
-        </Button>
-      </Stack>
+      )}
 
       {(application?.state === ApplicationState.NOT_ASSESSED ||
         application?.state === ApplicationState.INTERVIEWING) && (
         <Stack gap='sm'>
-          <Space />
-          <Divider />
+          {includeCommentSection && (
+            <>
+              <Space />
+              <Divider />
+            </>
+          )}
           <TextInput
             type='text'
             required={true}
@@ -346,13 +354,15 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
           )}
 
           <Group grow>
-            <ApplicationRejectButton
-              key={application.applicationId}
-              application={application}
-              onUpdate={(newApplication) => {
-                onUpdate(newApplication)
-              }}
-            />
+            {!acceptOnly && (
+              <ApplicationRejectButton
+                key={application.applicationId}
+                application={application}
+                onUpdate={(newApplication) => {
+                  onUpdate?.(newApplication)
+                }}
+              />
+            )}
             <Button
               onClick={() => onAccept(form.getValues())}
               variant='outline'

@@ -40,6 +40,8 @@ export interface IIntervieweeLight {
 
 export interface IIntervieweeLightWithNextSlot extends IIntervieweeLight {
   nextSlot: IInterviewSlot | null
+  applicationId: string
+  applicationState: ApplicationState
 }
 
 export interface IInterviewee extends IIntervieweeLight {
