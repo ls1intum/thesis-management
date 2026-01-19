@@ -42,7 +42,10 @@ const ApplicationRejectButton = (props: IApplicationRejectButtonProps) => {
     form.reset()
   }, [confirmationModal])
 
-  if (application.state !== ApplicationState.NOT_ASSESSED) {
+  if (
+    application.state !== ApplicationState.NOT_ASSESSED &&
+    application.state !== ApplicationState.INTERVIEWING
+  ) {
     return <></>
   }
 

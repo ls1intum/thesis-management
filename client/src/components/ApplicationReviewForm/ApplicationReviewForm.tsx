@@ -288,83 +288,83 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
         </Button>
       </Stack>
 
-      {application?.state === ApplicationState.NOT_ASSESSED ||
-        (application?.state === ApplicationState.INTERVIEWING && (
-          <Stack gap='sm'>
-            <Space />
-            <Divider />
-            <TextInput
-              type='text'
-              required={true}
-              placeholder='Thesis Title'
-              label='Thesis Title'
-              {...form.getInputProps('title')}
-            />
+      {(application?.state === ApplicationState.NOT_ASSESSED ||
+        application?.state === ApplicationState.INTERVIEWING) && (
+        <Stack gap='sm'>
+          <Space />
+          <Divider />
+          <TextInput
+            type='text'
+            required={true}
+            placeholder='Thesis Title'
+            label='Thesis Title'
+            {...form.getInputProps('title')}
+          />
 
-            <Select
-              label='Thesis Type'
-              required={true}
-              data={Object.keys(GLOBAL_CONFIG.thesis_types).map((key) => ({
-                value: key,
-                label: formatThesisType(key),
-              }))}
-              {...form.getInputProps('type')}
-            />
+          <Select
+            label='Thesis Type'
+            required={true}
+            data={Object.keys(GLOBAL_CONFIG.thesis_types).map((key) => ({
+              value: key,
+              label: formatThesisType(key),
+            }))}
+            {...form.getInputProps('type')}
+          />
 
-            <LanguageSelect
-              label='Thesis Language'
-              required={true}
-              {...form.getInputProps('language')}
-            />
+          <LanguageSelect
+            label='Thesis Language'
+            required={true}
+            {...form.getInputProps('language')}
+          />
 
-            <UserMultiSelect
-              label='Supervisor'
-              required={true}
-              groups={['supervisor']}
-              maxValues={1}
-              initialUsers={application.topic?.supervisors}
-              {...form.getInputProps('supervisors')}
-            />
-            <UserMultiSelect
-              label='Advisor(s)'
-              required={true}
-              groups={['advisor', 'supervisor']}
-              initialUsers={application.topic?.advisors}
-              {...form.getInputProps('advisors')}
-            />
+          <UserMultiSelect
+            label='Supervisor'
+            required={true}
+            groups={['supervisor']}
+            maxValues={1}
+            initialUsers={application.topic?.supervisors}
+            {...form.getInputProps('supervisors')}
+          />
+          <UserMultiSelect
+            label='Advisor(s)'
+            required={true}
+            groups={['advisor', 'supervisor']}
+            initialUsers={application.topic?.advisors}
+            {...form.getInputProps('advisors')}
+          />
 
+          <Checkbox
+            label='Notify Student'
+            {...form.getInputProps('notifyUser', { type: 'checkbox' })}
+          />
+
+          {application.topic && (
             <Checkbox
-              label='Notify Student'
-              {...form.getInputProps('notifyUser', { type: 'checkbox' })}
+              label='Close Topic (This will reject all applications for this topic)'
+              {...form.getInputProps('closeTopic', { type: 'checkbox' })}
             />
+          )}
 
-            {application.topic && (
-              <Checkbox
-                label='Close Topic (This will reject all applications for this topic)'
-                {...form.getInputProps('closeTopic', { type: 'checkbox' })}
-              />
-            )}
-
-            <Group grow>
-              <ApplicationRejectButton
-                key={application.applicationId}
-                application={application}
-                onUpdate={(newApplication) => {
-                  onUpdate(newApplication)
-                }}
-              />
-              <Button
-                onClick={() => onAccept(form.getValues())}
-                variant='outline'
-                color='green'
-                loading={loading}
-                disabled={!form.isValid()}
-              >
-                Accept
-              </Button>
-            </Group>
-          </Stack>
-        ))}
+          <Group grow>
+            <ApplicationRejectButton
+              key={application.applicationId}
+              application={application}
+              onUpdate={(newApplication) => {
+                onUpdate(newApplication)
+              }}
+            />
+            <Button
+              onClick={() => onAccept(form.getValues())}
+              variant='outline'
+              color='green'
+              loading={loading}
+              disabled={!form.isValid()}
+            >
+              Accept
+            </Button>
+          </Group>
+        </Stack>
+      )}
     </form>
   )
 }
