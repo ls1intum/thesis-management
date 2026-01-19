@@ -1,5 +1,5 @@
 --liquibase formatted sql
---changeset ramona:15_add_interview_tables
+--changeset ramona:18_add_interview_tables
 
 CREATE TABLE IF NOT EXISTS interview_processes (
     interview_process_id UUID PRIMARY KEY,
