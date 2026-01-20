@@ -1,6 +1,6 @@
 services:
   reverse-proxy:
-    image: traefik:v3.5
+    image: traefik:v3.6
     command:
       - "--providers.docker=true"
       - "--providers.docker.exposedByDefault=false"
@@ -33,7 +33,8 @@ services:
       - "traefik.http.routers.server.tls.certresolver=letsencrypt"
       - "traefik.http.middlewares.api-ratelimit.ratelimit.average=300"
       - "traefik.http.middlewares.api-ratelimit.ratelimit.burst=100"
-      - "traefik.http.routers.server.middlewares=api-ratelimit"
+      - "traefik.http.middlewares.server-compress.compress=true"
+      - "traefik.http.routers.server.middlewares=api-ratelimit,server-compress"
       - "traefik.http.routers.server.priority=10"
     depends_on:
       db:
@@ -115,7 +116,7 @@ services:
       - thesis-management-network
 
   db:
-    image: "postgres:17.6-alpine"
+    image: "postgres:17.7-alpine"
     container_name: thesis-management-db
     environment:
       - POSTGRES_USER=${SPRING_DATASOURCE_USERNAME}
