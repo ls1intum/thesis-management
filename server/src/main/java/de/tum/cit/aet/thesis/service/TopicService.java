@@ -69,10 +69,11 @@ public class TopicService {
         String searchQueryFilter = searchQuery == null || searchQuery.isEmpty() ? null : searchQuery.toLowerCase();
         String[] typesFilter = types == null || types.length == 0 ? null : types;
 
-        if (Arrays.stream(states).anyMatch(s -> s.equals(TopicState.CLOSED.name()) || s.equals(TopicState.DRAFT.name()))) {
+
+        if (states != null && Arrays.stream(states).anyMatch(s -> s.equals(TopicState.CLOSED.name()) || s.equals(TopicState.DRAFT.name()))) {
             currentUserProvider().assertCanAccessResearchGroup(researchGroup);
         }
-        String[] statesFilter = states.length > 0 ? states : new String[] { TopicState.OPEN.name() };
+        String[] statesFilter = (states != null && states.length > 0) ? states : new String[] { TopicState.OPEN.name() };
 
         return topicRepository.searchTopics(
                 researchGroup == null ? ( researchGroupIds == null ? null : new HashSet<>(Arrays.asList(researchGroupIds))) : new HashSet<UUID>(Collections.singleton(researchGroup.getId())),

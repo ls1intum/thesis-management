@@ -81,7 +81,7 @@ class TopicServiceTest {
         Page<Topic> result = topicService.getAll(
                 false,
                 null,
-                true,
+                null,
                 null,
                 0,
                 10,
@@ -95,7 +95,7 @@ class TopicServiceTest {
         verify(topicRepository).searchTopics(
                 eq(null),
                 eq(null),
-                eq(new String[] { TopicState.OPEN.name(), TopicState.CLOSED.name() }),
+                eq(new String[] { TopicState.OPEN.name()}),
                 eq(null),
                 eq(PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "title")))
         );
@@ -199,7 +199,8 @@ class TopicServiceTest {
                 advisorIds,
                 researchGroupId,
                 null,
-                null
+                null,
+                false
         );
 
         assertNotNull(result);
