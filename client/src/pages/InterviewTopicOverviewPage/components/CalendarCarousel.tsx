@@ -1,6 +1,22 @@
 import { Carousel } from '@mantine/carousel'
-import { Badge, Button, Center, Divider, Group, Loader, Stack, Title, Text } from '@mantine/core'
-import { CalendarDotsIcon, ClockUserIcon, PlusIcon } from '@phosphor-icons/react'
+import {
+  Badge,
+  Button,
+  Center,
+  Divider,
+  Group,
+  Loader,
+  Stack,
+  Title,
+  Text,
+  Popover,
+  CopyButton,
+  TextInput,
+  Tooltip,
+  ActionIcon,
+  CheckIcon,
+} from '@mantine/core'
+import { CalendarDotsIcon, ClockUserIcon, CopyIcon, PlusIcon } from '@phosphor-icons/react'
 import { IInterviewSlot } from '../../../requests/responses/interview'
 import { DateHeaderItem } from './DateHeaderItem'
 import SlotItem from './SlotItem'
@@ -8,6 +24,8 @@ import { useIsSmallerBreakpoint } from '../../../hooks/theme'
 import { useEffect, useState } from 'react'
 import AddSlotsModal from './AddSlotsModal'
 import { useInterviewProcessContext } from '../../../providers/InterviewProcessProvider/hooks'
+import { GLOBAL_CONFIG } from '../../../config/global'
+import { useUser } from '../../../hooks/authentication'
 
 const CalendarCarousel = () => {
   const [carouselSlide, setCarouselSlide] = useState(0)
@@ -94,14 +112,51 @@ const CalendarCarousel = () => {
     )
   }
 
+  const user = useUser()
+
+  const calendarUrl =
+    GLOBAL_CONFIG.calendar_url ||
+    `${GLOBAL_CONFIG.server_host}/api/v2/calendar/interviews/user/${user ? user.userId : ''}`
+
   return (
     <Stack gap={'0.25rem'}>
       <Group justify='space-between' align='center' gap={'0.5rem'}>
         <Title order={3}>{calendarHeader()}</Title>
         <Group gap={'0.5rem'}>
-          <Button variant='outline' size='xs' leftSection={<CalendarDotsIcon size={16} />}>
-            {isSmaller ? 'Subscribe' : 'Subscribe to Calendar'}
-          </Button>
+          <Popover position='bottom' withArrow shadow='md'>
+            <Popover.Target>
+              <Button variant='outline' size='xs' leftSection={<CalendarDotsIcon size={16} />}>
+                {isSmaller ? 'Subscribe' : 'Subscribe to Calendar'}
+              </Button>
+            </Popover.Target>
+            <Popover.Dropdown>
+              <Group>
+                <Text c='dimmed'>Subscribe to Calendar</Text>
+                <div style={{ flexGrow: 1 }}>
+                  <CopyButton value={calendarUrl}>
+                    {({ copied, copy }) => (
+                      <TextInput
+                        value={calendarUrl}
+                        onChange={() => undefined}
+                        onClick={(e) => e.currentTarget.select()}
+                        rightSection={
+                          <Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position='right'>
+                            <ActionIcon
+                              color={copied ? 'teal' : 'gray'}
+                              variant='subtle'
+                              onClick={copy}
+                            >
+                              {copied ? <CheckIcon size={16} /> : <CopyIcon size={16} />}
+                            </ActionIcon>
+                          </Tooltip>
+                        }
+                      />
+                    )}
+                  </CopyButton>
+                </div>
+              </Group>
+            </Popover.Dropdown>
+          </Popover>
           <Button
             size='xs'
             leftSection={<PlusIcon size={16} />}

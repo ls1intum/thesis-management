@@ -8,14 +8,17 @@ import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.repository.InterviewProcessRepository;
 import de.tum.cit.aet.thesis.repository.IntervieweeRepository;
 import de.tum.cit.aet.thesis.security.CurrentUserProvider;
+import jakarta.mail.internet.InternetAddress;
+import net.fortuna.ical4j.model.property.immutable.ImmutableMethod;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.RequestParam;
+import net.fortuna.ical4j.model.Calendar;
 
 import java.time.Instant;
 import java.util.*;
@@ -30,15 +33,20 @@ public class InterviewProcessService {
     private final ApplicationService applicationService;
     private final IntervieweeRepository intervieweeRepository;
     private final MailingService mailingService;
+    private final CalendarService calendarService;
+
+    private final InternetAddress applicationMail;
 
     @Autowired
-    public InterviewProcessService(TopicService topicService, InterviewProcessRepository interviewProcessRepository, ObjectProvider<CurrentUserProvider> currentUserProviderProvider, ApplicationService applicationService, IntervieweeRepository intervieweeRepository, MailingService mailingService) {
+    public InterviewProcessService(TopicService topicService, InterviewProcessRepository interviewProcessRepository, ObjectProvider<CurrentUserProvider> currentUserProviderProvider, ApplicationService applicationService, IntervieweeRepository intervieweeRepository, MailingService mailingService, CalendarService calendarService, @Value("${thesis-management.mail.sender}") InternetAddress applicationMail) {
         this.topicService = topicService;
         this.interviewProcessRepository = interviewProcessRepository;
         this.currentUserProviderProvider = currentUserProviderProvider;
         this.applicationService = applicationService;
         this.intervieweeRepository = intervieweeRepository;
         this.mailingService = mailingService;
+        this.calendarService = calendarService;
+        this.applicationMail = applicationMail;
     }
 
     private CurrentUserProvider currentUserProvider() {
@@ -431,4 +439,52 @@ public class InterviewProcessService {
                 "desc"
         );
     }
+
+    public Calendar getInterviewCalendarForUser(UUID userId) {
+        String calendarProdId = "-//Thesis Management//Thesis Interviews//EN";
+        Calendar calendar = calendarService.createEmptyCalendar(calendarProdId);
+
+        calendar.add(ImmutableMethod.PUBLISH);
+
+        List<InterviewSlot> slots = interviewProcessRepository.findAllMyInterviewSlots(userId);
+
+        for (InterviewSlot slot : slots) {
+            calendar.add(calendarService.createVEvent(slot.getId().toString(), createInterviewSlotCalendarEvent(slot)));
+        }
+
+        return calendar;
+    }
+
+    private CalendarService.CalendarEvent createInterviewSlotCalendarEvent(InterviewSlot slot) {
+        String thesisTitle = slot.getInterviewProcess().getTopic().getTitle();
+        String title = "Interview Slot \"" + thesisTitle + "\"";
+        String location = slot.getLocation();
+        String streamUrl = slot.getStreamLink();
+        String intervieweeName = slot.getInterviewee() == null ? "Not booked" : slot.getInterviewee().getApplication().getUser().getFirstName() + " " + slot.getInterviewee().getApplication().getUser().getLastName();
+
+        return new CalendarService.CalendarEvent(
+                title,
+                location == null || location.isBlank() ? streamUrl : location,
+                "Title: " + thesisTitle + "\n" +
+                        (streamUrl != null && !streamUrl.isBlank() ? "Stream URL: " + streamUrl + "\n" : "") + "\n" +
+                        "Interviewee: " + intervieweeName + "\n\n",
+                slot.getStartDate(),
+                slot.getEndDate(),
+                this.applicationMail,
+                slot.getInterviewProcess().getTopic().getRoles().stream().map(role -> role.getUser().getEmail()).toList(),
+                new ArrayList<>()
+        );
+    }
+
+    /*public void updateInterviewSlotsCalendarEvents(InterviewProcess interviewProcess) {
+        currentUserProvider().assertCanAccessResearchGroup(interviewProcess.getTopic().getResearchGroup());
+        for (InterviewSlot slot : interviewProcess.getSlots()) {
+            //TODO: Check if we need to save it
+            String eventId = slot.getCalendarEvent();
+
+            if (eventId != null) {
+                calendarService.updateEvent(eventId, createInterviewSlotCalendarEvent(slot));
+            }
+        }
+    }*/
 }

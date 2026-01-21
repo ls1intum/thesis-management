@@ -1,6 +1,7 @@
 package de.tum.cit.aet.thesis.repository;
 
 import de.tum.cit.aet.thesis.entity.InterviewProcess;
+import de.tum.cit.aet.thesis.entity.InterviewSlot;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.UUID;
 
 @Repository
@@ -30,4 +32,18 @@ public interface InterviewProcessRepository extends JpaRepository<InterviewProce
             "    )")
     Page<InterviewProcess> searchMyInterviewProcesses(@Param("userId") UUID userId, @Param("searchQuery") String searchQuery, @Param("excludeSupervised") boolean excludeSupervised, Pageable pageable);
 
+    @Query("""
+        SELECT DISTINCT s
+        FROM InterviewSlot s
+        JOIN s.interviewProcess ip
+        JOIN ip.topic t
+        WHERE EXISTS (
+            SELECT 1
+            FROM TopicRole r
+            WHERE r.topic = t
+              AND r.id.userId = :userId
+              AND (r.id.role = 'ADVISOR')
+        )
+    """)
+    List<InterviewSlot> findAllMyInterviewSlots(@Param("userId") UUID userId);
 }
