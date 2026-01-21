@@ -16,5 +16,6 @@ public record ReplaceTopicPayload(
         List<UUID> advisorIds,
         UUID researchGroupId,
         Instant intendedStart,
-        Instant applicationDeadline
+        Instant applicationDeadline,
+        Boolean isDraft
 ) { }

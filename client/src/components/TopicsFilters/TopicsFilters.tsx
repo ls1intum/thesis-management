@@ -1,11 +1,11 @@
-import { Center, Checkbox, Grid, Stack } from '@mantine/core'
+import { Center, Checkbox, Grid, Group, SegmentedControl, Stack } from '@mantine/core'
 import { GLOBAL_CONFIG } from '../../config/global'
-import React from 'react'
 import { useTopicsContext } from '../../providers/TopicsProvider/hooks'
-import { formatThesisType } from '../../utils/format'
+import { TopicState } from '../../requests/responses/topic'
+import { formatThesisType, formatTopicState } from '../../utils/format'
 
 interface ITopicsFiltersProps {
-  visible: Array<'type' | 'closed'>
+  visible: Array<'type' | 'states'>
 }
 
 const TopicsFilters = (props: ITopicsFiltersProps) => {
@@ -15,17 +15,24 @@ const TopicsFilters = (props: ITopicsFiltersProps) => {
 
   return (
     <Stack>
-      {visible.includes('closed') && (
-        <Checkbox
-          label='Show Closed Topics'
-          checked={!!filters.includeClosed}
-          onChange={(e) => {
-            setFilters((prev) => ({
-              ...prev,
-              includeClosed: e.target.checked,
-            }))
-          }}
-        />
+      {visible.includes('states') && (
+        <Group>
+          <SegmentedControl
+            data={Object.values(TopicState).map((state) => ({
+              label: formatTopicState(state),
+              value: state,
+            }))}
+            onChange={(e) => {
+              setFilters((prev) => ({
+                ...prev,
+                states: [e],
+              }))
+            }}
+            size='sm'
+            transitionDuration={300}
+            transitionTimingFunction='linear'
+          />
+        </Group>
       )}
       {visible.includes('type') && (
         <Grid grow>

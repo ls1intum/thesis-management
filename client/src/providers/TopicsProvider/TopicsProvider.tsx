@@ -1,39 +1,39 @@
 import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react'
 import { doRequest } from '../../requests/request'
 import { showSimpleError } from '../../utils/notification'
-import { ITopic } from '../../requests/responses/topic'
+import { ITopic, TopicState } from '../../requests/responses/topic'
 import { ITopicsContext, ITopicsFilters, TopicsContext } from './context'
 import { PaginationResponse } from '../../requests/responses/pagination'
 
 interface ITopicsProviderProps {
-  includeClosedTopics?: boolean
   limit: number
   hideIfEmpty?: boolean
   researchSpecific?: boolean
   initialFilters?: Partial<ITopicsFilters>
+  states?: TopicState[]
 }
 
 const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
   const {
     children,
-    includeClosedTopics = false,
     limit,
     hideIfEmpty = false,
     researchSpecific = true,
     initialFilters,
+    states = [],
   } = props
 
   const [topics, setTopics] = useState<PaginationResponse<ITopic>>()
   const [page, setPage] = useState(0)
   const [filters, setFilters] = useState<ITopicsFilters>({
-    includeClosed: includeClosedTopics,
+    states: states,
     researchSpecific: researchSpecific,
     ...initialFilters,
   })
 
   const [isLoading, setIsLoading] = useState(false)
 
-  useEffect(() => {
+  const fetchTopics = async () => {
     setIsLoading(true)
 
     return doRequest<PaginationResponse<ITopic>>(
@@ -45,7 +45,7 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
           page,
           limit,
           type: filters.types?.join(',') || '',
-          includeClosed: filters.includeClosed ? 'true' : 'false',
+          states: filters.states?.join(',') || '',
           onlyOwnResearchGroup: filters.researchSpecific ? 'true' : 'false',
           search: filters.search ?? '',
           researchGroupIds: filters.researchGroupIds?.join(',') || '',
@@ -70,12 +70,16 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
         setTopics(res.data)
       },
     )
+  }
+
+  useEffect(() => {
+    fetchTopics()
   }, [filters, page, limit])
 
   useEffect(() => {
     setFilters((prev) => ({
       ...prev,
-      includeClosed: includeClosedTopics,
+      states: states,
       researchSpecific: researchSpecific,
       ...initialFilters,
     }))
@@ -99,8 +103,16 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
 
           const index = prev.content.findIndex((x) => x.topicId === newTopic.topicId)
 
+          let newFetchRequired = false
+
           if (index >= 0) {
+            newFetchRequired = newTopic.state !== prev.content[index].state
             prev.content[index] = newTopic
+          }
+
+          if (newFetchRequired) {
+            // If state changed, refetch to update based on filters
+            fetchTopics()
           }
 
           return { ...prev }
@@ -112,9 +124,14 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
             return undefined
           }
 
-          prev.content = [newTopic, ...prev.content].slice(-limit)
-          prev.totalElements += 1
-          prev.totalPages = Math.ceil(prev.totalElements / limit)
+          const states = filters.states ?? [TopicState.OPEN.toString()]
+          const newHasState = states.includes(newTopic.state)
+
+          if (newHasState) {
+            prev.content = [newTopic, ...prev.content].slice(-limit)
+            prev.totalElements += 1
+            prev.totalPages = Math.ceil(prev.totalElements / limit)
+          }
 
           return { ...prev }
         })
