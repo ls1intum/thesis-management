@@ -110,7 +110,7 @@ const PublishedTheses = ({ search, representationType, filters, limit }: Publish
           },
           {
             accessor: 'advisors',
-            title: 'Advisor(s)',
+            title: 'Supervisor(s)',
             ellipsis: true,
             width: 180,
             render: (thesis) => <AvatarUserList users={thesis.advisors} />,

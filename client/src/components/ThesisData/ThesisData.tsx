@@ -37,13 +37,13 @@ const ThesisData = (props: IThesisDataProps) => {
       <Grid>
         <Grid.Col span={{ md: 4 }}>
           <LabeledItem
-            label={pluralize('Supervisor', thesis.supervisors.length)}
+            label={pluralize('Examiner', thesis.supervisors.length)}
             value={<AvatarUserList users={thesis.supervisors} withUniversityId={true} />}
           />
         </Grid.Col>
         <Grid.Col span={{ md: 4 }}>
           <LabeledItem
-            label={pluralize('Advisor', thesis.advisors.length)}
+            label={pluralize('Supervisor', thesis.advisors.length)}
             value={<AvatarUserList users={thesis.advisors} withUniversityId={true} />}
           />
         </Grid.Col>

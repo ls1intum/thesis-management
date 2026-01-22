@@ -268,8 +268,8 @@ const ResearchGroupMembers = ({ researchGroupData }: IResearchGroupMembersProps)
                     <Box style={{ minWidth: 140, maxWidth: 200 }}>
                       <Select
                         data={[
-                          { value: 'advisor', label: 'Advisor' },
-                          { value: 'supervisor', label: 'Supervisor' },
+                          { value: 'advisor', label: 'Supervisor' },
+                          { value: 'supervisor', label: 'Examiner' },
                         ]}
                         value={getPrimaryRoleFromGroups(member.groups)}
                         onChange={(val) => {

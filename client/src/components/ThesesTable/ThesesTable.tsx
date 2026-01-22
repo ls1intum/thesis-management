@@ -65,13 +65,13 @@ const ThesesTable = (props: IThesesTableProps) => {
     },
     supervisors: {
       accessor: 'supervisors',
-      title: 'Supervisor',
+      title: 'Examiner',
       width: 180,
       render: (thesis) => <AvatarUserList users={thesis.supervisors} />,
     },
     advisors: {
       accessor: 'advisors',
-      title: 'Advisor(s)',
+      title: 'Supervisor(s)',
       ellipsis: true,
       width: 180,
       render: (thesis) => <AvatarUserList users={thesis.advisors} />,
