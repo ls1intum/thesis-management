@@ -1,4 +1,13 @@
-import { Card, Group, Stack, Title, Text, useMantineColorScheme, Button } from '@mantine/core'
+import {
+  Card,
+  Group,
+  Stack,
+  Title,
+  Text,
+  useMantineColorScheme,
+  Button,
+  Badge,
+} from '@mantine/core'
 import { IInterviewSlot } from '../../../requests/responses/interview'
 import { ClockIcon } from '@phosphor-icons/react'
 import { useHover } from '@mantine/hooks'
@@ -16,6 +25,7 @@ interface ISlotItemProps {
   disabled?: boolean
   hoverEffect?: boolean
   assignable?: boolean
+  isPast?: boolean
 }
 
 const SlotItem = ({
@@ -28,6 +38,7 @@ const SlotItem = ({
   disabled = false,
   hoverEffect = true,
   assignable = false,
+  isPast = false,
 }: ISlotItemProps) => {
   const { ref, hovered } = useHover()
   const { colorScheme } = useMantineColorScheme()
@@ -50,7 +61,11 @@ const SlotItem = ({
             ? colorScheme === 'dark'
               ? 'primary.2'
               : 'primary.0'
-            : undefined
+            : isPast
+              ? colorScheme === 'dark'
+                ? 'dark.6'
+                : 'gray.1'
+              : undefined
       }
       style={{
         cursor: onClick && !disabled ? 'pointer' : 'default',
@@ -85,7 +100,7 @@ const SlotItem = ({
             ) : (
               <Group align='center' justify='space-between' w={'100%'} gap={'0.25rem'}>
                 <Text c={'dimmed'} size='sm' fw={500}>
-                  No interview
+                  {isPast ? 'No interview' : 'Open slot'}
                 </Text>
                 {assignable && (
                   <Button onClick={() => setAssignModalOpen(true)} size='xs' variant={'subtle'}>

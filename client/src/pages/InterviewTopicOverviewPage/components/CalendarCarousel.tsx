@@ -239,16 +239,21 @@ const CalendarCarousel = () => {
                         ) : (
                           <Stack h={70} />
                         )}
-                        {chunk.map((slot) => (
-                          <SlotItem
-                            slot={slot}
-                            key={slot.slotId}
-                            withInterviewee
-                            disabled={dateRowDisabled(date, chunkIndex)}
-                            hoverEffect={false}
-                            assignable={new Date(slot.startDate) > new Date() ? true : false}
-                          />
-                        ))}
+                        {chunk.map((slot) => {
+                          const isFuture = new Date(slot.endDate) > new Date()
+
+                          return (
+                            <SlotItem
+                              slot={slot}
+                              key={slot.slotId}
+                              withInterviewee
+                              disabled={dateRowDisabled(date, chunkIndex)}
+                              hoverEffect={false}
+                              assignable={isFuture ? true : false}
+                              isPast={!isFuture}
+                            />
+                          )
+                        })}
                       </Stack>
                     </Carousel.Slide>
                   ))}

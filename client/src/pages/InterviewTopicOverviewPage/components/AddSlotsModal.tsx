@@ -290,7 +290,7 @@ const AddSlotsModal = ({
                         />
                       ))}
                   </Accordion>
-                  <Button
+                  {/*<Button
                     variant='outline'
                     size='xs'
                     onClick={() => {
@@ -298,7 +298,7 @@ const AddSlotsModal = ({
                     }}
                   >
                     Same Slots for all days
-                  </Button>
+                  </Button>*/}
                 </Stack>
               </ScrollArea>
             )}
