@@ -57,7 +57,7 @@ dependencies {
 	implementation "com.github.vladimir-bukhtoyarov:bucket4j-core:8.0.1"
 	implementation "org.mnode.ical4j:ical4j:4.2.2"
 	implementation "com.itextpdf:itext-core:9.4.0"
-	implementation "com.itextpdf:html2pdf:6.3.0"
+	implementation "com.itextpdf:html2pdf:6.3.1"
 	implementation "com.auth0:java-jwt:4.5.0"
 
 	// Use the latest version of commons-lang3 to avoid security issues
