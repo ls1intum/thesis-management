@@ -83,14 +83,14 @@ const TopicsTable = (props: ITopicsTableProps) => {
     },
     supervisor: {
       accessor: 'supervisor',
-      title: 'Supervisor',
+      title: 'Examiner',
       width: 180,
       ellipsis: true,
       render: (topic) => <AvatarUserList users={topic.supervisors} />,
     },
     advisor: {
       accessor: 'advisor',
-      title: 'Advisor(s)',
+      title: 'Supervisor(s)',
       width: 180,
       ellipsis: true,
       render: (topic) => <AvatarUserList users={topic.advisors} />,
