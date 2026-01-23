@@ -1,9 +1,9 @@
 name: Build and Deploy to Dev
 
 on:
-  pull_request:
   push:
-    branches: [develop, main]
+    branches: [develop]
+  workflow_dispatch:
 
 jobs:
   run-tests:

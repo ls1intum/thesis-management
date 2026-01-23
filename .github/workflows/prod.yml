@@ -3,20 +3,103 @@ name: Build and Deploy to Prod
 on:
   push:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      force_deploy:
+        description: 'Force deployment even if versions do not match'
+        required: false
+        type: boolean
+        default: false
 
 jobs:
+  check-versions:
+    runs-on: ubuntu-latest
+    outputs:
+      client_version: ${{ steps.get-client-version.outputs.version }}
+      server_version: ${{ steps.get-server-version.outputs.version }}
+      versions_match: ${{ steps.check-versions-match.outputs.match }}
+      version: ${{ steps.check-versions-match.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Get Client Version
+        id: get-client-version
+        run: |
+          CLIENT_VERSION=$(grep '"version"' client/package.json | awk -F'"' '{print $4}')
+          echo "version=${CLIENT_VERSION}" >> $GITHUB_OUTPUT
+          echo "Client version: ${CLIENT_VERSION}"
+
+      - name: Get Server Version
+        id: get-server-version
+        run: |
+          SERVER_VERSION=$(grep -E "^version = " server/build.gradle | awk -F'"' '{print $2}')
+          echo "version=${SERVER_VERSION}" >> $GITHUB_OUTPUT
+          echo "Server version: ${SERVER_VERSION}"
+
+      - name: Check if Versions Match
+        id: check-versions-match
+        run: |
+          CLIENT_VERSION="${{ steps.get-client-version.outputs.version }}"
+          SERVER_VERSION="${{ steps.get-server-version.outputs.version }}"
+          
+          if [ "$CLIENT_VERSION" == "$SERVER_VERSION" ]; then
+            echo "match=true" >> $GITHUB_OUTPUT
+            echo "version=${CLIENT_VERSION}" >> $GITHUB_OUTPUT
+            echo "Versions match: ${CLIENT_VERSION}"
+          else
+            echo "match=false" >> $GITHUB_OUTPUT
+            echo "Client version: ${CLIENT_VERSION}, Server version: ${SERVER_VERSION} - Versions do not match!"
+            exit 1
+          fi
+
   run-tests:
+    needs: check-versions
     uses: ./.github/workflows/run_tests.yml
   build-prod-container:
+    needs: check-versions
     uses: ./.github/workflows/build_docker.yml
     secrets: inherit
   deploy-prod-container:
     needs:
       - run-tests
       - build-prod-container
+      - check-versions
+    if: needs.check-versions.outputs.versions_match == 'true' || github.event.inputs.force_deploy == 'true'
     uses: ./.github/workflows/deploy_docker.yml
     secrets: inherit
     with:
       environment: Production
       server_image_tag: "${{ needs.build-prod-container.outputs.server_image_tag }}"
       client_image_tag: "${{ needs.build-prod-container.outputs.client_image_tag }}"
+      
+  create-release:
+    needs:
+      - check-versions
+      - deploy-prod-container
+    runs-on: ubuntu-latest
+    if: needs.check-versions.outputs.versions_match == 'true' || github.event.inputs.force_deploy == 'true'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: v${{ needs.check-versions.outputs.version }}
+          tag_name: v${{ needs.check-versions.outputs.version }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          body: |
+            # Thesis Management v${{ needs.check-versions.outputs.version }}
+            
+            This release was automatically created from the main branch. A detailed changelog will need to be added manually.
+            
+            ## Deployment Information
+            - Deployed to Production at https://thesis.aet.cit.tum.de
+            - This is a production release and contains all changes from develop that have been merged into main.
