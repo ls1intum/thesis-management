@@ -100,7 +100,7 @@ const SlotItem = ({
             ) : (
               <Group align='center' justify='space-between' w={'100%'} gap={'0.25rem'}>
                 <Text c={'dimmed'} size='sm' fw={500}>
-                  {isPast ? 'No interview' : 'Open slot'}
+                  {isPast ? 'No interview' : 'Bookable'}
                 </Text>
                 {assignable && (
                   <Button onClick={() => setAssignModalOpen(true)} size='xs' variant={'subtle'}>

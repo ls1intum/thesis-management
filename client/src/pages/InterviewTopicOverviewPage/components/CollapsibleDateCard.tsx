@@ -1,4 +1,16 @@
-import { Accordion, Button, Card, Divider, Group, Stack, Text, Title } from '@mantine/core'
+import {
+  Accordion,
+  Button,
+  Card,
+  Divider,
+  Group,
+  Input,
+  SegmentedControl,
+  Stack,
+  Text,
+  TextInput,
+  Title,
+} from '@mantine/core'
 import dayjs from 'dayjs'
 import { IInterviewSlot } from '../../../requests/responses/interview'
 import { useEffect, useState } from 'react'
@@ -23,6 +35,8 @@ interface ISlotRange {
   type: 'single' | 'range' | 'scheduled'
   duration: number
   breakDuration?: number
+  location?: string
+  meetingUrl?: string
   slots?: IInterviewSlot[]
 }
 
@@ -67,7 +81,7 @@ const CollapsibleDateCard = ({
       })
 
       currentTime.setMinutes(currentTime.getMinutes() + duration + breakDuration)
-      slotEnd.setMinutes(slotEnd.getMinutes() + duration)
+      slotEnd.setMinutes(slotEnd.getMinutes() + duration + breakDuration)
     }
 
     return slots
@@ -204,11 +218,54 @@ const CollapsibleDateCard = ({
     return allRanges
   }
 
+  function isValidTime(value: string): boolean {
+    if (!/^([01]\d|2[0-3]):([0-5]\d)$/.test(value)) {
+      return false
+    }
+    return true
+  }
+
   useEffect(() => {
     if (slots && slots.length > 0) {
       setSlotRanges(buildSlotRanges(slots))
     }
   }, [])
+
+  const LocationInput = () => {
+    const [locationType, setLocationType] = useState<string>('Onsite')
+    const [value, setValue] = useState<string>('')
+
+    return (
+      <Input.Wrapper description='Location' size='xs' flex={1}>
+        <Group pt={'0.25rem'}>
+          <SegmentedControl
+            size='xs'
+            radius={'xl'}
+            data={['Onsite', 'Online']}
+            value={locationType}
+            onChange={(value: string) => setLocationType(value)}
+          ></SegmentedControl>
+          <TextInput
+            placeholder={locationType === 'Onsite' ? 'Location' : 'Meeting URL'}
+            size='xs'
+            flex={1}
+            miw={200}
+            rightSectionPointerEvents='all'
+            rightSection={
+              value !== '' && (
+                <Button size='xs' variant='subtle'>
+                  Apply for all
+                </Button>
+              )
+            }
+            rightSectionWidth={value !== '' ? 100 : 0}
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+          />
+        </Group>
+      </Input.Wrapper>
+    )
+  }
 
   return (
     <Card withBorder radius='md' my='sm' p={'0.25rem'} style={{ cursor: 'pointer' }}>
@@ -328,100 +385,109 @@ const CollapsibleDateCard = ({
                       />
 
                       <Stack w={'100%'}>
-                        {slotRange.type !== 'scheduled' && (
-                          <Group>
-                            <TimeInput
-                              value={slotRange.startTime?.toTimeString().slice(0, 5) ?? ''}
-                              size='xs'
-                              description='Start time'
-                              onChange={(newTime) => {
-                                setSlotRanges((prev) => {
-                                  const newRanges = [...prev]
+                        <Group>
+                          {slotRange.type !== 'scheduled' && (
+                            <>
+                              <TimeInput
+                                value={slotRange.startTime?.toTimeString().slice(0, 5) ?? ''}
+                                size='xs'
+                                description='Start time'
+                                onChange={(newTime) => {
+                                  if (!isValidTime(newTime.target.value)) return
+                                  setSlotRanges((prev) => {
+                                    const newRanges = [...prev]
 
-                                  let newStartTime = new Date(date)
-                                  const [hours, minutes] = newTime.target.value
-                                    .split(':')
-                                    .map(Number)
-                                  newStartTime.setHours(hours, minutes, 0, 0)
-                                  newRanges[index].startTime = newStartTime
+                                    let newStartTime = new Date(date)
+                                    const [hours, minutes] = newTime.target.value
+                                      .split(':')
+                                      .map(Number)
+                                    newStartTime.setHours(hours, minutes, 0, 0)
+                                    newRanges[index].startTime = newStartTime
 
-                                  //When it is single also set end time
-                                  if (slotRange.type === 'single') {
-                                    newRanges[index].endTime = (() => {
+                                    //When it is single also set end time
+                                    if (slotRange.type === 'single') {
+                                      newRanges[index].endTime = (() => {
+                                        let newEndTime = new Date(date)
+                                        const [hours, minutes] = newTime.target.value
+                                          .split(':')
+                                          .map(Number)
+                                        newEndTime.setHours(hours, minutes, 0, 0)
+                                        newEndTime.setMinutes(newEndTime.getMinutes() + duration)
+
+                                        return newEndTime
+                                      })()
+                                    }
+
+                                    if (newRanges[index].endTime && newRanges[index].startTime) {
+                                      if (slotRange.type === 'range') {
+                                        //Generate slots between start and end time every
+                                        newRanges[index].slots = createSlotsForRange(
+                                          newRanges[index].startTime,
+                                          newRanges[index].endTime,
+                                          duration,
+                                          breakDuration,
+                                        )
+                                      } else {
+                                        newRanges[index].slots = [
+                                          {
+                                            slotId: ``,
+                                            startDate: new Date(newRanges[index].startTime),
+                                            endDate: new Date(newRanges[index].endTime),
+                                            bookedBy: null,
+                                          },
+                                        ]
+                                      }
+                                    }
+
+                                    return newRanges
+                                  })
+                                }}
+                                onBlur={() => {
+                                  setSlotRanges((prev) => {
+                                    return [...prev].sort((a, b) => {
+                                      if (a.startTime && b.startTime) {
+                                        return a.startTime.getTime() - b.startTime.getTime()
+                                      }
+                                      return 0
+                                    })
+                                  })
+                                }}
+                              />
+                              {slotRange.type === 'range' && (
+                                <TimeInput
+                                  value={slotRange.endTime?.toTimeString().slice(0, 5) ?? ''}
+                                  size='xs'
+                                  description='End time'
+                                  onChange={(newTime) => {
+                                    if (!isValidTime(newTime.target.value)) return
+                                    setSlotRanges((prev) => {
+                                      const newRanges = [...prev]
                                       let newEndTime = new Date(date)
                                       const [hours, minutes] = newTime.target.value
                                         .split(':')
                                         .map(Number)
                                       newEndTime.setHours(hours, minutes, 0, 0)
-                                      newEndTime.setMinutes(newEndTime.getMinutes() + duration)
 
-                                      return newEndTime
-                                    })()
-                                  }
+                                      newRanges[index].endTime = newEndTime
 
-                                  if (newRanges[index].endTime && newRanges[index].startTime) {
-                                    if (slotRange.type === 'range') {
-                                      //Generate slots between start and end time every
-                                      newRanges[index].slots = createSlotsForRange(
-                                        newRanges[index].startTime,
-                                        newRanges[index].endTime,
-                                        duration,
-                                        breakDuration,
-                                      )
-                                    } else {
-                                      newRanges[index].slots = [
-                                        {
-                                          slotId: ``,
-                                          startDate: new Date(newRanges[index].startTime),
-                                          endDate: new Date(newRanges[index].endTime),
-                                          bookedBy: null,
-                                        },
-                                      ]
-                                    }
-                                  }
-
-                                  newRanges.sort((a, b) => {
-                                    if (a.startTime && b.startTime) {
-                                      return a.startTime.getTime() - b.startTime.getTime()
-                                    }
-                                    return 0
-                                  })
-                                  return newRanges
-                                })
-                              }}
-                            />
-                            {slotRange.type === 'range' && (
-                              <TimeInput
-                                value={slotRange.endTime?.toTimeString().slice(0, 5) ?? ''}
-                                size='xs'
-                                description='End time'
-                                onChange={(newTime) => {
-                                  setSlotRanges((prev) => {
-                                    const newRanges = [...prev]
-                                    let newEndTime = new Date(date)
-                                    const [hours, minutes] = newTime.target.value
-                                      .split(':')
-                                      .map(Number)
-                                    newEndTime.setHours(hours, minutes, 0, 0)
-
-                                    newRanges[index].endTime = newEndTime
-
-                                    if (newRanges[index].endTime && newRanges[index].startTime) {
-                                      //Generate slots between start and end time
-                                      newRanges[index].slots = createSlotsForRange(
-                                        newRanges[index].startTime,
-                                        newRanges[index].endTime,
-                                        duration,
-                                        breakDuration,
-                                      )
-                                    }
-                                    return newRanges
-                                  })
-                                }}
-                              />
-                            )}
-                          </Group>
-                        )}
+                                      if (newRanges[index].endTime && newRanges[index].startTime) {
+                                        //Generate slots between start and end time
+                                        newRanges[index].slots = createSlotsForRange(
+                                          newRanges[index].startTime,
+                                          newRanges[index].endTime,
+                                          duration,
+                                          breakDuration,
+                                        )
+                                      }
+                                      return newRanges
+                                    })
+                                  }}
+                                />
+                              )}
+                            </>
+                          )}
+                          <LocationInput />
+                        </Group>
                         {slotRange.slots && slotRange.slots.length > 0 ? (
                           <Stack w={'100%'} pt={6} gap={'0.5rem'}>
                             {slotRange.slots.map((slot, index) => (
