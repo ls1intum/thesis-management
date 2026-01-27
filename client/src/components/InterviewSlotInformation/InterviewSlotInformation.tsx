@@ -1,5 +1,5 @@
 import { Stack } from '@mantine/core'
-import { IInterviewSlot, IUpcomingInterview } from '../../requests/responses/interview'
+import { IInterviewSlot } from '../../requests/responses/interview'
 import InterviewInfoItem from '../InterviewInfoItem/InterviewInfoItem'
 import { CalendarBlankIcon, ClockIcon, MapPinIcon, WebcamIcon } from '@phosphor-icons/react'
 

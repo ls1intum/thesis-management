@@ -253,7 +253,6 @@ const AddSlotsModal = ({
             <Title order={5}>Create Slots</Title>
             {selected.length === 0 ? (
               <Center h={'100%'} mih={'250px'}>
-                {/* TODO: FIGURE OUT HOW TO USE 100% of the height */}
                 <Stack justify='center' align='center' h={'100%'}>
                   <CalendarBlankIcon size={40} />
                   <Stack gap={'0.5rem'} justify='center' align='center'>
@@ -265,7 +264,6 @@ const AddSlotsModal = ({
             ) : (
               <ScrollArea h={'100%'} w={'100%'} type={'hover'} offsetScrollbars>
                 <Stack mih={'350px'} justify='space-between'>
-                  {/* TODO: FIGURE OUT HOW TO USE 100% of the height */}
                   <Accordion
                     chevronPosition='left'
                     variant={'unstyled'}

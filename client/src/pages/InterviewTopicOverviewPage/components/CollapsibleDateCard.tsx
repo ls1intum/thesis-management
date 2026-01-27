@@ -19,8 +19,6 @@ import { TimeInput } from '@mantine/dates'
 import SlotItem from './SlotItem'
 import DeleteButton from '../../../components/DeleteButton/DeleteButton'
 
-//TODO: Missing break duration handling
-
 interface ICollapsibleDateCardProps {
   date: Date
   duration?: number
@@ -230,8 +228,8 @@ const CollapsibleDateCard = ({
       type: 'scheduled',
       duration: s.endDate.getTime() - s.startDate.getTime(),
       slots: [s],
-      locationType: 'Onsite',
-      location: '',
+      locationType: s.streamUrl ? 'Online' : 'Onsite',
+      location: s.streamUrl ? s.streamUrl : s.location ? s.location : '',
     }))
 
     // 2) compute ranges only on unscheduled
@@ -490,9 +488,22 @@ const CollapsibleDateCard = ({
                                 value={slotRange.locationType}
                                 onChange={(value: string) =>
                                   setSlotRanges((prev) => {
+                                    const newValue = (value as 'Onsite' | 'Online') ?? 'Onsite'
                                     const newRanges = [...prev]
-                                    newRanges[index].locationType =
-                                      (value as 'Onsite' | 'Online') ?? 'Onsite'
+                                    newRanges[index].locationType = newValue
+                                    newRanges[index].slots = newRanges[index].slots?.map(
+                                      (slot) => ({
+                                        ...slot,
+                                        location:
+                                          newValue === 'Onsite'
+                                            ? newRanges[index].location
+                                            : undefined,
+                                        streamUrl:
+                                          newValue === 'Online'
+                                            ? newRanges[index].location
+                                            : undefined,
+                                      }),
+                                    )
                                     return newRanges
                                   })
                                 }

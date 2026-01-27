@@ -65,10 +65,15 @@ const AddIntervieweesModal = ({ opened, closeModal }: IAddIntervieweesModalProps
     }
   }, [opened])
 
+  const onClose = () => {
+    setSelectedApplicants([])
+    closeModal()
+  }
+
   return (
     <Modal
       opened={opened}
-      onClose={closeModal}
+      onClose={onClose}
       centered
       size='xl'
       title={<Title order={3}>Add Interviewees to Interview Process</Title>}
@@ -98,7 +103,7 @@ const AddIntervieweesModal = ({ opened, closeModal }: IAddIntervieweesModalProps
         <Button
           onClick={() => {
             addIntervieweesToProcess(selectedApplicants)
-            closeModal()
+            onClose()
           }}
           disabled={selectedApplicants.length === 0}
         >

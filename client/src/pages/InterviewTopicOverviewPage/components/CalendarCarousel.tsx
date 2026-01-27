@@ -251,6 +251,7 @@ const CalendarCarousel = () => {
                               hoverEffect={false}
                               assignable={isFuture ? true : false}
                               isPast={!isFuture}
+                              withLocation
                             />
                           )
                         })}

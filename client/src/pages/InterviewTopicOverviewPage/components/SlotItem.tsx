@@ -7,6 +7,7 @@ import {
   useMantineColorScheme,
   Button,
   Badge,
+  Anchor,
 } from '@mantine/core'
 import { IInterviewSlot } from '../../../requests/responses/interview'
 import { ClockIcon } from '@phosphor-icons/react'
@@ -14,6 +15,8 @@ import { useHover } from '@mantine/hooks'
 import AvatarUser from '../../../components/AvatarUser/AvatarUser'
 import AssignIntervieweeToSlotModal from './AssignIntervieweeToSlotModal'
 import { useState } from 'react'
+import { normalizeUrl } from '../../../utils/format'
+import CancelSlotConfirmationModal from './CancelSlotConfirmationModal'
 
 interface ISlotItemProps {
   slot: IInterviewSlot
@@ -26,6 +29,7 @@ interface ISlotItemProps {
   hoverEffect?: boolean
   assignable?: boolean
   isPast?: boolean
+  withLocation?: boolean
 }
 
 const SlotItem = ({
@@ -39,6 +43,7 @@ const SlotItem = ({
   hoverEffect = true,
   assignable = false,
   isPast = false,
+  withLocation = false,
 }: ISlotItemProps) => {
   const { ref, hovered } = useHover()
   const { colorScheme } = useMantineColorScheme()
@@ -46,6 +51,7 @@ const SlotItem = ({
   const showHover = hoverEffect ? hovered : false
 
   const [assignModalOpen, setAssignModalOpen] = useState(false)
+  const [cancelModalOpen, setCancelModalOpen] = useState(false)
 
   return (
     <Card
@@ -85,30 +91,65 @@ const SlotItem = ({
                 ? 'dark.9'
                 : undefined
           }
+          lineClamp={1}
+          w={'100%'}
         >
           {`${new Date(slot.startDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${new Date(slot.endDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
+          {withLocation && (
+            <Text component='span' fw={400} c='dimmed' ml={6} size='xs'>
+              · {slot.location && slot.location}
+              {slot.location && slot.streamUrl && '·'}
+              {slot.streamUrl && (
+                <Anchor
+                  href={normalizeUrl(slot.streamUrl)}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  size='xs'
+                >
+                  Virtual
+                </Anchor>
+              )}
+            </Text>
+          )}
         </Title>
         {withInterviewee && (
           <Group align='center' justify='space-between' mih={30} w={'100%'}>
-            {slot.bookedBy ? (
-              <AvatarUser
-                user={slot.bookedBy.user}
-                textColor='dimmed'
-                textSize='sm'
-                fontWeight={500}
-              />
-            ) : (
-              <Group align='center' justify='space-between' w={'100%'} gap={'0.25rem'}>
+            <Group align='center' justify='space-between' w={'100%'} gap={'0.25rem'}>
+              {slot.bookedBy ? (
+                <AvatarUser
+                  user={slot.bookedBy.user}
+                  textColor='dimmed'
+                  textSize='sm'
+                  fontWeight={500}
+                />
+              ) : (
                 <Text c={'dimmed'} size='sm' fw={500}>
                   {isPast ? 'No interview' : 'Bookable'}
                 </Text>
-                {assignable && (
+              )}
+              {assignable &&
+                (slot.bookedBy ? (
+                  <>
+                    <Button
+                      onClick={() => setCancelModalOpen(true)}
+                      size='xs'
+                      variant={'subtle'}
+                      color='red'
+                    >
+                      Cancel
+                    </Button>
+                    <CancelSlotConfirmationModal
+                      cancelModalOpen={cancelModalOpen}
+                      setCancelModalOpen={setCancelModalOpen}
+                      slot={slot}
+                    />
+                  </>
+                ) : (
                   <Button onClick={() => setAssignModalOpen(true)} size='xs' variant={'subtle'}>
                     Assign
                   </Button>
-                )}
-              </Group>
-            )}
+                ))}
+            </Group>
           </Group>
         )}
         {withTimeSpan && (

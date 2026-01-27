@@ -130,7 +130,7 @@ const InterviewOverviewPage = () => {
                     <Stack gap={'0.5rem'} justify='center' align='center'>
                       <Title order={5}>No Interview Processes Found</Title>
                       <Text c='dimmed' ta={'center'}>
-                        Add a interviewee while reviewing application or just create a process
+                        Add an interviewee while reviewing application or just create a process
                         directly
                       </Text>
                     </Stack>
