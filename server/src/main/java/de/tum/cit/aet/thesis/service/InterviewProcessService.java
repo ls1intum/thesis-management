@@ -120,6 +120,9 @@ public class InterviewProcessService {
                     throw new IllegalArgumentException("Application with ID " + intervieweeApplicationId + " does not belong to the specified topic.");
                 }
 
+                if (application.getState() != ApplicationState.NOT_ASSESSED) {
+                    throw new IllegalStateException("Application with ID " + intervieweeApplicationId + " is already in interviewing or assessed.");
+                }
                 application.setState(ApplicationState.INTERVIEWING);
 
                 Interviewee interviewee = new Interviewee();
@@ -476,15 +479,8 @@ public class InterviewProcessService {
         );
     }
 
-    /*public void updateInterviewSlotsCalendarEvents(InterviewProcess interviewProcess) {
-        currentUserProvider().assertCanAccessResearchGroup(interviewProcess.getTopic().getResearchGroup());
-        for (InterviewSlot slot : interviewProcess.getSlots()) {
-            //TODO: Check if we need to save it
-            String eventId = slot.getCalendarEvent();
-
-            if (eventId != null) {
-                calendarService.updateEvent(eventId, createInterviewSlotCalendarEvent(slot));
-            }
-        }
-    }*/
+    public Topic getInterviewProcessTopic(UUID interviewProcessId) {
+        InterviewProcess interviewProcess = findById(interviewProcessId);
+        return interviewProcess.getTopic();
+    }
 }

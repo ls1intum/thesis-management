@@ -157,6 +157,38 @@ const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProv
     [processId],
   )
 
+  const addIntervieweesToProcess = useCallback(
+    (intervieweeApplicationIds: string[]): Promise<void> => {
+      if (!processId) return Promise.resolve()
+
+      setIntervieweesLoading(true)
+
+      return new Promise<void>((resolve) => {
+        doRequest<any>(
+          `/v2/interview-process/${processId}/interviewees`,
+          {
+            method: 'POST',
+            requiresAuth: true,
+            data: {
+              intervieweeApplicationIds,
+            },
+          },
+          (res) => {
+            if (res.ok) {
+              fetchPossibleInterviewees() // TODO: Missing searchkey and state?
+            } else {
+              showSimpleError(getApiResponseErrorMessage(res))
+              resolve()
+            }
+
+            setIntervieweesLoading(false)
+          },
+        )
+      })
+    },
+    [processId, fetchPossibleInterviewees],
+  )
+
   useEffect(() => {
     // reset when process changes
     setInterviewSlots({})
@@ -182,6 +214,8 @@ const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProv
       intervieweesLoading,
       fetchPossibleInterviewees,
 
+      addIntervieweesToProcess,
+
       cancelSlot,
     }
   }, [
@@ -195,6 +229,7 @@ const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProv
     intervieweesLoading,
     fetchPossibleInterviewees,
     cancelSlot,
+    addIntervieweesToProcess,
   ])
 
   return (

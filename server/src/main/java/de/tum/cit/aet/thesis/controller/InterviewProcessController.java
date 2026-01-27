@@ -3,10 +3,7 @@ package de.tum.cit.aet.thesis.controller;
 import de.tum.cit.aet.thesis.constants.ApplicationState;
 import de.tum.cit.aet.thesis.controller.payload.*;
 import de.tum.cit.aet.thesis.dto.*;
-import de.tum.cit.aet.thesis.entity.Application;
-import de.tum.cit.aet.thesis.entity.InterviewProcess;
-import de.tum.cit.aet.thesis.entity.InterviewSlot;
-import de.tum.cit.aet.thesis.entity.Interviewee;
+import de.tum.cit.aet.thesis.entity.*;
 import de.tum.cit.aet.thesis.service.InterviewProcessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -189,5 +186,19 @@ public class InterviewProcessController {
                 applications.map(ApplicationInterviewProcessDto::from)
         ));
 
+    }
+
+    @PostMapping("/{interviewProcessId}/interviewees")
+    @PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
+    public ResponseEntity<InterviewProcessDto> addInterviewees(
+            @PathVariable UUID interviewProcessId,
+            @RequestBody AddIntervieweesPayload payload
+    ) {
+        Topic topic = interviewProcessService.findById(interviewProcessId).getTopic();
+
+        InterviewProcessDto interviewProcessDto = InterviewProcessDto.fromInterviewProcessEntity(
+                interviewProcessService.createInterviewProcess(topic.getId(), payload.intervieweeApplicationIds())
+        );
+        return ResponseEntity.ok(interviewProcessDto);
     }
 }

@@ -7,6 +7,8 @@ import {
   Title,
   Text,
   useMantineColorScheme,
+  Button,
+  Stack,
 } from '@mantine/core'
 import { useEffect, useState } from 'react'
 import { IApplicationInterviewProcess } from '../../../requests/responses/interview'
@@ -16,6 +18,7 @@ import { PaginationResponse } from '../../../requests/responses/pagination'
 import { showSimpleError } from '../../../utils/notification'
 import { getApiResponseErrorMessage } from '../../../requests/handler'
 import { useParams } from 'react-router'
+import { useInterviewProcessContext } from '../../../providers/InterviewProcessProvider/hooks'
 
 interface IAddIntervieweesModalProps {
   opened: boolean
@@ -31,6 +34,8 @@ const AddIntervieweesModal = ({ opened, closeModal }: IAddIntervieweesModalProps
   >([])
   const [selectedApplicants, setSelectedApplicants] = useState<string[]>([])
   const { colorScheme } = useMantineColorScheme()
+
+  const { addIntervieweesToProcess } = useInterviewProcessContext()
 
   const fetchPossibleInterviewApplicantsByTopic = async () => {
     setApplicantsLoading(true)
@@ -68,27 +73,38 @@ const AddIntervieweesModal = ({ opened, closeModal }: IAddIntervieweesModalProps
       size='xl'
       title={<Title order={3}>Add Interviewees to Interview Process</Title>}
     >
-      <Input.Wrapper label='Select Applicants'>
-        {applicantsLoading ? (
-          <Center h={'10vh'} w={'100%'}>
-            <Loader />
-          </Center>
-        ) : possibleInterviewApplicants.length === 0 ? (
-          <Paper bg={colorScheme === 'dark' ? 'dark.8' : 'gray.0'} h={'50px'}>
-            <Center>
-              <Text c='dimmed' m={'xs'}>
-                No more applicants found for this interview topic.
-              </Text>
+      <Stack>
+        <Input.Wrapper label='Select Applicants'>
+          {applicantsLoading ? (
+            <Center h={'10vh'} w={'100%'}>
+              <Loader />
             </Center>
-          </Paper>
-        ) : (
-          <SelectApplicantsList
-            possibleInterviewApplicants={possibleInterviewApplicants}
-            selectedApplicants={selectedApplicants}
-            setSelectedApplicants={setSelectedApplicants}
-          />
-        )}
-      </Input.Wrapper>
+          ) : possibleInterviewApplicants.length === 0 ? (
+            <Paper bg={colorScheme === 'dark' ? 'dark.8' : 'gray.0'} h={'50px'}>
+              <Center>
+                <Text c='dimmed' m={'xs'}>
+                  No more applicants found for this interview topic.
+                </Text>
+              </Center>
+            </Paper>
+          ) : (
+            <SelectApplicantsList
+              possibleInterviewApplicants={possibleInterviewApplicants}
+              selectedApplicants={selectedApplicants}
+              setSelectedApplicants={setSelectedApplicants}
+            />
+          )}
+        </Input.Wrapper>
+        <Button
+          onClick={() => {
+            addIntervieweesToProcess(selectedApplicants)
+            closeModal()
+          }}
+          disabled={selectedApplicants.length === 0}
+        >
+          Add Interviewees
+        </Button>
+      </Stack>
     </Modal>
   )
 }

@@ -22,6 +22,9 @@ export interface IInterviewProcessContext {
     updateState?: boolean,
   ) => Promise<IIntervieweeLightWithNextSlot[]>
 
+  // add interviewees to existing process
+  addIntervieweesToProcess: (intervieweeApplicationIds: string[]) => Promise<void>
+
   // cancel interview
   cancelSlot: (slotId: string, onCancelSucessfull?: () => void) => void
 }
