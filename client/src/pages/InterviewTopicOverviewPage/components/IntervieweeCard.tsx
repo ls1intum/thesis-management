@@ -69,9 +69,6 @@ const IntervieweeCard = ({
 
   const [inviteModalOpen, setInviteModalOpen] = useState(false)
   const [cancelModalOpen, setCancelModalOpen] = useState(false)
-  const [acceptModalOpen, setAcceptModalOpen] = useState(false)
-
-  const [modalType, setModalType] = useState<'accept' | 'reject'>('accept')
 
   return (
     <Paper withBorder bg={scoreColorTranslate(interviewee.score ?? -1)} radius='md' flex={flex}>
@@ -151,32 +148,7 @@ const IntervieweeCard = ({
               {state === InterviewState.COMPLETED &&
                 interviewee.applicationState !== ApplicationState.ACCEPTED &&
                 interviewee.applicationState !== ApplicationState.REJECTED && (
-                  <>
-                    <Button
-                      variant='outline'
-                      size='xs'
-                      leftSection={<CheckIcon size={16} />}
-                      onClick={() => {
-                        setModalType('accept')
-                        setAcceptModalOpen(true)
-                      }}
-                      color={'green'}
-                    >
-                      Accept Applicant
-                    </Button>
-                    <Button
-                      variant='outline'
-                      size='xs'
-                      leftSection={<XIcon size={16} />}
-                      onClick={() => {
-                        setModalType('reject')
-                        setAcceptModalOpen(true)
-                      }}
-                      color={'red'}
-                    >
-                      Reject Applicant
-                    </Button>
-                  </>
+                  <AcceptApplicantModal interviewee={interviewee} />
                 )}
               {(interviewee.applicationState === ApplicationState.ACCEPTED ||
                 interviewee.applicationState === ApplicationState.REJECTED) && (
@@ -211,13 +183,6 @@ const IntervieweeCard = ({
         cancelModalOpen={cancelModalOpen}
         setCancelModalOpen={setCancelModalOpen}
         slot={interviewee.nextSlot ?? undefined}
-      />
-
-      <AcceptApplicantModal
-        modalOpen={acceptModalOpen}
-        setModalOpen={setAcceptModalOpen}
-        interviewee={interviewee}
-        type={modalType}
       />
     </Paper>
   )

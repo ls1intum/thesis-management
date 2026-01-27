@@ -34,9 +34,9 @@ interface ISlotRange {
   endTime: Date | null
   type: 'single' | 'range' | 'scheduled'
   duration: number
+  locationType: 'Onsite' | 'Online'
+  location: string
   breakDuration?: number
-  location?: string
-  meetingUrl?: string
   slots?: IInterviewSlot[]
 }
 
@@ -65,6 +65,8 @@ const CollapsibleDateCard = ({
     endTime: Date,
     duration: number,
     breakDuration: number,
+    locationType?: 'Onsite' | 'Online',
+    location?: string,
   ): IInterviewSlot[] => {
     const slots: IInterviewSlot[] = []
 
@@ -78,6 +80,8 @@ const CollapsibleDateCard = ({
         startDate: new Date(currentTime),
         endDate: new Date(slotEnd),
         bookedBy: null,
+        location: locationType === 'Onsite' ? (location ?? '') : undefined,
+        streamUrl: locationType === 'Online' ? (location ?? '') : undefined,
       })
 
       currentTime.setMinutes(currentTime.getMinutes() + duration + breakDuration)
@@ -97,6 +101,10 @@ const CollapsibleDateCard = ({
   function buildRangesForUnscheduled(slots: IInterviewSlot[]): ISlotRange[] {
     if (!slots.length) return []
 
+    const normalize = (v?: string | null) => (v ?? '').trim()
+    const slotLocationKey = (s: IInterviewSlot) =>
+      `${normalize(s.location)}||${normalize(s.streamUrl)}`
+
     // 1) Sort by start time
     const sorted = [...slots].sort((a, b) => a.startDate.getTime() - b.startDate.getTime())
 
@@ -107,19 +115,26 @@ const CollapsibleDateCard = ({
       breaks[i] = sorted[i + 1].startDate.getTime() - sorted[i].endDate.getTime()
     }
 
+    const locKeys = sorted.map(slotLocationKey)
+
     type CandidateRange = { start: number; end: number; length: number }
     const candidates: CandidateRange[] = []
 
     // 2) find all possible contiguous ranges [start, end]
     for (let start = 0; start < n; start++) {
       const baseDuration = durations[start]
+      const baseLocKey = locKeys[start]
       let currentBreak: number | null = null
 
       for (let end = start + 1; end < n; end++) {
+        // duration must match
         if (durations[end] !== baseDuration) break
 
-        const b = breaks[end - 1]
+        // location + meetingUrl must match
+        if (locKeys[end] !== baseLocKey) break
 
+        // break must stay constant
+        const b = breaks[end - 1]
         if (currentBreak === null) {
           currentBreak = b
         } else if (b !== currentBreak) {
@@ -161,33 +176,43 @@ const CollapsibleDateCard = ({
     for (const r of chosenRanges) {
       const groupSlots = sorted.slice(r.start, r.end + 1)
       const duration = groupSlots[0].endDate.getTime() - groupSlots[0].startDate.getTime()
+
+      const location = normalize(groupSlots[0].location)
+      const meetingUrl = normalize(groupSlots[0].streamUrl)
+
       ranges.push({
         startTime: groupSlots[0].startDate,
         endTime: groupSlots[groupSlots.length - 1].endDate,
         type: 'range',
         duration,
         slots: groupSlots,
+        locationType: meetingUrl && meetingUrl !== '' ? 'Online' : 'Onsite',
+        location: meetingUrl && meetingUrl !== '' ? meetingUrl : location,
       })
     }
 
-    // add remaining singles (unscheduled but not part of any chosen range)
+    // add remaining singles
     for (let i = 0; i < n; i++) {
       if (!used[i]) {
         const s = sorted[i]
         const duration = s.endDate.getTime() - s.startDate.getTime()
+
+        const location = normalize(s.location)
+        const meetingUrl = normalize(s.streamUrl)
+
         ranges.push({
           startTime: s.startDate,
           endTime: s.endDate,
           type: 'single',
           duration,
           slots: [s],
+          locationType: meetingUrl ? 'Online' : 'Onsite',
+          location: meetingUrl ? meetingUrl : location,
         })
       }
     }
 
-    // keep overall chronological order in the result
     ranges.sort((a, b) => (a.startTime?.getTime() ?? 0) - (b.startTime?.getTime() ?? 0))
-
     return ranges
   }
 
@@ -205,6 +230,8 @@ const CollapsibleDateCard = ({
       type: 'scheduled',
       duration: s.endDate.getTime() - s.startDate.getTime(),
       slots: [s],
+      locationType: 'Onsite',
+      location: '',
     }))
 
     // 2) compute ranges only on unscheduled
@@ -230,42 +257,6 @@ const CollapsibleDateCard = ({
       setSlotRanges(buildSlotRanges(slots))
     }
   }, [])
-
-  const LocationInput = () => {
-    const [locationType, setLocationType] = useState<string>('Onsite')
-    const [value, setValue] = useState<string>('')
-
-    return (
-      <Input.Wrapper description='Location' size='xs' flex={1}>
-        <Group pt={'0.25rem'}>
-          <SegmentedControl
-            size='xs'
-            radius={'xl'}
-            data={['Onsite', 'Online']}
-            value={locationType}
-            onChange={(value: string) => setLocationType(value)}
-          ></SegmentedControl>
-          <TextInput
-            placeholder={locationType === 'Onsite' ? 'Location' : 'Meeting URL'}
-            size='xs'
-            flex={1}
-            miw={200}
-            rightSectionPointerEvents='all'
-            rightSection={
-              value !== '' && (
-                <Button size='xs' variant='subtle'>
-                  Apply for all
-                </Button>
-              )
-            }
-            rightSectionWidth={value !== '' ? 100 : 0}
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-          />
-        </Group>
-      </Input.Wrapper>
-    )
-  }
 
   return (
     <Card withBorder radius='md' my='sm' p={'0.25rem'} style={{ cursor: 'pointer' }}>
@@ -295,6 +286,8 @@ const CollapsibleDateCard = ({
                       type: 'range',
                       duration: duration,
                       slots: [],
+                      locationType: 'Onsite',
+                      location: '',
                     },
                   ])
                 }}
@@ -318,6 +311,8 @@ const CollapsibleDateCard = ({
                       type: 'single',
                       duration: duration,
                       slots: [],
+                      locationType: 'Onsite',
+                      location: '',
                     },
                   ])
                 }}
@@ -486,7 +481,62 @@ const CollapsibleDateCard = ({
                               )}
                             </>
                           )}
-                          <LocationInput />
+                          <Input.Wrapper description='Location' size='xs' flex={1}>
+                            <Group pt={'0.25rem'}>
+                              <SegmentedControl
+                                size='xs'
+                                radius={'xl'}
+                                data={['Onsite', 'Online']}
+                                value={slotRange.locationType}
+                                onChange={(value: string) =>
+                                  setSlotRanges((prev) => {
+                                    const newRanges = [...prev]
+                                    newRanges[index].locationType =
+                                      (value as 'Onsite' | 'Online') ?? 'Onsite'
+                                    return newRanges
+                                  })
+                                }
+                              ></SegmentedControl>
+                              <TextInput
+                                placeholder={
+                                  slotRange.locationType === 'Onsite' ? 'Location' : 'Meeting URL'
+                                }
+                                size='xs'
+                                flex={1}
+                                miw={200}
+                                rightSectionPointerEvents='all'
+                                rightSection={
+                                  slotRange.location !== '' && (
+                                    <Button size='xs' variant='subtle'>
+                                      Apply for all
+                                    </Button>
+                                  )
+                                }
+                                rightSectionWidth={slotRange.location !== '' ? 100 : 0}
+                                value={slotRange.location ?? ''}
+                                onChange={(e) =>
+                                  setSlotRanges((prev) => {
+                                    const newRanges = [...prev]
+                                    newRanges[index].location = e.target.value
+                                    newRanges[index].slots = newRanges[index].slots?.map(
+                                      (slot) => ({
+                                        ...slot,
+                                        location:
+                                          newRanges[index].locationType === 'Onsite'
+                                            ? e.target.value
+                                            : undefined,
+                                        streamUrl:
+                                          newRanges[index].locationType === 'Online'
+                                            ? e.target.value
+                                            : undefined,
+                                      }),
+                                    )
+                                    return newRanges
+                                  })
+                                }
+                              />
+                            </Group>
+                          </Input.Wrapper>
                         </Group>
                         {slotRange.slots && slotRange.slots.length > 0 ? (
                           <Stack w={'100%'} pt={6} gap={'0.5rem'}>

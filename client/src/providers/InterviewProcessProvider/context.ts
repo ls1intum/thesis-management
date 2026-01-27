@@ -16,7 +16,11 @@ export interface IInterviewProcessContext {
   // interviewees
   interviewees: IIntervieweeLightWithNextSlot[]
   intervieweesLoading: boolean
-  fetchPossibleInterviewees: (searchQuery?: string, state?: string) => void
+  fetchPossibleInterviewees: (
+    searchQuery?: string,
+    state?: string,
+    updateState?: boolean,
+  ) => Promise<IIntervieweeLightWithNextSlot[]>
 
   // cancel interview
   cancelSlot: (slotId: string, onCancelSucessfull?: () => void) => void

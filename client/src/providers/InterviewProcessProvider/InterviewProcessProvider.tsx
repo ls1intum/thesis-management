@@ -121,29 +121,38 @@ const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProv
   )
 
   const fetchPossibleInterviewees = useCallback(
-    (searchQuery: string = '', state: string = ``) => {
+    (
+      searchQuery: string = '',
+      state: string = '',
+      updateState: boolean = true,
+    ): Promise<IIntervieweeLightWithNextSlot[]> => {
       setIntervieweesLoading(true)
 
-      return doRequest<PaginationResponse<IIntervieweeLightWithNextSlot>>(
-        `/v2/interview-process/${processId}/interviewees`,
-        {
-          method: 'GET',
-          requiresAuth: true,
-          params: {
-            searchQuery: searchQuery,
-            limit: 100, //TODO: implement pagination?
-            state: state !== 'ALL' ? state : '',
+      return new Promise<IIntervieweeLightWithNextSlot[]>((resolve) => {
+        doRequest<PaginationResponse<IIntervieweeLightWithNextSlot>>(
+          `/v2/interview-process/${processId}/interviewees`,
+          {
+            method: 'GET',
+            requiresAuth: true,
+            params: {
+              searchQuery,
+              limit: 100,
+              state: state !== 'ALL' ? state : '',
+            },
           },
-        },
-        (res) => {
-          if (res.ok) {
-            setInterviewees(res.data.content)
-          } else {
-            showSimpleError(getApiResponseErrorMessage(res))
-          }
-          setIntervieweesLoading(false)
-        },
-      )
+          (res) => {
+            if (res.ok) {
+              const content = res.data.content
+              if (updateState) setInterviewees(content)
+              resolve(content)
+            } else {
+              showSimpleError(getApiResponseErrorMessage(res))
+              resolve([]) // ✅ always resolve an array
+            }
+            setIntervieweesLoading(false)
+          },
+        )
+      })
     },
     [processId],
   )

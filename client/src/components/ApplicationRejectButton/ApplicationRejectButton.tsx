@@ -122,6 +122,7 @@ const ApplicationRejectButton = (props: IApplicationRejectButtonProps) => {
         opened={confirmationModal}
         onClick={(e) => e.stopPropagation()}
         onClose={() => setConfirmationModal(false)}
+        centered
       >
         <form>
           <Stack>
@@ -149,7 +150,7 @@ const ApplicationRejectButton = (props: IApplicationRejectButtonProps) => {
           </Stack>
         </form>
       </Modal>
-      Reject
+      {buttonProps.children ?? 'Reject'}
     </Button>
   )
 }

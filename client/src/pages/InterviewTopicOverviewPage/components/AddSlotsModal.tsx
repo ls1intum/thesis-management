@@ -117,6 +117,7 @@ const AddSlotsModal = ({
   const { fetchInterviewSlots } = useInterviewProcessContext()
 
   const saveNewSlots = async () => {
+    console.log('Saving slots:', modalSlots)
     setSaveLoading(true)
     doRequest<IInterviewSlot[]>(
       `/v2/interview-process/interview-slots`,

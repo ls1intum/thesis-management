@@ -31,7 +31,9 @@ const AssignIntervieweeToSlotModal = ({
   assignModalOpen,
   setAssignModalOpen,
 }: IAssignIntervieweeToSlotModalProps) => {
-  const { bookSlot, bookingLoading, interviewees, intervieweesLoading, fetchPossibleInterviewees } =
+  const [interviewees, setInterviewees] = useState<IIntervieweeLightWithNextSlot[]>([])
+
+  const { bookSlot, bookingLoading, intervieweesLoading, fetchPossibleInterviewees } =
     useInterviewProcessContext()
 
   const [selectedInterviewee, setSelectedInterviewee] =
@@ -39,7 +41,9 @@ const AssignIntervieweeToSlotModal = ({
 
   useEffect(() => {
     if (assignModalOpen) {
-      fetchPossibleInterviewees()
+      fetchPossibleInterviewees(undefined, 'ALL', false).then((fetchedInterviewees) => {
+        setInterviewees(fetchedInterviewees)
+      })
     }
   }, [assignModalOpen])
 

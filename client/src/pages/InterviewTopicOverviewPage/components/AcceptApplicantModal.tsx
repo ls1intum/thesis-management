@@ -1,48 +1,68 @@
-import { Loader, Modal, Stack, Title, Text } from '@mantine/core'
+import { Loader, Modal, Stack, Title, Text, Group, Button } from '@mantine/core'
 import { IIntervieweeLightWithNextSlot } from '../../../requests/responses/interview'
 import ApplicationReviewForm from '../../../components/ApplicationReviewForm/ApplicationReviewForm'
 import { IApplication } from '../../../requests/responses/application'
 import { useEffect, useState } from 'react'
 import { useApplicationsContext } from '../../../providers/ApplicationsProvider/hooks'
 import ApplicationRejectButton from '../../../components/ApplicationRejectButton/ApplicationRejectButton'
+import { CheckIcon } from '@phosphor-icons/react/dist/ssr'
+import { X } from 'react-router/dist/development/index-react-server-client-BKpa2trA'
+import { XIcon } from '@phosphor-icons/react'
 
 interface AcceptApplicantModalProps {
-  modalOpen: boolean
-  setModalOpen: (open: boolean) => void
   interviewee: IIntervieweeLightWithNextSlot
-  type?: 'accept' | 'reject'
 }
 
-const AcceptApplicantModal = ({
-  modalOpen,
-  setModalOpen,
-  interviewee,
-  type = 'accept',
-}: AcceptApplicantModalProps) => {
+const AcceptApplicantModal = ({ interviewee }: AcceptApplicantModalProps) => {
   const [application, setApplication] = useState<IApplication | null>(null)
+  const [modalOpen, setModalOpen] = useState(false)
 
   const { fetchApplication } = useApplicationsContext()
 
   useEffect(() => {
-    if (modalOpen) {
-      const fetchData = async () => {
-        const app = await fetchApplication(interviewee.applicationId)
-        setApplication(app)
-      }
-      fetchData()
+    const fetchData = async () => {
+      const app = await fetchApplication(interviewee.applicationId)
+      setApplication(app)
     }
-  }, [modalOpen])
+    fetchData()
+  }, [interviewee.applicationId])
 
   return (
-    <Modal
-      opened={modalOpen}
-      onClose={() => setModalOpen(false)}
-      title={<Title order={3}>Accept Applicant</Title>}
-      size={'xl'}
-      centered
-    >
-      {application ? (
-        type === 'accept' ? (
+    <Group>
+      <Button
+        variant='outline'
+        size='xs'
+        leftSection={<CheckIcon size={16} />}
+        onClick={() => {
+          setModalOpen(true)
+        }}
+        color={'green'}
+      >
+        Accept Applicant
+      </Button>
+
+      {application && (
+        <ApplicationRejectButton
+          application={application}
+          onUpdate={(newApplication) => {
+            newApplication.state
+            //TODO: SET State of interviewee
+          }}
+          size='xs'
+          leftSection={<XIcon size={16} />}
+        >
+          Reject Applicant
+        </ApplicationRejectButton>
+      )}
+
+      <Modal
+        opened={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title={<Title order={3}>Accept Applicant</Title>}
+        size={'xl'}
+        centered
+      >
+        {application ? (
           <ApplicationReviewForm
             application={application}
             onUpdate={(newApplication) => {
@@ -53,21 +73,10 @@ const AcceptApplicantModal = ({
             acceptOnly={true}
           />
         ) : (
-          <Stack>
-            <Text>Are you sure you want to reject this interviewee?</Text>
-            <ApplicationRejectButton
-              application={application}
-              onUpdate={(newApplication) => {
-                newApplication.state
-                //TODO: SET State of interviewee
-              }}
-            />
-          </Stack>
-        )
-      ) : (
-        <Loader />
-      )}
-    </Modal>
+          <Loader />
+        )}
+      </Modal>
+    </Group>
   )
 }
 
