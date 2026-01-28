@@ -17,6 +17,7 @@ import AssignIntervieweeToSlotModal from './AssignIntervieweeToSlotModal'
 import { useState } from 'react'
 import { normalizeUrl } from '../../../utils/format'
 import CancelSlotConfirmationModal from './CancelSlotConfirmationModal'
+import { WarningCircleIcon } from '@phosphor-icons/react/dist/ssr'
 
 interface ISlotItemProps {
   slot: IInterviewSlot
@@ -30,6 +31,7 @@ interface ISlotItemProps {
   assignable?: boolean
   isPast?: boolean
   withLocation?: boolean
+  warning?: string | undefined
 }
 
 const SlotItem = ({
@@ -44,6 +46,7 @@ const SlotItem = ({
   assignable = false,
   isPast = false,
   withLocation = false,
+  warning = undefined,
 }: ISlotItemProps) => {
   const { ref, hovered } = useHover()
   const { colorScheme } = useMantineColorScheme()
@@ -82,36 +85,48 @@ const SlotItem = ({
       opacity={disabled ? 0.35 : 1}
     >
       <Stack gap={'0.25rem'}>
-        <Title
-          order={6}
-          c={
-            selected
-              ? 'white'
-              : showHover && colorScheme === 'dark' && !disabled
-                ? 'dark.9'
-                : undefined
-          }
-          lineClamp={1}
-          w={'100%'}
-        >
-          {`${new Date(slot.startDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${new Date(slot.endDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
-          {withLocation && (
-            <Text component='span' fw={400} c='dimmed' ml={6} size='xs'>
-              · {slot.location && slot.location}
-              {slot.location && slot.streamUrl && '·'}
-              {slot.streamUrl && (
-                <Anchor
-                  href={normalizeUrl(slot.streamUrl)}
-                  target='_blank'
-                  rel='noopener noreferrer'
-                  size='xs'
-                >
-                  Virtual
-                </Anchor>
-              )}
-            </Text>
+        <Group w={'100%'} justify='space-between' align='center' wrap='nowrap'>
+          <Title
+            order={6}
+            c={
+              selected
+                ? 'white'
+                : showHover && colorScheme === 'dark' && !disabled
+                  ? 'dark.9'
+                  : undefined
+            }
+            lineClamp={1}
+            flex={1}
+          >
+            {`${new Date(slot.startDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${new Date(slot.endDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
+            {withLocation && (
+              <Text component='span' fw={400} c='dimmed' ml={6} size='xs'>
+                · {slot.location && slot.location}
+                {slot.location && slot.streamUrl && '·'}
+                {slot.streamUrl && (
+                  <Anchor
+                    href={normalizeUrl(slot.streamUrl)}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    size='xs'
+                  >
+                    Virtual
+                  </Anchor>
+                )}
+              </Text>
+            )}
+          </Title>
+          {warning && (
+            <Badge
+              size='xs'
+              variant='transparent'
+              color='orange'
+              leftSection={<WarningCircleIcon size={16} weight='bold' />}
+            >
+              {warning}
+            </Badge>
           )}
-        </Title>
+        </Group>
         {withInterviewee && (
           <Group align='center' justify='space-between' mih={30} w={'100%'}>
             <Group align='center' justify='space-between' w={'100%'} gap={'0.25rem'}>

@@ -68,16 +68,17 @@ const CalendarCarousel = () => {
   }
 
   const isSmaller = useIsSmallerBreakpoint('md')
+
   const isMobile = useIsSmallerBreakpoint('sm')
-  const isSmallScreen = useIsSmallerBreakpoint('lg')
-  const isMediumScreen = useIsSmallerBreakpoint('xl')
+  const isMediumScreen = useIsSmallerBreakpoint('lg')
+  const isLargeScreen = useIsSmallerBreakpoint('3xl')
 
   const [slotModalOpen, setSlotModalOpen] = useState(false)
 
   const rowAmount = isSmaller ? 2 : 3
 
   const getSlideDisplayAmount = () => {
-    const slideAmount = isMobile ? 1 : isSmallScreen ? 2 : isMediumScreen ? 3 : 4
+    const slideAmount = isMobile ? 1 : isMediumScreen ? 2 : isLargeScreen ? 3 : 4
     return Math.min(slideAmount, totalSlides)
   }
 

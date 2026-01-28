@@ -13,11 +13,12 @@ import {
 } from '@mantine/core'
 import dayjs from 'dayjs'
 import { IInterviewSlot } from '../../../requests/responses/interview'
-import { useEffect, useState } from 'react'
+import { use, useEffect, useState } from 'react'
 import { CardsIcon } from '@phosphor-icons/react'
 import { TimeInput } from '@mantine/dates'
 import SlotItem from './SlotItem'
 import DeleteButton from '../../../components/DeleteButton/DeleteButton'
+import { WarningCircleIcon } from '@phosphor-icons/react/dist/ssr'
 
 interface ICollapsibleDateCardProps {
   date: Date
@@ -274,6 +275,16 @@ const CollapsibleDateCard = ({
 
     setSlotRanges(slotRangesUpdated)
   }
+
+  const overlappingSlots = allSlots.filter((slot, _, self) => {
+    return self.some(
+      (otherSlot) =>
+        otherSlot !== slot &&
+        ((slot.startDate >= otherSlot.startDate && slot.startDate < otherSlot.endDate) ||
+          (slot.endDate > otherSlot.startDate && slot.endDate <= otherSlot.endDate) ||
+          (slot.startDate <= otherSlot.startDate && slot.endDate >= otherSlot.endDate)),
+    )
+  })
 
   return (
     <Card withBorder radius='md' my='sm' p={'0.25rem'} style={{ cursor: 'pointer' }}>
@@ -595,6 +606,9 @@ const CollapsibleDateCard = ({
                                   slotRange.slots[0].bookedBy
                                     ? true
                                     : false
+                                }
+                                warning={
+                                  overlappingSlots.includes(slot) ? 'Overlapping slot' : undefined
                                 }
                               />
                             ))}

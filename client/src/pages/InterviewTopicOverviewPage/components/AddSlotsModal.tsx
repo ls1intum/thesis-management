@@ -142,6 +142,24 @@ const AddSlotsModal = ({
     )
   }
 
+  const overlappingSlotsExist = () => {
+    const allSlots = Object.values(modalSlots).flat()
+    const sortedSlots = allSlots.sort(
+      (a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime(),
+    )
+
+    for (let i = 0; i < sortedSlots.length - 1; i++) {
+      const currentSlotEnd = new Date(sortedSlots[i].endDate).getTime()
+      const nextSlotStart = new Date(sortedSlots[i + 1].startDate).getTime()
+
+      if (currentSlotEnd > nextSlotStart) {
+        return true
+      }
+    }
+
+    return false
+  }
+
   return (
     <Modal
       centered
@@ -304,14 +322,22 @@ const AddSlotsModal = ({
           </Stack>
         </Flex>
 
-        <Button
-          fullWidth
-          onClick={() => {
-            saveNewSlots()
-          }}
-        >
-          Save Slots
-        </Button>
+        <Stack gap={'0.25rem'}>
+          {overlappingSlotsExist() && (
+            <Text c='orange' size='xs'>
+              Overlapping slots exist. Please adjust the slots before saving.
+            </Text>
+          )}
+          <Button
+            fullWidth
+            onClick={() => {
+              saveNewSlots()
+            }}
+            disabled={overlappingSlotsExist()}
+          >
+            Save Slots
+          </Button>
+        </Stack>
       </Stack>
     </Modal>
   )
