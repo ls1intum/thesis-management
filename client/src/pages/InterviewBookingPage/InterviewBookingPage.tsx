@@ -134,7 +134,7 @@ const InterviewBookingPage = () => {
   }
 
   return (
-    <InterviewProcessProvider excludeBookedSlots={true}>
+    <InterviewProcessProvider excludeBookedSlots={true} autoFetchInterviewees={false}>
       <Stack gap={'2rem'} h={'100%'}>
         <Title>Select your Interview Slot</Title>
         <Flex

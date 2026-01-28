@@ -9,10 +9,11 @@ import { useParams } from 'react-router'
 
 interface IInterviewProcessProviderProps {
   excludeBookedSlots?: boolean
+  autoFetchInterviewees?: boolean
 }
 
 const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProviderProps>) => {
-  const { children, excludeBookedSlots } = props
+  const { children, excludeBookedSlots, autoFetchInterviewees = true } = props
   const { processId } = useParams<{ processId: string }>()
 
   const [interviewSlots, setInterviewSlots] = useState<Record<string, IInterviewSlot[]>>({})
@@ -195,7 +196,9 @@ const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProv
     setInterviewees([])
 
     fetchInterviewSlots()
-    fetchPossibleInterviewees()
+    if (autoFetchInterviewees) {
+      fetchPossibleInterviewees()
+    }
   }, [processId, fetchInterviewSlots, fetchPossibleInterviewees])
 
   const contextState = useMemo<IInterviewProcessContext>(() => {
