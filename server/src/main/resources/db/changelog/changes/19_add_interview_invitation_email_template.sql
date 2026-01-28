@@ -73,13 +73,25 @@ VALUES
 
 <p th:inline="text">
   <strong>Details</strong><br/>
-  Date and time: <strong th:text="${DataFormatter.formatDateTime(slot.startDate)}">dd.MM.yyyy HH:mm</strong><br/>
-  <span th:if="${slot.location != null and !#strings.isEmpty(inviteUrl)}">
-  Location: <span th:text="${slot.location}">Location</span><br/>
-</span>
-<span th:unless="${slot.location != null and !#strings.isEmpty(slot.location)}">
-  Location not available yet<br/>
-</span>
+  Date and time:
+  <strong th:text="${DataFormatter.formatDateTime(slot.startDate)}">dd.MM.yyyy HH:mm</strong><br/>
+
+
+  <span th:if="${slot.location != null and !#strings.isEmpty(slot.location)}">
+    Location: <span th:text="${slot.location}">Location</span><br/>
+  </span>
+
+
+  <span th:if="${slot.streamUrl != null and !#strings.isEmpty(slot.streamUrl)}">
+    Meeting link:
+    <a th:href="${slot.streamUrl}" target="_blank" rel="noopener noreferrer">Join meeting</a><br/>
+  </span>
+
+
+  <span th:if="${(slot.location == null or #strings.isEmpty(slot.location))
+                and (slot.streamUrl == null or #strings.isEmpty(slot.streamUrl))}">
+    Location not available yet<br/>
+  </span>
 </p>
 
 <p th:inline="text">

@@ -24,11 +24,29 @@ public record InterviewSlotDto(
                 interviewSlot.getEndDate(),
                 intervieweeLightDto,
                 interviewSlot.getLocation(),
-                interviewSlot.getStreamLink()
+                normalizeUrl(interviewSlot.getStreamLink())
         );
     }
 
     public UUID getSlotId() {
         return slotId;
+    }
+
+    private static String normalizeUrl(String url) {
+        if (url == null) {
+            return null;
+        }
+
+        String s = url.trim();
+        if (s.isEmpty()) {
+            return null;
+        }
+
+        // equivalent to /^https?:\/\//i
+        if (!s.matches("(?i)^https?://.*")) {
+            return "https://" + s;
+        }
+
+        return s;
     }
 }

@@ -57,7 +57,7 @@ const AssignIntervieweeToSlotModal = ({
     >
       <Stack>
         <Input.Wrapper label='Selected Slot'>
-          <SlotItem slot={slot} hoverEffect={false} withDate={true} />
+          <SlotItem slot={slot} hoverEffect={false} withDate={true} withLocation={true} />
         </Input.Wrapper>
         <Input.Wrapper label='Select Interviewee' withAsterisk>
           {intervieweesLoading ? (
