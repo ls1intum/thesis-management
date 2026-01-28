@@ -98,7 +98,7 @@ const IntervieweeAssesmentPage = () => {
         style={{ overflow: 'auto' }}
       >
         <Stack h={'100%'} flex={1} gap={'1.5rem'}>
-          <Title order={3}>Interview Assesment</Title>
+          <Title order={3}>Interview Assessment</Title>
 
           <ScrollArea h={'100%'} w={'100%'} type={isSmaller ? 'never' : 'hover'} offsetScrollbars>
             <Stack h={'100%'} gap={'1rem'}>

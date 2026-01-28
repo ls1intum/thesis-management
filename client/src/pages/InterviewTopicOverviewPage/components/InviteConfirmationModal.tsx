@@ -1,7 +1,9 @@
-import { Button, Group, Modal, Paper, ScrollArea, Stack, Text, Title } from '@mantine/core'
+import { Alert, Button, Group, Modal, Paper, ScrollArea, Stack, Text, Title } from '@mantine/core'
 import { useIsSmallerBreakpoint } from '../../../hooks/theme'
 import AvatarUser from '../../../components/AvatarUser/AvatarUser'
 import { ILightUser } from '../../../requests/responses/user'
+import { useInterviewProcessContext } from '../../../providers/InterviewProcessProvider/hooks'
+import { WarningCircleIcon } from '@phosphor-icons/react'
 
 interface IinviteConfirmationModalProps {
   inviteModalOpen: boolean
@@ -19,6 +21,17 @@ const InviteConfirmationModal = ({
   onCancel,
 }: IinviteConfirmationModalProps) => {
   const isSmaller = useIsSmallerBreakpoint('sm')
+
+  const { interviewSlots } = useInterviewProcessContext()
+
+  const slotInFutureAmount = Object.values(interviewSlots).reduce((acc, slots) => {
+    return (
+      acc +
+      slots
+        .filter((slot) => slot.bookedBy === null)
+        .filter((slot) => new Date(slot.startDate) > new Date()).length
+    )
+  }, 0)
 
   return (
     <Modal
@@ -41,6 +54,16 @@ const InviteConfirmationModal = ({
             ))}
           </Stack>
         </ScrollArea.Autosize>
+        {slotInFutureAmount < interviewees.length && (
+          <Alert
+            variant='light'
+            color='red'
+            title='Not enough slots available'
+            icon={<WarningCircleIcon size={16} />}
+          >
+            {`There ${slotInFutureAmount !== 1 ? 'are' : 'is'} ${slotInFutureAmount > 0 ? slotInFutureAmount : 'no'} interview slot${slotInFutureAmount !== 1 ? 's' : ''} available in the future. This is not enough for ${interviewees.length} interviewee${interviewees.length !== 1 ? 's' : ''}. Please create more interview slots before sending out all invitations.`}
+          </Alert>
+        )}
         <Group justify='end' align='center'>
           <Button
             variant='default'

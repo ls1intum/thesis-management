@@ -568,7 +568,9 @@ const CollapsibleDateCard = ({
                           </Stack>
                         ) : slotRange.startTime && slotRange.endTime ? (
                           <Text c='red' size={'sm'}>
-                            StartTime must be before EndTime
+                            {slotRange.startTime > slotRange.endTime
+                              ? 'StartTime must be before EndTime'
+                              : 'No Slots could be created with the time range'}
                           </Text>
                         ) : (
                           <Text c='dimmed' size={'sm'}>

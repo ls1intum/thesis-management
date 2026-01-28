@@ -86,6 +86,11 @@ const IntervieweesList = () => {
     fetchPossibleInterviewees(debouncedSearch, state)
   }, [state, debouncedSearch])
 
+  const listEmptyDescription =
+    state === 'ALL'
+      ? 'Add an interviewee while reviewing application or just add them here'
+      : `No interviewees found for state "${InterviewState[state as keyof typeof InterviewState]}"`
+
   const [selectedIntervieweeIds, setSelectedIntervieweeIds] = useState<string[]>([])
   const [selectIntervieweeMode, setSelectIntervieweeMode] = useState(false)
 
@@ -165,7 +170,7 @@ const IntervieweesList = () => {
               <Stack gap={'0.5rem'} justify='center' align='center'>
                 <Title order={5}>No Interviewees Found</Title>
                 <Text c='dimmed' ta={'center'}>
-                  Add an interviewee while reviewing application or just add them here
+                  {listEmptyDescription}
                 </Text>
               </Stack>
             </Stack>
