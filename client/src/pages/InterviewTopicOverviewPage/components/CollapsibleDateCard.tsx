@@ -419,6 +419,8 @@ const CollapsibleDateCard = ({
                                           newRanges[index].endTime,
                                           duration,
                                           breakDuration,
+                                          slotRange.locationType,
+                                          slotRange.location,
                                         )
                                       } else {
                                         newRanges[index].slots = [
@@ -470,6 +472,8 @@ const CollapsibleDateCard = ({
                                           newRanges[index].endTime,
                                           duration,
                                           breakDuration,
+                                          slotRange.locationType,
+                                          slotRange.location,
                                         )
                                       }
                                       return newRanges
