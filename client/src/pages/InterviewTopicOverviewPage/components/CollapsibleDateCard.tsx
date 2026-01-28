@@ -256,6 +256,25 @@ const CollapsibleDateCard = ({
     }
   }, [])
 
+  const updateAllLocations = (newLocation: string, locationType: 'Onsite' | 'Online') => {
+    const slotRangesUpdated = slotRanges.map((slotRange) => {
+      const updatedSlots = slotRange.slots?.map((slot) => ({
+        ...slot,
+        location: locationType === 'Onsite' ? newLocation : undefined,
+        streamUrl: locationType === 'Online' ? newLocation : undefined,
+      }))
+
+      return {
+        ...slotRange,
+        location: newLocation,
+        slots: updatedSlots,
+        locationType: locationType,
+      }
+    })
+
+    setSlotRanges(slotRangesUpdated)
+  }
+
   return (
     <Card withBorder radius='md' my='sm' p={'0.25rem'} style={{ cursor: 'pointer' }}>
       <Accordion.Item key={date.toDateString()} value={date.toDateString()}>
@@ -522,12 +541,22 @@ const CollapsibleDateCard = ({
                                 rightSectionPointerEvents='all'
                                 rightSection={
                                   slotRange.location !== '' && (
-                                    <Button size='xs' variant='subtle'>
-                                      Apply for all
+                                    <Button
+                                      size='xs'
+                                      variant='subtle'
+                                      onClick={() => {
+                                        updateAllLocations(
+                                          slotRange.location,
+                                          slotRange.locationType,
+                                        )
+                                      }}
+                                      px={3}
+                                    >
+                                      Use all day
                                     </Button>
                                   )
                                 }
-                                rightSectionWidth={slotRange.location !== '' ? 100 : 0}
+                                rightSectionWidth={slotRange.location !== '' ? 90 : 0}
                                 value={slotRange.location ?? ''}
                                 onChange={(e) =>
                                   setSlotRanges((prev) => {
