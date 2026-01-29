@@ -19,8 +19,8 @@ public interface IntervieweeRepository extends JpaRepository<Interviewee, UUID> 
           AND (
             :state IS NULL
             OR (
-                (:state = 'UNCONTACTED' AND i.lastInvited IS NULL)
-             OR (:state = 'SCHEDULED'   AND SIZE(i.slots) > 0)
+                (:state = 'UNCONTACTED' AND i.lastInvited IS NULL and i.score IS NULL)
+             OR (:state = 'SCHEDULED'   AND SIZE(i.slots) > 0 AND i.score IS NULL)
              OR (:state = 'COMPLETED'   AND i.score IS NOT NULL)
              OR (:state = 'INVITED'     AND i.lastInvited IS NOT NULL AND SIZE(i.slots) = 0 AND i.score IS NULL)
             )
