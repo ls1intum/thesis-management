@@ -9,10 +9,7 @@ import de.tum.cit.aet.thesis.entity.*;
 import de.tum.cit.aet.thesis.entity.key.ApplicationReviewerId;
 import de.tum.cit.aet.thesis.exception.request.ResourceInvalidParametersException;
 import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
-import de.tum.cit.aet.thesis.repository.ApplicationRepository;
-import de.tum.cit.aet.thesis.repository.ApplicationReviewerRepository;
-import de.tum.cit.aet.thesis.repository.ResearchGroupRepository;
-import de.tum.cit.aet.thesis.repository.TopicRepository;
+import de.tum.cit.aet.thesis.repository.*;
 import de.tum.cit.aet.thesis.security.CurrentUserProvider;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +32,7 @@ public class ApplicationService {
     private final ApplicationReviewerRepository applicationReviewerRepository;
     private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
     private final ResearchGroupRepository researchGroupRepository;
+    private final InterviewProcessRepository interviewProcessRepository;
 
     @Autowired
     public ApplicationService(
@@ -44,7 +42,9 @@ public class ApplicationService {
             ThesisService thesisService,
             TopicService topicService,
             ApplicationReviewerRepository applicationReviewerRepository,
-            ObjectProvider<CurrentUserProvider> currentUserProviderProvider, ResearchGroupRepository researchGroupRepository
+            ObjectProvider<CurrentUserProvider> currentUserProviderProvider,
+            ResearchGroupRepository researchGroupRepository,
+            InterviewProcessRepository interviewProcessRepository
     ) {
         this.applicationRepository = applicationRepository;
         this.mailingService = mailingService;
@@ -54,6 +54,7 @@ public class ApplicationService {
         this.applicationReviewerRepository = applicationReviewerRepository;
         this.currentUserProviderProvider = currentUserProviderProvider;
         this.researchGroupRepository = researchGroupRepository;
+        this.interviewProcessRepository = interviewProcessRepository;
     }
 
     private CurrentUserProvider currentUserProvider() {
@@ -311,6 +312,12 @@ public class ApplicationService {
         topic.setClosedAt(Instant.now());
 
         rejectApplicationsForTopic(currentUserProvider().getUser(), topic, reason, notifyUser);
+
+        InterviewProcess interviewProcess = interviewProcessRepository.findByTopicId(topic.getId());
+        if (interviewProcess != null) {
+            interviewProcess.setCompleted(true);
+            interviewProcessRepository.save(interviewProcess);
+        }
 
         return topicRepository.save(topic);
     }
