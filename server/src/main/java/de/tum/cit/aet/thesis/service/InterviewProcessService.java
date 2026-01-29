@@ -293,7 +293,7 @@ public class InterviewProcessService {
             InterviewSlotDto current = sortedSlots.get(i);
             InterviewSlotDto next = sortedSlots.get(i + 1);
 
-            if (current.getEndDate().isAfter(next.getStartDate())) {
+            if (current.getEndDate().compareTo(next.getStartDate()) <= 0) {
                 return false;
             }
         }

@@ -100,7 +100,7 @@ public class InterviewProcessController {
 
     @PostMapping("/interview-slots")
     @PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
-    public ResponseEntity<List<InterviewSlotDto>> addInterviewProcess(@RequestBody CreateInterviewSlotsPayload payload) {
+    public ResponseEntity<List<InterviewSlotDto>> addInterviewProcessSlots(@RequestBody CreateInterviewSlotsPayload payload) {
         List<InterviewSlot> adaptedInterviewSlots = interviewProcessService.addInterviewSlotsToProcess(
                 payload.interviewProcessId(),
                 payload.interviewSlots()
