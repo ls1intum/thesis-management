@@ -110,7 +110,9 @@ const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProv
 
           if (res.ok) {
             fetchInterviewSlots()
-            fetchPossibleInterviewees() // TODO: Missing searchkey and state?
+            if (autoFetchInterviewees) {
+              fetchPossibleInterviewees() // TODO: Missing searchkey and state?
+            }
             if (onCancelSucessfull) onCancelSucessfull()
           } else {
             showSimpleError(getApiResponseErrorMessage(res))

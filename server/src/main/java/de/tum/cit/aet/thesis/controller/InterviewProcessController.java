@@ -47,6 +47,15 @@ public class InterviewProcessController {
         return ResponseEntity.ok(PaginationDto.fromSpringPage(result.map(InterviewProcessDto::fromInterviewProcessEntity)));
     }
 
+    @GetMapping("/{interviewProcessId}/my-booking")
+    public ResponseEntity<InterviewSlotDto> getMyBookedSlot(
+            @PathVariable("interviewProcessId") UUID interviewProcessId
+    ) {
+        InterviewSlot slot = interviewProcessService.getMyBookedSlot(interviewProcessId);
+        if (slot == null) return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(InterviewSlotDto.fromInterviewSlot(slot));
+    }
+
     @PostMapping
     @PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
     public ResponseEntity<InterviewProcessDto> createInterviewProcess(@RequestBody CreateInterviewProcessPayload payload) {
@@ -163,7 +172,6 @@ public class InterviewProcessController {
     }
 
     @PutMapping("/{interviewProcessId}/slot/{slotId}/cancel")
-    @PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
     public ResponseEntity<InterviewSlotDto> cancelInterviewSlotBooking(
             @PathVariable("interviewProcessId") UUID interviewProcessId,
             @PathVariable("slotId") UUID slotId

@@ -10,12 +10,14 @@ interface ICancelSlotConfirmationModalProps {
   setCancelModalOpen: (open: boolean) => void
 
   slot?: IInterviewSlot
+  onCancelSucessfull?: () => void
 }
 
 const CancelSlotConfirmationModal = ({
   cancelModalOpen,
   setCancelModalOpen,
   slot,
+  onCancelSucessfull,
 }: ICancelSlotConfirmationModalProps) => {
   const isSmaller = useIsSmallerBreakpoint('sm')
 
@@ -69,6 +71,7 @@ const CancelSlotConfirmationModal = ({
               if (!slot || !cancelSlot) return
               cancelSlot(slot.slotId, () => {
                 setCancelModalOpen(false)
+                onCancelSucessfull?.()
               })
             }}
           >

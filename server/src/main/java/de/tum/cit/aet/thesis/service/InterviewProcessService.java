@@ -423,11 +423,6 @@ public class InterviewProcessService {
 
     public InterviewSlot cancelInterviewSlotBooking(UUID interviewProcessId, UUID slotId) {
         InterviewProcess interviewProcess = findById(interviewProcessId);
-        currentUserProvider().assertCanAccessResearchGroup(interviewProcess.getTopic().getResearchGroup());
-
-        if (!interviewProcess.getSlots().stream().map(InterviewSlot::getId).toList().contains(slotId)) {
-            throw new ResourceNotFoundException(String.format("Slot with id %s does not belong to the provided process.", slotId));
-        }
 
         InterviewSlot slot = interviewProcess.getSlots().stream()
                 .filter(s -> s.getId().equals(slotId))
@@ -436,11 +431,19 @@ public class InterviewProcessService {
 
         if (slot.getInterviewee() == null) {
             throw new IllegalStateException("Slot is not booked.");
-        } else {
-            mailingService.sendInterviewSlotConfirmationEmail(slot, "CANCEL");
-            slot.setInterviewee(null);
-            interviewProcessRepository.save(interviewProcess);
         }
+
+        if (slot.getInterviewee().getApplication().getUser().getId() != currentUserProvider().getUser().getId()) {
+            currentUserProvider().assertCanAccessResearchGroup(interviewProcess.getTopic().getResearchGroup());
+        }
+
+        if (!interviewProcess.getSlots().stream().map(InterviewSlot::getId).toList().contains(slotId)) {
+            throw new ResourceNotFoundException(String.format("Slot with id %s does not belong to the provided process.", slotId));
+        }
+
+        mailingService.sendInterviewSlotConfirmationEmail(slot, "CANCEL");
+        slot.setInterviewee(null);
+        interviewProcessRepository.save(interviewProcess);
 
         return slot;
     }
@@ -504,5 +507,19 @@ public class InterviewProcessService {
     public Topic getInterviewProcessTopic(UUID interviewProcessId) {
         InterviewProcess interviewProcess = findById(interviewProcessId);
         return interviewProcess.getTopic();
+    }
+
+    public InterviewSlot getMyBookedSlot(UUID interviewProcessId) {
+        InterviewProcess interviewProcess = findById(interviewProcessId);
+
+        UUID currentUserId = currentUserProvider().getUser().getId();
+
+        for (InterviewSlot slot : interviewProcess.getSlots()) {
+            if (slot.getInterviewee() != null && slot.getInterviewee().getApplication().getUser().getId().equals(currentUserId)) {
+                return slot;
+            }
+        }
+
+        throw new ResourceNotFoundException("No booked slot found for the current user in the specified interview process.");
     }
 }
