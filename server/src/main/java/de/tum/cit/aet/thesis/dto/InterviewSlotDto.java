@@ -32,6 +32,14 @@ public record InterviewSlotDto(
         return slotId;
     }
 
+    public Instant getStartDate() {
+        return startDate;
+    }
+
+    public Instant getEndDate() {
+        return endDate;
+    }
+
     private static String normalizeUrl(String url) {
         if (url == null) {
             return null;

@@ -213,6 +213,10 @@ public class InterviewProcessService {
             throw new IllegalStateException("Current user is not assigned to any research group.");
         }
 
+        if (assertNoOverlappingSlots(interviewSlots)) {
+            throw new IllegalStateException("Interview slots cannot overlap.");
+        }
+
         InterviewProcess interviewProcess = findById(interviewProcessId);
 
         currentUserProvider().assertCanAccessResearchGroup(interviewProcess.getTopic().getResearchGroup());
@@ -278,6 +282,23 @@ public class InterviewProcessService {
         interviewProcessRepository.save(interviewProcess);
 
         return interviewProcess.getSlots();
+    }
+
+    private boolean assertNoOverlappingSlots(List<InterviewSlotDto> slots) {
+        List<InterviewSlotDto> sortedSlots = slots.stream()
+                .sorted(Comparator.comparing(InterviewSlotDto::getStartDate))
+                .toList();
+
+        for (int i = 0; i < sortedSlots.size() - 1; i++) {
+            InterviewSlotDto current = sortedSlots.get(i);
+            InterviewSlotDto next = sortedSlots.get(i + 1);
+
+            if (current.getEndDate().isAfter(next.getStartDate())) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public List<InterviewSlot> getInterviewProcessInterviewSlots(
