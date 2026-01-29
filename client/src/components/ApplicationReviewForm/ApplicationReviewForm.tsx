@@ -348,7 +348,7 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
 
           {application.topic && (
             <Checkbox
-              label='Close Topic (This will reject all applications for this topic)'
+              label='Close Topic (This will reject all applications for this topic and existing interview processes will be completed)'
               {...form.getInputProps('closeTopic', { type: 'checkbox' })}
             />
           )}
