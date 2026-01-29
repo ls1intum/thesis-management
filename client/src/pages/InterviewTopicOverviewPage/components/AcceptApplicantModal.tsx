@@ -1,4 +1,4 @@
-import { Loader, Modal, Stack, Title, Text, Group, Button } from '@mantine/core'
+import { Loader, Modal, Title, Group, Button } from '@mantine/core'
 import { IIntervieweeLightWithNextSlot } from '../../../requests/responses/interview'
 import ApplicationReviewForm from '../../../components/ApplicationReviewForm/ApplicationReviewForm'
 import { IApplication } from '../../../requests/responses/application'
@@ -6,7 +6,6 @@ import { useEffect, useState } from 'react'
 import { useApplicationsContext } from '../../../providers/ApplicationsProvider/hooks'
 import ApplicationRejectButton from '../../../components/ApplicationRejectButton/ApplicationRejectButton'
 import { CheckIcon } from '@phosphor-icons/react/dist/ssr'
-import { X } from 'react-router/dist/development/index-react-server-client-BKpa2trA'
 import { XIcon } from '@phosphor-icons/react'
 
 interface AcceptApplicantModalProps {

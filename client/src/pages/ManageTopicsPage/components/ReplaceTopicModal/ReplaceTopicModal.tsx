@@ -1,5 +1,5 @@
-import { Button, Modal, MultiSelect, Select, Stack, TextInput } from '@mantine/core'
-import { ITopic } from '../../../../requests/responses/topic'
+import { Button, Group, Modal, MultiSelect, Select, Stack, TextInput } from '@mantine/core'
+import { ITopic, TopicState } from '../../../../requests/responses/topic'
 import { isNotEmpty, useForm } from '@mantine/form'
 import { isNotEmptyUserList } from '../../../../utils/validation'
 import { useEffect, useState } from 'react'
@@ -144,7 +144,7 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
     )
   }, [opened])
 
-  const onSubmit = async () => {
+  const onSubmit = async (isDraft = false) => {
     setLoading(true)
 
     try {
@@ -163,6 +163,7 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
           researchGroupId: form.values.researchGroupId,
           intendedStart: form.values.intendedStart ?? null,
           applicationDeadline: form.values.applicationDeadline ?? null,
+          isDraft: isDraft,
         },
       })
 
@@ -191,7 +192,7 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
       opened={opened}
       onClose={onClose}
     >
-      <form onSubmit={form.onSubmit(onSubmit)}>
+      <form onSubmit={form.onSubmit(() => onSubmit(false))}>
         <Stack gap='md'>
           <TextInput label='Title' required {...form.getInputProps('title')} />
           <MultiSelect
@@ -266,9 +267,25 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
             editMode={true}
             {...form.getInputProps('references')}
           />
-          <Button type='submit' fullWidth disabled={!form.isValid()} loading={loading}>
-            {topic ? 'Save changes' : 'Create topic'}
-          </Button>
+          <Group>
+            {(!props.topic || props.topic.state === TopicState.DRAFT) && (
+              <Button
+                variant='default'
+                onClick={() => onSubmit(true)}
+                disabled={!form.isValid()}
+                loading={loading}
+              >
+                {props.topic ? 'Save Changes' : 'Create Draft'}
+              </Button>
+            )}
+            <Button type='submit' flex={1} disabled={!form.isValid()} loading={loading}>
+              {topic
+                ? topic.state === TopicState.DRAFT
+                  ? 'Save & Create Topic'
+                  : 'Save Changes'
+                : 'Create Topic'}
+            </Button>
+          </Group>
         </Stack>
       </form>
     </Modal>

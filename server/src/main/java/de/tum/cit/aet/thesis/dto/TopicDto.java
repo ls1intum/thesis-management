@@ -1,6 +1,7 @@
 package de.tum.cit.aet.thesis.dto;
 
 import de.tum.cit.aet.thesis.constants.ThesisRoleName;
+import de.tum.cit.aet.thesis.constants.TopicState;
 import de.tum.cit.aet.thesis.entity.Topic;
 import de.tum.cit.aet.thesis.entity.TopicRole;
 import java.time.Instant;
@@ -18,10 +19,12 @@ public record TopicDto(
     String goals,
     String references,
     Instant closedAt,
+    Instant publishedAt,
     Instant updatedAt,
     Instant createdAt,
     Instant intendedStart,
     Instant applicationDeadline,
+    TopicState state,
     LightUserDto createdBy,
     LightResearchGroupDto researchGroup,
 
@@ -55,10 +58,12 @@ public record TopicDto(
         topic.getGoals(),
         topic.getReferences(),
         topic.getClosedAt(),
+        topic.getPublishedAt(),
         topic.getUpdatedAt(),
         topic.getCreatedAt(),
         topic.getIntendedStart(),
         topic.getApplicationDeadline(),
+        topic.getTopicState(),
         LightUserDto.fromUserEntity(topic.getCreatedBy()),
         LightResearchGroupDto.fromResearchGroupEntity(topic.getResearchGroup()),
         advisors,

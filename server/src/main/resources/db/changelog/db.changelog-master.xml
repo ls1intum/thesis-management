@@ -23,4 +23,5 @@
     <include file="changes/17_application_notification_email.sql" relativeToChangelogFile="true"/>
     <include file="changes/18_add_interview_tables.sql" relativeToChangelogFile="true"/>
     <include file="changes/19_add_interview_invitation_email_template.sql" relativeToChangelogFile="true"/>
+    <include file="changes/20_add_published_at_topics.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>

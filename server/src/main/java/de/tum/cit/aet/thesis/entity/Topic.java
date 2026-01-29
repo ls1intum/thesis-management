@@ -1,6 +1,7 @@
 package de.tum.cit.aet.thesis.entity;
 
 import de.tum.cit.aet.thesis.constants.ThesisRoleName;
+import de.tum.cit.aet.thesis.constants.TopicState;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -64,6 +65,9 @@ public class Topic {
   @Column(name = "closed_at")
   private Instant closedAt;
 
+  @Column(name = "published_at")
+  private Instant publishedAt;
+
   @UpdateTimestamp
   @NotNull
   @Column(name = "updated_at", nullable = false)
@@ -104,5 +108,15 @@ public class Topic {
     }
 
     return result;
+  }
+
+  public TopicState getTopicState() {
+    if (this.closedAt != null) {
+      return TopicState.CLOSED;
+    } else if (this.publishedAt == null) {
+      return TopicState.DRAFT;
+    } else {
+      return TopicState.OPEN;
+    }
   }
 }

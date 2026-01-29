@@ -3,6 +3,7 @@ package de.tum.cit.aet.thesis.service;
 import de.tum.cit.aet.thesis.constants.ThesisRoleName;
 import de.tum.cit.aet.thesis.dto.InterviewProcessDto;
 import de.tum.cit.aet.thesis.dto.TopicInterviewProcessDto;
+import de.tum.cit.aet.thesis.constants.TopicState;
 import de.tum.cit.aet.thesis.entity.ResearchGroup;
 import de.tum.cit.aet.thesis.entity.Topic;
 import de.tum.cit.aet.thesis.entity.TopicRole;
@@ -51,7 +52,7 @@ public class TopicService {
     public Page<Topic> getAll(
             boolean onlyOwnResearchGroup,
             String[] types,
-            boolean includeClosed,
+            String[] states,
             String searchQuery,
             int page,
             int limit,
@@ -69,10 +70,16 @@ public class TopicService {
         String searchQueryFilter = searchQuery == null || searchQuery.isEmpty() ? null : searchQuery.toLowerCase();
         String[] typesFilter = types == null || types.length == 0 ? null : types;
 
+
+        if (states != null && Arrays.stream(states).anyMatch(s -> s.equals(TopicState.CLOSED.name()) || s.equals(TopicState.DRAFT.name()))) {
+            currentUserProvider().assertCanAccessResearchGroup(researchGroup);
+        }
+        String[] statesFilter = (states != null && states.length > 0) ? states : new String[] { TopicState.OPEN.name() };
+
         return topicRepository.searchTopics(
                 researchGroup == null ? ( researchGroupIds == null ? null : new HashSet<>(Arrays.asList(researchGroupIds))) : new HashSet<UUID>(Collections.singleton(researchGroup.getId())),
                 typesFilter,
-                includeClosed,
+                statesFilter,
                 searchQueryFilter,
                 PageRequest.of(page, limit, Sort.by(order))
         );
@@ -107,7 +114,7 @@ public class TopicService {
         return topicRepository.searchTopics(
                 Collections.singleton(researchGroupId),
                 null,
-                false,
+                new String[] { TopicState.OPEN.name() },
                 null,
                 PageRequest.of(0, Integer.MAX_VALUE, Sort.unsorted())
         ).toList();
@@ -125,7 +132,8 @@ public class TopicService {
             List<UUID> advisorIds,
             UUID researchGroupId,
             Instant intendedStart,
-            Instant applicationDeadline
+            Instant applicationDeadline,
+            Boolean isDraft
     ) {
         User creator = currentUserProvider().getUser();
         ResearchGroup researchGroup = researchGroupRepository.findById(researchGroupId).orElseThrow(
@@ -141,6 +149,9 @@ public class TopicService {
         topic.setReferences(references);
         topic.setUpdatedAt(Instant.now());
         topic.setCreatedAt(Instant.now());
+        if (isDraft != true) {
+            topic.setPublishedAt(Instant.now());
+        }
         topic.setCreatedBy(creator);
         topic.setResearchGroup(researchGroup);
         topic.setIntendedStart(intendedStart);
@@ -166,7 +177,8 @@ public class TopicService {
             List<UUID> advisorIds,
             UUID researchGroupId,
             Instant intendedStart,
-            Instant applicationDeadline
+            Instant applicationDeadline,
+            Boolean isDraft
     ) {
         ResearchGroup researchGroup = researchGroupRepository.findById(researchGroupId).orElseThrow(
                 () -> new ResourceNotFoundException("Research group not found")
@@ -179,6 +191,9 @@ public class TopicService {
         topic.setGoals(goals);
         topic.setReferences(references);
         topic.setUpdatedAt(Instant.now());
+        if (isDraft != true && topic.getPublishedAt() == null) {
+            topic.setPublishedAt(Instant.now());
+        }
         topic.setResearchGroup(researchGroup);
         topic.setIntendedStart(intendedStart);
         topic.setApplicationDeadline(applicationDeadline);
