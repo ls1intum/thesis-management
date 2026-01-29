@@ -37,7 +37,11 @@ import { useInterviewProcessContext } from '../../../providers/InterviewProcessP
 import AddIntervieweesModal from './AddIntervieweesModal'
 import ApplicationsProvider from '../../../providers/ApplicationsProvider/ApplicationsProvider'
 
-const IntervieweesList = () => {
+interface IIntervieweesListProps {
+  disabled?: boolean
+}
+
+const IntervieweesList = ({ disabled = false }: IIntervieweesListProps) => {
   const { processId } = useParams<{ processId: string }>()
   const [searchIntervieweeKey, setSearchIntervieweeKey] = useState('')
   const [debouncedSearch] = useDebouncedValue(searchIntervieweeKey, 500)
@@ -122,6 +126,7 @@ const IntervieweesList = () => {
                   setSelectIntervieweeMode(true)
                 }
               }}
+              disabled={disabled || interviewees.length === 0}
             >
               {isSmaller
                 ? selectIntervieweeMode
@@ -135,6 +140,7 @@ const IntervieweesList = () => {
               size='xs'
               leftSection={<PlusIcon size={16} />}
               onClick={() => setAddIntervieweesModalOpen(true)}
+              disabled={disabled}
             >
               {isSmaller ? 'Add' : 'Add Interviewee'}
             </Button>

@@ -522,4 +522,10 @@ public class InterviewProcessService {
 
         throw new ResourceNotFoundException("No booked slot found for the current user in the specified interview process.");
     }
+
+    public Boolean isInterviewProcessCompleted(UUID interviewProcessId) {
+        InterviewProcess interviewProcess = findById(interviewProcessId);
+
+        return interviewProcess.isCompleted();
+    }
 }

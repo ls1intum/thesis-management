@@ -139,7 +139,7 @@ const SlotItem = ({
                 />
               ) : (
                 <Text c={'dimmed'} size='sm' fw={500}>
-                  {isPast ? 'No interview' : 'Bookable'}
+                  {isPast || !assignable ? 'No interview' : 'Bookable'}
                 </Text>
               )}
               {assignable &&

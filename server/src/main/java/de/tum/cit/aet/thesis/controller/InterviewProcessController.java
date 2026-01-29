@@ -111,6 +111,14 @@ public class InterviewProcessController {
         return ResponseEntity.ok(interviewSlotDtos );
     }
 
+    @GetMapping("/{interviewProcessId}/completed")
+    public ResponseEntity<Boolean> isInterviewProcessCompleted(
+            @PathVariable("interviewProcessId") UUID interviewProcessId
+    ) {
+        boolean isCompleted = interviewProcessService.isInterviewProcessCompleted(interviewProcessId);
+        return ResponseEntity.ok(isCompleted);
+    }
+
     @GetMapping("/{interviewProcessId}/interview-slots")
     //Not preauthorized to allow interviewees to fetch available slots -> check inside service method if process is accessible to the user
     public ResponseEntity<List<InterviewSlotDto>> getInterviewProcessInterviewSlots(

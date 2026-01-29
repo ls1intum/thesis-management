@@ -27,7 +27,11 @@ import { useInterviewProcessContext } from '../../../providers/InterviewProcessP
 import { GLOBAL_CONFIG } from '../../../config/global'
 import { useUser } from '../../../hooks/authentication'
 
-const CalendarCarousel = () => {
+interface ICalendarCarouselProps {
+  disabled?: boolean
+}
+
+const CalendarCarousel = ({ disabled = false }: ICalendarCarouselProps) => {
   const [carouselSlide, setCarouselSlide] = useState(0)
 
   const [firstSlideIndexForDate, setFirstSlideIndexForDate] = useState<Record<string, number>>({})
@@ -162,6 +166,7 @@ const CalendarCarousel = () => {
             size='xs'
             leftSection={<PlusIcon size={16} />}
             onClick={() => setSlotModalOpen(true)}
+            disabled={disabled}
           >
             {isSmaller ? 'Add' : 'Add Slot'}
           </Button>
@@ -250,7 +255,7 @@ const CalendarCarousel = () => {
                               withInterviewee
                               disabled={dateRowDisabled(date, chunkIndex)}
                               hoverEffect={false}
-                              assignable={isFuture ? true : false}
+                              assignable={isFuture && !disabled ? true : false}
                               isPast={!isFuture}
                               withLocation
                             />
