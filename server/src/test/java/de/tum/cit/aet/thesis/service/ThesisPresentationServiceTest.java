@@ -246,6 +246,9 @@ class ThesisPresentationServiceTest {
                 .thenReturn(List.of(testPresentation));
         when(calendarService.createVEvent(anyString(), any()))
                 .thenReturn(null);
+        when(calendarService.createEmptyCalendar(anyString())).thenReturn(
+                new Calendar()
+        );
 
         Calendar result = presentationService.getPresentationCalendar(null);
 
