@@ -400,6 +400,10 @@ public class InterviewProcessService {
             throw new ResourceNotFoundException(String.format("Slot with id %s does not belong to the provided process.", slotId));
         }
 
+        if (interviewProcess.getSlots().stream().anyMatch((slot) -> slot.getInterviewee() != null && slot.getInterviewee().getApplication().getUser().getId().equals(intervieweeUserId))) {
+            throw new IllegalStateException("Interviewee has already booked a slot for this interview process.");
+        }
+
         Interviewee interviewee = interviewProcess.getInterviewees().stream()
                 .filter(ie -> ie.getApplication().getUser().getId().equals(intervieweeUserId))
                 .findFirst()

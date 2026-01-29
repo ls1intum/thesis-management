@@ -135,8 +135,14 @@ const CalendarCarousel = ({ disabled = false }: ICalendarCarouselProps) => {
               </Button>
             </Popover.Target>
             <Popover.Dropdown>
-              <Group>
-                <Text c='dimmed'>Subscribe to Calendar</Text>
+              <Stack gap={'0.5rem'}>
+                <Stack gap={0}>
+                  <Text>Subscribe to Calendar</Text>
+                  <Text size='xs' c='dimmed'>
+                    Use this URL to subscribe to the interview slots of all your interview processes
+                  </Text>
+                </Stack>
+
                 <div style={{ flexGrow: 1 }}>
                   <CopyButton value={calendarUrl}>
                     {({ copied, copy }) => (
@@ -159,7 +165,7 @@ const CalendarCarousel = ({ disabled = false }: ICalendarCarouselProps) => {
                     )}
                   </CopyButton>
                 </div>
-              </Group>
+              </Stack>
             </Popover.Dropdown>
           </Popover>
           <Button
