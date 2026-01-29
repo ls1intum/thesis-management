@@ -329,7 +329,7 @@ public class ApplicationService {
         List<Application> result = new ArrayList<>();
 
         for (Application application : applications) {
-            if (application.getState() != ApplicationState.NOT_ASSESSED) {
+            if (!(application.getState() == ApplicationState.NOT_ASSESSED || application.getState() == ApplicationState.INTERVIEWING)) {
                 continue;
             }
 

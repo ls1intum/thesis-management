@@ -70,6 +70,10 @@ const IntervieweeCard = ({
   const [inviteModalOpen, setInviteModalOpen] = useState(false)
   const [cancelModalOpen, setCancelModalOpen] = useState(false)
 
+  const isAcceptedOrRejected =
+    interviewee.applicationState === ApplicationState.ACCEPTED ||
+    interviewee.applicationState === ApplicationState.REJECTED
+
   return (
     <Paper withBorder bg={scoreColorTranslate(interviewee.score ?? -1)} radius='md' flex={flex}>
       <Card p={0} ml={8} radius='md'>
@@ -123,16 +127,17 @@ const IntervieweeCard = ({
               </Stack>
             </Group>
             <Group>
-              {(state === InterviewState.UNCONTACTED || state === InterviewState.INVITED) && (
-                <Button
-                  variant='outline'
-                  size='xs'
-                  leftSection={<PaperPlaneTiltIcon size={16} />}
-                  onClick={inviteInterviewee}
-                >
-                  {state === InterviewState.UNCONTACTED ? 'Invite' : 'Re-invite'}
-                </Button>
-              )}
+              {(state === InterviewState.UNCONTACTED || state === InterviewState.INVITED) &&
+                !isAcceptedOrRejected && (
+                  <Button
+                    variant='outline'
+                    size='xs'
+                    leftSection={<PaperPlaneTiltIcon size={16} />}
+                    onClick={inviteInterviewee}
+                  >
+                    {state === InterviewState.UNCONTACTED ? 'Invite' : 'Re-invite'}
+                  </Button>
+                )}
               {interviewee.nextSlot?.startDate &&
                 new Date(interviewee.nextSlot.startDate) > new Date() && (
                   <Button
@@ -145,13 +150,10 @@ const IntervieweeCard = ({
                     Cancel Interview
                   </Button>
                 )}
-              {state === InterviewState.COMPLETED &&
-                interviewee.applicationState !== ApplicationState.ACCEPTED &&
-                interviewee.applicationState !== ApplicationState.REJECTED && (
-                  <AcceptApplicantModal interviewee={interviewee} />
-                )}
-              {(interviewee.applicationState === ApplicationState.ACCEPTED ||
-                interviewee.applicationState === ApplicationState.REJECTED) && (
+              {state === InterviewState.COMPLETED && !isAcceptedOrRejected && (
+                <AcceptApplicantModal interviewee={interviewee} />
+              )}
+              {isAcceptedOrRejected && (
                 <Badge
                   variant='transparent'
                   color={
