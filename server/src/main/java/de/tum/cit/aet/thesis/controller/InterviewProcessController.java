@@ -98,6 +98,16 @@ public class InterviewProcessController {
         return ResponseEntity.ok(TopicDto.fromTopicEntity(interviewProcess.getTopic()));
     }
 
+    @GetMapping("/{interviewProcessId}")
+    @PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
+    public ResponseEntity<InterviewProcessDto> getInterviewProcess(
+            @PathVariable("interviewProcessId") UUID interviewProcessId
+    ) {
+        InterviewProcess interviewProcess = interviewProcessService.getInterviewProcess(interviewProcessId);
+
+        return ResponseEntity.ok(InterviewProcessDto.fromInterviewProcessEntity(interviewProcess));
+    }
+
     @PostMapping("/interview-slots")
     @PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
     public ResponseEntity<List<InterviewSlotDto>> addInterviewProcessSlots(@RequestBody CreateInterviewSlotsPayload payload) {

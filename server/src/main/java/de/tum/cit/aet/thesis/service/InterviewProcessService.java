@@ -532,4 +532,11 @@ public class InterviewProcessService {
 
         return interviewProcess.isCompleted();
     }
+
+    public InterviewProcess getInterviewProcess(UUID interviewProcessId) {
+        InterviewProcess interviewProcess = findById(interviewProcessId);
+        currentUserProvider().assertCanAccessResearchGroup(interviewProcess.getTopic().getResearchGroup());
+
+        return interviewProcess;
+    }
 }

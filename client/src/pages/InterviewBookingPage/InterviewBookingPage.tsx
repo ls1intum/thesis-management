@@ -11,11 +11,10 @@ import {
   Loader,
   Collapse,
   Paper,
-  useMantineColorScheme,
 } from '@mantine/core'
 import { useIsSmallerBreakpoint } from '../../hooks/theme'
 import { IInterviewSlot } from '../../requests/responses/interview'
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import SummaryCard from './components/SummaryCard'
 import {
   BuildingOfficeIcon,
@@ -31,7 +30,6 @@ import { useParams } from 'react-router'
 import { showSimpleError } from '../../utils/notification'
 import { getApiResponseErrorMessage } from '../../requests/handler'
 import { useAuthenticationContext, useUser } from '../../hooks/authentication'
-import { ConfettiIcon } from '@phosphor-icons/react/dist/ssr'
 import { ITopic } from '../../requests/responses/topic'
 import AvatarUserList from '../../components/AvatarUserList/AvatarUserList'
 import InterviewProcessProvider from '../../providers/InterviewProcessProvider/InterviewProcessProvider'
@@ -85,24 +83,51 @@ const InterviewBookingPage = () => {
 
   const fetchMyBooking = async () => {
     setPageLoading(true)
-    doRequest<IInterviewSlot>(
-      `/v2/interview-process/${processId}/my-booking`,
-      { method: 'GET', requiresAuth: true },
-      (res) => {
-        if (res.status === 204) {
-          setMyBooking(null)
-        } else if (res.ok) {
-          setMyBooking({
-            ...res.data,
-            startDate: new Date(res.data.startDate),
-            endDate: new Date(res.data.endDate),
-          })
-          setSelectedSlot(res.data)
-        }
-        setPageLoading(false)
-      },
-    )
+
+    new Promise<boolean>((resolve) => {
+      doRequest<boolean>(
+        `/v2/interview-process/${processId}/completed`,
+        {
+          method: 'GET',
+          requiresAuth: true,
+        },
+        (res) => {
+          if (res.ok) {
+            setProcessCompleted(res.data)
+            if (res.data) {
+              setPageLoading(false)
+            }
+            resolve(res.data)
+          } else {
+            resolve(false)
+          }
+        },
+      )
+    }).then((completed) => {
+      if (completed) {
+        return
+      }
+
+      doRequest<IInterviewSlot>(
+        `/v2/interview-process/${processId}/my-booking`,
+        { method: 'GET', requiresAuth: true },
+        (res) => {
+          if (res.status === 204) {
+            setMyBooking(null)
+          } else if (res.ok) {
+            setMyBooking({
+              ...res.data,
+              startDate: new Date(res.data.startDate),
+              endDate: new Date(res.data.endDate),
+            })
+          }
+          setPageLoading(false)
+        },
+      )
+    })
   }
+
+  const [processCompleted, setProcessCompleted] = useState(false)
 
   const bookSlot = async (slotId: string) => {
     setPageLoading(true)
@@ -131,8 +156,11 @@ const InterviewBookingPage = () => {
   }
 
   useEffect(() => {
-    fetchMyBooking().then(() => fetchTopicInformation())
-  }, [])
+    if (processId && auth.isAuthenticated) {
+      fetchMyBooking()
+      fetchTopicInformation()
+    }
+  }, [processId, auth.isAuthenticated])
 
   const [cancelModalOpen, setCancelModalOpen] = useState(false)
 
@@ -220,6 +248,22 @@ const InterviewBookingPage = () => {
     return (
       <Center style={{ height: '100%' }}>
         <Text>Please log in to book an interview slot.</Text>
+      </Center>
+    )
+  }
+
+  if (processCompleted) {
+    return (
+      <Center style={{ height: '100%' }}>
+        <Stack align='center' gap={'2rem'}>
+          <Stack gap={'0.5rem'} align='center'>
+            <Title order={2}>Interview Process Completed</Title>
+            <Text>
+              The Interview Process for this topic has been marked as completed. You can no longer
+              book an interview slot.
+            </Text>
+          </Stack>
+        </Stack>
       </Center>
     )
   }
