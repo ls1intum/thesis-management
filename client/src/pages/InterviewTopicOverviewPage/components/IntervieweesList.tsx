@@ -43,15 +43,20 @@ interface IIntervieweesListProps {
 
 const IntervieweesList = ({ disabled = false }: IIntervieweesListProps) => {
   const { processId } = useParams<{ processId: string }>()
-  const [searchIntervieweeKey, setSearchIntervieweeKey] = useState('')
+
+  const {
+    interviewees,
+    intervieweesLoading,
+    fetchPossibleInterviewees,
+    searchIntervieweeKey,
+    setSearchIntervieweeKey,
+    state,
+    setState,
+  } = useInterviewProcessContext()
+
   const [debouncedSearch] = useDebouncedValue(searchIntervieweeKey, 500)
 
-  const [state, setState] = useState<string>('ALL')
-
   const isSmaller = useIsSmallerBreakpoint('md')
-
-  const { interviewees, intervieweesLoading, fetchPossibleInterviewees } =
-    useInterviewProcessContext()
 
   const [showLoader] = useDebouncedValue(intervieweesLoading, 1000)
 

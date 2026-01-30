@@ -6,6 +6,7 @@ import { getApiResponseErrorMessage } from '../../requests/handler'
 import { IIntervieweeLightWithNextSlot, IInterviewSlot } from '../../requests/responses/interview'
 import { PaginationResponse } from '../../requests/responses/pagination'
 import { useParams } from 'react-router'
+import { useDebouncedValue } from '@mantine/hooks'
 
 interface IInterviewProcessProviderProps {
   excludeBookedSlots?: boolean
@@ -24,6 +25,9 @@ const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProv
 
   const [interviewees, setInterviewees] = useState<IIntervieweeLightWithNextSlot[]>([])
   const [intervieweesLoading, setIntervieweesLoading] = useState(false)
+
+  const [searchIntervieweeKey, setSearchIntervieweeKey] = useState('')
+  const [state, setState] = useState<string>('ALL')
 
   function groupSlotsByDate(slots: IInterviewSlot[]): Record<string, IInterviewSlot[]> {
     return slots
@@ -84,7 +88,9 @@ const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProv
 
           if (res.ok) {
             fetchInterviewSlots()
-            fetchPossibleInterviewees() // TODO: Missing searchkey and state?
+            if (autoFetchInterviewees) {
+              fetchPossibleInterviewees(searchIntervieweeKey, state)
+            }
             setBookingSuccessful(true)
           } else {
             showSimpleError(getApiResponseErrorMessage(res))
@@ -111,7 +117,7 @@ const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProv
           if (res.ok) {
             fetchInterviewSlots()
             if (autoFetchInterviewees) {
-              fetchPossibleInterviewees() // TODO: Missing searchkey and state?
+              fetchPossibleInterviewees(searchIntervieweeKey, state)
             }
             if (onCancelSucessfull) onCancelSucessfull()
           } else {
@@ -150,7 +156,7 @@ const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProv
               resolve(content)
             } else {
               showSimpleError(getApiResponseErrorMessage(res))
-              resolve([]) // ✅ always resolve an array
+              resolve([])
             }
             setIntervieweesLoading(false)
           },
@@ -222,6 +228,11 @@ const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProv
       addIntervieweesToProcess,
 
       cancelSlot,
+
+      searchIntervieweeKey,
+      setSearchIntervieweeKey,
+      state,
+      setState,
     }
   }, [
     processId,
@@ -235,6 +246,10 @@ const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProv
     fetchPossibleInterviewees,
     cancelSlot,
     addIntervieweesToProcess,
+    searchIntervieweeKey,
+    setSearchIntervieweeKey,
+    state,
+    setState,
   ])
 
   return (

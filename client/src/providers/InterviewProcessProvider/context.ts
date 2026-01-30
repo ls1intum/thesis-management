@@ -27,6 +27,12 @@ export interface IInterviewProcessContext {
 
   // cancel interview
   cancelSlot: (slotId: string, onCancelSucessfull?: () => void) => void
+
+  // search and filter
+  searchIntervieweeKey: string
+  setSearchIntervieweeKey: Dispatch<SetStateAction<string>>
+  state: string
+  setState: Dispatch<SetStateAction<string>>
 }
 
 export const InterviewProcessContext = React.createContext<IInterviewProcessContext | undefined>(

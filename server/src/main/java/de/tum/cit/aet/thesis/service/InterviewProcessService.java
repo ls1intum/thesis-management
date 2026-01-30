@@ -258,11 +258,14 @@ public class InterviewProcessService {
             if (incoming.getSlotId() != null && existingById.containsKey(incoming.getSlotId())) {
                 InterviewSlot toUpdate = existingById.get(incoming.getSlotId());
 
-                //TODO: INSTEAD ALLOW UPDATING BOOKED SLOTS WITH RE-SENDING EMAILS
                 // Only allow updating unbooked slots
                 if (toUpdate.getInterviewee() == null) {
                     toUpdate.setStartDate(incoming.startDate());
                     toUpdate.setEndDate(incoming.endDate());
+                    toUpdate.setLocation(incoming.location());
+                    toUpdate.setStreamLink(incoming.streamUrl());
+                } else {
+                    //TODO: INSTEAD ALLOW UPDATING BOOKED SLOTS WITH RE-SENDING EMAILS
                     toUpdate.setLocation(incoming.location());
                     toUpdate.setStreamLink(incoming.streamUrl());
                 }
