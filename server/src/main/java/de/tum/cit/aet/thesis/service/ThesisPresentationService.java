@@ -1,14 +1,9 @@
 package de.tum.cit.aet.thesis.service;
 
-import de.tum.cit.aet.thesis.constants.StringLimits;
 import de.tum.cit.aet.thesis.security.CurrentUserProvider;
-import de.tum.cit.aet.thesis.utility.RequestValidator;
 import jakarta.mail.internet.InternetAddress;
 import net.fortuna.ical4j.model.Calendar;
-import net.fortuna.ical4j.model.property.ProdId;
-import net.fortuna.ical4j.model.property.immutable.ImmutableCalScale;
 import net.fortuna.ical4j.model.property.immutable.ImmutableMethod;
-import net.fortuna.ical4j.model.property.immutable.ImmutableVersion;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,6 +45,8 @@ public class ThesisPresentationService {
     private final ThesisPresentationInviteRepository thesisPresentationInviteRepository;
 
     private final ResearchGroupSettingsService researchGroupSettingsService;
+
+    private final String calendarProdId = "-//Thesis Management//Thesis Presentations//EN";
 
     @Autowired
     public ThesisPresentationService(
@@ -110,7 +107,7 @@ public class ThesisPresentationService {
     }
 
     public Calendar getPresentationCalendar(UUID researchGroupId) {
-        Calendar calendar = createEmptyCalendar();
+        Calendar calendar = calendarService.createEmptyCalendar(calendarProdId);
 
         calendar.add(ImmutableMethod.PUBLISH);
 
@@ -129,7 +126,7 @@ public class ThesisPresentationService {
     }
 
     public Calendar getPresentationInvite(ThesisPresentation presentation) {
-        Calendar calendar = createEmptyCalendar();
+        Calendar calendar = calendarService.createEmptyCalendar(calendarProdId);
 
         calendar.add(ImmutableMethod.REQUEST);
 
@@ -344,16 +341,6 @@ public class ThesisPresentationService {
         }
 
         return presentation;
-    }
-
-    private Calendar createEmptyCalendar() {
-        Calendar calendar = new Calendar();
-
-        calendar.add(new ProdId("-//Thesis Management//Thesis Presentations//EN"));
-        calendar.add(ImmutableVersion.VERSION_2_0);
-        calendar.add(ImmutableCalScale.GREGORIAN);
-
-        return calendar;
     }
 
     private CalendarService.CalendarEvent createPresentationCalendarEvent(ThesisPresentation presentation) {

@@ -38,9 +38,24 @@ const ReviewApplicationPage = lazy(
 const ThesisPage = lazy(() => import('../pages/ThesisPage/ThesisPage'))
 const LandingPage = lazy(() => import('../pages/LandingPage/LandingPage'))
 
+const InterviewOverviewPage = lazy(
+  () => import('../pages/InterviewOverviewPage/InterviewOverviewPage'),
+)
+const InterviewTopicOverviewPage = lazy(
+  () => import('../pages/InterviewTopicOverviewPage/InterviewTopicOverviewPage'),
+)
+const IntervieweeAssesmentPage = lazy(
+  () => import('../pages/IntervieweeAssementPage/IntervieweeAssesmentPage'),
+)
+const InterviewBookingPage = lazy(
+  () => import('../pages/InterviewBookingPage/InterviewBookingPage'),
+)
+
 const AppRoutes = () => {
   const auth = useAuthenticationContext()
   const isSmaller = useIsSmallerBreakpoint('md')
+
+  const publicBreakpointSize = '100rem'
 
   return (
     <Suspense fallback={<PageLoader />}>
@@ -99,7 +114,7 @@ const AppRoutes = () => {
                   <PresentationPage />
                 </AuthenticatedArea>
               ) : (
-                <PublicArea size='xl'>
+                <PublicArea size={publicBreakpointSize}>
                   <PresentationPage />
                 </PublicArea>
               )
@@ -121,7 +136,7 @@ const AppRoutes = () => {
                   <TopicPage />
                 </AuthenticatedArea>
               ) : (
-                <PublicArea size='xl'>
+                <PublicArea size={publicBreakpointSize}>
                   <TopicPage />
                 </PublicArea>
               )
@@ -179,9 +194,47 @@ const AppRoutes = () => {
             }
           />
           <Route
+            path='/interviews'
+            element={
+              <AuthenticatedArea
+                requiredGroups={['advisor', 'supervisor']}
+                handleScrollInView={!isSmaller}
+              >
+                <InterviewOverviewPage />
+              </AuthenticatedArea>
+            }
+          />
+          <Route
+            path='/interviews/:processId'
+            element={
+              <AuthenticatedArea requiredGroups={['admin', 'advisor', 'supervisor']}>
+                <InterviewTopicOverviewPage />
+              </AuthenticatedArea>
+            }
+          />
+          <Route
+            path='/interviews/:processId/interviewee/:intervieweeId'
+            element={
+              <AuthenticatedArea
+                requiredGroups={['admin', 'advisor', 'supervisor']}
+                handleScrollInView={!isSmaller}
+              >
+                <IntervieweeAssesmentPage />
+              </AuthenticatedArea>
+            }
+          />
+          <Route
+            path='/interview_booking/:processId'
+            element={
+              <PublicArea size={publicBreakpointSize} handleScrollInView={true}>
+                <InterviewBookingPage />
+              </PublicArea>
+            }
+          />
+          <Route
             path='/about'
             element={
-              <PublicArea size='xl'>
+              <PublicArea size={publicBreakpointSize}>
                 <AboutPage />
               </PublicArea>
             }
@@ -189,7 +242,7 @@ const AppRoutes = () => {
           <Route
             path='/imprint'
             element={
-              <PublicArea size='xl'>
+              <PublicArea size={publicBreakpointSize}>
                 <ImprintPage />
               </PublicArea>
             }
@@ -197,7 +250,7 @@ const AppRoutes = () => {
           <Route
             path='/privacy'
             element={
-              <PublicArea size='xl'>
+              <PublicArea size={publicBreakpointSize}>
                 <PrivacyPage />
               </PublicArea>
             }
@@ -206,7 +259,7 @@ const AppRoutes = () => {
           <Route
             path='/'
             element={
-              <PublicArea size='xl'>
+              <PublicArea size={publicBreakpointSize}>
                 <LandingPage />
               </PublicArea>
             }
@@ -214,7 +267,7 @@ const AppRoutes = () => {
           <Route
             path='/:researchGroupAbbreviation'
             element={
-              <PublicArea size='xl'>
+              <PublicArea size={publicBreakpointSize}>
                 <LandingPage />
               </PublicArea>
             }

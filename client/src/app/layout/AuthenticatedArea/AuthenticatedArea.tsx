@@ -19,16 +19,17 @@ import { useDebouncedValue, useDisclosure } from '@mantine/hooks'
 import {
   CaretDoubleLeft,
   CaretDoubleRight,
-  Kanban,
   NewspaperClipping,
-  Scroll,
   SignOut,
-  FolderSimplePlus,
-  PaperPlaneTilt,
-  Table,
-  Presentation,
-  UsersThree,
   Gear,
+  PresentationIcon,
+  PaperPlaneTiltIcon,
+  ScrollIcon,
+  FolderSimplePlusIcon,
+  KanbanIcon,
+  TableIcon,
+  UsersThreeIcon,
+  ChatsCircleIcon,
 } from '@phosphor-icons/react'
 import { useAuthenticationContext, useUser } from '../../../hooks/authentication'
 import { useNavigationType } from 'react-router'
@@ -41,7 +42,6 @@ import ContentContainer from '../ContentContainer/ContentContainer'
 import Footer from '../../../components/Footer/Footer'
 import Header from '../../../components/Header/Header'
 import { useIsSmallerBreakpoint } from '../../../hooks/theme'
-import { IUser } from '../../../requests/responses/user'
 
 export interface IAuthenticatedAreaProps {
   size?: MantineSize
@@ -65,46 +65,52 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
     {
       link: '/presentations',
       label: 'Presentations',
-      icon: Presentation,
+      icon: PresentationIcon,
       groups: undefined,
       display: useAuthenticationContext().researchGroups.length > 0,
     },
     {
       link: '/submit-application',
       label: 'Submit Application',
-      icon: PaperPlaneTilt,
+      icon: PaperPlaneTiltIcon,
       groups: undefined,
       hideFromGroups: ['advisor', 'supervisor'],
     },
     {
       link: '/applications',
       label: 'Review Applications',
-      icon: Scroll,
+      icon: ScrollIcon,
       groups: ['admin', 'advisor', 'supervisor'],
     },
     {
       link: '/topics',
       label: 'Manage Topics',
-      icon: FolderSimplePlus,
+      icon: FolderSimplePlusIcon,
       groups: ['admin', 'advisor', 'supervisor'],
     },
     {
       link: '/theses',
       label: 'Browse Theses',
-      icon: Table,
+      icon: TableIcon,
       groups: undefined,
     },
     {
       link: '/overview',
       label: 'Theses Overview',
-      icon: Kanban,
+      icon: KanbanIcon,
       groups: ['admin', 'advisor', 'supervisor'],
     },
     {
       link: '/research-groups',
       label: 'Research Groups',
-      icon: UsersThree,
+      icon: UsersThreeIcon,
       groups: ['admin'],
+    },
+    {
+      link: '/interviews',
+      label: 'Interviews',
+      icon: ChatsCircleIcon,
+      groups: ['advisor', 'supervisor'],
     },
   ]
 
@@ -156,7 +162,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
     <AppShell
       header={{ height: HEADER_HEIGHT }}
       navbar={{
-        width: collapseNavigation || minimizedState ? 70 : 300,
+        width: collapseNavigation || minimizedState ? 70 : 250,
         breakpoint: 'md',
         collapsed: { mobile: !opened, desktop: false },
       }}

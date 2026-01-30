@@ -186,6 +186,45 @@ public class MailingService {
                 .send(javaMailSender, uploadService);
     }
 
+    public void sendInterviewInvitationEmail(Interviewee interviewee, Boolean firstInvitation) {
+        EmailTemplate emailTemplate = loadTemplate(
+                interviewee.getApplication().getResearchGroup().getId(),
+                 firstInvitation ? "INTERVIEW_INVITATION" : "INTERVIEW_INVITATION_REMINDER",
+                "en");
+
+        MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(), emailTemplate.getBodyHtml());
+        mailBuilder
+                .addPrimaryRecipient(interviewee.getApplication().getUser())
+                .addNotificationName(emailTemplate.getSubject())
+                .fillApplicationPlaceholders(interviewee.getApplication())
+                .fillIntervieweePlaceholders(interviewee)
+                .send(javaMailSender, uploadService);
+    }
+
+    public void sendInterviewSlotConfirmationEmail(InterviewSlot slot, String type) {
+        String templateCase = switch (type) {
+            case "BOOK" -> "INTERVIEW_SLOT_BOOKED_CONFORMATION";
+            case "CANCEL" -> "INTERVIEW_SLOT_BOOKED_CANCELLATION";
+            default -> throw new IllegalArgumentException("Invalid interview slot email type: " + type);
+        };
+        EmailTemplate emailTemplate = loadTemplate(
+                slot.getInterviewee().getApplication().getResearchGroup().getId(),
+                templateCase,
+                "en");
+
+        User advisor = slot.getInterviewProcess().getTopic().getAdvisors().getFirst();
+
+        MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(), emailTemplate.getBodyHtml());
+        mailBuilder
+                .addPrimaryRecipient(slot.getInterviewee().getApplication().getUser())
+                .addSecondaryRecipient(advisor)
+                .addNotificationName(emailTemplate.getSubject())
+                .fillApplicationPlaceholders(slot.getInterviewee().getApplication())
+                .fillIntervieweePlaceholders(slot.getInterviewee())
+                .fillInterviewSlotPlaceholders(slot)
+                .send(javaMailSender, uploadService);
+    }
+
     public void sendThesisCreatedEmail(User creatingUser, Thesis thesis) {
         EmailTemplate emailTemplate = loadTemplate(
                 thesis.getResearchGroup().getId(),

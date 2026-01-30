@@ -147,6 +147,26 @@ const ApplicationsProvider = (props: PropsWithChildren<IApplicationsProviderProp
     !topics,
   ])
 
+  const fetchApplication = async (applicationId: string): Promise<IApplication | null> => {
+    return new Promise((resolve) => {
+      doRequest<IApplication>(
+        `/v2/applications/${applicationId}`,
+        {
+          method: 'GET',
+          requiresAuth: true,
+        },
+        (res) => {
+          if (res.ok) {
+            resolve(res.data)
+          } else {
+            showSimpleError(getApiResponseErrorMessage(res))
+            resolve(null)
+          }
+        },
+      )
+    })
+  }
+
   const contextState = useMemo<IApplicationsContext>(() => {
     return {
       topics,
@@ -181,6 +201,7 @@ const ApplicationsProvider = (props: PropsWithChildren<IApplicationsProviderProp
           return { ...prev }
         })
       },
+      fetchApplication,
     }
   }, [user.userId, topics, applications, adjustedFilters, sort, page, limit])
 

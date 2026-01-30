@@ -1,5 +1,7 @@
 package de.tum.cit.aet.thesis.controller;
 
+import de.tum.cit.aet.thesis.dto.ApplicationInterviewProcessDto;
+import de.tum.cit.aet.thesis.dto.TopicInterviewProcessDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,8 @@ import de.tum.cit.aet.thesis.utility.RequestValidator;
 
 import java.util.List;
 import java.util.UUID;
+
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -111,6 +115,33 @@ public class ApplicationController {
 
         return ResponseEntity.ok(PaginationDto.fromSpringPage(
                 applications.map(application -> ApplicationDto.fromApplicationEntity(application, application.hasManagementAccess(authenticatedUser)))
+        ));
+    }
+
+    @GetMapping("/interview-applications")
+    @PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
+    public ResponseEntity<PaginationDto<ApplicationInterviewProcessDto>> getPossibleInterviewApplicationsForTopic(
+            @RequestParam(required = true) String topicId,
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "50") Integer limit
+    ) {
+        Page<Application> applications = applicationService.getAll(
+                null,
+                null,
+                null,
+                new ApplicationState[]{ApplicationState.NOT_ASSESSED, ApplicationState.INTERVIEWING},
+                null,
+                new String[]{topicId},
+                null,
+                false,
+                page,
+                limit <= 0 ? Integer.MAX_VALUE : limit,
+                "createdAt",
+                "desc"
+        );
+
+        return ResponseEntity.ok(PaginationDto.fromSpringPage(
+                applications.map(ApplicationInterviewProcessDto::from)
         ));
     }
 

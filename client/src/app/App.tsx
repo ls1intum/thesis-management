@@ -11,6 +11,7 @@ import '@mantine/notifications/styles.css'
 import '@mantine/tiptap/styles.css'
 import '@mantine/dropzone/styles.css'
 import 'mantine-datatable/styles.layer.css'
+import '@mantine/carousel/styles.css'
 
 import * as buttonClasses from './styles/Buttons.module.css'
 
@@ -28,6 +29,8 @@ const theme = createTheme({
       '#504c97',
       '#464388',
       '#3b3979',
+      '#302F66',
+      '#17172aff',
     ],
   },
   primaryColor: 'primary',
@@ -36,6 +39,10 @@ const theme = createTheme({
     Button: Button.extend({
       classNames: buttonClasses,
     }),
+  },
+  breakpoints: {
+    xxl: '88rem',
+    '3xl': '120rem',
   },
 })
 

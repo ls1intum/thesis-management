@@ -1,5 +1,6 @@
 package de.tum.cit.aet.thesis.entity;
 
+import de.tum.cit.aet.thesis.constants.ThesisRoleName;
 import de.tum.cit.aet.thesis.constants.TopicState;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -96,6 +97,18 @@ public class Topic {
   @OneToMany(mappedBy = "topic", fetch = FetchType.EAGER)
   @OrderBy("position ASC")
   private List<TopicRole> roles = new ArrayList<>();
+
+  public List<User> getAdvisors() {
+    List<User> result = new ArrayList<>();
+
+    for (TopicRole role : getRoles()) {
+        if (role.getId().getRole() == ThesisRoleName.ADVISOR) {
+            result.add(role.getUser());
+        }
+    }
+
+    return result;
+  }
 
   public TopicState getTopicState() {
     if (this.closedAt != null) {

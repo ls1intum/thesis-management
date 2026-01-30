@@ -17,11 +17,15 @@ import java.util.UUID;
 public class CalendarController {
     private final ThesisPresentationService thesisPresentationService;
     private final ResearchGroupService researchGroupService;
+    private final UserService userService;
+    private final InterviewProcessService interviewProcessService;
 
     @Autowired
-    public CalendarController(ThesisPresentationService thesisPresentationService, ResearchGroupService researchGroupService) {
+    public CalendarController(ThesisPresentationService thesisPresentationService, ResearchGroupService researchGroupService, UserService userService, InterviewProcessService interviewProcessService) {
         this.thesisPresentationService = thesisPresentationService;
         this.researchGroupService = researchGroupService;
+        this.userService = userService;
+        this.interviewProcessService = interviewProcessService;
     }
 
     @GetMapping( "/presentations/{researchGroupAbbreviation}")
@@ -36,5 +40,15 @@ public class CalendarController {
                 .contentType(MediaType.parseMediaType("text/calendar"))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=calendar.ics")
                 .body(thesisPresentationService.getPresentationCalendar(researchGroup.getId()).toString());
+    }
+
+    @GetMapping("/interviews/user/{userId}")
+    public ResponseEntity<String> getInterviews(@PathVariable UUID userId) {
+        userService.findById(userId);
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType("text/calendar"))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=calendar.ics")
+                .body(interviewProcessService.getInterviewCalendarForUser(userId).toString());
     }
 }

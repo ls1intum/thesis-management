@@ -6,6 +6,7 @@ import de.tum.cit.aet.thesis.controller.payload.CloseTopicPayload;
 import de.tum.cit.aet.thesis.controller.payload.ReplaceTopicPayload;
 import de.tum.cit.aet.thesis.dto.PaginationDto;
 import de.tum.cit.aet.thesis.dto.TopicDto;
+import de.tum.cit.aet.thesis.dto.TopicInterviewProcessDto;
 import de.tum.cit.aet.thesis.entity.Topic;
 import de.tum.cit.aet.thesis.service.ApplicationService;
 import de.tum.cit.aet.thesis.service.TopicService;
@@ -132,5 +133,23 @@ public class TopicController {
         );
 
         return ResponseEntity.ok(TopicDto.fromTopicEntity(topic));
+    }
+
+    @GetMapping("/interview-topics")
+    @PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
+    public ResponseEntity<PaginationDto<TopicInterviewProcessDto>> getPossibleInterviewTopics(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "50") Integer limit,
+            @RequestParam(required = false, defaultValue = "false") boolean excludeSupervised
+    ) {
+        Page<TopicInterviewProcessDto> topics = topicService.getPossibleInterviewTopics(
+                search,
+                page,
+                limit,
+                excludeSupervised
+        );
+
+        return ResponseEntity.ok(PaginationDto.fromSpringPage(topics));
     }
 }
