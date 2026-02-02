@@ -23,9 +23,15 @@ const convertTemplateVariablesToHtml = (text: string): string => {
 interface IEmailTextEditorProps {
   editingTemplate?: IEmailTemplate | null
   setEditingTemplate?: (template: IEmailTemplate | null) => void
+
+  stickyOffset?: number
 }
 
-const EmailTextEditor = ({ editingTemplate, setEditingTemplate }: IEmailTextEditorProps) => {
+const EmailTextEditor = ({
+  editingTemplate,
+  setEditingTemplate,
+  stickyOffset = 0,
+}: IEmailTextEditorProps) => {
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -61,7 +67,7 @@ const EmailTextEditor = ({ editingTemplate, setEditingTemplate }: IEmailTextEdit
 
   return (
     <RichTextEditor editor={editor}>
-      <RichTextEditor.Toolbar sticky stickyOffset='var(--docs-header-height)'>
+      <RichTextEditor.Toolbar sticky stickyOffset={stickyOffset}>
         <RichTextEditor.ControlsGroup>
           <RichTextEditor.Bold />
           <RichTextEditor.Italic />

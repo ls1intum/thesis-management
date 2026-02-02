@@ -65,6 +65,7 @@ const EmailTemplateModal = ({
             <EmailTextEditor
               editingTemplate={editingTemplate}
               setEditingTemplate={setEditingTemplate}
+              stickyOffset={50}
             />
           </Stack>
         ) : (
