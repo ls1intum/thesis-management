@@ -3,10 +3,10 @@ import TextAlign from '@tiptap/extension-text-align'
 import Underline from '@tiptap/extension-underline'
 import { useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import { Button, Group, Popover, Stack, TextInput } from '@mantine/core'
+import { Button, Group, Popover, Select, Stack, TextInput } from '@mantine/core'
 import ReactComponent from './Extension'
 import { IEmailTemplate } from '../../../../../requests/responses/emailtemplate'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Plus } from '@phosphor-icons/react'
 import { FontSize, TextStyle } from '@tiptap/extension-text-style'
 
@@ -91,6 +91,10 @@ const EmailTextEditor = ({ editingTemplate, setEditingTemplate }: IEmailTextEdit
           <RichTextEditor.Unlink />
         </RichTextEditor.ControlsGroup>
 
+        <RichTextEditor.ControlsGroup>
+          <FontSizeControl />
+        </RichTextEditor.ControlsGroup>
+
         <InsertVariableButton />
       </RichTextEditor.Toolbar>
 
@@ -123,6 +127,92 @@ function InsertVariableButton() {
           <TextInput value={variable} onChange={(e) => setVariable(e.currentTarget.value)} />
           <Button onClick={() => insertVariable()}>Insert Variable</Button>
         </Stack>
+      </Popover.Dropdown>
+    </Popover>
+  )
+}
+
+//TODO: OUR DEFAULT IS 16px, show that instead of empty as default
+//TODO: Nicer Dropdown look
+const FONT_SIZES = [
+  { value: '', label: 'Default' },
+  { value: '8px', label: '8' },
+  { value: '9px', label: '9' },
+  { value: '10px', label: '10' },
+  { value: '11px', label: '11' },
+  { value: '12px', label: '12' },
+  { value: '14px', label: '14' },
+  { value: '16px', label: '16' },
+  { value: '18px', label: '18' },
+  { value: '20px', label: '20' },
+  { value: '24px', label: '24' },
+  { value: '28px', label: '28' },
+  { value: '32px', label: '32' },
+  { value: '48px', label: '48' },
+  { value: '64px', label: '64' },
+  { value: '72px', label: '72' },
+  { value: '96px', label: '96' },
+  { value: '128px', label: '128' },
+]
+
+function getCurrentFontSize(editor: any): string {
+  const attrs = editor.getAttributes('textStyle')
+  return (attrs?.fontSize as string) ?? ''
+}
+
+export function FontSizeControl() {
+  const { editor } = useRichTextEditorContext()
+  const [value, setValue] = useState<string>('')
+
+  const data = useMemo(() => FONT_SIZES, [])
+
+  useEffect(() => {
+    if (!editor) return
+
+    const sync = () => setValue(getCurrentFontSize(editor))
+
+    sync()
+    editor.on('selectionUpdate', sync)
+    editor.on('transaction', sync) // helps when typing continues with same mark
+
+    return () => {
+      editor.off('selectionUpdate', sync)
+      editor.off('transaction', sync)
+    }
+  }, [editor])
+
+  const apply = (next: string | null) => {
+    if (!editor) return
+
+    const v = next ?? ''
+    setValue(v)
+
+    if (v === '') {
+      editor.chain().focus().unsetFontSize().run()
+    } else {
+      editor.chain().focus().setFontSize(v).run()
+    }
+  }
+
+  return (
+    <Popover width={160} position='bottom' withArrow shadow='md'>
+      <Popover.Target>
+        <RichTextEditor.Control aria-label='Font size' title='Font size'>
+          <Group gap={6} px={6}>
+            {value ? value.replace('px', '') : 'Size'}
+          </Group>
+        </RichTextEditor.Control>
+      </Popover.Target>
+
+      <Popover.Dropdown>
+        <Select
+          data={data}
+          value={value}
+          onChange={apply}
+          placeholder='Choose size'
+          searchable
+          nothingFoundMessage='No size'
+        />
       </Popover.Dropdown>
     </Popover>
   )
