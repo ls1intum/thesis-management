@@ -19,5 +19,14 @@ public class ResearchGroupSettings {
 
     @Column(name = "reject_duration")
     private int rejectDuration;
+
+    @Column(name = "presentation_slot_duration")
+    private Integer presentationSlotDuration;
+
+    @Column(name = "proposal_phase_active", nullable = false)
+    private boolean proposalPhaseActive = true;
+
+    @Column(name = "application_notification_email")
+    private String applicationNotificationEmail;
 }
 

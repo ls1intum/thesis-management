@@ -55,18 +55,16 @@ const ReplaceApplicationPage = () => {
   }
 
   return (
-    <Stack>
+    <Stack gap={'1.5rem'}>
       <Title>{applicationId ? 'Edit Application' : 'Submit Application'}</Title>
       <Stepper active={Math.max(step, topicId || applicationId ? 1 : 0)} onStepClick={updateStep}>
         <Stepper.Step label='First Step' description='Select Topic'>
-          <TopicsProvider limit={100}>
-            <SelectTopicStep
-              onComplete={(x) => {
-                navigate(`/submit-application/${x?.topicId || ''}`, { replace: true })
-                setStep(1)
-              }}
-            />
-          </TopicsProvider>
+          <SelectTopicStep
+            onComplete={(x) => {
+              navigate(`/submit-application/${x?.topicId || ''}`, { replace: true })
+              setStep(1)
+            }}
+          />
         </Stepper.Step>
         <Stepper.Step label='Second step' description='Update Information'>
           <StudentInformationStep onComplete={() => setStep(2)} />

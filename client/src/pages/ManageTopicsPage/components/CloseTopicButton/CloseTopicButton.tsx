@@ -1,4 +1,4 @@
-import { ITopic } from '../../../../requests/responses/topic'
+import { ITopic, TopicState } from '../../../../requests/responses/topic'
 import { X } from '@phosphor-icons/react'
 import React, { useEffect, useState } from 'react'
 import { useTopicsContext } from '../../../../providers/TopicsProvider/hooks'
@@ -40,10 +40,12 @@ const CloseTopicButton = (props: ICloseTopicButtonProps) => {
     return null
   }
 
+  const titleName = topic.state === TopicState.DRAFT ? 'Draft' : 'Topic'
+
   return (
     <Button onClick={() => setConfirmationModal(true)} size={size}>
       <Modal
-        title='Close Topic'
+        title={`Close ${titleName}`}
         opened={confirmationModal}
         onClose={() => setConfirmationModal(false)}
         onClick={(e) => e.stopPropagation()}
@@ -76,24 +78,28 @@ const CloseTopicButton = (props: ICloseTopicButtonProps) => {
         >
           <Stack>
             <Text>
-              Are you sure you want to close this topic? This will reject all applications for it.
+              {`Are you sure you want to close this ${titleName.toLowerCase()}? ${topic.state === TopicState.DRAFT ? '' : 'This will reject all applications for the topic.'}`}
             </Text>
-            <Select
-              label='Reason'
-              required
-              data={[
-                { value: 'TOPIC_FILLED', label: 'Topic was filled' },
-                { value: 'TOPIC_OUTDATED', label: 'Topic is outdated' },
-              ]}
-              {...form.getInputProps('reason')}
-            />
-            <Checkbox
-              label='Notify Students'
-              required
-              {...form.getInputProps('notifyUser', { type: 'checkbox' })}
-            />
+            {topic.state !== TopicState.DRAFT && (
+              <>
+                <Select
+                  label='Reason'
+                  required
+                  data={[
+                    { value: 'TOPIC_FILLED', label: 'Topic was filled' },
+                    { value: 'TOPIC_OUTDATED', label: 'Topic is outdated' },
+                  ]}
+                  {...form.getInputProps('reason')}
+                />
+                <Checkbox
+                  label='Notify Students'
+                  required
+                  {...form.getInputProps('notifyUser', { type: 'checkbox' })}
+                />
+              </>
+            )}
             <Button type='submit' loading={loading} fullWidth>
-              Close Topic
+              {`Close ${titleName}`}
             </Button>
           </Stack>
         </form>

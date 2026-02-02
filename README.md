@@ -1,3 +1,6 @@
+> [!NOTE] 
+> Please contact us if you want to get onboarded: **[thesis-management-support.aet@xcit.tum.de](thesis-management-support.aet@xcit.tum.de)**.
+
 # Thesis Management
 
 Thesis Management is a web-based thesis management system designed to streamline the thesis process in academic institutions by integrating essential stages into a single platform. 
@@ -112,3 +115,7 @@ These flowcharts offer a quick reference for understanding how each role engages
 
 #### Thesis Writing Flowchart
 ![Thesis Writing Flowchart](docs/files/thesis-writing-flowchart.svg)
+
+> [!NOTE]
+> **Couldn't find what you were looking for?**  
+> If you need any further help or want to be onboarded to the system, reach out to us at **[thesis-management-support.aet@xcit.tum.de](thesis-management-support.aet@xcit.tum.de)**.

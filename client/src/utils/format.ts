@@ -2,6 +2,7 @@ import { ILightUser } from '../requests/responses/user'
 import { IThesis, ThesisState } from '../requests/responses/thesis'
 import { ApplicationState, IApplication } from '../requests/responses/application'
 import { GLOBAL_CONFIG } from '../config/global'
+import { TopicState } from '../requests/responses/topic'
 
 interface IFormatDateOptions {
   withTime: boolean
@@ -116,6 +117,16 @@ export function formatThesisState(state: ThesisState) {
     [ThesisState.GRADED]: 'Graded',
     [ThesisState.FINISHED]: 'Finished',
     [ThesisState.DROPPED_OUT]: 'Dropped out',
+  }
+
+  return stateMap[state]
+}
+
+export function formatTopicState(state: TopicState) {
+  const stateMap: Record<TopicState, string> = {
+    [TopicState.OPEN]: 'Open',
+    [TopicState.DRAFT]: 'Draft',
+    [TopicState.CLOSED]: 'Closed',
   }
 
   return stateMap[state]

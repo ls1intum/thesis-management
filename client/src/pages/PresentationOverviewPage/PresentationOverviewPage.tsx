@@ -14,6 +14,7 @@ import {
   Divider,
   Grid,
   useMantineColorScheme,
+  Select,
 } from '@mantine/core'
 import { useIsSmallerBreakpoint, usePageTitle } from '../../hooks/theme'
 import { GLOBAL_CONFIG } from '../../config/global'
@@ -176,7 +177,20 @@ const PresentationOverviewPage = () => {
     <Stack h={'100%'} gap='md'>
       <Title>Presentations</Title>
 
-      {researchGroups.length > 1 && (
+      {researchGroups.length > 5 && (
+        <Select
+          value={selectedGroup?.name}
+          placeholder='Pick Research Group'
+          data={researchGroups.map((group) => group.name)}
+          searchable
+          onChange={(value) => {
+            const group = researchGroups.find((g) => g.name === value)
+            setSelectedGroup(group)
+          }}
+        />
+      )}
+
+      {researchGroups.length > 1 && researchGroups.length < 6 && (
         <Tabs
           value={selectedGroup?.abbreviation}
           onChange={(value) => {

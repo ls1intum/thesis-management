@@ -248,18 +248,16 @@ public class ApplicationService {
         int referenceDuration = Math.max(afterDuration * 7, minimalRejectDuration);
 
         for (Application application : applications) {
-            if (referenceDate == null) {
-                referenceDate = application.getCreatedAt();
-            }
+            Instant referenceDateLocal = referenceDate == null ? application.getCreatedAt() : referenceDate;
 
-            if (application.getState() == ApplicationState.NOT_ASSESSED &&  Instant.now().isAfter(application.getCreatedAt().plus(java.time.Duration.ofDays(minimalRejectDuration))) &&  Instant.now().isAfter(referenceDate.plus(java.time.Duration.ofDays(referenceDuration)))) { //Check if the application is older than two weeks and the reference date + duration is in the past
+            if (application.getState() == ApplicationState.NOT_ASSESSED &&  Instant.now().isAfter(application.getCreatedAt().plus(java.time.Duration.ofDays(minimalRejectDuration))) &&  Instant.now().isAfter(referenceDateLocal.plus(java.time.Duration.ofDays(referenceDuration)))) { //Check if the application is older than two weeks and the reference date + duration is in the past
                 ResearchGroup topicGroup = researchGroupRepository.findById(researchGroupId).orElseThrow(() -> new ResourceNotFoundException("Research Group not found: " + researchGroupId));
                 User reviewingUser = topicGroup.getHead();
 
                 Optional<TopicRole> supervisor = topic.getRoles().stream().filter((role) -> role.getId().getRole() == ThesisRoleName.SUPERVISOR).findFirst();
 
                 if (supervisor.isPresent()) {
-                    reviewingUser = supervisor.get().getUser();
+                    reviewingUser = supervisor.orElseThrow().getUser();
                 }
 
                 reject(reviewingUser , application, ApplicationRejectReason.GENERAL, true, false);

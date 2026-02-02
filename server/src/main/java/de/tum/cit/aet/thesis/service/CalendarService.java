@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.io.StringReader;
 import java.net.URI;
 import java.time.Instant;
@@ -193,7 +194,7 @@ public class CalendarService {
 
         try {
             CalendarBuilder builder = new CalendarBuilder();
-            StringReader reader = new StringReader(response);
+            Reader reader = Reader.of(response);
 
             return builder.build(reader);
         } catch (IOException | ParserException e) {

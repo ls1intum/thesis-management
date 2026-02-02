@@ -106,7 +106,7 @@ public class UploadService {
     private String computeFileHash(MultipartFile file) throws IOException, NoSuchAlgorithmException {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         try (InputStream inputStream = file.getInputStream()) {
-            byte[] fileBytes = IOUtils.toByteArray(inputStream);
+            byte[] fileBytes = inputStream.readAllBytes();
             byte[] hashBytes = digest.digest(fileBytes);
 
             return HexFormat.of().formatHex(hashBytes);

@@ -66,7 +66,8 @@ class TopicControllerTest extends BaseIntegrationTest {
                 List.of(advisor.userId()),
                 researchGroupId,
                 null,
-                null
+                null,
+                false
         );
 
         mockMvc.perform(MockMvcRequestBuilders.post("/v2/topics")
@@ -92,7 +93,8 @@ class TopicControllerTest extends BaseIntegrationTest {
                 List.of(UUID.randomUUID()),
                 researchGroupId,
                 null,
-                null
+                null,
+                false
         );
 
         mockMvc.perform(MockMvcRequestBuilders.post("/v2/topics")
@@ -119,7 +121,8 @@ class TopicControllerTest extends BaseIntegrationTest {
                 List.of(advisor.userId()),
                 researchGroupId,
                 null,
-                null
+                null,
+                false
         );
 
         mockMvc.perform(MockMvcRequestBuilders.put("/v2/topics/{topicId}", topicId)

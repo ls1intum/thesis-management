@@ -43,6 +43,7 @@ public class ThesisService {
     private final ThesisFileRepository thesisFileRepository;
     private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
     private final ResearchGroupRepository researchGroupRepository;
+    private final ResearchGroupSettingsService researchGroupSettingsService;
 
     @Autowired
     public ThesisService(
@@ -57,7 +58,7 @@ public class ThesisService {
             AccessManagementService accessManagementService,
             ThesisPresentationService thesisPresentationService,
             ThesisFeedbackRepository thesisFeedbackRepository, ThesisFileRepository thesisFileRepository,
-            ObjectProvider<CurrentUserProvider> currentUserProviderProvider, ResearchGroupRepository researchGroupRepository
+            ObjectProvider<CurrentUserProvider> currentUserProviderProvider, ResearchGroupRepository researchGroupRepository, ResearchGroupSettingsService researchGroupSettingsService
     ) {
         this.thesisRoleRepository = thesisRoleRepository;
         this.thesisRepository = thesisRepository;
@@ -73,6 +74,7 @@ public class ThesisService {
         this.thesisFileRepository = thesisFileRepository;
         this.currentUserProviderProvider = currentUserProviderProvider;
         this.researchGroupRepository = researchGroupRepository;
+        this.researchGroupSettingsService = researchGroupSettingsService;
     }
 
     private CurrentUserProvider currentUserProvider() {
@@ -142,7 +144,11 @@ public class ThesisService {
     ) {
         ResearchGroup researchGroup = researchGroupRepository.findById(researchGroupId)
                 .orElseThrow(() -> new ResourceNotFoundException("Research group not found"));
+
+        ResearchGroupSettings researchGroupSettings = researchGroupSettingsService.getByResearchGroupId(researchGroupId).orElseGet(ResearchGroupSettings::new);
         Thesis thesis = new Thesis();
+
+        ThesisState nextState = researchGroupSettings.isProposalPhaseActive() ? ThesisState.PROPOSAL : ThesisState.WRITING;
 
         thesis.setTitle(thesisTitle);
         thesis.setType(thesisType);
@@ -152,7 +158,7 @@ public class ThesisService {
         thesis.setKeywords(new HashSet<>());
         thesis.setInfo("");
         thesis.setAbstractField("");
-        thesis.setState(ThesisState.PROPOSAL);
+        thesis.setState(nextState);
         thesis.setApplication(application);
         thesis.setCreatedAt(Instant.now());
         thesis.setResearchGroup(researchGroup);
@@ -160,7 +166,7 @@ public class ThesisService {
         thesis = thesisRepository.save(thesis);
 
         assignThesisRoles(thesis, supervisorIds, advisorIds, studentIds);
-        saveStateChange(thesis, ThesisState.PROPOSAL);
+        saveStateChange(thesis, nextState);
 
         if (notifyUser) {
             mailingService.sendThesisCreatedEmail(currentUserProvider().getUser(), thesis);
@@ -468,7 +474,9 @@ public class ThesisService {
     }
 
     public Resource getThesisFile(ThesisFile file) {
-        currentUserProvider().assertCanAccessResearchGroup(file.getResearchGroup());
+        if (!file.getThesis().hasReadAccess(null)) {
+            currentUserProvider().assertCanAccessResearchGroup(file.getResearchGroup());
+        }
         return uploadService.load(file.getFilename());
     }
 
@@ -606,7 +614,11 @@ public class ThesisService {
     public Thesis findById(UUID thesisId) {
         Thesis thesis = thesisRepository.findById(thesisId)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Thesis with id %s not found.", thesisId)));
-        currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+
+        if (!thesis.hasReadAccess(null)) {
+            currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+        }
+
         return thesis;
     }
 

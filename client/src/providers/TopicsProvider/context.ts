@@ -4,7 +4,7 @@ import { PaginationResponse } from '../../requests/responses/pagination'
 
 export interface ITopicsFilters {
   types?: string[]
-  includeClosed?: boolean
+  states?: string[]
   researchSpecific?: boolean
   search?: string
   researchGroupIds?: string[]

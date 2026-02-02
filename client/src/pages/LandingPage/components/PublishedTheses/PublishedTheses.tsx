@@ -189,6 +189,7 @@ const PublishedTheses = ({ search, representationType, filters, limit }: Publish
               url={`/v2/published-theses/${openedThesis.thesisId}/thesis`}
               filename={`${openedThesis.title.toLowerCase().replaceAll(' ', '-')}.pdf`}
               type='pdf'
+              requiresAuth={false}
             />
           </Stack>
         )}

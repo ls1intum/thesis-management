@@ -47,6 +47,7 @@ class ThesisPresentationServiceTest {
     private CurrentUserProvider currentUserProvider;
     @Mock private UserRepository userRepository;
     @Mock private ThesisPresentationInviteRepository thesisPresentationInviteRepository;
+    @Mock private ResearchGroupSettingsService researchGroupSettingsService;
 
     private ThesisPresentationService presentationService;
     private User testUser;
@@ -66,7 +67,8 @@ class ThesisPresentationServiceTest {
                 clientHost,
                 applicationMail,
                 userRepository,
-                thesisPresentationInviteRepository
+                thesisPresentationInviteRepository,
+                researchGroupSettingsService
         );
 
         testUser = EntityMockFactory.createUser("Test User");

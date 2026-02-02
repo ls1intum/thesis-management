@@ -17,12 +17,19 @@ public interface TopicRepository extends JpaRepository<Topic, UUID> {
             SELECT t.* FROM topics t WHERE ( :researchGroupIds IS NULL OR t.research_group_id IN (:researchGroupIds)) AND
                     (:searchQuery IS NULL OR t.title ILIKE CONCAT('%', :searchQuery, '%')) AND
                     (t.thesis_types IS NULL OR CAST(:types AS TEXT[]) IS NULL OR t.thesis_types && CAST(:types AS TEXT[])) AND
-                    (:includeClosed = TRUE OR t.closed_at IS NULL)
+                    (
+                        CAST(:states AS TEXT[]) IS NULL
+                        OR (
+                            ('CLOSED' = ANY(CAST(:states AS TEXT[])) AND t.closed_at IS NOT NULL)
+                         OR ('DRAFT'  = ANY(CAST(:states AS TEXT[])) AND t.closed_at IS NULL AND t.published_at IS NULL)
+                         OR ('OPEN'   = ANY(CAST(:states AS TEXT[])) AND t.closed_at IS NULL AND t.published_at IS NOT NULL)
+                        )
+                    )
             """, nativeQuery = true)
     Page<Topic> searchTopics(
             @Param("researchGroupIds") Set<UUID> researchGroupIds,
             @Param("types") String[] types,
-            @Param("includeClosed") boolean includeClosed,
+            @Param("states") String[] states,
             @Param("searchQuery") String searchQuery,
             Pageable page
     );

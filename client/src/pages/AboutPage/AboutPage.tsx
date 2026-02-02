@@ -1,8 +1,9 @@
-import { Anchor, Center, Image, List, Stack, Text, Title } from '@mantine/core'
+import { Alert, Anchor, Center, Image, List, Stack, Text, Title } from '@mantine/core'
 import flowchart from './flowchart.svg'
 import { usePageTitle } from '../../hooks/theme'
 import { useEffect, useState } from 'react'
 import { doRequest } from '../../requests/request'
+import { WarningCircleIcon } from '@phosphor-icons/react/dist/ssr'
 
 interface IActuatorInfo {
   git: {
@@ -97,6 +98,11 @@ const AboutPage = () => {
             Marc Fett
           </Anchor>
         </List.Item>
+        <List.Item>
+          <Anchor href='https://github.com/rampecke' target='_blank' rel='noreferrer'>
+            Ramona Eckert
+          </Anchor>
+        </List.Item>
       </List>
       <Title order={3}>Features</Title>
       <Text>
@@ -121,6 +127,21 @@ const AboutPage = () => {
           Commit: <b>{info?.git.commit.id || 'unknown'}</b>
         </List.Item>
       </List>
+
+      <Alert
+        variant='light'
+        color='blue'
+        title={<Title order={5}>Couldn't find what you were looking for?</Title>}
+        icon={<WarningCircleIcon />}
+      >
+        <Text>
+          If you need any further help or want to be onboarded to the system, reach out to us at{' '}
+          <a href='mailto:thesis-management-support.aet@xcit.tum.de'>
+            thesis-management-support.aet@xcit.tum.de
+          </a>
+          .
+        </Text>
+      </Alert>
     </Stack>
   )
 }

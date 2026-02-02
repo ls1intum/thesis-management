@@ -4,18 +4,12 @@ import React, { useEffect } from 'react'
 import { IResearchGroup } from '../../../requests/responses/researchGroup'
 import CustomAvatar from '../../../components/CustomAvatar/CustomAvatar'
 import { formatUser } from '../../../utils/format'
-import { useNavigate } from 'react-router'
 import { doRequest } from '../../../requests/request'
 import { ILightUser } from '../../../requests/responses/user'
 import { useHover } from '@mantine/hooks'
+import { Link } from 'react-router'
 
 const ResearchGroupCard = (props: IResearchGroup) => {
-  const navigate = useNavigate()
-
-  const onResearchGroupCardClick = () => {
-    navigate(`/research-groups/${props.id}`)
-  }
-
   const [researchGroupMemberNumber, setResearchGroupMemberNumber] = React.useState(0)
 
   const fetchMemberAmount = () => {
@@ -48,8 +42,9 @@ const ResearchGroupCard = (props: IResearchGroup) => {
       h='100%'
       w='100%'
       style={{ cursor: 'pointer' }}
-      onClick={onResearchGroupCardClick}
       ref={ref}
+      component={Link}
+      to={`/research-groups/${props.id}`}
     >
       <Flex
         justify={{ base: 'flex-start', sm: 'space-between' }}

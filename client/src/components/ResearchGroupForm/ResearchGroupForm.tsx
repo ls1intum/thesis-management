@@ -62,6 +62,14 @@ const ResearchGroupForm = ({
       : '',
   )
 
+  const hasChanges =
+    (initialFormValues?.name || '') !== form.values.name ||
+    (initialFormValues?.abbreviation || '') !== form.values.abbreviation ||
+    (initialFormValues?.campus || '') !== form.values.campus ||
+    (initialFormValues?.description || '') !== form.values.description ||
+    (initialFormValues?.websiteUrl || '') !== form.values.websiteUrl ||
+    (initialFormValues?.head?.universityId || '') !== form.values.headUsername
+
   return (
     <form onSubmit={form.onSubmit(onSubmit)}>
       <Grid gutter='md'>
@@ -129,7 +137,7 @@ const ResearchGroupForm = ({
         </Grid.Col>
 
         <Grid.Col span={12}>
-          <Button type='submit' fullWidth mt='md' disabled={!form.isValid()}>
+          <Button type='submit' fullWidth mt='md' disabled={!form.isValid() || !hasChanges}>
             {submitLabel}
           </Button>
         </Grid.Col>

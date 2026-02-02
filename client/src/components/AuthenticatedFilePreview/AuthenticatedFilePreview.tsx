@@ -16,10 +16,19 @@ interface IAuthenticatedFilePreviewProps extends BoxProps {
   actionButton?: ReactNode
   aspectRatio?: number
   allowDownload?: boolean
+  requiresAuth?: boolean
 }
 
 const AuthenticatedFilePreview = (props: IAuthenticatedFilePreviewProps) => {
-  const { url, filename, type, actionButton, aspectRatio = 16 / 9, allowDownload = true } = props
+  const {
+    url,
+    filename,
+    type,
+    actionButton,
+    aspectRatio = 16 / 9,
+    allowDownload = true,
+    requiresAuth = true,
+  } = props
 
   const [file, setFile] = useState<File>()
 
@@ -31,7 +40,7 @@ const AuthenticatedFilePreview = (props: IAuthenticatedFilePreviewProps) => {
         url,
         {
           method: 'GET',
-          requiresAuth: true,
+          requiresAuth: requiresAuth,
           responseType: 'blob',
         },
         (response) => {

@@ -1,5 +1,6 @@
 package de.tum.cit.aet.thesis.service;
 
+import de.tum.cit.aet.thesis.constants.TopicState;
 import de.tum.cit.aet.thesis.entity.ResearchGroup;
 import de.tum.cit.aet.thesis.entity.Topic;
 import de.tum.cit.aet.thesis.entity.TopicRole;
@@ -72,7 +73,7 @@ class TopicServiceTest {
         when(topicRepository.searchTopics(
                 any(),
                 any(),
-                anyBoolean(),
+                any(),
                 any(),
                 any(PageRequest.class)
         )).thenReturn(expectedPage);
@@ -80,7 +81,7 @@ class TopicServiceTest {
         Page<Topic> result = topicService.getAll(
                 false,
                 null,
-                true,
+                null,
                 null,
                 0,
                 10,
@@ -94,7 +95,7 @@ class TopicServiceTest {
         verify(topicRepository).searchTopics(
                 eq(null),
                 eq(null),
-                eq(true),
+                eq(new String[] { TopicState.OPEN.name()}),
                 eq(null),
                 eq(PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "title")))
         );
@@ -127,7 +128,8 @@ class TopicServiceTest {
                 advisorIds,
                 researchGroupId,
                 null,
-                null
+                null,
+                false
         );
 
         assertNotNull(result);
@@ -163,7 +165,8 @@ class TopicServiceTest {
                         advisorIds,
                         researchGroupId,
                         null,
-                        null
+                        null,
+                        false
                 )
         );
     }
@@ -196,7 +199,8 @@ class TopicServiceTest {
                 advisorIds,
                 researchGroupId,
                 null,
-                null
+                null,
+                false
         );
 
         assertNotNull(result);

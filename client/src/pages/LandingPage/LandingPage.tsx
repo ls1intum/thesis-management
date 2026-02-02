@@ -1,38 +1,20 @@
 import TopicsProvider from '../../providers/TopicsProvider/TopicsProvider'
 import TopicsTable from '../../components/TopicsTable/TopicsTable'
-import {
-  Box,
-  Button,
-  Flex,
-  Group,
-  SegmentedControl,
-  Stack,
-  TextInput,
-  Center,
-  Text,
-  Checkbox,
-  Drawer,
-} from '@mantine/core'
+import { Button, Group, Stack, Center } from '@mantine/core'
 import { Link, useParams, useSearchParams } from 'react-router'
 import PublishedTheses from './components/PublishedTheses/PublishedTheses'
 import { usePageTitle } from '../../hooks/theme'
 import LandingPageHeader from './components/LandingPageHeader/LandingPageHeader'
-import {
-  FadersHorizontalIcon,
-  ListIcon,
-  MagnifyingGlassIcon,
-  SquaresFourIcon,
-} from '@phosphor-icons/react'
+import { ListIcon, SquaresFourIcon } from '@phosphor-icons/react'
 import { useEffect, useState } from 'react'
-import { useDebouncedValue, useMediaQuery } from '@mantine/hooks'
+import { useDebouncedValue } from '@mantine/hooks'
 import { GLOBAL_CONFIG } from '../../config/global'
 import TopicCardGrid from './components/TopicCardGrid/TopicCardGrid'
-import DropDownMultiSelect from '../../components/DropDownMultiSelect/DropDownMultiSelect'
-import ThesisTypeBadge from './components/ThesisTypBadge/ThesisTypBadge'
 import { ILightResearchGroup } from '../../requests/responses/researchGroup'
 import { doRequest } from '../../requests/request'
 import { showSimpleError } from '../../utils/notification'
 import { getApiResponseErrorMessage } from '../../requests/handler'
+import TopicSearchFilters from '../../components/TopicSearchFilters/TopicSearchFilters'
 
 const LandingPage = () => {
   usePageTitle('Find a Thesis Topic')
@@ -72,24 +54,6 @@ const LandingPage = () => {
     }
     return selectedGroups
   }
-
-  useEffect(() => {
-    const params = new URLSearchParams(searchParams)
-
-    if (selectedThesisTypes.length > 0) {
-      params.set('types', selectedThesisTypes.join(','))
-    } else {
-      params.delete('types')
-    }
-
-    if (selectedGroups.length > 0) {
-      params.set('groups', selectedGroups.join(','))
-    } else {
-      params.delete('groups')
-    }
-
-    setSearchParams(params, { replace: true })
-  }, [selectedThesisTypes, selectedGroups])
 
   useEffect(() => {
     return doRequest<ILightResearchGroup[]>(
@@ -132,7 +96,6 @@ const LandingPage = () => {
       value: 'grid',
     },
   ]
-
   const [listRepresentation, setListRepresentation] = useState<string>(
     listRepresentationOptions[0].value,
   )
@@ -147,90 +110,6 @@ const LandingPage = () => {
     setSearchParams(params, { replace: true })
   }, [debouncedSearch])
 
-  const isMobile = useMediaQuery('(max-width: 768px)')
-  const [filterDrawerOpen, setFilterDrawerOpen] = useState(false)
-
-  const segmentedControls = () => (
-    <>
-      <SegmentedControl
-        value={topicView}
-        onChange={(newVal) => {
-          setTopicView(newVal)
-          const params = new URLSearchParams(searchParams)
-          if (newVal === GLOBAL_CONFIG.topic_views_options.PUBLISHED) {
-            params.set('view', newVal)
-          } else {
-            params.delete('view')
-          }
-          setSearchParams(params, { replace: true })
-        }}
-        data={Object.values(GLOBAL_CONFIG.topic_views_options)}
-      />
-
-      <SegmentedControl
-        value={listRepresentation}
-        onChange={setListRepresentation}
-        data={listRepresentationOptions}
-      />
-    </>
-  )
-
-  const multiSelectDropdowns = () => (
-    <>
-      {!researchGroupAbbreviation && (
-        <DropDownMultiSelect
-          data={researchGroups.map((group) => group.id)}
-          searchPlaceholder='Search Research Groups'
-          dropdownLable='Research Groups'
-          selectedItems={selectedGroups}
-          setSelectedItem={(groupId: string) => {
-            setSelectedGroups((prev) =>
-              prev.includes(groupId) ? prev.filter((id) => id !== groupId) : [...prev, groupId],
-            )
-          }}
-          renderOption={(groupId) => {
-            const group = researchGroups.find((g) => g.id === groupId)
-            return group ? (
-              <Flex align='center' gap='xs'>
-                <Checkbox checked={selectedGroups.includes(group.id)} readOnly />
-                <Text size='sm'>{group.name}</Text>{' '}
-              </Flex>
-            ) : null
-          }}
-          withoutDropdown={isMobile}
-          searchFunction={(search) =>
-            researchGroups
-              .filter((group) => group.name.toLowerCase().includes(search.toLowerCase()))
-              .map((group) => group.id)
-          }
-        ></DropDownMultiSelect>
-      )}
-      <DropDownMultiSelect
-        data={Object.keys(GLOBAL_CONFIG.thesis_types)}
-        searchPlaceholder='Search Thesis Type'
-        dropdownLable='Thesis Types'
-        renderOption={(type) => (
-          <Group gap='xs'>
-            <Checkbox checked={selectedThesisTypes.includes(type)} readOnly />
-            <ThesisTypeBadge type={type} />
-          </Group>
-        )}
-        selectedItems={selectedThesisTypes}
-        setSelectedItem={(type) => {
-          setSelectedThesisTypes((prev) => {
-            if (prev.includes(type)) {
-              return prev.filter((t) => t !== type)
-            } else {
-              return [...prev, type]
-            }
-          })
-        }}
-        withSearch={false}
-        withoutDropdown={isMobile}
-      ></DropDownMultiSelect>
-    </>
-  )
-
   return (
     <Stack h={'100%'}>
       <LandingPageHeader
@@ -238,55 +117,24 @@ const LandingPage = () => {
           researchGroups.find((group) => group.abbreviation === researchGroupAbbreviation)?.id
         }
       />
-      <Flex direction={'column'} gap={'xs'}>
-        <Flex justify='space-between' align='stretch' gap={5} direction='row'>
-          <Box flex={1}>
-            <TextInput
-              w='100%'
-              placeholder='Search Thesis Topics...'
-              leftSection={<MagnifyingGlassIcon size={16} />}
-              value={searchKey}
-              onChange={(x) => setSearchKey(x.currentTarget.value)}
-            />
-          </Box>
-          {isMobile ? (
-            <>
-              <Button
-                variant='default'
-                onClick={() => setFilterDrawerOpen(true)}
-                style={{ flexShrink: 0 }}
-                leftSection={<FadersHorizontalIcon size={16} />}
-              >
-                Filter
-              </Button>
-              <Drawer
-                opened={filterDrawerOpen}
-                onClose={() => setFilterDrawerOpen(false)}
-                title='Filter Topics'
-                position={'right'}
-                size='xs'
-              >
-                <Stack gap='xs'>
-                  {segmentedControls()}
-                  {multiSelectDropdowns()}
-                </Stack>
-              </Drawer>
-            </>
-          ) : (
-            <Group gap={5}>{multiSelectDropdowns()}</Group>
-          )}
-        </Flex>
 
-        {!isMobile && (
-          <Flex
-            justify='space-between'
-            gap={{ base: 'xs', sm: 'xl' }}
-            direction={{ base: 'column', sm: 'row' }}
-          >
-            {segmentedControls()}
-          </Flex>
-        )}
-      </Flex>
+      <TopicSearchFilters
+        searchKey={searchKey}
+        setSearchKey={setSearchKey}
+        researchGroups={researchGroups}
+        selectedGroups={selectedGroups}
+        setSelectedGroups={setSelectedGroups}
+        selectedThesisTypes={selectedThesisTypes}
+        setSelectedThesisTypes={setSelectedThesisTypes}
+        searchParams={searchParams}
+        setSearchParams={setSearchParams}
+        topicView={topicView}
+        setTopicView={setTopicView}
+        listRepresentation={listRepresentation}
+        setListRepresentation={setListRepresentation}
+        listRepresentationOptions={listRepresentationOptions}
+      />
+
       <TopicsProvider
         limit={pageItemLimit}
         researchSpecific={false}

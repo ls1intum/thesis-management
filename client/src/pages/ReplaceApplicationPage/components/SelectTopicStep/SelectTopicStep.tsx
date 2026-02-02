@@ -1,63 +1,112 @@
 import { ITopic } from '../../../../requests/responses/topic'
-import { Accordion, Button, Center, Skeleton, Stack, Text } from '@mantine/core'
-import { useTopicsContext } from '../../../../providers/TopicsProvider/hooks'
-import React from 'react'
-import TopicAccordionItem from '../../../../components/TopicAccordionItem/TopicAccordionItem'
-import TopicsFilters from '../../../../components/TopicsFilters/TopicsFilters'
+import {
+  Accordion,
+  Button,
+  Center,
+  Flex,
+  Pagination,
+  Skeleton,
+  Stack,
+  Text,
+  ThemeIcon,
+} from '@mantine/core'
+import React, { useEffect, useState } from 'react'
 import { GLOBAL_CONFIG } from '../../../../config/global'
+import { useSearchParams } from 'react-router'
+import { useDebouncedValue } from '@mantine/hooks'
+import TopicsProvider from '../../../../providers/TopicsProvider/TopicsProvider'
+import TopicSearchFilters from '../../../../components/TopicSearchFilters/TopicSearchFilters'
+import { doRequest } from '../../../../requests/request'
+import { ILightResearchGroup } from '../../../../requests/responses/researchGroup'
+import { showSimpleError } from '../../../../utils/notification'
+import { getApiResponseErrorMessage } from '../../../../requests/handler'
+import TopicCardGrid from '../../../LandingPage/components/TopicCardGrid/TopicCardGrid'
 
 interface ISelectTopicStepProps {
   onComplete: (topic: ITopic | undefined) => unknown
 }
 
 const SelectTopicStep = (props: ISelectTopicStepProps) => {
-  const { onComplete } = props
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [searchKey, setSearchKey] = useState(searchParams.get('search') ?? '')
+  const [debouncedSearch] = useDebouncedValue(searchKey, 300)
 
-  const { topics } = useTopicsContext()
+  const [selectedThesisTypes, setSelectedThesisTypes] = useState<string[]>(
+    searchParams.get('types')?.split(',') ?? [],
+  )
 
-  if (
-    !GLOBAL_CONFIG.allow_suggested_topics &&
-    topics?.content.length === 0 &&
-    topics?.pageNumber === 0
-  ) {
-    return (
-      <Text ta='center' fw='bold' my='md'>
-        The chair is currently not searching for theses.
-      </Text>
+  const [researchGroups, setResearchGroups] = useState<ILightResearchGroup[]>([])
+  const [researchGroupsLoaded, setResearchGroupsLoaded] = useState(false)
+  const [selectedGroups, setSelectedGroups] = useState<string[]>(
+    searchParams.get('groups')?.split(',') ?? [],
+  )
+
+  const pageItemLimit = 10
+
+  useEffect(() => {
+    return doRequest<ILightResearchGroup[]>(
+      '/v2/research-groups/light',
+      {
+        method: 'GET',
+        requiresAuth: false,
+        params: {
+          search: '',
+        },
+      },
+      (response) => {
+        if (response.ok) {
+          setResearchGroups(response.data)
+          setResearchGroupsLoaded(true)
+        } else {
+          showSimpleError(getApiResponseErrorMessage(response))
+        }
+      },
     )
-  }
+  }, [])
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams)
+    if (debouncedSearch) {
+      params.set('search', debouncedSearch)
+    } else {
+      params.delete('search')
+    }
+    setSearchParams(params, { replace: true })
+  }, [debouncedSearch])
 
   return (
-    <Stack>
-      <TopicsFilters visible={['type']} />
-      {!topics && (
-        <Stack>
-          <Skeleton height={48} />
-          <Skeleton height={48} />
-          <Skeleton height={48} />
-        </Stack>
-      )}
-      <Accordion variant='separated'>
-        {topics?.content.map((topic) => (
-          <TopicAccordionItem key={topic.topicId} topic={topic}>
-            <Center mt='md'>
-              <Button onClick={() => onComplete(topic)}>Apply for this Topic</Button>
-            </Center>
-          </TopicAccordionItem>
-        ))}
-        {GLOBAL_CONFIG.allow_suggested_topics && (
-          <Accordion.Item value='custom'>
-            <Accordion.Control>Suggest Topic</Accordion.Control>
-            <Accordion.Panel>
-              <Center>
-                <Button onClick={() => onComplete(undefined)}>Suggest your own topic</Button>
-              </Center>
-            </Accordion.Panel>
-          </Accordion.Item>
-        )}
-      </Accordion>
+    <Stack gap={'0rem'} pt={'1rem'}>
+      <TopicSearchFilters
+        searchKey={searchKey}
+        setSearchKey={setSearchKey}
+        researchGroups={researchGroups}
+        selectedGroups={selectedGroups}
+        setSelectedGroups={setSelectedGroups}
+        selectedThesisTypes={selectedThesisTypes}
+        setSelectedThesisTypes={setSelectedThesisTypes}
+        searchParams={searchParams}
+        setSearchParams={setSearchParams}
+      />
+      <TopicsProvider
+        limit={pageItemLimit}
+        researchSpecific={false}
+        initialFilters={{
+          researchGroupIds: selectedGroups,
+          search: debouncedSearch,
+          types: selectedThesisTypes,
+        }}
+      >
+        <TopicCardGrid
+          collapsibleTopics={true}
+          showSuggestedTopic={GLOBAL_CONFIG.allow_suggested_topics}
+          onApply={props.onComplete}
+        />
+      </TopicsProvider>
     </Stack>
   )
 }
 
 export default SelectTopicStep
+function setResearchGroups(data: ILightResearchGroup[]) {
+  throw new Error('Function not implemented.')
+}

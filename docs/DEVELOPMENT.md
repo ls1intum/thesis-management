@@ -14,11 +14,12 @@ docker compose up keycloak -d
 2. Open http://localhost:8081 and sign in with admin credentials
     * Username: `admin`
     * Password: `admin`
-3. Click on the drowdown in the top left and go to [Create realm](http://localhost:8081/admin/master/console/#/master/add-realm)
-4. Import the [keycloak-realm-config-example-json](/keycloak-realm-config-example.json) or create a new realm `thesis-management` manually.
-5. Select the newly created realm and create your user in [Users](http://localhost:8081/admin/master/console/#/thesis-management/users) (username, email, first name, last name)
-6. Go to "Credentials" for the new user and set a non temporary password
-7. Go to "Role mapping" and assign the client roles `admin`, `supervisor`, `advisor` to the new user
+3. Click on the menu in the top left and go to [Manage realm](http://localhost:8081/admin/master/console/#/master/realms)
+4. Click on "Create realm", a popup appears
+5. Import the [keycloak-realm-config-example-json](/keycloak-realm-config-example.json) using drag and drop (alternatively, you can also create a new realm `thesis-management` manually)
+6. Select the newly created realm and create your user in [Users](http://localhost:8081/admin/master/console/#/thesis-management/users) (username, email, first name, last name)
+7. Go to "Credentials" for the new user and set a password (disable "Temporary" to avoid being forced to change it on first login)
+8. Go to "Role mapping" and assign the client roles `admin`, `supervisor`, `advisor` to the new user
    * Select "Filter by clients" and search for "thesis-management-app" to find the roles
 
 ## PostgreSQL Database
