@@ -10,9 +10,10 @@ import { XIcon } from '@phosphor-icons/react'
 
 interface AcceptApplicantModalProps {
   interviewee: IIntervieweeLightWithNextSlot
+  onAcceptSuccessfull?: () => void
 }
 
-const AcceptApplicantModal = ({ interviewee }: AcceptApplicantModalProps) => {
+const AcceptApplicantModal = ({ interviewee, onAcceptSuccessfull }: AcceptApplicantModalProps) => {
   const [application, setApplication] = useState<IApplication | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
 
@@ -46,6 +47,7 @@ const AcceptApplicantModal = ({ interviewee }: AcceptApplicantModalProps) => {
           onUpdate={(newApplication) => {
             newApplication.state
             //TODO: SET State of interviewee
+            onAcceptSuccessfull?.()
           }}
           size='xs'
           leftSection={<XIcon size={16} />}
@@ -72,6 +74,7 @@ const AcceptApplicantModal = ({ interviewee }: AcceptApplicantModalProps) => {
             acceptOnly={true}
             onAcceptSuccessfull={() => {
               setModalOpen(false)
+              onAcceptSuccessfull?.()
             }}
           />
         ) : (

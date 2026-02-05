@@ -38,6 +38,7 @@ interface IIntervieweeCardProps {
   disableLink?: boolean
   highlightCard?: boolean
   inviteInterviewee?: () => void
+  onAcceptedOrRejected?: () => void
 }
 
 const IntervieweeCard = ({
@@ -46,6 +47,7 @@ const IntervieweeCard = ({
   flex,
   disableLink,
   inviteInterviewee,
+  onAcceptedOrRejected,
 }: IIntervieweeCardProps) => {
   const checkState = () => {
     return interviewee.score && interviewee.score >= 0
@@ -145,7 +147,10 @@ const IntervieweeCard = ({
                   </Button>
                 )}
               {state === InterviewState.COMPLETED && !isAcceptedOrRejected && (
-                <AcceptApplicantModal interviewee={interviewee} />
+                <AcceptApplicantModal
+                  interviewee={interviewee}
+                  onAcceptSuccessfull={onAcceptedOrRejected}
+                />
               )}
               {isAcceptedOrRejected && (
                 <Badge

@@ -292,6 +292,9 @@ const IntervieweesList = ({ disabled = false }: IIntervieweesListProps) => {
                   flex={1}
                   disableLink={selectIntervieweeMode}
                   inviteInterviewee={() => inviteInterviewees([interviewee.intervieweeId])}
+                  onAcceptedOrRejected={() => {
+                    fetchPossibleInterviewees(debouncedSearch, state)
+                  }}
                 />
               </Group>
             ))}
