@@ -24,13 +24,7 @@ import {
 } from '../../../utils/format'
 import { Link } from 'react-router'
 import InterviewSlotInformation from '../../../components/InterviewSlotInformation/InterviewSlotInformation'
-import {
-  CheckCircleIcon,
-  CheckIcon,
-  PaperPlaneTiltIcon,
-  XCircleIcon,
-  XIcon,
-} from '@phosphor-icons/react'
+import { CheckCircleIcon, PaperPlaneTiltIcon, XCircleIcon, XIcon } from '@phosphor-icons/react'
 import InviteConfirmationModal from './InviteConfirmationModal'
 import { useState } from 'react'
 import CancelSlotConfirmationModal from './CancelSlotConfirmationModal'

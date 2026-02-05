@@ -242,6 +242,10 @@ public class ApplicationController {
             throw new AccessDeniedException("You do not have access to accept this application");
         }
 
+        if (application.getState().equals(ApplicationState.ACCEPTED)) {
+            throw new ResourceInvalidParametersException("This application has already been accepted");
+        }
+
         List<Application> applications = applicationService.accept(
                 authenticatedUser,
                 application,

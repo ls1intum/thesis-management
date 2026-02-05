@@ -34,6 +34,7 @@ interface IApplicationReviewFormProps {
   onUpdate?: (application: IApplication) => unknown
   includeCommentSection?: boolean
   acceptOnly?: boolean
+  onAcceptSuccessfull?: () => void
 }
 
 interface IApplicationReviewForm {
@@ -49,7 +50,13 @@ interface IApplicationReviewForm {
 }
 
 const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
-  const { application, onUpdate, includeCommentSection = true, acceptOnly = false } = props
+  const {
+    application,
+    onUpdate,
+    includeCommentSection = true,
+    acceptOnly = false,
+    onAcceptSuccessfull,
+  } = props
 
   const user = useLoggedInUser()
   const updateApplicationContext = useApplicationsContextUpdater()
@@ -167,6 +174,7 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
         if (currentApplication) {
           onUpdate?.(currentApplication)
         }
+        onAcceptSuccessfull?.()
       } else {
         showSimpleError(getApiResponseErrorMessage(response))
       }

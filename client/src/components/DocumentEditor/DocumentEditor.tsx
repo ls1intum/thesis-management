@@ -116,14 +116,25 @@ const DocumentEditor = (props: IDocumentEditorProps) => {
         editor={editor}
         onBlur={onBlur}
         onFocus={onFocus}
-        style={{
-          backgroundColor:
-            colorScheme.colorScheme === 'dark' ? 'var(--mantine-color-dark-7)' : 'white',
-          borderColor: wrapperProps.error ? 'var(--mantine-color-error)' : undefined,
-          borderStyle: editMode ? 'solid' : 'dashed',
-          borderWidth: noBorder ? 0 : 1,
+        styles={{
+          root: {
+            backgroundColor:
+              colorScheme.colorScheme === 'dark' ? 'var(--mantine-color-dark-7)' : 'white',
+            borderColor: wrapperProps.error ? 'var(--mantine-color-error)' : undefined,
+            borderStyle: editMode ? 'solid' : 'dashed',
+            borderWidth: noBorder ? 0 : 1,
+          },
+          content: {
+            minHeight: minHeight ?? (editMode ? '170px' : undefined),
+            flex: 1,
+            cursor: editMode ? 'text' : 'default',
+          },
         }}
-        mih={minHeight ?? (editMode ? '170px' : undefined)}
+        onClick={() => {
+          if (!editor?.isFocused) {
+            editor?.commands.focus()
+          }
+        }}
       >
         {editMode && (
           <RichTextEditor.Toolbar>

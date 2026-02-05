@@ -1,15 +1,16 @@
-import { Center, Divider, Flex, Loader, ScrollArea, Stack, Title } from '@mantine/core'
+import { Center, Divider, Flex, Group, Loader, ScrollArea, Stack, Title } from '@mantine/core'
 import { IInterviewee } from '../../requests/responses/interview'
 import { useIsSmallerBreakpoint } from '../../hooks/theme'
 import ScoreCard from './components/ScoreCard'
 import { useEffect, useState } from 'react'
 import InterviewNoteCard from './components/InterviewNoteCard'
 import { doRequest } from '../../requests/request'
-import { useParams } from 'react-router'
+import { useNavigate, useParams } from 'react-router'
 import { showSimpleError } from '../../utils/notification'
 import { getApiResponseErrorMessage } from '../../requests/handler'
 import UserCard from '../../components/UserCard/UserCard'
 import TopicInformationCard from '../TopicPage/components/TopicInformationCard'
+import { ArrowLeftIcon } from '@phosphor-icons/react'
 
 const IntervieweeAssesmentPage = () => {
   const { processId } = useParams<{ processId: string }>()
@@ -74,14 +75,29 @@ const IntervieweeAssesmentPage = () => {
 
   const isSmaller = useIsSmallerBreakpoint('sm')
 
+  const navigate = useNavigate()
+
   return intervieweeLoading ? (
     <Center style={{ height: '100%' }}>
       <Loader />
     </Center>
   ) : (
     <Stack h={'100%'} gap={'1.5rem'}>
-      <Stack gap={'0.5rem'}>
-        <Title>{`Interview - ${interviewee?.user.firstName} ${interviewee?.user.lastName}`}</Title>
+      <Stack
+        gap={'0.5rem'}
+        styles={{
+          root: {
+            cursor: 'pointer',
+          },
+        }}
+        onClick={() => {
+          navigate(-1)
+        }}
+      >
+        <Group align='center'>
+          <ArrowLeftIcon size={32} weight='bold' />
+          <Title>{`Interview - ${interviewee?.user.firstName} ${interviewee?.user.lastName}`}</Title>
+        </Group>
         {interviewee?.application && (
           <Title order={4} c={'dimmed'}>
             {interviewee.application?.thesisTitle}

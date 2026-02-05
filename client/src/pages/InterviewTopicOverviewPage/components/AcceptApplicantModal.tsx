@@ -70,6 +70,9 @@ const AcceptApplicantModal = ({ interviewee }: AcceptApplicantModalProps) => {
             }}
             includeCommentSection={false}
             acceptOnly={true}
+            onAcceptSuccessfull={() => {
+              setModalOpen(false)
+            }}
           />
         ) : (
           <Loader />

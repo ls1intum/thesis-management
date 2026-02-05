@@ -327,9 +327,9 @@ const InterviewBookingPage = () => {
                 selectedSlot={selectedSlot}
                 setSelectedSlot={setSelectedSlot}
               ></SelectSlotCarousel>
-              <Group justify='end' align='center' py={2}>
+              {/*<Group justify='end' align='center' py={2}>
                 <Button variant='outline'>Not available on any slot</Button>
-              </Group>
+              </Group>*/}
             </Stack>
 
             <Divider orientation='vertical' />
