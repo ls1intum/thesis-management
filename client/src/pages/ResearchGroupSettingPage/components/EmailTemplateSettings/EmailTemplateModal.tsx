@@ -1,12 +1,22 @@
-import { Button, Group, Modal, SegmentedControl, Stack, Text, TextInput } from '@mantine/core'
+import {
+  Button,
+  Flex,
+  Group,
+  Modal,
+  Paper,
+  Stack,
+  TextInput,
+  Title,
+  Text,
+  Divider,
+  Box,
+} from '@mantine/core'
 import { IEmailTemplate } from '../../../../requests/responses/emailtemplate'
 import EmailTextEditor from './EmailTextEditor/EmailTextEditor'
 
 interface IEmailTemplateModalProps {
   opened: boolean
   onClose: () => void
-  mode: 'preview' | 'edit'
-  setMode?: (mode: 'preview' | 'edit') => void
   defaultTemplate?: IEmailTemplate
   researchGroupTemplate?: IEmailTemplate
   editingTemplate?: IEmailTemplate | null
@@ -16,8 +26,6 @@ interface IEmailTemplateModalProps {
 const EmailTemplateModal = ({
   opened,
   onClose,
-  mode,
-  setMode,
   defaultTemplate,
   researchGroupTemplate,
   editingTemplate,
@@ -27,29 +35,21 @@ const EmailTemplateModal = ({
     <Modal
       opened={opened}
       onClose={onClose}
-      title={mode === 'edit' ? 'Edit Email Template' : 'Preview Email Template'}
+      title={
+        <Stack gap={'0.25rem'}>
+          <Title>Edit Email Template</Title>
+          <Title c='dimmed' order={4}>
+            {defaultTemplate?.subject || researchGroupTemplate?.subject || ''}
+          </Title>
+        </Stack>
+      }
       centered
-      size='xl'
+      fullScreen
     >
-      <Stack>
-        <Text size='sm' c='dimmed'>
-          Customize the content of your email template.
-        </Text>
-        <SegmentedControl
-          value={mode}
-          onChange={(value) => {
-            if (value === 'preview' || value === 'edit') {
-              setMode && setMode(value)
-            }
-          }}
-          data={[
-            { value: 'preview', label: 'Preview' },
-            { value: 'edit', label: 'Edit' },
-          ]}
-          size='xs'
-        ></SegmentedControl>
-        {mode === 'edit' ? (
-          <Stack>
+      <Stack pt={'md'}>
+        <Flex flex={1} w={'100%'} direction={{ base: 'column-reverse', md: 'row' }} gap={'1rem'}>
+          <Stack flex={1}>
+            <Title order={2}>Edit Template</Title>
             <TextInput
               label='Subject'
               placeholder='Enter subject of your email...'
@@ -68,9 +68,22 @@ const EmailTemplateModal = ({
               stickyOffset={50}
             />
           </Stack>
-        ) : (
-          <div dangerouslySetInnerHTML={{ __html: editingTemplate?.bodyHtml ?? '' }} />
-        )}
+
+          <Divider orientation='vertical' />
+
+          <Stack flex={1}>
+            <Title order={2}>Preview Template</Title>
+            <Text c={'dimmed'} size='sm'>
+              This Preview uses example data and contact. The system will fill in the data when
+              sending out the emails.
+            </Text>
+            <Paper withBorder radius='sm' flex={1}>
+              <Box p={'1rem'}>
+                <div dangerouslySetInnerHTML={{ __html: editingTemplate?.bodyHtml ?? '' }} />
+              </Box>
+            </Paper>
+          </Stack>
+        </Flex>
         <Group justify='space-between'>
           <Button
             variant='default'
@@ -81,24 +94,22 @@ const EmailTemplateModal = ({
           >
             Reset to default
           </Button>
-          {mode === 'edit' && (
-            <Group>
-              {!(
-                researchGroupTemplate === editingTemplate || defaultTemplate === editingTemplate
-              ) && (
-                <Button
-                  variant='default'
-                  onClick={() =>
-                    setEditingTemplate &&
-                    setEditingTemplate(researchGroupTemplate ?? defaultTemplate ?? null)
-                  }
-                >
-                  Discard changes
-                </Button>
-              )}
-              <Button>Save changes</Button>
-            </Group>
-          )}
+          <Group>
+            {!(
+              researchGroupTemplate === editingTemplate || defaultTemplate === editingTemplate
+            ) && (
+              <Button
+                variant='default'
+                onClick={() =>
+                  setEditingTemplate &&
+                  setEditingTemplate(researchGroupTemplate ?? defaultTemplate ?? null)
+                }
+              >
+                Discard changes
+              </Button>
+            )}
+            <Button>Save changes</Button>
+          </Group>
         </Group>
       </Stack>
     </Modal>

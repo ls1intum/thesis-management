@@ -14,8 +14,6 @@ interface IEmailTemplatesOverviewProps {
 const EmailTemplateCard = ({ emailTemplate }: IEmailTemplatesOverviewProps) => {
   const [templateModalOpened, setTemplateModalOpened] = useState(false)
 
-  //Create modal states here so they don't get reset if you close accidentally
-  const [mode, setMode] = useState<'preview' | 'edit'>(`edit`)
   const [editingTemplate, setEditingTemplate] = useState<IEmailTemplate | null>(
     emailTemplate.researchGroupTemplate ?? emailTemplate.default ?? null,
   )
@@ -63,7 +61,6 @@ const EmailTemplateCard = ({ emailTemplate }: IEmailTemplatesOverviewProps) => {
                 size='xs'
                 onClick={() => {
                   setTemplateModalOpened(true)
-                  setMode('preview')
                 }}
                 fullWidth={false}
                 leftSection={<EyeIcon size={16} />}
@@ -74,7 +71,6 @@ const EmailTemplateCard = ({ emailTemplate }: IEmailTemplatesOverviewProps) => {
                 size='xs'
                 onClick={() => {
                   setTemplateModalOpened(true)
-                  setMode('edit')
                 }}
                 leftSection={<NotePencilIcon size={16} />}
               >
@@ -88,8 +84,6 @@ const EmailTemplateCard = ({ emailTemplate }: IEmailTemplatesOverviewProps) => {
       <EmailTemplateModal
         opened={templateModalOpened}
         onClose={() => setTemplateModalOpened(false)}
-        mode={mode}
-        setMode={setMode}
         defaultTemplate={emailTemplate.default ?? undefined}
         researchGroupTemplate={emailTemplate.researchGroupTemplate ?? undefined}
         editingTemplate={editingTemplate}
