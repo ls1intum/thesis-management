@@ -11,6 +11,7 @@ public record KeycloakUserDto(
         String firstName,
         String lastName,
         String email,
+        String matriculationNumber,
         boolean hasResearchGroup
 ) {
     public static KeycloakUserDto from(KeycloakUserInformation keycloakUser, User systemUser) {
@@ -22,6 +23,7 @@ public record KeycloakUserDto(
                 keycloakUser.firstName(),
                 keycloakUser.lastName(),
                 keycloakUser.email(),
+                keycloakUser.getMatriculationNumber(),
                 hasResearchGroup
         );
     }

@@ -208,6 +208,7 @@ public class ResearchGroupService {
       newUser.setFirstName(userElement.firstName());
       newUser.setLastName(userElement.lastName());
       newUser.setEmail(userElement.email());
+      newUser.setMatriculationNumber(userElement.getMatriculationNumber());
 
       userRepository.save(newUser);
       return newUser;

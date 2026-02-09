@@ -379,7 +379,18 @@ public class AccessManagementService {
         return getUserByUsername(username).id;
     }
 
-    public record KeycloakUserInformation(UUID id, String username, String firstName, String lastName , String email) {}
+    public record KeycloakUserInformation(UUID id, String username, String firstName, String lastName, String email, Map<String, List<String>> attributes) {
+        public String getMatriculationNumber() {
+            if (attributes == null) {
+                return null;
+            }
+            List<String> values = attributes.get("matrikelnr");
+            if (values == null || values.isEmpty()) {
+                return null;
+            }
+            return values.getFirst();
+        }
+    }
     public List<KeycloakUserInformation> getAllUsers(String searchKey) {
         try {
             List<KeycloakUserInformation> users = webClient.get()

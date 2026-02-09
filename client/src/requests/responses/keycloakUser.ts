@@ -4,5 +4,6 @@ export interface IKeycloakUserElement {
   firstName: string
   lastName: string
   email: string
+  matriculationNumber: string | null
   hasResearchGroup: boolean
 }

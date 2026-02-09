@@ -52,6 +52,7 @@ public class AuthenticationService {
         String email = (String) attributes.get("email");
         String firstName = (String) attributes.get("given_name");
         String lastName = (String) attributes.get("family_name");
+        String matriculationNumber = (String) attributes.get("matrikelnr");
 
         List<String> groups = jwt.getAuthorities().stream()
                 .filter(authority -> authority.getAuthority().startsWith("ROLE_"))
@@ -79,6 +80,10 @@ public class AuthenticationService {
 
         if (lastName != null && !lastName.isEmpty()) {
             user.setLastName(lastName);
+        }
+
+        if (matriculationNumber != null && !matriculationNumber.isEmpty()) {
+            user.setMatriculationNumber(matriculationNumber);
         }
 
         user = userRepository.save(user);
