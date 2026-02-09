@@ -16,6 +16,7 @@ import {
   Text,
   Textarea,
   TextInput,
+  Tooltip,
 } from '@mantine/core'
 import UserMultiSelect from '../UserMultiSelect/UserMultiSelect'
 import { isNotEmptyUserList } from '../../utils/validation'
@@ -286,17 +287,25 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
               {form.values.comment !== application.comment ? 'Saving...' : 'Saved!'}
             </Text>
           </Stack>
-          <Button
-            onClick={() => {
-              createOrUpdateInterviewProcess()
-            }}
-            variant='outline'
-            color='primary'
-            mb={'sm'}
-            disabled={application.state !== ApplicationState.NOT_ASSESSED}
+
+          <Tooltip
+            label='Interview Process not available for suggested topics'
+            disabled={application.topic !== null}
           >
-            Add to Interview Process
-          </Button>
+            <Button
+              onClick={() => {
+                createOrUpdateInterviewProcess()
+              }}
+              variant='outline'
+              color='primary'
+              mb={'sm'}
+              disabled={
+                application.state !== ApplicationState.NOT_ASSESSED || application.topic === null
+              }
+            >
+              Add to Interview Process
+            </Button>
+          </Tooltip>
         </Stack>
       )}
 
