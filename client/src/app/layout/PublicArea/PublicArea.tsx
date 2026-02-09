@@ -3,9 +3,11 @@ import Footer from '../../../components/Footer/Footer'
 import { AppShell, Box, Container, Divider, Flex, MantineSize, Stack } from '@mantine/core'
 import ScrollToTop from '../ScrollToTop/ScrollToTop'
 import Header from '../../../components/Header/Header'
+import ContentContainer from '../ContentContainer/ContentContainer'
 
 interface IPublicAreaProps {
-  size?: MantineSize
+  size?: number | MantineSize | (string & {}) | undefined
+  handleScrollInView?: boolean
 }
 
 const PublicArea = (props: PropsWithChildren<IPublicAreaProps>) => {
@@ -25,7 +27,7 @@ const PublicArea = (props: PropsWithChildren<IPublicAreaProps>) => {
       <AppShell.Main>
         <Box h={`calc(100vh - ${HEADER_HEIGHT}px)`}>
           <Flex direction='column' h='100%' w='100%'>
-            <Box flex={1}>
+            <Box flex={1} style={{ overflow: props.handleScrollInView ? 'hidden' : undefined }}>
               <Container
                 size={size}
                 fluid={!size}
@@ -33,7 +35,7 @@ const PublicArea = (props: PropsWithChildren<IPublicAreaProps>) => {
                 py={{ base: 10, sm: 20 }}
                 h='100%'
               >
-                {children}
+                <ContentContainer size={size}>{children}</ContentContainer>
               </Container>
               <ScrollToTop />
             </Box>

@@ -2,7 +2,7 @@ import { PropsWithChildren } from 'react'
 import { Container, MantineSize } from '@mantine/core'
 
 interface IContentContainerProps {
-  size?: MantineSize
+  size?: number | MantineSize | (string & {}) | undefined
 }
 
 const ContentContainer = (props: PropsWithChildren<IContentContainerProps>) => {

@@ -6,6 +6,7 @@ export enum ApplicationState {
   NOT_ASSESSED = 'NOT_ASSESSED',
   ACCEPTED = 'ACCEPTED',
   REJECTED = 'REJECTED',
+  INTERVIEWING = 'INTERVIEWING',
 }
 
 export interface IApplication {
@@ -26,4 +27,15 @@ export interface IApplication {
   }> | null
   reviewedAt: string | null
   researchGroup: ILightResearchGroup
+}
+
+export interface IApplicationSummary {
+  applicationId: string
+  studyDegree: string
+  studyProgram: string
+  thesisTitle: string
+  motivation: string
+  interests: string
+  projects: string
+  specialSkills: string
 }

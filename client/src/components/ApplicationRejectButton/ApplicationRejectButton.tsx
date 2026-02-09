@@ -42,7 +42,10 @@ const ApplicationRejectButton = (props: IApplicationRejectButtonProps) => {
     form.reset()
   }, [confirmationModal])
 
-  if (application.state !== ApplicationState.NOT_ASSESSED) {
+  if (
+    application.state !== ApplicationState.NOT_ASSESSED &&
+    application.state !== ApplicationState.INTERVIEWING
+  ) {
     return <></>
   }
 
@@ -119,6 +122,7 @@ const ApplicationRejectButton = (props: IApplicationRejectButtonProps) => {
         opened={confirmationModal}
         onClick={(e) => e.stopPropagation()}
         onClose={() => setConfirmationModal(false)}
+        centered
       >
         <form>
           <Stack>
@@ -146,7 +150,7 @@ const ApplicationRejectButton = (props: IApplicationRejectButtonProps) => {
           </Stack>
         </form>
       </Modal>
-      Reject
+      {buttonProps.children ?? 'Reject'}
     </Button>
   )
 }

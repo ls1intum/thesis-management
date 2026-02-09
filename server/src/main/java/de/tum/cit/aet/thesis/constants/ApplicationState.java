@@ -8,7 +8,8 @@ import lombok.Getter;
 public enum ApplicationState {
     NOT_ASSESSED("NOT_ASSESSED"),
     ACCEPTED("ACCEPTED"),
-    REJECTED("REJECTED");
+    REJECTED("REJECTED"),
+    INTERVIEWING("INTERVIEWING");
 
     private final String value;
 }

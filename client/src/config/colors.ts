@@ -16,6 +16,7 @@ export const ApplicationStateColor: Record<ApplicationState, string> = {
   [ApplicationState.ACCEPTED]: '#26de81',
   [ApplicationState.REJECTED]: '#fc5c65',
   [ApplicationState.NOT_ASSESSED]: '#6c6c6c',
+  [ApplicationState.INTERVIEWING]: '#f78d0cff',
 }
 
 const availableThesisColors = ['#4db652', '#9d2edf', '#f8c13d', '#ea2626', '#455A64']

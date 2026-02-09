@@ -10,6 +10,8 @@ import net.fortuna.ical4j.model.parameter.PartStat;
 import net.fortuna.ical4j.model.parameter.Role;
 import net.fortuna.ical4j.model.parameter.Rsvp;
 import net.fortuna.ical4j.model.property.*;
+import net.fortuna.ical4j.model.property.immutable.ImmutableCalScale;
+import net.fortuna.ical4j.model.property.immutable.ImmutableVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -209,5 +211,15 @@ public class CalendarService {
                 .retrieve()
                 .bodyToMono(Void.class)
                 .block();
+    }
+
+    public Calendar createEmptyCalendar(String prodId) {
+        Calendar calendar = new Calendar();
+
+        calendar.add(new ProdId(prodId));
+        calendar.add(ImmutableVersion.VERSION_2_0);
+        calendar.add(ImmutableCalScale.GREGORIAN);
+
+        return calendar;
     }
 }

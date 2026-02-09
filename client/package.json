@@ -31,6 +31,7 @@
     "update": "ncu -i --format group"
   },
   "dependencies": {
+    "@mantine/carousel": "^8.2.8",
     "@mantine/core": "8.2.8",
     "@mantine/dates": "8.2.8",
     "@mantine/dropzone": "8.2.8",
@@ -45,6 +46,8 @@
     "@tiptap/extension-text-align": "3.4.1",
     "@tiptap/extension-underline": "3.4.1",
     "@tiptap/starter-kit": "3.4.1",
+    "embla-carousel": "^8.6.0",
+    "embla-carousel-react": "^8.6.0",
     "i18n-iso-countries": "7.14.0",
     "jszip": "3.10.1",
     "jwt-decode": "4.0.0",

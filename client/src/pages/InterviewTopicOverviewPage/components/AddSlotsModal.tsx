@@ -1,0 +1,345 @@
+import {
+  Modal,
+  Title,
+  Stack,
+  Group,
+  SegmentedControl,
+  Divider,
+  Flex,
+  ScrollArea,
+  Button,
+  Accordion,
+  Text,
+  Center,
+  NumberInput,
+  Tooltip,
+} from '@mantine/core'
+import { Calendar } from '@mantine/dates'
+import { useEffect, useState } from 'react'
+import dayjs from 'dayjs'
+import { CalendarBlankIcon } from '@phosphor-icons/react'
+import CollapsibleDateCard from './CollapsibleDateCard'
+import { useIsSmallerBreakpoint } from '../../../hooks/theme'
+import { IInterviewSlot } from '../../../requests/responses/interview'
+import { doRequest } from '../../../requests/request'
+import { useParams } from 'react-router'
+import { showSimpleError, showSimpleSuccess } from '../../../utils/notification'
+import { getApiResponseErrorMessage } from '../../../requests/handler'
+import { useInterviewProcessContext } from '../../../providers/InterviewProcessProvider/hooks'
+
+interface IAddSlotsModalProps {
+  slotModalOpen: boolean
+  setSlotModalOpen: (open: boolean) => void
+  interviewSlotItems?: Record<string, IInterviewSlot[]>
+}
+
+const AddSlotsModal = ({
+  slotModalOpen,
+  setSlotModalOpen,
+  interviewSlotItems,
+}: IAddSlotsModalProps) => {
+  const { processId } = useParams<{ processId: string }>()
+
+  //Show existing slots on selected dates or just selected dates
+  const [selected, setSelected] = useState<Date[]>(
+    interviewSlotItems ? Object.keys(interviewSlotItems).map((key) => new Date(key)) : [],
+  )
+
+  const [openDates, setOpenDates] = useState<string[]>(
+    interviewSlotItems
+      ? Object.keys(interviewSlotItems).map((key) => new Date(key).toDateString())
+      : [],
+  )
+
+  const [modalSlots, setModalSlots] = useState<Record<string, IInterviewSlot[]>>(
+    interviewSlotItems ? { ...interviewSlotItems } : {},
+  )
+
+  useEffect(() => {
+    setSelected(
+      interviewSlotItems ? Object.keys(interviewSlotItems).map((key) => new Date(key)) : [],
+    )
+    setOpenDates(
+      interviewSlotItems
+        ? Object.keys(interviewSlotItems).map((key) => new Date(key).toDateString())
+        : [],
+    )
+    setModalSlots(interviewSlotItems ? { ...interviewSlotItems } : {})
+  }, [interviewSlotItems])
+
+  const isSmaller = useIsSmallerBreakpoint('sm')
+
+  const [duration, setDuration] = useState<number>(30) // in minutes
+  const [customDuration, setCustomDuration] = useState<boolean>(false)
+
+  const [breakDuration, setBreakDuration] = useState<number>(0) // in minutes
+
+  const [sameSlotsForAllDays, setSameSlotsForAllDays] = useState(false)
+
+  const dayHasBookedSlots = (date: string) => {
+    return modalSlots[date]?.filter((slot) => slot.bookedBy !== null).length > 0
+  }
+
+  const handleSelect = (date: Date) => {
+    const isSelected = selected.some((s) => dayjs(s).isSame(date, 'day'))
+    if (isSelected) {
+      if (dayHasBookedSlots(date.toISOString().split('T')[0])) {
+        return
+      }
+
+      setSelected((current) => current.filter((d) => !dayjs(d).isSame(date, 'day')))
+      setOpenDates((current) => current.filter((d) => d !== date.toDateString()))
+    } else {
+      setSelected((current) => [...current, date])
+      setOpenDates((current) => [...current, date.toDateString()])
+    }
+  }
+
+  const onClose = () => {
+    setSlotModalOpen(false)
+    setSelected(
+      interviewSlotItems ? Object.keys(interviewSlotItems).map((key) => new Date(key)) : [],
+    )
+    setOpenDates(
+      interviewSlotItems
+        ? Object.keys(interviewSlotItems).map((key) => new Date(key).toDateString())
+        : [],
+    )
+
+    setCustomDuration(false)
+    setDuration(30)
+    setBreakDuration(0)
+    setModalSlots(interviewSlotItems ? { ...interviewSlotItems } : {})
+  }
+
+  const [saveLoading, setSaveLoading] = useState(false)
+
+  const { fetchInterviewSlots } = useInterviewProcessContext()
+
+  const saveNewSlots = async () => {
+    console.log('Saving slots:', modalSlots)
+    setSaveLoading(true)
+    doRequest<IInterviewSlot[]>(
+      `/v2/interview-process/interview-slots`,
+      {
+        method: 'POST',
+        requiresAuth: true,
+        data: {
+          interviewProcessId: processId,
+          interviewSlots: Object.values(modalSlots).flat(),
+        },
+      },
+      (res) => {
+        if (res.ok) {
+          onClose()
+          showSimpleSuccess('Interview slots added successfully')
+          fetchInterviewSlots()
+        } else {
+          showSimpleError(getApiResponseErrorMessage(res))
+        }
+        setSaveLoading(false)
+      },
+    )
+  }
+
+  const overlappingSlotsExist = () => {
+    const allSlots = Object.values(modalSlots).flat()
+    const sortedSlots = allSlots.sort(
+      (a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime(),
+    )
+
+    for (let i = 0; i < sortedSlots.length - 1; i++) {
+      const currentSlotEnd = new Date(sortedSlots[i].endDate).getTime()
+      const nextSlotStart = new Date(sortedSlots[i + 1].startDate).getTime()
+
+      if (currentSlotEnd > nextSlotStart) {
+        return true
+      }
+    }
+
+    return false
+  }
+
+  return (
+    <Modal
+      centered
+      size='1000px'
+      opened={slotModalOpen}
+      onClose={() => {
+        onClose()
+      }}
+      title={<Title order={3}>Add Interview Slot</Title>}
+    >
+      <Stack gap={'2.5rem'} h={'70vh'}>
+        <Group justify='flex-start' align='center' gap={isSmaller ? '0.5rem' : '2rem'}>
+          <Stack gap={'0.25rem'}>
+            <Title order={6} c={'dimmed'}>
+              Interview Length
+            </Title>
+            <Group>
+              <SegmentedControl
+                data={['30min', '45min', '60min', '90min', 'Custom']}
+                onChange={(durationString) => {
+                  if (durationString === 'Custom') {
+                    setCustomDuration(true)
+                    return
+                  } else {
+                    setCustomDuration(false)
+                  }
+
+                  const durationValue = parseInt(durationString.replace('min', ''))
+                  setDuration(durationValue)
+                }}
+                defaultValue={[30, 45, 60, 90].includes(duration) ? `${duration}min` : 'Custom'}
+                color='primary'
+              />
+
+              {customDuration && (
+                <NumberInput
+                  value={duration}
+                  onChange={(value) => {
+                    if (value) {
+                      setDuration(typeof value === 'string' ? parseInt(value) : value)
+                    }
+                  }}
+                  min={0}
+                  max={240}
+                  placeholder='Duration'
+                  size='xs'
+                  w={75}
+                />
+              )}
+            </Group>
+          </Stack>
+          <Stack gap={'0.25rem'}>
+            <Title order={6} c={'dimmed'}>
+              Interview Breaks
+            </Title>
+            <Group>
+              <SegmentedControl
+                data={['0min', '5min', '10min', '15min', `20min`, '30min']}
+                onChange={(durationString) => {
+                  const durationValue = parseInt(durationString.replace('min', ''))
+                  setBreakDuration(durationValue)
+                }}
+                color='primary'
+              />
+            </Group>
+          </Stack>
+        </Group>
+
+        <Flex
+          h={'100%'}
+          w={'100%'}
+          direction={{ base: 'column', sm: 'row' }}
+          justify={'space-between'}
+          gap={{ base: '1rem', md: '2rem' }}
+          style={{ overflow: 'auto' }}
+        >
+          <Stack w={{ base: '100%', sm: 'fit-content' }} h={'100%'}>
+            <Title order={5}>Select Dates</Title>
+            <Center w={'100%'}>
+              <Calendar
+                minDate={new Date()}
+                getDayProps={(date) => {
+                  const isPast = dayjs(date).isBefore(dayjs(), 'day')
+                  return {
+                    disabled: isPast,
+                    selected: selected.some((s) => dayjs(s).isSame(date, 'day')),
+                    onClick: isPast ? undefined : () => handleSelect(new Date(date)),
+                  }
+                }}
+                highlightToday
+                size={'md'}
+                renderDay={(date) => {
+                  if (dayHasBookedSlots(date)) {
+                    const day = dayjs(date).date()
+                    return (
+                      <Tooltip label='Can not be removed, slots are already booked' withArrow>
+                        <div>{day}</div>
+                      </Tooltip>
+                    )
+                  } else {
+                    return undefined
+                  }
+                }}
+              />
+            </Center>
+          </Stack>
+          <Divider orientation='vertical' />
+          <Stack h={'100%'} flex={1}>
+            <Title order={5}>Create Slots</Title>
+            {selected.length === 0 ? (
+              <Center h={'100%'} mih={'250px'}>
+                <Stack justify='center' align='center' h={'100%'}>
+                  <CalendarBlankIcon size={40} />
+                  <Stack gap={'0.5rem'} justify='center' align='center'>
+                    <Title order={6}>No Date selected</Title>
+                    <Text c='dimmed'>Please select one or multiple dates in the calendar</Text>
+                  </Stack>
+                </Stack>
+              </Center>
+            ) : (
+              <ScrollArea h={'100%'} w={'100%'} type={'hover'} offsetScrollbars>
+                <Stack mih={'350px'} justify='space-between'>
+                  <Accordion
+                    chevronPosition='left'
+                    variant={'unstyled'}
+                    multiple
+                    value={openDates}
+                    onChange={setOpenDates}
+                  >
+                    {selected
+                      .sort((a, b) => a.getTime() - b.getTime())
+                      .map((date) => (
+                        <CollapsibleDateCard
+                          key={date.toDateString()}
+                          date={date}
+                          duration={duration}
+                          breakDuration={breakDuration}
+                          slots={modalSlots?.[date.toISOString().split('T')[0]]}
+                          addNewSlots={(newSlots: IInterviewSlot[]) => {
+                            setModalSlots((prev) => ({
+                              ...prev,
+                              [date.toISOString().split('T')[0]]: newSlots,
+                            }))
+                          }}
+                        />
+                      ))}
+                  </Accordion>
+                  {/*<Button
+                    variant='outline'
+                    size='xs'
+                    onClick={() => {
+                      setSameSlotsForAllDays(!sameSlotsForAllDays)
+                    }}
+                  >
+                    Same Slots for all days
+                  </Button>*/}
+                </Stack>
+              </ScrollArea>
+            )}
+          </Stack>
+        </Flex>
+
+        <Stack gap={'0.25rem'}>
+          {overlappingSlotsExist() && (
+            <Text c='orange' size='xs'>
+              Overlapping slots exist. Please adjust the slots before saving.
+            </Text>
+          )}
+          <Button
+            fullWidth
+            onClick={() => {
+              saveNewSlots()
+            }}
+            disabled={overlappingSlotsExist()}
+          >
+            Save Slots
+          </Button>
+        </Stack>
+      </Stack>
+    </Modal>
+  )
+}
+export default AddSlotsModal

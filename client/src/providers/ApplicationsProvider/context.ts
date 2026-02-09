@@ -26,6 +26,7 @@ export interface IApplicationsContext {
   setPage: Dispatch<SetStateAction<number>>
   limit: number
   updateApplication: (application: IApplication) => unknown
+  fetchApplication: (applicationId: string) => Promise<IApplication | null>
 }
 
 export const ApplicationsContext = React.createContext<IApplicationsContext | undefined>(undefined)
