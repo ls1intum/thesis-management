@@ -358,6 +358,8 @@ public class AccessManagementService {
                 .uri(uriBuilder -> uriBuilder
                         .path("/admin/realms/" + keycloakRealmName + "/users")
                         .queryParam("username", username)
+                        .queryParam("exact", "true")
+                        .queryParam("briefRepresentation", "false")
                         .build()
                 )
                 .headers(headers -> headers.addAll(getAuthenticationHeaders()))
@@ -391,6 +393,7 @@ public class AccessManagementService {
             return values.getFirst();
         }
     }
+
     public List<KeycloakUserInformation> getAllUsers(String searchKey) {
         try {
             List<KeycloakUserInformation> users = webClient.get()
