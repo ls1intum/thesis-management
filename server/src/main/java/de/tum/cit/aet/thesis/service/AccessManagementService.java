@@ -396,7 +396,7 @@ public class AccessManagementService {
 
     public List<KeycloakUserInformation> getAllUsers(String searchKey) {
         try {
-            List<KeycloakUserInformation> users = webClient.get()
+            return webClient.get()
                     .uri(uriBuilder -> uriBuilder
                             .path("/admin/realms/" + keycloakRealmName + "/users")
                             .queryParam("search", searchKey)
@@ -407,7 +407,6 @@ public class AccessManagementService {
                     .bodyToFlux(KeycloakUserInformation.class)
                     .collectList()
                     .block();
-            return users;
         } catch (RuntimeException exception) {
             throw new RuntimeException("Could not fetch users from keycloak", exception);
         }
