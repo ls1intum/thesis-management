@@ -59,14 +59,16 @@ And execute all files that you need.
 
 #### Example Users and Roles
 
-| Username       | First Name | Last Name | Email                    | Role       |
-|----------------|------------|-----------|--------------------------|------------|
-| sam_fischer    | Sam        | Fischer   | sam_fischer@gmail.com    | supervisor |
-| jane_doe       | Jane       | Doe       | jane_doe@gmail.com       | supervisor |
-| joey_read      | Joey       | Read      | joey_read@gmail.com      | advisor    |
-| barney_young   | Barney     | Young     | barney_young@gmail.com   | advisor    |
-| chloe_mitchell | Chloe      | Mitchell  | chloe_mitchell@gmail.com | student    |
-| kelly_wilkins  | Kelly      | Wilkins   | kelly_wilkins@gmail.com  | student    |
+> **Note on Role Terminology:** The backend/Keycloak uses `supervisor` and `advisor` roles internally. In the UI, these are displayed as "Examiner" and "Supervisor" respectively to align with CIT terminology.
+
+| Username       | First Name | Last Name | Email                    | Role (Backend) | UI Label   |
+|----------------|------------|-----------|--------------------------|----------------|------------|
+| sam_fischer    | Sam        | Fischer   | sam_fischer@gmail.com    | supervisor     | Examiner   |
+| jane_doe       | Jane       | Doe       | jane_doe@gmail.com       | supervisor     | Examiner   |
+| joey_read      | Joey       | Read      | joey_read@gmail.com      | advisor        | Supervisor |
+| barney_young   | Barney     | Young     | barney_young@gmail.com   | advisor        | Supervisor |
+| chloe_mitchell | Chloe      | Mitchell  | chloe_mitchell@gmail.com | student        | Student    |
+| kelly_wilkins  | Kelly      | Wilkins   | kelly_wilkins@gmail.com  | student        | Student    |
 
 ## Postfix
 
