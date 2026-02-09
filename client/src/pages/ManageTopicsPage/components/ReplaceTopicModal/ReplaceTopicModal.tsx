@@ -205,7 +205,7 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
             {...form.getInputProps('thesisTypes')}
           />
           <UserMultiSelect
-            label='Supervisor'
+            label='Examiner'
             required
             groups={['supervisor']}
             initialUsers={topic?.supervisors}
@@ -213,7 +213,7 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
             {...form.getInputProps('supervisorIds')}
           />
           <UserMultiSelect
-            label='Advisor(s)'
+            label='Supervisor(s)'
             required
             groups={['advisor', 'supervisor']}
             initialUsers={topic?.advisors}
