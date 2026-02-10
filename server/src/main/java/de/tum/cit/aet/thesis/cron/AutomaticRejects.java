@@ -73,7 +73,7 @@ public class AutomaticRejects {
                             } else {
                                 List<ApplicationRejectObject> existingApplications = reminderApplicationsByUser.get(role.getUser());
                                 existingApplications.addAll(topicRejectsInNextSevenDays);
-                                existingApplications = existingApplications.stream().distinct().toList();
+                                existingApplications =  existingApplications.stream().distinct().collect(java.util.stream.Collectors.toCollection(java.util.ArrayList::new));
                                 reminderApplicationsByUser.put(loadEntireUser, existingApplications);
                             }
                         }
