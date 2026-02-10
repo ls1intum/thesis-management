@@ -14,10 +14,14 @@ import java.util.UUID;
 /**
  * Scheduled task that backfills missing matriculation numbers from Keycloak.
  *
- * <p>When a user logs in, the matriculation number is synced from the JWT's {@code matrikelnr} claim.
- * However, existing users who registered before this sync was implemented may have a {@code null}
- * matriculation number. This task periodically queries Keycloak's admin API to fill in the gaps
- * without requiring those users to re-login.</p>
+ * <p><strong>This is a temporary backfill task.</strong> It exists only to populate matriculation
+ * numbers for users who were created before the JWT-based sync (in {@code AuthenticationService})
+ * was implemented. Once all affected users have been backfilled, this task can be disabled (e.g. via a
+ * configuration flag). The code is kept in place in case a similar backfill is needed in the future.</p>
+ *
+ * <p>The primary/permanent mechanism for syncing matriculation numbers is the JWT {@code matrikelnr}
+ * claim extraction in {@link de.tum.cit.aet.thesis.service.AuthenticationService#updateAuthenticatedUser}.
+ * This task complements it by covering users who may not log in frequently enough.</p>
  *
  * <p>The task runs 10 minutes after server start and then every 7 days. User IDs are loaded once,
  * then each user is processed and committed individually so that a single Keycloak failure does not
