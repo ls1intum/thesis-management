@@ -4,7 +4,6 @@ import java.time.Instant;
 import java.util.Map;
 
 public record UpdateUserInformationPayload(
-        String matriculationNumber,
         String firstName,
         String lastName,
         String gender,

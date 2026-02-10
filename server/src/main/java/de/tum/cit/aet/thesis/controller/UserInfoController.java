@@ -50,7 +50,6 @@ public class UserInfoController {
 
         authenticatedUser = this.authenticationService.updateUserInformation(
                 authenticatedUser,
-                RequestValidator.validateStringMaxLengthAllowNull(payload.matriculationNumber(), StringLimits.SHORTTEXT.getLimit()),
                 RequestValidator.validateStringMaxLengthAllowNull(payload.firstName(), StringLimits.SHORTTEXT.getLimit()),
                 RequestValidator.validateStringMaxLengthAllowNull(payload.lastName(), StringLimits.SHORTTEXT.getLimit()),
                 RequestValidator.validateStringMaxLengthAllowNull(payload.gender(), StringLimits.SHORTTEXT.getLimit()),

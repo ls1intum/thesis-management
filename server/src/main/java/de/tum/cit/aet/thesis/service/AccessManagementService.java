@@ -358,6 +358,8 @@ public class AccessManagementService {
                 .uri(uriBuilder -> uriBuilder
                         .path("/admin/realms/" + keycloakRealmName + "/users")
                         .queryParam("username", username)
+                        .queryParam("exact", "true")
+                        .queryParam("briefRepresentation", "false")
                         .build()
                 )
                 .headers(headers -> headers.addAll(getAuthenticationHeaders()))
@@ -379,10 +381,22 @@ public class AccessManagementService {
         return getUserByUsername(username).id;
     }
 
-    public record KeycloakUserInformation(UUID id, String username, String firstName, String lastName , String email) {}
+    public record KeycloakUserInformation(UUID id, String username, String firstName, String lastName, String email, Map<String, List<String>> attributes) {
+        public String getMatriculationNumber() {
+            if (attributes == null) {
+                return null;
+            }
+            List<String> values = attributes.get("matrikelnr");
+            if (values == null || values.isEmpty()) {
+                return null;
+            }
+            return values.getFirst();
+        }
+    }
+
     public List<KeycloakUserInformation> getAllUsers(String searchKey) {
         try {
-            List<KeycloakUserInformation> users = webClient.get()
+            return webClient.get()
                     .uri(uriBuilder -> uriBuilder
                             .path("/admin/realms/" + keycloakRealmName + "/users")
                             .queryParam("search", searchKey)
@@ -393,7 +407,6 @@ public class AccessManagementService {
                     .bodyToFlux(KeycloakUserInformation.class)
                     .collectList()
                     .block();
-            return users;
         } catch (RuntimeException exception) {
             throw new RuntimeException("Could not fetch users from keycloak", exception);
         }

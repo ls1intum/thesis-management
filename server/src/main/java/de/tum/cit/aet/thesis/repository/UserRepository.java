@@ -48,6 +48,9 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     List<User> getRoleMembers(@Param("roles") Set<String> roles,
                               @Param("researchGroupId") UUID researchGroupId);
 
+    @Query("SELECT u.id FROM User u WHERE u.matriculationNumber IS NULL")
+    List<UUID> findIdsWithoutMatriculationNumber();
+
     @Query("""
                 SELECT DISTINCT u FROM User u
                 WHERE u.id IN (
