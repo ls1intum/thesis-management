@@ -76,9 +76,6 @@ const UserInformationForm = (props: IUserInformationFormProps) => {
     },
     validateInputOnBlur: true,
     validate: {
-      matriculationNumber: requireCompletion
-        ? isNotEmpty('Please state your matriculation number')
-        : undefined,
       firstName: requireCompletion ? isNotEmpty('Please state your first name') : undefined,
       lastName: requireCompletion ? isNotEmpty('Please state your last name') : undefined,
       email: requireCompletion ? isEmail('Invalid email') : undefined,
@@ -191,7 +188,6 @@ const UserInformationForm = (props: IUserInformationFormProps) => {
         try {
           await updateInformation(
             {
-              matriculationNumber: values.matriculationNumber || null,
               firstName: values.firstName || null,
               lastName: values.lastName || null,
               gender: values.gender || null,
@@ -284,13 +280,23 @@ const UserInformationForm = (props: IUserInformationFormProps) => {
               })}
             />
           </Tooltip>
-          <TextInput
-            type='text'
-            required={requireCompletion}
-            placeholder='Matriculation Number'
-            label='Matriculation Number'
-            {...form.getInputProps('matriculationNumber')}
-          />
+          <Tooltip label='This field is not editable because it is synchronized from your university account.'>
+            <TextInput
+              type='text'
+              required={requireCompletion}
+              placeholder='Matriculation Number'
+              label='Matriculation Number'
+              {...form.getInputProps('matriculationNumber')}
+              readOnly={true}
+              styles={() => ({
+                input: {
+                  backgroundColor:
+                    colorScheme === 'dark' ? theme.colors.dark[7] : theme.colors.gray[1],
+                  cursor: 'not-allowed',
+                },
+              })}
+            />
+          </Tooltip>
         </Group>
         <Group grow align='flex-start'>
           <Select

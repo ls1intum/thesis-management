@@ -69,7 +69,6 @@ class AuthenticationServiceTest {
 
         User result = authenticationService.updateUserInformation(
                 testUser,
-                "M12345",
                 "Updated",
                 "User",
                 "Male",

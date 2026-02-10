@@ -112,7 +112,6 @@ public class AuthenticationService {
 
     public User updateUserInformation(
             User user,
-            String matriculationNumber,
             String firstName,
             String lastName,
             String gender,
@@ -130,7 +129,6 @@ public class AuthenticationService {
             MultipartFile cv,
             MultipartFile degreeReport
     ) {
-        user.setMatriculationNumber(matriculationNumber);
         user.setFirstName(firstName);
         user.setLastName(lastName);
         user.setGender(gender);
