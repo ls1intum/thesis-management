@@ -1272,6 +1272,21 @@
             "claim.name": "locale",
             "jsonType.label": "String"
           }
+        },
+        {
+          "id": "f31d0c9a-198d-47d3-89fe-00ac5b934099",
+          "name": "matrikelnr",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "matrikelnr",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "matrikelnr",
+            "jsonType.label": "String",
+            "userinfo.token.claim": "true"
+          }
         }
       ]
     },
