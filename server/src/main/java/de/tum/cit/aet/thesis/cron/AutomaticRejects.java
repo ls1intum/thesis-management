@@ -18,9 +18,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static java.util.stream.Collectors.toCollection;
 
 @Component
 public class AutomaticRejects {
@@ -73,7 +76,7 @@ public class AutomaticRejects {
                             } else {
                                 List<ApplicationRejectObject> existingApplications = reminderApplicationsByUser.get(role.getUser());
                                 existingApplications.addAll(topicRejectsInNextSevenDays);
-                                existingApplications =  existingApplications.stream().distinct().collect(java.util.stream.Collectors.toCollection(java.util.ArrayList::new));
+                                existingApplications =  existingApplications.stream().distinct().collect(toCollection(ArrayList::new));
                                 reminderApplicationsByUser.put(loadEntireUser, existingApplications);
                             }
                         }
