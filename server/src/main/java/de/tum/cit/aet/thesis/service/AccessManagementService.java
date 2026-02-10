@@ -400,7 +400,6 @@ public class AccessManagementService {
                     .uri(uriBuilder -> uriBuilder
                             .path("/admin/realms/" + keycloakRealmName + "/users")
                             .queryParam("search", searchKey)
-                            .queryParam("briefRepresentation", "false")
                             .build()
                     )
                     .headers(headers -> headers.addAll(getAuthenticationHeaders()))
