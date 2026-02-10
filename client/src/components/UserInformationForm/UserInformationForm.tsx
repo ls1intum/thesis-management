@@ -40,6 +40,7 @@ const UserInformationForm = (props: IUserInformationFormProps) => {
 
   const form = useForm<
     Omit<IUpdateUserInformationPayload, 'enrolledAt'> & {
+      matriculationNumber: string // read-only, synced from Keycloak, not sent to server
       semester: string
       researchGroupName: string | null
       customData: Record<string, string>
@@ -283,7 +284,6 @@ const UserInformationForm = (props: IUserInformationFormProps) => {
           <Tooltip label='This field is not editable because it is synchronized from your university account.'>
             <TextInput
               type='text'
-              required={requireCompletion}
               placeholder='Matriculation Number'
               label='Matriculation Number'
               {...form.getInputProps('matriculationNumber')}
