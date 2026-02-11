@@ -39,6 +39,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("keycloak-test")
@@ -50,6 +51,10 @@ public abstract class BaseKeycloakIntegrationTest {
 
 	static final KeycloakContainer KEYCLOAK_CONTAINER = new KeycloakContainer("quay.io/keycloak/keycloak:26.4")
 			.withRealmImportFile("thesis-management-realm.json");
+
+	private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder()
+			.connectTimeout(Duration.ofSeconds(10))
+			.build();
 
 	static String serviceClientSecret;
 
@@ -115,6 +120,9 @@ public abstract class BaseKeycloakIntegrationTest {
 		DB_CONTAINER.start();
 		KEYCLOAK_CONTAINER.start();
 
+		// Only generate the secret once per JVM — generating a new secret would
+		// invalidate the previous one, breaking any already-initialized
+		// AccessManagementService instances in cached Spring contexts.
 		if (serviceClientSecret == null) {
 			Keycloak adminClient = KEYCLOAK_CONTAINER.getKeycloakAdminClient();
 			String serviceClientUuid = adminClient.realm("thesis-management")
@@ -163,7 +171,6 @@ public abstract class BaseKeycloakIntegrationTest {
 
 	protected String obtainAccessToken(String username, String password) {
 		try {
-			HttpClient client = HttpClient.newHttpClient();
 			String tokenUrl = KEYCLOAK_CONTAINER.getAuthServerUrl()
 					+ "/realms/thesis-management/protocol/openid-connect/token";
 			String body = "grant_type=password"
@@ -177,14 +184,26 @@ public abstract class BaseKeycloakIntegrationTest {
 					.POST(HttpRequest.BodyPublishers.ofString(body))
 					.build();
 
-			HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+			HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+			if (response.statusCode() != 200) {
+				throw new RuntimeException("Token request failed with status " + response.statusCode()
+						+ ": " + response.body());
+			}
+
 			JsonNode json = objectMapper.readTree(response.body());
-			return json.get("access_token").asText();
+			JsonNode tokenNode = json.get("access_token");
+			if (tokenNode == null || tokenNode.isNull()) {
+				throw new RuntimeException("No access_token in response: " + response.body());
+			}
+			return tokenNode.asText();
+		} catch (RuntimeException e) {
+			throw e;
 		} catch (Exception e) {
 			throw new RuntimeException("Failed to obtain access token for user: " + username, e);
 		}
 	}
 
+	/** All realm test users use their username as their password. */
 	protected String authHeaderFor(String username) {
 		return "Bearer " + obtainAccessToken(username, username);
 	}

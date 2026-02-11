@@ -11,6 +11,7 @@ import de.tum.cit.aet.thesis.entity.UserGroup;
 import de.tum.cit.aet.thesis.repository.UserRepository;
 import de.tum.cit.aet.thesis.service.AccessManagementService;
 import de.tum.cit.aet.thesis.service.AccessManagementService.KeycloakUserInformation;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.representations.idm.GroupRepresentation;
@@ -29,6 +30,42 @@ class AccessManagementServiceIntegrationTest extends BaseKeycloakIntegrationTest
 
 	@Autowired
 	private UserRepository userRepository;
+
+	/**
+	 * Resets Keycloak state that may have been mutated by tests.
+	 * Runs after every test so cleanup happens even when assertions fail.
+	 */
+	@AfterEach
+	void resetKeycloakState() {
+		Keycloak adminClient = KEYCLOAK_CONTAINER.getKeycloakAdminClient();
+		String appClientUuid = adminClient.realm("thesis-management")
+				.clients().findByClientId("thesis-management-app").get(0).getId();
+
+		// Reset "student" user's client roles back to only "student"
+		String studentKeycloakId = adminClient.realm("thesis-management")
+				.users().search("student", true).get(0).getId();
+		List<RoleRepresentation> currentRoles = adminClient.realm("thesis-management")
+				.users().get(studentKeycloakId).roles().clientLevel(appClientUuid).listAll();
+		if (!currentRoles.isEmpty()) {
+			adminClient.realm("thesis-management")
+					.users().get(studentKeycloakId).roles().clientLevel(appClientUuid).remove(currentRoles);
+		}
+		RoleRepresentation studentRole = adminClient.realm("thesis-management")
+				.clients().get(appClientUuid).roles().get("student").toRepresentation();
+		adminClient.realm("thesis-management")
+				.users().get(studentKeycloakId).roles().clientLevel(appClientUuid).add(List.of(studentRole));
+
+		// Remove "advisor" user from thesis-students group if present
+		String advisorKeycloakId = adminClient.realm("thesis-management")
+				.users().search("advisor", true).get(0).getId();
+		List<GroupRepresentation> advisorGroups = adminClient.realm("thesis-management")
+				.users().get(advisorKeycloakId).groups();
+		advisorGroups.stream()
+				.filter(g -> g.getName().equals("thesis-students"))
+				.findFirst()
+				.ifPresent(g -> adminClient.realm("thesis-management")
+						.users().get(advisorKeycloakId).leaveGroup(g.getId()));
+	}
 
 	private User createLocalUser(String username) throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/v2/user-info")
@@ -98,8 +135,6 @@ class AccessManagementServiceIntegrationTest extends BaseKeycloakIntegrationTest
 		assertTrue(roleNames.contains("supervisor"));
 		assertTrue(roleNames.contains("advisor"));
 		assertFalse(roleNames.contains("student"));
-
-		resetStudentRoles(adminClient, keycloakUserId, appClientUuid);
 	}
 
 	@Test
@@ -120,8 +155,6 @@ class AccessManagementServiceIntegrationTest extends BaseKeycloakIntegrationTest
 		assertTrue(roleNames.contains("advisor"));
 		assertFalse(roleNames.contains("supervisor"));
 		assertFalse(roleNames.contains("student"));
-
-		resetStudentRoles(adminClient, keycloakUserId, appClientUuid);
 	}
 
 	@Test
@@ -145,18 +178,4 @@ class AccessManagementServiceIntegrationTest extends BaseKeycloakIntegrationTest
 		assertFalse(groups.stream().anyMatch(g -> g.getName().equals("thesis-students")));
 	}
 
-	private void resetStudentRoles(Keycloak adminClient, String keycloakUserId, String appClientUuid) {
-		List<RoleRepresentation> currentRoles = adminClient.realm("thesis-management")
-				.users().get(keycloakUserId).roles().clientLevel(appClientUuid).listAll();
-
-		if (!currentRoles.isEmpty()) {
-			adminClient.realm("thesis-management")
-					.users().get(keycloakUserId).roles().clientLevel(appClientUuid).remove(currentRoles);
-		}
-
-		RoleRepresentation studentRole = adminClient.realm("thesis-management")
-				.clients().get(appClientUuid).roles().get("student").toRepresentation();
-		adminClient.realm("thesis-management")
-				.users().get(keycloakUserId).roles().clientLevel(appClientUuid).add(List.of(studentRole));
-	}
 }
