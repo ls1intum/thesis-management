@@ -24,6 +24,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * Manages user roles and group assignments in Keycloak and synchronizes them with the local database.
+ */
 @Service
 public class AccessManagementService {
 	private static final Logger log = LoggerFactory.getLogger(AccessManagementService.class);
@@ -42,6 +45,17 @@ public class AccessManagementService {
 
 	private final UserGroupRepository userGroupRepository;
 
+	/**
+	 * Initializes the Keycloak WebClient and resolves the application client UUID and student group ID.
+	 *
+	 * @param keycloakHost the Keycloak server host URL
+	 * @param keycloakRealmName the Keycloak realm name
+	 * @param serviceClientId the service client ID for authentication
+	 * @param serviceClientSecret the service client secret for authentication
+	 * @param studentGroupName the name of the student group in Keycloak
+	 * @param clientId the application client ID
+	 * @param userGroupRepository the user group repository
+	 */
 	@Autowired
 	public AccessManagementService(
 			@Value("${thesis-management.keycloak.host}") String keycloakHost,
@@ -79,6 +93,11 @@ public class AccessManagementService {
 		this.studentGroupId = studentGroupId;
 	}
 
+	/**
+	 * Assigns the configured student Keycloak group to the given user.
+	 *
+	 * @param user the user to assign the student group to
+	 */
 	public void addStudentGroup(User user) {
 		if (studentGroupId == null) {
 			return;
@@ -91,6 +110,11 @@ public class AccessManagementService {
 		}
 	}
 
+	/**
+	 * Removes the configured student Keycloak group from the given user.
+	 *
+	 * @param user the user to remove the student group from
+	 */
 	public void removeStudentGroup(User user) {
 		if (studentGroupId == null) {
 			return;
@@ -130,6 +154,11 @@ public class AccessManagementService {
 	}
 
 
+	/**
+	 * Assigns the advisor Keycloak role to the user and removes any conflicting supervisor or student roles.
+	 *
+	 * @param user the user to assign the advisor role to
+	 */
 	public void assignAdvisorRole(User user) {
 		if (user == null) {
 			throw new RuntimeException("User is null");
@@ -146,6 +175,11 @@ public class AccessManagementService {
 		}
 	}
 
+	/**
+	 * Assigns the supervisor and advisor Keycloak roles to the user and removes the student role.
+	 *
+	 * @param user the user to assign the supervisor role to
+	 */
 	public void assignSupervisorRole(User user) {
 		if (user == null) {
 			throw new RuntimeException("User is null");
@@ -163,6 +197,11 @@ public class AccessManagementService {
 		}
 	}
 
+	/**
+	 * Assigns the group-admin Keycloak role to the given user.
+	 *
+	 * @param user the user to assign the group-admin role to
+	 */
 	public void assignGroupAdminRole(User user) {
 		if (user == null) {
 			throw new RuntimeException("User is null");
@@ -176,6 +215,11 @@ public class AccessManagementService {
 		}
 	}
 
+	/**
+	 * Removes the group-admin Keycloak role from the given user.
+	 *
+	 * @param user the user to remove the group-admin role from
+	 */
 	public void removeGroupAdminRole(User user) {
 		if (user == null) {
 			throw new RuntimeException("User is null");
@@ -189,6 +233,11 @@ public class AccessManagementService {
 		}
 	}
 
+	/**
+	 * Removes all research group-related Keycloak roles from the user and reassigns the student role.
+	 *
+	 * @param user the user to remove research group roles from
+	 */
 	public void removeResearchGroupRoles(User user) {
 		if (user == null) {
 			throw new RuntimeException("User is null");
@@ -356,6 +405,9 @@ public class AccessManagementService {
 	/**
 	 * Fetches a user by their username from Keycloak.
 	 * In case of Tum the username is the university ID.
+	 *
+	 * @param username the Keycloak username to search for
+	 * @return the Keycloak user information
 	 */
 	public KeycloakUserInformation getUserByUsername(String username) {
 		List<KeycloakUserInformation> users = webClient.get()
@@ -385,7 +437,22 @@ public class AccessManagementService {
 		return getUserByUsername(username).id;
 	}
 
+	/**
+	 * Represents user information retrieved from Keycloak, including optional custom attributes.
+	 *
+	 * @param id the Keycloak user ID
+	 * @param username the Keycloak username
+	 * @param firstName the user's first name
+	 * @param lastName the user's last name
+	 * @param email the user's email address
+	 * @param attributes the custom user attributes from Keycloak
+	 */
 	public record KeycloakUserInformation(UUID id, String username, String firstName, String lastName, String email, Map<String, List<String>> attributes) {
+		/**
+		 * Returns the matriculation number from the Keycloak user attributes, or null if not present.
+		 *
+		 * @return the matriculation number, or null if not available
+		 */
 		public String getMatriculationNumber() {
 			if (attributes == null) {
 				return null;
@@ -398,6 +465,12 @@ public class AccessManagementService {
 		}
 	}
 
+	/**
+	 * Searches for users in Keycloak matching the given search key.
+	 *
+	 * @param searchKey the search key to match users against
+	 * @return the list of matching Keycloak users
+	 */
 	public List<KeycloakUserInformation> getAllUsers(String searchKey) {
 		try {
 			return webClient.get()

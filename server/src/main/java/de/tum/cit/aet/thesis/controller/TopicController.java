@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
+/** REST controller for managing thesis topics and their lifecycle. */
 @Slf4j
 @RestController
 @RequestMapping("/v2/topics")
@@ -34,12 +35,32 @@ public class TopicController {
 	private final TopicService topicService;
 	private final ApplicationService applicationService;
 
+	/**
+	 * Injects the topic service and application service.
+	 *
+	 * @param topicService the topic service
+	 * @param applicationService the application service
+	 */
 	@Autowired
 	public TopicController(TopicService topicService, ApplicationService applicationService) {
 		this.topicService = topicService;
 		this.applicationService = applicationService;
 	}
 
+	/**
+	 * Retrieves a paginated list of topics filtered by search, type, state, and research group.
+	 *
+	 * @param search the search query string
+	 * @param onlyOwnResearchGroup whether to filter by the current user's research group
+	 * @param type the topic types to filter by
+	 * @param states the topic states to filter by
+	 * @param page the page number
+	 * @param limit the number of items per page
+	 * @param sortBy the field to sort by
+	 * @param sortOrder the sort direction (asc or desc)
+	 * @param researchGroupIds the research group IDs to filter by
+	 * @return the paginated list of topics
+	 */
 	@GetMapping
 	public ResponseEntity<PaginationDto<TopicDto>> getTopics(
 			@RequestParam(required = false) String search,
@@ -67,6 +88,12 @@ public class TopicController {
 		return ResponseEntity.ok(PaginationDto.fromSpringPage(topics.map(TopicDto::fromTopicEntity)));
 	}
 
+	/**
+	 * Retrieves a single topic by its identifier.
+	 *
+	 * @param topicId the topic ID
+	 * @return the topic
+	 */
 	@GetMapping("/{topicId}")
 	public ResponseEntity<TopicDto> getTopic(@PathVariable UUID topicId) {
 		Topic topic = topicService.findById(topicId);
@@ -74,6 +101,12 @@ public class TopicController {
 		return ResponseEntity.ok(TopicDto.fromTopicEntity(topic));
 	}
 
+	/**
+	 * Creates a new topic with the specified details, supervisors, and advisors.
+	 *
+	 * @param payload the topic creation payload
+	 * @return the created topic
+	 */
 	@PostMapping
 	@PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
 	public ResponseEntity<TopicDto> createTopic(
@@ -97,6 +130,13 @@ public class TopicController {
 		return ResponseEntity.ok(TopicDto.fromTopicEntity(topic));
 	}
 
+	/**
+	 * Updates an existing topic with new details, supervisors, and advisors.
+	 *
+	 * @param topicId the topic ID to update
+	 * @param payload the topic update payload
+	 * @return the updated topic
+	 */
 	@PutMapping("/{topicId}")
 	@PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
 	public ResponseEntity<TopicDto> updateTopic(
@@ -124,6 +164,13 @@ public class TopicController {
 		return ResponseEntity.ok(TopicDto.fromTopicEntity(topic));
 	}
 
+	/**
+	 * Closes a topic with a given reason and optionally notifies affected users.
+	 *
+	 * @param topicId the topic ID to close
+	 * @param payload the close topic payload with reason and notification flag
+	 * @return the closed topic
+	 */
 	@DeleteMapping("/{topicId}")
 	@PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
 	public ResponseEntity<TopicDto> closeTopic(
@@ -141,6 +188,15 @@ public class TopicController {
 		return ResponseEntity.ok(TopicDto.fromTopicEntity(topic));
 	}
 
+	/**
+	 * Retrieves a paginated list of topics eligible for the interview process.
+	 *
+	 * @param search the search query to filter topics
+	 * @param page the page number
+	 * @param limit the number of items per page
+	 * @param excludeSupervised whether to exclude topics supervised by the current user
+	 * @return the paginated list of interview-eligible topics
+	 */
 	@GetMapping("/interview-topics")
 	@PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
 	public ResponseEntity<PaginationDto<TopicInterviewProcessDto>> getPossibleInterviewTopics(

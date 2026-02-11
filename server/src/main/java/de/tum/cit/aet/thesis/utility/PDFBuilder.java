@@ -17,6 +17,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+/** Fluent builder for generating PDF documents with a heading, key-value data pairs, and HTML content sections. */
 public class PDFBuilder {
 	private final String heading;
 	private final List<Section> sections;
@@ -25,24 +26,48 @@ public class PDFBuilder {
 	private record Data(String title, String value) { }
 	private record Section(String heading, String htmlContent) { }
 
+	/**
+	 * Initializes a new PDF builder with the given main heading.
+	 *
+	 * @param heading the main heading for the PDF document
+	 */
 	public PDFBuilder(String heading) {
 		this.heading = heading;
 		this.sections = new ArrayList<>();
 		this.data = new ArrayList<>();
 	}
 
+	/**
+	 * Adds a key-value data pair to be rendered in the PDF document.
+	 *
+	 * @param title the data label
+	 * @param value the data value
+	 * @return this PDFBuilder instance for method chaining
+	 */
 	public PDFBuilder addData(String title, String value) {
 		data.add(new Data(title, value));
 
 		return this;
 	}
 
+	/**
+	 * Adds a titled section with HTML content to be rendered in the PDF document.
+	 *
+	 * @param heading the section heading
+	 * @param htmlContent the HTML content of the section
+	 * @return this PDFBuilder instance for method chaining
+	 */
 	public PDFBuilder addSection(String heading, String htmlContent) {
 		sections.add(new Section(heading, htmlContent));
 
 		return this;
 	}
 
+	/**
+	 * Builds the PDF document and returns it as a byte array resource.
+	 *
+	 * @return the generated PDF as a Resource
+	 */
 	public Resource build() {
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 

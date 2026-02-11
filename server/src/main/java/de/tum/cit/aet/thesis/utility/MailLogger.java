@@ -11,7 +11,14 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Objects;
 
+/** Utility class for extracting human-readable text representations from MIME email messages. */
 public class MailLogger {
+	/**
+	 * Extracts the subject, sender, recipients, and body content from a MimeMessage as a formatted string.
+	 *
+	 * @param message the MIME message to extract text from
+	 * @return the formatted string representation of the message
+	 */
 	public static String getTextFromMimeMessage(MimeMessage message) {
 		StringBuilder builder = new StringBuilder();
 

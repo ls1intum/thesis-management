@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * REST controller for serving user avatar images.
+ */
 @Slf4j
 @RestController
 @RequestMapping("/v2/avatars")
@@ -24,12 +27,24 @@ public class AvatarController {
 	private final UserService userService;
 	private final UploadService uploadService;
 
+	/**
+	 * Injects the user service and upload service.
+	 *
+	 * @param userService the user service
+	 * @param uploadService the upload service
+	 */
 	@Autowired
 	public AvatarController(UserService userService, UploadService uploadService) {
 		this.userService = userService;
 		this.uploadService = uploadService;
 	}
 
+	/**
+	 * Retrieves the avatar image for a user by their ID.
+	 *
+	 * @param userId the ID of the user
+	 * @return the avatar image as a resource
+	 */
 	@GetMapping("/{userId}")
 	public ResponseEntity<Resource> getTheses(@PathVariable UUID userId) {
 		User user = userService.findById(userId);

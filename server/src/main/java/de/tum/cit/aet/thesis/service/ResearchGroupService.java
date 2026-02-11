@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+/** Manages research group lifecycle, membership, and role assignments with Keycloak synchronization. */
 @Service
 public class ResearchGroupService {
 
@@ -38,6 +39,16 @@ private final AccessManagementService accessManagementService;
 
 private final ThesisRepository thesisRepository;
 
+/**
+ * Injects the research group repository, user service, access management, and current user provider.
+ *
+ * @param researchGroupRepository the research group repository
+ * @param userService the user service
+ * @param currentUserProviderProvider the current user provider
+ * @param userRepository the user repository
+ * @param accessManagementService the access management service
+ * @param thesisRepository the thesis repository
+ */
 @Autowired
 public ResearchGroupService(ResearchGroupRepository researchGroupRepository,
 	UserService userService, ObjectProvider<CurrentUserProvider> currentUserProviderProvider,
@@ -54,6 +65,19 @@ private CurrentUserProvider currentUserProvider() {
 	return currentUserProviderProvider.getObject();
 }
 
+/**
+ * Returns a paginated and filtered list of research groups visible to the current user.
+ *
+ * @param heads the head usernames to filter by
+ * @param campuses the campuses to filter by
+ * @param includeArchived whether to include archived research groups
+ * @param searchQuery the search query to filter results
+ * @param page the page number for pagination
+ * @param limit the number of items per page
+ * @param sortBy the field to sort by
+ * @param sortOrder the sort direction (asc or desc)
+ * @return the paginated list of research groups
+ */
 public Page<ResearchGroup> getAll(
 	String[] heads,
 	String[] campuses,
@@ -92,6 +116,12 @@ public Page<ResearchGroup> getAll(
 	);
 }
 
+/**
+ * Returns all non-archived research groups matching the search query without access restrictions.
+ *
+ * @param searchQuery the search query to filter results
+ * @return the page of matching research groups
+ */
 public Page<ResearchGroup> getAllLight(String searchQuery) {
 	String searchQueryFilter =
 			searchQuery == null || searchQuery.isEmpty() ? null : searchQuery.toLowerCase();
@@ -107,6 +137,11 @@ public Page<ResearchGroup> getAllLight(String searchQuery) {
 	);
 }
 
+/**
+ * Returns the active research groups accessible to the current user, including groups via active theses.
+ *
+ * @return the list of active research groups for the current user
+ */
 public List<ResearchGroup> getActiveResearchGroupsForUser() {
 
 	User currentUser = currentUserProviderProvider.getObject().getUser();
@@ -141,14 +176,33 @@ public List<ResearchGroup> getActiveResearchGroupsForUser() {
 	return new ArrayList<>(result);
 }
 
+/**
+ * Finds a research group by its ID with access control enforcement.
+ *
+ * @param researchGroupId the unique identifier of the research group
+ * @return the found research group
+ */
 public ResearchGroup findById(UUID researchGroupId) {
 	return findById(researchGroupId, false);
 }
 
+/**
+ * Finds a research group by its abbreviation.
+ *
+ * @param abbreviation the abbreviation of the research group
+ * @return the found research group
+ */
 public ResearchGroup findByAbbreviation(String abbreviation) {
 	return researchGroupRepository.findByAbbreviation(abbreviation);
 }
 
+/**
+ * Finds a research group by its ID, optionally bypassing access control checks.
+ *
+ * @param researchGroupId the unique identifier of the research group
+ * @param noAuthentication whether to skip access control checks
+ * @return the found research group
+ */
 public ResearchGroup findById(UUID researchGroupId, boolean noAuthentication) {
 	ResearchGroup researchGroup = researchGroupRepository.findById(researchGroupId)
 		.orElseThrow(() -> new ResourceNotFoundException(
@@ -286,6 +340,16 @@ public ResearchGroup updateResearchGroup(
 	return savedResearchGroup;
 }
 
+/**
+ * Returns a paginated list of members belonging to the specified research group.
+ *
+ * @param researchGroupId the unique identifier of the research group
+ * @param page the page number for pagination
+ * @param limit the number of items per page
+ * @param sortBy the field to sort by
+ * @param sortOrder the sort direction (asc or desc)
+ * @return the paginated list of research group members
+ */
 public Page<User> getAllResearchGroupMembers(UUID researchGroupId, Integer page, Integer limit, String sortBy, String sortOrder) {
 	ResearchGroup researchGroup = findById(researchGroupId);
 	currentUserProvider().assertCanAccessResearchGroup(researchGroup);
@@ -296,6 +360,11 @@ public Page<User> getAllResearchGroupMembers(UUID researchGroupId, Integer page,
 			.searchUsers(researchGroupId, null, null, PageRequest.of(page, limit, Sort.by(order)));
 }
 
+/**
+ * Archives the given research group, preventing further modifications to it.
+ *
+ * @param researchGroup the research group to archive
+ */
 public void archiveResearchGroup(ResearchGroup researchGroup) {
 	currentUserProvider().assertCanAccessResearchGroup(researchGroup);
 	researchGroup.setUpdatedAt(Instant.now());
@@ -305,6 +374,13 @@ public void archiveResearchGroup(ResearchGroup researchGroup) {
 	researchGroupRepository.save(researchGroup);
 }
 
+/**
+ * Assigns a user to a research group and grants them the advisor role in Keycloak.
+ *
+ * @param username the username of the user to assign
+ * @param researchGroupId the unique identifier of the research group
+ * @return the assigned user
+ */
 public User assignUserToResearchGroup(String username, UUID researchGroupId) {
 
 	ResearchGroup researchGroup = findById(researchGroupId);
@@ -332,6 +408,13 @@ public User assignUserToResearchGroup(String username, UUID researchGroupId) {
 	return user;
 }
 
+	/**
+	 * Removes a user from a research group and revokes their research group roles in Keycloak.
+	 *
+	 * @param userId the unique identifier of the user to remove
+	 * @param researchGroupId the unique identifier of the research group
+	 * @return the removed user
+	 */
 	public User removeUserFromResearchGroup(UUID userId, UUID researchGroupId) {
 		User user = userService.findById(userId);
 
@@ -364,6 +447,14 @@ public User assignUserToResearchGroup(String username, UUID researchGroupId) {
 		return user;
 	}
 
+	/**
+	 * Updates the Keycloak role of a research group member to the specified advisor or supervisor role.
+	 *
+	 * @param researchGroupId the unique identifier of the research group
+	 * @param userId the unique identifier of the member
+	 * @param role the new role to assign (advisor or supervisor)
+	 * @return the updated user
+	 */
 	public User updateResearchGroupMemberRole(
 			UUID researchGroupId,
 			UUID userId,
@@ -397,6 +488,13 @@ public User assignUserToResearchGroup(String username, UUID researchGroupId) {
 		return user;
 	}
 
+	/**
+	 * Toggles the group-admin Keycloak role for the specified user in the research group.
+	 *
+	 * @param researchGroupId the unique identifier of the research group
+	 * @param userId the unique identifier of the user
+	 * @return the updated user
+	 */
 	public User changeResearchGroupAdminRole(UUID researchGroupId, UUID userId) {
 		User user = userService.findById(userId);
 

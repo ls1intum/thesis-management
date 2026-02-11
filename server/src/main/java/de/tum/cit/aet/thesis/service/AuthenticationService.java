@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/** Manages user authentication, profile synchronization, and notification settings based on JWT tokens. */
 @Service
 public class AuthenticationService {
 	private final UserRepository userRepository;
@@ -29,6 +30,14 @@ public class AuthenticationService {
 	private final UploadService uploadService;
 	private final NotificationSettingRepository notificationSettingRepository;
 
+	/**
+	 * Injects the user, user group, upload, and notification setting repositories.
+	 *
+	 * @param userRepository the user repository
+	 * @param userGroupRepository the user group repository
+	 * @param uploadService the upload service for file storage
+	 * @param notificationSettingRepository the notification setting repository
+	 */
 	@Autowired
 	public AuthenticationService(UserRepository userRepository, UserGroupRepository userGroupRepository, UploadService uploadService, NotificationSettingRepository notificationSettingRepository) {
 		this.userRepository = userRepository;
@@ -37,11 +46,23 @@ public class AuthenticationService {
 		this.notificationSettingRepository = notificationSettingRepository;
 	}
 
+	/**
+	 * Returns the authenticated user identified by the university ID in the JWT.
+	 *
+	 * @param jwt the JWT authentication token
+	 * @return the authenticated user
+	 */
 	public User getAuthenticatedUser(JwtAuthenticationToken jwt) {
 		return userRepository.findByUniversityId(getUniversityId(jwt))
 				.orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
 	}
 
+	/**
+	 * Returns the authenticated user with their research group eagerly loaded.
+	 *
+	 * @param jwt the JWT authentication token
+	 * @return the authenticated user with research group loaded
+	 */
 	public User getAuthenticatedUserWithResearchGroup(JwtAuthenticationToken jwt) {
 		return userRepository.findByUniversityIdWithResearchGroup(getUniversityId(jwt))
 				.orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
@@ -113,6 +134,28 @@ public class AuthenticationService {
 		return userRepository.save(user);
 	}
 
+	/**
+	 * Updates the user's profile information, including personal details and uploaded documents.
+	 *
+	 * @param user the user to update
+	 * @param firstName the user's first name
+	 * @param lastName the user's last name
+	 * @param gender the user's gender
+	 * @param nationality the user's nationality
+	 * @param email the user's email address
+	 * @param studyDegree the user's study degree
+	 * @param studyProgram the user's study program
+	 * @param enrolledAt the enrollment date
+	 * @param specialSkills the user's special skills
+	 * @param interests the user's interests
+	 * @param projects the user's projects
+	 * @param customData additional custom data fields
+	 * @param avatar the avatar image file
+	 * @param examinationReport the examination report file
+	 * @param cv the CV file
+	 * @param degreeReport the degree report file
+	 * @return the updated user
+	 */
 	public User updateUserInformation(
 			User user,
 			String firstName,
@@ -156,6 +199,12 @@ public class AuthenticationService {
 		return userRepository.save(user);
 	}
 
+	/**
+	 * Returns the notification settings for the given user.
+	 *
+	 * @param user the user whose notification settings to retrieve
+	 * @return the list of notification settings
+	 */
 	public List<NotificationSetting> getNotificationSettings(User user) {
 		return user.getNotificationSettings();
 	}

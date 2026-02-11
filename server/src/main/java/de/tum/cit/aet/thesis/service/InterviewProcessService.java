@@ -39,6 +39,7 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/** Service for managing interview processes, slots, interviewees, and related business logic. */
 @Service
 public class InterviewProcessService {
 	private final TopicService topicService;
@@ -51,6 +52,18 @@ public class InterviewProcessService {
 
 	private final InternetAddress applicationMail;
 
+	/**
+	 * Injects required services, repositories, and the application mail sender address.
+	 *
+	 * @param topicService the topic service
+	 * @param interviewProcessRepository the interview process repository
+	 * @param currentUserProviderProvider the provider for the current user context
+	 * @param applicationService the application service
+	 * @param intervieweeRepository the interviewee repository
+	 * @param mailingService the mailing service
+	 * @param calendarService the calendar service
+	 * @param applicationMail the application mail sender address
+	 */
 	@Autowired
 	public InterviewProcessService(
 			TopicService topicService,
@@ -75,6 +88,17 @@ public class InterviewProcessService {
 		return currentUserProviderProvider.getObject();
 	}
 
+	/**
+	 * Finds all interview processes accessible to the current user with pagination and filtering.
+	 *
+	 * @param searchQuery the search query to filter processes
+	 * @param page the page number for pagination
+	 * @param limit the maximum number of results per page
+	 * @param sortBy the field to sort by
+	 * @param sortOrder the sort direction (asc or desc)
+	 * @param excludeSupervised whether to exclude supervised processes
+	 * @return the paginated list of interview processes
+	 */
 	public Page<InterviewProcess> findAllMyProcesses(
 			String searchQuery,
 			int page,
@@ -110,6 +134,13 @@ public class InterviewProcessService {
 		);
 	}
 
+	/**
+	 * Creates or updates an interview process for a topic and adds interviewees from the given applications.
+	 *
+	 * @param topicId the ID of the topic for the interview process
+	 * @param intervieweeApplicationIds the list of application IDs to add as interviewees
+	 * @return the created or updated interview process
+	 */
 	public InterviewProcess createInterviewProcess(UUID topicId, List<UUID> intervieweeApplicationIds) {
 
 		Topic topic = topicService.findById(topicId);
@@ -160,12 +191,24 @@ public class InterviewProcessService {
 		return interviewProcess;
 	}
 
+	/**
+	 * Finds an interview process by its ID or throws a ResourceNotFoundException.
+	 *
+	 * @param interviewProcessId the ID of the interview process
+	 * @return the interview process
+	 */
 	public InterviewProcess findById(UUID interviewProcessId) {
 		return interviewProcessRepository.findById(interviewProcessId)
 				.orElseThrow(() -> new ResourceNotFoundException(
 						String.format("InterviewProcess with id %s not found.", interviewProcessId)));
 	}
 
+	/**
+	 * Finds an interview process by topic ID, or returns a new empty process if none exists.
+	 *
+	 * @param topicId the ID of the topic
+	 * @return the interview process for the topic, or a new empty process
+	 */
 	public InterviewProcess findByTopicId(UUID topicId) {
 		InterviewProcess interviewProcess = interviewProcessRepository.findByTopicId(topicId);
 		if (interviewProcess == null) {
@@ -174,10 +217,21 @@ public class InterviewProcessService {
 		return interviewProcess;
 	}
 
+	/**
+	 * Checks whether an interview process exists for the given topic ID.
+	 *
+	 * @param topicId the ID of the topic
+	 * @return true if an interview process exists for the topic, false otherwise
+	 */
 	public boolean existsByTopicId(UUID topicId) {
 		return interviewProcessRepository.existsByTopicId(topicId);
 	}
 
+	/**
+	 * Retrieves all future booked interview slots across the current user's interview processes.
+	 *
+	 * @return the list of upcoming interviews for the current user
+	 */
 	public List<UpcomingInterviewDto> getUpcomingInterviewsForCurrentUser() {
 		if (currentUserProvider().getUser().getResearchGroup() == null && !currentUserProvider().isAdmin()) {
 			throw new IllegalStateException("Current user is not assigned to any research group.");
@@ -201,6 +255,18 @@ public class InterviewProcessService {
 		return upcomingInterviewDtos;
 	}
 
+	/**
+	 * Retrieves a paginated and filtered list of interviewees for a specific interview process.
+	 *
+	 * @param interviewProcessId the ID of the interview process
+	 * @param searchQuery the search query to filter interviewees
+	 * @param page the page number for pagination
+	 * @param limit the maximum number of results per page
+	 * @param sortBy the field to sort by
+	 * @param sortOrder the sort direction (asc or desc)
+	 * @param state the interviewee state to filter by
+	 * @return the paginated list of interviewees
+	 */
 	public Page<Interviewee> getInterviewProcessInterviewees(
 			UUID interviewProcessId,
 			String searchQuery,
@@ -232,6 +298,13 @@ public class InterviewProcessService {
 	return intervieweeRepository.findAllInterviewees( interviewProcessId, searchQueryFilter, stateFilter, PageRequest.of(page, limit <= 0 ? Integer.MAX_VALUE : limit, Sort.by(order)) );
 	}
 
+	/**
+	 * Synchronizes interview slots for a process by adding, updating, or removing slots as needed.
+	 *
+	 * @param interviewProcessId the ID of the interview process
+	 * @param interviewSlots the list of interview slot DTOs to synchronize
+	 * @return the updated list of interview slots
+	 */
 	public List<InterviewSlot> addInterviewSlotsToProcess(UUID interviewProcessId, List<InterviewSlotDto> interviewSlots) {
 		if (currentUserProvider().getUser().getResearchGroup() == null && !currentUserProvider().isAdmin()) {
 			throw new IllegalStateException("Current user is not assigned to any research group.");
@@ -328,6 +401,13 @@ public class InterviewProcessService {
 		return true;
 	}
 
+	/**
+	 * Retrieves interview slots for a process, optionally filtering out booked and past slots.
+	 *
+	 * @param interviewProcessId the ID of the interview process
+	 * @param excludeBooked whether to exclude already booked and past slots
+	 * @return the list of interview slots
+	 */
 	public List<InterviewSlot> getInterviewProcessInterviewSlots(
 			UUID interviewProcessId,
 			boolean excludeBooked
@@ -363,6 +443,12 @@ public class InterviewProcessService {
 		return false;
 	}
 
+	/**
+	 * Finds an interviewee by ID and verifies the current user has access to their research group.
+	 *
+	 * @param intervieweeId the ID of the interviewee
+	 * @return the interviewee
+	 */
 	public Interviewee getInterviewee(UUID intervieweeId) {
 		Interviewee interviewee = intervieweeRepository.findById(intervieweeId)
 				.orElseThrow(() -> new ResourceNotFoundException(
@@ -371,6 +457,14 @@ public class InterviewProcessService {
 		return interviewee;
 	}
 
+	/**
+	 * Updates the interview assessment note and score for an interviewee.
+	 *
+	 * @param interviewee the interviewee to update
+	 * @param intervieweeNote the assessment note
+	 * @param score the assessment score
+	 * @return the updated interviewee
+	 */
 	public Interviewee updateIntervieweeAssessment(Interviewee interviewee, String intervieweeNote, int score) {
 		currentUserProvider().assertCanAccessResearchGroup(interviewee.getApplication().getResearchGroup());
 
@@ -393,6 +487,13 @@ public class InterviewProcessService {
 		return intervieweeRepository.save(interviewee);
 	}
 
+	/**
+	 * Sends interview invitation emails to the specified interviewees and updates their invitation timestamps.
+	 *
+	 * @param interviewProcessId the ID of the interview process
+	 * @param intervieweeIds the list of interviewee IDs to invite
+	 * @return the list of invited interviewees
+	 */
 	public List<Interviewee> inviteInterviewees(UUID interviewProcessId, List<UUID> intervieweeIds) {
 		if (intervieweeIds == null || intervieweeIds.isEmpty()) {
 			throw new IllegalStateException("Interviewee Ids cannot be null or empty.");
@@ -415,6 +516,14 @@ public class InterviewProcessService {
 		return interviewees;
 	}
 
+	/**
+	 * Books an available interview slot for the specified interviewee and sends a confirmation email.
+	 *
+	 * @param processID the ID of the interview process
+	 * @param slotId the ID of the interview slot to book
+	 * @param intervieweeUserId the user ID of the interviewee booking the slot
+	 * @return the booked interview slot
+	 */
 	public InterviewSlot bookInterviewSlot(UUID processID, UUID slotId,UUID intervieweeUserId) {
 		if (intervieweeUserId == null) {
 			throw new IllegalStateException("No Interviewee Id provided.");
@@ -456,6 +565,13 @@ public class InterviewProcessService {
 		return slot;
 	}
 
+	/**
+	 * Cancels an interview slot booking and sends a cancellation notification email.
+	 *
+	 * @param interviewProcessId the ID of the interview process
+	 * @param slotId the ID of the interview slot to cancel
+	 * @return the updated interview slot after cancellation
+	 */
 	public InterviewSlot cancelInterviewSlotBooking(UUID interviewProcessId, UUID slotId) {
 		InterviewProcess interviewProcess = findById(interviewProcessId);
 
@@ -483,6 +599,14 @@ public class InterviewProcessService {
 		return slot;
 	}
 
+	/**
+	 * Retrieves paginated unassessed applications that can be added to the specified interview process.
+	 *
+	 * @param interviewProcessId the ID of the interview process
+	 * @param page the page number for pagination
+	 * @param limit the maximum number of results per page
+	 * @return the paginated list of available applications
+	 */
 	public Page<Application> getPossibleApplicationsForProcess(UUID interviewProcessId, int page, int limit) {
 		InterviewProcess interviewProcess = findById(interviewProcessId);
 		currentUserProvider().assertCanAccessResearchGroup(interviewProcess.getTopic().getResearchGroup());
@@ -503,6 +627,12 @@ public class InterviewProcessService {
 		);
 	}
 
+	/**
+	 * Generates an iCal calendar containing all interview slots for the specified user.
+	 *
+	 * @param userId the ID of the user
+	 * @return the iCal calendar with interview slot events
+	 */
 	public Calendar getInterviewCalendarForUser(UUID userId) {
 		String calendarProdId = "-//Thesis Management//Thesis Interviews//EN";
 		Calendar calendar = calendarService.createEmptyCalendar(calendarProdId);
@@ -542,11 +672,23 @@ public class InterviewProcessService {
 		);
 	}
 
+	/**
+	 * Retrieves the topic associated with the specified interview process.
+	 *
+	 * @param interviewProcessId the ID of the interview process
+	 * @return the topic of the interview process
+	 */
 	public Topic getInterviewProcessTopic(UUID interviewProcessId) {
 		InterviewProcess interviewProcess = findById(interviewProcessId);
 		return interviewProcess.getTopic();
 	}
 
+	/**
+	 * Retrieves the interview slot booked by the current user in the specified process.
+	 *
+	 * @param interviewProcessId the ID of the interview process
+	 * @return the interview slot booked by the current user
+	 */
 	public InterviewSlot getMyBookedSlot(UUID interviewProcessId) {
 		InterviewProcess interviewProcess = findById(interviewProcessId);
 
@@ -561,12 +703,24 @@ public class InterviewProcessService {
 		throw new ResourceNotFoundException("No booked slot found for the current user in the specified interview process.");
 	}
 
+	/**
+	 * Checks whether the specified interview process has been marked as completed.
+	 *
+	 * @param interviewProcessId the ID of the interview process
+	 * @return true if the interview process is completed, false otherwise
+	 */
 	public Boolean isInterviewProcessCompleted(UUID interviewProcessId) {
 		InterviewProcess interviewProcess = findById(interviewProcessId);
 
 		return interviewProcess.isCompleted();
 	}
 
+	/**
+	 * Retrieves an interview process by ID and verifies the current user has research group access.
+	 *
+	 * @param interviewProcessId the ID of the interview process
+	 * @return the interview process
+	 */
 	public InterviewProcess getInterviewProcess(UUID interviewProcessId) {
 		InterviewProcess interviewProcess = findById(interviewProcessId);
 		currentUserProvider().assertCanAccessResearchGroup(interviewProcess.getTopic().getResearchGroup());

@@ -22,17 +22,35 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
+/** REST controller for managing email templates used in automated notifications. */
 @RestController
 @RequestMapping("/v2/email-templates")
 public class EmailTemplateController {
 
 	private final EmailTemplateService emailTemplateService;
 
+	/**
+	 * Injects the email template service.
+	 *
+	 * @param emailTemplateService the email template service
+	 */
 	@Autowired
 	public EmailTemplateController(EmailTemplateService emailTemplateService) {
 		this.emailTemplateService = emailTemplateService;
 	}
 
+	/**
+	 * Retrieves a paginated list of email templates with optional filtering.
+	 *
+	 * @param search the search query to filter templates
+	 * @param templateCases the template cases to filter by
+	 * @param languages the languages to filter by
+	 * @param page the page number for pagination
+	 * @param limit the maximum number of results per page
+	 * @param sortBy the field to sort by
+	 * @param sortOrder the sort direction
+	 * @return the paginated list of email templates
+	 */
 	@GetMapping
 	@PreAuthorize("hasAnyRole('admin', 'supervisor', 'advisor')")
 	public ResponseEntity<PaginationDto<EmailTemplateDto>> getEmailTemplates(
@@ -58,6 +76,12 @@ public class EmailTemplateController {
 				emailTemplates.map(EmailTemplateDto::fromEmailTemplateEntity)));
 	}
 
+	/**
+	 * Retrieves a single email template by its ID.
+	 *
+	 * @param emailTemplateId the ID of the email template
+	 * @return the email template
+	 */
 	@GetMapping("/{emailTemplateId}")
 	@PreAuthorize("hasAnyRole('admin', 'supervisor', 'advisor')")
 	public ResponseEntity<EmailTemplateDto> getEmailTemplate(
@@ -68,6 +92,12 @@ public class EmailTemplateController {
 		return ResponseEntity.ok(EmailTemplateDto.fromEmailTemplateEntity(emailTemplate));
 	}
 
+	/**
+	 * Creates a new email template for a research group.
+	 *
+	 * @param payload the payload containing the email template data
+	 * @return the created email template
+	 */
 	@PostMapping
 	@PreAuthorize("hasAnyRole('admin', 'supervisor', 'advisor')")
 	public ResponseEntity<EmailTemplateDto> createEmailTemplate(
@@ -85,6 +115,13 @@ public class EmailTemplateController {
 		return ResponseEntity.ok(EmailTemplateDto.fromEmailTemplateEntity(emailTemplate));
 	}
 
+	/**
+	 * Updates an existing email template by its ID.
+	 *
+	 * @param emailTemplateId the ID of the email template to update
+	 * @param payload the payload containing the updated email template data
+	 * @return the updated email template
+	 */
 	@PutMapping("/{emailTemplateId}")
 	@PreAuthorize("hasAnyRole('admin', 'supervisor', 'advisor')")
 	public ResponseEntity<EmailTemplateDto> updateEmailTemplate(
@@ -105,6 +142,12 @@ public class EmailTemplateController {
 		return ResponseEntity.ok(EmailTemplateDto.fromEmailTemplateEntity(emailTemplate));
 	}
 
+	/**
+	 * Deletes an email template by its ID.
+	 *
+	 * @param emailTemplateId the ID of the email template to delete
+	 * @return a response with no content
+	 */
 	@DeleteMapping("/{emailTemplateId}")
 	@PreAuthorize("hasAnyRole('admin', 'supervisor', 'advisor')")
 	public ResponseEntity<Void> deleteEmailTemplate(

@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/** Scheduled task that automatically rejects old applications based on research group settings. */
 @Component
 public class AutomaticRejects {
 	private static final Logger log = LoggerFactory.getLogger(ApplicationReminder.class);
@@ -33,6 +34,15 @@ public class AutomaticRejects {
 	private final MailingService mailingService;
 	private final UserService userService;
 
+	/**
+	 * Injects the research group settings repository, topic, application, mailing, and user services.
+	 *
+	 * @param researchGroupSettingsRepository the research group settings repository
+	 * @param topicService the topic service
+	 * @param applicationService the application service
+	 * @param mailingService the mailing service
+	 * @param userService the user service
+	 */
 	public AutomaticRejects(ResearchGroupSettingsRepository researchGroupSettingsRepository,
 			TopicService topicService, ApplicationService applicationService,
 			MailingService mailingService, UserService userService) {

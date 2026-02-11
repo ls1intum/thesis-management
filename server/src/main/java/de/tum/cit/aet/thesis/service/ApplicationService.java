@@ -39,6 +39,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * Handles the lifecycle of thesis applications, including creation, review, acceptance, and rejection.
+ */
 @Service
 public class ApplicationService {
 	private final ApplicationRepository applicationRepository;
@@ -51,6 +54,19 @@ public class ApplicationService {
 	private final ResearchGroupRepository researchGroupRepository;
 	private final InterviewProcessRepository interviewProcessRepository;
 
+	/**
+	 * Injects all required repositories, services, and the current user provider for application management.
+	 *
+	 * @param applicationRepository the application repository
+	 * @param mailingService the mailing service
+	 * @param topicRepository the topic repository
+	 * @param thesisService the thesis service
+	 * @param topicService the topic service
+	 * @param applicationReviewerRepository the application reviewer repository
+	 * @param currentUserProviderProvider the current user provider
+	 * @param researchGroupRepository the research group repository
+	 * @param interviewProcessRepository the interview process repository
+	 */
 	@Autowired
 	public ApplicationService(
 			ApplicationRepository applicationRepository,
@@ -78,6 +94,23 @@ public class ApplicationService {
 		return currentUserProviderProvider.getObject();
 	}
 
+	/**
+	 * Returns a paginated and filtered list of applications for the current user's research group.
+	 *
+	 * @param userId the user ID to filter applications by ownership
+	 * @param reviewerId the reviewer ID to filter applications by reviewer
+	 * @param searchQuery the search query to filter results
+	 * @param states the application states to filter by
+	 * @param previous the previous application states to filter by
+	 * @param topics the topic identifiers to filter by
+	 * @param types the thesis types to filter by
+	 * @param includeSuggestedTopics whether to include suggested topics
+	 * @param page the page number for pagination
+	 * @param limit the number of items per page
+	 * @param sortBy the field to sort by
+	 * @param sortOrder the sort direction (asc or desc)
+	 * @return the paginated list of applications
+	 */
 	public Page<Application> getAll(
 			UUID userId,
 			UUID reviewerId,
@@ -115,6 +148,12 @@ public class ApplicationService {
 		);
 	}
 
+	/**
+	 * Returns all not-yet-reviewed suggested applications for the given research group.
+	 *
+	 * @param researchGroupId the unique identifier of the research group
+	 * @return the list of unreviewed suggested applications
+	 */
 	public List<Application> getNotAssesedSuggestedOfResearchGroup(UUID researchGroupId) {
 		return applicationRepository.findNotReviewedSuggestedByResearchGroup(researchGroupId);
 	}
@@ -295,6 +334,14 @@ public class ApplicationService {
 		}
 	}
 
+	/**
+	 * Returns a list of applications that are scheduled to be automatically rejected based on the configured duration.
+	 *
+	 * @param topic the topic whose applications to check
+	 * @param afterDuration the duration in weeks after which applications are rejected
+	 * @param referenceDate the reference date to calculate rejection timing
+	 * @return the list of applications pending automatic rejection
+	 */
 	public List<ApplicationRejectObject> getListOfApplicationsThatWillBeRejected(Topic topic, int afterDuration, Instant referenceDate) {
 		List<Application> applications = applicationRepository.findAllByTopic(topic);
 		List<ApplicationRejectObject> result = new ArrayList<>();
@@ -423,10 +470,23 @@ public class ApplicationService {
 		return applicationRepository.save(application);
 	}
 
+	/**
+	 * Checks whether the user already has a pending application for the given topic.
+	 *
+	 * @param user the user to check for existing applications
+	 * @param topicId the unique identifier of the topic
+	 * @return true if a pending application exists, false otherwise
+	 */
 	public boolean applicationExists(User user, UUID topicId) {
 		return applicationRepository.existsPendingApplication(user.getId(), topicId);
 	}
 
+	/**
+	 * Finds an application by its ID and verifies the current user has access to its research group.
+	 *
+	 * @param applicationId the unique identifier of the application
+	 * @return the found application
+	 */
 	public Application findById(UUID applicationId) {
 		Application application = applicationRepository.findById(applicationId)
 				.orElseThrow(() -> new ResourceNotFoundException(String.format("Application with id %s not found.", applicationId)));

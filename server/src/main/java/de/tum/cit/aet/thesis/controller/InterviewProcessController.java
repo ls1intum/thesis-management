@@ -36,16 +36,33 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.UUID;
 
+/** REST controller for managing interview processes including slots, interviewees, and bookings. */
 @RestController
 @RequestMapping("/v2/interview-process")
 public class InterviewProcessController {
 	private final InterviewProcessService interviewProcessService;
 
+	/**
+	 * Injects the interview process service dependency.
+	 *
+	 * @param interviewProcessService the interview process service
+	 */
 	@Autowired
 	public InterviewProcessController(InterviewProcessService interviewProcessService) {
 		this.interviewProcessService = interviewProcessService;
 	}
 
+	/**
+	 * Retrieves a paginated list of interview processes for the current user.
+	 *
+	 * @param searchQuery the search query to filter processes
+	 * @param page the page number for pagination
+	 * @param limit the maximum number of results per page
+	 * @param sortBy the field to sort by
+	 * @param sortOrder the sort direction (asc or desc)
+	 * @param excludeSupervised whether to exclude supervised processes
+	 * @return the paginated list of interview processes
+	 */
 	@GetMapping
 	@PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
 	public ResponseEntity<PaginationDto<InterviewProcessDto>> getMyInterviewProcesses(
@@ -69,6 +86,12 @@ public class InterviewProcessController {
 		return ResponseEntity.ok(PaginationDto.fromSpringPage(result.map(InterviewProcessDto::fromInterviewProcessEntity)));
 	}
 
+	/**
+	 * Retrieves the current user's booked interview slot for the specified process.
+	 *
+	 * @param interviewProcessId the ID of the interview process
+	 * @return the booked interview slot or no content if none exists
+	 */
 	@GetMapping("/{interviewProcessId}/my-booking")
 	public ResponseEntity<InterviewSlotDto> getMyBookedSlot(
 			@PathVariable("interviewProcessId") UUID interviewProcessId
@@ -80,6 +103,12 @@ public class InterviewProcessController {
 		return ResponseEntity.ok(InterviewSlotDto.fromInterviewSlot(slot));
 	}
 
+	/**
+	 * Creates a new interview process for a topic with the specified interviewee applications.
+	 *
+	 * @param payload the payload containing the topic ID and interviewee application IDs
+	 * @return the created interview process
+	 */
 	@PostMapping
 	@PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
 	public ResponseEntity<InterviewProcessDto> createInterviewProcess(@RequestBody CreateInterviewProcessPayload payload) {
@@ -89,6 +118,11 @@ public class InterviewProcessController {
 		return ResponseEntity.ok(interviewProcessDto);
 	}
 
+	/**
+	 * Retrieves all upcoming interviews with booked slots for the current user.
+	 *
+	 * @return the list of upcoming interviews
+	 */
 	@GetMapping("/upcoming-interviews")
 	@PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
 	public ResponseEntity<List<UpcomingInterviewDto>> getUpcomingInterviews() {
@@ -96,6 +130,18 @@ public class InterviewProcessController {
 		return ResponseEntity.ok(upcomingInterviews);
 	}
 
+	/**
+	 * Retrieves a paginated list of interviewees for the specified interview process.
+	 *
+	 * @param interviewProcessId the ID of the interview process
+	 * @param searchQuery the search query to filter interviewees
+	 * @param page the page number for pagination
+	 * @param limit the maximum number of results per page
+	 * @param sortBy the field to sort by
+	 * @param sortOrder the sort direction (asc or desc)
+	 * @param state the interviewee state to filter by
+	 * @return the paginated list of interviewees
+	 */
 	@GetMapping("/{interviewProcessId}/interviewees")
 	@PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
 	public ResponseEntity<PaginationDto<IntervieweeLightWithNextSlotDto>> getInterviewProcessInterviewees(
@@ -113,6 +159,12 @@ public class InterviewProcessController {
 		return ResponseEntity.ok(PaginationDto.fromSpringPage(interviewProcessDto.map(IntervieweeLightWithNextSlotDto::fromIntervieweeEntity)));
 	}
 
+	/**
+	 * Retrieves the topic associated with the specified interview process.
+	 *
+	 * @param interviewProcessId the ID of the interview process
+	 * @return the topic of the interview process
+	 */
 	@GetMapping("/{interviewProcessId}/topic")
 	public ResponseEntity<TopicDto> getInterviewProcessTopic(
 			@PathVariable("interviewProcessId") UUID interviewProcessId
@@ -122,6 +174,12 @@ public class InterviewProcessController {
 		return ResponseEntity.ok(TopicDto.fromTopicEntity(interviewProcess.getTopic()));
 	}
 
+	/**
+	 * Retrieves the details of a specific interview process by its ID.
+	 *
+	 * @param interviewProcessId the ID of the interview process
+	 * @return the interview process details
+	 */
 	@GetMapping("/{interviewProcessId}")
 	@PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
 	public ResponseEntity<InterviewProcessDto> getInterviewProcess(
@@ -132,6 +190,12 @@ public class InterviewProcessController {
 		return ResponseEntity.ok(InterviewProcessDto.fromInterviewProcessEntity(interviewProcess));
 	}
 
+	/**
+	 * Adds, updates, or removes interview time slots for an interview process.
+	 *
+	 * @param payload the payload containing the interview process ID and slot data
+	 * @return the updated list of interview slots
+	 */
 	@PostMapping("/interview-slots")
 	@PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
 	public ResponseEntity<List<InterviewSlotDto>> addInterviewProcessSlots(@RequestBody CreateInterviewSlotsPayload payload) {
@@ -145,6 +209,12 @@ public class InterviewProcessController {
 		return ResponseEntity.ok(interviewSlotDtos );
 	}
 
+	/**
+	 * Checks whether the specified interview process has been completed.
+	 *
+	 * @param interviewProcessId the ID of the interview process
+	 * @return true if the interview process is completed, false otherwise
+	 */
 	@GetMapping("/{interviewProcessId}/completed")
 	public ResponseEntity<Boolean> isInterviewProcessCompleted(
 			@PathVariable("interviewProcessId") UUID interviewProcessId
@@ -153,6 +223,13 @@ public class InterviewProcessController {
 		return ResponseEntity.ok(isCompleted);
 	}
 
+	/**
+	 * Retrieves interview slots for a process, optionally excluding already booked slots.
+	 *
+	 * @param interviewProcessId the ID of the interview process
+	 * @param excludeBooked whether to exclude already booked slots
+	 * @return the list of interview slots
+	 */
 	@GetMapping("/{interviewProcessId}/interview-slots")
 	//Not preauthorized to allow interviewees to fetch available slots -> check inside service method if process is accessible to the user
 	public ResponseEntity<List<InterviewSlotDto>> getInterviewProcessInterviewSlots(
@@ -164,6 +241,13 @@ public class InterviewProcessController {
 		return ResponseEntity.ok(interviewSlotDtos);
 	}
 
+	/**
+	 * Retrieves the details of a specific interviewee within an interview process.
+	 *
+	 * @param interviewProcessId the ID of the interview process
+	 * @param intervieweeId the ID of the interviewee
+	 * @return the interviewee details or not found if the interviewee does not belong to the process
+	 */
 	@GetMapping("/{interviewProcessId}/interviewee/{intervieweeId}")
 	@PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
 	public ResponseEntity<IntervieweeDTO> getInterviewee(
@@ -177,6 +261,14 @@ public class InterviewProcessController {
 		return ResponseEntity.ok(IntervieweeDTO.fromIntervieweeEntity(interviewee));
 	}
 
+	/**
+	 * Updates the assessment note and score for a specific interviewee.
+	 *
+	 * @param interviewProcessId the ID of the interview process
+	 * @param intervieweeId the ID of the interviewee
+	 * @param payload the payload containing the assessment note and score
+	 * @return the updated interviewee details
+	 */
 	@PostMapping("/{interviewProcessId}/interviewee/{intervieweeId}")
 	@PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
 	public ResponseEntity<IntervieweeDTO> updateInterviewee(
@@ -193,6 +285,13 @@ public class InterviewProcessController {
 		return ResponseEntity.ok(IntervieweeDTO.fromIntervieweeEntity(updatedInterviewee));
 	}
 
+	/**
+	 * Sends interview invitations to the specified interviewees.
+	 *
+	 * @param interviewProcessId the ID of the interview process
+	 * @param payload the payload containing the interviewee IDs to invite
+	 * @return the list of invited interviewees
+	 */
 	@PostMapping("/{interviewProcessId}/invite")
 	@PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
 	public ResponseEntity<List<IntervieweeLightWithNextSlotDto>> inviteInterviewees(
@@ -203,6 +302,14 @@ public class InterviewProcessController {
 		return ResponseEntity.ok(interviewee.stream().map(IntervieweeLightWithNextSlotDto::fromIntervieweeEntity).toList());
 	}
 
+	/**
+	 * Books an interview slot for the specified interviewee.
+	 *
+	 * @param interviewProcessId the ID of the interview process
+	 * @param slotId the ID of the interview slot to book
+	 * @param payload the payload containing the interviewee user ID
+	 * @return the booked interview slot
+	 */
 	@PutMapping("/{interviewProcessId}/slot/{slotId}/book")
 	public ResponseEntity<InterviewSlotDto> bookInterviewSlot(
 			@PathVariable("interviewProcessId") UUID interviewProcessId,
@@ -213,6 +320,13 @@ public class InterviewProcessController {
 		return ResponseEntity.ok(InterviewSlotDto.fromInterviewSlot(interviewSlot));
 	}
 
+	/**
+	 * Cancels an existing interview slot booking.
+	 *
+	 * @param interviewProcessId the ID of the interview process
+	 * @param slotId the ID of the interview slot to cancel
+	 * @return the updated interview slot after cancellation
+	 */
 	@PutMapping("/{interviewProcessId}/slot/{slotId}/cancel")
 	public ResponseEntity<InterviewSlotDto> cancelInterviewSlotBooking(
 			@PathVariable("interviewProcessId") UUID interviewProcessId,
@@ -222,6 +336,14 @@ public class InterviewProcessController {
 		return ResponseEntity.ok(InterviewSlotDto.fromInterviewSlot(interviewSlot));
 	}
 
+	/**
+	 * Retrieves paginated applications that can be added to the specified interview process.
+	 *
+	 * @param interviewProcessId the ID of the interview process
+	 * @param page the page number for pagination
+	 * @param limit the maximum number of results per page
+	 * @return the paginated list of available applications
+	 */
 	@GetMapping("/{interviewProcessId}/interview-applications")
 	@PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
 	public ResponseEntity<PaginationDto<ApplicationInterviewProcessDto>> getInterviewApplications(
@@ -238,6 +360,13 @@ public class InterviewProcessController {
 
 	}
 
+	/**
+	 * Adds new interviewees from applications to an existing interview process.
+	 *
+	 * @param interviewProcessId the ID of the interview process
+	 * @param payload the payload containing the application IDs of new interviewees
+	 * @return the updated interview process
+	 */
 	@PostMapping("/{interviewProcessId}/interviewees")
 	@PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
 	public ResponseEntity<InterviewProcessDto> addInterviewees(

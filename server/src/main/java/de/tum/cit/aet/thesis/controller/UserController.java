@@ -30,6 +30,7 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/** REST controller for managing users and retrieving user documents. */
 @Slf4j
 @RestController
 @RequestMapping("/v2/users")
@@ -39,6 +40,13 @@ public class UserController {
 
 	private final AccessManagementService accessManagementService;
 
+	/**
+	 * Injects the user service, current user provider, and access management service.
+	 *
+	 * @param userService the user service
+	 * @param currentUserProviderProvider the current user provider
+	 * @param accessManagementService the access management service
+	 */
 	@Autowired
 	public UserController(UserService userService,
 		ObjectProvider<CurrentUserProvider> currentUserProviderProvider, AccessManagementService accessManagementService) {
@@ -51,6 +59,17 @@ public class UserController {
 		return currentUserProviderProvider.getObject();
 	}
 
+	/**
+	 * Retrieves a paginated list of users with optional search and group filtering.
+	 *
+	 * @param searchQuery the search query to filter users
+	 * @param groups the groups to filter by
+	 * @param page the page number for pagination
+	 * @param limit the maximum number of results per page
+	 * @param sortBy the field to sort by
+	 * @param sortOrder the sort direction
+	 * @return the paginated list of users
+	 */
 	@GetMapping
 	@PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
 	public ResponseEntity<PaginationDto<LightUserDto>> getUsers(
@@ -66,6 +85,12 @@ public class UserController {
 		return ResponseEntity.ok(PaginationDto.fromSpringPage(users.map(LightUserDto::fromUserEntity)));
 	}
 
+	/**
+	 * Searches for users in Keycloak and returns them with their local account status.
+	 *
+	 * @param searchKey the search key to filter Keycloak users
+	 * @return the list of Keycloak users with local account status
+	 */
 	@GetMapping("/keycloak")
 	@PreAuthorize("hasAnyRole('admin', 'group-admin')")
 	public ResponseEntity<List<KeycloakUserDto>> getKeycloakUsers(
@@ -89,6 +114,12 @@ public class UserController {
 		return ResponseEntity.ok(users);
 	}
 
+	/**
+	 * Downloads the examination report PDF for a user.
+	 *
+	 * @param userId the ID of the user
+	 * @return the examination report PDF as a resource
+	 */
 	@GetMapping("/{userId}/examination-report")
 	public ResponseEntity<Resource> getExaminationReport(@PathVariable UUID userId) {
 		User user = userService.findById(userId);
@@ -103,6 +134,12 @@ public class UserController {
 				.body(userService.getExaminationReport(user));
 	}
 
+	/**
+	 * Downloads the CV PDF for a user.
+	 *
+	 * @param userId the ID of the user
+	 * @return the CV PDF as a resource
+	 */
 	@GetMapping("/{userId}/cv")
 	public ResponseEntity<Resource> getCV(@PathVariable UUID userId) {
 		User user = userService.findById(userId);
@@ -117,6 +154,12 @@ public class UserController {
 				.body(userService.getCV(user));
 	}
 
+	/**
+	 * Downloads the degree report PDF for a user.
+	 *
+	 * @param userId the ID of the user
+	 * @return the degree report PDF as a resource
+	 */
 	@GetMapping("/{userId}/degree-report")
 	public ResponseEntity<Resource> getDegreeReport(@PathVariable UUID userId) {
 		User user = userService.findById(userId);

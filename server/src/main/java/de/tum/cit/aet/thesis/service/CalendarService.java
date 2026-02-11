@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+/** Manages calendar events via a CalDAV server, supporting creation, update, and deletion of iCal events. */
 @Service
 public class CalendarService {
 	private static final Logger log = LoggerFactory.getLogger(CalendarService.class);
@@ -41,6 +42,14 @@ public class CalendarService {
 	private final WebClient webClient;
 	private final boolean enabled;
 
+	/**
+	 * Initializes the CalDAV WebClient with the configured URL and authentication credentials.
+	 *
+	 * @param enabled whether the calendar integration is enabled
+	 * @param caldavUrl the CalDAV server URL
+	 * @param caldavUsername the CalDAV authentication username
+	 * @param caldavPassword the CalDAV authentication password
+	 */
 	public CalendarService(
 			@Value("${thesis-management.calendar.enabled}") Boolean enabled,
 			@Value("${thesis-management.calendar.url}") String caldavUrl,
@@ -55,6 +64,18 @@ public class CalendarService {
 				.build();
 	}
 
+	/**
+	 * Represents a calendar event with scheduling details, organizer, and attendee information.
+	 *
+	 * @param title the event title
+	 * @param location the event location
+	 * @param description the event description
+	 * @param start the event start time
+	 * @param end the event end time
+	 * @param organizer the event organizer email
+	 * @param requiredAttendees the list of required attendee emails
+	 * @param optionalAttendees the list of optional attendee emails
+	 */
 	public record CalendarEvent(
 			String title,
 			String location,
@@ -66,6 +87,12 @@ public class CalendarService {
 			List<InternetAddress> optionalAttendees
 	) {}
 
+	/**
+	 * Creates a new calendar event on the CalDAV server and returns its generated event ID.
+	 *
+	 * @param data the calendar event data
+	 * @return the generated event ID, or null if calendar is disabled or creation fails
+	 */
 	public String createEvent(CalendarEvent data) {
 		if (!enabled) {
 			return null;
@@ -86,6 +113,12 @@ public class CalendarService {
 		return null;
 	}
 
+	/**
+	 * Updates an existing calendar event identified by its event ID with the provided data.
+	 *
+	 * @param eventId the event ID to update
+	 * @param data the new calendar event data
+	 */
 	public void updateEvent(String eventId, CalendarEvent data) {
 		if (!enabled) {
 			return;
@@ -108,6 +141,11 @@ public class CalendarService {
 		}
 	}
 
+	/**
+	 * Deletes a calendar event identified by its event ID from the CalDAV server.
+	 *
+	 * @param eventId the event ID to delete
+	 */
 	public void deleteEvent(String eventId) {
 		if (!enabled) {
 			return;
@@ -129,6 +167,13 @@ public class CalendarService {
 		}
 	}
 
+	/**
+	 * Finds a VEvent in the given calendar by its unique event ID.
+	 *
+	 * @param calendar the iCal calendar to search
+	 * @param eventId the event ID to find
+	 * @return an optional containing the VEvent if found
+	 */
 	public Optional<VEvent> findVEvent(Calendar calendar, String eventId) {
 		return calendar.getComponents(Component.VEVENT).stream()
 				.map(component -> (VEvent) component)
@@ -139,6 +184,13 @@ public class CalendarService {
 				.findFirst();
 	}
 
+	/**
+	 * Builds an iCal VEvent from the given event ID and calendar event data.
+	 *
+	 * @param eventId the unique event ID
+	 * @param data the calendar event data
+	 * @return the constructed VEvent
+	 */
 	public VEvent createVEvent(String eventId, CalendarEvent data) {
 		VEvent event = new VEvent(data.start, data.end, data.title);
 
@@ -218,6 +270,12 @@ public class CalendarService {
 				.block();
 	}
 
+	/**
+	 * Creates an empty iCal calendar with the specified product ID and Gregorian calendar scale.
+	 *
+	 * @param prodId the product identifier for the calendar
+	 * @return the empty iCal calendar
+	 */
 	public Calendar createEmptyCalendar(String prodId) {
 		Calendar calendar = new Calendar();
 

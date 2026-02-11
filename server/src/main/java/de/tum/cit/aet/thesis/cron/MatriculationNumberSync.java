@@ -34,6 +34,12 @@ public class MatriculationNumberSync {
 	private final UserRepository userRepository;
 	private final AccessManagementService accessManagementService;
 
+	/**
+	 * Injects the user repository and access management service.
+	 *
+	 * @param userRepository the user repository
+	 * @param accessManagementService the access management service
+	 */
 	public MatriculationNumberSync(UserRepository userRepository, AccessManagementService accessManagementService) {
 		this.userRepository = userRepository;
 		this.accessManagementService = accessManagementService;

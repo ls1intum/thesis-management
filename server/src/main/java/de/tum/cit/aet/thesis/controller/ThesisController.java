@@ -55,6 +55,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+/** REST controller for managing theses and their associated resources. */
 @Slf4j
 @RestController
 @RequestMapping("/v2/theses")
@@ -64,6 +65,14 @@ public class ThesisController {
 	private final ThesisPresentationService thesisPresentationService;
 	private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
 
+	/**
+	 * Injects the thesis service, comment service, presentation service, and current user provider.
+	 *
+	 * @param thesisService the service for thesis operations
+	 * @param thesisCommentService the service for thesis comment operations
+	 * @param thesisPresentationService the service for thesis presentation operations
+	 * @param currentUserProviderProvider the provider for the current authenticated user
+	 */
 	@Autowired
 	public ThesisController(ThesisService thesisService, ThesisCommentService thesisCommentService, ThesisPresentationService thesisPresentationService,
 		ObjectProvider<CurrentUserProvider> currentUserProviderProvider) {
@@ -77,6 +86,20 @@ public class ThesisController {
 		return currentUserProviderProvider.getObject();
 	}
 
+	/**
+	 * Retrieves a paginated list of theses filtered by search, state, type, and research group.
+	 *
+	 * @param search the search query to filter theses
+	 * @param state the thesis states to filter by
+	 * @param type the thesis types to filter by
+	 * @param fetchAll whether to fetch all theses regardless of user access
+	 * @param page the page number for pagination
+	 * @param limit the maximum number of results per page
+	 * @param sortBy the field to sort results by
+	 * @param sortOrder the sort direction (asc or desc)
+	 * @param researchGroupIds the research group IDs to filter by
+	 * @return the paginated list of theses
+	 */
 	@GetMapping
 	public ResponseEntity<PaginationDto<ThesisDto>> getTheses(
 			@RequestParam(required = false) String search,
@@ -109,6 +132,12 @@ public class ThesisController {
 		));
 	}
 
+	/**
+	 * Retrieves a single thesis by its identifier.
+	 *
+	 * @param thesisId the unique identifier of the thesis
+	 * @return the thesis data
+	 */
 	@GetMapping("/{thesisId}")
 	public ResponseEntity<ThesisDto> getThesis(@PathVariable UUID thesisId) {
 		User currentUser = currentUserProvider().getUser();
@@ -121,6 +150,12 @@ public class ThesisController {
 		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
 
+	/**
+	 * Creates a new thesis with the specified title, type, language, and assigned roles.
+	 *
+	 * @param payload the thesis creation data
+	 * @return the created thesis
+	 */
 	@PostMapping
 	@PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
 	public ResponseEntity<ThesisDto> createThesis(
@@ -141,6 +176,13 @@ public class ThesisController {
 		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
 
+	/**
+	 * Updates the configuration of an existing thesis including title, type, dates, and assigned roles.
+	 *
+	 * @param thesisId the unique identifier of the thesis to update
+	 * @param payload the updated thesis configuration data
+	 * @return the updated thesis
+	 */
 	@PutMapping("/{thesisId}")
 	public ResponseEntity<ThesisDto> updateThesisConfig(
 			@PathVariable UUID thesisId,
@@ -172,6 +214,12 @@ public class ThesisController {
 		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
 
+	/**
+	 * Closes a thesis, preventing further modifications.
+	 *
+	 * @param thesisId the unique identifier of the thesis to close
+	 * @return the closed thesis
+	 */
 	@DeleteMapping("/{thesisId}")
 	public ResponseEntity<ThesisDto> closeThesis(
 			@PathVariable UUID thesisId
@@ -188,6 +236,13 @@ public class ThesisController {
 		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
 
+	/**
+	 * Updates the abstract, info text, and titles of a thesis.
+	 *
+	 * @param thesisId the unique identifier of the thesis to update
+	 * @param payload the updated thesis info data
+	 * @return the updated thesis
+	 */
 	@PutMapping("/{thesisId}/info")
 	public ResponseEntity<ThesisDto> updateThesisInfo(
 			@PathVariable UUID thesisId,
@@ -215,6 +270,13 @@ public class ThesisController {
 		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
 
+	/**
+	 * Updates the credit points assigned to a thesis.
+	 *
+	 * @param thesisId the unique identifier of the thesis to update
+	 * @param payload the updated thesis credits data
+	 * @return the updated thesis
+	 */
 	@PutMapping("/{thesisId}/credits")
 	public ResponseEntity<ThesisDto> updateThesisCredits(
 			@PathVariable UUID thesisId,
@@ -236,6 +298,14 @@ public class ThesisController {
 	}
 
 	/* FEEDBACK ENDPOINTS */
+	/**
+	 * Marks a feedback item as complete or incomplete for a given thesis.
+	 *
+	 * @param thesisId the unique identifier of the thesis
+	 * @param feedbackId the unique identifier of the feedback item
+	 * @param action the action to perform (complete or incomplete)
+	 * @return the updated thesis
+	 */
 	@PutMapping("/{thesisId}/feedback/{feedbackId}/{action}")
 	public ResponseEntity<ThesisDto> completeFeedback(
 			@PathVariable UUID thesisId,
@@ -254,6 +324,13 @@ public class ThesisController {
 		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
 
+	/**
+	 * Deletes a feedback item from a thesis.
+	 *
+	 * @param thesisId the unique identifier of the thesis
+	 * @param feedbackId the unique identifier of the feedback item to delete
+	 * @return the updated thesis
+	 */
 	@DeleteMapping("/{thesisId}/feedback/{feedbackId}")
 	public ResponseEntity<ThesisDto> deleteFeedback(
 			@PathVariable UUID thesisId,
@@ -271,6 +348,13 @@ public class ThesisController {
 		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
 
+	/**
+	 * Creates a new feedback item requesting changes on a thesis.
+	 *
+	 * @param thesisId the unique identifier of the thesis
+	 * @param payload the requested changes data
+	 * @return the updated thesis
+	 */
 	@PostMapping("/{thesisId}/feedback")
 	public ResponseEntity<ThesisDto> requestChanges(
 			@PathVariable UUID thesisId,
@@ -294,6 +378,13 @@ public class ThesisController {
 
 	/* PROPOSAL ENDPOINTS */
 
+	/**
+	 * Downloads the PDF file of a thesis proposal.
+	 *
+	 * @param thesisId the unique identifier of the thesis
+	 * @param proposalId the unique identifier of the proposal
+	 * @return the proposal PDF file as a resource
+	 */
 	@GetMapping("/{thesisId}/proposal/{proposalId}")
 	public ResponseEntity<Resource> getProposalFile(
 			@PathVariable UUID thesisId,
@@ -315,6 +406,13 @@ public class ThesisController {
 				.body(thesisService.getProposalFile(proposal));
 	}
 
+	/**
+	 * Deletes a proposal from a thesis.
+	 *
+	 * @param thesisId the unique identifier of the thesis
+	 * @param proposalId the unique identifier of the proposal to delete
+	 * @return the updated thesis
+	 */
 	@DeleteMapping("/{thesisId}/proposal/{proposalId}")
 	public ResponseEntity<ThesisDto> deleteProposal(
 			@PathVariable UUID thesisId,
@@ -332,6 +430,13 @@ public class ThesisController {
 		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
 
+	/**
+	 * Uploads a new proposal file for a thesis.
+	 *
+	 * @param thesisId the unique identifier of the thesis
+	 * @param proposalFile the proposal PDF file to upload
+	 * @return the updated thesis
+	 */
 	@PostMapping("/{thesisId}/proposal")
 	public ResponseEntity<ThesisDto> uploadProposal(
 			@PathVariable UUID thesisId,
@@ -353,6 +458,12 @@ public class ThesisController {
 		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
 
+	/**
+	 * Accepts the current proposal of a thesis and advances the thesis state.
+	 *
+	 * @param thesisId the unique identifier of the thesis
+	 * @return the updated thesis
+	 */
 	@PutMapping("/{thesisId}/proposal/accept")
 	public ResponseEntity<ThesisDto> acceptProposal(
 			@PathVariable UUID thesisId
@@ -371,6 +482,12 @@ public class ThesisController {
 
 	/* WRITING ENDPOINTS */
 
+	/**
+	 * Submits the final version of a thesis for assessment.
+	 *
+	 * @param thesisId the unique identifier of the thesis to submit
+	 * @return the updated thesis
+	 */
 	@PutMapping("/{thesisId}/thesis/final-submission")
 	public ResponseEntity<ThesisDto> submitThesis(
 			@PathVariable UUID thesisId
@@ -387,6 +504,14 @@ public class ThesisController {
 		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
 
+	/**
+	 * Uploads a file attachment to a thesis.
+	 *
+	 * @param thesisId the unique identifier of the thesis
+	 * @param type the type of file being uploaded
+	 * @param file the file to upload
+	 * @return the updated thesis
+	 */
 	@PostMapping("/{thesisId}/files")
 	public ResponseEntity<ThesisDto> uploadThesisFile(
 			@PathVariable UUID thesisId,
@@ -409,6 +534,13 @@ public class ThesisController {
 		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
 
+	/**
+	 * Downloads a file attachment from a thesis.
+	 *
+	 * @param thesisId the unique identifier of the thesis
+	 * @param fileId the unique identifier of the file to download
+	 * @return the file as a resource
+	 */
 	@GetMapping("/{thesisId}/files/{fileId}")
 	public ResponseEntity<Resource> getThesisFile(
 			@PathVariable UUID thesisId,
@@ -430,6 +562,13 @@ public class ThesisController {
 				.body(thesisService.getThesisFile(file));
 	}
 
+	/**
+	 * Deletes a file attachment from a thesis.
+	 *
+	 * @param thesisId the unique identifier of the thesis
+	 * @param fileId the unique identifier of the file to delete
+	 * @return the updated thesis
+	 */
 	@DeleteMapping("/{thesisId}/files/{fileId}")
 	public ResponseEntity<ThesisDto> deleteThesisFile(
 			@PathVariable UUID thesisId,
@@ -447,6 +586,13 @@ public class ThesisController {
 		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
 
+	/**
+	 * Creates a new presentation draft for a thesis.
+	 *
+	 * @param thesisId the unique identifier of the thesis
+	 * @param payload the presentation data
+	 * @return the updated thesis
+	 */
 	@PostMapping("/{thesisId}/presentations")
 	public ResponseEntity<ThesisDto> createPresentation(
 			@PathVariable UUID thesisId,
@@ -472,6 +618,14 @@ public class ThesisController {
 		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
 
+	/**
+	 * Updates an existing presentation for a thesis.
+	 *
+	 * @param thesisId the unique identifier of the thesis
+	 * @param presentationId the unique identifier of the presentation to update
+	 * @param payload the updated presentation data
+	 * @return the updated thesis
+	 */
 	@PutMapping("/{thesisId}/presentations/{presentationId}")
 	public ResponseEntity<ThesisDto> updatePresentation(
 			@PathVariable UUID thesisId,
@@ -503,6 +657,14 @@ public class ThesisController {
 		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
 
+	/**
+	 * Updates the note of a scheduled thesis presentation.
+	 *
+	 * @param thesisId the unique identifier of the thesis
+	 * @param presentationId the unique identifier of the presentation
+	 * @param payload the updated note data
+	 * @return the updated thesis
+	 */
 	@PutMapping("/{thesisId}/presentations/{presentationId}/note")
 	public ResponseEntity<ThesisDto> updateNote(
 			@PathVariable UUID thesisId,
@@ -529,6 +691,14 @@ public class ThesisController {
 		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
 
+	/**
+	 * Schedules a drafted presentation and sends invitations to attendees.
+	 *
+	 * @param thesisId the unique identifier of the thesis
+	 * @param presentationId the unique identifier of the presentation to schedule
+	 * @param payload the scheduling data including attendees
+	 * @return the updated thesis
+	 */
 	@PostMapping("/{thesisId}/presentations/{presentationId}/schedule")
 	public ResponseEntity<ThesisDto> schedulePresentation(
 			@PathVariable UUID thesisId,
@@ -553,6 +723,13 @@ public class ThesisController {
 		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
 
+	/**
+	 * Deletes a presentation from a thesis.
+	 *
+	 * @param thesisId the unique identifier of the thesis
+	 * @param presentationId the unique identifier of the presentation to delete
+	 * @return the updated thesis
+	 */
 	@DeleteMapping("/{thesisId}/presentations/{presentationId}")
 	public ResponseEntity<ThesisDto> deletePresentation(
 			@PathVariable UUID thesisId,
@@ -570,6 +747,15 @@ public class ThesisController {
 		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
 
+	/**
+	 * Retrieves a paginated list of comments for a thesis, filtered by comment type.
+	 *
+	 * @param thesisId the unique identifier of the thesis
+	 * @param commentType the type of comments to retrieve
+	 * @param page the page number for pagination
+	 * @param limit the maximum number of comments per page
+	 * @return the paginated list of thesis comments
+	 */
 	@GetMapping("/{thesisId}/comments")
 	public ResponseEntity<PaginationDto<ThesisCommentDto>> getComments(
 			@PathVariable UUID thesisId,
@@ -593,6 +779,14 @@ public class ThesisController {
 		return ResponseEntity.ok(PaginationDto.fromSpringPage(comments.map(ThesisCommentDto::fromCommentEntity)));
 	}
 
+	/**
+	 * Creates a new comment on a thesis with an optional file attachment.
+	 *
+	 * @param thesisId the unique identifier of the thesis
+	 * @param payload the comment data
+	 * @param file the optional file attachment
+	 * @return the created comment
+	 */
 	@PostMapping("/{thesisId}/comments")
 	public ResponseEntity<ThesisCommentDto> createComment(
 			@PathVariable UUID thesisId,
@@ -622,6 +816,13 @@ public class ThesisController {
 		return ResponseEntity.ok(ThesisCommentDto.fromCommentEntity(comment));
 	}
 
+	/**
+	 * Downloads the file attached to a thesis comment.
+	 *
+	 * @param thesisId the unique identifier of the thesis
+	 * @param commentId the unique identifier of the comment
+	 * @return the comment file as a resource
+	 */
 	@GetMapping("/{thesisId}/comments/{commentId}/file")
 	public ResponseEntity<Resource> getCommentFile(
 			@PathVariable UUID thesisId,
@@ -645,6 +846,13 @@ public class ThesisController {
 				.body(thesisCommentService.getCommentFile(comment));
 	}
 
+	/**
+	 * Deletes a comment from a thesis.
+	 *
+	 * @param thesisId the unique identifier of the thesis
+	 * @param commentId the unique identifier of the comment to delete
+	 * @return the deleted comment
+	 */
 	@DeleteMapping("/{thesisId}/comments/{commentId}")
 	public ResponseEntity<ThesisCommentDto> deleteComment(
 			@PathVariable UUID thesisId,
@@ -664,6 +872,12 @@ public class ThesisController {
 
 	/* ASSESSMENT ENDPOINTS */
 
+	/**
+	 * Downloads the assessment PDF file for a thesis.
+	 *
+	 * @param thesisId the unique identifier of the thesis
+	 * @return the assessment PDF file as a resource
+	 */
 	@GetMapping("/{thesisId}/assessment")
 	public ResponseEntity<Resource> getAssessmentFile(
 			@PathVariable UUID thesisId
@@ -681,6 +895,13 @@ public class ThesisController {
 				.body(thesisService.getAssessmentFile(thesis));
 	}
 
+	/**
+	 * Submits an assessment with summary, positives, negatives, and a grade suggestion.
+	 *
+	 * @param thesisId the unique identifier of the thesis
+	 * @param payload the assessment data
+	 * @return the updated thesis
+	 */
 	@PostMapping("/{thesisId}/assessment")
 	public ResponseEntity<ThesisDto> createAssessment(
 			@PathVariable UUID thesisId,
@@ -706,6 +927,13 @@ public class ThesisController {
 
 	/* GRADE ENDPOINTS */
 
+	/**
+	 * Adds a final grade and feedback to a thesis.
+	 *
+	 * @param thesisId the unique identifier of the thesis
+	 * @param payload the grade and feedback data
+	 * @return the updated thesis
+	 */
 	@PostMapping("/{thesisId}/grade")
 	public ResponseEntity<ThesisDto> addGrade(
 			@PathVariable UUID thesisId,
@@ -728,6 +956,12 @@ public class ThesisController {
 		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
 
+	/**
+	 * Marks a thesis as completed after grading.
+	 *
+	 * @param thesisId the unique identifier of the thesis to complete
+	 * @return the completed thesis
+	 */
 	@PostMapping("/{thesisId}/complete")
 	public ResponseEntity<ThesisDto> completeThesis(
 			@PathVariable UUID thesisId

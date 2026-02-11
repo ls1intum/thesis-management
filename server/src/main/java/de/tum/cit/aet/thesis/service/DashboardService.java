@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+/** Generates prioritized task lists for the user dashboard based on thesis states and role assignments. */
 @Service
 public class DashboardService {
 	private final ThesisRepository thesisRepository;
@@ -30,6 +31,15 @@ public class DashboardService {
 	private final String scientificWritingGuide;
 	private final CurrentUserProvider currentUserProvider;
 
+	/**
+	 * Injects the thesis, application, and topic repositories along with the scientific writing guide URL.
+	 *
+	 * @param thesisRepository the thesis repository
+	 * @param applicationRepository the application repository
+	 * @param topicRepository the topic repository
+	 * @param scientificWritingGuide the URL to the scientific writing guide
+	 * @param currentUserProvider the current user provider
+	 */
 	public DashboardService(
 			ThesisRepository thesisRepository,
 			ApplicationRepository applicationRepository,
@@ -44,6 +54,12 @@ public class DashboardService {
 		this.currentUserProvider = currentUserProvider;
 	}
 
+	/**
+	 * Collects and returns all pending tasks for the given user, sorted by priority in descending order.
+	 *
+	 * @param user the user to collect tasks for
+	 * @return the list of tasks sorted by priority
+	 */
 	public List<TaskDto> getTasks(User user) {
 		List<TaskDto> tasks = new ArrayList<>();
 		UUID researchGroupId = user.getResearchGroup() != null ? user.getResearchGroup().getId() : null;

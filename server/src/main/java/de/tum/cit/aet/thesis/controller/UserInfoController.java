@@ -24,17 +24,29 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+/** REST controller for managing the authenticated user's profile and notification settings. */
 @Slf4j
 @RestController
 @RequestMapping("/v2/user-info")
 public class UserInfoController {
 	private final AuthenticationService authenticationService;
 
+	/**
+	 * Injects the authentication service.
+	 *
+	 * @param authenticationService the authentication service
+	 */
 	@Autowired
 	public UserInfoController(AuthenticationService authenticationService) {
 		this.authenticationService = authenticationService;
 	}
 
+	/**
+	 * Retrieves the profile information of the authenticated user.
+	 *
+	 * @param jwt the JWT authentication token
+	 * @return the authenticated user's profile information
+	 */
 	@GetMapping
 	public ResponseEntity<UserDto> getInfo(JwtAuthenticationToken jwt) {
 		User user = this.authenticationService.updateAuthenticatedUser(jwt);
@@ -42,6 +54,17 @@ public class UserInfoController {
 		return ResponseEntity.ok(UserDto.fromUserEntity(user));
 	}
 
+	/**
+	 * Updates the authenticated user's profile information and uploaded documents.
+	 *
+	 * @param payload the payload containing updated user information
+	 * @param examinationReport the examination report file
+	 * @param cv the CV file
+	 * @param degreeReport the degree report file
+	 * @param avatar the avatar image file
+	 * @param jwt the JWT authentication token
+	 * @return the updated user profile information
+	 */
 	@PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<UserDto> updateInfo(
 			@RequestPart("data") UpdateUserInformationPayload payload,
@@ -76,6 +99,12 @@ public class UserInfoController {
 		return ResponseEntity.ok(UserDto.fromUserEntity(authenticatedUser));
 	}
 
+	/**
+	 * Retrieves the notification settings of the authenticated user.
+	 *
+	 * @param jwt the JWT authentication token
+	 * @return the list of notification settings
+	 */
 	@GetMapping("/notifications")
 	public ResponseEntity<List<NotificationSettingDto>> getNotificationSettings(JwtAuthenticationToken jwt) {
 		User user = this.authenticationService.getAuthenticatedUser(jwt);
@@ -87,6 +116,13 @@ public class UserInfoController {
 		);
 	}
 
+	/**
+	 * Updates the notification settings of the authenticated user.
+	 *
+	 * @param payload the payload containing notification setting updates
+	 * @param jwt the JWT authentication token
+	 * @return the updated list of notification settings
+	 */
 	@PutMapping("/notifications")
 	public ResponseEntity<List<NotificationSettingDto>> updateNotificationSettings(
 			@RequestBody UpdateNotificationSettingPayload payload,

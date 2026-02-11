@@ -19,16 +19,28 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Optional;
 import java.util.UUID;
 
+/** REST controller for managing research group settings such as auto-reject and presentation configuration. */
 @RestController
 @RequestMapping("/v2/research-group-settings")
 public class ResearchGroupSettingsController {
 	private final ResearchGroupSettingsService service;
 
+	/**
+	 * Injects the research group settings service.
+	 *
+	 * @param service the research group settings service
+	 */
 	@Autowired
 	public ResearchGroupSettingsController(ResearchGroupSettingsService service) {
 		this.service = service;
 	}
 
+	/**
+	 * Retrieves the settings for a research group by its ID.
+	 *
+	 * @param researchGroupId the ID of the research group
+	 * @return the research group settings
+	 */
 	@GetMapping("/{researchGroupId}")
 	@PreAuthorize("hasAnyRole('admin', 'group-admin')")
 	public ResponseEntity<ResearchGroupSettingsDTO> getSettings(@PathVariable UUID researchGroupId) {
@@ -38,6 +50,13 @@ public class ResearchGroupSettingsController {
 		return ResponseEntity.ok(ResearchGroupSettingsDTO.fromEntity(returnSettings));
 	}
 
+	/**
+	 * Creates or updates the settings for a research group.
+	 *
+	 * @param researchGroupId the ID of the research group
+	 * @param newSettings the payload containing the updated settings
+	 * @return the saved research group settings
+	 */
 	@PostMapping("/{researchGroupId}")
 	@PreAuthorize("hasAnyRole('admin', 'group-admin')")
 	public ResponseEntity<ResearchGroupSettingsDTO> createOrUpdateRejectSettings(@PathVariable UUID researchGroupId, @RequestBody UpdateResearchGroupSettingsPayload newSettings) {
@@ -67,6 +86,12 @@ public class ResearchGroupSettingsController {
 		return ResponseEntity.ok(ResearchGroupSettingsDTO.fromEntity(saved));
 	}
 
+	/**
+	 * Retrieves the phase settings for a research group.
+	 *
+	 * @param researchGroupId the ID of the research group
+	 * @return the phase settings for the research group
+	 */
 	@GetMapping("/{researchGroupId}/phase-settings")
 	@PreAuthorize("hasAnyRole('admin', 'group-admin')")
 	public ResponseEntity<ResearchGroupSettingsPhasesDTO> getPhaseSettings(@PathVariable UUID researchGroupId) {

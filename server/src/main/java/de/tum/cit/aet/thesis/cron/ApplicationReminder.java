@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import java.time.Instant;
 import java.util.Set;
 
+/** Scheduled task that sends weekly email reminders about unreviewed applications. */
 @Component
 public class ApplicationReminder {
 	private static final Logger log = LoggerFactory.getLogger(ApplicationReminder.class);
@@ -22,6 +23,14 @@ public class ApplicationReminder {
 	private final UserRepository userRepository;
 	private final ResearchGroupService researchGroupService;
 
+	/**
+	 * Injects the application repository, mailing service, user repository, and research group service.
+	 *
+	 * @param applicationRepository the application repository
+	 * @param mailingService the mailing service
+	 * @param userRepository the user repository
+	 * @param researchGroupService the research group service
+	 */
 	public ApplicationReminder(ApplicationRepository applicationRepository, MailingService mailingService, UserRepository userRepository,
 		ResearchGroupService researchGroupService) {
 		this.applicationRepository = applicationRepository;

@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+/** Manages thesis presentations, including scheduling, calendar integration, and email invitations. */
 @Service
 public class ThesisPresentationService {
 	private final CalendarService calendarService;
@@ -59,6 +60,20 @@ public class ThesisPresentationService {
 
 	private final String calendarProdId = "-//Thesis Management//Thesis Presentations//EN";
 
+	/**
+	 * Injects calendar, mailing, presentation repositories, and configuration values for presentation management.
+	 *
+	 * @param calendarService the calendar integration service
+	 * @param thesisRepository the thesis repository
+	 * @param mailingService the mailing service
+	 * @param thesisPresentationRepository the thesis presentation repository
+	 * @param currentUserProviderProvider the current user provider
+	 * @param clientHost the client application host URL
+	 * @param applicationMail the application sender email address
+	 * @param userRepository the user repository
+	 * @param thesisPresentationInviteRepository the presentation invite repository
+	 * @param researchGroupSettingsService the research group settings service
+	 */
 	@Autowired
 	public ThesisPresentationService(
 			CalendarService calendarService,
@@ -88,6 +103,17 @@ public class ThesisPresentationService {
 		return currentUserProviderProvider.getObject();
 	}
 
+	/**
+	 * Returns a paginated list of future public presentations, optionally including drafts.
+	 *
+	 * @param includeDrafts whether to include drafted presentations
+	 * @param page the page number
+	 * @param limit the number of items per page
+	 * @param sortBy the field to sort by
+	 * @param sortOrder the sort direction (asc or desc)
+	 * @param researchGroupId the research group ID to filter by
+	 * @return a page of thesis presentations
+	 */
 	public Page<ThesisPresentation> getPublicPresentations(boolean includeDrafts, Integer page,
 		Integer limit, String sortBy, String sortOrder, UUID researchGroupId) {
 		Sort.Order order = new Sort.Order(sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
@@ -106,6 +132,12 @@ public class ThesisPresentationService {
 		);
 	}
 
+	/**
+	 * Returns a single public presentation by its ID, throwing an exception if it is not public.
+	 *
+	 * @param presentationId the presentation ID
+	 * @return the public thesis presentation
+	 */
 	public ThesisPresentation getPublicPresentation(UUID presentationId) {
 		ThesisPresentation presentation =  thesisPresentationRepository.findById(presentationId)
 				.orElseThrow(() -> new ResourceNotFoundException(String.format("Presentation with id %s not found.", presentationId)));
@@ -117,6 +149,12 @@ public class ThesisPresentationService {
 		return presentation;
 	}
 
+	/**
+	 * Builds an iCal calendar containing all public presentations for the given research group.
+	 *
+	 * @param researchGroupId the research group ID
+	 * @return the iCal calendar with public presentations
+	 */
 	public Calendar getPresentationCalendar(UUID researchGroupId) {
 		Calendar calendar = calendarService.createEmptyCalendar(calendarProdId);
 
@@ -136,6 +174,12 @@ public class ThesisPresentationService {
 		return calendar;
 	}
 
+	/**
+	 * Creates an iCal calendar invite for the given thesis presentation.
+	 *
+	 * @param presentation the thesis presentation
+	 * @return the iCal calendar invite
+	 */
 	public Calendar getPresentationInvite(ThesisPresentation presentation) {
 		Calendar calendar = calendarService.createEmptyCalendar(calendarProdId);
 
@@ -330,6 +374,11 @@ public class ThesisPresentationService {
 		return thesis;
 	}
 
+	/**
+	 * Updates all calendar events associated with the presentations of the given thesis.
+	 *
+	 * @param thesis the thesis whose presentation calendar events should be updated
+	 */
 	public void updateThesisCalendarEvents(Thesis thesis) {
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
 		for (ThesisPresentation presentation : thesis.getPresentations()) {
@@ -341,6 +390,13 @@ public class ThesisPresentationService {
 		}
 	}
 
+	/**
+	 * Finds a presentation by its ID and verifies it belongs to the specified thesis.
+	 *
+	 * @param thesisId the thesis ID
+	 * @param presentationId the presentation ID
+	 * @return the thesis presentation
+	 */
 	public ThesisPresentation findById(UUID thesisId, UUID presentationId) {
 		ThesisPresentation presentation = thesisPresentationRepository.findById(presentationId)
 				.orElseThrow(() -> new ResourceNotFoundException(String.format("Presentation with id %s not found.", presentationId)));

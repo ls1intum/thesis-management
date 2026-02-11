@@ -59,6 +59,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
+/** Manages the full thesis lifecycle, including creation, state transitions, proposals, assessments, and grading. */
 @Service
 public class ThesisService {
 	private final ThesisRoleRepository thesisRoleRepository;
@@ -77,6 +78,25 @@ public class ThesisService {
 	private final ResearchGroupRepository researchGroupRepository;
 	private final ResearchGroupSettingsService researchGroupSettingsService;
 
+	/**
+	 * Injects all required repositories and services for thesis management.
+	 *
+	 * @param thesisRoleRepository the thesis role repository
+	 * @param thesisRepository the thesis repository
+	 * @param thesisStateChangeRepository the thesis state change repository
+	 * @param userRepository the user repository
+	 * @param thesisProposalRepository the thesis proposal repository
+	 * @param thesisAssessmentRepository the thesis assessment repository
+	 * @param uploadService the upload service for file storage
+	 * @param mailingService the mailing service for sending notifications
+	 * @param accessManagementService the access management service
+	 * @param thesisPresentationService the thesis presentation service
+	 * @param thesisFeedbackRepository the thesis feedback repository
+	 * @param thesisFileRepository the thesis file repository
+	 * @param currentUserProviderProvider the provider for the current user context
+	 * @param researchGroupRepository the research group repository
+	 * @param researchGroupSettingsService the research group settings service
+	 */
 	@Autowired
 	public ThesisService(
 			ThesisRoleRepository thesisRoleRepository,
@@ -113,6 +133,21 @@ public class ThesisService {
 		return currentUserProviderProvider.getObject();
 	}
 
+	/**
+	 * Returns a paginated and filtered list of theses based on user role, visibility, and search criteria.
+	 *
+	 * @param userId the ID of the user requesting the list, or null for public access
+	 * @param fetchAll whether to fetch all accessible theses beyond the user's own
+	 * @param searchQuery the search query to filter theses
+	 * @param states the thesis states to filter by
+	 * @param types the thesis types to filter by
+	 * @param page the page number for pagination
+	 * @param limit the number of results per page
+	 * @param sortBy the field to sort by
+	 * @param sortOrder the sort direction, "asc" or "desc"
+	 * @param researchGroupIds the research group IDs to filter by
+	 * @return the paginated list of theses
+	 */
 	public Page<Thesis> getAll(
 		UUID userId,
 		boolean fetchAll,
@@ -332,6 +367,14 @@ public class ThesisService {
 	}
 
 	/* FEEDBACK */
+	/**
+	 * Marks a feedback item as completed or not completed.
+	 *
+	 * @param thesis the thesis containing the feedback
+	 * @param feedbackId the ID of the feedback item
+	 * @param completed whether the feedback is completed
+	 * @return the updated thesis
+	 */
 	public Thesis completeFeedback(Thesis thesis, UUID feedbackId, boolean completed) {
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
 		ThesisFeedback feedback = thesis.getFeedbackItem(feedbackId)
@@ -387,6 +430,12 @@ public class ThesisService {
 
 	/* PROPOSAL */
 
+	/**
+	 * Loads and returns the file resource for the given thesis proposal.
+	 *
+	 * @param proposal the thesis proposal
+	 * @return the proposal file resource
+	 */
 	public Resource getProposalFile(ThesisProposal proposal) {
 		currentUserProvider().assertCanAccessResearchGroup(proposal.getResearchGroup());
 		return uploadService.load(proposal.getProposalFilename());
@@ -505,6 +554,12 @@ public class ThesisService {
 		return thesis;
 	}
 
+	/**
+	 * Loads and returns the file resource for the given thesis file, checking read access.
+	 *
+	 * @param file the thesis file entity
+	 * @return the file resource
+	 */
 	public Resource getThesisFile(ThesisFile file) {
 		if (!file.getThesis().hasReadAccess(null)) {
 			currentUserProvider().assertCanAccessResearchGroup(file.getResearchGroup());
@@ -547,6 +602,12 @@ public class ThesisService {
 		return thesisRepository.save(thesis);
 	}
 
+	/**
+	 * Generates and returns a PDF document containing the thesis assessment details.
+	 *
+	 * @param thesis the thesis to generate the assessment PDF for
+	 * @return the generated PDF file resource
+	 */
 	public Resource getAssessmentFile(Thesis thesis) {
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
 		ThesisAssessment assessment = thesis.getAssessments().getFirst();
@@ -643,6 +704,12 @@ public class ThesisService {
 		return theses.getTotalElements() > 0;
 	}
 
+	/**
+	 * Finds a thesis by its ID, verifying the current user has read access or belongs to the research group.
+	 *
+	 * @param thesisId the ID of the thesis to find
+	 * @return the found thesis
+	 */
 	public Thesis findById(UUID thesisId) {
 		Thesis thesis = thesisRepository.findById(thesisId)
 				.orElseThrow(() -> new ResourceNotFoundException(String.format("Thesis with id %s not found.", thesisId)));

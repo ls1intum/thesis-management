@@ -36,6 +36,9 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * REST controller for managing thesis applications, including creation, review, acceptance, and rejection.
+ */
 @Slf4j
 @RestController
 @RequestMapping("/v2/applications")
@@ -43,6 +46,12 @@ public class ApplicationController {
 	private final ApplicationService applicationService;
 	private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
 
+	/**
+	 * Injects the application service and current user provider.
+	 *
+	 * @param applicationService the application service
+	 * @param currentUserProviderProvider the current user provider
+	 */
 	@Autowired
 	public ApplicationController(ApplicationService applicationService,
 		ObjectProvider<CurrentUserProvider> currentUserProviderProvider) {
@@ -54,6 +63,12 @@ public class ApplicationController {
 		return currentUserProviderProvider.getObject();
 	}
 
+	/**
+	 * Creates a new thesis application for the authenticated user.
+	 *
+	 * @param payload the payload containing the application details
+	 * @return the created application
+	 */
 	@PostMapping
 	public ResponseEntity<ApplicationDto> createApplication(@RequestBody CreateApplicationPayload payload) {
 		User authenticatedUser = currentUserProvider().getUser();
@@ -81,6 +96,22 @@ public class ApplicationController {
 		return ResponseEntity.ok(ApplicationDto.fromApplicationEntity(application, application.hasManagementAccess(authenticatedUser)));
 	}
 
+	/**
+	 * Retrieves all applications with optional filtering by state, topic, type, and pagination support.
+	 *
+	 * @param search the search term to filter applications
+	 * @param state the application states to filter by
+	 * @param topic the topic identifiers to filter by
+	 * @param types the thesis types to filter by
+	 * @param previous the previous application states to filter by
+	 * @param includeSuggestedTopics whether to include suggested topics
+	 * @param fetchAll whether to fetch all applications regardless of ownership
+	 * @param page the page number for pagination
+	 * @param limit the number of items per page
+	 * @param sortBy the field to sort by
+	 * @param sortOrder the sort direction (asc or desc)
+	 * @return the paginated list of applications
+	 */
 	@GetMapping
 	public ResponseEntity<PaginationDto<ApplicationDto>> getApplications(
 			@RequestParam(required = false) String search,
@@ -120,6 +151,14 @@ public class ApplicationController {
 		));
 	}
 
+	/**
+	 * Retrieves applications eligible for interview scheduling for a given topic.
+	 *
+	 * @param topicId the identifier of the topic to get interview applications for
+	 * @param page the page number for pagination
+	 * @param limit the number of items per page
+	 * @return the paginated list of interview-eligible applications
+	 */
 	@GetMapping("/interview-applications")
 	@PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
 	public ResponseEntity<PaginationDto<ApplicationInterviewProcessDto>> getPossibleInterviewApplicationsForTopic(
@@ -147,6 +186,12 @@ public class ApplicationController {
 		));
 	}
 
+	/**
+	 * Retrieves a single application by its ID.
+	 *
+	 * @param applicationId the unique identifier of the application
+	 * @return the application details
+	 */
 	@GetMapping("/{applicationId}")
 	public ResponseEntity<ApplicationDto> getApplication(@PathVariable UUID applicationId) {
 		User authenticatedUser = currentUserProvider().getUser();
@@ -159,6 +204,13 @@ public class ApplicationController {
 		return ResponseEntity.ok(ApplicationDto.fromApplicationEntity(application, application.hasManagementAccess(authenticatedUser)));
 	}
 
+	/**
+	 * Updates an existing application that has not yet been assessed or reviewed.
+	 *
+	 * @param applicationId the unique identifier of the application to update
+	 * @param payload the payload containing the updated application details
+	 * @return the updated application
+	 */
 	@PutMapping("/{applicationId}")
 	public ResponseEntity<ApplicationDto> updateApplication(
 			@PathVariable UUID applicationId,
@@ -191,6 +243,13 @@ public class ApplicationController {
 		return ResponseEntity.ok(ApplicationDto.fromApplicationEntity(application, application.hasManagementAccess(authenticatedUser)));
 	}
 
+	/**
+	 * Updates the management comment on an application.
+	 *
+	 * @param applicationId the unique identifier of the application
+	 * @param payload the payload containing the comment to update
+	 * @return the updated application
+	 */
 	@PutMapping("/{applicationId}/comment")
 	public ResponseEntity<ApplicationDto> updateComment(
 			@PathVariable UUID applicationId,
@@ -211,6 +270,13 @@ public class ApplicationController {
 		return ResponseEntity.ok(ApplicationDto.fromApplicationEntity(application, application.hasManagementAccess(authenticatedUser)));
 	}
 
+	/**
+	 * Submits a review for an application by an authorized reviewer.
+	 *
+	 * @param applicationId the unique identifier of the application to review
+	 * @param payload the payload containing the review details
+	 * @return the reviewed application
+	 */
 	@PutMapping("/{applicationId}/review")
 	public ResponseEntity<ApplicationDto> reviewApplication(
 			@PathVariable UUID applicationId,
@@ -232,6 +298,13 @@ public class ApplicationController {
 		return ResponseEntity.ok(ApplicationDto.fromApplicationEntity(application, application.hasManagementAccess(authenticatedUser)));
 	}
 
+	/**
+	 * Accepts an application and creates the corresponding thesis.
+	 *
+	 * @param applicationId the unique identifier of the application to accept
+	 * @param payload the payload containing the acceptance details
+	 * @return the list of affected applications
+	 */
 	@PutMapping("/{applicationId}/accept")
 	public ResponseEntity<List<ApplicationDto>> acceptApplication(
 			@PathVariable UUID applicationId,
@@ -265,6 +338,13 @@ public class ApplicationController {
 		);
 	}
 
+	/**
+	 * Rejects an application with a given reason and optionally notifies the applicant.
+	 *
+	 * @param applicationId the unique identifier of the application to reject
+	 * @param payload the payload containing the rejection reason and notification preference
+	 * @return the list of affected applications
+	 */
 	@PutMapping("/{applicationId}/reject")
 	public ResponseEntity<List<ApplicationDto>> rejectApplication(
 			@PathVariable UUID applicationId,

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import java.util.Arrays;
 import java.util.List;
 
+/** Spring converter that splits a comma-separated string into a string array, filtering out empty entries. */
 @Component
 public class StringToArrayConverter implements Converter<String, String[]> {
 	private static final String DEFAULT_SEPARATOR = ",";

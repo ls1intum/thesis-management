@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+/** Service for composing and sending email notifications for applications, theses, interviews, and presentations. */
 @Service
 public class MailingService {
 	private final JavaMailSender javaMailSender;
@@ -46,6 +47,14 @@ public class MailingService {
 
 	private static final String NOTIFICATION_NAME_START = "thesis-";
 
+	/**
+	 * Injects the mail sender, upload service, mail configuration, and email template repository.
+	 *
+	 * @param javaMailSender the mail sender for sending emails
+	 * @param uploadService the service for handling file uploads
+	 * @param config the mail configuration
+	 * @param emailTemplateRepository the repository for email templates
+	 */
 	@Autowired
 	public MailingService(
 			JavaMailSender javaMailSender,
@@ -59,6 +68,11 @@ public class MailingService {
 		this.emailTemplateRepository = emailTemplateRepository;
 	}
 
+	/**
+	 * Sends application creation notification emails to the research group members and the student.
+	 *
+	 * @param application the newly created application
+	 */
 	public void sendApplicationCreatedEmail(Application application) {
 		EmailTemplate researchGroupEmailTemplate = loadTemplate(
 				application.getResearchGroup().getId(),
@@ -148,6 +162,12 @@ public class MailingService {
 		return recipient;
 	}
 
+	/**
+	 * Sends an application acceptance email to the student with advisor and thesis details.
+	 *
+	 * @param application the accepted application
+	 * @param thesis the thesis created from the application
+	 */
 	public void sendApplicationAcceptanceEmail(Application application, Thesis thesis) {
 		User advisor = thesis.getAdvisors().getFirst();
 		User supervisor = thesis.getSupervisors().getFirst();
@@ -170,6 +190,12 @@ public class MailingService {
 				.send(javaMailSender, uploadService);
 	}
 
+	/**
+	 * Sends an application rejection email to the student with the specified rejection reason.
+	 *
+	 * @param application the rejected application
+	 * @param reason the reason for rejection
+	 */
 	public void sendApplicationRejectionEmail(Application application, ApplicationRejectReason reason) {
 		EmailTemplate emailTemplate = loadTemplate(
 				application.getResearchGroup().getId(),
@@ -183,6 +209,12 @@ public class MailingService {
 				.send(javaMailSender, uploadService);
 	}
 
+	/**
+	 * Sends a reminder email to a user about their unreviewed applications.
+	 *
+	 * @param user the user to send the reminder to
+	 * @param unreviewedApplications the number of unreviewed applications
+	 */
 	public void sendApplicationReminderEmail(User user, long unreviewedApplications) {
 		EmailTemplate emailTemplate = loadTemplate(
 				user.getResearchGroup().getId(),
@@ -197,6 +229,12 @@ public class MailingService {
 				.send(javaMailSender, uploadService);
 	}
 
+	/**
+	 * Sends a reminder email warning about applications that will be automatically rejected.
+	 *
+	 * @param user the user to send the reminder to
+	 * @param applications the list of applications pending automatic rejection
+	 */
 	public void sendApplicationAutomaticRejectReminderEmail(User user, List<ApplicationRejectObject> applications) {
 		EmailTemplate emailTemplate = loadTemplate(
 				user.getResearchGroup().getId(),
@@ -215,6 +253,12 @@ public class MailingService {
 				.send(javaMailSender, uploadService);
 	}
 
+	/**
+	 * Sends an interview invitation or reminder email to an interviewee.
+	 *
+	 * @param interviewee the interviewee to send the invitation to
+	 * @param firstInvitation whether this is the first invitation or a reminder
+	 */
 	public void sendInterviewInvitationEmail(Interviewee interviewee, Boolean firstInvitation) {
 		EmailTemplate emailTemplate = loadTemplate(
 				interviewee.getApplication().getResearchGroup().getId(),
@@ -230,6 +274,12 @@ public class MailingService {
 				.send(javaMailSender, uploadService);
 	}
 
+	/**
+	 * Sends an interview slot booking confirmation or cancellation email.
+	 *
+	 * @param slot the interview slot that was booked or cancelled
+	 * @param type the email type, either "BOOK" or "CANCEL"
+	 */
 	public void sendInterviewSlotConfirmationEmail(InterviewSlot slot, String type) {
 		String templateCase = switch (type) {
 			case "BOOK" -> "INTERVIEW_SLOT_BOOKED_CONFORMATION";
@@ -254,6 +304,12 @@ public class MailingService {
 				.send(javaMailSender, uploadService);
 	}
 
+	/**
+	 * Sends a thesis creation notification email to the thesis students.
+	 *
+	 * @param creatingUser the user who created the thesis
+	 * @param thesis the newly created thesis
+	 */
 	public void sendThesisCreatedEmail(User creatingUser, Thesis thesis) {
 		EmailTemplate emailTemplate = loadTemplate(
 				thesis.getResearchGroup().getId(),
@@ -269,6 +325,12 @@ public class MailingService {
 				.send(javaMailSender, uploadService);
 	}
 
+	/**
+	 * Sends a thesis closure notification email to the thesis students.
+	 *
+	 * @param deletingUser the user who closed the thesis
+	 * @param thesis the closed thesis
+	 */
 	public void sendThesisClosedEmail(User deletingUser, Thesis thesis) {
 		EmailTemplate emailTemplate = loadTemplate(
 				thesis.getResearchGroup().getId(),
@@ -284,6 +346,11 @@ public class MailingService {
 				.send(javaMailSender, uploadService);
 	}
 
+	/**
+	 * Sends a proposal upload notification email to thesis advisors with the proposal as an attachment.
+	 *
+	 * @param proposal the uploaded thesis proposal
+	 */
 	public void sendProposalUploadedEmail(ThesisProposal proposal) {
 		EmailTemplate emailTemplate = loadTemplate(
 			proposal.getResearchGroup().getId(),
@@ -299,6 +366,11 @@ public class MailingService {
 				.send(javaMailSender, uploadService);
 	}
 
+	/**
+	 * Sends a proposal acceptance notification email to the thesis students.
+	 *
+	 * @param proposal the accepted thesis proposal
+	 */
 	public void sendProposalAcceptedEmail(ThesisProposal proposal) {
 		EmailTemplate emailTemplate = loadTemplate(
 				proposal.getResearchGroup().getId(),
@@ -314,6 +386,12 @@ public class MailingService {
 				.send(javaMailSender, uploadService);
 	}
 
+	/**
+	 * Sends a proposal change request email to thesis students with the requested changes.
+	 *
+	 * @param reviewingUser the user who requested changes
+	 * @param thesis the thesis whose proposal needs changes
+	 */
 	public void sendProposalChangeRequestEmail(User reviewingUser, Thesis thesis) {
 		EmailTemplate emailTemplate = loadTemplate(
 				thesis.getResearchGroup().getId(),
@@ -336,6 +414,11 @@ public class MailingService {
 				.send(javaMailSender, uploadService);
 	}
 
+	/**
+	 * Sends a new comment notification email to advisors or students depending on the comment type.
+	 *
+	 * @param comment the newly posted thesis comment
+	 */
 	public void sendNewCommentEmail(ThesisComment comment) {
 		EmailTemplate emailTemplate = loadTemplate(
 				comment.getResearchGroup().getId(),
@@ -358,6 +441,13 @@ public class MailingService {
 				.send(javaMailSender, uploadService);
 	}
 
+	/**
+	 * Sends scheduled or updated presentation notification emails to students and optionally to public invitees.
+	 *
+	 * @param action the action type, e.g. "UPDATED" or "SCHEDULED"
+	 * @param presentation the thesis presentation
+	 * @param icsFile the ICS calendar file content, or null if not applicable
+	 */
 	public void sendScheduledPresentationEmail(String action, ThesisPresentation presentation, String icsFile) {
 		if (presentation.getScheduledAt().isBefore(Instant.now())) {
 			return;
@@ -404,6 +494,12 @@ public class MailingService {
 		}
 	}
 
+	/**
+	 * Sends presentation deletion notification emails to students and optionally to public invitees.
+	 *
+	 * @param deletingUser the user who deleted the presentation
+	 * @param presentation the deleted thesis presentation
+	 */
 	public void sendPresentationDeletedEmail(User deletingUser, ThesisPresentation presentation) {
 		if (presentation.getScheduledAt().isBefore(Instant.now())) {
 			return;
@@ -441,6 +537,11 @@ public class MailingService {
 		}
 	}
 
+	/**
+	 * Sends a final thesis submission notification email to the thesis advisors.
+	 *
+	 * @param thesis the submitted thesis
+	 */
 	public void sendFinalSubmissionEmail(Thesis thesis) {
 		EmailTemplate emailTemplate = loadTemplate(
 				thesis.getResearchGroup().getId(),
@@ -457,6 +558,11 @@ public class MailingService {
 				.send(javaMailSender, uploadService);
 	}
 
+	/**
+	 * Sends an assessment added notification email to thesis supervisors.
+	 *
+	 * @param assessment the newly added thesis assessment
+	 */
 	public void sendAssessmentAddedEmail(ThesisAssessment assessment) {
 		EmailTemplate emailTemplate = loadTemplate(
 				assessment.getThesis().getResearchGroup().getId(),
@@ -472,6 +578,11 @@ public class MailingService {
 				.send(javaMailSender, uploadService);
 	}
 
+	/**
+	 * Sends the final grade notification email to the thesis students.
+	 *
+	 * @param thesis the graded thesis
+	 */
 	public void sendFinalGradeEmail(Thesis thesis) {
 		EmailTemplate emailTemplate = loadTemplate(
 				thesis.getResearchGroup().getId(),

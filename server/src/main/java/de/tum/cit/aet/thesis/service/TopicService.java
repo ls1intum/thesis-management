@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+/** Manages thesis topics, including creation, updates, role assignments, and search. */
 @Service
 public class TopicService {
 	private final TopicRepository topicRepository;
@@ -44,6 +45,16 @@ public class TopicService {
 	private final ResearchGroupRepository researchGroupRepository;
 	private final InterviewProcessRepository interviewProcessRepository;
 
+	/**
+	 * Injects the topic, user, and research group repositories along with the current user provider.
+	 *
+	 * @param topicRepository the topic repository
+	 * @param topicRoleRepository the topic role repository
+	 * @param userRepository the user repository
+	 * @param currentUserProviderProvider the current user provider
+	 * @param researchGroupRepository the research group repository
+	 * @param interviewProcessRepository the interview process repository
+	 */
 	@Autowired
 	public TopicService(
 			TopicRepository topicRepository,
@@ -64,6 +75,20 @@ public class TopicService {
 		return currentUserProviderProvider.getObject();
 	}
 
+	/**
+	 * Returns a paginated and filtered list of topics based on type, state, and research group.
+	 *
+	 * @param onlyOwnResearchGroup whether to filter by the current user's research group
+	 * @param types the topic types to filter by
+	 * @param states the topic states to filter by
+	 * @param searchQuery the search query string
+	 * @param page the page number
+	 * @param limit the number of items per page
+	 * @param sortBy the field to sort by
+	 * @param sortOrder the sort direction (asc or desc)
+	 * @param researchGroupIds the research group IDs to filter by
+	 * @return a page of topics matching the filters
+	 */
 	public Page<Topic> getAll(
 			boolean onlyOwnResearchGroup,
 			String[] types,
@@ -103,6 +128,15 @@ public class TopicService {
 		);
 	}
 
+	/**
+	 * Returns open topics eligible for interview processes for the current user's research group.
+	 *
+	 * @param searchQuery the search query to filter topics
+	 * @param page the page number
+	 * @param limit the number of items per page
+	 * @param excludeSupervised whether to exclude topics supervised by the current user
+	 * @return a page of topics with interview process information
+	 */
 	public Page<TopicInterviewProcessDto> getPossibleInterviewTopics(
 			String searchQuery,
 			int page,
@@ -128,6 +162,12 @@ public class TopicService {
 		);
 	}
 
+	/**
+	 * Returns all open topics belonging to the specified research group.
+	 *
+	 * @param researchGroupId the research group ID
+	 * @return the list of open topics for the research group
+	 */
 	public List<Topic> getOpenFromResearchGroup(UUID researchGroupId) {
 		return topicRepository.searchTopics(
 				Collections.singleton(researchGroupId),
@@ -221,6 +261,12 @@ public class TopicService {
 		return topicRepository.save(topic);
 	}
 
+	/**
+	 * Finds a topic by its ID or throws a ResourceNotFoundException if not found.
+	 *
+	 * @param topicId the topic ID
+	 * @return the topic
+	 */
 	public Topic findById(UUID topicId) {
 		return topicRepository.findById(topicId)
 				.orElseThrow(() -> new ResourceNotFoundException(String.format("Topic with id %s not found.", topicId)));

@@ -21,10 +21,16 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
 import java.util.Set;
 
+/** Handles file uploads and retrieval, including size and type validation and content-based hashing. */
 @Service
 public class UploadService {
 	private final Path rootLocation;
 
+	/**
+	 * Initializes the upload directory from the configured storage location, creating it if necessary.
+	 *
+	 * @param uploadLocation the file system path for uploads
+	 */
 	@Autowired
 	public UploadService(@Value("${thesis-management.storage.upload-location}") String uploadLocation) {
 		this.rootLocation = Path.of(uploadLocation);
@@ -36,6 +42,14 @@ public class UploadService {
 		}
 	}
 
+	/**
+	 * Validates and stores the uploaded file, returning the content-hashed filename.
+	 *
+	 * @param file the file to store
+	 * @param maxSize the maximum allowed file size in bytes
+	 * @param type the allowed upload file type
+	 * @return the content-hashed filename
+	 */
 	public String store(MultipartFile file, Integer maxSize, UploadFileType type) {
 		try {
 			if (file.isEmpty()) {
@@ -85,6 +99,12 @@ public class UploadService {
 		}
 	}
 
+	/**
+	 * Loads and returns a previously stored file as a FileSystemResource.
+	 *
+	 * @param filename the name of the file to load
+	 * @return the file as a FileSystemResource
+	 */
 	public FileSystemResource load(String filename) {
 		try {
 			if (filename.contains("..")) {

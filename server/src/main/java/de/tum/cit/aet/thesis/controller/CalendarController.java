@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
+/**
+ * REST controller for generating iCalendar feeds for thesis presentations and interviews.
+ */
 @Slf4j
 @RestController
 @RequestMapping("/v2/calendar")
@@ -26,6 +29,14 @@ public class CalendarController {
 	private final UserService userService;
 	private final InterviewProcessService interviewProcessService;
 
+	/**
+	 * Injects the presentation, research group, user, and interview process services.
+	 *
+	 * @param thesisPresentationService the thesis presentation service
+	 * @param researchGroupService the research group service
+	 * @param userService the user service
+	 * @param interviewProcessService the interview process service
+	 */
 	@Autowired
 	public CalendarController(ThesisPresentationService thesisPresentationService,
 		ResearchGroupService researchGroupService, UserService userService,
@@ -36,6 +47,12 @@ public class CalendarController {
 		this.interviewProcessService = interviewProcessService;
 	}
 
+	/**
+	 * Returns an iCalendar feed of thesis presentations for a given research group.
+	 *
+	 * @param researchGroupAbbreviation the abbreviation of the research group
+	 * @return the iCalendar feed as a string
+	 */
 	@GetMapping( "/presentations/{researchGroupAbbreviation}")
 	public ResponseEntity<String> getCalendar(@PathVariable(required = false) String researchGroupAbbreviation) {
 		ResearchGroup researchGroup = researchGroupService.findByAbbreviation(researchGroupAbbreviation);
@@ -50,6 +67,12 @@ public class CalendarController {
 				.body(thesisPresentationService.getPresentationCalendar(researchGroup.getId()).toString());
 	}
 
+	/**
+	 * Returns an iCalendar feed of interview appointments for a given user.
+	 *
+	 * @param userId the ID of the user
+	 * @return the iCalendar feed as a string
+	 */
 	@GetMapping("/interviews/user/{userId}")
 	public ResponseEntity<String> getInterviews(@PathVariable UUID userId) {
 		userService.findById(userId);

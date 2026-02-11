@@ -16,17 +16,34 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
+/** REST controller for publicly accessible thesis presentation data. */
 @Slf4j
 @RestController
 @RequestMapping("/v2/published-presentations")
 public class PublishedPresentationController {
 	private final ThesisPresentationService thesisPresentationService;
 
+	/**
+	 * Injects the thesis presentation service.
+	 *
+	 * @param thesisPresentationService the thesis presentation service
+	 */
 	@Autowired
 	public PublishedPresentationController(ThesisPresentationService thesisPresentationService) {
 		this.thesisPresentationService = thesisPresentationService;
 	}
 
+	/**
+	 * Retrieves a paginated list of published thesis presentations.
+	 *
+	 * @param includeDrafts whether to include draft presentations
+	 * @param page the page number for pagination
+	 * @param limit the maximum number of results per page
+	 * @param sortBy the field to sort by
+	 * @param sortOrder the sort direction
+	 * @param researchGroupId the research group ID to filter by
+	 * @return the paginated list of published presentations
+	 */
 	@GetMapping()
 	public ResponseEntity<PaginationDto<PublishedPresentationDto>> getPresentations(
 			@RequestParam(required = false, defaultValue = "false") boolean includeDrafts,
@@ -50,6 +67,12 @@ public class PublishedPresentationController {
 		));
 	}
 
+	/**
+	 * Retrieves a single published presentation by its ID.
+	 *
+	 * @param presentationId the ID of the presentation
+	 * @return the published presentation
+	 */
 	@GetMapping("/{presentationId}")
 	public ResponseEntity<PublishedPresentationDto> getPresentation(
 			@PathVariable UUID presentationId

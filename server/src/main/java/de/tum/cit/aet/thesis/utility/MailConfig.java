@@ -15,6 +15,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
+/** Provides mail configuration properties and access to chair member data for email sending. */
 @Component
 public class MailConfig {
 	private final UserRepository userRepository;
@@ -36,6 +37,18 @@ public class MailConfig {
 	@Getter
 	private final TemplateEngine templateEngine;
 
+	/**
+	 * Injects mail-related configuration properties, the user repository, and the template engine.
+	 *
+	 * @param enabled whether email sending is enabled
+	 * @param sender the sender email address
+	 * @param bccRecipientsList the BCC recipients list
+	 * @param mailSignature the email signature
+	 * @param workspaceUrl the workspace URL
+	 * @param clientHost the client host URL
+	 * @param userRepository the user repository
+	 * @param templateEngine the Thymeleaf template engine
+	 */
 	@Autowired
 	public MailConfig(
 			@Value("${thesis-management.mail.enabled}") boolean enabled,
@@ -57,24 +70,53 @@ public class MailConfig {
 		this.userRepository = userRepository;
 	}
 
+	/**
+	 * Returns whether email sending is enabled.
+	 *
+	 * @return true if email sending is enabled
+	 */
 	public boolean isEnabled() {
 		return enabled;
 	}
 
+	/**
+	 * Returns all admin, supervisor, and advisor users belonging to the given research group.
+	 *
+	 * @param researchGroupId the research group ID
+	 * @return the list of chair members
+	 */
 	public List<User> getChairMembers(UUID researchGroupId) {
 		return userRepository.getRoleMembers(Set.of("admin", "supervisor", "advisor"), researchGroupId);
 	}
 
+	/**
+	 * Returns all student users belonging to the given research group.
+	 *
+	 * @param researchGroupId the research group ID
+	 * @return the list of students
+	 */
 	public List<User> getChairStudents(UUID researchGroupId) {
 		return userRepository.getRoleMembers(Set.of("student"), researchGroupId);
 	}
 
+	/**
+	 * Data transfer object holding mail configuration values for use in email templates.
+	 *
+	 * @param signature the email signature
+	 * @param workspaceUrl the workspace URL
+	 * @param clientHost the client host URL
+	 */
 	public record MailConfigDto(
 			String signature,
 			String workspaceUrl,
 			String clientHost
 	) {}
 
+	/**
+	 * Creates a MailConfigDto with the current configuration values, substituting empty strings for null values.
+	 *
+	 * @return the mail configuration DTO
+	 */
 	public MailConfigDto getConfigDto() {
 		return new MailConfigDto(
 				Objects.requireNonNullElse(signature, ""),

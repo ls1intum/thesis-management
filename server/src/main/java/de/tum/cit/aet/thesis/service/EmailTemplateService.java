@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.UUID;
 
+/** Manages CRUD operations for email templates scoped to research groups. */
 @Service
 public class EmailTemplateService {
 
@@ -26,6 +27,13 @@ public class EmailTemplateService {
 	private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
 	private final ResearchGroupRepository researchGroupRepository;
 
+	/**
+	 * Injects the email template repository, the current user provider, and the research group repository.
+	 *
+	 * @param emailTemplateRepository the email template repository
+	 * @param currentUserProviderProvider the current user provider
+	 * @param researchGroupRepository the research group repository
+	 */
 	@Autowired
 	public EmailTemplateService(EmailTemplateRepository emailTemplateRepository, ObjectProvider<CurrentUserProvider> currentUserProviderProvider, ResearchGroupRepository researchGroupRepository) {
 		this.emailTemplateRepository = emailTemplateRepository;
@@ -37,6 +45,18 @@ public class EmailTemplateService {
 		return currentUserProviderProvider.getObject();
 	}
 
+	/**
+	 * Returns a paginated and filtered list of email templates for the current user's research group.
+	 *
+	 * @param templateCases the template cases to filter by
+	 * @param languages the languages to filter by
+	 * @param searchQuery the search query string
+	 * @param page the page number
+	 * @param limit the number of results per page
+	 * @param sortBy the field to sort by
+	 * @param sortOrder the sort direction (asc or desc)
+	 * @return the paginated list of email templates
+	 */
 	public Page<EmailTemplate> getAll(
 			String[] templateCases,
 			String[] languages,
@@ -72,6 +92,12 @@ public class EmailTemplateService {
 		);
 	}
 
+	/**
+	 * Finds an email template by its ID and verifies the current user has access to its research group.
+	 *
+	 * @param emailTemplateId the ID of the email template
+	 * @return the found email template
+	 */
 	public EmailTemplate findById(UUID emailTemplateId) {
 		EmailTemplate emailTemplate = emailTemplateRepository.findById(emailTemplateId)
 				.orElseThrow(() -> new ResourceNotFoundException(

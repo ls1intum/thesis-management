@@ -102,6 +102,26 @@
         <module name="ModifierOrder"/>
         <module name="RedundantModifier"/>
 
+        <!-- Javadoc existence (moderate: required on services, controllers, and utilities) -->
+        <module name="MissingJavadocType">
+            <property name="scope" value="public"/>
+        </module>
+        <module name="MissingJavadocMethod">
+            <property name="scope" value="public"/>
+            <property name="allowedAnnotations" value="Override, Bean, Scheduled, Transactional, ExceptionHandler"/>
+        </module>
+
+        <!-- Javadoc content validation -->
+        <module name="JavadocType">
+            <property name="scope" value="public"/>
+            <property name="allowMissingParamTags" value="true"/>
+        </module>
+        <module name="JavadocMethod">
+            <property name="accessModifiers" value="public"/>
+            <property name="allowMissingParamTags" value="false"/>
+            <property name="allowMissingReturnTag" value="false"/>
+        </module>
+
         <!-- Annotation style -->
         <module name="AnnotationLocation">
             <property name="allowSamelineMultipleAnnotations" value="false"/>
