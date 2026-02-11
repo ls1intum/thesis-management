@@ -87,6 +87,22 @@ To start the sever application for local development, navigate to /server folder
 
 Server is served at http://localhost:8080.
 
+### Useful Gradle Commands
+
+| Command | Description |
+|---------|-------------|
+| `./gradlew test` | Run all server tests |
+| `./gradlew test jacocoTestReport` | Run tests with JaCoCo coverage report |
+| `./gradlew build -x test` | Build the server without running tests |
+| `./gradlew bootRun` | Start the server for local development |
+| `./gradlew spotlessApply` | Auto-format code (imports, whitespace, tabs) |
+| `./gradlew spotlessCheck` | Check code formatting without modifying files |
+| `./gradlew checkstyleMain` | Run Checkstyle on main source code |
+| `./gradlew checkstyleTest` | Run Checkstyle on test source code |
+| `./gradlew dependencyUpdates -Drevision=release` | Find available dependency updates |
+
+After running tests with coverage, the HTML report is available at `server/build/reports/jacoco/test/html/index.html`.
+
 ## Client
 
 #### Preconditions

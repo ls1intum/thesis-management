@@ -2,6 +2,7 @@ plugins {
 	id "java"
 	id "idea"
 	id "checkstyle"
+	id "jacoco"
 	id "com.github.andygoossens.modernizer" version "1.12.0"
 	id "com.gorylenko.gradle-git-properties" version "2.5.4"
 	id "org.springframework.boot" version "3.5.9"
@@ -123,15 +124,83 @@ checkstyle {
 
 test {
 	useJUnitPlatform()
+	finalizedBy jacocoTestReport
 
 	maxParallelForks = 1
 	forkEvery = 0
 
 	testLogging {
 		events "PASSED", "FAILED", "SKIPPED"
+		showStandardStreams = false
+		exceptionFormat = "full"
+		showCauses = true
+		showStackTraces = true
 	}
-	testLogging.showStandardStreams = true
 	systemProperty "spring.profiles.active", "test"
+
+	afterSuite { desc, result ->
+		if (!desc.parent) {
+			println ""
+			println "==============================================================="
+			println " Test Results: ${result.resultType}"
+			println "==============================================================="
+			println " Total:   ${result.testCount}"
+			println " Passed:  ${result.successfulTestCount}"
+			println " Failed:  ${result.failedTestCount}"
+			println " Skipped: ${result.skippedTestCount}"
+			println "==============================================================="
+		}
+	}
+}
+
+jacocoTestReport {
+	dependsOn test
+	reports {
+		xml.required = true
+		html.required = true
+	}
+
+	def reportFile = layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml")
+	def htmlReportDir = layout.buildDirectory.dir("reports/jacoco/test/html")
+
+	doLast {
+		def report = reportFile.get().asFile
+		if (report.exists()) {
+			def parser = new groovy.xml.XmlSlurper()
+			parser.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false)
+			parser.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
+			def xml = parser.parse(report)
+			def counters = xml.counter
+
+			def instructionCounter = counters.find { it.@type == 'INSTRUCTION' }
+			def branchCounter = counters.find { it.@type == 'BRANCH' }
+			def lineCounter = counters.find { it.@type == 'LINE' }
+			def methodCounter = counters.find { it.@type == 'METHOD' }
+			def classCounter = counters.find { it.@type == 'CLASS' }
+
+			def calcCoverage = { counter ->
+				if (counter == null) return "N/A"
+				def missed = counter.@missed.toInteger()
+				def covered = counter.@covered.toInteger()
+				def total = missed + covered
+				if (total == 0) return "N/A"
+				return String.format("%.1f%%", (covered * 100.0) / total)
+			}
+
+			println ""
+			println "==============================================================="
+			println " Code Coverage Report"
+			println "==============================================================="
+			println " Instructions: ${calcCoverage(instructionCounter)}"
+			println " Branches:     ${calcCoverage(branchCounter)}"
+			println " Lines:        ${calcCoverage(lineCounter)}"
+			println " Methods:      ${calcCoverage(methodCounter)}"
+			println " Classes:      ${calcCoverage(classCounter)}"
+			println "==============================================================="
+			println " Full report: file://${htmlReportDir.get().asFile}"
+			println "==============================================================="
+		}
+	}
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -159,5 +228,9 @@ tasks.named("dependencyUpdates").configure {
 //
 // Find dependency updates:    ./gradlew dependencyUpdates -Drevision=release
 // Test:                       ./gradlew test
+// Test with coverage:         ./gradlew test jacocoTestReport
 // Build:                      ./gradlew build -x test
-// Run:						   ./gradlew bootRun
+// Run:                        ./gradlew bootRun
+// Code formatting:            ./gradlew spotlessApply
+// Check formatting:           ./gradlew spotlessCheck
+// Checkstyle:                 ./gradlew checkstyleMain checkstyleTest
