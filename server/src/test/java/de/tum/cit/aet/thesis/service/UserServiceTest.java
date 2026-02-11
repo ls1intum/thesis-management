@@ -1,5 +1,11 @@
 package de.tum.cit.aet.thesis.service;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import de.tum.cit.aet.thesis.entity.User;
 import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.mock.EntityMockFactory;
@@ -21,87 +27,81 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
-    @Mock
-    private UserRepository userRepository;
+	@Mock
+	private UserRepository userRepository;
 
-    @Mock
-    private ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
+	@Mock
+	private ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
 
-    @Mock
-    private CurrentUserProvider currentUserProvider;
+	@Mock
+	private CurrentUserProvider currentUserProvider;
 
-    @InjectMocks
-    private UserService userService;
+	@InjectMocks
+	private UserService userService;
 
-    private User testUser;
+	private User testUser;
 
-    @BeforeEach
-    void setUp() {
-        testUser = EntityMockFactory.createUser("Test");
-    }
+	@BeforeEach
+	void setUp() {
+		testUser = EntityMockFactory.createUser("Test");
+	}
 
-    @Test
-    void getAll_WithNoFilters_ReturnsAllUsers() {
-        List<User> users = Collections.singletonList(testUser);
-        Page<User> expectedPage = new PageImpl<>(users);
-        when(userRepository.searchUsers(
-                any(),
-                any(),
-                any(),
-                any(PageRequest.class)
-        )).thenReturn(expectedPage);
-        when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
-        when(currentUserProvider.getResearchGroupOrThrow()).thenReturn(testUser.getResearchGroup());
+	@Test
+	void getAll_WithNoFilters_ReturnsAllUsers() {
+		List<User> users = Collections.singletonList(testUser);
+		Page<User> expectedPage = new PageImpl<>(users);
+		when(userRepository.searchUsers(
+				any(),
+				any(),
+				any(),
+				any(PageRequest.class)
+		)).thenReturn(expectedPage);
+		when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
+		when(currentUserProvider.getResearchGroupOrThrow()).thenReturn(testUser.getResearchGroup());
 
-        Page<User> result = userService.getAll(
-                null,
-                null,
-                0,
-                10,
-                "id",
-                "asc"
-        );
+		Page<User> result = userService.getAll(
+				null,
+				null,
+				0,
+				10,
+				"id",
+				"asc"
+		);
 
-        assertNotNull(result);
-        assertEquals(1, result.getContent().size());
-        assertEquals(testUser, result.getContent().getFirst());
-        verify(userRepository).searchUsers(
-                any(),
-                any(),
-                any(),
-                eq(PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id")))
-        );
-    }
+		assertNotNull(result);
+		assertEquals(1, result.getContent().size());
+		assertEquals(testUser, result.getContent().getFirst());
+		verify(userRepository).searchUsers(
+				any(),
+				any(),
+				any(),
+				eq(PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id")))
+		);
+	}
 
-    @Test
-    void findById_WithExistingUser_ReturnsUser() {
-        when(userRepository.findById(testUser.getId())).thenReturn(Optional.of(testUser));
+	@Test
+	void findById_WithExistingUser_ReturnsUser() {
+		when(userRepository.findById(testUser.getId())).thenReturn(Optional.of(testUser));
 
-        User result = userService.findById(testUser.getId());
+		User result = userService.findById(testUser.getId());
 
-        assertNotNull(result);
-        assertEquals(testUser.getId(), result.getId());
-        assertEquals(testUser.getFirstName(), result.getFirstName());
-        assertEquals(testUser.getLastName(), result.getLastName());
-        assertEquals(testUser.getEmail(), result.getEmail());
-        verify(userRepository).findById(testUser.getId());
-    }
+		assertNotNull(result);
+		assertEquals(testUser.getId(), result.getId());
+		assertEquals(testUser.getFirstName(), result.getFirstName());
+		assertEquals(testUser.getLastName(), result.getLastName());
+		assertEquals(testUser.getEmail(), result.getEmail());
+		verify(userRepository).findById(testUser.getId());
+	}
 
-    @Test
-    void findById_WithNonExistingUser_ThrowsResourceNotFoundException() {
-        when(userRepository.findById(testUser.getId())).thenReturn(Optional.empty());
+	@Test
+	void findById_WithNonExistingUser_ThrowsResourceNotFoundException() {
+		when(userRepository.findById(testUser.getId())).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () ->
-                userService.findById(testUser.getId())
-        );
-        verify(userRepository).findById(testUser.getId());
-    }
+		assertThrows(ResourceNotFoundException.class, () ->
+				userService.findById(testUser.getId())
+		);
+		verify(userRepository).findById(testUser.getId());
+	}
 }

@@ -6,10 +6,10 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum ThesisVisibility {
-    PRIVATE("PRIVATE"),
-    INTERNAL("INTERNAL"),
-    STUDENT("STUDENT"),
-    PUBLIC("PUBLIC");
+	PRIVATE("PRIVATE"),
+	INTERNAL("INTERNAL"),
+	STUDENT("STUDENT"),
+	PUBLIC("PUBLIC");
 
-    private final String value;
+	private final String value;
 }

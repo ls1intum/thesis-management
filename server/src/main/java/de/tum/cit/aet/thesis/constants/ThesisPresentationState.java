@@ -6,8 +6,8 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum ThesisPresentationState {
-    SCHEDULED("SCHEDULED"),
-    DRAFTED("DRAFTED");
+	SCHEDULED("SCHEDULED"),
+	DRAFTED("DRAFTED");
 
-    private final String value;
+	private final String value;
 }

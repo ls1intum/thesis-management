@@ -1,5 +1,10 @@
 package de.tum.cit.aet.thesis.service;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+
 import de.tum.cit.aet.thesis.constants.ThesisCommentType;
 import de.tum.cit.aet.thesis.constants.UploadFileType;
 import de.tum.cit.aet.thesis.entity.ResearchGroup;
@@ -29,202 +34,197 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 class ThesisCommentServiceTest {
-    @Mock
-    private ThesisCommentRepository thesisCommentRepository;
+	@Mock
+	private ThesisCommentRepository thesisCommentRepository;
 
-    @Mock
-    private UploadService uploadService;
+	@Mock
+	private UploadService uploadService;
 
-    @Mock
-    private MailingService mailingService;
+	@Mock
+	private MailingService mailingService;
 
-    @Mock
-    private ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
+	@Mock
+	private ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
 
-    @Mock
-    private CurrentUserProvider currentUserProvider;
+	@Mock
+	private CurrentUserProvider currentUserProvider;
 
-    @Mock
-    private FileSystemResource mockResource;
+	@Mock
+	private FileSystemResource mockResource;
 
-    private ThesisCommentService commentService;
-    private User testUser;
-    private Thesis testThesis;
-    private ThesisComment testComment;
+	private ThesisCommentService commentService;
+	private User testUser;
+	private Thesis testThesis;
+	private ThesisComment testComment;
 
-    @BeforeEach
-    void setUp() {
-        commentService = new ThesisCommentService(
-                thesisCommentRepository,
-                uploadService,
-                mailingService,
-                currentUserProviderProvider
-        );
+	@BeforeEach
+	void setUp() {
+		commentService = new ThesisCommentService(
+				thesisCommentRepository,
+				uploadService,
+				mailingService,
+				currentUserProviderProvider
+		);
 
-        testUser = EntityMockFactory.createUser("Test User");
-        ResearchGroup testResearchGroup = EntityMockFactory.createResearchGroup("Test Research Group");
-        testUser.setResearchGroup(testResearchGroup);
-        testThesis = EntityMockFactory.createThesis("Test Thesis", testResearchGroup);
+		testUser = EntityMockFactory.createUser("Test User");
+		ResearchGroup testResearchGroup = EntityMockFactory.createResearchGroup("Test Research Group");
+		testUser.setResearchGroup(testResearchGroup);
+		testThesis = EntityMockFactory.createThesis("Test Thesis", testResearchGroup);
 
-        testComment = new ThesisComment();
-        testComment.setId(UUID.randomUUID());
-        testComment.setThesis(testThesis);
-        testComment.setCreatedBy(testUser);
-        testComment.setMessage("Test Comment");
-        testComment.setType(ThesisCommentType.THESIS);
-        testComment.setCreatedAt(Instant.now());
-    }
+		testComment = new ThesisComment();
+		testComment.setId(UUID.randomUUID());
+		testComment.setThesis(testThesis);
+		testComment.setCreatedBy(testUser);
+		testComment.setMessage("Test Comment");
+		testComment.setType(ThesisCommentType.THESIS);
+		testComment.setCreatedAt(Instant.now());
+	}
 
-    @Test
-    void getComments_ReturnsPageOfComments() {
-        Page<ThesisComment> expectedPage = new PageImpl<>(List.of(testComment));
-        when(thesisCommentRepository.searchComments(
-                eq(testThesis.getId()),
-                eq(ThesisCommentType.THESIS),
-                any(PageRequest.class)
-        )).thenReturn(expectedPage);
-        when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
+	@Test
+	void getComments_ReturnsPageOfComments() {
+		Page<ThesisComment> expectedPage = new PageImpl<>(List.of(testComment));
+		when(thesisCommentRepository.searchComments(
+				eq(testThesis.getId()),
+				eq(ThesisCommentType.THESIS),
+				any(PageRequest.class)
+		)).thenReturn(expectedPage);
+		when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
 
-        Page<ThesisComment> result = commentService.getComments(
-                testThesis,
-                ThesisCommentType.THESIS,
-                0,
-                10
-        );
+		Page<ThesisComment> result = commentService.getComments(
+				testThesis,
+				ThesisCommentType.THESIS,
+				0,
+				10
+		);
 
-        assertNotNull(result);
-        assertEquals(1, result.getContent().size());
-        assertEquals(testComment, result.getContent().getFirst());
-        verify(thesisCommentRepository).searchComments(
-                eq(testThesis.getId()),
-                eq(ThesisCommentType.THESIS),
-                any(PageRequest.class)
-        );
-    }
+		assertNotNull(result);
+		assertEquals(1, result.getContent().size());
+		assertEquals(testComment, result.getContent().getFirst());
+		verify(thesisCommentRepository).searchComments(
+				eq(testThesis.getId()),
+				eq(ThesisCommentType.THESIS),
+				any(PageRequest.class)
+		);
+	}
 
-    @Test
-    void postComment_WithoutFile_CreatesComment() {
-        when(thesisCommentRepository.save(any(ThesisComment.class))).thenAnswer(invocation -> {
-            ThesisComment savedComment = invocation.getArgument(0);
-            savedComment.setId(UUID.randomUUID());
-            return savedComment;
-        });
-        when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
-        when(currentUserProvider.getUser()).thenReturn(testUser);
+	@Test
+	void postComment_WithoutFile_CreatesComment() {
+		when(thesisCommentRepository.save(any(ThesisComment.class))).thenAnswer(invocation -> {
+			ThesisComment savedComment = invocation.getArgument(0);
+			savedComment.setId(UUID.randomUUID());
+			return savedComment;
+		});
+		when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
+		when(currentUserProvider.getUser()).thenReturn(testUser);
 
-        ThesisComment result = commentService.postComment(
-                testThesis,
-                ThesisCommentType.THESIS,
-                "Test Message",
-                null
-        );
+		ThesisComment result = commentService.postComment(
+				testThesis,
+				ThesisCommentType.THESIS,
+				"Test Message",
+				null
+		);
 
-        assertNotNull(result);
-        assertEquals("Test Message", result.getMessage());
-        assertEquals(testUser, result.getCreatedBy());
-        assertEquals(testThesis, result.getThesis());
-        assertEquals(ThesisCommentType.THESIS, result.getType());
-        assertNull(result.getFilename());
-        verify(thesisCommentRepository).save(any(ThesisComment.class));
-        verify(mailingService).sendNewCommentEmail(result);
-        verify(uploadService, never()).store(any(), any(), any());
-    }
+		assertNotNull(result);
+		assertEquals("Test Message", result.getMessage());
+		assertEquals(testUser, result.getCreatedBy());
+		assertEquals(testThesis, result.getThesis());
+		assertEquals(ThesisCommentType.THESIS, result.getType());
+		assertNull(result.getFilename());
+		verify(thesisCommentRepository).save(any(ThesisComment.class));
+		verify(mailingService).sendNewCommentEmail(result);
+		verify(uploadService, never()).store(any(), any(), any());
+	}
 
-    @Test
-    void postComment_WithFile_CreatesCommentWithFile() {
-        MultipartFile file = new MockMultipartFile(
-                "file",
-                "test.pdf",
-                "application/pdf",
-                "test content".getBytes()
-        );
-        when(thesisCommentRepository.save(any(ThesisComment.class))).thenAnswer(invocation -> {
-            ThesisComment savedComment = invocation.getArgument(0);
-            savedComment.setId(UUID.randomUUID());
-            return savedComment;
-        });
-        when(uploadService.store(any(), any(), any())).thenReturn("stored-file-name");
-        when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
+	@Test
+	void postComment_WithFile_CreatesCommentWithFile() {
+		MultipartFile file = new MockMultipartFile(
+				"file",
+				"test.pdf",
+				"application/pdf",
+				"test content".getBytes()
+		);
+		when(thesisCommentRepository.save(any(ThesisComment.class))).thenAnswer(invocation -> {
+			ThesisComment savedComment = invocation.getArgument(0);
+			savedComment.setId(UUID.randomUUID());
+			return savedComment;
+		});
+		when(uploadService.store(any(), any(), any())).thenReturn("stored-file-name");
+		when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
 
-        ThesisComment result = commentService.postComment(
-                testThesis,
-                ThesisCommentType.THESIS,
-                "Test Message",
-                file
-        );
+		ThesisComment result = commentService.postComment(
+				testThesis,
+				ThesisCommentType.THESIS,
+				"Test Message",
+				file
+		);
 
-        assertNotNull(result);
-        assertEquals("Test Message", result.getMessage());
-        assertEquals("stored-file-name", result.getFilename());
-        verify(uploadService).store(eq(file), any(), eq(UploadFileType.ANY));
-        verify(thesisCommentRepository).save(any(ThesisComment.class));
-        verify(mailingService).sendNewCommentEmail(result);
-    }
+		assertNotNull(result);
+		assertEquals("Test Message", result.getMessage());
+		assertEquals("stored-file-name", result.getFilename());
+		verify(uploadService).store(eq(file), any(), eq(UploadFileType.ANY));
+		verify(thesisCommentRepository).save(any(ThesisComment.class));
+		verify(mailingService).sendNewCommentEmail(result);
+	}
 
-    @Test
-    void getCommentFile_ReturnsResource() {
-        testComment.setFilename("test-file.pdf");
-        when(uploadService.load("test-file.pdf")).thenReturn(mockResource);
-        when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
+	@Test
+	void getCommentFile_ReturnsResource() {
+		testComment.setFilename("test-file.pdf");
+		when(uploadService.load("test-file.pdf")).thenReturn(mockResource);
+		when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
 
-        Resource result = commentService.getCommentFile(testComment);
+		Resource result = commentService.getCommentFile(testComment);
 
-        assertNotNull(result);
-        assertEquals(mockResource, result);
-        verify(uploadService).load("test-file.pdf");
-    }
+		assertNotNull(result);
+		assertEquals(mockResource, result);
+		verify(uploadService).load("test-file.pdf");
+	}
 
-    @Test
-    void deleteComment_DeletesComment() {
-        doNothing().when(thesisCommentRepository).deleteById(testComment.getId());
-        when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
+	@Test
+	void deleteComment_DeletesComment() {
+		doNothing().when(thesisCommentRepository).deleteById(testComment.getId());
+		when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
 
-        ThesisComment result = commentService.deleteComment(testComment);
+		ThesisComment result = commentService.deleteComment(testComment);
 
-        assertNotNull(result);
-        assertEquals(testComment, result);
-        verify(thesisCommentRepository).deleteById(testComment.getId());
-    }
+		assertNotNull(result);
+		assertEquals(testComment, result);
+		verify(thesisCommentRepository).deleteById(testComment.getId());
+	}
 
-    @Test
-    void findById_WithValidIds_ReturnsComment() {
-        when(thesisCommentRepository.findById(testComment.getId()))
-                .thenReturn(Optional.of(testComment));
-        when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
+	@Test
+	void findById_WithValidIds_ReturnsComment() {
+		when(thesisCommentRepository.findById(testComment.getId()))
+				.thenReturn(Optional.of(testComment));
+		when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
 
-        ThesisComment result = commentService.findById(testThesis.getId(), testComment.getId());
+		ThesisComment result = commentService.findById(testThesis.getId(), testComment.getId());
 
-        assertNotNull(result);
-        assertEquals(testComment, result);
-    }
+		assertNotNull(result);
+		assertEquals(testComment, result);
+	}
 
-    @Test
-    void findById_WithInvalidCommentId_ThrowsException() {
-        UUID invalidId = UUID.randomUUID();
-        when(thesisCommentRepository.findById(invalidId))
-                .thenReturn(Optional.empty());
+	@Test
+	void findById_WithInvalidCommentId_ThrowsException() {
+		UUID invalidId = UUID.randomUUID();
+		when(thesisCommentRepository.findById(invalidId))
+				.thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () ->
-                commentService.findById(testThesis.getId(), invalidId)
-        );
-    }
+		assertThrows(ResourceNotFoundException.class, () ->
+				commentService.findById(testThesis.getId(), invalidId)
+		);
+	}
 
-    @Test
-    void findById_WithMismatchedThesisId_ThrowsException() {
-        UUID differentThesisId = UUID.randomUUID();
-        when(thesisCommentRepository.findById(testComment.getId()))
-                .thenReturn(Optional.of(testComment));
-        when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
+	@Test
+	void findById_WithMismatchedThesisId_ThrowsException() {
+		UUID differentThesisId = UUID.randomUUID();
+		when(thesisCommentRepository.findById(testComment.getId()))
+				.thenReturn(Optional.of(testComment));
+		when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
 
-        assertThrows(ResourceNotFoundException.class, () ->
-                commentService.findById(differentThesisId, testComment.getId())
-        );
-    }
+		assertThrows(ResourceNotFoundException.class, () ->
+				commentService.findById(differentThesisId, testComment.getId())
+		);
+	}
 }

@@ -3,121 +3,131 @@ package de.tum.cit.aet.thesis.mock;
 import de.tum.cit.aet.thesis.constants.ApplicationState;
 import de.tum.cit.aet.thesis.constants.ThesisRoleName;
 import de.tum.cit.aet.thesis.constants.ThesisState;
-import de.tum.cit.aet.thesis.entity.*;
+import de.tum.cit.aet.thesis.entity.Application;
+import de.tum.cit.aet.thesis.entity.ResearchGroup;
+import de.tum.cit.aet.thesis.entity.Thesis;
+import de.tum.cit.aet.thesis.entity.ThesisRole;
+import de.tum.cit.aet.thesis.entity.Topic;
+import de.tum.cit.aet.thesis.entity.User;
+import de.tum.cit.aet.thesis.entity.UserGroup;
 import de.tum.cit.aet.thesis.entity.key.ThesisRoleId;
 import de.tum.cit.aet.thesis.entity.key.UserGroupId;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 public class EntityMockFactory {
-    public static User createUser(String name) {
-        User user = new User();
-        user.setId(UUID.randomUUID());
-        user.setFirstName(name);
-        user.setLastName(name);
-        user.setEmail(name.toLowerCase() + "@example.com");
+	public static User createUser(String name) {
+		User user = new User();
+		user.setId(UUID.randomUUID());
+		user.setFirstName(name);
+		user.setLastName(name);
+		user.setEmail(name.toLowerCase() + "@example.com");
 
-        return user;
-    }
+		return user;
+	}
 
-    public static User createUserWithDefaultResearchGroup(String name) {
-        ResearchGroup researchGroup = createResearchGroup("Default Research Group");
-        User user = createUser(name);
-        user.setResearchGroup(researchGroup);
-        return user;
-    }
+	public static User createUserWithDefaultResearchGroup(String name) {
+		ResearchGroup researchGroup = createResearchGroup("Default Research Group");
+		User user = createUser(name);
+		user.setResearchGroup(researchGroup);
+		return user;
+	}
 
-    public static User createUserWithResearchGroup(String name, ResearchGroup researchGroup) {
-        User user = createUser(name);
-        user.setResearchGroup(researchGroup);
-        return user;
-    }
+	public static User createUserWithResearchGroup(String name, ResearchGroup researchGroup) {
+		User user = createUser(name);
+		user.setResearchGroup(researchGroup);
+		return user;
+	}
 
-    public static User createUserWithGroup(String name, String... groups) {
-        User user = createUser(name);
+	public static User createUserWithGroup(String name, String... groups) {
+		User user = createUser(name);
 
-        setupUserGroups(user, groups);
+		setupUserGroups(user, groups);
 
-        return user;
-    }
+		return user;
+	}
 
-    public static void setupUserGroups(User user, String... groups) {
-        Set<UserGroup> userGroups = new HashSet<>();
-        for (String group : groups) {
-            UserGroup entity = new UserGroup();
-            UserGroupId entityId = new UserGroupId();
+	public static void setupUserGroups(User user, String... groups) {
+		Set<UserGroup> userGroups = new HashSet<>();
+		for (String group : groups) {
+			UserGroup entity = new UserGroup();
+			UserGroupId entityId = new UserGroupId();
 
-            entityId.setUserId(user.getId());
-            entityId.setGroup(group);
-            entity.setId(entityId);
-            entity.setUser(user);
+			entityId.setUserId(user.getId());
+			entityId.setGroup(group);
+			entity.setId(entityId);
+			entity.setUser(user);
 
-            userGroups.add(entity);
-        }
+			userGroups.add(entity);
+		}
 
-        user.setGroups(userGroups);
-    }
+		user.setGroups(userGroups);
+	}
 
-    public static ResearchGroup createResearchGroup(String name) {
-        ResearchGroup researchGroup = new ResearchGroup();
-        User user = createUserWithGroup(name, "supervisor");
+	public static ResearchGroup createResearchGroup(String name) {
+		ResearchGroup researchGroup = new ResearchGroup();
+		User user = createUserWithGroup(name, "supervisor");
 
-        researchGroup.setId(UUID.randomUUID());
-        researchGroup.setHead(user);
-        researchGroup.setName(name);
-        researchGroup.setArchived(false);
-        researchGroup.setCreatedAt(java.time.Instant.now());
-        researchGroup.setUpdatedAt(java.time.Instant.now());
-        researchGroup.setCreatedBy(user);
-        researchGroup.setUpdatedBy(user);
+		researchGroup.setId(UUID.randomUUID());
+		researchGroup.setHead(user);
+		researchGroup.setName(name);
+		researchGroup.setArchived(false);
+		researchGroup.setCreatedAt(java.time.Instant.now());
+		researchGroup.setUpdatedAt(java.time.Instant.now());
+		researchGroup.setCreatedBy(user);
+		researchGroup.setUpdatedBy(user);
 
-        user.setResearchGroup(researchGroup);
-        return researchGroup;
-    }
+		user.setResearchGroup(researchGroup);
+		return researchGroup;
+	}
 
-    public static Topic createTopic(String title, ResearchGroup researchGroup) {
-        Topic topic = new Topic();
+	public static Topic createTopic(String title, ResearchGroup researchGroup) {
+		Topic topic = new Topic();
 
-        topic.setId(UUID.randomUUID());
-        topic.setTitle(title);
-        topic.setRoles(new ArrayList<>());
-        topic.setResearchGroup(researchGroup);
+		topic.setId(UUID.randomUUID());
+		topic.setTitle(title);
+		topic.setRoles(new ArrayList<>());
+		topic.setResearchGroup(researchGroup);
 
-        return topic;
-    }
+		return topic;
+	}
 
-    public static Application createApplication(ResearchGroup researchGroup) {
-        Application application = new Application();
+	public static Application createApplication(ResearchGroup researchGroup) {
+		Application application = new Application();
 
-        application.setId(UUID.randomUUID());
-        application.setUser(createUserWithResearchGroup("user", researchGroup));
-        application.setTopic(createTopic("title", researchGroup));
-        application.setState(ApplicationState.NOT_ASSESSED);
-        application.setResearchGroup(researchGroup);
+		application.setId(UUID.randomUUID());
+		application.setUser(createUserWithResearchGroup("user", researchGroup));
+		application.setTopic(createTopic("title", researchGroup));
+		application.setState(ApplicationState.NOT_ASSESSED);
+		application.setResearchGroup(researchGroup);
 
-        return application;
-    }
+		return application;
+	}
 
-    public static Thesis createThesis(String title, ResearchGroup researchGroup) {
-        Thesis thesis = new Thesis();
+	public static Thesis createThesis(String title, ResearchGroup researchGroup) {
+		Thesis thesis = new Thesis();
 
-        thesis.setId(UUID.randomUUID());
-        thesis.setTitle(title);
-        thesis.setState(ThesisState.PROPOSAL);
-        thesis.setResearchGroup(researchGroup);
+		thesis.setId(UUID.randomUUID());
+		thesis.setTitle(title);
+		thesis.setState(ThesisState.PROPOSAL);
+		thesis.setResearchGroup(researchGroup);
 
-        return thesis;
-    }
+		return thesis;
+	}
 
-    public static void setupThesisRole(Thesis thesis, User user, ThesisRoleName roleName) {
-        ThesisRole role = new ThesisRole();
-        ThesisRoleId roleId = new ThesisRoleId();
+	public static void setupThesisRole(Thesis thesis, User user, ThesisRoleName roleName) {
+		ThesisRole role = new ThesisRole();
+		ThesisRoleId roleId = new ThesisRoleId();
 
-        role.setThesis(thesis);
-        role.setUser(user);
-        roleId.setRole(roleName);
-        role.setId(roleId);
+		role.setThesis(thesis);
+		role.setUser(user);
+		roleId.setRole(roleName);
+		role.setId(roleId);
 
-        thesis.setRoles(List.of(role));
-    }
+		thesis.setRoles(List.of(role));
+	}
 }

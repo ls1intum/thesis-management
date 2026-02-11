@@ -9,66 +9,71 @@ import de.tum.cit.aet.thesis.utility.RequestValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import java.util.Optional;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/v2/research-group-settings")
 public class ResearchGroupSettingsController {
-    private final ResearchGroupSettingsService service;
+	private final ResearchGroupSettingsService service;
 
-    @Autowired
-    public ResearchGroupSettingsController(ResearchGroupSettingsService service) {
-        this.service = service;
-    }
+	@Autowired
+	public ResearchGroupSettingsController(ResearchGroupSettingsService service) {
+		this.service = service;
+	}
 
-    @GetMapping("/{researchGroupId}")
-    @PreAuthorize("hasAnyRole('admin', 'group-admin')")
-    public ResponseEntity<ResearchGroupSettingsDTO> getSettings(@PathVariable UUID researchGroupId) {
-        Optional<ResearchGroupSettings> settings = service.getByResearchGroupId(researchGroupId);
-        ResearchGroupSettings returnSettings = settings.orElseGet(ResearchGroupSettings::new);
+	@GetMapping("/{researchGroupId}")
+	@PreAuthorize("hasAnyRole('admin', 'group-admin')")
+	public ResponseEntity<ResearchGroupSettingsDTO> getSettings(@PathVariable UUID researchGroupId) {
+		Optional<ResearchGroupSettings> settings = service.getByResearchGroupId(researchGroupId);
+		ResearchGroupSettings returnSettings = settings.orElseGet(ResearchGroupSettings::new);
 
-        return ResponseEntity.ok(ResearchGroupSettingsDTO.fromEntity(returnSettings));
-    }
+		return ResponseEntity.ok(ResearchGroupSettingsDTO.fromEntity(returnSettings));
+	}
 
-    @PostMapping("/{researchGroupId}")
-    @PreAuthorize("hasAnyRole('admin', 'group-admin')")
-    public ResponseEntity<ResearchGroupSettingsDTO> createOrUpdateRejectSettings(@PathVariable UUID researchGroupId, @RequestBody UpdateResearchGroupSettingsPayload newSettings) {
-        Optional<ResearchGroupSettings> settings = service.getByResearchGroupId(researchGroupId);
-        ResearchGroupSettings toSave = settings.orElseGet(ResearchGroupSettings::new);
+	@PostMapping("/{researchGroupId}")
+	@PreAuthorize("hasAnyRole('admin', 'group-admin')")
+	public ResponseEntity<ResearchGroupSettingsDTO> createOrUpdateRejectSettings(@PathVariable UUID researchGroupId, @RequestBody UpdateResearchGroupSettingsPayload newSettings) {
+		Optional<ResearchGroupSettings> settings = service.getByResearchGroupId(researchGroupId);
+		ResearchGroupSettings toSave = settings.orElseGet(ResearchGroupSettings::new);
 
-        if (toSave.getResearchGroupId() == null) {
-            toSave.setResearchGroupId(researchGroupId);
-        }
-        if (newSettings.rejectSettings() != null) {
-            toSave.setAutomaticRejectEnabled(newSettings.rejectSettings().automaticRejectEnabled());
-            toSave.setRejectDuration(newSettings.rejectSettings().rejectDuration());
-        }
-        if (newSettings.presentationSettings() != null) {
-            toSave.setPresentationSlotDuration(newSettings.presentationSettings().presentationSlotDuration());
-        }
-        if (newSettings.phaseSettings() != null) {
-            toSave.setProposalPhaseActive(newSettings.phaseSettings().proposalPhaseActive());
-        }
-        if (newSettings.emailSettings() != null) {
-            String validatedEmail = RequestValidator.validateEmailAllowNull(
-                    newSettings.emailSettings().applicationNotificationEmail() == null ? null : newSettings.emailSettings().applicationNotificationEmail().trim());
-            toSave.setApplicationNotificationEmail(validatedEmail);
-        }
+		if (toSave.getResearchGroupId() == null) {
+			toSave.setResearchGroupId(researchGroupId);
+		}
+		if (newSettings.rejectSettings() != null) {
+			toSave.setAutomaticRejectEnabled(newSettings.rejectSettings().automaticRejectEnabled());
+			toSave.setRejectDuration(newSettings.rejectSettings().rejectDuration());
+		}
+		if (newSettings.presentationSettings() != null) {
+			toSave.setPresentationSlotDuration(newSettings.presentationSettings().presentationSlotDuration());
+		}
+		if (newSettings.phaseSettings() != null) {
+			toSave.setProposalPhaseActive(newSettings.phaseSettings().proposalPhaseActive());
+		}
+		if (newSettings.emailSettings() != null) {
+			String validatedEmail = RequestValidator.validateEmailAllowNull(
+					newSettings.emailSettings().applicationNotificationEmail() == null ? null : newSettings.emailSettings().applicationNotificationEmail().trim());
+			toSave.setApplicationNotificationEmail(validatedEmail);
+		}
 
-        ResearchGroupSettings saved = service.saveOrUpdate(toSave);
-        return ResponseEntity.ok(ResearchGroupSettingsDTO.fromEntity(saved));
-    }
+		ResearchGroupSettings saved = service.saveOrUpdate(toSave);
+		return ResponseEntity.ok(ResearchGroupSettingsDTO.fromEntity(saved));
+	}
 
-    @GetMapping("/{researchGroupId}/phase-settings")
-    @PreAuthorize("hasAnyRole('admin', 'group-admin')")
-    public ResponseEntity<ResearchGroupSettingsPhasesDTO> getPhaseSettings(@PathVariable UUID researchGroupId) {
-        Optional<ResearchGroupSettings> existingSettings = service.getByResearchGroupId(researchGroupId);
-        ResearchGroupSettings settings = existingSettings.orElseGet(ResearchGroupSettings::new);
+	@GetMapping("/{researchGroupId}/phase-settings")
+	@PreAuthorize("hasAnyRole('admin', 'group-admin')")
+	public ResponseEntity<ResearchGroupSettingsPhasesDTO> getPhaseSettings(@PathVariable UUID researchGroupId) {
+		Optional<ResearchGroupSettings> existingSettings = service.getByResearchGroupId(researchGroupId);
+		ResearchGroupSettings settings = existingSettings.orElseGet(ResearchGroupSettings::new);
 
-        return ResponseEntity.ok(
-                ResearchGroupSettingsPhasesDTO.fromEntity(settings));
-    }
+		return ResponseEntity.ok(
+				ResearchGroupSettingsPhasesDTO.fromEntity(settings));
+	}
 }
-

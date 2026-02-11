@@ -1,11 +1,13 @@
 plugins {
 	id "java"
 	id "idea"
+	id "checkstyle"
 	id "com.github.andygoossens.modernizer" version "1.12.0"
 	id "com.gorylenko.gradle-git-properties" version "2.5.4"
 	id "org.springframework.boot" version "3.5.9"
 	id "io.spring.dependency-management" version "1.1.7"
 	id "com.github.ben-manes.versions" version "0.53.0"
+	id "com.diffplug.spotless" version "8.2.1"
 }
 
 group = "de.tum.cit.aet.thesis"
@@ -82,10 +84,10 @@ dependencies {
 	testImplementation "org.mockito:mockito-junit-jupiter:5.21.0"
 
 	testImplementation "org.testcontainers:testcontainers:${test_container_version}"
-	testImplementation "org.testcontainers:junit-jupiter:${test_container_version}"
-	testImplementation "org.testcontainers:jdbc:${test_container_version}"
-	testImplementation "org.testcontainers:database-commons:${test_container_version}"
-	testImplementation "org.testcontainers:postgresql:${test_container_version}"
+	testImplementation "org.testcontainers:testcontainers-junit-jupiter:${test_container_version}"
+	testImplementation "org.testcontainers:testcontainers-jdbc:${test_container_version}"
+	testImplementation "org.testcontainers:testcontainers-database-commons:${test_container_version}"
+	testImplementation "org.testcontainers:testcontainers-postgresql:${test_container_version}"
 
 	testImplementation "org.junit.jupiter:junit-jupiter:${junit_version}"
 	testImplementation "org.junit.jupiter:junit-jupiter-api:${junit_version}"
@@ -100,6 +102,23 @@ dependencies {
 
 springBoot {
 	buildInfo()
+}
+
+spotless {
+	java {
+		target "src/*/java/**/*.java"
+		removeUnusedImports()
+		importOrder("", "jakarta", "javax", "java")
+		trimTrailingWhitespace()
+		endWithNewline()
+		leadingSpacesToTabs()
+	}
+}
+
+checkstyle {
+	toolVersion = "13.2.0"
+	configFile = file("config/checkstyle/checkstyle.xml")
+	maxWarnings = 0
 }
 
 test {

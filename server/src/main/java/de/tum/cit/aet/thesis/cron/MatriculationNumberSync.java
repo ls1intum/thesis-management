@@ -29,63 +29,63 @@ import java.util.UUID;
  */
 @Component
 public class MatriculationNumberSync {
-    private static final Logger log = LoggerFactory.getLogger(MatriculationNumberSync.class);
+	private static final Logger log = LoggerFactory.getLogger(MatriculationNumberSync.class);
 
-    private final UserRepository userRepository;
-    private final AccessManagementService accessManagementService;
+	private final UserRepository userRepository;
+	private final AccessManagementService accessManagementService;
 
-    public MatriculationNumberSync(UserRepository userRepository, AccessManagementService accessManagementService) {
-        this.userRepository = userRepository;
-        this.accessManagementService = accessManagementService;
-    }
+	public MatriculationNumberSync(UserRepository userRepository, AccessManagementService accessManagementService) {
+		this.userRepository = userRepository;
+		this.accessManagementService = accessManagementService;
+	}
 
-    /**
-     * Loads IDs of all users without a matriculation number, then fetches each user's
-     * {@code matrikelnr} attribute from the Keycloak admin API. Each user is saved in its own
-     * transaction so that progress is preserved even if individual lookups fail (e.g. for
-     * professors who do not have a matriculation number in Keycloak).
-     */
-    @Scheduled(initialDelay = 10 * 60 * 1000, fixedRate = 7 * 24 * 60 * 60 * 1000)
-    public void syncMatriculationNumbers() {
-        List<UUID> userIds = userRepository.findIdsWithoutMatriculationNumber();
-        log.info("Starting matriculation number sync for {} users", userIds.size());
+	/**
+	 * Loads IDs of all users without a matriculation number, then fetches each user's
+	 * {@code matrikelnr} attribute from the Keycloak admin API. Each user is saved in its own
+	 * transaction so that progress is preserved even if individual lookups fail (e.g. for
+	 * professors who do not have a matriculation number in Keycloak).
+	 */
+	@Scheduled(initialDelay = 10 * 60 * 1000, fixedRate = 7 * 24 * 60 * 60 * 1000)
+	public void syncMatriculationNumbers() {
+		List<UUID> userIds = userRepository.findIdsWithoutMatriculationNumber();
+		log.info("Starting matriculation number sync for {} users", userIds.size());
 
-        int updated = 0;
-        for (UUID userId : userIds) {
-            try {
-                if (syncSingleUser(userId)) {
-                    updated++;
-                }
-            } catch (RuntimeException e) {
-                log.warn("Could not sync matriculation number for user id {}", userId, e);
-            }
-        }
+		int updated = 0;
+		for (UUID userId : userIds) {
+			try {
+				if (syncSingleUser(userId)) {
+					updated++;
+				}
+			} catch (RuntimeException e) {
+				log.warn("Could not sync matriculation number for user id {}", userId, e);
+			}
+		}
 
-        log.info("Matriculation number sync completed: {}/{} users updated", updated, userIds.size());
-    }
+		log.info("Matriculation number sync completed: {}/{} users updated", updated, userIds.size());
+	}
 
-    /**
-     * Fetches the matriculation number from Keycloak for a single user and persists it.
-     *
-     * @param userId the database ID of the user to sync
-     * @return {@code true} if the matriculation number was updated, {@code false} otherwise
-     */
-    public boolean syncSingleUser(UUID userId) {
-        User user = userRepository.findById(userId).orElse(null);
-        if (user == null || user.getMatriculationNumber() != null) {
-            return false;
-        }
+	/**
+	 * Fetches the matriculation number from Keycloak for a single user and persists it.
+	 *
+	 * @param userId the database ID of the user to sync
+	 * @return {@code true} if the matriculation number was updated, {@code false} otherwise
+	 */
+	public boolean syncSingleUser(UUID userId) {
+		User user = userRepository.findById(userId).orElse(null);
+		if (user == null || user.getMatriculationNumber() != null) {
+			return false;
+		}
 
-        AccessManagementService.KeycloakUserInformation keycloakUser =
-                accessManagementService.getUserByUsername(user.getUniversityId());
-        String matriculationNumber = keycloakUser.getMatriculationNumber();
+		AccessManagementService.KeycloakUserInformation keycloakUser =
+				accessManagementService.getUserByUsername(user.getUniversityId());
+		String matriculationNumber = keycloakUser.getMatriculationNumber();
 
-        if (matriculationNumber != null && !matriculationNumber.isEmpty()) {
-            user.setMatriculationNumber(matriculationNumber);
-            userRepository.save(user);
-            return true;
-        }
+		if (matriculationNumber != null && !matriculationNumber.isEmpty()) {
+			user.setMatriculationNumber(matriculationNumber);
+			userRepository.save(user);
+			return true;
+		}
 
-        return false;
-    }
+		return false;
+	}
 }

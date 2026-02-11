@@ -1,11 +1,14 @@
 package de.tum.cit.aet.thesis.mock;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
+
 import com.auth0.jwt.JWT;
 import de.tum.cit.aet.thesis.service.AccessManagementService;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -26,80 +29,76 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
-
 @TestConfiguration
 @EnableWebSecurity
 @EnableMethodSecurity
 @Profile("test") // should only be used during tests
 public class TestSecurityConfig {
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .cors(Customizer.withDefaults())
-                .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
-                .oauth2ResourceServer(server -> {
-                    server.jwt(jwt -> jwt.decoder(jwtDecoder()).jwtAuthenticationConverter(jwtAuthenticationConverter()));
-                });
+	@Bean
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		http
+				.cors(Customizer.withDefaults())
+				.csrf(AbstractHttpConfigurer::disable)
+				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
+				.oauth2ResourceServer(server -> {
+					server.jwt(jwt -> jwt.decoder(jwtDecoder()).jwtAuthenticationConverter(jwtAuthenticationConverter()));
+				});
 
-        return http.build();
-    }
+		return http.build();
+	}
 
-    @Bean
-    public JwtDecoder jwtDecoder() {
-        return token -> {
-            var decodedJWT = JWT.decode(token);
+	@Bean
+	public JwtDecoder jwtDecoder() {
+		return token -> {
+			var decodedJWT = JWT.decode(token);
 
-            Map<String, Object> headers = new HashMap<>();
-            headers.put("alg", decodedJWT.getAlgorithm());
-            headers.put("typ", decodedJWT.getType());
+			Map<String, Object> headers = new HashMap<>();
+			headers.put("alg", decodedJWT.getAlgorithm());
+			headers.put("typ", decodedJWT.getType());
 
-            Map<String, Object> claims = new HashMap<>();
-            decodedJWT.getClaims().forEach((key, value) -> {
-                if (key.equals("exp") || key.equals("iat")) {
-                    claims.put(key, Instant.ofEpochSecond(value.asLong()));
-                } else {
-                    claims.put(key, value.as(Object.class));
-                }
-            });
+			Map<String, Object> claims = new HashMap<>();
+			decodedJWT.getClaims().forEach((key, value) -> {
+				if (key.equals("exp") || key.equals("iat")) {
+					claims.put(key, Instant.ofEpochSecond(value.asLong()));
+				} else {
+					claims.put(key, value.as(Object.class));
+				}
+			});
 
-            return Jwt.withTokenValue(token)
-                    .headers(h -> h.putAll(headers))
-                    .claims(c -> c.putAll(claims))
-                    .build();
-        };
-    }
+			return Jwt.withTokenValue(token)
+					.headers(h -> h.putAll(headers))
+					.claims(c -> c.putAll(claims))
+					.build();
+		};
+	}
 
-    private JwtAuthenticationConverter jwtAuthenticationConverter() {
-        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+	private JwtAuthenticationConverter jwtAuthenticationConverter() {
+		JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
 
-        converter.setJwtGrantedAuthoritiesConverter(jwt -> {
-            List<String> roles = jwt.getClaimAsStringList("roles");
-            if (roles == null) {
-                return Collections.emptyList();
-            }
-            return roles.stream()
-                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
-                    .collect(Collectors.toList());
-        });
+		converter.setJwtGrantedAuthoritiesConverter(jwt -> {
+			List<String> roles = jwt.getClaimAsStringList("roles");
+			if (roles == null) {
+				return Collections.emptyList();
+			}
+			return roles.stream()
+					.map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+					.collect(Collectors.toList());
+		});
 
-        return converter;
-    }
+		return converter;
+	}
 
-    @Bean
-    public AccessManagementService accessManagementService() {
-        AccessManagementService mock = Mockito.mock(AccessManagementService.class);
+	@Bean
+	public AccessManagementService accessManagementService() {
+		AccessManagementService mock = Mockito.mock(AccessManagementService.class);
 
-        // Mock behavior
-        doNothing().when(mock).assignSupervisorRole(any());
+		// Mock behavior
+		doNothing().when(mock).assignSupervisorRole(any());
 
-        when(mock.syncRolesFromKeycloakToDatabase(any()))
-                .thenReturn(Collections.emptySet());
+		when(mock.syncRolesFromKeycloakToDatabase(any()))
+				.thenReturn(Collections.emptySet());
 
-        return mock;
-    }
+		return mock;
+	}
 }

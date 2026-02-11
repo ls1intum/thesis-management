@@ -6,9 +6,9 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum ThesisRoleName {
-    STUDENT("STUDENT"),
-    ADVISOR("ADVISOR"),
-    SUPERVISOR("SUPERVISOR");
+	STUDENT("STUDENT"),
+	ADVISOR("ADVISOR"),
+	SUPERVISOR("SUPERVISOR");
 
-    private final String value;
+	private final String value;
 }
