@@ -14,7 +14,7 @@
   ],
   "main": "src/index.tsx",
   "sideEffects": false,
-  "packageManager": "npm@11.8.0",
+  "packageManager": "npm@11.10.0",
   "engines": {
     "node": ">=24.7.0",
     "npm": ">=11.4.0"
@@ -54,7 +54,7 @@
     "keycloak-js": "25.0.6",
     "mantine-datatable": "8.2.0",
     "react": "19.1.1",
-    "react-avatar-editor": "14.0.0-beta.6",
+    "react-avatar-editor": "14.0.0",
     "react-dom": "19.1.1",
     "react-router": "7.12.0"
   },
@@ -65,8 +65,8 @@
     "@types/react": "19.1.12",
     "@types/react-avatar-editor": "13.0.4",
     "@types/react-dom": "19.1.9",
-    "@typescript-eslint/eslint-plugin": "8.42.0",
-    "@typescript-eslint/parser": "8.42.0",
+    "@typescript-eslint/eslint-plugin": "8.55.0",
+    "@typescript-eslint/parser": "8.55.0",
     "clean-webpack-plugin": "4.0.0",
     "compression-webpack-plugin": "11.1.0",
     "copy-webpack-plugin": "13.0.1",
@@ -79,11 +79,11 @@
     "fork-ts-checker-webpack-plugin": "9.1.0",
     "globals": "16.5.0",
     "html-webpack-plugin": "5.6.6",
-    "mini-css-extract-plugin": "2.9.4",
+    "mini-css-extract-plugin": "2.10.0",
     "postcss": "8.5.6",
     "postcss-loader": "8.2.0",
     "postcss-preset-mantine": "1.18.0",
-    "prettier": "3.6.2",
+    "prettier": "3.8.1",
     "speed-measure-webpack-plugin": "1.5.0",
     "style-loader": "4.0.0",
     "terser-webpack-plugin": "5.3.16",
@@ -91,10 +91,10 @@
     "ts-node": "10.9.2",
     "typescript": "5.9.3",
     "typescript-plugin-css-modules": "5.2.0",
-    "webpack": "5.104.1",
+    "webpack": "5.105.1",
     "webpack-bundle-analyzer": "4.10.2",
     "webpack-cli": "6.0.1",
-    "webpack-dev-server": "5.2.2",
+    "webpack-dev-server": "5.2.3",
     "webpackbar": "7.0.0"
   }
 }
