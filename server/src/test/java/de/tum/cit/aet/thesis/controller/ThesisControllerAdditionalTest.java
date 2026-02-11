@@ -3,7 +3,6 @@ package de.tum.cit.aet.thesis.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import de.tum.cit.aet.thesis.constants.ThesisCommentType;
 import de.tum.cit.aet.thesis.constants.ThesisFeedbackType;
 import de.tum.cit.aet.thesis.constants.ThesisPresentationType;
@@ -32,6 +31,7 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import tools.jackson.databind.JsonNode;
 
 import java.time.Instant;
 import java.util.List;
@@ -74,7 +74,7 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 				.andReturn().getResponse().getContentAsString();
 
 		return UUID.fromString(objectMapper.readTree(response)
-				.get("presentations").get(0).get("presentationId").asText());
+				.get("presentations").get(0).get("presentationId").asString());
 	}
 
 	private UUID createScheduledPresentation(UUID thesisId, String adminAuth) throws Exception {
@@ -224,7 +224,7 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 					.andExpect(status().isOk())
 					.andReturn().getResponse().getContentAsString();
 
-			return UUID.fromString(objectMapper.readTree(response).get("thesisId").asText());
+			return UUID.fromString(objectMapper.readTree(response).get("thesisId").asString());
 		}
 
 		@Test
@@ -261,7 +261,7 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 
 			JsonNode json = objectMapper.readTree(response);
 			assertThat(json.get("content").size()).isEqualTo(1);
-			assertThat(json.get("content").get(0).get("title").asText()).isEqualTo("UniqueSearchableTitle");
+			assertThat(json.get("content").get(0).get("title").asString()).isEqualTo("UniqueSearchableTitle");
 		}
 
 		@Test
@@ -277,7 +277,7 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 
 			JsonNode json = objectMapper.readTree(response);
 			assertThat(json.get("content").size()).isEqualTo(1);
-			assertThat(json.get("content").get(0).get("type").asText()).isEqualTo("MASTER");
+			assertThat(json.get("content").get(0).get("type").asString()).isEqualTo("MASTER");
 
 			String emptyResponse = mockMvc.perform(MockMvcRequestBuilders.get("/v2/theses")
 							.header("Authorization", createRandomAdminAuthentication())
@@ -305,8 +305,8 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 			JsonNode json = objectMapper.readTree(response);
 			assertThat(json.get("content").size()).isGreaterThanOrEqualTo(1);
 			for (JsonNode thesis : json.get("content")) {
-				assertThat(thesis.get("state").asText()).isEqualTo("PROPOSAL");
-				assertThat(thesis.get("type").asText()).isEqualTo("MASTER");
+				assertThat(thesis.get("state").asString()).isEqualTo("PROPOSAL");
+				assertThat(thesis.get("type").asString()).isEqualTo("MASTER");
 			}
 		}
 
@@ -374,7 +374,7 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 					.andExpect(status().isOk())
 					.andReturn().getResponse().getContentAsString();
 
-			UUID thesisId = UUID.fromString(objectMapper.readTree(response).get("thesisId").asText());
+			UUID thesisId = UUID.fromString(objectMapper.readTree(response).get("thesisId").asString());
 
 			Thesis thesis = thesisRepository.findById(thesisId).orElseThrow();
 			assertThat(thesis.getTitle()).isEqualTo("Database State Thesis");
@@ -606,7 +606,7 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 							.content(objectMapper.writeValueAsString(thesisPayload)))
 					.andExpect(status().isOk())
 					.andReturn().getResponse().getContentAsString();
-			UUID thesisId = UUID.fromString(objectMapper.readTree(response).get("thesisId").asText());
+			UUID thesisId = UUID.fromString(objectMapper.readTree(response).get("thesisId").asString());
 
 			String supervisorAuth = generateTestAuthenticationHeader(
 					supervisor.universityId(), List.of("supervisor", "advisor"));
@@ -646,7 +646,7 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 							.content(objectMapper.writeValueAsString(thesisPayload)))
 					.andExpect(status().isOk())
 					.andReturn().getResponse().getContentAsString();
-			UUID thesisId = UUID.fromString(objectMapper.readTree(response).get("thesisId").asText());
+			UUID thesisId = UUID.fromString(objectMapper.readTree(response).get("thesisId").asString());
 
 			String supervisorAuth = generateTestAuthenticationHeader(
 					supervisor.universityId(), List.of("supervisor", "advisor"));
@@ -688,7 +688,7 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 							.content(objectMapper.writeValueAsString(thesisPayload)))
 					.andExpect(status().isOk())
 					.andReturn().getResponse().getContentAsString();
-			UUID thesisId = UUID.fromString(objectMapper.readTree(response).get("thesisId").asText());
+			UUID thesisId = UUID.fromString(objectMapper.readTree(response).get("thesisId").asString());
 
 			// Advisor (non-supervisor) should not be able to grade
 			String advisorAuth = generateTestAuthenticationHeader(

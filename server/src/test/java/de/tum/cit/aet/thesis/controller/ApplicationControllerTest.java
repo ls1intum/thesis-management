@@ -3,7 +3,6 @@ package de.tum.cit.aet.thesis.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import de.tum.cit.aet.thesis.constants.ApplicationRejectReason;
 import de.tum.cit.aet.thesis.constants.ApplicationReviewReason;
 import de.tum.cit.aet.thesis.constants.ApplicationState;
@@ -24,6 +23,7 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import tools.jackson.databind.JsonNode;
 
 import java.time.Instant;
 import java.util.List;
@@ -74,11 +74,11 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 
 			JsonNode json = objectMapper.readTree(response);
-			assertThat(json.get("thesisTitle").asText()).isEqualTo("Test Thesis");
-			assertThat(json.get("thesisType").asText()).isEqualTo("MASTER");
-			assertThat(json.get("motivation").asText()).isEqualTo("Test motivation");
-			assertThat(json.get("state").asText()).isEqualTo(ApplicationState.NOT_ASSESSED.getValue());
-			assertThat(json.get("applicationId").asText()).isNotBlank();
+			assertThat(json.get("thesisTitle").asString()).isEqualTo("Test Thesis");
+			assertThat(json.get("thesisType").asString()).isEqualTo("MASTER");
+			assertThat(json.get("motivation").asString()).isEqualTo("Test motivation");
+			assertThat(json.get("state").asString()).isEqualTo(ApplicationState.NOT_ASSESSED.getValue());
+			assertThat(json.get("applicationId").asString()).isNotBlank();
 
 			assertThat(applicationRepository.count()).isEqualTo(1);
 		}
@@ -103,8 +103,8 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 
 			JsonNode json = objectMapper.readTree(response);
 			assertThat(json.get("topic")).isNotNull();
-			assertThat(json.get("motivation").asText()).isEqualTo("Motivation for topic");
-			assertThat(json.get("state").asText()).isEqualTo(ApplicationState.NOT_ASSESSED.getValue());
+			assertThat(json.get("motivation").asString()).isEqualTo("Motivation for topic");
+			assertThat(json.get("state").asString()).isEqualTo(ApplicationState.NOT_ASSESSED.getValue());
 		}
 
 		@Test
@@ -167,7 +167,7 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 					.andExpect(status().isOk())
 					.andReturn().getResponse().getContentAsString();
 
-			UUID applicationId = UUID.fromString(objectMapper.readTree(response).get("applicationId").asText());
+			UUID applicationId = UUID.fromString(objectMapper.readTree(response).get("applicationId").asString());
 
 			var application = applicationRepository.findById(applicationId).orElseThrow();
 			assertThat(application.getThesisTitle()).isEqualTo("Database Check Thesis");
@@ -243,7 +243,7 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 
 			JsonNode json = objectMapper.readTree(response);
 			assertThat(json.get("content").size()).isEqualTo(1);
-			assertThat(json.get("content").get(0).get("thesisTitle").asText()).isEqualTo("Student Application");
+			assertThat(json.get("content").get(0).get("thesisTitle").asString()).isEqualTo("Student Application");
 		}
 
 		@Test
@@ -279,9 +279,9 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 
 			JsonNode json = objectMapper.readTree(response);
-			assertThat(json.get("applicationId").asText()).isEqualTo(applicationId.toString());
-			assertThat(json.get("thesisTitle").asText()).isEqualTo("Test Application");
-			assertThat(json.get("state").asText()).isEqualTo(ApplicationState.NOT_ASSESSED.getValue());
+			assertThat(json.get("applicationId").asString()).isEqualTo(applicationId.toString());
+			assertThat(json.get("thesisTitle").asString()).isEqualTo("Test Application");
+			assertThat(json.get("state").asString()).isEqualTo(ApplicationState.NOT_ASSESSED.getValue());
 		}
 
 		@Test
@@ -361,10 +361,10 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 
 			JsonNode json = objectMapper.readTree(response);
-			assertThat(json.get("thesisTitle").asText()).isEqualTo("Updated Thesis");
-			assertThat(json.get("thesisType").asText()).isEqualTo("BACHELOR");
-			assertThat(json.get("motivation").asText()).isEqualTo("Updated motivation");
-			assertThat(json.get("state").asText()).isEqualTo(ApplicationState.NOT_ASSESSED.getValue());
+			assertThat(json.get("thesisTitle").asString()).isEqualTo("Updated Thesis");
+			assertThat(json.get("thesisType").asString()).isEqualTo("BACHELOR");
+			assertThat(json.get("motivation").asString()).isEqualTo("Updated motivation");
+			assertThat(json.get("state").asString()).isEqualTo(ApplicationState.NOT_ASSESSED.getValue());
 
 			var application = applicationRepository.findById(applicationId).orElseThrow();
 			assertThat(application.getThesisTitle()).isEqualTo("Updated Thesis");
@@ -435,7 +435,7 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 
 			JsonNode json = objectMapper.readTree(response);
-			assertThat(json.get("comment").asText()).isEqualTo("Management comment");
+			assertThat(json.get("comment").asString()).isEqualTo("Management comment");
 
 			var application = applicationRepository.findById(applicationId).orElseThrow();
 			assertThat(application.getComment()).isEqualTo("Management comment");
@@ -496,7 +496,7 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 
 			JsonNode json = objectMapper.readTree(response);
-			assertThat(json.get("applicationId").asText()).isEqualTo(applicationId.toString());
+			assertThat(json.get("applicationId").asString()).isEqualTo(applicationId.toString());
 
 			assertThat(applicationReviewerRepository.count()).isEqualTo(1);
 		}
@@ -584,7 +584,7 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 
 			boolean hasAccepted = false;
 			for (JsonNode app : json) {
-				if (app.get("state").asText().equals(ApplicationState.ACCEPTED.getValue())) {
+				if (app.get("state").asString().equals(ApplicationState.ACCEPTED.getValue())) {
 					hasAccepted = true;
 				}
 			}
@@ -689,7 +689,7 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 
 			boolean hasRejected = false;
 			for (JsonNode app : json) {
-				if (app.get("state").asText().equals(ApplicationState.REJECTED.getValue())) {
+				if (app.get("state").asString().equals(ApplicationState.REJECTED.getValue())) {
 					hasRejected = true;
 				}
 			}
@@ -755,7 +755,7 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 							.content(objectMapper.writeValueAsString(payload1)))
 					.andExpect(status().isOk())
 					.andReturn().getResponse().getContentAsString();
-			UUID appId1 = UUID.fromString(objectMapper.readTree(response1).get("applicationId").asText());
+			UUID appId1 = UUID.fromString(objectMapper.readTree(response1).get("applicationId").asString());
 
 			CreateApplicationPayload payload2 = new CreateApplicationPayload(
 					topicId2, null, "MASTER", Instant.now(), "Motivation 2", null
@@ -766,7 +766,7 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 							.content(objectMapper.writeValueAsString(payload2)))
 					.andExpect(status().isOk())
 					.andReturn().getResponse().getContentAsString();
-			UUID appId2 = UUID.fromString(objectMapper.readTree(response2).get("applicationId").asText());
+			UUID appId2 = UUID.fromString(objectMapper.readTree(response2).get("applicationId").asString());
 
 			createTestEmailTemplate("APPLICATION_REJECTED_STUDENT_REQUIREMENTS");
 
