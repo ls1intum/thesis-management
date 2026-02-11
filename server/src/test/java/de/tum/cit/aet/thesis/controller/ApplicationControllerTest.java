@@ -229,6 +229,46 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 		}
 
 		@Test
+		void getApplications_FilterByPreviousIds() throws Exception {
+			String studentAuth = createRandomAuthentication("student");
+			UUID applicationId = createTestApplication(studentAuth, "Previous App");
+
+			// Reject the application so it no longer matches NOT_ASSESSED state
+			createTestEmailTemplate("APPLICATION_REJECTED");
+			RejectApplicationPayload rejectPayload = new RejectApplicationPayload(
+					ApplicationRejectReason.GENERAL, false
+			);
+			mockMvc.perform(MockMvcRequestBuilders.put("/v2/applications/{applicationId}/reject", applicationId)
+							.header("Authorization", createRandomAdminAuthentication())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(rejectPayload)))
+					.andExpect(status().isOk());
+
+			// Without previous param, filtering by NOT_ASSESSED should return nothing
+			String responseWithout = mockMvc.perform(MockMvcRequestBuilders.get("/v2/applications")
+							.header("Authorization", createRandomAdminAuthentication())
+							.param("fetchAll", "true")
+							.param("state", "NOT_ASSESSED"))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			assertThat(objectMapper.readTree(responseWithout).get("content").size()).isZero();
+
+			// With previous param, the rejected application should still be included
+			String responseWith = mockMvc.perform(MockMvcRequestBuilders.get("/v2/applications")
+							.header("Authorization", createRandomAdminAuthentication())
+							.param("fetchAll", "true")
+							.param("state", "NOT_ASSESSED")
+							.param("previous", applicationId.toString()))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			JsonNode json = objectMapper.readTree(responseWith);
+			assertThat(json.get("content").size()).isEqualTo(1);
+			assertThat(json.get("content").get(0).get("applicationId").asString()).isEqualTo(applicationId.toString());
+		}
+
+		@Test
 		void getApplications_AsStudent_ReturnsOwnOnly() throws Exception {
 			String studentAuth = createRandomAuthentication("student");
 			createTestApplication(studentAuth, "Student Application");

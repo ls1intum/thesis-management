@@ -133,7 +133,7 @@ public class ApplicationService {
 		Set<ApplicationState> statesFilter = states == null || states.length == 0 ? null : new HashSet<>(Arrays.asList(states));
 		Set<UUID> topicsFilter = topics == null || topics.length == 0 ? null : Arrays.stream(topics).map(UUID::fromString).collect(Collectors.toSet());
 		Set<String> typesFilter = types == null || types.length == 0 ? null : new HashSet<>(Arrays.asList(types));
-		Set<String> previousFilter = previous == null || previous.length == 0 ? null : new HashSet<>(Arrays.asList(previous));
+		Set<UUID> previousFilter = previous == null || previous.length == 0 ? null : Arrays.stream(previous).map(UUID::fromString).collect(Collectors.toSet());
 
 		return applicationRepository.searchApplications(
 				researchGroup == null ? null : researchGroup.getId(),
