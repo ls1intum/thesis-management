@@ -1,41 +1,81 @@
-import { Badge, Button, Group, Popover, Stack, TextInput } from '@mantine/core'
-import { CaretDown } from '@phosphor-icons/react'
+import { Badge, Combobox, Group, useCombobox } from '@mantine/core'
+import { CaretDownIcon, CaretUpIcon } from '@phosphor-icons/react'
 import { NodeViewWrapper, NodeViewProps } from '@tiptap/react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { IMailVariableDto } from '../../../../../requests/responses/emailtemplate'
+import VariableComboboxOptions from './VariableComboboxOptions'
 
 export default (props: NodeViewProps) => {
-  const { node, updateAttributes } = props
-  const [newVariable, setNewVariable] = useState(node.attrs.variable || '')
-  const [variable, setVariable] = useState(node.attrs.variable || '')
+  const { node, updateAttributes, extension } = props
+
+  const selectableVariables = (extension.options.selectableVariables as IMailVariableDto[]) ?? []
+
+  const [variable, setVariable] = useState<string>(node.attrs.variable ?? '')
+  const [template, setTemplate] = useState<string>(node.attrs.template ?? '')
+
+  useEffect(() => {
+    setVariable(node.attrs.variable ?? '')
+    setTemplate(node.attrs.template ?? '')
+  }, [node.attrs.variable, node.attrs.template])
+
+  const setAndPersist = (v: string, t: string) => {
+    setVariable(v)
+    updateAttributes({ variable: v })
+    setTemplate(t)
+    updateAttributes({ template: t })
+  }
+
+  const [search, setSearch] = useState('')
+
+  const combobox = useCombobox({
+    onDropdownClose: () => {
+      combobox.resetSelectedOption()
+      combobox.focusTarget()
+      setSearch('')
+    },
+
+    onDropdownOpen: () => {
+      combobox.focusSearchInput()
+    },
+  })
 
   return (
     <NodeViewWrapper style={{ display: 'inline-block' }}>
-      <Popover width={200} position='bottom' withArrow shadow='md'>
-        <Popover.Target>
-          <Badge variant='light' color='grape' radius='xs'>
+      <Combobox
+        store={combobox}
+        width={250}
+        position='bottom-start'
+        onOptionSubmit={(val) => {
+          const variable = selectableVariables.find((v) => v.templateVariable === val)
+          if (variable) {
+            setAndPersist(variable.label, variable.templateVariable)
+          }
+        }}
+        offset={4}
+        shadow='md'
+      >
+        <Combobox.Target withAriaAttributes={false}>
+          <Badge
+            variant='light'
+            color={'primary'}
+            radius='sm'
+            onClick={() => combobox.toggleDropdown()}
+          >
             <Group gap={5}>
-              {variable ? variable : 'Add variable'}
-              <CaretDown size={12} />
+              {variable || 'Add variable'}
+              {combobox.dropdownOpened ? <CaretUpIcon size={12} /> : <CaretDownIcon size={12} />}
             </Group>
           </Badge>
-        </Popover.Target>
-        <Popover.Dropdown>
-          <Stack>
-            <TextInput
-              value={newVariable}
-              onChange={(e) => setNewVariable(e.currentTarget.value)}
-            />
-            <Button
-              onClick={() => {
-                setVariable(newVariable)
-                updateAttributes({ variable: newVariable })
-              }}
-            >
-              Change Variable
-            </Button>
-          </Stack>
-        </Popover.Dropdown>
-      </Popover>
+        </Combobox.Target>
+
+        <Combobox.Dropdown>
+          <VariableComboboxOptions
+            selectableVariables={selectableVariables}
+            search={search}
+            setSearch={setSearch}
+          />
+        </Combobox.Dropdown>
+      </Combobox>
     </NodeViewWrapper>
   )
 }

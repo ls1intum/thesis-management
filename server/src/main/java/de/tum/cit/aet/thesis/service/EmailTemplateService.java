@@ -1,9 +1,11 @@
 package de.tum.cit.aet.thesis.service;
 
+import de.tum.cit.aet.thesis.dto.MailVariableDto;
 import de.tum.cit.aet.thesis.entity.EmailTemplate;
 import de.tum.cit.aet.thesis.entity.ResearchGroup;
 import de.tum.cit.aet.thesis.exception.request.AccessDeniedException;
 import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
+import de.tum.cit.aet.thesis.mailVariables.MailVariablesBuilder;
 import de.tum.cit.aet.thesis.repository.EmailTemplateRepository;
 import de.tum.cit.aet.thesis.repository.ResearchGroupRepository;
 import de.tum.cit.aet.thesis.security.CurrentUserProvider;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -111,7 +114,9 @@ public class EmailTemplateService {
         EmailTemplate emailTemplate = emailTemplateRepository.findById(emailTemplateId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         String.format("Email Template with id %s not found.", emailTemplateId)));
-        currentUserProvider().assertCanAccessResearchGroup(emailTemplate.getResearchGroup());
+        if (emailTemplate.getResearchGroup() != null) {
+            currentUserProvider().assertCanAccessResearchGroup(emailTemplate.getResearchGroup());
+        }
         return emailTemplate;
     }
 
@@ -202,5 +207,12 @@ public class EmailTemplateService {
         if (!VALID_TEMPLATE_CASES.contains(templateCase)) {
             throw new IllegalArgumentException("Invalid template case: " + templateCase);
         }
+    }
+
+    public List<MailVariableDto> getVariablesForTemplate(UUID emailTemplateId) {
+        EmailTemplate emailTemplate = findById(emailTemplateId);
+
+        MailVariablesBuilder mailVariablesBuilder = new MailVariablesBuilder();
+        return mailVariablesBuilder.getMailVariables(emailTemplate.getTemplateCase());
     }
 }

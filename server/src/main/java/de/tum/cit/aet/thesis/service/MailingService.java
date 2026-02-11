@@ -53,6 +53,7 @@ public class MailingService {
         researchGroupMailBuilder
             .sendToChairMembers(application.getResearchGroup().getId())
             .addNotificationName("new-applications")
+            .fillApplicationPlaceholders(application)
             .filterChairMembersNewApplicationNotifications(application.getTopic(), "new-applications")
             .send(javaMailSender, uploadService);
 

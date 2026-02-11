@@ -2,16 +2,17 @@ import { Badge, Card, Text, Stack, Title, Group, Button, Flex } from '@mantine/c
 import { IEmailTemplate } from '../../../../requests/responses/emailtemplate'
 import { useState } from 'react'
 import EmailTemplateModal from './EmailTemplateModal'
-import { EnvelopeIcon, EyeIcon, NotePencilIcon } from '@phosphor-icons/react'
+import { EyeIcon, NotePencilIcon } from '@phosphor-icons/react'
 
 interface IEmailTemplatesOverviewProps {
   emailTemplate: {
     default: IEmailTemplate | null
     researchGroupTemplate: IEmailTemplate | null
   }
+  updateTemplate?: (template: IEmailTemplate) => void
 }
 
-const EmailTemplateCard = ({ emailTemplate }: IEmailTemplatesOverviewProps) => {
+const EmailTemplateCard = ({ emailTemplate, updateTemplate }: IEmailTemplatesOverviewProps) => {
   const [templateModalOpened, setTemplateModalOpened] = useState(false)
 
   const [editingTemplate, setEditingTemplate] = useState<IEmailTemplate | null>(
@@ -88,6 +89,7 @@ const EmailTemplateCard = ({ emailTemplate }: IEmailTemplatesOverviewProps) => {
         researchGroupTemplate={emailTemplate.researchGroupTemplate ?? undefined}
         editingTemplate={editingTemplate}
         setEditingTemplate={setEditingTemplate}
+        updateTemplate={updateTemplate}
       />
     </>
   )

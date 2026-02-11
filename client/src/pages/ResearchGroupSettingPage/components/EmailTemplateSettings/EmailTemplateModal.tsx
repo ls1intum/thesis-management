@@ -13,6 +13,11 @@ import {
 } from '@mantine/core'
 import { IEmailTemplate } from '../../../../requests/responses/emailtemplate'
 import EmailTextEditor from './EmailTextEditor/EmailTextEditor'
+import { useState } from 'react'
+import { doRequest } from '../../../../requests/request'
+import { showSimpleError, showSimpleSuccess } from '../../../../utils/notification'
+import { getApiResponseErrorMessage } from '../../../../requests/handler'
+import { useUser } from '../../../../hooks/authentication'
 
 interface IEmailTemplateModalProps {
   opened: boolean
@@ -21,6 +26,7 @@ interface IEmailTemplateModalProps {
   researchGroupTemplate?: IEmailTemplate
   editingTemplate?: IEmailTemplate | null
   setEditingTemplate?: (template: IEmailTemplate | null) => void
+  updateTemplate?: (template: IEmailTemplate) => void
 }
 
 const EmailTemplateModal = ({
@@ -30,7 +36,51 @@ const EmailTemplateModal = ({
   researchGroupTemplate,
   editingTemplate,
   setEditingTemplate,
+  updateTemplate,
 }: IEmailTemplateModalProps) => {
+  const [exampleText, setExampleText] = useState<string>(editingTemplate?.bodyHtml || '')
+
+  const user = useUser()
+
+  const saveChanges = async () => {
+    if (!editingTemplate) return
+
+    const url = editingTemplate.researchGroup
+      ? `/v2/email-templates/${editingTemplate.id}`
+      : `/v2/email-templates`
+    const method = editingTemplate.researchGroup ? 'PUT' : 'POST'
+    const researchGroupId = editingTemplate.researchGroup
+      ? editingTemplate.researchGroup.id
+      : user?.researchGroupId
+
+    return doRequest<IEmailTemplate>(
+      url,
+      {
+        method: method,
+        requiresAuth: true,
+        data: {
+          researchGroupId: researchGroupId,
+          templateCase: editingTemplate.templateCase,
+          description: editingTemplate.description,
+          subject: editingTemplate.subject,
+          bodyHtml: editingTemplate.bodyHtml,
+          language: editingTemplate.language,
+        },
+      },
+      (res) => {
+        if (res.ok) {
+          showSimpleSuccess('Email template updated successfully')
+          if (updateTemplate) {
+            updateTemplate(res.data)
+          }
+          onClose()
+        } else {
+          showSimpleError(getApiResponseErrorMessage(res))
+        }
+      },
+    )
+  }
+
   return (
     <Modal
       opened={opened}
@@ -65,7 +115,8 @@ const EmailTemplateModal = ({
             <EmailTextEditor
               editingTemplate={editingTemplate}
               setEditingTemplate={setEditingTemplate}
-              stickyOffset={50}
+              stickyOffset={100}
+              setExampleText={setExampleText}
             />
           </Stack>
 
@@ -73,13 +124,13 @@ const EmailTemplateModal = ({
 
           <Stack flex={1}>
             <Title order={2}>Preview Template</Title>
-            <Text c={'dimmed'} size='sm'>
+            <Text c={'dimmed'} size='sm' pt={'1rem'}>
               This Preview uses example data and contact. The system will fill in the data when
               sending out the emails.
             </Text>
             <Paper withBorder radius='sm' flex={1}>
               <Box p={'1rem'}>
-                <div dangerouslySetInnerHTML={{ __html: editingTemplate?.bodyHtml ?? '' }} />
+                <div dangerouslySetInnerHTML={{ __html: exampleText }} />
               </Box>
             </Paper>
           </Stack>
@@ -108,7 +159,13 @@ const EmailTemplateModal = ({
                 Discard changes
               </Button>
             )}
-            <Button>Save changes</Button>
+            <Button
+              onClick={() => {
+                saveChanges()
+              }}
+            >
+              Save changes
+            </Button>
           </Group>
         </Group>
       </Stack>

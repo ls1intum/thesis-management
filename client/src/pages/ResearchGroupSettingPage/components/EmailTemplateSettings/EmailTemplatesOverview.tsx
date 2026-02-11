@@ -4,11 +4,11 @@ import { doRequest } from '../../../../requests/request'
 import { IEmailTemplate } from '../../../../requests/responses/emailtemplate'
 import { PaginationResponse } from '../../../../requests/responses/pagination'
 import { showSimpleError } from '../../../../utils/notification'
-import { Box, Divider, Flex, Stack, TextInput, Title } from '@mantine/core'
+import { Box, Divider, Flex, Loader, Stack, TextInput, Title } from '@mantine/core'
 import { ResearchGroupSettingsCard } from '../ResearchGroupSettingsCard'
 import EmailTemplateCard from './EmailTemplateCard'
 import { useSearchParams } from 'react-router'
-import { MagnifyingGlass, Spinner } from '@phosphor-icons/react'
+import { MagnifyingGlass } from '@phosphor-icons/react'
 
 const EmailTemplatesOverview = () => {
   const [loading, setLoading] = useState(true)
@@ -70,6 +70,31 @@ const EmailTemplatesOverview = () => {
       template.default?.templateCase.toLowerCase().includes(lowerKey) ||
       category.toLowerCase().includes(lowerKey)
     )
+  }
+
+  const updateTemplate = (updatedTemplate: IEmailTemplate) => {
+    const category = getEmailTemplateCategory(updatedTemplate.templateCase)
+    const key = updatedTemplate.templateCase
+
+    setEmailTemplates((prev) => {
+      const updated = { ...prev }
+
+      if (!updated[category]) {
+        updated[category] = {}
+      }
+
+      if (!updated[category][key]) {
+        updated[category][key] = { default: null, researchGroupTemplate: null }
+      }
+
+      if (updatedTemplate.researchGroup) {
+        updated[category][key].researchGroupTemplate = updatedTemplate
+      } else {
+        updated[category][key].default = updatedTemplate
+      }
+
+      return updated
+    })
   }
 
   useEffect(() => {
@@ -216,6 +241,7 @@ const EmailTemplatesOverview = () => {
                         <EmailTemplateCard
                           key={`${category}-${templateCase}`}
                           emailTemplate={template}
+                          updateTemplate={updateTemplate}
                         />
                       ))}
                     </Stack>
@@ -224,7 +250,7 @@ const EmailTemplatesOverview = () => {
                 .flat()}
             </Stack>
           ) : (
-            <Spinner />
+            <Loader />
           )}
         </Stack>
       }

@@ -2,6 +2,7 @@ package de.tum.cit.aet.thesis.controller;
 
 import de.tum.cit.aet.thesis.controller.payload.CreateEmailTemplatePayload;
 import de.tum.cit.aet.thesis.dto.EmailTemplateDto;
+import de.tum.cit.aet.thesis.dto.MailVariableDto;
 import de.tum.cit.aet.thesis.dto.PaginationDto;
 import de.tum.cit.aet.thesis.entity.EmailTemplate;
 import de.tum.cit.aet.thesis.service.EmailTemplateService;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -107,5 +109,13 @@ public class EmailTemplateController {
         emailTemplateService.deleteEmailTemplate(emailTemplateId);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{emailTemplateId}/variables")
+    @PreAuthorize("hasAnyRole('admin', 'supervisor', 'advisor')")
+    public ResponseEntity<List<MailVariableDto>> getEmailTemplateVariables(
+            @PathVariable("emailTemplateId") UUID emailTemplateId
+    ) {
+        return ResponseEntity.ok(emailTemplateService.getVariablesForTemplate(emailTemplateId));
     }
 }

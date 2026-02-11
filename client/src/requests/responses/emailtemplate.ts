@@ -9,3 +9,10 @@ export interface IEmailTemplate {
   bodyHtml: string
   language: string
 }
+
+export interface IMailVariableDto {
+  label: string
+  templateVariable: string
+  example: string
+  group: string
+}

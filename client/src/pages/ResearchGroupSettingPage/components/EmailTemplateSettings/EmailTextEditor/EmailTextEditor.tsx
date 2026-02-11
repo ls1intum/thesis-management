@@ -3,67 +3,133 @@ import TextAlign from '@tiptap/extension-text-align'
 import Underline from '@tiptap/extension-underline'
 import { useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import { Button, Group, Popover, Select, Stack, TextInput } from '@mantine/core'
+import { Combobox, Group, Select, useCombobox } from '@mantine/core'
 import ReactComponent from './Extension'
-import { IEmailTemplate } from '../../../../../requests/responses/emailtemplate'
+import { IEmailTemplate, IMailVariableDto } from '../../../../../requests/responses/emailtemplate'
 import { useEffect, useMemo, useState } from 'react'
-import { Plus } from '@phosphor-icons/react'
+import { CaretDownIcon, CaretUpIcon, MagnifyingGlassIcon, Plus } from '@phosphor-icons/react'
 import { FontSize, TextStyle } from '@tiptap/extension-text-style'
+import { doRequest } from '../../../../../requests/request'
+import { showSimpleError } from '../../../../../utils/notification'
+import { getApiResponseErrorMessage } from '../../../../../requests/handler'
+import VariableComboboxOptions from './VariableComboboxOptions'
+
+const getVariableLabel = (variable: IMailVariableDto): string => {
+  return `<react-component variable="${variable.label}" template="${variable.templateVariable}"></react-component>`
+}
 
 // Function to convert HTML react-component tags to template variables
-const convertHtmlToTemplateVariables = (html: string): string => {
-  return html.replace(/<react-component\s+variable="([^"]+)"><\/react-component>/g, '[[${$1}]]')
+const convertHtmlToTemplateVariables = (
+  html: string,
+  templateVariables: IMailVariableDto[],
+): string => {
+  for (const variable of templateVariables) {
+    const reactComponentTag = getVariableLabel(variable)
+    html = html.replaceAll(reactComponentTag, variable.templateVariable)
+  }
+  return html
 }
 
 // Function to convert template variables back to HTML react-component tags
-const convertTemplateVariablesToHtml = (text: string): string => {
-  return text.replace(/\[\[\$\{([^}]+)\}\]\]/g, '<react-component variable="$1"></react-component>')
+const convertTemplateVariablesToHtml = (
+  text: string,
+  templateVariables: IMailVariableDto[],
+): string => {
+  for (const variable of templateVariables) {
+    const reactComponentTag = getVariableLabel(variable)
+    text = text.replaceAll(variable.templateVariable, reactComponentTag)
+  }
+  return text
+}
+
+const convertExample = (text: string, templateVariables: IMailVariableDto[]): string => {
+  for (const variable of templateVariables) {
+    text = text.replaceAll(getVariableLabel(variable), variable.example)
+  }
+  return text
 }
 
 interface IEmailTextEditorProps {
   editingTemplate?: IEmailTemplate | null
   setEditingTemplate?: (template: IEmailTemplate | null) => void
-
+  setExampleText?: (text: string) => void
   stickyOffset?: number
 }
 
 const EmailTextEditor = ({
   editingTemplate,
   setEditingTemplate,
+  setExampleText,
   stickyOffset = 0,
 }: IEmailTextEditorProps) => {
-  const editor = useEditor({
-    extensions: [
-      StarterKit,
-      Underline,
-      Link,
-      TextAlign.configure({ types: ['heading', 'paragraph', 'div'] }),
-      ReactComponent,
-      TextStyle,
-      FontSize,
-    ],
-    content: convertTemplateVariablesToHtml(editingTemplate?.bodyHtml ?? ''),
-    onUpdate: ({ editor }) => {
-      setEditingTemplate &&
-        setEditingTemplate({
-          ...editingTemplate!,
-          bodyHtml: convertHtmlToTemplateVariables(editor.getHTML()),
-        })
+  const [templateVariables, setTemplateVariables] = useState<IMailVariableDto[]>([])
+
+  const editor = useEditor(
+    {
+      extensions: [
+        StarterKit,
+        Underline,
+        Link,
+        TextAlign.configure({ types: ['heading', 'paragraph', 'div'] }),
+        ReactComponent.configure({ selectableVariables: templateVariables }),
+        TextStyle,
+        FontSize,
+      ],
+      content: convertTemplateVariablesToHtml(editingTemplate?.bodyHtml ?? '', templateVariables),
+      onCreate: ({ editor }) => {
+        setExampleText && setExampleText(convertExample(editor.getHTML(), templateVariables))
+      },
+      onUpdate: ({ editor }) => {
+        setEditingTemplate &&
+          setEditingTemplate({
+            ...editingTemplate!,
+            bodyHtml: convertHtmlToTemplateVariables(editor.getHTML(), templateVariables),
+          })
+
+        setExampleText && setExampleText(convertExample(editor.getHTML(), templateVariables))
+      },
     },
-  })
+    [templateVariables],
+  )
 
   // Update editor content if editingTemplate.bodyHtml changes
   useEffect(() => {
-    console.log('useEffect triggered with bodyHtml:', editingTemplate?.bodyHtml)
-
     if (
       editor &&
       editingTemplate &&
-      convertTemplateVariablesToHtml(editingTemplate.bodyHtml ?? '') !== editor.getHTML()
+      convertTemplateVariablesToHtml(editingTemplate.bodyHtml ?? '', templateVariables) !==
+        editor.getHTML()
     ) {
-      editor.commands.setContent(convertTemplateVariablesToHtml(editingTemplate.bodyHtml ?? ''))
+      editor.commands.setContent(
+        convertTemplateVariablesToHtml(editingTemplate.bodyHtml ?? '', templateVariables),
+      )
     }
-  }, [editingTemplate?.bodyHtml, editor])
+  }, [editingTemplate?.bodyHtml, editor, templateVariables])
+
+  const fetchTemplateVariables = async () => {
+    try {
+      const response = await doRequest<IMailVariableDto[]>(
+        `/v2/email-templates/${editingTemplate?.id}/variables`,
+        {
+          method: 'GET',
+          requiresAuth: true,
+        },
+      )
+      if (response.ok) {
+        setTemplateVariables(response.data)
+      } else {
+        showSimpleError(getApiResponseErrorMessage(response))
+      }
+    } catch (error) {
+      showSimpleError('Failed to fetch template variables')
+    }
+  }
+
+  useEffect(() => {
+    if (editingTemplate) {
+      fetchTemplateVariables()
+    }
+  }, [editingTemplate?.id])
 
   return (
     <RichTextEditor editor={editor}>
@@ -101,7 +167,7 @@ const EmailTextEditor = ({
           <FontSizeControl />
         </RichTextEditor.ControlsGroup>
 
-        <InsertVariableButton />
+        <InsertVariableButton selectableVariables={templateVariables} />
       </RichTextEditor.Toolbar>
 
       <RichTextEditor.Content />
@@ -109,37 +175,73 @@ const EmailTextEditor = ({
   )
 }
 
-function InsertVariableButton() {
+interface IInsertVariableButtonProps {
+  selectableVariables?: IMailVariableDto[]
+}
+
+function InsertVariableButton({ selectableVariables = [] }: IInsertVariableButtonProps) {
   const { editor } = useRichTextEditorContext()
 
-  const [variable, setVariable] = useState('')
-
-  const insertVariable = () => {
-    editor?.commands.insertContent(`<react-component variable="${variable}"></react-component>`)
+  const insertVariable = (variable: IMailVariableDto) => {
+    editor?.commands.insertContent(getVariableLabel(variable))
   }
 
+  const [search, setSearch] = useState('')
+
+  const combobox = useCombobox({
+    onDropdownClose: () => {
+      combobox.resetSelectedOption()
+      combobox.focusTarget()
+      setSearch('')
+    },
+
+    onDropdownOpen: () => {
+      combobox.focusSearchInput()
+    },
+  })
+
   return (
-    <Popover width={200} position='bottom' withArrow shadow='md'>
-      <Popover.Target>
-        <RichTextEditor.Control aria-label='Insert variable' title='Insert variable'>
+    <Combobox
+      store={combobox}
+      width={250}
+      position='bottom-start'
+      onOptionSubmit={(val) => {
+        const variable = selectableVariables.find((v) => v.templateVariable === val)
+        if (variable) {
+          insertVariable(variable)
+        }
+      }}
+      offset={4}
+      shadow='md'
+    >
+      <Combobox.Target withAriaAttributes={false}>
+        <RichTextEditor.Control
+          aria-label='Insert variable'
+          title='Insert variable'
+          onClick={() => combobox.toggleDropdown()}
+          variant='default'
+        >
           <Group gap={5} p={5}>
             <Plus size={14} />
             Add variable
           </Group>
         </RichTextEditor.Control>
-      </Popover.Target>
-      <Popover.Dropdown>
-        <Stack>
-          <TextInput value={variable} onChange={(e) => setVariable(e.currentTarget.value)} />
-          <Button onClick={() => insertVariable()}>Insert Variable</Button>
-        </Stack>
-      </Popover.Dropdown>
-    </Popover>
+      </Combobox.Target>
+
+      <Combobox.Dropdown>
+        <VariableComboboxOptions
+          selectableVariables={selectableVariables}
+          search={search}
+          setSearch={setSearch}
+        />
+      </Combobox.Dropdown>
+    </Combobox>
   )
 }
 
 //TODO: OUR DEFAULT IS 16px, show that instead of empty as default
 //TODO: Nicer Dropdown look
+
 const FONT_SIZES = [
   { value: '', label: 'Default' },
   { value: '8px', label: '8' },
@@ -179,7 +281,7 @@ export function FontSizeControl() {
 
     sync()
     editor.on('selectionUpdate', sync)
-    editor.on('transaction', sync) // helps when typing continues with same mark
+    editor.on('transaction', sync)
 
     return () => {
       editor.off('selectionUpdate', sync)
@@ -187,40 +289,64 @@ export function FontSizeControl() {
     }
   }, [editor])
 
-  const apply = (next: string | null) => {
+  const apply = (next: string) => {
     if (!editor) return
+    setValue(next)
 
-    const v = next ?? ''
-    setValue(v)
-
-    if (v === '') {
+    if (next === '') {
       editor.chain().focus().unsetFontSize().run()
     } else {
-      editor.chain().focus().setFontSize(v).run()
+      editor.chain().focus().setFontSize(next).run()
     }
   }
 
+  const combobox = useCombobox({
+    onDropdownClose: () => {
+      combobox.resetSelectedOption()
+      combobox.focusTarget()
+    },
+  })
+
   return (
-    <Popover width={160} position='bottom' withArrow shadow='md'>
-      <Popover.Target>
-        <RichTextEditor.Control aria-label='Font size' title='Font size'>
+    <Combobox
+      store={combobox}
+      width={100}
+      position='bottom-start'
+      shadow='md'
+      withinPortal
+      onOptionSubmit={(val) => {
+        apply(val) // val can be '' for Default
+        combobox.closeDropdown()
+      }}
+    >
+      <Combobox.Target withAriaAttributes={false}>
+        <RichTextEditor.Control
+          aria-label='Font size'
+          title='Font size'
+          onClick={() => combobox.toggleDropdown()}
+          variant='default'
+        >
           <Group gap={6} px={6}>
             {value ? value.replace('px', '') : 'Size'}
+            {combobox.dropdownOpened ? <CaretUpIcon size={12} /> : <CaretDownIcon size={12} />}
           </Group>
         </RichTextEditor.Control>
-      </Popover.Target>
+      </Combobox.Target>
 
-      <Popover.Dropdown>
-        <Select
-          data={data}
-          value={value}
-          onChange={apply}
-          placeholder='Choose size'
-          searchable
-          nothingFoundMessage='No size'
-        />
-      </Popover.Dropdown>
-    </Popover>
+      <Combobox.Dropdown>
+        <Combobox.Options mah={200} style={{ overflowY: 'auto' }}>
+          {data.length > 0 ? (
+            data.map((item) => (
+              <Combobox.Option key={item.value || 'default'} value={item.value}>
+                {item.label}
+              </Combobox.Option>
+            ))
+          ) : (
+            <Combobox.Empty>Nothing found</Combobox.Empty>
+          )}
+        </Combobox.Options>
+      </Combobox.Dropdown>
+    </Combobox>
   )
 }
 
