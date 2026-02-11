@@ -4,8 +4,8 @@ plugins {
 	id "checkstyle"
 	id "jacoco"
 	id "com.github.andygoossens.modernizer" version "1.12.0"
-	id "com.gorylenko.gradle-git-properties" version "2.5.4"
-	id "org.springframework.boot" version "3.5.9"
+	id "com.gorylenko.gradle-git-properties" version "2.5.7"
+	id "org.springframework.boot" version "3.5.10"
 	id "io.spring.dependency-management" version "1.1.7"
 	id "com.github.ben-manes.versions" version "0.53.0"
 	id "com.diffplug.spotless" version "8.2.1"
@@ -54,13 +54,13 @@ dependencies {
 	implementation("net.minidev:json-smart") { version { 				strictly "2.6.0" } }
 
 	implementation "org.liquibase:liquibase-core:4.33.0"
-	implementation "org.postgresql:postgresql:42.7.8"
+	implementation "org.postgresql:postgresql:42.7.9"
 
 	implementation "commons-io:commons-io:2.21.0"
 	implementation "com.github.vladimir-bukhtoyarov:bucket4j-core:8.0.1"
-	implementation "org.mnode.ical4j:ical4j:4.2.2"
-	implementation "com.itextpdf:itext-core:9.4.0"
-	implementation "com.itextpdf:html2pdf:6.3.0"
+	implementation "org.mnode.ical4j:ical4j:4.2.3"
+	implementation "com.itextpdf:itext-core:9.5.0"
+	implementation "com.itextpdf:html2pdf:6.3.1"
 	implementation "com.auth0:java-jwt:4.5.0"
 
 	// Use the latest version of commons-lang3 to avoid security issues
