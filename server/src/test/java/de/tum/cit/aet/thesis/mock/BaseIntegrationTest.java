@@ -8,6 +8,7 @@ import de.tum.cit.aet.thesis.controller.payload.CreateThesisPayload;
 import de.tum.cit.aet.thesis.controller.payload.ReplaceTopicPayload;
 import de.tum.cit.aet.thesis.repository.ApplicationRepository;
 import de.tum.cit.aet.thesis.repository.ApplicationReviewerRepository;
+import de.tum.cit.aet.thesis.repository.EmailTemplateRepository;
 import de.tum.cit.aet.thesis.repository.NotificationSettingRepository;
 import de.tum.cit.aet.thesis.repository.ThesisAssessmentRepository;
 import de.tum.cit.aet.thesis.repository.ThesisCommentRepository;
@@ -24,8 +25,6 @@ import de.tum.cit.aet.thesis.repository.TopicRoleRepository;
 import de.tum.cit.aet.thesis.repository.UserGroupRepository;
 import de.tum.cit.aet.thesis.repository.UserRepository;
 import de.tum.cit.aet.thesis.service.AccessManagementService;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +36,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 import tools.jackson.databind.ObjectMapper;
 
@@ -60,6 +58,9 @@ public abstract class BaseIntegrationTest {
 
 	@Autowired
 	private ApplicationReviewerRepository applicationReviewerRepository;
+
+	@Autowired
+	private EmailTemplateRepository emailTemplateRepository;
 
 	@Autowired
 	private NotificationSettingRepository notificationSettingRepository;
@@ -115,8 +116,7 @@ public abstract class BaseIntegrationTest {
 	@Autowired
 	private AccessManagementService accessManagementService;
 
-	@Container
-	protected static PostgreSQLContainer dbContainer = new PostgreSQLContainer("postgres:17.5-alpine");
+	protected static PostgreSQLContainer dbContainer = new PostgreSQLContainer("postgres:17.7-alpine");
 
 	protected static void configureProperties(DynamicPropertyRegistry registry) {
 		dbContainer.start();
@@ -126,18 +126,10 @@ public abstract class BaseIntegrationTest {
 		registry.add("spring.datasource.password", dbContainer::getPassword);
 	}
 
-	@BeforeAll
-	protected static void startDatabase() {
-		dbContainer.start();
-	}
-
-	@AfterAll
-	protected static void stopDatabase() {
-		dbContainer.stop();
-	}
-
+	// Deletion order matters: child tables with foreign keys must be deleted before parent tables.
 	@BeforeEach
 	void deleteDatabase() {
+		emailTemplateRepository.deleteAll();
 		thesisCommentRepository.deleteAll();
 		thesisFeedbackRepository.deleteAll();
 		thesisFileRepository.deleteAll();
@@ -280,7 +272,7 @@ public abstract class BaseIntegrationTest {
 	}
 
 	protected UUID createTestThesis(String title) throws Exception {
-		TestUser advisor = createTestUser("supervisor", List.of("supervisor", "advisor"));
+		TestUser advisor = createRandomTestUser(List.of("supervisor", "advisor"));
 		UUID researchGroupId = createTestResearchGroup("Test Research Group", advisor.universityId());
 		createTestEmailTemplate("THESIS_CREATED");
 
@@ -306,6 +298,11 @@ public abstract class BaseIntegrationTest {
 	}
 
 	protected void createTestEmailTemplate(String templateCase) throws Exception {
+		if (emailTemplateRepository.findByResearchGroupIdAndTemplateCaseAndLanguage(
+				null, templateCase, "en").isPresent()) {
+			return;
+		}
+
 		Map<String, Object> payload = new HashMap<>();
 		payload.put("researchGroupId", null);
 		payload.put("templateCase", templateCase);

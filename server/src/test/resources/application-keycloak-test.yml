@@ -1,0 +1,7 @@
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://placeholder:8080/realms/thesis-management/protocol/openid-connect/certs
+          issuer-uri: http://placeholder:8080/realms/thesis-management
