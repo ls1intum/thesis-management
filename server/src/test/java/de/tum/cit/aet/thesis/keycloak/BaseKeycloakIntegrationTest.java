@@ -47,7 +47,7 @@ import java.time.Duration;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class BaseKeycloakIntegrationTest {
 
-	static final PostgreSQLContainer DB_CONTAINER = new PostgreSQLContainer("postgres:17.5-alpine");
+	static final PostgreSQLContainer DB_CONTAINER = new PostgreSQLContainer("postgres:17.7-alpine");
 
 	static final KeycloakContainer KEYCLOAK_CONTAINER = new KeycloakContainer("quay.io/keycloak/keycloak:26.4")
 			.withRealmImportFile("thesis-management-realm.json");
