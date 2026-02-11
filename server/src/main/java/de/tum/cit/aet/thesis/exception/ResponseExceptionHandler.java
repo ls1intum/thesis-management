@@ -1,7 +1,5 @@
 package de.tum.cit.aet.thesis.exception;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import de.tum.cit.aet.thesis.dto.ErrorDto;
 import de.tum.cit.aet.thesis.exception.request.AccessDeniedException;
 import de.tum.cit.aet.thesis.exception.request.ResourceAlreadyExistsException;
@@ -14,6 +12,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.exc.StreamReadException;
 
 import java.text.ParseException;
 
@@ -32,8 +32,8 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
 	@ExceptionHandler({
 			ParseException.class,
 			ResourceInvalidParametersException.class,
-			JsonParseException.class,
-			JsonProcessingException.class,
+			StreamReadException.class,
+			JacksonException.class,
 	})
 	protected ResponseEntity<Object> handleBadRequest(RuntimeException ex, WebRequest request) {
 		return handleExceptionInternal(ex, ErrorDto.fromRuntimeException(ex), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);

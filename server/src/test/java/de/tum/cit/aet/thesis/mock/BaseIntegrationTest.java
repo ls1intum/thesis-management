@@ -2,7 +2,6 @@ package de.tum.cit.aet.thesis.mock;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import de.tum.cit.aet.thesis.controller.payload.CreateApplicationPayload;
 import de.tum.cit.aet.thesis.controller.payload.CreateThesisPayload;
@@ -30,8 +29,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
@@ -40,6 +39,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.postgresql.PostgreSQLContainer;
+import tools.jackson.databind.ObjectMapper;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -276,7 +276,7 @@ public abstract class BaseIntegrationTest {
 				.getResponse()
 				.getContentAsString();
 
-		return objectMapper.readTree(response).get("topicId").asText().transform(UUID::fromString);
+		return objectMapper.readTree(response).get("topicId").asString().transform(UUID::fromString);
 	}
 
 	protected UUID createTestThesis(String title) throws Exception {
@@ -302,7 +302,7 @@ public abstract class BaseIntegrationTest {
 				.getResponse()
 				.getContentAsString();
 
-		return objectMapper.readTree(response).get("thesisId").asText().transform(UUID::fromString);
+		return objectMapper.readTree(response).get("thesisId").asString().transform(UUID::fromString);
 	}
 
 	protected void createTestEmailTemplate(String templateCase) throws Exception {

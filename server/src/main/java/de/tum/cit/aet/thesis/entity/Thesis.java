@@ -80,7 +80,7 @@ private ThesisState state;
 private ThesisVisibility visibility;
 
 @JdbcTypeCode(SqlTypes.ARRAY)
-@Column(name = "keywords", columnDefinition = "text[]")
+@Column(name = "keywords", columnDefinition = "text[]", nullable = false)
 private Set<String> keywords = new HashSet<>();
 
 @ManyToOne(fetch = FetchType.LAZY)
