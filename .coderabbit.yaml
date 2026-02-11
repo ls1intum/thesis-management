@@ -1,0 +1,287 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+
+language: en-US
+tone_instructions: >-
+  Expert code reviewer for Java, Spring Boot, TypeScript, and React.
+  Concise and clear feedback. Only elaborate when requested.
+  Refer to the project's build files for current framework and language versions.
+early_access: true
+enable_free_tier: true
+reviews:
+  profile: chill
+  request_changes_workflow: true
+  high_level_summary: true
+  high_level_summary_placeholder: '@coderabbitai summary'
+  auto_title_placeholder: '@coderabbitai title'
+  poem: false
+  review_status: true
+  collapse_walkthrough: false
+  sequence_diagrams: true
+  changed_files_summary: true
+  abort_on_close: true
+  path_filters:
+    - '!dist/**'
+    - '!**/node_modules/**'
+    - '!**/build/**'
+    - '!**/*.app'
+    - '!**/*.bin'
+    - '!**/*.bz2'
+    - '!**/*.class'
+    - '!**/*.db'
+    - '!**/*.csv'
+    - '!**/*.tsv'
+    - '!**/*.dat'
+    - '!**/*.dll'
+    - '!**/*.dylib'
+    - '!**/*.egg'
+    - '!**/*.glif'
+    - '!**/*.gz'
+    - '!**/*.xz'
+    - '!**/*.zip'
+    - '!**/*.7z'
+    - '!**/*.rar'
+    - '!**/*.zst'
+    - '!**/*.ico'
+    - '!**/*.jar'
+    - '!**/*.tar'
+    - '!**/*.war'
+    - '!**/*.lo'
+    - '!**/*.log'
+    - '!**/*.mp3'
+    - '!**/*.wav'
+    - '!**/*.wma'
+    - '!**/*.mp4'
+    - '!**/*.avi'
+    - '!**/*.mkv'
+    - '!**/*.wmv'
+    - '!**/*.m4a'
+    - '!**/*.m4v'
+    - '!**/*.3gp'
+    - '!**/*.3g2'
+    - '!**/*.rm'
+    - '!**/*.mov'
+    - '!**/*.flv'
+    - '!**/*.iso'
+    - '!**/*.swf'
+    - '!**/*.flac'
+    - '!**/*.nar'
+    - '!**/*.o'
+    - '!**/*.ogg'
+    - '!**/*.otf'
+    - '!**/*.p'
+    - '!**/*.pdf'
+    - '!**/*.doc'
+    - '!**/*.docx'
+    - '!**/*.xls'
+    - '!**/*.xlsx'
+    - '!**/*.map'
+    - '!**/*.out'
+    - '!**/*.ppt'
+    - '!**/*.pptx'
+    - '!**/*.pkl'
+    - '!**/*.pickle'
+    - '!**/*.pyc'
+    - '!**/*.pyd'
+    - '!**/*.pyo'
+    - '!**/*.pub'
+    - '!**/*.pem'
+    - '!**/*.rkt'
+    - '!**/*.so'
+    - '!**/*.ss'
+    - '!**/*.eot'
+    - '!**/*.exe'
+    - '!**/*.lock'
+    - '!**/*.ttf'
+    - '!**/*.cfg'
+    - '!**/*.toml'
+    - '!**/*.ini'
+    - '!**/*.mod'
+    - '!**/*.sum'
+    - '!**/*.work'
+    - '!**/*.mmd'
+    - '!**/*.svg'
+    - '!**/*.jpeg'
+    - '!**/*.jpg'
+    - '!**/*.png'
+    - '!**/*.gif'
+    - '!**/*.bmp'
+    - '!**/*.tiff'
+    - '!**/*.webm'
+    - '!**/*.woff'
+    - '!**/*.woff2'
+    - '!**/*.dot'
+    - '!**/*.md5sum'
+    - '!**/*.wasm'
+    - '!**/*.snap'
+    - '!**/*.parquet'
+    - '!**/gen/**'
+    - '!**/_gen/**'
+    - '!**/generated/**'
+    - '!**/@generated/**'
+    - '!**/vendor/**'
+    - '!**/*.min.js'
+    - '!**/*.min.js.map'
+    - '!**/*.min.js.css'
+    - '!**/*.tfstate'
+    - '!**/*.tfstate.backup'
+  path_instructions:
+    - path: client/src/**/*.{ts,tsx}
+      instructions: |
+        Review TypeScript and React code for best practices:
+        - Functional components only, no class components
+        - Prefer named exports over default exports
+        - Use proper TypeScript types, avoid 'any' where possible
+        - Use 'import type' for type-only imports
+        - Ensure hooks follow rules of hooks (no conditional hooks)
+        - Verify proper cleanup in useEffect hooks to prevent memory leaks
+        - Check for proper key props in lists
+        - Mantine UI: use Mantine components consistently, avoid raw HTML where Mantine provides equivalents
+        - React Router for navigation
+        - TipTap for rich text editing
+        - Keycloak for authentication
+        - Mantine DataTable for tabular data
+        - Single quotes for strings, 2-space indentation, arrow functions
+        - Types/Enums: PascalCase; functions/props: camelCase
+        - Check for proper error handling with user-friendly notifications
+        - No console.log or debugger statements in production code
+    - path: server/src/main/java/**/*.java
+      instructions: |
+        Review Java code using current Java and Spring Boot standards:
+        - Naming: CamelCase conventions throughout
+        - Principles: single responsibility, small methods, no duplication
+        - Spring: constructor injection only (no field injection via @Autowired)
+        - REST: stateless controllers, delegate business logic to services, minimal DTOs
+        - DTOs: prefer Java records, never expose JPA entities directly, minimal data
+        - JPA/Hibernate: avoid N+1 queries, use fetch joins where appropriate,
+          prefer LocalDateTime over Timestamp
+        - Lombok: verify correct usage, avoid @Data on JPA entities (use @Getter/@Setter)
+        - SQL: prefer parameterized queries, uppercase keywords, avoid subqueries where joins suffice
+        - Avoid star imports
+        - Security: Spring Security with OAuth2/Keycloak, verify proper authorization checks
+        - Validation: use bean validation annotations (@Valid, @NotNull, etc.)
+        - Avoid leaving TODO comments in production code
+        - Ensure proper error handling with meaningful exception messages
+    - path: server/src/test/java/**/*.java
+      instructions: |
+        Review test code using JUnit 5 and Mockito best practices:
+        - Descriptive test method names that explain scenario and expected outcome
+        - Keep tests small and focused on a single behavior
+        - Use AssertJ assertions (assertThat) over JUnit assertions
+        - Use @ExtendWith(MockitoExtension.class) over @RunWith
+        - Prefer fixed test data over random data for reproducibility
+        - Mock external dependencies; avoid real database access in unit tests
+        - For integration tests with Testcontainers, verify proper PostgreSQL container lifecycle
+        - Minimize Spring context restarts across test classes
+        - Use spring profile 'test' for test configuration
+    - path: server/src/main/resources/db/changelog/**/*.sql
+      instructions: |
+        Review Liquibase SQL changesets for:
+        - Use appropriate column types and constraints
+        - Add proper indexes for foreign keys and frequently queried columns
+        - Never modify existing changesets that have been applied; create new ones
+        - Verify NOT NULL constraints have default values for existing data
+        - Check for missing foreign key constraints
+        - Verify backward compatibility of schema changes
+    - path: server/src/main/resources/application*.yml
+      instructions: |
+        Review Spring Boot application configuration for:
+        - No hardcoded credentials or secrets (use environment variables)
+        - Proper profile-specific configuration separation
+        - Sensible defaults for connection pools and timeouts
+        - Proper logging configuration
+    - path: "**/*.Dockerfile"
+      instructions: |
+        Review Dockerfile for best practices:
+        - Multi-stage builds to minimize image size
+        - Proper layer ordering for cache efficiency
+        - Non-root user for running the application
+        - Specific version tags for base images, not 'latest'
+        - HEALTHCHECK instructions where appropriate
+    - path: docker-compose*.yml
+      instructions: |
+        Review Docker Compose configuration for:
+        - Proper service dependencies and health checks
+        - No hardcoded secrets (use environment variables or .env files)
+        - Volume mount correctness
+        - Network configuration and service isolation
+    - path: keycloak/**
+      instructions: |
+        Review Keycloak configuration for:
+        - No hardcoded credentials or secrets
+        - Proper realm, client, and role configuration
+        - Security best practices for OAuth2/OIDC settings
+  auto_review:
+    enabled: true
+    auto_incremental_review: true
+    ignore_title_keywords:
+      - WIP
+      - DO NOT MERGE
+      - DRAFT
+    labels: []
+    drafts: false
+    base_branches:
+      - develop
+  tools:
+    shellcheck:
+      enabled: true
+    markdownlint:
+      enabled: true
+    github-checks:
+      enabled: true
+      timeout_ms: 90000
+    languagetool:
+      enabled: true
+      disabled_rules:
+        - EN_UNPAIRED_BRACKETS
+      disabled_categories:
+        - TYPOS
+        - TYPOGRAPHY
+        - CASING
+      enabled_only: false
+      level: default
+      enabled_rules: []
+      enabled_categories: []
+    biome:
+      enabled: true
+    hadolint:
+      enabled: true
+    gitleaks:
+      enabled: true
+    semgrep:
+      enabled: true
+    eslint:
+      enabled: true
+    ast-grep:
+      packages: []
+      rule_dirs: []
+      util_dirs: []
+      essential_rules: true
+    # Disabled — not applicable to this tech stack
+    ruff:
+      enabled: false
+    swiftlint:
+      enabled: false
+    phpstan:
+      enabled: false
+    golangci-lint:
+      enabled: false
+    detekt:
+      enabled: false
+    rubocop:
+      enabled: false
+    buf:
+      enabled: false
+    cppcheck:
+      enabled: false
+chat:
+  auto_reply: true
+knowledge_base:
+  opt_out: false
+  learnings:
+    scope: auto
+  issues:
+    scope: auto
+  jira:
+    project_keys: []
+  linear:
+    team_keys: []
