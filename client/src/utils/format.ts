@@ -44,7 +44,7 @@ export function formatUser(user: IMinimalUser, options: Partial<IFormatUserOptio
     ...options,
   }
 
-  let text = `${user.firstName} ${user.lastName}`
+  let text = `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim()
 
   if (withUniversityId && 'universityId' in user) {
     text += ` (${(user as ILightUser).universityId})`

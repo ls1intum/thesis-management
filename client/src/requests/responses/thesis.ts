@@ -143,7 +143,7 @@ export interface IPublishedPresentation {
 }
 
 export function isThesis(thesis: any): thesis is IThesis {
-  return thesis.thesisId && !!thesis.states
+  return thesis.thesisId && !!thesis.states && 'language' in thesis
 }
 
 export function isThesisPresentation(presentation: any): presentation is IThesisPresentation {
