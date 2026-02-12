@@ -8,7 +8,6 @@ import DocumentEditor from '../../../../../components/DocumentEditor/DocumentEdi
 import LabeledItem from '../../../../../components/LabeledItem/LabeledItem'
 import { pluralize } from '../../../../../utils/format'
 import { useTopic } from '../../../../../hooks/fetcher'
-import { useState } from 'react'
 
 interface ICollapsibleTopicElementProps {
   topic: IPublishedThesis | ITopicOverview
@@ -17,10 +16,9 @@ interface ICollapsibleTopicElementProps {
 
 const CollapsibleTopicElement = ({ topic, onApply }: ICollapsibleTopicElementProps) => {
   const { hovered, ref } = useHover()
-  const [expanded, setExpanded] = useState(false)
 
   const isTopicOverview = 'topicId' in topic
-  const fullTopic = useTopic(isTopicOverview && expanded ? topic.topicId : undefined)
+  const fullTopic = useTopic(isTopicOverview ? topic.topicId : undefined)
 
   return (
     <Card
@@ -35,7 +33,7 @@ const CollapsibleTopicElement = ({ topic, onApply }: ICollapsibleTopicElementPro
       <Accordion.Item
         value={`topic-card-${isTopicOverview ? topic.topicId : topic.thesisId}`}
       >
-        <Accordion.Control onClick={() => setExpanded((prev) => !prev)}>
+        <Accordion.Control>
           <Stack gap={'0.5rem'}>
             <Group gap={'0.75rem'}>
               {isTopicOverview ? (
@@ -125,7 +123,7 @@ const CollapsibleTopicElement = ({ topic, onApply }: ICollapsibleTopicElementPro
               <></>
             )}
             {onApply && isTopicOverview && (
-              <Button onClick={() => onApply(fullTopic || undefined)} fullWidth>
+              <Button onClick={() => onApply(fullTopic || undefined)} fullWidth disabled={!fullTopic}>
                 Apply
               </Button>
             )}

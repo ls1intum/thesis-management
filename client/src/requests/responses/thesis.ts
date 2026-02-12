@@ -40,7 +40,7 @@ export interface IThesisOverview {
   startDate: string | null
   endDate: string | null
   createdAt: string
-  keywords: string[]
+  keywords?: string[]
   students: IMinimalUser[]
   advisors: IMinimalUser[]
   supervisors: IMinimalUser[]
@@ -54,6 +54,7 @@ export interface IThesisOverview {
 }
 
 export interface IThesis extends IThesisOverview {
+  keywords: string[]
   language: string
   metadata: {
     credits: Record<string, number>

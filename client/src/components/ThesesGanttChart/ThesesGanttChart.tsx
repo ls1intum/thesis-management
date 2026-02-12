@@ -97,7 +97,7 @@ const ThesesGanttChart = () => {
             </Text>
           </Indicator>,
           <Text key='keywords' size='xs' truncate>
-            {thesis.keywords.join(', ')}
+            {(thesis.keywords ?? []).join(', ')}
           </Text>,
         ],
         timeline: thesis.states.map((state) => ({
@@ -137,7 +137,7 @@ const ThesesGanttChart = () => {
       ])
     : []
 
-  const hasKeywordsColumn = !!theses?.content.some((thesis) => !!thesis.keywords.length)
+  const hasKeywordsColumn = !!theses?.content.some((thesis) => !!(thesis.keywords ?? []).length)
 
   return (
     <Stack>

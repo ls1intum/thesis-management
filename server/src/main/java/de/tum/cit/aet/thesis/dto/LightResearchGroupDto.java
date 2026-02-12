@@ -5,7 +5,7 @@ import de.tum.cit.aet.thesis.entity.ResearchGroup;
 
 import java.util.UUID;
 
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public record LightResearchGroupDto(
 	UUID id,
 	LightUserDto head,
