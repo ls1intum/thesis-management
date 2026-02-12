@@ -4,10 +4,10 @@
 --
 -- This script:
 --   - Inserts all default email templates,
---   - Should be executed manually on DEV and PROD environments.
+--   - Is executed automatically via Liquibase change 21_seed_default_email_templates.xml.
 --
 -- IMPORTANT:
--- This script is NOT part of the standard Liquibase migration process.
+-- This script can still be executed manually if needed.
 --
 -- Author: Marc Fett
 -- Date: 2025/04/27
@@ -665,4 +665,7 @@ INTO email_templates (email_template_id,
                       updated_by,
                       updated_at)
 SELECT *
-FROM templates;
+FROM templates
+ON CONFLICT (template_case, language)
+    WHERE research_group_id IS NULL
+    DO NOTHING;
