@@ -14,7 +14,7 @@ const CustomAvatar = (props: ICustomAvatarProps) => {
   return (
     <Avatar
       src={getAvatar(user)}
-      name={`${user.firstName} ${user.lastName}`}
+      name={`${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || undefined}
       color='initials'
       size={size}
       {...other}

@@ -71,6 +71,10 @@ const CollapsibleTopicElement = ({ topic, onApply }: ICollapsibleTopicElementPro
                 <Center py='md'>
                   <Loader size='sm' />
                 </Center>
+              ) : fullTopic === false ? (
+                <Center py='md'>
+                  <Text c='dimmed' size='sm'>Failed to load topic details.</Text>
+                </Center>
               ) : fullTopic ? (
                 <>
                   <Grid>
@@ -93,7 +97,7 @@ const CollapsibleTopicElement = ({ topic, onApply }: ICollapsibleTopicElementPro
                     <Grid.Col span={4}>
                       <LabeledItem
                         label={'Published At'}
-                        value={new Date(fullTopic.createdAt).toLocaleDateString()}
+                        value={fullTopic.publishedAt ? new Date(fullTopic.publishedAt).toLocaleDateString() : '-'}
                       />
                     </Grid.Col>
                     {fullTopic.applicationDeadline && (

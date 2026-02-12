@@ -55,8 +55,7 @@ public static TopicDto fromTopicEntity(Topic topic) {
 	return new TopicDto(
 		topic.getId(),
 		topic.getTitle(),
-		topic.getThesisTypes() == null || topic.getThesisTypes().isEmpty() ? null
-			: topic.getThesisTypes(),
+		topic.getThesisTypes(),
 		topic.getProblemStatement(),
 		topic.getRequirements(),
 		topic.getGoals(),

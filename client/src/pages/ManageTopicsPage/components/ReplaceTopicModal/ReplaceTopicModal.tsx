@@ -1,4 +1,4 @@
-import { Button, Group, Modal, MultiSelect, Select, Stack, TextInput } from '@mantine/core'
+import { Button, Center, Group, Modal, MultiSelect, Select, Stack, Text, TextInput } from '@mantine/core'
 import { ITopic, TopicState } from '../../../../requests/responses/topic'
 import { isNotEmpty, useForm } from '@mantine/form'
 import { isNotEmptyUserList } from '../../../../utils/validation'
@@ -27,7 +27,8 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
   const { topicId, opened, onClose } = props
 
   const fetchedTopic = useTopic(opened ? topicId : undefined)
-  const topic = fetchedTopic || undefined
+  const topic = fetchedTopic === false ? undefined : fetchedTopic || undefined
+  const fetchError = fetchedTopic === false
 
   const { addTopic, updateTopic } = useTopicsContext()
   const [researchGroups, setResearchGroups] = useState<PaginationResponse<ILightResearchGroup>>()
@@ -192,10 +193,15 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
   return (
     <Modal
       size='xl'
-      title={topic ? 'Edit Topic' : 'Create Topic'}
+      title={fetchError ? 'Failed to load topic' : topic ? 'Edit Topic' : 'Create Topic'}
       opened={opened}
       onClose={onClose}
     >
+      {fetchError ? (
+        <Center py='xl'>
+          <Text c='dimmed'>Could not load topic data.</Text>
+        </Center>
+      ) : (
       <form onSubmit={form.onSubmit(() => onSubmit(false))}>
         <Stack gap='md'>
           <TextInput label='Title' required {...form.getInputProps('title')} />
@@ -292,6 +298,7 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
           </Group>
         </Stack>
       </form>
+      )}
     </Modal>
   )
 }

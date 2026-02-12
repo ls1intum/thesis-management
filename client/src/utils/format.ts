@@ -58,7 +58,7 @@ export function wordsToFilename(words: string) {
 }
 
 export function formatUserFilename(user: ILightUser): string {
-  return wordsToFilename(`${user.firstName} ${user.lastName}`)
+  return wordsToFilename(`${user.firstName ?? ''} ${user.lastName ?? ''}`.trim())
 }
 
 export function formatUsersFilename(users: ILightUser[]) {

@@ -44,8 +44,7 @@ public record TopicOverviewDto(
 			topic.getId(),
 			topic.getTitle(),
 			topic.getTopicState(),
-			topic.getThesisTypes() == null || topic.getThesisTypes().isEmpty() ? null
-				: topic.getThesisTypes(),
+			topic.getThesisTypes(),
 			topic.getCreatedAt(),
 			advisors,
 			supervisors,
