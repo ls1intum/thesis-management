@@ -1,4 +1,16 @@
-import { Accordion, Card, Group, Stack, Title, Text, Button, Divider, Grid, Center, Loader } from '@mantine/core'
+import {
+  Accordion,
+  Card,
+  Group,
+  Stack,
+  Title,
+  Text,
+  Button,
+  Divider,
+  Grid,
+  Center,
+  Loader,
+} from '@mantine/core'
 import { ITopicOverview, ITopic } from '../../../../../requests/responses/topic'
 import ThesisTypeBadge from '../../../../LandingPage/components/ThesisTypBadge/ThesisTypBadge'
 import { IPublishedThesis } from '../../../../../requests/responses/thesis'
@@ -32,9 +44,7 @@ const CollapsibleTopicElement = ({ topic, onApply }: ICollapsibleTopicElementPro
       style={{ cursor: 'pointer' }}
       ref={ref}
     >
-      <Accordion.Item
-        value={`topic-card-${isTopicOverview ? topic.topicId : topic.thesisId}`}
-      >
+      <Accordion.Item value={`topic-card-${isTopicOverview ? topic.topicId : topic.thesisId}`}>
         <Accordion.Control onClick={() => setExpanded(true)}>
           <Stack gap={'0.5rem'}>
             <Group gap={'0.75rem'}>
@@ -73,7 +83,9 @@ const CollapsibleTopicElement = ({ topic, onApply }: ICollapsibleTopicElementPro
                 </Center>
               ) : fullTopic === false ? (
                 <Center py='md'>
-                  <Text c='dimmed' size='sm'>Failed to load topic details.</Text>
+                  <Text c='dimmed' size='sm'>
+                    Failed to load topic details.
+                  </Text>
                 </Center>
               ) : fullTopic ? (
                 <>
@@ -97,7 +109,11 @@ const CollapsibleTopicElement = ({ topic, onApply }: ICollapsibleTopicElementPro
                     <Grid.Col span={4}>
                       <LabeledItem
                         label={'Published At'}
-                        value={fullTopic.publishedAt ? new Date(fullTopic.publishedAt).toLocaleDateString() : '-'}
+                        value={
+                          fullTopic.publishedAt
+                            ? new Date(fullTopic.publishedAt).toLocaleDateString()
+                            : '-'
+                        }
                       />
                     </Grid.Col>
                     {fullTopic.applicationDeadline && (
@@ -122,14 +138,20 @@ const CollapsibleTopicElement = ({ topic, onApply }: ICollapsibleTopicElementPro
                     <DocumentEditor label='Requirements' value={fullTopic.requirements} />
                   )}
                   {fullTopic.goals && <DocumentEditor label='Goals' value={fullTopic.goals} />}
-                  {fullTopic.references && <DocumentEditor label='References' value={fullTopic.references} />}
+                  {fullTopic.references && (
+                    <DocumentEditor label='References' value={fullTopic.references} />
+                  )}
                 </>
               ) : null
             ) : (
               <></>
             )}
             {onApply && isTopicOverview && (
-              <Button onClick={() => onApply(fullTopic || undefined)} fullWidth disabled={!fullTopic}>
+              <Button
+                onClick={() => onApply(fullTopic || undefined)}
+                fullWidth
+                disabled={!fullTopic}
+              >
                 Apply
               </Button>
             )}
