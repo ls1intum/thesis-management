@@ -113,11 +113,11 @@ private ResearchGroup researchGroup;
 @OrderBy("position ASC")
 private List<ThesisRole> roles = new ArrayList<>();
 
-@OneToMany(mappedBy = "thesis", fetch = FetchType.EAGER)
+@OneToMany(mappedBy = "thesis", fetch = FetchType.LAZY)
 @OrderBy("createdAt DESC")
 private List<ThesisProposal> proposals = new ArrayList<>();
 
-@OneToMany(mappedBy = "thesis", fetch = FetchType.EAGER)
+@OneToMany(mappedBy = "thesis", fetch = FetchType.LAZY)
 @OrderBy("createdAt DESC")
 private List<ThesisAssessment> assessments = new ArrayList<>();
 
@@ -125,11 +125,11 @@ private List<ThesisAssessment> assessments = new ArrayList<>();
 @OrderBy("scheduledAt ASC")
 private List<ThesisPresentation> presentations = new ArrayList<>();
 
-@OneToMany(mappedBy = "thesis", fetch = FetchType.EAGER)
+@OneToMany(mappedBy = "thesis", fetch = FetchType.LAZY)
 @OrderBy("requestedAt ASC")
 private List<ThesisFeedback> feedback = new ArrayList<>();
 
-@OneToMany(mappedBy = "thesis", fetch = FetchType.EAGER)
+@OneToMany(mappedBy = "thesis", fetch = FetchType.LAZY)
 @OrderBy("uploadedAt DESC")
 private List<ThesisFile> files = new ArrayList<>();
 
