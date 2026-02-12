@@ -4,7 +4,7 @@ import React, { useMemo, useState } from 'react'
 import { formatDate, formatPresentationType, formatThesisType } from '../../utils/format'
 import { ThesisStateColor, ThesisTypeColor } from '../../config/colors'
 import ThesisPreviewModal from '../ThesisPreviewModal/ThesisPreviewModal'
-import { IThesis, ThesisState } from '../../requests/responses/thesis'
+import { IThesisOverview, ThesisState } from '../../requests/responses/thesis'
 import { Badge, Center, Group, Indicator, Pagination, Stack, Text } from '@mantine/core'
 import ThesisStateBadge from '../ThesisStateBadge/ThesisStateBadge'
 import { Presentation } from '@phosphor-icons/react'
@@ -17,7 +17,7 @@ import { IGanttChartDataElement } from '../GanttChart/context'
 const ThesesGanttChart = () => {
   const { theses, page, setPage } = useThesesContext()
 
-  const [openedThesis, setOpenedThesis] = useState<IThesis>()
+  const [openedThesisId, setOpenedThesisId] = useState<string>()
 
   const currentTime = useMemo(() => Date.now(), [])
 
@@ -183,7 +183,7 @@ const ThesesGanttChart = () => {
           )
         }}
         onItemClick={(item) =>
-          setOpenedThesis(theses?.content.find((thesis) => thesis.thesisId === item.id))
+          setOpenedThesisId(item.id)
         }
       />
       {visibleStates.length > 0 && (
@@ -220,9 +220,9 @@ const ThesesGanttChart = () => {
         </Center>
       )}
       <ThesisPreviewModal
-        opened={!!openedThesis}
-        onClose={() => setOpenedThesis(undefined)}
-        thesis={openedThesis}
+        opened={!!openedThesisId}
+        onClose={() => setOpenedThesisId(undefined)}
+        thesisId={openedThesisId}
       />
     </Stack>
   )

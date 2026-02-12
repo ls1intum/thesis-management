@@ -1,7 +1,7 @@
 import { DataTable, DataTableColumn } from 'mantine-datatable'
 import { formatDate } from '../../utils/format'
 import { useTopicsContext } from '../../providers/TopicsProvider/hooks'
-import { ITopic, TopicState } from '../../requests/responses/topic'
+import { ITopicOverview, TopicState } from '../../requests/responses/topic'
 import { useNavigate } from 'react-router'
 import { Badge, Center, Stack, Text } from '@mantine/core'
 import AvatarUserList from '../AvatarUserList/AvatarUserList'
@@ -17,13 +17,13 @@ type TopicColumn =
   | 'createdAt'
   | string
 
-interface ITopicsTableProps {
+interface ITopicOverviewsTableProps {
   columns?: TopicColumn[]
-  extraColumns?: Record<string, DataTableColumn<ITopic>>
+  extraColumns?: Record<string, DataTableColumn<ITopicOverview>>
   noBorder?: boolean
 }
 
-const TopicsTable = (props: ITopicsTableProps) => {
+const TopicsTable = (props: ITopicOverviewsTableProps) => {
   const {
     extraColumns = {},
     columns = ['title', 'types', 'supervisor', 'advisor'],
@@ -47,7 +47,7 @@ const TopicsTable = (props: ITopicsTableProps) => {
     }
   }
 
-  const columnConfig: Record<TopicColumn, DataTableColumn<ITopic>> = {
+  const columnConfig: Record<TopicColumn, DataTableColumn<ITopicOverview>> = {
     state: {
       accessor: 'state',
       title: 'State',

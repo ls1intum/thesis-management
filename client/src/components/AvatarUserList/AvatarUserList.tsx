@@ -1,9 +1,9 @@
-import { ILightUser } from '../../requests/responses/user'
+import { IMinimalUser } from '../../requests/responses/user'
 import { MantineSize, Stack } from '@mantine/core'
 import AvatarUser from '../AvatarUser/AvatarUser'
 
 interface IAvatarUserListProps {
-  users: ILightUser[]
+  users: IMinimalUser[]
   withUniversityId?: boolean
   size?: MantineSize
   textSize?: MantineSize

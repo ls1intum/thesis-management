@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { doRequest } from '../requests/request'
 import { showSimpleError } from '../utils/notification'
 import { getApiResponseErrorMessage } from '../requests/handler'
-import { ITopic } from '../requests/responses/topic'
+import { ITopic, ITopicOverview } from '../requests/responses/topic'
 import { PaginationResponse } from '../requests/responses/pagination'
 
 export function useThesis(thesisId: string | undefined) {
@@ -89,12 +89,12 @@ export function useApiPdfFile(
 }
 
 export function useAllTopics() {
-  const [topics, setTopics] = useState<ITopic[]>()
+  const [topics, setTopics] = useState<ITopicOverview[]>()
 
   useEffect(() => {
     setTopics(undefined)
 
-    return doRequest<PaginationResponse<ITopic>>(
+    return doRequest<PaginationResponse<ITopicOverview>>(
       `/v2/topics`,
       {
         method: 'GET',

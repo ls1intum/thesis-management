@@ -1,5 +1,5 @@
-import { ILightResearchGroup } from './researchGroup'
-import { ILightUser } from './user'
+import { ILightResearchGroup, IMinimalResearchGroup } from './researchGroup'
+import { ILightUser, IMinimalUser } from './user'
 
 export enum ThesisState {
   PROPOSAL = 'PROPOSAL',
@@ -9,6 +9,12 @@ export enum ThesisState {
   GRADED = 'GRADED',
   FINISHED = 'FINISHED',
   DROPPED_OUT = 'DROPPED_OUT',
+}
+
+export interface IThesisPresentationOverview {
+  presentationId: string
+  type: string
+  scheduledAt: string
 }
 
 export interface IThesisPresentation {
@@ -26,24 +32,37 @@ export interface IThesisPresentation {
   createdBy: ILightUser
 }
 
-export interface IThesis {
+export interface IThesisOverview {
   thesisId: string
   title: string
   type: string
+  state: ThesisState
+  startDate: string | null
+  endDate: string | null
+  createdAt: string
+  keywords: string[]
+  students: IMinimalUser[]
+  advisors: IMinimalUser[]
+  supervisors: IMinimalUser[]
+  researchGroup: IMinimalResearchGroup
+  states: Array<{
+    state: ThesisState
+    startedAt: string
+    endedAt: string
+  }>
+  presentations: IThesisPresentationOverview[]
+}
+
+export interface IThesis extends IThesisOverview {
   language: string
   metadata: {
     credits: Record<string, number>
     titles: Record<string, string>
   }
   visibility: string
-  keywords: string[]
   infoText: string
   abstractText: string
-  state: ThesisState
   applicationId: string | null
-  startDate: string | null
-  endDate: string | null
-  createdAt: string
   researchGroup: ILightResearchGroup
   students: ILightUser[]
   advisors: ILightUser[]
@@ -85,11 +104,6 @@ export interface IThesis {
     feedback: string
   }
   presentations: IThesisPresentation[]
-  states: Array<{
-    state: ThesisState
-    startedAt: string
-    endedAt: string
-  }>
 }
 
 export interface IThesisComment {

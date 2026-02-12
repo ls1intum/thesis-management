@@ -15,6 +15,8 @@ import de.tum.cit.aet.thesis.entity.ThesisProposal;
 import de.tum.cit.aet.thesis.entity.ThesisStateChange;
 import de.tum.cit.aet.thesis.entity.jsonb.ThesisMetadata;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -22,6 +24,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record ThesisDto(
 	UUID thesisId,
 	String title,
@@ -54,19 +57,7 @@ public record ThesisDto(
 	List<ThesisStateChangeDto> states
 ) {
 
-public static ThesisDto fromThesisEntity(Thesis thesis, boolean advisorAccess,
-	boolean studentAccess) {
-	if (thesis == null) {
-	return null;
-	}
-
-	List<LightUserDto> students = thesis.getStudents().stream().map(LightUserDto::fromUserEntity)
-		.toList();
-	List<LightUserDto> advisors = thesis.getAdvisors().stream().map(LightUserDto::fromUserEntity)
-		.toList();
-	List<LightUserDto> supervisors = thesis.getSupervisors().stream()
-		.map(LightUserDto::fromUserEntity).toList();
-
+public static List<ThesisStateChangeDto> computeStateChanges(Thesis thesis) {
 	List<ThesisStateChangeDto> states = new ArrayList<>();
 	List<ThesisStateChange> stateChanges = thesis.getStates().stream()
 		.sorted(Comparator.comparing(ThesisStateChange::getChangedAt)).toList();
@@ -83,6 +74,24 @@ public static ThesisDto fromThesisEntity(Thesis thesis, boolean advisorAccess,
 
 	states.add(ThesisStateChangeDto.fromStateChangeEntity(stateChange, endedAt));
 	}
+
+	return states;
+}
+
+public static ThesisDto fromThesisEntity(Thesis thesis, boolean advisorAccess,
+	boolean studentAccess) {
+	if (thesis == null) {
+	return null;
+	}
+
+	List<LightUserDto> students = thesis.getStudents().stream().map(LightUserDto::fromUserEntity)
+		.toList();
+	List<LightUserDto> advisors = thesis.getAdvisors().stream().map(LightUserDto::fromUserEntity)
+		.toList();
+	List<LightUserDto> supervisors = thesis.getSupervisors().stream()
+		.map(LightUserDto::fromUserEntity).toList();
+
+	List<ThesisStateChangeDto> states = computeStateChanges(thesis);
 
 	List<ThesisProposal> proposals = thesis.getProposals();
 	List<ThesisAssessment> assessments = thesis.getAssessments();

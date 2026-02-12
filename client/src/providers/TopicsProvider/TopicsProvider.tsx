@@ -1,7 +1,7 @@
 import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react'
 import { doRequest } from '../../requests/request'
 import { showSimpleError } from '../../utils/notification'
-import { ITopic, TopicState } from '../../requests/responses/topic'
+import { ITopicOverview, TopicState } from '../../requests/responses/topic'
 import { ITopicsContext, ITopicsFilters, TopicsContext } from './context'
 import { PaginationResponse } from '../../requests/responses/pagination'
 
@@ -23,7 +23,7 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
     states = [],
   } = props
 
-  const [topics, setTopics] = useState<PaginationResponse<ITopic>>()
+  const [topics, setTopics] = useState<PaginationResponse<ITopicOverview>>()
   const [page, setPage] = useState(0)
   const [filters, setFilters] = useState<ITopicsFilters>({
     states: states,
@@ -36,7 +36,7 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
   const fetchTopics = async () => {
     setIsLoading(true)
 
-    return doRequest<PaginationResponse<ITopic>>(
+    return doRequest<PaginationResponse<ITopicOverview>>(
       `/v2/topics`,
       {
         method: 'GET',

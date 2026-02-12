@@ -6,6 +6,7 @@ import de.tum.cit.aet.thesis.controller.payload.ReplaceTopicPayload;
 import de.tum.cit.aet.thesis.dto.PaginationDto;
 import de.tum.cit.aet.thesis.dto.TopicDto;
 import de.tum.cit.aet.thesis.dto.TopicInterviewProcessDto;
+import de.tum.cit.aet.thesis.dto.TopicOverviewDto;
 import de.tum.cit.aet.thesis.entity.Topic;
 import de.tum.cit.aet.thesis.service.ApplicationService;
 import de.tum.cit.aet.thesis.service.TopicService;
@@ -62,7 +63,7 @@ public class TopicController {
 	 * @return the paginated list of topics
 	 */
 	@GetMapping
-	public ResponseEntity<PaginationDto<TopicDto>> getTopics(
+	public ResponseEntity<PaginationDto<TopicOverviewDto>> getTopics(
 			@RequestParam(required = false) String search,
 			@RequestParam(required = false, defaultValue = "true") boolean onlyOwnResearchGroup,
 			@RequestParam(required = false, defaultValue = "") String[] type,
@@ -85,7 +86,7 @@ public class TopicController {
 				researchGroupIds
 		);
 
-		return ResponseEntity.ok(PaginationDto.fromSpringPage(topics.map(TopicDto::fromTopicEntity)));
+		return ResponseEntity.ok(PaginationDto.fromSpringPage(topics.map(TopicOverviewDto::fromTopicEntity)));
 	}
 
 	/**

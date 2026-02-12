@@ -1,4 +1,4 @@
-import { ITopic, TopicState } from '../../../../requests/responses/topic'
+import { ITopic, ITopicOverview, TopicState } from '../../../../requests/responses/topic'
 import { X } from '@phosphor-icons/react'
 import React, { useEffect, useState } from 'react'
 import { useTopicsContext } from '../../../../providers/TopicsProvider/hooks'
@@ -9,7 +9,7 @@ import { useForm } from '@mantine/form'
 import { Button, Checkbox, Modal, Select, Stack, Text } from '@mantine/core'
 
 interface ICloseTopicButtonProps {
-  topic: ITopic
+  topic: ITopicOverview
   size?: string
 }
 
@@ -36,7 +36,7 @@ const CloseTopicButton = (props: ICloseTopicButtonProps) => {
     form.reset()
   }, [confirmationModal])
 
-  if (topic.closedAt) {
+  if (topic.state === TopicState.CLOSED) {
     return null
   }
 

@@ -343,9 +343,12 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 			assertThat(firstThesis.has("thesisId")).isTrue();
 			assertThat(firstThesis.has("title")).isTrue();
 			assertThat(firstThesis.has("type")).isTrue();
-			assertThat(firstThesis.has("language")).isTrue();
 			assertThat(firstThesis.has("state")).isTrue();
-			assertThat(firstThesis.has("visibility")).isTrue();
+			assertThat(firstThesis.has("students")).isTrue();
+			assertThat(firstThesis.has("advisors")).isTrue();
+			// Overview DTO does not include language or visibility
+			assertThat(firstThesis.has("language")).isFalse();
+			assertThat(firstThesis.has("visibility")).isFalse();
 		}
 	}
 

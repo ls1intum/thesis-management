@@ -3,6 +3,7 @@ import { ITopic, TopicState } from '../../../../requests/responses/topic'
 import { isNotEmpty, useForm } from '@mantine/form'
 import { isNotEmptyUserList } from '../../../../utils/validation'
 import { useEffect, useState } from 'react'
+import { useTopic } from '../../../../hooks/fetcher'
 import DocumentEditor from '../../../../components/DocumentEditor/DocumentEditor'
 import { GLOBAL_CONFIG } from '../../../../config/global'
 import { doRequest } from '../../../../requests/request'
@@ -19,11 +20,14 @@ import { DateInput } from '@mantine/dates'
 interface ICreateTopicModalProps {
   opened: boolean
   onClose: () => unknown
-  topic?: ITopic
+  topicId?: string
 }
 
 const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
-  const { topic, opened, onClose } = props
+  const { topicId, opened, onClose } = props
+
+  const fetchedTopic = useTopic(opened ? topicId : undefined)
+  const topic = fetchedTopic || undefined
 
   const { addTopic, updateTopic } = useTopicsContext()
   const [researchGroups, setResearchGroups] = useState<PaginationResponse<ILightResearchGroup>>()
@@ -268,14 +272,14 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
             {...form.getInputProps('references')}
           />
           <Group>
-            {(!props.topic || props.topic.state === TopicState.DRAFT) && (
+            {(!topic || topic.state === TopicState.DRAFT) && (
               <Button
                 variant='default'
                 onClick={() => onSubmit(true)}
                 disabled={!form.isValid()}
                 loading={loading}
               >
-                {props.topic ? 'Save Changes' : 'Create Draft'}
+                {topic ? 'Save Changes' : 'Create Draft'}
               </Button>
             )}
             <Button type='submit' flex={1} disabled={!form.isValid()} loading={loading}>

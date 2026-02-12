@@ -1,5 +1,6 @@
 import TopicsProvider from '../../providers/TopicsProvider/TopicsProvider'
 import TopicsTable from '../../components/TopicsTable/TopicsTable'
+import { TopicState } from '../../requests/responses/topic'
 import { Button, Group, Stack, Center } from '@mantine/core'
 import { Link, useParams, useSearchParams } from 'react-router'
 import PublishedTheses from './components/PublishedTheses/PublishedTheses'
@@ -163,7 +164,7 @@ const LandingPage = () => {
                         justify='center'
                         onClick={(e) => e.stopPropagation()}
                       >
-                        {!topic.closedAt && (
+                        {topic.state !== TopicState.CLOSED && (
                           <Button
                             component={Link}
                             to={`/submit-application/${topic.topicId}`}

@@ -17,14 +17,14 @@ import TopicCard from './TopicCard/TopicCard'
 import { useTopicsContext } from '../../../../providers/TopicsProvider/hooks'
 import { Database } from '@phosphor-icons/react'
 import { Dispatch, useEffect, useState } from 'react'
-import { ITopic } from '../../../../requests/responses/topic'
+import { ITopic, ITopicOverview } from '../../../../requests/responses/topic'
 import { IPublishedThesis } from '../../../../requests/responses/thesis'
 import { PaginationResponse } from '../../../../requests/responses/pagination'
 import CollapsibleTopicElement from '../../../ReplaceApplicationPage/components/SelectTopicStep/components/CollapsibleTopicElement'
 import { GLOBAL_CONFIG } from '../../../../config/global'
 
 interface ITopicCardGridProps {
-  topics: PaginationResponse<ITopic> | PaginationResponse<IPublishedThesis>
+  topics: PaginationResponse<ITopicOverview> | PaginationResponse<IPublishedThesis>
   page: number
   setPage: (page: number) => void
   limit: number

@@ -5,12 +5,15 @@ import de.tum.cit.aet.thesis.constants.TopicState;
 import de.tum.cit.aet.thesis.entity.Topic;
 import de.tum.cit.aet.thesis.entity.TopicRole;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record TopicDto(
 	UUID topicId,
 	String title,

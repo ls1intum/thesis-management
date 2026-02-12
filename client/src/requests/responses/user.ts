@@ -1,10 +1,13 @@
-export interface ILightUser {
+export interface IMinimalUser {
   userId: string
-  universityId: string
-  avatar: string | null
-  matriculationNumber: string | null
   firstName: string | null
   lastName: string | null
+  avatar: string | null
+}
+
+export interface ILightUser extends IMinimalUser {
+  universityId: string
+  matriculationNumber: string | null
   email: string | null
   studyDegree: string | null
   studyProgram: string | null
