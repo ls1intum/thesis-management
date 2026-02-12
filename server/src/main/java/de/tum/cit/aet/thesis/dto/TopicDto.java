@@ -1,11 +1,10 @@
 package de.tum.cit.aet.thesis.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.thesis.constants.ThesisRoleName;
 import de.tum.cit.aet.thesis.constants.TopicState;
 import de.tum.cit.aet.thesis.entity.Topic;
 import de.tum.cit.aet.thesis.entity.TopicRole;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.time.Instant;
 import java.util.ArrayList;

@@ -1,5 +1,6 @@
 package de.tum.cit.aet.thesis.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.thesis.constants.ThesisFeedbackType;
 import de.tum.cit.aet.thesis.constants.ThesisPresentationState;
 import de.tum.cit.aet.thesis.constants.ThesisPresentationType;
@@ -14,8 +15,6 @@ import de.tum.cit.aet.thesis.entity.ThesisPresentation;
 import de.tum.cit.aet.thesis.entity.ThesisProposal;
 import de.tum.cit.aet.thesis.entity.ThesisStateChange;
 import de.tum.cit.aet.thesis.entity.jsonb.ThesisMetadata;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.time.Instant;
 import java.util.ArrayList;
