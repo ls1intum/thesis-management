@@ -6,23 +6,23 @@ import de.tum.cit.aet.thesis.service.AccessManagementService.KeycloakUserInforma
 import java.util.UUID;
 
 public record KeycloakUserDto(
-        UUID id,
-        String username,
-        String firstName,
-        String lastName,
-        String email,
-        boolean hasResearchGroup
+		UUID id,
+		String username,
+		String firstName,
+		String lastName,
+		String email,
+		boolean hasResearchGroup
 ) {
-    public static KeycloakUserDto from(KeycloakUserInformation keycloakUser, User systemUser) {
-        boolean hasResearchGroup = systemUser != null && systemUser.getResearchGroup() != null;
+	public static KeycloakUserDto from(KeycloakUserInformation keycloakUser, User systemUser) {
+		boolean hasResearchGroup = systemUser != null && systemUser.getResearchGroup() != null;
 
-        return new KeycloakUserDto(
-                keycloakUser.id(),
-                keycloakUser.username(),
-                keycloakUser.firstName(),
-                keycloakUser.lastName(),
-                keycloakUser.email(),
-                hasResearchGroup
-        );
-    }
+		return new KeycloakUserDto(
+				keycloakUser.id(),
+				keycloakUser.username(),
+				keycloakUser.firstName(),
+				keycloakUser.lastName(),
+				keycloakUser.email(),
+				hasResearchGroup
+		);
+	}
 }

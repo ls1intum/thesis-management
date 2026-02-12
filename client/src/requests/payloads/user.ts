@@ -1,5 +1,4 @@
 export interface IUpdateUserInformationPayload {
-  matriculationNumber: string
   firstName: string
   lastName: string
   gender: string

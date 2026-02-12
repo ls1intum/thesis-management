@@ -6,9 +6,9 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum UploadFileType {
-    PDF("PDF"),
-    IMAGE("IMAGE"),
-    ANY("ANY");
+	PDF("PDF"),
+	IMAGE("IMAGE"),
+	ANY("ANY");
 
-    private final String value;
+	private final String value;
 }

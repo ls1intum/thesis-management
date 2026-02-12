@@ -2,83 +2,126 @@ package de.tum.cit.aet.thesis.utility;
 
 import de.tum.cit.aet.thesis.entity.User;
 import de.tum.cit.aet.thesis.repository.UserRepository;
-import jakarta.mail.internet.InternetAddress;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
 
+import jakarta.mail.internet.InternetAddress;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
+/** Provides mail configuration properties and access to chair member data for email sending. */
 @Component
 public class MailConfig {
-    private final UserRepository userRepository;
+	private final UserRepository userRepository;
 
-    private final Boolean enabled;
+	private final Boolean enabled;
 
-    @Getter
-    private final String clientHost;
+	@Getter
+	private final String clientHost;
 
-    @Getter
-    private final InternetAddress sender;
+	@Getter
+	private final InternetAddress sender;
 
-    @Getter
-    private final String signature;
+	@Getter
+	private final String signature;
 
-    @Getter
-    private final String workspaceUrl;
+	@Getter
+	private final String workspaceUrl;
 
-    @Getter
-    private final TemplateEngine templateEngine;
+	@Getter
+	private final TemplateEngine templateEngine;
 
-    @Autowired
-    public MailConfig(
-            @Value("${thesis-management.mail.enabled}") boolean enabled,
-            @Value("${thesis-management.mail.sender}") InternetAddress sender,
-            @Value("${thesis-management.mail.bcc-recipients}") String bccRecipientsList,
-            @Value("${thesis-management.mail.signature}") String mailSignature,
-            @Value("${thesis-management.mail.workspace-url}") String workspaceUrl,
-            @Value("${thesis-management.client.host}") String clientHost,
-            UserRepository userRepository,
-            TemplateEngine templateEngine
-    ) {
-        this.enabled = enabled;
-        this.sender = sender;
-        this.workspaceUrl = workspaceUrl;
-        this.signature = mailSignature;
-        this.clientHost = clientHost;
+	/**
+	 * Injects mail-related configuration properties, the user repository, and the template engine.
+	 *
+	 * @param enabled whether email sending is enabled
+	 * @param sender the sender email address
+	 * @param bccRecipientsList the BCC recipients list
+	 * @param mailSignature the email signature
+	 * @param workspaceUrl the workspace URL
+	 * @param clientHost the client host URL
+	 * @param userRepository the user repository
+	 * @param templateEngine the Thymeleaf template engine
+	 */
+	@Autowired
+	public MailConfig(
+			@Value("${thesis-management.mail.enabled}") boolean enabled,
+			@Value("${thesis-management.mail.sender}") InternetAddress sender,
+			@Value("${thesis-management.mail.bcc-recipients}") String bccRecipientsList,
+			@Value("${thesis-management.mail.signature}") String mailSignature,
+			@Value("${thesis-management.mail.workspace-url}") String workspaceUrl,
+			@Value("${thesis-management.client.host}") String clientHost,
+			UserRepository userRepository,
+			TemplateEngine templateEngine
+	) {
+		this.enabled = enabled;
+		this.sender = sender;
+		this.workspaceUrl = workspaceUrl;
+		this.signature = mailSignature;
+		this.clientHost = clientHost;
 
-        this.templateEngine = templateEngine;
-        this.userRepository = userRepository;
-    }
+		this.templateEngine = templateEngine;
+		this.userRepository = userRepository;
+	}
 
-    public boolean isEnabled() {
-        return enabled;
-    }
+	/**
+	 * Returns whether email sending is enabled.
+	 *
+	 * @return true if email sending is enabled
+	 */
+	public boolean isEnabled() {
+		return enabled;
+	}
 
-    public List<User> getChairMembers(UUID researchGroupId) {
-        return userRepository.getRoleMembers(Set.of("admin", "supervisor", "advisor"), researchGroupId);
-    }
+	/**
+	 * Returns all admin, supervisor, and advisor users belonging to the given research group.
+	 *
+	 * @param researchGroupId the research group ID
+	 * @return the list of chair members
+	 */
+	public List<User> getChairMembers(UUID researchGroupId) {
+		return userRepository.getRoleMembers(Set.of("admin", "supervisor", "advisor"), researchGroupId);
+	}
 
-    public List<User> getChairStudents(UUID researchGroupId) {
-        return userRepository.getRoleMembers(Set.of("student"), researchGroupId);
-    }
+	/**
+	 * Returns all student users belonging to the given research group.
+	 *
+	 * @param researchGroupId the research group ID
+	 * @return the list of students
+	 */
+	public List<User> getChairStudents(UUID researchGroupId) {
+		return userRepository.getRoleMembers(Set.of("student"), researchGroupId);
+	}
 
-    public record MailConfigDto(
-            String signature,
-            String workspaceUrl,
-            String clientHost
-    ) {}
+	/**
+	 * Data transfer object holding mail configuration values for use in email templates.
+	 *
+	 * @param signature the email signature
+	 * @param workspaceUrl the workspace URL
+	 * @param clientHost the client host URL
+	 */
+	public record MailConfigDto(
+			String signature,
+			String workspaceUrl,
+			String clientHost
+	) {}
 
-    public MailConfigDto getConfigDto() {
-        return new MailConfigDto(
-                Objects.requireNonNullElse(signature, ""),
-                Objects.requireNonNullElse(workspaceUrl, ""),
-                Objects.requireNonNullElse(getClientHost(), "")
-        );
-    }
+	/**
+	 * Creates a MailConfigDto with the current configuration values, substituting empty strings for null values.
+	 *
+	 * @return the mail configuration DTO
+	 */
+	public MailConfigDto getConfigDto() {
+		return new MailConfigDto(
+				Objects.requireNonNullElse(signature, ""),
+				Objects.requireNonNullElse(workspaceUrl, ""),
+				Objects.requireNonNullElse(getClientHost(), "")
+		);
+	}
 }

@@ -31,18 +31,18 @@ public interface EmailTemplateRepository extends JpaRepository<EmailTemplate, UU
             Pageable page
     );
 
-    @Query("""
-            SELECT e FROM EmailTemplate e
-            WHERE (:researchGroupId IS NULL AND e.researchGroup.id IS NULL
-                   OR e.researchGroup.id = :researchGroupId)
-              AND e.templateCase = :templateCase
-              AND e.language = :language
-            """)
-    Optional<EmailTemplate> findByResearchGroupIdAndTemplateCaseAndLanguage(
-            @Param("researchGroupId") UUID researchGroupId,
-            @Param("templateCase") String templateCase,
-            @Param("language") String language
-    );
+	@Query("""
+			SELECT e FROM EmailTemplate e
+			WHERE (:researchGroupId IS NULL AND e.researchGroup.id IS NULL
+				OR e.researchGroup.id = :researchGroupId)
+			AND e.templateCase = :templateCase
+			AND e.language = :language
+			""")
+	Optional<EmailTemplate> findByResearchGroupIdAndTemplateCaseAndLanguage(
+			@Param("researchGroupId") UUID researchGroupId,
+			@Param("templateCase") String templateCase,
+			@Param("language") String language
+	);
 
     @Query("""
     SELECT e FROM EmailTemplate e
@@ -58,6 +58,6 @@ public interface EmailTemplateRepository extends JpaRepository<EmailTemplate, UU
         Optional<EmailTemplate> specific = findByResearchGroupIdAndTemplateCaseAndLanguage(researchGroupId, templateCase, language);
         if (specific.isPresent()) return specific;
 
-        return findByResearchGroupIdAndTemplateCaseAndLanguage(null, templateCase, "en");
-    }
+		return findByResearchGroupIdAndTemplateCaseAndLanguage(null, templateCase, "en");
+	}
 }

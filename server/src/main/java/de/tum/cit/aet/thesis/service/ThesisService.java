@@ -1,15 +1,39 @@
 package de.tum.cit.aet.thesis.service;
 
-import de.tum.cit.aet.thesis.constants.*;
+import de.tum.cit.aet.thesis.constants.StringLimits;
+import de.tum.cit.aet.thesis.constants.ThesisFeedbackType;
+import de.tum.cit.aet.thesis.constants.ThesisRoleName;
+import de.tum.cit.aet.thesis.constants.ThesisState;
+import de.tum.cit.aet.thesis.constants.ThesisVisibility;
+import de.tum.cit.aet.thesis.constants.UploadFileType;
 import de.tum.cit.aet.thesis.controller.payload.RequestChangesPayload;
 import de.tum.cit.aet.thesis.controller.payload.ThesisStatePayload;
-import de.tum.cit.aet.thesis.entity.*;
+import de.tum.cit.aet.thesis.entity.Application;
+import de.tum.cit.aet.thesis.entity.ResearchGroup;
+import de.tum.cit.aet.thesis.entity.ResearchGroupSettings;
+import de.tum.cit.aet.thesis.entity.Thesis;
+import de.tum.cit.aet.thesis.entity.ThesisAssessment;
+import de.tum.cit.aet.thesis.entity.ThesisFeedback;
+import de.tum.cit.aet.thesis.entity.ThesisFile;
+import de.tum.cit.aet.thesis.entity.ThesisPresentation;
+import de.tum.cit.aet.thesis.entity.ThesisProposal;
+import de.tum.cit.aet.thesis.entity.ThesisRole;
+import de.tum.cit.aet.thesis.entity.ThesisStateChange;
+import de.tum.cit.aet.thesis.entity.User;
 import de.tum.cit.aet.thesis.entity.jsonb.ThesisMetadata;
 import de.tum.cit.aet.thesis.entity.key.ThesisRoleId;
 import de.tum.cit.aet.thesis.entity.key.ThesisStateChangeId;
 import de.tum.cit.aet.thesis.exception.request.ResourceInvalidParametersException;
 import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
-import de.tum.cit.aet.thesis.repository.*;
+import de.tum.cit.aet.thesis.repository.ResearchGroupRepository;
+import de.tum.cit.aet.thesis.repository.ThesisAssessmentRepository;
+import de.tum.cit.aet.thesis.repository.ThesisFeedbackRepository;
+import de.tum.cit.aet.thesis.repository.ThesisFileRepository;
+import de.tum.cit.aet.thesis.repository.ThesisProposalRepository;
+import de.tum.cit.aet.thesis.repository.ThesisRepository;
+import de.tum.cit.aet.thesis.repository.ThesisRoleRepository;
+import de.tum.cit.aet.thesis.repository.ThesisStateChangeRepository;
+import de.tum.cit.aet.thesis.repository.UserRepository;
 import de.tum.cit.aet.thesis.security.CurrentUserProvider;
 import de.tum.cit.aet.thesis.utility.DataFormatter;
 import de.tum.cit.aet.thesis.utility.PDFBuilder;
@@ -25,709 +49,784 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 
+/** Manages the full thesis lifecycle, including creation, state transitions, proposals, assessments, and grading. */
 @Service
 public class ThesisService {
-    private final ThesisRoleRepository thesisRoleRepository;
-    private final ThesisRepository thesisRepository;
-    private final ThesisStateChangeRepository thesisStateChangeRepository;
-    private final UserRepository userRepository;
-    private final UploadService uploadService;
-    private final ThesisProposalRepository thesisProposalRepository;
-    private final ThesisAssessmentRepository thesisAssessmentRepository;
-    private final MailingService mailingService;
-    private final AccessManagementService accessManagementService;
-    private final ThesisPresentationService thesisPresentationService;
-    private final ThesisFeedbackRepository thesisFeedbackRepository;
-    private final ThesisFileRepository thesisFileRepository;
-    private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
-    private final ResearchGroupRepository researchGroupRepository;
-    private final ResearchGroupSettingsService researchGroupSettingsService;
-
-    @Autowired
-    public ThesisService(
-            ThesisRoleRepository thesisRoleRepository,
-            ThesisRepository thesisRepository,
-            ThesisStateChangeRepository thesisStateChangeRepository,
-            UserRepository userRepository,
-            ThesisProposalRepository thesisProposalRepository,
-            ThesisAssessmentRepository thesisAssessmentRepository,
-            UploadService uploadService,
-            MailingService mailingService,
-            AccessManagementService accessManagementService,
-            ThesisPresentationService thesisPresentationService,
-            ThesisFeedbackRepository thesisFeedbackRepository, ThesisFileRepository thesisFileRepository,
-            ObjectProvider<CurrentUserProvider> currentUserProviderProvider, ResearchGroupRepository researchGroupRepository, ResearchGroupSettingsService researchGroupSettingsService
-    ) {
-        this.thesisRoleRepository = thesisRoleRepository;
-        this.thesisRepository = thesisRepository;
-        this.thesisStateChangeRepository = thesisStateChangeRepository;
-        this.userRepository = userRepository;
-        this.uploadService = uploadService;
-        this.thesisProposalRepository = thesisProposalRepository;
-        this.thesisAssessmentRepository = thesisAssessmentRepository;
-        this.mailingService = mailingService;
-        this.accessManagementService = accessManagementService;
-        this.thesisPresentationService = thesisPresentationService;
-        this.thesisFeedbackRepository = thesisFeedbackRepository;
-        this.thesisFileRepository = thesisFileRepository;
-        this.currentUserProviderProvider = currentUserProviderProvider;
-        this.researchGroupRepository = researchGroupRepository;
-        this.researchGroupSettingsService = researchGroupSettingsService;
-    }
-
-    private CurrentUserProvider currentUserProvider() {
-        return currentUserProviderProvider.getObject();
-    }
-
-    public Page<Thesis> getAll(
-        UUID userId,
-        boolean fetchAll,
-        String searchQuery,
-        ThesisState[] states,
-        String[] types,
-        int page,
-        int limit,
-        String sortBy,
-        String sortOrder,
-        UUID[] researchGroupIds
-    ) {
-        Sort.Order order = new Sort.Order(sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
-        String searchQueryFilter = searchQuery == null || searchQuery.isEmpty() ? null : searchQuery.toLowerCase();
-        Set<ThesisState> statesFilter = states == null || states.length == 0 ? null : new HashSet<>(Arrays.asList(states));
-        Set<String> typesFilter = types == null || types.length == 0 ? null : new HashSet<>(Arrays.asList(types));
-
-        Set<UUID> researchGroupIdsFilter = null;
-
-        if (researchGroupIds != null && researchGroupIds.length > 0) {
-            researchGroupIdsFilter = new HashSet<>(Arrays.asList(researchGroupIds));
-        }
-        Set<ThesisVisibility> visibilitySet = Set.of();
-
-        if (userId == null) {
-            visibilitySet = Set.of(ThesisVisibility.PUBLIC);
-        } else if (currentUserProvider().isAdmin()) {
-            userId = null; // Admins can see all theses
-            visibilitySet = null;
-        } else if ((currentUserProvider().isAdvisor() || currentUserProvider().isSupervisor()) && fetchAll) {
-            researchGroupIdsFilter = new HashSet<>(Arrays.asList(currentUserProvider().getResearchGroupOrThrow().getId()));
-            visibilitySet = Set.of(ThesisVisibility.PUBLIC, ThesisVisibility.STUDENT, ThesisVisibility.INTERNAL);
-        } else if (currentUserProvider().isStudent() && fetchAll) {
-            visibilitySet = Set.of(ThesisVisibility.PUBLIC, ThesisVisibility.STUDENT);
-        } else if (currentUserProvider().isAnonymous() && fetchAll) {
-            visibilitySet = Set.of(ThesisVisibility.PUBLIC);
-        }
-
-        return thesisRepository.searchTheses(
-                researchGroupIdsFilter,
-                userId,
-                visibilitySet,
-                searchQueryFilter,
-                statesFilter,
-                typesFilter,
-                PageRequest.of(page, limit, Sort.by(order))
-        );
-    }
-
-    @Transactional
-    public Thesis createThesis(
-            String thesisTitle,
-            String thesisType,
-            String language,
-            List<UUID> supervisorIds,
-            List<UUID> advisorIds,
-            List<UUID> studentIds,
-            Application application,
-            boolean notifyUser,
-            UUID researchGroupId
-    ) {
-        ResearchGroup researchGroup = researchGroupRepository.findById(researchGroupId)
-                .orElseThrow(() -> new ResourceNotFoundException("Research group not found"));
-
-        ResearchGroupSettings researchGroupSettings = researchGroupSettingsService.getByResearchGroupId(researchGroupId).orElseGet(ResearchGroupSettings::new);
-        Thesis thesis = new Thesis();
-
-        ThesisState nextState = researchGroupSettings.isProposalPhaseActive() ? ThesisState.PROPOSAL : ThesisState.WRITING;
-
-        thesis.setTitle(thesisTitle);
-        thesis.setType(thesisType);
-        thesis.setLanguage(language);
-        thesis.setMetadata(ThesisMetadata.getEmptyMetadata());
-        thesis.setVisibility(ThesisVisibility.INTERNAL);
-        thesis.setKeywords(new HashSet<>());
-        thesis.setInfo("");
-        thesis.setAbstractField("");
-        thesis.setState(nextState);
-        thesis.setApplication(application);
-        thesis.setCreatedAt(Instant.now());
-        thesis.setResearchGroup(researchGroup);
-
-        thesis = thesisRepository.save(thesis);
-
-        assignThesisRoles(thesis, supervisorIds, advisorIds, studentIds);
-        saveStateChange(thesis, nextState);
-
-        if (notifyUser) {
-            mailingService.sendThesisCreatedEmail(currentUserProvider().getUser(), thesis);
-        }
-
-        for (User student : thesis.getStudents()) {
-            accessManagementService.addStudentGroup(student);
-        }
-
-        return thesis;
-    }
-
-    @Transactional
-    public Thesis closeThesis(Thesis thesis) {
-        currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
-        if (thesis.getState() == ThesisState.DROPPED_OUT || thesis.getState() == ThesisState.FINISHED) {
-            throw new ResourceInvalidParametersException("Thesis is already completed");
-        }
-
-        thesis.setState(ThesisState.DROPPED_OUT);
-        saveStateChange(thesis, ThesisState.DROPPED_OUT);
-
-        thesis = thesisRepository.save(thesis);
-
-        mailingService.sendThesisClosedEmail(currentUserProvider().getUser(), thesis);
-
-        for (User student : thesis.getStudents()) {
-            if (!existsPendingThesis(student)) {
-                accessManagementService.removeStudentGroup(student);
-            }
-        }
-
-        return thesis;
-    }
-
-    @Transactional
-    public Thesis updateThesis(
-            Thesis thesis,
-            String thesisTitle,
-            String thesisType,
-            String language,
-            ThesisVisibility visibility,
-            Set<String> keywords,
-            Instant startDate,
-            Instant endDate,
-            List<UUID> studentIds,
-            List<UUID> advisorIds,
-            List<UUID> supervisorIds,
-            List<ThesisStatePayload> states,
-            UUID researchGroupId
-    ) {
-        ResearchGroup researchGroup = researchGroupRepository.findById(researchGroupId)
-                .orElseThrow(() -> new ResourceNotFoundException("Research group not found"));
-        currentUserProvider().assertCanAccessResearchGroup(researchGroup);
-        thesis.setTitle(thesisTitle);
-        thesis.setType(thesisType);
-        thesis.setLanguage(language);
-        thesis.setVisibility(visibility);
-        thesis.setKeywords(keywords);
-        thesis.setResearchGroup(researchGroup);
-
-        if ((startDate == null && endDate != null) || (startDate != null && endDate == null)) {
-            throw new ResourceInvalidParametersException("Both start and end date must be provided.");
-        }
-
-        thesis.setStartDate(startDate);
-        thesis.setEndDate(endDate);
-
-        assignThesisRoles(thesis, supervisorIds, advisorIds, studentIds);
-
-        for (ThesisStatePayload state : states) {
-            saveStateChange(thesis, state.state(), state.changedAt());
-        }
-
-        thesis = thesisRepository.save(thesis);
-
-        thesisPresentationService.updateThesisCalendarEvents(thesis);
-
-        return thesis;
-    }
-
-    @Transactional
-    public Thesis updateThesisInfo(
-            Thesis thesis,
-            String abstractText,
-            String infoText
-    ) {
-        currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
-        thesis.setAbstractField(abstractText);
-        thesis.setInfo(infoText);
-
-        thesis = thesisRepository.save(thesis);
-
-        thesisPresentationService.updateThesisCalendarEvents(thesis);
-
-        return thesis;
-    }
-
-    @Transactional
-    public Thesis updateThesisTitles(
-            Thesis thesis,
-            String primaryTitle,
-            Map<String, String> titles
-    ) {
-        currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
-        thesis.setMetadata(new ThesisMetadata(
-                titles,
-                thesis.getMetadata().credits()
-        ));
-        thesis.setTitle(primaryTitle);
-
-        thesis = thesisRepository.save(thesis);
-
-        thesisPresentationService.updateThesisCalendarEvents(thesis);
-
-        return thesis;
-    }
-
-    @Transactional
-    public Thesis updateThesisCredits(
-            Thesis thesis,
-            Map<UUID, Number> credits
-    ) {
-        currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
-        thesis.setMetadata(new ThesisMetadata(
-                thesis.getMetadata().titles(),
-                credits
-        ));
-
-        return thesisRepository.save(thesis);
-    }
-
-    /* FEEDBACK */
-    public Thesis completeFeedback(Thesis thesis, UUID feedbackId, boolean completed) {
-        currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
-        ThesisFeedback feedback = thesis.getFeedbackItem(feedbackId)
-                .orElseThrow(() -> new ResourceNotFoundException("Feedback id not found"));
-
-        feedback.setCompletedAt(completed ? Instant.now() : null);
-
-        thesisFeedbackRepository.save(feedback);
-
-        return thesis;
-    }
-
-    @Transactional
-    public Thesis deleteFeedback(Thesis thesis, UUID feedbackId) {
-        currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
-        thesis.getFeedbackItem(feedbackId)
-                .orElseThrow(() -> new ResourceNotFoundException("Feedback id not found"));
-
-        thesisFeedbackRepository.deleteById(feedbackId);
-
-        thesis.setFeedback(new ArrayList<>(
-                thesis.getFeedback().stream().filter(feedback -> !feedback.getId().equals(feedbackId)).toList()
-        ));
-
-        return thesis;
-    }
-
-    @Transactional
-    public Thesis requestChanges(Thesis thesis, ThesisFeedbackType type, List<RequestChangesPayload.RequestedChange> requestedChanges) {
-        currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
-        for (var requestedChange : requestedChanges) {
-            ThesisFeedback feedback = new ThesisFeedback();
-
-            feedback.setRequestedAt(Instant.now());
-            feedback.setRequestedBy(currentUserProvider().getUser());
-            feedback.setThesis(thesis);
-            feedback.setType(type);
-            feedback.setFeedback(RequestValidator.validateStringMaxLength(requestedChange.feedback(), StringLimits.LONGTEXT.getLimit()));
-            feedback.setCompletedAt(requestedChange.completed() ? Instant.now() : null);
-
-            feedback = thesisFeedbackRepository.save(feedback);
-
-            thesis.getFeedback().add(feedback);
-            thesis.setFeedback(thesis.getFeedback());
-        }
-
-        if (type == ThesisFeedbackType.PROPOSAL) {
-            mailingService.sendProposalChangeRequestEmail(currentUserProvider().getUser(), thesis);
-        }
-
-        return thesis;
-    }
-
-    /* PROPOSAL */
-
-    public Resource getProposalFile(ThesisProposal proposal) {
-        currentUserProvider().assertCanAccessResearchGroup(proposal.getResearchGroup());
-        return uploadService.load(proposal.getProposalFilename());
-    }
-
-    @Transactional
-    public Thesis uploadProposal(Thesis thesis, MultipartFile proposalFile) {
-        currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
-        ThesisProposal proposal = new ThesisProposal();
-
-        proposal.setThesis(thesis);
-        proposal.setProposalFilename(uploadService.store(proposalFile, 25 * 1024 * 1024, UploadFileType.PDF));
-        proposal.setCreatedAt(Instant.now());
-        proposal.setCreatedBy(currentUserProvider().getUser());
-
-        List<ThesisProposal> proposals = thesis.getProposals() == null ? new ArrayList<>() : thesis.getProposals();
-        proposals.addFirst(proposal);
-
-        thesis.setProposals(proposals);
-
-        thesisProposalRepository.save(proposal);
-
-        mailingService.sendProposalUploadedEmail(proposal);
-
-        return thesisRepository.save(thesis);
-    }
-
-    @Transactional
-    public Thesis deleteProposal(Thesis thesis, UUID proposalId) {
-        currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
-        thesis.getProposalById(proposalId)
-                .orElseThrow(() -> new ResourceNotFoundException("Proposal id not found"));
-
-        thesisProposalRepository.deleteById(proposalId);
-
-        thesis.setProposals(new ArrayList<>(
-                thesis.getProposals().stream().filter(proposal -> !proposal.getId().equals(proposalId)).toList()
-        ));
-
-        return thesis;
-    }
-
-    @Transactional
-    public Thesis acceptProposal(Thesis thesis) {
-        currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
-        List<ThesisProposal> proposals = thesis.getProposals();
-
-        if (proposals == null || proposals.isEmpty()) {
-            throw new ResourceNotFoundException("No proposal added to thesis yet");
-        }
-
-        ThesisProposal proposal = proposals.getFirst();
-
-        proposal.setApprovedAt(Instant.now());
-        proposal.setApprovedBy(currentUserProvider().getUser());
-
-        thesisProposalRepository.save(proposal);
-
-        saveStateChange(thesis, ThesisState.WRITING);
-
-        thesis.setState(ThesisState.WRITING);
-
-        mailingService.sendProposalAcceptedEmail(proposal);
-
-        return thesisRepository.save(thesis);
-    }
-
-    /* WRITING */
-
-    @Transactional
-    public Thesis submitThesis(Thesis thesis) {
-        currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
-        if (thesis.getLatestFile("THESIS").isEmpty()) {
-            throw new ResourceInvalidParametersException("Thesis file not uploaded yet");
-        }
-
-        thesis.setState(ThesisState.SUBMITTED);
-
-        saveStateChange(thesis, ThesisState.SUBMITTED);
-
-        mailingService.sendFinalSubmissionEmail(thesis);
-
-        return thesisRepository.save(thesis);
-    }
-
-    @Transactional
-    public Thesis uploadThesisFile(Thesis thesis, String type, MultipartFile file) {
-        currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
-        ThesisFile thesisFile = new ThesisFile();
-
-        thesisFile.setUploadName(file.getOriginalFilename());
-        thesisFile.setFilename(uploadService.store(file, 25 * 1024 * 1024, UploadFileType.ANY));
-        thesisFile.setUploadedBy(currentUserProvider().getUser());
-        thesisFile.setUploadedAt(Instant.now());
-        thesisFile.setThesis(thesis);
-        thesisFile.setType(type);
-
-        List<ThesisFile> files = thesis.getFiles();
-        files.addFirst(thesisFileRepository.save(thesisFile));
-
-        return thesisRepository.save(thesis);
-    }
-
-    @Transactional
-    public Thesis deleteThesisFile(Thesis thesis, UUID fileId) {
-        currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
-        thesis.getFileById(fileId)
-                .orElseThrow(() -> new ResourceNotFoundException("File id not found"));
-
-        thesisFileRepository.deleteById(fileId);
-
-        thesis.setFiles(new ArrayList<>(
-                thesis.getFiles().stream().filter(file -> !file.getId().equals(fileId)).toList()
-        ));
-
-        return thesis;
-    }
-
-    public Resource getThesisFile(ThesisFile file) {
-        if (!file.getThesis().hasReadAccess(null)) {
-            currentUserProvider().assertCanAccessResearchGroup(file.getResearchGroup());
-        }
-        return uploadService.load(file.getFilename());
-    }
-
-    /* ASSESSMENT */
-    @Transactional
-    public Thesis submitAssessment(
-            Thesis thesis,
-            String summary,
-            String positives,
-            String negatives,
-            String gradeSuggestion
-    ) {
-        currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
-        ThesisAssessment assessment = new ThesisAssessment();
-
-        assessment.setThesis(thesis);
-        assessment.setCreatedBy(currentUserProvider().getUser());
-        assessment.setCreatedAt(Instant.now());
-        assessment.setSummary(summary);
-        assessment.setPositives(positives);
-        assessment.setNegatives(negatives);
-        assessment.setGradeSuggestion(gradeSuggestion);
-
-        thesisAssessmentRepository.save(assessment);
-
-        List<ThesisAssessment> assessments = Objects.requireNonNullElse(thesis.getAssessments(), new ArrayList<>());
-        assessments.addFirst(assessment);
-
-        thesis.setAssessments(assessments);
-        thesis.setState(ThesisState.ASSESSED);
-
-        saveStateChange(thesis, ThesisState.ASSESSED);
-
-        mailingService.sendAssessmentAddedEmail(assessment);
-
-        return thesisRepository.save(thesis);
-    }
-
-    public Resource getAssessmentFile(Thesis thesis) {
-        currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
-        ThesisAssessment assessment = thesis.getAssessments().getFirst();
-        ThesisPresentation presentation = thesis.getPresentations().getFirst();
-
-        String students = String.join(", ", thesis.getStudents().stream().map(student -> student.getFirstName() + " " + student.getLastName()).toList());
-        String advisors = String.join(", ", thesis.getAdvisors().stream().map(advisor -> advisor.getFirstName() + " " + advisor.getLastName()).toList());
-        String supervisors = String.join(", ", thesis.getSupervisors().stream().map(supervisor -> supervisor.getFirstName() + " " + supervisor.getLastName()).toList());
-
-        PDFBuilder builder = new PDFBuilder("Assessment of \"" + thesis.getTitle() + "\"");
-
-        builder
-                .addData("Thesis Type", DataFormatter.formatConstantName(thesis.getType()))
-                .addData("Student", students)
-                .addData("Advisor", advisors)
-                .addData("Supervisor", supervisors)
-                .addData("", "");
-
-        for (var stateChange : thesis.getStates()) {
-            if (stateChange.getId().getState() == ThesisState.ASSESSED) {
-                builder.addData("Assessment Date", DataFormatter.formatDate(stateChange.getChangedAt()));
-            }
-
-            if (stateChange.getId().getState() == ThesisState.SUBMITTED) {
-                builder.addData("Submission Date", DataFormatter.formatDate(stateChange.getChangedAt()));
-            }
-        }
-
-        if (presentation != null) {
-            builder.addData("Presentation Date", DataFormatter.formatDate(presentation.getScheduledAt()));
-        }
-
-        builder.addSection("Summary", assessment.getSummary())
-                .addSection("Strengths", assessment.getPositives())
-                .addSection("Weaknesses", assessment.getNegatives())
-                .addSection("Grade Suggestion", assessment.getGradeSuggestion());
-
-        return builder.build();
-    }
-
-    /* GRADING */
-    @Transactional
-    public Thesis gradeThesis(Thesis thesis, String finalGrade, String finalFeedback, ThesisVisibility visibility) {
-        currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
-        thesis.setState(ThesisState.GRADED);
-        thesis.setVisibility(visibility);
-        thesis.setFinalGrade(finalGrade);
-        thesis.setFinalFeedback(finalFeedback);
-
-        saveStateChange(thesis, ThesisState.GRADED);
-
-        mailingService.sendFinalGradeEmail(thesis);
-
-        return thesisRepository.save(thesis);
-    }
-
-    @Transactional
-    public Thesis completeThesis(Thesis thesis) {
-        currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
-        thesis.setState(ThesisState.FINISHED);
-
-        saveStateChange(thesis, ThesisState.FINISHED);
-
-        thesis = thesisRepository.save(thesis);
-
-        for (User student : thesis.getStudents()) {
-            if (!existsPendingThesis(student)) {
-                accessManagementService.removeStudentGroup(student);
-            }
-        }
-
-        return thesis;
-    }
-
-    /* UTILITY */
-
-    private boolean existsPendingThesis(User user) {
-        Page<Thesis> theses = thesisRepository.searchTheses(
-            null,
-                user.getId(),
-                null,
-                null,
-                Set.of(
-                        ThesisState.PROPOSAL,
-                        ThesisState.WRITING,
-                        ThesisState.SUBMITTED,
-                        ThesisState.ASSESSED,
-                        ThesisState.GRADED
-                ),
-                null,
-                PageRequest.ofSize(1)
-        );
-
-        return theses.getTotalElements() > 0;
-    }
-
-    public Thesis findById(UUID thesisId) {
-        Thesis thesis = thesisRepository.findById(thesisId)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Thesis with id %s not found.", thesisId)));
-
-        if (!thesis.hasReadAccess(null)) {
-            currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
-        }
-
-        return thesis;
-    }
-
-    private void assignThesisRoles(
-            Thesis thesis,
-            List<UUID> supervisorIds,
-            List<UUID> advisorIds,
-            List<UUID> studentIds
-    ) {
-        currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
-        List<User> supervisors = userRepository.findAllById(supervisorIds);
-        List<User> advisors = userRepository.findAllById(advisorIds);
-        List<User> students = userRepository.findAllById(studentIds);
-
-        supervisors.sort(Comparator.comparing(user -> supervisorIds.indexOf(user.getId())));
-        advisors.sort(Comparator.comparing(user -> advisorIds.indexOf(user.getId())));
-        students.sort(Comparator.comparing(user -> studentIds.indexOf(user.getId())));
-
-        if (supervisors.isEmpty() || supervisors.size() != supervisorIds.size()) {
-            throw new ResourceInvalidParametersException("No supervisors selected or supervisors not found");
-        }
-
-        if (advisors.isEmpty() || advisors.size() != advisorIds.size()) {
-            throw new ResourceInvalidParametersException("No advisors selected or advisors not found");
-        }
-
-        if (students.isEmpty() || students.size() != studentIds.size()) {
-            throw new ResourceInvalidParametersException("No students selected or students not found");
-        }
-
-        thesisRoleRepository.deleteByThesisId(thesis.getId());
-        thesis.setRoles(new ArrayList<>());
-
-        for (int i = 0; i < supervisors.size(); i++) {
-            User supervisor = supervisors.get(i);
-
-            if (!supervisor.hasAnyGroup("supervisor")) {
-                throw new ResourceInvalidParametersException("User is not a supervisor");
-            }
-
-            saveThesisRole(thesis, supervisor, ThesisRoleName.SUPERVISOR, i);
-        }
-
-        for (int i = 0; i < advisors.size(); i++) {
-            User advisor = advisors.get(i);
-
-            if (!advisor.hasAnyGroup("advisor", "supervisor")) {
-                throw new ResourceInvalidParametersException("User is not an advisor");
-            }
-
-            saveThesisRole(thesis, advisor, ThesisRoleName.ADVISOR, i);
-        }
-
-        for (int i = 0; i < students.size(); i++) {
-            User student = students.get(i);
-            saveThesisRole(thesis, student, ThesisRoleName.STUDENT, i);
-        }
-    }
-
-    private void saveStateChange(Thesis thesis, ThesisState state) {
-        saveStateChange(thesis, state, Instant.now());
-    }
-
-    private void saveStateChange(Thesis thesis, ThesisState state, Instant changedAt) {
-        currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
-        ThesisStateChangeId stateChangeId = new ThesisStateChangeId();
-        stateChangeId.setThesisId(thesis.getId());
-        stateChangeId.setState(state);
-
-        ThesisStateChange stateChange = new ThesisStateChange();
-        stateChange.setId(stateChangeId);
-        stateChange.setThesis(thesis);
-        stateChange.setChangedAt(changedAt);
-
-        thesisStateChangeRepository.save(stateChange);
-
-        Set<ThesisStateChange> stateChanges = thesis.getStates();
-        stateChanges.add(stateChange);
-        thesis.setStates(stateChanges);
-    }
-
-    private void saveThesisRole(Thesis thesis, User user, ThesisRoleName role, int position) {
-        currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
-        User assigner = currentUserProvider().getUser();
-        if (assigner == null || user == null) {
-            throw new ResourceInvalidParametersException("Assigner and user must be provided.");
-        }
-
-        ThesisRole thesisRole = new ThesisRole();
-        ThesisRoleId thesisRoleId = new ThesisRoleId();
-
-        thesisRoleId.setThesisId(thesis.getId());
-        thesisRoleId.setUserId(user.getId());
-        thesisRoleId.setRole(role);
-
-        thesisRole.setId(thesisRoleId);
-        thesisRole.setUser(user);
-        thesisRole.setAssignedBy(assigner);
-        thesisRole.setAssignedAt(Instant.now());
-        thesisRole.setThesis(thesis);
-        thesisRole.setPosition(position);
-
-        thesisRoleRepository.save(thesisRole);
-
-        List<ThesisRole> roles = thesis.getRoles();
-
-        roles.add(thesisRole);
-        roles.sort(Comparator.comparingInt(ThesisRole::getPosition));
-
-        thesis.setRoles(roles);
-    }
+	private final ThesisRoleRepository thesisRoleRepository;
+	private final ThesisRepository thesisRepository;
+	private final ThesisStateChangeRepository thesisStateChangeRepository;
+	private final UserRepository userRepository;
+	private final UploadService uploadService;
+	private final ThesisProposalRepository thesisProposalRepository;
+	private final ThesisAssessmentRepository thesisAssessmentRepository;
+	private final MailingService mailingService;
+	private final AccessManagementService accessManagementService;
+	private final ThesisPresentationService thesisPresentationService;
+	private final ThesisFeedbackRepository thesisFeedbackRepository;
+	private final ThesisFileRepository thesisFileRepository;
+	private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
+	private final ResearchGroupRepository researchGroupRepository;
+	private final ResearchGroupSettingsService researchGroupSettingsService;
+
+	/**
+	 * Injects all required repositories and services for thesis management.
+	 *
+	 * @param thesisRoleRepository the thesis role repository
+	 * @param thesisRepository the thesis repository
+	 * @param thesisStateChangeRepository the thesis state change repository
+	 * @param userRepository the user repository
+	 * @param thesisProposalRepository the thesis proposal repository
+	 * @param thesisAssessmentRepository the thesis assessment repository
+	 * @param uploadService the upload service for file storage
+	 * @param mailingService the mailing service for sending notifications
+	 * @param accessManagementService the access management service
+	 * @param thesisPresentationService the thesis presentation service
+	 * @param thesisFeedbackRepository the thesis feedback repository
+	 * @param thesisFileRepository the thesis file repository
+	 * @param currentUserProviderProvider the provider for the current user context
+	 * @param researchGroupRepository the research group repository
+	 * @param researchGroupSettingsService the research group settings service
+	 */
+	@Autowired
+	public ThesisService(
+			ThesisRoleRepository thesisRoleRepository,
+			ThesisRepository thesisRepository,
+			ThesisStateChangeRepository thesisStateChangeRepository,
+			UserRepository userRepository,
+			ThesisProposalRepository thesisProposalRepository,
+			ThesisAssessmentRepository thesisAssessmentRepository,
+			UploadService uploadService,
+			MailingService mailingService,
+			AccessManagementService accessManagementService,
+			ThesisPresentationService thesisPresentationService,
+			ThesisFeedbackRepository thesisFeedbackRepository, ThesisFileRepository thesisFileRepository,
+			ObjectProvider<CurrentUserProvider> currentUserProviderProvider, ResearchGroupRepository researchGroupRepository, ResearchGroupSettingsService researchGroupSettingsService
+	) {
+		this.thesisRoleRepository = thesisRoleRepository;
+		this.thesisRepository = thesisRepository;
+		this.thesisStateChangeRepository = thesisStateChangeRepository;
+		this.userRepository = userRepository;
+		this.uploadService = uploadService;
+		this.thesisProposalRepository = thesisProposalRepository;
+		this.thesisAssessmentRepository = thesisAssessmentRepository;
+		this.mailingService = mailingService;
+		this.accessManagementService = accessManagementService;
+		this.thesisPresentationService = thesisPresentationService;
+		this.thesisFeedbackRepository = thesisFeedbackRepository;
+		this.thesisFileRepository = thesisFileRepository;
+		this.currentUserProviderProvider = currentUserProviderProvider;
+		this.researchGroupRepository = researchGroupRepository;
+		this.researchGroupSettingsService = researchGroupSettingsService;
+	}
+
+	private CurrentUserProvider currentUserProvider() {
+		return currentUserProviderProvider.getObject();
+	}
+
+	/**
+	 * Returns a paginated and filtered list of theses based on user role, visibility, and search criteria.
+	 *
+	 * @param userId the ID of the user requesting the list, or null for public access
+	 * @param fetchAll whether to fetch all accessible theses beyond the user's own
+	 * @param searchQuery the search query to filter theses
+	 * @param states the thesis states to filter by
+	 * @param types the thesis types to filter by
+	 * @param page the page number for pagination
+	 * @param limit the number of results per page
+	 * @param sortBy the field to sort by
+	 * @param sortOrder the sort direction, "asc" or "desc"
+	 * @param researchGroupIds the research group IDs to filter by
+	 * @return the paginated list of theses
+	 */
+	public Page<Thesis> getAll(
+		UUID userId,
+		boolean fetchAll,
+		String searchQuery,
+		ThesisState[] states,
+		String[] types,
+		int page,
+		int limit,
+		String sortBy,
+		String sortOrder,
+		UUID[] researchGroupIds
+	) {
+		Sort.Order order = new Sort.Order(sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
+		String searchQueryFilter = searchQuery == null || searchQuery.isEmpty() ? null : searchQuery.toLowerCase();
+		Set<ThesisState> statesFilter = states == null || states.length == 0 ? null : new HashSet<>(Arrays.asList(states));
+		Set<String> typesFilter = types == null || types.length == 0 ? null : new HashSet<>(Arrays.asList(types));
+
+		Set<UUID> researchGroupIdsFilter = null;
+
+		if (researchGroupIds != null && researchGroupIds.length > 0) {
+			researchGroupIdsFilter = new HashSet<>(Arrays.asList(researchGroupIds));
+		}
+		Set<ThesisVisibility> visibilitySet = Set.of();
+
+		if (userId == null) {
+			visibilitySet = Set.of(ThesisVisibility.PUBLIC);
+		} else if (currentUserProvider().isAdmin()) {
+			userId = null; // Admins can see all theses
+			visibilitySet = null;
+		} else if ((currentUserProvider().isAdvisor() || currentUserProvider().isSupervisor()) && fetchAll) {
+			researchGroupIdsFilter = new HashSet<>(Arrays.asList(currentUserProvider().getResearchGroupOrThrow().getId()));
+			visibilitySet = Set.of(ThesisVisibility.PUBLIC, ThesisVisibility.STUDENT, ThesisVisibility.INTERNAL);
+		} else if (currentUserProvider().isStudent() && fetchAll) {
+			visibilitySet = Set.of(ThesisVisibility.PUBLIC, ThesisVisibility.STUDENT);
+		} else if (currentUserProvider().isAnonymous() && fetchAll) {
+			visibilitySet = Set.of(ThesisVisibility.PUBLIC);
+		}
+
+		return thesisRepository.searchTheses(
+				researchGroupIdsFilter,
+				userId,
+				visibilitySet,
+				searchQueryFilter,
+				statesFilter,
+				typesFilter,
+				PageRequest.of(page, limit, Sort.by(order))
+		);
+	}
+
+	@Transactional
+	public Thesis createThesis(
+			String thesisTitle,
+			String thesisType,
+			String language,
+			List<UUID> supervisorIds,
+			List<UUID> advisorIds,
+			List<UUID> studentIds,
+			Application application,
+			boolean notifyUser,
+			UUID researchGroupId
+	) {
+		ResearchGroup researchGroup = researchGroupRepository.findById(researchGroupId)
+				.orElseThrow(() -> new ResourceNotFoundException("Research group not found"));
+
+		ResearchGroupSettings researchGroupSettings = researchGroupSettingsService.getByResearchGroupId(researchGroupId).orElseGet(ResearchGroupSettings::new);
+		Thesis thesis = new Thesis();
+
+		ThesisState nextState = researchGroupSettings.isProposalPhaseActive() ? ThesisState.PROPOSAL : ThesisState.WRITING;
+
+		thesis.setTitle(thesisTitle);
+		thesis.setType(thesisType);
+		thesis.setLanguage(language);
+		thesis.setMetadata(ThesisMetadata.getEmptyMetadata());
+		thesis.setVisibility(ThesisVisibility.INTERNAL);
+		thesis.setKeywords(new HashSet<>());
+		thesis.setInfo("");
+		thesis.setAbstractField("");
+		thesis.setState(nextState);
+		thesis.setApplication(application);
+		thesis.setCreatedAt(Instant.now());
+		thesis.setResearchGroup(researchGroup);
+
+		thesis = thesisRepository.save(thesis);
+
+		assignThesisRoles(thesis, supervisorIds, advisorIds, studentIds);
+		saveStateChange(thesis, nextState);
+
+		if (notifyUser) {
+			mailingService.sendThesisCreatedEmail(currentUserProvider().getUser(), thesis);
+		}
+
+		for (User student : thesis.getStudents()) {
+			accessManagementService.addStudentGroup(student);
+		}
+
+		return thesis;
+	}
+
+	@Transactional
+	public Thesis closeThesis(Thesis thesis) {
+		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+		if (thesis.getState() == ThesisState.DROPPED_OUT || thesis.getState() == ThesisState.FINISHED) {
+			throw new ResourceInvalidParametersException("Thesis is already completed");
+		}
+
+		thesis.setState(ThesisState.DROPPED_OUT);
+		saveStateChange(thesis, ThesisState.DROPPED_OUT);
+
+		thesis = thesisRepository.save(thesis);
+
+		mailingService.sendThesisClosedEmail(currentUserProvider().getUser(), thesis);
+
+		for (User student : thesis.getStudents()) {
+			if (!existsPendingThesis(student)) {
+				accessManagementService.removeStudentGroup(student);
+			}
+		}
+
+		return thesis;
+	}
+
+	@Transactional
+	public Thesis updateThesis(
+			Thesis thesis,
+			String thesisTitle,
+			String thesisType,
+			String language,
+			ThesisVisibility visibility,
+			Set<String> keywords,
+			Instant startDate,
+			Instant endDate,
+			List<UUID> studentIds,
+			List<UUID> advisorIds,
+			List<UUID> supervisorIds,
+			List<ThesisStatePayload> states,
+			UUID researchGroupId
+	) {
+		ResearchGroup researchGroup = researchGroupRepository.findById(researchGroupId)
+				.orElseThrow(() -> new ResourceNotFoundException("Research group not found"));
+		currentUserProvider().assertCanAccessResearchGroup(researchGroup);
+		thesis.setTitle(thesisTitle);
+		thesis.setType(thesisType);
+		thesis.setLanguage(language);
+		thesis.setVisibility(visibility);
+		thesis.setKeywords(keywords);
+		thesis.setResearchGroup(researchGroup);
+
+		if ((startDate == null && endDate != null) || (startDate != null && endDate == null)) {
+			throw new ResourceInvalidParametersException("Both start and end date must be provided.");
+		}
+
+		thesis.setStartDate(startDate);
+		thesis.setEndDate(endDate);
+
+		assignThesisRoles(thesis, supervisorIds, advisorIds, studentIds);
+
+		for (ThesisStatePayload state : states) {
+			saveStateChange(thesis, state.state(), state.changedAt());
+		}
+
+		thesis = thesisRepository.save(thesis);
+
+		thesisPresentationService.updateThesisCalendarEvents(thesis);
+
+		return thesis;
+	}
+
+	@Transactional
+	public Thesis updateThesisInfo(
+			Thesis thesis,
+			String abstractText,
+			String infoText
+	) {
+		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+		thesis.setAbstractField(abstractText);
+		thesis.setInfo(infoText);
+
+		thesis = thesisRepository.save(thesis);
+
+		thesisPresentationService.updateThesisCalendarEvents(thesis);
+
+		return thesis;
+	}
+
+	@Transactional
+	public Thesis updateThesisTitles(
+			Thesis thesis,
+			String primaryTitle,
+			Map<String, String> titles
+	) {
+		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+		thesis.setMetadata(new ThesisMetadata(
+				titles,
+				thesis.getMetadata().credits()
+		));
+		thesis.setTitle(primaryTitle);
+
+		thesis = thesisRepository.save(thesis);
+
+		thesisPresentationService.updateThesisCalendarEvents(thesis);
+
+		return thesis;
+	}
+
+	@Transactional
+	public Thesis updateThesisCredits(
+			Thesis thesis,
+			Map<UUID, Number> credits
+	) {
+		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+		thesis.setMetadata(new ThesisMetadata(
+				thesis.getMetadata().titles(),
+				credits
+		));
+
+		return thesisRepository.save(thesis);
+	}
+
+	/* FEEDBACK */
+	/**
+	 * Marks a feedback item as completed or not completed.
+	 *
+	 * @param thesis the thesis containing the feedback
+	 * @param feedbackId the ID of the feedback item
+	 * @param completed whether the feedback is completed
+	 * @return the updated thesis
+	 */
+	public Thesis completeFeedback(Thesis thesis, UUID feedbackId, boolean completed) {
+		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+		ThesisFeedback feedback = thesis.getFeedbackItem(feedbackId)
+				.orElseThrow(() -> new ResourceNotFoundException("Feedback id not found"));
+
+		feedback.setCompletedAt(completed ? Instant.now() : null);
+
+		thesisFeedbackRepository.save(feedback);
+
+		return thesis;
+	}
+
+	@Transactional
+	public Thesis deleteFeedback(Thesis thesis, UUID feedbackId) {
+		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+		thesis.getFeedbackItem(feedbackId)
+				.orElseThrow(() -> new ResourceNotFoundException("Feedback id not found"));
+
+		thesisFeedbackRepository.deleteById(feedbackId);
+
+		thesis.setFeedback(new ArrayList<>(
+				thesis.getFeedback().stream().filter(feedback -> !feedback.getId().equals(feedbackId)).toList()
+		));
+
+		return thesis;
+	}
+
+	@Transactional
+	public Thesis requestChanges(Thesis thesis, ThesisFeedbackType type, List<RequestChangesPayload.RequestedChange> requestedChanges) {
+		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+		for (var requestedChange : requestedChanges) {
+			ThesisFeedback feedback = new ThesisFeedback();
+
+			feedback.setRequestedAt(Instant.now());
+			feedback.setRequestedBy(currentUserProvider().getUser());
+			feedback.setThesis(thesis);
+			feedback.setType(type);
+			feedback.setFeedback(RequestValidator.validateStringMaxLength(requestedChange.feedback(), StringLimits.LONGTEXT.getLimit()));
+			feedback.setCompletedAt(requestedChange.completed() ? Instant.now() : null);
+
+			feedback = thesisFeedbackRepository.save(feedback);
+
+			thesis.getFeedback().add(feedback);
+			thesis.setFeedback(thesis.getFeedback());
+		}
+
+		if (type == ThesisFeedbackType.PROPOSAL) {
+			mailingService.sendProposalChangeRequestEmail(currentUserProvider().getUser(), thesis);
+		}
+
+		return thesis;
+	}
+
+	/* PROPOSAL */
+
+	/**
+	 * Loads and returns the file resource for the given thesis proposal.
+	 *
+	 * @param proposal the thesis proposal
+	 * @return the proposal file resource
+	 */
+	public Resource getProposalFile(ThesisProposal proposal) {
+		currentUserProvider().assertCanAccessResearchGroup(proposal.getResearchGroup());
+		return uploadService.load(proposal.getProposalFilename());
+	}
+
+	@Transactional
+	public Thesis uploadProposal(Thesis thesis, MultipartFile proposalFile) {
+		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+		ThesisProposal proposal = new ThesisProposal();
+
+		proposal.setThesis(thesis);
+		proposal.setProposalFilename(uploadService.store(proposalFile, 25 * 1024 * 1024, UploadFileType.PDF));
+		proposal.setCreatedAt(Instant.now());
+		proposal.setCreatedBy(currentUserProvider().getUser());
+
+		List<ThesisProposal> proposals = thesis.getProposals() == null ? new ArrayList<>() : thesis.getProposals();
+		proposals.addFirst(proposal);
+
+		thesis.setProposals(proposals);
+
+		thesisProposalRepository.save(proposal);
+
+		mailingService.sendProposalUploadedEmail(proposal);
+
+		return thesisRepository.save(thesis);
+	}
+
+	@Transactional
+	public Thesis deleteProposal(Thesis thesis, UUID proposalId) {
+		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+		thesis.getProposalById(proposalId)
+				.orElseThrow(() -> new ResourceNotFoundException("Proposal id not found"));
+
+		thesisProposalRepository.deleteById(proposalId);
+
+		thesis.setProposals(new ArrayList<>(
+				thesis.getProposals().stream().filter(proposal -> !proposal.getId().equals(proposalId)).toList()
+		));
+
+		return thesis;
+	}
+
+	@Transactional
+	public Thesis acceptProposal(Thesis thesis) {
+		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+		List<ThesisProposal> proposals = thesis.getProposals();
+
+		if (proposals == null || proposals.isEmpty()) {
+			throw new ResourceNotFoundException("No proposal added to thesis yet");
+		}
+
+		ThesisProposal proposal = proposals.getFirst();
+
+		proposal.setApprovedAt(Instant.now());
+		proposal.setApprovedBy(currentUserProvider().getUser());
+
+		thesisProposalRepository.save(proposal);
+
+		saveStateChange(thesis, ThesisState.WRITING);
+
+		thesis.setState(ThesisState.WRITING);
+
+		mailingService.sendProposalAcceptedEmail(proposal);
+
+		return thesisRepository.save(thesis);
+	}
+
+	/* WRITING */
+
+	@Transactional
+	public Thesis submitThesis(Thesis thesis) {
+		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+		if (thesis.getLatestFile("THESIS").isEmpty()) {
+			throw new ResourceInvalidParametersException("Thesis file not uploaded yet");
+		}
+
+		thesis.setState(ThesisState.SUBMITTED);
+
+		saveStateChange(thesis, ThesisState.SUBMITTED);
+
+		mailingService.sendFinalSubmissionEmail(thesis);
+
+		return thesisRepository.save(thesis);
+	}
+
+	@Transactional
+	public Thesis uploadThesisFile(Thesis thesis, String type, MultipartFile file) {
+		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+		ThesisFile thesisFile = new ThesisFile();
+
+		thesisFile.setUploadName(file.getOriginalFilename());
+		thesisFile.setFilename(uploadService.store(file, 25 * 1024 * 1024, UploadFileType.ANY));
+		thesisFile.setUploadedBy(currentUserProvider().getUser());
+		thesisFile.setUploadedAt(Instant.now());
+		thesisFile.setThesis(thesis);
+		thesisFile.setType(type);
+
+		List<ThesisFile> files = thesis.getFiles();
+		files.addFirst(thesisFileRepository.save(thesisFile));
+
+		return thesisRepository.save(thesis);
+	}
+
+	@Transactional
+	public Thesis deleteThesisFile(Thesis thesis, UUID fileId) {
+		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+		thesis.getFileById(fileId)
+				.orElseThrow(() -> new ResourceNotFoundException("File id not found"));
+
+		thesisFileRepository.deleteById(fileId);
+
+		thesis.setFiles(new ArrayList<>(
+				thesis.getFiles().stream().filter(file -> !file.getId().equals(fileId)).toList()
+		));
+
+		return thesis;
+	}
+
+	/**
+	 * Loads and returns the file resource for the given thesis file, checking read access.
+	 *
+	 * @param file the thesis file entity
+	 * @return the file resource
+	 */
+	public Resource getThesisFile(ThesisFile file) {
+		if (!file.getThesis().hasReadAccess(null)) {
+			currentUserProvider().assertCanAccessResearchGroup(file.getResearchGroup());
+		}
+		return uploadService.load(file.getFilename());
+	}
+
+	/* ASSESSMENT */
+	@Transactional
+	public Thesis submitAssessment(
+			Thesis thesis,
+			String summary,
+			String positives,
+			String negatives,
+			String gradeSuggestion
+	) {
+		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+		ThesisAssessment assessment = new ThesisAssessment();
+
+		assessment.setThesis(thesis);
+		assessment.setCreatedBy(currentUserProvider().getUser());
+		assessment.setCreatedAt(Instant.now());
+		assessment.setSummary(summary);
+		assessment.setPositives(positives);
+		assessment.setNegatives(negatives);
+		assessment.setGradeSuggestion(gradeSuggestion);
+
+		thesisAssessmentRepository.save(assessment);
+
+		List<ThesisAssessment> assessments = Objects.requireNonNullElse(thesis.getAssessments(), new ArrayList<>());
+		assessments.addFirst(assessment);
+
+		thesis.setAssessments(assessments);
+		thesis.setState(ThesisState.ASSESSED);
+
+		saveStateChange(thesis, ThesisState.ASSESSED);
+
+		mailingService.sendAssessmentAddedEmail(assessment);
+
+		return thesisRepository.save(thesis);
+	}
+
+	/**
+	 * Generates and returns a PDF document containing the thesis assessment details.
+	 *
+	 * @param thesis the thesis to generate the assessment PDF for
+	 * @return the generated PDF file resource
+	 */
+	public Resource getAssessmentFile(Thesis thesis) {
+		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+		ThesisAssessment assessment = thesis.getAssessments().getFirst();
+		ThesisPresentation presentation = thesis.getPresentations().getFirst();
+
+		String students = String.join(", ", thesis.getStudents().stream().map(student -> student.getFirstName() + " " + student.getLastName()).toList());
+		String advisors = String.join(", ", thesis.getAdvisors().stream().map(advisor -> advisor.getFirstName() + " " + advisor.getLastName()).toList());
+		String supervisors = String.join(", ", thesis.getSupervisors().stream().map(supervisor -> supervisor.getFirstName() + " " + supervisor.getLastName()).toList());
+
+		PDFBuilder builder = new PDFBuilder("Assessment of \"" + thesis.getTitle() + "\"");
+
+		builder
+				.addData("Thesis Type", DataFormatter.formatConstantName(thesis.getType()))
+				.addData("Student", students)
+				.addData("Advisor", advisors)
+				.addData("Supervisor", supervisors)
+				.addData("", "");
+
+		for (var stateChange : thesis.getStates()) {
+			if (stateChange.getId().getState() == ThesisState.ASSESSED) {
+				builder.addData("Assessment Date", DataFormatter.formatDate(stateChange.getChangedAt()));
+			}
+
+			if (stateChange.getId().getState() == ThesisState.SUBMITTED) {
+				builder.addData("Submission Date", DataFormatter.formatDate(stateChange.getChangedAt()));
+			}
+		}
+
+		if (presentation != null) {
+			builder.addData("Presentation Date", DataFormatter.formatDate(presentation.getScheduledAt()));
+		}
+
+		builder.addSection("Summary", assessment.getSummary())
+				.addSection("Strengths", assessment.getPositives())
+				.addSection("Weaknesses", assessment.getNegatives())
+				.addSection("Grade Suggestion", assessment.getGradeSuggestion());
+
+		return builder.build();
+	}
+
+	/* GRADING */
+	@Transactional
+	public Thesis gradeThesis(Thesis thesis, String finalGrade, String finalFeedback, ThesisVisibility visibility) {
+		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+		thesis.setState(ThesisState.GRADED);
+		thesis.setVisibility(visibility);
+		thesis.setFinalGrade(finalGrade);
+		thesis.setFinalFeedback(finalFeedback);
+
+		saveStateChange(thesis, ThesisState.GRADED);
+
+		mailingService.sendFinalGradeEmail(thesis);
+
+		return thesisRepository.save(thesis);
+	}
+
+	@Transactional
+	public Thesis completeThesis(Thesis thesis) {
+		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+		thesis.setState(ThesisState.FINISHED);
+
+		saveStateChange(thesis, ThesisState.FINISHED);
+
+		thesis = thesisRepository.save(thesis);
+
+		for (User student : thesis.getStudents()) {
+			if (!existsPendingThesis(student)) {
+				accessManagementService.removeStudentGroup(student);
+			}
+		}
+
+		return thesis;
+	}
+
+	/* UTILITY */
+
+	private boolean existsPendingThesis(User user) {
+		Page<Thesis> theses = thesisRepository.searchTheses(
+			null,
+				user.getId(),
+				null,
+				null,
+				Set.of(
+						ThesisState.PROPOSAL,
+						ThesisState.WRITING,
+						ThesisState.SUBMITTED,
+						ThesisState.ASSESSED,
+						ThesisState.GRADED
+				),
+				null,
+				PageRequest.ofSize(1)
+		);
+
+		return theses.getTotalElements() > 0;
+	}
+
+	/**
+	 * Finds a thesis by its ID, verifying the current user has read access or belongs to the research group.
+	 *
+	 * @param thesisId the ID of the thesis to find
+	 * @return the found thesis
+	 */
+	public Thesis findById(UUID thesisId) {
+		Thesis thesis = thesisRepository.findById(thesisId)
+				.orElseThrow(() -> new ResourceNotFoundException(String.format("Thesis with id %s not found.", thesisId)));
+
+		if (!thesis.hasReadAccess(null)) {
+			currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+		}
+
+		return thesis;
+	}
+
+	private void assignThesisRoles(
+			Thesis thesis,
+			List<UUID> supervisorIds,
+			List<UUID> advisorIds,
+			List<UUID> studentIds
+	) {
+		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+		List<User> supervisors = userRepository.findAllById(supervisorIds);
+		List<User> advisors = userRepository.findAllById(advisorIds);
+		List<User> students = userRepository.findAllById(studentIds);
+
+		supervisors.sort(Comparator.comparing(user -> supervisorIds.indexOf(user.getId())));
+		advisors.sort(Comparator.comparing(user -> advisorIds.indexOf(user.getId())));
+		students.sort(Comparator.comparing(user -> studentIds.indexOf(user.getId())));
+
+		if (supervisors.isEmpty() || supervisors.size() != supervisorIds.size()) {
+			throw new ResourceInvalidParametersException("No supervisors selected or supervisors not found");
+		}
+
+		if (advisors.isEmpty() || advisors.size() != advisorIds.size()) {
+			throw new ResourceInvalidParametersException("No advisors selected or advisors not found");
+		}
+
+		if (students.isEmpty() || students.size() != studentIds.size()) {
+			throw new ResourceInvalidParametersException("No students selected or students not found");
+		}
+
+		thesisRoleRepository.deleteByThesisId(thesis.getId());
+		thesis.setRoles(new ArrayList<>());
+
+		for (int i = 0; i < supervisors.size(); i++) {
+			User supervisor = supervisors.get(i);
+
+			if (!supervisor.hasAnyGroup("supervisor")) {
+				throw new ResourceInvalidParametersException("User is not a supervisor");
+			}
+
+			saveThesisRole(thesis, supervisor, ThesisRoleName.SUPERVISOR, i);
+		}
+
+		for (int i = 0; i < advisors.size(); i++) {
+			User advisor = advisors.get(i);
+
+			if (!advisor.hasAnyGroup("advisor", "supervisor")) {
+				throw new ResourceInvalidParametersException("User is not an advisor");
+			}
+
+			saveThesisRole(thesis, advisor, ThesisRoleName.ADVISOR, i);
+		}
+
+		for (int i = 0; i < students.size(); i++) {
+			User student = students.get(i);
+			saveThesisRole(thesis, student, ThesisRoleName.STUDENT, i);
+		}
+	}
+
+	private void saveStateChange(Thesis thesis, ThesisState state) {
+		saveStateChange(thesis, state, Instant.now());
+	}
+
+	private void saveStateChange(Thesis thesis, ThesisState state, Instant changedAt) {
+		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+		ThesisStateChangeId stateChangeId = new ThesisStateChangeId();
+		stateChangeId.setThesisId(thesis.getId());
+		stateChangeId.setState(state);
+
+		ThesisStateChange stateChange = new ThesisStateChange();
+		stateChange.setId(stateChangeId);
+		stateChange.setThesis(thesis);
+		stateChange.setChangedAt(changedAt);
+
+		thesisStateChangeRepository.save(stateChange);
+
+		Set<ThesisStateChange> stateChanges = thesis.getStates();
+		stateChanges.add(stateChange);
+		thesis.setStates(stateChanges);
+	}
+
+	private void saveThesisRole(Thesis thesis, User user, ThesisRoleName role, int position) {
+		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+		User assigner = currentUserProvider().getUser();
+		if (assigner == null || user == null) {
+			throw new ResourceInvalidParametersException("Assigner and user must be provided.");
+		}
+
+		ThesisRole thesisRole = new ThesisRole();
+		ThesisRoleId thesisRoleId = new ThesisRoleId();
+
+		thesisRoleId.setThesisId(thesis.getId());
+		thesisRoleId.setUserId(user.getId());
+		thesisRoleId.setRole(role);
+
+		thesisRole.setId(thesisRoleId);
+		thesisRole.setUser(user);
+		thesisRole.setAssignedBy(assigner);
+		thesisRole.setAssignedAt(Instant.now());
+		thesisRole.setThesis(thesis);
+		thesisRole.setPosition(position);
+
+		thesisRoleRepository.save(thesisRole);
+
+		List<ThesisRole> roles = thesis.getRoles();
+
+		roles.add(thesisRole);
+		roles.sort(Comparator.comparingInt(ThesisRole::getPosition));
+
+		thesis.setRoles(roles);
+	}
 }

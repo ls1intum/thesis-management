@@ -1,5 +1,5 @@
 --liquibase formatted sql
---changeset codex:22_migrate_email_template_placeholder_variables
+--changeset ramona:22_migrate_email_template_placeholder_variables
 
 UPDATE email_templates SET body_html = REPLACE(body_html, 'DataFormatter.formatConstantName(application.user.studyProgram)', 'application.studyProgram');
 UPDATE email_templates SET body_html = REPLACE(body_html, 'DataFormatter.formatConstantName(application.user.studyDegree)', 'application.studyDegree');

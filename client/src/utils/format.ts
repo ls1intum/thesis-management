@@ -2,6 +2,8 @@ import { ILightUser } from '../requests/responses/user'
 import { IThesis, ThesisState } from '../requests/responses/thesis'
 import { ApplicationState, IApplication } from '../requests/responses/application'
 import { GLOBAL_CONFIG } from '../config/global'
+import { InterviewState } from '../requests/responses/interview'
+import { useMantineColorScheme } from '@mantine/core'
 import { TopicState } from '../requests/responses/topic'
 
 interface IFormatDateOptions {
@@ -137,6 +139,7 @@ export function formatApplicationState(state: ApplicationState) {
     [ApplicationState.ACCEPTED]: 'Accepted',
     [ApplicationState.REJECTED]: 'Rejected',
     [ApplicationState.NOT_ASSESSED]: 'Not assessed',
+    [ApplicationState.INTERVIEWING]: 'Interviewing',
   }
 
   return stateMap[state]
@@ -198,4 +201,85 @@ export function formatPresentationState(state: string) {
   }
 
   return state
+}
+
+export function scoreColorTranslate(score: number | null, light: boolean = true): string {
+  switch (score) {
+    case 1:
+      return light ? 'red.2' : 'red.9'
+    case 2:
+      return light ? 'orange.2' : 'orange.9'
+    case 3:
+      return light ? 'yellow.2' : 'yellow.9'
+    case 4:
+      return light ? 'lime.2' : 'lime.9'
+    case 5:
+      return light ? 'green.2' : 'green.9'
+    default:
+      return light ? 'gray.2' : 'gray.9'
+  }
+}
+
+export function createScoreLabel(score: number): string {
+  switch (score) {
+    case 0:
+      return 'No Show'
+    case 1:
+      return 'Not a Fit'
+    case 2:
+      return 'Some Concerns'
+    case 3:
+      return 'Meets expectations'
+    case 4:
+      return 'Great Candidate'
+    case 5:
+      return 'Excellent'
+    default:
+      return 'No Score'
+  }
+}
+
+export function createInterviewStageLabel(score: number): string {
+  switch (score) {
+    case 1:
+      return 'Uncontacted'
+    case 2:
+      return 'Invited'
+    case 3:
+      return 'Scheduled'
+    case 4:
+      return 'Great Candidate'
+    case 5:
+      return 'Completed'
+    default:
+      return 'All'
+  }
+}
+
+export function getInterviewStateColor(state: InterviewState): string {
+  const colorScheme = useMantineColorScheme()
+
+  switch (state) {
+    case InterviewState.UNCONTACTED:
+      return 'primary.1'
+    case InterviewState.INVITED:
+      return 'primary.3'
+    case InterviewState.SCHEDULED:
+      return 'primary.5'
+    case InterviewState.COMPLETED:
+      return colorScheme.colorScheme === 'dark' ? 'primary.8' : 'primary.10'
+    default:
+      return 'gray'
+  }
+}
+
+export function formateStudyProgram(program: string) {
+  return GLOBAL_CONFIG.study_programs[program] ?? program
+}
+
+export function normalizeUrl(url: string): string {
+  if (!/^https?:\/\//i.test(url)) {
+    return `https://${url}`
+  }
+  return url
 }

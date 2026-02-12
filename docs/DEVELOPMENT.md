@@ -58,14 +58,16 @@ And execute all files that you need.
 
 #### Example Users and Roles
 
-| Username       | First Name | Last Name | Email                    | Role       |
-|----------------|------------|-----------|--------------------------|------------|
-| sam_fischer    | Sam        | Fischer   | sam_fischer@gmail.com    | supervisor |
-| jane_doe       | Jane       | Doe       | jane_doe@gmail.com       | supervisor |
-| joey_read      | Joey       | Read      | joey_read@gmail.com      | advisor    |
-| barney_young   | Barney     | Young     | barney_young@gmail.com   | advisor    |
-| chloe_mitchell | Chloe      | Mitchell  | chloe_mitchell@gmail.com | student    |
-| kelly_wilkins  | Kelly      | Wilkins   | kelly_wilkins@gmail.com  | student    |
+> **Note on Role Terminology:** The backend/Keycloak uses `supervisor` and `advisor` roles internally. In the UI, these are displayed as "Examiner" and "Supervisor" respectively to align with CIT terminology.
+
+| Username       | First Name | Last Name | Email                    | Role (Backend) | UI Label   |
+|----------------|------------|-----------|--------------------------|----------------|------------|
+| sam_fischer    | Sam        | Fischer   | sam_fischer@gmail.com    | supervisor     | Examiner   |
+| jane_doe       | Jane       | Doe       | jane_doe@gmail.com       | supervisor     | Examiner   |
+| joey_read      | Joey       | Read      | joey_read@gmail.com      | advisor        | Supervisor |
+| barney_young   | Barney     | Young     | barney_young@gmail.com   | advisor        | Supervisor |
+| chloe_mitchell | Chloe      | Mitchell  | chloe_mitchell@gmail.com | student        | Student    |
+| kelly_wilkins  | Kelly      | Wilkins   | kelly_wilkins@gmail.com  | student        | Student    |
 
 ## Postfix
 
@@ -83,6 +85,22 @@ To start the sever application for local development, navigate to /server folder
 ```
 
 Server is served at http://localhost:8080.
+
+### Useful Gradle Commands
+
+| Command | Description |
+|---------|-------------|
+| `./gradlew test` | Run all server tests |
+| `./gradlew test jacocoTestReport` | Run tests with JaCoCo coverage report |
+| `./gradlew build -x test` | Build the server without running tests |
+| `./gradlew bootRun` | Start the server for local development |
+| `./gradlew spotlessApply` | Auto-format code (imports, whitespace, tabs) |
+| `./gradlew spotlessCheck` | Check code formatting without modifying files |
+| `./gradlew checkstyleMain` | Run Checkstyle on main source code |
+| `./gradlew checkstyleTest` | Run Checkstyle on test source code |
+| `./gradlew dependencyUpdates -Drevision=release` | Find available dependency updates |
+
+After running tests with coverage, the HTML report is available at `server/build/reports/jacoco/test/html/index.html`.
 
 ## Client
 

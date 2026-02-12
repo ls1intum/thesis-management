@@ -8,12 +8,12 @@ import org.thymeleaf.templateresolver.StringTemplateResolver;
 @Configuration
 public class ThymeleafConfig {
 
-    @Bean
-    public StringTemplateResolver stringTemplateResolver() {
-        StringTemplateResolver resolver = new StringTemplateResolver();
-        resolver.setTemplateMode(TemplateMode.HTML);
-        resolver.setCacheable(false);
-        resolver.setOrder(1);
-        return resolver;
-    }
+	@Bean
+	public StringTemplateResolver stringTemplateResolver() {
+		StringTemplateResolver resolver = new StringTemplateResolver();
+		resolver.setTemplateMode(TemplateMode.HTML);
+		resolver.setCacheable(false);
+		resolver.setOrder(1);
+		return resolver;
+	}
 }

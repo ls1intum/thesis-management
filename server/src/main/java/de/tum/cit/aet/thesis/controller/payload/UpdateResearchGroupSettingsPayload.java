@@ -7,9 +7,9 @@ import de.tum.cit.aet.thesis.dto.ResearchGroupSettingsRejectDTO;
 
 
 public record UpdateResearchGroupSettingsPayload(
-        ResearchGroupSettingsRejectDTO rejectSettings,
-        ResearchGroupSettingsPresentationDTO presentationSettings,
-        ResearchGroupSettingsPhasesDTO phaseSettings,
-        ResearchGroupSettingsEmailDTO emailSettings
+		ResearchGroupSettingsRejectDTO rejectSettings,
+		ResearchGroupSettingsPresentationDTO presentationSettings,
+		ResearchGroupSettingsPhasesDTO phaseSettings,
+		ResearchGroupSettingsEmailDTO emailSettings
 ) {
 }

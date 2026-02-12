@@ -8,11 +8,17 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+/** Main Spring Boot application class for the Thesis Management system. */
 @SpringBootApplication
 @EnableScheduling
 public class ThesisManagementApplication implements ApplicationRunner {
 	private static final Logger logger = LoggerFactory.getLogger(ThesisManagementApplication.class);
 
+	/**
+	 * Starts the Spring Boot application.
+	 *
+	 * @param args the command-line arguments
+	 */
 	public static void main(String[] args) {
 		SpringApplication.run(ThesisManagementApplication.class, args);
 	}

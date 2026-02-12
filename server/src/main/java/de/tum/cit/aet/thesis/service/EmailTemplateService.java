@@ -24,23 +24,31 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+/** Manages CRUD operations for email templates scoped to research groups. */
 @Service
 public class EmailTemplateService {
 
-    private final EmailTemplateRepository emailTemplateRepository;
-    private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
-    private final ResearchGroupRepository researchGroupRepository;
+	private final EmailTemplateRepository emailTemplateRepository;
+	private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
+	private final ResearchGroupRepository researchGroupRepository;
 
-    @Autowired
-    public EmailTemplateService(EmailTemplateRepository emailTemplateRepository, ObjectProvider<CurrentUserProvider> currentUserProviderProvider, ResearchGroupRepository researchGroupRepository) {
-        this.emailTemplateRepository = emailTemplateRepository;
-        this.currentUserProviderProvider = currentUserProviderProvider;
-        this.researchGroupRepository = researchGroupRepository;
-    }
+	/**
+	 * Injects the email template repository, the current user provider, and the research group repository.
+	 *
+	 * @param emailTemplateRepository the email template repository
+	 * @param currentUserProviderProvider the current user provider
+	 * @param researchGroupRepository the research group repository
+	 */
+	@Autowired
+	public EmailTemplateService(EmailTemplateRepository emailTemplateRepository, ObjectProvider<CurrentUserProvider> currentUserProviderProvider, ResearchGroupRepository researchGroupRepository) {
+		this.emailTemplateRepository = emailTemplateRepository;
+		this.currentUserProviderProvider = currentUserProviderProvider;
+		this.researchGroupRepository = researchGroupRepository;
+	}
 
-    private CurrentUserProvider currentUserProvider() {
-        return currentUserProviderProvider.getObject();
-    }
+	private CurrentUserProvider currentUserProvider() {
+		return currentUserProviderProvider.getObject();
+	}
 
     private static final Set<String> VALID_TEMPLATE_CASES = Set.of(
             "APPLICATION_REJECTED_TOPIC_REQUIREMENTS",
@@ -75,7 +83,18 @@ public class EmailTemplateService {
             "INTERVIEW_SLOT_BOOKED_CONFORMATION",
             "INTERVIEW_SLOT_BOOKED_CANCELLATION"
     );
-
+	/**
+	 * Returns a paginated and filtered list of email templates for the current user's research group.
+	 *
+	 * @param templateCases the template cases to filter by
+	 * @param languages the languages to filter by
+	 * @param searchQuery the search query string
+	 * @param page the page number
+	 * @param limit the number of results per page
+	 * @param sortBy the field to sort by
+	 * @param sortOrder the sort direction (asc or desc)
+	 * @return the paginated list of email templates
+	 */
     public Page<EmailTemplate> getAll(
             String[] templateCases,
             String[] languages,
@@ -97,14 +116,14 @@ public class EmailTemplateService {
         String[] templateCasesFilter = templateCases == null || templateCases.length == 0 ? null : templateCases;
         String[] languagesFilter = languages == null || languages.length == 0 ? null : languages;
 
-        Sort.Order order = new Sort.Order(
-                sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,
-                HibernateHelper.getColumnName(EmailTemplate.class, sortBy)
-        );
+		Sort.Order order = new Sort.Order(
+				sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,
+				HibernateHelper.getColumnName(EmailTemplate.class, sortBy)
+		);
 
-        Pageable pageable = limit == -1
-                ? PageRequest.of(0, Integer.MAX_VALUE, Sort.by(order))
-                : PageRequest.of(page, limit, Sort.by(order));
+		Pageable pageable = limit == -1
+				? PageRequest.of(0, Integer.MAX_VALUE, Sort.by(order))
+				: PageRequest.of(page, limit, Sort.by(order));
 
         return emailTemplateRepository.searchEmailTemplate(
                 searchResearchGroupId,
@@ -115,6 +134,12 @@ public class EmailTemplateService {
         );
     }
 
+	/**
+	 * Finds an email template by its ID and verifies the current user has access to its research group.
+	 *
+	 * @param emailTemplateId the ID of the email template
+	 * @return the found email template
+	 */
     public EmailTemplate findById(UUID emailTemplateId) {
         EmailTemplate emailTemplate = emailTemplateRepository.findById(emailTemplateId)
                 .orElseThrow(() -> new ResourceNotFoundException(
@@ -163,8 +188,8 @@ public class EmailTemplateService {
         emailTemplate.setUpdatedAt(Instant.now());
         emailTemplate.setUpdatedBy(currentUserProvider().getUser());
 
-        return emailTemplateRepository.save(emailTemplate);
-    }
+		return emailTemplateRepository.save(emailTemplate);
+	}
 
     @Transactional
     public EmailTemplate updateEmailTemplate(
@@ -190,8 +215,8 @@ public class EmailTemplateService {
         emailTemplate.setUpdatedAt(Instant.now());
         emailTemplate.setUpdatedBy(currentUserProvider().getUser());
 
-        return emailTemplateRepository.save(emailTemplate);
-    }
+		return emailTemplateRepository.save(emailTemplate);
+	}
 
     @Transactional
     public void deleteEmailTemplate(UUID emailTemplateId) {

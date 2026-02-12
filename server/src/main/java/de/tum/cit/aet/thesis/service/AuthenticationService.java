@@ -1,10 +1,5 @@
 package de.tum.cit.aet.thesis.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 import de.tum.cit.aet.thesis.constants.UploadFileType;
 import de.tum.cit.aet.thesis.entity.NotificationSetting;
 import de.tum.cit.aet.thesis.entity.User;
@@ -15,178 +10,238 @@ import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.repository.NotificationSettingRepository;
 import de.tum.cit.aet.thesis.repository.UserGroupRepository;
 import de.tum.cit.aet.thesis.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+/** Manages user authentication, profile synchronization, and notification settings based on JWT tokens. */
 @Service
 public class AuthenticationService {
-    private final UserRepository userRepository;
-    private final UserGroupRepository userGroupRepository;
-    private final UploadService uploadService;
-    private final NotificationSettingRepository notificationSettingRepository;
+	private final UserRepository userRepository;
+	private final UserGroupRepository userGroupRepository;
+	private final UploadService uploadService;
+	private final NotificationSettingRepository notificationSettingRepository;
 
-    @Autowired
-    public AuthenticationService(UserRepository userRepository, UserGroupRepository userGroupRepository, UploadService uploadService, NotificationSettingRepository notificationSettingRepository) {
-        this.userRepository = userRepository;
-        this.userGroupRepository = userGroupRepository;
-        this.uploadService = uploadService;
-        this.notificationSettingRepository = notificationSettingRepository;
-    }
+	/**
+	 * Injects the user, user group, upload, and notification setting repositories.
+	 *
+	 * @param userRepository the user repository
+	 * @param userGroupRepository the user group repository
+	 * @param uploadService the upload service for file storage
+	 * @param notificationSettingRepository the notification setting repository
+	 */
+	@Autowired
+	public AuthenticationService(UserRepository userRepository, UserGroupRepository userGroupRepository, UploadService uploadService, NotificationSettingRepository notificationSettingRepository) {
+		this.userRepository = userRepository;
+		this.userGroupRepository = userGroupRepository;
+		this.uploadService = uploadService;
+		this.notificationSettingRepository = notificationSettingRepository;
+	}
 
-    public User getAuthenticatedUser(JwtAuthenticationToken jwt) {
-        return userRepository.findByUniversityId(getUniversityId(jwt))
-                .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
-    }
+	/**
+	 * Returns the authenticated user identified by the university ID in the JWT.
+	 *
+	 * @param jwt the JWT authentication token
+	 * @return the authenticated user
+	 */
+	public User getAuthenticatedUser(JwtAuthenticationToken jwt) {
+		return userRepository.findByUniversityId(getUniversityId(jwt))
+				.orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
+	}
 
-    public User getAuthenticatedUserWithResearchGroup(JwtAuthenticationToken jwt) {
-        return userRepository.findByUniversityIdWithResearchGroup(getUniversityId(jwt))
-                .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
-    }
+	/**
+	 * Returns the authenticated user with their research group eagerly loaded.
+	 *
+	 * @param jwt the JWT authentication token
+	 * @return the authenticated user with research group loaded
+	 */
+	public User getAuthenticatedUserWithResearchGroup(JwtAuthenticationToken jwt) {
+		return userRepository.findByUniversityIdWithResearchGroup(getUniversityId(jwt))
+				.orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
+	}
 
-    @Transactional
-    public User updateAuthenticatedUser(JwtAuthenticationToken jwt) {
-        Map<String, Object> attributes = jwt.getTokenAttributes();
-        String universityId = getUniversityId(jwt);
+	@Transactional
+	public User updateAuthenticatedUser(JwtAuthenticationToken jwt) {
+		Map<String, Object> attributes = jwt.getTokenAttributes();
+		String universityId = getUniversityId(jwt);
 
-        String email = (String) attributes.get("email");
-        String firstName = (String) attributes.get("given_name");
-        String lastName = (String) attributes.get("family_name");
+		String email = (String) attributes.get("email");
+		String firstName = (String) attributes.get("given_name");
+		String lastName = (String) attributes.get("family_name");
+		String matriculationNumber = (String) attributes.get("matrikelnr");
 
-        List<String> groups = jwt.getAuthorities().stream()
-                .filter(authority -> authority.getAuthority().startsWith("ROLE_"))
-                .map(authority -> authority.getAuthority().replace("ROLE_", "")).toList();
+		List<String> groups = jwt.getAuthorities().stream()
+				.filter(authority -> authority.getAuthority().startsWith("ROLE_"))
+				.map(authority -> authority.getAuthority().replace("ROLE_", "")).toList();
 
-        User user = userRepository.findByUniversityId(universityId).orElseGet(() -> {
-            User newUser = new User();
-            Instant currentTime = Instant.now();
+		User user = userRepository.findByUniversityId(universityId).orElseGet(() -> {
+			User newUser = new User();
+			Instant currentTime = Instant.now();
 
-            newUser.setJoinedAt(currentTime);
-            newUser.setUpdatedAt(currentTime);
+			newUser.setJoinedAt(currentTime);
+			newUser.setUpdatedAt(currentTime);
 
-            return newUser;
-        });
+			return newUser;
+		});
 
-        user.setUniversityId(universityId);
+		user.setUniversityId(universityId);
 
-        if (email != null && !email.isEmpty()) {
-            user.setEmail(email);
-        }
+		if (email != null && !email.isEmpty()) {
+			user.setEmail(email);
+		}
 
-        if (firstName != null && !firstName.isEmpty()) {
-            user.setFirstName(firstName);
-        }
+		if (firstName != null && !firstName.isEmpty()) {
+			user.setFirstName(firstName);
+		}
 
-        if (lastName != null && !lastName.isEmpty()) {
-            user.setLastName(lastName);
-        }
+		if (lastName != null && !lastName.isEmpty()) {
+			user.setLastName(lastName);
+		}
 
-        user = userRepository.save(user);
+		if (matriculationNumber != null && !matriculationNumber.isEmpty()) {
+			user.setMatriculationNumber(matriculationNumber);
+		}
 
-        userGroupRepository.deleteByUserId(user.getId());
+		user = userRepository.save(user);
 
-        Set<UserGroup> userGroups = new HashSet<>();
+		userGroupRepository.deleteByUserId(user.getId());
 
-        for (String group : groups) {
-            UserGroup entity = new UserGroup();
-            UserGroupId entityId = new UserGroupId();
+		Set<UserGroup> userGroups = new HashSet<>();
 
-            entityId.setUserId(user.getId());
-            entityId.setGroup(group);
+		for (String group : groups) {
+			UserGroup entity = new UserGroup();
+			UserGroupId entityId = new UserGroupId();
 
-            entity.setUser(user);
-            entity.setId(entityId);
+			entityId.setUserId(user.getId());
+			entityId.setGroup(group);
 
-            userGroups.add(userGroupRepository.save(entity));
-        }
+			entity.setUser(user);
+			entity.setId(entityId);
 
-        user.setGroups(userGroups);
+			userGroups.add(userGroupRepository.save(entity));
+		}
 
-        return userRepository.save(user);
-    }
+		user.setGroups(userGroups);
 
-    public User updateUserInformation(
-            User user,
-            String matriculationNumber,
-            String firstName,
-            String lastName,
-            String gender,
-            String nationality,
-            String email,
-            String studyDegree,
-            String studyProgram,
-            Instant enrolledAt,
-            String specialSkills,
-            String interests,
-            String projects,
-            Map<String, String> customData,
-            MultipartFile avatar,
-            MultipartFile examinationReport,
-            MultipartFile cv,
-            MultipartFile degreeReport
-    ) {
-        user.setMatriculationNumber(matriculationNumber);
-        user.setFirstName(firstName);
-        user.setLastName(lastName);
-        user.setGender(gender);
-        user.setNationality(nationality);
-        user.setEmail(email);
-        user.setStudyDegree(studyDegree);
-        user.setStudyProgram(studyProgram);
-        user.setEnrolledAt(enrolledAt);
-        user.setSpecialSkills(specialSkills);
-        user.setInterests(interests);
-        user.setProjects(projects);
-        user.setCustomData(customData);
+		return userRepository.save(user);
+	}
 
-        if (avatar != null) {
-            user.setAvatar(avatar.isEmpty() ? null : uploadService.store(avatar, 1024 * 1024, UploadFileType.IMAGE));
-        }
+	/**
+	 * Updates the user's profile information, including personal details and uploaded documents.
+	 *
+	 * @param user the user to update
+	 * @param firstName the user's first name
+	 * @param lastName the user's last name
+	 * @param gender the user's gender
+	 * @param nationality the user's nationality
+	 * @param email the user's email address
+	 * @param studyDegree the user's study degree
+	 * @param studyProgram the user's study program
+	 * @param enrolledAt the enrollment date
+	 * @param specialSkills the user's special skills
+	 * @param interests the user's interests
+	 * @param projects the user's projects
+	 * @param customData additional custom data fields
+	 * @param avatar the avatar image file
+	 * @param examinationReport the examination report file
+	 * @param cv the CV file
+	 * @param degreeReport the degree report file
+	 * @return the updated user
+	 */
+	public User updateUserInformation(
+			User user,
+			String firstName,
+			String lastName,
+			String gender,
+			String nationality,
+			String email,
+			String studyDegree,
+			String studyProgram,
+			Instant enrolledAt,
+			String specialSkills,
+			String interests,
+			String projects,
+			Map<String, String> customData,
+			MultipartFile avatar,
+			MultipartFile examinationReport,
+			MultipartFile cv,
+			MultipartFile degreeReport
+	) {
+		user.setFirstName(firstName);
+		user.setLastName(lastName);
+		user.setGender(gender);
+		user.setNationality(nationality);
+		user.setEmail(email);
+		user.setStudyDegree(studyDegree);
+		user.setStudyProgram(studyProgram);
+		user.setEnrolledAt(enrolledAt);
+		user.setSpecialSkills(specialSkills);
+		user.setInterests(interests);
+		user.setProjects(projects);
+		user.setCustomData(customData);
 
-        user.setExaminationFilename(examinationReport == null ? null : uploadService.store(examinationReport, 3 * 1024 * 1024, UploadFileType.PDF));
-        user.setCvFilename(cv == null ? null : uploadService.store(cv, 3 * 1024 * 1024, UploadFileType.PDF));
-        user.setDegreeFilename(degreeReport == null ? null : uploadService.store(degreeReport, 3 * 1024 * 1024, UploadFileType.PDF));
+		if (avatar != null) {
+			user.setAvatar(avatar.isEmpty() ? null : uploadService.store(avatar, 1024 * 1024, UploadFileType.IMAGE));
+		}
 
-        return userRepository.save(user);
-    }
+		user.setExaminationFilename(examinationReport == null ? null : uploadService.store(examinationReport, 3 * 1024 * 1024, UploadFileType.PDF));
+		user.setCvFilename(cv == null ? null : uploadService.store(cv, 3 * 1024 * 1024, UploadFileType.PDF));
+		user.setDegreeFilename(degreeReport == null ? null : uploadService.store(degreeReport, 3 * 1024 * 1024, UploadFileType.PDF));
 
-    public List<NotificationSetting> getNotificationSettings(User user) {
-        return user.getNotificationSettings();
-    }
+		return userRepository.save(user);
+	}
 
-    @Transactional
-    public List<NotificationSetting> updateNotificationSettings(User user, String name, String email) {
-        List<NotificationSetting> settings = user.getNotificationSettings();
+	/**
+	 * Returns the notification settings for the given user.
+	 *
+	 * @param user the user whose notification settings to retrieve
+	 * @return the list of notification settings
+	 */
+	public List<NotificationSetting> getNotificationSettings(User user) {
+		return user.getNotificationSettings();
+	}
 
-        for (NotificationSetting setting : settings) {
-            if (setting.getId().getName().equals(name)) {
-                setting.setEmail(email);
-                setting.setUpdatedAt(Instant.now());
+	@Transactional
+	public List<NotificationSetting> updateNotificationSettings(User user, String name, String email) {
+		List<NotificationSetting> settings = user.getNotificationSettings();
 
-                notificationSettingRepository.save(setting);
+		for (NotificationSetting setting : settings) {
+			if (setting.getId().getName().equals(name)) {
+				setting.setEmail(email);
+				setting.setUpdatedAt(Instant.now());
 
-                return settings;
-            }
-        }
+				notificationSettingRepository.save(setting);
 
-        NotificationSettingId entityId = new NotificationSettingId();
-        entityId.setName(name);
-        entityId.setUserId(user.getId());
+				return settings;
+			}
+		}
 
-        NotificationSetting entity = new NotificationSetting();
-        entity.setId(entityId);
-        entity.setUpdatedAt(Instant.now());
-        entity.setEmail(email);
-        entity.setUser(user);
+		NotificationSettingId entityId = new NotificationSettingId();
+		entityId.setName(name);
+		entityId.setUserId(user.getId());
 
-        settings.add(notificationSettingRepository.save(entity));
+		NotificationSetting entity = new NotificationSetting();
+		entity.setId(entityId);
+		entity.setUpdatedAt(Instant.now());
+		entity.setEmail(email);
+		entity.setUser(user);
 
-        user.setNotificationSettings(settings);
+		settings.add(notificationSettingRepository.save(entity));
 
-        return settings;
-    }
+		user.setNotificationSettings(settings);
 
-    private String getUniversityId(JwtAuthenticationToken jwt) {
-        return jwt.getName();
-    }
+		return settings;
+	}
+
+	private String getUniversityId(JwtAuthenticationToken jwt) {
+		return jwt.getName();
+	}
 }

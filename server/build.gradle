@@ -1,15 +1,18 @@
 plugins {
 	id "java"
 	id "idea"
+	id "checkstyle"
+	id "jacoco"
 	id "com.github.andygoossens.modernizer" version "1.12.0"
-	id "com.gorylenko.gradle-git-properties" version "2.5.4"
-	id "org.springframework.boot" version "3.5.9"
+	id "com.gorylenko.gradle-git-properties" version "2.5.7"
+	id "org.springframework.boot" version "3.5.10"
 	id "io.spring.dependency-management" version "1.1.7"
 	id "com.github.ben-manes.versions" version "0.53.0"
+	id "com.diffplug.spotless" version "8.2.1"
 }
 
 group = "de.tum.cit.aet.thesis"
-version = "4.7.0"
+version = "4.8.0"
 description = "Thesis Management"
 
 gitProperties {
@@ -51,13 +54,13 @@ dependencies {
 	implementation("net.minidev:json-smart") { version { 				strictly "2.6.0" } }
 
 	implementation "org.liquibase:liquibase-core:4.33.0"
-	implementation "org.postgresql:postgresql:42.7.8"
+	implementation "org.postgresql:postgresql:42.7.9"
 
 	implementation "commons-io:commons-io:2.21.0"
 	implementation "com.github.vladimir-bukhtoyarov:bucket4j-core:8.0.1"
-	implementation "org.mnode.ical4j:ical4j:4.2.2"
-	implementation "com.itextpdf:itext-core:9.4.0"
-	implementation "com.itextpdf:html2pdf:6.3.0"
+	implementation "org.mnode.ical4j:ical4j:4.2.3"
+	implementation "com.itextpdf:itext-core:9.5.0"
+	implementation "com.itextpdf:html2pdf:6.3.1"
 	implementation "com.auth0:java-jwt:4.5.0"
 
 	// Use the latest version of commons-lang3 to avoid security issues
@@ -82,10 +85,12 @@ dependencies {
 	testImplementation "org.mockito:mockito-junit-jupiter:5.21.0"
 
 	testImplementation "org.testcontainers:testcontainers:${test_container_version}"
-	testImplementation "org.testcontainers:junit-jupiter:${test_container_version}"
-	testImplementation "org.testcontainers:jdbc:${test_container_version}"
-	testImplementation "org.testcontainers:database-commons:${test_container_version}"
-	testImplementation "org.testcontainers:postgresql:${test_container_version}"
+	testImplementation "org.testcontainers:testcontainers-junit-jupiter:${test_container_version}"
+	testImplementation "org.testcontainers:testcontainers-jdbc:${test_container_version}"
+	testImplementation "org.testcontainers:testcontainers-database-commons:${test_container_version}"
+	testImplementation "org.testcontainers:testcontainers-postgresql:${test_container_version}"
+
+	testImplementation "com.github.dasniko:testcontainers-keycloak:4.1.1"
 
 	testImplementation "org.junit.jupiter:junit-jupiter:${junit_version}"
 	testImplementation "org.junit.jupiter:junit-jupiter-api:${junit_version}"
@@ -102,17 +107,110 @@ springBoot {
 	buildInfo()
 }
 
+sourceSets {
+	test {
+		resources {
+			srcDir '../keycloak'
+		}
+	}
+}
+
+spotless {
+	java {
+		target "src/*/java/**/*.java"
+		removeUnusedImports()
+		importOrder("", "jakarta", "javax", "java")
+		trimTrailingWhitespace()
+		endWithNewline()
+		leadingSpacesToTabs()
+	}
+}
+
+checkstyle {
+	toolVersion = "13.2.0"
+	configFile = file("config/checkstyle/checkstyle.xml")
+	maxWarnings = 0
+}
+
 test {
 	useJUnitPlatform()
+	finalizedBy jacocoTestReport
 
 	maxParallelForks = 1
 	forkEvery = 0
 
 	testLogging {
 		events "PASSED", "FAILED", "SKIPPED"
+		showStandardStreams = false
+		exceptionFormat = "full"
+		showCauses = true
+		showStackTraces = true
 	}
-	testLogging.showStandardStreams = true
 	systemProperty "spring.profiles.active", "test"
+
+	afterSuite { desc, result ->
+		if (!desc.parent) {
+			println ""
+			println "==============================================================="
+			println " Test Results: ${result.resultType}"
+			println "==============================================================="
+			println " Total:   ${result.testCount}"
+			println " Passed:  ${result.successfulTestCount}"
+			println " Failed:  ${result.failedTestCount}"
+			println " Skipped: ${result.skippedTestCount}"
+			println "==============================================================="
+		}
+	}
+}
+
+jacocoTestReport {
+	dependsOn test
+	reports {
+		xml.required = true
+		html.required = true
+	}
+
+	def reportFile = layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml")
+	def htmlReportDir = layout.buildDirectory.dir("reports/jacoco/test/html")
+
+	doLast {
+		def report = reportFile.get().asFile
+		if (report.exists()) {
+			def parser = new groovy.xml.XmlSlurper()
+			parser.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false)
+			parser.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
+			def xml = parser.parse(report)
+			def counters = xml.counter
+
+			def instructionCounter = counters.find { it.@type == 'INSTRUCTION' }
+			def branchCounter = counters.find { it.@type == 'BRANCH' }
+			def lineCounter = counters.find { it.@type == 'LINE' }
+			def methodCounter = counters.find { it.@type == 'METHOD' }
+			def classCounter = counters.find { it.@type == 'CLASS' }
+
+			def calcCoverage = { counter ->
+				if (counter == null) return "N/A"
+				def missed = counter.@missed.toInteger()
+				def covered = counter.@covered.toInteger()
+				def total = missed + covered
+				if (total == 0) return "N/A"
+				return String.format("%.1f%%", (covered * 100.0) / total)
+			}
+
+			println ""
+			println "==============================================================="
+			println " Code Coverage Report"
+			println "==============================================================="
+			println " Instructions: ${calcCoverage(instructionCounter)}"
+			println " Branches:     ${calcCoverage(branchCounter)}"
+			println " Lines:        ${calcCoverage(lineCounter)}"
+			println " Methods:      ${calcCoverage(methodCounter)}"
+			println " Classes:      ${calcCoverage(classCounter)}"
+			println "==============================================================="
+			println " Full report: file://${htmlReportDir.get().asFile}"
+			println "==============================================================="
+		}
+	}
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -140,5 +238,9 @@ tasks.named("dependencyUpdates").configure {
 //
 // Find dependency updates:    ./gradlew dependencyUpdates -Drevision=release
 // Test:                       ./gradlew test
+// Test with coverage:         ./gradlew test jacocoTestReport
 // Build:                      ./gradlew build -x test
-// Run:						   ./gradlew bootRun
+// Run:                        ./gradlew bootRun
+// Code formatting:            ./gradlew spotlessApply
+// Check formatting:           ./gradlew spotlessCheck
+// Checkstyle:                 ./gradlew checkstyleMain checkstyleTest

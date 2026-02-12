@@ -1,5 +1,10 @@
 package de.tum.cit.aet.thesis.service;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import de.tum.cit.aet.thesis.constants.ThesisPresentationState;
 import de.tum.cit.aet.thesis.constants.ThesisPresentationType;
 import de.tum.cit.aet.thesis.constants.ThesisPresentationVisibility;
@@ -16,7 +21,6 @@ import de.tum.cit.aet.thesis.repository.ThesisPresentationRepository;
 import de.tum.cit.aet.thesis.repository.ThesisRepository;
 import de.tum.cit.aet.thesis.repository.UserRepository;
 import de.tum.cit.aet.thesis.security.CurrentUserProvider;
-import jakarta.mail.internet.InternetAddress;
 import net.fortuna.ical4j.model.Calendar;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,229 +32,233 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
-import java.time.Instant;
-import java.util.*;
+import jakarta.mail.internet.InternetAddress;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
 class ThesisPresentationServiceTest {
-    @Mock private CalendarService calendarService;
-    @Mock private ThesisRepository thesisRepository;
-    @Mock private MailingService mailingService;
-    @Mock private ThesisPresentationRepository thesisPresentationRepository;
-    @Mock private ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
-    @Mock
-    private CurrentUserProvider currentUserProvider;
-    @Mock private UserRepository userRepository;
-    @Mock private ThesisPresentationInviteRepository thesisPresentationInviteRepository;
-    @Mock private ResearchGroupSettingsService researchGroupSettingsService;
+	@Mock private CalendarService calendarService;
+	@Mock private ThesisRepository thesisRepository;
+	@Mock private MailingService mailingService;
+	@Mock private ThesisPresentationRepository thesisPresentationRepository;
+	@Mock private ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
+	@Mock
+	private CurrentUserProvider currentUserProvider;
+	@Mock private UserRepository userRepository;
+	@Mock private ThesisPresentationInviteRepository thesisPresentationInviteRepository;
+	@Mock private ResearchGroupSettingsService researchGroupSettingsService;
 
-    private ThesisPresentationService presentationService;
-    private User testUser;
-    private Thesis testThesis;
-    private ThesisPresentation testPresentation;
+	private ThesisPresentationService presentationService;
+	private User testUser;
+	private Thesis testThesis;
+	private ThesisPresentation testPresentation;
 
-    @BeforeEach
-    void setUp() throws Exception {
-        InternetAddress applicationMail = new InternetAddress("test@example.com");
-        String clientHost = "http://example.com";
-        presentationService = new ThesisPresentationService(
-                calendarService,
-                thesisRepository,
-                mailingService,
-                thesisPresentationRepository,
-                currentUserProviderProvider,
-                clientHost,
-                applicationMail,
-                userRepository,
-                thesisPresentationInviteRepository,
-                researchGroupSettingsService
-        );
+	@BeforeEach
+	void setUp() throws Exception {
+		InternetAddress applicationMail = new InternetAddress("test@example.com");
+		String clientHost = "http://example.com";
+		presentationService = new ThesisPresentationService(
+				calendarService,
+				thesisRepository,
+				mailingService,
+				thesisPresentationRepository,
+				currentUserProviderProvider,
+				clientHost,
+				applicationMail,
+				userRepository,
+				thesisPresentationInviteRepository,
+				researchGroupSettingsService
+		);
 
-        testUser = EntityMockFactory.createUser("Test User");
-        ResearchGroup testResearchGroup = EntityMockFactory.createResearchGroup("Test Research Group");
-        testUser.setResearchGroup(testResearchGroup);
-        testThesis = EntityMockFactory.createThesis("Test Thesis", testResearchGroup);
+		testUser = EntityMockFactory.createUser("Test User");
+		ResearchGroup testResearchGroup = EntityMockFactory.createResearchGroup("Test Research Group");
+		testUser.setResearchGroup(testResearchGroup);
+		testThesis = EntityMockFactory.createThesis("Test Thesis", testResearchGroup);
 
-        testPresentation = new ThesisPresentation();
-        testPresentation.setId(UUID.randomUUID());
-        testPresentation.setThesis(testThesis);
-        testPresentation.setState(ThesisPresentationState.DRAFTED);
-        testPresentation.setType(ThesisPresentationType.FINAL);
-        testPresentation.setVisibility(ThesisPresentationVisibility.PRIVATE);
-        testPresentation.setScheduledAt(Instant.now().plusSeconds(3600));
-        testPresentation.setLocation("Location");
-        testPresentation.setStreamUrl("https://stream.url");
-        testPresentation.setLanguage("English");
-        testPresentation.setCreatedBy(testUser);
-        testPresentation.setCreatedAt(Instant.now());
+		testPresentation = new ThesisPresentation();
+		testPresentation.setId(UUID.randomUUID());
+		testPresentation.setThesis(testThesis);
+		testPresentation.setState(ThesisPresentationState.DRAFTED);
+		testPresentation.setType(ThesisPresentationType.FINAL);
+		testPresentation.setVisibility(ThesisPresentationVisibility.PRIVATE);
+		testPresentation.setScheduledAt(Instant.now().plusSeconds(3600));
+		testPresentation.setLocation("Location");
+		testPresentation.setStreamUrl("https://stream.url");
+		testPresentation.setLanguage("English");
+		testPresentation.setCreatedBy(testUser);
+		testPresentation.setCreatedAt(Instant.now());
 
-        testThesis.setPresentations(new ArrayList<>(List.of(testPresentation)));
-    }
+		testThesis.setPresentations(new ArrayList<>(List.of(testPresentation)));
+	}
 
-    @Test
-    void getPublicPresentations_ReturnsPageOfPresentations() {
-        Page<ThesisPresentation> expectedPage = new PageImpl<>(List.of(testPresentation));
-        when(thesisPresentationRepository.findFuturePresentations(
-                any(Instant.class),
-                anySet(),
-                anySet(),
-                isNull(),
-                any(PageRequest.class)
-        )).thenReturn(expectedPage);
+	@Test
+	void getPublicPresentations_ReturnsPageOfPresentations() {
+		Page<ThesisPresentation> expectedPage = new PageImpl<>(List.of(testPresentation));
+		when(thesisPresentationRepository.findFuturePresentations(
+				any(Instant.class),
+				anySet(),
+				anySet(),
+				isNull(),
+				any(PageRequest.class)
+		)).thenReturn(expectedPage);
 
-        Page<ThesisPresentation> result = presentationService.getPublicPresentations(
-                true,
-                0,
-                10,
-                "scheduledAt",
-                "asc",
-                null
-        );
+		Page<ThesisPresentation> result = presentationService.getPublicPresentations(
+				true,
+				0,
+				10,
+				"scheduledAt",
+				"asc",
+				null
+		);
 
-        assertNotNull(result);
-        assertEquals(1, result.getContent().size());
-        assertEquals(testPresentation, result.getContent().getFirst());
-        verify(thesisPresentationRepository).findFuturePresentations(
-                any(Instant.class),
-                eq(Set.of(ThesisPresentationState.SCHEDULED, ThesisPresentationState.DRAFTED)),
-                eq(Set.of(ThesisPresentationVisibility.PUBLIC)),
-                isNull(),
-                any(PageRequest.class)
-        );
-    }
+		assertNotNull(result);
+		assertEquals(1, result.getContent().size());
+		assertEquals(testPresentation, result.getContent().getFirst());
+		verify(thesisPresentationRepository).findFuturePresentations(
+				any(Instant.class),
+				eq(Set.of(ThesisPresentationState.SCHEDULED, ThesisPresentationState.DRAFTED)),
+				eq(Set.of(ThesisPresentationVisibility.PUBLIC)),
+				isNull(),
+				any(PageRequest.class)
+		);
+	}
 
-    @Test
-    void getPublicPresentation_WithPublicPresentation_ReturnsPresentation() {
-        testPresentation.setVisibility(ThesisPresentationVisibility.PUBLIC);
-        when(thesisPresentationRepository.findById(testPresentation.getId()))
-                .thenReturn(Optional.of(testPresentation));
+	@Test
+	void getPublicPresentation_WithPublicPresentation_ReturnsPresentation() {
+		testPresentation.setVisibility(ThesisPresentationVisibility.PUBLIC);
+		when(thesisPresentationRepository.findById(testPresentation.getId()))
+				.thenReturn(Optional.of(testPresentation));
 
-        ThesisPresentation result = presentationService.getPublicPresentation(testPresentation.getId());
+		ThesisPresentation result = presentationService.getPublicPresentation(testPresentation.getId());
 
-        assertNotNull(result);
-        assertEquals(testPresentation.getId(), result.getId());
-        verify(thesisPresentationRepository).findById(testPresentation.getId());
-    }
+		assertNotNull(result);
+		assertEquals(testPresentation.getId(), result.getId());
+		verify(thesisPresentationRepository).findById(testPresentation.getId());
+	}
 
-    @Test
-    void getPublicPresentation_WithPrivatePresentation_ThrowsException() {
-        when(thesisPresentationRepository.findById(testPresentation.getId()))
-                .thenReturn(Optional.of(testPresentation));
+	@Test
+	void getPublicPresentation_WithPrivatePresentation_ThrowsException() {
+		when(thesisPresentationRepository.findById(testPresentation.getId()))
+				.thenReturn(Optional.of(testPresentation));
 
-        assertThrows(AccessDeniedException.class, () ->
-                presentationService.getPublicPresentation(testPresentation.getId())
-        );
-        verify(thesisPresentationRepository).findById(testPresentation.getId());
-    }
+		assertThrows(AccessDeniedException.class, () ->
+				presentationService.getPublicPresentation(testPresentation.getId())
+		);
+		verify(thesisPresentationRepository).findById(testPresentation.getId());
+	}
 
-    @Test
-    void createPresentation_WithValidData_CreatesPresentation() {
-        when(thesisPresentationRepository.save(any(ThesisPresentation.class)))
-                .thenAnswer(invocation -> invocation.getArgument(0));
-        when(thesisRepository.save(any(Thesis.class)))
-                .thenAnswer(invocation -> invocation.getArgument(0));
-        when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
+	@Test
+	void createPresentation_WithValidData_CreatesPresentation() {
+		when(thesisPresentationRepository.save(any(ThesisPresentation.class)))
+				.thenAnswer(invocation -> invocation.getArgument(0));
+		when(thesisRepository.save(any(Thesis.class)))
+				.thenAnswer(invocation -> invocation.getArgument(0));
+		when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
 
-        Thesis result = presentationService.createPresentation(
-                testThesis,
-                ThesisPresentationType.FINAL,
-                ThesisPresentationVisibility.PRIVATE,
-                "Room 101",
-                "http://example.com/meeting",
-                "English",
-                Instant.now().plusSeconds(1800)
-        );
+		Thesis result = presentationService.createPresentation(
+				testThesis,
+				ThesisPresentationType.FINAL,
+				ThesisPresentationVisibility.PRIVATE,
+				"Room 101",
+				"http://example.com/meeting",
+				"English",
+				Instant.now().plusSeconds(1800)
+		);
 
-        assertNotNull(result);
-        assertEquals(2, result.getPresentations().size());
-        assertEquals(testPresentation, result.getPresentations().getLast());
-        verify(thesisPresentationRepository).save(any(ThesisPresentation.class));
-        verify(thesisRepository).save(testThesis);
-    }
+		assertNotNull(result);
+		assertEquals(2, result.getPresentations().size());
+		assertEquals(testPresentation, result.getPresentations().getLast());
+		verify(thesisPresentationRepository).save(any(ThesisPresentation.class));
+		verify(thesisRepository).save(testThesis);
+	}
 
-    @Test
-    void schedulePresentation_WithAlreadyScheduledPresentation_ThrowsException() {
-        testPresentation.setState(ThesisPresentationState.SCHEDULED);
-        testThesis.setPresentations(List.of(testPresentation));
-        when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
+	@Test
+	void schedulePresentation_WithAlreadyScheduledPresentation_ThrowsException() {
+		testPresentation.setState(ThesisPresentationState.SCHEDULED);
+		testThesis.setPresentations(List.of(testPresentation));
+		when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
 
-        assertThrows(ResourceInvalidParametersException.class, () ->
-                presentationService.schedulePresentation(
-                        testPresentation,
-                        true,
-                        true,
-                        List.of(new InternetAddress("invite@example.com"))
-                )
-        );
-    }
+		assertThrows(ResourceInvalidParametersException.class, () ->
+				presentationService.schedulePresentation(
+						testPresentation,
+						true,
+						true,
+						List.of(new InternetAddress("invite@example.com"))
+				)
+		);
+	}
 
-    @Test
-    void deletePresentation_WithScheduledPresentation_DeletesAndNotifies() {
-        testPresentation.setState(ThesisPresentationState.SCHEDULED);
-        testThesis.setPresentations(List.of(testPresentation));
-        when(thesisRepository.save(any(Thesis.class))).thenAnswer(invocation -> invocation.getArgument(0));
-        when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
-        when(currentUserProvider.getUser()).thenReturn(testUser);
+	@Test
+	void deletePresentation_WithScheduledPresentation_DeletesAndNotifies() {
+		testPresentation.setState(ThesisPresentationState.SCHEDULED);
+		testThesis.setPresentations(List.of(testPresentation));
+		when(thesisRepository.save(any(Thesis.class))).thenAnswer(invocation -> invocation.getArgument(0));
+		when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
+		when(currentUserProvider.getUser()).thenReturn(testUser);
 
-        Thesis result = presentationService.deletePresentation(testPresentation);
+		Thesis result = presentationService.deletePresentation(testPresentation);
 
-        assertNotNull(result);
-        assertTrue(result.getPresentations().isEmpty());
-        verify(thesisPresentationInviteRepository).deleteByPresentationId(testPresentation.getId());
-        verify(thesisPresentationRepository).deleteById(testPresentation.getId());
-        verify(mailingService).sendPresentationDeletedEmail(testUser, testPresentation);
-        verify(thesisRepository).save(testThesis);
-    }
+		assertNotNull(result);
+		assertTrue(result.getPresentations().isEmpty());
+		verify(thesisPresentationInviteRepository).deleteByPresentationId(testPresentation.getId());
+		verify(thesisPresentationRepository).deleteById(testPresentation.getId());
+		verify(mailingService).sendPresentationDeletedEmail(testUser, testPresentation);
+		verify(thesisRepository).save(testThesis);
+	}
 
-    @Test
-    void updatePresentation_WithScheduledPresentation_UpdatesAndNotifies() {
-        when(thesisPresentationRepository.save(any(ThesisPresentation.class)))
-                .thenAnswer(invocation -> invocation.getArgument(0));
-        when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
+	@Test
+	void updatePresentation_WithScheduledPresentation_UpdatesAndNotifies() {
+		when(thesisPresentationRepository.save(any(ThesisPresentation.class)))
+				.thenAnswer(invocation -> invocation.getArgument(0));
+		when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
 
-        Thesis result = presentationService.updatePresentation(
-                testPresentation,
-                ThesisPresentationType.FINAL,
-                ThesisPresentationVisibility.PRIVATE,
-                "Updated Room",
-                "http://example.com/updated",
-                "German",
-                Instant.now().plusSeconds(7200)
-        );
+		Thesis result = presentationService.updatePresentation(
+				testPresentation,
+				ThesisPresentationType.FINAL,
+				ThesisPresentationVisibility.PRIVATE,
+				"Updated Room",
+				"http://example.com/updated",
+				"German",
+				Instant.now().plusSeconds(7200)
+		);
 
-        assertNotNull(result);
-        verify(thesisPresentationRepository).save(testPresentation);
-    }
+		assertNotNull(result);
+		verify(thesisPresentationRepository).save(testPresentation);
+	}
 
-    @Test
-    void findById_WithInvalidThesisId_ThrowsException() {
-        UUID differentThesisId = UUID.randomUUID();
-        when(thesisPresentationRepository.findById(testPresentation.getId()))
-                .thenReturn(Optional.of(testPresentation));
-        when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
+	@Test
+	void findById_WithInvalidThesisId_ThrowsException() {
+		UUID differentThesisId = UUID.randomUUID();
+		when(thesisPresentationRepository.findById(testPresentation.getId()))
+				.thenReturn(Optional.of(testPresentation));
+		when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
 
-        assertThrows(ResourceNotFoundException.class, () ->
-                presentationService.findById(differentThesisId, testPresentation.getId())
-        );
-        verify(thesisPresentationRepository).findById(testPresentation.getId());
-    }
+		assertThrows(ResourceNotFoundException.class, () ->
+				presentationService.findById(differentThesisId, testPresentation.getId())
+		);
+		verify(thesisPresentationRepository).findById(testPresentation.getId());
+	}
 
-    @Test
-    void getPresentationCalendar_ReturnsCalendarWithEvents() {
-        when(thesisPresentationRepository.findAllPresentations(isNull(), anySet()))
-                .thenReturn(List.of(testPresentation));
-        when(calendarService.createVEvent(anyString(), any()))
-                .thenReturn(null);
+	@Test
+	void getPresentationCalendar_ReturnsCalendarWithEvents() {
+		when(thesisPresentationRepository.findAllPresentations(isNull(), anySet()))
+				.thenReturn(List.of(testPresentation));
+		when(calendarService.createVEvent(anyString(), any()))
+				.thenReturn(null);
+		when(calendarService.createEmptyCalendar(anyString())).thenReturn(
+				new Calendar()
+		);
 
-        Calendar result = presentationService.getPresentationCalendar(null);
+		Calendar result = presentationService.getPresentationCalendar(null);
 
-        assertNotNull(result);
-        verify(calendarService).createVEvent(anyString(), any());
-        verify(thesisPresentationRepository).findAllPresentations(isNull(), anySet());
-    }
+		assertNotNull(result);
+		verify(calendarService).createVEvent(anyString(), any());
+		verify(thesisPresentationRepository).findAllPresentations(isNull(), anySet());
+	}
 }

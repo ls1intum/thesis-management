@@ -307,7 +307,7 @@ const ThesisConfigSection = () => {
               <UserMultiSelect
                 required={true}
                 disabled={!access.advisor}
-                label='Advisor(s)'
+                label='Supervisor(s)'
                 groups={['advisor', 'supervisor']}
                 initialUsers={thesis.advisors}
                 {...form.getInputProps('advisors')}
@@ -315,7 +315,7 @@ const ThesisConfigSection = () => {
               <UserMultiSelect
                 required={true}
                 disabled={!access.advisor}
-                label='Supervisor'
+                label='Examiner'
                 groups={['supervisor']}
                 initialUsers={thesis.supervisors}
                 maxValues={1}

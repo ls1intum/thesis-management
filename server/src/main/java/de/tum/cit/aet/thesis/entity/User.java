@@ -1,8 +1,5 @@
 package de.tum.cit.aet.thesis.entity;
 
-import jakarta.mail.internet.InternetAddress;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
@@ -10,177 +7,196 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
 
+import jakarta.mail.internet.InternetAddress;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "users")
 public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "user_id", nullable = false)
-    private UUID id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.UUID)
+	@Column(name = "user_id", nullable = false)
+	private UUID id;
 
-    @NotNull
-    @Column(name = "university_id", nullable = false)
-    private String universityId;
+	@NotNull
+	@Column(name = "university_id", nullable = false)
+	private String universityId;
 
-    @Column(name = "matriculation_number")
-    private String matriculationNumber;
+	@Column(name = "matriculation_number")
+	private String matriculationNumber;
 
-    @Column(name = "email")
-    private String email;
+	@Column(name = "email")
+	private String email;
 
-    @Column(name = "avatar")
-    private String avatar;
+	@Column(name = "avatar")
+	private String avatar;
 
-    @Column(name = "first_name")
-    private String firstName;
+	@Column(name = "first_name")
+	private String firstName;
 
-    @Column(name = "last_name")
-    private String lastName;
+	@Column(name = "last_name")
+	private String lastName;
 
-    @Column(name = "gender")
-    private String gender;
+	@Column(name = "gender")
+	private String gender;
 
-    @Column(name = "nationality")
-    private String nationality;
+	@Column(name = "nationality")
+	private String nationality;
 
-    @Column(name = "cv_filename")
-    private String cvFilename;
+	@Column(name = "cv_filename")
+	private String cvFilename;
 
-    @Column(name = "degree_filename")
-    private String degreeFilename;
+	@Column(name = "degree_filename")
+	private String degreeFilename;
 
-    @Column(name = "examination_filename")
-    private String examinationFilename;
+	@Column(name = "examination_filename")
+	private String examinationFilename;
 
-    @Column(name = "study_degree")
-    private String studyDegree;
+	@Column(name = "study_degree")
+	private String studyDegree;
 
-    @Column(name = "study_program")
-    private String studyProgram;
+	@Column(name = "study_program")
+	private String studyProgram;
 
-    @Column(name = "projects")
-    private String projects;
+	@Column(name = "projects")
+	private String projects;
 
-    @Column(name = "interests")
-    private String interests;
+	@Column(name = "interests")
+	private String interests;
 
-    @Column(name = "special_skills")
-    private String specialSkills;
+	@Column(name = "special_skills")
+	private String specialSkills;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "custom_data", columnDefinition = "jsonb")
-    private Map<String, String> customData = new HashMap<>();
+	@JdbcTypeCode(SqlTypes.JSON)
+	@Column(name = "custom_data", columnDefinition = "jsonb")
+	private Map<String, String> customData = new HashMap<>();
 
-    @Column(name = "enrolled_at")
-    private Instant enrolledAt;
+	@Column(name = "enrolled_at")
+	private Instant enrolledAt;
 
-    @UpdateTimestamp
-    @NotNull
-    @Column(name = "updated_at", nullable = false)
-    private Instant updatedAt;
+	@UpdateTimestamp
+	@NotNull
+	@Column(name = "updated_at", nullable = false)
+	private Instant updatedAt;
 
-    @CreationTimestamp
-    @NotNull
-    @Column(name = "joined_at", nullable = false)
-    private Instant joinedAt;
+	@CreationTimestamp
+	@NotNull
+	@Column(name = "joined_at", nullable = false)
+	private Instant joinedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "research_group_id")
-    private ResearchGroup researchGroup;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "research_group_id")
+	private ResearchGroup researchGroup;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-    private Set<UserGroup> groups = new HashSet<>();
+	@OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+	private Set<UserGroup> groups = new HashSet<>();
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<NotificationSetting> notificationSettings = new ArrayList<>();
+	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+	private List<NotificationSetting> notificationSettings = new ArrayList<>();
 
-    public InternetAddress getEmail() {
-        try {
-            return new InternetAddress(email);
-        } catch (Exception e) {
-            return null;
-        }
-    }
+	public InternetAddress getEmail() {
+		try {
+			return new InternetAddress(email);
+		} catch (Exception e) {
+			return null;
+		}
+	}
 
-    public String getAdjustedAvatar() {
-        if (avatar != null && !avatar.isBlank()) {
-            return avatar;
-        }
+	public String getAdjustedAvatar() {
+		if (avatar != null && !avatar.isBlank()) {
+			return avatar;
+		}
 
-        if (email == null) {
-            return null;
-        }
+		if (email == null) {
+			return null;
+		}
 
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
+		try {
+			MessageDigest md = MessageDigest.getInstance("MD5");
 
-            byte[] hashInBytes = md.digest(email.trim().toLowerCase().getBytes());
+			byte[] hashInBytes = md.digest(email.trim().toLowerCase().getBytes());
 
-            StringBuilder sb = new StringBuilder();
+			StringBuilder sb = new StringBuilder();
 
-            for (byte b : hashInBytes) {
-                sb.append(String.format("%02x", b));
-            }
+			for (byte b : hashInBytes) {
+				sb.append(String.format("%02x", b));
+			}
 
-            return "https://www.gravatar.com/avatar/" + sb + "?s=400";
-        } catch (NoSuchAlgorithmException e) {
-            return null;
-        }
-    }
+			return "https://www.gravatar.com/avatar/" + sb + "?s=400";
+		} catch (NoSuchAlgorithmException e) {
+			return null;
+		}
+	}
 
-    public boolean hasNoGroup() {
-        return groups.isEmpty();
-    }
+	public boolean hasNoGroup() {
+		return groups.isEmpty();
+	}
 
-    public boolean hasAnyGroup(String...groups) {
-        for (String group : groups) {
-            for (UserGroup userGroup : getGroups()) {
-                if (userGroup.getId().getGroup().equals(group)) {
-                    return true;
-                }
-            }
-        }
+	public boolean hasAnyGroup(String...groups) {
+		for (String group : groups) {
+			for (UserGroup userGroup : getGroups()) {
+				if (userGroup.getId().getGroup().equals(group)) {
+					return true;
+				}
+			}
+		}
 
-        return false;
-    }
+		return false;
+	}
 
-    public boolean hasFullAccess(User user) {
-        if (user.hasAnyGroup("admin", "supervisor", "advisor")) {
-            return true;
-        }
+	public boolean hasFullAccess(User user) {
+		if (user.hasAnyGroup("admin", "supervisor", "advisor")) {
+			return true;
+		}
 
-        return id.equals(user.getId());
-    }
+		return id.equals(user.getId());
+	}
 
-    public boolean isNotificationEnabled(String name) {
-        for (NotificationSetting setting : getNotificationSettings()) {
-            if (setting.getId().getName().equals(name) && setting.getEmail().equals("none")) {
-                return false;
-            }
-        }
+	public boolean isNotificationEnabled(String name) {
+		for (NotificationSetting setting : getNotificationSettings()) {
+			if (setting.getId().getName().equals(name) && setting.getEmail().equals("none")) {
+				return false;
+			}
+		}
 
-        return true;
-    }
+		return true;
+	}
 
-    public String getNotificationEmail(String notificationName) {
-        for (NotificationSetting setting : getNotificationSettings()) {
-            if (setting.getId().getName().equals(notificationName)) {
-                return setting.getEmail();
-            }
-        }
+	public String getNotificationEmail(String notificationName) {
+		for (NotificationSetting setting : getNotificationSettings()) {
+			if (setting.getId().getName().equals(notificationName)) {
+				return setting.getEmail();
+			}
+		}
 
-        //Default value when it is not in the database -> For new applications, we need a diffrent value since it is not a true or false toggle
-        if (notificationName.equals("new-applications")) {
-            return "own";
-        } else {
-            return "all";
-        }
-    }
+		//Default value when it is not in the database -> For new applications, we need a diffrent value since it is not a true or false toggle
+		if (notificationName.equals("new-applications")) {
+			return "own";
+		} else {
+			return "all";
+		}
+	}
 }

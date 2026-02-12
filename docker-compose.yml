@@ -33,11 +33,11 @@ services:
       - "5232:5232"
 
   keycloak:
-    image: quay.io/keycloak/keycloak:26.0
+    image: quay.io/keycloak/keycloak:26.4
     container_name: thesis-management-keycloak
     environment:
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
     volumes:
       - ./keycloak/thesis-management-realm.json:/opt/keycloak/data/import/thesis-management-realm.json:ro
     entrypoint: /opt/keycloak/bin/kc.sh start-dev --import-realm

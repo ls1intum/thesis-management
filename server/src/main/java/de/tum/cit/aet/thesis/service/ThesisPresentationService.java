@@ -1,26 +1,14 @@
 package de.tum.cit.aet.thesis.service;
 
-import de.tum.cit.aet.thesis.constants.StringLimits;
-import de.tum.cit.aet.thesis.security.CurrentUserProvider;
-import de.tum.cit.aet.thesis.utility.RequestValidator;
-import jakarta.mail.internet.InternetAddress;
-import net.fortuna.ical4j.model.Calendar;
-import net.fortuna.ical4j.model.property.ProdId;
-import net.fortuna.ical4j.model.property.immutable.ImmutableCalScale;
-import net.fortuna.ical4j.model.property.immutable.ImmutableMethod;
-import net.fortuna.ical4j.model.property.immutable.ImmutableVersion;
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import de.tum.cit.aet.thesis.constants.ThesisPresentationState;
 import de.tum.cit.aet.thesis.constants.ThesisPresentationType;
 import de.tum.cit.aet.thesis.constants.ThesisPresentationVisibility;
-import de.tum.cit.aet.thesis.entity.*;
+import de.tum.cit.aet.thesis.entity.ResearchGroup;
+import de.tum.cit.aet.thesis.entity.Thesis;
+import de.tum.cit.aet.thesis.entity.ThesisPresentation;
+import de.tum.cit.aet.thesis.entity.ThesisPresentationInvite;
+import de.tum.cit.aet.thesis.entity.ThesisRole;
+import de.tum.cit.aet.thesis.entity.User;
 import de.tum.cit.aet.thesis.entity.key.ThesisPresentationInviteId;
 import de.tum.cit.aet.thesis.exception.request.AccessDeniedException;
 import de.tum.cit.aet.thesis.exception.request.ResourceInvalidParametersException;
@@ -29,359 +17,425 @@ import de.tum.cit.aet.thesis.repository.ThesisPresentationInviteRepository;
 import de.tum.cit.aet.thesis.repository.ThesisPresentationRepository;
 import de.tum.cit.aet.thesis.repository.ThesisRepository;
 import de.tum.cit.aet.thesis.repository.UserRepository;
+import de.tum.cit.aet.thesis.security.CurrentUserProvider;
+import net.fortuna.ical4j.model.Calendar;
+import net.fortuna.ical4j.model.property.immutable.ImmutableMethod;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import jakarta.mail.internet.InternetAddress;
 
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
+/** Manages thesis presentations, including scheduling, calendar integration, and email invitations. */
 @Service
 public class ThesisPresentationService {
-    private final CalendarService calendarService;
-    private final ThesisRepository thesisRepository;
-    private final MailingService mailingService;
-    private final ThesisPresentationRepository thesisPresentationRepository;
-    private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
-
-    private final String clientHost;
-    private final InternetAddress applicationMail;
-    private final UserRepository userRepository;
-    private final ThesisPresentationInviteRepository thesisPresentationInviteRepository;
-
-    private final ResearchGroupSettingsService researchGroupSettingsService;
-
-    @Autowired
-    public ThesisPresentationService(
-            CalendarService calendarService,
-            ThesisRepository thesisRepository,
-            MailingService mailingService,
-            ThesisPresentationRepository thesisPresentationRepository,
-            ObjectProvider<CurrentUserProvider> currentUserProviderProvider,
-            @Value("${thesis-management.client.host}") String clientHost,
-            @Value("${thesis-management.mail.sender}") InternetAddress applicationMail,
-            UserRepository userRepository, ThesisPresentationInviteRepository thesisPresentationInviteRepository,
-            ResearchGroupSettingsService researchGroupSettingsService){
-        this.calendarService = calendarService;
-        this.thesisRepository = thesisRepository;
-        this.mailingService = mailingService;
-        this.thesisPresentationRepository = thesisPresentationRepository;
-        this.currentUserProviderProvider = currentUserProviderProvider;
-
-        this.clientHost = clientHost;
-        this.applicationMail = applicationMail;
-        this.userRepository = userRepository;
-        this.thesisPresentationInviteRepository = thesisPresentationInviteRepository;
-
-        this.researchGroupSettingsService = researchGroupSettingsService;
-    }
-
-    private CurrentUserProvider currentUserProvider() {
-        return currentUserProviderProvider.getObject();
-    }
-
-    public Page<ThesisPresentation> getPublicPresentations(boolean includeDrafts, Integer page,
-        Integer limit, String sortBy, String sortOrder, UUID researchGroupId) {
-        Sort.Order order = new Sort.Order(sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
-
-        ZoneId zone = ZoneId.systemDefault(); // or ZoneId.of("Europe/Berlin") if you want it explicit
-        Instant startOfToday = LocalDate.now(zone)
-                .atStartOfDay(zone)
-                .toInstant();
-
-        return thesisPresentationRepository.findFuturePresentations(
-                startOfToday,
-                includeDrafts ? Set.of(ThesisPresentationState.DRAFTED, ThesisPresentationState.SCHEDULED) : Set.of(ThesisPresentationState.SCHEDULED),
-                Set.of(ThesisPresentationVisibility.PUBLIC),
-                researchGroupId,
-                PageRequest.of(page, limit, Sort.by(order))
-        );
-    }
-
-    public ThesisPresentation getPublicPresentation(UUID presentationId) {
-        ThesisPresentation presentation =  thesisPresentationRepository.findById(presentationId)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Presentation with id %s not found.", presentationId)));
-
-        if (presentation.getVisibility() != ThesisPresentationVisibility.PUBLIC) {
-            throw new AccessDeniedException("Presentation is not public");
-        }
-
-        return presentation;
-    }
-
-    public Calendar getPresentationCalendar(UUID researchGroupId) {
-        Calendar calendar = createEmptyCalendar();
-
-        calendar.add(ImmutableMethod.PUBLISH);
-
-        List<ThesisPresentation> presentations;
-
-        presentations = thesisPresentationRepository.findAllPresentations(
-                researchGroupId,
-                Set.of(ThesisPresentationVisibility.PUBLIC)
-        );
-
-        for (ThesisPresentation presentation : presentations) {
-            calendar.add(calendarService.createVEvent(presentation.getId().toString(), createPresentationCalendarEventWithoutAccessCheck(presentation)));
-        }
-
-        return calendar;
-    }
-
-    public Calendar getPresentationInvite(ThesisPresentation presentation) {
-        Calendar calendar = createEmptyCalendar();
-
-        calendar.add(ImmutableMethod.REQUEST);
-
-        calendar.add(calendarService.createVEvent(presentation.getId().toString(), createPresentationCalendarEvent(presentation)));
-
-        return calendar;
-    }
-
-    @Transactional
-    public Thesis createPresentation(
-            Thesis thesis,
-            ThesisPresentationType type,
-            ThesisPresentationVisibility visibility,
-            String location,
-            String streamUrl,
-            String language,
-            Instant date
-    ) {
-        currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
-        ThesisPresentation presentation = new ThesisPresentation();
-
-        presentation.setThesis(thesis);
-        presentation.setState(ThesisPresentationState.DRAFTED);
-        presentation.setType(type);
-        presentation.setVisibility(visibility);
-        presentation.setLocation(location);
-        presentation.setStreamUrl(streamUrl);
-        presentation.setLanguage(language);
-        presentation.setScheduledAt(date);
-        presentation.setCreatedBy(currentUserProvider().getUser());
-        presentation.setCreatedAt(Instant.now());
-
-        presentation = thesisPresentationRepository.save(presentation);
-
-        List<ThesisPresentation> presentations = thesis.getPresentations();
-        presentations.add(presentation);
-        presentations.sort(Comparator.comparing(ThesisPresentation::getScheduledAt));
-        thesis.setPresentations(presentations);
-
-        return thesisRepository.save(thesis);
-    }
-
-    @Transactional
-    public Thesis updatePresentation(
-            ThesisPresentation presentation,
-            ThesisPresentationType type,
-            ThesisPresentationVisibility visibility,
-            String location,
-            String streamUrl,
-            String language,
-            Instant date
-    ) {
-        Thesis thesis = presentation.getThesis();
-        currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
-        presentation = thesis.getPresentation(presentation.getId()).orElseThrow();
-
-        presentation.setType(type);
-        presentation.setVisibility(visibility);
-        presentation.setLocation(location);
-        presentation.setStreamUrl(streamUrl);
-        presentation.setLanguage(language);
-        presentation.setScheduledAt(date);
-
-        thesisPresentationRepository.save(presentation);
-
-        if (presentation.getState() == ThesisPresentationState.SCHEDULED) {
-            mailingService.sendScheduledPresentationEmail("UPDATED", presentation, getPresentationInvite(presentation).toString());
-        }
-
-        updateThesisCalendarEvents(thesis);
-
-        return thesis;
-    }
-
-    @Transactional
-    public Thesis updatePresentationNote(ThesisPresentation presentation, String note) {
-        Thesis thesis = presentation.getThesis();
-        currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
-
-        if (note.isEmpty()) {
-            note = null;
-        }
-        presentation.setPresentationNoteHtml(note);
-
-        thesisPresentationRepository.save(presentation);
-
-        return thesis;
-    }
-
-    @Transactional
-    public Thesis schedulePresentation(
-            ThesisPresentation presentation,
-            boolean inviteChairMembers,
-            boolean inviteThesisStudents,
-            List<InternetAddress> additionalInvites
-    ) {
-        Thesis thesis = presentation.getThesis();
-        ResearchGroup researchGroup = thesis.getResearchGroup();
-        currentUserProvider().assertCanAccessResearchGroup(researchGroup);
-        presentation = thesis.getPresentation(presentation.getId()).orElseThrow();
-
-        if (presentation.getState() == ThesisPresentationState.SCHEDULED) {
-            throw new ResourceInvalidParametersException("Presentation is already scheduled");
-        }
-
-        presentation.setState(ThesisPresentationState.SCHEDULED);
-
-        calendarService.deleteEvent(presentation.getCalendarEvent());
-
-        if (presentation.getVisibility().equals(ThesisPresentationVisibility.PUBLIC)) {
-            presentation.setCalendarEvent(calendarService.createEvent(createPresentationCalendarEvent(presentation)));
-        }
-
-        presentation = thesisPresentationRepository.save(presentation);
-
-        Set<InternetAddress> addresses = new HashSet<>();
-
-        for (ThesisRole role : presentation.getThesis().getRoles()) {
-            addresses.add(role.getUser().getEmail());
-        }
-
-        if (inviteChairMembers) {
-            for (User user : userRepository.getRoleMembers(Set.of("admin", "supervisor",
-                    "advisor"), researchGroup.getId())) {
-                if (!user.isNotificationEnabled("presentation-invitations")) {
-                    continue;
-                }
-
-                addresses.add(user.getEmail());
-            }
-        }
-
-        if (inviteThesisStudents) {
-            for (User user : userRepository.findStudentsWithActiveThesesByResearchGroupId(researchGroup.getId())) {
-                if (!user.isNotificationEnabled("presentation-invitations")) {
-                    continue;
-                }
-
-                addresses.add(user.getEmail());
-            }
-        }
-
-        addresses.addAll(additionalInvites);
-
-        List<ThesisPresentationInvite> invites = new ArrayList<>();
-
-        for (InternetAddress address : addresses) {
-            ThesisPresentationInviteId entityId = new ThesisPresentationInviteId();
-            entityId.setPresentationId(presentation.getId());
-            entityId.setEmail(address.toString());
-
-            ThesisPresentationInvite entity = new ThesisPresentationInvite();
-            entity.setPresentation(presentation);
-            entity.setId(entityId);
-            entity.setInvitedAt(Instant.now());
-
-            invites.add(thesisPresentationInviteRepository.save(entity));
-        }
-
-        presentation.setInvites(invites);
-        presentation = thesisPresentationRepository.save(presentation);
-
-        mailingService.sendScheduledPresentationEmail("CREATED", presentation, getPresentationInvite(presentation).toString());
-
-        return thesis;
-    }
-
-    @Transactional
-    public Thesis deletePresentation(ThesisPresentation presentation) {
-        Thesis thesis = presentation.getThesis();
-        currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
-
-        thesisPresentationInviteRepository.deleteByPresentationId(presentation.getId());
-        thesisPresentationRepository.deleteById(presentation.getId());
-
-        List<ThesisPresentation> presentations = new ArrayList<>(thesis.getPresentations().stream()
-                .filter(x -> !presentation.getId().equals(x.getId()))
-                .toList());
-
-        thesis.setPresentations(presentations);
-
-        thesis = thesisRepository.save(thesis);
-
-        calendarService.deleteEvent(presentation.getCalendarEvent());
-
-        if (presentation.getState() == ThesisPresentationState.SCHEDULED) {
-            mailingService.sendPresentationDeletedEmail(currentUserProvider().getUser(), presentation);
-        }
-
-        return thesis;
-    }
-
-    public void updateThesisCalendarEvents(Thesis thesis) {
-        currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
-        for (ThesisPresentation presentation : thesis.getPresentations()) {
-            String eventId = presentation.getCalendarEvent();
-
-            if (eventId != null) {
-                calendarService.updateEvent(eventId, createPresentationCalendarEvent(presentation));
-            }
-        }
-    }
-
-    public ThesisPresentation findById(UUID thesisId, UUID presentationId) {
-        ThesisPresentation presentation = thesisPresentationRepository.findById(presentationId)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Presentation with id %s not found.", presentationId)));
-
-        currentUserProvider().assertCanAccessResearchGroup(presentation.getResearchGroup());
-
-        if (!presentation.getThesis().getId().equals(thesisId)) {
-            throw new ResourceNotFoundException(String.format("Presentation with id %s not found for thesis with id %s.", presentationId, thesisId));
-        }
-
-        return presentation;
-    }
-
-    private Calendar createEmptyCalendar() {
-        Calendar calendar = new Calendar();
-
-        calendar.add(new ProdId("-//Thesis Management//Thesis Presentations//EN"));
-        calendar.add(ImmutableVersion.VERSION_2_0);
-        calendar.add(ImmutableCalScale.GREGORIAN);
-
-        return calendar;
-    }
-
-    private CalendarService.CalendarEvent createPresentationCalendarEvent(ThesisPresentation presentation) {
-        Thesis thesis = presentation.getThesis();
-        currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
-        return createPresentationCalendarEventWithoutAccessCheck(presentation);
-    }
-
-    private CalendarService.CalendarEvent createPresentationCalendarEventWithoutAccessCheck(ThesisPresentation presentation) {
-        Thesis thesis = presentation.getThesis();
-        String location = presentation.getLocation();
-        String streamUrl = presentation.getStreamUrl();
-
-        int groupSettingsDuration = researchGroupSettingsService.getPresentationDurationInMinutes(thesis.getResearchGroup().getId());
-
-        return new CalendarService.CalendarEvent(
-                "Thesis Presentation \"" + thesis.getTitle() + "\"",
-                location == null || location.isBlank() ? streamUrl : location,
-                "Title: " + thesis.getTitle() + "\n" +
-                        (streamUrl != null && !streamUrl.isBlank() ? "Stream URL: " + streamUrl + "\n" : "") + "\n" +
-                        "Language: " + presentation.getLanguage() + "\n\n" +
-                        "Details: " + clientHost + "/presentations/" + presentation.getId() + "\n\n" +
-                        "Abstract:\n" + thesis.getAbstractField(),
-                presentation.getScheduledAt(),
-                presentation.getScheduledAt().plus(groupSettingsDuration, ChronoUnit.MINUTES),
-                this.applicationMail,
-                thesis.getRoles().stream().map(role -> role.getUser().getEmail()).toList(),
-                presentation.getInvites().stream().map(ThesisPresentationInvite::getEmail).toList()
-        );
-    }
+	private final CalendarService calendarService;
+	private final ThesisRepository thesisRepository;
+	private final MailingService mailingService;
+	private final ThesisPresentationRepository thesisPresentationRepository;
+	private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
+
+	private final String clientHost;
+	private final InternetAddress applicationMail;
+	private final UserRepository userRepository;
+	private final ThesisPresentationInviteRepository thesisPresentationInviteRepository;
+
+	private final ResearchGroupSettingsService researchGroupSettingsService;
+
+	private final String calendarProdId = "-//Thesis Management//Thesis Presentations//EN";
+
+	/**
+	 * Injects calendar, mailing, presentation repositories, and configuration values for presentation management.
+	 *
+	 * @param calendarService the calendar integration service
+	 * @param thesisRepository the thesis repository
+	 * @param mailingService the mailing service
+	 * @param thesisPresentationRepository the thesis presentation repository
+	 * @param currentUserProviderProvider the current user provider
+	 * @param clientHost the client application host URL
+	 * @param applicationMail the application sender email address
+	 * @param userRepository the user repository
+	 * @param thesisPresentationInviteRepository the presentation invite repository
+	 * @param researchGroupSettingsService the research group settings service
+	 */
+	@Autowired
+	public ThesisPresentationService(
+			CalendarService calendarService,
+			ThesisRepository thesisRepository,
+			MailingService mailingService,
+			ThesisPresentationRepository thesisPresentationRepository,
+			ObjectProvider<CurrentUserProvider> currentUserProviderProvider,
+			@Value("${thesis-management.client.host}") String clientHost,
+			@Value("${thesis-management.mail.sender}") InternetAddress applicationMail,
+			UserRepository userRepository, ThesisPresentationInviteRepository thesisPresentationInviteRepository,
+			ResearchGroupSettingsService researchGroupSettingsService) {
+		this.calendarService = calendarService;
+		this.thesisRepository = thesisRepository;
+		this.mailingService = mailingService;
+		this.thesisPresentationRepository = thesisPresentationRepository;
+		this.currentUserProviderProvider = currentUserProviderProvider;
+
+		this.clientHost = clientHost;
+		this.applicationMail = applicationMail;
+		this.userRepository = userRepository;
+		this.thesisPresentationInviteRepository = thesisPresentationInviteRepository;
+
+		this.researchGroupSettingsService = researchGroupSettingsService;
+	}
+
+	private CurrentUserProvider currentUserProvider() {
+		return currentUserProviderProvider.getObject();
+	}
+
+	/**
+	 * Returns a paginated list of future public presentations, optionally including drafts.
+	 *
+	 * @param includeDrafts whether to include drafted presentations
+	 * @param page the page number
+	 * @param limit the number of items per page
+	 * @param sortBy the field to sort by
+	 * @param sortOrder the sort direction (asc or desc)
+	 * @param researchGroupId the research group ID to filter by
+	 * @return a page of thesis presentations
+	 */
+	public Page<ThesisPresentation> getPublicPresentations(boolean includeDrafts, Integer page,
+		Integer limit, String sortBy, String sortOrder, UUID researchGroupId) {
+		Sort.Order order = new Sort.Order(sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
+
+		ZoneId zone = ZoneId.systemDefault(); // or ZoneId.of("Europe/Berlin") if you want it explicit
+		Instant startOfToday = LocalDate.now(zone)
+				.atStartOfDay(zone)
+				.toInstant();
+
+		return thesisPresentationRepository.findFuturePresentations(
+				startOfToday,
+				includeDrafts ? Set.of(ThesisPresentationState.DRAFTED, ThesisPresentationState.SCHEDULED) : Set.of(ThesisPresentationState.SCHEDULED),
+				Set.of(ThesisPresentationVisibility.PUBLIC),
+				researchGroupId,
+				PageRequest.of(page, limit, Sort.by(order))
+		);
+	}
+
+	/**
+	 * Returns a single public presentation by its ID, throwing an exception if it is not public.
+	 *
+	 * @param presentationId the presentation ID
+	 * @return the public thesis presentation
+	 */
+	public ThesisPresentation getPublicPresentation(UUID presentationId) {
+		ThesisPresentation presentation =  thesisPresentationRepository.findById(presentationId)
+				.orElseThrow(() -> new ResourceNotFoundException(String.format("Presentation with id %s not found.", presentationId)));
+
+		if (presentation.getVisibility() != ThesisPresentationVisibility.PUBLIC) {
+			throw new AccessDeniedException("Presentation is not public");
+		}
+
+		return presentation;
+	}
+
+	/**
+	 * Builds an iCal calendar containing all public presentations for the given research group.
+	 *
+	 * @param researchGroupId the research group ID
+	 * @return the iCal calendar with public presentations
+	 */
+	public Calendar getPresentationCalendar(UUID researchGroupId) {
+		Calendar calendar = calendarService.createEmptyCalendar(calendarProdId);
+
+		calendar.add(ImmutableMethod.PUBLISH);
+
+		List<ThesisPresentation> presentations;
+
+		presentations = thesisPresentationRepository.findAllPresentations(
+				researchGroupId,
+				Set.of(ThesisPresentationVisibility.PUBLIC)
+		);
+
+		for (ThesisPresentation presentation : presentations) {
+			calendar.add(calendarService.createVEvent(presentation.getId().toString(), createPresentationCalendarEventWithoutAccessCheck(presentation)));
+		}
+
+		return calendar;
+	}
+
+	/**
+	 * Creates an iCal calendar invite for the given thesis presentation.
+	 *
+	 * @param presentation the thesis presentation
+	 * @return the iCal calendar invite
+	 */
+	public Calendar getPresentationInvite(ThesisPresentation presentation) {
+		Calendar calendar = calendarService.createEmptyCalendar(calendarProdId);
+
+		calendar.add(ImmutableMethod.REQUEST);
+
+		calendar.add(calendarService.createVEvent(presentation.getId().toString(), createPresentationCalendarEvent(presentation)));
+
+		return calendar;
+	}
+
+	@Transactional
+	public Thesis createPresentation(
+			Thesis thesis,
+			ThesisPresentationType type,
+			ThesisPresentationVisibility visibility,
+			String location,
+			String streamUrl,
+			String language,
+			Instant date
+	) {
+		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+		ThesisPresentation presentation = new ThesisPresentation();
+
+		presentation.setThesis(thesis);
+		presentation.setState(ThesisPresentationState.DRAFTED);
+		presentation.setType(type);
+		presentation.setVisibility(visibility);
+		presentation.setLocation(location);
+		presentation.setStreamUrl(streamUrl);
+		presentation.setLanguage(language);
+		presentation.setScheduledAt(date);
+		presentation.setCreatedBy(currentUserProvider().getUser());
+		presentation.setCreatedAt(Instant.now());
+
+		presentation = thesisPresentationRepository.save(presentation);
+
+		List<ThesisPresentation> presentations = thesis.getPresentations();
+		presentations.add(presentation);
+		presentations.sort(Comparator.comparing(ThesisPresentation::getScheduledAt));
+		thesis.setPresentations(presentations);
+
+		return thesisRepository.save(thesis);
+	}
+
+	@Transactional
+	public Thesis updatePresentation(
+			ThesisPresentation presentation,
+			ThesisPresentationType type,
+			ThesisPresentationVisibility visibility,
+			String location,
+			String streamUrl,
+			String language,
+			Instant date
+	) {
+		Thesis thesis = presentation.getThesis();
+		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+		presentation = thesis.getPresentation(presentation.getId()).orElseThrow();
+
+		presentation.setType(type);
+		presentation.setVisibility(visibility);
+		presentation.setLocation(location);
+		presentation.setStreamUrl(streamUrl);
+		presentation.setLanguage(language);
+		presentation.setScheduledAt(date);
+
+		thesisPresentationRepository.save(presentation);
+
+		if (presentation.getState() == ThesisPresentationState.SCHEDULED) {
+			mailingService.sendScheduledPresentationEmail("UPDATED", presentation, getPresentationInvite(presentation).toString());
+		}
+
+		updateThesisCalendarEvents(thesis);
+
+		return thesis;
+	}
+
+	@Transactional
+	public Thesis updatePresentationNote(ThesisPresentation presentation, String note) {
+		Thesis thesis = presentation.getThesis();
+		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+
+		if (note.isEmpty()) {
+			note = null;
+		}
+		presentation.setPresentationNoteHtml(note);
+
+		thesisPresentationRepository.save(presentation);
+
+		return thesis;
+	}
+
+	@Transactional
+	public Thesis schedulePresentation(
+			ThesisPresentation presentation,
+			boolean inviteChairMembers,
+			boolean inviteThesisStudents,
+			List<InternetAddress> additionalInvites
+	) {
+		Thesis thesis = presentation.getThesis();
+		ResearchGroup researchGroup = thesis.getResearchGroup();
+		currentUserProvider().assertCanAccessResearchGroup(researchGroup);
+		presentation = thesis.getPresentation(presentation.getId()).orElseThrow();
+
+		if (presentation.getState() == ThesisPresentationState.SCHEDULED) {
+			throw new ResourceInvalidParametersException("Presentation is already scheduled");
+		}
+
+		presentation.setState(ThesisPresentationState.SCHEDULED);
+
+		calendarService.deleteEvent(presentation.getCalendarEvent());
+
+		if (presentation.getVisibility().equals(ThesisPresentationVisibility.PUBLIC)) {
+			presentation.setCalendarEvent(calendarService.createEvent(createPresentationCalendarEvent(presentation)));
+		}
+
+		presentation = thesisPresentationRepository.save(presentation);
+
+		Set<InternetAddress> addresses = new HashSet<>();
+
+		for (ThesisRole role : presentation.getThesis().getRoles()) {
+			addresses.add(role.getUser().getEmail());
+		}
+
+		if (inviteChairMembers) {
+			for (User user : userRepository.getRoleMembers(Set.of("admin", "supervisor",
+					"advisor"), researchGroup.getId())) {
+				if (!user.isNotificationEnabled("presentation-invitations")) {
+					continue;
+				}
+
+				addresses.add(user.getEmail());
+			}
+		}
+
+		if (inviteThesisStudents) {
+			for (User user : userRepository.findStudentsWithActiveThesesByResearchGroupId(researchGroup.getId())) {
+				if (!user.isNotificationEnabled("presentation-invitations")) {
+					continue;
+				}
+
+				addresses.add(user.getEmail());
+			}
+		}
+
+		addresses.addAll(additionalInvites);
+
+		List<ThesisPresentationInvite> invites = new ArrayList<>();
+
+		for (InternetAddress address : addresses) {
+			ThesisPresentationInviteId entityId = new ThesisPresentationInviteId();
+			entityId.setPresentationId(presentation.getId());
+			entityId.setEmail(address.toString());
+
+			ThesisPresentationInvite entity = new ThesisPresentationInvite();
+			entity.setPresentation(presentation);
+			entity.setId(entityId);
+			entity.setInvitedAt(Instant.now());
+
+			invites.add(thesisPresentationInviteRepository.save(entity));
+		}
+
+		presentation.setInvites(invites);
+		presentation = thesisPresentationRepository.save(presentation);
+
+		mailingService.sendScheduledPresentationEmail("CREATED", presentation, getPresentationInvite(presentation).toString());
+
+		return thesis;
+	}
+
+	@Transactional
+	public Thesis deletePresentation(ThesisPresentation presentation) {
+		Thesis thesis = presentation.getThesis();
+		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+
+		thesisPresentationInviteRepository.deleteByPresentationId(presentation.getId());
+		thesisPresentationRepository.deleteById(presentation.getId());
+
+		List<ThesisPresentation> presentations = new ArrayList<>(thesis.getPresentations().stream()
+				.filter(x -> !presentation.getId().equals(x.getId()))
+				.toList());
+
+		thesis.setPresentations(presentations);
+
+		thesis = thesisRepository.save(thesis);
+
+		calendarService.deleteEvent(presentation.getCalendarEvent());
+
+		if (presentation.getState() == ThesisPresentationState.SCHEDULED) {
+			mailingService.sendPresentationDeletedEmail(currentUserProvider().getUser(), presentation);
+		}
+
+		return thesis;
+	}
+
+	/**
+	 * Updates all calendar events associated with the presentations of the given thesis.
+	 *
+	 * @param thesis the thesis whose presentation calendar events should be updated
+	 */
+	public void updateThesisCalendarEvents(Thesis thesis) {
+		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+		for (ThesisPresentation presentation : thesis.getPresentations()) {
+			String eventId = presentation.getCalendarEvent();
+
+			if (eventId != null) {
+				calendarService.updateEvent(eventId, createPresentationCalendarEvent(presentation));
+			}
+		}
+	}
+
+	/**
+	 * Finds a presentation by its ID and verifies it belongs to the specified thesis.
+	 *
+	 * @param thesisId the thesis ID
+	 * @param presentationId the presentation ID
+	 * @return the thesis presentation
+	 */
+	public ThesisPresentation findById(UUID thesisId, UUID presentationId) {
+		ThesisPresentation presentation = thesisPresentationRepository.findById(presentationId)
+				.orElseThrow(() -> new ResourceNotFoundException(String.format("Presentation with id %s not found.", presentationId)));
+
+		currentUserProvider().assertCanAccessResearchGroup(presentation.getResearchGroup());
+
+		if (!presentation.getThesis().getId().equals(thesisId)) {
+			throw new ResourceNotFoundException(String.format("Presentation with id %s not found for thesis with id %s.", presentationId, thesisId));
+		}
+
+		return presentation;
+	}
+
+	private CalendarService.CalendarEvent createPresentationCalendarEvent(ThesisPresentation presentation) {
+		Thesis thesis = presentation.getThesis();
+		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+		return createPresentationCalendarEventWithoutAccessCheck(presentation);
+	}
+
+	private CalendarService.CalendarEvent createPresentationCalendarEventWithoutAccessCheck(ThesisPresentation presentation) {
+		Thesis thesis = presentation.getThesis();
+		String location = presentation.getLocation();
+		String streamUrl = presentation.getStreamUrl();
+
+		int groupSettingsDuration = researchGroupSettingsService.getPresentationDurationInMinutes(thesis.getResearchGroup().getId());
+
+		return new CalendarService.CalendarEvent(
+				"Thesis Presentation \"" + thesis.getTitle() + "\"",
+				location == null || location.isBlank() ? streamUrl : location,
+				"Title: " + thesis.getTitle() + "\n" +
+						(streamUrl != null && !streamUrl.isBlank() ? "Stream URL: " + streamUrl + "\n" : "") + "\n" +
+						"Language: " + presentation.getLanguage() + "\n\n" +
+						"Details: " + clientHost + "/presentations/" + presentation.getId() + "\n\n" +
+						"Abstract:\n" + thesis.getAbstractField(),
+				presentation.getScheduledAt(),
+				presentation.getScheduledAt().plus(groupSettingsDuration, ChronoUnit.MINUTES),
+				this.applicationMail,
+				thesis.getRoles().stream().map(role -> role.getUser().getEmail()).toList(),
+				presentation.getInvites().stream().map(ThesisPresentationInvite::getEmail).toList()
+		);
+	}
 }

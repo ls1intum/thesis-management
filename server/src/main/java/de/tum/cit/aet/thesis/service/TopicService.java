@@ -2,6 +2,7 @@ package de.tum.cit.aet.thesis.service;
 
 import de.tum.cit.aet.thesis.constants.ThesisRoleName;
 import de.tum.cit.aet.thesis.constants.TopicState;
+import de.tum.cit.aet.thesis.dto.TopicInterviewProcessDto;
 import de.tum.cit.aet.thesis.entity.ResearchGroup;
 import de.tum.cit.aet.thesis.entity.Topic;
 import de.tum.cit.aet.thesis.entity.TopicRole;
@@ -9,6 +10,7 @@ import de.tum.cit.aet.thesis.entity.User;
 import de.tum.cit.aet.thesis.entity.key.TopicRoleId;
 import de.tum.cit.aet.thesis.exception.request.ResourceInvalidParametersException;
 import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
+import de.tum.cit.aet.thesis.repository.InterviewProcessRepository;
 import de.tum.cit.aet.thesis.repository.ResearchGroupRepository;
 import de.tum.cit.aet.thesis.repository.TopicRepository;
 import de.tum.cit.aet.thesis.repository.TopicRoleRepository;
@@ -24,232 +26,320 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
+/** Manages thesis topics, including creation, updates, role assignments, and search. */
 @Service
 public class TopicService {
-    private final TopicRepository topicRepository;
-    private final TopicRoleRepository topicRoleRepository;
-    private final UserRepository userRepository;
-    private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
-    private final ResearchGroupRepository researchGroupRepository;
+	private final TopicRepository topicRepository;
+	private final TopicRoleRepository topicRoleRepository;
+	private final UserRepository userRepository;
+	private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
+	private final ResearchGroupRepository researchGroupRepository;
+	private final InterviewProcessRepository interviewProcessRepository;
 
-    @Autowired
-    public TopicService(TopicRepository topicRepository, TopicRoleRepository topicRoleRepository, UserRepository userRepository,
-                        ObjectProvider<CurrentUserProvider> currentUserProviderProvider, ResearchGroupRepository researchGroupRepository) {
-        this.topicRepository = topicRepository;
-        this.topicRoleRepository = topicRoleRepository;
-        this.userRepository = userRepository;
-       this.currentUserProviderProvider = currentUserProviderProvider;
-        this.researchGroupRepository = researchGroupRepository;
-    }
+	/**
+	 * Injects the topic, user, and research group repositories along with the current user provider.
+	 *
+	 * @param topicRepository the topic repository
+	 * @param topicRoleRepository the topic role repository
+	 * @param userRepository the user repository
+	 * @param currentUserProviderProvider the current user provider
+	 * @param researchGroupRepository the research group repository
+	 * @param interviewProcessRepository the interview process repository
+	 */
+	@Autowired
+	public TopicService(
+			TopicRepository topicRepository,
+			TopicRoleRepository topicRoleRepository,
+			UserRepository userRepository,
+			ObjectProvider<CurrentUserProvider> currentUserProviderProvider,
+			ResearchGroupRepository researchGroupRepository,
+			InterviewProcessRepository interviewProcessRepository) {
+		this.topicRepository = topicRepository;
+		this.topicRoleRepository = topicRoleRepository;
+		this.userRepository = userRepository;
+	this.currentUserProviderProvider = currentUserProviderProvider;
+		this.researchGroupRepository = researchGroupRepository;
+		this.interviewProcessRepository = interviewProcessRepository;
+	}
 
-    private CurrentUserProvider currentUserProvider() {
-        return currentUserProviderProvider.getObject();
-    }
+	private CurrentUserProvider currentUserProvider() {
+		return currentUserProviderProvider.getObject();
+	}
 
-    public Page<Topic> getAll(
-            boolean onlyOwnResearchGroup,
-            String[] types,
-            String[] states,
-            String searchQuery,
-            int page,
-            int limit,
-            String sortBy,
-            String sortOrder,
-            UUID[] researchGroupIds
-    ) {
-        Sort.Order order = new Sort.Order(
-                sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,
-                HibernateHelper.getColumnName(Topic.class, sortBy)
-        );
+	/**
+	 * Returns a paginated and filtered list of topics based on type, state, and research group.
+	 *
+	 * @param onlyOwnResearchGroup whether to filter by the current user's research group
+	 * @param types the topic types to filter by
+	 * @param states the topic states to filter by
+	 * @param searchQuery the search query string
+	 * @param page the page number
+	 * @param limit the number of items per page
+	 * @param sortBy the field to sort by
+	 * @param sortOrder the sort direction (asc or desc)
+	 * @param researchGroupIds the research group IDs to filter by
+	 * @return a page of topics matching the filters
+	 */
+	public Page<Topic> getAll(
+			boolean onlyOwnResearchGroup,
+			String[] types,
+			String[] states,
+			String searchQuery,
+			int page,
+			int limit,
+			String sortBy,
+			String sortOrder,
+			UUID[] researchGroupIds
+	) {
+		Sort.Order order = new Sort.Order(
+				sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,
+				HibernateHelper.getColumnName(Topic.class, sortBy)
+		);
 
-        ResearchGroup researchGroup = onlyOwnResearchGroup ?
-            currentUserProvider().getResearchGroupOrThrow() : null;
-        String searchQueryFilter = searchQuery == null || searchQuery.isEmpty() ? null : searchQuery.toLowerCase();
-        String[] typesFilter = types == null || types.length == 0 ? null : types;
+		ResearchGroup researchGroup = onlyOwnResearchGroup ?
+			currentUserProvider().getResearchGroupOrThrow() : null;
+		String searchQueryFilter = searchQuery == null || searchQuery.isEmpty() ? null : searchQuery.toLowerCase();
+		String[] typesFilter = types == null || types.length == 0 ? null : types;
 
 
-        if (states != null && Arrays.stream(states).anyMatch(s -> s.equals(TopicState.CLOSED.name()) || s.equals(TopicState.DRAFT.name()))) {
-            currentUserProvider().assertCanAccessResearchGroup(researchGroup);
-        }
-        String[] statesFilter = (states != null && states.length > 0) ? states : new String[] { TopicState.OPEN.name() };
+		if (states != null && Arrays.stream(states).anyMatch(s -> s.equals(TopicState.CLOSED.name()) || s.equals(TopicState.DRAFT.name()))) {
+			currentUserProvider().assertCanAccessResearchGroup(researchGroup);
+		}
+		String[] statesFilter = (states != null && states.length > 0) ? states : new String[] { TopicState.OPEN.name() };
 
-        return topicRepository.searchTopics(
-                researchGroup == null ? ( researchGroupIds == null ? null : new HashSet<>(Arrays.asList(researchGroupIds))) : new HashSet<UUID>(Collections.singleton(researchGroup.getId())),
-                typesFilter,
-                statesFilter,
-                searchQueryFilter,
-                PageRequest.of(page, limit, Sort.by(order))
-        );
-    }
+		return topicRepository.searchTopics(
+				researchGroup == null
+						? (researchGroupIds == null ? null
+								: new HashSet<>(Arrays.asList(researchGroupIds)))
+						: new HashSet<UUID>(Collections.singleton(researchGroup.getId())),
+				typesFilter,
+				statesFilter,
+				searchQueryFilter,
+				PageRequest.of(page, limit, Sort.by(order))
+		);
+	}
 
-    public List<Topic> getOpenFromResearchGroup(UUID researchGroupId) {
-        return topicRepository.searchTopics(
-                Collections.singleton(researchGroupId),
-                null,
-                new String[] { TopicState.OPEN.name() },
-                null,
-                PageRequest.of(0, Integer.MAX_VALUE, Sort.unsorted())
-        ).toList();
-    }
+	/**
+	 * Returns open topics eligible for interview processes for the current user's research group.
+	 *
+	 * @param searchQuery the search query to filter topics
+	 * @param page the page number
+	 * @param limit the number of items per page
+	 * @param excludeSupervised whether to exclude topics supervised by the current user
+	 * @return a page of topics with interview process information
+	 */
+	public Page<TopicInterviewProcessDto> getPossibleInterviewTopics(
+			String searchQuery,
+			int page,
+			int limit,
+			boolean excludeSupervised
+	) {
+		if (currentUserProvider().getResearchGroupOrThrow().getId() == null && !currentUserProvider().isAdmin()) {
+			throw new IllegalStateException("Current user is not assigned to any research group.");
+		}
 
-    @Transactional
-    public Topic createTopic(
-            String title,
-            Set<String> thesisTypes,
-            String problemStatement,
-            String requirements,
-            String goals,
-            String references,
-            List<UUID> supervisorIds,
-            List<UUID> advisorIds,
-            UUID researchGroupId,
-            Instant intendedStart,
-            Instant applicationDeadline,
-            Boolean isDraft
-    ) {
-        User creator = currentUserProvider().getUser();
-        ResearchGroup researchGroup = researchGroupRepository.findById(researchGroupId).orElseThrow(
-                () -> new ResourceNotFoundException("Research group not found")
-        );
-        Topic topic = new Topic();
+		UUID userId = currentUserProvider().isAdmin() ?
+				null : currentUserProvider().getUser().getId();
 
-        topic.setTitle(title);
-        topic.setThesisTypes(thesisTypes);
-        topic.setProblemStatement(problemStatement);
-        topic.setRequirements(requirements);
-        topic.setGoals(goals);
-        topic.setReferences(references);
-        topic.setUpdatedAt(Instant.now());
-        topic.setCreatedAt(Instant.now());
-        if (isDraft != true) {
-            topic.setPublishedAt(Instant.now());
-        }
-        topic.setCreatedBy(creator);
-        topic.setResearchGroup(researchGroup);
-        topic.setIntendedStart(intendedStart);
-        topic.setApplicationDeadline(applicationDeadline);
+		Sort.Order order = new Sort.Order(
+				Sort.Direction.DESC,
+				HibernateHelper.getColumnName(Topic.class, "title")
+		);
 
-        topic = topicRepository.save(topic);
+		Page<Topic> topics = topicRepository.findOpenTopicsForUserByRoles(searchQuery, userId, excludeSupervised, PageRequest.of(page, limit <= 0 ? Integer.MAX_VALUE : limit, Sort.by(order)));
 
-        assignTopicRoles(topic, advisorIds, supervisorIds);
+		return topics.map(topic ->
+			TopicInterviewProcessDto.from(topic, interviewProcessRepository.existsByTopicId(topic.getId()))
+		);
+	}
 
-        return topicRepository.save(topic);
-    }
+	/**
+	 * Returns all open topics belonging to the specified research group.
+	 *
+	 * @param researchGroupId the research group ID
+	 * @return the list of open topics for the research group
+	 */
+	public List<Topic> getOpenFromResearchGroup(UUID researchGroupId) {
+		return topicRepository.searchTopics(
+				Collections.singleton(researchGroupId),
+				null,
+				new String[] { TopicState.OPEN.name() },
+				null,
+				PageRequest.of(0, Integer.MAX_VALUE, Sort.unsorted())
+		).toList();
+	}
 
-    @Transactional
-    public Topic updateTopic(
-            Topic topic,
-            String title,
-            Set<String> thesisTypes,
-            String problemStatement,
-            String requirements,
-            String goals,
-            String references,
-            List<UUID> supervisorIds,
-            List<UUID> advisorIds,
-            UUID researchGroupId,
-            Instant intendedStart,
-            Instant applicationDeadline,
-            Boolean isDraft
-    ) {
-        ResearchGroup researchGroup = researchGroupRepository.findById(researchGroupId).orElseThrow(
-                () -> new ResourceNotFoundException("Research group not found")
-        );
-        currentUserProvider().assertCanAccessResearchGroup(researchGroup);
-        topic.setTitle(title);
-        topic.setThesisTypes(thesisTypes);
-        topic.setProblemStatement(problemStatement);
-        topic.setRequirements(requirements);
-        topic.setGoals(goals);
-        topic.setReferences(references);
-        topic.setUpdatedAt(Instant.now());
-        if (isDraft != true && topic.getPublishedAt() == null) {
-            topic.setPublishedAt(Instant.now());
-        }
-        topic.setResearchGroup(researchGroup);
-        topic.setIntendedStart(intendedStart);
-        topic.setApplicationDeadline(applicationDeadline);
+	@Transactional
+	public Topic createTopic(
+			String title,
+			Set<String> thesisTypes,
+			String problemStatement,
+			String requirements,
+			String goals,
+			String references,
+			List<UUID> supervisorIds,
+			List<UUID> advisorIds,
+			UUID researchGroupId,
+			Instant intendedStart,
+			Instant applicationDeadline,
+			Boolean isDraft
+	) {
+		User creator = currentUserProvider().getUser();
+		ResearchGroup researchGroup = researchGroupRepository.findById(researchGroupId).orElseThrow(
+				() -> new ResourceNotFoundException("Research group not found")
+		);
+		Topic topic = new Topic();
 
-        assignTopicRoles(topic, advisorIds, supervisorIds);
+		topic.setTitle(title);
+		topic.setThesisTypes(thesisTypes);
+		topic.setProblemStatement(problemStatement);
+		topic.setRequirements(requirements);
+		topic.setGoals(goals);
+		topic.setReferences(references);
+		topic.setUpdatedAt(Instant.now());
+		topic.setCreatedAt(Instant.now());
+		if (!isDraft) {
+			topic.setPublishedAt(Instant.now());
+		}
+		topic.setCreatedBy(creator);
+		topic.setResearchGroup(researchGroup);
+		topic.setIntendedStart(intendedStart);
+		topic.setApplicationDeadline(applicationDeadline);
 
-        return topicRepository.save(topic);
-    }
+		topic = topicRepository.save(topic);
 
-    public Topic findById(UUID topicId) {
-        return topicRepository.findById(topicId)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Topic with id %s not found.", topicId)));
-    }
+		assignTopicRoles(topic, advisorIds, supervisorIds);
 
-    private void assignTopicRoles(Topic topic, List<UUID> advisorIds, List<UUID> supervisorIds) {
-        currentUserProvider().assertCanAccessResearchGroup(topic.getResearchGroup());
-        List<User> supervisors = userRepository.findAllById(supervisorIds);
-        List<User> advisors = userRepository.findAllById(advisorIds);
+		return topicRepository.save(topic);
+	}
 
-        supervisors.sort(Comparator.comparing(user -> supervisorIds.indexOf(user.getId())));
-        advisors.sort(Comparator.comparing(user -> advisorIds.indexOf(user.getId())));
+	@Transactional
+	public Topic updateTopic(
+			Topic topic,
+			String title,
+			Set<String> thesisTypes,
+			String problemStatement,
+			String requirements,
+			String goals,
+			String references,
+			List<UUID> supervisorIds,
+			List<UUID> advisorIds,
+			UUID researchGroupId,
+			Instant intendedStart,
+			Instant applicationDeadline,
+			Boolean isDraft
+	) {
+		ResearchGroup researchGroup = researchGroupRepository.findById(researchGroupId).orElseThrow(
+				() -> new ResourceNotFoundException("Research group not found")
+		);
+		currentUserProvider().assertCanAccessResearchGroup(researchGroup);
+		topic.setTitle(title);
+		topic.setThesisTypes(thesisTypes);
+		topic.setProblemStatement(problemStatement);
+		topic.setRequirements(requirements);
+		topic.setGoals(goals);
+		topic.setReferences(references);
+		topic.setUpdatedAt(Instant.now());
+		if (!isDraft && topic.getPublishedAt() == null) {
+			topic.setPublishedAt(Instant.now());
+		}
+		topic.setResearchGroup(researchGroup);
+		topic.setIntendedStart(intendedStart);
+		topic.setApplicationDeadline(applicationDeadline);
 
-        if (supervisors.isEmpty() || supervisors.size() != supervisorIds.size()) {
-            throw new ResourceInvalidParametersException("No supervisors selected or supervisors not found");
-        }
+		assignTopicRoles(topic, advisorIds, supervisorIds);
 
-        if (advisors.isEmpty() || advisors.size() != advisorIds.size()) {
-            throw new ResourceInvalidParametersException("No advisors selected or advisors not found");
-        }
+		return topicRepository.save(topic);
+	}
 
-        topicRoleRepository.deleteByTopicId(topic.getId());
-        topic.setRoles(new ArrayList<>());
+	/**
+	 * Finds a topic by its ID or throws a ResourceNotFoundException if not found.
+	 *
+	 * @param topicId the topic ID
+	 * @return the topic
+	 */
+	public Topic findById(UUID topicId) {
+		return topicRepository.findById(topicId)
+				.orElseThrow(() -> new ResourceNotFoundException(String.format("Topic with id %s not found.", topicId)));
+	}
 
-        for (int i = 0; i < supervisors.size(); i++) {
-            User supervisor = supervisors.get(i);
+	private void assignTopicRoles(Topic topic, List<UUID> advisorIds, List<UUID> supervisorIds) {
+		currentUserProvider().assertCanAccessResearchGroup(topic.getResearchGroup());
+		List<User> supervisors = userRepository.findAllById(supervisorIds);
+		List<User> advisors = userRepository.findAllById(advisorIds);
 
-            if (!supervisor.hasAnyGroup("supervisor")) {
-                throw new ResourceInvalidParametersException("User is not a supervisor");
-            }
+		supervisors.sort(Comparator.comparing(user -> supervisorIds.indexOf(user.getId())));
+		advisors.sort(Comparator.comparing(user -> advisorIds.indexOf(user.getId())));
 
-            saveTopicRole(topic, supervisor, ThesisRoleName.SUPERVISOR, i);
-        }
+		if (supervisors.isEmpty() || supervisors.size() != supervisorIds.size()) {
+			throw new ResourceInvalidParametersException("No supervisors selected or supervisors not found");
+		}
 
-        for (int i = 0; i < advisors.size(); i++) {
-            User advisor = advisors.get(i);
+		if (advisors.isEmpty() || advisors.size() != advisorIds.size()) {
+			throw new ResourceInvalidParametersException("No advisors selected or advisors not found");
+		}
 
-            if (!advisor.hasAnyGroup("advisor", "supervisor")) {
-                throw new ResourceInvalidParametersException("User is not an advisor");
-            }
+		topicRoleRepository.deleteByTopicId(topic.getId());
+		topic.setRoles(new ArrayList<>());
 
-            saveTopicRole(topic, advisor, ThesisRoleName.ADVISOR, i);
-        }
-    }
+		for (int i = 0; i < supervisors.size(); i++) {
+			User supervisor = supervisors.get(i);
 
-    private void saveTopicRole(Topic topic, User user, ThesisRoleName role, int position) {
-        currentUserProvider().assertCanAccessResearchGroup(topic.getResearchGroup());
-        User assigner = currentUserProvider().getUser();
-        if (assigner == null || user == null) {
-            throw new ResourceInvalidParametersException("Assigner and user must be provided.");
-        }
+			if (!supervisor.hasAnyGroup("supervisor")) {
+				throw new ResourceInvalidParametersException("User is not a supervisor");
+			}
 
-        TopicRole topicRole = new TopicRole();
-        TopicRoleId topicRoleId = new TopicRoleId();
+			saveTopicRole(topic, supervisor, ThesisRoleName.SUPERVISOR, i);
+		}
 
-        topicRoleId.setTopicId(topic.getId());
-        topicRoleId.setUserId(user.getId());
-        topicRoleId.setRole(role);
+		for (int i = 0; i < advisors.size(); i++) {
+			User advisor = advisors.get(i);
 
-        topicRole.setId(topicRoleId);
-        topicRole.setUser(user);
-        topicRole.setAssignedBy(assigner);
-        topicRole.setAssignedAt(Instant.now());
-        topicRole.setTopic(topic);
-        topicRole.setPosition(position);
+			if (!advisor.hasAnyGroup("advisor", "supervisor")) {
+				throw new ResourceInvalidParametersException("User is not an advisor");
+			}
 
-        topicRoleRepository.save(topicRole);
+			saveTopicRole(topic, advisor, ThesisRoleName.ADVISOR, i);
+		}
+	}
 
-        List<TopicRole> roles = topic.getRoles();
+	private void saveTopicRole(Topic topic, User user, ThesisRoleName role, int position) {
+		currentUserProvider().assertCanAccessResearchGroup(topic.getResearchGroup());
+		User assigner = currentUserProvider().getUser();
+		if (assigner == null || user == null) {
+			throw new ResourceInvalidParametersException("Assigner and user must be provided.");
+		}
 
-        roles.add(topicRole);
-        roles.sort(Comparator.comparingInt(TopicRole::getPosition));
+		TopicRole topicRole = new TopicRole();
+		TopicRoleId topicRoleId = new TopicRoleId();
 
-        topic.setRoles(roles);
-    }
+		topicRoleId.setTopicId(topic.getId());
+		topicRoleId.setUserId(user.getId());
+		topicRoleId.setRole(role);
+
+		topicRole.setId(topicRoleId);
+		topicRole.setUser(user);
+		topicRole.setAssignedBy(assigner);
+		topicRole.setAssignedAt(Instant.now());
+		topicRole.setTopic(topic);
+		topicRole.setPosition(position);
+
+		topicRoleRepository.save(topicRole);
+
+		List<TopicRole> roles = topic.getRoles();
+
+		roles.add(topicRole);
+		roles.sort(Comparator.comparingInt(TopicRole::getPosition));
+
+		topic.setRoles(roles);
+	}
 }

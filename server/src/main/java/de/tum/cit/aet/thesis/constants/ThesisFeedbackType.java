@@ -6,9 +6,9 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum ThesisFeedbackType {
-    PROPOSAL("PROPOSAL"),
-    THESIS("THESIS"),
-    PRESENTATION("PRESENTATION");
+	PROPOSAL("PROPOSAL"),
+	THESIS("THESIS"),
+	PRESENTATION("PRESENTATION");
 
-    private final String value;
+	private final String value;
 }

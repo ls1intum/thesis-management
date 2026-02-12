@@ -6,8 +6,8 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum ThesisPresentationType {
-    INTERMEDIATE("INTERMEDIATE"),
-    FINAL("FINAL");
+	INTERMEDIATE("INTERMEDIATE"),
+	FINAL("FINAL");
 
-    private final String value;
+	private final String value;
 }

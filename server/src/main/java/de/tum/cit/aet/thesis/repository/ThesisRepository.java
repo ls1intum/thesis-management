@@ -18,68 +18,68 @@ import java.util.UUID;
 
 @Repository
 public interface ThesisRepository extends JpaRepository<Thesis, UUID> {
-    @Query("""
-            SELECT DISTINCT t FROM Thesis t
-             LEFT JOIN ThesisRole r ON t.id = r.thesis.id
-             WHERE (
-                 :visibilities IS NULL
-                 OR (
-                     t.visibility IN :visibilities
-                     AND (:researchGroupIds IS NULL OR t.researchGroup.id IN :researchGroupIds)
-                 )
-                 OR (
-                     t.visibility = 'PRIVATE'
-                     AND EXISTS (
-                             SELECT 1
-                             FROM t.roles as tr
-                             WHERE tr.user.id = :userId
-                         )
-                 )
-                 OR (:userId IS NOT NULL AND r.user.id = :userId )
-             )
-             AND (:states IS NULL OR t.state IN :states)
-             AND (:types IS NULL OR t.type IN :types)
-             AND (
-                 :searchQuery IS NULL OR (
-                     LOWER(t.title) LIKE %:searchQuery%
-                     OR LOWER(r.user.firstName || ' ' || r.user.lastName) LIKE %:searchQuery%
-                     OR LOWER(r.user.email) LIKE %:searchQuery%
-                     OR LOWER(r.user.matriculationNumber) LIKE %:searchQuery%
-                     OR LOWER(r.user.universityId) LIKE %:searchQuery%
-                 )
-             )
-            """)
-    Page<Thesis> searchTheses(
-            @Param("researchGroupIds") Set<UUID> researchGroupIds,
-            @Param("userId") UUID userId,
-            @Param("visibilities") Set<ThesisVisibility> visibilities,
-            @Param("searchQuery") String searchQuery,
-            @Param("states") Set<ThesisState> states,
-            @Param("types") Set<String> types,
-            Pageable page
-    );
+	@Query("""
+			SELECT DISTINCT t FROM Thesis t
+			LEFT JOIN ThesisRole r ON t.id = r.thesis.id
+			WHERE (
+				:visibilities IS NULL
+				OR (
+					t.visibility IN :visibilities
+					AND (:researchGroupIds IS NULL OR t.researchGroup.id IN :researchGroupIds)
+				)
+				OR (
+					t.visibility = 'PRIVATE'
+					AND EXISTS (
+							SELECT 1
+							FROM t.roles as tr
+							WHERE tr.user.id = :userId
+						)
+				)
+				OR (:userId IS NOT NULL AND r.user.id = :userId )
+			)
+			AND (:states IS NULL OR t.state IN :states)
+			AND (:types IS NULL OR t.type IN :types)
+			AND (
+				:searchQuery IS NULL OR (
+					LOWER(t.title) LIKE %:searchQuery%
+					OR LOWER(r.user.firstName || ' ' || r.user.lastName) LIKE %:searchQuery%
+					OR LOWER(r.user.email) LIKE %:searchQuery%
+					OR LOWER(r.user.matriculationNumber) LIKE %:searchQuery%
+					OR LOWER(r.user.universityId) LIKE %:searchQuery%
+				)
+			)
+			""")
+	Page<Thesis> searchTheses(
+			@Param("researchGroupIds") Set<UUID> researchGroupIds,
+			@Param("userId") UUID userId,
+			@Param("visibilities") Set<ThesisVisibility> visibilities,
+			@Param("searchQuery") String searchQuery,
+			@Param("states") Set<ThesisState> states,
+			@Param("types") Set<String> types,
+			Pageable page
+	);
 
-    @Query("""
-            SELECT DISTINCT t FROM Thesis t LEFT JOIN ThesisRole r ON (t.id = r.thesis.id) WHERE
-            (:userId IS NULL OR r.user.id = :userId) AND
-            (:researchGroupId IS NULL OR t.researchGroup.id = :researchGroupId) AND
-            (t.state != 'FINISHED' AND t.state != 'DROPPED_OUT') AND
-            (:roleNames IS NULL OR r.id.role IN :roleNames) AND
-            (:states IS NULL OR t.state IN :states)
-            """)
-    List<Thesis> findActiveThesesForRole(
-            @Param("userId") UUID userId,
-            @Param("researchGroupId") UUID researchGroupId,
-            @Param("roleNames") Set<ThesisRoleName> roleNames,
-            @Param("states") Set<ThesisState> states
-    );
+	@Query("""
+			SELECT DISTINCT t FROM Thesis t LEFT JOIN ThesisRole r ON (t.id = r.thesis.id) WHERE
+			(:userId IS NULL OR r.user.id = :userId) AND
+			(:researchGroupId IS NULL OR t.researchGroup.id = :researchGroupId) AND
+			(t.state != 'FINISHED' AND t.state != 'DROPPED_OUT') AND
+			(:roleNames IS NULL OR r.id.role IN :roleNames) AND
+			(:states IS NULL OR t.state IN :states)
+			""")
+	List<Thesis> findActiveThesesForRole(
+			@Param("userId") UUID userId,
+			@Param("researchGroupId") UUID researchGroupId,
+			@Param("roleNames") Set<ThesisRoleName> roleNames,
+			@Param("states") Set<ThesisState> states
+	);
 
-    @Query("""
-    SELECT DISTINCT t.researchGroup FROM Thesis t
-    JOIN t.roles r
-    WHERE r.id.userId = :userId
-      AND r.id.role = 'STUDENT'
-      AND t.state <> 'FINISHED'
+	@Query("""
+	SELECT DISTINCT t.researchGroup FROM Thesis t
+	JOIN t.roles r
+	WHERE r.id.userId = :userId
+	AND r.id.role = 'STUDENT'
+	AND t.state <> 'FINISHED'
 """)
-    List<ResearchGroup> findActiveStudentThesisResearchGroups(@Param("userId") UUID userId);
+	List<ResearchGroup> findActiveStudentThesisResearchGroups(@Param("userId") UUID userId);
 }

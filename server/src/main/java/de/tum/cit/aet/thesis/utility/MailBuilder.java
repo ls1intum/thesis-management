@@ -1,14 +1,26 @@
 package de.tum.cit.aet.thesis.utility;
 
 import de.tum.cit.aet.thesis.constants.ThesisRoleName;
+import de.tum.cit.aet.thesis.entity.Application;
+import de.tum.cit.aet.thesis.entity.InterviewSlot;
+import de.tum.cit.aet.thesis.entity.Interviewee;
+import de.tum.cit.aet.thesis.entity.Thesis;
+import de.tum.cit.aet.thesis.entity.ThesisAssessment;
+import de.tum.cit.aet.thesis.entity.ThesisComment;
+import de.tum.cit.aet.thesis.entity.ThesisPresentation;
+import de.tum.cit.aet.thesis.entity.ThesisProposal;
+import de.tum.cit.aet.thesis.entity.ThesisRole;
+import de.tum.cit.aet.thesis.entity.Topic;
+import de.tum.cit.aet.thesis.entity.TopicRole;
+import de.tum.cit.aet.thesis.entity.User;
 import de.tum.cit.aet.thesis.mailVariables.MailApplication;
+import de.tum.cit.aet.thesis.mailVariables.MailInterviewSlot;
 import de.tum.cit.aet.thesis.mailVariables.MailThesis;
 import de.tum.cit.aet.thesis.mailVariables.MailThesisAssessment;
 import de.tum.cit.aet.thesis.mailVariables.MailThesisComment;
 import de.tum.cit.aet.thesis.mailVariables.MailThesisPresentation;
 import de.tum.cit.aet.thesis.mailVariables.MailThesisProposal;
 import de.tum.cit.aet.thesis.mailVariables.MailUser;
-import de.tum.cit.aet.thesis.entity.*;
 import de.tum.cit.aet.thesis.service.UploadService;
 import jakarta.activation.DataHandler;
 import jakarta.activation.FileDataSource;
@@ -26,7 +38,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.thymeleaf.context.Context;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 public class MailBuilder {
     private static final Logger log = LoggerFactory.getLogger(MailBuilder.class);
@@ -93,7 +111,6 @@ public class MailBuilder {
         }
 
         rawAttachments.add(new RawAttachment(filename, file));
-
     }
 
     public MailBuilder addNotificationName(String name) {
@@ -142,7 +159,6 @@ public class MailBuilder {
         }
 
         bccRecipients.add(address);
-
     }
 
     public MailBuilder sendToChairMembers(UUID researchGroupId) {
@@ -249,6 +265,22 @@ public class MailBuilder {
         return this;
     }
 
+    public MailBuilder fillIntervieweePlaceholders(Interviewee interviewee) {
+        if (interviewee == null || interviewee.getInterviewProcess() == null) {
+            return this;
+        }
+
+        fillPlaceholder("inviteUrl", config.getClientHost() + "/interview_booking/" + interviewee.getInterviewProcess().getId());
+
+        return this;
+    }
+
+    public MailBuilder fillInterviewSlotPlaceholders(InterviewSlot interviewSlot) {
+        fillPlaceholder("slot", MailInterviewSlot.fromInterviewSlot(interviewSlot));
+
+        return this;
+    }
+
     public MailBuilder fillThesisPlaceholders(Thesis thesis) {
         fillPlaceholder("thesis", MailThesis.fromThesis(thesis));
         fillPlaceholder("thesisUrl", config.getClientHost() + "/theses/" + thesis.getId());
@@ -258,7 +290,6 @@ public class MailBuilder {
 
     public MailBuilder fillThesisCommentPlaceholders(ThesisComment comment) {
         fillThesisPlaceholders(comment.getThesis());
-
         fillPlaceholder("comment", MailThesisComment.fromComment(comment));
 
         return this;
@@ -266,7 +297,6 @@ public class MailBuilder {
 
     public MailBuilder fillThesisPresentationPlaceholders(ThesisPresentation presentation) {
         fillThesisPlaceholders(presentation.getThesis());
-
         fillPlaceholder("presentation", MailThesisPresentation.fromPresentation(presentation));
         fillPlaceholder("presentationUrl", config.getClientHost() + "/presentations/" + presentation.getId());
 
@@ -275,7 +305,6 @@ public class MailBuilder {
 
     public MailBuilder fillThesisProposalPlaceholders(ThesisProposal proposal) {
         fillThesisPlaceholders(proposal.getThesis());
-
         fillPlaceholder("proposal", MailThesisProposal.fromProposal(proposal));
 
         return this;
@@ -283,7 +312,6 @@ public class MailBuilder {
 
     public MailBuilder fillThesisAssessmentPlaceholders(ThesisAssessment assessment) {
         fillThesisPlaceholders(assessment.getThesis());
-
         fillPlaceholder("assessment", MailThesisAssessment.fromAssessment(assessment));
 
         return this;
@@ -354,19 +382,15 @@ public class MailBuilder {
 
                 for (StoredAttachment data : fileAttachments) {
                     MimeBodyPart attachment = new MimeBodyPart();
-
                     attachment.setDataHandler(new DataHandler(new FileDataSource(uploadService.load(data.file()).getFile())));
                     attachment.setFileName(data.filename());
-
                     messageContent.addBodyPart(attachment);
                 }
 
                 for (RawAttachment data : rawAttachments) {
                     MimeBodyPart attachment = new MimeBodyPart();
-
                     attachment.setDataHandler(new DataHandler(data.file()));
                     attachment.setFileName(data.filename());
-
                     messageContent.addBodyPart(attachment);
                 }
 

@@ -23,37 +23,37 @@ import org.springframework.web.cors.CorsConfigurationSource;
 @EnableMethodSecurity
 @Profile("!test")   // NOTE: this is a workaround to avoid overlapping definitions during test execution
 public class WebSecurityConfig {
-    private final JwtAuthConverter jwtAuthConverter;
+	private final JwtAuthConverter jwtAuthConverter;
 
-    @Value("${thesis-management.client.host}")
-    private String clientHost;
+	@Value("${thesis-management.client.host}")
+	private String clientHost;
 
-    @Bean
-    protected SessionAuthenticationStrategy sessionAuthenticationStrategy() {
-        return new RegisterSessionAuthenticationStrategy(new SessionRegistryImpl());
-    }
+	@Bean
+	protected SessionAuthenticationStrategy sessionAuthenticationStrategy() {
+		return new RegisterSessionAuthenticationStrategy(new SessionRegistryImpl());
+	}
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
-        http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource))
-                .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.GET, "/v2/topics/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/v2/published-theses/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/v2/published-presentations/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/v2/research-groups/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/v2/calendar/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/v2/avatars/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/actuator/info").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/actuator/health").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .oauth2ResourceServer(server -> {
-                    server.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthConverter));
-                });
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
+		http
+				.cors(cors -> cors.configurationSource(corsConfigurationSource))
+				.csrf(AbstractHttpConfigurer::disable)
+				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.authorizeHttpRequests(auth -> auth
+						.requestMatchers(HttpMethod.GET, "/v2/topics/**").permitAll()
+						.requestMatchers(HttpMethod.GET, "/v2/published-theses/**").permitAll()
+						.requestMatchers(HttpMethod.GET, "/v2/published-presentations/**").permitAll()
+						.requestMatchers(HttpMethod.GET, "/v2/research-groups/**").permitAll()
+						.requestMatchers(HttpMethod.GET, "/v2/calendar/**").permitAll()
+						.requestMatchers(HttpMethod.GET, "/v2/avatars/**").permitAll()
+						.requestMatchers(HttpMethod.GET, "/actuator/info").permitAll()
+						.requestMatchers(HttpMethod.GET, "/actuator/health").permitAll()
+						.anyRequest().authenticated()
+				)
+				.oauth2ResourceServer(server -> {
+					server.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthConverter));
+				});
 
-        return http.build();
-    }
+		return http.build();
+	}
 }

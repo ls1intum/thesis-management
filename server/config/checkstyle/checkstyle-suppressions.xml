@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+        "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
+        "https://checkstyle.org/dtds/suppressions_1_2.dtd">
+
+<suppressions>
+    <!-- Allow underscores in test method names (e.g., methodName_condition_expected) -->
+    <suppress checks="MethodName" files="src[\\/]test[\\/]"/>
+
+    <!-- Suppress JavaDoc checks for packages where it adds noise rather than value -->
+    <suppress checks="JavadocType|JavadocMethod" files="[\\/]dto[\\/]"/>
+    <suppress checks="JavadocType|JavadocMethod" files="[\\/]payload[\\/]"/>
+    <suppress checks="JavadocType|JavadocMethod" files="[\\/]entity[\\/]"/>
+    <suppress checks="JavadocType|JavadocMethod" files="[\\/]constants[\\/]"/>
+    <suppress checks="JavadocType|JavadocMethod" files="[\\/]exception[\\/]"/>
+    <suppress checks="JavadocType|JavadocMethod" files="[\\/]config[\\/]"/>
+    <suppress checks="JavadocType|JavadocMethod" files="[\\/]security[\\/]"/>
+    <suppress checks="JavadocType|JavadocMethod" files="[\\/]repository[\\/]"/>
+    <suppress checks="JavadocType|JavadocMethod" files="[\\/]cron[\\/]model[\\/]"/>
+    <suppress checks="JavadocType|JavadocMethod" files="src[\\/]test[\\/]"/>
+</suppressions>

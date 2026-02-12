@@ -9,9 +9,6 @@ import de.tum.cit.aet.thesis.entity.ResearchGroup;
 import de.tum.cit.aet.thesis.entity.User;
 import de.tum.cit.aet.thesis.service.ResearchGroupService;
 import de.tum.cit.aet.thesis.utility.RequestValidator;
-
-import java.util.List;
-import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -26,183 +23,280 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+import java.util.UUID;
+
+/** REST controller for managing research groups, their members, and roles. */
 @RestController
 @RequestMapping("/v2/research-groups")
 public class ResearchGroupController {
 
-  private final ResearchGroupService researchGroupService;
+private final ResearchGroupService researchGroupService;
 
-  @Autowired
-  public ResearchGroupController(ResearchGroupService researchGroupService) {
-    this.researchGroupService = researchGroupService;
-  }
+/**
+ * Injects the research group service.
+ *
+ * @param researchGroupService the research group service
+ */
+@Autowired
+public ResearchGroupController(ResearchGroupService researchGroupService) {
+	this.researchGroupService = researchGroupService;
+}
 
-  @GetMapping
-  public ResponseEntity<PaginationDto<ResearchGroupDto>> getResearchGroups(
-      @RequestParam(required = false) String search,
-      @RequestParam(required = false, defaultValue = "") String[] heads,
-      @RequestParam(required = false, defaultValue = "") String[] campuses,
-      @RequestParam(required = false, defaultValue = "false") boolean includeArchived,
-      @RequestParam(required = false, defaultValue = "0") Integer page,
-      @RequestParam(required = false, defaultValue = "50") Integer limit,
-      @RequestParam(required = false, defaultValue = "name") String sortBy,
-      @RequestParam(required = false, defaultValue = "desc") String sortOrder
-  ) {
-    Page<ResearchGroup> researchGroups = researchGroupService.getAll(
-        heads,
-        campuses,
-        includeArchived,
-        search,
-        page,
-        limit,
-        sortBy,
-        sortOrder
-    );
+/**
+ * Retrieves a paginated list of research groups filtered by heads, campuses, and search term.
+ *
+ * @param search the search term to filter research groups
+ * @param heads the head usernames to filter by
+ * @param campuses the campuses to filter by
+ * @param includeArchived whether to include archived research groups
+ * @param page the page number for pagination
+ * @param limit the number of items per page
+ * @param sortBy the field to sort by
+ * @param sortOrder the sort direction (asc or desc)
+ * @return the paginated list of research groups
+ */
+@GetMapping
+public ResponseEntity<PaginationDto<ResearchGroupDto>> getResearchGroups(
+	@RequestParam(required = false) String search,
+	@RequestParam(required = false, defaultValue = "") String[] heads,
+	@RequestParam(required = false, defaultValue = "") String[] campuses,
+	@RequestParam(required = false, defaultValue = "false") boolean includeArchived,
+	@RequestParam(required = false, defaultValue = "0") Integer page,
+	@RequestParam(required = false, defaultValue = "50") Integer limit,
+	@RequestParam(required = false, defaultValue = "name") String sortBy,
+	@RequestParam(required = false, defaultValue = "desc") String sortOrder
+) {
+	Page<ResearchGroup> researchGroups = researchGroupService.getAll(
+		heads,
+		campuses,
+		includeArchived,
+		search,
+		page,
+		limit,
+		sortBy,
+		sortOrder
+	);
 
-    return ResponseEntity.ok(PaginationDto.fromSpringPage(
-        researchGroups.map(ResearchGroupDto::fromResearchGroupEntity)));
-  }
+	return ResponseEntity.ok(PaginationDto.fromSpringPage(
+		researchGroups.map(ResearchGroupDto::fromResearchGroupEntity)));
+}
 
-  @GetMapping("/light")
-  public ResponseEntity<List<LightResearchGroupDto>> getLightResearchGroups(
-          @RequestParam(required = false) String search
-  ) {
-    Page<ResearchGroup> groups = researchGroupService.getAllLight(search);
+/**
+ * Retrieves a lightweight list of all research groups with optional search filtering.
+ *
+ * @param search the search term to filter research groups
+ * @return the list of lightweight research group representations
+ */
+@GetMapping("/light")
+public ResponseEntity<List<LightResearchGroupDto>> getLightResearchGroups(
+		@RequestParam(required = false) String search
+) {
+	Page<ResearchGroup> groups = researchGroupService.getAllLight(search);
 
-    List<LightResearchGroupDto> dtos = groups.getContent()
-            .stream()
-            .map(LightResearchGroupDto::fromResearchGroupEntity)
-            .toList();
+	List<LightResearchGroupDto> dtos = groups.getContent()
+			.stream()
+			.map(LightResearchGroupDto::fromResearchGroupEntity)
+			.toList();
 
-    return ResponseEntity.ok(dtos);
-  }
+	return ResponseEntity.ok(dtos);
+}
 
-  @GetMapping("/light/active")
-  public ResponseEntity<List<LightResearchGroupDto>> getActiveLightResearchGroups(
-  ) {
-    List<ResearchGroup> activeGroups = researchGroupService.getActiveResearchGroupsForUser();
+/**
+ * Retrieves a lightweight list of active research groups for the current user.
+ *
+ * @return the list of active lightweight research group representations
+ */
+@GetMapping("/light/active")
+public ResponseEntity<List<LightResearchGroupDto>> getActiveLightResearchGroups(
+) {
+	List<ResearchGroup> activeGroups = researchGroupService.getActiveResearchGroupsForUser();
 
-    return ResponseEntity.ok(
-            activeGroups.stream()
-                    .map(LightResearchGroupDto::fromResearchGroupEntity)
-                    .distinct()
-                    .toList()
-    );
-  }
+	return ResponseEntity.ok(
+			activeGroups.stream()
+					.map(LightResearchGroupDto::fromResearchGroupEntity)
+					.distinct()
+					.toList()
+	);
+}
 
-  @GetMapping("/{researchGroupId}")
-  public ResponseEntity<ResearchGroupDto> getResearchGroup(
-      @PathVariable("researchGroupId") UUID researchGroupId
-  ) {
-    ResearchGroup researchGroup = researchGroupService.findById(researchGroupId, true);
+/**
+ * Retrieves a single research group by its identifier.
+ *
+ * @param researchGroupId the unique identifier of the research group
+ * @return the research group details
+ */
+@GetMapping("/{researchGroupId}")
+public ResponseEntity<ResearchGroupDto> getResearchGroup(
+	@PathVariable("researchGroupId") UUID researchGroupId
+) {
+	ResearchGroup researchGroup = researchGroupService.findById(researchGroupId, true);
 
-    return ResponseEntity.ok(ResearchGroupDto.fromResearchGroupEntity(researchGroup));
-  }
+	return ResponseEntity.ok(ResearchGroupDto.fromResearchGroupEntity(researchGroup));
+}
 
-    @GetMapping("/{researchGroupId}/members")
-    @PreAuthorize("hasAnyRole('admin', 'group-admin')")
-    public ResponseEntity<PaginationDto<LightUserDto>> getResearchGroupMembers(
-        @PathVariable("researchGroupId") UUID researchGroupId,
-        @RequestParam(required = false, defaultValue = "0") Integer page,
-        @RequestParam(required = false, defaultValue = "50") Integer limit,
-        @RequestParam(required = false, defaultValue = "joinedAt") String sortBy,
-        @RequestParam(required = false, defaultValue = "desc") String sortOrder
-    ) {
-      Page<User> users = researchGroupService.getAllResearchGroupMembers(researchGroupId, page, limit, sortBy, sortOrder);
+	/**
+	 * Retrieves a paginated list of members belonging to a research group.
+	 *
+	 * @param researchGroupId the unique identifier of the research group
+	 * @param page the page number for pagination
+	 * @param limit the number of items per page
+	 * @param sortBy the field to sort by
+	 * @param sortOrder the sort direction (asc or desc)
+	 * @return the paginated list of research group members
+	 */
+	@GetMapping("/{researchGroupId}/members")
+	@PreAuthorize("hasAnyRole('admin', 'group-admin')")
+	public ResponseEntity<PaginationDto<LightUserDto>> getResearchGroupMembers(
+		@PathVariable("researchGroupId") UUID researchGroupId,
+		@RequestParam(required = false, defaultValue = "0") Integer page,
+		@RequestParam(required = false, defaultValue = "50") Integer limit,
+		@RequestParam(required = false, defaultValue = "joinedAt") String sortBy,
+		@RequestParam(required = false, defaultValue = "desc") String sortOrder
+	) {
+	Page<User> users = researchGroupService.getAllResearchGroupMembers(researchGroupId, page, limit, sortBy, sortOrder);
 
-      return ResponseEntity.ok(PaginationDto.fromSpringPage(users.map(LightUserDto::fromUserEntity)));
-    }
+	return ResponseEntity.ok(PaginationDto.fromSpringPage(users.map(LightUserDto::fromUserEntity)));
+	}
 
-  @PostMapping
-  @PreAuthorize("hasRole('admin')")
-  public ResponseEntity<ResearchGroupDto> createResearchGroup(
-      @RequestBody CreateResearchGroupPayload payload
-  ) {
-    ResearchGroup researchGroup = researchGroupService.createResearchGroup(
-        RequestValidator.validateNotNull(payload.headUsername()),
-        RequestValidator.validateNotNull(payload.name()),
-        RequestValidator.validateNotNull(payload.abbreviation()),
-        RequestValidator.validateStringMaxLengthAllowNull(payload.description(), 500),
-        payload.websiteUrl(),
-        payload.campus()
-    );
+/**
+ * Creates a new research group with the specified head, name, and details.
+ *
+ * @param payload the payload containing the research group details
+ * @return the created research group
+ */
+@PostMapping
+@PreAuthorize("hasRole('admin')")
+public ResponseEntity<ResearchGroupDto> createResearchGroup(
+	@RequestBody CreateResearchGroupPayload payload
+) {
+	ResearchGroup researchGroup = researchGroupService.createResearchGroup(
+		RequestValidator.validateNotNull(payload.headUsername()),
+		RequestValidator.validateNotNull(payload.name()),
+		RequestValidator.validateNotNull(payload.abbreviation()),
+		RequestValidator.validateStringMaxLengthAllowNull(payload.description(), 500),
+		payload.websiteUrl(),
+		payload.campus()
+	);
 
-    return ResponseEntity.ok(ResearchGroupDto.fromResearchGroupEntity(researchGroup));
-  }
+	return ResponseEntity.ok(ResearchGroupDto.fromResearchGroupEntity(researchGroup));
+}
 
-  @PutMapping("/{researchGroupId}")
-  @PreAuthorize("hasAnyRole('admin', 'group-admin')")
-  public ResponseEntity<ResearchGroupDto> updateResearchGroup(
-      @PathVariable("researchGroupId") UUID researchGroupId,
-      @RequestBody CreateResearchGroupPayload payload
-  ) {
-    ResearchGroup researchGroup = researchGroupService.findById(researchGroupId);
+/**
+ * Updates an existing research group with new details.
+ *
+ * @param researchGroupId the unique identifier of the research group to update
+ * @param payload the payload containing the updated research group details
+ * @return the updated research group
+ */
+@PutMapping("/{researchGroupId}")
+@PreAuthorize("hasAnyRole('admin', 'group-admin')")
+public ResponseEntity<ResearchGroupDto> updateResearchGroup(
+	@PathVariable("researchGroupId") UUID researchGroupId,
+	@RequestBody CreateResearchGroupPayload payload
+) {
+	ResearchGroup researchGroup = researchGroupService.findById(researchGroupId);
 
-    researchGroup = researchGroupService.updateResearchGroup(
-        researchGroup,
-        RequestValidator.validateNotNull(payload.headUsername()),
-        RequestValidator.validateNotNull(payload.name()),
-        RequestValidator.validateNotNull(payload.abbreviation()),
-        RequestValidator.validateStringMaxLengthAllowNull(payload.description(), 500),
-        payload.websiteUrl(),
-        payload.campus()
-    );
+	researchGroup = researchGroupService.updateResearchGroup(
+		researchGroup,
+		RequestValidator.validateNotNull(payload.headUsername()),
+		RequestValidator.validateNotNull(payload.name()),
+		RequestValidator.validateNotNull(payload.abbreviation()),
+		RequestValidator.validateStringMaxLengthAllowNull(payload.description(), 500),
+		payload.websiteUrl(),
+		payload.campus()
+	);
 
-    return ResponseEntity.ok(ResearchGroupDto.fromResearchGroupEntity(researchGroup));
-  }
+	return ResponseEntity.ok(ResearchGroupDto.fromResearchGroupEntity(researchGroup));
+}
 
-  @PatchMapping("/{researchGroupId}/archive")
-  @PreAuthorize("hasRole('admin')")
-  public ResponseEntity<Void> archiveResearchGroup(
-      @PathVariable("researchGroupId") UUID researchGroupId
-  ) {
-    ResearchGroup researchGroup = researchGroupService.findById(researchGroupId);
-    researchGroupService.archiveResearchGroup(researchGroup);
+/**
+ * Archives a research group, making it inactive.
+ *
+ * @param researchGroupId the unique identifier of the research group to archive
+ * @return an empty response indicating success
+ */
+@PatchMapping("/{researchGroupId}/archive")
+@PreAuthorize("hasRole('admin')")
+public ResponseEntity<Void> archiveResearchGroup(
+	@PathVariable("researchGroupId") UUID researchGroupId
+) {
+	ResearchGroup researchGroup = researchGroupService.findById(researchGroupId);
+	researchGroupService.archiveResearchGroup(researchGroup);
 
-    return ResponseEntity.noContent().build();
-  }
+	return ResponseEntity.noContent().build();
+}
 
-  @PutMapping("/{researchGroupId}/assign/{username}")
-  @PreAuthorize("hasAnyRole('admin', 'group-admin')")
-  public ResponseEntity<LightUserDto> assignUserToResearchGroup(
-      @PathVariable("researchGroupId") UUID researchGroupId,
-      @PathVariable("username") String username
-  ) {
-    User user = researchGroupService.assignUserToResearchGroup(username, researchGroupId);
+/**
+ * Assigns a user to a research group by username.
+ *
+ * @param researchGroupId the unique identifier of the research group
+ * @param username the username of the user to assign
+ * @return the assigned user details
+ */
+@PutMapping("/{researchGroupId}/assign/{username}")
+@PreAuthorize("hasAnyRole('admin', 'group-admin')")
+public ResponseEntity<LightUserDto> assignUserToResearchGroup(
+	@PathVariable("researchGroupId") UUID researchGroupId,
+	@PathVariable("username") String username
+) {
+	User user = researchGroupService.assignUserToResearchGroup(username, researchGroupId);
 
-    return ResponseEntity.ok(LightUserDto.fromUserEntity(user));
-  }
+	return ResponseEntity.ok(LightUserDto.fromUserEntity(user));
+}
 
-    @PutMapping("/{researchGroupId}/remove/{userId}")
-    @PreAuthorize("hasAnyRole('admin', 'group-admin')")
-    public ResponseEntity<LightUserDto> removeUserFromResearchGroup(
-        @PathVariable("researchGroupId") UUID researchGroupId,
-        @PathVariable("userId") UUID userId
-    ) {
-        User user = researchGroupService.removeUserFromResearchGroup(userId, researchGroupId);
+	/**
+	 * Removes a user from a research group.
+	 *
+	 * @param researchGroupId the unique identifier of the research group
+	 * @param userId the unique identifier of the user to remove
+	 * @return the removed user details
+	 */
+	@PutMapping("/{researchGroupId}/remove/{userId}")
+	@PreAuthorize("hasAnyRole('admin', 'group-admin')")
+	public ResponseEntity<LightUserDto> removeUserFromResearchGroup(
+		@PathVariable("researchGroupId") UUID researchGroupId,
+		@PathVariable("userId") UUID userId
+	) {
+		User user = researchGroupService.removeUserFromResearchGroup(userId, researchGroupId);
 
-        //User can be removed no matter if they have open topic/thesis or not
-        return ResponseEntity.ok(LightUserDto.fromUserEntity(user));
-    }
+		//User can be removed no matter if they have open topic/thesis or not
+		return ResponseEntity.ok(LightUserDto.fromUserEntity(user));
+	}
 
-  @PutMapping("/{researchGroupId}/member/{userId}/role")
-  @PreAuthorize("hasAnyRole('admin', 'group-admin')")
-  public ResponseEntity<LightUserDto> updateResearchGroupMemberRole(
-          @PathVariable UUID researchGroupId,
-          @PathVariable UUID userId,
-          @RequestParam("role") String role
-  ) {
-    User user = researchGroupService.updateResearchGroupMemberRole(researchGroupId, userId, role);
-    return ResponseEntity.ok(LightUserDto.fromUserEntity(user));
-  }
+/**
+ * Updates the role of a member within a research group.
+ *
+ * @param researchGroupId the unique identifier of the research group
+ * @param userId the unique identifier of the member
+ * @param role the new role to assign
+ * @return the updated user details
+ */
+@PutMapping("/{researchGroupId}/member/{userId}/role")
+@PreAuthorize("hasAnyRole('admin', 'group-admin')")
+public ResponseEntity<LightUserDto> updateResearchGroupMemberRole(
+		@PathVariable UUID researchGroupId,
+		@PathVariable UUID userId,
+		@RequestParam("role") String role
+) {
+	User user = researchGroupService.updateResearchGroupMemberRole(researchGroupId, userId, role);
+	return ResponseEntity.ok(LightUserDto.fromUserEntity(user));
+}
 
-  @PutMapping("/{researchGroupId}/member/{userId}/group-admin")
-  @PreAuthorize("hasAnyRole('admin', 'group-admin')")
-  public ResponseEntity<LightUserDto> updateResearchGroupAdminRole(
-          @PathVariable UUID researchGroupId,
-          @PathVariable UUID userId
-  ) {
-    User user = researchGroupService.changeResearchGroupAdminRole(researchGroupId, userId);
-    return ResponseEntity.ok(LightUserDto.fromUserEntity(user));
-  }
+/**
+ * Toggles the group admin role for a member of a research group.
+ *
+ * @param researchGroupId the unique identifier of the research group
+ * @param userId the unique identifier of the member
+ * @return the updated user details
+ */
+@PutMapping("/{researchGroupId}/member/{userId}/group-admin")
+@PreAuthorize("hasAnyRole('admin', 'group-admin')")
+public ResponseEntity<LightUserDto> updateResearchGroupAdminRole(
+		@PathVariable UUID researchGroupId,
+		@PathVariable UUID userId
+) {
+	User user = researchGroupService.changeResearchGroupAdminRole(researchGroupId, userId);
+	return ResponseEntity.ok(LightUserDto.fromUserEntity(user));
+}
 }

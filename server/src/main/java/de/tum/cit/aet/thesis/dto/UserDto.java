@@ -3,48 +3,52 @@ package de.tum.cit.aet.thesis.dto;
 import de.tum.cit.aet.thesis.entity.User;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
-public record UserDto (
-        UUID userId,
-        String avatar,
-        String universityId,
-        String matriculationNumber,
-        String email,
-        String firstName,
-        String lastName,
-        String gender,
-        String nationality,
-        String studyDegree,
-        String studyProgram,
-        String projects,
-        String interests,
-        String specialSkills,
-        Map<String, String> customData,
-        Instant enrolledAt,
-        Instant updatedAt,
-        Instant joinedAt,
-        Set<String> groups,
-        String researchGroupName,
-        UUID researchGroupId,
-        boolean hasCv,
-        boolean hasExaminationReport,
-        boolean hasDegreeReport
+public record UserDto(
+		UUID userId,
+		String avatar,
+		String universityId,
+		String matriculationNumber,
+		String email,
+		String firstName,
+		String lastName,
+		String gender,
+		String nationality,
+		String studyDegree,
+		String studyProgram,
+		String projects,
+		String interests,
+		String specialSkills,
+		Map<String, String> customData,
+		Instant enrolledAt,
+		Instant updatedAt,
+		Instant joinedAt,
+		Set<String> groups,
+		String researchGroupName,
+		UUID researchGroupId,
+		boolean hasCv,
+		boolean hasExaminationReport,
+		boolean hasDegreeReport
 ) {
-    public static UserDto fromUserEntity(User user) {
-        if (user == null) {
-            return null;
-        }
+	public static UserDto fromUserEntity(User user) {
+		if (user == null) {
+			return null;
+		}
 
-        return new UserDto(
-                user.getId(), user.getAdjustedAvatar(), user.getUniversityId(), user.getMatriculationNumber(), user.getEmail() != null ? user.getEmail().toString() : null,
-                user.getFirstName(), user.getLastName(), user.getGender(), user.getNationality(),
-                user.getStudyDegree(), user.getStudyProgram(), user.getProjects(), user.getInterests(),
-                user.getSpecialSkills(), user.getCustomData(), user.getEnrolledAt(), user.getUpdatedAt(), user.getJoinedAt(),
-                user.getGroups() == null ? Collections.emptySet() : new HashSet<>(user.getGroups().stream().map(x -> x.getId().getGroup()).toList()),
-                user.getResearchGroup() == null ? "" : user.getResearchGroup().getName(),
-                user.getResearchGroup() == null ? null :user.getResearchGroup().getId(),
-            user.getCvFilename() != null,user.getExaminationFilename() != null, user.getDegreeFilename() != null
-        );
-    }
+		return new UserDto(
+				user.getId(), user.getAdjustedAvatar(), user.getUniversityId(), user.getMatriculationNumber(), user.getEmail() != null ? user.getEmail().toString() : null,
+				user.getFirstName(), user.getLastName(), user.getGender(), user.getNationality(),
+				user.getStudyDegree(), user.getStudyProgram(), user.getProjects(), user.getInterests(),
+				user.getSpecialSkills(), user.getCustomData(), user.getEnrolledAt(), user.getUpdatedAt(), user.getJoinedAt(),
+				user.getGroups() == null ? Collections.emptySet() : new HashSet<>(user.getGroups().stream().map(x -> x.getId().getGroup()).toList()),
+				user.getResearchGroup() == null ? "" : user.getResearchGroup().getName(),
+				user.getResearchGroup() == null ? null : user.getResearchGroup().getId(),
+			user.getCvFilename() != null,user.getExaminationFilename() != null, user.getDegreeFilename() != null
+		);
+	}
 }

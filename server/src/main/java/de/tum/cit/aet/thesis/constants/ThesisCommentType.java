@@ -6,8 +6,8 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum ThesisCommentType {
-    ADVISOR("ADVISOR"),
-    THESIS("THESIS");
+	ADVISOR("ADVISOR"),
+	THESIS("THESIS");
 
-    private final String value;
+	private final String value;
 }

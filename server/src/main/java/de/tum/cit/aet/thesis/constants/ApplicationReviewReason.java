@@ -6,9 +6,9 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum ApplicationReviewReason {
-    NOT_REVIEWED("NOT_REVIEWED"),
-    INTERESTED("INTERESTED"),
-    NOT_INTERESTED("NOT_INTERESTED");
+	NOT_REVIEWED("NOT_REVIEWED"),
+	INTERESTED("INTERESTED"),
+	NOT_INTERESTED("NOT_INTERESTED");
 
-    private final String value;
+	private final String value;
 }
