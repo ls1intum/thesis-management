@@ -52,6 +52,8 @@ const EmailTemplatesOverview = () => {
         return 'Application Open'
       case templateCase.startsWith('THESIS_'):
         return 'Thesis Lifecycle'
+      case templateCase.startsWith('INTERVIEW_'):
+        return 'Interview'
       default:
         return 'Others'
     }
@@ -136,6 +138,9 @@ const EmailTemplatesOverview = () => {
     'APPLICATION_REJECTED_TOPIC_FILLED',
     'APPLICATION_ACCEPTED',
     'APPLICATION_ACCEPTED_NO_ADVISOR',
+    'INTERVIEW_SLOT_BOOKED_CONFORMATION',
+    'INTERVIEW_SLOT_BOOKED_CANCELLATION',
+    'INTERVIEW_INVITATION',
   ]
 
   useEffect(() => {

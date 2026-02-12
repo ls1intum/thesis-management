@@ -31,7 +31,7 @@ public record MailApplication(
         User applicant = application.getUser();
 
         return new MailApplication(
-                valueOrEmpty(application.getThesisTitle()),
+                valueOrEmpty(resolveThesisTitle(application)),
                 valueOrEmpty(applicant != null ? applicant.getFirstName() : null),
                 valueOrEmpty(applicant != null ? applicant.getLastName() : null),
                 valueOrEmpty(applicant != null && applicant.getEmail() != null ? applicant.getEmail().getAddress() : null),
@@ -70,5 +70,18 @@ public record MailApplication(
 
     private static String valueOrEmpty(String value) {
         return value == null ? "" : value;
+    }
+
+    private static String resolveThesisTitle(Application application) {
+        if (application.getThesisTitle() != null && !application.getThesisTitle().isBlank()) {
+            return application.getThesisTitle();
+        }
+
+        if (application.getTopic() != null && application.getTopic().getTitle() != null
+                && !application.getTopic().getTitle().isBlank()) {
+            return application.getTopic().getTitle();
+        }
+
+        return "";
     }
 }

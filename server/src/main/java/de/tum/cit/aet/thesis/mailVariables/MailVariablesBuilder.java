@@ -26,6 +26,9 @@ public class MailVariablesBuilder {
                 mailVariables.addAll(MailThesisProposal.templateVariables());
                 mailVariables.addAll(MailThesis.templateVariables());
                 mailVariables.addAll(userTemplateVariables(templateCase));
+                if ("THESIS_PROPOSAL_REJECTED".equals(templateCase)) {
+                    mailVariables.addAll(proposalRejectedTemplateVariables());
+                }
             }
             case "THESIS_PRESENTATION_UPDATED", "THESIS_PRESENTATION_SCHEDULED", "THESIS_PRESENTATION_INVITATION_CANCELLED", "THESIS_PRESENTATION_INVITATION_UPDATED", "THESIS_PRESENTATION_INVITATION" -> {
                 mailVariables.addAll(MailThesisPresentation.templateVariables());
@@ -46,6 +49,7 @@ public class MailVariablesBuilder {
                 mailVariables.addAll(MailThesis.templateVariables());
             }
             case "APPLICATION_REMINDER" -> mailVariables.addAll(MailApplicationReminder.templateVariables());
+            case "APPLICATION_AUTOMATIC_REJECT_REMINDER" -> mailVariables.addAll(automaticRejectReminderTemplateVariables());
             case "INTERVIEW_INVITATION", "INTERVIEW_INVITATION_REMINDER" -> {
                 mailVariables.addAll(MailApplication.templateVariables());
                 mailVariables.addAll(MailInterview.templateVariables());
@@ -73,5 +77,33 @@ public class MailVariablesBuilder {
                     MailUser.templateVariables("reviewingUser", "Reviewing User", "User");
             default -> List.of();
         };
+    }
+
+    private List<MailVariableDto> proposalRejectedTemplateVariables() {
+        return List.of(
+                new MailVariableDto(
+                        "Requested Changes",
+                        "[[${requestedChanges}]]",
+                        "Clarify evaluation setup",
+                        "Proposal"
+                )
+        );
+    }
+
+    private List<MailVariableDto> automaticRejectReminderTemplateVariables() {
+        return List.of(
+                new MailVariableDto(
+                        "Applications",
+                        "[[${applications}]]",
+                        "List of expiring applications",
+                        "Application Reminder"
+                ),
+                new MailVariableDto(
+                        "Client Host",
+                        "[[${clientHost}]]",
+                        "https://thesis-management.com",
+                        "Application Reminder"
+                )
+        );
     }
 }
