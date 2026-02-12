@@ -28,7 +28,7 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
 
   const fetchedTopic = useTopic(opened ? topicId : undefined)
   const topic = fetchedTopic === false ? undefined : fetchedTopic || undefined
-  const fetchError = fetchedTopic === false
+  const fetchError = fetchedTopic === false && !!topicId
 
   const { addTopic, updateTopic } = useTopicsContext()
   const [researchGroups, setResearchGroups] = useState<PaginationResponse<ILightResearchGroup>>()
