@@ -28,7 +28,8 @@
     "lint:fix": "eslint \"src/**/*.{js,jsx,ts,tsx}\" --fix",
     "prettier:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx}\"",
     "prettier:write": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
-    "update": "ncu -i --format group"
+    "update": "ncu -i --format group",
+    "prepare": "cd .. && husky client/.husky"
   },
   "dependencies": {
     "@mantine/carousel": "^8.2.8",
@@ -79,6 +80,7 @@
     "fork-ts-checker-webpack-plugin": "9.1.0",
     "globals": "16.5.0",
     "html-webpack-plugin": "5.6.6",
+    "husky": "^9.1.7",
     "mini-css-extract-plugin": "2.10.0",
     "postcss": "8.5.6",
     "postcss-loader": "8.2.0",

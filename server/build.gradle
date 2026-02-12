@@ -126,14 +126,6 @@ spotless {
 	}
 }
 
-tasks.register("installGitHooks", Exec) {
-	description = "Installs the pre-commit Git hook for automatic Spotless formatting."
-	commandLine "git", "config", "core.hooksPath", ".githooks"
-}
-
-tasks.named("compileJava") {
-	dependsOn "installGitHooks"
-}
 
 checkstyle {
 	toolVersion = "13.2.0"
