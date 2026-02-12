@@ -1,4 +1,4 @@
-import { PropsWithChildren, Suspense, useEffect, useState } from 'react'
+import { PropsWithChildren, Suspense, useEffect } from 'react'
 import {
   ActionIcon,
   AppShell,

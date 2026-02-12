@@ -78,7 +78,9 @@ const CloseTopicButton = (props: ICloseTopicButtonProps) => {
         >
           <Stack>
             <Text>
-              {`Are you sure you want to close this ${titleName.toLowerCase()}? ${topic.state === TopicState.DRAFT ? '' : 'This will reject all applications for the topic and complete existing interview processes.'}`}
+              {`Are you sure you want to close this ${titleName.toLowerCase()}? `}
+              {topic.state !== TopicState.DRAFT &&
+                'This will reject all applications for the topic and complete existing interview processes.'}
             </Text>
             {topic.state !== TopicState.DRAFT && (
               <>

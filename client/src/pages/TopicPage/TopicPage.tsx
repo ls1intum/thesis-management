@@ -60,7 +60,10 @@ const TopicPage = () => {
       <Grid>
         <Grid.Col span={{ base: 12, md: 9 }} order={{ base: 2, md: 1 }}>
           <Stack gap={'1.5rem'}>
-            <TopicInformationCard title='Problem Statement' content={topic.problemStatement ?? ''} />
+            <TopicInformationCard
+              title='Problem Statement'
+              content={topic.problemStatement ?? ''}
+            />
             {topic.requirements && (
               <TopicInformationCard title='Requirements' content={topic.requirements} />
             )}

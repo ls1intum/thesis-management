@@ -88,7 +88,10 @@ const EmailSettingsCard = ({
         <Stack>
           <TextInput
             label='Additional application notification email (optional)'
-            description='Send a copy of every new application notification (with attachments) to an additional address, even if advisors or supervisors muted their alerts. Leave empty to turn this off.'
+            description={
+              'Send a copy of every new application notification (with attachments) to an additional address, ' +
+              'even if advisors or supervisors muted their alerts. Leave empty to turn this off.'
+            }
             placeholder='notifications@example.edu'
             value={form.values.applicationNotificationEmail}
             onChange={(event) =>

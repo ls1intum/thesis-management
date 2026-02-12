@@ -71,7 +71,9 @@ const TopicCard = ({ topic, setOpenTopic }: ITopicCardProps) => {
           >
             <Flex wrap='wrap' gap={5}>
               {thesisTypes?.length ? (
-                thesisTypes.map((type) => <ThesisTypeBadge type={type}></ThesisTypeBadge>)
+                thesisTypes.map((type) => (
+                  <ThesisTypeBadge key={type} type={type}></ThesisTypeBadge>
+                ))
               ) : (
                 <ThesisTypeBadge type='Any' key={'any'} />
               )}

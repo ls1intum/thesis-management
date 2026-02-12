@@ -1,6 +1,5 @@
 import { Group, Stack, Switch, Text } from '@mantine/core'
 import { ResearchGroupSettingsCard } from './ResearchGroupSettingsCard'
-import { useEffect } from 'react'
 import { doRequest } from '../../../requests/request'
 import { useParams } from 'react-router'
 import { showSimpleError } from '../../../utils/notification'

@@ -124,8 +124,8 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
             return undefined
           }
 
-          const states = filters.states ?? [TopicState.OPEN.toString()]
-          const newHasState = states.includes(newTopic.state)
+          const topicStates = filters.states ?? [TopicState.OPEN.toString()]
+          const newHasState = topicStates.includes(newTopic.state)
 
           if (newHasState) {
             prev.content = [newTopic, ...prev.content].slice(-limit)

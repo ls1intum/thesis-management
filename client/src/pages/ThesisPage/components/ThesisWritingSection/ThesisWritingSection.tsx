@@ -244,15 +244,13 @@ const ThesisWritingSection = () => {
                           name:
                             adjustedThesisFiles[file.type].label +
                             ' v' +
-                            thesisFiles.filter((a, b) => b >= index && a.type === file.type)
-                              .length,
+                            thesisFiles.filter((a, b) => b >= index && a.type === file.type).length,
                           url: `/v2/theses/${thesis.thesisId}/files/${file.fileId}`,
                           filename: formatThesisFilename(
                             thesis,
                             adjustedThesisFiles[file.type].label,
                             file.filename,
-                            thesisFiles.filter((a, b) => b >= index && a.type === file.type)
-                              .length,
+                            thesisFiles.filter((a, b) => b >= index && a.type === file.type).length,
                           ),
                           type: adjustedThesisFiles[file.type].accept,
                           uploadedBy: file.uploadedBy,

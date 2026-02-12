@@ -98,7 +98,13 @@ const SlotItem = ({
             lineClamp={1}
             flex={1}
           >
-            {`${new Date(slot.startDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${new Date(slot.endDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
+            {`${new Date(slot.startDate).toLocaleTimeString([], {
+              hour: '2-digit',
+              minute: '2-digit',
+            })} - ${new Date(slot.endDate).toLocaleTimeString([], {
+              hour: '2-digit',
+              minute: '2-digit',
+            })}`}
             {withLocation && (
               <Text component='span' fw={400} c='dimmed' ml={6} size='xs'>
                 · {slot.location && slot.location}

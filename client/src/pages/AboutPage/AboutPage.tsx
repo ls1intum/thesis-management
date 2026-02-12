@@ -131,7 +131,7 @@ const AboutPage = () => {
       <Alert
         variant='light'
         color='blue'
-        title={<Title order={5}>Couldn't find what you were looking for?</Title>}
+        title={<Title order={5}>Couldn&apos;t find what you were looking for?</Title>}
         icon={<WarningCircleIcon />}
       >
         <Text>

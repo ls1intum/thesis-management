@@ -6,7 +6,6 @@ import { getApiResponseErrorMessage } from '../../requests/handler'
 import { IIntervieweeLightWithNextSlot, IInterviewSlot } from '../../requests/responses/interview'
 import { PaginationResponse } from '../../requests/responses/pagination'
 import { useParams } from 'react-router'
-import { useDebouncedValue } from '@mantine/hooks'
 
 interface IInterviewProcessProviderProps {
   excludeBookedSlots?: boolean
@@ -132,7 +131,7 @@ const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProv
   const fetchPossibleInterviewees = useCallback(
     (
       searchQuery: string = '',
-      state: string = '',
+      topicState: string = '',
       updateState: boolean = true,
     ): Promise<IIntervieweeLightWithNextSlot[]> => {
       setIntervieweesLoading(true)
@@ -146,7 +145,7 @@ const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProv
             params: {
               searchQuery,
               limit: 100,
-              state: state !== 'ALL' ? state : '',
+              state: topicState !== 'ALL' ? topicState : '',
             },
           },
           (res) => {

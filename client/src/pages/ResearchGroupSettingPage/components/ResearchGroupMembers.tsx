@@ -245,10 +245,13 @@ const ResearchGroupMembers = ({ researchGroupData }: IResearchGroupMembersProps)
               .filter((member) => {
                 const key = searchKey.toLowerCase().replaceAll(' ', '')
 
-                const searchTarget =
-                  `${member.firstName ?? ''}${member.lastName ?? ''}${member.universityId ?? ''}${member.email ?? ''}${member.lastName ?? ''}${member.firstName ?? ''}`
-                    .toLowerCase()
-                    .replaceAll(' ', '')
+                const searchTarget = (
+                  `${member.firstName ?? ''}${member.lastName ?? ''}` +
+                  `${member.universityId ?? ''}${member.email ?? ''}` +
+                  `${member.lastName ?? ''}${member.firstName ?? ''}`
+                )
+                  .toLowerCase()
+                  .replaceAll(' ', '')
 
                 return searchTarget.includes(key)
               })

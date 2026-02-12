@@ -4,7 +4,6 @@ import { Accordion, Button, Stack } from '@mantine/core'
 import { checkMinimumThesisState, isThesisClosed } from '../../../../utils/thesis'
 import { useLoadedThesisContext } from '../../../../providers/ThesisProvider/hooks'
 import ReplacePresentationModal from '../../../../components/PresentationsTable/components/ReplacePresentationModal/ReplacePresentationModal'
-import PresentationsTable from '../../../../components/PresentationsTable/PresentationsTable'
 import PresentationCard from './components/PresentationCard'
 
 const ThesisPresentationSection = () => {

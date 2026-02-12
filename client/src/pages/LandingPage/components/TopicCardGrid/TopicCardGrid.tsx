@@ -100,7 +100,7 @@ const TopicCardGrid = ({
                     <Stack gap={'0.5rem'}>
                       <Title order={5}>Suggest your own topic</Title>
                       <Title c={'dimmed'} order={6}>
-                        Can't find a suitable topic? Suggest your own thesis topic to a group.
+                        Can&apos;t find a suitable topic? Suggest your own thesis topic to a group.
                       </Title>
                     </Stack>
                   </Accordion.Control>

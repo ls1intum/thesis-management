@@ -232,10 +232,10 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
             message: 'Interviewee added to interview process successfully.',
             color: 'green',
           })
-          const application = { ...props.application, state: ApplicationState.INTERVIEWING }
+          const updatedApplication = { ...props.application, state: ApplicationState.INTERVIEWING }
 
-          updateApplicationContext(application)
-          onUpdate?.(application)
+          updateApplicationContext(updatedApplication)
+          onUpdate?.(updatedApplication)
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
         }

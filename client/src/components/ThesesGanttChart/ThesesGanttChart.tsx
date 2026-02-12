@@ -4,7 +4,7 @@ import React, { useMemo, useState } from 'react'
 import { formatDate, formatPresentationType, formatThesisType } from '../../utils/format'
 import { ThesisStateColor, ThesisTypeColor } from '../../config/colors'
 import ThesisPreviewModal from '../ThesisPreviewModal/ThesisPreviewModal'
-import { IThesisOverview, ThesisState } from '../../requests/responses/thesis'
+import { ThesisState } from '../../requests/responses/thesis'
 import { Badge, Center, Group, Indicator, Pagination, Stack, Text } from '@mantine/core'
 import ThesisStateBadge from '../ThesisStateBadge/ThesisStateBadge'
 import { Presentation } from '@phosphor-icons/react'
@@ -157,7 +157,9 @@ const ThesesGanttChart = () => {
             return null
           }
 
-          const presentation = (thesis.presentations ?? []).find((row) => row.presentationId === event?.id)
+          const presentation = (thesis.presentations ?? []).find(
+            (row) => row.presentationId === event?.id,
+          )
 
           return (
             <Stack gap='md'>
@@ -182,9 +184,7 @@ const ThesesGanttChart = () => {
             </Stack>
           )
         }}
-        onItemClick={(item) =>
-          setOpenedThesisId(item.id)
-        }
+        onItemClick={(item) => setOpenedThesisId(item.id)}
       />
       {visibleStates.length > 0 && (
         <Center>

@@ -90,12 +90,12 @@ const CalendarCarousel = ({ disabled = false }: ICalendarCarouselProps) => {
     //TODO: LOGIC DOES NOT WORK YET DUE TO MULTIPLE ROWS PER DATE
     const keys = Object.keys(interviewSlots)
     const itemsPerPage = getSlideDisplayAmount()
-    const totalSlides = keys.length
-    const lastSlideIndex = Math.max(0, Math.ceil(totalSlides / itemsPerPage) - 1)
+    const totalKeysCount = keys.length
+    const lastSlideIndex = Math.max(0, Math.ceil(totalKeysCount / itemsPerPage) - 1)
 
     let visibleStart = carouselSlide * itemsPerPage
     if (carouselSlide >= lastSlideIndex) {
-      visibleStart = Math.max(0, totalSlides - itemsPerPage)
+      visibleStart = Math.max(0, totalKeysCount - itemsPerPage)
     }
 
     const firstKey = keys[visibleStart]

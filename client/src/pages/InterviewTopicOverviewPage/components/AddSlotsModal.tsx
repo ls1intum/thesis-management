@@ -74,8 +74,6 @@ const AddSlotsModal = ({
 
   const [breakDuration, setBreakDuration] = useState<number>(0) // in minutes
 
-  const [sameSlotsForAllDays, setSameSlotsForAllDays] = useState(false)
-
   const dayHasBookedSlots = (date: string) => {
     return modalSlots[date]?.filter((slot) => slot.bookedBy !== null).length > 0
   }
@@ -112,7 +110,7 @@ const AddSlotsModal = ({
     setModalSlots(interviewSlotItems ? { ...interviewSlotItems } : {})
   }
 
-  const [saveLoading, setSaveLoading] = useState(false)
+  const [, setSaveLoading] = useState(false)
 
   const { fetchInterviewSlots } = useInterviewProcessContext()
 

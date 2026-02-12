@@ -1,6 +1,5 @@
 import { Card, Title, Flex, useComputedColorScheme } from '@mantine/core'
 import LogoCircle from './LogoCircle'
-import { useParams } from 'react-router'
 import { useEffect, useState } from 'react'
 import { IResearchGroup } from '../../../../requests/responses/researchGroup'
 import { doRequest } from '../../../../requests/request'

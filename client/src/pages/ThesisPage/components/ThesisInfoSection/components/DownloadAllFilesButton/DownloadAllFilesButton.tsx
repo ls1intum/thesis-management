@@ -30,8 +30,8 @@ const DownloadAllFilesButton = () => {
       })
     }
 
-    const files = thesis.files ?? []
-    const thesisFile = files.find((file) => file.type === 'THESIS')
+    const thesisFiles = thesis.files ?? []
+    const thesisFile = thesisFiles.find((file) => file.type === 'THESIS')
 
     if (thesisFile) {
       data.push({
@@ -41,7 +41,7 @@ const DownloadAllFilesButton = () => {
     }
 
     for (const [key, value] of Object.entries(GLOBAL_CONFIG.thesis_files)) {
-      const file = files.find((row) => row.type === key)
+      const file = thesisFiles.find((row) => row.type === key)
 
       if (file) {
         data.push({
