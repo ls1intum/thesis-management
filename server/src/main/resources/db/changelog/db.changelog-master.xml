@@ -23,4 +23,5 @@
     <include file="changes/17_application_notification_email.sql" relativeToChangelogFile="true"/>
     <include file="changes/20_add_published_at_topics.sql" relativeToChangelogFile="true" />
     <include file="changes/21_seed_default_email_templates.xml" relativeToChangelogFile="true" />
+    <include file="changes/22_migrate_email_template_placeholder_variables.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>

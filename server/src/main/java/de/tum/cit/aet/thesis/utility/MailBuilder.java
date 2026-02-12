@@ -1,10 +1,13 @@
 package de.tum.cit.aet.thesis.utility;
 
 import de.tum.cit.aet.thesis.constants.ThesisRoleName;
-import de.tum.cit.aet.thesis.dto.ApplicationDto;
-import de.tum.cit.aet.thesis.dto.ThesisCommentDto;
-import de.tum.cit.aet.thesis.dto.ThesisDto;
-import de.tum.cit.aet.thesis.dto.UserDto;
+import de.tum.cit.aet.thesis.mailVariables.MailApplication;
+import de.tum.cit.aet.thesis.mailVariables.MailThesis;
+import de.tum.cit.aet.thesis.mailVariables.MailThesisAssessment;
+import de.tum.cit.aet.thesis.mailVariables.MailThesisComment;
+import de.tum.cit.aet.thesis.mailVariables.MailThesisPresentation;
+import de.tum.cit.aet.thesis.mailVariables.MailThesisProposal;
+import de.tum.cit.aet.thesis.mailVariables.MailUser;
 import de.tum.cit.aet.thesis.entity.*;
 import de.tum.cit.aet.thesis.service.UploadService;
 import jakarta.activation.DataHandler;
@@ -24,7 +27,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.thymeleaf.context.Context;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class MailBuilder {
     private static final Logger log = LoggerFactory.getLogger(MailBuilder.class);
@@ -235,20 +237,20 @@ public class MailBuilder {
     }
 
     public MailBuilder fillUserPlaceholders(User user, String placeholder) {
-        fillPlaceholder(placeholder, UserDto.fromUserEntity(user));
+        fillPlaceholder(placeholder, MailUser.fromUser(user));
 
         return this;
     }
 
     public MailBuilder fillApplicationPlaceholders(Application application) {
-        fillPlaceholder("application", ApplicationDto.fromApplicationEntity(application, false));
+        fillPlaceholder("application", MailApplication.fromApplication(application));
         fillPlaceholder("applicationUrl", config.getClientHost() + "/applications/" + application.getId());
 
         return this;
     }
 
     public MailBuilder fillThesisPlaceholders(Thesis thesis) {
-        fillPlaceholder("thesis", ThesisDto.fromThesisEntity(thesis, false, true));
+        fillPlaceholder("thesis", MailThesis.fromThesis(thesis));
         fillPlaceholder("thesisUrl", config.getClientHost() + "/theses/" + thesis.getId());
 
         return this;
@@ -257,7 +259,7 @@ public class MailBuilder {
     public MailBuilder fillThesisCommentPlaceholders(ThesisComment comment) {
         fillThesisPlaceholders(comment.getThesis());
 
-        fillPlaceholder("comment", ThesisCommentDto.fromCommentEntity(comment));
+        fillPlaceholder("comment", MailThesisComment.fromComment(comment));
 
         return this;
     }
@@ -265,7 +267,7 @@ public class MailBuilder {
     public MailBuilder fillThesisPresentationPlaceholders(ThesisPresentation presentation) {
         fillThesisPlaceholders(presentation.getThesis());
 
-        fillPlaceholder("presentation", ThesisDto.ThesisPresentationDto.fromPresentationEntity(presentation));
+        fillPlaceholder("presentation", MailThesisPresentation.fromPresentation(presentation));
         fillPlaceholder("presentationUrl", config.getClientHost() + "/presentations/" + presentation.getId());
 
         return this;
@@ -274,7 +276,7 @@ public class MailBuilder {
     public MailBuilder fillThesisProposalPlaceholders(ThesisProposal proposal) {
         fillThesisPlaceholders(proposal.getThesis());
 
-        fillPlaceholder("proposal", ThesisDto.ThesisProposalDto.fromProposalEntity(proposal));
+        fillPlaceholder("proposal", MailThesisProposal.fromProposal(proposal));
 
         return this;
     }
@@ -282,7 +284,7 @@ public class MailBuilder {
     public MailBuilder fillThesisAssessmentPlaceholders(ThesisAssessment assessment) {
         fillThesisPlaceholders(assessment.getThesis());
 
-        fillPlaceholder("assessment", ThesisDto.ThesisAssessmentDto.fromAssessmentEntity(assessment));
+        fillPlaceholder("assessment", MailThesisAssessment.fromAssessment(assessment));
 
         return this;
     }
@@ -339,7 +341,7 @@ public class MailBuilder {
 
                 Context templateContext = new Context();
                 templateContext.setVariables(this.variables);
-                templateContext.setVariable("recipient", UserDto.fromUserEntity(recipient));
+                templateContext.setVariable("recipient", MailUser.fromUser(recipient));
                 templateContext.setVariable("DataFormatter", DataFormatter.class);
 
                 message.setSubject(subject);

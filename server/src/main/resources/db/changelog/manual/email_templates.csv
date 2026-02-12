@@ -1,0 +1,1424 @@
+email_template_id,research_group_id,template_case,description,subject,body_html,language,created_at,updated_by,updated_at
+b64437da-f1de-4107-bbb8-579444d6cf99,,APPLICATION_AUTOMATIC_REJECT_REMINDER,This will be send out when you have soon to be automatically rejected applications.,Automatic Rejection Reminder,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+<p th:inline=""text"">
+This is a reminder that Automatic Application Rejection is enabled for your group.
+The following application(s) require your attention:
+</p>
+<ul th:if=""${!#lists.isEmpty(applications)}"">
+ <li th:each=""app : ${applications}"">
+   <strong th:text=""${app.name}"">Applicant Name</strong> (applying for: <span th:text=""${app.topicTitle}"">Topic</span>) – will be rejected on <span th:text=""${#temporals.format(app.rejectionDate, 'dd.MM.yyyy')}"">dd.MM.yyyy</span> – <a th:href=""@{|${clientHost}/applications/${app.applicationId}|}"">Application Link</a>
+ </li>
+</ul>
+<p th:inline=""text"">
+Please review the applications, if you don't want them to be rejected automatically.
+</p>
+<p>Best regards,<br/>
+The Thesis Coordination Team</p>",en,2025-09-30 01:15:18.290199,,2025-09-30 01:15:18.290199
+a586f280-0d63-4854-9c08-ad688c04d29e,,INTERVIEW_INVITATION,"Invitation email sent to interviewees with scheduling link, applicant name and thesis title",Interview Invitation,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+  You have been invited to schedule an interview for the thesis <strong>[[${application.thesisTitle}]]</strong>.
+</p>
+
+<p th:inline=""text"">
+  Please follow the link below to choose a suitable time:
+</p>
+
+<p th:inline=""text"">
+  <a target=""_blank"" rel=""noopener noreferrer"" th:href=""${inviteUrl}"">Schedule your interview</a>
+</p>
+
+<p>Best regards,<br/>
+The Thesis Coordination Team</p>",en,2026-02-10 14:55:28.891504,,2026-02-10 14:55:28.891504
+f5faa517-f7a7-4857-abfa-49996b495b34,,INTERVIEW_INVITATION_REMINDER,Reminder email sent when resending the interview scheduling invitation,Interview Invitation Reminder,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+  This is a reminder that you were invited to schedule an interview for the thesis <strong>[[${application.thesisTitle}]]</strong>.
+</p>
+
+<p th:inline=""text"">
+  If you haven't scheduled yet, please follow the link below to choose a suitable time:
+</p>
+
+<p th:inline=""text"">
+  <a target=""_blank"" rel=""noopener noreferrer"" th:href=""${inviteUrl}"">Schedule your interview</a>
+</p>
+
+<p th:inline=""text"">
+  If you already scheduled your interview, please ignore this reminder.
+</p>
+
+<p>Best regards,<br/>
+The Thesis Coordination Team</p>",en,2026-02-10 14:55:28.891504,,2026-02-10 14:55:28.891504
+033484ef-34b9-4086-b512-9fdf182de7e6,,INTERVIEW_SLOT_BOOKED_CONFORMATION,Confirmation email sent to interviewees when a slot was booked,Interview Slot Booking Confirmation,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+  Your interview slot for the interview process <strong>[[${application.thesisTitle}]]</strong> has been booked.
+</p>
+
+<p th:inline=""text"">
+  <strong>Details</strong><br/>
+  Date and time:
+  <strong th:text=""${slot.startDate}"">dd.MM.yyyy HH:mm</strong><br/>
+
+
+  <span th:if=""${slot.location != null and !#strings.isEmpty(slot.location)}"">
+    Location: <span th:text=""${slot.location}"">Location</span><br/>
+  </span>
+
+
+  <span th:if=""${slot.streamUrl != null and !#strings.isEmpty(slot.streamUrl)}"">
+    Meeting link:
+    <a th:href=""${slot.streamUrl}"" target=""_blank"" rel=""noopener noreferrer"">Join meeting</a><br/>
+  </span>
+
+
+  <span th:if=""${(slot.location == null or #strings.isEmpty(slot.location))
+                and (slot.streamUrl == null or #strings.isEmpty(slot.streamUrl))}"">
+    Location not available yet<br/>
+  </span>
+</p>
+
+<p th:inline=""text"">
+  You can view or manage your booking using the link below:
+</p>
+
+<p th:inline=""text"">
+  <a target=""_blank"" rel=""noopener noreferrer"" th:href=""${inviteUrl}"">View or change your booking</a>
+</p>
+
+<p>Best regards,<br/>
+The Thesis Coordination Team</p>",en,2026-02-10 14:55:28.891504,,2026-02-10 14:55:28.891504
+5efd953f-e058-4395-8a14-1d177b013a60,,INTERVIEW_SLOT_BOOKED_CANCELLATION,Confirmation email sent to interviewees when a slot was canceled,Interview Slot Booking Cancellation,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+Your interview slot for the interview process <strong>[[${application.thesisTitle}]]</strong> has been canceled.
+</p>
+
+<p th:inline=""text"">
+<strong>Details</strong><br/>
+Date and time: <strong th:text=""${slot.startDate}"">dd.MM.yyyy HH:mm</strong><br/>
+</p>
+
+<p th:inline=""text"">
+You can book a new slot using the link below:
+</p>
+
+<p th:inline=""text"">
+<a target=""_blank"" rel=""noopener noreferrer"" th:href=""${inviteUrl}"">Book a new Slot</a>
+</p>
+
+<p>Best regards,<br/>
+The Thesis Coordination Team</p>",en,2026-02-10 14:55:28.891504,,2026-02-10 14:55:28.891504
+5e5239d7-0a92-4e47-82b8-fabbe489a6b2,,THESIS_COMMENT_POSTED,New comment on a thesis. TO depends whether its a student or advisor comment,A Comment was posted,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+[[${comment.creatorFirstName}]] [[${comment.creatorLastName}]] posted a comment on thesis ""[[${thesis.title}]]""
+</p>
+
+<p th:inline=""text"">
+<strong>Message</strong><br />
+[[${comment.message}]]
+</p>
+
+<p th:inline=""text"">
+    Full Details: <a target=""_blank"" rel=""noopener noreferrer nofollow"" th:href=""${thesisUrl}"" th:text=""${thesisUrl}""></a>
+</p>
+
+<hr/>
+<div style=""text-align: center;font-size: 10px"">
+    Manage your notification settings <a th:href=""${config.clientHost + '/settings/notifications'}"">here</a>
+</div>
+<br/><br/>",en,2025-05-07 21:17:45.170272,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:17:45.170272
+bff9f41a-aee1-4373-ab27-fbdd44a9c3a7,,THESIS_CREATED,New thesis was created and assigned to a student,Thesis Created,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+[[${creatingUser.firstName}]] [[${creatingUser.lastName}]] created and assigned a thesis to you: <a target=""_blank"" rel=""noopener noreferrer nofollow"" th:href=""${thesisUrl}"">[[${thesisUrl}]]</a>
+</p>
+
+<p th:inline=""text"">
+<strong>Title</strong>: [[${thesis.title}]]<br />
+<strong>Supervisor</strong>: [[${thesis.supervisors}]]<br />
+<strong>Advisor</strong>: [[${thesis.advisors}]]<br />
+<strong>Student</strong>: [[${thesis.students}]]<br />
+</p>
+
+<p th:inline=""text"">
+The next step is that you write a proposal and submit it on <a target=""_blank"" rel=""noopener noreferrer nofollow"" th:href=""${thesisUrl}"">[[${thesisUrl}]]</a>
+</p>",en,2025-05-07 21:17:45.170272,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:17:45.170272
+7fa2c9c4-075b-412a-8459-09883ab2ea60,,THESIS_FINAL_GRADE,Final grade was added to a thesis,Final Grade available for Thesis,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+[[${thesis.supervisors}]] added the final grade to your thesis ""[[${thesis.title}]]""
+</p>
+
+<p th:inline=""text"">
+<strong>Final Grade</strong>: [[${thesis.finalGrade}]]
+</p>
+
+<p>
+<strong>Feedback</strong><br />
+<span th:utext=""${thesis.finalFeedback}""></span>
+</p>
+
+<p th:inline=""text"">
+    Full Details: <a target=""_blank"" rel=""noopener noreferrer nofollow"" th:href=""${thesisUrl}"" th:text=""${thesisUrl}""></a>
+</p>
+
+<hr/>
+<div style=""text-align: center;font-size: 10px"">
+    Manage your notification settings <a th:href=""${config.clientHost + '/settings/notifications'}"">here</a>
+</div>
+<br/><br/>",en,2025-05-07 21:17:45.170272,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:17:45.170272
+d126b8a9-0481-4e48-97b8-60272ca4bf9a,,THESIS_FINAL_SUBMISSION,Student submitted final thesis,Thesis Submitted,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+[[${thesis.students}]] submitted thesis ""[[${thesis.title}]]"".
+</p>
+
+<p th:inline=""text"">
+The next step is to write an assessment about the thesis.
+</p>
+
+<p th:inline=""text"">
+    Full Details: <a target=""_blank"" rel=""noopener noreferrer nofollow"" th:href=""${thesisUrl}"" th:text=""${thesisUrl}""></a>
+</p>
+
+<hr/>
+<div style=""text-align: center;font-size: 10px"">
+    Manage your notification settings <a th:href=""${config.clientHost + '/settings/notifications'}"">here</a>
+</div>
+<br/><br/>",en,2025-05-07 21:17:45.170272,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:17:45.170272
+32c83731-5d53-4955-99f4-1a1b9731f996,,THESIS_ASSESSMENT_ADDED,Assessment was added to a submitted thesis,Assessment added,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+[[${assessment.creatorFirstName}]] [[${assessment.creatorLastName}]] added an assessment to thesis ""[[${thesis.title}]]""
+</p>
+
+<p >
+<strong>Summary</strong><br />
+<span th:utext=""${assessment.summary}""></span>
+</p>
+
+<p>
+<strong>Strengths</strong><br />
+<span th:utext=""${assessment.positives}""></span>
+</p>
+
+<p>
+<strong>Weaknesses</strong><br />
+<span th:utext=""${assessment.negatives}""></span>
+</p>
+
+<p th:inline=""text"">
+<strong>Grade Suggestion</strong>: [[${assessment.gradeSuggestion}]]
+</p>
+
+<p th:inline=""text"">
+    Full Details: <a target=""_blank"" rel=""noopener noreferrer nofollow"" th:href=""${thesisUrl}"" th:text=""${thesisUrl}""></a>
+</p>
+
+<hr/>
+<div style=""text-align: center;font-size: 10px"">
+    Manage your notification settings <a th:href=""${config.clientHost + '/settings/notifications'}"">here</a>
+</div>
+<br/><br/>",en,2025-05-07 21:17:45.170272,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:17:45.170272
+ea2d10cd-eb1f-45b4-bec9-b972486eefd9,,THESIS_PRESENTATION_DELETED,Scheduled presentation was deleted,Presentation deleted,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+[[${deletingUser.firstName}]] [[${deletingUser.lastName}]] cancelled the presentation scheduled at [[${presentation.scheduledAt}]] for thesis ""[[${thesis.title}]]""
+</p>
+
+<p th:inline=""text"">
+    Full Details: <a target=""_blank"" rel=""noopener noreferrer nofollow"" th:href=""${thesisUrl}"" th:text=""${thesisUrl}""></a>
+</p>
+
+<hr/>
+<div style=""text-align: center;font-size: 10px"">
+    Manage your notification settings <a th:href=""${config.clientHost + '/settings/notifications'}"">here</a>
+</div>
+<br/><br/>",en,2025-05-07 21:17:45.170272,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:17:45.170272
+6fef0951-46d0-4e24-b446-9dd839482294,,THESIS_PRESENTATION_SCHEDULED,New presentation was scheduled,New Presentation scheduled,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+[[${presentation.creatorFirstName}]] [[${presentation.creatorLastName}]] scheduled a presentation for thesis ""[[${thesis.title}]]""
+</p>
+
+<p th:inline=""text"">
+<strong>Type</strong><br />
+[[${presentation.type}]]
+</p>
+
+<p th:inline=""text"">
+<strong>Location</strong><br />
+[[${presentation.location}]]
+</p >
+
+<p th:inline=""text"">
+<strong>Stream URL</strong><br />
+[[${presentation.streamUrl}]]
+</p>
+
+<p th:inline=""text"">
+<strong>Language</strong><br />
+[[${presentation.language}]]
+</p>
+
+<p th:inline=""text"">
+<strong>Scheduled At</strong><br />
+[[${presentation.scheduledAt}]]
+</p>
+
+<p th:inline=""text"">
+    Full Details: <a target=""_blank"" rel=""noopener noreferrer nofollow"" th:href=""${thesisUrl}"" th:text=""${thesisUrl}""></a>
+</p>
+
+<hr/>
+<div style=""text-align: center;font-size: 10px"">
+    Manage your notification settings <a th:href=""${config.clientHost + '/settings/notifications'}"">here</a>
+</div>
+<br/><br/>",en,2025-05-07 21:17:45.170272,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:17:45.170272
+b06a871c-18ee-440c-bb35-89e465fc6aef,,THESIS_PRESENTATION_UPDATED,Presentation was updated,Presentation updated,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+[[${presentation.creatorFirstName}]] [[${presentation.creatorLastName}]] updated a presentation for thesis ""[[${thesis.title}]]""
+</p>
+
+<p th:inline=""text"">
+<strong>Type</strong><br />
+[[${presentation.type}]]
+</p>
+
+<p th:inline=""text"">
+<strong>Location</strong><br />
+[[${presentation.location}]]
+</p >
+
+<p th:inline=""text"">
+<strong>Stream URL</strong><br />
+[[${presentation.streamUrl}]]
+</p>
+
+<p th:inline=""text"">
+<strong>Language</strong><br />
+[[${presentation.language}]]
+</p>
+
+<p th:inline=""text"">
+<strong>Scheduled At</strong><br />
+[[${presentation.scheduledAt}]]
+</p>
+
+<p th:inline=""text"">
+    Full Details: <a target=""_blank"" rel=""noopener noreferrer nofollow"" th:href=""${thesisUrl}"" th:text=""${thesisUrl}""></a>
+</p>
+
+<hr/>
+<div style=""text-align: center;font-size: 10px"">
+    Manage your notification settings <a th:href=""${config.clientHost + '/settings/notifications'}"">here</a>
+</div>
+<br/><br/>",en,2025-05-07 21:17:45.170272,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:17:45.170272
+9b0f3cb5-94a9-46a8-b611-70da4c1ce5b9,,THESIS_PRESENTATION_INVITATION,Public Presentation Invitation,Thesis Presentation Invitation,"<div style=""text-align: center"" th:inline=""text"">
+<h2>INVITATION</h2>
+<div>As part of their [[${thesis.type}]]'s thesis</div>
+<div><strong>[[${thesis.students}]]</strong></div>
+<div>will give their [[${presentation.type}]] presentation on</div>
+<div><strong>[[${presentation.scheduledAt}]]</strong></div>
+<div th:if=""${presentation.streamUrl != null and !#strings.isEmpty(presentation.streamUrl)}"" th:inline=""text"">
+online at [[${presentation.streamUrl}]]
+</div>
+<div th:if=""${presentation.location != null and !#strings.isEmpty(presentation.location)}"">
+<span th:if=""${presentation.streamUrl != null and !#strings.isEmpty(presentation.streamUrl)}"">and&nbsp;</span>onsite in <strong>[[${presentation.location}]]</strong>
+</div>
+<br/>
+<div>Title:</div>
+<div>[[${thesis.title}]]</div>
+<br/>
+<div>Supervisor: [[${thesis.supervisors}]]</div>
+<div>Advisor(s): [[${thesis.advisors}]]</div>
+<br/>
+<div>
+The presentation will be in [[${presentation.language}]]. Everybody is cordially invited to attend.
+</div>
+</div>
+
+<p>
+<strong>Abstract</strong><br />
+<span th:utext=""${thesis.abstractText}""></span>
+</p>
+
+<p th:inline=""text"">
+Full Details: <a target=""_blank"" rel=""noopener noreferrer nofollow"" th:href=""${presentationUrl}"">[[${presentationUrl}]]</a>
+</p>
+
+<hr/>
+<div style=""text-align: center;font-size: 10px"">
+    Manage your notification settings <a th:href=""${config.clientHost + '/settings/notifications'}"">here</a>
+</div>
+<br/><br/>",en,2025-05-07 21:17:45.170272,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:17:45.170272
+ee369afb-2349-4957-8774-231b0d51e9b2,,THESIS_PRESENTATION_INVITATION_CANCELLED,Public Presentation was deleted,Thesis Presentation Cancelled,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+The [[${thesis.type}]] thesis presentation of
+<strong>[[${thesis.students}]]</strong> scheduled at
+[[${presentation.scheduledAt}]] was cancelled.
+</p>
+
+<hr/>
+<div style=""text-align: center;font-size: 10px"">
+    Manage your notification settings <a th:href=""${config.clientHost + '/settings/notifications'}"">here</a>
+</div>
+<br/><br/>",en,2025-05-07 21:17:45.170272,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:17:45.170272
+37caa286-90d5-4c0d-98c3-8d5a9e686a4e,,THESIS_PRESENTATION_INVITATION_UPDATED,Public Presentation was updated,Thesis Presentation Updated,"<div style=""text-align: center"" th:inline=""text"">
+<h2>INVITATION</h2>
+<div>As part of their [[${thesis.type}]]'s thesis</div>
+<div><strong>[[${thesis.students}]]</strong></div>
+<div>will give their [[${presentation.type}]] presentation on</div>
+<div><strong>[[${presentation.scheduledAt}]]</strong></div>
+<div th:if=""${presentation.streamUrl != null and !#strings.isEmpty(presentation.streamUrl)}"" th:inline=""text"">
+online at [[${presentation.streamUrl}]]
+</div>
+<div th:if=""${presentation.location != null and !#strings.isEmpty(presentation.location)}"">
+<span th:if=""${presentation.streamUrl != null and !#strings.isEmpty(presentation.streamUrl)}"">and&nbsp;</span>onsite in <strong>[[${presentation.location}]]</strong>
+</div>
+<br/>
+<div>Title:</div>
+<div>[[${thesis.title}]]</div>
+<br/>
+<div>Supervisor: [[${thesis.supervisors}]]</div>
+<div>Advisor(s): [[${thesis.advisors}]]</div>
+<br/>
+<div>
+The presentation will be in [[${presentation.language}]]. Everybody is cordially invited to attend.
+</div>
+</div>
+
+<p>
+<strong>Abstract</strong><br />
+<span th:utext=""${thesis.abstractText}""></span>
+</p>
+
+<p th:inline=""text"">
+Full Details: <a target=""_blank"" rel=""noopener noreferrer nofollow"" th:href=""${presentationUrl}"">[[${presentationUrl}]]</a>
+</p>
+
+<hr/>
+<div style=""text-align: center;font-size: 10px"">
+    Manage your notification settings <a th:href=""${config.clientHost + '/settings/notifications'}"">here</a>
+</div>
+<br/><br/>",en,2025-05-07 21:17:45.170272,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:17:45.170272
+e212edea-faa4-4360-b6e0-ead504028f9b,,THESIS_PROPOSAL_ACCEPTED,Proposal was accepted,Thesis Proposal Accepted,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+[[${proposal.approverFirstName}]] [[${proposal.approverLastName}]] approved the proposal of thesis ""[[${thesis.title}]]"".
+The next step is to start with the project work and with writing the thesis.
+You can see your submission deadline on <a target=""_blank"" rel=""noopener noreferrer nofollow"" th:href=""${thesisUrl}"">[[${thesisUrl}]]</a>.
+</p>
+
+<hr/>
+<div style=""text-align: center;font-size: 10px"">
+    Manage your notification settings <a th:href=""${config.clientHost + '/settings/notifications'}"">here</a>
+</div>
+<br/><br/>",en,2025-05-07 21:17:45.170272,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:17:45.170272
+7f456286-06ee-4ebf-999f-957ac67f4dc8,,THESIS_PROPOSAL_REJECTED,Changes were requested for proposal,Changes were requested for Proposal,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+[[${reviewingUser.firstName}]] [[${reviewingUser.lastName}]] reviewed your proposal for thesis ""[[${thesis.title}]]"".
+</p>
+
+<p th:inline=""text"">
+The following changes were requested:<br />
+<ul>
+<li th:each=""requestedChange : ${requestedChanges}"" th:text=""${requestedChange}""></li>
+</ul>
+</p>
+
+<p th:inline=""text"">
+    Full Details: <a target=""_blank"" rel=""noopener noreferrer nofollow"" th:href=""${thesisUrl}"" th:text=""${thesisUrl}""></a>
+</p>
+
+<hr/>
+<div style=""text-align: center;font-size: 10px"">
+    Manage your notification settings <a th:href=""${config.clientHost + '/settings/notifications'}"">here</a>
+</div>
+<br/><br/>",en,2025-05-07 21:17:45.170272,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:17:45.170272
+b8cfbbbf-1def-4e7b-8fe0-dfbf69d97f1c,,THESIS_PROPOSAL_UPLOADED,Student uploaded new proposal,Thesis Proposal Added,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+[[${proposal.creatorFirstName}]] [[${proposal.creatorLastName}]] uploaded a proposal to thesis ""[[${thesis.title}]]"".
+You can find the submitted file in the attachment part of this email.
+</p>
+
+<p th:inline=""text"">
+    Full Details: <a target=""_blank"" rel=""noopener noreferrer nofollow"" th:href=""${thesisUrl}"" th:text=""${thesisUrl}""></a>
+</p>
+
+<hr/>
+<div style=""text-align: center;font-size: 10px"">
+    Manage your notification settings <a th:href=""${config.clientHost + '/settings/notifications'}"">here</a>
+</div>
+<br/><br/>",en,2025-05-07 21:17:45.170272,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:17:45.170272
+22a95ad5-39b3-46bc-a744-ed3c447f3ce6,3088fb21-7b56-4404-9dd2-d65d30134f73,APPLICATION_CREATED_CHAIR,All supervisors and advisors get a summary about a new application,New Thesis Application,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">there is a new thesis application by <strong>[[${application.applicantFirstName}]]&nbsp;[[${application.applicantLastName}]]</strong>.</p>
+<p th:inline=""text"">We received the following thesis application details:</p>
+
+<hr/>
+
+<p th:inline=""text"">
+<strong>Name:</strong><br/>
+[[${application.applicantFirstName}]]&nbsp;[[${application.applicantLastName}]]
+</p>
+<p th:inline=""text"">
+<strong>Email:</strong><br/>
+[[${application.applicantEmail}]]
+</p>
+<p th:inline=""text"">
+<strong>University ID:</strong><br/>
+[[${application.applicantUniversityId}]]
+</p>
+<p th:inline=""text"">
+<strong>Matriculation Number:</strong><br/>
+[[${application.applicantMatriculationNumber}]]
+</p>
+<p th:inline=""text"">
+<strong>Study program:</strong><br/>
+[[${application.studyProgram}]]&nbsp;
+[[${application.studyDegree}]]&nbsp;
+(Semester [[${application.semester}]])
+</p>
+<p th:inline=""text"">
+<strong>Thesis Title:</strong><br/>
+[[${application.thesisTitle}]]
+</p>
+<p th:inline=""text"">
+<strong>Desired Thesis Start Date:</strong><br/>
+[[${application.desiredStartDate}]]
+</p>
+<p>
+<strong>Motivation:</strong><br/>
+<span th:utext=""${application.motivation}""></span>
+</p>
+<br/>
+<p>
+<strong>Special Skills:</strong><br/>
+<span th:utext=""${application.specialSkills}""></span>
+</p>
+<br/>
+<p>
+<strong>Interests:</strong><br/>
+<span th:utext=""${application.interests}""></span>
+</p>
+<br/>
+<p>
+<strong>Projects:</strong><br/>
+<span th:utext=""${application.projects}""></span>
+</p>
+<br/>
+
+<p th:inline=""text"">
+Full Details: <a target=""_blank"" rel=""noopener noreferrer nofollow"" th:href=""${applicationUrl}"">[[${applicationUrl}]]</a>
+</p>
+
+<p th:inline=""text""><strong>You can find the submitted files in the attachment part of this email.</strong></p>
+
+<hr/>
+<div style=""text-align: center;font-size: 10px"">
+    Manage your notification settings <a th:href=""${config.clientHost + '/settings/notifications'}"">here</a>
+</div>
+<br/><br/>",en,2025-05-07 21:19:10.420087,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:19:10.420087
+c3d0c482-eaa4-4cc7-b6bc-fb52aa061717,3088fb21-7b56-4404-9dd2-d65d30134f73,THESIS_CLOSED,Thesis was closed before completion,Thesis Closed,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+[[${deletingUser.firstName}]] [[${deletingUser.lastName}]] closed thesis ""[[${thesis.title}]]"".
+Please contact your advisor or supervisor if you think that this was a mistake.
+</p>
+
+<p th:inline=""text"">
+    Full Details: <a target=""_blank"" rel=""noopener noreferrer nofollow"" th:href=""${thesisUrl}"" th:text=""${thesisUrl}""></a>
+</p>
+
+<hr/>
+<div style=""text-align: center;font-size: 10px"">
+    Manage your notification settings <a th:href=""${config.clientHost + '/settings/notifications'}"">here</a>
+</div>
+<br/><br/>",en,2025-05-07 21:19:10.420087,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:19:10.420087
+28df2858-b568-4917-bdb4-b6a1eef8aa76,3088fb21-7b56-4404-9dd2-d65d30134f73,APPLICATION_REMINDER,Weekly email if there are more than 10 unreviewed applications,Unreviewed Thesis Applications,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+There are currently <strong>[[${unreviewedApplications}]]</strong> unreviewed thesis applications.
+</p>
+
+<p th:inline=""text"">
+Review Applications: <a target=""_blank"" rel=""noopener noreferrer nofollow"" th:href=""${reviewApplicationsLink}"">[[${reviewApplicationsLink}]]</a>
+</p>
+
+<hr/>
+<div style=""text-align: center;font-size: 10px"">
+    Manage your notification settings <a th:href=""${config.clientHost + '/settings/notifications'}"">here</a>
+</div>
+<br/><br/>",en,2025-05-07 21:19:10.420087,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:19:10.420087
+01d60075-4a4c-4e76-bb7b-06e6ea80e4af,3088fb21-7b56-4404-9dd2-d65d30134f73,APPLICATION_REJECTED_TOPIC_FILLED,Application was rejected because topic was closed,Thesis Application Rejection,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+Thank you for your interest in pursuing your thesis on ""[[${application.thesisTitle}]]"" under my supervision.
+</p>
+
+<p th:inline=""text"">
+We found a student for the specific topic you applied for.
+</p>
+
+<p th:inline=""text"">
+You can explore other topics or suggest a topic yourself in your area of interest.
+</p>
+
+<div th:utext=""${config.signature}""></div>",en,2025-05-07 21:19:10.420087,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:19:10.420087
+23625b9f-eaf3-48ae-a4f3-2e52c14d2819,3088fb21-7b56-4404-9dd2-d65d30134f73,THESIS_ASSESSMENT_ADDED,Assessment was added to a submitted thesis,Assessment added,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+[[${assessment.creatorFirstName}]] [[${assessment.creatorLastName}]] added an assessment to thesis ""[[${thesis.title}]]""
+</p>
+
+<p >
+<strong>Summary</strong><br />
+<span th:utext=""${assessment.summary}""></span>
+</p>
+
+<p>
+<strong>Strengths</strong><br />
+<span th:utext=""${assessment.positives}""></span>
+</p>
+
+<p>
+<strong>Weaknesses</strong><br />
+<span th:utext=""${assessment.negatives}""></span>
+</p>
+
+<p th:inline=""text"">
+<strong>Grade Suggestion</strong>: [[${assessment.gradeSuggestion}]]
+</p>
+
+<p th:inline=""text"">
+    Full Details: <a target=""_blank"" rel=""noopener noreferrer nofollow"" th:href=""${thesisUrl}"" th:text=""${thesisUrl}""></a>
+</p>
+
+<hr/>
+<div style=""text-align: center;font-size: 10px"">
+    Manage your notification settings <a th:href=""${config.clientHost + '/settings/notifications'}"">here</a>
+</div>
+<br/><br/>",en,2025-05-07 21:19:10.420087,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:19:10.420087
+c9c72e8b-126a-474d-ae16-252461746383,3088fb21-7b56-4404-9dd2-d65d30134f73,APPLICATION_CREATED_STUDENT,Confirmation email to the applying student when application was submitted,Thesis Application Confirmation,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">With this email, we confirm your thesis application.</p>
+<p th:inline=""text"">We received the following details:</p>
+
+<hr>
+
+<p th:inline=""text"">
+<strong>Name:</strong><br/>
+[[${application.applicantFirstName}]]&nbsp;[[${application.applicantLastName}]]
+</p>
+<p th:inline=""text"">
+<strong>Email:</strong><br/>
+[[${application.applicantEmail}]]
+</p>
+<p th:inline=""text"">
+<strong>University ID:</strong><br/>
+[[${application.applicantUniversityId}]]
+</p>
+<p th:inline=""text"">
+<strong>Matriculation Number:</strong><br/>
+[[${application.applicantMatriculationNumber}]]
+</p>
+<p th:inline=""text"">
+<strong>Study program:</strong><br/>
+[[${application.studyProgram}]]&nbsp;
+[[${application.studyDegree}]]&nbsp;
+(Semester [[${application.semester}]])
+</p>
+<p th:inline=""text"">
+<strong>Thesis Title:</strong><br/>
+[[${application.thesisTitle}]]
+</p>
+<p th:inline=""text"">
+<strong>Desired Thesis Start Date:</strong><br/>
+[[${application.desiredStartDate}]]
+</p>
+<p>
+<strong>Motivation:</strong><br/>
+<span th:utext=""${application.motivation}""></span>
+</p>
+<br/>
+<p>
+<strong>Special Skills:</strong><br/>
+<span th:utext=""${application.specialSkills}""></span>
+</p>
+<br/>
+<p>
+<strong>Interests:</strong><br/>
+<span th:utext=""${application.interests}""></span>
+</p>
+<br/>
+<p>
+<strong>Projects:</strong><br/>
+<span th:utext=""${application.projects}""></span>
+</p>
+<br/>
+
+<p th:inline=""text"">
+We are currently experiencing a high volume of thesis applications, and each one requires careful review.
+While we aim to respond as quickly as possible, the combination of the application volume and the intensive teaching
+and research commitments of our group may result in a response time of up to six weeks.
+We appreciate your patience and understanding during this period.
+</p>
+
+<p th:inline=""text""><strong>You can find the submitted files in the attachment part of this email.</strong></p>",en,2025-05-07 21:19:10.420087,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:19:10.420087
+7c279937-a5ac-4c61-b6d5-af6944d9c592,3088fb21-7b56-4404-9dd2-d65d30134f73,THESIS_COMMENT_POSTED,New comment on a thesis. TO depends whether its a student or advisor comment,A Comment was posted,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+[[${comment.creatorFirstName}]] [[${comment.creatorLastName}]] posted a comment on thesis ""[[${thesis.title}]]""
+</p>
+
+<p th:inline=""text"">
+<strong>Message</strong><br />
+[[${comment.message}]]
+</p>
+
+<p th:inline=""text"">
+    Full Details: <a target=""_blank"" rel=""noopener noreferrer nofollow"" th:href=""${thesisUrl}"" th:text=""${thesisUrl}""></a>
+</p>
+
+<hr/>
+<div style=""text-align: center;font-size: 10px"">
+    Manage your notification settings <a th:href=""${config.clientHost + '/settings/notifications'}"">here</a>
+</div>
+<br/><br/>",en,2025-05-07 21:19:10.420087,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:19:10.420087
+783632a4-7fa2-49d4-9243-a1038cb208a8,3088fb21-7b56-4404-9dd2-d65d30134f73,THESIS_CREATED,New thesis was created and assigned to a student,Thesis Created,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+[[${creatingUser.firstName}]] [[${creatingUser.lastName}]] created and assigned a thesis to you: <a target=""_blank"" rel=""noopener noreferrer nofollow"" th:href=""${thesisUrl}"">[[${thesisUrl}]]</a>
+</p>
+
+<p th:inline=""text"">
+<strong>Title</strong>: [[${thesis.title}]]<br />
+<strong>Supervisor</strong>: [[${thesis.supervisors}]]<br />
+<strong>Advisor</strong>: [[${thesis.advisors}]]<br />
+<strong>Student</strong>: [[${thesis.students}]]<br />
+</p>
+
+<p th:inline=""text"">
+The next step is that you write a proposal and submit it on <a target=""_blank"" rel=""noopener noreferrer nofollow"" th:href=""${thesisUrl}"">[[${thesisUrl}]]</a>
+</p>",en,2025-05-07 21:19:10.420087,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:19:10.420087
+302c1d11-af62-4ea8-9837-e71c3063f9ea,3088fb21-7b56-4404-9dd2-d65d30134f73,THESIS_FINAL_GRADE,Final grade was added to a thesis,Final Grade available for Thesis,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+[[${thesis.supervisors}]] added the final grade to your thesis ""[[${thesis.title}]]""
+</p>
+
+<p th:inline=""text"">
+<strong>Final Grade</strong>: [[${thesis.finalGrade}]]
+</p>
+
+<p>
+<strong>Feedback</strong><br />
+<span th:utext=""${thesis.finalFeedback}""></span>
+</p>
+
+<p th:inline=""text"">
+    Full Details: <a target=""_blank"" rel=""noopener noreferrer nofollow"" th:href=""${thesisUrl}"" th:text=""${thesisUrl}""></a>
+</p>
+
+<hr/>
+<div style=""text-align: center;font-size: 10px"">
+    Manage your notification settings <a th:href=""${config.clientHost + '/settings/notifications'}"">here</a>
+</div>
+<br/><br/>",en,2025-05-07 21:19:10.420087,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:19:10.420087
+da267457-a52e-4d5c-bc48-1782b8ae9ba7,3088fb21-7b56-4404-9dd2-d65d30134f73,THESIS_FINAL_SUBMISSION,Student submitted final thesis,Thesis Submitted,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+[[${thesis.students}]] submitted thesis ""[[${thesis.title}]]"".
+</p>
+
+<p th:inline=""text"">
+The next step is to write an assessment about the thesis.
+</p>
+
+<p th:inline=""text"">
+    Full Details: <a target=""_blank"" rel=""noopener noreferrer nofollow"" th:href=""${thesisUrl}"" th:text=""${thesisUrl}""></a>
+</p>
+
+<hr/>
+<div style=""text-align: center;font-size: 10px"">
+    Manage your notification settings <a th:href=""${config.clientHost + '/settings/notifications'}"">here</a>
+</div>
+<br/><br/>",en,2025-05-07 21:19:10.420087,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:19:10.420087
+d25b772d-7406-4694-9417-f07bfce25e37,3088fb21-7b56-4404-9dd2-d65d30134f73,THESIS_PRESENTATION_DELETED,Scheduled presentation was deleted,Presentation deleted,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+[[${deletingUser.firstName}]] [[${deletingUser.lastName}]] cancelled the presentation scheduled at [[${presentation.scheduledAt}]] for thesis ""[[${thesis.title}]]""
+</p>
+
+<p th:inline=""text"">
+    Full Details: <a target=""_blank"" rel=""noopener noreferrer nofollow"" th:href=""${thesisUrl}"" th:text=""${thesisUrl}""></a>
+</p>
+
+<hr/>
+<div style=""text-align: center;font-size: 10px"">
+    Manage your notification settings <a th:href=""${config.clientHost + '/settings/notifications'}"">here</a>
+</div>
+<br/><br/>",en,2025-05-07 21:19:10.420087,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:19:10.420087
+8722bb94-18c6-4d4d-abaa-9869c53cadde,3088fb21-7b56-4404-9dd2-d65d30134f73,THESIS_PRESENTATION_SCHEDULED,New presentation was scheduled,New Presentation scheduled,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+[[${presentation.creatorFirstName}]] [[${presentation.creatorLastName}]] scheduled a presentation for thesis ""[[${thesis.title}]]""
+</p>
+
+<p th:inline=""text"">
+<strong>Type</strong><br />
+[[${presentation.type}]]
+</p>
+
+<p th:inline=""text"">
+<strong>Location</strong><br />
+[[${presentation.location}]]
+</p >
+
+<p th:inline=""text"">
+<strong>Stream URL</strong><br />
+[[${presentation.streamUrl}]]
+</p>
+
+<p th:inline=""text"">
+<strong>Language</strong><br />
+[[${presentation.language}]]
+</p>
+
+<p th:inline=""text"">
+<strong>Scheduled At</strong><br />
+[[${presentation.scheduledAt}]]
+</p>
+
+<p th:inline=""text"">
+    Full Details: <a target=""_blank"" rel=""noopener noreferrer nofollow"" th:href=""${thesisUrl}"" th:text=""${thesisUrl}""></a>
+</p>
+
+<hr/>
+<div style=""text-align: center;font-size: 10px"">
+    Manage your notification settings <a th:href=""${config.clientHost + '/settings/notifications'}"">here</a>
+</div>
+<br/><br/>",en,2025-05-07 21:19:10.420087,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:19:10.420087
+243316cb-5caf-4dae-883d-faf6e4149f62,3088fb21-7b56-4404-9dd2-d65d30134f73,THESIS_PRESENTATION_UPDATED,Presentation was updated,Presentation updated,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+[[${presentation.creatorFirstName}]] [[${presentation.creatorLastName}]] updated a presentation for thesis ""[[${thesis.title}]]""
+</p>
+
+<p th:inline=""text"">
+<strong>Type</strong><br />
+[[${presentation.type}]]
+</p>
+
+<p th:inline=""text"">
+<strong>Location</strong><br />
+[[${presentation.location}]]
+</p >
+
+<p th:inline=""text"">
+<strong>Stream URL</strong><br />
+[[${presentation.streamUrl}]]
+</p>
+
+<p th:inline=""text"">
+<strong>Language</strong><br />
+[[${presentation.language}]]
+</p>
+
+<p th:inline=""text"">
+<strong>Scheduled At</strong><br />
+[[${presentation.scheduledAt}]]
+</p>
+
+<p th:inline=""text"">
+    Full Details: <a target=""_blank"" rel=""noopener noreferrer nofollow"" th:href=""${thesisUrl}"" th:text=""${thesisUrl}""></a>
+</p>
+
+<hr/>
+<div style=""text-align: center;font-size: 10px"">
+    Manage your notification settings <a th:href=""${config.clientHost + '/settings/notifications'}"">here</a>
+</div>
+<br/><br/>",en,2025-05-07 21:19:10.420087,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:19:10.420087
+39cb847c-dac6-414b-bda4-07de71200b3a,,APPLICATION_REJECTED_TOPIC_OUTDATED,Application was rejected because topic is outdated,Thesis Application Rejection,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+Thank you for your interest in pursuing your thesis on ""[[${application.thesisTitle}]]"" under my supervision.
+</p>
+
+<p th:inline=""text"">
+I wanted to inform you that the topic you applied for is no longer available.
+</p>
+
+<p th:inline=""text"">
+You can explore other topics or suggest a topic yourself in your area of interest.
+</p>
+
+<p>Best regards,<br/>
+The Thesis Coordination Team</p>",en,2025-05-07 21:17:45.170272,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:17:45.170272
+457e1f88-a79f-4437-9028-d0c4e9c43576,3088fb21-7b56-4404-9dd2-d65d30134f73,THESIS_PRESENTATION_INVITATION,Public Presentation Invitation,Thesis Presentation Invitation,"<div style=""text-align: center"" th:inline=""text"">
+<h2>INVITATION</h2>
+<div>As part of their [[${thesis.type}]]'s thesis</div>
+<div><strong>[[${thesis.students}]]</strong></div>
+<div>will give their [[${presentation.type}]] presentation on</div>
+<div><strong>[[${presentation.scheduledAt}]]</strong></div>
+<div th:if=""${presentation.streamUrl != null and !#strings.isEmpty(presentation.streamUrl)}"" th:inline=""text"">
+online at [[${presentation.streamUrl}]]
+</div>
+<div th:if=""${presentation.location != null and !#strings.isEmpty(presentation.location)}"">
+<span th:if=""${presentation.streamUrl != null and !#strings.isEmpty(presentation.streamUrl)}"">and&nbsp;</span>onsite in <strong>[[${presentation.location}]]</strong>
+</div>
+<br/>
+<div>Title:</div>
+<div>[[${thesis.title}]]</div>
+<br/>
+<div>Supervisor: [[${thesis.supervisors}]]</div>
+<div>Advisor(s): [[${thesis.advisors}]]</div>
+<br/>
+<div>
+The presentation will be in [[${presentation.language}]]. Everybody is cordially invited to attend.
+</div>
+</div>
+
+<p>
+<strong>Abstract</strong><br />
+<span th:utext=""${thesis.abstractText}""></span>
+</p>
+
+<p th:inline=""text"">
+Full Details: <a target=""_blank"" rel=""noopener noreferrer nofollow"" th:href=""${presentationUrl}"">[[${presentationUrl}]]</a>
+</p>
+
+<hr/>
+<div style=""text-align: center;font-size: 10px"">
+    Manage your notification settings <a th:href=""${config.clientHost + '/settings/notifications'}"">here</a>
+</div>
+<br/><br/>",en,2025-05-07 21:19:10.420087,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:19:10.420087
+49fd7a18-60d0-4293-8fa9-4eb9e14f9d62,3088fb21-7b56-4404-9dd2-d65d30134f73,THESIS_PRESENTATION_INVITATION_CANCELLED,Public Presentation was deleted,Thesis Presentation Cancelled,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+The [[${thesis.type}]] thesis presentation of
+<strong>[[${thesis.students}]]</strong> scheduled at
+[[${presentation.scheduledAt}]] was cancelled.
+</p>
+
+<hr/>
+<div style=""text-align: center;font-size: 10px"">
+    Manage your notification settings <a th:href=""${config.clientHost + '/settings/notifications'}"">here</a>
+</div>
+<br/><br/>",en,2025-05-07 21:19:10.420087,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:19:10.420087
+b613d207-97f6-4b7b-8e80-e9eedf531e5e,3088fb21-7b56-4404-9dd2-d65d30134f73,THESIS_PRESENTATION_INVITATION_UPDATED,Public Presentation was updated,Thesis Presentation Updated,"<div style=""text-align: center"" th:inline=""text"">
+<h2>INVITATION</h2>
+<div>As part of their [[${thesis.type}]]'s thesis</div>
+<div><strong>[[${thesis.students}]]</strong></div>
+<div>will give their [[${presentation.type}]] presentation on</div>
+<div><strong>[[${presentation.scheduledAt}]]</strong></div>
+<div th:if=""${presentation.streamUrl != null and !#strings.isEmpty(presentation.streamUrl)}"" th:inline=""text"">
+online at [[${presentation.streamUrl}]]
+</div>
+<div th:if=""${presentation.location != null and !#strings.isEmpty(presentation.location)}"">
+<span th:if=""${presentation.streamUrl != null and !#strings.isEmpty(presentation.streamUrl)}"">and&nbsp;</span>onsite in <strong>[[${presentation.location}]]</strong>
+</div>
+<br/>
+<div>Title:</div>
+<div>[[${thesis.title}]]</div>
+<br/>
+<div>Supervisor: [[${thesis.supervisors}]]</div>
+<div>Advisor(s): [[${thesis.advisors}]]</div>
+<br/>
+<div>
+The presentation will be in [[${presentation.language}]]. Everybody is cordially invited to attend.
+</div>
+</div>
+
+<p>
+<strong>Abstract</strong><br />
+<span th:utext=""${thesis.abstractText}""></span>
+</p>
+
+<p th:inline=""text"">
+Full Details: <a target=""_blank"" rel=""noopener noreferrer nofollow"" th:href=""${presentationUrl}"">[[${presentationUrl}]]</a>
+</p>
+
+<hr/>
+<div style=""text-align: center;font-size: 10px"">
+    Manage your notification settings <a th:href=""${config.clientHost + '/settings/notifications'}"">here</a>
+</div>
+<br/><br/>",en,2025-05-07 21:19:10.420087,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:19:10.420087
+bf16ffee-118b-4837-b373-c0e66e8fdb1e,3088fb21-7b56-4404-9dd2-d65d30134f73,THESIS_PROPOSAL_ACCEPTED,Proposal was accepted,Thesis Proposal Accepted,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+[[${proposal.approverFirstName}]] [[${proposal.approverLastName}]] approved the proposal of thesis ""[[${thesis.title}]]"".
+The next step is to start with the project work and with writing the thesis.
+You can see your submission deadline on <a target=""_blank"" rel=""noopener noreferrer nofollow"" th:href=""${thesisUrl}"">[[${thesisUrl}]]</a>.
+</p>
+
+<hr/>
+<div style=""text-align: center;font-size: 10px"">
+    Manage your notification settings <a th:href=""${config.clientHost + '/settings/notifications'}"">here</a>
+</div>
+<br/><br/>",en,2025-05-07 21:19:10.420087,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:19:10.420087
+8a7a0d9c-6484-4756-9c55-3912f60c880e,3088fb21-7b56-4404-9dd2-d65d30134f73,THESIS_PROPOSAL_REJECTED,Changes were requested for proposal,Changes were requested for Proposal,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+[[${reviewingUser.firstName}]] [[${reviewingUser.lastName}]] reviewed your proposal for thesis ""[[${thesis.title}]]"".
+</p>
+
+<p th:inline=""text"">
+The following changes were requested:<br />
+<ul>
+<li th:each=""requestedChange : ${requestedChanges}"" th:text=""${requestedChange}""></li>
+</ul>
+</p>
+
+<p th:inline=""text"">
+    Full Details: <a target=""_blank"" rel=""noopener noreferrer nofollow"" th:href=""${thesisUrl}"" th:text=""${thesisUrl}""></a>
+</p>
+
+<hr/>
+<div style=""text-align: center;font-size: 10px"">
+    Manage your notification settings <a th:href=""${config.clientHost + '/settings/notifications'}"">here</a>
+</div>
+<br/><br/>",en,2025-05-07 21:19:10.420087,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:19:10.420087
+4f182b8f-de86-47a8-a6bb-d173cb8ad6ea,3088fb21-7b56-4404-9dd2-d65d30134f73,THESIS_PROPOSAL_UPLOADED,Student uploaded new proposal,Thesis Proposal Added,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+[[${proposal.creatorFirstName}]] [[${proposal.creatorLastName}]] uploaded a proposal to thesis ""[[${thesis.title}]]"".
+You can find the submitted file in the attachment part of this email.
+</p>
+
+<p th:inline=""text"">
+    Full Details: <a target=""_blank"" rel=""noopener noreferrer nofollow"" th:href=""${thesisUrl}"" th:text=""${thesisUrl}""></a>
+</p>
+
+<hr/>
+<div style=""text-align: center;font-size: 10px"">
+    Manage your notification settings <a th:href=""${config.clientHost + '/settings/notifications'}"">here</a>
+</div>
+<br/><br/>",en,2025-05-07 21:19:10.420087,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:19:10.420087
+517fb991-5732-4d6f-82ca-dd9f3df89746,3088fb21-7b56-4404-9dd2-d65d30134f73,APPLICATION_REJECTED_TOPIC_OUTDATED,Application was rejected because topic is outdated,Thesis Application Rejection,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+Thank you for your interest in pursuing your thesis on ""[[${application.thesisTitle}]]"" under my supervision.
+</p>
+
+<p th:inline=""text"">
+I wanted to inform you that the topic you applied for is no longer available.
+</p>
+
+<p th:inline=""text"">
+You can explore other topics or suggest a topic yourself in your area of interest.
+</p>
+
+<div th:utext=""${config.signature}""></div>",en,2025-05-07 21:19:10.420087,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:19:10.420087
+538e88dc-5496-4105-a810-8b124803f8f5,,APPLICATION_REJECTED_TITLE_NOT_INTERESTING,Application was rejected because the suggested thesis title is not interesting,Thesis Application Rejection,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+Thank you for your interest in pursuing your thesis on ""[[${application.thesisTitle}]]"" under my supervision.
+I have carefully reviewed your proposed thesis.
+However, the suggested topic does not align with the current research interests of my group, and I am unable to supervise your thesis on this basis
+</p>
+<p th:inline=""text"">
+I encourage you to explore other research groups whose research is more closely related to your proposed area of study.
+</p>
+
+<p>Best regards,<br/>
+The Thesis Coordination Team</p>",en,2025-05-07 21:17:45.170272,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:17:45.170272
+5fc95578-b48b-48d2-87e0-f4eeb220ba3f,3088fb21-7b56-4404-9dd2-d65d30134f73,APPLICATION_REJECTED_TITLE_NOT_INTERESTING,Application was rejected because the suggested thesis title is not interesting,Thesis Application Rejection,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+Thank you for your interest in pursuing your thesis on ""[[${application.thesisTitle}]]"" under my supervision.
+I have carefully reviewed your proposed thesis.
+However, the suggested topic does not align with the current research interests of my group, and I am unable to supervise your thesis on this basis
+</p>
+<p th:inline=""text"">
+I encourage you to explore other faculty members whose research is more closely related to your proposed area of study.
+</p>
+
+<div th:utext=""${config.signature}""></div>",en,2025-05-07 21:19:10.420087,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:19:10.420087
+8f07dfc8-3f2e-407b-9e82-9a02b996a376,,APPLICATION_REJECTED,Application was rejected,Thesis Application Rejection,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+Thank you for your interest in pursuing your thesis on ""[[${application.thesisTitle}]]"" under my supervision.
+I have carefully reviewed your application and supporting documents.
+It is with regret that I inform you that I am unable to supervise your thesis.
+The volume of applications received this year was exceptionally high, and I have limited capacity to ensure each student receives the appropriate level of support and guidance.
+</p>
+<p th:inline=""text"">
+I recommend exploring other supervisors or research groups who may align more closely with your qualifications and area of interest.
+</p>
+
+<p>Best regards,<br/>
+The Thesis Coordination Team</p>",en,2025-05-07 21:17:45.170272,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:17:45.170272
+a23641ef-1a8a-4041-a368-ec5d112d6708,3088fb21-7b56-4404-9dd2-d65d30134f73,APPLICATION_REJECTED,Application was rejected,Thesis Application Rejection,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+Thank you for your interest in pursuing your thesis on ""[[${application.thesisTitle}]]"" under my supervision.
+I have carefully reviewed your application and supporting documents.
+It is with regret that I inform you that I am unable to supervise your thesis.
+The volume of applications received this year was exceptionally high, and I have limited capacity to ensure each student receives the appropriate level of support and guidance.
+</p>
+<p th:inline=""text"">
+I recommend reaching out to other faculty members who may align more closely with your qualifications and area of interest.
+</p>
+
+<div th:utext=""${config.signature}""></div>",en,2025-05-07 21:19:10.420087,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:19:10.420087
+a32608a3-a429-4fcd-b449-0776a9d89de3,,APPLICATION_REJECTED_STUDENT_REQUIREMENTS,"Application was rejected because student does not fulfil chair's requirements",Thesis Application Rejection,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+Thank you for your interest in pursuing your thesis on ""[[${application.thesisTitle}]]"" under my supervision.
+I have carefully reviewed your application and supporting documents.
+Unfortunately, I must inform you that you do not currently meet the necessary requirements for thesis supervision under my guidance.
+</p>
+<p th:inline=""text"">
+I recommend exploring other supervisors or research groups who may align more closely with your qualifications and area of interest.
+</p>
+
+<p>Best regards,<br/>
+The Thesis Coordination Team</p>",en,2025-05-07 21:17:45.170272,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:17:45.170272
+a87eb4a9-ff4e-47ec-9457-017c274695cc,,APPLICATION_REJECTED_TOPIC_FILLED,Application was rejected because topic was closed,Thesis Application Rejection,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+Thank you for your interest in pursuing your thesis on ""[[${application.thesisTitle}]]"" under my supervision.
+</p>
+
+<p th:inline=""text"">
+We found a student for the specific topic you applied for.
+</p>
+
+<p th:inline=""text"">
+You can explore other topics or suggest a topic yourself in your area of interest.
+</p>
+
+<p>Best regards,<br/>
+The Thesis Coordination Team</p>",en,2025-05-07 21:17:45.170272,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:17:45.170272
+afa92fad-9f95-4387-9e76-b2b4e174219d,3088fb21-7b56-4404-9dd2-d65d30134f73,APPLICATION_REJECTED_TOPIC_REQUIREMENTS,Application was rejected because topic requirements were not met,Thesis Application Rejection,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+Thank you for your interest in pursuing your thesis on ""[[${application.thesisTitle}]]"" under my supervision.
+After reviewing your application and supporting documents, I regret to inform you that you do not meet the necessary requirements for the chosen thesis topic.
+</p>
+<p th:inline=""text"">
+I recommend considering other thesis topics or reaching out to faculty members whose research focus may better align with your qualifications.
+</p>
+
+<div th:utext=""${config.signature}""></div>",en,2025-05-07 21:19:10.420087,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:19:10.420087
+c3bb1605-c3dc-41f8-84c0-962f584be802,3088fb21-7b56-4404-9dd2-d65d30134f73,APPLICATION_REJECTED_STUDENT_REQUIREMENTS,"Application was rejected because student does not fulfil chair's requirements",Thesis Application Rejection,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+Thank you for your interest in pursuing your thesis on ""[[${application.thesisTitle}]]"" under my supervision.
+I have carefully reviewed your application and supporting documents.
+Unfortunately, I must inform you that you do not currently meet the necessary requirements for thesis supervision under my guidance.
+</p>
+<p th:inline=""text"">
+I recommend reaching out to other faculty members who may align more closely with your qualifications and area of interest.
+</p>
+
+<div th:utext=""${config.signature}""></div>",en,2025-05-07 21:19:10.420087,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:19:10.420087
+b9e89809-efe2-4859-aade-e5493cbadfd9,,APPLICATION_CREATED_CHAIR,All supervisors and advisors get a summary about a new application,New Thesis Application,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">there is a new thesis application by <strong>[[${application.applicantFirstName}]]&nbsp;[[${application.applicantLastName}]]</strong>.</p>
+<p th:inline=""text"">We received the following thesis application details:</p>
+
+<hr/>
+
+<p th:inline=""text"">
+<strong>Name:</strong><br/>
+[[${application.applicantFirstName}]]&nbsp;[[${application.applicantLastName}]]
+</p>
+<p th:inline=""text"">
+<strong>Email:</strong><br/>
+[[${application.applicantEmail}]]
+</p>
+<p th:inline=""text"">
+<strong>University ID:</strong><br/>
+[[${application.applicantUniversityId}]]
+</p>
+<p th:inline=""text"">
+<strong>Matriculation Number:</strong><br/>
+[[${application.applicantMatriculationNumber}]]
+</p>
+<p th:inline=""text"">
+<strong>Study program:</strong><br/>
+[[${application.studyProgram}]]&nbsp;
+[[${application.studyDegree}]]&nbsp;
+(Semester [[${application.semester}]])
+</p>
+<p th:inline=""text"">
+<strong>Thesis Title:</strong><br/>
+[[${application.thesisTitle}]]
+</p>
+<p th:inline=""text"">
+<strong>Desired Thesis Start Date:</strong><br/>
+[[${application.desiredStartDate}]]
+</p>
+<p>
+<strong>Motivation:</strong><br/>
+<span th:utext=""${application.motivation}""></span>
+</p>
+<br/>
+<p>
+<strong>Special Skills:</strong><br/>
+<span th:utext=""${application.specialSkills}""></span>
+</p>
+<br/>
+<p>
+<strong>Interests:</strong><br/>
+<span th:utext=""${application.interests}""></span>
+</p>
+<br/>
+<p>
+<strong>Projects:</strong><br/>
+<span th:utext=""${application.projects}""></span>
+</p>
+<br/>
+
+<p th:inline=""text"">
+Full Details: <a target=""_blank"" rel=""noopener noreferrer nofollow"" th:href=""${applicationUrl}"">[[${applicationUrl}]]</a>
+</p>
+
+<p th:inline=""text""><strong>You can find the submitted files in the attachment part of this email.</strong></p>
+
+<hr/>
+<div style=""text-align: center;font-size: 10px"">
+    Manage your notification settings <a th:href=""${config.clientHost + '/settings/notifications'}"">here</a>
+</div>
+<br/><br/>",en,2025-05-07 21:17:45.170272,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:17:45.170272
+13a40cf2-91db-449b-a979-c6be8b0f333a,3088fb21-7b56-4404-9dd2-d65d30134f73,APPLICATION_ACCEPTED_NO_ADVISOR,Application was accepted with same advisor and supervisor,Thesis Application Acceptance,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+I am delighted to inform you that I would like to take the next steps in
+supervising your thesis on ""[[${application.thesisTitle}]]"". This includes writing a proposal and familiarizing yourself with the development environment
+independently. These steps are crucial to ensure that you are well-prepared to start the project.
+</p>
+<p th:inline=""text"">
+Please coordinate the next steps with me using the following link:
+<a target=""_blank"" rel=""noopener noreferrer nofollow"" th:href=""${config.workspaceUrl}"">[[${config.workspaceUrl}]]</a>
+</p>
+<p th:inline=""text"">
+I would like to emphasize that in undertaking this thesis, you assume the role of project manager for
+your thesis project. This role requires <b>proactive communication</b>, high dedication, and a strong commitment to the
+successful completion of the project. I have full confidence in your ability to rise to this challenge and produce
+exemplary work.
+</p>
+<p th:inline=""text"">
+I am excited about the opportunity to work with you and am eager to see the contributions you will make to our field.
+Please reach out if you have any questions or need further clarification on any aspect of the
+project.
+</p>
+
+<p th:inline=""text"">
+You can view your thesis details and tasks on: <a target=""_blank"" rel=""noopener noreferrer nofollow"" th:href=""${thesisUrl}"">[[${thesisUrl}]]</a>
+</p>
+
+<div th:utext=""${config.signature}""></div>",en,2025-05-07 21:19:10.420087,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:19:10.420087
+4b2e057a-3352-48c1-a9aa-2ff639cfbec4,3088fb21-7b56-4404-9dd2-d65d30134f73,APPLICATION_ACCEPTED,Application was accepted with different advisor and supervisor,Thesis Application Acceptance,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+  I am delighted to inform you that I would like to take the next steps in
+  supervising your thesis on ""[[${application.thesisTitle}]]"". This includes writing a proposal and familiarizing yourself with the development environment
+  independently. These steps are crucial to ensure that you are well-prepared to start the project.
+</p>
+
+<p th:inline=""text"">
+  [[${advisor.firstName}]]&nbsp;[[${advisor.lastName}]] would be your advisor. Please coordinate the
+  next steps with [[${advisor.firstName}]] [[${advisor.lastName}]] using the following link:
+  <a target=""_blank"" rel=""noopener noreferrer nofollow"" th:href=""${config.workspaceUrl}"">[[${config.workspaceUrl}]]</a>
+</p>
+
+<p th:inline=""text"">
+  I would like to emphasize that in undertaking this thesis, you assume the role of project manager for
+  your thesis project. This role requires <b>proactive communication</b>, high dedication, and a strong commitment to the
+  successful completion of the project. I have full confidence in your ability to rise to this challenge and produce
+  exemplary work.
+</p>
+
+<p th:inline=""text"">
+  I am excited about the opportunity to work with you and am eager to see the contributions you
+  will make to our field. Please reach out if you have any questions or need further clarification on any
+  aspect of the project.
+</p>
+
+<p th:inline=""text"">
+  You can view your thesis details and tasks on: <a target=""_blank"" rel=""noopener noreferrer nofollow"" th:href=""${thesisUrl}"">[[${thesisUrl}]]</a>
+</p>
+
+<div th:utext=""${config.signature}""></div>
+",en,2025-05-07 21:19:10.420087,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:19:10.420087
+6d0add16-2e7e-4a47-98ad-40a07749f419,,APPLICATION_ACCEPTED,Application was accepted with different advisor and supervisor,Thesis Application Acceptance,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+  I am delighted to inform you that I would like to take the next steps in
+  supervising your thesis on ""[[${application.thesisTitle}]]"". This includes writing a proposal and familiarizing yourself with the necessary resources and thesis guidelines
+  independently. These steps are crucial to ensure that you are well-prepared to start the thesis.
+</p>
+
+<p th:inline=""text"">
+  [[${advisor.firstName}]]&nbsp;[[${advisor.lastName}]] would be your advisor. Please coordinate the
+  next steps with [[${advisor.firstName}]] [[${advisor.lastName}]] via email.
+</p>
+
+<p th:inline=""text"">
+  I would like to emphasize that you are taking personal responsibility for
+  your thesis project. This requires <b>proactive communication</b>, high dedication, and a strong commitment to the
+  successful completion of the thesis. I have full confidence in your ability to rise to this challenge and produce
+  exemplary work.
+</p>
+
+<p th:inline=""text"">
+  I am excited about the opportunity to work with you and am eager to see the contributions you
+  will make to our field. Please reach out if you have any questions or need further clarification on any
+  aspect of the thesis.
+</p>
+
+<p th:inline=""text"">
+  You can view your thesis details and tasks on: <a target=""_blank"" rel=""noopener noreferrer nofollow"" th:href=""${thesisUrl}"">[[${thesisUrl}]]</a>
+</p>
+
+<p>Best regards,<br/>
+The Thesis Coordination Team</p>
+",en,2025-05-07 21:17:45.170272,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:17:45.170272
+f75e32de-7281-469a-be5a-ce8ea7e4cb5d,,APPLICATION_REJECTED_TOPIC_REQUIREMENTS,Application was rejected because topic requirements were not met,Thesis Application Rejection,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+Thank you for your interest in pursuing your thesis on ""[[${application.thesisTitle}]]"" under my supervision.
+After reviewing your application and supporting documents, I regret to inform you that you do not meet the necessary requirements for the chosen thesis topic.
+</p>
+<p th:inline=""text"">
+I recommend considering other thesis topics or reaching out to other research groups whose research focus may better align with your qualifications.
+</p>
+
+<p>Best regards,<br/>
+The Thesis Coordination Team</p>",en,2025-05-07 21:17:45.170272,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:17:45.170272
+ea23856e-4d49-45a3-9a85-8ef813f8a9e8,,APPLICATION_CREATED_STUDENT,Confirmation email to the applying student when application was submitted,Thesis Application Confirmation,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">With this email, we confirm your thesis application.</p>
+<p th:inline=""text"">We received the following details:</p>
+
+<hr>
+
+<p th:inline=""text"">
+<strong>Name:</strong><br/>
+[[${application.applicantFirstName}]]&nbsp;[[${application.applicantLastName}]]
+</p>
+<p th:inline=""text"">
+<strong>Email:</strong><br/>
+[[${application.applicantEmail}]]
+</p>
+<p th:inline=""text"">
+<strong>University ID:</strong><br/>
+[[${application.applicantUniversityId}]]
+</p>
+<p th:inline=""text"">
+<strong>Matriculation Number:</strong><br/>
+[[${application.applicantMatriculationNumber}]]
+</p>
+<p th:inline=""text"">
+<strong>Study program:</strong><br/>
+[[${application.studyProgram}]]&nbsp;
+[[${application.studyDegree}]]&nbsp;
+(Semester [[${application.semester}]])
+</p>
+<p th:inline=""text"">
+<strong>Thesis Title:</strong><br/>
+[[${application.thesisTitle}]]
+</p>
+<p th:inline=""text"">
+<strong>Desired Thesis Start Date:</strong><br/>
+[[${application.desiredStartDate}]]
+</p>
+<p>
+<strong>Motivation:</strong><br/>
+<span th:utext=""${application.motivation}""></span>
+</p>
+<br/>
+<p>
+<strong>Special Skills:</strong><br/>
+<span th:utext=""${application.specialSkills}""></span>
+</p>
+<br/>
+<p>
+<strong>Interests:</strong><br/>
+<span th:utext=""${application.interests}""></span>
+</p>
+<br/>
+<p>
+<strong>Projects:</strong><br/>
+<span th:utext=""${application.projects}""></span>
+</p>
+<br/>
+
+<p th:inline=""text"">
+We are currently experiencing a high volume of thesis applications, and each one requires careful review.
+While we aim to respond as quickly as possible, the combination of the application volume and the intensive teaching
+and research commitments of our group may result in a response time of up to four weeks.
+We appreciate your patience and understanding during this period.
+</p>
+
+<p th:inline=""text""><strong>You can find the submitted files in the attachment part of this email.</strong></p>",en,2025-05-07 21:17:45.170272,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:17:45.170272
+505f80aa-9d08-46e5-b82d-47cd9c6d8634,,APPLICATION_ACCEPTED_NO_ADVISOR,Application was accepted with same advisor and supervisor,Thesis Application Acceptance,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+I am delighted to inform you that I would like to take the next steps in
+supervising your thesis on ""[[${application.thesisTitle}]]"". This includes writing a proposal and familiarizing yourself with the necessary resources and thesis guidelines
+independently. These steps are crucial to ensure that you are well-prepared to start the thesis.
+</p>
+<p th:inline=""text"">
+Please coordinate the next steps with me via email.
+</p>
+<p th:inline=""text"">
+I would like to emphasize that you are taking personal responsibility for
+your thesis project. This requires <b>proactive communication</b>, high dedication, and a strong commitment to the
+successful completion of the thesis. I have full confidence in your ability to rise to this challenge and produce
+exemplary work.
+</p>
+<p th:inline=""text"">
+I am excited about the opportunity to work with you and am eager to see the contributions you will make to our field.
+Please reach out if you have any questions or need further clarification on any aspect of the
+thesis.
+</p>
+
+<p th:inline=""text"">
+You can view your thesis details and tasks on: <a target=""_blank"" rel=""noopener noreferrer nofollow"" th:href=""${thesisUrl}"">[[${thesisUrl}]]</a>
+</p>
+
+<p>Best regards,<br/>
+The Thesis Coordination Team</p>",en,2025-05-07 21:17:45.170272,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:17:45.170272
+cd08f027-e2b1-4c1b-905a-d60897d56f33,,APPLICATION_REMINDER,Weekly email if there are more than 10 unreviewed applications,Unreviewed Thesis Applications,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+There are currently <strong>[[${unreviewedApplications}]]</strong> unreviewed thesis applications.
+</p>
+
+<p th:inline=""text"">
+Review Applications: <a target=""_blank"" rel=""noopener noreferrer nofollow"" th:href=""${reviewApplicationsLink}"">[[${reviewApplicationsLink}]]</a>
+</p>
+
+<hr/>
+<div style=""text-align: center;font-size: 10px"">
+    Manage your notification settings <a th:href=""${config.clientHost + '/settings/notifications'}"">here</a>
+</div>
+<br/><br/>",en,2025-05-07 21:17:45.170272,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:17:45.170272
+90f7bbc0-2a9a-494a-a82c-54f47b065bc4,,THESIS_CLOSED,Thesis was closed before completion,Thesis Closed,"<p th:inline=""text"">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline=""text"">
+[[${deletingUser.firstName}]] [[${deletingUser.lastName}]] closed thesis ""[[${thesis.title}]]"".
+Please contact your advisor or supervisor if you think that this was a mistake.
+</p>
+
+<p th:inline=""text"">
+    Full Details: <a target=""_blank"" rel=""noopener noreferrer nofollow"" th:href=""${thesisUrl}"" th:text=""${thesisUrl}""></a>
+</p>
+
+<hr/>
+<div style=""text-align: center;font-size: 10px"">
+    Manage your notification settings <a th:href=""${config.clientHost + '/settings/notifications'}"">here</a>
+</div>
+<br/><br/>",en,2025-05-07 21:17:45.170272,69fa250e-f4eb-435f-b1fb-2cff8d051e32,2025-05-07 21:17:45.170272
