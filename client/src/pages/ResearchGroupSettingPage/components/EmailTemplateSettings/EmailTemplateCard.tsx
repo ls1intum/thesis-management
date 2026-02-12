@@ -1,23 +1,29 @@
 import { Badge, Card, Text, Stack, Title, Group, Button, Flex } from '@mantine/core'
 import { IEmailTemplate } from '../../../../requests/responses/emailtemplate'
 import { useState } from 'react'
-import EmailTemplateModal from './EmailTemplateModal'
+import EmailTemplatePreviewModal from './EmailTemplatePreviewModal'
 import { EyeIcon, NotePencilIcon } from '@phosphor-icons/react'
+import { useNavigate, useParams } from 'react-router'
 
 interface IEmailTemplatesOverviewProps {
   emailTemplate: {
     default: IEmailTemplate | null
     researchGroupTemplate: IEmailTemplate | null
   }
-  updateTemplate?: (template: IEmailTemplate) => void
 }
 
-const EmailTemplateCard = ({ emailTemplate, updateTemplate }: IEmailTemplatesOverviewProps) => {
-  const [templateModalOpened, setTemplateModalOpened] = useState(false)
+const EmailTemplateCard = ({ emailTemplate }: IEmailTemplatesOverviewProps) => {
+  const [templatePreviewOpened, setTemplatePreviewOpened] = useState(false)
+  const navigate = useNavigate()
+  const { researchGroupId } = useParams<{ researchGroupId: string }>()
+  const activeTemplate = emailTemplate.researchGroupTemplate ?? emailTemplate.default ?? null
 
-  const [editingTemplate, setEditingTemplate] = useState<IEmailTemplate | null>(
-    emailTemplate.researchGroupTemplate ?? emailTemplate.default ?? null,
-  )
+  const navigateToEditPage = () => {
+    if (!researchGroupId || !activeTemplate) return
+    navigate(
+      `/research-groups/${researchGroupId}/email-templates/${activeTemplate.templateCase}/edit`,
+    )
+  }
 
   return (
     <>
@@ -61,7 +67,7 @@ const EmailTemplateCard = ({ emailTemplate, updateTemplate }: IEmailTemplatesOve
                 variant='outline'
                 size='xs'
                 onClick={() => {
-                  setTemplateModalOpened(true)
+                  setTemplatePreviewOpened(true)
                 }}
                 fullWidth={false}
                 leftSection={<EyeIcon size={16} />}
@@ -71,7 +77,7 @@ const EmailTemplateCard = ({ emailTemplate, updateTemplate }: IEmailTemplatesOve
               <Button
                 size='xs'
                 onClick={() => {
-                  setTemplateModalOpened(true)
+                  navigateToEditPage()
                 }}
                 leftSection={<NotePencilIcon size={16} />}
               >
@@ -82,14 +88,11 @@ const EmailTemplateCard = ({ emailTemplate, updateTemplate }: IEmailTemplatesOve
         </Card>
       </Card>
 
-      <EmailTemplateModal
-        opened={templateModalOpened}
-        onClose={() => setTemplateModalOpened(false)}
-        defaultTemplate={emailTemplate.default ?? undefined}
-        researchGroupTemplate={emailTemplate.researchGroupTemplate ?? undefined}
-        editingTemplate={editingTemplate}
-        setEditingTemplate={setEditingTemplate}
-        updateTemplate={updateTemplate}
+      <EmailTemplatePreviewModal
+        opened={templatePreviewOpened}
+        onClose={() => setTemplatePreviewOpened(false)}
+        template={activeTemplate}
+        onEdit={navigateToEditPage}
       />
     </>
   )

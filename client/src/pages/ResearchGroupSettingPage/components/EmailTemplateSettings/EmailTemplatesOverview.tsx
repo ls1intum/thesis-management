@@ -74,31 +74,6 @@ const EmailTemplatesOverview = () => {
     )
   }
 
-  const updateTemplate = (updatedTemplate: IEmailTemplate) => {
-    const category = getEmailTemplateCategory(updatedTemplate.templateCase)
-    const key = updatedTemplate.templateCase
-
-    setEmailTemplates((prev) => {
-      const updated = { ...prev }
-
-      if (!updated[category]) {
-        updated[category] = {}
-      }
-
-      if (!updated[category][key]) {
-        updated[category][key] = { default: null, researchGroupTemplate: null }
-      }
-
-      if (updatedTemplate.researchGroup) {
-        updated[category][key].researchGroupTemplate = updatedTemplate
-      } else {
-        updated[category][key].default = updatedTemplate
-      }
-
-      return updated
-    })
-  }
-
   useEffect(() => {
     if (searchKey.trim() === '') {
       setDisplayEmailTemplates(emailTemplates)
@@ -138,9 +113,6 @@ const EmailTemplatesOverview = () => {
     'APPLICATION_REJECTED_TOPIC_FILLED',
     'APPLICATION_ACCEPTED',
     'APPLICATION_ACCEPTED_NO_ADVISOR',
-    'INTERVIEW_SLOT_BOOKED_CONFORMATION',
-    'INTERVIEW_SLOT_BOOKED_CANCELLATION',
-    'INTERVIEW_INVITATION',
   ]
 
   useEffect(() => {
@@ -201,65 +173,63 @@ const EmailTemplatesOverview = () => {
     <ResearchGroupSettingsCard
       title={'Email Templates'}
       subtle={'Manage email templates for this research group.'}
-      children={
-        <Stack>
-          <Flex
-            justify='space-between'
-            align='stretch'
-            gap='md'
-            direction={{ base: 'column', sm: 'row' }}
-          >
-            <Box style={{ flex: 1 }}>
-              <TextInput
-                w='100%'
-                placeholder='Search Email Template...'
-                leftSection={<MagnifyingGlass size={16} />}
-                value={searchKey}
-                onChange={(x) => {
-                  setSearchKey(x.target.value || '')
-                  const params = new URLSearchParams(searchParams)
+    >
+      <Stack>
+        <Flex
+          justify='space-between'
+          align='stretch'
+          gap='md'
+          direction={{ base: 'column', sm: 'row' }}
+        >
+          <Box style={{ flex: 1 }}>
+            <TextInput
+              w='100%'
+              placeholder='Search Email Template...'
+              leftSection={<MagnifyingGlass size={16} />}
+              value={searchKey}
+              onChange={(x) => {
+                setSearchKey(x.target.value || '')
+                const params = new URLSearchParams(searchParams)
 
-                  if (x.target.value) {
-                    params.set('search', x.target.value)
-                  } else {
-                    params.delete('search')
-                  }
+                if (x.target.value) {
+                  params.set('search', x.target.value)
+                } else {
+                  params.delete('search')
+                }
 
-                  setSearchParams(params, { replace: true })
-                }}
-              />
-            </Box>
-          </Flex>
+                setSearchParams(params, { replace: true })
+              }}
+            />
+          </Box>
+        </Flex>
 
-          {emailTemplates && !loading ? (
-            <Stack>
-              {Object.entries(displayEmailTemplates)
-                .map(([category, templates]) => (
-                  <Stack key={category}>
-                    <Divider
-                      label={<Title order={4}>{category}</Title>}
-                      labelPosition='left'
-                      my='sm'
-                    />
-                    <Stack>
-                      {Object.entries(templates).map(([templateCase, template]) => (
-                        <EmailTemplateCard
-                          key={`${category}-${templateCase}`}
-                          emailTemplate={template}
-                          updateTemplate={updateTemplate}
-                        />
-                      ))}
-                    </Stack>
+        {emailTemplates && !loading ? (
+          <Stack>
+            {Object.entries(displayEmailTemplates)
+              .map(([category, templates]) => (
+                <Stack key={category}>
+                  <Divider
+                    label={<Title order={4}>{category}</Title>}
+                    labelPosition='left'
+                    my='sm'
+                  />
+                  <Stack>
+                    {Object.entries(templates).map(([templateCase, template]) => (
+                      <EmailTemplateCard
+                        key={`${category}-${templateCase}`}
+                        emailTemplate={template}
+                      />
+                    ))}
                   </Stack>
-                ))
-                .flat()}
-            </Stack>
-          ) : (
-            <Loader />
-          )}
-        </Stack>
-      }
-    />
+                </Stack>
+              ))
+              .flat()}
+          </Stack>
+        ) : (
+          <Loader />
+        )}
+      </Stack>
+    </ResearchGroupSettingsCard>
   )
 }
 
