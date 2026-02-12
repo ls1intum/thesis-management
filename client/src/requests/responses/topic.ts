@@ -19,10 +19,10 @@ export interface ITopicOverview {
 }
 
 export interface ITopic extends ITopicOverview {
-  problemStatement: string
-  requirements: string
-  goals: string
-  references: string
+  problemStatement?: string
+  requirements?: string
+  goals?: string
+  references?: string
   closedAt: string | null
   publishedAt: string | null
   updatedAt: string

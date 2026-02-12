@@ -60,8 +60,8 @@ export interface IThesis extends IThesisOverview {
     titles: Record<string, string>
   }
   visibility: string
-  infoText: string
-  abstractText: string
+  infoText?: string
+  abstractText?: string
   applicationId: string | null
   researchGroup: ILightResearchGroup
   students: ILightUser[]
@@ -122,7 +122,7 @@ export interface IPublishedThesis {
   type: string
   startDate: string | null
   endDate: string | null
-  abstractText: string
+  abstractText?: string
   students: ILightUser[]
   advisors: ILightUser[]
   supervisors: ILightUser[]

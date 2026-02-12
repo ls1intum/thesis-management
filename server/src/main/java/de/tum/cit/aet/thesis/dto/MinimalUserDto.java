@@ -5,7 +5,7 @@ import de.tum.cit.aet.thesis.entity.User;
 
 import java.util.UUID;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record MinimalUserDto(UUID userId, String firstName, String lastName, String avatar) {
 	public static MinimalUserDto fromUserEntity(User user) {
 		if (user == null) {
