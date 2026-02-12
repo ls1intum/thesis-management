@@ -13,7 +13,7 @@ export interface ILightUser extends IMinimalUser {
   studyProgram: string | null
   customData: Record<string, string> | null
   joinedAt: string
-  groups: string[]
+  groups?: string[]
 }
 
 export interface IUser extends ILightUser {

@@ -79,11 +79,12 @@ const ThesisWritingSection = () => {
     },
   }
 
-  const thesisFile = thesis.files.find((file) => file.type === 'THESIS')
+  const thesisFiles = thesis.files ?? []
+  const thesisFile = thesisFiles.find((file) => file.type === 'THESIS')
   const customFiles = Object.fromEntries(
     Object.keys(GLOBAL_CONFIG.thesis_files).map((type) => [
       type,
-      thesis.files.find((file) => file.type === type),
+      thesisFiles.find((file) => file.type === type),
     ]),
   )
   const requiredFilesUploaded =
@@ -237,20 +238,20 @@ const ThesisWritingSection = () => {
                   </Grid>
                   {access.student && (
                     <FileHistoryTable
-                      data={thesis.files
+                      data={thesisFiles
                         .filter((file) => adjustedThesisFiles[file.type])
                         .map((file, index) => ({
                           name:
                             adjustedThesisFiles[file.type].label +
                             ' v' +
-                            thesis.files.filter((a, b) => b >= index && a.type === file.type)
+                            thesisFiles.filter((a, b) => b >= index && a.type === file.type)
                               .length,
                           url: `/v2/theses/${thesis.thesisId}/files/${file.fileId}`,
                           filename: formatThesisFilename(
                             thesis,
                             adjustedThesisFiles[file.type].label,
                             file.filename,
-                            thesis.files.filter((a, b) => b >= index && a.type === file.type)
+                            thesisFiles.filter((a, b) => b >= index && a.type === file.type)
                               .length,
                           ),
                           type: adjustedThesisFiles[file.type].accept,

@@ -21,7 +21,7 @@ export function hasStudentAccess(
 
   return !!(
     users.some((row) => row.userId === user?.userId) ||
-    user?.groups.some((name) => name === 'admin')
+    user?.groups?.some((name) => name === 'admin')
   )
 }
 
@@ -37,7 +37,7 @@ export function hasAdvisorAccess(
 
   return !!(
     users.some((row) => row.userId === user?.userId) ||
-    user?.groups.some((name) => name === 'admin')
+    user?.groups?.some((name) => name === 'admin')
   )
 }
 
@@ -47,6 +47,6 @@ export function hasSupervisorAccess(
 ) {
   return !!(
     thesis?.supervisors.some((row) => row.userId === user?.userId) ||
-    user?.groups.some((name) => name === 'admin')
+    user?.groups?.some((name) => name === 'admin')
   )
 }

@@ -74,9 +74,9 @@ const ThesisData = (props: IThesisDataProps) => {
         )}
         {additionalInformation.includes('keywords') &&
           isThesis(thesis) &&
-          thesis.keywords.length > 0 && (
+          (thesis.keywords ?? []).length > 0 && (
             <Grid.Col span={{ md: 4 }}>
-              <LabeledItem label='Keywords' value={thesis.keywords.join(', ')} />
+              <LabeledItem label='Keywords' value={(thesis.keywords ?? []).join(', ')} />
             </Grid.Col>
           )}
         {additionalInformation.includes('state') && isThesis(thesis) && (

@@ -271,12 +271,12 @@ const PresentationOverviewPage = () => {
                               presentation={p}
                               thesis={p.thesis}
                               hasEditAccess={
-                                user?.groups.includes('admin') ||
+                                user?.groups?.includes('admin') ||
                                 user?.researchGroupId === p.thesis.researchGroup.id ||
                                 p.thesis.students.some((student) => student.userId === user?.userId)
                               }
                               hasAcceptAccess={
-                                user?.groups.includes('admin') ||
+                                user?.groups?.includes('admin') ||
                                 user?.researchGroupId === p.thesis.researchGroup.id
                               }
                               thesisName={p.thesis.title}
@@ -322,14 +322,14 @@ const PresentationOverviewPage = () => {
                                 presentation={p}
                                 thesis={p.thesis}
                                 hasEditAccess={
-                                  user?.groups.includes('admin') ||
+                                  user?.groups?.includes('admin') ||
                                   user?.researchGroupId === p.thesis.researchGroup.id ||
                                   p.thesis.students.some(
                                     (student) => student.userId === user?.userId,
                                   )
                                 }
                                 hasAcceptAccess={
-                                  user?.groups.includes('admin') ||
+                                  user?.groups?.includes('admin') ||
                                   user?.researchGroupId === p.thesis.researchGroup.id
                                 }
                                 thesisName={p.thesis.title}

@@ -22,14 +22,16 @@ const DownloadAllFilesButton = () => {
       filename: string
     }> = []
 
-    if (thesis.proposals.length > 0) {
+    const proposals = thesis.proposals ?? []
+    if (proposals.length > 0) {
       data.push({
-        url: `/v2/theses/${thesis.thesisId}/proposal/${thesis.proposals[0].proposalId}`,
-        filename: formatThesisFilename(thesis, 'Proposal', thesis.proposals[0].filename, 0),
+        url: `/v2/theses/${thesis.thesisId}/proposal/${proposals[0].proposalId}`,
+        filename: formatThesisFilename(thesis, 'Proposal', proposals[0].filename, 0),
       })
     }
 
-    const thesisFile = thesis.files.find((file) => file.type === 'THESIS')
+    const files = thesis.files ?? []
+    const thesisFile = files.find((file) => file.type === 'THESIS')
 
     if (thesisFile) {
       data.push({
@@ -39,7 +41,7 @@ const DownloadAllFilesButton = () => {
     }
 
     for (const [key, value] of Object.entries(GLOBAL_CONFIG.thesis_files)) {
-      const file = thesis.files.find((row) => row.type === key)
+      const file = files.find((row) => row.type === key)
 
       if (file) {
         data.push({

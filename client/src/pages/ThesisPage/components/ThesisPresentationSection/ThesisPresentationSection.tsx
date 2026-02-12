@@ -33,7 +33,7 @@ const ThesisPresentationSection = () => {
               </Button>
             )}
 
-            {thesis.presentations.map((presentation, index) => (
+            {(thesis.presentations ?? []).map((presentation, index) => (
               <PresentationCard
                 key={`presentation-${index}`}
                 presentation={presentation}

@@ -110,7 +110,7 @@ const ThesesGanttChart = () => {
           ),
           color: ThesisStateColor[state.state],
         })),
-        events: thesis.presentations.map((presentation) => ({
+        events: (thesis.presentations ?? []).map((presentation) => ({
           id: presentation.presentationId,
           icon: <Presentation />,
           time: new Date(presentation.scheduledAt),
@@ -157,7 +157,7 @@ const ThesesGanttChart = () => {
             return null
           }
 
-          const presentation = thesis.presentations.find((row) => row.presentationId === event?.id)
+          const presentation = (thesis.presentations ?? []).find((row) => row.presentationId === event?.id)
 
           return (
             <Stack gap='md'>

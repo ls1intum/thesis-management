@@ -50,11 +50,10 @@ export interface IThesisOverview {
     startedAt: string
     endedAt: string
   }>
-  presentations: IThesisPresentationOverview[]
+  presentations?: IThesisPresentationOverview[]
 }
 
 export interface IThesis extends IThesisOverview {
-  keywords: string[]
   language: string
   metadata: {
     credits: Record<string, number>
@@ -68,7 +67,7 @@ export interface IThesis extends IThesisOverview {
   students: ILightUser[]
   advisors: ILightUser[]
   supervisors: ILightUser[]
-  files: Array<{
+  files?: Array<{
     fileId: string
     type: string
     filename: string
@@ -84,7 +83,7 @@ export interface IThesis extends IThesisOverview {
     createdAt: string
     createdBy: ILightUser
   }
-  proposals: Array<{
+  proposals?: Array<{
     proposalId: string
     filename: string
     createdAt: string
@@ -92,7 +91,7 @@ export interface IThesis extends IThesisOverview {
     approvedAt: string | null
     approvedBy: ILightUser | null
   }>
-  feedback: Array<{
+  feedback?: Array<{
     feedbackId: string
     type: string
     feedback: string
@@ -104,7 +103,7 @@ export interface IThesis extends IThesisOverview {
     finalGrade: string
     feedback: string
   }
-  presentations: IThesisPresentation[]
+  presentations?: IThesisPresentation[]
 }
 
 export interface IThesisComment {

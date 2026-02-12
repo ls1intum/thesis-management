@@ -77,7 +77,7 @@ export function useThesisAccess(thesis: IThesis | IPublishedThesis | undefined |
 
     if (user && thesis) {
       if (
-        user.groups.includes('admin') ||
+        user.groups?.includes('admin') ||
         thesis.supervisors.some((supervisor) => user.userId === supervisor.userId)
       ) {
         access.supervisor = true
