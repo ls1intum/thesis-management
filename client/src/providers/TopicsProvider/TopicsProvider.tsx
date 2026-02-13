@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react'
+import React, { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react'
 import { doRequest } from '../../requests/request'
 import { showSimpleError } from '../../utils/notification'
 import { ITopicOverview, TopicState } from '../../requests/responses/topic'
@@ -33,7 +33,7 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
 
   const [isLoading, setIsLoading] = useState(false)
 
-  const fetchTopics = async () => {
+  const fetchTopics = () => {
     setIsLoading(true)
 
     return doRequest<PaginationResponse<ITopicOverview>>(
@@ -73,10 +73,18 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
   }
 
   useEffect(() => {
-    fetchTopics()
+    return fetchTopics()
   }, [filters, page, limit])
 
+  const initialFiltersKey = JSON.stringify(initialFilters)
+  const prevInitialFiltersKeyRef = useRef(initialFiltersKey)
+
   useEffect(() => {
+    if (prevInitialFiltersKeyRef.current === initialFiltersKey) {
+      return
+    }
+    prevInitialFiltersKeyRef.current = initialFiltersKey
+
     setFilters((prev) => ({
       ...prev,
       states: states,
@@ -84,7 +92,7 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
       ...initialFilters,
     }))
     setPage(0)
-  }, [initialFilters])
+  }, [initialFiltersKey])
 
   const contextState = useMemo<ITopicsContext>(() => {
     return {

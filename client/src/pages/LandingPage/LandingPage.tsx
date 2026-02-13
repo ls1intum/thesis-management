@@ -7,7 +7,7 @@ import PublishedTheses from './components/PublishedTheses/PublishedTheses'
 import { usePageTitle } from '../../hooks/theme'
 import LandingPageHeader from './components/LandingPageHeader/LandingPageHeader'
 import { ListIcon, SquaresFourIcon } from '@phosphor-icons/react'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useDebouncedValue } from '@mantine/hooks'
 import { GLOBAL_CONFIG } from '../../config/global'
 import TopicCardGrid from './components/TopicCardGrid/TopicCardGrid'
@@ -42,19 +42,35 @@ const LandingPage = () => {
 
   const pageItemLimit = 12
 
-  const createResearchGroupFilter = () => {
+  const researchGroupFilter = useMemo(() => {
     if (researchGroupAbbreviation) {
       const group = researchGroups.find((g) => g.abbreviation === researchGroupAbbreviation)
       if (group) {
         return [group.id]
-      } else if (researchGroupsLoaded) {
+      }
+    }
+    return selectedGroups
+  }, [researchGroupAbbreviation, researchGroups, selectedGroups])
+
+  useEffect(() => {
+    if (researchGroupAbbreviation && researchGroupsLoaded) {
+      const group = researchGroups.find((g) => g.abbreviation === researchGroupAbbreviation)
+      if (!group) {
         showSimpleError(
           `Research group ${researchGroupAbbreviation} not found - showing all topics`,
         )
       }
     }
-    return selectedGroups
-  }
+  }, [researchGroupAbbreviation, researchGroupsLoaded, researchGroups])
+
+  const initialFilters = useMemo(
+    () => ({
+      researchGroupIds: researchGroupFilter,
+      search: debouncedSearch,
+      types: selectedThesisTypes,
+    }),
+    [researchGroupFilter, debouncedSearch, selectedThesisTypes],
+  )
 
   useEffect(() => {
     return doRequest<ILightResearchGroup[]>(
@@ -139,11 +155,7 @@ const LandingPage = () => {
       <TopicsProvider
         limit={pageItemLimit}
         researchSpecific={false}
-        initialFilters={{
-          researchGroupIds: createResearchGroupFilter(),
-          search: debouncedSearch,
-          types: selectedThesisTypes,
-        }}
+        initialFilters={initialFilters}
       >
         <Stack gap='xs' h={'100%'}>
           {topicView === GLOBAL_CONFIG.topic_views_options.OPEN ? (
@@ -186,7 +198,7 @@ const LandingPage = () => {
               search={debouncedSearch}
               representationType={listRepresentation}
               filters={{
-                researchGroupIds: createResearchGroupFilter(),
+                researchGroupIds: researchGroupFilter,
                 types: selectedThesisTypes,
               }}
               limit={pageItemLimit}
