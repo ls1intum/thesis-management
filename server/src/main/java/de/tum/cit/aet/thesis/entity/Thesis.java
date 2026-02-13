@@ -121,7 +121,7 @@ private List<ThesisProposal> proposals = new ArrayList<>();
 @OrderBy("createdAt DESC")
 private List<ThesisAssessment> assessments = new ArrayList<>();
 
-@OneToMany(mappedBy = "thesis", fetch = FetchType.EAGER)
+@OneToMany(mappedBy = "thesis", fetch = FetchType.LAZY)
 @OrderBy("scheduledAt ASC")
 private List<ThesisPresentation> presentations = new ArrayList<>();
 

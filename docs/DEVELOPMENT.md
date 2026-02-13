@@ -136,6 +136,27 @@ private List<ChildEntity> children = new ArrayList<>();
 
 ## Client
 
+### Coding Conventions
+
+#### Handling API Responses
+
+The server uses `@JsonInclude(JsonInclude.Include.NON_EMPTY)` on all DTOs, which means `null` values, empty strings (`""`), and empty collections (`[]`) are omitted from JSON responses. TypeScript interfaces must account for this:
+
+- Mark fields that may be omitted as optional with `?`
+- Always use fallback defaults when accessing optional fields: `?? ''` for strings, `?? []` for arrays
+- Use optional chaining (`?.`) when accessing nested properties on optional fields
+- Never assume an array field will be present — always fall back to `[]`
+
+```typescript
+// Correct: handle potentially missing fields
+const types = topic.thesisTypes ?? []
+const name = user.firstName ?? ''
+const hasAccess = user.groups?.includes('admin') ?? false
+
+// Incorrect: assumes field is always present
+const types = topic.thesisTypes  // may be undefined
+```
+
 #### Preconditions
 * Server running at http://localhost:8080
 * Keycloak realm `thesis-management` is available under http://localhost:8081 (See [Keycloak Setup](#keycloak-setup))

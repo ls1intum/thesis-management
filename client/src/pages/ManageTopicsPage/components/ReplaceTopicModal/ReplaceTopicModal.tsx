@@ -2,6 +2,7 @@ import {
   Button,
   Center,
   Group,
+  Loader,
   Modal,
   MultiSelect,
   Select,
@@ -39,6 +40,7 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
   const fetchedTopic = useTopic(opened ? topicId : undefined)
   const topic = fetchedTopic === false ? undefined : fetchedTopic || undefined
   const fetchError = fetchedTopic === false && !!topicId
+  const isTopicLoading = !!topicId && opened && fetchedTopic === undefined
 
   const { addTopic, updateTopic } = useTopicsContext()
   const [researchGroups, setResearchGroups] = useState<PaginationResponse<ILightResearchGroup>>()
@@ -210,6 +212,10 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
       {fetchError ? (
         <Center py='xl'>
           <Text c='dimmed'>Could not load topic data.</Text>
+        </Center>
+      ) : isTopicLoading ? (
+        <Center py='xl'>
+          <Loader size={32} />
         </Center>
       ) : (
         <form onSubmit={form.onSubmit(() => onSubmit(false))}>
