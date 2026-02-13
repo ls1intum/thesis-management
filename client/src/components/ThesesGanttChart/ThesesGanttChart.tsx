@@ -100,7 +100,7 @@ const ThesesGanttChart = () => {
             {(thesis.keywords ?? []).join(', ')}
           </Text>,
         ],
-        timeline: thesis.states.map((state) => ({
+        timeline: (thesis.states ?? []).map((state) => ({
           id: state.state,
           startDate: getAdjustedStartDate(state.state, new Date(state.startedAt)),
           endDate: getAdjustedEndDate(
@@ -130,7 +130,9 @@ const ThesesGanttChart = () => {
         ...theses.content.reduce<ThesisState[]>(
           (prev, curr) => [
             ...prev,
-            ...curr.states.filter((row) => row.startedAt !== row.endedAt).map((row) => row.state),
+            ...(curr.states ?? [])
+              .filter((row) => row.startedAt !== row.endedAt)
+              .map((row) => row.state),
           ],
           [],
         ),

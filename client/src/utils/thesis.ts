@@ -6,7 +6,7 @@ export function isThesisClosed(thesis: IThesis | IPublishedThesis) {
 }
 
 export function checkMinimumThesisState(thesis: IThesis, state: ThesisState) {
-  return thesis.states.some((s) => s.state === state)
+  return (thesis.states ?? []).some((s) => s.state === state)
 }
 
 export function hasStudentAccess(

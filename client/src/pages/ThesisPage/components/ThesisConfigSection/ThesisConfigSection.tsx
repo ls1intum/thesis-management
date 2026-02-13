@@ -77,7 +77,7 @@ const ThesisConfigSection = () => {
       advisors: thesis.advisors.map((advisor) => advisor.userId),
       supervisors: thesis.supervisors.map((supervisor) => supervisor.userId),
       researchGroupId: thesis.researchGroup?.id ?? '',
-      states: thesis.states.map((state) => ({
+      states: (thesis.states ?? []).map((state) => ({
         state: state.state,
         changedAt: new Date(state.startedAt),
       })),
@@ -134,7 +134,7 @@ const ThesisConfigSection = () => {
       advisors: thesis.advisors.map((advisor) => advisor.userId),
       supervisors: thesis.supervisors.map((supervisor) => supervisor.userId),
       researchGroupId: thesis.researchGroup?.id ?? '',
-      states: thesis.states.map((state) => ({
+      states: (thesis.states ?? []).map((state) => ({
         state: state.state,
         changedAt: new Date(state.startedAt),
       })),

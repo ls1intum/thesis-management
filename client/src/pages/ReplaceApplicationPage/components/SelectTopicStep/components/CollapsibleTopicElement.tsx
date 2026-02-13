@@ -77,7 +77,7 @@ const CollapsibleTopicElement = ({ topic, onApply }: ICollapsibleTopicElementPro
           <Stack>
             <Divider />
             {isTopicOverview ? (
-              fullTopic === undefined ? (
+              !expanded || fullTopic === undefined ? (
                 <Center py='md'>
                   <Loader size='sm' />
                 </Center>
