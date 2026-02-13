@@ -74,8 +74,6 @@ services:
       - CALDAV_USERNAME
       - CALDAV_PASSWORD
       - SCIENTIFIC_WRITING_GUIDE
-      - GIT_COMMIT
-      - GIT_BRANCH
     networks:
       - thesis-management-network
 
