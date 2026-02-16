@@ -14,22 +14,22 @@ import java.util.UUID;
 @Repository
 public interface EmailTemplateRepository extends JpaRepository<EmailTemplate, UUID> {
 
-    @Query(value = """
-            SELECT et.* FROM email_templates et
-            WHERE (:researchGroupId IS NULL OR et.research_group_id = :researchGroupId OR et.research_group_id IS NULL)
-              AND (:searchQuery IS NULL OR et.description ILIKE CONCAT('%', :searchQuery, '%')
-                OR et.subject ILIKE CONCAT('%', :searchQuery, '%')
-                OR et.body_html ILIKE CONCAT('%', :searchQuery, '%'))
-              AND (CAST(:templateCases AS TEXT[]) IS NULL OR et.template_case = ANY(CAST(:templateCases AS TEXT[])))
-              AND (CAST(:languages AS TEXT[]) IS NULL OR et.language = ANY(CAST(:languages AS TEXT[])))
-            """, nativeQuery = true)
-    Page<EmailTemplate> searchEmailTemplate(
-            @Param("researchGroupId") UUID researchGroupId,
-            @Param("templateCases") String[] templateCases,
-            @Param("languages") String[] languages,
-            @Param("searchQuery") String searchQuery,
-            Pageable page
-    );
+	@Query(value = """
+			SELECT et.* FROM email_templates et
+			WHERE (:researchGroupId IS NULL OR et.research_group_id = :researchGroupId OR et.research_group_id IS NULL)
+			AND (:searchQuery IS NULL OR et.description ILIKE CONCAT('%', :searchQuery, '%')
+				OR et.subject ILIKE CONCAT('%', :searchQuery, '%')
+				OR et.body_html ILIKE CONCAT('%', :searchQuery, '%'))
+			AND (CAST(:templateCases AS TEXT[]) IS NULL OR et.template_case = ANY(CAST(:templateCases AS TEXT[])))
+			AND (CAST(:languages AS TEXT[]) IS NULL OR et.language = ANY(CAST(:languages AS TEXT[])))
+			""", nativeQuery = true)
+	Page<EmailTemplate> searchEmailTemplate(
+			@Param("researchGroupId") UUID researchGroupId,
+			@Param("templateCases") String[] templateCases,
+			@Param("languages") String[] languages,
+			@Param("searchQuery") String searchQuery,
+			Pageable page
+	);
 
 	@Query("""
 			SELECT e FROM EmailTemplate e
@@ -44,19 +44,19 @@ public interface EmailTemplateRepository extends JpaRepository<EmailTemplate, UU
 			@Param("language") String language
 	);
 
-    @Query("""
-    SELECT e FROM EmailTemplate e
-    WHERE (e.researchGroup.id = :researchGroupId)
-      AND e.templateCase = :templateCase
+	@Query("""
+	SELECT e FROM EmailTemplate e
+	WHERE (e.researchGroup.id = :researchGroupId)
+	AND e.templateCase = :templateCase
 """)
-    Optional<EmailTemplate> findByResearchGroupAndTemplateCase(
-            @Param("researchGroupId") UUID researchGroupId,
-            @Param("templateCase") String templateCase
-    );
+	Optional<EmailTemplate> findByResearchGroupAndTemplateCase(
+			@Param("researchGroupId") UUID researchGroupId,
+			@Param("templateCase") String templateCase
+	);
 
-    default Optional<EmailTemplate> findTemplateWithFallback(UUID researchGroupId, String templateCase, String language) {
-        Optional<EmailTemplate> specific = findByResearchGroupIdAndTemplateCaseAndLanguage(researchGroupId, templateCase, language);
-        if (specific.isPresent()) return specific;
+	default Optional<EmailTemplate> findTemplateWithFallback(UUID researchGroupId, String templateCase, String language) {
+		Optional<EmailTemplate> specific = findByResearchGroupIdAndTemplateCaseAndLanguage(researchGroupId, templateCase, language);
+		if (specific.isPresent()) return specific;
 
 		return findByResearchGroupIdAndTemplateCaseAndLanguage(null, templateCase, "en");
 	}

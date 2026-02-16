@@ -53,28 +53,28 @@ public class EmailTemplateController {
 	 * @param sortOrder the sort direction
 	 * @return the paginated list of email templates
 	 */
-    @GetMapping
-    @PreAuthorize("hasAnyRole('admin', 'supervisor', 'advisor')")
-    public ResponseEntity<PaginationDto<EmailTemplateDto>> getEmailTemplates(
-            @RequestParam(required = false) String search,
-            @RequestParam(required = false, defaultValue = "") String[] templateCases,
-            @RequestParam(required = false, defaultValue = "") String[] languages,
-            @RequestParam(required = false, defaultValue = "0") Integer page,
-            @RequestParam(required = false, defaultValue = "-1") Integer limit,
-            @RequestParam(required = false, defaultValue = "templateCase") String sortBy,
-            @RequestParam(required = false, defaultValue = "desc") String sortOrder,
-            @RequestParam(required = false) UUID researchGroupId
-    ) {
-        Page<EmailTemplate> emailTemplates = emailTemplateService.getAll(
-                templateCases,
-                languages,
-                search,
-                page,
-                limit,
-                sortBy,
-                sortOrder,
-                researchGroupId
-        );
+	@GetMapping
+	@PreAuthorize("hasAnyRole('admin', 'supervisor', 'advisor')")
+	public ResponseEntity<PaginationDto<EmailTemplateDto>> getEmailTemplates(
+			@RequestParam(required = false) String search,
+			@RequestParam(required = false, defaultValue = "") String[] templateCases,
+			@RequestParam(required = false, defaultValue = "") String[] languages,
+			@RequestParam(required = false, defaultValue = "0") Integer page,
+			@RequestParam(required = false, defaultValue = "-1") Integer limit,
+			@RequestParam(required = false, defaultValue = "templateCase") String sortBy,
+			@RequestParam(required = false, defaultValue = "desc") String sortOrder,
+			@RequestParam(required = false) UUID researchGroupId
+	) {
+		Page<EmailTemplate> emailTemplates = emailTemplateService.getAll(
+				templateCases,
+				languages,
+				search,
+				page,
+				limit,
+				sortBy,
+				sortOrder,
+				researchGroupId
+		);
 
 		return ResponseEntity.ok(PaginationDto.fromSpringPage(
 				emailTemplates.map(EmailTemplateDto::fromEmailTemplateEntity)));
@@ -159,14 +159,14 @@ public class EmailTemplateController {
 	) {
 		emailTemplateService.deleteEmailTemplate(emailTemplateId);
 
-        return ResponseEntity.noContent().build();
-    }
+		return ResponseEntity.noContent().build();
+	}
 
-    @GetMapping("/{emailTemplateId}/variables")
-    @PreAuthorize("hasAnyRole('admin', 'supervisor', 'advisor')")
-    public ResponseEntity<List<MailVariableDto>> getEmailTemplateVariables(
-            @PathVariable("emailTemplateId") UUID emailTemplateId
-    ) {
-        return ResponseEntity.ok(emailTemplateService.getVariablesForTemplate(emailTemplateId));
-    }
+	@GetMapping("/{emailTemplateId}/variables")
+	@PreAuthorize("hasAnyRole('admin', 'supervisor', 'advisor')")
+	public ResponseEntity<List<MailVariableDto>> getEmailTemplateVariables(
+			@PathVariable("emailTemplateId") UUID emailTemplateId
+	) {
+		return ResponseEntity.ok(emailTemplateService.getVariablesForTemplate(emailTemplateId));
+	}
 }

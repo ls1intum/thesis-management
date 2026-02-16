@@ -79,13 +79,13 @@ public class MailingService {
 				"APPLICATION_CREATED_CHAIR",
 				"en");
 
-        MailBuilder researchGroupMailBuilder = prepareApplicationCreatedMailBuilder(application, researchGroupEmailTemplate);
-        researchGroupMailBuilder
-            .sendToChairMembers(application.getResearchGroup().getId())
-            .addNotificationName("new-applications")
-            .fillApplicationPlaceholders(application)
-            .filterChairMembersNewApplicationNotifications(application.getTopic(), "new-applications")
-            .send(javaMailSender, uploadService);
+		MailBuilder researchGroupMailBuilder = prepareApplicationCreatedMailBuilder(application, researchGroupEmailTemplate);
+		researchGroupMailBuilder
+			.sendToChairMembers(application.getResearchGroup().getId())
+			.addNotificationName("new-applications")
+			.fillApplicationPlaceholders(application)
+			.filterChairMembersNewApplicationNotifications(application.getTopic(), "new-applications")
+			.send(javaMailSender, uploadService);
 
 		sendNotificationCopy(application.getResearchGroup(), prepareApplicationCreatedMailBuilder(application,researchGroupEmailTemplate));
 
