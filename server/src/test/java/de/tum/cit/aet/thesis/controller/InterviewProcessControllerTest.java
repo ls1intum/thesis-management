@@ -7,12 +7,12 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import de.tum.cit.aet.thesis.constants.ApplicationState;
 import de.tum.cit.aet.thesis.controller.payload.AddIntervieweesPayload;
 import de.tum.cit.aet.thesis.controller.payload.BookInterviewSlotPayload;
 import de.tum.cit.aet.thesis.controller.payload.CreateInterviewProcessPayload;
 import de.tum.cit.aet.thesis.controller.payload.InviteIntervieweesPayload;
 import de.tum.cit.aet.thesis.controller.payload.UpdateIntervieweeAssessmentPayload;
-import de.tum.cit.aet.thesis.constants.ApplicationState;
 import de.tum.cit.aet.thesis.dto.InterviewProcessDto;
 import de.tum.cit.aet.thesis.dto.PaginationDto;
 import de.tum.cit.aet.thesis.dto.UpcomingInterviewDto;

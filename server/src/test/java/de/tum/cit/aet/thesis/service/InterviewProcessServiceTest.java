@@ -7,11 +7,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.lenient;
 
 import de.tum.cit.aet.thesis.constants.ApplicationState;
 import de.tum.cit.aet.thesis.dto.InterviewSlotDto;
@@ -27,7 +27,6 @@ import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.repository.InterviewProcessRepository;
 import de.tum.cit.aet.thesis.repository.IntervieweeRepository;
 import de.tum.cit.aet.thesis.security.CurrentUserProvider;
-import jakarta.mail.internet.InternetAddress;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,9 +39,11 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import jakarta.mail.internet.InternetAddress;
+
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
