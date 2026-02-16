@@ -2,7 +2,7 @@ import { DataTable, DataTableColumn } from 'mantine-datatable'
 import { formatDate } from '../../utils/format'
 import { useTopicsContext } from '../../providers/TopicsProvider/hooks'
 import { ITopic, TopicState } from '../../requests/responses/topic'
-import { useNavigate } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { Badge, Center, Stack, Text } from '@mantine/core'
 import AvatarUserList from '../AvatarUserList/AvatarUserList'
 import ThesisTypeBadge from '../../pages/LandingPage/components/ThesisTypBadge/ThesisTypBadge'
@@ -65,6 +65,11 @@ const TopicsTable = (props: ITopicsTableProps) => {
       accessor: 'title',
       title: 'Title',
       cellsStyle: () => ({ minWidth: 200 }),
+      render: (record) => (
+        <Link to={`/topics/${record.topicId}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+          {record.title}
+        </Link>
+      ),
     },
     types: {
       accessor: 'thesisTypes',
