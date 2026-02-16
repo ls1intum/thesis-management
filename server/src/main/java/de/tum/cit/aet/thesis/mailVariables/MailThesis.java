@@ -18,6 +18,14 @@ public record MailThesis(
         String finalFeedback
 ) {
     public static MailThesis fromThesis(Thesis thesis) {
+        return fromThesis(thesis, false);
+    }
+
+    public static MailThesis fromThesisWithGrade(Thesis thesis) {
+        return fromThesis(thesis, true);
+    }
+
+    private static MailThesis fromThesis(Thesis thesis, boolean includeFinalGrade) {
         if (thesis == null) {
             return new MailThesis("", "", "", "", "", "", "", "");
         }
@@ -29,8 +37,8 @@ public record MailThesis(
                 valueOrEmpty(formatUsers(thesis.getSupervisors())),
                 valueOrEmpty(formatUsers(thesis.getAdvisors())),
                 valueOrEmpty(thesis.getAbstractField()),
-                valueOrEmpty(thesis.getFinalGrade()),
-                valueOrEmpty(thesis.getFinalFeedback())
+                includeFinalGrade ? valueOrEmpty(thesis.getFinalGrade()) : "",
+                includeFinalGrade ? valueOrEmpty(thesis.getFinalFeedback()) : ""
         );
     }
 
@@ -42,9 +50,14 @@ public record MailThesis(
                 new MailVariableDto("Thesis Supervisor(s)", "[[${thesis.supervisors}]]", "Maria Musterfrau", "Thesis"),
                 new MailVariableDto("Thesis Advisor(s)", "[[${thesis.advisors}]]", "Alex Example", "Thesis"),
                 new MailVariableDto("Thesis Abstract", "[[${thesis.abstractText}]]", "Abstract text", "Thesis"),
-                new MailVariableDto("Thesis Final Grade", "[[${thesis.finalGrade}]]", "1.3", "Thesis"),
-                new MailVariableDto("Thesis Final Feedback", "[[${thesis.finalFeedback}]]", "Great work", "Thesis"),
                 new MailVariableDto("Thesis URL", "[[${thesisUrl}]]", "https://thesis-management.com/theses/123", "Thesis")
+        );
+    }
+
+    public static List<MailVariableDto> gradeTemplateVariables() {
+        return List.of(
+                new MailVariableDto("Thesis Final Grade", "[[${thesis.finalGrade}]]", "1.3", "Thesis"),
+                new MailVariableDto("Thesis Final Feedback", "[[${thesis.finalFeedback}]]", "Great work", "Thesis")
         );
     }
 

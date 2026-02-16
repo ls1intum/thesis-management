@@ -17,7 +17,7 @@ public class MailVariablesBuilder {
                 mailVariables.addAll(userTemplateVariables(templateCase));
             }
             case "APPLICATION_REJECTED_TOPIC_REQUIREMENTS", "APPLICATION_REJECTED_TOPIC_OUTDATED", "APPLICATION_REJECTED_TITLE_NOT_INTERESTING", "APPLICATION_REJECTED", "APPLICATION_REJECTED_TOPIC_FILLED", "APPLICATION_REJECTED_STUDENT_REQUIREMENTS", "APPLICATION_CREATED_STUDENT", "APPLICATION_CREATED_CHAIR" ->
-                    mailVariables.addAll(MailApplication.templateVariables());
+                mailVariables.addAll(MailApplication.templateVariables());
             case "THESIS_CREATED", "THESIS_CLOSED" -> {
                 mailVariables.addAll(MailThesis.templateVariables());
                 mailVariables.addAll(userTemplateVariables(templateCase));
@@ -39,7 +39,11 @@ public class MailVariablesBuilder {
                 mailVariables.addAll(MailThesis.templateVariables());
                 mailVariables.addAll(userTemplateVariables(templateCase));
             }
-            case "THESIS_FINAL_SUBMISSION", "THESIS_FINAL_GRADE" -> mailVariables.addAll(MailThesis.templateVariables());
+            case "THESIS_FINAL_SUBMISSION" -> mailVariables.addAll(MailThesis.templateVariables());
+            case "THESIS_FINAL_GRADE" -> {
+                mailVariables.addAll(MailThesis.templateVariables());
+                mailVariables.addAll(MailThesis.gradeTemplateVariables());
+            }
             case "THESIS_ASSESSMENT_ADDED" -> {
                 mailVariables.addAll(MailThesisAssessment.templateVariables());
                 mailVariables.addAll(MailThesis.templateVariables());

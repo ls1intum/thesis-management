@@ -288,6 +288,13 @@ public class MailBuilder {
         return this;
     }
 
+    public MailBuilder fillThesisGradePlaceholders(Thesis thesis) {
+        fillPlaceholder("thesis", MailThesis.fromThesisWithGrade(thesis));
+        fillPlaceholder("thesisUrl", config.getClientHost() + "/theses/" + thesis.getId());
+
+        return this;
+    }
+
     public MailBuilder fillThesisCommentPlaceholders(ThesisComment comment) {
         fillThesisPlaceholders(comment.getThesis());
         fillPlaceholder("comment", MailThesisComment.fromComment(comment));
