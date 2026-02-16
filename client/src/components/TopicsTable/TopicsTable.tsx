@@ -3,7 +3,7 @@ import { formatDate } from '../../utils/format'
 import { useTopicsContext } from '../../providers/TopicsProvider/hooks'
 import { ITopic, TopicState } from '../../requests/responses/topic'
 import { Link, useNavigate } from 'react-router'
-import { Badge, Center, Stack, Text } from '@mantine/core'
+import { Badge, Box, Center, Stack, Text } from '@mantine/core'
 import AvatarUserList from '../AvatarUserList/AvatarUserList'
 import ThesisTypeBadge from '../../pages/LandingPage/components/ThesisTypBadge/ThesisTypBadge'
 
@@ -66,9 +66,13 @@ const TopicsTable = (props: ITopicsTableProps) => {
       title: 'Title',
       cellsStyle: () => ({ minWidth: 200 }),
       render: (record) => (
-        <Link to={`/topics/${record.topicId}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-          {record.title}
-        </Link>
+        <Box
+          component={Link}
+          to={`/topics/${record.topicId}`}
+          style={{ textDecoration: 'none', color: 'inherit' }}
+        >
+          <Box w={'100%'}>{record.title}</Box>
+        </Box>
       ),
     },
     types: {

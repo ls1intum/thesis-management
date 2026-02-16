@@ -1,4 +1,4 @@
-import { Card, Flex, Text, Group, Stack, Button, Tooltip, Anchor } from '@mantine/core'
+import { Card, Flex, Text, Group, Stack, Button, Tooltip, Anchor, Box } from '@mantine/core'
 import { ITopic } from '../../../../../requests/responses/topic'
 import { useHover, useMediaQuery } from '@mantine/hooks'
 import { DownloadSimple, Users } from '@phosphor-icons/react'
@@ -51,66 +51,70 @@ const TopicCard = ({ topic, setOpenTopic }: ITopicCardProps) => {
       style={{ cursor: 'pointer' }}
       ref={ref}
       onClick={() => {
-        if (!isPublished) {
-          navigate(`/topics/${topicId}`)
-        } else if (setOpenTopic) {
+        if (isPublished && setOpenTopic) {
           setOpenTopic(topic as IPublishedThesis)
         }
       }}
     >
-      <Card.Section withBorder inheritPadding p='1rem'>
-        <Stack gap={'0.25rem'}>
-          <Flex
-            justify={'space-between'}
-            align={'center'}
-            gap={5}
-            style={{
-              minHeight: '3.5rem',
-            }}
-            pb={'0.25rem'}
-          >
-            <Flex wrap='wrap' gap={5}>
-              {thesisTypes?.length ? (
-                thesisTypes.map((type) => <ThesisTypeBadge type={type}></ThesisTypeBadge>)
-              ) : (
-                <ThesisTypeBadge type='Any' key={'any'} />
-              )}
-            </Flex>
-          </Flex>
-          <Tooltip openDelay={500} label={topic.title} withArrow>
+      <Box
+        component={isPublished ? undefined : Link}
+        to={isPublished ? '' : `/topics/${topicId}`}
+        style={{ textDecoration: 'none', color: 'inherit' }}
+      >
+        <Card.Section withBorder inheritPadding p='1rem'>
+          <Stack gap={'0.25rem'}>
             <Flex
+              justify={'space-between'}
+              align={'center'}
+              gap={5}
               style={{
-                minHeight: largerThanXs ? '4rem' : undefined,
+                minHeight: '3.5rem',
               }}
-              align={'flex-start'}
+              pb={'0.25rem'}
             >
-              <Text fw={500} lineClamp={2} size='lg'>
-                {topic.title}
-              </Text>
+              <Flex wrap='wrap' gap={5}>
+                {thesisTypes?.length ? (
+                  thesisTypes.map((type) => <ThesisTypeBadge type={type}></ThesisTypeBadge>)
+                ) : (
+                  <ThesisTypeBadge type='Any' key={'any'} />
+                )}
+              </Flex>
             </Flex>
-          </Tooltip>
+            <Tooltip openDelay={500} label={topic.title} withArrow>
+              <Flex
+                style={{
+                  minHeight: largerThanXs ? '4rem' : undefined,
+                }}
+                align={'flex-start'}
+              >
+                <Text fw={500} lineClamp={2} size='lg'>
+                  {topic.title}
+                </Text>
+              </Flex>
+            </Tooltip>
 
-          <Text c='dimmed'>{topic.researchGroup.name}</Text>
-        </Stack>
-      </Card.Section>
+            <Text c='dimmed'>{topic.researchGroup.name}</Text>
+          </Stack>
+        </Card.Section>
 
-      <Stack gap='xs' pt='1rem' flex={1}>
-        <Group gap={'xs'} c='dimmed'>
-          <Users></Users>
-          <Text size='sm'>Advisor(s)</Text>
-        </Group>
-        <AvatarUserList users={topic.advisors} />
-      </Stack>
-
-      {students.length > 0 && (
-        <Stack gap={5} pt={15} flex={1}>
-          <Group gap={3} c='dimmed'>
+        <Stack gap='xs' pt='1rem' flex={1}>
+          <Group gap={'xs'} c='dimmed'>
             <Users></Users>
-            <Text size='sm'>Student(s)</Text>
+            <Text size='sm'>Advisor(s)</Text>
           </Group>
-          <AvatarUserList users={students} />
+          <AvatarUserList users={topic.advisors} />
         </Stack>
-      )}
+
+        {students.length > 0 && (
+          <Stack gap={5} pt={15} flex={1}>
+            <Group gap={3} c='dimmed'>
+              <Users></Users>
+              <Text size='sm'>Student(s)</Text>
+            </Group>
+            <AvatarUserList users={students} />
+          </Stack>
+        )}
+      </Box>
 
       {isPublished ? (
         <Group gap={5} mt='md' w={'100%'} align='center'>
