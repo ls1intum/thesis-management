@@ -106,7 +106,7 @@ public class EmailTemplateService {
 			String sortOrder,
 			UUID researchGroupId
 	) {
-		if (!currentUserProvider().isAdmin() && !currentUserProvider().getResearchGroupOrThrow().getId().equals(researchGroupId) && researchGroupId != null ) {
+		if (!currentUserProvider().isAdmin() && researchGroupId != null && !currentUserProvider().getResearchGroupOrThrow().getId().equals(researchGroupId)) {
 			throw new AccessDeniedException("You do not have access to this research group.");
 		}
 
@@ -201,12 +201,12 @@ public class EmailTemplateService {
 			String bodyHtml,
 			String language
 	) {
-		currentUserProvider().assertCanAccessResearchGroup(emailTemplate.getResearchGroup());
-		validateTemplateCase(templateCase);
-
 		if (emailTemplate.getResearchGroup() == null && !currentUserProvider().isAdmin()) {
 			throw new AccessDeniedException("Only admins can update default email templates without ResearchGroupId.");
 		}
+
+        currentUserProvider().assertCanAccessResearchGroup(emailTemplate.getResearchGroup());
+        validateTemplateCase(templateCase);
 
 		emailTemplate.setTemplateCase(templateCase);
 		emailTemplate.setDescription(description);
