@@ -59,8 +59,36 @@ const EmailTemplateEditPage = () => {
     )
   }, [templateCase])
 
+  const deleteTemplate = async () => {
+    if (!researchGroupTemplate) return
+
+    setLoading(true)
+    await doRequest(
+      `/v2/email-templates/${researchGroupTemplate.id}`,
+      {
+        method: 'DELETE',
+        requiresAuth: true,
+      },
+      (res) => {
+        if (res.ok) {
+          showSimpleSuccess('Custom template deleted. Reverted to default template.')
+          setResearchGroupTemplate(null)
+          setEditingTemplate(defaultTemplate)
+        } else {
+          showSimpleError(getApiResponseErrorMessage(res))
+        }
+        setLoading(false)
+      },
+    )
+  }
+
   const saveChanges = async () => {
     if (!editingTemplate) return
+
+    if (editingTemplate === defaultTemplate) {
+      deleteTemplate()
+      return
+    }
 
     setSaving(true)
     const url = editingTemplate.researchGroup

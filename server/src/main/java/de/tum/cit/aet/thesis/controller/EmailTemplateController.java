@@ -151,16 +151,16 @@ public class EmailTemplateController {
 	 * Deletes an email template by its ID.
 	 *
 	 * @param emailTemplateId the ID of the email template to delete
-	 * @return a response with no content
+	 * @return a boolean indicating whether the deletion was successful
 	 */
 	@DeleteMapping("/{emailTemplateId}")
 	@PreAuthorize("hasAnyRole('admin', 'supervisor', 'advisor')")
-	public ResponseEntity<Void> deleteEmailTemplate(
+	public ResponseEntity<Boolean> deleteEmailTemplate(
 			@PathVariable("emailTemplateId") UUID emailTemplateId
 	) {
 		emailTemplateService.deleteEmailTemplate(emailTemplateId);
 
-		return ResponseEntity.noContent().build();
+		return ResponseEntity.ok(true);
 	}
 
 	/**
