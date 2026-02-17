@@ -11,18 +11,18 @@ export default (props: NodeViewProps) => {
   const selectableVariables = (extension.options.selectableVariables as IMailVariableDto[]) ?? []
 
   const [variable, setVariable] = useState<string>(node.attrs.variable ?? '')
-  const [template, setTemplate] = useState<string>(node.attrs.template ?? '')
+  const [group, setGroup] = useState<string>(node.attrs.group ?? '')
 
   useEffect(() => {
     setVariable(node.attrs.variable ?? '')
-    setTemplate(node.attrs.template ?? '')
-  }, [node.attrs.variable, node.attrs.template])
+    setGroup(node.attrs.group ?? '')
+  }, [node.attrs.variable, node.attrs.group])
 
-  const setAndPersist = (v: string, t: string) => {
+  const setAndPersist = (v: string, g: string) => {
     setVariable(v)
     updateAttributes({ variable: v })
-    setTemplate(t)
-    updateAttributes({ template: t })
+    setGroup(g)
+    updateAttributes({ group: g })
   }
 
   const [search, setSearch] = useState('')
@@ -48,7 +48,7 @@ export default (props: NodeViewProps) => {
         onOptionSubmit={(val) => {
           const variable = selectableVariables.find((v) => v.templateVariable === val)
           if (variable) {
-            setAndPersist(variable.label, variable.templateVariable)
+            setAndPersist(variable.label, variable.group)
           }
         }}
         offset={4}

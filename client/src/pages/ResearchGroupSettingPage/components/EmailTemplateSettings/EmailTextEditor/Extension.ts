@@ -18,7 +18,7 @@ export default Node.create({
   addAttributes() {
     return {
       variable: { default: null },
-      template: { default: null },
+      group: { default: null },
     }
   },
 

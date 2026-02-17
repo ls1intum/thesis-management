@@ -60,10 +60,10 @@ public record MailApplication(
 				new MailVariableDto("Applicant Study Degree", "[[${application.studyDegree}]]", "Bachelor", "Application"),
 				new MailVariableDto("Applicant Semester", "[[${application.semester}]]", "3", "Application"),
 				new MailVariableDto("Desired Start Date", "[[${application.desiredStartDate}]]", "01.10.2024", "Application"),
-				new MailVariableDto("Application Motivation", "[[${application.motivation}]]", "Strong motivation", "Application"),
-				new MailVariableDto("Applicant Special Skills", "[[${application.specialSkills}]]", "Python, Java", "Application"),
-				new MailVariableDto("Applicant Interests", "[[${application.interests}]]", "AI", "Application"),
-				new MailVariableDto("Applicant Projects", "[[${application.projects}]]", "Chatbot", "Application"),
+				new MailVariableDto("Application Motivation", "<span th:utext=\"${application.motivation}\"></span>", "Strong motivation", "Application"),
+				new MailVariableDto("Applicant Special Skills", "<span th:utext=\"${application.specialSkills}\"></span>", "Python, Java", "Application"),
+				new MailVariableDto("Applicant Interests",  "<span th:utext=\"${application.interests}\"></span>", "AI", "Application"),
+				new MailVariableDto("Applicant Projects", "<span th:utext=\"${application.projects}\"></span>", "Chatbot", "Application"),
 				new MailVariableDto("Application URL", "[[${applicationUrl}]]", "https://thesis-management.com/applications/123", "Application")
 		);
 	}

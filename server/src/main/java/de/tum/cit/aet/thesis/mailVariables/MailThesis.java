@@ -49,7 +49,7 @@ public record MailThesis(
 				new MailVariableDto("Thesis Student(s)", "[[${thesis.students}]]", "Max Mustermann", "Thesis"),
 				new MailVariableDto("Thesis Supervisor(s)", "[[${thesis.supervisors}]]", "Maria Musterfrau", "Thesis"),
 				new MailVariableDto("Thesis Advisor(s)", "[[${thesis.advisors}]]", "Alex Example", "Thesis"),
-				new MailVariableDto("Thesis Abstract", "[[${thesis.abstractText}]]", "Abstract text", "Thesis"),
+				new MailVariableDto("Thesis Abstract", "<span th:utext=\"${thesis.abstractText}\"></span>", "Abstract text", "Thesis"),
 				new MailVariableDto("Thesis URL", "[[${thesisUrl}]]", "https://thesis-management.com/theses/123", "Thesis")
 		);
 	}

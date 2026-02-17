@@ -15,7 +15,7 @@ import { getApiResponseErrorMessage } from '../../../../../requests/handler'
 import VariableComboboxOptions from './VariableComboboxOptions'
 
 const getVariableLabel = (variable: IMailVariableDto): string => {
-  return `<react-component variable="${variable.label}" template="${variable.templateVariable}"></react-component>`
+  return `<react-component variable="${variable.label}" group="${variable.group}"></react-component>`
 }
 
 // Function to convert HTML react-component tags to template variables
@@ -39,6 +39,7 @@ const convertTemplateVariablesToHtml = (
     const reactComponentTag = getVariableLabel(variable)
     text = text.replaceAll(variable.templateVariable, reactComponentTag)
   }
+
   return text
 }
 
