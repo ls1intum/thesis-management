@@ -5,7 +5,7 @@ import de.tum.cit.aet.thesis.entity.EmailTemplate;
 import de.tum.cit.aet.thesis.entity.ResearchGroup;
 import de.tum.cit.aet.thesis.exception.request.AccessDeniedException;
 import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
-import de.tum.cit.aet.thesis.mailVariables.MailVariablesBuilder;
+import de.tum.cit.aet.thesis.mailvariables.MailVariablesBuilder;
 import de.tum.cit.aet.thesis.repository.EmailTemplateRepository;
 import de.tum.cit.aet.thesis.repository.ResearchGroupRepository;
 import de.tum.cit.aet.thesis.security.CurrentUserProvider;
@@ -93,6 +93,7 @@ public class EmailTemplateService {
 	 * @param limit the number of results per page
 	 * @param sortBy the field to sort by
 	 * @param sortOrder the sort direction (asc or desc)
+	 * @param researchGroupId optional research group ID filter
 	 * @return the paginated list of email templates
 	 */
 	public Page<EmailTemplate> getAll(
@@ -239,6 +240,12 @@ public class EmailTemplateService {
 		}
 	}
 
+	/**
+	 * Returns template variables available for a given email template.
+	 *
+	 * @param emailTemplateId the email template ID
+	 * @return available mail variable descriptors
+	 */
 	public List<MailVariableDto> getVariablesForTemplate(UUID emailTemplateId) {
 		EmailTemplate emailTemplate = findById(emailTemplateId);
 

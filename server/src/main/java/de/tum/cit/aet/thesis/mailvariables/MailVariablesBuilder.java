@@ -1,12 +1,19 @@
-package de.tum.cit.aet.thesis.mailVariables;
+package de.tum.cit.aet.thesis.mailvariables;
 
 import de.tum.cit.aet.thesis.dto.MailVariableDto;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/** Builds the available template variables per email template case. */
 public class MailVariablesBuilder {
 
+	/**
+	 * Returns all selectable template variables for a template case.
+	 *
+	 * @param templateCase the template case identifier
+	 * @return variable descriptors grouped by source domain
+	 */
 	public List<MailVariableDto> getMailVariables(String templateCase) {
 		List<MailVariableDto> mailVariables = new ArrayList<>(MailUser.templateVariables("recipient", "Recipient", "General"));
 
@@ -16,8 +23,15 @@ public class MailVariablesBuilder {
 				mailVariables.addAll(MailThesis.templateVariables());
 				mailVariables.addAll(userTemplateVariables(templateCase));
 			}
-			case "APPLICATION_REJECTED_TOPIC_REQUIREMENTS", "APPLICATION_REJECTED_TOPIC_OUTDATED", "APPLICATION_REJECTED_TITLE_NOT_INTERESTING", "APPLICATION_REJECTED", "APPLICATION_REJECTED_TOPIC_FILLED", "APPLICATION_REJECTED_STUDENT_REQUIREMENTS", "APPLICATION_CREATED_STUDENT", "APPLICATION_CREATED_CHAIR" ->
-				mailVariables.addAll(MailApplication.templateVariables());
+			case "APPLICATION_REJECTED_TOPIC_REQUIREMENTS",
+					"APPLICATION_REJECTED_TOPIC_OUTDATED",
+					"APPLICATION_REJECTED_TITLE_NOT_INTERESTING",
+					"APPLICATION_REJECTED",
+					"APPLICATION_REJECTED_TOPIC_FILLED",
+					"APPLICATION_REJECTED_STUDENT_REQUIREMENTS",
+					"APPLICATION_CREATED_STUDENT",
+					"APPLICATION_CREATED_CHAIR" ->
+					mailVariables.addAll(MailApplication.templateVariables());
 			case "THESIS_CREATED", "THESIS_CLOSED" -> {
 				mailVariables.addAll(MailThesis.templateVariables());
 				mailVariables.addAll(userTemplateVariables(templateCase));
@@ -30,7 +44,11 @@ public class MailVariablesBuilder {
 					mailVariables.addAll(proposalRejectedTemplateVariables());
 				}
 			}
-			case "THESIS_PRESENTATION_UPDATED", "THESIS_PRESENTATION_SCHEDULED", "THESIS_PRESENTATION_INVITATION_CANCELLED", "THESIS_PRESENTATION_INVITATION_UPDATED", "THESIS_PRESENTATION_INVITATION" -> {
+			case "THESIS_PRESENTATION_UPDATED",
+					"THESIS_PRESENTATION_SCHEDULED",
+					"THESIS_PRESENTATION_INVITATION_CANCELLED",
+					"THESIS_PRESENTATION_INVITATION_UPDATED",
+					"THESIS_PRESENTATION_INVITATION" -> {
 				mailVariables.addAll(MailThesisPresentation.templateVariables());
 				mailVariables.addAll(MailThesis.templateVariables());
 			}

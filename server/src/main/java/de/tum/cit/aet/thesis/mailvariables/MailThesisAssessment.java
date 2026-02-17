@@ -1,4 +1,4 @@
-package de.tum.cit.aet.thesis.mailVariables;
+package de.tum.cit.aet.thesis.mailvariables;
 
 import de.tum.cit.aet.thesis.dto.MailVariableDto;
 import de.tum.cit.aet.thesis.entity.ThesisAssessment;
@@ -6,6 +6,7 @@ import de.tum.cit.aet.thesis.entity.User;
 
 import java.util.List;
 
+/** Mail placeholder model for thesis assessment variables. */
 public record MailThesisAssessment(
 		String creatorFirstName,
 		String creatorLastName,
@@ -14,6 +15,12 @@ public record MailThesisAssessment(
 		String negatives,
 		String gradeSuggestion
 ) {
+	/**
+	 * Builds a mail-safe thesis assessment model.
+	 *
+	 * @param assessment the thesis assessment entity
+	 * @return mapped thesis assessment mail model
+	 */
 	public static MailThesisAssessment fromAssessment(ThesisAssessment assessment) {
 		if (assessment == null) {
 			return new MailThesisAssessment("", "", "", "", "", "");
@@ -31,6 +38,11 @@ public record MailThesisAssessment(
 		);
 	}
 
+	/**
+	 * Returns all selectable template variables for thesis assessments.
+	 *
+	 * @return thesis assessment variable descriptors
+	 */
 	public static List<MailVariableDto> templateVariables() {
 		return List.of(
 				new MailVariableDto("Assessment Creator First Name", "[[${assessment.creatorFirstName}]]", "Max", "Assessment"),

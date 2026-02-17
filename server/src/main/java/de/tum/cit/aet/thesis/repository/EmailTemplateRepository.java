@@ -56,7 +56,9 @@ public interface EmailTemplateRepository extends JpaRepository<EmailTemplate, UU
 
 	default Optional<EmailTemplate> findTemplateWithFallback(UUID researchGroupId, String templateCase, String language) {
 		Optional<EmailTemplate> specific = findByResearchGroupIdAndTemplateCaseAndLanguage(researchGroupId, templateCase, language);
-		if (specific.isPresent()) return specific;
+		if (specific.isPresent()) {
+			return specific;
+		}
 
 		return findByResearchGroupIdAndTemplateCaseAndLanguage(null, templateCase, "en");
 	}

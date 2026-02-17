@@ -51,6 +51,7 @@ public class EmailTemplateController {
 	 * @param limit the maximum number of results per page
 	 * @param sortBy the field to sort by
 	 * @param sortOrder the sort direction
+	 * @param researchGroupId optional research group ID filter
 	 * @return the paginated list of email templates
 	 */
 	@GetMapping
@@ -162,6 +163,12 @@ public class EmailTemplateController {
 		return ResponseEntity.noContent().build();
 	}
 
+	/**
+	 * Retrieves all selectable variables for an email template.
+	 *
+	 * @param emailTemplateId the email template ID
+	 * @return variable metadata for template editing
+	 */
 	@GetMapping("/{emailTemplateId}/variables")
 	@PreAuthorize("hasAnyRole('admin', 'supervisor', 'advisor')")
 	public ResponseEntity<List<MailVariableDto>> getEmailTemplateVariables(

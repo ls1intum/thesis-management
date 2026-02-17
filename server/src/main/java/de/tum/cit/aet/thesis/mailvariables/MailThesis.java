@@ -1,4 +1,4 @@
-package de.tum.cit.aet.thesis.mailVariables;
+package de.tum.cit.aet.thesis.mailvariables;
 
 import de.tum.cit.aet.thesis.dto.MailVariableDto;
 import de.tum.cit.aet.thesis.entity.Thesis;
@@ -7,6 +7,7 @@ import de.tum.cit.aet.thesis.utility.DataFormatter;
 
 import java.util.List;
 
+/** Mail placeholder model for thesis-related variables. */
 public record MailThesis(
 		String title,
 		String type,
@@ -17,10 +18,22 @@ public record MailThesis(
 		String finalGrade,
 		String finalFeedback
 ) {
+	/**
+	 * Builds a thesis mail model without final grade values.
+	 *
+	 * @param thesis the thesis entity
+	 * @return mapped thesis mail model
+	 */
 	public static MailThesis fromThesis(Thesis thesis) {
 		return fromThesis(thesis, false);
 	}
 
+	/**
+	 * Builds a thesis mail model including final grade values.
+	 *
+	 * @param thesis the thesis entity
+	 * @return mapped thesis mail model including grade fields
+	 */
 	public static MailThesis fromThesisWithGrade(Thesis thesis) {
 		return fromThesis(thesis, true);
 	}
@@ -42,6 +55,11 @@ public record MailThesis(
 		);
 	}
 
+	/**
+	 * Returns all selectable template variables for thesis lifecycle templates.
+	 *
+	 * @return thesis variable descriptors
+	 */
 	public static List<MailVariableDto> templateVariables() {
 		return List.of(
 				new MailVariableDto("Thesis Title", "[[${thesis.title}]]", "Deep Learning for NLP", "Thesis"),
@@ -54,6 +72,11 @@ public record MailThesis(
 		);
 	}
 
+	/**
+	 * Returns all selectable template variables for thesis grade templates.
+	 *
+	 * @return thesis grade variable descriptors
+	 */
 	public static List<MailVariableDto> gradeTemplateVariables() {
 		return List.of(
 				new MailVariableDto("Thesis Final Grade", "[[${thesis.finalGrade}]]", "1.3", "Thesis"),

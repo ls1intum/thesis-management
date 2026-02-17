@@ -1,4 +1,4 @@
-package de.tum.cit.aet.thesis.mailVariables;
+package de.tum.cit.aet.thesis.mailvariables;
 
 import de.tum.cit.aet.thesis.dto.MailVariableDto;
 import de.tum.cit.aet.thesis.entity.ThesisPresentation;
@@ -7,6 +7,7 @@ import de.tum.cit.aet.thesis.utility.DataFormatter;
 
 import java.util.List;
 
+/** Mail placeholder model for thesis presentation variables. */
 public record MailThesisPresentation(
 		String creatorFirstName,
 		String creatorLastName,
@@ -16,6 +17,12 @@ public record MailThesisPresentation(
 		String streamUrl,
 		String language
 ) {
+	/**
+	 * Builds a mail-safe thesis presentation model.
+	 *
+	 * @param presentation the thesis presentation entity
+	 * @return mapped thesis presentation mail model
+	 */
 	public static MailThesisPresentation fromPresentation(ThesisPresentation presentation) {
 		if (presentation == null) {
 			return new MailThesisPresentation("", "", "", "", "", "", "");
@@ -34,6 +41,11 @@ public record MailThesisPresentation(
 		);
 	}
 
+	/**
+	 * Returns all selectable template variables for thesis presentations.
+	 *
+	 * @return thesis presentation variable descriptors
+	 */
 	public static List<MailVariableDto> templateVariables() {
 		return List.of(
 				new MailVariableDto("Presentation Creator First Name", "[[${presentation.creatorFirstName}]]", "Max", "Presentation"),

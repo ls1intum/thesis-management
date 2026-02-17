@@ -1,4 +1,4 @@
-package de.tum.cit.aet.thesis.mailVariables;
+package de.tum.cit.aet.thesis.mailvariables;
 
 import de.tum.cit.aet.thesis.dto.MailVariableDto;
 import de.tum.cit.aet.thesis.entity.Application;
@@ -7,6 +7,7 @@ import de.tum.cit.aet.thesis.utility.DataFormatter;
 
 import java.util.List;
 
+/** Mail placeholder model for application-related variables. */
 public record MailApplication(
 		String thesisTitle,
 		String applicantFirstName,
@@ -23,6 +24,12 @@ public record MailApplication(
 		String interests,
 		String projects
 ) {
+	/**
+	 * Builds a mail-safe application model from an application entity.
+	 *
+	 * @param application the application entity
+	 * @return mapped application mail model
+	 */
 	public static MailApplication fromApplication(Application application) {
 		if (application == null) {
 			return new MailApplication("", "", "", "", "", "", "", "", "", "", "", "", "", "");
@@ -48,6 +55,11 @@ public record MailApplication(
 		);
 	}
 
+	/**
+	 * Returns all selectable template variables for applications.
+	 *
+	 * @return application variable descriptors
+	 */
 	public static List<MailVariableDto> templateVariables() {
 		return List.of(
 				new MailVariableDto("Thesis Title", "[[${application.thesisTitle}]]", "Deep Learning for NLP", "Application"),

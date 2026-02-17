@@ -1,4 +1,4 @@
-package de.tum.cit.aet.thesis.mailVariables;
+package de.tum.cit.aet.thesis.mailvariables;
 
 import de.tum.cit.aet.thesis.dto.MailVariableDto;
 import de.tum.cit.aet.thesis.entity.ThesisProposal;
@@ -6,12 +6,19 @@ import de.tum.cit.aet.thesis.entity.User;
 
 import java.util.List;
 
+/** Mail placeholder model for thesis proposal variables. */
 public record MailThesisProposal(
 		String creatorFirstName,
 		String creatorLastName,
 		String approverFirstName,
 		String approverLastName
 ) {
+	/**
+	 * Builds a mail-safe thesis proposal model.
+	 *
+	 * @param proposal the thesis proposal entity
+	 * @return mapped thesis proposal mail model
+	 */
 	public static MailThesisProposal fromProposal(ThesisProposal proposal) {
 		if (proposal == null) {
 			return new MailThesisProposal("", "", "", "");
@@ -28,6 +35,11 @@ public record MailThesisProposal(
 		);
 	}
 
+	/**
+	 * Returns all selectable template variables for thesis proposals.
+	 *
+	 * @return thesis proposal variable descriptors
+	 */
 	public static List<MailVariableDto> templateVariables() {
 		return List.of(
 				new MailVariableDto("Proposal Creator First Name", "[[${proposal.creatorFirstName}]]", "Max", "Proposal"),
