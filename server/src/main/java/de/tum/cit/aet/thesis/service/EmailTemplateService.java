@@ -205,8 +205,8 @@ public class EmailTemplateService {
 			throw new AccessDeniedException("Only admins can update default email templates without ResearchGroupId.");
 		}
 
-        currentUserProvider().assertCanAccessResearchGroup(emailTemplate.getResearchGroup());
-        validateTemplateCase(templateCase);
+		currentUserProvider().assertCanAccessResearchGroup(emailTemplate.getResearchGroup());
+		validateTemplateCase(templateCase);
 
 		emailTemplate.setTemplateCase(templateCase);
 		emailTemplate.setDescription(description);

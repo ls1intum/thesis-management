@@ -129,17 +129,17 @@ public class MailVariablesBuilder {
 		);
 	}
 
-    private List<MailVariableDto> createGeneralVariables() {
-        List<MailVariableDto> mailVariables = new ArrayList<>( MailUser.templateVariables("recipient", "Recipient", "General"));
+	private List<MailVariableDto> createGeneralVariables() {
+		List<MailVariableDto> mailVariables = new ArrayList<>( MailUser.templateVariables("recipient", "Recipient", "General"));
 
-        mailVariables.add(
-        new MailVariableDto(
-                "Notification URL Footer",
-                "<hr><p style=\"text-align: center;\"><span style=\"font-size: 10px;\">Manage your notification settings </span><a target=\"_blank\" rel=\"noopener noreferrer nofollow\" href=\"${config.clientHost + '/settings/notifications'}\"><span style=\"font-size: 10px;\">here</span></a>",
-                "<hr><p style=\"text-align: center;\"><span style=\"font-size: 10px;\">Manage your notification settings </span><a target=\"_blank\" rel=\"noopener noreferrer nofollow\" href=\"\"><span style=\"font-size: 10px;\">here</span></a>",
-                "General"
-        ));
+		mailVariables.add(
+		new MailVariableDto(
+				"Notification URL Footer",
+				"<hr><p style=\"text-align: center;\"><span style=\"font-size: 10px;\">Manage your notification settings </span><a target=\"_blank\" rel=\"noopener noreferrer nofollow\" href=\"${config.clientHost + '/settings/notifications'}\"><span style=\"font-size: 10px;\">here</span></a>",
+				"<hr><p style=\"text-align: center;\"><span style=\"font-size: 10px;\">Manage your notification settings </span><a target=\"_blank\" rel=\"noopener noreferrer nofollow\" href=\"\"><span style=\"font-size: 10px;\">here</span></a>",
+				"General"
+		));
 
-        return mailVariables;
-    }
+		return mailVariables;
+	}
 }
