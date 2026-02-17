@@ -143,7 +143,7 @@ Examiner, Supervisor and Student means that the user is directly assigned to the
 | Cancel Interview               | ✅       | ✅         | ✅      | ❌     |
 | Assess Interviewee             | ✅       | ✅         | ❌      | ❌     |
 
-#### Thesis Page Permissions
+#### Research Group Permissions
 
 Supervisors and Examiners, who are not Group Admins, don't have any of the permissions below.
 Group heads have the Group Admin role for their group by default (this cannot be changed).
