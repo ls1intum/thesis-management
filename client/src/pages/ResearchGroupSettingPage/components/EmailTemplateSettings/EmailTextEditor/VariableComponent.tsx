@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import { IMailVariableDto } from '../../../../../requests/responses/emailtemplate'
 import VariableComboboxOptions from './VariableComboboxOptions'
 
-export default (props: NodeViewProps) => {
+export default function VariableComponent(props: NodeViewProps) {
   const { node, updateAttributes, extension } = props
 
   const selectableVariables = (extension.options.selectableVariables as IMailVariableDto[]) ?? []

@@ -5,14 +5,14 @@ import EmailTemplatePreviewModal from './EmailTemplatePreviewModal'
 import { EyeIcon, NotePencilIcon } from '@phosphor-icons/react'
 import { useNavigate, useParams } from 'react-router'
 
-interface IEmailTemplatesOverviewProps {
+interface IEmailTemplateCardProps {
   emailTemplate: {
     default: IEmailTemplate | null
     researchGroupTemplate: IEmailTemplate | null
   }
 }
 
-const EmailTemplateCard = ({ emailTemplate }: IEmailTemplatesOverviewProps) => {
+const EmailTemplateCard = ({ emailTemplate }: IEmailTemplateCardProps) => {
   const [templatePreviewOpened, setTemplatePreviewOpened] = useState(false)
   const navigate = useNavigate()
   const { researchGroupId } = useParams<{ researchGroupId: string }>()

@@ -46,7 +46,7 @@ public interface EmailTemplateRepository extends JpaRepository<EmailTemplate, UU
 
 	@Query("""
 	SELECT e FROM EmailTemplate e
-	WHERE (e.researchGroup.id = :researchGroupId)
+	WHERE (e.researchGroup.id = :researchGroupId OR (e.researchGroup IS NULL AND :researchGroupId IS NULL))
 	AND e.templateCase = :templateCase
 """)
 	Optional<EmailTemplate> findByResearchGroupAndTemplateCase(

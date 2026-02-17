@@ -9,6 +9,7 @@ import { IEmailTemplate } from '../../../../requests/responses/emailtemplate'
 import { PaginationResponse } from '../../../../requests/responses/pagination'
 import { showSimpleError, showSimpleSuccess } from '../../../../utils/notification'
 import EmailTextEditor from './EmailTextEditor/EmailTextEditor'
+import DOMPurify from 'dompurify'
 
 const EmailTemplateEditPage = () => {
   const navigate = useNavigate()
@@ -142,7 +143,7 @@ const EmailTemplateEditPage = () => {
           <EmailTextEditor
             editingTemplate={editingTemplate}
             setEditingTemplate={setEditingTemplate}
-            stickyOffset={100}
+            stickyOffset={50}
             setExampleText={setExampleText}
           />
         </Stack>
@@ -155,7 +156,10 @@ const EmailTemplateEditPage = () => {
             This preview uses example data. Real values are filled in when emails are sent.
           </Text>
           <Paper withBorder radius='sm' flex={1}>
-            <div style={{ padding: '1rem' }} dangerouslySetInnerHTML={{ __html: exampleText }} />
+            <div
+              style={{ padding: '1rem' }}
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(exampleText) }}
+            />
           </Paper>
         </Stack>
       </Flex>

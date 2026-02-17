@@ -1,7 +1,7 @@
 import { Link, RichTextEditor, useRichTextEditorContext } from '@mantine/tiptap'
 import TextAlign from '@tiptap/extension-text-align'
 import Underline from '@tiptap/extension-underline'
-import { useEditor } from '@tiptap/react'
+import { Editor, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { Combobox, Group, Select, useCombobox } from '@mantine/core'
 import ReactComponent from './Extension'
@@ -81,11 +81,12 @@ const EmailTextEditor = ({
         setExampleText && setExampleText(convertExample(editor.getHTML(), templateVariables))
       },
       onUpdate: ({ editor }) => {
-        setEditingTemplate &&
+        if (setEditingTemplate && editingTemplate) {
           setEditingTemplate({
             ...editingTemplate!,
             bodyHtml: convertHtmlToTemplateVariables(editor.getHTML(), templateVariables),
           })
+        }
 
         setExampleText && setExampleText(convertExample(editor.getHTML(), templateVariables))
       },
@@ -264,7 +265,7 @@ const FONT_SIZES = [
   { value: '128px', label: '128' },
 ]
 
-function getCurrentFontSize(editor: any): string {
+function getCurrentFontSize(editor: Editor): string {
   const attrs = editor.getAttributes('textStyle')
   return (attrs?.fontSize as string) ?? ''
 }

@@ -1,5 +1,6 @@
 import { Box, Button, Group, Modal, Paper, Stack, Text, Title } from '@mantine/core'
 import { useEffect, useMemo, useState } from 'react'
+import DOMPurify from 'dompurify'
 import { getApiResponseErrorMessage } from '../../../../requests/handler'
 import { doRequest } from '../../../../requests/request'
 import { IEmailTemplate, IMailVariableDto } from '../../../../requests/responses/emailtemplate'
@@ -60,7 +61,7 @@ const EmailTemplatePreviewModal = ({
 
         <Paper withBorder radius='sm'>
           <Box p='md'>
-            <div dangerouslySetInnerHTML={{ __html: previewHtml }} />
+            <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(previewHtml) }} />
           </Box>
         </Paper>
 
