@@ -35,7 +35,7 @@ The videos are grouped by the roles student, supervisor, examiner, and research 
 - [Manage User Settings](https://live.rbg.tum.de/w/artemisintro/53605)  
   Enables students to configure their account settings, including personal information such as study program and contact details, ensuring all details are up-to-date.
 
-- [Book Interview Slot](https://live.rbg.tum.de/w/artemisintro/70051)  
+- [Book Interview Slot](https://live.rbg.tum.de/w/artemisintro/70067)  
   Allows students to view available interview slots and book a preferred timeslot.
 
 #### Supervisor
@@ -58,28 +58,28 @@ The videos are grouped by the roles student, supervisor, examiner, and research 
 - [Submit Thesis Assessment](https://live.rbg.tum.de/w/artemisintro/53598)  
   Enables supervisors to submit an evaluation of the thesis, including a recommended grade. This assessment informs the final grading and captures key feedback for student growth.
 
-- [Create Interview Process (Interview Page)](https://live.rbg.tum.de/w/artemisintro/70043)  
+- [Create Interview Process (Interview Page)](https://live.rbg.tum.de/w/artemisintro/70059)  
   Shows how supervisors can create an interview process directly from the interview page.
 
-- [Create Interview Process (Application Page)](https://live.rbg.tum.de/w/artemisintro/70044)  
+- [Create Interview Process (Application Page)](https://live.rbg.tum.de/w/artemisintro/70060)  
   Shows how supervisors can create an interview process while reviewing applications.
 
-- [Add Interviewees to Process](https://live.rbg.tum.de/w/artemisintro/70045)  
+- [Add Interviewees to Process](https://live.rbg.tum.de/w/artemisintro/70061)  
   Demonstrates how supervisors can add selected applicants to an interview process.
 
-- [Create Interview Slots](https://live.rbg.tum.de/w/artemisintro/70046)  
+- [Create Interview Slots](https://live.rbg.tum.de/w/artemisintro/70062)  
   Demonstrates how supervisors can define available interview timeslots.
 
-- [Invite Interviewees (Bulk)](https://live.rbg.tum.de/w/artemisintro/70047)  
+- [Invite Interviewees (Bulk)](https://live.rbg.tum.de/w/artemisintro/70063)  
   Shows how supervisors can send invitations to multiple interviewees at once.
 
-- [Invite Interviewees (Individual)](https://live.rbg.tum.de/w/artemisintro/70048)  
+- [Invite Interviewees (Individual)](https://live.rbg.tum.de/w/artemisintro/70064)  
   Shows how supervisors can send invitations to a single interviewee.
 
-- [Assign Interviewee](https://live.rbg.tum.de/w/artemisintro/70049)  
+- [Assign Interviewee](https://live.rbg.tum.de/w/artemisintro/70065)  
   Demonstrates assigning an interviewee to a specific slot or interviewer.
 
-- [Assess Interviewees](https://live.rbg.tum.de/w/artemisintro/70050)  
+- [Assess Interviewees](https://live.rbg.tum.de/w/artemisintro/70066)  
   Shows how supervisors can evaluate interviewees during or after interviews.
 
 #### Examiner
@@ -89,13 +89,13 @@ The videos are grouped by the roles student, supervisor, examiner, and research 
 
 #### Research Group Admin
 
-- [Update Research Group Information](https://live.rbg.tum.de/w/artemisintro/70052)  
+- [Update Research Group Information](https://live.rbg.tum.de/w/artemisintro/70058)  
   Shows how research group admins can update general research group details.
 
-- [Change Research Group Settings](https://live.rbg.tum.de/w/artemisintro/70053)  
+- [Change Research Group Settings](https://live.rbg.tum.de/w/artemisintro/70057)  
   Demonstrates how research group admins can configure research group settings.
 
-- [Add Members to Research Group](https://live.rbg.tum.de/w/artemisintro/70054)  
+- [Add Members to Research Group](https://live.rbg.tum.de/w/artemisintro/70056)  
   Shows how research group admins can add members to the research group.
 
 - [Make a Member Research Group Admin](https://live.rbg.tum.de/w/artemisintro/70055)  
