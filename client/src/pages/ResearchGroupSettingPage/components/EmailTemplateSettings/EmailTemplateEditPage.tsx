@@ -167,6 +167,7 @@ const EmailTemplateEditPage = () => {
                 subject: event.currentTarget.value,
               })
             }}
+            mih={60}
           />
           <EmailTextEditor
             editingTemplate={editingTemplate}
@@ -180,9 +181,11 @@ const EmailTemplateEditPage = () => {
 
         <Stack flex={1}>
           <Title order={3}>Preview Template</Title>
-          <Text c='dimmed' size='sm' pt='1rem'>
-            This preview uses example data. Real values are filled in when emails are sent.
-          </Text>
+          <Stack mih={60} justify={'flex-end'} align={'end'}>
+            <Text c='dimmed' size='sm'>
+              This preview uses example data. Real values are filled in when emails are sent.
+            </Text>
+          </Stack>
           <Paper withBorder radius='sm' flex={1}>
             <div
               style={{ padding: '1rem' }}
