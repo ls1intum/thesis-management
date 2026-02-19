@@ -135,8 +135,14 @@ public class MailVariablesBuilder {
 		mailVariables.add(
 		new MailVariableDto(
 				"Notification URL Footer",
-				"<hr><p style=\"text-align: center;\"><span style=\"font-size: 10px;\">Manage your notification settings </span><a target=\"_blank\" rel=\"noopener noreferrer nofollow\" href=\"${config.clientHost + '/settings/notifications'}\"><span style=\"font-size: 10px;\">here</span></a>",
-				"<hr><p style=\"text-align: center;\"><span style=\"font-size: 10px;\">Manage your notification settings </span><a target=\"_blank\" rel=\"noopener noreferrer nofollow\" href=\"\"><span style=\"font-size: 10px;\">here</span></a>",
+				"<hr/>\n" +
+                        "<div style=\"text-align: center;font-size: 10px\">\n" +
+                        "    Manage your notification settings <a th:href=\"${config.clientHost + '/settings/notifications'}\">here</a>\n" +
+                        "</div>",
+				"<hr/>\n" +
+                        "<div style=\"text-align: center;font-size: 10px\">\n" +
+                        "    Manage your notification settings <a th:href=\"\">here</a>\n" +
+                        "</div>",
 				"General"
 		));
 
