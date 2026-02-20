@@ -54,8 +54,7 @@ cd ../server/src/main/resources/db/changelog/manual/
 
 And execute all files that you need.
 > 💡 Tip: Check the prerequisites !
-
-> 💡 Tip: Default Templates are needed for many API calls.
+> 💡 Tip: Default email templates are now inserted automatically by Liquibase migrations.
 
 #### Example Users and Roles
 
