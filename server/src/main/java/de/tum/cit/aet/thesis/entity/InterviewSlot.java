@@ -23,31 +23,31 @@ import java.util.UUID;
 @Table(name = "interview_slots")
 public class InterviewSlot {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.UUID)
-	@Column(name = "slot_id", nullable = false)
-	private UUID id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "slot_id", nullable = false)
+    private UUID id;
 
-	@NotNull
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "interview_process_id", nullable = false)
-	private InterviewProcess interviewProcess;
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "interview_process_id", nullable = false)
+    private InterviewProcess interviewProcess;
 
-	@NotNull
-	@Column(name = "start_date", nullable = false)
-	private Instant startDate;
+    @NotNull
+    @Column(name = "start_date", nullable = false)
+    private Instant startDate;
 
-	@NotNull
-	@Column(name = "end_date", nullable = false)
-	private Instant endDate;
+    @NotNull
+    @Column(name = "end_date", nullable = false)
+    private Instant endDate;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "interviewee_id")
-	private Interviewee interviewee;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "interviewee_id")
+    private Interviewee interviewee;
 
-	@Column(name = "location")
-	private String location;
+    @Column(name = "location")
+    private String location;
 
-	@Column(name = "stream_link")
-	private String streamLink;
+    @Column(name = "stream_link")
+    private String streamLink;
 }
