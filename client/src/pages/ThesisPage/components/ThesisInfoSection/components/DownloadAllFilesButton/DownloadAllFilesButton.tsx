@@ -87,7 +87,7 @@ const DownloadAllFilesButton = () => {
         )
 
         if (response.ok) {
-          for (const comment of response.data.content) {
+          for (const comment of response.data.content ?? []) {
             if (!comment.uploadName || !commentsZip) {
               continue
             }

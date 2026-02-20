@@ -174,8 +174,8 @@ const ThesisConfigSection = () => {
             content: res.data.content,
           })
 
-          if (res.data.content.length === 1) {
-            form.setValues({ researchGroupId: res.data.content[0].id })
+          if ((res.data.content ?? []).length === 1) {
+            form.setValues({ researchGroupId: (res.data.content ?? [])[0].id })
           }
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
@@ -326,7 +326,7 @@ const ThesisConfigSection = () => {
                 required
                 nothingFoundMessage={'Nothing found...'}
                 disabled={!hasAdminAccess}
-                data={researchGroups?.content.map((researchGroup: ILightResearchGroup) => ({
+                data={(researchGroups?.content ?? []).map((researchGroup: ILightResearchGroup) => ({
                   label: researchGroup.name,
                   value: researchGroup.id,
                 }))}

@@ -144,7 +144,7 @@ const EmailTemplatesOverview = () => {
             >
           > = {}
 
-          res.data.content.forEach((template) => {
+          ;(res.data.content ?? []).forEach((template) => {
             const category = getEmailTemplateCategory(template.templateCase)
             const key = template.templateCase
 

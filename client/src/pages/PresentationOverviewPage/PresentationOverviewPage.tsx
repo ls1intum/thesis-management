@@ -98,7 +98,7 @@ const PresentationOverviewPage = () => {
       (res) => {
         if (res.ok) {
           const presentationsByDate = new Map<string, IPublishedPresentation[]>()
-          res.data.content.forEach((presentation) => {
+          ;(res.data.content ?? []).forEach((presentation) => {
             const date = dayjs(presentation.scheduledAt).format('YYYY-MM-DD')
             if (!presentationsByDate.has(date)) {
               presentationsByDate.set(date, [])

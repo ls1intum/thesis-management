@@ -79,10 +79,10 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
             content: res.data.content,
           })
 
-          if (res.data.content.length === 1) {
+          if ((res.data.content ?? []).length === 1) {
             form.setValues({
-              researchGroupId: res.data.content[0].id,
-              supervisors: [res.data.content[0].head.userId],
+              researchGroupId: (res.data.content ?? [])[0].id,
+              supervisors: [(res.data.content ?? [])[0].head.userId],
             })
           }
         } else {
@@ -179,7 +179,7 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
             required
             nothingFoundMessage={!loading ? 'Nothing found...' : 'Loading...'}
             disabled={loading || !researchGroups || !hasAdminAccess}
-            data={researchGroups?.content.map((researchGroup: ILightResearchGroup) => ({
+            data={(researchGroups?.content ?? []).map((researchGroup: ILightResearchGroup) => ({
               label: researchGroup.name,
               value: researchGroup.id,
             }))}

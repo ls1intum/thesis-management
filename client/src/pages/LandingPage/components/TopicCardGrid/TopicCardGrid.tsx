@@ -61,7 +61,7 @@ const TopicCardGrid = ({
 
   return (
     <Flex direction={'column'} gap='md' w='100%' h='100%'>
-      {topics?.content.length === 0 && !showSuggestedTopic && (
+      {(topics?.content ?? []).length === 0 && !showSuggestedTopic && (
         <Center h='100%'>
           <Stack align='center' gap='xs'>
             <ThemeIcon radius='xl' size={50} color='gray' variant='light'>
@@ -85,7 +85,7 @@ const TopicCardGrid = ({
             radius='md'
             chevronIconSize={20}
           >
-            {topics?.content.map((topic) => (
+            {(topics?.content ?? []).map((topic) => (
               <CollapsibleTopicElement
                 key={'topicId' in topic ? topic.topicId : topic.thesisId}
                 topic={topic}
@@ -121,7 +121,7 @@ const TopicCardGrid = ({
             spacing={{ base: 'xs', sm: 'sm', xl: 'md' }}
             verticalSpacing={{ base: 'xs', sm: 'sm', xl: 'md' }}
           >
-            {topics?.content.map((topic) => (
+            {(topics?.content ?? []).map((topic) => (
               <TopicCard
                 key={'topicId' in topic ? topic.topicId : topic.thesisId}
                 topic={topic}

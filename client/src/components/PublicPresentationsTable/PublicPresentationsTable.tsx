@@ -64,7 +64,7 @@ const PublicPresentationsTable = (props: IPublicPresentationsTableProps) => {
             ]
       }
       presentations={presentations?.content}
-      theses={presentations?.content.map((row) => row.thesis) || []}
+      theses={(presentations?.content ?? []).map((row) => row.thesis)}
       onRowClick={(presentation) => navigate(`/presentations/${presentation.presentationId}`)}
       pagination={{
         totalRecords: presentations?.totalElements ?? 0,

@@ -98,10 +98,13 @@ const ThesesProvider = (props: PropsWithChildren<IThesesProviderProps>) => {
             return undefined
           }
 
-          const index = prev.content.findIndex((x) => x.thesisId === newThesis.thesisId)
+          const index = (prev.content ?? []).findIndex((x) => x.thesisId === newThesis.thesisId)
 
           if (index >= 0) {
-            prev.content[index] = newThesis
+            const content = prev.content ?? []
+            content[index] = newThesis
+
+            return { ...prev, content }
           }
 
           return { ...prev }
@@ -110,7 +113,7 @@ const ThesesProvider = (props: PropsWithChildren<IThesesProviderProps>) => {
     }
   }, [theses, filters, sort, page, limit])
 
-  if (hideIfEmpty && page === 0 && (!theses || theses.content.length === 0)) {
+  if (hideIfEmpty && page === 0 && (!theses || (theses.content ?? []).length === 0)) {
     return <></>
   }
 

@@ -150,7 +150,7 @@ const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProv
           },
           (res) => {
             if (res.ok) {
-              const content = res.data.content
+              const content = res.data.content ?? []
               if (updateState) setInterviewees(content)
               resolve(content)
             } else {

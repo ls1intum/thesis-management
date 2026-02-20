@@ -28,7 +28,7 @@ const ThesesGanttChart = () => {
 
     const result: IGanttChartDataElement[] = []
 
-    for (const thesis of theses.content) {
+    for (const thesis of theses.content ?? []) {
       const getAdjustedStartDate = (state: ThesisState, startDate: Date) => {
         if (state === ThesisState.PROPOSAL && thesis.startDate) {
           // Overwrite start date if it's in the writing phase
@@ -123,12 +123,12 @@ const ThesesGanttChart = () => {
   }, [theses])
 
   const visibleTypes: string[] = theses
-    ? arrayUnique([...theses.content.map((thesis) => thesis.type)])
+    ? arrayUnique([...(theses.content ?? []).map((thesis) => thesis.type)])
     : []
 
   const visibleStates: ThesisState[] = theses
     ? arrayUnique<ThesisState>([
-        ...theses.content.reduce<ThesisState[]>(
+        ...(theses.content ?? []).reduce<ThesisState[]>(
           (prev, curr) => [
             ...prev,
             ...(curr.states ?? [])
@@ -140,7 +140,9 @@ const ThesesGanttChart = () => {
       ])
     : []
 
-  const hasKeywordsColumn = !!theses?.content.some((thesis) => !!(thesis.keywords ?? []).length)
+  const hasKeywordsColumn = !!(theses?.content ?? []).some(
+    (thesis) => !!(thesis.keywords ?? []).length,
+  )
 
   return (
     <Stack>
@@ -154,7 +156,7 @@ const ThesesGanttChart = () => {
         minRange={[currentTime - 1000 * 3600 * 24 * 365 * 2, currentTime + 1000 * 3600 * 24 * 365]}
         rangeStorageKey='thesis-gantt-chart'
         itemPopover={(item, timeline, event) => {
-          const thesis = theses?.content.find((row) => row.thesisId === item.id)
+          const thesis = (theses?.content ?? []).find((row) => row.thesisId === item.id)
 
           if (!thesis) {
             return null

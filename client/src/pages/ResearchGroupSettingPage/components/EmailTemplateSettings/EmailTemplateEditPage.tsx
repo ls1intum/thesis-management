@@ -44,9 +44,9 @@ const EmailTemplateEditPage = () => {
       (res) => {
         if (res.ok) {
           const currentDefault =
-            res.data.content.find((template) => !template.researchGroup) ?? null
+            (res.data.content ?? []).find((template) => !template.researchGroup) ?? null
           const currentResearchGroup =
-            res.data.content.find((template) => Boolean(template.researchGroup)) ?? null
+            (res.data.content ?? []).find((template) => Boolean(template.researchGroup)) ?? null
 
           setDefaultTemplate(currentDefault)
           setResearchGroupTemplate(currentResearchGroup)

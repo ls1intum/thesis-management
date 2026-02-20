@@ -287,7 +287,7 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 
 			JsonNode emptyJson = objectMapper.readTree(emptyResponse);
-			assertThat(emptyJson.get("content").size()).isZero();
+			assertThat(emptyJson.path("content").size()).isZero();
 		}
 
 		@Test
@@ -320,7 +320,7 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 
 			JsonNode json = objectMapper.readTree(response);
-			assertThat(json.get("content").size()).isZero();
+			assertThat(json.path("content").size()).isZero();
 			assertThat(json.get("totalElements").asInt()).isZero();
 		}
 
@@ -349,6 +349,46 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 			// Overview DTO does not include language or visibility
 			assertThat(firstThesis.has("language")).isFalse();
 			assertThat(firstThesis.has("visibility")).isFalse();
+		}
+
+		@Test
+		void getTheses_WithPresentation_IncludesPresentationOverview() throws Exception {
+			UUID thesisId = createTestThesis("Thesis With Presentation");
+			String adminAuth = createRandomAdminAuthentication();
+
+			ReplacePresentationPayload presentationPayload = new ReplacePresentationPayload(
+					ThesisPresentationType.INTERMEDIATE,
+					ThesisPresentationVisibility.PUBLIC,
+					"Room 101",
+					"http://stream.url",
+					"English",
+					Instant.now().plusSeconds(86400)
+			);
+
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses/{thesisId}/presentations", thesisId)
+							.header("Authorization", adminAuth)
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(presentationPayload)))
+					.andExpect(status().isOk());
+
+			String response = mockMvc.perform(MockMvcRequestBuilders.get("/v2/theses")
+							.header("Authorization", adminAuth)
+							.param("fetchAll", "true")
+							.param("search", "Thesis With Presentation"))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			JsonNode json = objectMapper.readTree(response);
+			JsonNode firstThesis = json.get("content").get(0);
+			assertThat(firstThesis.has("presentations")).isTrue();
+
+			JsonNode presentations = firstThesis.get("presentations");
+			assertThat(presentations.isArray()).isTrue();
+			assertThat(presentations.size()).isEqualTo(1);
+			assertThat(presentations.get(0).has("presentationId")).isTrue();
+			assertThat(presentations.get(0).has("type")).isTrue();
+			assertThat(presentations.get(0).has("scheduledAt")).isTrue();
+			assertThat(presentations.get(0).get("type").asText()).isEqualTo("INTERMEDIATE");
 		}
 	}
 
@@ -520,7 +560,8 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 
 			JsonNode json = objectMapper.readTree(response);
-			assertThat(json.get("content").isArray()).isTrue();
+			assertThat(json.path("content").size()).isZero();
+			assertThat(json.get("totalElements").asInt()).isZero();
 		}
 
 		@Test

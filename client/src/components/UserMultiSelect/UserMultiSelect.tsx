@@ -65,7 +65,7 @@ const UserMultiSelect = (props: IUserMultiSelectProps) => {
             arrayUnique(
               [
                 ...prevState.filter((item) => selected.includes(item.value)),
-                ...res.data.content.map((user) => ({
+                ...(res.data.content ?? []).map((user) => ({
                   value: user.userId,
                   label: formatUser(user, { withUniversityId: true }),
                   user: user,

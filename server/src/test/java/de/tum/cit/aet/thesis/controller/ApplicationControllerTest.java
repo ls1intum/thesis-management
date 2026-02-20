@@ -225,7 +225,7 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 
 			JsonNode jsonEmpty = objectMapper.readTree(responseEmpty);
-			assertThat(jsonEmpty.get("content").size()).isZero();
+			assertThat(jsonEmpty.path("content").size()).isZero();
 		}
 
 		@Test

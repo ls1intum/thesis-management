@@ -138,10 +138,10 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
             content: res.data.content,
           })
 
-          if (res.data.content.length === 1) {
+          if ((res.data.content ?? []).length === 1) {
             form.setValues({
-              researchGroupId: res.data.content[0].id,
-              supervisorIds: [res.data.content[0].head.userId],
+              researchGroupId: (res.data.content ?? [])[0].id,
+              supervisorIds: [(res.data.content ?? [])[0].head.userId],
             })
           }
         } else {
@@ -251,7 +251,7 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
               required
               nothingFoundMessage={!loading ? 'Nothing found...' : 'Loading...'}
               disabled={loading || !researchGroups || !hasAdminAccess}
-              data={researchGroups?.content.map((researchGroup: ILightResearchGroup) => ({
+              data={(researchGroups?.content ?? []).map((researchGroup: ILightResearchGroup) => ({
                 label: researchGroup.name,
                 value: researchGroup.id,
               }))}
