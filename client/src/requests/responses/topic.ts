@@ -11,11 +11,24 @@ export interface ITopicOverview {
   topicId: string
   title: string
   state: TopicState
-  thesisTypes: string[] | null
+  thesisTypes?: string[]
   createdAt: string
   advisors: IMinimalUser[]
   supervisors: IMinimalUser[]
-  researchGroup: IMinimalResearchGroup
+  researchGroup?: IMinimalResearchGroup
+}
+
+export function toTopicOverview(topic: ITopic): ITopicOverview {
+  return {
+    topicId: topic.topicId,
+    title: topic.title,
+    state: topic.state,
+    thesisTypes: topic.thesisTypes,
+    createdAt: topic.createdAt,
+    advisors: topic.advisors,
+    supervisors: topic.supervisors,
+    researchGroup: topic.researchGroup,
+  }
 }
 
 export interface ITopic extends ITopicOverview {

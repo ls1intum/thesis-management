@@ -10,7 +10,7 @@ import {
   Text,
   TextInput,
 } from '@mantine/core'
-import { ITopic, TopicState } from '../../../../requests/responses/topic'
+import { ITopic, TopicState, toTopicOverview } from '../../../../requests/responses/topic'
 import { isNotEmpty, useForm } from '@mantine/form'
 import { isNotEmptyUserList } from '../../../../utils/validation'
 import { useEffect, useState } from 'react'
@@ -185,10 +185,11 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
       })
 
       if (response.ok) {
+        const overview = toTopicOverview(response.data)
         if (topic) {
-          updateTopic(response.data)
+          updateTopic(overview)
         } else {
-          addTopic(response.data)
+          addTopic(overview)
         }
 
         onClose()

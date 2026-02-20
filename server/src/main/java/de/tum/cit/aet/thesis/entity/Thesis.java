@@ -6,6 +6,7 @@ import de.tum.cit.aet.thesis.constants.ThesisVisibility;
 import de.tum.cit.aet.thesis.entity.jsonb.ThesisMetadata;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -123,6 +124,7 @@ private List<ThesisAssessment> assessments = new ArrayList<>();
 
 @OneToMany(mappedBy = "thesis", fetch = FetchType.LAZY)
 @OrderBy("scheduledAt ASC")
+@BatchSize(size = 50)
 private List<ThesisPresentation> presentations = new ArrayList<>();
 
 @OneToMany(mappedBy = "thesis", fetch = FetchType.LAZY)

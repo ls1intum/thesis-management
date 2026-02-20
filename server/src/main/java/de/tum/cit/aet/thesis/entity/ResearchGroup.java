@@ -2,6 +2,7 @@ package de.tum.cit.aet.thesis.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -27,6 +28,7 @@ import java.util.UUID;
 @Setter
 @Entity
 @Table(name = "research_groups")
+@BatchSize(size = 50)
 public class ResearchGroup {
 
 @Id

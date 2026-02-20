@@ -68,7 +68,7 @@ const CollapsibleTopicElement = ({ topic, onApply }: ICollapsibleTopicElementPro
             <Stack gap={'0.25rem'}>
               <Title order={5}>{topic.title}</Title>
               <Title c={'dimmed'} order={6}>
-                {topic.researchGroup.name}
+                {topic.researchGroup?.name ?? ''}
               </Title>
             </Stack>
           </Stack>
@@ -87,7 +87,7 @@ const CollapsibleTopicElement = ({ topic, onApply }: ICollapsibleTopicElementPro
                     Failed to load topic details.
                   </Text>
                 </Center>
-              ) : fullTopic ? (
+              ) : (
                 <>
                   <Grid>
                     <Grid.Col span={4}>
@@ -142,7 +142,7 @@ const CollapsibleTopicElement = ({ topic, onApply }: ICollapsibleTopicElementPro
                     <DocumentEditor label='References' value={fullTopic.references} />
                   )}
                 </>
-              ) : null
+              )
             ) : (
               <></>
             )}

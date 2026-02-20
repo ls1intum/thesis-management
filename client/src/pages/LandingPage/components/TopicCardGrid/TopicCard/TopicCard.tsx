@@ -93,7 +93,7 @@ const TopicCard = ({ topic, setOpenTopic }: ITopicCardProps) => {
               </Flex>
             </Tooltip>
 
-            <Text c='dimmed'>{topic.researchGroup.name}</Text>
+            <Text c='dimmed'>{topic.researchGroup?.name ?? ''}</Text>
           </Stack>
         </Card.Section>
 

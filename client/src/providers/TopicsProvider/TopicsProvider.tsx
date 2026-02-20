@@ -136,7 +136,7 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
           const newHasState = topicStates.includes(newTopic.state)
 
           if (newHasState) {
-            prev.content = [newTopic, ...prev.content].slice(-limit)
+            prev.content = [newTopic, ...prev.content].slice(0, limit)
             prev.totalElements += 1
             prev.totalPages = Math.ceil(prev.totalElements / limit)
           }

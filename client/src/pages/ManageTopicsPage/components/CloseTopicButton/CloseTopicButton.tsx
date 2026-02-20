@@ -1,4 +1,9 @@
-import { ITopic, ITopicOverview, TopicState } from '../../../../requests/responses/topic'
+import {
+  ITopic,
+  ITopicOverview,
+  TopicState,
+  toTopicOverview,
+} from '../../../../requests/responses/topic'
 import { X } from '@phosphor-icons/react'
 import React, { useEffect, useState } from 'react'
 import { useTopicsContext } from '../../../../providers/TopicsProvider/hooks'
@@ -65,7 +70,7 @@ const CloseTopicButton = (props: ICloseTopicButtonProps) => {
               })
 
               if (response.ok) {
-                updateTopic(response.data)
+                updateTopic(toTopicOverview(response.data))
 
                 showSimpleSuccess('Topic closed successfully')
               } else {

@@ -70,6 +70,7 @@ const ThesesGanttChart = () => {
       }
 
       const advisor = thesis.advisors[0]
+      if (!advisor) continue
 
       result.push({
         id: thesis.thesisId,

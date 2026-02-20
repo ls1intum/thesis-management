@@ -29,6 +29,7 @@ public record ThesisOverviewDto(
 	List<ThesisPresentationOverviewDto> presentations
 ) {
 
+	@JsonInclude(JsonInclude.Include.NON_EMPTY)
 	public record ThesisPresentationOverviewDto(
 		UUID presentationId,
 		ThesisPresentationType type,

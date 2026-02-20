@@ -44,7 +44,7 @@ export interface IThesisOverview {
   students: IMinimalUser[]
   advisors: IMinimalUser[]
   supervisors: IMinimalUser[]
-  researchGroup: IMinimalResearchGroup
+  researchGroup?: IMinimalResearchGroup
   states?: Array<{
     state: ThesisState
     startedAt: string
