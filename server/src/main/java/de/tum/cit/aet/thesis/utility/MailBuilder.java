@@ -1,12 +1,6 @@
 package de.tum.cit.aet.thesis.utility;
 
 import de.tum.cit.aet.thesis.constants.ThesisRoleName;
-import de.tum.cit.aet.thesis.dto.ApplicationDto;
-import de.tum.cit.aet.thesis.dto.InterviewSlotDto;
-import de.tum.cit.aet.thesis.dto.IntervieweeDTO;
-import de.tum.cit.aet.thesis.dto.ThesisCommentDto;
-import de.tum.cit.aet.thesis.dto.ThesisDto;
-import de.tum.cit.aet.thesis.dto.UserDto;
 import de.tum.cit.aet.thesis.entity.Application;
 import de.tum.cit.aet.thesis.entity.InterviewSlot;
 import de.tum.cit.aet.thesis.entity.Interviewee;
@@ -19,6 +13,14 @@ import de.tum.cit.aet.thesis.entity.ThesisRole;
 import de.tum.cit.aet.thesis.entity.Topic;
 import de.tum.cit.aet.thesis.entity.TopicRole;
 import de.tum.cit.aet.thesis.entity.User;
+import de.tum.cit.aet.thesis.mailvariables.MailApplication;
+import de.tum.cit.aet.thesis.mailvariables.MailInterviewSlot;
+import de.tum.cit.aet.thesis.mailvariables.MailThesis;
+import de.tum.cit.aet.thesis.mailvariables.MailThesisAssessment;
+import de.tum.cit.aet.thesis.mailvariables.MailThesisComment;
+import de.tum.cit.aet.thesis.mailvariables.MailThesisPresentation;
+import de.tum.cit.aet.thesis.mailvariables.MailThesisProposal;
+import de.tum.cit.aet.thesis.mailvariables.MailUser;
 import de.tum.cit.aet.thesis.service.UploadService;
 import lombok.Getter;
 import org.slf4j.Logger;
@@ -46,7 +48,7 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * Fluent builder for composing and sending email messages with recipients, template placeholders, and attachments.
+ * Builds and sends template-based emails with recipients, placeholders, and attachments.
  */
 public class MailBuilder {
 	private static final Logger log = LoggerFactory.getLogger(MailBuilder.class);
@@ -79,11 +81,11 @@ public class MailBuilder {
 	private record StoredAttachment(String filename, String file) {}
 
 	/**
-	 * Initializes a new mail builder with the given mail configuration, subject, and template.
+	 * Creates a new mail builder.
 	 *
 	 * @param config the mail configuration
-	 * @param subject the email subject line
-	 * @param templateHtml the HTML template for the email body
+	 * @param subject the email subject
+	 * @param templateHtml the HTML template body
 	 */
 	public MailBuilder(MailConfig config, String subject, String templateHtml) {
 		this.config = config;
@@ -105,11 +107,11 @@ public class MailBuilder {
 	}
 
 	/**
-	 * Adds a stored file attachment referenced by its storage path.
+	 * Adds an attachment that is stored in the upload storage.
 	 *
-	 * @param storedFile the storage path of the file
-	 * @param filename the display filename for the attachment
-	 * @return the updated mail builder instance
+	 * @param storedFile the stored file name
+	 * @param filename the output attachment file name
+	 * @return this builder
 	 */
 	public MailBuilder addStoredAttachment(String storedFile, String filename) {
 		if (storedFile == null || storedFile.isBlank()) {
@@ -122,10 +124,10 @@ public class MailBuilder {
 	}
 
 	/**
-	 * Adds a raw byte array attachment to the email.
+	 * Adds a raw in-memory attachment.
 	 *
-	 * @param file the byte array data source for the attachment
-	 * @param filename the display filename for the attachment
+	 * @param file the file data
+	 * @param filename the output attachment file name
 	 */
 	public void addRawAttatchment(ByteArrayDataSource file, String filename) {
 		if (filename == null || filename.isBlank()) {
@@ -133,14 +135,13 @@ public class MailBuilder {
 		}
 
 		rawAttachments.add(new RawAttachment(filename, file));
-
 	}
 
 	/**
-	 * Registers a notification name used to filter recipients based on their notification preferences.
+	 * Adds a notification key used for recipient preference filtering.
 	 *
-	 * @param name the notification name to register
-	 * @return the updated mail builder instance
+	 * @param name the notification name
+	 * @return this builder
 	 */
 	public MailBuilder addNotificationName(String name) {
 		notificationNames.add(name);
@@ -149,10 +150,10 @@ public class MailBuilder {
 	}
 
 	/**
-	 * Adds a user as a primary sender, which is used to exclude them from the recipient list when appropriate.
+	 * Adds a primary sender.
 	 *
-	 * @param user the user to add as primary sender
-	 * @return the updated mail builder instance
+	 * @param user the sender user
+	 * @return this builder
 	 */
 	public MailBuilder addPrimarySender(User user) {
 		this.primarySenders.add(user);
@@ -161,10 +162,10 @@ public class MailBuilder {
 	}
 
 	/**
-	 * Adds the research group head email address as a BCC recipient if it is non-null and non-blank.
+	 * Adds the research group head as BCC recipient.
 	 *
-	 * @param researchGroupHeadMail the email address of the research group head
-	 * @return the updated mail builder instance
+	 * @param researchGroupHeadMail the head email address
+	 * @return this builder
 	 */
 	public MailBuilder addDefaultBccRecipients(InternetAddress researchGroupHeadMail) {
 		if (researchGroupHeadMail == null || researchGroupHeadMail.getAddress().isBlank()) {
@@ -175,10 +176,10 @@ public class MailBuilder {
 	}
 
 	/**
-	 * Adds a user as a primary (TO) recipient, preventing duplicates.
+	 * Adds a primary recipient.
 	 *
-	 * @param user the user to add as a primary recipient
-	 * @return the updated mail builder instance
+	 * @param user the recipient user
+	 * @return this builder
 	 */
 	public MailBuilder addPrimaryRecipient(User user) {
 		if (primaryRecipients.contains(user)) {
@@ -191,10 +192,10 @@ public class MailBuilder {
 	}
 
 	/**
-	 * Adds a user as a secondary (CC) recipient, preventing duplicates.
+	 * Adds a secondary recipient.
 	 *
-	 * @param user the user to add as a secondary recipient
-	 * @return the updated mail builder instance
+	 * @param user the recipient user
+	 * @return this builder
 	 */
 	public MailBuilder addSecondaryRecipient(User user) {
 		if (secondaryRecipients.contains(user)) {
@@ -207,9 +208,9 @@ public class MailBuilder {
 	}
 
 	/**
-	 * Adds an email address as a BCC recipient, preventing duplicates.
+	 * Adds a BCC recipient.
 	 *
-	 * @param address the email address to add as a BCC recipient
+	 * @param address the email address
 	 */
 	public void addBccRecipient(InternetAddress address) {
 		if (bccRecipients.contains(address)) {
@@ -217,14 +218,13 @@ public class MailBuilder {
 		}
 
 		bccRecipients.add(address);
-
 	}
 
 	/**
-	 * Adds all chair members of the given research group as primary recipients.
+	 * Adds all chair members of a research group as primary recipients.
 	 *
-	 * @param researchGroupId the ID of the research group
-	 * @return the updated mail builder instance
+	 * @param researchGroupId the research group ID
+	 * @return this builder
 	 */
 	public MailBuilder sendToChairMembers(UUID researchGroupId) {
 		for (User user : config.getChairMembers(researchGroupId)) {
@@ -235,11 +235,11 @@ public class MailBuilder {
 	}
 
 	/**
-	 * Filters primary recipients to only include chair members whose notification preferences match the given topic.
+	 * Filters chair recipients for new-application notifications based on notification settings.
 	 *
-	 * @param topic the topic to filter notifications against
-	 * @param notificationName the notification preference name to check
-	 * @return the updated mail builder instance
+	 * @param topic the topic associated with the application
+	 * @param notificationName the notification preference key
+	 * @return this builder
 	 */
 	public MailBuilder filterChairMembersNewApplicationNotifications(Topic topic, String notificationName) {
 		List<User> filteredMembers = new ArrayList<>();
@@ -280,10 +280,10 @@ public class MailBuilder {
 	}
 
 	/**
-	 * Adds all supervisors of the given thesis as primary recipients.
+	 * Adds all thesis supervisors as primary recipients.
 	 *
-	 * @param thesis the thesis whose supervisors will be added
-	 * @return the updated mail builder instance
+	 * @param thesis the thesis
+	 * @return this builder
 	 */
 	public MailBuilder sendToThesisSupervisors(Thesis thesis) {
 		for (ThesisRole role : thesis.getRoles()) {
@@ -296,10 +296,10 @@ public class MailBuilder {
 	}
 
 	/**
-	 * Adds all advisors and supervisors of the given thesis as primary recipients.
+	 * Adds all thesis advisors and supervisors as primary recipients.
 	 *
-	 * @param thesis the thesis whose advisors and supervisors will be added
-	 * @return the updated mail builder instance
+	 * @param thesis the thesis
+	 * @return this builder
 	 */
 	public MailBuilder sendToThesisAdvisors(Thesis thesis) {
 		for (ThesisRole role : thesis.getRoles()) {
@@ -314,10 +314,10 @@ public class MailBuilder {
 	}
 
 	/**
-	 * Adds students of the given thesis as primary recipients and all other roles as secondary recipients.
+	 * Adds thesis students as primary recipients and other roles as secondary recipients.
 	 *
-	 * @param thesis the thesis whose students and other roles will be added
-	 * @return the updated mail builder instance
+	 * @param thesis the thesis
+	 * @return this builder
 	 */
 	public MailBuilder sendToThesisStudents(Thesis thesis) {
 		for (ThesisRole role : thesis.getRoles()) {
@@ -332,10 +332,10 @@ public class MailBuilder {
 	}
 
 	/**
-	 * Adds all entries from the given map as template placeholder variables.
+	 * Adds all placeholder values from a model map.
 	 *
-	 * @param model the map of placeholder names to values
-	 * @return the updated mail builder instance
+	 * @param model placeholder model values
+	 * @return this builder
 	 */
 	public MailBuilder fillPlaceholders(Map<String, Object> model) {
 		this.variables.putAll(model);
@@ -343,11 +343,11 @@ public class MailBuilder {
 	}
 
 	/**
-	 * Sets a single template placeholder variable to the given value.
+	 * Adds a single placeholder value.
 	 *
-	 * @param placeholder the placeholder name
-	 * @param value the value to set for the placeholder
-	 * @return the updated mail builder instance
+	 * @param placeholder the placeholder key
+	 * @param value the placeholder value
+	 * @return this builder
 	 */
 	public MailBuilder fillPlaceholder(String placeholder, Object value) {
 		this.variables.put(placeholder, value);
@@ -356,131 +356,143 @@ public class MailBuilder {
 	}
 
 	/**
-	 * Sets a user DTO as a template placeholder variable under the given name.
+	 * Fills user placeholders under the given placeholder key.
 	 *
-	 * @param user the user to convert to a DTO and set as a placeholder
-	 * @param placeholder the placeholder name for the user DTO
-	 * @return the updated mail builder instance
+	 * @param user the user entity
+	 * @param placeholder the top-level placeholder key
+	 * @return this builder
 	 */
 	public MailBuilder fillUserPlaceholders(User user, String placeholder) {
-		fillPlaceholder(placeholder, UserDto.fromUserEntity(user));
+		fillPlaceholder(placeholder, MailUser.fromUser(user));
 
 		return this;
 	}
 
 	/**
-	 * Sets the application DTO and application URL as template placeholder variables.
+	 * Fills placeholders related to an application.
 	 *
-	 * @param application the application to populate placeholders from
-	 * @return the updated mail builder instance
+	 * @param application the application entity
+	 * @return this builder
 	 */
 	public MailBuilder fillApplicationPlaceholders(Application application) {
-		fillPlaceholder("application", ApplicationDto.fromApplicationEntity(application, false));
+		fillPlaceholder("application", MailApplication.fromApplication(application));
 		fillPlaceholder("applicationUrl", config.getClientHost() + "/applications/" + application.getId());
 
 		return this;
 	}
 
 	/**
-	 * Sets the interviewee DTO and interview booking URL as template placeholder variables.
+	 * Fills placeholders related to interview invitations.
 	 *
-	 * @param interviewee the interviewee to populate placeholders from
-	 * @return the updated mail builder instance
+	 * @param interviewee the interviewee entity
+	 * @return this builder
 	 */
 	public MailBuilder fillIntervieweePlaceholders(Interviewee interviewee) {
-		fillPlaceholder("interviewee", IntervieweeDTO.fromIntervieweeEntity(interviewee));
+		if (interviewee == null || interviewee.getInterviewProcess() == null) {
+			return this;
+		}
+
 		fillPlaceholder("inviteUrl", config.getClientHost() + "/interview_booking/" + interviewee.getInterviewProcess().getId());
 
 		return this;
 	}
 
 	/**
-	 * Sets the interview slot DTO as a template placeholder variable.
+	 * Fills placeholders related to interview slots.
 	 *
-	 * @param interviewSlot the interview slot to populate placeholders from
-	 * @return the updated mail builder instance
+	 * @param interviewSlot the interview slot entity
+	 * @return this builder
 	 */
 	public MailBuilder fillInterviewSlotPlaceholders(InterviewSlot interviewSlot) {
-		fillPlaceholder("slot", InterviewSlotDto.fromInterviewSlot(interviewSlot));
+		fillPlaceholder("slot", MailInterviewSlot.fromInterviewSlot(interviewSlot));
 
 		return this;
 	}
 
 	/**
-	 * Sets the thesis DTO and thesis URL as template placeholder variables.
+	 * Fills thesis-related placeholders.
 	 *
-	 * @param thesis the thesis to populate placeholders from
-	 * @return the updated mail builder instance
+	 * @param thesis the thesis entity
+	 * @return this builder
 	 */
 	public MailBuilder fillThesisPlaceholders(Thesis thesis) {
-		fillPlaceholder("thesis", ThesisDto.fromThesisEntity(thesis, false, true));
+		fillPlaceholder("thesis", MailThesis.fromThesis(thesis));
 		fillPlaceholder("thesisUrl", config.getClientHost() + "/theses/" + thesis.getId());
 
 		return this;
 	}
 
 	/**
-	 * Sets the thesis comment DTO and associated thesis placeholders as template variables.
+	 * Fills thesis placeholders including grade fields.
 	 *
-	 * @param comment the thesis comment to populate placeholders from
-	 * @return the updated mail builder instance
+	 * @param thesis the thesis entity
+	 * @return this builder
 	 */
-	public MailBuilder fillThesisCommentPlaceholders(ThesisComment comment) {
-		fillThesisPlaceholders(comment.getThesis());
-
-		fillPlaceholder("comment", ThesisCommentDto.fromCommentEntity(comment));
+	public MailBuilder fillThesisGradePlaceholders(Thesis thesis) {
+		fillPlaceholder("thesis", MailThesis.fromThesisWithGrade(thesis));
+		fillPlaceholder("thesisUrl", config.getClientHost() + "/theses/" + thesis.getId());
 
 		return this;
 	}
 
 	/**
-	 * Sets the thesis presentation DTO, presentation URL, and associated thesis placeholders as template variables.
+	 * Fills placeholders for thesis comment notifications.
 	 *
-	 * @param presentation the thesis presentation to populate placeholders from
-	 * @return the updated mail builder instance
+	 * @param comment the thesis comment
+	 * @return this builder
+	 */
+	public MailBuilder fillThesisCommentPlaceholders(ThesisComment comment) {
+		fillThesisPlaceholders(comment.getThesis());
+		fillPlaceholder("comment", MailThesisComment.fromComment(comment));
+
+		return this;
+	}
+
+	/**
+	 * Fills placeholders for thesis presentation notifications.
+	 *
+	 * @param presentation the thesis presentation
+	 * @return this builder
 	 */
 	public MailBuilder fillThesisPresentationPlaceholders(ThesisPresentation presentation) {
 		fillThesisPlaceholders(presentation.getThesis());
-
-		fillPlaceholder("presentation", ThesisDto.ThesisPresentationDto.fromPresentationEntity(presentation));
+		fillPlaceholder("presentation", MailThesisPresentation.fromPresentation(presentation));
 		fillPlaceholder("presentationUrl", config.getClientHost() + "/presentations/" + presentation.getId());
 
 		return this;
 	}
 
 	/**
-	 * Sets the thesis proposal DTO and associated thesis placeholders as template variables.
+	 * Fills placeholders for thesis proposal notifications.
 	 *
-	 * @param proposal the thesis proposal to populate placeholders from
-	 * @return the updated mail builder instance
+	 * @param proposal the thesis proposal
+	 * @return this builder
 	 */
 	public MailBuilder fillThesisProposalPlaceholders(ThesisProposal proposal) {
 		fillThesisPlaceholders(proposal.getThesis());
-
-		fillPlaceholder("proposal", ThesisDto.ThesisProposalDto.fromProposalEntity(proposal));
+		fillPlaceholder("proposal", MailThesisProposal.fromProposal(proposal));
 
 		return this;
 	}
 
 	/**
-	 * Sets the thesis assessment DTO and associated thesis placeholders as template variables.
+	 * Fills placeholders for thesis assessment notifications.
 	 *
-	 * @param assessment the thesis assessment to populate placeholders from
-	 * @return the updated mail builder instance
+	 * @param assessment the thesis assessment
+	 * @return this builder
 	 */
 	public MailBuilder fillThesisAssessmentPlaceholders(ThesisAssessment assessment) {
 		fillThesisPlaceholders(assessment.getThesis());
-
-		fillPlaceholder("assessment", ThesisDto.ThesisAssessmentDto.fromAssessmentEntity(assessment));
+		fillPlaceholder("assessment", MailThesisAssessment.fromAssessment(assessment));
 
 		return this;
 	}
 
 	/**
-	 * Composes and sends the email to all filtered recipients using the configured mail sender and upload service.
+	 * Renders and sends the email with all configured recipients, placeholders, and attachments.
 	 *
-	 * @param mailSender the mail sender to use for sending
-	 * @param uploadService the upload service for resolving file attachments
+	 * @param mailSender the mail sender
+	 * @param uploadService upload service used for stored attachments
 	 */
 	public void send(JavaMailSender mailSender, UploadService uploadService) {
 		List<User> toRecipients = new ArrayList<>();
@@ -534,7 +546,7 @@ public class MailBuilder {
 
 				Context templateContext = new Context();
 				templateContext.setVariables(this.variables);
-				templateContext.setVariable("recipient", UserDto.fromUserEntity(recipient));
+				templateContext.setVariable("recipient", MailUser.fromUser(recipient));
 				templateContext.setVariable("DataFormatter", DataFormatter.class);
 
 				message.setSubject(subject);
@@ -547,19 +559,15 @@ public class MailBuilder {
 
 				for (StoredAttachment data : fileAttachments) {
 					MimeBodyPart attachment = new MimeBodyPart();
-
 					attachment.setDataHandler(new DataHandler(new FileDataSource(uploadService.load(data.file()).getFile())));
 					attachment.setFileName(data.filename());
-
 					messageContent.addBodyPart(attachment);
 				}
 
 				for (RawAttachment data : rawAttachments) {
 					MimeBodyPart attachment = new MimeBodyPart();
-
 					attachment.setDataHandler(new DataHandler(data.file()));
 					attachment.setFileName(data.filename());
-
 					messageContent.addBodyPart(attachment);
 				}
 

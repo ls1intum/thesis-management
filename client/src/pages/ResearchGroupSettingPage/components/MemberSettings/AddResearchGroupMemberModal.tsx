@@ -1,5 +1,5 @@
 import { Button, Flex, Modal, Stack, Text } from '@mantine/core'
-import KeycloakUserAutocomplete from '../../../components/KeycloakUserAutocomplete.tsx/KeycloakUserAutocomplete'
+import KeycloakUserAutocomplete from '../../../../components/KeycloakUserAutocomplete.tsx/KeycloakUserAutocomplete'
 import { useState } from 'react'
 
 interface IAddResearchGroupMemberModalProps {

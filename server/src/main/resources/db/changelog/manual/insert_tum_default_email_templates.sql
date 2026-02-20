@@ -4,10 +4,10 @@
 --
 -- This script:
 --   - Inserts all default email templates,
---   - Should be executed manually on DEV and PROD environments.
+--   - Is executed automatically via Liquibase change 21_seed_default_email_templates.xml.
 --
 -- IMPORTANT:
--- This script is NOT part of the standard Liquibase migration process.
+-- This script can still be executed manually if needed.
 --
 -- Author: Marc Fett
 -- Date: 2025/04/27
@@ -80,32 +80,32 @@ You can view your thesis details and tasks on: <a target="_blank" rel="noopener 
 <p>Best regards,<br/>
 The Thesis Coordination Team</p>', 'Application was accepted with same advisor and supervisor'), ('APPLICATION_CREATED_CHAIR', 'New Thesis Application', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
-<p th:inline="text">there is a new thesis application by <strong>[[${application.user.firstName}]]&nbsp;[[${application.user.lastName}]]</strong>.</p>
+<p th:inline="text">there is a new thesis application by <strong>[[${application.applicantFirstName}]]&nbsp;[[${application.applicantLastName}]]</strong>.</p>
 <p th:inline="text">We received the following thesis application details:</p>
 
 <hr/>
 
 <p th:inline="text">
 <strong>Name:</strong><br/>
-[[${application.user.firstName}]]&nbsp;[[${application.user.lastName}]]
+[[${application.applicantFirstName}]]&nbsp;[[${application.applicantLastName}]]
 </p>
 <p th:inline="text">
 <strong>Email:</strong><br/>
-[[${application.user.email}]]
+[[${application.applicantEmail}]]
 </p>
 <p th:inline="text">
 <strong>University ID:</strong><br/>
-[[${application.user.universityId}]]
+[[${application.applicantUniversityId}]]
 </p>
 <p th:inline="text">
 <strong>Matriculation Number:</strong><br/>
-[[${application.user.matriculationNumber}]]
+[[${application.applicantMatriculationNumber}]]
 </p>
 <p th:inline="text">
 <strong>Study program:</strong><br/>
-[[${DataFormatter.formatConstantName(application.user.studyProgram)}]]&nbsp;
-[[${DataFormatter.formatConstantName(application.user.studyDegree)}]]&nbsp;
-(Semester [[${DataFormatter.formatSemester(application.user.enrolledAt)}]])
+[[${application.studyProgram}]]&nbsp;
+[[${application.studyDegree}]]&nbsp;
+(Semester [[${application.semester}]])
 </p>
 <p th:inline="text">
 <strong>Thesis Title:</strong><br/>
@@ -113,7 +113,7 @@ The Thesis Coordination Team</p>', 'Application was accepted with same advisor a
 </p>
 <p th:inline="text">
 <strong>Desired Thesis Start Date:</strong><br/>
-[[${DataFormatter.formatDate(application.desiredStartDate)}]]
+[[${application.desiredStartDate}]]
 </p>
 <p>
 <strong>Motivation:</strong><br/>
@@ -122,17 +122,17 @@ The Thesis Coordination Team</p>', 'Application was accepted with same advisor a
 <br/>
 <p>
 <strong>Special Skills:</strong><br/>
-<span th:utext="${application.user.specialSkills}"></span>
+<span th:utext="${application.specialSkills}"></span>
 </p>
 <br/>
 <p>
 <strong>Interests:</strong><br/>
-<span th:utext="${application.user.interests}"></span>
+<span th:utext="${application.interests}"></span>
 </p>
 <br/>
 <p>
 <strong>Projects:</strong><br/>
-<span th:utext="${application.user.projects}"></span>
+<span th:utext="${application.projects}"></span>
 </p>
 <br/>
 
@@ -155,25 +155,25 @@ Full Details: <a target="_blank" rel="noopener noreferrer nofollow" th:href="${a
 
 <p th:inline="text">
 <strong>Name:</strong><br/>
-[[${application.user.firstName}]]&nbsp;[[${application.user.lastName}]]
+[[${application.applicantFirstName}]]&nbsp;[[${application.applicantLastName}]]
 </p>
 <p th:inline="text">
 <strong>Email:</strong><br/>
-[[${application.user.email}]]
+[[${application.applicantEmail}]]
 </p>
 <p th:inline="text">
 <strong>University ID:</strong><br/>
-[[${application.user.universityId}]]
+[[${application.applicantUniversityId}]]
 </p>
 <p th:inline="text">
 <strong>Matriculation Number:</strong><br/>
-[[${application.user.matriculationNumber}]]
+[[${application.applicantMatriculationNumber}]]
 </p>
 <p th:inline="text">
 <strong>Study program:</strong><br/>
-[[${DataFormatter.formatConstantName(application.user.studyProgram)}]]&nbsp;
-[[${DataFormatter.formatConstantName(application.user.studyDegree)}]]&nbsp;
-(Semester [[${DataFormatter.formatSemester(application.user.enrolledAt)}]])
+[[${application.studyProgram}]]&nbsp;
+[[${application.studyDegree}]]&nbsp;
+(Semester [[${application.semester}]])
 </p>
 <p th:inline="text">
 <strong>Thesis Title:</strong><br/>
@@ -181,7 +181,7 @@ Full Details: <a target="_blank" rel="noopener noreferrer nofollow" th:href="${a
 </p>
 <p th:inline="text">
 <strong>Desired Thesis Start Date:</strong><br/>
-[[${DataFormatter.formatDate(application.desiredStartDate)}]]
+[[${application.desiredStartDate}]]
 </p>
 <p>
 <strong>Motivation:</strong><br/>
@@ -190,17 +190,17 @@ Full Details: <a target="_blank" rel="noopener noreferrer nofollow" th:href="${a
 <br/>
 <p>
 <strong>Special Skills:</strong><br/>
-<span th:utext="${application.user.specialSkills}"></span>
+<span th:utext="${application.specialSkills}"></span>
 </p>
 <br/>
 <p>
 <strong>Interests:</strong><br/>
-<span th:utext="${application.user.interests}"></span>
+<span th:utext="${application.interests}"></span>
 </p>
 <br/>
 <p>
 <strong>Projects:</strong><br/>
-<span th:utext="${application.user.projects}"></span>
+<span th:utext="${application.projects}"></span>
 </p>
 <br/>
 
@@ -215,6 +215,7 @@ We appreciate your patience and understanding during this period.
 
 <p th:inline="text">
 Thank you for your interest in pursuing your thesis under my supervision.
+Your application for "[[${application.thesisTitle}]]" was carefully reviewed.
 I have carefully reviewed your application and supporting documents.
 It is with regret that I inform you that I am unable to supervise your thesis.
 The volume of applications received this year was exceptionally high, and I have limited capacity to ensure each student receives the appropriate level of support and guidance.
@@ -228,6 +229,7 @@ The Thesis Coordination Team</p>', 'Application was rejected'), ('APPLICATION_RE
 
 <p th:inline="text">
 Thank you for your interest in pursuing your thesis under my supervision.
+Your application for "[[${application.thesisTitle}]]" was carefully reviewed.
 After reviewing your application and supporting documents, I regret to inform you that you do not meet the necessary requirements for the chosen thesis topic.
 </p>
 <p th:inline="text">
@@ -239,6 +241,7 @@ The Thesis Coordination Team</p>', 'Application was rejected because topic requi
 
 <p th:inline="text">
 Thank you for your interest in pursuing your thesis under my supervision.
+Your application for "[[${application.thesisTitle}]]" was carefully reviewed.
 I have carefully reviewed your application and supporting documents.
 Unfortunately, I must inform you that you do not currently meet the necessary requirements for thesis supervision under my guidance.
 </p>
@@ -251,6 +254,7 @@ The Thesis Coordination Team</p>', 'Application was rejected because student doe
 
 <p th:inline="text">
 Thank you for your interest in pursuing your thesis under my supervision.
+Your application for "[[${application.thesisTitle}]]" was carefully reviewed.
 I have carefully reviewed your proposed thesis.
 However, the suggested topic does not align with the current research interests of my group, and I am unable to supervise your thesis on this basis
 </p>
@@ -263,6 +267,7 @@ The Thesis Coordination Team</p>', 'Application was rejected because the suggest
 
 <p th:inline="text">
 Thank you for your interest in pursuing your thesis under my supervision.
+Your application for "[[${application.thesisTitle}]]" was carefully reviewed.
 </p>
 
 <p th:inline="text">
@@ -278,6 +283,7 @@ The Thesis Coordination Team</p>', 'Application was rejected because topic was c
 
 <p th:inline="text">
 Thank you for your interest in pursuing your thesis under my supervision.
+Your application for "[[${application.thesisTitle}]]" was carefully reviewed.
 </p>
 
 <p th:inline="text">
@@ -306,7 +312,7 @@ Review Applications: <a target="_blank" rel="noopener noreferrer nofollow" th:hr
 <br/><br/>', 'Weekly email if there are more than 10 unreviewed applications'), ('THESIS_ASSESSMENT_ADDED', 'Assessment added', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">
-[[${assessment.createdBy.firstName}]] [[${assessment.createdBy.lastName}]] added an assessment to thesis "[[${thesis.title}]]"
+[[${assessment.creatorFirstName}]] [[${assessment.creatorLastName}]] added an assessment to thesis "[[${thesis.title}]]"
 </p>
 
 <p >
@@ -354,7 +360,7 @@ Please contact your advisor or supervisor if you think that this was a mistake.
 <br/><br/>', 'Thesis was closed before completion'), ('THESIS_COMMENT_POSTED', 'A Comment was posted', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">
-[[${comment.createdBy.firstName}]] [[${comment.createdBy.lastName}]] posted a comment on thesis "[[${thesis.title}]]"
+[[${comment.creatorFirstName}]] [[${comment.creatorLastName}]] posted a comment on thesis "[[${thesis.title}]]"
 </p>
 
 <p th:inline="text">
@@ -378,9 +384,9 @@ Please contact your advisor or supervisor if you think that this was a mistake.
 
 <p th:inline="text">
 <strong>Title</strong>: [[${thesis.title}]]<br />
-<strong>Supervisor</strong>: [[${DataFormatter.formatUsers(thesis.supervisors)}]]<br />
-<strong>Advisor</strong>: [[${DataFormatter.formatUsers(thesis.advisors)}]]<br />
-<strong>Student</strong>: [[${DataFormatter.formatUsers(thesis.students)}]]<br />
+<strong>Supervisor</strong>: [[${thesis.supervisors}]]<br />
+<strong>Advisor</strong>: [[${thesis.advisors}]]<br />
+<strong>Student</strong>: [[${thesis.students}]]<br />
 </p>
 
 <p th:inline="text">
@@ -388,16 +394,16 @@ The next step is that you write a proposal and submit it on <a target="_blank" r
 </p>', 'New thesis was created and assigned to a student'), ('THESIS_FINAL_GRADE', 'Final Grade available for Thesis', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">
-[[${DataFormatter.formatUsers(thesis.supervisors)}]] added the final grade to your thesis "[[${thesis.title}]]"
+[[${thesis.supervisors}]] added the final grade to your thesis "[[${thesis.title}]]"
 </p>
 
 <p th:inline="text">
-<strong>Final Grade</strong>: [[${thesis.grade.finalGrade}]]
+<strong>Final Grade</strong>: [[${thesis.finalGrade}]]
 </p>
 
 <p>
 <strong>Feedback</strong><br />
-<span th:utext="${thesis.grade.feedback}"></span>
+<span th:utext="${thesis.finalFeedback}"></span>
 </p>
 
 <p th:inline="text">
@@ -411,7 +417,7 @@ The next step is that you write a proposal and submit it on <a target="_blank" r
 <br/><br/>', 'Final grade was added to a thesis'), ('THESIS_FINAL_SUBMISSION', 'Thesis Submitted', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">
-[[${DataFormatter.formatUsers(thesis.students)}]] submitted thesis "[[${thesis.title}]]".
+[[${thesis.students}]] submitted thesis "[[${thesis.title}]]".
 </p>
 
 <p th:inline="text">
@@ -429,7 +435,7 @@ The next step is to write an assessment about the thesis.
 <br/><br/>', 'Student submitted final thesis'), ('THESIS_PRESENTATION_DELETED', 'Presentation deleted', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">
-[[${deletingUser.firstName}]] [[${deletingUser.lastName}]] cancelled the presentation scheduled at [[${DataFormatter.formatDateTime(presentation.scheduledAt)}]] for thesis "[[${thesis.title}]]"
+[[${deletingUser.firstName}]] [[${deletingUser.lastName}]] cancelled the presentation scheduled at [[${presentation.scheduledAt}]] for thesis "[[${thesis.title}]]"
 </p>
 
 <p th:inline="text">
@@ -443,32 +449,32 @@ The next step is to write an assessment about the thesis.
 <br/><br/>', 'Scheduled presentation was deleted'), ('THESIS_PRESENTATION_SCHEDULED', 'New Presentation scheduled', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">
-[[${presentation.createdBy.firstName}]] [[${presentation.createdBy.lastName}]] scheduled a presentation for thesis "[[${thesis.title}]]"
+[[${presentation.creatorFirstName}]] [[${presentation.creatorLastName}]] scheduled a presentation for thesis "[[${thesis.title}]]"
 </p>
 
 <p th:inline="text">
 <strong>Type</strong><br />
-[[${DataFormatter.formatEnum(presentation.type)}]]
+[[${presentation.type}]]
 </p>
 
 <p th:inline="text">
 <strong>Location</strong><br />
-[[${DataFormatter.formatOptionalString(presentation.location)}]]
+[[${presentation.location}]]
 </p >
 
 <p th:inline="text">
 <strong>Stream URL</strong><br />
-[[${DataFormatter.formatOptionalString(presentation.streamUrl)}]]
+[[${presentation.streamUrl}]]
 </p>
 
 <p th:inline="text">
 <strong>Language</strong><br />
-[[${DataFormatter.formatConstantName(presentation.language)}]]
+[[${presentation.language}]]
 </p>
 
 <p th:inline="text">
 <strong>Scheduled At</strong><br />
-[[${DataFormatter.formatDateTime(presentation.scheduledAt)}]]
+[[${presentation.scheduledAt}]]
 </p>
 
 <p th:inline="text">
@@ -482,32 +488,32 @@ The next step is to write an assessment about the thesis.
 <br/><br/>', 'New presentation was scheduled'), ('THESIS_PRESENTATION_UPDATED', 'Presentation updated', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">
-[[${presentation.createdBy.firstName}]] [[${presentation.createdBy.lastName}]] updated a presentation for thesis "[[${thesis.title}]]"
+[[${presentation.creatorFirstName}]] [[${presentation.creatorLastName}]] updated a presentation for thesis "[[${thesis.title}]]"
 </p>
 
 <p th:inline="text">
 <strong>Type</strong><br />
-[[${DataFormatter.formatEnum(presentation.type)}]]
+[[${presentation.type}]]
 </p>
 
 <p th:inline="text">
 <strong>Location</strong><br />
-[[${DataFormatter.formatOptionalString(presentation.location)}]]
+[[${presentation.location}]]
 </p >
 
 <p th:inline="text">
 <strong>Stream URL</strong><br />
-[[${DataFormatter.formatOptionalString(presentation.streamUrl)}]]
+[[${presentation.streamUrl}]]
 </p>
 
 <p th:inline="text">
 <strong>Language</strong><br />
-[[${DataFormatter.formatConstantName(presentation.language)}]]
+[[${presentation.language}]]
 </p>
 
 <p th:inline="text">
 <strong>Scheduled At</strong><br />
-[[${DataFormatter.formatDateTime(presentation.scheduledAt)}]]
+[[${presentation.scheduledAt}]]
 </p>
 
 <p th:inline="text">
@@ -518,96 +524,13 @@ The next step is to write an assessment about the thesis.
 <div style="text-align: center;font-size: 10px">
     Manage your notification settings <a th:href="${config.clientHost + ''/settings/notifications''}">here</a>
 </div>
-<br/><br/>', 'Presentation was updated'), ('THESIS_PRESENTATION_INVITATION', 'Thesis Presentation Invitation', '<div style="text-align: center" th:inline="text">
-<h2>INVITATION</h2>
-<div>As part of their [[${DataFormatter.formatConstantName(thesis.type)}]]''s thesis</div>
-<div><strong>[[${DataFormatter.formatUsers(thesis.students)}]]</strong></div>
-<div>will give their [[${DataFormatter.formatEnum(presentation.type)}]] presentation on</div>
-<div><strong>[[${DataFormatter.formatDateTime(presentation.scheduledAt)}]]</strong></div>
-<div th:if="${presentation.streamUrl != null and !#strings.isEmpty(presentation.streamUrl)}" th:inline="text">
-online at [[${presentation.streamUrl}]]
-</div>
-<div th:if="${presentation.location != null and !#strings.isEmpty(presentation.location)}">
-<span th:if="${presentation.streamUrl != null and !#strings.isEmpty(presentation.streamUrl)}">and&nbsp;</span>onsite in <strong>[[${presentation.location}]]</strong>
-</div>
-<br/>
-<div>Title:</div>
-<div>[[${thesis.title}]]</div>
-<br/>
-<div>Supervisor: [[${DataFormatter.formatUsers(thesis.supervisors)}]]</div>
-<div>Advisor(s): [[${DataFormatter.formatUsers(thesis.advisors)}]]</div>
-<br/>
-<div>
-The presentation will be in [[${DataFormatter.formatConstantName(presentation.language)}]]. Everybody is cordially invited to attend.
-</div>
-</div>
-
-<p>
-<strong>Abstract</strong><br />
-<span th:utext="${thesis.abstractText}"></span>
-</p>
+<br/><br/>', 'Presentation was updated'), ('THESIS_PRESENTATION_INVITATION', 'Thesis Presentation Invitation', '<h2 style="text-align: center;">INVITATION</h2><p style="text-align: center;">As part of their [[${thesis.type}]]''s thesis<br><strong>[[${thesis.students}]]</strong><br>will give their [[${presentation.type}]] presentation on<br><strong>[[${presentation.scheduledAt}]]</strong><br>online at [[${presentation.streamUrl}]]<br>and&nbsp;onsite in <strong>[[${presentation.location}]]</strong><br><br>Title:<br>[[${thesis.title}]]<br><br>Supervisor: [[${thesis.supervisors}]]<br>Advisor(s): [[${thesis.advisors}]]<br><br>The presentation will be in [[${presentation.language}]]. Everybody is cordially invited to attend.</p><p><strong>Abstract</strong><br><span th:utext="${thesis.abstractText}"></span></p><p>Full Details: [[${presentationUrl}]]</p><p><hr/>
+</hr><div style="text-align: center;font-size: 10px"> Manage your notification settings <a th:href="${config.clientHost + ''/settings/notifications''}">here</a></div>', 'Public Presentation Invitation'), ('THESIS_PRESENTATION_INVITATION_CANCELLED', 'Thesis Presentation Cancelled', '<p>Dear [[${recipient.firstName}]],</p><p>The [[${thesis.type}]] thesis presentation of <strong>[[${thesis.students}]]</strong> scheduled at [[${presentation.scheduledAt}]] was cancelled.</p><p><hr/>
+</hr><div style="text-align: center;font-size: 10px"> Manage your notification settings <a th:href="${config.clientHost + ''/settings/notifications''}">here</a></div>', 'Public Presentation was deleted'), ('THESIS_PRESENTATION_INVITATION_UPDATED', 'Thesis Presentation Updated', '<h2 style="text-align: center;">INVITATION</h2><p style="text-align: center;">As part of their [[${thesis.type}]]''s thesis<br><strong>[[${thesis.students}]]</strong><br>will give their [[${presentation.type}]] presentation on<br><strong>[[${presentation.scheduledAt}]]</strong><br>online at [[${presentation.streamUrl}]]<br>and&nbsp;onsite in <strong>[[${presentation.location}]]</strong><br><br>Title:<br>[[${thesis.title}]]</p><p style="text-align: center;"></p><p style="text-align: center;">Supervisor: [[${thesis.supervisors}]]<br>Advisor(s): [[${thesis.advisors}]]<br></p><p style="text-align: center;">The presentation will be in [[${presentation.language}]]. Everybody is cordially invited to attend.</p><p><strong>Abstract</strong><br><span th:utext="${thesis.abstractText}"></span></p><p>Full Details: [[${presentationUrl}]]</p><p><hr/>
+</hr><div style="text-align: center;font-size: 10px"> Manage your notification settings <a th:href="${config.clientHost + ''/settings/notifications''}">here</a></div>', 'Public Presentation was updated'), ('THESIS_PROPOSAL_ACCEPTED', 'Thesis Proposal Accepted', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">
-Full Details: <a target="_blank" rel="noopener noreferrer nofollow" th:href="${presentationUrl}">[[${presentationUrl}]]</a>
-</p>
-
-<hr/>
-<div style="text-align: center;font-size: 10px">
-    Manage your notification settings <a th:href="${config.clientHost + ''/settings/notifications''}">here</a>
-</div>
-<br/><br/>', 'Public Presentation Invitation'), ('THESIS_PRESENTATION_INVITATION_CANCELLED', 'Thesis Presentation Cancelled', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
-
-<p th:inline="text">
-The [[${DataFormatter.formatConstantName(thesis.type)}]] thesis presentation of
-<strong>[[${DataFormatter.formatUsers(thesis.students)}]]</strong> scheduled at
-[[${DataFormatter.formatDateTime(presentation.scheduledAt)}]] was cancelled.
-</p>
-
-<hr/>
-<div style="text-align: center;font-size: 10px">
-    Manage your notification settings <a th:href="${config.clientHost + ''/settings/notifications''}">here</a>
-</div>
-<br/><br/>', 'Public Presentation was deleted'), ('THESIS_PRESENTATION_INVITATION_UPDATED', 'Thesis Presentation Updated', '<div style="text-align: center" th:inline="text">
-<h2>INVITATION</h2>
-<div>As part of their [[${DataFormatter.formatConstantName(thesis.type)}]]''s thesis</div>
-<div><strong>[[${DataFormatter.formatUsers(thesis.students)}]]</strong></div>
-<div>will give their [[${DataFormatter.formatEnum(presentation.type)}]] presentation on</div>
-<div><strong>[[${DataFormatter.formatDateTime(presentation.scheduledAt)}]]</strong></div>
-<div th:if="${presentation.streamUrl != null and !#strings.isEmpty(presentation.streamUrl)}" th:inline="text">
-online at [[${presentation.streamUrl}]]
-</div>
-<div th:if="${presentation.location != null and !#strings.isEmpty(presentation.location)}">
-<span th:if="${presentation.streamUrl != null and !#strings.isEmpty(presentation.streamUrl)}">and&nbsp;</span>onsite in <strong>[[${presentation.location}]]</strong>
-</div>
-<br/>
-<div>Title:</div>
-<div>[[${thesis.title}]]</div>
-<br/>
-<div>Supervisor: [[${DataFormatter.formatUsers(thesis.supervisors)}]]</div>
-<div>Advisor(s): [[${DataFormatter.formatUsers(thesis.advisors)}]]</div>
-<br/>
-<div>
-The presentation will be in [[${DataFormatter.formatConstantName(presentation.language)}]]. Everybody is cordially invited to attend.
-</div>
-</div>
-
-<p>
-<strong>Abstract</strong><br />
-<span th:utext="${thesis.abstractText}"></span>
-</p>
-
-<p th:inline="text">
-Full Details: <a target="_blank" rel="noopener noreferrer nofollow" th:href="${presentationUrl}">[[${presentationUrl}]]</a>
-</p>
-
-<hr/>
-<div style="text-align: center;font-size: 10px">
-    Manage your notification settings <a th:href="${config.clientHost + ''/settings/notifications''}">here</a>
-</div>
-<br/><br/>', 'Public Presentation was updated'), ('THESIS_PROPOSAL_ACCEPTED', 'Thesis Proposal Accepted', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
-
-<p th:inline="text">
-[[${proposal.approvedBy.firstName}]] [[${proposal.approvedBy.lastName}]] approved the proposal of thesis "[[${thesis.title}]]".
+[[${proposal.approverFirstName}]] [[${proposal.approverLastName}]] approved the proposal of thesis "[[${thesis.title}]]".
 The next step is to start with the project work and with writing the thesis.
 You can see your submission deadline on <a target="_blank" rel="noopener noreferrer nofollow" th:href="${thesisUrl}">[[${thesisUrl}]]</a>.
 </p>
@@ -640,7 +563,7 @@ The following changes were requested:<br />
 <br/><br/>', 'Changes were requested for proposal'), ('THESIS_PROPOSAL_UPLOADED', 'Thesis Proposal Added', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">
-[[${proposal.createdBy.firstName}]] [[${proposal.createdBy.lastName}]] uploaded a proposal to thesis "[[${thesis.title}]]".
+[[${proposal.creatorFirstName}]] [[${proposal.creatorLastName}]] uploaded a proposal to thesis "[[${thesis.title}]]".
 You can find the submitted file in the attachment part of this email.
 </p>
 
@@ -665,4 +588,7 @@ INTO email_templates (email_template_id,
                       updated_by,
                       updated_at)
 SELECT *
-FROM templates;
+FROM templates
+ON CONFLICT (template_case, language)
+    WHERE research_group_id IS NULL
+    DO NOTHING;

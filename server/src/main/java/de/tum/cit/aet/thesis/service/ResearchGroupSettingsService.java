@@ -70,7 +70,8 @@ public class ResearchGroupSettingsService {
 	 * @return the presentation duration in minutes
 	 */
 	public int getPresentationDurationInMinutes(UUID researchGroupId) {
-		Optional<ResearchGroupSettings> settings = repository.findById(researchGroupId);
-		return settings.isEmpty() || settings.get().getPresentationSlotDuration() == null ? 30 : settings.get().getPresentationSlotDuration();
+		return repository.findById(researchGroupId)
+				.map(ResearchGroupSettings::getPresentationSlotDuration)
+				.orElse(30);
 	}
 }

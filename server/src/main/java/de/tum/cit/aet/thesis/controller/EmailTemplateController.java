@@ -2,6 +2,7 @@ package de.tum.cit.aet.thesis.controller;
 
 import de.tum.cit.aet.thesis.controller.payload.CreateEmailTemplatePayload;
 import de.tum.cit.aet.thesis.dto.EmailTemplateDto;
+import de.tum.cit.aet.thesis.dto.MailVariableDto;
 import de.tum.cit.aet.thesis.dto.PaginationDto;
 import de.tum.cit.aet.thesis.entity.EmailTemplate;
 import de.tum.cit.aet.thesis.service.EmailTemplateService;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.UUID;
 
 /** REST controller for managing email templates used in automated notifications. */
@@ -49,6 +51,7 @@ public class EmailTemplateController {
 	 * @param limit the maximum number of results per page
 	 * @param sortBy the field to sort by
 	 * @param sortOrder the sort direction
+	 * @param researchGroupId optional research group ID filter
 	 * @return the paginated list of email templates
 	 */
 	@GetMapping
@@ -58,9 +61,10 @@ public class EmailTemplateController {
 			@RequestParam(required = false, defaultValue = "") String[] templateCases,
 			@RequestParam(required = false, defaultValue = "") String[] languages,
 			@RequestParam(required = false, defaultValue = "0") Integer page,
-			@RequestParam(required = false, defaultValue = "50") Integer limit,
+			@RequestParam(required = false, defaultValue = "-1") Integer limit,
 			@RequestParam(required = false, defaultValue = "templateCase") String sortBy,
-			@RequestParam(required = false, defaultValue = "desc") String sortOrder
+			@RequestParam(required = false, defaultValue = "desc") String sortOrder,
+			@RequestParam(required = false) UUID researchGroupId
 	) {
 		Page<EmailTemplate> emailTemplates = emailTemplateService.getAll(
 				templateCases,
@@ -69,7 +73,8 @@ public class EmailTemplateController {
 				page,
 				limit,
 				sortBy,
-				sortOrder
+				sortOrder,
+				researchGroupId
 		);
 
 		return ResponseEntity.ok(PaginationDto.fromSpringPage(
@@ -146,15 +151,29 @@ public class EmailTemplateController {
 	 * Deletes an email template by its ID.
 	 *
 	 * @param emailTemplateId the ID of the email template to delete
-	 * @return a response with no content
+	 * @return a boolean indicating whether the deletion was successful
 	 */
 	@DeleteMapping("/{emailTemplateId}")
 	@PreAuthorize("hasAnyRole('admin', 'supervisor', 'advisor')")
-	public ResponseEntity<Void> deleteEmailTemplate(
+	public ResponseEntity<Boolean> deleteEmailTemplate(
 			@PathVariable("emailTemplateId") UUID emailTemplateId
 	) {
 		emailTemplateService.deleteEmailTemplate(emailTemplateId);
 
-		return ResponseEntity.noContent().build();
+		return ResponseEntity.ok(true);
+	}
+
+	/**
+	 * Retrieves all selectable variables for an email template.
+	 *
+	 * @param emailTemplateId the email template ID
+	 * @return variable metadata for template editing
+	 */
+	@GetMapping("/{emailTemplateId}/variables")
+	@PreAuthorize("hasAnyRole('admin', 'supervisor', 'advisor')")
+	public ResponseEntity<List<MailVariableDto>> getEmailTemplateVariables(
+			@PathVariable("emailTemplateId") UUID emailTemplateId
+	) {
+		return ResponseEntity.ok(emailTemplateService.getVariablesForTemplate(emailTemplateId));
 	}
 }
