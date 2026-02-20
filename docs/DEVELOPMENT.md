@@ -29,10 +29,6 @@ For local development start a database container by executing the following comm
 docker compose up db -d
 ```
 
-## Database Setup and Test Data
-
-> 💡 Tip: Make sure the database container is running (`docker compose up db -d`) before executing the commands.
-
 ### Liquibase Migration
 
 To apply the latest database schema changes using Liquibase, run the following command:
@@ -44,30 +40,60 @@ cd ../server
 
 This will apply all migrations defined under `server/src/main/resources/db/changelog/changes`.
 
-### Importing Test Data
+### Automatic Dev Seed Data
 
-To populate the database with test data, go to the manual migration folder:
+When running with the `dev` Spring profile, Liquibase automatically seeds the database with realistic test data. This is controlled by the `application-dev.yml` configuration which activates the `dev` Liquibase context.
 
-```bash
-cd ../server/src/main/resources/db/changelog/manual/
-```
+The seed data script (`server/src/main/resources/db/changelog/manual/seed_dev_test_data.sql`) is **idempotent** — it uses `ON CONFLICT DO NOTHING / DO UPDATE`, so it is safe to run repeatedly.
 
-And execute all files that you need.
-> 💡 Tip: Check the prerequisites !
+To activate the dev profile, either:
+- Set the environment variable `SPRING_PROFILES_ACTIVE=dev`
+- Or pass `--spring.profiles.active=dev` when starting the server
+
 > 💡 Tip: Default email templates are now inserted automatically by Liquibase migrations.
 
-#### Example Users and Roles
+#### Test Users and Roles
 
-> **Note on Role Terminology:** The backend/Keycloak uses `supervisor` and `advisor` roles internally. In the UI, these are displayed as "Examiner" and "Supervisor" respectively to align with CIT terminology.
+> **Note on Role Terminology:** The server / Keycloak uses `supervisor` and `advisor` roles internally. In the UI, these are displayed as "Examiner" and "Supervisor" respectively to align with CIT terminology.
 
-| Username       | First Name | Last Name | Email                    | Role (Backend) | UI Label   |
-|----------------|------------|-----------|--------------------------|----------------|------------|
-| sam_fischer    | Sam        | Fischer   | sam_fischer@gmail.com    | supervisor     | Examiner   |
-| jane_doe       | Jane       | Doe       | jane_doe@gmail.com       | supervisor     | Examiner   |
-| joey_read      | Joey       | Read      | joey_read@gmail.com      | advisor        | Supervisor |
-| barney_young   | Barney     | Young     | barney_young@gmail.com   | advisor        | Supervisor |
-| chloe_mitchell | Chloe      | Mitchell  | chloe_mitchell@gmail.com | student        | Student    |
-| kelly_wilkins  | Kelly      | Wilkins   | kelly_wilkins@gmail.com  | student        | Student    |
+| Username    | First Name  | Last Name | Email                    | Role (Server) | UI Label   |
+|-------------|-------------|-----------|--------------------------|---------------|------------|
+| admin       | Admin       | User      | admin@test.local         | admin         | Admin      |
+| supervisor  | Supervisor  | User      | supervisor@test.local    | supervisor    | Examiner   |
+| supervisor2 | Supervisor2 | User      | supervisor2@test.local   | supervisor    | Examiner   |
+| advisor     | Advisor     | User      | advisor@test.local       | advisor       | Supervisor |
+| advisor2    | Advisor2    | User      | advisor2@test.local      | advisor       | Supervisor |
+| student     | Student     | User      | student@test.local       | student       | Student    |
+| student2    | Student2    | User      | student2@test.local      | student       | Student    |
+| student3    | Student3    | User      | student3@test.local      | student       | Student    |
+| student4    | Student4    | User      | student4@test.local      | student       | Student    |
+| student5    | Student5    | User      | student5@test.local      | student       | Student    |
+
+#### Research Groups
+
+| Name                          | Abbreviation | Head        | Members                          |
+|-------------------------------|--------------|-------------|----------------------------------|
+| Applied Software Engineering  | ASE          | supervisor  | supervisor, advisor, advisor2    |
+| Data Science and Analytics    | DSA          | supervisor2 | supervisor2                      |
+
+#### Topics
+
+The seed data includes 6 topics across both research groups:
+- 3 **open** topics (published and accepting applications)
+- 2 **draft** topics (not yet published)
+- 1 **closed** topic
+
+#### Applications
+
+8 applications in various states: `ACCEPTED`, `NOT_ASSESSED`, `REJECTED`, `INTERVIEWING`, and one free-form application without a topic.
+
+#### Theses
+
+5 theses covering key lifecycle states: `PROPOSAL`, `WRITING`, `SUBMITTED`, `FINISHED`, and `DROPPED_OUT`. Each thesis includes associated roles, state history, proposals, comments, files, feedback, presentations, and assessments where applicable.
+
+#### Interview Processes
+
+3 interview processes (2 completed, 1 active) with interviewees, interview slots, and assessments.
 
 ## Postfix
 

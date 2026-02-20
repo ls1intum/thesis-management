@@ -26,4 +26,6 @@
     <include file="changes/20_add_published_at_topics.sql" relativeToChangelogFile="true" />
     <include file="changes/21_seed_default_email_templates.xml" relativeToChangelogFile="true" />
     <include file="changes/22_migrate_email_template_placeholder_variables.sql" relativeToChangelogFile="true"/>
+    <include file="changes/23_seed_dev_test_data.xml" relativeToChangelogFile="true" />
+    <include file="changes/24_make_reject_duration_not_null.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>

@@ -19,31 +19,31 @@ import java.util.UUID;
 @Setter
 @Embeddable
 public class ThesisStateChangeId implements Serializable {
-	@NotNull
-	@Column(name = "thesis_id", nullable = false)
-	private UUID thesisId;
+    @NotNull
+    @Column(name = "thesis_id", nullable = false)
+    private UUID thesisId;
 
-	@NotNull
-	@Enumerated(EnumType.STRING)
-	@Column(name = "state", nullable = false)
-	private ThesisState state;
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "state", nullable = false)
+    private ThesisState state;
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
-		}
-		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
-			return false;
-		}
-		ThesisStateChangeId entity = (ThesisStateChangeId) o;
-		return Objects.equals(this.thesisId, entity.thesisId) &&
-				Objects.equals(this.state, entity.state);
-	}
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
+            return false;
+        }
+        ThesisStateChangeId entity = (ThesisStateChangeId) o;
+        return Objects.equals(this.thesisId, entity.thesisId) &&
+                Objects.equals(this.state, entity.state);
+    }
 
-	@Override
-	public int hashCode() {
-		return Objects.hash("thesis-state-changes", thesisId, state);
-	}
+    @Override
+    public int hashCode() {
+        return Objects.hash("thesis-state-changes", thesisId, state);
+    }
 
 }

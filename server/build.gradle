@@ -54,7 +54,7 @@ dependencies {
 	implementation("net.minidev:json-smart") { version { 				strictly "2.6.0" } }
 
 	implementation "org.springframework.boot:spring-boot-starter-liquibase"
-	implementation "org.postgresql:postgresql:42.7.9"
+	implementation "org.postgresql:postgresql:42.7.10"
 
 	implementation "commons-io:commons-io:2.21.0"
 	implementation "com.github.vladimir-bukhtoyarov:bucket4j-core:8.0.1"

@@ -21,30 +21,30 @@ import java.time.Instant;
 @Entity
 @Table(name = "topic_roles")
 public class TopicRole {
-	@EmbeddedId
-	private TopicRoleId id;
+    @EmbeddedId
+    private TopicRoleId id;
 
-	@MapsId("topicId")
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "topic_id", nullable = false)
-	private Topic topic;
+    @MapsId("topicId")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "topic_id", nullable = false)
+    private Topic topic;
 
-	@MapsId("userId")
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "user_id", nullable = false)
-	private User user;
+    @MapsId("userId")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-	@NotNull
-	@Column(name = "position", nullable = false)
-	private Integer position;
+    @NotNull
+    @Column(name = "position", nullable = false)
+    private Integer position;
 
-	@NotNull
-	@Column(name = "assigned_at", nullable = false)
-	private Instant assignedAt;
+    @NotNull
+    @Column(name = "assigned_at", nullable = false)
+    private Instant assignedAt;
 
-	@NotNull
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "assigned_by", nullable = false)
-	private User assignedBy;
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "assigned_by", nullable = false)
+    private User assignedBy;
 
 }
