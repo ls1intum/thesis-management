@@ -155,7 +155,7 @@ public class User {
 		return groups.isEmpty();
 	}
 
-	public boolean hasAnyGroup(String...groups) {
+	public boolean hasAnyGroup(String... groups) {
 		for (String group : groups) {
 			for (UserGroup userGroup : getGroups()) {
 				if (userGroup.getId().getGroup().equals(group)) {

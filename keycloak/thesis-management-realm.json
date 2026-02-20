@@ -651,6 +651,176 @@
       "groups": [
         "/thesis-students"
       ]
+    },
+    {
+      "username": "supervisor2",
+      "email": "supervisor2@test.local",
+      "firstName": "Supervisor2",
+      "lastName": "User",
+      "emailVerified": true,
+      "enabled": true,
+      "attributes": {
+        "matrikelnr": ["03700004"]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "supervisor2",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "default-roles-thesis-management"
+      ],
+      "clientRoles": {
+        "thesis-management-app": [
+          "supervisor"
+        ]
+      },
+      "groups": []
+    },
+    {
+      "username": "advisor2",
+      "email": "advisor2@test.local",
+      "firstName": "Advisor2",
+      "lastName": "User",
+      "emailVerified": true,
+      "enabled": true,
+      "attributes": {
+        "matrikelnr": ["03700005"]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "advisor2",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "default-roles-thesis-management"
+      ],
+      "clientRoles": {
+        "thesis-management-app": [
+          "advisor"
+        ]
+      },
+      "groups": []
+    },
+    {
+      "username": "student2",
+      "email": "student2@test.local",
+      "firstName": "Student2",
+      "lastName": "User",
+      "emailVerified": true,
+      "enabled": true,
+      "attributes": {
+        "matrikelnr": ["03700006"]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "student2",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "default-roles-thesis-management"
+      ],
+      "clientRoles": {
+        "thesis-management-app": [
+          "student"
+        ]
+      },
+      "groups": [
+        "/thesis-students"
+      ]
+    },
+    {
+      "username": "student3",
+      "email": "student3@test.local",
+      "firstName": "Student3",
+      "lastName": "User",
+      "emailVerified": true,
+      "enabled": true,
+      "attributes": {
+        "matrikelnr": ["03700007"]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "student3",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "default-roles-thesis-management"
+      ],
+      "clientRoles": {
+        "thesis-management-app": [
+          "student"
+        ]
+      },
+      "groups": [
+        "/thesis-students"
+      ]
+    },
+    {
+      "username": "student4",
+      "email": "student4@test.local",
+      "firstName": "Student4",
+      "lastName": "User",
+      "emailVerified": true,
+      "enabled": true,
+      "attributes": {
+        "matrikelnr": ["03700008"]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "student4",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "default-roles-thesis-management"
+      ],
+      "clientRoles": {
+        "thesis-management-app": [
+          "student"
+        ]
+      },
+      "groups": [
+        "/thesis-students"
+      ]
+    },
+    {
+      "username": "student5",
+      "email": "student5@test.local",
+      "firstName": "Student5",
+      "lastName": "User",
+      "emailVerified": true,
+      "enabled": true,
+      "attributes": {
+        "matrikelnr": ["03700009"]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "student5",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "default-roles-thesis-management"
+      ],
+      "clientRoles": {
+        "thesis-management-app": [
+          "student"
+        ]
+      },
+      "groups": [
+        "/thesis-students"
+      ]
     }
   ],
   "scopeMappings": [

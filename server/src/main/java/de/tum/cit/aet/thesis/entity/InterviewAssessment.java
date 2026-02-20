@@ -1,4 +1,5 @@
 package de.tum.cit.aet.thesis.entity;
+
 import lombok.Getter;
 import lombok.Setter;
 
