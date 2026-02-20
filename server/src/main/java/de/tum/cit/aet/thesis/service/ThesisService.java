@@ -322,8 +322,8 @@ public class ThesisService {
 			String infoText
 	) {
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
-		thesis.setAbstractField(abstractText);
-		thesis.setInfo(infoText);
+		thesis.setAbstractField(abstractText != null ? abstractText : "");
+		thesis.setInfo(infoText != null ? infoText : "");
 
 		thesis = thesisRepository.save(thesis);
 
@@ -339,11 +339,15 @@ public class ThesisService {
 			Map<String, String> titles
 	) {
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
-		thesis.setMetadata(new ThesisMetadata(
-				titles,
-				thesis.getMetadata().credits()
-		));
-		thesis.setTitle(primaryTitle);
+		if (titles != null) {
+			thesis.setMetadata(new ThesisMetadata(
+					titles,
+					thesis.getMetadata().credits()
+			));
+		}
+		if (primaryTitle != null) {
+			thesis.setTitle(primaryTitle);
+		}
 
 		thesis = thesisRepository.save(thesis);
 
