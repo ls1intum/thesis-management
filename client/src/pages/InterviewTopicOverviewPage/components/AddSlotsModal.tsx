@@ -110,7 +110,7 @@ const AddSlotsModal = ({
     setModalSlots(interviewSlotItems ? { ...interviewSlotItems } : {})
   }
 
-  const [, setSaveLoading] = useState(false)
+  const [saveLoading, setSaveLoading] = useState(false)
 
   const { fetchInterviewSlots } = useInterviewProcessContext()
 
@@ -331,7 +331,8 @@ const AddSlotsModal = ({
             onClick={() => {
               saveNewSlots()
             }}
-            disabled={overlappingSlotsExist()}
+            disabled={overlappingSlotsExist() || saveLoading}
+            loading={saveLoading}
           >
             Save Slots
           </Button>
