@@ -100,7 +100,6 @@ const CloseTopicButton = (props: ICloseTopicButtonProps) => {
                 />
                 <Checkbox
                   label='Notify Students'
-                  required
                   {...form.getInputProps('notifyUser', { type: 'checkbox' })}
                 />
               </>
