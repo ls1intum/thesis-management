@@ -4,7 +4,7 @@ import React, { useMemo, useState } from 'react'
 import { formatDate, formatPresentationType, formatThesisType } from '../../utils/format'
 import { ThesisStateColor, ThesisTypeColor } from '../../config/colors'
 import ThesisPreviewModal from '../ThesisPreviewModal/ThesisPreviewModal'
-import { IThesis, ThesisState } from '../../requests/responses/thesis'
+import { ThesisState } from '../../requests/responses/thesis'
 import { Badge, Center, Group, Indicator, Pagination, Stack, Text } from '@mantine/core'
 import ThesisStateBadge from '../ThesisStateBadge/ThesisStateBadge'
 import { Presentation } from '@phosphor-icons/react'
@@ -17,7 +17,7 @@ import { IGanttChartDataElement } from '../GanttChart/context'
 const ThesesGanttChart = () => {
   const { theses, page, setPage } = useThesesContext()
 
-  const [openedThesis, setOpenedThesis] = useState<IThesis>()
+  const [openedThesisId, setOpenedThesisId] = useState<string>()
 
   const currentTime = useMemo(() => Date.now(), [])
 
@@ -28,7 +28,7 @@ const ThesesGanttChart = () => {
 
     const result: IGanttChartDataElement[] = []
 
-    for (const thesis of theses.content) {
+    for (const thesis of theses.content ?? []) {
       const getAdjustedStartDate = (state: ThesisState, startDate: Date) => {
         if (state === ThesisState.PROPOSAL && thesis.startDate) {
           // Overwrite start date if it's in the writing phase
@@ -70,6 +70,7 @@ const ThesesGanttChart = () => {
       }
 
       const advisor = thesis.advisors[0]
+      if (!advisor) continue
 
       result.push({
         id: thesis.thesisId,
@@ -97,10 +98,10 @@ const ThesesGanttChart = () => {
             </Text>
           </Indicator>,
           <Text key='keywords' size='xs' truncate>
-            {thesis.keywords.join(', ')}
+            {(thesis.keywords ?? []).join(', ')}
           </Text>,
         ],
-        timeline: thesis.states.map((state) => ({
+        timeline: (thesis.states ?? []).map((state) => ({
           id: state.state,
           startDate: getAdjustedStartDate(state.state, new Date(state.startedAt)),
           endDate: getAdjustedEndDate(
@@ -110,7 +111,7 @@ const ThesesGanttChart = () => {
           ),
           color: ThesisStateColor[state.state],
         })),
-        events: thesis.presentations.map((presentation) => ({
+        events: (thesis.presentations ?? []).map((presentation) => ({
           id: presentation.presentationId,
           icon: <Presentation />,
           time: new Date(presentation.scheduledAt),
@@ -122,22 +123,26 @@ const ThesesGanttChart = () => {
   }, [theses])
 
   const visibleTypes: string[] = theses
-    ? arrayUnique([...theses.content.map((thesis) => thesis.type)])
+    ? arrayUnique([...(theses.content ?? []).map((thesis) => thesis.type)])
     : []
 
   const visibleStates: ThesisState[] = theses
     ? arrayUnique<ThesisState>([
-        ...theses.content.reduce<ThesisState[]>(
+        ...(theses.content ?? []).reduce<ThesisState[]>(
           (prev, curr) => [
             ...prev,
-            ...curr.states.filter((row) => row.startedAt !== row.endedAt).map((row) => row.state),
+            ...(curr.states ?? [])
+              .filter((row) => row.startedAt !== row.endedAt)
+              .map((row) => row.state),
           ],
           [],
         ),
       ])
     : []
 
-  const hasKeywordsColumn = !!theses?.content.some((thesis) => !!thesis.keywords.length)
+  const hasKeywordsColumn = !!(theses?.content ?? []).some(
+    (thesis) => !!(thesis.keywords ?? []).length,
+  )
 
   return (
     <Stack>
@@ -151,13 +156,15 @@ const ThesesGanttChart = () => {
         minRange={[currentTime - 1000 * 3600 * 24 * 365 * 2, currentTime + 1000 * 3600 * 24 * 365]}
         rangeStorageKey='thesis-gantt-chart'
         itemPopover={(item, timeline, event) => {
-          const thesis = theses?.content.find((row) => row.thesisId === item.id)
+          const thesis = (theses?.content ?? []).find((row) => row.thesisId === item.id)
 
           if (!thesis) {
             return null
           }
 
-          const presentation = thesis.presentations.find((row) => row.presentationId === event?.id)
+          const presentation = (thesis.presentations ?? []).find(
+            (row) => row.presentationId === event?.id,
+          )
 
           return (
             <Stack gap='md'>
@@ -182,9 +189,7 @@ const ThesesGanttChart = () => {
             </Stack>
           )
         }}
-        onItemClick={(item) =>
-          setOpenedThesis(theses?.content.find((thesis) => thesis.thesisId === item.id))
-        }
+        onItemClick={(item) => setOpenedThesisId(item.id)}
       />
       {visibleStates.length > 0 && (
         <Center>
@@ -220,9 +225,9 @@ const ThesesGanttChart = () => {
         </Center>
       )}
       <ThesisPreviewModal
-        opened={!!openedThesis}
-        onClose={() => setOpenedThesis(undefined)}
-        thesis={openedThesis}
+        opened={!!openedThesisId}
+        onClose={() => setOpenedThesisId(undefined)}
+        thesisId={openedThesisId}
       />
     </Stack>
   )

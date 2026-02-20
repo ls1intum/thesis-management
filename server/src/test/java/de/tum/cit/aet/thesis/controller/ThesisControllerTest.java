@@ -148,7 +148,7 @@ class ThesisControllerTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 
 			JsonNode jsonEmpty = objectMapper.readTree(responseEmpty);
-			assertThat(jsonEmpty.get("content").size()).isEqualTo(0);
+			assertThat(jsonEmpty.path("content").size()).isEqualTo(0);
 		}
 
 		@Test
@@ -870,7 +870,8 @@ class ThesisControllerTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 
 			JsonNode json = objectMapper.readTree(response);
-			assertThat(json.get("content").isArray()).isTrue();
+			assertThat(json.path("content").size()).isZero();
+			assertThat(json.get("totalElements").asInt()).isZero();
 		}
 
 		@Test

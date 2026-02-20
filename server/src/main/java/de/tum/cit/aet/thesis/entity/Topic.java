@@ -35,90 +35,90 @@ import java.util.UUID;
 @Table(name = "topics")
 public class Topic {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "topic_id", nullable = false)
-    private UUID id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.UUID)
+	@Column(name = "topic_id", nullable = false)
+	private UUID id;
 
-    @NotNull
-    @Column(name = "title", nullable = false)
-    private String title;
+	@NotNull
+	@Column(name = "title", nullable = false)
+	private String title;
 
-    @JdbcTypeCode(SqlTypes.ARRAY)
-    @Column(name = "thesis_types", columnDefinition = "text[]")
-    private Set<String> thesisTypes = new HashSet<>();
+	@JdbcTypeCode(SqlTypes.ARRAY)
+	@Column(name = "thesis_types", columnDefinition = "text[]")
+	private Set<String> thesisTypes = new HashSet<>();
 
-    @NotNull
-    @Column(name = "problem_statement", nullable = false)
-    private String problemStatement;
+	@NotNull
+	@Column(name = "problem_statement", nullable = false)
+	private String problemStatement;
 
-    @NotNull
-    @Column(name = "requirements", nullable = false)
-    private String requirements;
+	@NotNull
+	@Column(name = "requirements", nullable = false)
+	private String requirements;
 
-    @NotNull
-    @Column(name = "goals", nullable = false)
-    private String goals;
+	@NotNull
+	@Column(name = "goals", nullable = false)
+	private String goals;
 
-    @NotNull
-    @Column(name = "\"references\"", nullable = false)
-    private String references;
+	@NotNull
+	@Column(name = "\"references\"", nullable = false)
+	private String references;
 
-    @Column(name = "closed_at")
-    private Instant closedAt;
+	@Column(name = "closed_at")
+	private Instant closedAt;
 
-    @Column(name = "published_at")
-    private Instant publishedAt;
+	@Column(name = "published_at")
+	private Instant publishedAt;
 
-    @UpdateTimestamp
-    @NotNull
-    @Column(name = "updated_at", nullable = false)
-    private Instant updatedAt;
+	@UpdateTimestamp
+	@NotNull
+	@Column(name = "updated_at", nullable = false)
+	private Instant updatedAt;
 
-    @CreationTimestamp
-    @NotNull
-    @Column(name = "created_at", nullable = false)
-    private Instant createdAt;
+	@CreationTimestamp
+	@NotNull
+	@Column(name = "created_at", nullable = false)
+	private Instant createdAt;
 
-    @Column(name = "intended_start")
-    private Instant intendedStart;
+	@Column(name = "intended_start")
+	private Instant intendedStart;
 
-    @Column(name = "application_deadline")
-    private Instant applicationDeadline;
+	@Column(name = "application_deadline")
+	private Instant applicationDeadline;
 
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "created_by", nullable = false)
-    private User createdBy;
+	@NotNull
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "created_by", nullable = false)
+	private User createdBy;
 
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "research_group_id", nullable = false)
-    private ResearchGroup researchGroup;
+	@NotNull
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "research_group_id", nullable = false)
+	private ResearchGroup researchGroup;
 
-    @OneToMany(mappedBy = "topic", fetch = FetchType.EAGER)
-    @OrderBy("position ASC")
-    private List<TopicRole> roles = new ArrayList<>();
+	@OneToMany(mappedBy = "topic", fetch = FetchType.EAGER)
+	@OrderBy("position ASC")
+	private List<TopicRole> roles = new ArrayList<>();
 
-    public List<User> getAdvisors() {
-        List<User> result = new ArrayList<>();
+	public List<User> getAdvisors() {
+		List<User> result = new ArrayList<>();
 
-        for (TopicRole role : getRoles()) {
-            if (role.getId().getRole() == ThesisRoleName.ADVISOR) {
-                result.add(role.getUser());
-            }
-        }
+		for (TopicRole role : getRoles()) {
+			if (role.getId().getRole() == ThesisRoleName.ADVISOR) {
+				result.add(role.getUser());
+			}
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    public TopicState getTopicState() {
-        if (this.closedAt != null) {
-            return TopicState.CLOSED;
-        } else if (this.publishedAt == null) {
-            return TopicState.DRAFT;
-        } else {
-            return TopicState.OPEN;
-        }
-    }
+	public TopicState getTopicState() {
+		if (this.closedAt != null) {
+			return TopicState.CLOSED;
+		} else if (this.publishedAt == null) {
+			return TopicState.DRAFT;
+		} else {
+			return TopicState.OPEN;
+		}
+	}
 }

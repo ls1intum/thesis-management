@@ -23,23 +23,23 @@ import java.time.Instant;
 @Entity
 @Table(name = "thesis_presentation_invites")
 public class ThesisPresentationInvite {
-    @EmbeddedId
-    private ThesisPresentationInviteId id;
+	@EmbeddedId
+	private ThesisPresentationInviteId id;
 
-    @MapsId("presentationId")
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "presentation_id", nullable = false)
-    private ThesisPresentation presentation;
+	@MapsId("presentationId")
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "presentation_id", nullable = false)
+	private ThesisPresentation presentation;
 
-    @NotNull
-    @Column(name = "invited_at", nullable = false, length = Integer.MAX_VALUE)
-    private Instant invitedAt;
+	@NotNull
+	@Column(name = "invited_at", nullable = false, length = Integer.MAX_VALUE)
+	private Instant invitedAt;
 
-    public InternetAddress getEmail() {
-        try {
-            return new InternetAddress(id.getEmail());
-        } catch (AddressException e) {
-            return null;
-        }
-    }
+	public InternetAddress getEmail() {
+		try {
+			return new InternetAddress(id.getEmail());
+		} catch (AddressException e) {
+			return null;
+		}
+	}
 }

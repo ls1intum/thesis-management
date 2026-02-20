@@ -4,6 +4,10 @@ on:
   push:
     branches: [main]
 
+concurrency:
+  group: deploy-prod
+  cancel-in-progress: false
+
 jobs:
   run-tests:
     uses: ./.github/workflows/run_tests.yml

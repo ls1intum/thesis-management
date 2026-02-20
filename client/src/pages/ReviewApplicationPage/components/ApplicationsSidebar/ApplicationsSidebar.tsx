@@ -17,7 +17,8 @@ const ApplicationsSidebar = (props: IApplicationsSidebarProps) => {
   const { page, setPage, applications } = useApplicationsContext()
 
   const selectedIndex =
-    applications?.content.findIndex((x) => x.applicationId === selected?.applicationId) ?? -1
+    (applications?.content ?? []).findIndex((x) => x.applicationId === selected?.applicationId) ??
+    -1
 
   const [startAtLastApplication, setStartAtLastApplication] = useState(false)
 
@@ -38,14 +39,14 @@ const ApplicationsSidebar = (props: IApplicationsSidebarProps) => {
         setPage(page > 0 ? page - 1 : 0)
       }
 
-      if (applications && newIndex >= applications.content.length && !applications.last) {
+      if (applications && newIndex >= (applications.content ?? []).length && !applications.last) {
         // make sure that state is reset when navigating to next page with arrow keys
         setStartAtLastApplication(false)
         setPage(page + 1)
       }
 
-      if (applications?.content[newIndex]) {
-        onSelect(applications.content[newIndex])
+      if ((applications?.content ?? [])[newIndex]) {
+        onSelect((applications?.content ?? [])[newIndex])
       }
     }
 
@@ -66,26 +67,26 @@ const ApplicationsSidebar = (props: IApplicationsSidebarProps) => {
     if (applications) {
       onSelect(
         startAtLastApplication
-          ? applications.content[applications.content.length - 1]
-          : applications.content[0],
+          ? (applications.content ?? [])[(applications.content ?? []).length - 1]
+          : (applications.content ?? [])[0],
       )
     }
   }, [
     page,
     startAtLastApplication,
     isSmallScreen,
-    applications?.content.map((x) => x.applicationId).join(','),
+    (applications?.content ?? []).map((x) => x.applicationId).join(','),
   ])
 
   return (
     <Stack gap='sm'>
       <ApplicationsFilters size='sm' />
-      {applications && applications.content.length === 0 && (
+      {applications && (applications.content ?? []).length === 0 && (
         <Text ta='center' fw='bold' my='md'>
           No applications found
         </Text>
       )}
-      {applications?.content.map((application) => (
+      {(applications?.content ?? []).map((application) => (
         <ApplicationListItem
           key={application.applicationId}
           selected={application.applicationId === selected?.applicationId}

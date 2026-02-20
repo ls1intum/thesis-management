@@ -110,8 +110,8 @@ const MotivationStep = (props: IMotivationStepProps) => {
             content: res.data.content,
           })
 
-          if (res.data.content.length === 1) {
-            form.setValues({ researchGroupId: res.data.content[0].id })
+          if ((res.data.content ?? []).length === 1) {
+            form.setValues({ researchGroupId: (res.data.content ?? [])[0].id })
           }
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
@@ -179,7 +179,7 @@ const MotivationStep = (props: IMotivationStepProps) => {
           required
           nothingFoundMessage={!loading ? 'Nothing found...' : 'Loading...'}
           disabled={!!mergedTopic}
-          data={researchGroups?.content.map((researchGroup: ILightResearchGroup) => ({
+          data={(researchGroups?.content ?? []).map((researchGroup: ILightResearchGroup) => ({
             label: researchGroup.name,
             value: researchGroup.id,
           }))}

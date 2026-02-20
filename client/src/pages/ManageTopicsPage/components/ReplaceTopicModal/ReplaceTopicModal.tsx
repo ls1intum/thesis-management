@@ -1,8 +1,20 @@
-import { Button, Group, Modal, MultiSelect, Select, Stack, TextInput } from '@mantine/core'
-import { ITopic, TopicState } from '../../../../requests/responses/topic'
+import {
+  Button,
+  Center,
+  Group,
+  Loader,
+  Modal,
+  MultiSelect,
+  Select,
+  Stack,
+  Text,
+  TextInput,
+} from '@mantine/core'
+import { ITopic, TopicState, toTopicOverview } from '../../../../requests/responses/topic'
 import { isNotEmpty, useForm } from '@mantine/form'
 import { isNotEmptyUserList } from '../../../../utils/validation'
 import { useEffect, useState } from 'react'
+import { useTopic } from '../../../../hooks/fetcher'
 import DocumentEditor from '../../../../components/DocumentEditor/DocumentEditor'
 import { GLOBAL_CONFIG } from '../../../../config/global'
 import { doRequest } from '../../../../requests/request'
@@ -19,11 +31,16 @@ import { DateInput } from '@mantine/dates'
 interface ICreateTopicModalProps {
   opened: boolean
   onClose: () => unknown
-  topic?: ITopic
+  topicId?: string
 }
 
 const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
-  const { topic, opened, onClose } = props
+  const { topicId, opened, onClose } = props
+
+  const fetchedTopic = useTopic(opened ? topicId : undefined)
+  const topic = fetchedTopic === false ? undefined : fetchedTopic || undefined
+  const fetchError = fetchedTopic === false && !!topicId
+  const isTopicLoading = !!topicId && opened && fetchedTopic === undefined
 
   const { addTopic, updateTopic } = useTopicsContext()
   const [researchGroups, setResearchGroups] = useState<PaginationResponse<ILightResearchGroup>>()
@@ -73,12 +90,12 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
       form.setInitialValues({
         title: topic.title,
         thesisTypes: topic.thesisTypes || [],
-        problemStatement: topic.problemStatement,
-        requirements: topic.requirements,
-        goals: topic.goals,
-        references: topic.references,
-        supervisorIds: topic.supervisors.map((supervisor) => supervisor.userId),
-        advisorIds: topic.advisors.map((advisor) => advisor.userId),
+        problemStatement: topic.problemStatement ?? '',
+        requirements: topic.requirements ?? '',
+        goals: topic.goals ?? '',
+        references: topic.references ?? '',
+        supervisorIds: (topic.supervisors ?? []).map((supervisor) => supervisor.userId),
+        advisorIds: (topic.advisors ?? []).map((advisor) => advisor.userId),
         researchGroupId: topic.researchGroup.id,
         intendedStart: topic.intendedStart ? new Date(topic.intendedStart) : undefined,
         applicationDeadline: topic.applicationDeadline
@@ -121,10 +138,10 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
             content: res.data.content,
           })
 
-          if (res.data.content.length === 1) {
+          if ((res.data.content ?? []).length === 1) {
             form.setValues({
-              researchGroupId: res.data.content[0].id,
-              supervisorIds: [res.data.content[0].head.userId],
+              researchGroupId: (res.data.content ?? [])[0].id,
+              supervisorIds: [(res.data.content ?? [])[0].head.userId],
             })
           }
         } else {
@@ -168,10 +185,11 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
       })
 
       if (response.ok) {
+        const overview = toTopicOverview(response.data)
         if (topic) {
-          updateTopic(response.data)
+          updateTopic(overview)
         } else {
-          addTopic(response.data)
+          addTopic(overview)
         }
 
         onClose()
@@ -188,106 +206,116 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
   return (
     <Modal
       size='xl'
-      title={topic ? 'Edit Topic' : 'Create Topic'}
+      title={fetchError ? 'Failed to load topic' : topic ? 'Edit Topic' : 'Create Topic'}
       opened={opened}
       onClose={onClose}
     >
-      <form onSubmit={form.onSubmit(() => onSubmit(false))}>
-        <Stack gap='md'>
-          <TextInput label='Title' required {...form.getInputProps('title')} />
-          <MultiSelect
-            label='Thesis Types'
-            placeholder={form.values.thesisTypes.length > 0 ? undefined : 'All Thesis Types'}
-            data={Object.keys(GLOBAL_CONFIG.thesis_types).map((key) => ({
-              value: key,
-              label: formatThesisType(key),
-            }))}
-            {...form.getInputProps('thesisTypes')}
-          />
-          <UserMultiSelect
-            label='Examiner'
-            required
-            groups={['supervisor']}
-            initialUsers={topic?.supervisors}
-            maxValues={1}
-            {...form.getInputProps('supervisorIds')}
-          />
-          <UserMultiSelect
-            label='Supervisor(s)'
-            required
-            groups={['advisor', 'supervisor']}
-            initialUsers={topic?.advisors}
-            {...form.getInputProps('advisorIds')}
-          />
-          <Select
-            label='Research Group'
-            required
-            nothingFoundMessage={!loading ? 'Nothing found...' : 'Loading...'}
-            disabled={loading || !researchGroups || !hasAdminAccess}
-            data={researchGroups?.content.map((researchGroup: ILightResearchGroup) => ({
-              label: researchGroup.name,
-              value: researchGroup.id,
-            }))}
-            {...form.getInputProps('researchGroupId')}
-          />
-          <DateInput
-            clearable
-            minDate={new Date()}
-            label='Intended Start'
-            placeholder='Select intended start date'
-            value={form.values.intendedStart ?? null}
-            onChange={(date) => {
-              form.setFieldValue('intendedStart', date ? new Date(date) : undefined)
-            }}
-          />
-          <DateInput
-            clearable
-            minDate={new Date()}
-            label='Application Deadline'
-            placeholder='Select application deadline'
-            value={form.values.applicationDeadline ?? null}
-            onChange={(date) => {
-              form.setFieldValue('applicationDeadline', date ? new Date(date) : undefined)
-            }}
-          />
-          <DocumentEditor
-            label='Problem Statement'
-            required
-            editMode={true}
-            {...form.getInputProps('problemStatement')}
-          />
-          <DocumentEditor
-            label='Requirements'
-            editMode={true}
-            {...form.getInputProps('requirements')}
-          />
-          <DocumentEditor label='Goals' editMode={true} {...form.getInputProps('goals')} />
-          <DocumentEditor
-            label='References'
-            editMode={true}
-            {...form.getInputProps('references')}
-          />
-          <Group>
-            {(!props.topic || props.topic.state === TopicState.DRAFT) && (
-              <Button
-                variant='default'
-                onClick={() => onSubmit(true)}
-                disabled={!form.isValid()}
-                loading={loading}
-              >
-                {props.topic ? 'Save Changes' : 'Create Draft'}
+      {fetchError ? (
+        <Center py='xl'>
+          <Text c='dimmed'>Could not load topic data.</Text>
+        </Center>
+      ) : isTopicLoading ? (
+        <Center py='xl'>
+          <Loader size={32} />
+        </Center>
+      ) : (
+        <form onSubmit={form.onSubmit(() => onSubmit(false))}>
+          <Stack gap='md'>
+            <TextInput label='Title' required {...form.getInputProps('title')} />
+            <MultiSelect
+              label='Thesis Types'
+              placeholder={form.values.thesisTypes.length > 0 ? undefined : 'All Thesis Types'}
+              data={Object.keys(GLOBAL_CONFIG.thesis_types).map((key) => ({
+                value: key,
+                label: formatThesisType(key),
+              }))}
+              {...form.getInputProps('thesisTypes')}
+            />
+            <UserMultiSelect
+              label='Examiner'
+              required
+              groups={['supervisor']}
+              initialUsers={topic?.supervisors}
+              maxValues={1}
+              {...form.getInputProps('supervisorIds')}
+            />
+            <UserMultiSelect
+              label='Supervisor(s)'
+              required
+              groups={['advisor', 'supervisor']}
+              initialUsers={topic?.advisors}
+              {...form.getInputProps('advisorIds')}
+            />
+            <Select
+              label='Research Group'
+              required
+              nothingFoundMessage={!loading ? 'Nothing found...' : 'Loading...'}
+              disabled={loading || !researchGroups || !hasAdminAccess}
+              data={(researchGroups?.content ?? []).map((researchGroup: ILightResearchGroup) => ({
+                label: researchGroup.name,
+                value: researchGroup.id,
+              }))}
+              {...form.getInputProps('researchGroupId')}
+            />
+            <DateInput
+              clearable
+              minDate={new Date()}
+              label='Intended Start'
+              placeholder='Select intended start date'
+              value={form.values.intendedStart ?? null}
+              onChange={(date) => {
+                form.setFieldValue('intendedStart', date ? new Date(date) : undefined)
+              }}
+            />
+            <DateInput
+              clearable
+              minDate={new Date()}
+              label='Application Deadline'
+              placeholder='Select application deadline'
+              value={form.values.applicationDeadline ?? null}
+              onChange={(date) => {
+                form.setFieldValue('applicationDeadline', date ? new Date(date) : undefined)
+              }}
+            />
+            <DocumentEditor
+              label='Problem Statement'
+              required
+              editMode={true}
+              {...form.getInputProps('problemStatement')}
+            />
+            <DocumentEditor
+              label='Requirements'
+              editMode={true}
+              {...form.getInputProps('requirements')}
+            />
+            <DocumentEditor label='Goals' editMode={true} {...form.getInputProps('goals')} />
+            <DocumentEditor
+              label='References'
+              editMode={true}
+              {...form.getInputProps('references')}
+            />
+            <Group>
+              {(!topic || topic.state === TopicState.DRAFT) && (
+                <Button
+                  variant='default'
+                  onClick={() => onSubmit(true)}
+                  disabled={!form.isValid()}
+                  loading={loading}
+                >
+                  {topic ? 'Save Changes' : 'Create Draft'}
+                </Button>
+              )}
+              <Button type='submit' flex={1} disabled={!form.isValid()} loading={loading}>
+                {topic
+                  ? topic.state === TopicState.DRAFT
+                    ? 'Save & Create Topic'
+                    : 'Save Changes'
+                  : 'Create Topic'}
               </Button>
-            )}
-            <Button type='submit' flex={1} disabled={!form.isValid()} loading={loading}>
-              {topic
-                ? topic.state === TopicState.DRAFT
-                  ? 'Save & Create Topic'
-                  : 'Save Changes'
-                : 'Create Topic'}
-            </Button>
-          </Group>
-        </Stack>
-      </form>
+            </Group>
+          </Stack>
+        </form>
+      )}
     </Modal>
   )
 }

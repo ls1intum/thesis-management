@@ -21,11 +21,6 @@ const CancelSlotConfirmationModal = ({
 }: ICancelSlotConfirmationModalProps) => {
   const isSmaller = useIsSmallerBreakpoint('sm')
 
-  const slotLabel =
-    slot?.startDate && slot?.endDate
-      ? `${new Date(slot.startDate).toLocaleString()} – ${new Date(slot.endDate).toLocaleTimeString()}`
-      : undefined
-
   const { bookingLoading, cancelSlot } = useInterviewProcessContext()
 
   return (

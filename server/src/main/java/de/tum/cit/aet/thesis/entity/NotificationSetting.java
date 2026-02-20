@@ -22,20 +22,20 @@ import java.time.Instant;
 @Entity
 @Table(name = "notification_settings")
 public class NotificationSetting {
-    @EmbeddedId
-    private NotificationSettingId id;
+	@EmbeddedId
+	private NotificationSettingId id;
 
-    @MapsId("userId")
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+	@MapsId("userId")
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "user_id", nullable = false)
+	private User user;
 
-    @NotNull
-    @Column(name = "email", nullable = false)
-    private String email;
+	@NotNull
+	@Column(name = "email", nullable = false)
+	private String email;
 
-    @UpdateTimestamp
-    @NotNull
-    @Column(name = "updated_at", nullable = false)
-    private Instant updatedAt;
+	@UpdateTimestamp
+	@NotNull
+	@Column(name = "updated_at", nullable = false)
+	private Instant updatedAt;
 }

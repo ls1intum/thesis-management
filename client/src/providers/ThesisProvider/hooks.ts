@@ -77,17 +77,23 @@ export function useThesisAccess(thesis: IThesis | IPublishedThesis | undefined |
 
     if (user && thesis) {
       if (
-        user.groups.includes('admin') ||
-        thesis.supervisors.some((supervisor) => user.userId === supervisor.userId)
+        user.groups?.includes('admin') ||
+        (thesis.supervisors ?? []).some((supervisor) => user.userId === supervisor.userId)
       ) {
         access.supervisor = true
       }
 
-      if (access.supervisor || thesis.advisors.some((advisor) => user.userId === advisor.userId)) {
+      if (
+        access.supervisor ||
+        (thesis.advisors ?? []).some((advisor) => user.userId === advisor.userId)
+      ) {
         access.advisor = true
       }
 
-      if (access.advisor || thesis.students.some((student) => user.userId === student.userId)) {
+      if (
+        access.advisor ||
+        (thesis.students ?? []).some((student) => user.userId === student.userId)
+      ) {
         access.student = true
       }
     }

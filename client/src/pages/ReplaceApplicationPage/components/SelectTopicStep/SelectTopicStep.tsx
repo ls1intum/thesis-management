@@ -1,15 +1,5 @@
 import { ITopic } from '../../../../requests/responses/topic'
-import {
-  Accordion,
-  Button,
-  Center,
-  Flex,
-  Pagination,
-  Skeleton,
-  Stack,
-  Text,
-  ThemeIcon,
-} from '@mantine/core'
+import { Stack } from '@mantine/core'
 import React, { useEffect, useState } from 'react'
 import { GLOBAL_CONFIG } from '../../../../config/global'
 import { useSearchParams } from 'react-router'
@@ -36,7 +26,6 @@ const SelectTopicStep = (props: ISelectTopicStepProps) => {
   )
 
   const [researchGroups, setResearchGroups] = useState<ILightResearchGroup[]>([])
-  const [researchGroupsLoaded, setResearchGroupsLoaded] = useState(false)
   const [selectedGroups, setSelectedGroups] = useState<string[]>(
     searchParams.get('groups')?.split(',') ?? [],
   )
@@ -56,7 +45,6 @@ const SelectTopicStep = (props: ISelectTopicStepProps) => {
       (response) => {
         if (response.ok) {
           setResearchGroups(response.data)
-          setResearchGroupsLoaded(true)
         } else {
           showSimpleError(getApiResponseErrorMessage(response))
         }
@@ -107,6 +95,3 @@ const SelectTopicStep = (props: ISelectTopicStepProps) => {
 }
 
 export default SelectTopicStep
-function setResearchGroups(data: ILightResearchGroup[]) {
-  throw new Error('Function not implemented.')
-}

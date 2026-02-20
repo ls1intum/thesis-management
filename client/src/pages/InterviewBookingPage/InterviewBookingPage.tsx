@@ -216,9 +216,9 @@ const InterviewBookingPage = () => {
           title: 'Time',
           content: (
             <Text size='xs' pl={'xs'}>
-              {`${slot.startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${slot.endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}, ${`${Math.round(
-                (slot.endDate.getTime() - slot.startDate.getTime()) / 60000,
-              )} min`}`}
+              {`${slot.startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` +
+                ` - ${slot.endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` +
+                `, ${Math.round((slot.endDate.getTime() - slot.startDate.getTime()) / 60000)} min`}
             </Text>
           ),
           icon: <ClockIcon />,

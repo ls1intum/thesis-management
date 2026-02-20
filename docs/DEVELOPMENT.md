@@ -128,7 +128,59 @@ Server is served at http://localhost:8080.
 
 After running tests with coverage, the HTML report is available at `server/build/reports/jacoco/test/html/index.html`.
 
+### Coding Conventions
+
+#### DTOs
+
+Use Java `record` types for all Data Transfer Objects (DTOs). Records are immutable, concise, and well-suited for API response objects.
+
+Annotate every DTO with `@JsonInclude(JsonInclude.Include.NON_EMPTY)` to omit `null` values, empty strings, and empty collections from JSON responses. This reduces payload size and keeps API responses clean. On the client side, handle potentially missing fields with optional types (`?`) and fallback defaults (`?? ''`, `?? []`).
+
+```java
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+public record ExampleDto(UUID id, String name, List<String> items) {
+    public static ExampleDto fromEntity(ExampleEntity entity) {
+        return new ExampleDto(entity.getId(), entity.getName(), entity.getItems());
+    }
+}
+```
+
+#### JPA Entity Relationships
+
+Prefer `FetchType.LAZY` over `FetchType.EAGER` for `@OneToMany` and `@ManyToMany` relationships. Eager loading causes additional SQL queries for every entity loaded, even when the related data is not needed (e.g. in list endpoints). Lazy loading defers these queries until the data is actually accessed.
+
+```java
+// Preferred
+@OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
+private List<ChildEntity> children = new ArrayList<>();
+
+// Avoid
+@OneToMany(mappedBy = "parent", fetch = FetchType.EAGER)
+private List<ChildEntity> children = new ArrayList<>();
+```
+
 ## Client
+
+### Coding Conventions
+
+#### Handling API Responses
+
+The server uses `@JsonInclude(JsonInclude.Include.NON_EMPTY)` on all DTOs, which means `null` values, empty strings (`""`), and empty collections (`[]`) are omitted from JSON responses. TypeScript interfaces must account for this:
+
+- Mark fields that may be omitted as optional with `?`
+- Always use fallback defaults when accessing optional fields: `?? ''` for strings, `?? []` for arrays
+- Use optional chaining (`?.`) when accessing nested properties on optional fields
+- Never assume an array field will be present — always fall back to `[]`
+
+```typescript
+// Correct: handle potentially missing fields
+const types = topic.thesisTypes ?? []
+const name = user.firstName ?? ''
+const hasAccess = user.groups?.includes('admin') ?? false
+
+// Incorrect: assumes field is always present
+const types = topic.thesisTypes  // may be undefined
+```
 
 #### Preconditions
 * Server running at http://localhost:8080

@@ -23,7 +23,8 @@ const ResearchGroupSettingPage = lazy(
   () => import('../pages/ResearchGroupSettingPage/ResearchGroupSettingPage'),
 )
 const EmailTemplateEditPage = lazy(
-  () => import('../pages/ResearchGroupSettingPage/components/EmailTemplateSettings/EmailTemplateEditPage'),
+  () =>
+    import('../pages/ResearchGroupSettingPage/components/EmailTemplateSettings/EmailTemplateEditPage'),
 )
 const BrowseThesesPage = lazy(() => import('../pages/BrowseThesesPage/BrowseThesesPage'))
 const DashboardPage = lazy(() => import('../pages/DashboardPage/DashboardPage'))

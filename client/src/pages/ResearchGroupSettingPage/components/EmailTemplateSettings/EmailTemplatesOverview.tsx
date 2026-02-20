@@ -61,10 +61,10 @@ const EmailTemplatesOverview = () => {
 
   const emailTemplateContainsSearchKey = (
     template: { default: IEmailTemplate | null; researchGroupTemplate: IEmailTemplate | null },
-    searchKey: string,
+    key: string,
     category: string,
   ) => {
-    const lowerKey = searchKey.toLowerCase()
+    const lowerKey = key.toLowerCase()
 
     return (
       template.default?.description.toLowerCase().includes(lowerKey) ||
@@ -144,7 +144,7 @@ const EmailTemplatesOverview = () => {
             >
           > = {}
 
-          res.data.content.forEach((template) => {
+          ;(res.data.content ?? []).forEach((template) => {
             const category = getEmailTemplateCategory(template.templateCase)
             const key = template.templateCase
 

@@ -10,18 +10,15 @@ export default function VariableComponent(props: NodeViewProps) {
 
   const selectableVariables = (extension.options.selectableVariables as IMailVariableDto[]) ?? []
 
-  const [variable, setVariable] = useState<string>(node.attrs.variable ?? '')
-  const [group, setGroup] = useState<string>(node.attrs.group ?? '')
+  const [variableLabel, setVariableLabel] = useState<string>(node.attrs.variable ?? '')
 
   useEffect(() => {
-    setVariable(node.attrs.variable ?? '')
-    setGroup(node.attrs.group ?? '')
+    setVariableLabel(node.attrs.variable ?? '')
   }, [node.attrs.variable, node.attrs.group])
 
   const setAndPersist = (v: string, g: string) => {
-    setVariable(v)
+    setVariableLabel(v)
     updateAttributes({ variable: v })
-    setGroup(g)
     updateAttributes({ group: g })
   }
 
@@ -46,9 +43,9 @@ export default function VariableComponent(props: NodeViewProps) {
         width={250}
         position='bottom-start'
         onOptionSubmit={(val) => {
-          const variable = selectableVariables.find((v) => v.templateVariable === val)
-          if (variable) {
-            setAndPersist(variable.label, variable.group)
+          const matched = selectableVariables.find((v) => v.templateVariable === val)
+          if (matched) {
+            setAndPersist(matched.label, matched.group)
           }
         }}
         offset={4}
@@ -62,7 +59,7 @@ export default function VariableComponent(props: NodeViewProps) {
             onClick={() => combobox.toggleDropdown()}
           >
             <Group gap={5}>
-              {variable || 'Add variable'}
+              {variableLabel || 'Add variable'}
               {combobox.dropdownOpened ? <CaretUpIcon size={12} /> : <CaretDownIcon size={12} />}
             </Group>
           </Badge>

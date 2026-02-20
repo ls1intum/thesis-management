@@ -84,10 +84,10 @@ const PresentationCard = ({
   onDelete,
   onChange,
 }: IPresentationCardProps) => {
-  const [deleting, deletePresentation] = useThesisUpdateAction(
-    async (presentation: IThesisPresentation) => {
+  const [, deletePresentation] = useThesisUpdateAction(
+    async (presentationToDelete: IThesisPresentation) => {
       const response = await doRequest<IThesis>(
-        `/v2/theses/${presentation.thesisId}/presentations/${presentation.presentationId}`,
+        `/v2/theses/${presentationToDelete.thesisId}/presentations/${presentationToDelete.presentationId}`,
         {
           method: 'DELETE',
           requiresAuth: true,
@@ -209,13 +209,15 @@ const PresentationCard = ({
       bg={getPresentationColor(presentation.state)}
       p={0}
       onClick={() => {
-        editPresentationModal ||
-        schedulePresentationModal ||
-        openDeleteModal ||
-        editMenuOpened ||
-        !onClick
-          ? undefined
-          : onClick()
+        if (
+          !editPresentationModal &&
+          !schedulePresentationModal &&
+          !openDeleteModal &&
+          !editMenuOpened &&
+          onClick
+        ) {
+          onClick()
+        }
       }}
       style={{ cursor: onClick ? 'pointer' : 'default' }}
     >
@@ -283,7 +285,7 @@ const PresentationCard = ({
                     'supervisors' in thesis &&
                     hasAdvisorAccess(thesis, user) && (
                       <Menu.Item
-                        onClick={(e) => {
+                        onClick={() => {
                           setOpenDeleteModal(true)
                         }}
                       >

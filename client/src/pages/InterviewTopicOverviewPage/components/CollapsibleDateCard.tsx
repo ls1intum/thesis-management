@@ -13,12 +13,11 @@ import {
 } from '@mantine/core'
 import dayjs from 'dayjs'
 import { IInterviewSlot } from '../../../requests/responses/interview'
-import { use, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { CardsIcon } from '@phosphor-icons/react'
 import { TimeInput } from '@mantine/dates'
 import SlotItem from './SlotItem'
 import DeleteButton from '../../../components/DeleteButton/DeleteButton'
-import { WarningCircleIcon } from '@phosphor-icons/react/dist/ssr'
 
 interface ICollapsibleDateCardProps {
   date: Date
@@ -56,25 +55,27 @@ const CollapsibleDateCard = ({
   }, [] as IInterviewSlot[])
 
   useEffect(() => {
-    addNewSlots && addNewSlots(allSlots)
+    if (addNewSlots) {
+      addNewSlots(allSlots)
+    }
   }, [slotRanges])
 
   const createSlotsForRange = (
     startTime: Date,
     endTime: Date,
-    duration: number,
-    breakDuration: number,
+    slotDuration: number,
+    slotBreakDuration: number,
     locationType?: 'Onsite' | 'Online',
     location?: string,
   ): IInterviewSlot[] => {
-    const slots: IInterviewSlot[] = []
+    const generatedSlots: IInterviewSlot[] = []
 
-    let currentTime = new Date(startTime)
-    let slotEnd = new Date(currentTime)
-    slotEnd.setMinutes(slotEnd.getMinutes() + duration)
+    const currentTime = new Date(startTime)
+    const slotEnd = new Date(currentTime)
+    slotEnd.setMinutes(slotEnd.getMinutes() + slotDuration)
 
     while (slotEnd <= endTime) {
-      slots.push({
+      generatedSlots.push({
         slotId: ``,
         startDate: new Date(currentTime),
         endDate: new Date(slotEnd),
@@ -83,11 +84,11 @@ const CollapsibleDateCard = ({
         streamUrl: locationType === 'Online' ? (location ?? '') : undefined,
       })
 
-      currentTime.setMinutes(currentTime.getMinutes() + duration + breakDuration)
-      slotEnd.setMinutes(slotEnd.getMinutes() + duration + breakDuration)
+      currentTime.setMinutes(currentTime.getMinutes() + slotDuration + slotBreakDuration)
+      slotEnd.setMinutes(slotEnd.getMinutes() + slotDuration + slotBreakDuration)
     }
 
-    return slots
+    return generatedSlots
   }
 
   const handleDeleteSlotRange = (index: number) => {
@@ -97,15 +98,15 @@ const CollapsibleDateCard = ({
   //These next functions build slot ranges from existing slots, we do this in the client, because saving it to the server does not make sense since it is extra overhead to manage and changes frequently when slots are scheduled
   // For the user it is only important to be able to change them as quickly as possible and the range is just a representation of that
 
-  function buildRangesForUnscheduled(slots: IInterviewSlot[]): ISlotRange[] {
-    if (!slots.length) return []
+  function buildRangesForUnscheduled(unbooked: IInterviewSlot[]): ISlotRange[] {
+    if (!unbooked.length) return []
 
     const normalize = (v?: string | null) => (v ?? '').trim()
     const slotLocationKey = (s: IInterviewSlot) =>
       `${normalize(s.location)}||${normalize(s.streamUrl)}`
 
     // 1) Sort by start time
-    const sorted = [...slots].sort((a, b) => a.startDate.getTime() - b.startDate.getTime())
+    const sorted = [...unbooked].sort((a, b) => a.startDate.getTime() - b.startDate.getTime())
 
     const n = sorted.length
     const durations = sorted.map((s) => s.endDate.getTime() - s.startDate.getTime())
@@ -174,7 +175,7 @@ const CollapsibleDateCard = ({
     // add multi-slot ranges
     for (const r of chosenRanges) {
       const groupSlots = sorted.slice(r.start, r.end + 1)
-      const duration = groupSlots[0].endDate.getTime() - groupSlots[0].startDate.getTime()
+      const rangeDuration = groupSlots[0].endDate.getTime() - groupSlots[0].startDate.getTime()
 
       const location = normalize(groupSlots[0].location)
       const meetingUrl = normalize(groupSlots[0].streamUrl)
@@ -183,7 +184,7 @@ const CollapsibleDateCard = ({
         startTime: groupSlots[0].startDate,
         endTime: groupSlots[groupSlots.length - 1].endDate,
         type: 'range',
-        duration,
+        duration: rangeDuration,
         slots: groupSlots,
         locationType: meetingUrl && meetingUrl !== '' ? 'Online' : 'Onsite',
         location: meetingUrl && meetingUrl !== '' ? meetingUrl : location,
@@ -194,7 +195,7 @@ const CollapsibleDateCard = ({
     for (let i = 0; i < n; i++) {
       if (!used[i]) {
         const s = sorted[i]
-        const duration = s.endDate.getTime() - s.startDate.getTime()
+        const singleDuration = s.endDate.getTime() - s.startDate.getTime()
 
         const location = normalize(s.location)
         const meetingUrl = normalize(s.streamUrl)
@@ -203,7 +204,7 @@ const CollapsibleDateCard = ({
           startTime: s.startDate,
           endTime: s.endDate,
           type: 'single',
-          duration,
+          duration: singleDuration,
           slots: [s],
           locationType: meetingUrl ? 'Online' : 'Onsite',
           location: meetingUrl ? meetingUrl : location,
@@ -215,12 +216,12 @@ const CollapsibleDateCard = ({
     return ranges
   }
 
-  function buildSlotRanges(slots: IInterviewSlot[]): ISlotRange[] {
-    if (!slots.length) return []
+  function buildSlotRanges(inputSlots: IInterviewSlot[]): ISlotRange[] {
+    if (!inputSlots.length) return []
 
     // 0) split into scheduled vs unscheduled
-    const scheduledSlots = slots.filter((s) => s.bookedBy != null)
-    const unscheduledSlots = slots.filter((s) => s.bookedBy == null)
+    const scheduledSlots = inputSlots.filter((s) => s.bookedBy != null)
+    const unscheduledSlots = inputSlots.filter((s) => s.bookedBy == null)
 
     // 1) scheduled slots are always singles
     const scheduledRanges: ISlotRange[] = scheduledSlots.map((s) => ({
@@ -420,7 +421,7 @@ const CollapsibleDateCard = ({
                                   setSlotRanges((prev) => {
                                     const newRanges = [...prev]
 
-                                    let newStartTime = new Date(date)
+                                    const newStartTime = new Date(date)
                                     const [hours, minutes] = newTime.target.value
                                       .split(':')
                                       .map(Number)
@@ -430,11 +431,11 @@ const CollapsibleDateCard = ({
                                     //When it is single also set end time
                                     if (slotRange.type === 'single') {
                                       newRanges[index].endTime = (() => {
-                                        let newEndTime = new Date(date)
-                                        const [hours, minutes] = newTime.target.value
+                                        const newEndTime = new Date(date)
+                                        const [endHours, endMinutes] = newTime.target.value
                                           .split(':')
                                           .map(Number)
-                                        newEndTime.setHours(hours, minutes, 0, 0)
+                                        newEndTime.setHours(endHours, endMinutes, 0, 0)
                                         newEndTime.setMinutes(newEndTime.getMinutes() + duration)
 
                                         return newEndTime
@@ -487,7 +488,7 @@ const CollapsibleDateCard = ({
                                     if (!isValidTime(newTime.target.value)) return
                                     setSlotRanges((prev) => {
                                       const newRanges = [...prev]
-                                      let newEndTime = new Date(date)
+                                      const newEndTime = new Date(date)
                                       const [hours, minutes] = newTime.target.value
                                         .split(':')
                                         .map(Number)
@@ -595,9 +596,9 @@ const CollapsibleDateCard = ({
                         </Group>
                         {slotRange.slots && slotRange.slots.length > 0 ? (
                           <Stack w={'100%'} pt={6} gap={'0.5rem'}>
-                            {slotRange.slots.map((slot, index) => (
+                            {slotRange.slots.map((slot, slotIndex) => (
                               <SlotItem
-                                key={`${slot.slotId}-${slot.startDate.toISOString()}-${index}`}
+                                key={`${slot.slotId}-${slot.startDate.toISOString()}-${slotIndex}`}
                                 slot={slot}
                                 hoverEffect={false}
                                 withInterviewee={

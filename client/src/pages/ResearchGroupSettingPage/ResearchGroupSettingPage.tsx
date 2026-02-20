@@ -91,7 +91,7 @@ const ResearchGroupSettingPage = () => {
   return (
     <>
       {user &&
-      (user.groups.includes('admin') ? false : user.researchGroupId !== researchGroupId) ? (
+      (user.groups?.includes('admin') ? false : user.researchGroupId !== researchGroupId) ? (
         <Center h={'100%'}>
           <h1>403 - Unauthorized</h1>
         </Center>

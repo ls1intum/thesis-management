@@ -2,6 +2,7 @@ package de.tum.cit.aet.thesis.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -27,55 +28,56 @@ import java.util.UUID;
 @Setter
 @Entity
 @Table(name = "research_groups")
+@BatchSize(size = 50)
 public class ResearchGroup {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "research_group_id", nullable = false)
-    private UUID id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.UUID)
+	@Column(name = "research_group_id", nullable = false)
+	private UUID id;
 
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "head_user_id", unique = true)
-    private User head;
+	@OneToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "head_user_id", unique = true)
+	private User head;
 
-    @NotBlank
-    @Column(name = "name", nullable = false, unique = true)
-    private String name;
+	@NotBlank
+	@Column(name = "name", nullable = false, unique = true)
+	private String name;
 
-    @NotBlank
-    @Column(name = "abbreviation", nullable = false, unique = true)
-    private String abbreviation;
+	@NotBlank
+	@Column(name = "abbreviation", nullable = false, unique = true)
+	private String abbreviation;
 
-    @Column(name = "description", length = 500)
-    private String description;
+	@Column(name = "description", length = 500)
+	private String description;
 
-    @Column(name = "website_url")
-    private String websiteUrl;
+	@Column(name = "website_url")
+	private String websiteUrl;
 
-    @Column(name = "campus")
-    private String campus;
+	@Column(name = "campus")
+	private String campus;
 
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private Instant createdAt;
+	@CreationTimestamp
+	@Column(name = "created_at", nullable = false, updatable = false)
+	private Instant createdAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "created_by")
-    private User createdBy;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "created_by")
+	private User createdBy;
 
-    @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false)
-    private Instant updatedAt;
+	@UpdateTimestamp
+	@Column(name = "updated_at", nullable = false)
+	private Instant updatedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "updated_by")
-    private User updatedBy;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "updated_by")
+	private User updatedBy;
 
-    @NotNull
-    @Column(name = "archived", nullable = false)
-    private boolean archived = false;
+	@NotNull
+	@Column(name = "archived", nullable = false)
+	private boolean archived = false;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, optional = true)
-    @PrimaryKeyJoinColumn
-    private ResearchGroupSettings researchGroupSettings;
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, optional = true)
+	@PrimaryKeyJoinColumn
+	private ResearchGroupSettings researchGroupSettings;
 }

@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction } from 'react'
-import { ITopic } from '../../requests/responses/topic'
+import { ITopicOverview } from '../../requests/responses/topic'
 import { PaginationResponse } from '../../requests/responses/pagination'
 
 export interface ITopicsFilters {
@@ -11,14 +11,14 @@ export interface ITopicsFilters {
 }
 
 export interface ITopicsContext {
-  topics: PaginationResponse<ITopic> | undefined
+  topics: PaginationResponse<ITopicOverview> | undefined
   filters: ITopicsFilters
   setFilters: Dispatch<SetStateAction<ITopicsFilters>>
   page: number
   setPage: Dispatch<SetStateAction<number>>
   limit: number
-  updateTopic: (thesis: ITopic) => unknown
-  addTopic: (thesis: ITopic) => unknown
+  updateTopic: (topic: ITopicOverview) => unknown
+  addTopic: (topic: ITopicOverview) => unknown
   isLoading: boolean
 }
 

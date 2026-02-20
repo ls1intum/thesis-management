@@ -1,7 +1,7 @@
 import React, { Dispatch, SetStateAction } from 'react'
 import { PaginationResponse } from '../../requests/responses/pagination'
 import { ApplicationState, IApplication } from '../../requests/responses/application'
-import { ITopic } from '../../requests/responses/topic'
+import { ITopicOverview } from '../../requests/responses/topic'
 
 export interface IApplicationsFilters {
   search?: string
@@ -16,7 +16,7 @@ export interface IApplicationsSort {
 }
 
 export interface IApplicationsContext {
-  topics: ITopic[] | undefined
+  topics: ITopicOverview[] | undefined
   applications: PaginationResponse<IApplication> | undefined
   filters: IApplicationsFilters
   setFilters: Dispatch<SetStateAction<IApplicationsFilters>>

@@ -128,7 +128,7 @@ const ResearchGroupAdminPage = () => {
         <Flex justify='center' align='center'>
           <Loader color='blue' />
         </Flex>
-      ) : researchGroups && researchGroups.content.length === 0 ? (
+      ) : researchGroups && (researchGroups.content ?? []).length === 0 ? (
         <NoContentFoundCard
           title={searchKey.length === 0 ? 'No Research Groups Found' : 'No Research Groups Found'}
           subtle={
@@ -144,7 +144,7 @@ const ResearchGroupAdminPage = () => {
           spacing={{ base: 'xs', sm: 'sm', xl: 'md' }}
           verticalSpacing={{ base: 'xs', sm: 'sm', xl: 'md' }}
         >
-          {researchGroups?.content.map((group) => (
+          {(researchGroups?.content ?? []).map((group) => (
             <ResearchGroupCard {...group} key={group.id} />
           ))}
         </SimpleGrid>

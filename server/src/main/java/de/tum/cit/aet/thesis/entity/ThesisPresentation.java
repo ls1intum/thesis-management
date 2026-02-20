@@ -32,70 +32,70 @@ import java.util.UUID;
 @Entity
 @Table(name = "thesis_presentations")
 public class ThesisPresentation {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "presentation_id", nullable = false)
-    private UUID id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.UUID)
+	@Column(name = "presentation_id", nullable = false)
+	private UUID id;
 
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "thesis_id", nullable = false)
-    private Thesis thesis;
+	@NotNull
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "thesis_id", nullable = false)
+	private Thesis thesis;
 
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    @Column(name = "type", nullable = false)
-    private ThesisPresentationType type;
+	@NotNull
+	@Enumerated(EnumType.STRING)
+	@Column(name = "type", nullable = false)
+	private ThesisPresentationType type;
 
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    @Column(name = "visibility", nullable = false)
-    private ThesisPresentationVisibility visibility;
+	@NotNull
+	@Enumerated(EnumType.STRING)
+	@Column(name = "visibility", nullable = false)
+	private ThesisPresentationVisibility visibility;
 
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    @Column(name = "state", nullable = false)
-    private ThesisPresentationState state;
+	@NotNull
+	@Enumerated(EnumType.STRING)
+	@Column(name = "state", nullable = false)
+	private ThesisPresentationState state;
 
-    @Column(name = "location")
-    private String location;
+	@Column(name = "location")
+	private String location;
 
-    @Column(name = "stream_url")
-    private String streamUrl;
+	@Column(name = "stream_url")
+	private String streamUrl;
 
-    @NotNull
-    @Column(name = "language")
-    private String language;
+	@NotNull
+	@Column(name = "language")
+	private String language;
 
-    @Column(name = "presentation_note_html")
-    private String presentationNoteHtml;
+	@Column(name = "presentation_note_html")
+	private String presentationNoteHtml;
 
-    @Column(name = "calendar_event")
-    private String calendarEvent;
+	@Column(name = "calendar_event")
+	private String calendarEvent;
 
-    @NotNull
-    @Column(name = "scheduled_at", nullable = false)
-    private Instant scheduledAt;
+	@NotNull
+	@Column(name = "scheduled_at", nullable = false)
+	private Instant scheduledAt;
 
-    @CreationTimestamp
-    @NotNull
-    @Column(name = "created_at", nullable = false)
-    private Instant createdAt;
+	@CreationTimestamp
+	@NotNull
+	@Column(name = "created_at", nullable = false)
+	private Instant createdAt;
 
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "created_by", nullable = false)
-    private User createdBy;
+	@NotNull
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "created_by", nullable = false)
+	private User createdBy;
 
-    @OneToMany(mappedBy = "presentation", fetch = FetchType.LAZY)
-    @OrderBy("invitedAt ASC")
-    private List<ThesisPresentationInvite> invites = new ArrayList<>();
+	@OneToMany(mappedBy = "presentation", fetch = FetchType.LAZY)
+	@OrderBy("invitedAt ASC")
+	private List<ThesisPresentationInvite> invites = new ArrayList<>();
 
-    public boolean hasManagementAccess(User user) {
-        return thesis.hasAdvisorAccess(user) || createdBy.getId().equals(user.getId());
-    }
+	public boolean hasManagementAccess(User user) {
+		return thesis.hasAdvisorAccess(user) || createdBy.getId().equals(user.getId());
+	}
 
-    public ResearchGroup getResearchGroup() {
-        return thesis != null ? thesis.getResearchGroup() : null;
-    }
+	public ResearchGroup getResearchGroup() {
+		return thesis != null ? thesis.getResearchGroup() : null;
+	}
 }

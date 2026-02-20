@@ -1,5 +1,6 @@
 package de.tum.cit.aet.thesis.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.thesis.constants.ThesisRoleName;
 import de.tum.cit.aet.thesis.constants.TopicState;
 import de.tum.cit.aet.thesis.entity.Topic;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record TopicDto(
 	UUID topicId,
 	String title,
@@ -52,8 +54,7 @@ public static TopicDto fromTopicEntity(Topic topic) {
 	return new TopicDto(
 		topic.getId(),
 		topic.getTitle(),
-		topic.getThesisTypes() == null || topic.getThesisTypes().isEmpty() ? null
-			: topic.getThesisTypes(),
+		topic.getThesisTypes(),
 		topic.getProblemStatement(),
 		topic.getRequirements(),
 		topic.getGoals(),

@@ -22,7 +22,7 @@ const ThesisFeedbackOverview = (props: IThesisFeedbackOverviewProps) => {
   const { thesis, access } = useLoadedThesisContext()
 
   const [loading, toggleFeedback] = useThesisUpdateAction(
-    async (feedback: IThesis['feedback'][number]) => {
+    async (feedback: NonNullable<IThesis['feedback']>[number]) => {
       const response = await doRequest<IThesis>(
         `/v2/theses/${thesis.thesisId}/feedback/${feedback.feedbackId}/${feedback.completedAt ? 'request' : 'complete'}`,
         {
@@ -41,7 +41,7 @@ const ThesisFeedbackOverview = (props: IThesisFeedbackOverviewProps) => {
   )
 
   const [deleting, deleteFeedback] = useThesisUpdateAction(
-    async (feedback: IThesis['feedback'][number]) => {
+    async (feedback: NonNullable<IThesis['feedback']>[number]) => {
       const response = await doRequest<IThesis>(
         `/v2/theses/${thesis.thesisId}/feedback/${feedback.feedbackId}`,
         {
@@ -59,7 +59,9 @@ const ThesisFeedbackOverview = (props: IThesisFeedbackOverviewProps) => {
     'Feedback successfully deleted',
   )
 
-  if (thesis.feedback.length === 0) {
+  const feedbackItems = thesis.feedback ?? []
+
+  if (feedbackItems.length === 0) {
     return null
   }
 
@@ -77,7 +79,7 @@ const ThesisFeedbackOverview = (props: IThesisFeedbackOverviewProps) => {
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
-            {thesis.feedback
+            {feedbackItems
               .filter((item) => item.type === type)
               .map((item) => (
                 <Table.Tr key={item.feedbackId}>

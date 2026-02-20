@@ -17,14 +17,14 @@ import TopicCard from './TopicCard/TopicCard'
 import { useTopicsContext } from '../../../../providers/TopicsProvider/hooks'
 import { Database } from '@phosphor-icons/react'
 import { Dispatch, useEffect, useState } from 'react'
-import { ITopic } from '../../../../requests/responses/topic'
+import { ITopic, ITopicOverview } from '../../../../requests/responses/topic'
 import { IPublishedThesis } from '../../../../requests/responses/thesis'
 import { PaginationResponse } from '../../../../requests/responses/pagination'
 import CollapsibleTopicElement from '../../../ReplaceApplicationPage/components/SelectTopicStep/components/CollapsibleTopicElement'
 import { GLOBAL_CONFIG } from '../../../../config/global'
 
 interface ITopicCardGridProps {
-  topics: PaginationResponse<ITopic> | PaginationResponse<IPublishedThesis>
+  topics: PaginationResponse<ITopicOverview> | PaginationResponse<IPublishedThesis>
   page: number
   setPage: (page: number) => void
   limit: number
@@ -61,7 +61,7 @@ const TopicCardGrid = ({
 
   return (
     <Flex direction={'column'} gap='md' w='100%' h='100%'>
-      {topics?.content.length === 0 && !showSuggestedTopic && (
+      {(topics?.content ?? []).length === 0 && !showSuggestedTopic && (
         <Center h='100%'>
           <Stack align='center' gap='xs'>
             <ThemeIcon radius='xl' size={50} color='gray' variant='light'>
@@ -85,7 +85,7 @@ const TopicCardGrid = ({
             radius='md'
             chevronIconSize={20}
           >
-            {topics?.content.map((topic) => (
+            {(topics?.content ?? []).map((topic) => (
               <CollapsibleTopicElement
                 key={'topicId' in topic ? topic.topicId : topic.thesisId}
                 topic={topic}
@@ -100,7 +100,7 @@ const TopicCardGrid = ({
                     <Stack gap={'0.5rem'}>
                       <Title order={5}>Suggest your own topic</Title>
                       <Title c={'dimmed'} order={6}>
-                        Can't find a suitable topic? Suggest your own thesis topic to a group.
+                        Can&apos;t find a suitable topic? Suggest your own thesis topic to a group.
                       </Title>
                     </Stack>
                   </Accordion.Control>
@@ -121,7 +121,7 @@ const TopicCardGrid = ({
             spacing={{ base: 'xs', sm: 'sm', xl: 'md' }}
             verticalSpacing={{ base: 'xs', sm: 'sm', xl: 'md' }}
           >
-            {topics?.content.map((topic) => (
+            {(topics?.content ?? []).map((topic) => (
               <TopicCard
                 key={'topicId' in topic ? topic.topicId : topic.thesisId}
                 topic={topic}

@@ -25,34 +25,34 @@ import java.util.UUID;
 @Entity
 @Table(name = "thesis_feedback")
 public class ThesisFeedback {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "feedback_id", nullable = false)
-    private UUID id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.UUID)
+	@Column(name = "feedback_id", nullable = false)
+	private UUID id;
 
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "thesis_id", nullable = false)
-    private Thesis thesis;
+	@NotNull
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "thesis_id", nullable = false)
+	private Thesis thesis;
 
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    @Column(name = "type", nullable = false)
-    private ThesisFeedbackType type;
+	@NotNull
+	@Enumerated(EnumType.STRING)
+	@Column(name = "type", nullable = false)
+	private ThesisFeedbackType type;
 
-    @NotNull
-    @Column(name = "feedback", nullable = false)
-    private String feedback;
+	@NotNull
+	@Column(name = "feedback", nullable = false)
+	private String feedback;
 
-    @Column(name = "completed_at")
-    private Instant completedAt;
+	@Column(name = "completed_at")
+	private Instant completedAt;
 
-    @NotNull
-    @Column(name = "requested_at", nullable = false)
-    private Instant requestedAt;
+	@NotNull
+	@Column(name = "requested_at", nullable = false)
+	private Instant requestedAt;
 
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "requested_by", nullable = false)
-    private User requestedBy;
+	@NotNull
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "requested_by", nullable = false)
+	private User requestedBy;
 }

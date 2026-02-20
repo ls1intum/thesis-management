@@ -90,9 +90,11 @@ const PresentationPage = () => {
       </Grid>
       <Divider />
       <ThesisData thesis={presentation.thesis} additionalInformation={['abstract']} />
-      {(user?.groups.includes('admin') ||
+      {(user?.groups?.includes('admin') ||
         user?.researchGroupId === presentation.thesis.researchGroup.id ||
-        presentation.thesis.students.some((student) => student.userId === user?.userId)) && (
+        (presentation.thesis.students ?? []).some(
+          (student) => student.userId === user?.userId,
+        )) && (
         <Button component={Link} to={`/theses/${presentation.thesis.thesisId}`}>
           View Thesis Page
         </Button>
