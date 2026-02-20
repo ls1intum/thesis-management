@@ -109,13 +109,15 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
             return undefined
           }
 
-          const index = prev.content.findIndex((x) => x.topicId === newTopic.topicId)
+          const content = prev.content ?? []
+          const index = content.findIndex((x) => x.topicId === newTopic.topicId)
 
           let newFetchRequired = false
 
           if (index >= 0) {
-            newFetchRequired = newTopic.state !== prev.content[index].state
-            prev.content[index] = newTopic
+            newFetchRequired = newTopic.state !== content[index].state
+            content[index] = newTopic
+            prev.content = content
           }
 
           if (newFetchRequired) {
@@ -136,7 +138,7 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
           const newHasState = topicStates.includes(newTopic.state)
 
           if (newHasState) {
-            prev.content = [newTopic, ...prev.content].slice(0, limit)
+            prev.content = [newTopic, ...(prev.content ?? [])].slice(0, limit)
             prev.totalElements += 1
             prev.totalPages = Math.ceil(prev.totalElements / limit)
           }
@@ -147,7 +149,7 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
     }
   }, [topics, filters, page, limit, isLoading])
 
-  if (hideIfEmpty && page === 0 && (!topics || topics.content.length === 0)) {
+  if (hideIfEmpty && page === 0 && (!topics || (topics.content?.length ?? 0) === 0)) {
     return <></>
   }
 
