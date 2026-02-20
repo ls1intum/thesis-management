@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import tools.jackson.core.JacksonException;
-import tools.jackson.core.exc.StreamReadException;
 
 import java.text.ParseException;
 
@@ -21,31 +20,30 @@ import java.text.ParseException;
 public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
 	@ExceptionHandler({ ResourceNotFoundException.class })
 	protected ResponseEntity<Object> handleNotFound(RuntimeException ex, WebRequest request) {
-		return handleExceptionInternal(ex, ErrorDto.fromRuntimeException(ex), new HttpHeaders(), HttpStatus.NOT_FOUND, request);
+		return handleExceptionInternal(ex, ErrorDto.fromException(ex), new HttpHeaders(), HttpStatus.NOT_FOUND, request);
 	}
 
 	@ExceptionHandler({ ResourceAlreadyExistsException.class })
 	protected ResponseEntity<Object> handleAlreadyExists(RuntimeException ex, WebRequest request) {
-		return handleExceptionInternal(ex, ErrorDto.fromRuntimeException(ex), new HttpHeaders(), HttpStatus.CONFLICT, request);
+		return handleExceptionInternal(ex, ErrorDto.fromException(ex), new HttpHeaders(), HttpStatus.CONFLICT, request);
 	}
 
 	@ExceptionHandler({
 			ParseException.class,
 			ResourceInvalidParametersException.class,
-			StreamReadException.class,
 			JacksonException.class,
 	})
-	protected ResponseEntity<Object> handleBadRequest(RuntimeException ex, WebRequest request) {
-		return handleExceptionInternal(ex, ErrorDto.fromRuntimeException(ex), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+	protected ResponseEntity<Object> handleBadRequest(Exception ex, WebRequest request) {
+		return handleExceptionInternal(ex, ErrorDto.fromException(ex), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
 	}
 
 	@ExceptionHandler({ AccessDeniedException.class })
 	protected ResponseEntity<Object> handleAccessDenied(RuntimeException ex, WebRequest request) {
-		return handleExceptionInternal(ex, ErrorDto.fromRuntimeException(ex), new HttpHeaders(), HttpStatus.FORBIDDEN, request);
+		return handleExceptionInternal(ex, ErrorDto.fromException(ex), new HttpHeaders(), HttpStatus.FORBIDDEN, request);
 	}
 
 	@ExceptionHandler({ MailingException.class, UploadException.class })
 	protected ResponseEntity<Object> handleServerError(RuntimeException ex, WebRequest request) {
-		return handleExceptionInternal(ex, ErrorDto.fromRuntimeException(ex), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
+		return handleExceptionInternal(ex, ErrorDto.fromException(ex), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
 	}
 }

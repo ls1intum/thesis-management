@@ -7,7 +7,7 @@ public record ErrorDto(
 	String message,
 	String exception
 ) {
-	public static ErrorDto fromRuntimeException(RuntimeException error) {
+	public static ErrorDto fromException(Exception error) {
 		return new ErrorDto(
 			Instant.now(),
 			error.getMessage(),
