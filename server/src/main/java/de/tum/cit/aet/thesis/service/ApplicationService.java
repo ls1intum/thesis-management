@@ -131,9 +131,21 @@ public class ApplicationService {
 		ResearchGroup researchGroup = currentUserProvider().getResearchGroupOrThrow();
 		String searchQueryFilter = searchQuery == null || searchQuery.isEmpty() ? null : searchQuery.toLowerCase();
 		Set<ApplicationState> statesFilter = states == null || states.length == 0 ? null : new HashSet<>(Arrays.asList(states));
-		Set<UUID> topicsFilter = topics == null || topics.length == 0 ? null : Arrays.stream(topics).map(UUID::fromString).collect(Collectors.toSet());
+		Set<UUID> topicsFilter = topics == null || topics.length == 0 ? null : Arrays.stream(topics).map(t -> {
+			try {
+				return UUID.fromString(t);
+			} catch (IllegalArgumentException e) {
+				throw new ResourceInvalidParametersException("Invalid topic ID: " + t);
+			}
+		}).collect(Collectors.toSet());
 		Set<String> typesFilter = types == null || types.length == 0 ? null : new HashSet<>(Arrays.asList(types));
-		Set<UUID> previousFilter = previous == null || previous.length == 0 ? null : Arrays.stream(previous).map(UUID::fromString).collect(Collectors.toSet());
+		Set<UUID> previousFilter = previous == null || previous.length == 0 ? null : Arrays.stream(previous).map(t -> {
+			try {
+				return UUID.fromString(t);
+			} catch (IllegalArgumentException e) {
+				throw new ResourceInvalidParametersException("Invalid application ID: " + t);
+			}
+		}).collect(Collectors.toSet());
 
 		return applicationRepository.searchApplications(
 				researchGroup == null ? null : researchGroup.getId(),
