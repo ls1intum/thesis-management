@@ -29,10 +29,6 @@ For local development start a database container by executing the following comm
 docker compose up db -d
 ```
 
-## Database Setup and Test Data
-
-> 💡 Tip: Make sure the database container is running (`docker compose up db -d`) before executing the commands.
-
 ### Liquibase Migration
 
 To apply the latest database schema changes using Liquibase, run the following command:
@@ -58,20 +54,20 @@ To activate the dev profile, either:
 
 #### Test Users and Roles
 
-> **Note on Role Terminology:** The backend/Keycloak uses `supervisor` and `advisor` roles internally. In the UI, these are displayed as "Examiner" and "Supervisor" respectively to align with CIT terminology.
+> **Note on Role Terminology:** The server / Keycloak uses `supervisor` and `advisor` roles internally. In the UI, these are displayed as "Examiner" and "Supervisor" respectively to align with CIT terminology.
 
-| Username    | First Name  | Last Name | Email                    | Role (Backend) | UI Label   |
-|-------------|-------------|-----------|--------------------------|----------------|------------|
-| admin       | Admin       | User      | admin@test.local         | admin          | Admin      |
-| supervisor  | Supervisor  | User      | supervisor@test.local    | supervisor     | Examiner   |
-| supervisor2 | Supervisor2 | User      | supervisor2@test.local   | supervisor     | Examiner   |
-| advisor     | Advisor     | User      | advisor@test.local       | advisor        | Supervisor |
-| advisor2    | Advisor2    | User      | advisor2@test.local      | advisor        | Supervisor |
-| student     | Student     | User      | student@test.local       | student        | Student    |
-| student2    | Student2    | User      | student2@test.local      | student        | Student    |
-| student3    | Student3    | User      | student3@test.local      | student        | Student    |
-| student4    | Student4    | User      | student4@test.local      | student        | Student    |
-| student5    | Student5    | User      | student5@test.local      | student        | Student    |
+| Username    | First Name  | Last Name | Email                    | Role (Server) | UI Label   |
+|-------------|-------------|-----------|--------------------------|---------------|------------|
+| admin       | Admin       | User      | admin@test.local         | admin         | Admin      |
+| supervisor  | Supervisor  | User      | supervisor@test.local    | supervisor    | Examiner   |
+| supervisor2 | Supervisor2 | User      | supervisor2@test.local   | supervisor    | Examiner   |
+| advisor     | Advisor     | User      | advisor@test.local       | advisor       | Supervisor |
+| advisor2    | Advisor2    | User      | advisor2@test.local      | advisor       | Supervisor |
+| student     | Student     | User      | student@test.local       | student       | Student    |
+| student2    | Student2    | User      | student2@test.local      | student       | Student    |
+| student3    | Student3    | User      | student3@test.local      | student       | Student    |
+| student4    | Student4    | User      | student4@test.local      | student       | Student    |
+| student5    | Student5    | User      | student5@test.local      | student       | Student    |
 
 #### Research Groups
 

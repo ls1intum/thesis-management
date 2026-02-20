@@ -25,7 +25,7 @@ VALUES
     (gen_random_uuid(), 'student', '03700003', 'student@test.local', 'Student', 'User',
      'MALE', 'DE', 'MASTER', 'COMPUTER_SCIENCE',
      'AI-based tutor recommendation system',
-     'Machine learning, backend development',
+     'Machine learning, server development',
      'Java, Spring Boot, PostgreSQL',
      NOW(), NOW(), NOW()),
     -- New Keycloak users
