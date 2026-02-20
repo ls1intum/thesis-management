@@ -1,10 +1,10 @@
-import { ILightUser } from '../../requests/responses/user'
+import { IMinimalUser } from '../../requests/responses/user'
 import { Avatar, MantineSize } from '@mantine/core'
 import { getAvatar } from '../../utils/user'
 import { BoxProps } from '@mantine/core/lib/core'
 
 interface ICustomAvatarProps extends BoxProps {
-  user: ILightUser
+  user: IMinimalUser
   size?: MantineSize | number
 }
 
@@ -14,7 +14,7 @@ const CustomAvatar = (props: ICustomAvatarProps) => {
   return (
     <Avatar
       src={getAvatar(user)}
-      name={`${user.firstName} ${user.lastName}`}
+      name={`${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || undefined}
       color='initials'
       size={size}
       {...other}

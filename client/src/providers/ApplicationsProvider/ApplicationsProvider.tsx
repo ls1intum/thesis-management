@@ -62,8 +62,8 @@ const ApplicationsProvider = (props: PropsWithChildren<IApplicationsProviderProp
         ...(topics ?? [])
           .filter(
             (topic) =>
-              topic.supervisors.some((supervisor) => supervisor.userId === user.userId) ||
-              topic.advisors.some((advisor) => advisor.userId === user.userId),
+              (topic.supervisors ?? []).some((supervisor) => supervisor.userId === user.userId) ||
+              (topic.advisors ?? []).some((advisor) => advisor.userId === user.userId),
           )
           .map((topic) => topic.topicId),
       ]
@@ -131,7 +131,7 @@ const ApplicationsProvider = (props: PropsWithChildren<IApplicationsProviderProp
           })
         }
 
-        previousContent.current.push(...res.data.content.map((item) => item.applicationId))
+        previousContent.current.push(...(res.data.content ?? []).map((item) => item.applicationId))
         setApplications(res.data)
       },
     )
@@ -190,12 +190,15 @@ const ApplicationsProvider = (props: PropsWithChildren<IApplicationsProviderProp
             return undefined
           }
 
-          const index = prev.content.findIndex(
+          const index = (prev.content ?? []).findIndex(
             (x) => x.applicationId === newApplication.applicationId,
           )
 
           if (index >= 0) {
-            prev.content[index] = newApplication
+            const content = prev.content ?? []
+            content[index] = newApplication
+
+            return { ...prev, content }
           }
 
           return { ...prev }
@@ -205,7 +208,7 @@ const ApplicationsProvider = (props: PropsWithChildren<IApplicationsProviderProp
     }
   }, [user.userId, topics, applications, adjustedFilters, sort, page, limit])
 
-  if (hideIfEmpty && page === 0 && (!applications || applications.content.length === 0)) {
+  if (hideIfEmpty && page === 0 && (!applications || (applications.content ?? []).length === 0)) {
     return <>{emptyComponent}</>
   }
 

@@ -1,9 +1,11 @@
 package de.tum.cit.aet.thesis.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import de.tum.cit.aet.thesis.constants.ApplicationRejectReason;
 import de.tum.cit.aet.thesis.controller.payload.CloseTopicPayload;
 import de.tum.cit.aet.thesis.controller.payload.ReplaceTopicPayload;
@@ -185,5 +187,37 @@ class TopicControllerTest extends BaseIntegrationTest {
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.content", hasSize(equalTo(1))))
 				.andExpect(jsonPath("$.content[0].title", containsString("Specific")));
+	}
+
+	@Test
+	void getTopics_VerifyResponseStructure() throws Exception {
+		createTestTopic("Structure Test Topic");
+
+		String response = mockMvc.perform(MockMvcRequestBuilders.get("/v2/topics")
+						.header("Authorization", createRandomAdminAuthentication()))
+				.andExpect(status().isOk())
+				.andReturn().getResponse().getContentAsString();
+
+		JsonNode json = objectMapper.readTree(response);
+		assertThat(json.has("content")).isTrue();
+		assertThat(json.has("totalElements")).isTrue();
+		assertThat(json.has("totalPages")).isTrue();
+
+		JsonNode firstTopic = json.get("content").get(0);
+		// Fields present in TopicOverviewDto
+		assertThat(firstTopic.has("topicId")).isTrue();
+		assertThat(firstTopic.has("title")).isTrue();
+		assertThat(firstTopic.has("state")).isTrue();
+		assertThat(firstTopic.has("advisors")).isTrue();
+		assertThat(firstTopic.has("supervisors")).isTrue();
+
+		// Fields excluded from overview (only in detail TopicDto)
+		assertThat(firstTopic.has("problemStatement")).isFalse();
+		assertThat(firstTopic.has("requirements")).isFalse();
+		assertThat(firstTopic.has("goals")).isFalse();
+		assertThat(firstTopic.has("references")).isFalse();
+		assertThat(firstTopic.has("closedAt")).isFalse();
+		assertThat(firstTopic.has("publishedAt")).isFalse();
+		assertThat(firstTopic.has("updatedAt")).isFalse();
 	}
 }

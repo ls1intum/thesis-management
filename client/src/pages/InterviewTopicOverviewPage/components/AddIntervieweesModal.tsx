@@ -50,7 +50,7 @@ const AddIntervieweesModal = ({ opened, closeModal }: IAddIntervieweesModalProps
       },
       (res) => {
         if (res.ok) {
-          setPossibleInterviewApplicants(res.data.content)
+          setPossibleInterviewApplicants(res.data.content ?? [])
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
         }

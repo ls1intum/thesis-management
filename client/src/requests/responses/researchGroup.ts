@@ -1,9 +1,12 @@
 import { ILightUser } from './user'
 
-export interface ILightResearchGroup {
+export interface IMinimalResearchGroup {
   id: string
-  head: ILightUser
   name: string
+}
+
+export interface ILightResearchGroup extends IMinimalResearchGroup {
+  head: ILightUser
   abbreviation: string
 }
 

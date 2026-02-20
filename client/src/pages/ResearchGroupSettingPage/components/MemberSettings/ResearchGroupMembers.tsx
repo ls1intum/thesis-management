@@ -172,7 +172,7 @@ const ResearchGroupMembers = ({ researchGroupData }: IResearchGroupMembersProps)
         if (res.ok) {
           showNotification({
             title: 'Success',
-            message: res.data.groups.includes('group-admin')
+            message: res.data.groups?.includes('group-admin')
               ? `${userName} is now a group admin.`
               : `${userName} is no longer a group admin.`,
             color: 'green',
@@ -245,10 +245,13 @@ const ResearchGroupMembers = ({ researchGroupData }: IResearchGroupMembersProps)
               .filter((member) => {
                 const key = searchKey.toLowerCase().replaceAll(' ', '')
 
-                const searchTarget =
-                  `${member.firstName ?? ''}${member.lastName ?? ''}${member.universityId ?? ''}${member.email ?? ''}${member.lastName ?? ''}${member.firstName ?? ''}`
-                    .toLowerCase()
-                    .replaceAll(' ', '')
+                const searchTarget = (
+                  `${member.firstName ?? ''}${member.lastName ?? ''}` +
+                  `${member.universityId ?? ''}${member.email ?? ''}` +
+                  `${member.lastName ?? ''}${member.firstName ?? ''}`
+                )
+                  .toLowerCase()
+                  .replaceAll(' ', '')
 
                 return searchTarget.includes(key)
               })
@@ -261,7 +264,7 @@ const ResearchGroupMembers = ({ researchGroupData }: IResearchGroupMembersProps)
                       username={member.universityId ?? ''}
                       email={member.email ?? ''}
                       user={member}
-                      researchGroupAdmin={member.groups.includes('group-admin')}
+                      researchGroupAdmin={member.groups?.includes('group-admin')}
                     />
                   </Table.Td>
                   <Table.Td style={{ whiteSpace: 'nowrap' }}>
@@ -271,7 +274,7 @@ const ResearchGroupMembers = ({ researchGroupData }: IResearchGroupMembersProps)
                           { value: 'advisor', label: 'Supervisor' },
                           { value: 'supervisor', label: 'Examiner' },
                         ]}
-                        value={getPrimaryRoleFromGroups(member.groups)}
+                        value={getPrimaryRoleFromGroups(member.groups ?? [])}
                         onChange={(val) => {
                           updateMemberRole(member.userId, val ?? '')
                         }}
@@ -319,7 +322,7 @@ const ResearchGroupMembers = ({ researchGroupData }: IResearchGroupMembersProps)
                               )
                             }}
                           >
-                            {member.groups.includes('group-admin') ? (
+                            {member.groups?.includes('group-admin') ? (
                               <>
                                 <UserMinus size={16} />
                                 <Text size='xs'>Remove Group Admin</Text>

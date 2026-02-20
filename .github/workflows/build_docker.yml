@@ -3,31 +3,81 @@ name: Build Docker Image
 on:
   workflow_call:
     outputs:
-      server_image_tag: 
+      server_image_tag:
         description: "The tag of the server image that was built"
-        value: ${{ jobs.build.outputs.server_image_tag }}
-      client_image_tag: 
+        value: ${{ jobs.build-server.outputs.server_image_tag }}
+      client_image_tag:
         description: "The tag of the client image that was built"
-        value: ${{ jobs.build.outputs.client_image_tag }}
+        value: ${{ jobs.build-client.outputs.client_image_tag }}
 
 jobs:
-  build:
+  build-server:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - dockerfile: ./client.Dockerfile
-            image: ghcr.io/ls1intum/thesis-management/thesis-management-client
-            context: ./
-            path: client
-          - dockerfile: ./server.Dockerfile
-            image: ghcr.io/ls1intum/thesis-management/thesis-management-server
-            context: ./
-            path: server
     outputs:
-      server_image_tag: "${{ steps.output-tag-server.outputs.server_image_tag }}"
-      client_image_tag: "${{ steps.output-tag-client.outputs.client_image_tag }}"
+      server_image_tag: "${{ steps.output-tag.outputs.server_image_tag }}"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.head_ref || github.ref }}
+          fetch-depth: 1
+
+      - name: Get changed files in the server folder
+        id: changed-files
+        uses: tj-actions/changed-files@v45
+        with:
+          files: server/**
+
+      - name: Log in to the Container registry
+        if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up QEMU
+        if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: all
+
+      - name: Install Docker Buildx
+        if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
+        uses: docker/setup-buildx-action@v3
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/ls1intum/thesis-management/thesis-management-server
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=ref,event=branch
+            type=ref,event=pr
+
+      - name: Build and push Docker Image
+        if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
+        uses: docker/build-push-action@v5
+        with:
+          context: ./
+          file: ./server.Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+
+      - id: output-tag
+        run: |
+          if [[ "${{ steps.changed-files.outputs.any_changed }}" == "true" ]]; then
+            echo "server_image_tag=${{ steps.meta.outputs.version }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "server_image_tag=latest" >> "$GITHUB_OUTPUT"
+          fi
+
+  build-client:
+    runs-on: ubuntu-latest
+    outputs:
+      client_image_tag: "${{ steps.output-tag.outputs.client_image_tag }}"
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -36,19 +86,13 @@ jobs:
           fetch-depth: 1
 
       - name: Get changed files in the client folder
-        id: changed-files-client-folder
+        id: changed-files
         uses: tj-actions/changed-files@v45
         with:
           files: client/**
 
-      - name: Get changed files in the server folder
-        id: changed-files-server-folder
-        uses: tj-actions/changed-files@v45
-        with:
-          files: server/**
-
       - name: Log in to the Container registry
-        if: ${{ (steps.changed-files-client-folder.outputs.any_changed == 'true') || (steps.changed-files-server-folder.outputs.any_changed == 'true') }}
+        if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -56,48 +100,39 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up QEMU
-        if: ${{ (steps.changed-files-client-folder.outputs.any_changed == 'true') || (steps.changed-files-server-folder.outputs.any_changed == 'true') }}
+        if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
         uses: docker/setup-qemu-action@v3
         with:
           platforms: all
 
       - name: Install Docker Buildx
-        if: ${{ (steps.changed-files-client-folder.outputs.any_changed == 'true') || (steps.changed-files-server-folder.outputs.any_changed == 'true') }}
-        id: buildx
+        if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
         uses: docker/setup-buildx-action@v3
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ matrix.image }}
+          images: ghcr.io/ls1intum/thesis-management/thesis-management-client
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
             type=ref,event=branch
             type=ref,event=pr
 
       - name: Build and push Docker Image
+        if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
         uses: docker/build-push-action@v5
-        if: ${{ (steps.changed-files-client-folder.outputs.any_changed == 'true' && matrix.path == 'client') || (steps.changed-files-server-folder.outputs.any_changed == 'true' && matrix.path == 'server') }}
         with:
-          context: ${{ matrix.context }}
-          file: ${{ matrix.dockerfile }}
+          context: ./
+          file: ./client.Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
 
-      - id: output-tag-client
+      - id: output-tag
         run: |
-          if [[ "${{ matrix.path }}" == "client" ]] && [[ "${{ steps.changed-files-client-folder.outputs.any_changed }}" == "true" ]]; then
+          if [[ "${{ steps.changed-files.outputs.any_changed }}" == "true" ]]; then
             echo "client_image_tag=${{ steps.meta.outputs.version }}" >> "$GITHUB_OUTPUT"
-          elif [[ "${{ matrix.path }}" == "client" ]]; then
+          else
             echo "client_image_tag=latest" >> "$GITHUB_OUTPUT"
-          fi
-      
-      - id: output-tag-server
-        run: |
-          if [[ "${{ matrix.path }}" == "server" ]] && [[ "${{ steps.changed-files-server-folder.outputs.any_changed }}" == "true" ]]; then
-            echo "server_image_tag=${{ steps.meta.outputs.version }}" >> "$GITHUB_OUTPUT"
-          elif [[ "${{ matrix.path }}" == "server" ]]; then
-            echo "server_image_tag=latest" >> "$GITHUB_OUTPUT"
           fi

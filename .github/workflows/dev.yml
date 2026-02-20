@@ -2,8 +2,14 @@ name: Build and Deploy to Dev
 
 on:
   pull_request:
+    branches: [develop, main]
+    types: [opened, synchronize, reopened]
   push:
     branches: [develop, main]
+
+concurrency:
+  group: deploy-dev-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   run-tests:

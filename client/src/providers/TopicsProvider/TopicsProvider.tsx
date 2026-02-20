@@ -1,7 +1,7 @@
-import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react'
+import React, { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react'
 import { doRequest } from '../../requests/request'
 import { showSimpleError } from '../../utils/notification'
-import { ITopic, TopicState } from '../../requests/responses/topic'
+import { ITopicOverview, TopicState } from '../../requests/responses/topic'
 import { ITopicsContext, ITopicsFilters, TopicsContext } from './context'
 import { PaginationResponse } from '../../requests/responses/pagination'
 
@@ -23,7 +23,7 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
     states = [],
   } = props
 
-  const [topics, setTopics] = useState<PaginationResponse<ITopic>>()
+  const [topics, setTopics] = useState<PaginationResponse<ITopicOverview>>()
   const [page, setPage] = useState(0)
   const [filters, setFilters] = useState<ITopicsFilters>({
     states: states,
@@ -33,10 +33,10 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
 
   const [isLoading, setIsLoading] = useState(false)
 
-  const fetchTopics = async () => {
+  const fetchTopics = () => {
     setIsLoading(true)
 
-    return doRequest<PaginationResponse<ITopic>>(
+    return doRequest<PaginationResponse<ITopicOverview>>(
       `/v2/topics`,
       {
         method: 'GET',
@@ -73,10 +73,18 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
   }
 
   useEffect(() => {
-    fetchTopics()
+    return fetchTopics()
   }, [filters, page, limit])
 
+  const initialFiltersKey = JSON.stringify(initialFilters)
+  const prevInitialFiltersKeyRef = useRef(initialFiltersKey)
+
   useEffect(() => {
+    if (prevInitialFiltersKeyRef.current === initialFiltersKey) {
+      return
+    }
+    prevInitialFiltersKeyRef.current = initialFiltersKey
+
     setFilters((prev) => ({
       ...prev,
       states: states,
@@ -84,7 +92,7 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
       ...initialFilters,
     }))
     setPage(0)
-  }, [initialFilters])
+  }, [initialFiltersKey])
 
   const contextState = useMemo<ITopicsContext>(() => {
     return {
@@ -101,13 +109,15 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
             return undefined
           }
 
-          const index = prev.content.findIndex((x) => x.topicId === newTopic.topicId)
+          const content = prev.content ?? []
+          const index = content.findIndex((x) => x.topicId === newTopic.topicId)
 
           let newFetchRequired = false
 
           if (index >= 0) {
-            newFetchRequired = newTopic.state !== prev.content[index].state
-            prev.content[index] = newTopic
+            newFetchRequired = newTopic.state !== content[index].state
+            content[index] = newTopic
+            prev.content = content
           }
 
           if (newFetchRequired) {
@@ -124,11 +134,11 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
             return undefined
           }
 
-          const states = filters.states ?? [TopicState.OPEN.toString()]
-          const newHasState = states.includes(newTopic.state)
+          const topicStates = filters.states ?? [TopicState.OPEN.toString()]
+          const newHasState = topicStates.includes(newTopic.state)
 
           if (newHasState) {
-            prev.content = [newTopic, ...prev.content].slice(-limit)
+            prev.content = [newTopic, ...(prev.content ?? [])].slice(0, limit)
             prev.totalElements += 1
             prev.totalPages = Math.ceil(prev.totalElements / limit)
           }
@@ -139,7 +149,7 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
     }
   }, [topics, filters, page, limit, isLoading])
 
-  if (hideIfEmpty && page === 0 && (!topics || topics.content.length === 0)) {
+  if (hideIfEmpty && page === 0 && (!topics || (topics.content?.length ?? 0) === 0)) {
     return <></>
   }
 

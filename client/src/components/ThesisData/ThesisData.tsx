@@ -37,19 +37,19 @@ const ThesisData = (props: IThesisDataProps) => {
       <Grid>
         <Grid.Col span={{ md: 4 }}>
           <LabeledItem
-            label={pluralize('Examiner', thesis.supervisors.length)}
+            label={pluralize('Examiner', (thesis.supervisors ?? []).length)}
             value={<AvatarUserList users={thesis.supervisors} withUniversityId={true} />}
           />
         </Grid.Col>
         <Grid.Col span={{ md: 4 }}>
           <LabeledItem
-            label={pluralize('Supervisor', thesis.advisors.length)}
+            label={pluralize('Supervisor', (thesis.advisors ?? []).length)}
             value={<AvatarUserList users={thesis.advisors} withUniversityId={true} />}
           />
         </Grid.Col>
         <Grid.Col span={{ md: 4 }}>
           <LabeledItem
-            label={pluralize('Student', thesis.students.length)}
+            label={pluralize('Student', (thesis.students ?? []).length)}
             value={<AvatarUserList users={thesis.students} withUniversityId={true} />}
           />
         </Grid.Col>
@@ -74,9 +74,9 @@ const ThesisData = (props: IThesisDataProps) => {
         )}
         {additionalInformation.includes('keywords') &&
           isThesis(thesis) &&
-          thesis.keywords.length > 0 && (
+          (thesis.keywords ?? []).length > 0 && (
             <Grid.Col span={{ md: 4 }}>
-              <LabeledItem label='Keywords' value={thesis.keywords.join(', ')} />
+              <LabeledItem label='Keywords' value={(thesis.keywords ?? []).join(', ')} />
             </Grid.Col>
           )}
         {additionalInformation.includes('state') && isThesis(thesis) && (

@@ -10,7 +10,7 @@ const ThesisCommentsList = () => {
     <Stack pb={'0.5rem'}>
       {!comments &&
         Array.from(Array(limit).keys()).map((index) => <Skeleton key={index} height={50} />)}
-      {comments && comments.content.length === 0 && (
+      {comments && (comments.content ?? []).length === 0 && (
         <Stack align='center' justify='center' py='lg' gap={'0.5rem'}>
           <NoteIcon size={48} color='gray' />
           <Stack gap={'0.25rem'} align='center'>
@@ -23,7 +23,7 @@ const ThesisCommentsList = () => {
       )}
       <Stack gap={'1rem'}>
         {comments &&
-          comments.content.map((comment, idx) => (
+          (comments.content ?? []).map((comment, idx) => (
             <>
               <ThesisCommentElement
                 key={comment.commentId}
@@ -31,7 +31,7 @@ const ThesisCommentsList = () => {
                 thesisId={thesis.thesisId}
                 deleteComment={deleteComment}
               />
-              {idx < comments.content.length - 1 && <Divider />}
+              {idx < (comments.content ?? []).length - 1 && <Divider />}
             </>
           ))}
       </Stack>

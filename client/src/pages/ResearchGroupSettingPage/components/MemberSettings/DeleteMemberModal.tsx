@@ -13,7 +13,6 @@ type IDeleteMemberModalProps = {
 const DeleteMemberModal = ({
   onConfirm,
   member,
-  disabled,
   deleteMemberModalOpened,
   setDeleteMemberModalOpened,
 }: IDeleteMemberModalProps) => {

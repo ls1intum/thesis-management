@@ -123,7 +123,7 @@ const InterviewOverviewPage = () => {
                 <Center>
                   <Loader />
                 </Center>
-              ) : interviewProcesses?.content.length === 0 ? (
+              ) : (interviewProcesses?.content ?? []).length === 0 ? (
                 <Center h={'100%'} mih={isSmaller ? '30vh' : '50vh'}>
                   <Stack justify='center' align='center' h={'100%'}>
                     <ChatCircleSlashIcon size={60} />
@@ -137,7 +137,7 @@ const InterviewOverviewPage = () => {
                   </Stack>
                 </Center>
               ) : (
-                interviewProcesses?.content.map((process) => (
+                (interviewProcesses?.content ?? []).map((process) => (
                   <InterviewProcessCard
                     key={`card-${process.interviewProcessId}`}
                     interviewProcess={process}

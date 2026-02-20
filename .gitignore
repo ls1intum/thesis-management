@@ -8,5 +8,8 @@ postfix-config
 .idea
 *.iml
 
+# Dependencies
+node_modules/
+
 # misc
 .DS_Store

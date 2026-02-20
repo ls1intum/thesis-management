@@ -91,7 +91,7 @@ const CreateInterviewProcess = ({ opened, onClose }: CreateInterviewProcessProps
       },
       (res) => {
         if (res.ok) {
-          setPossibleInterviewApplicants(res.data.content)
+          setPossibleInterviewApplicants(res.data.content ?? [])
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
         }
@@ -124,7 +124,7 @@ const CreateInterviewProcess = ({ opened, onClose }: CreateInterviewProcessProps
             if (!prev) return prev
             return {
               ...prev,
-              content: prev.content.map((topic) => {
+              content: (prev.content ?? []).map((topic) => {
                 if (topic.topicId === selectedTopic.topicId) {
                   return { ...topic, interviewProcessExists: true }
                 }
@@ -157,12 +157,12 @@ const CreateInterviewProcess = ({ opened, onClose }: CreateInterviewProcessProps
 
   useEffect(() => {
     if (searchKey.trim() !== '') {
-      const filtered = possibleInterviewTopics?.content.filter((topic) =>
+      const filtered = (possibleInterviewTopics?.content ?? []).filter((topic) =>
         topic.topicTitle.toLowerCase().includes(searchKey.toLowerCase()),
       )
-      setFilteredTopics(filtered || [])
+      setFilteredTopics(filtered)
     } else {
-      setFilteredTopics(possibleInterviewTopics?.content || [])
+      setFilteredTopics(possibleInterviewTopics?.content ?? [])
     }
   }, [searchKey, possibleInterviewTopics])
 

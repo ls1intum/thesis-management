@@ -17,11 +17,11 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "user_groups")
 public class UserGroup {
-    @EmbeddedId
-    private UserGroupId id;
+	@EmbeddedId
+	private UserGroupId id;
 
-    @MapsId("userId")
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+	@MapsId("userId")
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "user_id", nullable = false)
+	private User user;
 }

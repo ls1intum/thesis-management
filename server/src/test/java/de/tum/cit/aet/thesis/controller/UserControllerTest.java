@@ -200,7 +200,7 @@ class UserControllerTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 
 			JsonNode json = objectMapper.readTree(response);
-			assertThat(json.get("content").size()).isZero();
+			assertThat(json.path("content").size()).isZero();
 			assertThat(json.get("totalElements").asInt()).isZero();
 		}
 

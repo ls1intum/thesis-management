@@ -4,7 +4,7 @@ import React from 'react'
 import { useThesesContext } from '../../providers/ThesesProvider/hooks'
 import { IThesesSort } from '../../providers/ThesesProvider/context'
 import { useNavigate } from 'react-router'
-import { IThesis } from '../../requests/responses/thesis'
+import { IThesisOverview } from '../../requests/responses/thesis'
 import ThesisStateBadge from '../ThesisStateBadge/ThesisStateBadge'
 import { Center, Text, Tooltip } from '@mantine/core'
 import AvatarUserList from '../AvatarUserList/AvatarUserList'
@@ -23,7 +23,7 @@ type ThesisColumn =
 
 interface IThesesTableProps {
   columns?: ThesisColumn[]
-  extraColumns?: Record<string, DataTableColumn<IThesis>>
+  extraColumns?: Record<string, DataTableColumn<IThesisOverview>>
 }
 
 const ThesesTable = (props: IThesesTableProps) => {
@@ -45,11 +45,11 @@ const ThesesTable = (props: IThesesTableProps) => {
 
   const navigate = useNavigate()
 
-  const onThesisClick = (thesis: IThesis) => {
+  const onThesisClick = (thesis: IThesisOverview) => {
     navigate(`/theses/${thesis.thesisId}`)
   }
 
-  const columnConfig: Record<ThesisColumn, DataTableColumn<IThesis>> = {
+  const columnConfig: Record<ThesisColumn, DataTableColumn<IThesisOverview>> = {
     state: {
       accessor: 'state',
       title: 'State',

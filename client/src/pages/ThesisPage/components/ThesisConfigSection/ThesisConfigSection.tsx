@@ -70,14 +70,14 @@ const ThesisConfigSection = () => {
       type: thesis.type,
       language: thesis.language,
       visibility: thesis.visibility,
-      keywords: thesis.keywords,
+      keywords: thesis.keywords ?? [],
       startDate: thesis.startDate ? new Date(thesis.startDate) : undefined,
       endDate: thesis.endDate ? new Date(thesis.endDate) : undefined,
-      students: thesis.students.map((student) => student.userId),
-      advisors: thesis.advisors.map((advisor) => advisor.userId),
-      supervisors: thesis.supervisors.map((supervisor) => supervisor.userId),
+      students: (thesis.students ?? []).map((student) => student.userId),
+      advisors: (thesis.advisors ?? []).map((advisor) => advisor.userId),
+      supervisors: (thesis.supervisors ?? []).map((supervisor) => supervisor.userId),
       researchGroupId: thesis.researchGroup?.id ?? '',
-      states: thesis.states.map((state) => ({
+      states: (thesis.states ?? []).map((state) => ({
         state: state.state,
         changedAt: new Date(state.startedAt),
       })),
@@ -127,14 +127,14 @@ const ThesisConfigSection = () => {
       type: thesis.type,
       language: thesis.language,
       visibility: thesis.visibility,
-      keywords: thesis.keywords,
+      keywords: thesis.keywords ?? [],
       startDate: thesis.startDate ? new Date(thesis.startDate) : undefined,
       endDate: thesis.endDate ? new Date(thesis.endDate) : undefined,
-      students: thesis.students.map((student) => student.userId),
-      advisors: thesis.advisors.map((advisor) => advisor.userId),
-      supervisors: thesis.supervisors.map((supervisor) => supervisor.userId),
+      students: (thesis.students ?? []).map((student) => student.userId),
+      advisors: (thesis.advisors ?? []).map((advisor) => advisor.userId),
+      supervisors: (thesis.supervisors ?? []).map((supervisor) => supervisor.userId),
       researchGroupId: thesis.researchGroup?.id ?? '',
-      states: thesis.states.map((state) => ({
+      states: (thesis.states ?? []).map((state) => ({
         state: state.state,
         changedAt: new Date(state.startedAt),
       })),
@@ -174,8 +174,8 @@ const ThesisConfigSection = () => {
             content: res.data.content,
           })
 
-          if (res.data.content.length === 1) {
-            form.setValues({ researchGroupId: res.data.content[0].id })
+          if ((res.data.content ?? []).length === 1) {
+            form.setValues({ researchGroupId: (res.data.content ?? [])[0].id })
           }
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
@@ -326,7 +326,7 @@ const ThesisConfigSection = () => {
                 required
                 nothingFoundMessage={'Nothing found...'}
                 disabled={!hasAdminAccess}
-                data={researchGroups?.content.map((researchGroup: ILightResearchGroup) => ({
+                data={(researchGroups?.content ?? []).map((researchGroup: ILightResearchGroup) => ({
                   label: researchGroup.name,
                   value: researchGroup.id,
                 }))}

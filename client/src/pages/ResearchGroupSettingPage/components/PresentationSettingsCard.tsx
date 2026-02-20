@@ -1,4 +1,4 @@
-import { Group, NumberInput, Stack, Switch, Text } from '@mantine/core'
+import { Group, NumberInput, Stack, Text } from '@mantine/core'
 import { ResearchGroupSettingsCard } from './ResearchGroupSettingsCard'
 import { doRequest } from '../../../requests/request'
 import { useParams } from 'react-router'

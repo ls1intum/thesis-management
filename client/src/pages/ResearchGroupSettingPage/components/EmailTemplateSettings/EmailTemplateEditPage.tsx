@@ -2,7 +2,6 @@ import { Button, Divider, Flex, Group, Paper, Stack, Text, TextInput, Title } fr
 import { ArrowLeftIcon } from '@phosphor-icons/react'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
-import { useUser } from '../../../../hooks/authentication'
 import { getApiResponseErrorMessage } from '../../../../requests/handler'
 import { doRequest } from '../../../../requests/request'
 import { IEmailTemplate } from '../../../../requests/responses/emailtemplate'
@@ -13,7 +12,6 @@ import DOMPurify from 'dompurify'
 
 const EmailTemplateEditPage = () => {
   const navigate = useNavigate()
-  const user = useUser()
   const { researchGroupId, templateCase } = useParams<{
     researchGroupId: string
     templateCase: string
@@ -46,9 +44,9 @@ const EmailTemplateEditPage = () => {
       (res) => {
         if (res.ok) {
           const currentDefault =
-            res.data.content.find((template) => !template.researchGroup) ?? null
+            (res.data.content ?? []).find((template) => !template.researchGroup) ?? null
           const currentResearchGroup =
-            res.data.content.find((template) => Boolean(template.researchGroup)) ?? null
+            (res.data.content ?? []).find((template) => Boolean(template.researchGroup)) ?? null
 
           setDefaultTemplate(currentDefault)
           setResearchGroupTemplate(currentResearchGroup)

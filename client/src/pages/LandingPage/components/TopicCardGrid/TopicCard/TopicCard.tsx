@@ -1,27 +1,25 @@
 import { Card, Flex, Text, Group, Stack, Button, Tooltip, Anchor, Box } from '@mantine/core'
-import { ITopic } from '../../../../../requests/responses/topic'
+import { ITopicOverview } from '../../../../../requests/responses/topic'
 import { useHover, useMediaQuery } from '@mantine/hooks'
 import { DownloadSimple, Users } from '@phosphor-icons/react'
 import AvatarUserList from '../../../../../components/AvatarUserList/AvatarUserList'
 import { IPublishedThesis } from '../../../../../requests/responses/thesis'
 import { Dispatch, useEffect, useState } from 'react'
-import { ILightUser } from '../../../../../requests/responses/user'
-import { Link, useNavigate } from 'react-router'
+import { IMinimalUser } from '../../../../../requests/responses/user'
+import { Link } from 'react-router'
 import { GLOBAL_CONFIG } from '../../../../../config/global'
 import ThesisTypeBadge from '../../ThesisTypBadge/ThesisTypBadge'
 
 interface ITopicCardProps {
-  topic: ITopic | IPublishedThesis
+  topic: ITopicOverview | IPublishedThesis
   setOpenTopic?: Dispatch<React.SetStateAction<IPublishedThesis | undefined>>
 }
 
 const TopicCard = ({ topic, setOpenTopic }: ITopicCardProps) => {
   const { hovered, ref } = useHover()
 
-  const navigate = useNavigate()
-
   const [thesisTypes, setThesisTypes] = useState<string[]>([])
-  const [students, setStudents] = useState<ILightUser[]>([])
+  const [students, setStudents] = useState<IMinimalUser[]>([])
   const [isPublished, setIsPublished] = useState<boolean>(false)
   const [topicId, setTopicId] = useState<string | undefined>(undefined)
 
@@ -95,7 +93,7 @@ const TopicCard = ({ topic, setOpenTopic }: ITopicCardProps) => {
               </Flex>
             </Tooltip>
 
-            <Text c='dimmed'>{topic.researchGroup.name}</Text>
+            <Text c='dimmed'>{topic.researchGroup?.name ?? ''}</Text>
           </Stack>
         </Card.Section>
 

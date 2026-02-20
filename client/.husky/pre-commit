@@ -1,0 +1,40 @@
+# Run Spotless on staged Java files in server/
+STAGED_JAVA_FILES=$(git diff --cached --name-only --diff-filter=d | grep '^server/.*\.java$' || true)
+
+if [ -n "$STAGED_JAVA_FILES" ]; then
+    echo "Running Spotless on staged Java files..."
+
+    if ! (cd server && ./gradlew spotlessApply -q); then
+        echo "Spotless apply failed. Please fix the issues and try again."
+        exit 1
+    fi
+
+    # Re-stage the formatted files
+    echo "$STAGED_JAVA_FILES" | while IFS= read -r FILE; do
+        if [ -f "$FILE" ]; then
+            git add "$FILE"
+        fi
+    done
+fi
+
+# Run ESLint on staged client files
+STAGED_CLIENT_FILES=$(git diff --cached --name-only --diff-filter=d | grep '^client/src/.*\.\(ts\|tsx\|js\|jsx\)$' || true)
+
+if [ -n "$STAGED_CLIENT_FILES" ]; then
+    echo "Running ESLint on staged client files..."
+
+    # Strip the client/ prefix since ESLint runs from the client directory
+    CLIENT_RELATIVE_FILES=$(echo "$STAGED_CLIENT_FILES" | sed 's|^client/||')
+
+    if ! (cd client && npx eslint --fix $CLIENT_RELATIVE_FILES); then
+        echo "ESLint failed. Please fix the issues and try again."
+        exit 1
+    fi
+
+    # Re-stage the fixed files (using repo-root-relative paths)
+    echo "$STAGED_CLIENT_FILES" | while IFS= read -r FILE; do
+        if [ -f "$FILE" ]; then
+            git add "$FILE"
+        fi
+    done
+fi

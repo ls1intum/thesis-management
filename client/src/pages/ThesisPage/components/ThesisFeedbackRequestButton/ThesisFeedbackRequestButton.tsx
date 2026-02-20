@@ -124,7 +124,7 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
           </Stack>
         ) : (
           <Stack>
-            {thesis.feedback
+            {(thesis.feedback ?? [])
               .filter((change) => change.type === type)
               .map((change) => (
                 <Checkbox

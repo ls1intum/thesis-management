@@ -3,11 +3,11 @@ import TextAlign from '@tiptap/extension-text-align'
 import Underline from '@tiptap/extension-underline'
 import { Editor, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import { Combobox, Group, Select, useCombobox } from '@mantine/core'
+import { Combobox, Group, useCombobox } from '@mantine/core'
 import ReactComponent from './Extension'
 import { IEmailTemplate, IMailVariableDto } from '../../../../../requests/responses/emailtemplate'
 import { useEffect, useMemo, useState } from 'react'
-import { CaretDownIcon, CaretUpIcon, MagnifyingGlassIcon, Plus } from '@phosphor-icons/react'
+import { CaretDownIcon, CaretUpIcon, Plus } from '@phosphor-icons/react'
 import { FontSize, TextStyle } from '@tiptap/extension-text-style'
 import { doRequest } from '../../../../../requests/request'
 import { showSimpleError } from '../../../../../utils/notification'
@@ -77,18 +77,22 @@ const EmailTextEditor = ({
         FontSize,
       ],
       content: convertTemplateVariablesToHtml(editingTemplate?.bodyHtml ?? '', templateVariables),
-      onCreate: ({ editor }) => {
-        setExampleText && setExampleText(convertExample(editor.getHTML(), templateVariables))
+      onCreate: ({ editor: ed }) => {
+        if (setExampleText) {
+          setExampleText(convertExample(ed.getHTML(), templateVariables))
+        }
       },
-      onUpdate: ({ editor }) => {
+      onUpdate: ({ editor: ed }) => {
         if (setEditingTemplate && editingTemplate) {
           setEditingTemplate({
             ...editingTemplate!,
-            bodyHtml: convertHtmlToTemplateVariables(editor.getHTML(), templateVariables),
+            bodyHtml: convertHtmlToTemplateVariables(ed.getHTML(), templateVariables),
           })
         }
 
-        setExampleText && setExampleText(convertExample(editor.getHTML(), templateVariables))
+        if (setExampleText) {
+          setExampleText(convertExample(ed.getHTML(), templateVariables))
+        }
       },
     },
     [templateVariables],
@@ -122,7 +126,7 @@ const EmailTextEditor = ({
       } else {
         showSimpleError(getApiResponseErrorMessage(response))
       }
-    } catch (error) {
+    } catch {
       showSimpleError('Failed to fetch template variables')
     }
   }

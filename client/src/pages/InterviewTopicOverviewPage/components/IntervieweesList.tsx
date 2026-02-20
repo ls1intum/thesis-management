@@ -248,7 +248,13 @@ const IntervieweesList = ({ disabled = false }: IIntervieweesListProps) => {
                   setInviteModalOpen(true)
                 }}
               >
-                {`Send ${selectedIntervieweeIds.length > 0 ? selectedIntervieweeIds.length : ''} Invitation${selectedIntervieweeIds.length !== 1 && selectedIntervieweeIds.length > 0 ? 's' : ''}`}
+                {`Send ${
+                  selectedIntervieweeIds.length > 0 ? selectedIntervieweeIds.length : ''
+                } Invitation${
+                  selectedIntervieweeIds.length !== 1 && selectedIntervieweeIds.length > 0
+                    ? 's'
+                    : ''
+                }`}
               </Button>
             </Group>
           )}
