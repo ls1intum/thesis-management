@@ -10,7 +10,7 @@ public record ErrorDto(
 	public static ErrorDto fromException(Exception error) {
 		return new ErrorDto(
 			Instant.now(),
-			error.getMessage(),
+			error.getMessage() != null ? error.getMessage() : error.toString(),
 			error.getClass().getName()
 		);
 	}
