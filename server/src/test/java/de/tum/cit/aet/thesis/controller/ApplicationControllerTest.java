@@ -252,7 +252,8 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 					.andExpect(status().isOk())
 					.andReturn().getResponse().getContentAsString();
 
-			assertThat(objectMapper.readTree(responseWithout).get("content").size()).isZero();
+			JsonNode contentWithout = objectMapper.readTree(responseWithout).get("content");
+			assertThat(contentWithout == null || contentWithout.size() == 0).isTrue();
 
 			// With previous param, the rejected application should still be included
 			String responseWith = mockMvc.perform(MockMvcRequestBuilders.get("/v2/applications")

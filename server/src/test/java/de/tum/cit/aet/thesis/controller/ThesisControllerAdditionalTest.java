@@ -388,7 +388,7 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 			assertThat(presentations.get(0).has("presentationId")).isTrue();
 			assertThat(presentations.get(0).has("type")).isTrue();
 			assertThat(presentations.get(0).has("scheduledAt")).isTrue();
-			assertThat(presentations.get(0).get("type").asText()).isEqualTo("INTERMEDIATE");
+			assertThat(presentations.get(0).get("type").asString()).isEqualTo("INTERMEDIATE");
 		}
 	}
 
