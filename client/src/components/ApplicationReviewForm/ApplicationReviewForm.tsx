@@ -2,7 +2,7 @@ import { ApplicationState, IApplication } from '../../requests/responses/applica
 import { useApplicationsContextUpdater } from '../../providers/ApplicationsProvider/hooks'
 import { isNotEmpty, useForm } from '@mantine/form'
 import { GLOBAL_CONFIG } from '../../config/global'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useState } from 'react'
 import { useDebouncedValue } from '@mantine/hooks'
 import { doRequest } from '../../requests/request'
 import {
@@ -85,7 +85,7 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
     },
   })
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (application) {
       form.setInitialValues({
         applicationId: application.applicationId,
@@ -96,10 +96,11 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
             ? application.user.studyDegree
             : null,
         language: getDefaultLanguage(),
-        advisors: application.topic?.advisors.map((advisor) => advisor.userId) ?? [],
-        supervisors: application.topic?.supervisors.map((supervisor) => supervisor.userId) ?? [
-          application.researchGroup.head.userId,
-        ],
+        advisors: (application.topic?.advisors ?? []).map((advisor) => advisor.userId),
+        supervisors:
+          (application.topic?.supervisors ?? []).length > 0
+            ? (application.topic?.supervisors ?? []).map((supervisor) => supervisor.userId)
+            : [application.researchGroup.head.userId],
         notifyUser: true,
         closeTopic: false,
       })

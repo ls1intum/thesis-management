@@ -17,7 +17,11 @@ export function hasStudentAccess(
     return false
   }
 
-  const users = [...thesis.students, ...thesis.advisors, ...thesis.supervisors]
+  const users = [
+    ...(thesis.students ?? []),
+    ...(thesis.advisors ?? []),
+    ...(thesis.supervisors ?? []),
+  ]
 
   return !!(
     users.some((row) => row.userId === user?.userId) ||
@@ -33,7 +37,7 @@ export function hasAdvisorAccess(
     return false
   }
 
-  const users = [...thesis.advisors, ...thesis.supervisors]
+  const users = [...(thesis.advisors ?? []), ...(thesis.supervisors ?? [])]
 
   return !!(
     users.some((row) => row.userId === user?.userId) ||
@@ -46,7 +50,7 @@ export function hasSupervisorAccess(
   user: ILightUser | undefined,
 ) {
   return !!(
-    thesis?.supervisors.some((row) => row.userId === user?.userId) ||
+    (thesis?.supervisors ?? []).some((row) => row.userId === user?.userId) ||
     user?.groups?.some((name) => name === 'admin')
   )
 }
