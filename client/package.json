@@ -24,11 +24,19 @@
     "check-bundle-size": "webpack --env NODE_ENV=production --env BUNDLE_SIZE=true",
     "check-build-speed": "BUILD_SPEED=true webpack --env NODE_ENV=production",
     "dev": "webpack serve --open --env NODE_ENV=development",
+    "postinstall": "patch-package",
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
     "lint:fix": "eslint \"src/**/*.{js,jsx,ts,tsx}\" --fix",
     "prettier:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx}\"",
     "prettier:write": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
     "update": "ncu -i --format group"
+  },
+  "overrides": {
+    "ajv": "8.18.0",
+    "minimatch": "10.2.1",
+    "fork-ts-checker-webpack-plugin": {
+      "schema-utils": "4.3.3"
+    }
   },
   "dependencies": {
     "@mantine/carousel": "^8.2.8",
@@ -97,6 +105,7 @@
     "webpack-bundle-analyzer": "4.10.2",
     "webpack-cli": "6.0.1",
     "webpack-dev-server": "5.2.3",
+    "patch-package": "8.0.1",
     "webpackbar": "7.0.0"
   }
 }
