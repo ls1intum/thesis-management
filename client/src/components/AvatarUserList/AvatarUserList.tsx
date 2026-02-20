@@ -13,7 +13,15 @@ interface IAvatarUserListProps {
 }
 
 const AvatarUserList = (props: IAvatarUserListProps) => {
-  const { users, withUniversityId, size, textSize, oneLine = false, textColor, fontWeight } = props
+  const {
+    users = [],
+    withUniversityId,
+    size,
+    textSize,
+    oneLine = false,
+    textColor,
+    fontWeight,
+  } = props
 
   if (oneLine && users.length > 0) {
     return (

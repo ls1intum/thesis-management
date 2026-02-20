@@ -94,8 +94,8 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
         requirements: topic.requirements ?? '',
         goals: topic.goals ?? '',
         references: topic.references ?? '',
-        supervisorIds: topic.supervisors.map((supervisor) => supervisor.userId),
-        advisorIds: topic.advisors.map((advisor) => advisor.userId),
+        supervisorIds: (topic.supervisors ?? []).map((supervisor) => supervisor.userId),
+        advisorIds: (topic.advisors ?? []).map((advisor) => advisor.userId),
         researchGroupId: topic.researchGroup.id,
         intendedStart: topic.intendedStart ? new Date(topic.intendedStart) : undefined,
         applicationDeadline: topic.applicationDeadline
