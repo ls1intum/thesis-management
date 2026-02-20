@@ -7,7 +7,7 @@ import { showSimpleError } from '../../../../utils/notification'
 import { Box, Divider, Flex, Loader, Stack, TextInput, Title } from '@mantine/core'
 import { ResearchGroupSettingsCard } from '../ResearchGroupSettingsCard'
 import EmailTemplateCard from './EmailTemplateCard'
-import { useSearchParams } from 'react-router'
+import { useParams, useSearchParams } from 'react-router'
 import { MagnifyingGlass } from '@phosphor-icons/react'
 
 const EmailTemplatesOverview = () => {
@@ -115,7 +115,13 @@ const EmailTemplatesOverview = () => {
     'APPLICATION_ACCEPTED_NO_ADVISOR',
   ]
 
+  const { researchGroupId } = useParams<{
+    researchGroupId: string
+  }>()
+
   useEffect(() => {
+    if (!researchGroupId) return
+
     doRequest<PaginationResponse<IEmailTemplate>>(
       '/v2/email-templates',
       {
@@ -125,6 +131,7 @@ const EmailTemplatesOverview = () => {
           templateCases: templateCasesToFetch.join(','),
           page: 0,
           limit: -1,
+          researchGroupId: researchGroupId,
         },
       },
       (res) => {

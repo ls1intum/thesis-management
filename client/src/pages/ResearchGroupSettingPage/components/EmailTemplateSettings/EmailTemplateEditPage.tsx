@@ -28,6 +28,7 @@ const EmailTemplateEditPage = () => {
 
   useEffect(() => {
     if (!templateCase) return
+    if (!researchGroupId) return
 
     setLoading(true)
     doRequest<PaginationResponse<IEmailTemplate>>(
@@ -39,6 +40,7 @@ const EmailTemplateEditPage = () => {
           templateCases: templateCase,
           page: 0,
           limit: -1,
+          researchGroupId: researchGroupId,
         },
       },
       (res) => {
@@ -57,7 +59,7 @@ const EmailTemplateEditPage = () => {
         setLoading(false)
       },
     )
-  }, [templateCase])
+  }, [templateCase, researchGroupId])
 
   const deleteTemplate = async () => {
     if (!researchGroupTemplate) return
@@ -97,7 +99,7 @@ const EmailTemplateEditPage = () => {
     const method = editingTemplate.researchGroup ? 'PUT' : 'POST'
     const currentResearchGroupId = editingTemplate.researchGroup
       ? editingTemplate.researchGroup.id
-      : user?.researchGroupId
+      : researchGroupId
 
     await doRequest<IEmailTemplate>(
       url,
