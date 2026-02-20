@@ -270,8 +270,15 @@ const InterviewBookingPage = () => {
   return (
     <InterviewProcessProvider excludeBookedSlots={true} autoFetchInterviewees={false}>
       {myBooking ? (
-        <Center style={{ height: '100%' }}>
-          <Stack align='center' gap={'2rem'}>
+        <ScrollArea h={'100%'} w={'100%'} type={isSmaller ? 'never' : 'hover'} offsetScrollbars>
+          <Stack
+            align='center'
+            gap={'2rem'}
+            px={isSmaller ? 0 : 'sm'}
+            py={isSmaller ? 'sm' : 'xl'}
+            justify='center'
+            mih={'100%'}
+          >
             <Stack gap={'0.5rem'} align='center'>
               <ClockIcon size={60} color='green' />
               <Title order={2}>Interview Scheduled</Title>
@@ -309,7 +316,7 @@ const InterviewBookingPage = () => {
               }}
             />
           </Stack>
-        </Center>
+        </ScrollArea>
       ) : (
         <Stack gap={'2rem'} h={'100%'}>
           <Title>Select your Interview Slot</Title>
