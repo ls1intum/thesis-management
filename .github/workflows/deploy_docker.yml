@@ -20,19 +20,6 @@ jobs:
       name: ${{ inputs.environment }}
       url: '${{ vars.CLIENT_HOST }}'
     steps:
-      - name: SSH to VM and Execute Docker-Compose Down
-        uses: appleboy/ssh-action@v1.2.5
-        with:
-          host: ${{ vars.VM_HOST }}
-          username: ${{ vars.VM_USERNAME }}
-          key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
-          proxy_host: ${{ vars.DEPLOYMENT_GATEWAY_HOST }}
-          proxy_username: ${{ vars.DEPLOYMENT_GATEWAY_USER }}
-          proxy_key: ${{ secrets.DEPLOYMENT_GATEWAY_SSH_KEY }}
-          proxy_port: ${{ vars.DEPLOYMENT_GATEWAY_PORT }}
-          script: |
-            docker compose -f docker-compose.prod.yml --env-file=.env.prod down --remove-orphans --rmi local
-
       - name: Checkout Code
         uses: actions/checkout@v6
 
@@ -44,7 +31,7 @@ jobs:
           printf '%s' "$POSTFIX_MAIN_CF" > main.cf
           printf '%s' "$POSTFIX_MASTER_CF" > master.cf
 
-      - name: Copy Docker Compose File From Repo to VM Host
+      - name: Copy Files to VM Host
         uses: appleboy/scp-action@v1.0.0
         with:
           host: ${{ vars.VM_HOST }}
@@ -54,11 +41,12 @@ jobs:
           proxy_username: ${{ vars.DEPLOYMENT_GATEWAY_USER }}
           proxy_key: ${{ secrets.DEPLOYMENT_GATEWAY_SSH_KEY }}
           proxy_port: ${{ vars.DEPLOYMENT_GATEWAY_PORT }}
-          source: "./docker-compose.prod.yml"
+          source: "docker-compose.prod.yml,main.cf,master.cf"
           target: /home/${{ vars.VM_USERNAME }}
+          overwrite: true
 
-      - name: Copy main.cf to VM Host
-        uses: appleboy/scp-action@v1.0.0
+      - name: SSH to VM and Move Postfix Config Files
+        uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ vars.VM_HOST }}
           username: ${{ vars.VM_USERNAME }}
@@ -67,21 +55,9 @@ jobs:
           proxy_username: ${{ vars.DEPLOYMENT_GATEWAY_USER }}
           proxy_key: ${{ secrets.DEPLOYMENT_GATEWAY_SSH_KEY }}
           proxy_port: ${{ vars.DEPLOYMENT_GATEWAY_PORT }}
-          source: "main.cf"
-          target: /home/${{ vars.VM_USERNAME }}/postfix-config/
-
-      - name: Copy master.cf to VM Host
-        uses: appleboy/scp-action@v1.0.0
-        with:
-          host: ${{ vars.VM_HOST }}
-          username: ${{ vars.VM_USERNAME }}
-          key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
-          proxy_host: ${{ vars.DEPLOYMENT_GATEWAY_HOST }}
-          proxy_username: ${{ vars.DEPLOYMENT_GATEWAY_USER }}
-          proxy_key: ${{ secrets.DEPLOYMENT_GATEWAY_SSH_KEY }}
-          proxy_port: ${{ vars.DEPLOYMENT_GATEWAY_PORT }}
-          source: "master.cf"
-          target: /home/${{ vars.VM_USERNAME }}/postfix-config/
+          script: |
+            mkdir -p postfix-config
+            mv -f main.cf master.cf postfix-config/
 
       - name: SSH to VM and Create .env.prod
         uses: appleboy/ssh-action@v1.2.5
@@ -170,6 +146,19 @@ jobs:
             CLIENT_IMAGE_TAG=${CLIENT_TAG:-latest}
             ENVEOF
 
+      - name: SSH to VM and Pre-Pull New Images
+        uses: appleboy/ssh-action@v1.2.5
+        with:
+          host: ${{ vars.VM_HOST }}
+          username: ${{ vars.VM_USERNAME }}
+          key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
+          proxy_host: ${{ vars.DEPLOYMENT_GATEWAY_HOST }}
+          proxy_username: ${{ vars.DEPLOYMENT_GATEWAY_USER }}
+          proxy_key: ${{ secrets.DEPLOYMENT_GATEWAY_SSH_KEY }}
+          proxy_port: ${{ vars.DEPLOYMENT_GATEWAY_PORT }}
+          script: |
+            docker compose -f docker-compose.prod.yml --env-file=.env.prod pull
+
       - name: SSH to VM and Execute Docker-Compose Up
         uses: appleboy/ssh-action@v1.2.5
         with:
@@ -181,4 +170,4 @@ jobs:
           proxy_key: ${{ secrets.DEPLOYMENT_GATEWAY_SSH_KEY }}
           proxy_port: ${{ vars.DEPLOYMENT_GATEWAY_PORT }}
           script: |
-            docker compose -f docker-compose.prod.yml --env-file=.env.prod up --pull=always -d
+            docker compose -f docker-compose.prod.yml --env-file=.env.prod up -d
