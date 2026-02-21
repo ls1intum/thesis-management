@@ -63,43 +63,56 @@ working.
 
 > **Always test the upgrade on the dev environment first before applying to production.**
 
+All commands must be run as the `thesistrack` user in `/home/thesistrack/` on the VM.
+SSH in, then switch to the correct user:
+
 ```bash
+sudo su
+su thesistrack
+cd ~
+```
+
+Then run the upgrade
+
+```bash
+DB_USER=thesistrack
+DB_NAME=thesistrack
+
 # 1. Stop the application server (keep DB running)
-docker compose -f docker-compose.prod.yml stop server client
+docker compose -f docker-compose.prod.yml --env-file=.env.prod stop server client
 
 # 2. Create a full database dump
-docker exec thesis-management-db pg_dump -Fc -U "$SPRING_DATASOURCE_USERNAME" \
-  "$SPRING_DATASOURCE_DATABASE" > thesis_dump_pg17.dump
+docker exec thesis-management-db pg_dump -Fc -U "$DB_USER" "$DB_NAME" > thesis_dump.dump
 
 # 3. Stop and remove the old DB container
-docker compose -f docker-compose.prod.yml down db
+docker compose -f docker-compose.prod.yml --env-file=.env.prod down db
 
 # 4. Back up the old data directory (do NOT delete it yet)
-mv ./postgres_data ./postgres_data_pg17_backup
+mv ./postgres_data ./postgres_data_backup
 
-# 5. Deploy the updated compose file with the new PG image + PGDATA env var
-#    (edit docker-compose.prod.yml with the new postgres image tag)
+# 5. Update the postgres image tag in docker-compose.prod.yml
+#    (or deploy the new version that already contains the change)
+sed -i 's|postgres:17.*-alpine|postgres:18.2-alpine|' docker-compose.prod.yml
 
 # 6. Start only the database service
-docker compose -f docker-compose.prod.yml up -d db
+docker compose -f docker-compose.prod.yml --env-file=.env.prod up -d db
 
 # 7. Copy the dump into the new container and restore
-docker cp thesis_dump_pg17.dump thesis-management-db:/tmp/thesis_dump.dump
-docker exec thesis-management-db pg_restore -U "$SPRING_DATASOURCE_USERNAME" \
-  -d "$SPRING_DATASOURCE_DATABASE" --no-owner --no-acl /tmp/thesis_dump.dump
+docker cp thesis_dump.dump thesis-management-db:/tmp/thesis_dump.dump
+docker exec thesis-management-db pg_restore -U "$DB_USER" -d "$DB_NAME" \
+  --no-owner --no-acl /tmp/thesis_dump.dump
 
 # 8. Verify data integrity
-docker exec thesis-management-db psql -U "$SPRING_DATASOURCE_USERNAME" \
-  -d "$SPRING_DATASOURCE_DATABASE" -c "\dt+" # list tables with sizes
+docker exec thesis-management-db psql -U "$DB_USER" -d "$DB_NAME" -c "\dt+"
 
 # 9. Start the full application stack
-docker compose -f docker-compose.prod.yml up -d
+docker compose -f docker-compose.prod.yml --env-file=.env.prod up -d
 
 # 10. Verify Hibernate validation and Liquibase pass
 docker logs -f thesis-management-server  # check for errors
 
-# 11. After 1-2 weeks of stable operation, remove the old data directory
-rm -rf ./postgres_data_pg17_backup
+# 11. After 1-2 weeks of stable operation, remove the old data directory and dump
+rm -rf ./postgres_data_backup thesis_dump.dump
 ```
 
 ### Rollback
@@ -107,11 +120,11 @@ rm -rf ./postgres_data_pg17_backup
 If the upgrade fails, restore the previous version:
 
 ```bash
-docker compose -f docker-compose.prod.yml down db
+docker compose -f docker-compose.prod.yml --env-file=.env.prod down db
 rm -rf ./postgres_data
-mv ./postgres_data_pg17_backup ./postgres_data
+mv ./postgres_data_backup ./postgres_data
 # Revert docker-compose.prod.yml to the old PG image tag
-docker compose -f docker-compose.prod.yml up -d
+docker compose -f docker-compose.prod.yml --env-file=.env.prod up -d
 ```
 
 ### References
