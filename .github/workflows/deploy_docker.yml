@@ -1,3 +1,21 @@
+# Deploy workflow using a "pull-before-restart" strategy to minimize downtime.
+#
+# How it works:
+#   1. Copy config files to the VM while old containers are still running
+#   2. Pre-pull new Docker images (this is the slow part, ~1-2 min)
+#   3. Recreate containers with the already-cached images (near-instant, ~5-10s)
+#
+# This avoids the old approach of running "docker compose down" first, which
+# caused 3-4 minutes of downtime while files were copied and images were pulled.
+#
+# Key details:
+#   - "docker compose up -d --force-recreate" stops and recreates all containers.
+#     --force-recreate ensures env-only changes (without image tag changes) are
+#     always picked up, since compose does not track .env file content changes.
+#   - "--remove-orphans" cleans up containers from services that were renamed or
+#     removed from the compose file.
+#   - "docker image prune -f" removes old unused images to prevent disk bloat.
+
 name: Deploy Docker Image
 
 on:
@@ -31,6 +49,9 @@ jobs:
           printf '%s' "$POSTFIX_MAIN_CF" > main.cf
           printf '%s' "$POSTFIX_MASTER_CF" > master.cf
 
+      # All files are copied in a single SCP call to avoid multiple SSH handshakes
+      # through the bastion host. Files land in the home directory; the postfix
+      # configs are moved to their subdirectory in the next step.
       - name: Copy Files to VM Host
         uses: appleboy/scp-action@v1.0.0
         with:
@@ -43,7 +64,6 @@ jobs:
           proxy_port: ${{ vars.DEPLOYMENT_GATEWAY_PORT }}
           source: "docker-compose.prod.yml,main.cf,master.cf"
           target: /home/${{ vars.VM_USERNAME }}
-          overwrite: true
 
       - name: SSH to VM and Move Postfix Config Files
         uses: appleboy/ssh-action@v1.2.5
@@ -146,6 +166,10 @@ jobs:
             CLIENT_IMAGE_TAG=${CLIENT_TAG:-latest}
             ENVEOF
 
+      # Pull new images while old containers are still running and serving traffic.
+      # This is the slow step (~1-2 min), but causes zero downtime since old
+      # containers remain up. Must run after .env.prod is created because compose
+      # needs it to resolve image tag variables (SERVER_IMAGE_TAG, CLIENT_IMAGE_TAG).
       - name: SSH to VM and Pre-Pull New Images
         uses: appleboy/ssh-action@v1.2.5
         with:
@@ -159,6 +183,14 @@ jobs:
           script: |
             docker compose -f docker-compose.prod.yml --env-file=.env.prod pull
 
+      # Recreate all containers with the pre-pulled images. Since images are already
+      # cached locally, this takes ~5-10 seconds instead of minutes.
+      # - --force-recreate: ensures containers are recreated even if only .env.prod
+      #   changed (compose does not track env-file content changes on its own)
+      # - --remove-orphans: cleans up containers from services that were renamed or
+      #   removed from the compose file
+      # No "docker compose down" is needed — "up -d" handles stopping old containers
+      # and starting new ones. Traefik detects the new containers automatically.
       - name: SSH to VM and Execute Docker-Compose Up
         uses: appleboy/ssh-action@v1.2.5
         with:
@@ -170,4 +202,20 @@ jobs:
           proxy_key: ${{ secrets.DEPLOYMENT_GATEWAY_SSH_KEY }}
           proxy_port: ${{ vars.DEPLOYMENT_GATEWAY_PORT }}
           script: |
-            docker compose -f docker-compose.prod.yml --env-file=.env.prod up -d --remove-orphans
+            docker compose -f docker-compose.prod.yml --env-file=.env.prod up -d --force-recreate --remove-orphans
+
+      # Remove old dangling images left behind after pulling new versions.
+      # Without this, each deployment leaves behind ~200-500MB of unused image
+      # layers that accumulate over time.
+      - name: SSH to VM and Cleanup Old Images
+        uses: appleboy/ssh-action@v1.2.5
+        with:
+          host: ${{ vars.VM_HOST }}
+          username: ${{ vars.VM_USERNAME }}
+          key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
+          proxy_host: ${{ vars.DEPLOYMENT_GATEWAY_HOST }}
+          proxy_username: ${{ vars.DEPLOYMENT_GATEWAY_USER }}
+          proxy_key: ${{ secrets.DEPLOYMENT_GATEWAY_SSH_KEY }}
+          proxy_port: ${{ vars.DEPLOYMENT_GATEWAY_PORT }}
+          script: |
+            docker image prune -f
