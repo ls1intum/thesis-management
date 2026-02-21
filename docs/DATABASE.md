@@ -45,6 +45,82 @@ in specific environments (e.g. TUM-specific data).
 This file manually adds the "Applied Education Technologies (AET)" research group, only applicable
 for TUM environments (DEV & PROD). **Do not include in Liquibase.**
 
+## 🔄 Major Version Upgrade (pg_dump/pg_restore)
+
+PostgreSQL major versions (e.g. 17 → 18) use different internal data formats, so the new server
+**cannot read data files** written by the old one. You must export the data with `pg_dump` and
+re-import it with `pg_restore`.
+
+### PGDATA Path Change in PG 18+
+
+Starting with PostgreSQL 18, the official Docker image changed the default `PGDATA` from
+`/var/lib/postgresql/data` to `/var/lib/postgresql/18/docker`
+([docker-library/postgres#1259](https://github.com/docker-library/postgres/pull/1259)).
+Our compose files explicitly set `PGDATA=/var/lib/postgresql/data` to keep existing volume mounts
+working.
+
+### Upgrade Procedure
+
+> **Always test the upgrade on the dev environment first before applying to production.**
+
+```bash
+# 1. Stop the application server (keep DB running)
+docker compose -f docker-compose.prod.yml stop server client
+
+# 2. Create a full database dump
+docker exec thesis-management-db pg_dump -Fc -U "$SPRING_DATASOURCE_USERNAME" \
+  "$SPRING_DATASOURCE_DATABASE" > thesis_dump_pg17.dump
+
+# 3. Stop and remove the old DB container
+docker compose -f docker-compose.prod.yml down db
+
+# 4. Back up the old data directory (do NOT delete it yet)
+mv ./postgres_data ./postgres_data_pg17_backup
+
+# 5. Deploy the updated compose file with the new PG image + PGDATA env var
+#    (edit docker-compose.prod.yml with the new postgres image tag)
+
+# 6. Start only the database service
+docker compose -f docker-compose.prod.yml up -d db
+
+# 7. Copy the dump into the new container and restore
+docker cp thesis_dump_pg17.dump thesis-management-db:/tmp/thesis_dump.dump
+docker exec thesis-management-db pg_restore -U "$SPRING_DATASOURCE_USERNAME" \
+  -d "$SPRING_DATASOURCE_DATABASE" --no-owner --no-acl /tmp/thesis_dump.dump
+
+# 8. Verify data integrity
+docker exec thesis-management-db psql -U "$SPRING_DATASOURCE_USERNAME" \
+  -d "$SPRING_DATASOURCE_DATABASE" -c "\dt+" # list tables with sizes
+
+# 9. Start the full application stack
+docker compose -f docker-compose.prod.yml up -d
+
+# 10. Verify Hibernate validation and Liquibase pass
+docker logs -f thesis-management-server  # check for errors
+
+# 11. After 1-2 weeks of stable operation, remove the old data directory
+rm -rf ./postgres_data_pg17_backup
+```
+
+### Rollback
+
+If the upgrade fails, restore the previous version:
+
+```bash
+docker compose -f docker-compose.prod.yml down db
+rm -rf ./postgres_data
+mv ./postgres_data_pg17_backup ./postgres_data
+# Revert docker-compose.prod.yml to the old PG image tag
+docker compose -f docker-compose.prod.yml up -d
+```
+
+### References
+
+- [PostgreSQL 18 Upgrading Guide](https://www.postgresql.org/docs/18/upgrading.html)
+- [pg_dump Documentation](https://www.postgresql.org/docs/18/app-pgdump.html)
+- [pg_restore Documentation](https://www.postgresql.org/docs/18/app-pg-restore.html)
+- [PGDATA path change (docker-library/postgres#1259)](https://github.com/docker-library/postgres/pull/1259)
+
 ## 🗺️ Database Schema
 
 ![Database Schema](files/database-schema.svg)
