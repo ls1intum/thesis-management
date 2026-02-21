@@ -56,8 +56,8 @@ re-import it with `pg_restore`.
 Starting with PostgreSQL 18, the official Docker image changed the default `PGDATA` from
 `/var/lib/postgresql/data` to `/var/lib/postgresql/18/docker`
 ([docker-library/postgres#1259](https://github.com/docker-library/postgres/pull/1259)).
-Our compose files explicitly set `PGDATA=/var/lib/postgresql/data` to keep existing volume mounts
-working.
+Our production compose file explicitly sets `PGDATA=/var/lib/postgresql/data` to keep existing
+volume mounts working.
 
 ### Upgrade Procedure
 
@@ -97,21 +97,24 @@ sed -i 's|postgres:17.*-alpine|postgres:18.2-alpine|' docker-compose.prod.yml
 # 6. Start only the database service
 docker compose -f docker-compose.prod.yml --env-file=.env.prod up -d db
 
-# 7. Copy the dump into the new container and restore
+# 7. Wait for the database to be ready
+until docker exec thesis-management-db pg_isready -U "$DB_USER"; do sleep 1; done
+
+# 8. Copy the dump into the new container and restore
 docker cp thesis_dump.dump thesis-management-db:/tmp/thesis_dump.dump
 docker exec thesis-management-db pg_restore -U "$DB_USER" -d "$DB_NAME" \
-  --no-owner --no-acl /tmp/thesis_dump.dump
+  --no-owner --no-acl --exit-on-error /tmp/thesis_dump.dump
 
-# 8. Verify data integrity
+# 9. Verify data integrity
 docker exec thesis-management-db psql -U "$DB_USER" -d "$DB_NAME" -c "\dt+"
 
-# 9. Start the full application stack
+# 10. Start the full application stack
 docker compose -f docker-compose.prod.yml --env-file=.env.prod up -d
 
-# 10. Verify Hibernate validation and Liquibase pass
+# 11. Verify Hibernate validation and Liquibase pass
 docker logs -f thesis-management-server  # check for errors
 
-# 11. After 1-2 weeks of stable operation, remove the old data directory and dump
+# 12. After 1-2 weeks of stable operation, remove the old data directory and dump
 rm -rf ./postgres_data_backup thesis_dump.dump
 ```
 
@@ -123,7 +126,7 @@ If the upgrade fails, restore the previous version:
 docker compose -f docker-compose.prod.yml --env-file=.env.prod down db
 rm -rf ./postgres_data
 mv ./postgres_data_backup ./postgres_data
-# Revert docker-compose.prod.yml to the old PG image tag
+# Revert docker-compose.prod.yml changes (PG image tag and PGDATA override)
 docker compose -f docker-compose.prod.yml --env-file=.env.prod up -d
 ```
 

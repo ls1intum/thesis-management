@@ -8,7 +8,7 @@
 
 When the Keycloak container starts, it automatically imports the [`thesis-management` realm](../keycloak/thesis-management-realm.json), creates all test users with passwords, and configures their role mappings. No manual setup is needed. Start it from the project root:
 
-```
+```bash
 docker compose up keycloak -d
 ```
 
