@@ -11,6 +11,8 @@ spring:
     username: ""
     password: ""
     driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 5
   liquibase:
     enabled: true
     change-log: db/changelog/db.changelog-master.xml
@@ -51,18 +53,18 @@ thesis-management:
       secret: ""
       student-group-name: thesis-students
   calendar:
-    enabled: false
-    url: ""
-    username: ""
-    password: ""
+    enabled: true
+    url: http://localhost:18080
+    username: test
+    password: test
   client:
     host: http://localhost:3000
   mail:
-    enabled: false
+    enabled: true
     sender: test@ios.ase.cit.tum.de
     signature: ""
     workspace-url: https://slack.com
     bcc-recipients: ""
   storage:
     upload-location: uploads
-  scientific-writing-guide: ""
+  scientific-writing-guide: http://localhost:3000/writing-guide

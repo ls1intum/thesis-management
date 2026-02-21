@@ -22,6 +22,7 @@ import de.tum.cit.aet.thesis.repository.ThesisRepository;
 import de.tum.cit.aet.thesis.repository.UserRepository;
 import de.tum.cit.aet.thesis.security.CurrentUserProvider;
 import net.fortuna.ical4j.model.Calendar;
+import net.fortuna.ical4j.model.component.VEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -249,8 +250,10 @@ class ThesisPresentationServiceTest {
 	void getPresentationCalendar_ReturnsCalendarWithEvents() {
 		when(thesisPresentationRepository.findAllPresentations(isNull(), anySet()))
 				.thenReturn(List.of(testPresentation));
+
+		VEvent vEvent = new VEvent();
 		when(calendarService.createVEvent(anyString(), any()))
-				.thenReturn(null);
+				.thenReturn(vEvent);
 		when(calendarService.createEmptyCalendar(anyString())).thenReturn(
 				new Calendar()
 		);
@@ -258,6 +261,7 @@ class ThesisPresentationServiceTest {
 		Calendar result = presentationService.getPresentationCalendar(null);
 
 		assertNotNull(result);
+		assertEquals(1, result.getComponents().size());
 		verify(calendarService).createVEvent(anyString(), any());
 		verify(thesisPresentationRepository).findAllPresentations(isNull(), anySet());
 	}
