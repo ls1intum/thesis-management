@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Handles the lifecycle of thesis applications, including creation, review, acceptance, and rejection.
@@ -130,9 +131,21 @@ public class ApplicationService {
 		ResearchGroup researchGroup = currentUserProvider().getResearchGroupOrThrow();
 		String searchQueryFilter = searchQuery == null || searchQuery.isEmpty() ? null : searchQuery.toLowerCase();
 		Set<ApplicationState> statesFilter = states == null || states.length == 0 ? null : new HashSet<>(Arrays.asList(states));
-		Set<String> topicsFilter = topics == null || topics.length == 0 ? null : new HashSet<>(Arrays.asList(topics));
+		Set<UUID> topicsFilter = topics == null || topics.length == 0 ? null : Arrays.stream(topics).map(t -> {
+			try {
+				return UUID.fromString(t);
+			} catch (IllegalArgumentException e) {
+				throw new ResourceInvalidParametersException("Invalid topic ID: " + t);
+			}
+		}).collect(Collectors.toSet());
 		Set<String> typesFilter = types == null || types.length == 0 ? null : new HashSet<>(Arrays.asList(types));
-		Set<String> previousFilter = previous == null || previous.length == 0 ? null : new HashSet<>(Arrays.asList(previous));
+		Set<UUID> previousFilter = previous == null || previous.length == 0 ? null : Arrays.stream(previous).map(t -> {
+			try {
+				return UUID.fromString(t);
+			} catch (IllegalArgumentException e) {
+				throw new ResourceInvalidParametersException("Invalid application ID: " + t);
+			}
+		}).collect(Collectors.toSet());
 
 		return applicationRepository.searchApplications(
 				researchGroup == null ? null : researchGroup.getId(),

@@ -3,6 +3,8 @@ package de.tum.cit.aet.thesis.controller;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -312,7 +314,7 @@ class InterviewProcessControllerTest {
 		);
 
 		assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-		verify(interviewProcessService, never()).updateIntervieweeAssessment(org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.anyInt());
+		verify(interviewProcessService, never()).updateIntervieweeAssessment(any(), any(), anyInt());
 	}
 
 	@Test

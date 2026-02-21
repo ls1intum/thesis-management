@@ -3,18 +3,21 @@ package de.tum.cit.aet.thesis.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import de.tum.cit.aet.thesis.constants.ApplicationRejectReason;
 import de.tum.cit.aet.thesis.constants.ApplicationReviewReason;
 import de.tum.cit.aet.thesis.constants.ApplicationState;
 import de.tum.cit.aet.thesis.controller.payload.AcceptApplicationPayload;
+import de.tum.cit.aet.thesis.controller.payload.CloseTopicPayload;
 import de.tum.cit.aet.thesis.controller.payload.CreateApplicationPayload;
+import de.tum.cit.aet.thesis.controller.payload.CreateInterviewProcessPayload;
 import de.tum.cit.aet.thesis.controller.payload.RejectApplicationPayload;
+import de.tum.cit.aet.thesis.controller.payload.ReplaceTopicPayload;
 import de.tum.cit.aet.thesis.controller.payload.ReviewApplicationPayload;
 import de.tum.cit.aet.thesis.controller.payload.UpdateApplicationCommentPayload;
 import de.tum.cit.aet.thesis.mock.BaseIntegrationTest;
 import de.tum.cit.aet.thesis.repository.ApplicationRepository;
 import de.tum.cit.aet.thesis.repository.ApplicationReviewerRepository;
+import de.tum.cit.aet.thesis.repository.InterviewProcessRepository;
 import de.tum.cit.aet.thesis.repository.ThesisRepository;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -24,9 +27,13 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import tools.jackson.databind.JsonNode;
+
+import jakarta.mail.internet.MimeMessage;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Testcontainers
@@ -45,6 +52,9 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 
 	@Autowired
 	private ThesisRepository thesisRepository;
+
+	@Autowired
+	private InterviewProcessRepository interviewProcessRepository;
 
 	@Nested
 	class ApplicationCreation {
@@ -74,11 +84,11 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 
 			JsonNode json = objectMapper.readTree(response);
-			assertThat(json.get("thesisTitle").asText()).isEqualTo("Test Thesis");
-			assertThat(json.get("thesisType").asText()).isEqualTo("MASTER");
-			assertThat(json.get("motivation").asText()).isEqualTo("Test motivation");
-			assertThat(json.get("state").asText()).isEqualTo(ApplicationState.NOT_ASSESSED.getValue());
-			assertThat(json.get("applicationId").asText()).isNotBlank();
+			assertThat(json.get("thesisTitle").asString()).isEqualTo("Test Thesis");
+			assertThat(json.get("thesisType").asString()).isEqualTo("MASTER");
+			assertThat(json.get("motivation").asString()).isEqualTo("Test motivation");
+			assertThat(json.get("state").asString()).isEqualTo(ApplicationState.NOT_ASSESSED.getValue());
+			assertThat(json.get("applicationId").asString()).isNotBlank();
 
 			assertThat(applicationRepository.count()).isEqualTo(1);
 		}
@@ -103,8 +113,8 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 
 			JsonNode json = objectMapper.readTree(response);
 			assertThat(json.get("topic")).isNotNull();
-			assertThat(json.get("motivation").asText()).isEqualTo("Motivation for topic");
-			assertThat(json.get("state").asText()).isEqualTo(ApplicationState.NOT_ASSESSED.getValue());
+			assertThat(json.get("motivation").asString()).isEqualTo("Motivation for topic");
+			assertThat(json.get("state").asString()).isEqualTo(ApplicationState.NOT_ASSESSED.getValue());
 		}
 
 		@Test
@@ -167,7 +177,7 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 					.andExpect(status().isOk())
 					.andReturn().getResponse().getContentAsString();
 
-			UUID applicationId = UUID.fromString(objectMapper.readTree(response).get("applicationId").asText());
+			UUID applicationId = UUID.fromString(objectMapper.readTree(response).get("applicationId").asString());
 
 			var application = applicationRepository.findById(applicationId).orElseThrow();
 			assertThat(application.getThesisTitle()).isEqualTo("Database Check Thesis");
@@ -229,6 +239,47 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 		}
 
 		@Test
+		void getApplications_FilterByPreviousIds() throws Exception {
+			String studentAuth = createRandomAuthentication("student");
+			UUID applicationId = createTestApplication(studentAuth, "Previous App");
+
+			// Reject the application so it no longer matches NOT_ASSESSED state
+			createTestEmailTemplate("APPLICATION_REJECTED");
+			RejectApplicationPayload rejectPayload = new RejectApplicationPayload(
+					ApplicationRejectReason.GENERAL, false
+			);
+			mockMvc.perform(MockMvcRequestBuilders.put("/v2/applications/{applicationId}/reject", applicationId)
+							.header("Authorization", createRandomAdminAuthentication())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(rejectPayload)))
+					.andExpect(status().isOk());
+
+			// Without previous param, filtering by NOT_ASSESSED should return nothing
+			String responseWithout = mockMvc.perform(MockMvcRequestBuilders.get("/v2/applications")
+							.header("Authorization", createRandomAdminAuthentication())
+							.param("fetchAll", "true")
+							.param("state", "NOT_ASSESSED"))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			JsonNode contentWithout = objectMapper.readTree(responseWithout).get("content");
+			assertThat(contentWithout == null || contentWithout.size() == 0).isTrue();
+
+			// With previous param, the rejected application should still be included
+			String responseWith = mockMvc.perform(MockMvcRequestBuilders.get("/v2/applications")
+							.header("Authorization", createRandomAdminAuthentication())
+							.param("fetchAll", "true")
+							.param("state", "NOT_ASSESSED")
+							.param("previous", applicationId.toString()))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			JsonNode json = objectMapper.readTree(responseWith);
+			assertThat(json.get("content").size()).isEqualTo(1);
+			assertThat(json.get("content").get(0).get("applicationId").asString()).isEqualTo(applicationId.toString());
+		}
+
+		@Test
 		void getApplications_AsStudent_ReturnsOwnOnly() throws Exception {
 			String studentAuth = createRandomAuthentication("student");
 			createTestApplication(studentAuth, "Student Application");
@@ -243,7 +294,7 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 
 			JsonNode json = objectMapper.readTree(response);
 			assertThat(json.get("content").size()).isEqualTo(1);
-			assertThat(json.get("content").get(0).get("thesisTitle").asText()).isEqualTo("Student Application");
+			assertThat(json.get("content").get(0).get("thesisTitle").asString()).isEqualTo("Student Application");
 		}
 
 		@Test
@@ -279,9 +330,9 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 
 			JsonNode json = objectMapper.readTree(response);
-			assertThat(json.get("applicationId").asText()).isEqualTo(applicationId.toString());
-			assertThat(json.get("thesisTitle").asText()).isEqualTo("Test Application");
-			assertThat(json.get("state").asText()).isEqualTo(ApplicationState.NOT_ASSESSED.getValue());
+			assertThat(json.get("applicationId").asString()).isEqualTo(applicationId.toString());
+			assertThat(json.get("thesisTitle").asString()).isEqualTo("Test Application");
+			assertThat(json.get("state").asString()).isEqualTo(ApplicationState.NOT_ASSESSED.getValue());
 		}
 
 		@Test
@@ -361,10 +412,10 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 
 			JsonNode json = objectMapper.readTree(response);
-			assertThat(json.get("thesisTitle").asText()).isEqualTo("Updated Thesis");
-			assertThat(json.get("thesisType").asText()).isEqualTo("BACHELOR");
-			assertThat(json.get("motivation").asText()).isEqualTo("Updated motivation");
-			assertThat(json.get("state").asText()).isEqualTo(ApplicationState.NOT_ASSESSED.getValue());
+			assertThat(json.get("thesisTitle").asString()).isEqualTo("Updated Thesis");
+			assertThat(json.get("thesisType").asString()).isEqualTo("BACHELOR");
+			assertThat(json.get("motivation").asString()).isEqualTo("Updated motivation");
+			assertThat(json.get("state").asString()).isEqualTo(ApplicationState.NOT_ASSESSED.getValue());
 
 			var application = applicationRepository.findById(applicationId).orElseThrow();
 			assertThat(application.getThesisTitle()).isEqualTo("Updated Thesis");
@@ -435,7 +486,7 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 
 			JsonNode json = objectMapper.readTree(response);
-			assertThat(json.get("comment").asText()).isEqualTo("Management comment");
+			assertThat(json.get("comment").asString()).isEqualTo("Management comment");
 
 			var application = applicationRepository.findById(applicationId).orElseThrow();
 			assertThat(application.getComment()).isEqualTo("Management comment");
@@ -496,7 +547,7 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 
 			JsonNode json = objectMapper.readTree(response);
-			assertThat(json.get("applicationId").asText()).isEqualTo(applicationId.toString());
+			assertThat(json.get("applicationId").asString()).isEqualTo(applicationId.toString());
 
 			assertThat(applicationReviewerRepository.count()).isEqualTo(1);
 		}
@@ -584,7 +635,7 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 
 			boolean hasAccepted = false;
 			for (JsonNode app : json) {
-				if (app.get("state").asText().equals(ApplicationState.ACCEPTED.getValue())) {
+				if (app.get("state").asString().equals(ApplicationState.ACCEPTED.getValue())) {
 					hasAccepted = true;
 				}
 			}
@@ -635,6 +686,113 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(objectMapper.writeValueAsString(payload)))
 					.andExpect(status().isForbidden());
+		}
+
+		@Test
+		void acceptApplication_WithCloseTopic_RejectsOtherApplications() throws Exception {
+			createTestEmailTemplate("APPLICATION_CREATED_CHAIR");
+			createTestEmailTemplate("APPLICATION_CREATED_STUDENT");
+			createTestEmailTemplate("APPLICATION_ACCEPTED");
+			createTestEmailTemplate("APPLICATION_REJECTED_TOPIC_FILLED");
+
+			UUID topicId = createTestTopic("Close Topic Test");
+
+			// Two different students apply for the same topic
+			String student1Auth = createRandomAuthentication("student");
+			CreateApplicationPayload payload1 = new CreateApplicationPayload(
+					topicId, null, "MASTER", Instant.now(), "Motivation 1", null
+			);
+			String response1 = mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
+							.header("Authorization", student1Auth)
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(payload1)))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+			UUID appId1 = UUID.fromString(objectMapper.readTree(response1).get("applicationId").asString());
+
+			String student2Auth = createRandomAuthentication("student");
+			CreateApplicationPayload payload2 = new CreateApplicationPayload(
+					topicId, null, "MASTER", Instant.now(), "Motivation 2", null
+			);
+			String response2 = mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
+							.header("Authorization", student2Auth)
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(payload2)))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+			UUID appId2 = UUID.fromString(objectMapper.readTree(response2).get("applicationId").asString());
+
+			TestUser advisor = createTestUser("advisor-close", List.of("advisor"));
+			TestUser supervisor = createTestUser("supervisor-close", List.of("supervisor"));
+
+			AcceptApplicationPayload acceptPayload = new AcceptApplicationPayload(
+					"Accepted Thesis", "MASTER", "ENGLISH",
+					List.of(advisor.userId()), List.of(supervisor.userId()),
+					true, true  // notifyUser=true, closeTopic=true
+			);
+
+			String response = mockMvc.perform(MockMvcRequestBuilders.put("/v2/applications/{applicationId}/accept", appId1)
+							.header("Authorization", createRandomAdminAuthentication())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(acceptPayload)))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			JsonNode json = objectMapper.readTree(response);
+			assertThat(json.isArray()).isTrue();
+			// Should contain both the accepted and the rejected application
+			assertThat(json.size()).isGreaterThanOrEqualTo(2);
+
+			// Verify the second application was rejected
+			var app2 = applicationRepository.findById(appId2).orElseThrow();
+			assertThat(app2.getState()).isEqualTo(ApplicationState.REJECTED);
+			assertThat(app2.getRejectReason()).isEqualTo(ApplicationRejectReason.TOPIC_FILLED);
+		}
+
+		@Test
+		void acceptApplication_WithNotify_SameAdvisorSupervisor_UsesNoAdvisorTemplate() throws Exception {
+			createTestEmailTemplate("APPLICATION_CREATED_CHAIR");
+			createTestEmailTemplate("APPLICATION_CREATED_STUDENT");
+			createTestEmailTemplate("APPLICATION_ACCEPTED_NO_ADVISOR");
+			createTestEmailTemplate("THESIS_CREATED");
+
+			TestUser student = createRandomTestUser(List.of("student"));
+			String studentAuth = generateTestAuthenticationHeader(student.universityId(), List.of("student"));
+
+			TestUser advisor = createRandomTestUser(List.of("supervisor", "advisor"));
+			UUID researchGroupId = createTestResearchGroup("Accept No Advisor", advisor.universityId());
+
+			CreateApplicationPayload appPayload = new CreateApplicationPayload(
+					null, "No Advisor Thesis", "MASTER", Instant.now(), "Motivation", researchGroupId
+			);
+
+			String appResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
+							.header("Authorization", studentAuth)
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(appPayload)))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			UUID applicationId = UUID.fromString(objectMapper.readTree(appResponse).get("applicationId").asString());
+
+			clearEmails();
+
+			// Same user as both advisor and supervisor triggers APPLICATION_ACCEPTED_NO_ADVISOR template
+			AcceptApplicationPayload acceptPayload = new AcceptApplicationPayload(
+					"No Advisor Thesis", "MASTER", "ENGLISH",
+					List.of(advisor.userId()),
+					List.of(advisor.userId()),
+					true, false
+			);
+
+			mockMvc.perform(MockMvcRequestBuilders.put("/v2/applications/{applicationId}/accept", applicationId)
+							.header("Authorization", createRandomAdminAuthentication())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(acceptPayload)))
+					.andExpect(status().isOk());
+
+			MimeMessage[] emails = getReceivedEmails();
+			assertThat(emails.length).isGreaterThanOrEqualTo(1);
 		}
 
 		@Test
@@ -689,7 +847,7 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 
 			boolean hasRejected = false;
 			for (JsonNode app : json) {
-				if (app.get("state").asText().equals(ApplicationState.REJECTED.getValue())) {
+				if (app.get("state").asString().equals(ApplicationState.REJECTED.getValue())) {
 					hasRejected = true;
 				}
 			}
@@ -755,7 +913,7 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 							.content(objectMapper.writeValueAsString(payload1)))
 					.andExpect(status().isOk())
 					.andReturn().getResponse().getContentAsString();
-			UUID appId1 = UUID.fromString(objectMapper.readTree(response1).get("applicationId").asText());
+			UUID appId1 = UUID.fromString(objectMapper.readTree(response1).get("applicationId").asString());
 
 			CreateApplicationPayload payload2 = new CreateApplicationPayload(
 					topicId2, null, "MASTER", Instant.now(), "Motivation 2", null
@@ -766,7 +924,7 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 							.content(objectMapper.writeValueAsString(payload2)))
 					.andExpect(status().isOk())
 					.andReturn().getResponse().getContentAsString();
-			UUID appId2 = UUID.fromString(objectMapper.readTree(response2).get("applicationId").asText());
+			UUID appId2 = UUID.fromString(objectMapper.readTree(response2).get("applicationId").asString());
 
 			createTestEmailTemplate("APPLICATION_REJECTED_STUDENT_REQUIREMENTS");
 
@@ -805,6 +963,220 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 			var application = applicationRepository.findById(applicationId).orElseThrow();
 			assertThat(application.getState()).isEqualTo(ApplicationState.REJECTED);
 			assertThat(application.getRejectReason()).isEqualTo(ApplicationRejectReason.NO_CAPACITY);
+		}
+	}
+
+	@Nested
+	class ApplicationSorting {
+		@Test
+		void getApplications_SortByCreatedAtDesc_Success() throws Exception {
+			String student1Auth = createRandomAuthentication("student");
+			createTestApplication(student1Auth, "First Application");
+			String student2Auth = createRandomAuthentication("student");
+			createTestApplication(student2Auth, "Second Application");
+
+			String response = mockMvc.perform(MockMvcRequestBuilders.get("/v2/applications")
+							.header("Authorization", createRandomAdminAuthentication())
+							.param("fetchAll", "true")
+							.param("sortBy", "createdAt")
+							.param("sortOrder", "desc"))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			JsonNode json = objectMapper.readTree(response);
+			assertThat(json.get("content").size()).isEqualTo(2);
+			// Last created should be first with desc order
+			assertThat(json.get("content").get(0).get("thesisTitle").asString()).isEqualTo("Second Application");
+		}
+
+		@Test
+		void getApplications_SortByCreatedAtAsc_Success() throws Exception {
+			String student1Auth = createRandomAuthentication("student");
+			createTestApplication(student1Auth, "First Application");
+			String student2Auth = createRandomAuthentication("student");
+			createTestApplication(student2Auth, "Second Application");
+
+			String response = mockMvc.perform(MockMvcRequestBuilders.get("/v2/applications")
+							.header("Authorization", createRandomAdminAuthentication())
+							.param("fetchAll", "true")
+							.param("sortBy", "createdAt")
+							.param("sortOrder", "asc"))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			JsonNode json = objectMapper.readTree(response);
+			assertThat(json.get("content").size()).isEqualTo(2);
+			// First created should be first with asc order
+			assertThat(json.get("content").get(0).get("thesisTitle").asString()).isEqualTo("First Application");
+		}
+	}
+
+	@Nested
+	class CloseTopicWithInterviewProcess {
+		@Test
+		void closeTopic_WithInterviewProcess_MarksProcessCompleted() throws Exception {
+			createTestEmailTemplate("APPLICATION_CREATED_CHAIR");
+			createTestEmailTemplate("APPLICATION_CREATED_STUDENT");
+			createTestEmailTemplate("APPLICATION_REJECTED_TOPIC_FILLED");
+			createTestEmailTemplate("INTERVIEW_INVITATION");
+			createTestEmailTemplate("INTERVIEW_INVITATION_REMINDER");
+
+			TestUser advisor = createRandomTestUser(List.of("supervisor", "advisor"));
+			UUID researchGroupId = createTestResearchGroup("Close IP Group", advisor.universityId());
+
+			ReplaceTopicPayload topicPayload = new ReplaceTopicPayload(
+					"Close IP Topic", Set.of("MASTER"),
+					"PS", "Req", "Goals", "Refs",
+					List.of(advisor.userId()), List.of(advisor.userId()),
+					researchGroupId, null, null, false
+			);
+			String topicResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/topics")
+							.header("Authorization", createRandomAdminAuthentication())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(topicPayload)))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+			UUID topicId = UUID.fromString(objectMapper.readTree(topicResponse).get("topicId").asString());
+
+			// Create application for the topic
+			String studentAuth = createRandomAuthentication("student");
+			CreateApplicationPayload appPayload = new CreateApplicationPayload(
+					topicId, null, "MASTER", Instant.now(), "Interview motivation", null
+			);
+			String appResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
+							.header("Authorization", studentAuth)
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(appPayload)))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+			UUID applicationId = UUID.fromString(objectMapper.readTree(appResponse).get("applicationId").asString());
+
+			// Create interview process for the topic
+			String advisorAuth = generateTestAuthenticationHeader(advisor.universityId(), List.of("supervisor", "advisor"));
+			CreateInterviewProcessPayload processPayload = new CreateInterviewProcessPayload(topicId, List.of(applicationId));
+			String processResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/interview-process")
+							.header("Authorization", advisorAuth)
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(processPayload)))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+			UUID processId = UUID.fromString(objectMapper.readTree(processResponse).get("interviewProcessId").asString());
+
+			// Close the topic
+			CloseTopicPayload closePayload = new CloseTopicPayload(
+					ApplicationRejectReason.TOPIC_FILLED, true
+			);
+			mockMvc.perform(MockMvcRequestBuilders.delete("/v2/topics/{topicId}", topicId)
+							.header("Authorization", createRandomAdminAuthentication())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(closePayload)))
+					.andExpect(status().isOk());
+
+			// Verify interview process is marked completed
+			var process = interviewProcessRepository.findById(processId).orElseThrow();
+			assertThat(process.isCompleted()).isTrue();
+
+			// Verify application was rejected
+			var app = applicationRepository.findById(applicationId).orElseThrow();
+			assertThat(app.getState()).isEqualTo(ApplicationState.REJECTED);
+		}
+	}
+
+	@Nested
+	class ApplicationFilterCombinations {
+		@Test
+		void getApplications_FilterByType_Success() throws Exception {
+			String studentAuth = createRandomAuthentication("student");
+			createTestApplication(studentAuth, "Bachelor App");
+
+			String response = mockMvc.perform(MockMvcRequestBuilders.get("/v2/applications")
+							.header("Authorization", createRandomAdminAuthentication())
+							.param("fetchAll", "true")
+							.param("types", "BACHELOR"))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			JsonNode json = objectMapper.readTree(response);
+			assertThat(json.get("content").size()).isGreaterThanOrEqualTo(1);
+		}
+
+		@Test
+		void getApplications_WithSearch_FiltersResults() throws Exception {
+			String student1Auth = createRandomAuthentication("student");
+			createTestApplication(student1Auth, "Unique Search Term XYZ");
+			String student2Auth = createRandomAuthentication("student");
+			createTestApplication(student2Auth, "Other Application");
+
+			// Search with a term that doesn't match any user name - should return fewer results
+			String response = mockMvc.perform(MockMvcRequestBuilders.get("/v2/applications")
+							.header("Authorization", createRandomAdminAuthentication())
+							.param("fetchAll", "true")
+							.param("search", "nonexistent-search-term-99999"))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			JsonNode json = objectMapper.readTree(response);
+			assertThat(json.get("totalElements").asInt()).isEqualTo(0);
+		}
+
+		@Test
+		void getApplications_WithTopicFilter_Success() throws Exception {
+			createTestEmailTemplate("APPLICATION_CREATED_CHAIR");
+			createTestEmailTemplate("APPLICATION_CREATED_STUDENT");
+
+			UUID topicId = createTestTopic("Filter Topic");
+
+			String studentAuth = createRandomAuthentication("student");
+			CreateApplicationPayload payload = new CreateApplicationPayload(
+					topicId, null, "MASTER", Instant.now(), "Topic filter test", null
+			);
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
+							.header("Authorization", studentAuth)
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(payload)))
+					.andExpect(status().isOk());
+
+			String response = mockMvc.perform(MockMvcRequestBuilders.get("/v2/applications")
+							.header("Authorization", createRandomAdminAuthentication())
+							.param("fetchAll", "true")
+							.param("topic", topicId.toString()))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			JsonNode json = objectMapper.readTree(response);
+			assertThat(json.get("content").size()).isEqualTo(1);
+		}
+
+		@Test
+		void getApplications_MultipleStates_Success() throws Exception {
+			String studentAuth = createRandomAuthentication("student");
+			UUID applicationId = createTestApplication(studentAuth, "Multi State App");
+
+			// Reject one application
+			createTestEmailTemplate("APPLICATION_REJECTED");
+			RejectApplicationPayload rejectPayload = new RejectApplicationPayload(
+					ApplicationRejectReason.GENERAL, false
+			);
+			mockMvc.perform(MockMvcRequestBuilders.put("/v2/applications/{applicationId}/reject", applicationId)
+							.header("Authorization", createRandomAdminAuthentication())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(rejectPayload)))
+					.andExpect(status().isOk());
+
+			// Create another application
+			String student2Auth = createRandomAuthentication("student");
+			createTestApplication(student2Auth, "Not Assessed App");
+
+			// Filter by both states
+			String response = mockMvc.perform(MockMvcRequestBuilders.get("/v2/applications")
+							.header("Authorization", createRandomAdminAuthentication())
+							.param("fetchAll", "true")
+							.param("state", "NOT_ASSESSED", "REJECTED"))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			JsonNode json = objectMapper.readTree(response);
+			assertThat(json.get("content").size()).isEqualTo(2);
 		}
 	}
 }

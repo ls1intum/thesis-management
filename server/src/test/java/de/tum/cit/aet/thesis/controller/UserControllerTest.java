@@ -7,7 +7,6 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import de.tum.cit.aet.thesis.mock.BaseIntegrationTest;
 import de.tum.cit.aet.thesis.repository.UserRepository;
 import de.tum.cit.aet.thesis.service.AccessManagementService;
@@ -20,6 +19,7 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import tools.jackson.databind.JsonNode;
 
 import jakarta.servlet.ServletException;
 
@@ -139,7 +139,7 @@ class UserControllerTest extends BaseIntegrationTest {
 
 			List<String> userIds = new ArrayList<>();
 			for (JsonNode u : content) {
-				userIds.add(u.get("userId").asText());
+				userIds.add(u.get("userId").asString());
 			}
 			assertThat(userIds).contains(user.userId().toString());
 		}
@@ -183,8 +183,8 @@ class UserControllerTest extends BaseIntegrationTest {
 			assertThat(content.size()).isGreaterThanOrEqualTo(2);
 
 			for (int i = 1; i < content.size(); i++) {
-				String prev = content.get(i - 1).get("firstName").asText();
-				String curr = content.get(i).get("firstName").asText();
+				String prev = content.get(i - 1).get("firstName").asString();
+				String curr = content.get(i).get("firstName").asString();
 				assertThat(prev.compareToIgnoreCase(curr)).isLessThanOrEqualTo(0);
 			}
 		}
@@ -246,7 +246,7 @@ class UserControllerTest extends BaseIntegrationTest {
 			JsonNode json = objectMapper.readTree(response);
 			boolean foundStudent = false;
 			for (JsonNode u : json.get("content")) {
-				if (u.get("universityId").asText().equals("dbcheck1")) {
+				if (u.get("universityId").asString().equals("dbcheck1")) {
 					foundStudent = true;
 					break;
 				}
@@ -282,10 +282,10 @@ class UserControllerTest extends BaseIntegrationTest {
 			JsonNode json = objectMapper.readTree(response);
 			assertThat(json.isArray()).isTrue();
 			assertThat(json.size()).isEqualTo(1);
-			assertThat(json.get(0).get("username").asText()).isEqualTo("kc-user-1");
-			assertThat(json.get(0).get("firstName").asText()).isEqualTo("John");
-			assertThat(json.get(0).get("lastName").asText()).isEqualTo("Doe");
-			assertThat(json.get(0).get("email").asText()).isEqualTo("john@example.com");
+			assertThat(json.get(0).get("username").asString()).isEqualTo("kc-user-1");
+			assertThat(json.get(0).get("firstName").asString()).isEqualTo("John");
+			assertThat(json.get(0).get("lastName").asString()).isEqualTo("Doe");
+			assertThat(json.get(0).get("email").asString()).isEqualTo("john@example.com");
 		}
 
 		@Test
@@ -305,7 +305,7 @@ class UserControllerTest extends BaseIntegrationTest {
 			JsonNode json = objectMapper.readTree(response);
 			assertThat(json.isArray()).isTrue();
 			assertThat(json.size()).isEqualTo(1);
-			assertThat(json.get(0).get("username").asText()).isEqualTo("kc-existing-user");
+			assertThat(json.get(0).get("username").asString()).isEqualTo("kc-existing-user");
 		}
 
 		@Test

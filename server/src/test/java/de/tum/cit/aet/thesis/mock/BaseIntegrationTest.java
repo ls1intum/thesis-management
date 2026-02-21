@@ -2,7 +2,11 @@ package de.tum.cit.aet.thesis.mock;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import com.icegreen.greenmail.util.GreenMail;
+import com.icegreen.greenmail.util.ServerSetup;
 import com.jayway.jsonpath.JsonPath;
 import de.tum.cit.aet.thesis.controller.payload.CreateApplicationPayload;
 import de.tum.cit.aet.thesis.controller.payload.CreateThesisPayload;
@@ -10,7 +14,11 @@ import de.tum.cit.aet.thesis.controller.payload.ReplaceTopicPayload;
 import de.tum.cit.aet.thesis.repository.ApplicationRepository;
 import de.tum.cit.aet.thesis.repository.ApplicationReviewerRepository;
 import de.tum.cit.aet.thesis.repository.EmailTemplateRepository;
+import de.tum.cit.aet.thesis.repository.InterviewProcessRepository;
+import de.tum.cit.aet.thesis.repository.IntervieweeRepository;
 import de.tum.cit.aet.thesis.repository.NotificationSettingRepository;
+import de.tum.cit.aet.thesis.repository.ResearchGroupRepository;
+import de.tum.cit.aet.thesis.repository.ResearchGroupSettingsRepository;
 import de.tum.cit.aet.thesis.repository.ThesisAssessmentRepository;
 import de.tum.cit.aet.thesis.repository.ThesisCommentRepository;
 import de.tum.cit.aet.thesis.repository.ThesisFeedbackRepository;
@@ -29,15 +37,19 @@ import de.tum.cit.aet.thesis.service.AccessManagementService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.testcontainers.postgresql.PostgreSQLContainer;
+import tools.jackson.databind.ObjectMapper;
+
+import jakarta.mail.internet.MimeMessage;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -58,6 +70,12 @@ public abstract class BaseIntegrationTest {
 
 	@Autowired
 	private ApplicationReviewerRepository applicationReviewerRepository;
+
+	@Autowired
+	private IntervieweeRepository intervieweeRepository;
+
+	@Autowired
+	private InterviewProcessRepository interviewProcessRepository;
 
 	@Autowired
 	private EmailTemplateRepository emailTemplateRepository;
@@ -102,6 +120,12 @@ public abstract class BaseIntegrationTest {
 	private TopicRoleRepository topicRoleRepository;
 
 	@Autowired
+	private ResearchGroupRepository researchGroupRepository;
+
+	@Autowired
+	private ResearchGroupSettingsRepository researchGroupSettingsRepository;
+
+	@Autowired
 	private UserGroupRepository userGroupRepository;
 
 	@Autowired
@@ -116,7 +140,17 @@ public abstract class BaseIntegrationTest {
 	@Autowired
 	private AccessManagementService accessManagementService;
 
-	protected static PostgreSQLContainer dbContainer = new PostgreSQLContainer("postgres:17.8-alpine");
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
+
+	protected static PostgreSQLContainer dbContainer = new PostgreSQLContainer("postgres:17.8-alpine")
+			.withCommand("postgres", "-c", "max_connections=200");
+
+	protected static GreenMail greenMail;
+
+	protected static WireMockServer wireMockServer;
+
+	private static final String EMPTY_ICAL = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Test//Test//EN\r\nCALSCALE:GREGORIAN\r\nEND:VCALENDAR\r\n";
 
 	protected static void configureProperties(DynamicPropertyRegistry registry) {
 		dbContainer.start();
@@ -124,6 +158,31 @@ public abstract class BaseIntegrationTest {
 		registry.add("spring.datasource.url", dbContainer::getJdbcUrl);
 		registry.add("spring.datasource.username", dbContainer::getUsername);
 		registry.add("spring.datasource.password", dbContainer::getPassword);
+
+		if (greenMail == null) {
+			greenMail = new GreenMail(new ServerSetup(0, "127.0.0.1", ServerSetup.PROTOCOL_SMTP));
+			greenMail.start();
+		}
+
+		registry.add("spring.mail.host", () -> "127.0.0.1");
+		registry.add("spring.mail.port", () -> greenMail.getSmtp().getPort());
+
+		if (wireMockServer == null) {
+			wireMockServer = new WireMockServer(WireMockConfiguration.wireMockConfig().dynamicPort());
+			wireMockServer.start();
+
+			wireMockServer.stubFor(WireMock.get(WireMock.urlEqualTo("/"))
+					.willReturn(WireMock.aResponse()
+							.withStatus(200)
+							.withHeader("Content-Type", "text/calendar")
+							.withBody(EMPTY_ICAL)));
+
+			wireMockServer.stubFor(WireMock.put(WireMock.urlEqualTo("/"))
+					.willReturn(WireMock.aResponse()
+							.withStatus(204)));
+		}
+
+		registry.add("thesis-management.calendar.url", () -> wireMockServer.baseUrl());
 	}
 
 	// Deletion order matters: child tables with foreign keys must be deleted before parent tables.
@@ -144,12 +203,38 @@ public abstract class BaseIntegrationTest {
 		thesisRoleRepository.deleteAll();
 		topicRoleRepository.deleteAll();
 
+		// Interview tables must be cleaned before topics/applications due to FK constraints
+		intervieweeRepository.deleteAll();
+		interviewProcessRepository.deleteAll();
+
 		thesisRepository.deleteAll();
 		applicationRepository.deleteAll();
 		topicRepository.deleteAll();
-		userGroupRepository.deleteAll();
 
+		// Break circular FK between User and ResearchGroup before deletion
+		jdbcTemplate.execute("UPDATE users SET research_group_id = NULL");
+		jdbcTemplate.execute("UPDATE research_groups SET head_user_id = NULL, created_by = NULL, updated_by = NULL");
+
+		researchGroupSettingsRepository.deleteAll();
+		userGroupRepository.deleteAll();
+		researchGroupRepository.deleteAll();
 		userRepository.deleteAll();
+
+		clearEmails();
+	}
+
+	protected MimeMessage[] getReceivedEmails() {
+		return greenMail.getReceivedMessages();
+	}
+
+	protected void clearEmails() {
+		if (greenMail != null) {
+			try {
+				greenMail.purgeEmailFromAllMailboxes();
+			} catch (com.icegreen.greenmail.store.FolderException e) {
+				throw new RuntimeException(e);
+			}
+		}
 	}
 
 	protected String createRandomAuthentication(String role) throws Exception {
@@ -268,7 +353,7 @@ public abstract class BaseIntegrationTest {
 				.getResponse()
 				.getContentAsString();
 
-		return objectMapper.readTree(response).get("topicId").asText().transform(UUID::fromString);
+		return objectMapper.readTree(response).get("topicId").asString().transform(UUID::fromString);
 	}
 
 	protected UUID createTestThesis(String title) throws Exception {
@@ -294,7 +379,7 @@ public abstract class BaseIntegrationTest {
 				.getResponse()
 				.getContentAsString();
 
-		return objectMapper.readTree(response).get("thesisId").asText().transform(UUID::fromString);
+		return objectMapper.readTree(response).get("thesisId").asString().transform(UUID::fromString);
 	}
 
 	protected void createTestEmailTemplate(String templateCase) throws Exception {

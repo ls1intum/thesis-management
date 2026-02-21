@@ -112,7 +112,7 @@ class InterviewProcessServiceTest {
 				eq(user.getId()),
 				eq("%thesis%"),
 				eq(true),
-				org.mockito.ArgumentMatchers.<Pageable>any()
+				any(Pageable.class)
 		)).thenReturn(expectedPage);
 
 		Page<InterviewProcess> result = interviewProcessService.findAllMyProcesses("thesis", 1, 5, "completed", "asc", true);
@@ -351,7 +351,7 @@ class InterviewProcessServiceTest {
 				eq(currentUser.getId()),
 				eq(null),
 				eq(false),
-				org.mockito.ArgumentMatchers.<Pageable>any()
+				any(Pageable.class)
 		)).thenReturn(new PageImpl<>(List.of(process)));
 
 		List<UpcomingInterviewDto> result = interviewProcessService.getUpcomingInterviewsForCurrentUser();

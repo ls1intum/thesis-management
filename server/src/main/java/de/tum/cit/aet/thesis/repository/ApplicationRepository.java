@@ -44,8 +44,8 @@ public interface ApplicationRepository extends JpaRepository<Application, UUID> 
 			@Param("reviewerId") UUID reviewerId,
 			@Param("searchQuery") String searchQuery,
 			@Param("states") Set<ApplicationState> states,
-			@Param("previousIds") Set<String> previousIds,
-			@Param("topics") Set<String> topics,
+			@Param("previousIds") Set<UUID> previousIds,
+			@Param("topics") Set<UUID> topics,
 			@Param("types") Set<String> types,
 			@Param("includeSuggestedTopics") boolean includeSuggestedTopics,
 			Pageable page

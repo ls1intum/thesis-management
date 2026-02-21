@@ -258,14 +258,14 @@ public class ThesisController {
 
 		thesis = thesisService.updateThesisInfo(
 				thesis,
-				RequestValidator.validateStringMaxLength(payload.abstractText(), StringLimits.UNLIMITED_TEXT.getLimit()),
-				RequestValidator.validateStringMaxLength(payload.infoText(), StringLimits.UNLIMITED_TEXT.getLimit())
+				RequestValidator.validateStringMaxLengthAllowNull(payload.abstractText(), StringLimits.UNLIMITED_TEXT.getLimit()),
+				RequestValidator.validateStringMaxLengthAllowNull(payload.infoText(), StringLimits.UNLIMITED_TEXT.getLimit())
 		);
 
 		thesis = thesisService.updateThesisTitles(
 				thesis,
-				RequestValidator.validateStringMaxLength(payload.primaryTitle(), StringLimits.THESIS_TITLE.getLimit()),
-				RequestValidator.validateNotNull(payload.secondaryTitles())
+				RequestValidator.validateStringMaxLengthAllowNull(payload.primaryTitle(), StringLimits.THESIS_TITLE.getLimit()),
+				payload.secondaryTitles()
 		);
 
 		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
