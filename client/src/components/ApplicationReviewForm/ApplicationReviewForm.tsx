@@ -18,7 +18,7 @@ import {
   TextInput,
   Tooltip,
 } from '@mantine/core'
-import UserMultiSelect from '../UserMultiSelect/UserMultiSelect'
+import { UserMultiSelect } from '../UserMultiSelect/UserMultiSelect'
 import { isNotEmptyUserList } from '../../utils/validation'
 import { showSimpleError, showSimpleSuccess } from '../../utils/notification'
 import { getApiResponseErrorMessage } from '../../requests/handler'

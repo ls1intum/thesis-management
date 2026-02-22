@@ -44,8 +44,13 @@ err()  { echo -e "${RED}[e2e]${NC} $*"; }
 # ---------------------------------------------------------------------------
 
 # Check whether a given TCP port has a process listening on it.
+# Uses ss on Linux (where it is standard) and falls back to lsof on macOS.
 is_port_open() {
-  ss -tlnp "sport = :$1" 2>/dev/null | grep -q LISTEN
+  if command -v ss >/dev/null 2>&1; then
+    ss -tlnp "sport = :$1" 2>/dev/null | grep -q LISTEN
+  else
+    lsof -iTCP:"$1" -sTCP:LISTEN -P -n -t >/dev/null 2>&1
+  fi
 }
 
 # Poll a URL until it responds successfully, with a configurable timeout.
@@ -75,14 +80,15 @@ read_pid() {
   [[ -f "$f" ]] && cat "$f" || echo ""
 }
 
-# Gracefully stop a previously saved background process and its entire process
-# group.  Using a negative PID ensures child processes (e.g. the JVM spawned by
-# gradlew, or the node process spawned by npx) are also terminated.
+# Gracefully stop a previously saved background process and its child tree.
+# pkill -P kills direct children (e.g. the JVM spawned by gradlew, or the
+# node process spawned by npx) before terminating the wrapper process itself.
 kill_pid() {
   local pid
   pid=$(read_pid "$1")
   if [[ -n "$pid" ]] && kill -0 "$pid" 2>/dev/null; then
-    kill -- -"$pid" 2>/dev/null || kill "$pid" 2>/dev/null || true
+    pkill -P "$pid" 2>/dev/null || true
+    kill "$pid" 2>/dev/null || true
     wait "$pid" 2>/dev/null || true
     ok "Stopped $1 (PID $pid)"
   fi

@@ -1,7 +1,6 @@
 import { ReactNode, useEffect, useState } from 'react'
-import { Button, Center, Group, Stack } from '@mantine/core'
+import { Button, Center, Group, Stack, type BoxProps } from '@mantine/core'
 import { downloadFile } from '../../utils/blob'
-import type { BoxProps } from '@mantine/core'
 import FilePreview from '../FilePreview/FilePreview'
 import { doRequest } from '../../requests/request'
 import { showSimpleError } from '../../utils/notification'
@@ -19,7 +18,7 @@ interface IAuthenticatedFilePreviewProps extends BoxProps {
   requiresAuth?: boolean
 }
 
-const AuthenticatedFilePreview = (props: IAuthenticatedFilePreviewProps) => {
+export const AuthenticatedFilePreview = (props: IAuthenticatedFilePreviewProps) => {
   const {
     url,
     filename,
@@ -63,7 +62,7 @@ const AuthenticatedFilePreview = (props: IAuthenticatedFilePreviewProps) => {
         },
       )
     }
-  }, [url, filename, type])
+  }, [url, filename, type, requiresAuth])
 
   return (
     <Stack>
@@ -83,5 +82,3 @@ const AuthenticatedFilePreview = (props: IAuthenticatedFilePreviewProps) => {
     </Stack>
   )
 }
-
-export default AuthenticatedFilePreview

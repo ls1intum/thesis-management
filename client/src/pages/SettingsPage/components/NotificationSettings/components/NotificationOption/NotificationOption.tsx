@@ -1,5 +1,5 @@
 import { Group, Stack, Text } from '@mantine/core'
-import NotificationToggleSwitch from '../NotificationToggleSwitch/NotificationToggleSwitch'
+import { NotificationToggleSwitch } from '../NotificationToggleSwitch/NotificationToggleSwitch'
 import { NotificationSelect } from '../NotificationSelect/NotificationSelect'
 
 interface INotificationOptionProps {

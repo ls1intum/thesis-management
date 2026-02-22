@@ -1,5 +1,4 @@
-import type { ButtonProps } from '@mantine/core'
-import { Button } from '@mantine/core'
+import { Button, type ButtonProps } from '@mantine/core'
 import { PropsWithChildren, useState } from 'react'
 import { doRequest } from '../../requests/request'
 import { showSimpleError } from '../../utils/notification'

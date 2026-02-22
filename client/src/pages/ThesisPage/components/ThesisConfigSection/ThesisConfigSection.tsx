@@ -3,7 +3,7 @@ import { Accordion, Button, Group, Select, Stack, TagsInput, Text, TextInput } f
 import { useEffect, useState } from 'react'
 import { isNotEmpty, useForm } from '@mantine/form'
 import { DateInput, DateTimePicker } from '@mantine/dates'
-import UserMultiSelect from '../../../../components/UserMultiSelect/UserMultiSelect'
+import { UserMultiSelect } from '../../../../components/UserMultiSelect/UserMultiSelect'
 import { isNotEmptyUserList } from '../../../../utils/validation'
 import { isThesisClosed } from '../../../../utils/thesis'
 import { doRequest } from '../../../../requests/request'

@@ -15,9 +15,9 @@ import { ApiError, getApiResponseErrorMessage } from '../../../../requests/handl
 import { formatDate, formatThesisFilename } from '../../../../utils/format'
 import { GLOBAL_CONFIG } from '../../../../config/global'
 import { UploadFileButton } from '../../../../components/UploadFileButton/UploadFileButton'
-import AuthenticatedFilePreview from '../../../../components/AuthenticatedFilePreview/AuthenticatedFilePreview'
+import { AuthenticatedFilePreview } from '../../../../components/AuthenticatedFilePreview/AuthenticatedFilePreview'
 import AuthenticatedFileDownloadButton from '../../../../components/AuthenticatedFileDownloadButton/AuthenticatedFileDownloadButton'
-import AuthenticatedFilePreviewButton from '../../../../components/AuthenticatedFilePreviewButton/AuthenticatedFilePreviewButton'
+import { AuthenticatedFilePreviewButton } from '../../../../components/AuthenticatedFilePreviewButton/AuthenticatedFilePreviewButton'
 import { DownloadSimple, Eye, UploadSimple, WarningCircle } from '@phosphor-icons/react'
 import FileHistoryTable from '../FileHistoryTable/FileHistoryTable'
 
