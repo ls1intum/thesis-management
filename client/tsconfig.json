@@ -13,6 +13,7 @@
     "noImplicitAny": true,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
+    "skipLibCheck": true,
     "lib": ["dom", "dom.iterable", "esnext"],
     "plugins": [
       { "name": "typescript-plugin-css-modules" }
