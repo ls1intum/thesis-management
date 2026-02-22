@@ -20,9 +20,9 @@ test.describe('Applications - Student', () => {
   test('dashboard shows student applications section', async ({ page }) => {
     await navigateTo(page, '/dashboard')
 
-    await expect(page.getByRole('heading', { name: /dashboard/i })).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByRole('heading', { name: /dashboard/i })).toBeVisible({ timeout: 30_000 })
     // Student should see My Applications section
-    await expect(page.getByRole('heading', { name: /my applications/i })).toBeVisible()
+    await expect(page.getByRole('heading', { name: /my applications/i })).toBeVisible({ timeout: 15_000 })
   })
 })
 
@@ -33,8 +33,8 @@ test.describe('Applications - Advisor review', () => {
     await navigateTo(page, '/applications')
 
     await expect(page).toHaveURL(/\/applications/)
-    // The page should have the sidebar with applications or an empty state
-    await expect(page.locator('body')).toContainText(/.+/)
+    // The page should show the application filter sidebar
+    await expect(page.getByPlaceholder(/search applications/i)).toBeVisible({ timeout: 15_000 })
   })
 })
 

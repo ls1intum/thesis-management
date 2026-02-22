@@ -116,7 +116,7 @@ if is_port_open 8080; then
   ok "Server already running on port 8080"
 else
   log "Starting server (dev profile)..."
-  (cd "$SERVER_DIR" && ./gradlew bootRun --args='--spring.profiles.active=dev' \
+  (cd "$SERVER_DIR" && exec ./gradlew bootRun --args='--spring.profiles.active=dev' \
     > "$ROOT_DIR/.e2e-server.log" 2>&1) &
   save_pid "server" $!
 fi
@@ -129,7 +129,7 @@ if is_port_open 3000; then
   ok "Client already running on port 3000"
 else
   log "Starting client dev server..."
-  (cd "$CLIENT_DIR" && npx webpack serve --env NODE_ENV=development \
+  (cd "$CLIENT_DIR" && exec npx webpack serve --env NODE_ENV=development \
     > "$ROOT_DIR/.e2e-client.log" 2>&1) &
   save_pid "client" $!
 fi

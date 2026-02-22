@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 import { authStatePath, navigateTo } from './helpers'
 
 test.describe('Presentations - Student', () => {
-  test('presentations page shows heading and calendar', async ({ page }) => {
+  test('presentations page shows heading', async ({ page }) => {
     await navigateTo(page, '/presentations')
 
     await expect(page.getByRole('heading', { name: 'Presentations', exact: true })).toBeVisible({ timeout: 15_000 })

@@ -46,7 +46,6 @@ test.describe('Theses - Detail page (Advisor)', () => {
     ).toBeVisible({ timeout: 15_000 })
 
     // Key thesis sections should be visible (accordion sections)
-    // Key thesis sections should be visible (accordion sections)
     await expect(page.getByText('Configuration')).toBeVisible()
     await expect(page.getByText('Involved Persons')).toBeVisible()
   })

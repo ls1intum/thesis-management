@@ -27,10 +27,14 @@ for (const user of TEST_USERS) {
 
     // Wait for the app to fully initialize with the auth tokens
     await page.waitForFunction(() => {
-      const tokens = localStorage.getItem('authentication_tokens')
-      if (!tokens) return false
-      const parsed = JSON.parse(tokens)
-      return !!parsed.access_token && !!parsed.refresh_token
+      try {
+        const tokens = localStorage.getItem('authentication_tokens')
+        if (!tokens) return false
+        const parsed = JSON.parse(tokens)
+        return !!parsed.access_token && !!parsed.refresh_token
+      } catch {
+        return false
+      }
     }, { timeout: 15_000 })
 
     // Save the authenticated state (localStorage + cookies including Keycloak session)

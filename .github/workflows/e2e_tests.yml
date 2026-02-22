@@ -48,7 +48,7 @@ jobs:
               echo "Keycloak is ready"
               break
             fi
-            if [ $i -eq 60 ]; then
+            if [ "$i" -eq 60 ]; then
               echo "Keycloak failed to start"
               docker logs keycloak
               exit 1
@@ -132,7 +132,7 @@ jobs:
               echo "Server is ready"
               break
             fi
-            if [ $i -eq 120 ]; then
+            if [ "$i" -eq 120 ]; then
               echo "Server failed to start"
               exit 1
             fi
@@ -147,7 +147,7 @@ jobs:
               echo "Client is ready"
               break
             fi
-            if [ $i -eq 60 ]; then
+            if [ "$i" -eq 60 ]; then
               echo "Client failed to start"
               exit 1
             fi

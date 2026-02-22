@@ -14,10 +14,10 @@ test.describe('Interviews - Supervisor', () => {
   })
 
   test('interview process detail page loads', async ({ page }) => {
-    // Active interview process for topic 3 (anomaly detection)
+    // UUID matches the active interview process seeded in seed_dev_test_data.sql
     await navigateTo(page, '/interviews/00000000-0000-4000-e600-000000000001')
 
-    await expect(page.getByRole('heading', { name: /interview management/i })).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByRole('heading', { name: /interview management/i })).toBeVisible({ timeout: 30_000 })
     // Should show sections for slots and interviewees
     await expect(page.getByRole('heading', { name: 'Interviewees', exact: true })).toBeVisible()
   })
@@ -35,6 +35,8 @@ test.describe('Interviews - Advisor', () => {
 })
 
 test.describe('Interviews - Student cannot access', () => {
+  test.use({ storageState: authStatePath('student') })
+
   test('student is redirected away from interviews page', async ({ page }) => {
     await navigateTo(page, '/interviews')
 

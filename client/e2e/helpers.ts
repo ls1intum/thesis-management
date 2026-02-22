@@ -1,26 +1,17 @@
 import { Page, expect } from '@playwright/test'
 
 /**
- * Wait for the app to fully load after navigation.
- * The Mantine Loader (spinning circle) must disappear before we consider the page ready.
+ * Navigate to a page and wait for it to fully load.
+ * Waits for the Mantine Loader spinner to disappear.
  */
-export async function waitForPageLoad(page: Page, timeout = 30_000) {
-  // Wait for the Mantine loader/spinner to appear and then disappear
-  // The loader uses a CSS animation (mantine-Loader-root class)
+export async function navigateTo(page: Page, path: string) {
+  await page.goto(path, { waitUntil: 'domcontentloaded', timeout: 30_000 })
   await page
     .locator('.mantine-Loader-root')
-    .waitFor({ state: 'hidden', timeout })
+    .waitFor({ state: 'hidden', timeout: 30_000 })
     .catch(() => {
       // Loader may never appear if the page loads instantly
     })
-}
-
-/**
- * Navigate to a page and wait for it to fully load.
- */
-export async function navigateTo(page: Page, path: string) {
-  await page.goto(path, { waitUntil: 'domcontentloaded' })
-  await waitForPageLoad(page)
 }
 
 /**
