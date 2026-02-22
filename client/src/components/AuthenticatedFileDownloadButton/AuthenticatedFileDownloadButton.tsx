@@ -1,5 +1,4 @@
-import { ButtonProps } from '@mantine/core/lib/components/Button/Button'
-import { Button } from '@mantine/core'
+import { Button, type ButtonProps } from '@mantine/core'
 import { PropsWithChildren, useState } from 'react'
 import { doRequest } from '../../requests/request'
 import { showSimpleError } from '../../utils/notification'
@@ -11,7 +10,7 @@ interface IAuthenticatedFileDownloadButtonProps extends ButtonProps {
   filename: string
 }
 
-const AuthenticatedFileDownloadButton = (
+export const AuthenticatedFileDownloadButton = (
   props: PropsWithChildren<IAuthenticatedFileDownloadButtonProps>,
 ) => {
   const { url, filename, children, ...buttonProps } = props
@@ -44,5 +43,3 @@ const AuthenticatedFileDownloadButton = (
     </Button>
   )
 }
-
-export default AuthenticatedFileDownloadButton

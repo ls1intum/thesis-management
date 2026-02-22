@@ -1,14 +1,13 @@
 import { IMinimalUser } from '../../requests/responses/user'
-import { Avatar, MantineSize } from '@mantine/core'
+import { Avatar, MantineSize, type BoxProps } from '@mantine/core'
 import { getAvatar } from '../../utils/user'
-import { BoxProps } from '@mantine/core/lib/core'
 
 interface ICustomAvatarProps extends BoxProps {
   user: IMinimalUser
   size?: MantineSize | number
 }
 
-const CustomAvatar = (props: ICustomAvatarProps) => {
+export const CustomAvatar = (props: ICustomAvatarProps) => {
   const { user, size, ...other } = props
 
   return (
@@ -21,5 +20,3 @@ const CustomAvatar = (props: ICustomAvatarProps) => {
     />
   )
 }
-
-export default CustomAvatar

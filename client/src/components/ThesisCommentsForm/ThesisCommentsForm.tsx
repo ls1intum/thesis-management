@@ -2,7 +2,7 @@ import { Button, Card, Group, Stack, Textarea, Text, Tooltip } from '@mantine/co
 import { useState } from 'react'
 import { useThesisCommentsContext } from '../../providers/ThesisCommentsProvider/hooks'
 import { PaperclipIcon, XIcon } from '@phosphor-icons/react'
-import UploadFileButton from '../UploadFileButton/UploadFileButton'
+import { UploadFileButton } from '../UploadFileButton/UploadFileButton'
 import { isThesisClosed } from '../../utils/thesis'
 import FileElement from '../FileElement/FileElement'
 

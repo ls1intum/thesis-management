@@ -11,8 +11,8 @@ import { ApiError, getApiResponseErrorMessage } from '../../../../requests/handl
 import { formatThesisFilename } from '../../../../utils/format'
 import ThesisFeedbackRequestButton from '../ThesisFeedbackRequestButton/ThesisFeedbackRequestButton'
 import ThesisFeedbackOverview from '../ThesisFeedbackOverview/ThesisFeedbackOverview'
-import AuthenticatedFilePreview from '../../../../components/AuthenticatedFilePreview/AuthenticatedFilePreview'
-import UploadFileButton from '../../../../components/UploadFileButton/UploadFileButton'
+import { AuthenticatedFilePreview } from '../../../../components/AuthenticatedFilePreview/AuthenticatedFilePreview'
+import { UploadFileButton } from '../../../../components/UploadFileButton/UploadFileButton'
 import FileHistoryTable from '../FileHistoryTable/FileHistoryTable'
 import { checkMinimumThesisState, isThesisClosed } from '../../../../utils/thesis'
 

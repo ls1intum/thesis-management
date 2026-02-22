@@ -6,7 +6,7 @@ import ThesesProvider from '../../../../providers/ThesesProvider/ThesesProvider'
 import React, { useEffect, useState } from 'react'
 import { doRequest } from '../../../../requests/request'
 import PageLoader from '../../../../components/PageLoader/PageLoader'
-import NotificationToggleSwitch from './components/NotificationToggleSwitch/NotificationToggleSwitch'
+import { NotificationToggleSwitch } from './components/NotificationToggleSwitch/NotificationToggleSwitch'
 import { NotificationOption } from './components/NotificationOption/NotificationOption'
 
 const NotificationSettings = () => {

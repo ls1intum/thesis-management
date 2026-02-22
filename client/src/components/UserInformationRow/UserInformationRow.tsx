@@ -1,6 +1,6 @@
 import { Badge, Flex, Group, Stack, Text } from '@mantine/core'
 import { ILightUser } from '../../requests/responses/user'
-import CustomAvatar from '../CustomAvatar/CustomAvatar'
+import { CustomAvatar } from '../CustomAvatar/CustomAvatar'
 
 type IUserInformationRowProps = {
   firstName?: string

@@ -6,9 +6,10 @@ import Underline from '@tiptap/extension-underline'
 import TextAlign from '@tiptap/extension-text-align'
 import Superscript from '@tiptap/extension-superscript'
 import SubScript from '@tiptap/extension-subscript'
-import { ChangeEvent, useEffect, useRef } from 'react'
+import { ChangeEvent, ComponentProps, useEffect, useRef } from 'react'
 import { Group, Input, Text, useMantineColorScheme } from '@mantine/core'
-import { InputWrapperProps } from '@mantine/core/lib/components/Input/InputWrapper/InputWrapper'
+
+type InputWrapperProps = ComponentProps<typeof Input.Wrapper>
 
 interface IDocumentEditorProps extends InputWrapperProps {
   value?: string
@@ -36,9 +37,10 @@ const DocumentEditor = (props: IDocumentEditorProps) => {
   const inputRef = useRef<HTMLInputElement>(null)
 
   const editor = useEditor({
+    shouldRerenderOnTransaction: true,
     editable: editMode,
     extensions: [
-      StarterKit,
+      StarterKit.configure({ underline: false, link: false }),
       Underline,
       Link,
       Superscript,

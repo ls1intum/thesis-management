@@ -1,7 +1,7 @@
 import { IMinimalUser } from '../../requests/responses/user'
 import { Group, MantineSize, Text } from '@mantine/core'
 import { formatUser } from '../../utils/format'
-import CustomAvatar from '../CustomAvatar/CustomAvatar'
+import { CustomAvatar } from '../CustomAvatar/CustomAvatar'
 
 interface IAvatarUserProps {
   user: IMinimalUser

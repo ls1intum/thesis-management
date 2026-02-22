@@ -4,7 +4,7 @@ import { doRequest } from '../../requests/request'
 import { PaginationResponse } from '../../requests/responses/pagination'
 import { ILightUser } from '../../requests/responses/user'
 import { useDebouncedValue } from '@mantine/hooks'
-import { GetInputPropsReturnType } from '@mantine/form/lib/types'
+import type { GetInputPropsReturnType } from '@mantine/form'
 import { formatUser } from '../../utils/format'
 import { arrayUnique } from '../../utils/array'
 import { showSimpleError } from '../../utils/notification'
@@ -20,7 +20,7 @@ interface IUserMultiSelectProps extends GetInputPropsReturnType {
   initialUsers?: ILightUser[]
 }
 
-const UserMultiSelect = (props: IUserMultiSelectProps) => {
+export const UserMultiSelect = (props: IUserMultiSelectProps) => {
   const {
     groups,
     maxValues = Infinity,
@@ -31,7 +31,7 @@ const UserMultiSelect = (props: IUserMultiSelectProps) => {
     ...inputProps
   } = props
 
-  const selected: string[] = inputProps.value || []
+  const selected: string[] = inputProps.value ?? []
 
   const [loading, setLoading] = useState(false)
   const [focused, setFocused] = useState(false)
@@ -132,5 +132,3 @@ const UserMultiSelect = (props: IUserMultiSelectProps) => {
     />
   )
 }
-
-export default UserMultiSelect

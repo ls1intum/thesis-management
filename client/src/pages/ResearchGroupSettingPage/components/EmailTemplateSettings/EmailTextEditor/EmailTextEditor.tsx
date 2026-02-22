@@ -67,8 +67,9 @@ const EmailTextEditor = ({
 
   const editor = useEditor(
     {
+      shouldRerenderOnTransaction: true,
       extensions: [
-        StarterKit,
+        StarterKit.configure({ underline: false, link: false }),
         Underline,
         Link,
         TextAlign.configure({ types: ['heading', 'paragraph', 'div'] }),

@@ -14,7 +14,7 @@ import DocumentEditor from '../DocumentEditor/DocumentEditor'
 import { ApplicationStateColor } from '../../config/colors'
 import TopicAccordionItem from '../TopicAccordionItem/TopicAccordionItem'
 import { enrollmentDateToSemester } from '../../utils/converter'
-import AuthenticatedFilePreview from '../AuthenticatedFilePreview/AuthenticatedFilePreview'
+import { AuthenticatedFilePreview } from '../AuthenticatedFilePreview/AuthenticatedFilePreview'
 
 interface IApplicationDataProps {
   application: IApplication
