@@ -2,6 +2,8 @@ import { test as setup, expect } from '@playwright/test'
 
 const TEST_USERS = [
   { name: 'student', username: 'student', password: 'student' },
+  { name: 'student2', username: 'student2', password: 'student2' },
+  { name: 'student3', username: 'student3', password: 'student3' },
   { name: 'advisor', username: 'advisor', password: 'advisor' },
   { name: 'supervisor', username: 'supervisor', password: 'supervisor' },
   { name: 'admin', username: 'admin', password: 'admin' },
