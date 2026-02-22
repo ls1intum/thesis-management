@@ -1,7 +1,7 @@
 import { IMinimalUser } from '../../requests/responses/user'
 import { Avatar, MantineSize } from '@mantine/core'
 import { getAvatar } from '../../utils/user'
-import { BoxProps } from '@mantine/core/lib/core'
+import type { BoxProps } from '@mantine/core'
 
 interface ICustomAvatarProps extends BoxProps {
   user: IMinimalUser

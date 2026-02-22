@@ -1,6 +1,6 @@
 import { Button, createPolymorphicComponent, Group, Modal, Stack, Text } from '@mantine/core'
 import { forwardRef, ReactNode, useState } from 'react'
-import { ButtonProps } from '@mantine/core/lib/components/Button/Button'
+import type { ButtonProps } from '@mantine/core'
 
 interface IConfirmationButtonProps extends ButtonProps {
   confirmationTitle: string

@@ -1,7 +1,7 @@
 import { ReactNode, useEffect, useState } from 'react'
 import { Button, Center, Group, Stack } from '@mantine/core'
 import { downloadFile } from '../../utils/blob'
-import { BoxProps } from '@mantine/core/lib/core'
+import type { BoxProps } from '@mantine/core'
 import FilePreview from '../FilePreview/FilePreview'
 import { doRequest } from '../../requests/request'
 import { showSimpleError } from '../../utils/notification'

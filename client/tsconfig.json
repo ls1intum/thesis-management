@@ -7,17 +7,12 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "allowJs": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "strict": true,
     "isolatedModules": true,
     "noImplicitAny": true,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
-    // keycloak-js 26.x removed "main"/"types" fields and relies on "exports" only,
-    // which moduleResolution "node" does not support. This paths mapping is a workaround.
-    "paths": {
-      "keycloak-js": ["./node_modules/keycloak-js/lib/keycloak.d.ts"]
-    },
     "lib": ["dom", "dom.iterable", "esnext"],
     "plugins": [
       { "name": "typescript-plugin-css-modules" }

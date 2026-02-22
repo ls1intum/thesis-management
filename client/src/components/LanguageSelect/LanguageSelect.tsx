@@ -1,7 +1,7 @@
 import { GLOBAL_CONFIG } from '../../config/global'
 import { Select } from '@mantine/core'
 import { formatLanguage } from '../../utils/format'
-import { SelectProps } from '@mantine/core/lib/components/Select/Select'
+import type { SelectProps } from '@mantine/core'
 
 const LanguageSelect = (props: Omit<SelectProps, 'data'>) => {
   return (

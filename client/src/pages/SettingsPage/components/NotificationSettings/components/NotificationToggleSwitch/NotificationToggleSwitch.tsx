@@ -1,6 +1,6 @@
 import React, { Dispatch, SetStateAction } from 'react'
 import { Switch } from '@mantine/core'
-import { BoxProps } from '@mantine/core/lib/core'
+import type { BoxProps } from '@mantine/core'
 import { useNotificationSetting } from '../../../../../../hooks/notification'
 
 interface INotificationToggleSwitchProps extends BoxProps {

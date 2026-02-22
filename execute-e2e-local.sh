@@ -45,7 +45,7 @@ err()  { echo -e "${RED}[e2e]${NC} $*"; }
 
 # Check whether a given TCP port has a process listening on it.
 is_port_open() {
-  lsof -iTCP:"$1" -sTCP:LISTEN -t >/dev/null 2>&1
+  ss -tlnp "sport = :$1" 2>/dev/null | grep -q LISTEN
 }
 
 # Poll a URL until it responds successfully, with a configurable timeout.
@@ -75,26 +75,29 @@ read_pid() {
   [[ -f "$f" ]] && cat "$f" || echo ""
 }
 
-# Gracefully stop a previously saved background process.
+# Gracefully stop a previously saved background process and its entire process
+# group.  Using a negative PID ensures child processes (e.g. the JVM spawned by
+# gradlew, or the node process spawned by npx) are also terminated.
 kill_pid() {
   local pid
   pid=$(read_pid "$1")
   if [[ -n "$pid" ]] && kill -0 "$pid" 2>/dev/null; then
-    kill "$pid" 2>/dev/null || true
+    kill -- -"$pid" 2>/dev/null || kill "$pid" 2>/dev/null || true
     wait "$pid" 2>/dev/null || true
     ok "Stopped $1 (PID $pid)"
   fi
   rm -f "$PID_DIR/$1.pid"
 }
 
-# Wait up to 10 seconds for a port to be released after stopping a process.
+# Wait up to 30 seconds for a port to be released after stopping a process.
 wait_for_port_release() {
   local port="$1"
-  for i in $(seq 1 10); do
+  for i in $(seq 1 30); do
     is_port_open "$port" || return 0
     sleep 1
   done
-  warn "Port $port still in use after 10s"
+  err "Port $port still in use after 30s — aborting"
+  exit 1
 }
 
 # ---------------------------------------------------------------------------

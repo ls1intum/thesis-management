@@ -1,6 +1,6 @@
 import { UploadFileType } from '../../config/types'
 import { PropsWithChildren, useEffect, useState } from 'react'
-import { ButtonProps } from '@mantine/core/lib/components/Button/Button'
+import type { ButtonProps } from '@mantine/core'
 import { Button, Modal, Stack } from '@mantine/core'
 import UploadArea from '../UploadArea/UploadArea'
 
@@ -10,7 +10,7 @@ interface IUploadFileButtonProps extends ButtonProps {
   accept: UploadFileType
 }
 
-const UploadFileButton = (props: PropsWithChildren<IUploadFileButtonProps>) => {
+export const UploadFileButton = (props: PropsWithChildren<IUploadFileButtonProps>) => {
   const { onUpload, maxSize, accept, children, ...buttonProps } = props
 
   const [file, setFile] = useState<File>()
@@ -58,5 +58,3 @@ const UploadFileButton = (props: PropsWithChildren<IUploadFileButtonProps>) => {
     </Button>
   )
 }
-
-export default UploadFileButton

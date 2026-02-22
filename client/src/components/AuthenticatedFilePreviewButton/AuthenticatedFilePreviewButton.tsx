@@ -1,4 +1,4 @@
-import { ButtonProps } from '@mantine/core/lib/components/Button/Button'
+import type { ButtonProps } from '@mantine/core'
 import { Button, Modal } from '@mantine/core'
 import { PropsWithChildren, useState } from 'react'
 import AuthenticatedFilePreview from '../AuthenticatedFilePreview/AuthenticatedFilePreview'

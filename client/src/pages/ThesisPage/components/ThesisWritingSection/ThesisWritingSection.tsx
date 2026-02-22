@@ -14,7 +14,7 @@ import ThesisCommentsList from '../../../../components/ThesisCommentsList/Thesis
 import { ApiError, getApiResponseErrorMessage } from '../../../../requests/handler'
 import { formatDate, formatThesisFilename } from '../../../../utils/format'
 import { GLOBAL_CONFIG } from '../../../../config/global'
-import UploadFileButton from '../../../../components/UploadFileButton/UploadFileButton'
+import { UploadFileButton } from '../../../../components/UploadFileButton/UploadFileButton'
 import AuthenticatedFilePreview from '../../../../components/AuthenticatedFilePreview/AuthenticatedFilePreview'
 import AuthenticatedFileDownloadButton from '../../../../components/AuthenticatedFileDownloadButton/AuthenticatedFileDownloadButton'
 import AuthenticatedFilePreviewButton from '../../../../components/AuthenticatedFilePreviewButton/AuthenticatedFilePreviewButton'
