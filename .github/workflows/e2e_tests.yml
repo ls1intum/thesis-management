@@ -23,21 +23,6 @@ jobs:
           --health-timeout 5s
           --health-retries 10
 
-      keycloak:
-        image: quay.io/keycloak/keycloak:26.4
-        env:
-          KC_BOOTSTRAP_ADMIN_USERNAME: admin
-          KC_BOOTSTRAP_ADMIN_PASSWORD: admin
-        ports:
-          - 8081:8080
-        # Note: realm import is handled via the entrypoint below
-        options: >-
-          --health-cmd "exec 3<>/dev/tcp/127.0.0.1/8080; echo -e 'GET /health/ready HTTP/1.1\r\nHost: localhost\r\n\r\n' >&3; head -1 <&3 | grep -q '200'"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 30
-          --health-start-period 60s
-
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -45,14 +30,28 @@ jobs:
           ref: ${{ github.head_ref || github.ref }}
           fetch-depth: 1
 
-      # Import Keycloak realm (service containers can't mount volumes, so we use the REST API)
+      # Start Keycloak manually (service containers don't support custom commands)
+      - name: Start Keycloak
+        run: |
+          docker run -d --name keycloak \
+            -e KC_BOOTSTRAP_ADMIN_USERNAME=admin \
+            -e KC_BOOTSTRAP_ADMIN_PASSWORD=admin \
+            -p 8081:8080 \
+            quay.io/keycloak/keycloak:26.4 \
+            start-dev
+
       - name: Wait for Keycloak to be ready
         run: |
           echo "Waiting for Keycloak..."
           for i in $(seq 1 60); do
-            if curl -sf http://localhost:8081/health/ready > /dev/null 2>&1; then
+            if curl -sf http://localhost:8081/realms/master > /dev/null 2>&1; then
               echo "Keycloak is ready"
               break
+            fi
+            if [ $i -eq 60 ]; then
+              echo "Keycloak failed to start"
+              docker logs keycloak
+              exit 1
             fi
             sleep 2
           done
