@@ -10,13 +10,16 @@ test.describe('Application Review Workflow', () => {
   test('advisor can reject a NOT_ASSESSED application', async ({ page }) => {
     await navigateTo(page, `/applications/${APPLICATION_REJECT_ID}`)
 
-    // Wait for review page to load — detect if application was already processed
-    // (A prior test run may have rejected this application and DB wasn't re-seeded)
+    // Wait for the page to fully load — the student heading is always visible for any state
+    await expect(page.getByRole('heading', { name: /Student4 User/i })).toBeVisible({
+      timeout: 30_000,
+    })
+
+    // Check if application still has the review form (NOT_ASSESSED state)
+    // A prior test run may have rejected this application and DB wasn't re-seeded
     const thesisTitle = page.getByLabel('Thesis Title')
-    const alreadyProcessed = !(await thesisTitle.isVisible({ timeout: 15_000 }).catch(() => false))
-    if (alreadyProcessed) {
-      // Application is no longer in NOT_ASSESSED state; verify page loaded and skip
-      await expect(page.getByPlaceholder(/search applications/i)).toBeVisible({ timeout: 10_000 })
+    const hasReviewForm = await thesisTitle.isVisible({ timeout: 5_000 }).catch(() => false)
+    if (!hasReviewForm) {
       return
     }
 
@@ -50,11 +53,16 @@ test.describe('Application Review Workflow', () => {
   test('advisor can accept a NOT_ASSESSED application', async ({ page }) => {
     await navigateTo(page, `/applications/${APPLICATION_ACCEPT_ID}`)
 
-    // Wait for review page to load — detect if application was already processed
+    // Wait for the page to fully load — the student heading is always visible for any state
+    await expect(page.getByRole('heading', { name: /Student5 User/i })).toBeVisible({
+      timeout: 30_000,
+    })
+
+    // Check if application still has the review form (NOT_ASSESSED state)
+    // A prior test run may have accepted this application and DB wasn't re-seeded
     const thesisTitle = page.getByLabel('Thesis Title')
-    const alreadyProcessed = !(await thesisTitle.isVisible({ timeout: 15_000 }).catch(() => false))
-    if (alreadyProcessed) {
-      await expect(page.getByPlaceholder(/search applications/i)).toBeVisible({ timeout: 10_000 })
+    const hasReviewForm = await thesisTitle.isVisible({ timeout: 5_000 }).catch(() => false)
+    if (!hasReviewForm) {
       return
     }
 

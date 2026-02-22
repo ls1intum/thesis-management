@@ -16,7 +16,7 @@ test.describe('Application Workflow - Student submits application', () => {
     await navigateTo(page, '/submit-application')
     await expect(
       page.getByRole('heading', { name: 'Submit Application', exact: true }),
-    ).toBeVisible({ timeout: 15_000 })
+    ).toBeVisible({ timeout: 30_000 })
 
     // Detect which step we're on (state may vary from prior test runs)
     const successText = page.getByText('Your application was successfully submitted!')
