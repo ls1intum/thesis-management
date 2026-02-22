@@ -57,8 +57,9 @@ test.describe('Presentation Workflow - Student creates a presentation draft', ()
     const datePickerDialog = page.getByRole('dialog').nth(1)
     await expect(datePickerDialog).toBeVisible({ timeout: 5_000 })
 
-    // Select a future date from the calendar (e.g. 25th of the current month)
-    await datePickerDialog.getByRole('button', { name: /25 February 2026/i }).click()
+    // Select a date from the calendar - pick the last day button visible in the grid
+    const dayButtons = datePickerDialog.locator('table button:not([data-outside])')
+    await dayButtons.last().click()
 
     // Set the time using the spinbuttons (hours and minutes)
     const hourSpinbutton = datePickerDialog.getByRole('spinbutton').first()

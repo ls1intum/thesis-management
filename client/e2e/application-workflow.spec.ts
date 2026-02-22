@@ -65,7 +65,7 @@ test.describe('Application Workflow - Student submits application', () => {
     }
 
     // Accept privacy notice if not already checked
-    const privacyCheckbox = page.getByRole('checkbox')
+    const privacyCheckbox = page.getByLabel(/privacy/i).or(page.getByRole('checkbox').first())
     if (!(await privacyCheckbox.isChecked())) {
       await privacyCheckbox.check()
     }

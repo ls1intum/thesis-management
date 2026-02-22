@@ -60,7 +60,6 @@ export async function clickMultiSelect(page: Page, label: string) {
 export async function searchAndSelectMultiSelect(
   page: Page,
   label: string,
-  _searchText: string,
   optionPattern: RegExp,
 ) {
   const textbox = page.getByRole('textbox', { name: label })

@@ -31,10 +31,10 @@ test.describe('Topic Workflow - Supervisor creates a topic', () => {
     await page.keyboard.press('Escape')
 
     // Examiner - click to open, then select from results
-    await searchAndSelectMultiSelect(page, 'Examiner', 'Supervisor', /supervisor/i)
+    await searchAndSelectMultiSelect(page, 'Examiner', /supervisor/i)
 
     // Supervisor(s) - click to open, then select from results
-    await searchAndSelectMultiSelect(page, 'Supervisor(s)', 'Advisor', /advisor/i)
+    await searchAndSelectMultiSelect(page, 'Supervisor(s)', /advisor/i)
     await page.keyboard.press('Escape')
 
     // Research Group should be pre-filled for single-group supervisors

@@ -26,15 +26,15 @@ test.describe('Thesis Workflow - Supervisor creates a thesis', () => {
     await selectOption(page, 'Thesis Language', /english/i)
 
     // Student(s) - search and select
-    await searchAndSelectMultiSelect(page, 'Student(s)', 'Student4', /student4/i)
+    await searchAndSelectMultiSelect(page, 'Student(s)', /student4/i)
     await page.keyboard.press('Escape')
 
     // Supervisor(s) - search and select advisor
-    await searchAndSelectMultiSelect(page, 'Supervisor(s)', 'Advisor', /advisor/i)
+    await searchAndSelectMultiSelect(page, 'Supervisor(s)', /advisor/i)
     await page.keyboard.press('Escape')
 
     // Examiner - search and select self (supervisor)
-    await searchAndSelectMultiSelect(page, 'Examiner', 'Supervisor', /supervisor/i)
+    await searchAndSelectMultiSelect(page, 'Examiner', /supervisor/i)
 
     // Research Group should be pre-filled
 
