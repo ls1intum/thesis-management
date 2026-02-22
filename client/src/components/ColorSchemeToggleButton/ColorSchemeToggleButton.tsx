@@ -13,7 +13,9 @@ export const ColorSchemeToggleButton = ({
   ...props
 }: ColorSchemeToggleButtonProps) => {
   const { colorScheme, toggleColorScheme, clearColorScheme } = useMantineColorScheme()
-  const prefersDarkColorScheme = useMediaQuery('(prefers-color-scheme: dark)')
+  const prefersDarkColorScheme = useMediaQuery('(prefers-color-scheme: dark)', undefined, {
+    getInitialValueInEffect: false,
+  })
 
   const showSunIcon = (colorScheme === 'auto' && prefersDarkColorScheme) || colorScheme === 'dark'
 
