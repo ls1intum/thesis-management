@@ -1,4 +1,4 @@
-import { Page, expect } from '@playwright/test'
+import { Locator, Page, expect } from '@playwright/test'
 
 /**
  * Navigate to a page and wait for it to fully load.
@@ -18,18 +18,36 @@ export async function navigateTo(page: Page, path: string) {
  * Use a specific auth state file for a test.
  */
 export function authStatePath(
-  role: 'student' | 'student2' | 'student3' | 'advisor' | 'supervisor' | 'admin',
+  role:
+    | 'student'
+    | 'student2'
+    | 'student3'
+    | 'advisor'
+    | 'advisor2'
+    | 'supervisor'
+    | 'supervisor2'
+    | 'admin',
 ): string {
   return `e2e/.auth/${role}.json`
 }
 
 /**
  * Type text into a TipTap/ProseMirror rich text editor identified by its label.
+ * Optionally accepts a parent locator to scope the search (e.g., a dialog).
  */
-export async function fillRichTextEditor(page: Page, label: string, text: string) {
-  const wrapper = page.locator(`.mantine-InputWrapper-root:has(.mantine-InputWrapper-label:text("${label}"))`)
+export async function fillRichTextEditor(
+  page: Page,
+  label: string,
+  text: string,
+  parent?: Locator,
+) {
+  const root = parent ?? page
+  const wrapper = root.locator(`.mantine-InputWrapper-root:has(.mantine-InputWrapper-label:text("${label}"))`)
   const editor = wrapper.locator('.ProseMirror')
   await editor.click()
+  // Select all existing content and replace it
+  const modifier = process.platform === 'darwin' ? 'Meta' : 'Control'
+  await page.keyboard.press(`${modifier}+a`)
   await page.keyboard.type(text)
 }
 

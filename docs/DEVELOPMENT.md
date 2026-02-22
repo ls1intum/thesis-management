@@ -247,7 +247,7 @@ Tests are located in `client/e2e/` and authenticate via the Keycloak login form 
 
 | File | Description |
 |------|-------------|
-| `auth.setup.ts` | Authenticates all test users (student, student2, student3, advisor, supervisor, admin) via Keycloak and caches their session state |
+| `auth.setup.ts` | Authenticates all test users (student, student2, student3, advisor, advisor2, supervisor, supervisor2, admin) via Keycloak and caches their session state |
 | `auth.spec.ts` | Keycloak redirect for unauthenticated users, role-based navigation item visibility for all 5 access levels |
 | `navigation.spec.ts` | Public page rendering (landing page, about, footer), sidebar navigation flow, route access per role |
 | `dashboard.spec.ts` | Dashboard sections per role (My Theses, My Applications) |
@@ -264,6 +264,9 @@ Tests are located in `client/e2e/` and authenticate via the Keycloak login form 
 | `application-workflow.spec.ts` | Student submits an application through the full stepper: topic selection, student info, file uploads, motivation |
 | `presentation-workflow.spec.ts` | Student creates a presentation draft for a submitted thesis: type, visibility, location, language, date/time |
 | `proposal-feedback-workflow.spec.ts` | Advisor submits proposal feedback on a thesis in PROPOSAL state: opens feedback dialog, enters comment, submits |
+| `application-review-workflow.spec.ts` | Advisor rejects and accepts NOT_ASSESSED applications: reject with reason, accept with pre-filled thesis details |
+| `thesis-grading-workflow.spec.ts` | Sequential thesis grading: advisor submits assessment, supervisor submits final grade, supervisor marks thesis as finished |
+| `interview-workflow.spec.ts` | Supervisor scores an interviewee with notes, opens add slot modal on interview process page |
 
 ### Tested Roles
 
@@ -283,16 +286,16 @@ The E2E tests focus on page accessibility, content rendering, and role-based acc
 |------|---------|-----------------|
 | **Authentication & RBAC** | Keycloak redirect, nav item visibility per role, access denied for unauthorized roles | Token refresh, session expiry, logout |
 | **Topics** | Public browsing, search, filters, list/grid toggle, management view, student apply button, **creating a topic end-to-end** | Editing/closing topics, draft topics |
-| **Applications** | Stepper form rendering, pre-selected topic, advisor/supervisor review page access, **submitting an application end-to-end (topic selection, student info, file uploads, motivation)** | Accepting/rejecting applications |
-| **Theses** | Browse per role, overview page, detail page sections, student own thesis, **creating a thesis end-to-end**, **submitting proposal feedback** | State transitions (submission, grading), comments |
-| **Interviews** | Supervisor overview and process detail, advisor access, student denied | Creating interview processes, adding slots/interviewees, booking slots |
+| **Applications** | Stepper form rendering, pre-selected topic, advisor/supervisor review page access, **submitting an application end-to-end**, **accepting and rejecting applications** | — |
+| **Theses** | Browse per role, overview page, detail page sections, student own thesis, **creating a thesis end-to-end**, **submitting proposal feedback**, **assessment → final grade → mark as finished** | Comments |
+| **Interviews** | Supervisor overview and process detail, advisor access, student denied, **scoring interviewees with notes**, **add slot modal** | Creating interview processes, booking slots |
 | **Presentations** | Page access per role, public presentation detail, **creating a presentation draft** | Calendar integration |
 | **Settings** | Tab rendering per role | Editing profile information, notification preferences |
 | **Research Groups** | Admin CRUD page, search filtering, student denied | Creating/editing groups, member management |
 | **Dashboard** | Section visibility per role (My Theses, My Applications) | Dashboard data accuracy, links to detail pages |
 | **Navigation** | Public pages, sidebar flow, header logo, footer links, unknown routes | Mobile/responsive layout, deep linking |
 
-**In summary:** The tests cover both page rendering/access control across all roles and key end-to-end workflows including topic creation, thesis creation, application submission, presentation scheduling, and proposal feedback. The main gaps are state transition workflows (accepting/rejecting applications, thesis grading) and interview management.
+**In summary:** The tests cover page rendering/access control across all roles and key end-to-end workflows including topic creation, thesis creation, application submission, presentation scheduling, proposal feedback, application accept/reject, thesis grading (assessment → grade → finish), and interview scoring.
 
 ### CI Integration
 

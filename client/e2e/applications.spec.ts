@@ -45,5 +45,30 @@ test.describe('Applications - Supervisor review', () => {
     await navigateTo(page, '/applications')
 
     await expect(page).toHaveURL(/\/applications/)
+    await expect(page.getByPlaceholder(/search applications/i)).toBeVisible({ timeout: 15_000 })
+  })
+
+  test('application detail shows student data and topic', async ({ page }) => {
+    // Navigate to ACCEPTED application: student on topic 1 (stable across re-runs)
+    await navigateTo(page, '/applications/00000000-0000-4000-c000-000000000001')
+
+    // Student name heading
+    await expect(page.getByRole('heading', { name: 'Student User' })).toBeVisible({
+      timeout: 15_000,
+    })
+
+    // Topic accordion button with topic title
+    await expect(
+      page.getByRole('button', { name: 'Automated Code Review Using Large Language Models' }),
+    ).toBeVisible()
+
+    // Motivation section with actual content from seed data
+    await expect(page.getByText('Motivation')).toBeVisible()
+    await expect(page.getByText(/passionate about LLMs/)).toBeVisible()
+
+    // Student detail values from seed data
+    await expect(page.getByText('student@test.local')).toBeVisible()
+    await expect(page.getByText('Computer Science')).toBeVisible()
+    await expect(page.getByText('Accepted').first()).toBeVisible()
   })
 })

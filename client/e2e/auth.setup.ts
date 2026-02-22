@@ -5,7 +5,9 @@ const TEST_USERS = [
   { name: 'student2', username: 'student2', password: 'student2' },
   { name: 'student3', username: 'student3', password: 'student3' },
   { name: 'advisor', username: 'advisor', password: 'advisor' },
+  { name: 'advisor2', username: 'advisor2', password: 'advisor2' },
   { name: 'supervisor', username: 'supervisor', password: 'supervisor' },
+  { name: 'supervisor2', username: 'supervisor2', password: 'supervisor2' },
   { name: 'admin', username: 'admin', password: 'admin' },
 ] as const
 
