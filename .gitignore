@@ -13,3 +13,8 @@ node_modules/
 
 # misc
 .DS_Store
+
+# E2E test runner
+.e2e-pids/
+.e2e-server.log
+.e2e-client.log

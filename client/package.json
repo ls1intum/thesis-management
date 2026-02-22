@@ -30,6 +30,9 @@
     "prettier:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx}\"",
     "prettier:write": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
     "update": "ncu -i --format group",
+    "e2e": "playwright test",
+    "e2e:ui": "playwright test --ui",
+    "e2e:headed": "playwright test --headed",
     "prepare": "cd .. && husky client/.husky"
   },
   "overrides": {
@@ -74,6 +77,7 @@
     "@eslint/compat": "1.4.1",
     "@eslint/eslintrc": "3.3.3",
     "@eslint/js": "9.39.2",
+    "@playwright/test": "1.58.2",
     "@types/react": "19.1.12",
     "@types/react-avatar-editor": "13.0.4",
     "@types/react-dom": "19.1.9",
@@ -93,6 +97,7 @@
     "html-webpack-plugin": "5.6.6",
     "husky": "9.1.7",
     "mini-css-extract-plugin": "2.10.0",
+    "patch-package": "8.0.1",
     "postcss": "8.5.6",
     "postcss-loader": "8.2.0",
     "postcss-preset-mantine": "1.18.0",
@@ -108,7 +113,6 @@
     "webpack-bundle-analyzer": "4.10.2",
     "webpack-cli": "6.0.1",
     "webpack-dev-server": "5.2.3",
-    "patch-package": "8.0.1",
     "webpackbar": "7.0.0"
   }
 }
