@@ -114,11 +114,12 @@ services:
       - thesis-management-network
 
   db:
-    image: "postgres:17.8-alpine"
+    image: "postgres:18.2-alpine"
     container_name: thesis-management-db
     environment:
       - POSTGRES_USER=${SPRING_DATASOURCE_USERNAME}
       - POSTGRES_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+      - PGDATA=/var/lib/postgresql/data
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
     healthcheck:
