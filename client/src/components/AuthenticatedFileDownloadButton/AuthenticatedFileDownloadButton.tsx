@@ -10,7 +10,7 @@ interface IAuthenticatedFileDownloadButtonProps extends ButtonProps {
   filename: string
 }
 
-const AuthenticatedFileDownloadButton = (
+export const AuthenticatedFileDownloadButton = (
   props: PropsWithChildren<IAuthenticatedFileDownloadButtonProps>,
 ) => {
   const { url, filename, children, ...buttonProps } = props
@@ -43,5 +43,3 @@ const AuthenticatedFileDownloadButton = (
     </Button>
   )
 }
-
-export default AuthenticatedFileDownloadButton

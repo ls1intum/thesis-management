@@ -7,7 +7,7 @@ import { checkMinimumThesisState, isThesisClosed } from '../../../../utils/thesi
 import { useLoadedThesisContext } from '../../../../providers/ThesisProvider/hooks'
 import LabeledItem from '../../../../components/LabeledItem/LabeledItem'
 import { formatThesisFilename } from '../../../../utils/format'
-import AuthenticatedFileDownloadButton from '../../../../components/AuthenticatedFileDownloadButton/AuthenticatedFileDownloadButton'
+import { AuthenticatedFileDownloadButton } from '../../../../components/AuthenticatedFileDownloadButton/AuthenticatedFileDownloadButton'
 
 const ThesisAssessmentSection = () => {
   const { thesis, access } = useLoadedThesisContext()

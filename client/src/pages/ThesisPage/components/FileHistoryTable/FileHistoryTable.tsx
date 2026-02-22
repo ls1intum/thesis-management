@@ -4,7 +4,7 @@ import { Button, Center, Group, Input, Table, Text } from '@mantine/core'
 import { formatDate } from '../../../../utils/format'
 import { AuthenticatedFilePreviewButton } from '../../../../components/AuthenticatedFilePreviewButton/AuthenticatedFilePreviewButton'
 import { DownloadSimple, Eye, Trash } from '@phosphor-icons/react'
-import AuthenticatedFileDownloadButton from '../../../../components/AuthenticatedFileDownloadButton/AuthenticatedFileDownloadButton'
+import { AuthenticatedFileDownloadButton } from '../../../../components/AuthenticatedFileDownloadButton/AuthenticatedFileDownloadButton'
 import AvatarUser from '../../../../components/AvatarUser/AvatarUser'
 import { useState } from 'react'
 
