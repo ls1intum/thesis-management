@@ -37,7 +37,7 @@ jobs:
             -e KC_BOOTSTRAP_ADMIN_USERNAME=admin \
             -e KC_BOOTSTRAP_ADMIN_PASSWORD=admin \
             -p 8081:8080 \
-            quay.io/keycloak/keycloak:26.4 \
+            quay.io/keycloak/keycloak:26.5 \
             start-dev
 
       - name: Wait for Keycloak to be ready

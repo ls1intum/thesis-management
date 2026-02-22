@@ -49,7 +49,7 @@ public abstract class BaseKeycloakIntegrationTest {
 
 	static final PostgreSQLContainer DB_CONTAINER = new PostgreSQLContainer("postgres:18.2-alpine");
 
-	static final KeycloakContainer KEYCLOAK_CONTAINER = new KeycloakContainer("quay.io/keycloak/keycloak:26.4")
+	static final KeycloakContainer KEYCLOAK_CONTAINER = new KeycloakContainer("quay.io/keycloak/keycloak:26.5")
 			.withRealmImportFile("thesis-management-realm.json");
 
 	private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder()
