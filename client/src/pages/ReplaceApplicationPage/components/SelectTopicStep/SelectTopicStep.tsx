@@ -1,5 +1,6 @@
 import { ITopic } from '../../../../requests/responses/topic'
-import { Stack } from '@mantine/core'
+import { Alert, Stack } from '@mantine/core'
+import { InfoIcon } from '@phosphor-icons/react'
 import React, { useEffect, useState } from 'react'
 import { GLOBAL_CONFIG } from '../../../../config/global'
 import { useSearchParams } from 'react-router'
@@ -64,6 +65,10 @@ const SelectTopicStep = (props: ISelectTopicStepProps) => {
 
   return (
     <Stack gap={'0rem'} pt={'1rem'}>
+      <Alert variant='light' color='blue' icon={<InfoIcon />} mb='md'>
+        Topics are offered by different research groups. Please verify that you are eligible to
+        write your thesis at the respective research group before submitting your application.
+      </Alert>
       <TopicSearchFilters
         searchKey={searchKey}
         setSearchKey={setSearchKey}
