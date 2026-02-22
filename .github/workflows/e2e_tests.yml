@@ -101,7 +101,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: '24.7.0'
+          node-version: '24.13.1'
           cache: 'npm'
           cache-dependency-path: client/package-lock.json
 
