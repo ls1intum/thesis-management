@@ -1,10 +1,10 @@
-import { ILightUser } from '../../requests/responses/user'
+import { IMinimalUser } from '../../requests/responses/user'
 import { Group, MantineSize, Text } from '@mantine/core'
 import { formatUser } from '../../utils/format'
-import CustomAvatar from '../CustomAvatar/CustomAvatar'
+import { CustomAvatar } from '../CustomAvatar/CustomAvatar'
 
 interface IAvatarUserProps {
-  user: ILightUser
+  user: IMinimalUser
   withUniversityId?: boolean
   size?: MantineSize
   textSize?: MantineSize

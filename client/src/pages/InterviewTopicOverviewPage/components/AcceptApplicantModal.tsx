@@ -44,8 +44,7 @@ const AcceptApplicantModal = ({ interviewee, onAcceptSuccessfull }: AcceptApplic
       {application && (
         <ApplicationRejectButton
           application={application}
-          onUpdate={(newApplication) => {
-            newApplication.state
+          onUpdate={() => {
             //TODO: SET State of interviewee
             onAcceptSuccessfull?.()
           }}
@@ -66,8 +65,7 @@ const AcceptApplicantModal = ({ interviewee, onAcceptSuccessfull }: AcceptApplic
         {application ? (
           <ApplicationReviewForm
             application={application}
-            onUpdate={(newApplication) => {
-              newApplication.state
+            onUpdate={() => {
               //TODO: SET State of interviewee
             }}
             includeCommentSection={false}

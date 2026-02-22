@@ -1,5 +1,5 @@
-import { ILightResearchGroup } from './researchGroup'
-import { ILightUser } from './user'
+import { ILightResearchGroup, IMinimalResearchGroup } from './researchGroup'
+import { ILightUser, IMinimalUser } from './user'
 
 export enum ThesisState {
   PROPOSAL = 'PROPOSAL',
@@ -9,6 +9,12 @@ export enum ThesisState {
   GRADED = 'GRADED',
   FINISHED = 'FINISHED',
   DROPPED_OUT = 'DROPPED_OUT',
+}
+
+export interface IThesisPresentationOverview {
+  presentationId: string
+  type: string
+  scheduledAt: string
 }
 
 export interface IThesisPresentation {
@@ -26,29 +32,42 @@ export interface IThesisPresentation {
   createdBy: ILightUser
 }
 
-export interface IThesis {
+export interface IThesisOverview {
   thesisId: string
   title: string
   type: string
+  state: ThesisState
+  startDate: string | null
+  endDate: string | null
+  createdAt: string
+  keywords?: string[]
+  students: IMinimalUser[]
+  advisors: IMinimalUser[]
+  supervisors: IMinimalUser[]
+  researchGroup?: IMinimalResearchGroup
+  states?: Array<{
+    state: ThesisState
+    startedAt: string
+    endedAt: string
+  }>
+  presentations?: IThesisPresentationOverview[]
+}
+
+export interface IThesis extends IThesisOverview {
   language: string
   metadata: {
     credits: Record<string, number>
     titles: Record<string, string>
   }
   visibility: string
-  keywords: string[]
-  infoText: string
-  abstractText: string
-  state: ThesisState
+  infoText?: string
+  abstractText?: string
   applicationId: string | null
-  startDate: string | null
-  endDate: string | null
-  createdAt: string
   researchGroup: ILightResearchGroup
   students: ILightUser[]
   advisors: ILightUser[]
   supervisors: ILightUser[]
-  files: Array<{
+  files?: Array<{
     fileId: string
     type: string
     filename: string
@@ -64,7 +83,7 @@ export interface IThesis {
     createdAt: string
     createdBy: ILightUser
   }
-  proposals: Array<{
+  proposals?: Array<{
     proposalId: string
     filename: string
     createdAt: string
@@ -72,7 +91,7 @@ export interface IThesis {
     approvedAt: string | null
     approvedBy: ILightUser | null
   }>
-  feedback: Array<{
+  feedback?: Array<{
     feedbackId: string
     type: string
     feedback: string
@@ -84,12 +103,7 @@ export interface IThesis {
     finalGrade: string
     feedback: string
   }
-  presentations: IThesisPresentation[]
-  states: Array<{
-    state: ThesisState
-    startedAt: string
-    endedAt: string
-  }>
+  presentations?: IThesisPresentation[]
 }
 
 export interface IThesisComment {
@@ -108,7 +122,7 @@ export interface IPublishedThesis {
   type: string
   startDate: string | null
   endDate: string | null
-  abstractText: string
+  abstractText?: string
   students: ILightUser[]
   advisors: ILightUser[]
   supervisors: ILightUser[]
@@ -129,7 +143,7 @@ export interface IPublishedPresentation {
 }
 
 export function isThesis(thesis: any): thesis is IThesis {
-  return thesis.thesisId && !!thesis.states
+  return thesis.thesisId && !!thesis.states && 'language' in thesis
 }
 
 export function isThesisPresentation(presentation: any): presentation is IThesisPresentation {

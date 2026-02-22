@@ -1,13 +1,12 @@
 import { Moon, Sun } from '@phosphor-icons/react'
-import { ActionIcon, useMantineColorScheme } from '@mantine/core'
-import { BoxProps } from '@mantine/core/lib/core'
+import { ActionIcon, useMantineColorScheme, type BoxProps } from '@mantine/core'
 
 interface ColorSchemeToggleButtonProps extends BoxProps {
   iconSize?: number | string
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | number
 }
 
-const ColorSchemeToggleButton = ({
+export const ColorSchemeToggleButton = ({
   iconSize = '1.1rem',
   size = 'md',
   ...props
@@ -27,5 +26,3 @@ const ColorSchemeToggleButton = ({
     </ActionIcon>
   )
 }
-
-export default ColorSchemeToggleButton

@@ -1,6 +1,5 @@
 import React, { Dispatch, SetStateAction } from 'react'
-import { Switch } from '@mantine/core'
-import { BoxProps } from '@mantine/core/lib/core'
+import { Switch, type BoxProps } from '@mantine/core'
 import { useNotificationSetting } from '../../../../../../hooks/notification'
 
 interface INotificationToggleSwitchProps extends BoxProps {
@@ -9,7 +8,7 @@ interface INotificationToggleSwitchProps extends BoxProps {
   setSettings: Dispatch<SetStateAction<Array<{ name: string; email: string }> | undefined>>
 }
 
-const NotificationToggleSwitch = (props: INotificationToggleSwitchProps) => {
+export const NotificationToggleSwitch = (props: INotificationToggleSwitchProps) => {
   const { name, settings, setSettings, ...other } = props
 
   const { loading, currentEmail, updateSetting } = useNotificationSetting(
@@ -26,5 +25,3 @@ const NotificationToggleSwitch = (props: INotificationToggleSwitchProps) => {
 
   return <Switch checked={isChecked} onChange={toggleSetting} disabled={loading} {...other} />
 }
-
-export default NotificationToggleSwitch

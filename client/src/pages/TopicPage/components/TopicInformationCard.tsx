@@ -1,4 +1,4 @@
-import { Card, Stack, Title, Text, TypographyStylesProvider, Divider } from '@mantine/core'
+import { Card, Stack, Title } from '@mantine/core'
 import DocumentEditor from '../../../components/DocumentEditor/DocumentEditor'
 
 interface ITopicInformationCardProps {

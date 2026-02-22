@@ -35,8 +35,10 @@ const TopicPage = () => {
   const checkIfUserIsSupervisorOrAdvisor = () => {
     if (!user) return false
     const userId = user.userId
-    const isSupervisor = topic.supervisors.some((supervisor) => supervisor.userId === userId)
-    const isAdvisor = topic.advisors.some((advisor) => advisor.userId === userId)
+    const isSupervisor = (topic.supervisors ?? []).some(
+      (supervisor) => supervisor.userId === userId,
+    )
+    const isAdvisor = (topic.advisors ?? []).some((advisor) => advisor.userId === userId)
     return isSupervisor || isAdvisor
   }
 
@@ -44,7 +46,7 @@ const TopicPage = () => {
     <Stack gap={'2rem'}>
       <Stack gap={'1rem'}>
         <Title>{topic.title}</Title>
-        {!checkIfUserIsSupervisorOrAdvisor() && (
+        {!managementAccess && !checkIfUserIsSupervisorOrAdvisor() && (
           <Button
             component={Link}
             to={`/submit-application/${topic.topicId}`}
@@ -60,7 +62,10 @@ const TopicPage = () => {
       <Grid>
         <Grid.Col span={{ base: 12, md: 9 }} order={{ base: 2, md: 1 }}>
           <Stack gap={'1.5rem'}>
-            <TopicInformationCard title='Problem Statement' content={topic.problemStatement} />
+            <TopicInformationCard
+              title='Problem Statement'
+              content={topic.problemStatement ?? ''}
+            />
             {topic.requirements && (
               <TopicInformationCard title='Requirements' content={topic.requirements} />
             )}

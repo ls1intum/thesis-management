@@ -3,7 +3,7 @@ import { usePageTitle } from '../../hooks/theme'
 import { Button, Group, Stack, Title } from '@mantine/core'
 import TopicsProvider from '../../providers/TopicsProvider/TopicsProvider'
 import TopicsTable from '../../components/TopicsTable/TopicsTable'
-import { ITopic } from '../../requests/responses/topic'
+import { TopicState } from '../../requests/responses/topic'
 import { PencilIcon } from '@phosphor-icons/react'
 import CloseTopicButton from './components/CloseTopicButton/CloseTopicButton'
 import ReplaceTopicModal from './components/ReplaceTopicModal/ReplaceTopicModal'
@@ -12,7 +12,7 @@ import TopicsFilters from '../../components/TopicsFilters/TopicsFilters'
 const ManageTopicsPage = () => {
   usePageTitle('Manage Topics')
 
-  const [editingTopic, setEditingTopic] = useState<ITopic>()
+  const [editingTopicId, setEditingTopicId] = useState<string>()
   const [createTopicModal, setCreateTopicModal] = useState(false)
 
   return (
@@ -26,9 +26,9 @@ const ManageTopicsPage = () => {
         </Group>
         <ReplaceTopicModal opened={createTopicModal} onClose={() => setCreateTopicModal(false)} />
         <ReplaceTopicModal
-          opened={!!editingTopic}
-          onClose={() => setEditingTopic(undefined)}
-          topic={editingTopic}
+          opened={!!editingTopicId}
+          onClose={() => setEditingTopicId(undefined)}
+          topicId={editingTopicId}
         />
         <Button ml='auto' onClick={() => setCreateTopicModal(true)} hiddenFrom='md'>
           Create Topic
@@ -50,8 +50,8 @@ const ManageTopicsPage = () => {
                   onClick={(e) => e.stopPropagation()}
                   gap='xs'
                 >
-                  {!topic.closedAt && (
-                    <Button size='xs' onClick={() => setEditingTopic(topic)}>
+                  {topic.state !== TopicState.CLOSED && (
+                    <Button size='xs' onClick={() => setEditingTopicId(topic.topicId)}>
                       <PencilIcon />
                     </Button>
                   )}

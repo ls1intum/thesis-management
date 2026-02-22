@@ -20,7 +20,7 @@ const ReviewApplicationPage = () => {
   const [application, setApplication] = useState<IApplication>()
 
   useEffect(() => {
-    if (applicationId && applicationId !== application?.applicationId) {
+    if (applicationId) {
       return doRequest<IApplication>(
         `/v2/applications/${applicationId}`,
         {
@@ -34,7 +34,7 @@ const ReviewApplicationPage = () => {
         },
       )
     }
-  }, [applicationId, application])
+  }, [applicationId])
 
   return (
     <ApplicationsProvider

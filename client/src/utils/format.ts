@@ -1,4 +1,4 @@
-import { ILightUser } from '../requests/responses/user'
+import { ILightUser, IMinimalUser } from '../requests/responses/user'
 import { IThesis, ThesisState } from '../requests/responses/thesis'
 import { ApplicationState, IApplication } from '../requests/responses/application'
 import { GLOBAL_CONFIG } from '../config/global'
@@ -38,16 +38,16 @@ interface IFormatUserOptions {
   withUniversityId: boolean
 }
 
-export function formatUser(user: ILightUser, options: Partial<IFormatUserOptions> = {}) {
+export function formatUser(user: IMinimalUser, options: Partial<IFormatUserOptions> = {}) {
   const { withUniversityId } = {
     withUniversityId: false,
     ...options,
   }
 
-  let text = `${user.firstName} ${user.lastName}`
+  let text = `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim()
 
-  if (withUniversityId) {
-    text += ` (${user.universityId})`
+  if (withUniversityId && 'universityId' in user) {
+    text += ` (${(user as ILightUser).universityId})`
   }
 
   return text
@@ -58,7 +58,7 @@ export function wordsToFilename(words: string) {
 }
 
 export function formatUserFilename(user: ILightUser): string {
-  return wordsToFilename(`${user.firstName} ${user.lastName}`)
+  return wordsToFilename(`${user.firstName ?? ''} ${user.lastName ?? ''}`.trim())
 }
 
 export function formatUsersFilename(users: ILightUser[]) {

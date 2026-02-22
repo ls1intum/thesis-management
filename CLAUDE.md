@@ -1,0 +1,38 @@
+# CLAUDE.md
+
+This file provides guidance for Claude Code when working with this repository.
+
+## Build & Test Commands
+
+### Server (Spring Boot + Gradle)
+- **Run server**: `cd server && ./gradlew bootRun`
+- **Run tests**: `cd server && ./gradlew test`
+- **Format code**: `cd server && ./gradlew spotlessApply`
+
+### Client (React + Webpack)
+- **Install dependencies**: `cd client && npm install`
+- **Run dev server**: `cd client && npm run dev`
+- **Build**: `cd client && npm run build`
+- **Lint**: `cd client && npx eslint src/`
+- **Type check**: `cd client && npx tsc --noEmit` (ignore mantine-datatable type errors)
+
+### E2E Tests (Playwright)
+- **Run locally**: `./execute-e2e-local.sh` (starts all services automatically)
+- **Run only tests**: `cd client && npm run e2e` (when services already running)
+- **Interactive UI**: `./execute-e2e-local.sh --ui`
+
+## Architecture
+
+- **Server**: Spring Boot 3, Java 25, PostgreSQL, Keycloak for auth, Liquibase for migrations
+- **Client**: React 19, TypeScript, Mantine UI, Webpack
+- **Deployment**: Docker multi-platform images (amd64/arm64), deployed via GitHub Actions
+
+## Key Conventions
+
+### DTO Serialization (`@JsonInclude(NON_EMPTY)`)
+
+All DTOs use `@JsonInclude(JsonInclude.Include.NON_EMPTY)`. `null`, empty strings, and empty collections are omitted from JSON. The client must handle missing fields with `?? ''`, `?? []`, and `?.`.
+
+### Role Terminology
+
+The backend/Keycloak uses `supervisor` and `advisor` roles. In the UI these are displayed as "Examiner" and "Supervisor" respectively.

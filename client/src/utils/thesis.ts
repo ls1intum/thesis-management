@@ -6,7 +6,7 @@ export function isThesisClosed(thesis: IThesis | IPublishedThesis) {
 }
 
 export function checkMinimumThesisState(thesis: IThesis, state: ThesisState) {
-  return thesis.states.some((s) => s.state === state)
+  return (thesis.states ?? []).some((s) => s.state === state)
 }
 
 export function hasStudentAccess(
@@ -17,11 +17,15 @@ export function hasStudentAccess(
     return false
   }
 
-  const users = [...thesis.students, ...thesis.advisors, ...thesis.supervisors]
+  const users = [
+    ...(thesis.students ?? []),
+    ...(thesis.advisors ?? []),
+    ...(thesis.supervisors ?? []),
+  ]
 
   return !!(
     users.some((row) => row.userId === user?.userId) ||
-    user?.groups.some((name) => name === 'admin')
+    user?.groups?.some((name) => name === 'admin')
   )
 }
 
@@ -33,11 +37,11 @@ export function hasAdvisorAccess(
     return false
   }
 
-  const users = [...thesis.advisors, ...thesis.supervisors]
+  const users = [...(thesis.advisors ?? []), ...(thesis.supervisors ?? [])]
 
   return !!(
     users.some((row) => row.userId === user?.userId) ||
-    user?.groups.some((name) => name === 'admin')
+    user?.groups?.some((name) => name === 'admin')
   )
 }
 
@@ -46,7 +50,7 @@ export function hasSupervisorAccess(
   user: ILightUser | undefined,
 ) {
   return !!(
-    thesis?.supervisors.some((row) => row.userId === user?.userId) ||
-    user?.groups.some((name) => name === 'admin')
+    (thesis?.supervisors ?? []).some((row) => row.userId === user?.userId) ||
+    user?.groups?.some((name) => name === 'admin')
   )
 }

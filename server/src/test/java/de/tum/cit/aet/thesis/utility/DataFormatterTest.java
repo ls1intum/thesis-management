@@ -182,13 +182,9 @@ class DataFormatterTest {
 
 	@Test
 	void formatSemester_WithValidInstant_ReturnsExpectedSemester() {
-		Instant now = Instant.now();
-		Instant sixMonthsAgo = now.minus(182, ChronoUnit.DAYS);
-
-		String result = DataFormatter.formatSemester(sixMonthsAgo);
-
-		int semester = Integer.parseInt(result);
-		assertTrue(semester >= 1 && semester <= 2, "Semester should be 1 or 2");
+		Instant oneYearAgo = Instant.now().minus(365, ChronoUnit.DAYS);
+		String result = DataFormatter.formatSemester(oneYearAgo);
+		assertEquals("2", result, "365 days / 182 days per semester = 2");
 	}
 
 	@Test

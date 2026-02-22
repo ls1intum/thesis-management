@@ -1,19 +1,36 @@
-import { IThesis } from '../../requests/responses/thesis'
-import { Button, Modal, Stack } from '@mantine/core'
+import { Button, Center, Loader, Modal, Stack, Text } from '@mantine/core'
 import { Link } from 'react-router'
 import ThesisData from '../ThesisData/ThesisData'
+import { useThesis } from '../../hooks/fetcher'
 
 interface IThesisPreviewModalProps {
-  thesis: IThesis | undefined
+  thesisId: string | undefined
   opened: boolean
   onClose: () => unknown
 }
 
 const ThesisPreviewModal = (props: IThesisPreviewModalProps) => {
-  const { thesis, opened, onClose } = props
+  const { thesisId, opened, onClose } = props
+
+  const thesis = useThesis(opened ? thesisId : undefined)
 
   return (
-    <Modal title={thesis?.title} opened={opened} onClose={onClose} size='xl'>
+    <Modal
+      title={thesis ? thesis.title : thesis === false ? 'Failed to load thesis' : 'Loading...'}
+      opened={opened}
+      onClose={onClose}
+      size='xl'
+    >
+      {thesis === undefined && (
+        <Center py='xl'>
+          <Loader />
+        </Center>
+      )}
+      {thesis === false && (
+        <Center py='xl'>
+          <Text c='dimmed'>Could not load thesis data.</Text>
+        </Center>
+      )}
       {thesis && (
         <Stack gap='md'>
           <ThesisData

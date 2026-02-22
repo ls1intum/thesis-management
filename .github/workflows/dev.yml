@@ -2,18 +2,27 @@ name: Build and Deploy to Dev
 
 on:
   pull_request:
+    branches: [develop, main]
+    types: [opened, synchronize, reopened]
   push:
     branches: [develop, main]
+
+concurrency:
+  group: deploy-dev-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   run-tests:
     uses: ./.github/workflows/run_tests.yml
+  run-e2e-tests:
+    uses: ./.github/workflows/e2e_tests.yml
   build-dev-container:
     uses: ./.github/workflows/build_docker.yml
     secrets: inherit
   deploy-dev-container:
     needs:
       - run-tests
+      - run-e2e-tests
       - build-dev-container
     uses: ./.github/workflows/deploy_docker.yml
     secrets: inherit

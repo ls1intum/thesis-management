@@ -3,7 +3,7 @@
 Mails can be customized in the email_templates table in the database or via API calls.
 If no research group specific template is found, the default template will be used.
 
-> **Note on Role Terminology:** The backend uses `supervisor` and `advisor` roles internally. In the UI, these are displayed as "Examiner" and "Supervisor" respectively to align with CIT terminology.
+> **Note on Role Terminology:** The server uses `supervisor` and `advisor` roles internally. In the UI, these are displayed as "Examiner" and "Supervisor" respectively to align with CIT terminology.
 
 ## Templates
 

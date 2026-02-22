@@ -5,14 +5,14 @@ plugins {
 	id "jacoco"
 	id "com.github.andygoossens.modernizer" version "1.12.0"
 	id "com.gorylenko.gradle-git-properties" version "2.5.7"
-	id "org.springframework.boot" version "3.5.10"
+	id "org.springframework.boot" version "4.0.3"
 	id "io.spring.dependency-management" version "1.1.7"
 	id "com.github.ben-manes.versions" version "0.53.0"
 	id "com.diffplug.spotless" version "8.2.1"
 }
 
 group = "de.tum.cit.aet.thesis"
-version = "4.8.0"
+version = "4.9.1"
 description = "Thesis Management"
 
 gitProperties {
@@ -35,13 +35,13 @@ repositories {
 
 dependencies {
 	implementation "org.springframework.boot:spring-boot-starter-data-jpa"
-	implementation "org.springframework.boot:spring-boot-starter-web"
+	implementation "org.springframework.boot:spring-boot-starter-webmvc"
 	implementation "org.springframework.boot:spring-boot-starter-validation"
 	implementation "org.springframework.boot:spring-boot-starter-mail"
 	implementation "org.springframework.boot:spring-boot-starter-webflux"
 	implementation "org.springframework.boot:spring-boot-starter-security"
-	implementation "org.springframework.boot:spring-boot-starter-oauth2-client"
-	implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
+	implementation "org.springframework.boot:spring-boot-starter-security-oauth2-client"
+	implementation "org.springframework.boot:spring-boot-starter-security-oauth2-resource-server"
 	implementation "org.springframework.boot:spring-boot-starter-thymeleaf"
 	implementation "org.springframework.boot:spring-boot-starter-actuator"
 
@@ -53,15 +53,15 @@ dependencies {
 	// Avoid outdated version to prevent security issues
 	implementation("net.minidev:json-smart") { version { 				strictly "2.6.0" } }
 
-	implementation "org.liquibase:liquibase-core:4.33.0"
-	implementation "org.postgresql:postgresql:42.7.9"
+	implementation "org.springframework.boot:spring-boot-starter-liquibase"
+	implementation "org.postgresql:postgresql:42.7.10"
 
 	implementation "commons-io:commons-io:2.21.0"
 	implementation "com.github.vladimir-bukhtoyarov:bucket4j-core:8.0.1"
 	implementation "org.mnode.ical4j:ical4j:4.2.3"
 	implementation "com.itextpdf:itext-core:9.5.0"
 	implementation "com.itextpdf:html2pdf:6.3.1"
-	implementation "com.auth0:java-jwt:4.5.0"
+	implementation "com.auth0:java-jwt:4.5.1"
 
 	// Use the latest version of commons-lang3 to avoid security issues
 	implementation "org.apache.commons:commons-lang3:${commons_lang3_version}"
@@ -80,6 +80,7 @@ dependencies {
 		exclude group: "com.vaadin.external.google", module: "android-json"
 		exclude group: "org.xmlunit", module: "xmlunit-core"
 	}
+	testImplementation "org.springframework.boot:spring-boot-starter-webmvc-test"
 
 	testImplementation "org.mockito:mockito-core:5.21.0"
 	testImplementation "org.mockito:mockito-junit-jupiter:5.21.0"
@@ -91,6 +92,9 @@ dependencies {
 	testImplementation "org.testcontainers:testcontainers-postgresql:${test_container_version}"
 
 	testImplementation "com.github.dasniko:testcontainers-keycloak:4.1.1"
+
+	testImplementation "com.icegreen:greenmail-junit5:2.1.8"
+	testImplementation "org.wiremock:wiremock-standalone:3.13.2"
 
 	testImplementation "org.junit.jupiter:junit-jupiter:${junit_version}"
 	testImplementation "org.junit.jupiter:junit-jupiter-api:${junit_version}"
@@ -125,6 +129,7 @@ spotless {
 		leadingSpacesToTabs()
 	}
 }
+
 
 checkstyle {
 	toolVersion = "13.2.0"

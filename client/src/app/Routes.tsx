@@ -22,6 +22,10 @@ const PresentationOverviewPage = lazy(
 const ResearchGroupSettingPage = lazy(
   () => import('../pages/ResearchGroupSettingPage/ResearchGroupSettingPage'),
 )
+const EmailTemplateEditPage = lazy(
+  () =>
+    import('../pages/ResearchGroupSettingPage/components/EmailTemplateSettings/EmailTemplateEditPage'),
+)
 const BrowseThesesPage = lazy(() => import('../pages/BrowseThesesPage/BrowseThesesPage'))
 const DashboardPage = lazy(() => import('../pages/DashboardPage/DashboardPage'))
 const LogoutPage = lazy(() => import('../pages/LogoutPage/LogoutPage'))
@@ -190,6 +194,14 @@ const AppRoutes = () => {
             element={
               <AuthenticatedArea requiredGroups={['admin', 'group-admin']}>
                 <ResearchGroupSettingPage />
+              </AuthenticatedArea>
+            }
+          />
+          <Route
+            path='/research-groups/:researchGroupId/email-templates/:templateCase/edit'
+            element={
+              <AuthenticatedArea requiredGroups={['admin', 'group-admin']}>
+                <EmailTemplateEditPage />
               </AuthenticatedArea>
             }
           />

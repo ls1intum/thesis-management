@@ -7,12 +7,13 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "allowJs": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "strict": true,
     "isolatedModules": true,
     "noImplicitAny": true,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
+    "skipLibCheck": true,
     "lib": ["dom", "dom.iterable", "esnext"],
     "plugins": [
       { "name": "typescript-plugin-css-modules" }

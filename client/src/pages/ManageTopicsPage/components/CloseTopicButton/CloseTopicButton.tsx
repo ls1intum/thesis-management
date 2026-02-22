@@ -1,4 +1,9 @@
-import { ITopic, TopicState } from '../../../../requests/responses/topic'
+import {
+  ITopic,
+  ITopicOverview,
+  TopicState,
+  toTopicOverview,
+} from '../../../../requests/responses/topic'
 import { X } from '@phosphor-icons/react'
 import React, { useEffect, useState } from 'react'
 import { useTopicsContext } from '../../../../providers/TopicsProvider/hooks'
@@ -9,7 +14,7 @@ import { useForm } from '@mantine/form'
 import { Button, Checkbox, Modal, Select, Stack, Text } from '@mantine/core'
 
 interface ICloseTopicButtonProps {
-  topic: ITopic
+  topic: ITopicOverview
   size?: string
 }
 
@@ -36,7 +41,7 @@ const CloseTopicButton = (props: ICloseTopicButtonProps) => {
     form.reset()
   }, [confirmationModal])
 
-  if (topic.closedAt) {
+  if (topic.state === TopicState.CLOSED) {
     return null
   }
 
@@ -65,7 +70,7 @@ const CloseTopicButton = (props: ICloseTopicButtonProps) => {
               })
 
               if (response.ok) {
-                updateTopic(response.data)
+                updateTopic(toTopicOverview(response.data))
 
                 showSimpleSuccess('Topic closed successfully')
               } else {
@@ -78,7 +83,9 @@ const CloseTopicButton = (props: ICloseTopicButtonProps) => {
         >
           <Stack>
             <Text>
-              {`Are you sure you want to close this ${titleName.toLowerCase()}? ${topic.state === TopicState.DRAFT ? '' : 'This will reject all applications for the topic and complete existing interview processes.'}`}
+              {`Are you sure you want to close this ${titleName.toLowerCase()}? `}
+              {topic.state !== TopicState.DRAFT &&
+                'This will reject all applications for the topic and complete existing interview processes.'}
             </Text>
             {topic.state !== TopicState.DRAFT && (
               <>
@@ -93,7 +100,6 @@ const CloseTopicButton = (props: ICloseTopicButtonProps) => {
                 />
                 <Checkbox
                   label='Notify Students'
-                  required
                   {...form.getInputProps('notifyUser', { type: 'checkbox' })}
                 />
               </>

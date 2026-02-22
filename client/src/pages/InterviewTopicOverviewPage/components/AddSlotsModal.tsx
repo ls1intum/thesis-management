@@ -74,8 +74,6 @@ const AddSlotsModal = ({
 
   const [breakDuration, setBreakDuration] = useState<number>(0) // in minutes
 
-  const [sameSlotsForAllDays, setSameSlotsForAllDays] = useState(false)
-
   const dayHasBookedSlots = (date: string) => {
     return modalSlots[date]?.filter((slot) => slot.bookedBy !== null).length > 0
   }
@@ -333,7 +331,8 @@ const AddSlotsModal = ({
             onClick={() => {
               saveNewSlots()
             }}
-            disabled={overlappingSlotsExist()}
+            disabled={overlappingSlotsExist() || saveLoading}
+            loading={saveLoading}
           >
             Save Slots
           </Button>

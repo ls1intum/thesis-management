@@ -22,7 +22,7 @@ public class ResearchGroupSettings {
 	@Column(name = "automatic_reject_enabled", nullable = false)
 	private boolean automaticRejectEnabled;
 
-	@Column(name = "reject_duration")
+	@Column(name = "reject_duration", nullable = false)
 	private int rejectDuration;
 
 	@Column(name = "presentation_slot_duration")

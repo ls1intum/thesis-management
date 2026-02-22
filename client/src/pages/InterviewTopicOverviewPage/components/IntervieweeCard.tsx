@@ -15,7 +15,7 @@ import {
   IIntervieweeLightWithNextSlot,
   InterviewState,
 } from '../../../requests/responses/interview'
-import CustomAvatar from '../../../components/CustomAvatar/CustomAvatar'
+import { CustomAvatar } from '../../../components/CustomAvatar/CustomAvatar'
 import {
   createScoreLabel,
   formatApplicationState,

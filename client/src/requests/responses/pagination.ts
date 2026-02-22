@@ -1,5 +1,5 @@
 export interface PaginationResponse<T> {
-  content: T[]
+  content?: T[]
   pageNumber: number
   pageSize: number
   totalElements: number

@@ -37,7 +37,7 @@ const ThesisCommentsProvider = (props: PropsWithChildren<IThesisCommentsProvider
         if (res.ok) {
           setComments({
             ...res.data,
-            content: res.data.content.reverse(),
+            content: (res.data.content ?? []).reverse(),
           })
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
@@ -106,7 +106,7 @@ const ThesisCommentsProvider = (props: PropsWithChildren<IThesisCommentsProvider
 
               return {
                 ...prev,
-                content: [...prev.content, response.data].slice(-limit),
+                content: [...(prev.content ?? []), response.data].slice(-limit),
                 totalElements: prev.totalElements + 1,
                 totalPages: Math.ceil((prev.totalElements + 1) / limit),
               }
@@ -135,7 +135,7 @@ const ThesisCommentsProvider = (props: PropsWithChildren<IThesisCommentsProvider
 
             return {
               ...prev,
-              content: prev.content.filter((c) => c.commentId !== comment.commentId),
+              content: (prev.content ?? []).filter((c) => c.commentId !== comment.commentId),
               totalElements: prev.totalElements - 1,
               totalPages: Math.ceil((prev.totalElements - 1) / limit),
             }

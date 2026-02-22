@@ -6,7 +6,8 @@ import { showSimpleError } from '../../utils/notification'
 import { getApiResponseErrorMessage } from '../../requests/handler'
 import { Center, Loader, Stack, Tabs, Title } from '@mantine/core'
 import GeneralResearchGroupSettings from './components/GeneralResearchGroupSettings'
-import ResearchGroupMembers from './components/ResearchGroupMembers'
+import ResearchGroupMembers from './components/MemberSettings/ResearchGroupMembers'
+import EmailTemplatesOverview from './components/EmailTemplateSettings/EmailTemplatesOverview'
 import { useUser } from '../../hooks/authentication'
 import ApplicationPhaseSettingsCard from './components/ApplicationPhaseSettingsCard'
 import { IResearchGroupSettings } from '../../requests/responses/researchGroupSettings'
@@ -17,13 +18,13 @@ import EmailSettingsCard from './components/EmailSettingsCard'
 const ResearchGroupSettingPage = () => {
   const { researchGroupId } = useParams<{ researchGroupId: string }>()
 
+  const user = useUser()
+
   const [loading, setLoading] = useState(true)
   const [researchGroupData, setResearchGroupData] = useState<IResearchGroup | undefined>(undefined)
   const [researchGroupSettings, setResearchGroupSettings] = useState<
     IResearchGroupSettings | undefined
   >(undefined)
-
-  const user = useUser()
 
   const [searchParams, setSearchParams] = useSearchParams()
   const [selectedTab, setSelectedTab] = useState(searchParams.get('setting') ?? 'general')
@@ -90,7 +91,7 @@ const ResearchGroupSettingPage = () => {
   return (
     <>
       {user &&
-      (user.groups.includes('admin') ? false : user.researchGroupId !== researchGroupId) ? (
+      (user.groups?.includes('admin') ? false : user.researchGroupId !== researchGroupId) ? (
         <Center h={'100%'}>
           <h1>403 - Unauthorized</h1>
         </Center>
@@ -107,8 +108,8 @@ const ResearchGroupSettingPage = () => {
             <Tabs.List>
               <Tabs.Tab value='general'>General</Tabs.Tab>
               <Tabs.Tab value='members'>Members</Tabs.Tab>
+              <Tabs.Tab value='email-templates'>Email Templates</Tabs.Tab>
             </Tabs.List>
-
             <Tabs.Panel value='general' pt='md'>
               <Stack>
                 <GeneralResearchGroupSettings
@@ -201,6 +202,9 @@ const ResearchGroupSettingPage = () => {
             </Tabs.Panel>
             <Tabs.Panel value='members' pt='md'>
               <ResearchGroupMembers researchGroupData={researchGroupData} />
+            </Tabs.Panel>
+            <Tabs.Panel value='email-templates' pt='md'>
+              <EmailTemplatesOverview />
             </Tabs.Panel>
           </Tabs>
         </Stack>

@@ -593,7 +593,7 @@ public class MailingService {
 		mailBuilder
 				.sendToThesisStudents(thesis)
 				.addNotificationName(NOTIFICATION_NAME_START + thesis.getId())
-				.fillThesisPlaceholders(thesis)
+				.fillThesisGradePlaceholders(thesis)
 				.send(javaMailSender, uploadService);
 	}
 

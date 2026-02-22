@@ -3,7 +3,6 @@ package de.tum.cit.aet.thesis.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import de.tum.cit.aet.thesis.constants.ThesisCommentType;
 import de.tum.cit.aet.thesis.constants.ThesisFeedbackType;
 import de.tum.cit.aet.thesis.constants.ThesisPresentationType;
@@ -37,6 +36,7 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import tools.jackson.databind.JsonNode;
 
 import java.time.Instant;
 import java.util.List;
@@ -101,12 +101,12 @@ class ThesisControllerTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 
 			JsonNode json = objectMapper.readTree(response);
-			assertThat(json.get("thesisId").asText()).isEqualTo(thesisId.toString());
-			assertThat(json.get("title").asText()).isEqualTo("Test Thesis");
-			assertThat(json.get("type").asText()).isEqualTo("MASTER");
-			assertThat(json.get("language").asText()).isEqualTo("ENGLISH");
-			assertThat(json.get("state").asText()).isEqualTo("PROPOSAL");
-			assertThat(json.get("visibility").asText()).isEqualTo("INTERNAL");
+			assertThat(json.get("thesisId").asString()).isEqualTo(thesisId.toString());
+			assertThat(json.get("title").asString()).isEqualTo("Test Thesis");
+			assertThat(json.get("type").asString()).isEqualTo("MASTER");
+			assertThat(json.get("language").asString()).isEqualTo("ENGLISH");
+			assertThat(json.get("state").asString()).isEqualTo("PROPOSAL");
+			assertThat(json.get("visibility").asString()).isEqualTo("INTERNAL");
 		}
 
 		@Test
@@ -148,7 +148,7 @@ class ThesisControllerTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 
 			JsonNode jsonEmpty = objectMapper.readTree(responseEmpty);
-			assertThat(jsonEmpty.get("content").size()).isEqualTo(0);
+			assertThat(jsonEmpty.path("content").size()).isEqualTo(0);
 		}
 
 		@Test
@@ -175,8 +175,8 @@ class ThesisControllerTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 
 			JsonNode json = objectMapper.readTree(response);
-			assertThat(json.get("title").asText()).isEqualTo("Test Thesis");
-			assertThat(json.get("type").asText()).isEqualTo("MASTER");
+			assertThat(json.get("title").asString()).isEqualTo("Test Thesis");
+			assertThat(json.get("type").asString()).isEqualTo("MASTER");
 		}
 
 		@Test
@@ -225,8 +225,8 @@ class ThesisControllerTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 
 			JsonNode json = objectMapper.readTree(response);
-			assertThat(json.get("title").asText()).isEqualTo("Updated Thesis");
-			assertThat(json.get("visibility").asText()).isEqualTo("PUBLIC");
+			assertThat(json.get("title").asString()).isEqualTo("Updated Thesis");
+			assertThat(json.get("visibility").asString()).isEqualTo("PUBLIC");
 		}
 
 		@Test
@@ -298,9 +298,9 @@ class ThesisControllerTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 
 			JsonNode json = objectMapper.readTree(response);
-			assertThat(json.get("abstractText").asText()).isEqualTo("Test abstract text");
-			assertThat(json.get("infoText").asText()).isEqualTo("Test info text");
-			assertThat(json.get("title").asText()).isEqualTo("Updated Primary Title");
+			assertThat(json.get("abstractText").asString()).isEqualTo("Test abstract text");
+			assertThat(json.get("infoText").asString()).isEqualTo("Test info text");
+			assertThat(json.get("title").asString()).isEqualTo("Updated Primary Title");
 
 			Thesis thesis = thesisRepository.findById(thesisId).orElseThrow();
 			assertThat(thesis.getAbstractField()).isEqualTo("Test abstract text");
@@ -411,7 +411,7 @@ class ThesisControllerTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 
 			UUID feedbackId = UUID.fromString(objectMapper.readTree(feedbackResponse)
-					.get("feedback").get(0).get("feedbackId").asText());
+					.get("feedback").get(0).get("feedbackId").asString());
 
 			mockMvc.perform(MockMvcRequestBuilders.put("/v2/theses/{thesisId}/feedback/{feedbackId}/complete", thesisId, feedbackId)
 							.header("Authorization", adminAuth))
@@ -439,7 +439,7 @@ class ThesisControllerTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 
 			UUID feedbackId = UUID.fromString(objectMapper.readTree(feedbackResponse)
-					.get("feedback").get(0).get("feedbackId").asText());
+					.get("feedback").get(0).get("feedbackId").asString());
 
 			mockMvc.perform(MockMvcRequestBuilders.put("/v2/theses/{thesisId}/feedback/{feedbackId}/incomplete", thesisId, feedbackId)
 							.header("Authorization", adminAuth))
@@ -467,7 +467,7 @@ class ThesisControllerTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 
 			UUID feedbackId = UUID.fromString(objectMapper.readTree(feedbackResponse)
-					.get("feedback").get(0).get("feedbackId").asText());
+					.get("feedback").get(0).get("feedbackId").asString());
 
 			mockMvc.perform(MockMvcRequestBuilders.delete("/v2/theses/{thesisId}/feedback/{feedbackId}", thesisId, feedbackId)
 							.header("Authorization", adminAuth))
@@ -493,7 +493,7 @@ class ThesisControllerTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 
 			UUID feedbackId = UUID.fromString(objectMapper.readTree(feedbackResponse)
-					.get("feedback").get(0).get("feedbackId").asText());
+					.get("feedback").get(0).get("feedbackId").asString());
 
 			String studentAuth = createRandomAuthentication("student");
 			mockMvc.perform(MockMvcRequestBuilders.delete("/v2/theses/{thesisId}/feedback/{feedbackId}", thesisId, feedbackId)
@@ -563,7 +563,7 @@ class ThesisControllerTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 
 			UUID proposalId = UUID.fromString(objectMapper.readTree(response)
-					.get("proposals").get(0).get("proposalId").asText());
+					.get("proposals").get(0).get("proposalId").asString());
 
 			mockMvc.perform(MockMvcRequestBuilders.get("/v2/theses/{thesisId}/proposal/{proposalId}", thesisId, proposalId)
 							.header("Authorization", createRandomAdminAuthentication()))
@@ -586,7 +586,7 @@ class ThesisControllerTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 
 			UUID proposalId = UUID.fromString(objectMapper.readTree(response)
-					.get("proposals").get(0).get("proposalId").asText());
+					.get("proposals").get(0).get("proposalId").asString());
 
 			mockMvc.perform(MockMvcRequestBuilders.delete("/v2/theses/{thesisId}/proposal/{proposalId}", thesisId, proposalId)
 							.header("Authorization", createRandomAdminAuthentication()))
@@ -611,7 +611,7 @@ class ThesisControllerTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 
 			UUID proposalId = UUID.fromString(objectMapper.readTree(response)
-					.get("proposals").get(0).get("proposalId").asText());
+					.get("proposals").get(0).get("proposalId").asString());
 
 			String studentAuth = createRandomAuthentication("student");
 			mockMvc.perform(MockMvcRequestBuilders.delete("/v2/theses/{thesisId}/proposal/{proposalId}", thesisId, proposalId)
@@ -663,7 +663,7 @@ class ThesisControllerTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 
 			UUID fileId = UUID.fromString(objectMapper.readTree(response)
-					.get("files").get(0).get("fileId").asText());
+					.get("files").get(0).get("fileId").asString());
 
 			mockMvc.perform(MockMvcRequestBuilders.get("/v2/theses/{thesisId}/files/{fileId}", thesisId, fileId)
 							.header("Authorization", createRandomAdminAuthentication()))
@@ -689,7 +689,7 @@ class ThesisControllerTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 
 			UUID fileId = UUID.fromString(objectMapper.readTree(response)
-					.get("files").get(0).get("fileId").asText());
+					.get("files").get(0).get("fileId").asString());
 
 			mockMvc.perform(MockMvcRequestBuilders.delete("/v2/theses/{thesisId}/files/{fileId}", thesisId, fileId)
 							.header("Authorization", createRandomAdminAuthentication()))
@@ -778,7 +778,7 @@ class ThesisControllerTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 
 			UUID presentationId = UUID.fromString(objectMapper.readTree(response)
-					.get("presentations").get(0).get("presentationId").asText());
+					.get("presentations").get(0).get("presentationId").asString());
 
 			ReplacePresentationPayload updatePayload = new ReplacePresentationPayload(
 					ThesisPresentationType.FINAL,
@@ -818,7 +818,7 @@ class ThesisControllerTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 
 			UUID presentationId = UUID.fromString(objectMapper.readTree(response)
-					.get("presentations").get(0).get("presentationId").asText());
+					.get("presentations").get(0).get("presentationId").asString());
 
 			mockMvc.perform(MockMvcRequestBuilders.delete("/v2/theses/{thesisId}/presentations/{presentationId}", thesisId, presentationId)
 							.header("Authorization", adminAuth))
@@ -846,7 +846,7 @@ class ThesisControllerTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 
 			UUID presentationId = UUID.fromString(objectMapper.readTree(response)
-					.get("presentations").get(0).get("presentationId").asText());
+					.get("presentations").get(0).get("presentationId").asString());
 
 			String studentAuth = createRandomAuthentication("student");
 			mockMvc.perform(MockMvcRequestBuilders.delete("/v2/theses/{thesisId}/presentations/{presentationId}", thesisId, presentationId)
@@ -870,7 +870,8 @@ class ThesisControllerTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 
 			JsonNode json = objectMapper.readTree(response);
-			assertThat(json.get("content").isArray()).isTrue();
+			assertThat(json.path("content").size()).isZero();
+			assertThat(json.get("totalElements").asInt()).isZero();
 		}
 
 		@Test
@@ -919,7 +920,7 @@ class ThesisControllerTest extends BaseIntegrationTest {
 					.andExpect(status().isOk())
 					.andReturn().getResponse().getContentAsString();
 
-			UUID commentId = UUID.fromString(objectMapper.readTree(response).get("commentId").asText());
+			UUID commentId = UUID.fromString(objectMapper.readTree(response).get("commentId").asString());
 
 			mockMvc.perform(MockMvcRequestBuilders.delete("/v2/theses/{thesisId}/comments/{commentId}", thesisId, commentId)
 							.header("Authorization", adminAuth))
@@ -947,7 +948,7 @@ class ThesisControllerTest extends BaseIntegrationTest {
 					.andExpect(status().isOk())
 					.andReturn().getResponse().getContentAsString();
 
-			UUID commentId = UUID.fromString(objectMapper.readTree(response).get("commentId").asText());
+			UUID commentId = UUID.fromString(objectMapper.readTree(response).get("commentId").asString());
 
 			String studentAuth = createRandomAuthentication("student");
 			mockMvc.perform(MockMvcRequestBuilders.delete("/v2/theses/{thesisId}/comments/{commentId}", thesisId, commentId)
@@ -981,7 +982,7 @@ class ThesisControllerTest extends BaseIntegrationTest {
 					.andExpect(status().isOk())
 					.andReturn().getResponse().getContentAsString();
 
-			UUID commentId = UUID.fromString(objectMapper.readTree(response).get("commentId").asText());
+			UUID commentId = UUID.fromString(objectMapper.readTree(response).get("commentId").asString());
 
 			mockMvc.perform(MockMvcRequestBuilders.get("/v2/theses/{thesisId}/comments/{commentId}/file", thesisId, commentId)
 							.header("Authorization", createRandomAdminAuthentication()))

@@ -1,7 +1,6 @@
-import { ButtonProps } from '@mantine/core/lib/components/Button/Button'
-import { Button, Modal } from '@mantine/core'
+import { Button, Modal, type ButtonProps } from '@mantine/core'
 import { PropsWithChildren, useState } from 'react'
-import AuthenticatedFilePreview from '../AuthenticatedFilePreview/AuthenticatedFilePreview'
+import { AuthenticatedFilePreview } from '../AuthenticatedFilePreview/AuthenticatedFilePreview'
 import { UploadFileType } from '../../config/types'
 import { getAdjustedFileType } from '../../utils/file'
 
@@ -13,7 +12,7 @@ interface IAuthenticatedFilePreviewButtonProps extends ButtonProps {
   allowDownload?: boolean
 }
 
-const AuthenticatedFilePreviewButton = (
+export const AuthenticatedFilePreviewButton = (
   props: PropsWithChildren<IAuthenticatedFilePreviewButtonProps>,
 ) => {
   const {
@@ -55,5 +54,3 @@ const AuthenticatedFilePreviewButton = (
     </Button>
   )
 }
-
-export default AuthenticatedFilePreviewButton

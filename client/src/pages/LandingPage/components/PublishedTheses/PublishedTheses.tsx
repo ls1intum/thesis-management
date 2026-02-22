@@ -10,7 +10,7 @@ import { DownloadSimple, Eye } from '@phosphor-icons/react'
 import ThesisData from '../../../../components/ThesisData/ThesisData'
 import AvatarUserList from '../../../../components/AvatarUserList/AvatarUserList'
 import { GLOBAL_CONFIG } from '../../../../config/global'
-import AuthenticatedFilePreview from '../../../../components/AuthenticatedFilePreview/AuthenticatedFilePreview'
+import { AuthenticatedFilePreview } from '../../../../components/AuthenticatedFilePreview/AuthenticatedFilePreview'
 import TopicCardGrid from '../TopicCardGrid/TopicCardGrid'
 import ThesisTypeBadge from '../ThesisTypBadge/ThesisTypBadge'
 

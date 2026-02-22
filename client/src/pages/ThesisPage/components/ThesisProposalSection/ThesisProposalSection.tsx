@@ -11,8 +11,8 @@ import { ApiError, getApiResponseErrorMessage } from '../../../../requests/handl
 import { formatThesisFilename } from '../../../../utils/format'
 import ThesisFeedbackRequestButton from '../ThesisFeedbackRequestButton/ThesisFeedbackRequestButton'
 import ThesisFeedbackOverview from '../ThesisFeedbackOverview/ThesisFeedbackOverview'
-import AuthenticatedFilePreview from '../../../../components/AuthenticatedFilePreview/AuthenticatedFilePreview'
-import UploadFileButton from '../../../../components/UploadFileButton/UploadFileButton'
+import { AuthenticatedFilePreview } from '../../../../components/AuthenticatedFilePreview/AuthenticatedFilePreview'
+import { UploadFileButton } from '../../../../components/UploadFileButton/UploadFileButton'
 import FileHistoryTable from '../FileHistoryTable/FileHistoryTable'
 import { checkMinimumThesisState, isThesisClosed } from '../../../../utils/thesis'
 
@@ -52,7 +52,8 @@ const ThesisProposalSection = () => {
     }
   }
 
-  const proposal = thesis.proposals[0]
+  const proposals = thesis.proposals ?? []
+  const proposal = proposals[0]
 
   if (!checkMinimumThesisState(thesis, ThesisState.PROPOSAL)) {
     return <></>
@@ -74,7 +75,7 @@ const ThesisProposalSection = () => {
                   thesis,
                   'Proposal',
                   proposal.filename,
-                  thesis.proposals.length,
+                  proposals.length,
                 )}
                 type='pdf'
                 aspectRatio={16 / 6}
@@ -109,18 +110,18 @@ const ThesisProposalSection = () => {
             />
             {access.student && (
               <FileHistoryTable
-                data={thesis.proposals.map((row, index) => ({
+                data={proposals.map((row, index) => ({
                   filename: formatThesisFilename(
                     thesis,
                     'Proposal',
                     row.filename,
-                    thesis.proposals.length - index,
+                    proposals.length - index,
                   ),
                   url: `/v2/theses/${thesis.thesisId}/proposal/${row.proposalId}`,
                   type: 'pdf',
                   uploadedBy: row.createdBy,
                   uploadedAt: row.createdAt,
-                  name: `Proposal v${thesis.proposals.length - index}`,
+                  name: `Proposal v${proposals.length - index}`,
                   onDelete:
                     access.advisor && !isThesisClosed(thesis)
                       ? async () => {

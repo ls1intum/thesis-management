@@ -44,11 +44,11 @@ const ThesisStudentInfoSection = () => {
   }
 
   const users = [
-    ...thesis.students.map((row) => ({
+    ...(thesis.students ?? []).map((row) => ({
       type: 'student',
       data: row,
     })),
-    ...thesis.advisors.map((row) => ({
+    ...(thesis.advisors ?? []).map((row) => ({
       type: 'advisor',
       data: row,
     })),

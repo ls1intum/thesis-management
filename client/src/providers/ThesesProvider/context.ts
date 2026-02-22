@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction } from 'react'
-import { IThesis, ThesisState } from '../../requests/responses/thesis'
+import { IThesisOverview, ThesisState } from '../../requests/responses/thesis'
 import { PaginationResponse } from '../../requests/responses/pagination'
 
 export interface IThesesFilters {
@@ -14,7 +14,7 @@ export interface IThesesSort {
 }
 
 export interface IThesesContext {
-  theses: PaginationResponse<IThesis> | undefined
+  theses: PaginationResponse<IThesisOverview> | undefined
   filters: IThesesFilters
   setFilters: Dispatch<SetStateAction<IThesesFilters>>
   sort: IThesesSort
@@ -22,7 +22,7 @@ export interface IThesesContext {
   page: number
   setPage: Dispatch<SetStateAction<number>>
   limit: number
-  updateThesis: (thesis: IThesis) => unknown
+  updateThesis: (thesis: IThesisOverview) => unknown
 }
 
 export const ThesesContext = React.createContext<IThesesContext | undefined>(undefined)

@@ -18,6 +18,7 @@ import de.tum.cit.aet.thesis.controller.payload.UpdateThesisPayload;
 import de.tum.cit.aet.thesis.dto.PaginationDto;
 import de.tum.cit.aet.thesis.dto.ThesisCommentDto;
 import de.tum.cit.aet.thesis.dto.ThesisDto;
+import de.tum.cit.aet.thesis.dto.ThesisOverviewDto;
 import de.tum.cit.aet.thesis.entity.Thesis;
 import de.tum.cit.aet.thesis.entity.ThesisComment;
 import de.tum.cit.aet.thesis.entity.ThesisFile;
@@ -101,7 +102,7 @@ public class ThesisController {
 	 * @return the paginated list of theses
 	 */
 	@GetMapping
-	public ResponseEntity<PaginationDto<ThesisDto>> getTheses(
+	public ResponseEntity<PaginationDto<ThesisOverviewDto>> getTheses(
 			@RequestParam(required = false) String search,
 			@RequestParam(required = false) ThesisState[] state,
 			@RequestParam(required = false) String[] type,
@@ -128,7 +129,7 @@ public class ThesisController {
 		);
 
 		return ResponseEntity.ok(PaginationDto.fromSpringPage(
-				theses.map(thesis -> ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)))
+				theses.map(ThesisOverviewDto::fromThesisEntity)
 		));
 	}
 
@@ -257,14 +258,14 @@ public class ThesisController {
 
 		thesis = thesisService.updateThesisInfo(
 				thesis,
-				RequestValidator.validateStringMaxLength(payload.abstractText(), StringLimits.UNLIMITED_TEXT.getLimit()),
-				RequestValidator.validateStringMaxLength(payload.infoText(), StringLimits.UNLIMITED_TEXT.getLimit())
+				RequestValidator.validateStringMaxLengthAllowNull(payload.abstractText(), StringLimits.UNLIMITED_TEXT.getLimit()),
+				RequestValidator.validateStringMaxLengthAllowNull(payload.infoText(), StringLimits.UNLIMITED_TEXT.getLimit())
 		);
 
 		thesis = thesisService.updateThesisTitles(
 				thesis,
-				RequestValidator.validateStringMaxLength(payload.primaryTitle(), StringLimits.THESIS_TITLE.getLimit()),
-				RequestValidator.validateNotNull(payload.secondaryTitles())
+				RequestValidator.validateStringMaxLengthAllowNull(payload.primaryTitle(), StringLimits.THESIS_TITLE.getLimit()),
+				payload.secondaryTitles()
 		);
 
 		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));

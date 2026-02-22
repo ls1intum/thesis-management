@@ -1,4 +1,4 @@
-import { PropsWithChildren, Suspense, useEffect, useState } from 'react'
+import { PropsWithChildren, Suspense, useEffect } from 'react'
 import {
   ActionIcon,
   AppShell,
@@ -36,7 +36,7 @@ import { useNavigationType } from 'react-router'
 import ScrollToTop from '../ScrollToTop/ScrollToTop'
 import PageLoader from '../../../components/PageLoader/PageLoader'
 import { useLocalStorage } from '../../../hooks/local-storage'
-import CustomAvatar from '../../../components/CustomAvatar/CustomAvatar'
+import { CustomAvatar } from '../../../components/CustomAvatar/CustomAvatar'
 import { formatUser } from '../../../utils/format'
 import ContentContainer from '../ContentContainer/ContentContainer'
 import Footer from '../../../components/Footer/Footer'
@@ -184,12 +184,12 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
           {links
             .filter(
               (item) =>
-                !item.groups || item.groups.some((role) => auth.user?.groups.includes(role)),
+                !item.groups || item.groups.some((role) => auth.user?.groups?.includes(role)),
             )
             .filter((item) => item.display == undefined || item.display === true)
             .filter((item) =>
               item.hideFromGroups
-                ? !item.hideFromGroups.some((role) => auth.user?.groups.includes(role))
+                ? !item.hideFromGroups.some((role) => auth.user?.groups?.includes(role))
                 : true,
             )
             .map((item) => (
@@ -241,7 +241,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
             )}
 
             <Group>
-              {user.groups.includes('group-admin') && (
+              {user.groups?.includes('group-admin') && (
                 <Link
                   to={`/research-groups/${user.researchGroupId}`}
                   className={minimized ? classes.minimizedLink : classes.fullLink}
@@ -288,7 +288,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
                 {auth.user ? (
                   <Suspense fallback={<PageLoader />}>
                     {!requiredGroups ||
-                    requiredGroups.some((role) => auth.user?.groups.includes(role)) ? (
+                    requiredGroups.some((role) => auth.user?.groups?.includes(role)) ? (
                       <ContentContainer size={size}>{children}</ContentContainer>
                     ) : (
                       <Center className={classes.fullHeight}>

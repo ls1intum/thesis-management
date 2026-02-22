@@ -8,8 +8,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
+          ref: ${{ github.head_ref || github.ref }}
           fetch-depth: 1
 
       # Set up Java for server tests
@@ -31,7 +32,7 @@ jobs:
           ./gradlew test jacocoTestReport
 
       - name: Upload Coverage Report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         if: always()
         with:
           name: coverage-report
@@ -39,7 +40,7 @@ jobs:
           retention-days: 14
 
       - name: Upload Test Results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         if: always()
         with:
           name: test-results

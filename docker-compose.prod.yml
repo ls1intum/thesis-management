@@ -74,8 +74,6 @@ services:
       - CALDAV_USERNAME
       - CALDAV_PASSWORD
       - SCIENTIFIC_WRITING_GUIDE
-      - GIT_COMMIT
-      - GIT_BRANCH
     networks:
       - thesis-management-network
 
@@ -116,11 +114,12 @@ services:
       - thesis-management-network
 
   db:
-    image: "postgres:17.7-alpine"
+    image: "postgres:18.2-alpine"
     container_name: thesis-management-db
     environment:
       - POSTGRES_USER=${SPRING_DATASOURCE_USERNAME}
       - POSTGRES_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+      - PGDATA=/var/lib/postgresql/data
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
     healthcheck:
