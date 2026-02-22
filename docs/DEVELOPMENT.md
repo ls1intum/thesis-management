@@ -186,6 +186,114 @@ npm run dev
 
 Client is served at http://localhost:3000. 
 
+## E2E Tests (Playwright)
+
+The project includes end-to-end tests using [Playwright](https://playwright.dev/) that verify the client application works correctly across all user roles. Tests run against the full dev stack (PostgreSQL, Keycloak, server with seed data, client).
+
+### Prerequisites
+
+The E2E tests require all dev services to be running:
+
+1. **PostgreSQL + Keycloak**: `docker compose up -d`
+2. **Server** (dev profile with seed data): `cd server && ./gradlew bootRun --args='--spring.profiles.active=dev'`
+3. **Client** (dev server): `cd client && npm run dev`
+4. **Install Playwright browsers** (first time only): `cd client && npx playwright install chromium`
+
+### Running E2E Tests
+
+#### One-command local run (recommended)
+
+The `execute-e2e-local.sh` script in the project root starts all required services automatically and runs the tests. It is idempotent — it detects already-running services and reuses them, so it can be executed repeatedly.
+
+```bash
+# Headless (default)
+./execute-e2e-local.sh
+
+# Interactive Playwright UI
+./execute-e2e-local.sh --ui
+
+# Headed browser (watch tests run)
+./execute-e2e-local.sh --headed
+
+# Stop all services started by the script
+./execute-e2e-local.sh --stop
+```
+
+#### Manual run (when services are already running)
+
+```bash
+cd client
+
+# Headless
+npm run e2e
+
+# Interactive Playwright UI
+npm run e2e:ui
+
+# Headed browser
+npm run e2e:headed
+```
+
+#### Run a single test file
+
+```bash
+cd client
+npx playwright test e2e/auth.spec.ts
+```
+
+### Test Structure
+
+Tests are located in `client/e2e/` and authenticate via the Keycloak login form using the seeded test users (password = username). Auth state is cached in `e2e/.auth/` and reused across tests.
+
+| File | Description |
+|------|-------------|
+| `auth.setup.ts` | Authenticates all 4 test users (student, advisor, supervisor, admin) via Keycloak and caches their session state |
+| `auth.spec.ts` | Keycloak redirect for unauthenticated users, role-based navigation item visibility for all 5 access levels |
+| `navigation.spec.ts` | Public page rendering (landing page, about, footer), sidebar navigation flow, route access per role |
+| `dashboard.spec.ts` | Dashboard sections per role (My Theses, My Applications) |
+| `topics.spec.ts` | Public topic browsing with search, filters, and list/grid toggle; supervisor management view; student apply button |
+| `applications.spec.ts` | Student application stepper form, pre-selected topic flow, advisor and supervisor review page access |
+| `theses.spec.ts` | Browse view per role, theses overview, thesis detail page sections, student viewing own thesis |
+| `interviews.spec.ts` | Supervisor interview overview and process detail, advisor access, student access denied |
+| `presentations.spec.ts` | Student and supervisor presentations page, public presentation detail access |
+| `settings.spec.ts` | My Information and Notification Settings tabs for student and advisor |
+| `research-groups.spec.ts` | Admin research group CRUD with search filtering, supervisor group access, student access denied |
+
+### Tested Roles
+
+Every major page is tested with appropriate roles to verify access control:
+
+- **Unauthenticated** — public pages are accessible, protected routes redirect to Keycloak login
+- **Student** — dashboard, submit application, browse theses, settings, presentations; cannot access management pages
+- **Advisor** — dashboard, review applications, manage topics, theses overview, interviews, settings
+- **Supervisor** — same as advisor (management view); additional thesis detail assertions
+- **Admin** — all pages including research groups management
+
+### Coverage
+
+The E2E tests focus on page accessibility, content rendering, and role-based access control. The table below summarizes what is currently covered and what is not.
+
+| Area | Covered | Not yet covered |
+|------|---------|-----------------|
+| **Authentication & RBAC** | Keycloak redirect, nav item visibility per role, access denied for unauthorized roles | Token refresh, session expiry, logout |
+| **Topics** | Public browsing, search, filters, list/grid toggle, management view, student apply button | Creating/editing/closing topics, draft topics |
+| **Applications** | Stepper form rendering, pre-selected topic, advisor/supervisor review page access | Submitting an application end-to-end, accepting/rejecting |
+| **Theses** | Browse per role, overview page, detail page sections (Configuration, Involved Persons), student own thesis | Creating theses, state transitions (proposal upload, submission, grading), file uploads, comments |
+| **Interviews** | Supervisor overview and process detail, advisor access, student denied | Creating interview processes, adding slots/interviewees, booking slots |
+| **Presentations** | Page access per role, public presentation detail | Scheduling presentations, calendar integration |
+| **Settings** | Tab rendering per role | Editing profile information, notification preferences |
+| **Research Groups** | Admin CRUD page, search filtering, student denied | Creating/editing groups, member management |
+| **Dashboard** | Section visibility per role (My Theses, My Applications) | Dashboard data accuracy, links to detail pages |
+| **Navigation** | Public pages, sidebar flow, header logo, footer links, unknown routes | Mobile/responsive layout, deep linking |
+
+**In summary:** The tests provide broad coverage of page rendering and access control across all roles. The main gap is end-to-end workflows involving data mutations (form submissions, state transitions, file uploads). These are good candidates for future test expansion.
+
+### CI Integration
+
+E2E tests run automatically in CI via the `e2e_tests.yml` reusable workflow, which is called from `dev.yml` on PRs and pushes to develop/main. The CI workflow spins up PostgreSQL and Keycloak as service containers, starts the server with the dev profile, builds and serves the client, and runs the Playwright tests.
+
+Test artifacts (screenshots, traces, videos) are uploaded on failure and available in the GitHub Actions artifacts.
+
 ## Postman Collection
 
 A ready-to-use Postman Collection is included: [`TUMApply API.postman_collection.json`](./Thesis%20Management%20API.postman_collection.json).

@@ -18,6 +18,44 @@ This file provides guidance for Claude Code when working with this repository.
 - **Lint**: `cd client && npx eslint src/`
 - **Type check**: `cd client && npx tsc --noEmit` (ignore mantine-datatable type errors — pre-existing)
 
+### Client E2E Tests (Playwright)
+
+E2E tests require the full dev stack running: PostgreSQL, Keycloak, server (dev profile), and client dev server.
+
+**Prerequisites** (start these first):
+1. `docker-compose up` (starts PostgreSQL + Keycloak + CalDAV)
+2. `cd server && ./gradlew bootRun --args='--spring.profiles.active=dev'` (starts server with seed data)
+3. `cd client && npm run dev` (starts client dev server on port 3000)
+
+**One-command local run** (starts all services automatically):
+- **Headless**: `./execute-e2e-local.sh`
+- **Interactive UI**: `./execute-e2e-local.sh --ui`
+- **Headed browser**: `./execute-e2e-local.sh --headed`
+- **Stop services**: `./execute-e2e-local.sh --stop`
+
+The script is idempotent — it reuses already-running services and can be executed repeatedly. Services stay running between invocations for fast re-runs.
+
+**Run tests only** (when services are already running manually):
+- **Headless**: `cd client && npm run e2e`
+- **Interactive UI**: `cd client && npm run e2e:ui`
+- **Headed browser**: `cd client && npm run e2e:headed`
+
+**Install browsers** (first time only): `cd client && npx playwright install chromium`
+
+Tests authenticate via the Keycloak login form using seeded test users (student/student, advisor/advisor, supervisor/supervisor, admin/admin). Auth state is cached in `e2e/.auth/` and reused across tests. Test files are in `client/e2e/`.
+
+**Test coverage** (50 tests across 11 files):
+- `auth.spec.ts` — Authentication & role-based nav visibility (5 roles: unauthenticated, student, advisor, supervisor, admin)
+- `navigation.spec.ts` — Public pages, sidebar navigation, route access per role
+- `dashboard.spec.ts` — Dashboard sections per role (My Theses, My Applications)
+- `topics.spec.ts` — Public topic browsing (search, filters, list/grid), management view, student apply
+- `applications.spec.ts` — Student stepper form, pre-selected topic, advisor/supervisor review access
+- `theses.spec.ts` — Browse view per role, overview, detail page sections, student own thesis
+- `interviews.spec.ts` — Supervisor overview/detail, advisor access, student denied
+- `presentations.spec.ts` — Student/supervisor access, public presentation detail
+- `settings.spec.ts` — My Information and Notification Settings tabs per role
+- `research-groups.spec.ts` — Admin CRUD, search filtering, supervisor access, student denied
+
 ## Architecture
 
 - **Server**: Spring Boot 3, Java 25, PostgreSQL, Keycloak for auth, Liquibase for migrations
@@ -51,7 +89,8 @@ The backend/Keycloak uses `supervisor` and `advisor` roles. In the UI these are 
 
 ## CI/CD
 
-- `dev.yml`: Triggers on PRs to develop/main and pushes to develop/main. Has concurrency control per PR.
+- `dev.yml`: Triggers on PRs to develop/main and pushes to develop/main. Has concurrency control per PR. Runs server tests, E2E tests, builds Docker images, and deploys.
 - `prod.yml`: Triggers on pushes to main only. Has concurrency control (no cancellation).
 - `build_docker.yml`: Separate jobs for server and client builds (not a matrix) to avoid output race conditions.
 - `deploy_docker.yml`: Deploys to VMs via SSH. Uses environment protection rules requiring approval.
+- `e2e_tests.yml`: Reusable workflow that spins up PostgreSQL + Keycloak, starts the server (dev profile with seed data) and client, then runs Playwright E2E tests.

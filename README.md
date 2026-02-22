@@ -163,7 +163,7 @@ Group heads have the Group Admin role for their group by default (this cannot be
 1. [Production Setup](docs/PRODUCTION.md)
 2. [Configuration](docs/CONFIGURATION.md)
 3. [Customizing E-Mails](docs/MAILS.md)
-4. [Development Setup](docs/DEVELOPMENT.md)
+4. [Development Setup](docs/DEVELOPMENT.md) (includes [E2E Tests](docs/DEVELOPMENT.md#e2e-tests-playwright))
 5. [Database Changes](docs/DATABASE.md)
 
 ## Features
