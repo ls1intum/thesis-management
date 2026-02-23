@@ -55,10 +55,23 @@ To address this, the application includes a time-based expiration mechanism that
 1. **Student transparency**: Without expiration, students whose applications are never reviewed would wait indefinitely without any response. The automatic rejection ensures they are notified and can reapply or look for alternatives.
 2. **Data minimization**: The expiration assigns a rejection date, which starts the 1-year retention clock and enables eventual data cleanup.
 
-## Implementation Status
+## Implementation TODO
 
-- [ ] Automatic deletion of rejected applications after 1 year (not yet implemented)
-- [ ] Automatic deletion/archival of thesis data after 5-year retention period (not yet implemented)
-- [ ] Automatic disabling of inactive accounts after 1 year of inactivity (not yet implemented)
-- [ ] Deletion of disabled user accounts after linked data retention periods expire (not yet implemented)
-- [ ] Reactivation of disabled accounts on login (not yet implemented)
+Prioritized by urgency and impact on GDPR compliance.
+
+### Priority 1 — High (address before next complaint)
+
+- [ ] **Configurable application email content**: Add a per-research-group setting to control whether application notification emails include attachments (CV, examination report) and personal details, or only contain the student name, topic, and a link to the application in the system. This addresses a data privacy concern raised by the Lehrstuhl für Mikro- und Nanosystemtechnik about the inability to retract personal data from already-sent emails. Research groups with strict privacy requirements can disable attachments; others can keep the current behavior.
+- [ ] **Automatic disabling of inactive accounts after 1 year of inactivity**: Required to fulfill the retention promise in the privacy statement. Without this, user data is retained indefinitely.
+- [ ] **Reactivation of disabled accounts on login**: Necessary counterpart to the above — disabled users who log in again should have their account re-enabled automatically.
+
+### Priority 2 — Medium (implement within next months)
+
+- [ ] **Automatic deletion of rejected applications after 1 year**: The privacy statement promises this retention period. Without enforcement, rejected application data accumulates indefinitely.
+- [ ] **Deletion of disabled user accounts after linked data retention periods expire**: Completes the account lifecycle — once all linked thesis/application data has been cleaned up, the account itself should be removed.
+
+### Priority 3 — Low (implement when capacity allows)
+
+- [ ] **Automatic deletion/archival of thesis data after 5-year retention period**: Important for long-term compliance, but the 5-year clock means this is not urgent for recently created data. Can be implemented once the higher-priority items are in place.
+- [ ] **Remove CalDAV push code from codebase**: CalDAV is disabled in production and has no benefit over ICS subscription feeds. Removing it simplifies the codebase.
+- [ ] **Remove ProfilePictureMigration after successful production deployment**: One-time migration task that should be deleted once it has run successfully.
