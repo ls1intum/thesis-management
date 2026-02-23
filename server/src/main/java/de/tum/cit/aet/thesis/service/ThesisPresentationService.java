@@ -190,6 +190,7 @@ public class ThesisPresentationService {
 		return calendar;
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis createPresentation(
 			Thesis thesis,
@@ -224,6 +225,7 @@ public class ThesisPresentationService {
 		return thesisRepository.save(thesis);
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis updatePresentation(
 			ThesisPresentation presentation,
@@ -254,6 +256,7 @@ public class ThesisPresentationService {
 		return thesis;
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis updatePresentationNote(ThesisPresentation presentation, String note) {
 		Thesis thesis = presentation.getThesis();
@@ -269,6 +272,7 @@ public class ThesisPresentationService {
 		return thesis;
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis schedulePresentation(
 			ThesisPresentation presentation,
@@ -341,6 +345,7 @@ public class ThesisPresentationService {
 		return thesis;
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis deletePresentation(ThesisPresentation presentation) {
 		Thesis thesis = presentation.getThesis();

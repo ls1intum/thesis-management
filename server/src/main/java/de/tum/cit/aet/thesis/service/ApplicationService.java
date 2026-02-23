@@ -171,6 +171,7 @@ public class ApplicationService {
 		return applicationRepository.findNotReviewedSuggestedByResearchGroup(researchGroupId);
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Application createApplication(User user, UUID researchGroupId, UUID topicId, String thesisTitle,
 										String thesisType, Instant desiredStartDate, String motivation) {
@@ -204,6 +205,7 @@ public class ApplicationService {
 		return application;
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Application updateApplication(Application application, UUID topicId, String thesisTitle, String thesisType, Instant desiredStartDate, String motivation) {
 		currentUserProvider().assertCanAccessResearchGroup(application.getResearchGroup());
@@ -218,6 +220,7 @@ public class ApplicationService {
 		return application;
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public List<Application> accept(
 			User reviewingUser,
@@ -271,6 +274,7 @@ public class ApplicationService {
 		return result;
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public List<Application> reject(User reviewingUser, Application application,
 			ApplicationRejectReason reason, boolean notifyUser, boolean authenticated) {
@@ -315,6 +319,7 @@ public class ApplicationService {
 		return result;
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public void rejectAllApplicationsAutomatically(Topic topic, int afterDuration, Instant referenceDate, UUID researchGroupId) {
 		List<Application> applications = applicationRepository.findAllByTopic(topic);
@@ -385,6 +390,7 @@ public class ApplicationService {
 		return result;
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public void rejectListOfApplicationsIfOlderThan(
 			List<Application> applications, int afterDuration, UUID researchGroupId) {
@@ -403,6 +409,7 @@ public class ApplicationService {
 		}
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Topic closeTopic(Topic topic, ApplicationRejectReason reason, boolean notifyUser) {
 		currentUserProvider().assertCanAccessResearchGroup(topic.getResearchGroup());
@@ -419,6 +426,7 @@ public class ApplicationService {
 		return topicRepository.save(topic);
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public List<Application> rejectApplicationsForTopic(User closer, Topic topic, ApplicationRejectReason reason, boolean notifyUser) {
 		currentUserProvider().assertCanAccessResearchGroup(topic.getResearchGroup());
@@ -436,6 +444,7 @@ public class ApplicationService {
 		return result;
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Application reviewApplication(Application application, User reviewer, ApplicationReviewReason reason) {
 		currentUserProvider().assertCanAccessResearchGroup(application.getResearchGroup());
@@ -443,6 +452,7 @@ public class ApplicationService {
 		return reviewApplicationWithoutAuth(application, reviewer, reason);
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Application reviewApplicationWithoutAuth(Application application, User reviewer, ApplicationReviewReason reason) {
 		ApplicationReviewer entity = application.getReviewer(reviewer).orElseGet(() -> {
@@ -476,6 +486,7 @@ public class ApplicationService {
 		return applicationRepository.save(application);
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Application updateComment(Application application, String comment) {
 		currentUserProvider().assertCanAccessResearchGroup(application.getResearchGroup());
@@ -507,6 +518,7 @@ public class ApplicationService {
 		return application;
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public void deleteApplication(UUID applicationId) {
 		findById(applicationId);

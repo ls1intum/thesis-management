@@ -83,6 +83,7 @@ public class DataExportService {
 		}
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public DataExport requestDataExport(User user) {
 		RequestStatus status = canRequestDataExport(user);
@@ -135,6 +136,7 @@ public class DataExportService {
 				.orElseThrow(() -> new ResourceNotFoundException("Data export not found"));
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Resource downloadDataExport(DataExport export, User user) {
 		if (!export.getUser().getId().equals(user.getId()) && !user.hasAnyGroup("admin")) {

@@ -193,6 +193,7 @@ public class ThesisService {
 		);
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis createThesis(
 			String thesisTitle,
@@ -242,6 +243,7 @@ public class ThesisService {
 		return thesis;
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis closeThesis(Thesis thesis) {
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
@@ -265,6 +267,7 @@ public class ThesisService {
 		return thesis;
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis updateThesis(
 			Thesis thesis,
@@ -309,6 +312,7 @@ public class ThesisService {
 		return thesis;
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis updateThesisInfo(
 			Thesis thesis,
@@ -324,6 +328,7 @@ public class ThesisService {
 		return thesis;
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis updateThesisTitles(
 			Thesis thesis,
@@ -346,6 +351,7 @@ public class ThesisService {
 		return thesis;
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis updateThesisCredits(
 			Thesis thesis,
@@ -381,6 +387,7 @@ public class ThesisService {
 		return thesis;
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis deleteFeedback(Thesis thesis, UUID feedbackId) {
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
@@ -396,6 +403,7 @@ public class ThesisService {
 		return thesis;
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis requestChanges(Thesis thesis, ThesisFeedbackType type, List<RequestChangesPayload.RequestedChange> requestedChanges) {
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
@@ -435,6 +443,7 @@ public class ThesisService {
 		return uploadService.load(proposal.getProposalFilename());
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis uploadProposal(Thesis thesis, MultipartFile proposalFile) {
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
@@ -457,6 +466,7 @@ public class ThesisService {
 		return thesisRepository.save(thesis);
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis deleteProposal(Thesis thesis, UUID proposalId) {
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
@@ -472,6 +482,7 @@ public class ThesisService {
 		return thesis;
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis acceptProposal(Thesis thesis) {
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
@@ -499,6 +510,7 @@ public class ThesisService {
 
 	/* WRITING */
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis submitThesis(Thesis thesis) {
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
@@ -515,6 +527,7 @@ public class ThesisService {
 		return thesisRepository.save(thesis);
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis uploadThesisFile(Thesis thesis, String type, MultipartFile file) {
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
@@ -533,6 +546,7 @@ public class ThesisService {
 		return thesisRepository.save(thesis);
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis deleteThesisFile(Thesis thesis, UUID fileId) {
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
@@ -562,6 +576,7 @@ public class ThesisService {
 	}
 
 	/* ASSESSMENT */
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis submitAssessment(
 			Thesis thesis,
@@ -643,6 +658,7 @@ public class ThesisService {
 	}
 
 	/* GRADING */
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis gradeThesis(Thesis thesis, String finalGrade, String finalFeedback, ThesisVisibility visibility) {
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
@@ -658,6 +674,7 @@ public class ThesisService {
 		return thesisRepository.save(thesis);
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis completeThesis(Thesis thesis) {
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
