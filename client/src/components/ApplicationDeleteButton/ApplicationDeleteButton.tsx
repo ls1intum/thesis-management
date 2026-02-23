@@ -46,13 +46,16 @@ const ApplicationDeleteButton = (props: IApplicationDeleteButtonProps) => {
   }
 
   return (
-    <Button
-      {...buttonProps}
-      variant='outline'
-      loading={loading}
-      color='red'
-      onClick={() => setConfirmationModal(true)}
-    >
+    <>
+      <Button
+        {...buttonProps}
+        variant='outline'
+        loading={loading}
+        color='red'
+        onClick={() => setConfirmationModal(true)}
+      >
+        {buttonProps.children ?? 'Delete'}
+      </Button>
       <Modal
         title='Delete Application'
         opened={confirmationModal}
@@ -70,8 +73,7 @@ const ApplicationDeleteButton = (props: IApplicationDeleteButtonProps) => {
           </Button>
         </Stack>
       </Modal>
-      {buttonProps.children ?? 'Delete'}
-    </Button>
+    </>
   )
 }
 

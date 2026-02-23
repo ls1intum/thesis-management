@@ -9,6 +9,7 @@ import de.tum.cit.aet.thesis.entity.NotificationSetting;
 import de.tum.cit.aet.thesis.entity.User;
 import de.tum.cit.aet.thesis.repository.UserRepository;
 import de.tum.cit.aet.thesis.service.AuthenticationService;
+import de.tum.cit.aet.thesis.service.GravatarService;
 import de.tum.cit.aet.thesis.service.UploadService;
 import de.tum.cit.aet.thesis.utility.RequestValidator;
 import lombok.extern.slf4j.Slf4j;
@@ -25,31 +26,25 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.InputStream;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.security.MessageDigest;
-import java.time.Duration;
 import java.util.List;
+import java.util.Optional;
 
 /** REST controller for managing the authenticated user's profile and notification settings. */
 @Slf4j
 @RestController
 @RequestMapping("/v2/user-info")
 public class UserInfoController {
-	private static final String AVATAR_LOOKUP_URL = "https://www.gravatar.com/avatar/";
-
 	private final AuthenticationService authenticationService;
 	private final UserRepository userRepository;
 	private final UploadService uploadService;
+	private final GravatarService gravatarService;
 
 	@Autowired
-	public UserInfoController(AuthenticationService authenticationService, UserRepository userRepository, UploadService uploadService) {
+	public UserInfoController(AuthenticationService authenticationService, UserRepository userRepository, UploadService uploadService, GravatarService gravatarService) {
 		this.authenticationService = authenticationService;
 		this.userRepository = userRepository;
 		this.uploadService = uploadService;
+		this.gravatarService = gravatarService;
 	}
 
 	/**
@@ -168,51 +163,15 @@ public class UserInfoController {
 			return ResponseEntity.badRequest().build();
 		}
 
-		try {
-			String hash = sha256Hex(email.trim().toLowerCase());
-			String lookupUrl = AVATAR_LOOKUP_URL + hash + "?s=400&d=404";
-
-			HttpClient httpClient = HttpClient.newBuilder()
-					.connectTimeout(Duration.ofSeconds(10))
-					.followRedirects(HttpClient.Redirect.NORMAL)
-					.build();
-
-			HttpRequest request = HttpRequest.newBuilder()
-					.uri(URI.create(lookupUrl))
-					.timeout(Duration.ofSeconds(10))
-					.GET()
-					.build();
-
-			HttpResponse<InputStream> response = httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
-
-			if (response.statusCode() != 200) {
-				return ResponseEntity.notFound().build();
-			}
-
-			byte[] imageBytes = response.body().readAllBytes();
-			String storedFilename = uploadService.storeBytes(imageBytes, "png", 1024 * 1024);
-			user.setAvatar(storedFilename);
-
-			user = userRepository.save(user);
-
-			return ResponseEntity.ok(UserDto.fromUserEntity(user));
-		} catch (Exception e) {
-			log.warn("Failed to import profile picture for user {}", user.getId(), e);
-			return ResponseEntity.internalServerError().build();
+		Optional<byte[]> imageBytes = gravatarService.fetchProfilePicture(email);
+		if (imageBytes.isEmpty()) {
+			return ResponseEntity.notFound().build();
 		}
-	}
 
-	private String sha256Hex(String input) {
-		try {
-			MessageDigest digest = MessageDigest.getInstance("SHA-256");
-			byte[] hashBytes = digest.digest(input.getBytes());
-			StringBuilder sb = new StringBuilder();
-			for (byte b : hashBytes) {
-				sb.append(String.format("%02x", b));
-			}
-			return sb.toString();
-		} catch (Exception e) {
-			throw new RuntimeException("SHA-256 not available", e);
-		}
+		String storedFilename = uploadService.storeBytes(imageBytes.get(), "png", 1024 * 1024);
+		user.setAvatar(storedFilename);
+		user = userRepository.save(user);
+
+		return ResponseEntity.ok(UserDto.fromUserEntity(user));
 	}
 }

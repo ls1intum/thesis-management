@@ -151,7 +151,12 @@ public class DataExportService {
 			throw new ResourceNotFoundException("Export file not found");
 		}
 
-		FileSystemResource resource = new FileSystemResource(export.getFilePath());
+		Path resolvedPath = Path.of(export.getFilePath()).normalize();
+		if (!resolvedPath.startsWith(exportPath.normalize())) {
+			throw new ResourceNotFoundException("Export file not found");
+		}
+
+		FileSystemResource resource = new FileSystemResource(resolvedPath);
 		if (!resource.exists()) {
 			throw new ResourceNotFoundException("Export file not found on disk");
 		}
@@ -187,6 +192,29 @@ public class DataExportService {
 		String filename = String.format("export_%s_%d.zip", user.getId(), System.currentTimeMillis());
 		Path zipPath = exportPath.resolve(filename);
 
+		try {
+			writeZipFile(zipPath, user);
+		} catch (IOException e) {
+			// Clean up partial ZIP file on failure
+			Files.deleteIfExists(zipPath);
+			throw e;
+		}
+
+		export.setFilePath(zipPath.toString());
+		export.setCreationFinishedAt(Instant.now());
+
+		try {
+			mailingService.sendDataExportReadyEmail(user, export);
+			export.setState(DataExportState.EMAIL_SENT);
+		} catch (Exception e) {
+			log.warn("Failed to send data export email for export {}: {}", export.getId(), e.getMessage());
+			export.setState(DataExportState.EMAIL_FAILED);
+		}
+
+		dataExportRepository.save(export);
+	}
+
+	private void writeZipFile(Path zipPath, User user) throws IOException {
 		try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipPath.toFile()))) {
 			// user.json
 			zos.putNextEntry(new ZipEntry("user.json"));
@@ -213,19 +241,6 @@ public class DataExportService {
 			addUserFile(zos, user.getDegreeFilename(), "files/degree_report");
 			addUserFile(zos, user.getExaminationFilename(), "files/examination_report");
 		}
-
-		export.setFilePath(zipPath.toString());
-		export.setCreationFinishedAt(Instant.now());
-
-		try {
-			mailingService.sendDataExportReadyEmail(user, export);
-			export.setState(DataExportState.EMAIL_SENT);
-		} catch (Exception e) {
-			log.warn("Failed to send data export email for export {}: {}", export.getId(), e.getMessage());
-			export.setState(DataExportState.EMAIL_FAILED);
-		}
-
-		dataExportRepository.save(export);
 	}
 
 	public void deleteExpiredExports() {

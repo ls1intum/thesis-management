@@ -14,7 +14,7 @@ public record DataExportDto(
 		Instant createdAt,
 		Instant creationFinishedAt,
 		Instant downloadedAt,
-		boolean canRequest,
+		Boolean canRequest,
 		Instant nextRequestDate
 ) {
 	public static DataExportDto fromEntity(DataExport entity, boolean canRequest, Instant nextRequestDate) {
