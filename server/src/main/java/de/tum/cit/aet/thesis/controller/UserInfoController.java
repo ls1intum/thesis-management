@@ -7,7 +7,9 @@ import de.tum.cit.aet.thesis.dto.NotificationSettingDto;
 import de.tum.cit.aet.thesis.dto.UserDto;
 import de.tum.cit.aet.thesis.entity.NotificationSetting;
 import de.tum.cit.aet.thesis.entity.User;
+import de.tum.cit.aet.thesis.repository.UserRepository;
 import de.tum.cit.aet.thesis.service.AuthenticationService;
+import de.tum.cit.aet.thesis.service.UploadService;
 import de.tum.cit.aet.thesis.utility.RequestValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +25,13 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.security.MessageDigest;
+import java.time.Duration;
 import java.util.List;
 
 /** REST controller for managing the authenticated user's profile and notification settings. */
@@ -29,16 +39,17 @@ import java.util.List;
 @RestController
 @RequestMapping("/v2/user-info")
 public class UserInfoController {
-	private final AuthenticationService authenticationService;
+	private static final String AVATAR_LOOKUP_URL = "https://www.gravatar.com/avatar/";
 
-	/**
-	 * Injects the authentication service.
-	 *
-	 * @param authenticationService the authentication service
-	 */
+	private final AuthenticationService authenticationService;
+	private final UserRepository userRepository;
+	private final UploadService uploadService;
+
 	@Autowired
-	public UserInfoController(AuthenticationService authenticationService) {
+	public UserInfoController(AuthenticationService authenticationService, UserRepository userRepository, UploadService uploadService) {
 		this.authenticationService = authenticationService;
+		this.userRepository = userRepository;
+		this.uploadService = uploadService;
 	}
 
 	/**
@@ -139,5 +150,69 @@ public class UserInfoController {
 		return ResponseEntity.ok(
 				settings.stream().map(NotificationSettingDto::fromNotificationSettingEntity).toList()
 		);
+	}
+
+	/**
+	 * Imports the authenticated user's profile picture from an external avatar service.
+	 * The request is made server-side so that the user's IP address is not exposed to the external service.
+	 *
+	 * @param jwt the JWT authentication token
+	 * @return the updated user profile information
+	 */
+	@PostMapping("/import-profile-picture")
+	public ResponseEntity<UserDto> importProfilePicture(JwtAuthenticationToken jwt) {
+		User user = this.authenticationService.getAuthenticatedUser(jwt);
+
+		String email = user.getEmail() != null ? user.getEmail().getAddress() : null;
+		if (email == null || email.isBlank()) {
+			return ResponseEntity.badRequest().build();
+		}
+
+		try {
+			String hash = sha256Hex(email.trim().toLowerCase());
+			String lookupUrl = AVATAR_LOOKUP_URL + hash + "?s=400&d=404";
+
+			HttpClient httpClient = HttpClient.newBuilder()
+					.connectTimeout(Duration.ofSeconds(10))
+					.followRedirects(HttpClient.Redirect.NORMAL)
+					.build();
+
+			HttpRequest request = HttpRequest.newBuilder()
+					.uri(URI.create(lookupUrl))
+					.timeout(Duration.ofSeconds(10))
+					.GET()
+					.build();
+
+			HttpResponse<InputStream> response = httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
+
+			if (response.statusCode() != 200) {
+				return ResponseEntity.notFound().build();
+			}
+
+			byte[] imageBytes = response.body().readAllBytes();
+			String storedFilename = uploadService.storeBytes(imageBytes, "png", 1024 * 1024);
+			user.setAvatar(storedFilename);
+
+			user = userRepository.save(user);
+
+			return ResponseEntity.ok(UserDto.fromUserEntity(user));
+		} catch (Exception e) {
+			log.warn("Failed to import profile picture for user {}", user.getId(), e);
+			return ResponseEntity.internalServerError().build();
+		}
+	}
+
+	private String sha256Hex(String input) {
+		try {
+			MessageDigest digest = MessageDigest.getInstance("SHA-256");
+			byte[] hashBytes = digest.digest(input.getBytes());
+			StringBuilder sb = new StringBuilder();
+			for (byte b : hashBytes) {
+				sb.append(String.format("%02x", b));
+			}
+			return sb.toString();
+		} catch (Exception e) {
+			throw new RuntimeException("SHA-256 not available", e);
+		}
 	}
 }

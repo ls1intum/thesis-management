@@ -9,6 +9,7 @@ export interface IAuthenticationContext {
   isAuthenticated: boolean
   user: IUser | undefined
   groups: string[]
+  updateUser: (user: IUser) => void
   updateInformation: (
     data: PartialNull<IUpdateUserInformationPayload>,
     avatar: File | undefined,

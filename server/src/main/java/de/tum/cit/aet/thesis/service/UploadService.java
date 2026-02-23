@@ -121,6 +121,36 @@ public class UploadService {
 		}
 	}
 
+	/**
+	 * Stores raw bytes as a file with the given extension, returning the content-hashed filename.
+	 *
+	 * @param bytes the file content
+	 * @param extension the file extension (e.g. "png")
+	 * @param maxSize the maximum allowed size in bytes
+	 * @return the content-hashed filename
+	 */
+	public String storeBytes(byte[] bytes, String extension, int maxSize) {
+		try {
+			if (bytes == null || bytes.length == 0) {
+				throw new UploadException("Failed to store empty file");
+			}
+
+			if (bytes.length > maxSize) {
+				throw new UploadException("File size exceeds the maximum allowed size");
+			}
+
+			MessageDigest digest = MessageDigest.getInstance("SHA-256");
+			byte[] hashBytes = digest.digest(bytes);
+			String hash = HexFormat.of().formatHex(hashBytes);
+			String filename = hash + "." + extension;
+
+			Files.write(rootLocation.resolve(filename), bytes);
+			return filename;
+		} catch (IOException | NoSuchAlgorithmException e) {
+			throw new UploadException("Failed to store file", e);
+		}
+	}
+
 	private String computeFileHash(MultipartFile file) throws IOException, NoSuchAlgorithmException {
 		MessageDigest digest = MessageDigest.getInstance("SHA-256");
 		try (InputStream inputStream = file.getInputStream()) {

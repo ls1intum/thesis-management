@@ -51,6 +51,9 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 	@Query("SELECT u.id FROM User u WHERE u.matriculationNumber IS NULL")
 	List<UUID> findIdsWithoutMatriculationNumber();
 
+	@Query("SELECT u FROM User u WHERE u.avatar IS NULL OR u.avatar = ''")
+	List<User> findAllByAvatarIsNullOrAvatarIsEmpty();
+
 	@Query("""
 				SELECT DISTINCT u FROM User u
 				WHERE u.id IN (

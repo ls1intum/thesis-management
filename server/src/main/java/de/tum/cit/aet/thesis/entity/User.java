@@ -20,8 +20,6 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -130,25 +128,7 @@ public class User {
 			return avatar;
 		}
 
-		if (email == null) {
-			return null;
-		}
-
-		try {
-			MessageDigest md = MessageDigest.getInstance("MD5");
-
-			byte[] hashInBytes = md.digest(email.trim().toLowerCase().getBytes());
-
-			StringBuilder sb = new StringBuilder();
-
-			for (byte b : hashInBytes) {
-				sb.append(String.format("%02x", b));
-			}
-
-			return "https://www.gravatar.com/avatar/" + sb + "?s=400";
-		} catch (NoSuchAlgorithmException e) {
-			return null;
-		}
+		return null;
 	}
 
 	public boolean hasNoGroup() {
