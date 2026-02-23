@@ -61,14 +61,13 @@ Prioritized by urgency and impact on GDPR compliance.
 
 ### Priority 1 — High (address quickly)
 
-- [ ] **Data export endpoint**: Add a GDPR data export feature (Art. 20 data portability) that lets users download all their personal data in a structured format (e.g. JSON/ZIP with profile data and uploaded files). This is a concrete right users can exercise today — if someone requests their data and we cannot provide it, that is an immediate compliance gap.
 - [ ] **Automatic deletion of rejected applications after 1 year**: The privacy statement promises this retention period. Without enforcement, rejected application data accumulates indefinitely, creating a documented discrepancy between the privacy statement and actual behavior.
 - [ ] **Account/data deletion endpoint**: There is currently no way for users to delete their account or data. Add a self-service account deletion feature or at minimum an admin endpoint to fully delete a user's data (Art. 17 right to erasure). Must respect the retention periods defined above (e.g. thesis data cannot be deleted before the 5-year period expires).
-
-- [ ] **Configurable application email content**: Add a per-research-group setting to control whether application notification emails include attachments (CV, examination report) and personal details, or only contain the student name, topic, and a link to the application in the system. This addresses an active data privacy concern raised by the Lehrstuhl für Mikro- und Nanosystemtechnik about the inability to retract personal data from already-sent emails. Responding promptly demonstrates good faith; ignoring it risks escalation to the DPO or BayLfD.
+- [ ] **Configurable application email content**: Add a per-research-group setting to control whether application notification emails include attachments (CV, examination report) and personal details, or only contain the student name, topic, and a link to the application in the system. This addresses a user request. Responding promptly demonstrates good faith.
 
 ### Priority 2 — Medium (implement within next months)
 
+- [ ] **Data export endpoint**: Add a GDPR data export feature (Art. 20 data portability) that lets users download all their personal data in a structured format (e.g. JSON/ZIP with profile data and uploaded files). Currently handled manually on request, but a self-service feature would reduce administrative effort and improve response time.
 - [ ] **Automatic disabling of inactive accounts after 1 year of inactivity**: Required to fulfill the retention promise in the privacy statement. Without this, user data is retained indefinitely.
 - [ ] **Reactivation of disabled accounts on login**: Necessary counterpart to the above — disabled users who log in again should have their account re-enabled automatically.
 - [ ] **Deletion of disabled user accounts after linked data retention periods expire**: Completes the account lifecycle — once all linked thesis/application data has been cleaned up, the account itself should be removed.
