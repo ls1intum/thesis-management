@@ -1,68 +1,207 @@
 <p>The Research Group for Applied Education Technologies (referred to as AET in the following paragraphs) from the
-  Technical University of Munich takes the protection of private data seriously. We process the automatically collected
-  personal data obtained when you visit our website, in compliance with the applicable data protection regulations, in
-  particular the Bavarian Data Protection (BayDSG), the Telemedia Act (TMG) and the General Data Protection Regulation
-  (GDPR). Below, we inform you about the type, scope and purpose of the collection and use of personal data.</p>
-<h2 id=logging>Logging</h2>
-<p>The web servers of the AET are operated by the AET itself, based in Boltzmannstr. 3, 85748 Garching b. Munich. Every
-  time our website is accessed, the web server temporarily processes the following information in log files:</p>
+  Technical University of Munich takes the protection of private data seriously. We process personal data collected
+  when you visit and use our application, in compliance with the applicable data protection regulations, in particular
+  the Bavarian Data Protection Act (BayDSG), the Telecommunications Digital Services Data Protection Act (TDDDG) and
+  the General Data Protection Regulation (GDPR). Below, we inform you about the type, scope and purpose of the
+  collection and use of personal data.</p>
+
+<h2 id="controller">Controller</h2>
+<p>The controller responsible for data processing within the meaning of the GDPR is:</p>
+<p>
+  Technical University of Munich<br>
+  Research Group for Applied Education Technologies (AET)<br>
+  Boltzmannstr. 3<br>
+  85748 Garching b. Munich<br>
+  Email: <a href="mailto:ls1.admin@in.tum.de">ls1.admin@in.tum.de</a>
+</p>
+
+<h2 id="dpo">Data Protection Officer</h2>
+<p>The Data Protection Officer of the Technical University of Munich can be reached at:</p>
+<p>
+  The Data Protection Officer of the Technical University of Munich<br>
+  Postal address: Arcisstr. 21, 80333 Munich<br>
+  Email: <a href="mailto:beauftragter@datenschutz.tum.de">beauftragter@datenschutz.tum.de</a><br>
+  Further information: <a href="https://www.datenschutz.tum.de" rel="noopener" target="_blank">https://www.datenschutz.tum.de</a>
+</p>
+
+<h2 id="account-data">User account and profile data</h2>
+<p>When you log in to this application via your university account (Single Sign-On via Keycloak), the following personal
+  data is automatically retrieved from your university identity provider and stored:</p>
+<ul>
+  <li>First name and last name</li>
+  <li>Email address</li>
+  <li>University ID (username)</li>
+  <li>Matriculation number (if available)</li>
+  <li>University role assignments (student, supervisor, advisor, administrator)</li>
+</ul>
+<p>In addition, you may voluntarily provide the following information in your user profile:</p>
+<ul>
+  <li>Gender</li>
+  <li>Nationality</li>
+  <li>Study degree and study program</li>
+  <li>Enrollment semester</li>
+  <li>Interests, projects, and special skills (free text)</li>
+  <li>Additional configurable fields as required by your research group</li>
+</ul>
+<p><strong>Legal basis:</strong> Processing of authentication data is necessary for the performance of the university's
+  public task of organizing and assessing theses (Art. 6(1)(e) GDPR in conjunction with Art. 4(1) BayDSG). Processing
+  of voluntarily provided profile data is based on your consent (Art. 6(1)(a) GDPR).</p>
+
+<h2 id="uploaded-documents">Uploaded documents</h2>
+<p>As part of the thesis application process, you may upload the following documents:</p>
+<ul>
+  <li>Curriculum vitae (CV)</li>
+  <li>Examination report</li>
+  <li>Degree report (for Master's students)</li>
+  <li>Profile picture (avatar)</li>
+</ul>
+<p>During the thesis process, additional documents may be uploaded, such as thesis proposals, final thesis submissions,
+  and supporting files. These documents are stored on the application server and are accessible only to authorized
+  personnel (supervisors, advisors, and administrators of the relevant research group).</p>
+<p><strong>Legal basis:</strong> Consent (Art. 6(1)(a) GDPR) and performance of the university's public task
+  (Art. 6(1)(e) GDPR).</p>
+
+<h2 id="thesis-data">Thesis and application data</h2>
+<p>When you apply for or work on a thesis, the following data is processed:</p>
+<ul>
+  <li>Thesis application details (motivation text, desired start date, preferred thesis topic)</li>
+  <li>Thesis metadata (title, type, abstract, keywords, language)</li>
+  <li>Assessment and grading data (feedback, grade suggestions, final grade)</li>
+  <li>Comments and communication within the thesis process</li>
+  <li>Presentation details (date, time, location, stream link)</li>
+  <li>Interview scheduling data (time slots, location, stream link)</li>
+</ul>
+<p><strong>Legal basis:</strong> Performance of the university's public task of organizing and assessing theses
+  (Art. 6(1)(e) GDPR).</p>
+
+<h2 id="email-notifications">Email notifications</h2>
+<p>The application sends automated email notifications related to the thesis process, including:</p>
+<ul>
+  <li>Application status updates (submission confirmation, acceptance, rejection)</li>
+  <li>Interview invitations and scheduling confirmations</li>
+  <li>Thesis proposal and submission notifications</li>
+  <li>Presentation scheduling notifications</li>
+  <li>Comment notifications</li>
+  <li>Final grade notifications</li>
+</ul>
+<p>These emails may contain personal data such as your name, thesis title, and relevant process details. The research
+  group head receives a copy (BCC) of application acceptance, rejection, and thesis lifecycle emails. Additionally,
+  research groups may configure an additional notification email address that receives a copy of every new application
+  (including attached documents such as CV and examination reports). You can configure your notification preferences in
+  the application settings.</p>
+<p><strong>Legal basis:</strong> Performance of the university's public task (Art. 6(1)(e) GDPR) and legitimate interest
+  in ensuring efficient communication (Art. 6(1)(f) GDPR).</p>
+
+<h2 id="calendar-feeds">Calendar subscription feeds</h2>
+<p>The application provides calendar subscription feeds (ICS format) that authorized users can subscribe to in their
+  calendar applications (e.g. Outlook, Google Calendar, Apple Calendar). These feeds contain:</p>
+<ul>
+  <li><strong>Presentation calendar:</strong> Thesis titles, presentation dates, locations or stream links, and names
+    of participants for public thesis presentations.</li>
+  <li><strong>Interview calendar:</strong> Interview time slots, locations or stream links, and topic titles for
+    individual users.</li>
+</ul>
+<p><strong>Legal basis:</strong> Legitimate interest in efficient scheduling and organization (Art. 6(1)(f) GDPR).</p>
+
+<h2 id="authentication">Authentication and session data</h2>
+<p>Authentication is handled through Keycloak (Single Sign-On) using your university credentials. The application does
+  not store your password. Authentication tokens (JWT) are stored in your browser's local storage for the duration of
+  your session. The following data is stored in your browser:</p>
+<ul>
+  <li>Authentication tokens (in localStorage, cleared on logout)</li>
+  <li>Privacy consent status (in localStorage)</li>
+  <li>User interface preferences (in localStorage)</li>
+</ul>
+<p><strong>Legal basis:</strong> These are technically necessary for the operation of the application (Art. 6(1)(e) GDPR
+  and Section 25(2) TDDDG).</p>
+
+<h2 id="logging">Server logging</h2>
+<p>The web servers are operated by the AET. Every time the application is accessed, the web server temporarily processes
+  the following information in log files:</p>
 <ul>
   <li>IP address of the requesting computer</li>
   <li>Date and time of access</li>
-  <li>Name, URL and transferred data volume of the accessed file</li>
-  <li>Access status (requested file transferred, not found etc.)</li>
+  <li>Name, URL, and transferred data volume of the accessed resource</li>
+  <li>Access status (requested resource transferred, not found, etc.)</li>
   <li>Identification data of the browser and operating system used (if transmitted by the requesting web browser)</li>
   <li>Website from which access was made (if transmitted by the requesting web browser)</li>
 </ul>
-<p>The processing of the data in this log file takes place as follows:</p>
+<p>The log entries can be continuously and automatically evaluated in order to detect attacks on the web servers and
+  react accordingly. In individual cases, i.e. in the event of reported malfunctions, errors and security incidents,
+  a manual analysis may be carried out. Log files are automatically deleted after 90 days.</p>
+<p><strong>Legal basis:</strong> Legitimate interest in ensuring the security and stability of the application
+  (Art. 6(1)(f) GDPR).</p>
+
+<h2 id="data-retention">Data retention</h2>
+<p>Personal data is stored for the duration necessary to fulfill the purposes described above:</p>
 <ul>
-  <li>The log entries are continuously updated automatically evaluated in order to be able to detect attacks on the web
-    server and react accordingly.
-  </li>
-  <li>In individual cases, i.e. in the case of reported disruptions, errors and security incidents, a manual analysis is
-    carried out.
-  </li>
-  <li>The IP addresses contained in the log entries are not merged with other databases by AET, so that no conclusions
-    can be drawn about individual persons.
-  </li>
+  <li><strong>User account data:</strong> Accounts that have been inactive for more than one year are automatically
+    disabled. Disabled accounts and their associated profile data are deleted after the applicable retention period for
+    any linked thesis or application data has expired. If you log in again before deletion, your account is
+    reactivated.</li>
+  <li><strong>Thesis data and accepted applications:</strong> Thesis data, including assessment and grading records and
+    the associated application, is retained for 5 years after the end of the calendar year in which the final thesis
+    grade was issued, in accordance with university examination regulations.</li>
+  <li><strong>Rejected application data:</strong> Applications that are not accepted are retained for 1 year after
+    rejection to allow for inquiries and reapplications, after which they are deleted.</li>
+  <li><strong>Uploaded documents:</strong> Retained for the same period as the associated thesis or application data.</li>
+  <li><strong>Server log files:</strong> Automatically deleted after 90 days.</li>
 </ul>
-<h2 id=use-and-transfer-of-personal-data>Use and transfer of personal data</h2>
-<p>Our website can be used without providing personal data. All services that might require any form of personal data
-  (e.g. registration for events, contact forms) are offered on external sites, linked here. The use of contact data
-  published as part of the imprint obligation by third parties to send unsolicited advertising and information material
-  is hereby prohibited. The operators of the pages reserve the right to take legal action in the event of the
-  unsolicited sending of advertising information, such as spam mails.</p>
-<h2 id=revocation-of-your-consent-to-data-processing>Revocation of your consent to data processing</h2>
-<p>Some data processing operations require your express consent possible. You can revoke your consent that you have
-  already given at any time. A message by e-mail is sufficient for the revocation. The lawfulness of the data processing
-  that took place up until the revocation remains unaffected by the revocation.</p>
-<h2 id=right-to-file-a-complaint-with-the-responsible-supervisory-authority>Right to file a complaint with the
-  responsible supervisory authority</h2>
-<p>You have the right to lodge a complaint with the responsible supervisory authority in the event of a breach of data
-  protection law. The responsible supervisory authority with regard to data protection issues is the Federal
-  Commissioner for Data Protection and Freedom of Information of the state where our company is based. The following
-  link provides a list of data protection authorities and their contact details: <a
-    href=https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html class=link--external
-    rel=noopener target=_blank>https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html</a>.
-</p>
-<h2 id=right-to-data-portability>Right to data portability</h2>
-<p>You have the right to request the data that we process automatically on the basis of your consent or in fulfillment
-  of a contract to be handed over to you or a third party. The data is provided in a machine-readable format. If you
-  request the direct transfer of the data to another person responsible, this will only be done if it is technically
-  feasible.</p>
-<h2 id=right-to-information-correction-blocking-and-deletion>Right to information, correction, blocking, and
-  deletion</h2>
-<p>You have at any time within the framework of the applicable legal provisions the right to request information about
-  your stored personal data, the origin of the data, its recipient and the purpose of the data processing, and if
-  necessary, a right to correction, blocking or deletion of this data. You can contact us at any time via <a
-    href=mailto:ls1.admin@in.tum.de>ls1.admin@in.tum.de</a> regarding this and other questions on the subject of
-  personal data.</p>
-<h2 id=ssltls-encryption>SSL/TLS encryption</h2>
-<p>For security reasons and to protect the transmission of confidential content that you send to us send as a site
-  operator, our website uses an SSL/TLS encryption. This means that data that you transmit via this website cannot be
-  read by third parties. You can recognize an encrypted connection by the “https://” address line in your browser and by
-  the lock symbol in the browser line.</p>
-<h2 id=e-mail-security>E-mail security</h2>
-<p>If you e-mail us, your e-mail address will only be used for correspondence with you. Please note that data
-  transmission on the Internet can have security gaps. Complete protection of data from access by third parties is not
-  possible.</p>
+
+<h2 id="data-recipients">Data recipients</h2>
+<p>Your personal data may be accessible to the following recipients within the application:</p>
+<ul>
+  <li><strong>Supervisors and advisors</strong> of the research group you are associated with can view your profile,
+    application data, uploaded documents, and thesis information.</li>
+  <li><strong>Administrators</strong> can view and manage all data in the application.</li>
+  <li><strong>Other students</strong> cannot view your personal data unless explicitly shared through the thesis process
+    (e.g. public thesis presentations).</li>
+</ul>
+<p>Data is not transferred to recipients outside the university, except:</p>
+<ul>
+  <li>Email recipients — presentation invitations may be sent to external email addresses provided by supervisors.</li>
+</ul>
+
+<h2 id="your-rights">Your rights</h2>
+<p>Under the GDPR, you have the following rights regarding your personal data:</p>
+<ul>
+  <li><strong>Right of access</strong> (Art. 15 GDPR): You have the right to request information about the personal data
+    we process about you.</li>
+  <li><strong>Right to rectification</strong> (Art. 16 GDPR): You have the right to request the correction of inaccurate
+    personal data. Some data (name, email, matriculation number) is synchronized from your university account and must
+    be corrected there.</li>
+  <li><strong>Right to erasure</strong> (Art. 17 GDPR): You have the right to request the deletion of your personal
+    data. Voluntarily provided profile data and rejected application data will be deleted promptly upon request.
+    Thesis-related data (including accepted applications, assessments, and grades) is subject to mandatory retention
+    under university examination regulations and cannot be deleted until the retention period has expired. We will
+    inform you of any applicable retention obligations when processing your request.</li>
+  <li><strong>Right to restriction of processing</strong> (Art. 18 GDPR): You have the right to request the restriction
+    of processing of your personal data under certain conditions.</li>
+  <li><strong>Right to data portability</strong> (Art. 20 GDPR): You have the right to receive the personal data you
+    have provided to us in a structured, commonly used, and machine-readable format.</li>
+  <li><strong>Right to object</strong> (Art. 21 GDPR): You have the right to object to the processing of your personal
+    data based on Art. 6(1)(e) or (f) GDPR at any time, for reasons arising from your particular situation.</li>
+  <li><strong>Right to withdraw consent</strong> (Art. 7(3) GDPR): You can revoke any consent you have given at any
+    time. An informal message by email is sufficient. The lawfulness of the data processing carried out on the basis
+    of the consent until the revocation remains unaffected.</li>
+</ul>
+<p>To exercise any of these rights, please contact us at <a href="mailto:ls1.admin@in.tum.de">ls1.admin@in.tum.de</a>.</p>
+
+<h2 id="supervisory-authority">Right to lodge a complaint</h2>
+<p>You have the right to lodge a complaint with a supervisory authority if you believe that the processing of your
+  personal data violates data protection law. The competent supervisory authority for the Technical University of Munich
+  is the Bayerische Landesbeauftragte für den Datenschutz (BayLfD). You can also contact the Data Protection Officer of
+  the Technical University of Munich (see above).</p>
+
+<h2 id="encryption">SSL/TLS encryption</h2>
+<p>For security reasons and to protect the transmission of confidential content, this application uses SSL/TLS
+  encryption. This means that data you transmit via this application cannot be read by third parties. You can recognize
+  an encrypted connection by the "https://" address line in your browser and by the lock symbol in the browser line.</p>
+
+<h2 id="email-security">Email security</h2>
+<p>If you email us, your email address will only be used for correspondence with you. Please note that data transmission
+  on the Internet can have security gaps. Complete protection of data from access by third parties is not possible.</p>
+
+<h2 id="changes">Changes to this privacy statement</h2>
+<p>We reserve the right to update this privacy statement to reflect changes in our data processing practices or legal
+  requirements. The current version is always available at the privacy page of this application.</p>
