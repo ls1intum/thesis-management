@@ -43,8 +43,6 @@ export interface IGlobalConfig {
     }
   >
 
-  default_supervisors: string[]
-
   keycloak: {
     client_id: string
     realm: string

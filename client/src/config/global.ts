@@ -103,7 +103,6 @@ export const GLOBAL_CONFIG: IGlobalConfig = {
     },
   },
 
-  default_supervisors: getEnvironmentVariable('DEFAULT_SUPERVISOR_UUID')?.split(';') || [],
   server_host: getEnvironmentVariable('SERVER_HOST') || 'http://localhost:8080',
 
   keycloak: {
