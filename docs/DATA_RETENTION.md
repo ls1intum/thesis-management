@@ -44,6 +44,17 @@ When a user requests deletion of their data, the response depends on the legal b
 4. If the user has no active thesis and no retained examination data, offer full account deactivation.
 5. Document the request and the actions taken for accountability purposes.
 
+## Prerequisite: Automatic Application Expiration
+
+The 1-year retention period for rejected applications (see above) requires that every application eventually receives a rejection date. Without this, unreviewed applications would remain in a "not assessed" state indefinitely, making data cleanup impossible and violating the data minimization principle.
+
+To address this, the application includes a time-based expiration mechanism that automatically rejects applications which have not been reviewed within a configurable period (configured per research group in weeks, with a minimum of 2 weeks). When triggered, the student receives the standard rejection email notification.
+
+**This is not automated decision-making** in the sense of GDPR Art. 22. It does not evaluate the applicant's qualifications, profile, or any personal characteristics. It is a simple timeout comparable to a deadline expiring. Its purposes are:
+
+1. **Student transparency**: Without expiration, students whose applications are never reviewed would wait indefinitely without any response. The automatic rejection ensures they are notified and can reapply or look for alternatives.
+2. **Data minimization**: The expiration assigns a rejection date, which starts the 1-year retention clock and enables eventual data cleanup.
+
 ## Implementation Status
 
 - [ ] Automatic deletion of rejected applications after 1 year (not yet implemented)

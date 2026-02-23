@@ -177,6 +177,12 @@ These flowcharts offer a quick reference for understanding how each role engages
 
 ![Thesis Application Flowchart](docs/files/thesis-application-flowchart.svg)
 
+#### Automatic Application Expiration
+
+Applications that have not been reviewed within a configurable period are automatically rejected. Research group admins can configure the expiration delay in weeks (minimum 2 weeks) in the research group settings. When an application expires, the student receives the standard rejection email notification, so they can reapply or pursue other options.
+
+This mechanism ensures that students are not left waiting indefinitely for a response and enables the system to clean up application data after the retention period.
+
 #### Thesis Writing Flowchart
 
 ![Thesis Writing Flowchart](docs/files/thesis-writing-flowchart.svg)
