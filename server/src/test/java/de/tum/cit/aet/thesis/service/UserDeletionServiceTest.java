@@ -105,7 +105,7 @@ class UserDeletionServiceTest extends BaseIntegrationTest {
 		return new StudentWithThesis(student, thesisId, researchGroupId);
 	}
 
-	private UUID createRejectedApplicationForUser(TestUser student) throws Exception {
+	private UUID createRejectedApplicationForUser(TestUser student, TestUser reviewer) throws Exception {
 		createTestEmailTemplate("APPLICATION_CREATED_CHAIR");
 		createTestEmailTemplate("APPLICATION_CREATED_STUDENT");
 
@@ -118,6 +118,16 @@ class UserDeletionServiceTest extends BaseIntegrationTest {
 					.setParameter("date", Instant.now().minus(30, ChronoUnit.DAYS))
 					.setParameter("id", applicationId)
 					.executeUpdate();
+			// Add an application reviewer to test that reviewers are cleaned up during deletion
+			if (reviewer != null) {
+				entityManager.createNativeQuery(
+								"INSERT INTO application_reviewers (application_id, user_id, reason, reviewed_at) "
+										+ "VALUES (:appId, :userId, 'NOT_INTERESTED', :date)")
+						.setParameter("appId", applicationId)
+						.setParameter("userId", reviewer.userId())
+						.setParameter("date", Instant.now().minus(30, ChronoUnit.DAYS))
+						.executeUpdate();
+			}
 			entityManager.clear();
 		});
 
@@ -212,9 +222,10 @@ class UserDeletionServiceTest extends BaseIntegrationTest {
 		}
 
 		@Test
-		void deletesUserWithRejectedApplicationCompletely() throws Exception {
+		void deletesUserWithRejectedApplicationAndReviewerCompletely() throws Exception {
 			TestUser student = createRandomTestUser(List.of("student"));
-			UUID appId = createRejectedApplicationForUser(student);
+			TestUser advisor = createRandomTestUser(List.of("advisor"));
+			UUID appId = createRejectedApplicationForUser(student, advisor);
 
 			assertThat(applicationRepository.findById(appId)).isPresent();
 

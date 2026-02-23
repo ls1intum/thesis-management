@@ -11,6 +11,7 @@ import de.tum.cit.aet.thesis.entity.User;
 import de.tum.cit.aet.thesis.exception.request.AccessDeniedException;
 import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.repository.ApplicationRepository;
+import de.tum.cit.aet.thesis.repository.ApplicationReviewerRepository;
 import de.tum.cit.aet.thesis.repository.DataExportRepository;
 import de.tum.cit.aet.thesis.repository.NotificationSettingRepository;
 import de.tum.cit.aet.thesis.repository.ResearchGroupRepository;
@@ -26,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -36,11 +38,13 @@ public class UserDeletionService {
 	private static final Logger log = LoggerFactory.getLogger(UserDeletionService.class);
 	private static final int RETENTION_YEARS = 5;
 	private static final Set<ThesisState> TERMINAL_STATES = Set.of(ThesisState.FINISHED, ThesisState.DROPPED_OUT);
+	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MMMM d, yyyy");
 
 	private final UserRepository userRepository;
 	private final ThesisRoleRepository thesisRoleRepository;
 	private final TopicRoleRepository topicRoleRepository;
 	private final ApplicationRepository applicationRepository;
+	private final ApplicationReviewerRepository applicationReviewerRepository;
 	private final ResearchGroupRepository researchGroupRepository;
 	private final DataExportRepository dataExportRepository;
 	private final UserGroupRepository userGroupRepository;
@@ -52,6 +56,7 @@ public class UserDeletionService {
 			ThesisRoleRepository thesisRoleRepository,
 			TopicRoleRepository topicRoleRepository,
 			ApplicationRepository applicationRepository,
+			ApplicationReviewerRepository applicationReviewerRepository,
 			ResearchGroupRepository researchGroupRepository,
 			DataExportRepository dataExportRepository,
 			UserGroupRepository userGroupRepository,
@@ -61,6 +66,7 @@ public class UserDeletionService {
 		this.thesisRoleRepository = thesisRoleRepository;
 		this.topicRoleRepository = topicRoleRepository;
 		this.applicationRepository = applicationRepository;
+		this.applicationReviewerRepository = applicationReviewerRepository;
 		this.researchGroupRepository = researchGroupRepository;
 		this.dataExportRepository = dataExportRepository;
 		this.userGroupRepository = userGroupRepository;
@@ -92,7 +98,7 @@ public class UserDeletionService {
 		} else {
 			message = "Your account will be deactivated and non-essential data deleted immediately. "
 					+ "Your profile and thesis data (" + retentionBlockedCount
-					+ " thesis/theses) must be retained until " + earliestDeletion
+					+ " thesis/theses) must be retained until " + formatDate(earliestDeletion)
 					+ " per legal requirements, then everything will be fully deleted.";
 		}
 
@@ -166,8 +172,12 @@ public class UserDeletionService {
 	private UserDeletionResultDto performFullDeletion(User user) {
 		UUID userId = user.getId();
 
-		// Delete remaining applications (use entity-based deletion to keep Hibernate session consistent)
+		// Delete remaining applications and their reviewers (entity-based to keep Hibernate session consistent)
 		List<Application> remainingApps = applicationRepository.findAllByUserId(userId);
+		for (Application app : remainingApps) {
+			applicationReviewerRepository.deleteAll(app.getReviewers());
+			app.getReviewers().clear();
+		}
 		applicationRepository.deleteAll(remainingApps);
 
 		// Delete topic roles
@@ -218,7 +228,7 @@ public class UserDeletionService {
 		return new UserDeletionResultDto("DEACTIVATED",
 				"Your account has been deactivated and non-essential data deleted. "
 						+ "Your profile and thesis data will be fully deleted after the legal retention period expires ("
-						+ earliestDeletion + ").");
+						+ formatDate(earliestDeletion) + ").");
 	}
 
 	private void deleteAllUserFiles(User user) {
@@ -257,10 +267,19 @@ public class UserDeletionService {
 				.orElse(null);
 	}
 
+	private String formatDate(Instant instant) {
+		if (instant == null) {
+			return "unknown";
+		}
+		return instant.atZone(ZoneId.of("Europe/Berlin")).format(DATE_FORMATTER);
+	}
+
 	private void deleteNonRetainedApplications(UUID userId) {
 		List<Application> applications = applicationRepository.findAllByUserId(userId);
 		for (Application app : applications) {
 			if (app.getState() == ApplicationState.REJECTED || app.getState() == ApplicationState.NOT_ASSESSED) {
+				applicationReviewerRepository.deleteAll(app.getReviewers());
+				app.getReviewers().clear();
 				applicationRepository.delete(app);
 			}
 		}
