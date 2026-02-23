@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { Alert, Button, Group, Loader, Modal, Stack, Text, Title } from '@mantine/core'
+import { Alert, Button, Group, Loader, Modal, Stack, Text, TextInput, Title } from '@mantine/core'
 import { Warning } from '@phosphor-icons/react'
+import { useNavigate } from 'react-router'
 import { doRequest } from '../../../../requests/request'
 import { showSimpleError, showSimpleSuccess } from '../../../../utils/notification'
 import { getApiResponseErrorMessage } from '../../../../requests/handler'
@@ -25,7 +26,9 @@ const AccountDeletion = () => {
   const [loading, setLoading] = useState(true)
   const [deleting, setDeleting] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
+  const [confirmName, setConfirmName] = useState('')
   const auth = useAuthenticationContext()
+  const navigate = useNavigate()
 
   useEffect(() => {
     const fetchPreview = async () => {
@@ -57,7 +60,7 @@ const AccountDeletion = () => {
       })
       if (response.ok) {
         showSimpleSuccess(response.data.message)
-        auth.logout(window.location.origin)
+        navigate('/logout')
       } else {
         showSimpleError(getApiResponseErrorMessage(response))
       }
@@ -74,6 +77,7 @@ const AccountDeletion = () => {
     return <Text>Failed to load deletion preview.</Text>
   }
 
+  const fullName = `${auth.user?.firstName ?? ''} ${auth.user?.lastName ?? ''}`.trim()
   const canDelete = !preview.hasActiveTheses && !preview.isResearchGroupHead
 
   return (
@@ -119,7 +123,10 @@ const AccountDeletion = () => {
 
       <Modal
         opened={confirmOpen}
-        onClose={() => setConfirmOpen(false)}
+        onClose={() => {
+          setConfirmOpen(false)
+          setConfirmName('')
+        }}
         title='Confirm Account Deletion'
       >
         <Stack>
@@ -130,12 +137,28 @@ const AccountDeletion = () => {
               : 'deactivated, with full deletion after the retention period'}
             .
           </Alert>
-          <Text>Are you sure you want to proceed?</Text>
+          <Text>
+            To confirm, please type your full name:{' '}
+            <Text span fw='bold'>
+              {fullName}
+            </Text>
+          </Text>
+          <TextInput
+            placeholder={fullName}
+            value={confirmName}
+            onChange={(e) => setConfirmName(e.currentTarget.value)}
+          />
           <Group grow>
-            <Button variant='outline' onClick={() => setConfirmOpen(false)}>
+            <Button
+              variant='outline'
+              onClick={() => {
+                setConfirmOpen(false)
+                setConfirmName('')
+              }}
+            >
               Cancel
             </Button>
-            <Button color='red' onClick={onDelete}>
+            <Button color='red' disabled={confirmName !== fullName} onClick={onDelete}>
               Yes, Delete My Account
             </Button>
           </Group>

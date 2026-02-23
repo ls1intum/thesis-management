@@ -48,10 +48,14 @@ test.describe('Account Deletion - Self-Service (Full Deletion)', () => {
 
     // Confirmation modal should appear
     await expect(page.getByRole('dialog')).toBeVisible({ timeout: 5_000 })
-    await expect(page.getByText('Are you sure you want to proceed?')).toBeVisible()
+    // Delete button should be disabled until full name is typed
+    const confirmButton = page.getByRole('dialog').getByRole('button', { name: 'Yes, Delete My Account' })
+    await expect(confirmButton).toBeDisabled()
 
-    // Confirm deletion
-    await page.getByRole('dialog').getByRole('button', { name: 'Yes, Delete My Account' }).click()
+    // Type the full name to enable confirmation
+    await page.getByRole('dialog').getByRole('textbox').fill('RejectedApp Deletable')
+    await expect(confirmButton).toBeEnabled()
+    await confirmButton.click()
 
     // Should redirect to login (Keycloak) after logout
     await expect(page).toHaveURL(/localhost:3000|kc-login/, { timeout: 30_000 })
@@ -90,7 +94,9 @@ test.describe('Account Deletion - Self-Service (Soft Deletion / Retention)', () 
     await expect(dialog).toBeVisible({ timeout: 5_000 })
     await expect(dialog.getByText(/deactivated/i)).toBeVisible()
 
-    await page.getByRole('dialog').getByRole('button', { name: 'Yes, Delete My Account' }).click()
+    // Type the full name to enable confirmation
+    await dialog.getByRole('textbox').fill('RecentThesis Retainable')
+    await dialog.getByRole('button', { name: 'Yes, Delete My Account' }).click()
 
     // Should redirect after logout
     await expect(page).toHaveURL(/localhost:3000|kc-login/, { timeout: 30_000 })
@@ -125,8 +131,12 @@ test.describe('Account Deletion - Self-Service (Expired Retention)', () => {
     await expect(deleteButton).toBeEnabled({ timeout: 10_000 })
     await deleteButton.click()
 
-    await expect(page.getByRole('dialog')).toBeVisible({ timeout: 5_000 })
-    await page.getByRole('dialog').getByRole('button', { name: 'Yes, Delete My Account' }).click()
+    const dialog = page.getByRole('dialog')
+    await expect(dialog).toBeVisible({ timeout: 5_000 })
+
+    // Type the full name to enable confirmation
+    await dialog.getByRole('textbox').fill('OldThesis Deletable')
+    await dialog.getByRole('button', { name: 'Yes, Delete My Account' }).click()
 
     await expect(page).toHaveURL(/localhost:3000|kc-login/, { timeout: 30_000 })
   })
