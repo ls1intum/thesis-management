@@ -67,7 +67,7 @@ Prioritized by urgency and impact on GDPR compliance.
 
 ### Priority 2 — Medium (implement within next months)
 
-- [ ] **Data export endpoint**: Add a GDPR data export feature (Art. 20 data portability) that lets users download all their personal data in a structured format (e.g. JSON/ZIP with profile data and uploaded files). Currently handled manually on request, but a self-service feature would reduce administrative effort and improve response time.
+- [x] **Data export endpoint**: Self-service GDPR data export feature (Art. 15 / Art. 20). Users can request an export from `/data-export`, which is processed overnight and generates a ZIP file containing profile data (JSON), applications, theses, assessments, and uploaded files. Users receive an email notification when ready. Downloads expire after 7 days, rate-limited to one request per 7 days.
 - [ ] **Automatic disabling of inactive accounts after 1 year of inactivity**: Required to fulfill the retention promise in the privacy statement. Without this, user data is retained indefinitely.
 - [ ] **Reactivation of disabled accounts on login**: Necessary counterpart to the above — disabled users who log in again should have their account re-enabled automatically.
 - [ ] **Deletion of disabled user accounts after linked data retention periods expire**: Completes the account lifecycle — once all linked thesis/application data has been cleaned up, the account itself should be removed.

@@ -26,6 +26,7 @@ labels:
   - "traefik.http.routers.server.priority=10"
 volumes:
   - ./thesis_uploads:/uploads
+  - ./thesis_data_exports:/data-exports
 expose:
   - "8080"
 environment:
@@ -98,10 +99,12 @@ volumes:
 
 ## Backup Strategy
 There are 2 places that require backups:
-- The PostgreSQL database. The backup strategy depends on the database setup, but the whole public schema of the connected database should be included in the backup. 
+- The PostgreSQL database. The backup strategy depends on the database setup, but the whole public schema of the connected database should be included in the backup.
   - Example backup command: `pg_dump -U thesismanagement --schema="public" thesismanagement > backup_thesismanagement.sql`
   - Example import command: `psql -U thesismanagement -d thesismanagement -f backup_thesismanagement.sql`
 - The files stored at `/uploads`. In the docker example, these files are mounted to `./thesis_uploads` and backup system should collect the files from the mounted folder
+
+Note: The `/data-exports` directory contains temporary data export ZIP files that auto-delete after 7 days. Backing up this directory is optional.
 
 There is an example script [thesis-management-backup.sh](../supporting_scripts/thesis-management-backup.sh) that you can call in a cronjob to create regular backups.
 
