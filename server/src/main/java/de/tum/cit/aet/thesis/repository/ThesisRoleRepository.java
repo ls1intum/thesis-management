@@ -12,4 +12,8 @@ import java.util.UUID;
 @Repository
 public interface ThesisRoleRepository extends JpaRepository<ThesisRole, ThesisRoleId> {
 	List<ThesisRole> deleteByThesisId(UUID thesisId);
+
+	List<ThesisRole> findAllByIdUserId(UUID userId);
+
+	void deleteAllByIdUserId(UUID userId);
 }

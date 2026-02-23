@@ -93,6 +93,11 @@ public class AuthenticationService {
 			return newUser;
 		});
 
+		if (user.isAnonymized() || user.getDeletionRequestedAt() != null) {
+			throw new de.tum.cit.aet.thesis.exception.request.AccessDeniedException(
+					"This account has been deleted and can no longer be used");
+		}
+
 		user.setUniversityId(universityId);
 
 		if (email != null && !email.isEmpty()) {

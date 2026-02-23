@@ -67,6 +67,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 			""")
 	List<User> findStudentsWithActiveThesesByResearchGroupId(@Param("researchGroupId") UUID researchGroupId);
 
+	List<User> findAllByDeletionRequestedAtIsNotNull();
+
 	@Query("""
 			SELECT DISTINCT u FROM User u
 			JOIN UserGroup g ON u.id = g.id.userId AND g.id.group = 'student'

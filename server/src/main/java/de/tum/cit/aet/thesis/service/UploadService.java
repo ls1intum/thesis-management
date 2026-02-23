@@ -151,6 +151,17 @@ public class UploadService {
 		}
 	}
 
+	public void deleteFile(String filename) {
+		if (filename == null || filename.isBlank()) {
+			return;
+		}
+		try {
+			Files.deleteIfExists(rootLocation.resolve(filename));
+		} catch (IOException e) {
+			// Log but don't throw — best-effort file cleanup
+		}
+	}
+
 	private String computeFileHash(MultipartFile file) throws IOException, NoSuchAlgorithmException {
 		MessageDigest digest = MessageDigest.getInstance("SHA-256");
 		try (InputStream inputStream = file.getInputStream()) {

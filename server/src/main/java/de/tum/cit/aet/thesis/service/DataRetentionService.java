@@ -21,17 +21,20 @@ public class DataRetentionService {
 	private final ApplicationRepository applicationRepository;
 	private final UserRepository userRepository;
 	private final DataExportService dataExportService;
+	private final UserDeletionService userDeletionService;
 	private final int retentionDays;
 	private final int inactiveUserDays;
 
 	public DataRetentionService(ApplicationRepository applicationRepository,
 			UserRepository userRepository,
 			DataExportService dataExportService,
+			UserDeletionService userDeletionService,
 			@Value("${thesis-management.data-retention.rejected-application-retention-days}") int retentionDays,
 			@Value("${thesis-management.data-retention.inactive-user-days}") int inactiveUserDays) {
 		this.applicationRepository = applicationRepository;
 		this.userRepository = userRepository;
 		this.dataExportService = dataExportService;
+		this.userDeletionService = userDeletionService;
 		this.retentionDays = retentionDays;
 		this.inactiveUserDays = inactiveUserDays;
 	}
@@ -42,6 +45,7 @@ public class DataRetentionService {
 		disableInactiveUsers();
 		dataExportService.processAllPendingExports();
 		dataExportService.deleteExpiredExports();
+		userDeletionService.processDeferredDeletions();
 	}
 
 	public int disableInactiveUsers() {

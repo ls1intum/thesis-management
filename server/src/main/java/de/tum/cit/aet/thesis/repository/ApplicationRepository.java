@@ -100,4 +100,11 @@ public interface ApplicationRepository extends JpaRepository<Application, UUID> 
 	List<Application> findAllByTopic(Topic topic);
 
 	List<Application> findAllByUser(User user);
+
+	List<Application> findAllByUserId(UUID userId);
+
+	@Modifying
+	@Transactional
+	@Query("DELETE FROM Application a WHERE a.user.id = :userId")
+	void deleteAllByUserId(@Param("userId") UUID userId);
 }

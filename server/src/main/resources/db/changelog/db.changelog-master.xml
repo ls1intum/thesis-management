@@ -33,4 +33,5 @@
     <include file="changes/27_data_retention_preparation.sql" relativeToChangelogFile="true" />
     <include file="changes/28_data_export.sql" relativeToChangelogFile="true" />
     <include file="changes/29_user_disabled_flag.sql" relativeToChangelogFile="true" />
+    <include file="changes/30_user_deletion.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>

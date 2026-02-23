@@ -95,6 +95,15 @@ public class User {
 	@Column(name = "disabled", nullable = false)
 	private boolean disabled = false;
 
+	@Column(name = "anonymized_at")
+	private Instant anonymizedAt;
+
+	@Column(name = "deletion_requested_at")
+	private Instant deletionRequestedAt;
+
+	@Column(name = "deletion_scheduled_for")
+	private Instant deletionScheduledFor;
+
 	@Column(name = "enrolled_at")
 	private Instant enrolledAt;
 
@@ -135,6 +144,10 @@ public class User {
 		}
 
 		return null;
+	}
+
+	public boolean isAnonymized() {
+		return anonymizedAt != null;
 	}
 
 	public boolean hasNoGroup() {
