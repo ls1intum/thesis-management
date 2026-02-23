@@ -1,9 +1,10 @@
 import ApplicationData from '../../../../components/ApplicationData/ApplicationData'
 import ApplicationReviewForm from '../../../../components/ApplicationReviewForm/ApplicationReviewForm'
-import { Divider, Stack } from '@mantine/core'
+import { Divider, Group, Stack } from '@mantine/core'
 import React, { useEffect } from 'react'
 import { IApplication } from '../../../../requests/responses/application'
 import ApplicationRejectButton from '../../../../components/ApplicationRejectButton/ApplicationRejectButton'
+import ApplicationDeleteButton from '../../../../components/ApplicationDeleteButton/ApplicationDeleteButton'
 
 interface IApplicationReviewBodyProps {
   application: IApplication
@@ -22,14 +23,19 @@ const ApplicationReviewBody = (props: IApplicationReviewBodyProps) => {
       <ApplicationData
         application={application}
         rightTitleSection={
-          <ApplicationRejectButton
-            key={application.applicationId}
-            application={application}
-            onUpdate={(newApplication) => {
-              onChange(newApplication)
-            }}
-            ml='auto'
-          />
+          <Group ml='auto' gap='xs'>
+            <ApplicationDeleteButton
+              key={`delete-${application.applicationId}`}
+              application={application}
+            />
+            <ApplicationRejectButton
+              key={`reject-${application.applicationId}`}
+              application={application}
+              onUpdate={(newApplication) => {
+                onChange(newApplication)
+              }}
+            />
+          </Group>
         }
         bottomSection={
           <Stack>

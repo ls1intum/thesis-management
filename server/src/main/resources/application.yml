@@ -86,5 +86,8 @@ thesis-management:
   mail:
     enabled: ${MAIL_ENABLED:false}
     sender: ${MAIL_SENDER:thesis-dev@test.aet.cit.tum.de}
+  data-retention:
+    cron: ${DATA_RETENTION_CRON:0 0 4 * * *}
+    rejected-application-retention-days: ${REJECTED_APP_RETENTION_DAYS:365}
   storage:
     upload-location: ${UPLOAD_FOLDER:uploads}

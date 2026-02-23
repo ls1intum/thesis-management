@@ -22,6 +22,7 @@ import {
   NewspaperClipping,
   SignOut,
   Gear,
+  GearSix,
   PresentationIcon,
   PaperPlaneTiltIcon,
   ScrollIcon,
@@ -111,6 +112,12 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
       label: 'Interviews',
       icon: ChatsCircleIcon,
       groups: ['advisor', 'supervisor'],
+    },
+    {
+      link: '/admin',
+      label: 'Administration',
+      icon: GearSix,
+      groups: ['admin'],
     },
   ]
 

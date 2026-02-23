@@ -100,6 +100,9 @@ public class User {
 	@Column(name = "updated_at", nullable = false)
 	private Instant updatedAt;
 
+	@Column(name = "last_login_at")
+	private Instant lastLoginAt;
+
 	@CreationTimestamp
 	@NotNull
 	@Column(name = "joined_at", nullable = false)

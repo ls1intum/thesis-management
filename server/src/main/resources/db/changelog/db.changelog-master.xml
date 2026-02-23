@@ -30,4 +30,5 @@
     <include file="changes/24_make_reject_duration_not_null.sql" relativeToChangelogFile="true" />
     <include file="changes/25_drop_calendar_event_column.sql" relativeToChangelogFile="true" />
     <include file="changes/26_add_scientific_writing_guide_link_to_settings.sql" relativeToChangelogFile="true" />
+    <include file="changes/27_data_retention_preparation.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>

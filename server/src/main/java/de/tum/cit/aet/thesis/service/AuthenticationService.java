@@ -110,6 +110,8 @@ public class AuthenticationService {
 			user.setMatriculationNumber(matriculationNumber);
 		}
 
+		user.setLastLoginAt(Instant.now());
+
 		user = userRepository.save(user);
 
 		userGroupRepository.deleteByUserId(user.getId());

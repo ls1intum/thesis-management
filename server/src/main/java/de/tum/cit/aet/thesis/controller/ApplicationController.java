@@ -24,6 +24,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,6 +35,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -368,5 +370,12 @@ public class ApplicationController {
 		return ResponseEntity.ok(
 				applications.stream().map(item -> ApplicationDto.fromApplicationEntity(item, item.hasManagementAccess(authenticatedUser))).toList()
 		);
+	}
+
+	@DeleteMapping("/{applicationId}")
+	@PreAuthorize("hasRole('admin')")
+	public ResponseEntity<Map<String, String>> deleteApplication(@PathVariable UUID applicationId) {
+		applicationService.deleteApplication(applicationId);
+		return ResponseEntity.ok(Map.of("status", "deleted"));
 	}
 }

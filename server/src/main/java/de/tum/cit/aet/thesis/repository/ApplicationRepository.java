@@ -7,10 +7,13 @@ import de.tum.cit.aet.thesis.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -85,6 +88,14 @@ public interface ApplicationRepository extends JpaRepository<Application, UUID> 
 			@Param("userId") UUID userId,
 			@Param("topicId") UUID topicId
 	);
+
+	@Query("SELECT a.id FROM Application a WHERE a.state = 'REJECTED' AND a.reviewedAt < :cutoffDate")
+	List<UUID> findExpiredRejectedApplicationIds(@Param("cutoffDate") Instant cutoffDate);
+
+	@Modifying
+	@Transactional
+	@Query("DELETE FROM Application a WHERE a.id = :id")
+	void deleteApplicationById(@Param("id") UUID id);
 
 	List<Application> findAllByTopic(Topic topic);
 

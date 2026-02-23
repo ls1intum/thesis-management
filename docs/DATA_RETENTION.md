@@ -61,7 +61,7 @@ Prioritized by urgency and impact on GDPR compliance.
 
 ### Priority 1 — High (address quickly)
 
-- [ ] **Automatic deletion of rejected applications after 1 year**: The privacy statement promises this retention period. Without enforcement, rejected application data accumulates indefinitely, creating a documented discrepancy between the privacy statement and actual behavior.
+- [x] **Automatic deletion of rejected applications after 1 year**: The privacy statement promises this retention period. Without enforcement, rejected application data accumulates indefinitely, creating a documented discrepancy between the privacy statement and actual behavior.
 - [ ] **Account/data deletion endpoint**: There is currently no way for users to delete their account or data. Add a self-service account deletion feature or at minimum an admin endpoint to fully delete a user's data (Art. 17 right to erasure). Must respect the retention periods defined above (e.g. thesis data cannot be deleted before the 5-year period expires).
 - [ ] **Configurable application email content**: Add a per-research-group setting to control whether application notification emails include attachments (CV, examination report) and personal details, or only contain the student name, topic, and a link to the application in the system. This addresses a user request. Responding promptly demonstrates good faith.
 

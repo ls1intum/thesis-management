@@ -340,6 +340,28 @@ VALUES
      'NOT_ASSESSED', NULL,
      NOW() + INTERVAL '60 days', '',
      NOW() - INTERVAL '3 days', NULL,
+     '00000000-0000-4000-a000-000000000001'::UUID),
+
+    -- OLD REJECTED #1: student2 on topic 1, rejected 400 days ago (for data retention e2e test)
+    ('00000000-0000-4000-c000-000000000009'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'student2'),
+     '00000000-0000-4000-b000-000000000001'::UUID,
+     NULL, 'MASTER',
+     'I wanted to explore LLM-based code review but my application was not selected.',
+     'REJECTED', 'FAILED_TOPIC_REQUIREMENTS',
+     NOW() - INTERVAL '380 days', '',
+     NOW() - INTERVAL '410 days', NOW() - INTERVAL '400 days',
+     '00000000-0000-4000-a000-000000000001'::UUID),
+
+    -- OLD REJECTED #2: student3 on topic 2, rejected 500 days ago (for data retention e2e test)
+    ('00000000-0000-4000-c000-00000000000a'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'student3'),
+     '00000000-0000-4000-b000-000000000002'::UUID,
+     NULL, 'BACHELOR',
+     'I was interested in CI pipeline optimization but there was no capacity at the time.',
+     'REJECTED', 'NO_CAPACITY',
+     NOW() - INTERVAL '480 days', '',
+     NOW() - INTERVAL '510 days', NOW() - INTERVAL '500 days',
      '00000000-0000-4000-a000-000000000001'::UUID)
 ON CONFLICT DO NOTHING;
 
@@ -363,7 +385,15 @@ VALUES
     -- Rejected app: advisor2 not interested
     ('00000000-0000-4000-c000-000000000006'::UUID,
      (SELECT user_id FROM users WHERE university_id = 'advisor2'),
-     'NOT_INTERESTED', NOW() - INTERVAL '6 days')
+     'NOT_INTERESTED', NOW() - INTERVAL '6 days'),
+    -- Old rejected app 1: advisor not interested
+    ('00000000-0000-4000-c000-000000000009'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'advisor'),
+     'NOT_INTERESTED', NOW() - INTERVAL '400 days'),
+    -- Old rejected app 2: advisor not interested
+    ('00000000-0000-4000-c000-00000000000a'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'advisor'),
+     'NOT_INTERESTED', NOW() - INTERVAL '500 days')
 ON CONFLICT DO NOTHING;
 
 -- ============================================================================

@@ -506,4 +506,10 @@ public class ApplicationService {
 		currentUserProvider().assertCanAccessResearchGroup(application.getResearchGroup());
 		return application;
 	}
+
+	@Transactional
+	public void deleteApplication(UUID applicationId) {
+		findById(applicationId);
+		applicationRepository.deleteApplicationById(applicationId);
+	}
 }

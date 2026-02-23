@@ -42,6 +42,8 @@ const ReviewApplicationPage = lazy(
 const ThesisPage = lazy(() => import('../pages/ThesisPage/ThesisPage'))
 const LandingPage = lazy(() => import('../pages/LandingPage/LandingPage'))
 
+const AdminPage = lazy(() => import('../pages/AdminPage/AdminPage'))
+
 const InterviewOverviewPage = lazy(
   () => import('../pages/InterviewOverviewPage/InterviewOverviewPage'),
 )
@@ -202,6 +204,14 @@ const AppRoutes = () => {
             element={
               <AuthenticatedArea requiredGroups={['admin', 'group-admin']}>
                 <EmailTemplateEditPage />
+              </AuthenticatedArea>
+            }
+          />
+          <Route
+            path='/admin'
+            element={
+              <AuthenticatedArea requiredGroups={['admin']}>
+                <AdminPage />
               </AuthenticatedArea>
             }
           />
