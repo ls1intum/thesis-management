@@ -518,10 +518,16 @@ public class ApplicationService {
 		return application;
 	}
 
-	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
-	@Transactional
 	public void deleteApplication(UUID applicationId) {
-		findById(applicationId);
-		applicationRepository.deleteApplicationById(applicationId);
+		Application application = findById(applicationId);
+
+		if (application.getState() == ApplicationState.ACCEPTED) {
+			throw new ResourceInvalidParametersException(
+					"Accepted applications cannot be deleted because they are linked to a thesis.");
+		}
+
+		applicationReviewerRepository.deleteAll(application.getReviewers());
+		application.getReviewers().clear();
+		applicationRepository.delete(application);
 	}
 }

@@ -9,10 +9,11 @@ import ApplicationDeleteButton from '../../../../components/ApplicationDeleteBut
 interface IApplicationReviewBodyProps {
   application: IApplication
   onChange: (application: IApplication) => unknown
+  onDelete: () => void
 }
 
 const ApplicationReviewBody = (props: IApplicationReviewBodyProps) => {
-  const { application, onChange } = props
+  const { application, onChange, onDelete } = props
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -27,6 +28,7 @@ const ApplicationReviewBody = (props: IApplicationReviewBodyProps) => {
             <ApplicationDeleteButton
               key={`delete-${application.applicationId}`}
               application={application}
+              onDelete={onDelete}
             />
             <ApplicationRejectButton
               key={`reject-${application.applicationId}`}
