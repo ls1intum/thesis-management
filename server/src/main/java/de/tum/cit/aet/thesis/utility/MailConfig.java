@@ -29,12 +29,6 @@ public class MailConfig {
 	private final InternetAddress sender;
 
 	@Getter
-	private final String signature;
-
-	@Getter
-	private final String workspaceUrl;
-
-	@Getter
 	private final TemplateEngine templateEngine;
 
 	/**
@@ -42,8 +36,6 @@ public class MailConfig {
 	 *
 	 * @param enabled whether email sending is enabled
 	 * @param sender the sender email address
-	 * @param mailSignature the email signature
-	 * @param workspaceUrl the workspace URL
 	 * @param clientHost the client host URL
 	 * @param userRepository the user repository
 	 * @param templateEngine the Thymeleaf template engine
@@ -52,16 +44,12 @@ public class MailConfig {
 	public MailConfig(
 			@Value("${thesis-management.mail.enabled}") boolean enabled,
 			@Value("${thesis-management.mail.sender}") InternetAddress sender,
-			@Value("${thesis-management.mail.signature}") String mailSignature,
-			@Value("${thesis-management.mail.workspace-url}") String workspaceUrl,
 			@Value("${thesis-management.client.host}") String clientHost,
 			UserRepository userRepository,
 			TemplateEngine templateEngine
 	) {
 		this.enabled = enabled;
 		this.sender = sender;
-		this.workspaceUrl = workspaceUrl;
-		this.signature = mailSignature;
 		this.clientHost = clientHost;
 
 		this.templateEngine = templateEngine;
@@ -100,13 +88,9 @@ public class MailConfig {
 	/**
 	 * Data transfer object holding mail configuration values for use in email templates.
 	 *
-	 * @param signature the email signature
-	 * @param workspaceUrl the workspace URL
 	 * @param clientHost the client host URL
 	 */
 	public record MailConfigDto(
-			String signature,
-			String workspaceUrl,
 			String clientHost
 	) {}
 
@@ -117,8 +101,6 @@ public class MailConfig {
 	 */
 	public MailConfigDto getConfigDto() {
 		return new MailConfigDto(
-				Objects.requireNonNullElse(signature, ""),
-				Objects.requireNonNullElse(workspaceUrl, ""),
 				Objects.requireNonNullElse(getClientHost(), "")
 		);
 	}

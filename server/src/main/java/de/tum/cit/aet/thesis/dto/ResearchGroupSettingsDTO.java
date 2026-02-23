@@ -6,14 +6,16 @@ public record ResearchGroupSettingsDTO(
 		ResearchGroupSettingsRejectDTO rejectSettings,
 		ResearchGroupSettingsPresentationDTO presentationSettings,
 		ResearchGroupSettingsPhasesDTO phaseSettings,
-		ResearchGroupSettingsEmailDTO emailSettings
+		ResearchGroupSettingsEmailDTO emailSettings,
+		ResearchGroupSettingsWritingGuideDTO writingGuideSettings
 ) {
 	public static ResearchGroupSettingsDTO fromEntity(ResearchGroupSettings settings) {
 		return new ResearchGroupSettingsDTO(
 				ResearchGroupSettingsRejectDTO.fromEntity(settings),
 				ResearchGroupSettingsPresentationDTO.fromEntity(settings),
 				ResearchGroupSettingsPhasesDTO.fromEntity(settings),
-				ResearchGroupSettingsEmailDTO.fromEntity(settings)
+				ResearchGroupSettingsEmailDTO.fromEntity(settings),
+				ResearchGroupSettingsWritingGuideDTO.fromEntity(settings)
 		);
 	}
 }

@@ -14,6 +14,7 @@ import { IResearchGroupSettings } from '../../requests/responses/researchGroupSe
 import PresentationSettingsCard from './components/PresentationSettingsCard'
 import ProposalSettingsCard from './components/ProposalSettingsCard'
 import EmailSettingsCard from './components/EmailSettingsCard'
+import ScientificWritingGuideSettingsCard from './components/ScientificWritingGuideSettingsCard'
 
 const ResearchGroupSettingPage = () => {
   const { researchGroupId } = useParams<{ researchGroupId: string }>()
@@ -124,6 +125,18 @@ const ResearchGroupSettingPage = () => {
                         ({
                           ...prev,
                           emailSettings: emailSettings,
+                        }) as IResearchGroupSettings,
+                    )
+                  }
+                />
+                <ScientificWritingGuideSettingsCard
+                  writingGuideSettings={researchGroupSettings?.writingGuideSettings}
+                  setWritingGuideSettings={(writingGuideSettings) =>
+                    setResearchGroupSettings(
+                      (prev) =>
+                        ({
+                          ...prev,
+                          writingGuideSettings: writingGuideSettings,
                         }) as IResearchGroupSettings,
                     )
                   }

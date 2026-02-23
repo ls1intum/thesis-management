@@ -85,9 +85,6 @@ thesis-management:
     host: ${CLIENT_HOST:http://localhost:3000}
   mail:
     enabled: ${MAIL_ENABLED:false}
-    sender: ${MAIL_SENDER:test@ios.ase.cit.tum.de}
-    signature: ${MAIL_SIGNATURE:}
-    workspace-url: ${MAIL_WORKSPACE_URL:https://slack.com}
+    sender: ${MAIL_SENDER:thesis-dev@test.aet.cit.tum.de}
   storage:
     upload-location: ${UPLOAD_FOLDER:uploads}
-  scientific-writing-guide: ${SCIENTIFIC_WRITING_GUIDE:}

@@ -4,6 +4,8 @@ import de.tum.cit.aet.thesis.constants.ThesisPresentationState;
 import de.tum.cit.aet.thesis.constants.ThesisRoleName;
 import de.tum.cit.aet.thesis.constants.ThesisState;
 import de.tum.cit.aet.thesis.dto.TaskDto;
+import de.tum.cit.aet.thesis.entity.ResearchGroup;
+import de.tum.cit.aet.thesis.entity.ResearchGroupSettings;
 import de.tum.cit.aet.thesis.entity.Thesis;
 import de.tum.cit.aet.thesis.entity.ThesisPresentation;
 import de.tum.cit.aet.thesis.entity.User;
@@ -11,7 +13,6 @@ import de.tum.cit.aet.thesis.repository.ApplicationRepository;
 import de.tum.cit.aet.thesis.repository.ThesisRepository;
 import de.tum.cit.aet.thesis.repository.TopicRepository;
 import de.tum.cit.aet.thesis.security.CurrentUserProvider;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -28,29 +29,25 @@ public class DashboardService {
 	private final ThesisRepository thesisRepository;
 	private final ApplicationRepository applicationRepository;
 	private final TopicRepository topicRepository;
-	private final String scientificWritingGuide;
 	private final CurrentUserProvider currentUserProvider;
 
 	/**
-	 * Injects the thesis, application, and topic repositories along with the scientific writing guide URL.
+	 * Injects the thesis, application, and topic repositories.
 	 *
 	 * @param thesisRepository the thesis repository
 	 * @param applicationRepository the application repository
 	 * @param topicRepository the topic repository
-	 * @param scientificWritingGuide the URL to the scientific writing guide
 	 * @param currentUserProvider the current user provider
 	 */
 	public DashboardService(
 			ThesisRepository thesisRepository,
 			ApplicationRepository applicationRepository,
 			TopicRepository topicRepository,
-			@Value("${thesis-management.scientific-writing-guide}") String scientificWritingGuide,
 			CurrentUserProvider currentUserProvider
 	) {
 		this.thesisRepository = thesisRepository;
 		this.applicationRepository = applicationRepository;
 		this.topicRepository = topicRepository;
-		this.scientificWritingGuide = scientificWritingGuide;
 		this.currentUserProvider = currentUserProvider;
 	}
 
@@ -64,12 +61,16 @@ public class DashboardService {
 		List<TaskDto> tasks = new ArrayList<>();
 		UUID researchGroupId = user.getResearchGroup() != null ? user.getResearchGroup().getId() : null;
 
-		if (user.hasAnyGroup("student") && !scientificWritingGuide.isBlank()) {
-			tasks.add(new TaskDto(
-					"Please make yourself familiar with scientific writing",
-					scientificWritingGuide,
-					50
-			));
+		ResearchGroup researchGroup = user.getResearchGroup();
+		if (user.hasAnyGroup("student") && researchGroup != null) {
+			ResearchGroupSettings settings = researchGroup.getResearchGroupSettings();
+			if (settings != null && settings.getScientificWritingGuideLink() != null && !settings.getScientificWritingGuideLink().isBlank()) {
+				tasks.add(new TaskDto(
+						"Please make yourself familiar with scientific writing",
+						settings.getScientificWritingGuideLink(),
+						50
+				));
+			}
 		}
 
 		// general student tasks

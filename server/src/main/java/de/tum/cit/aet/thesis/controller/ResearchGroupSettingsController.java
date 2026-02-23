@@ -81,6 +81,10 @@ public class ResearchGroupSettingsController {
 					newSettings.emailSettings().applicationNotificationEmail() == null ? null : newSettings.emailSettings().applicationNotificationEmail().trim());
 			toSave.setApplicationNotificationEmail(validatedEmail);
 		}
+		if (newSettings.writingGuideSettings() != null) {
+			String link = newSettings.writingGuideSettings().scientificWritingGuideLink();
+			toSave.setScientificWritingGuideLink(link != null && !link.trim().isEmpty() ? link.trim() : null);
+		}
 
 		ResearchGroupSettings saved = service.saveOrUpdate(toSave);
 		return ResponseEntity.ok(ResearchGroupSettingsDTO.fromEntity(saved));
