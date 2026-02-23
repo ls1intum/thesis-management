@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -65,4 +66,24 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 				)
 			""")
 	List<User> findStudentsWithActiveThesesByResearchGroupId(@Param("researchGroupId") UUID researchGroupId);
+
+	@Query("""
+			SELECT DISTINCT u FROM User u
+			JOIN UserGroup g ON u.id = g.id.userId AND g.id.group = 'student'
+			WHERE u.disabled = FALSE
+			AND COALESCE(u.lastLoginAt, u.joinedAt) < :cutoff
+			AND COALESCE(u.updatedAt, u.joinedAt) < :cutoff
+			AND NOT EXISTS (
+				SELECT 1 FROM UserGroup ug2
+				WHERE ug2.id.userId = u.id AND ug2.id.group IN ('admin', 'supervisor', 'advisor')
+			)
+			AND NOT EXISTS (
+				SELECT 1 FROM ThesisRole tr
+				WHERE tr.user.id = u.id AND tr.thesis.state NOT IN (
+					de.tum.cit.aet.thesis.constants.ThesisState.FINISHED,
+					de.tum.cit.aet.thesis.constants.ThesisState.DROPPED_OUT
+				)
+			)
+			""")
+	List<User> findInactiveStudentCandidates(@Param("cutoff") Instant cutoff);
 }

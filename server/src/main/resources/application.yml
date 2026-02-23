@@ -89,6 +89,7 @@ thesis-management:
   data-retention:
     cron: ${DATA_RETENTION_CRON:0 0 4 * * *}
     rejected-application-retention-days: ${REJECTED_APP_RETENTION_DAYS:365}
+    inactive-user-days: ${INACTIVE_USER_DAYS:365}
   data-export:
     path: ${DATA_EXPORT_PATH:data-exports}
     retention-days: ${DATA_EXPORT_RETENTION_DAYS:7}

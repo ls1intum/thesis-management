@@ -5,10 +5,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import de.tum.cit.aet.thesis.constants.ApplicationState;
 import de.tum.cit.aet.thesis.controller.payload.CreateApplicationPayload;
+import de.tum.cit.aet.thesis.controller.payload.CreateThesisPayload;
 import de.tum.cit.aet.thesis.controller.payload.ReplaceTopicPayload;
+import de.tum.cit.aet.thesis.entity.User;
 import de.tum.cit.aet.thesis.mock.BaseIntegrationTest;
 import de.tum.cit.aet.thesis.repository.ApplicationRepository;
 import de.tum.cit.aet.thesis.repository.ApplicationReviewerRepository;
+import de.tum.cit.aet.thesis.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -42,6 +45,12 @@ class DataRetentionServiceTest extends BaseIntegrationTest {
 
 	@Autowired
 	private ApplicationReviewerRepository applicationReviewerRepository;
+
+	@Autowired
+	private UserRepository userRepository;
+
+	@Autowired
+	private AuthenticationService authenticationService;
 
 	@Autowired
 	private EntityManager entityManager;
@@ -195,5 +204,129 @@ class DataRetentionServiceTest extends BaseIntegrationTest {
 
 		assertThat(deleted).isPositive();
 		assertThat(applicationRepository.findById(applicationId)).isEmpty();
+	}
+
+	// --- Inactive user disabling tests ---
+
+	private void backdateUserActivity(UUID userId, int daysAgo) {
+		Instant pastDate = Instant.now().minus(daysAgo, ChronoUnit.DAYS);
+		transactionTemplate.executeWithoutResult(status -> {
+			entityManager.createNativeQuery(
+							"UPDATE users SET last_login_at = :date, updated_at = :date, joined_at = :date WHERE user_id = :id")
+					.setParameter("date", pastDate)
+					.setParameter("id", userId)
+					.executeUpdate();
+			entityManager.clear();
+		});
+	}
+
+	@Test
+	void disablesStudentInactiveForMoreThanOneYear() throws Exception {
+		TestUser student = createRandomTestUser(List.of("student"));
+		backdateUserActivity(student.userId(), 400);
+
+		int disabled = dataRetentionService.disableInactiveUsers();
+
+		assertThat(disabled).isPositive();
+		User user = userRepository.findById(student.userId()).orElseThrow();
+		assertThat(user.isDisabled()).isTrue();
+	}
+
+	@Test
+	void doesNotDisableRecentlyActiveStudent() throws Exception {
+		TestUser student = createRandomTestUser(List.of("student"));
+		// Student was just created with a recent last_login_at, so should not be disabled
+
+		int disabled = dataRetentionService.disableInactiveUsers();
+
+		assertThat(disabled).isZero();
+		User user = userRepository.findById(student.userId()).orElseThrow();
+		assertThat(user.isDisabled()).isFalse();
+	}
+
+	@Test
+	void doesNotDisableStudentWithActiveThesis() throws Exception {
+		createTestEmailTemplate("THESIS_CREATED");
+
+		TestUser advisor = createRandomTestUser(List.of("supervisor", "advisor"));
+		UUID researchGroupId = createTestResearchGroup("Active Thesis RG", advisor.universityId());
+
+		TestUser student = createRandomTestUser(List.of("student"));
+
+		CreateThesisPayload thesisPayload = new CreateThesisPayload(
+				"Active Thesis Test",
+				"MASTER",
+				"ENGLISH",
+				List.of(student.userId()),
+				List.of(advisor.userId()),
+				List.of(advisor.userId()),
+				researchGroupId
+		);
+		mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses")
+						.header("Authorization", createRandomAdminAuthentication())
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(thesisPayload)))
+				.andReturn();
+
+		backdateUserActivity(student.userId(), 400);
+
+		int disabled = dataRetentionService.disableInactiveUsers();
+
+		assertThat(disabled).isZero();
+		User user = userRepository.findById(student.userId()).orElseThrow();
+		assertThat(user.isDisabled()).isFalse();
+	}
+
+	@Test
+	void doesNotDisableStudentWithRecentApplication() throws Exception {
+		TestUser student = createRandomTestUser(List.of("student"));
+		String studentAuth = generateTestAuthenticationHeader(student.universityId(), List.of("student"));
+
+		createTestApplication(studentAuth, "Recent Application");
+
+		backdateUserActivity(student.userId(), 400);
+
+		int disabled = dataRetentionService.disableInactiveUsers();
+
+		assertThat(disabled).isZero();
+		User user = userRepository.findById(student.userId()).orElseThrow();
+		assertThat(user.isDisabled()).isFalse();
+	}
+
+	@Test
+	void doesNotDisableSupervisorOrAdmin() throws Exception {
+		TestUser supervisor = createRandomTestUser(List.of("supervisor", "advisor"));
+		TestUser admin = createRandomTestUser(List.of("admin"));
+
+		backdateUserActivity(supervisor.userId(), 400);
+		backdateUserActivity(admin.userId(), 400);
+
+		int disabled = dataRetentionService.disableInactiveUsers();
+
+		assertThat(disabled).isZero();
+		assertThat(userRepository.findById(supervisor.userId()).orElseThrow().isDisabled()).isFalse();
+		assertThat(userRepository.findById(admin.userId()).orElseThrow().isDisabled()).isFalse();
+	}
+
+	@Test
+	void reEnablesDisabledUserOnLogin() throws Exception {
+		TestUser student = createRandomTestUser(List.of("student"));
+
+		// Manually disable the user
+		transactionTemplate.executeWithoutResult(status -> {
+			entityManager.createNativeQuery("UPDATE users SET disabled = TRUE WHERE user_id = :id")
+					.setParameter("id", student.userId())
+					.executeUpdate();
+			entityManager.clear();
+		});
+
+		// Simulate login via updateAuthenticatedUser
+		String authHeader = generateTestAuthenticationHeader(student.universityId(), List.of("student"));
+		mockMvc.perform(MockMvcRequestBuilders.get("/v2/user-info")
+						.header("Authorization", authHeader))
+				.andReturn();
+
+		User user = userRepository.findById(student.userId()).orElseThrow();
+		assertThat(user.isDisabled()).isFalse();
 	}
 }

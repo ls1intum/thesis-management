@@ -32,4 +32,5 @@
     <include file="changes/26_add_scientific_writing_guide_link_to_settings.sql" relativeToChangelogFile="true" />
     <include file="changes/27_data_retention_preparation.sql" relativeToChangelogFile="true" />
     <include file="changes/28_data_export.sql" relativeToChangelogFile="true" />
+    <include file="changes/29_user_disabled_flag.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>
