@@ -614,14 +614,19 @@ public class ThesisService {
 	 */
 	public Resource getAssessmentFile(Thesis thesis) {
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+		User currentUser = currentUserProvider().getUser();
+		String currentUserName = currentUser.getFirstName() + " " + currentUser.getLastName();
 		ThesisAssessment assessment = thesis.getAssessments().getFirst();
 		ThesisPresentation presentation = thesis.getPresentations().getFirst();
 
-		String students = String.join(", ", thesis.getStudents().stream().map(student -> student.getFirstName() + " " + student.getLastName()).toList());
-		String advisors = String.join(", ", thesis.getAdvisors().stream().map(advisor -> advisor.getFirstName() + " " + advisor.getLastName()).toList());
-		String supervisors = String.join(", ", thesis.getSupervisors().stream().map(supervisor -> supervisor.getFirstName() + " " + supervisor.getLastName()).toList());
+		String students = String.join(", ", thesis.getStudents().stream()
+				.map(student -> student.getFirstName() + " " + student.getLastName()).toList());
+		String advisors = String.join(", ", thesis.getAdvisors().stream()
+				.map(advisor -> advisor.getFirstName() + " " + advisor.getLastName()).toList());
+		String supervisors = String.join(", ", thesis.getSupervisors().stream()
+				.map(supervisor -> supervisor.getFirstName() + " " + supervisor.getLastName()).toList());
 
-		PDFBuilder builder = new PDFBuilder("Assessment of \"" + thesis.getTitle() + "\"");
+		PDFBuilder builder = new PDFBuilder("Assessment of \"" + thesis.getTitle() + "\"", currentUserName);
 
 		builder
 				.addData("Thesis Type", DataFormatter.formatConstantName(thesis.getType()))
