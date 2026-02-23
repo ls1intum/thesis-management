@@ -59,11 +59,10 @@ To address this, the application includes a time-based expiration mechanism that
 
 Prioritized by urgency and impact on GDPR compliance.
 
-### Priority 1 — High (address before next complaint)
+### Priority 1 — High (address quickly)
 
 - [ ] **Configurable application email content**: Add a per-research-group setting to control whether application notification emails include attachments (CV, examination report) and personal details, or only contain the student name, topic, and a link to the application in the system. This addresses a data privacy concern raised by the Lehrstuhl für Mikro- und Nanosystemtechnik about the inability to retract personal data from already-sent emails. Research groups with strict privacy requirements can disable attachments; others can keep the current behavior.
-- [ ] **Server-side consent tracking**: Consent to the privacy statement is currently stored only in the browser's localStorage, which is not auditable. Store consent with a timestamp in the database so there is a record of when each user consented and to which version of the privacy statement.
-- [ ] **Privacy statement versioning**: Track which version of the privacy statement each user consented to. When the statement changes, re-prompt users for consent. This is a natural extension of server-side consent tracking.
+- [ ] **Server-side consent tracking and privacy statement versioning**: The privacy notice consent checkbox ("I have read the privacy notice and agree to the processing of my data.") currently stores consent only in the browser's localStorage as a UX convenience — once checked and submitted, the checkbox stays pre-ticked on future profile edits so users don't have to re-check it every time. This is not auditable and not persistent across browsers. Replace with server-side tracking: add a `privacyConsentedAt` timestamp and `privacyVersion` field to the User entity. When the user checks the box and submits, store the consent on the server. On future visits, pre-tick the checkbox based on the server record instead of localStorage. When the privacy statement is updated (new version), clear the consent and re-prompt users to agree to the new version.
 - [ ] **Automatic disabling of inactive accounts after 1 year of inactivity**: Required to fulfill the retention promise in the privacy statement. Without this, user data is retained indefinitely.
 - [ ] **Reactivation of disabled accounts on login**: Necessary counterpart to the above — disabled users who log in again should have their account re-enabled automatically.
 
