@@ -60,5 +60,9 @@ thesis-management:
   data-retention:
     cron: "-"
     rejected-application-retention-days: 365
+  data-export:
+    path: data-exports
+    retention-days: 7
+    days-between-exports: 7
   storage:
     upload-location: uploads

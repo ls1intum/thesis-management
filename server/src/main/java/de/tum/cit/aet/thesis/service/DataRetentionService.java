@@ -17,17 +17,22 @@ public class DataRetentionService {
 	private static final Logger log = LoggerFactory.getLogger(DataRetentionService.class);
 
 	private final ApplicationRepository applicationRepository;
+	private final DataExportService dataExportService;
 	private final int retentionDays;
 
 	public DataRetentionService(ApplicationRepository applicationRepository,
+			DataExportService dataExportService,
 			@Value("${thesis-management.data-retention.rejected-application-retention-days}") int retentionDays) {
 		this.applicationRepository = applicationRepository;
+		this.dataExportService = dataExportService;
 		this.retentionDays = retentionDays;
 	}
 
 	@Scheduled(cron = "${thesis-management.data-retention.cron}")
 	public void runNightlyCleanup() {
 		deleteExpiredRejectedApplications();
+		dataExportService.processAllPendingExports();
+		dataExportService.deleteExpiredExports();
 	}
 
 	public int deleteExpiredRejectedApplications() {

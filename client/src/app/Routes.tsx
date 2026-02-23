@@ -56,6 +56,7 @@ const IntervieweeAssesmentPage = lazy(
 const InterviewBookingPage = lazy(
   () => import('../pages/InterviewBookingPage/InterviewBookingPage'),
 )
+const DataExportPage = lazy(() => import('../pages/DataExportPage/DataExportPage'))
 
 const AppRoutes = () => {
   const auth = useAuthenticationContext()
@@ -251,6 +252,14 @@ const AppRoutes = () => {
               <PublicArea size={publicBreakpointSize} handleScrollInView={true}>
                 <InterviewBookingPage />
               </PublicArea>
+            }
+          />
+          <Route
+            path='/data-export'
+            element={
+              <AuthenticatedArea>
+                <DataExportPage />
+              </AuthenticatedArea>
             }
           />
           <Route

@@ -6,6 +6,7 @@ import de.tum.cit.aet.thesis.constants.ThesisFeedbackType;
 import de.tum.cit.aet.thesis.constants.ThesisPresentationVisibility;
 import de.tum.cit.aet.thesis.cron.model.ApplicationRejectObject;
 import de.tum.cit.aet.thesis.entity.Application;
+import de.tum.cit.aet.thesis.entity.DataExport;
 import de.tum.cit.aet.thesis.entity.EmailTemplate;
 import de.tum.cit.aet.thesis.entity.InterviewSlot;
 import de.tum.cit.aet.thesis.entity.Interviewee;
@@ -626,6 +627,24 @@ public class MailingService {
 		}
 
 		return builder.toString();
+	}
+
+	/**
+	 * Sends an email notifying the user that their data export is ready for download.
+	 *
+	 * @param user the user who requested the export
+	 * @param export the completed data export
+	 */
+	public void sendDataExportReadyEmail(User user, DataExport export) {
+		EmailTemplate template = loadTemplate(null, "DATA_EXPORT_READY", "en");
+
+		String downloadUrl = config.getClientHost() + "/data-export";
+
+		new MailBuilder(config, template.getSubject(), template.getBodyHtml())
+				.addPrimaryRecipient(user)
+				.fillUserPlaceholders(user, "user")
+				.fillPlaceholder("downloadUrl", downloadUrl)
+				.send(javaMailSender, uploadService);
 	}
 
 	private String getThesisFilename(Thesis thesis, String name, String originalFilename) {

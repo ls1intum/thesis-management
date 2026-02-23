@@ -82,4 +82,12 @@ public interface ThesisRepository extends JpaRepository<Thesis, UUID> {
 	AND t.state <> 'FINISHED'
 """)
 	List<ResearchGroup> findActiveStudentThesisResearchGroups(@Param("userId") UUID userId);
+
+	@Query("""
+			SELECT DISTINCT t FROM Thesis t
+			JOIN t.roles r
+			WHERE r.id.userId = :userId
+			AND r.id.role = 'STUDENT'
+			""")
+	List<Thesis> findAllByStudentUserId(@Param("userId") UUID userId);
 }
