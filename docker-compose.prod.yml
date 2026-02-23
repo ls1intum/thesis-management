@@ -68,10 +68,6 @@ services:
       - MAIL_WORKSPACE_URL
       - MAIL_SENDER
       - MAIL_SIGNATURE
-      - CALDAV_ENABLED
-      - CALDAV_URL
-      - CALDAV_USERNAME
-      - CALDAV_PASSWORD
       - SCIENTIFIC_WRITING_GUIDE
     networks:
       - thesis-management-network

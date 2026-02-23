@@ -44,7 +44,6 @@ export interface IGlobalConfig {
   >
 
   default_supervisors: string[]
-  calendar_url: string
 
   keycloak: {
     client_id: string

@@ -57,9 +57,7 @@ const PresentationOverviewPage = () => {
     }
   }, [context.researchGroups])
 
-  const calendarUrl =
-    GLOBAL_CONFIG.calendar_url ||
-    `${GLOBAL_CONFIG.server_host}/api/v2/calendar/presentations${selectedGroup ? `/${selectedGroup.abbreviation}` : ''}`
+  const calendarUrl = `${GLOBAL_CONFIG.server_host}/api/v2/calendar/presentations${selectedGroup ? `/${selectedGroup.abbreviation}` : ''}`
 
   const scrollRef = useRef<HTMLDivElement>(null)
 

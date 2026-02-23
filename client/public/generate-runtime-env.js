@@ -18,7 +18,6 @@ const ALLOWED_ENVIRONMENT_VARIABLES = [
   'THESIS_TYPES',
   'CUSTOM_DATA',
   'THESIS_FILES',
-  'CALDAV_URL',
 ]
 
 async function generateConfig() {

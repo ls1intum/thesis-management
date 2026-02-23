@@ -137,7 +137,7 @@ for arg in "$@"; do
 done
 
 # ---------------------------------------------------------------------------
-# 1. Docker services (PostgreSQL + Keycloak + CalDAV)
+# 1. Docker services (PostgreSQL + Keycloak)
 # ---------------------------------------------------------------------------
 # These are long-lived infrastructure services that don't change with code
 # edits, so we only ensure they are running (docker compose up is idempotent).

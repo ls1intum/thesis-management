@@ -71,7 +71,6 @@ public class ThesisService {
 	private final ThesisAssessmentRepository thesisAssessmentRepository;
 	private final MailingService mailingService;
 	private final AccessManagementService accessManagementService;
-	private final ThesisPresentationService thesisPresentationService;
 	private final ThesisFeedbackRepository thesisFeedbackRepository;
 	private final ThesisFileRepository thesisFileRepository;
 	private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
@@ -90,7 +89,6 @@ public class ThesisService {
 	 * @param uploadService the upload service for file storage
 	 * @param mailingService the mailing service for sending notifications
 	 * @param accessManagementService the access management service
-	 * @param thesisPresentationService the thesis presentation service
 	 * @param thesisFeedbackRepository the thesis feedback repository
 	 * @param thesisFileRepository the thesis file repository
 	 * @param currentUserProviderProvider the provider for the current user context
@@ -108,7 +106,6 @@ public class ThesisService {
 			UploadService uploadService,
 			MailingService mailingService,
 			AccessManagementService accessManagementService,
-			ThesisPresentationService thesisPresentationService,
 			ThesisFeedbackRepository thesisFeedbackRepository, ThesisFileRepository thesisFileRepository,
 			ObjectProvider<CurrentUserProvider> currentUserProviderProvider, ResearchGroupRepository researchGroupRepository, ResearchGroupSettingsService researchGroupSettingsService
 	) {
@@ -121,7 +118,6 @@ public class ThesisService {
 		this.thesisAssessmentRepository = thesisAssessmentRepository;
 		this.mailingService = mailingService;
 		this.accessManagementService = accessManagementService;
-		this.thesisPresentationService = thesisPresentationService;
 		this.thesisFeedbackRepository = thesisFeedbackRepository;
 		this.thesisFileRepository = thesisFileRepository;
 		this.currentUserProviderProvider = currentUserProviderProvider;
@@ -310,8 +306,6 @@ public class ThesisService {
 
 		thesis = thesisRepository.save(thesis);
 
-		thesisPresentationService.updateThesisCalendarEvents(thesis);
-
 		return thesis;
 	}
 
@@ -326,8 +320,6 @@ public class ThesisService {
 		thesis.setInfo(infoText != null ? infoText : "");
 
 		thesis = thesisRepository.save(thesis);
-
-		thesisPresentationService.updateThesisCalendarEvents(thesis);
 
 		return thesis;
 	}
@@ -350,8 +342,6 @@ public class ThesisService {
 		}
 
 		thesis = thesisRepository.save(thesis);
-
-		thesisPresentationService.updateThesisCalendarEvents(thesis);
 
 		return thesis;
 	}

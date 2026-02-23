@@ -251,8 +251,6 @@ public class ThesisPresentationService {
 			mailingService.sendScheduledPresentationEmail("UPDATED", presentation, getPresentationInvite(presentation).toString());
 		}
 
-		updateThesisCalendarEvents(thesis);
-
 		return thesis;
 	}
 
@@ -288,12 +286,6 @@ public class ThesisPresentationService {
 		}
 
 		presentation.setState(ThesisPresentationState.SCHEDULED);
-
-		calendarService.deleteEvent(presentation.getCalendarEvent());
-
-		if (presentation.getVisibility().equals(ThesisPresentationVisibility.PUBLIC)) {
-			presentation.setCalendarEvent(calendarService.createEvent(createPresentationCalendarEvent(presentation)));
-		}
 
 		presentation = thesisPresentationRepository.save(presentation);
 
@@ -365,29 +357,11 @@ public class ThesisPresentationService {
 
 		thesis = thesisRepository.save(thesis);
 
-		calendarService.deleteEvent(presentation.getCalendarEvent());
-
 		if (presentation.getState() == ThesisPresentationState.SCHEDULED) {
 			mailingService.sendPresentationDeletedEmail(currentUserProvider().getUser(), presentation);
 		}
 
 		return thesis;
-	}
-
-	/**
-	 * Updates all calendar events associated with the presentations of the given thesis.
-	 *
-	 * @param thesis the thesis whose presentation calendar events should be updated
-	 */
-	public void updateThesisCalendarEvents(Thesis thesis) {
-		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
-		for (ThesisPresentation presentation : thesis.getPresentations()) {
-			String eventId = presentation.getCalendarEvent();
-
-			if (eventId != null) {
-				calendarService.updateEvent(eventId, createPresentationCalendarEvent(presentation));
-			}
-		}
 	}
 
 	/**
