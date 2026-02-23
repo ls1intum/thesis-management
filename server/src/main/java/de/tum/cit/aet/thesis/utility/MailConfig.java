@@ -42,7 +42,6 @@ public class MailConfig {
 	 *
 	 * @param enabled whether email sending is enabled
 	 * @param sender the sender email address
-	 * @param bccRecipientsList the BCC recipients list
 	 * @param mailSignature the email signature
 	 * @param workspaceUrl the workspace URL
 	 * @param clientHost the client host URL
@@ -53,7 +52,6 @@ public class MailConfig {
 	public MailConfig(
 			@Value("${thesis-management.mail.enabled}") boolean enabled,
 			@Value("${thesis-management.mail.sender}") InternetAddress sender,
-			@Value("${thesis-management.mail.bcc-recipients}") String bccRecipientsList,
 			@Value("${thesis-management.mail.signature}") String mailSignature,
 			@Value("${thesis-management.mail.workspace-url}") String workspaceUrl,
 			@Value("${thesis-management.client.host}") String clientHost,

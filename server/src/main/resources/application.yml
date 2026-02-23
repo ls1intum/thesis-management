@@ -93,7 +93,6 @@ thesis-management:
     sender: ${MAIL_SENDER:test@ios.ase.cit.tum.de}
     signature: ${MAIL_SIGNATURE:}
     workspace-url: ${MAIL_WORKSPACE_URL:https://slack.com}
-    bcc-recipients: ${MAIL_BCC_RECIPIENTS:}
   storage:
     upload-location: ${UPLOAD_FOLDER:uploads}
   scientific-writing-guide: ${SCIENTIFIC_WRITING_GUIDE:}

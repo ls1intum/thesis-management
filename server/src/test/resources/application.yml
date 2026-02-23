@@ -64,7 +64,6 @@ thesis-management:
     sender: test@ios.ase.cit.tum.de
     signature: ""
     workspace-url: https://slack.com
-    bcc-recipients: ""
   storage:
     upload-location: uploads
   scientific-writing-guide: http://localhost:3000/writing-guide
