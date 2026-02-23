@@ -3,7 +3,7 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
-    <changeSet id="23-seed-dev-test-data" author="claude" context="dev">
+    <changeSet id="23-seed-dev-test-data" author="claude" context="dev" runOnChange="true">
         <sqlFile
                 path="../manual/seed_dev_test_data.sql"
                 relativeToChangelogFile="true"/>

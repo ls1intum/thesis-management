@@ -166,8 +166,9 @@ public class UserDeletionService {
 	private UserDeletionResultDto performFullDeletion(User user) {
 		UUID userId = user.getId();
 
-		// Delete remaining applications
-		applicationRepository.deleteAllByUserId(userId);
+		// Delete remaining applications (use entity-based deletion to keep Hibernate session consistent)
+		List<Application> remainingApps = applicationRepository.findAllByUserId(userId);
+		applicationRepository.deleteAll(remainingApps);
 
 		// Delete topic roles
 		topicRoleRepository.deleteAllByIdUserId(userId);
@@ -175,7 +176,13 @@ public class UserDeletionService {
 		// Delete thesis roles (should be empty if no retention-blocked data)
 		thesisRoleRepository.deleteAllByIdUserId(userId);
 
-		// Delete user record (FK cascades handle notification_settings, user_groups, data_exports)
+		// Explicitly delete user-owned entities to avoid Hibernate session conflicts
+		// (UserGroup is EAGER-fetched and causes TransientPropertyValueException otherwise)
+		notificationSettingRepository.deleteAll(user.getNotificationSettings());
+		userGroupRepository.deleteByUserId(userId);
+		user.getGroups().clear();
+		user.getNotificationSettings().clear();
+
 		userRepository.delete(user);
 
 		log.info("Fully deleted user account {}", userId);
@@ -222,13 +229,13 @@ public class UserDeletionService {
 	}
 
 	private boolean hasActiveTheses(UUID userId) {
-		return thesisRoleRepository.findAllByIdUserId(userId).stream()
+		return thesisRoleRepository.findAllByIdUserIdWithThesis(userId).stream()
 				.anyMatch(role -> !TERMINAL_STATES.contains(role.getThesis().getState()));
 	}
 
 	private List<ThesisRole> getRetentionBlockedThesisRoles(UUID userId) {
 		Instant now = Instant.now();
-		return thesisRoleRepository.findAllByIdUserId(userId).stream()
+		return thesisRoleRepository.findAllByIdUserIdWithThesis(userId).stream()
 				.filter(role -> TERMINAL_STATES.contains(role.getThesis().getState()))
 				.filter(role -> computeRetentionExpiry(role).isAfter(now))
 				.toList();
@@ -254,7 +261,7 @@ public class UserDeletionService {
 		List<Application> applications = applicationRepository.findAllByUserId(userId);
 		for (Application app : applications) {
 			if (app.getState() == ApplicationState.REJECTED || app.getState() == ApplicationState.NOT_ASSESSED) {
-				applicationRepository.deleteApplicationById(app.getId());
+				applicationRepository.delete(app);
 			}
 		}
 	}

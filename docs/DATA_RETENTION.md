@@ -55,6 +55,52 @@ To address this, the application includes a time-based expiration mechanism that
 1. **Student transparency**: Without expiration, students whose applications are never reviewed would wait indefinitely without any response. The automatic rejection ensures they are notified and can reapply or look for alternatives.
 2. **Data minimization**: The expiration assigns a rejection date, which starts the 1-year retention clock and enables eventual data cleanup.
 
+## Account Deletion Implementation
+
+Self-service account deletion is available via **Settings > Account** and admin deletion via the **Administration** page. The system handles two scenarios depending on whether the user has thesis data under legal retention.
+
+### Scenario A: No Retention-Blocked Data
+
+When the user has no completed theses (or all thesis retention periods have expired), the account is **fully deleted**:
+
+1. All uploaded files (CV, degree report, examination report, avatar) are deleted from disk.
+2. Rejected/unassessed applications and data exports are deleted.
+3. Topic roles, thesis roles, and remaining applications are deleted.
+4. The user record is deleted (FK cascades remove notification settings, user groups, and data exports).
+
+### Scenario B: Thesis Data Under Retention
+
+When the user has completed theses within the 5-year retention window, the account is **soft-deleted** (deactivated):
+
+1. The account is disabled and marked with `deletion_requested_at` and `deletion_scheduled_for`.
+2. Non-essential data is cleared: avatar, projects, interests, special skills, custom data.
+3. **Profile data (name, email, university ID) and thesis-related files (CV, degree report, examination report) are preserved** so that professors can still find and reference thesis records by student name during the retention period.
+4. Notification settings and user groups are deleted.
+5. The authentication guard prevents the user from logging back in (SSO sync is blocked).
+
+The **nightly job** (`DataRetentionService`) checks all soft-deleted accounts. Once all retention periods have expired for a user, it performs the full deletion (Scenario A).
+
+### Preconditions
+
+Deletion is blocked if the user:
+- Is a **research group head** (must transfer leadership first).
+- Has **active (non-terminal) theses** (must complete or drop out first).
+
+### Endpoints
+
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| `GET` | `/v2/user-deletion/me/preview` | Any authenticated | Preview what would happen |
+| `DELETE` | `/v2/user-deletion/me` | Any authenticated | Self-service deletion |
+| `GET` | `/v2/user-deletion/{userId}/preview` | Admin | Preview for specific user |
+| `DELETE` | `/v2/user-deletion/{userId}` | Admin | Admin deletes user |
+
+### Database Changes (Migration 30)
+
+- Added columns to `users`: `anonymized_at`, `deletion_requested_at`, `deletion_scheduled_for`.
+- FK constraints changed to `ON DELETE CASCADE` for user-owned metadata (notification_settings, user_groups, data_exports).
+- FK constraints changed to `ON DELETE SET NULL` for audit references on retained records (thesis_assessments.created_by, thesis_comments.created_by, thesis_feedback.requested_by, thesis_files.uploaded_by, thesis_proposals.created_by, topics.created_by, email_templates.updated_by, research_groups.created_by/updated_by, topic_roles.assigned_by, thesis_roles.assigned_by).
+
 ## Implementation TODO
 
 Prioritized by urgency and impact on GDPR compliance.
@@ -62,7 +108,7 @@ Prioritized by urgency and impact on GDPR compliance.
 ### Priority 1 — High (address quickly)
 
 - [x] **Automatic deletion of rejected applications after 1 year**: The privacy statement promises this retention period. Without enforcement, rejected application data accumulates indefinitely, creating a documented discrepancy between the privacy statement and actual behavior.
-- [ ] **Account/data deletion endpoint**: There is currently no way for users to delete their account or data. Add a self-service account deletion feature or at minimum an admin endpoint to fully delete a user's data (Art. 17 right to erasure). Must respect the retention periods defined above (e.g. thesis data cannot be deleted before the 5-year period expires).
+- [x] **Account/data deletion endpoint**: Self-service and admin account deletion (Art. 17 right to erasure). See "Account Deletion Implementation" section below for details.
 - [ ] **Configurable application email content**: Add a per-research-group setting to control whether application notification emails include attachments (CV, examination report) and personal details, or only contain the student name, topic, and a link to the application in the system. This addresses a user request. Responding promptly demonstrates good faith.
 
 ### Priority 2 — Medium (implement within next months)
@@ -70,7 +116,7 @@ Prioritized by urgency and impact on GDPR compliance.
 - [x] **Data export endpoint**: Self-service GDPR data export feature (Art. 15 / Art. 20). Users can request an export from `/data-export`, which is processed overnight and generates a ZIP file containing profile data (JSON), applications, theses, assessments, and uploaded files. Users receive an email notification when ready. Downloads expire after 7 days, rate-limited to one request per 7 days.
 - [x] **Automatic disabling of inactive accounts after 1 year of inactivity**: Required to fulfill the retention promise in the privacy statement. Without this, user data is retained indefinitely.
 - [x] **Reactivation of disabled accounts on login**: Necessary counterpart to the above — disabled users who log in again should have their account re-enabled automatically.
-- [ ] **Deletion of disabled user accounts after linked data retention periods expire**: Completes the account lifecycle — once all linked thesis/application data has been cleaned up, the account itself should be removed.
+- [x] **Deletion of disabled user accounts after linked data retention periods expire**: Handled by the nightly job (`DataRetentionService.processDeferredDeletions`), which checks soft-deleted accounts and performs full deletion once all retention periods have expired.
 
 ### Priority 3 — Low (implement when capacity allows)
 

@@ -9,6 +9,9 @@ const TEST_USERS = [
   { name: 'supervisor', username: 'supervisor', password: 'supervisor' },
   { name: 'supervisor2', username: 'supervisor2', password: 'supervisor2' },
   { name: 'admin', username: 'admin', password: 'admin' },
+  { name: 'delete_old_thesis', username: 'delete_old_thesis', password: 'delete_old_thesis' },
+  { name: 'delete_recent_thesis', username: 'delete_recent_thesis', password: 'delete_recent_thesis' },
+  { name: 'delete_rejected_app', username: 'delete_rejected_app', password: 'delete_rejected_app' },
 ] as const
 
 for (const user of TEST_USERS) {
