@@ -153,11 +153,6 @@ public class UserDeletionService {
 		} else {
 			// Retention active — only delete avatar (cosmetic), keep CV/degree/exam
 			// as they are part of the thesis evaluation process.
-			// TODO: Once application file snapshotting is implemented (i.e. copying cvFilename,
-			//  degreeFilename, and examinationFilename onto the Application or Thesis at submission
-			//  time), we can delete user.cvFilename, user.degreeFilename, and
-			//  user.examinationFilename here as well, because the snapshots on the retained
-			//  thesis/application records would still be available for evaluation purposes.
 			result = performSoftDeletion(user, retentionBlockedRoles);
 			uploadService.deleteFile(user.getAvatar());
 		}
@@ -175,38 +170,42 @@ public class UserDeletionService {
 				.stream().map(User::getId).toList();
 
 		for (UUID userId : pendingUserIds) {
-			User user = userRepository.findById(userId).orElse(null);
-			if (user == null) {
-				continue;
-			}
-
-			List<ThesisRole> retentionBlocked = getRetentionBlockedThesisRoles(userId);
-			if (retentionBlocked.isEmpty()) {
-				log.info("Retention expired for user {}, performing full cleanup", userId);
-
-				// Collect file paths before DB changes
-				List<String> exportFilePaths = collectExportFilePaths(user);
-				List<String> userFilePaths = collectUserFilePaths(user);
-
-				// Delete all remaining related data
-				deleteDataExportRecords(user);
-				List<Application> remainingApps = applicationRepository.findAllByUserId(userId);
-				for (Application app : remainingApps) {
-					applicationReviewerRepository.deleteByApplicationId(app.getId());
+			try {
+				User user = userRepository.findById(userId).orElse(null);
+				if (user == null) {
+					continue;
 				}
-				applicationRepository.deleteAllByUserId(userId);
-				topicRoleRepository.deleteAllByIdUserId(userId);
-				thesisRoleRepository.deleteAllByIdUserId(userId);
 
-				// Fully anonymize the tombstone (clear name + file references)
-				// anonymizeUser clears the persistence context and re-fetches,
-				// so we must set deletionScheduledFor via a separate query.
-				anonymizeUser(user);
-				userRepository.clearDeletionScheduledFor(userId);
+				List<ThesisRole> retentionBlocked = getRetentionBlockedThesisRoles(userId);
+				if (retentionBlocked.isEmpty()) {
+					log.info("Retention expired for user {}, performing full cleanup", userId);
 
-				// Delete files after DB operations succeeded
-				deleteFilePaths(userFilePaths);
-				deleteExportFiles(exportFilePaths);
+					// Collect file paths before DB changes
+					List<String> exportFilePaths = collectExportFilePaths(user);
+					List<String> userFilePaths = collectUserFilePaths(user);
+
+					// Delete all remaining related data
+					deleteDataExportRecords(user);
+					List<Application> remainingApps = applicationRepository.findAllByUserId(userId);
+					for (Application app : remainingApps) {
+						applicationReviewerRepository.deleteByApplicationId(app.getId());
+					}
+					applicationRepository.deleteAllByUserId(userId);
+					topicRoleRepository.deleteAllByIdUserId(userId);
+					thesisRoleRepository.deleteAllByIdUserId(userId);
+
+					// Fully anonymize the tombstone (clear name + file references)
+					// anonymizeUser clears the persistence context and re-fetches,
+					// so we must set deletionScheduledFor via a separate query.
+					anonymizeUser(user);
+					userRepository.clearDeletionScheduledFor(userId);
+
+					// Delete files after DB operations succeeded
+					deleteFilePaths(userFilePaths);
+					deleteExportFiles(exportFilePaths);
+				}
+			} catch (Exception e) {
+				log.error("Failed to process deferred deletion for user {}: {}", userId, e.getMessage(), e);
 			}
 		}
 	}

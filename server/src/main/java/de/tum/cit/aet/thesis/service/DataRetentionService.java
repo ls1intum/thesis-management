@@ -45,11 +45,19 @@ public class DataRetentionService {
 
 	@Scheduled(cron = "${thesis-management.data-retention.cron}")
 	public void runNightlyCleanup() {
-		deleteExpiredRejectedApplications();
-		disableInactiveUsers();
-		dataExportService.processAllPendingExports();
-		dataExportService.deleteExpiredExports();
-		userDeletionService.processDeferredDeletions();
+		runStep("deleteExpiredRejectedApplications", this::deleteExpiredRejectedApplications);
+		runStep("disableInactiveUsers", this::disableInactiveUsers);
+		runStep("processAllPendingExports", dataExportService::processAllPendingExports);
+		runStep("deleteExpiredExports", dataExportService::deleteExpiredExports);
+		runStep("processDeferredDeletions", userDeletionService::processDeferredDeletions);
+	}
+
+	private void runStep(String name, Runnable step) {
+		try {
+			step.run();
+		} catch (Exception e) {
+			log.error("Nightly cleanup step '{}' failed: {}", name, e.getMessage(), e);
+		}
 	}
 
 	public int disableInactiveUsers() {
@@ -61,10 +69,8 @@ public class DataRetentionService {
 			return 0;
 		}
 
-		for (User user : toDisable) {
-			user.setDisabled(true);
-			userRepository.save(user);
-		}
+		toDisable.forEach(user -> user.setDisabled(true));
+		userRepository.saveAll(toDisable);
 
 		log.info("Disabled {} inactive student accounts (inactive for more than {} days)", toDisable.size(), inactiveUserDays);
 

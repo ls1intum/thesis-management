@@ -75,11 +75,6 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
 	@Modifying
 	@Transactional
-	@Query("DELETE FROM User u WHERE u.id = :userId")
-	void deleteUserById(@Param("userId") UUID userId);
-
-	@Modifying
-	@Transactional
 	@Query("UPDATE User u SET u.deletionScheduledFor = NULL WHERE u.id = :userId")
 	void clearDeletionScheduledFor(@Param("userId") UUID userId);
 

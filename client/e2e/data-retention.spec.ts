@@ -17,7 +17,7 @@ test.describe('Data Retention - Admin Operations', () => {
 
     // The application may have been deleted in a prior test run; check if it loaded
     const heading = page.getByRole('heading', { name: /Student2 User/i })
-    const hasApplication = await heading.isVisible({ timeout: 30_000 }).catch(() => false)
+    const hasApplication = await heading.waitFor({ state: 'visible', timeout: 30_000 }).then(() => true).catch(() => false)
     if (!hasApplication) {
       // Application was already deleted in a prior run — skip gracefully
       return

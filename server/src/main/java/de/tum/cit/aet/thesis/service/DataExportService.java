@@ -83,7 +83,6 @@ public class DataExportService {
 		}
 	}
 
-	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public DataExport requestDataExport(User user) {
 		RequestStatus status = canRequestDataExport(user);
@@ -136,7 +135,6 @@ public class DataExportService {
 				.orElseThrow(() -> new ResourceNotFoundException("Data export not found"));
 	}
 
-	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Resource downloadDataExport(DataExport export, User user) {
 		if (!export.getUser().getId().equals(user.getId()) && !user.hasAnyGroup("admin")) {
@@ -193,7 +191,8 @@ public class DataExportService {
 		}
 	}
 
-	private void createDataExport(DataExport export) throws IOException {
+	@Transactional
+	void createDataExport(DataExport export) throws IOException {
 		export.setState(DataExportState.IN_CREATION);
 
 		User user = export.getUser();
@@ -241,7 +240,7 @@ public class DataExportService {
 
 			// README.txt
 			zos.putNextEntry(new ZipEntry("README.txt"));
-			zos.write(buildReadme().getBytes());
+			zos.write(buildReadme().getBytes(java.nio.charset.StandardCharsets.UTF_8));
 			zos.closeEntry();
 
 			// User-uploaded files
@@ -260,7 +259,12 @@ public class DataExportService {
 		for (DataExport export : expired) {
 			try {
 				if (export.getFilePath() != null) {
-					Files.deleteIfExists(Path.of(export.getFilePath()));
+					Path resolvedPath = Path.of(export.getFilePath()).normalize();
+					if (resolvedPath.startsWith(exportPath.normalize())) {
+						Files.deleteIfExists(resolvedPath);
+					} else {
+						log.warn("Skipping export file deletion outside expected directory: {}", export.getFilePath());
+					}
 				}
 
 				DataExportState newState = export.getState() == DataExportState.DOWNLOADED
