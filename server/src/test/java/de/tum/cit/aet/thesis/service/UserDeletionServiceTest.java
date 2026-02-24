@@ -64,6 +64,19 @@ class UserDeletionServiceTest extends BaseIntegrationTest {
 	@Autowired
 	private TransactionTemplate transactionTemplate;
 
+	// --- Helper: assert that a user row is an anonymized tombstone ---
+	private void assertTombstone(UUID userId) {
+		User tombstone = userRepository.findById(userId).orElseThrow(
+				() -> new AssertionError("Expected tombstone user row to exist for " + userId));
+		assertThat(tombstone.isAnonymized()).isTrue();
+		assertThat(tombstone.isDisabled()).isTrue();
+		assertThat(tombstone.getDeletionRequestedAt()).isNotNull();
+		assertThat(tombstone.getFirstName()).isNull();
+		assertThat(tombstone.getLastName()).isNull();
+		assertThat(tombstone.getEmail()).isNull();
+		assertThat(tombstone.getUniversityId()).isNotNull(); // preserved for SSO identification
+	}
+
 	// --- Helper: create a student with a completed thesis (backdated) ---
 	private record StudentWithThesis(TestUser student, UUID thesisId, UUID researchGroupId) {}
 
@@ -218,7 +231,7 @@ class UserDeletionServiceTest extends BaseIntegrationTest {
 			var result = userDeletionService.deleteOrAnonymizeUser(student.userId());
 
 			assertThat(result.result()).isEqualTo("DELETED");
-			assertThat(userRepository.findById(student.userId())).isEmpty();
+			assertTombstone(student.userId());
 		}
 
 		@Test
@@ -232,7 +245,7 @@ class UserDeletionServiceTest extends BaseIntegrationTest {
 			var result = userDeletionService.deleteOrAnonymizeUser(student.userId());
 
 			assertThat(result.result()).isEqualTo("DELETED");
-			assertThat(userRepository.findById(student.userId())).isEmpty();
+			assertTombstone(student.userId());
 			assertThat(applicationRepository.findById(appId)).isEmpty();
 		}
 
@@ -243,7 +256,7 @@ class UserDeletionServiceTest extends BaseIntegrationTest {
 			var result = userDeletionService.deleteOrAnonymizeUser(swt.student().userId());
 
 			assertThat(result.result()).isEqualTo("DELETED");
-			assertThat(userRepository.findById(swt.student().userId())).isEmpty();
+			assertTombstone(swt.student().userId());
 			assertThat(thesisRoleRepository.findAllByIdUserId(swt.student().userId())).isEmpty();
 		}
 
@@ -378,7 +391,7 @@ class UserDeletionServiceTest extends BaseIntegrationTest {
 			userDeletionService.deleteOrAnonymizeUser(student.userId());
 
 			org.junit.jupiter.api.Assertions.assertThrows(
-					Exception.class,
+					de.tum.cit.aet.thesis.exception.request.AccessDeniedException.class,
 					() -> userDeletionService.deleteOrAnonymizeUser(student.userId())
 			);
 		}
@@ -417,7 +430,12 @@ class UserDeletionServiceTest extends BaseIntegrationTest {
 
 			userDeletionService.processDeferredDeletions();
 
-			assertThat(userRepository.findById(swt.student().userId())).isEmpty();
+			// After deferred deletion, user is fully anonymized tombstone with no scheduled deletion
+			User tombstone = userRepository.findById(swt.student().userId()).orElseThrow();
+			assertThat(tombstone.isAnonymized()).isTrue();
+			assertThat(tombstone.getFirstName()).isNull();
+			assertThat(tombstone.getLastName()).isNull();
+			assertThat(tombstone.getDeletionScheduledFor()).isNull();
 		}
 
 		@Test
@@ -481,7 +499,7 @@ class UserDeletionServiceTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 
 			assertThat(response).contains("DELETED");
-			assertThat(userRepository.findById(student.userId())).isEmpty();
+			assertTombstone(student.userId());
 		}
 
 		@Test
@@ -522,7 +540,7 @@ class UserDeletionServiceTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 
 			assertThat(response).contains("DELETED");
-			assertThat(userRepository.findById(student.userId())).isEmpty();
+			assertTombstone(student.userId());
 		}
 
 		@Test

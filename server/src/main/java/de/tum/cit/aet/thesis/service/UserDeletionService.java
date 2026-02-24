@@ -52,6 +52,7 @@ public class UserDeletionService {
 	private final UserGroupRepository userGroupRepository;
 	private final NotificationSettingRepository notificationSettingRepository;
 	private final UploadService uploadService;
+	private final jakarta.persistence.EntityManager entityManager;
 	private final Path dataExportPath;
 
 	public UserDeletionService(
@@ -65,6 +66,7 @@ public class UserDeletionService {
 			UserGroupRepository userGroupRepository,
 			NotificationSettingRepository notificationSettingRepository,
 			UploadService uploadService,
+			jakarta.persistence.EntityManager entityManager,
 			@Value("${thesis-management.data-export.path}") String dataExportPath) {
 		this.userRepository = userRepository;
 		this.thesisRoleRepository = thesisRoleRepository;
@@ -76,6 +78,7 @@ public class UserDeletionService {
 		this.userGroupRepository = userGroupRepository;
 		this.notificationSettingRepository = notificationSettingRepository;
 		this.uploadService = uploadService;
+		this.entityManager = entityManager;
 		this.dataExportPath = Path.of(dataExportPath);
 	}
 
@@ -166,17 +169,35 @@ public class UserDeletionService {
 	}
 
 	public void processDeferredDeletions() {
-		List<User> pendingUsers = userRepository.findAllByDeletionRequestedAtIsNotNull();
+		List<User> pendingUsers = userRepository.findAllByDeletionScheduledForIsNotNull();
 
 		for (User user : pendingUsers) {
 			List<ThesisRole> retentionBlocked = getRetentionBlockedThesisRoles(user.getId());
 			if (retentionBlocked.isEmpty()) {
-				log.info("Retention expired for user {}, performing full deletion", user.getId());
+				log.info("Retention expired for user {}, performing full cleanup", user.getId());
+
+				// Collect file paths before DB changes
 				List<String> exportFilePaths = collectExportFilePaths(user);
+				List<String> userFilePaths = collectUserFilePaths(user);
+
+				// Delete all remaining related data
 				deleteDataExportRecords(user);
-				performFullDeletion(user);
+				List<Application> remainingApps = applicationRepository.findAllByUserId(user.getId());
+				for (Application app : remainingApps) {
+					applicationReviewerRepository.deleteByApplicationId(app.getId());
+				}
+				applicationRepository.deleteAllByUserId(user.getId());
+				topicRoleRepository.deleteAllByIdUserId(user.getId());
+				thesisRoleRepository.deleteAllByIdUserId(user.getId());
+
+				// Fully anonymize the tombstone (clear name + file references)
+				// anonymizeUser clears the persistence context and re-fetches,
+				// so we must set deletionScheduledFor via a separate query.
+				anonymizeUser(user);
+				userRepository.clearDeletionScheduledFor(user.getId());
+
 				// Delete files after DB operations succeeded
-				deleteAllUserFiles(user);
+				deleteFilePaths(userFilePaths);
 				deleteExportFiles(exportFilePaths);
 			}
 		}
@@ -199,12 +220,14 @@ public class UserDeletionService {
 		// Delete thesis roles (should be empty if no retention-blocked data)
 		thesisRoleRepository.deleteAllByIdUserId(userId);
 
-		// Delete the user via JPQL to avoid Hibernate session conflicts with
-		// eagerly-loaded collections (groups, notification settings) that may
-		// reference already-deleted rows after the JPQL deletes above.
+		// Delete user-owned data
 		notificationSettingRepository.deleteByUserId(userId);
 		userGroupRepository.deleteByUserId(userId);
-		userRepository.deleteUserById(userId);
+
+		// Keep the user row as a tombstone to prevent re-creation via Keycloak SSO.
+		// The universityId is preserved so that updateAuthenticatedUser() finds
+		// this row and the isAnonymized() check blocks access.
+		anonymizeUser(user);
 
 		log.info("Fully deleted user account {}", userId);
 		return new UserDeletionResultDto("DELETED", "Your account and all associated data have been permanently deleted.");
@@ -214,20 +237,29 @@ public class UserDeletionService {
 		Instant now = Instant.now();
 		Instant earliestDeletion = computeEarliestFullDeletion(retentionBlockedRoles);
 
-		// Deactivate the account but keep profile data intact so thesis records
-		// remain searchable by name during the legal retention period.
+		// Deactivate the account but keep name and thesis-related files intact
+		// so thesis records remain searchable during the legal retention period.
 		user.setDisabled(true);
+		user.setAnonymizedAt(now);
 		user.setDeletionRequestedAt(now);
 		user.setDeletionScheduledFor(earliestDeletion);
 
-		// Delete non-essential data that is not needed for thesis retention.
-		// Keep CV, degree report, and examination report as they are part of
-		// the thesis evaluation process and may still need to be referenced.
+		// Clear non-essential data
+		user.setEmail(null);
+		user.setGender(null);
+		user.setNationality(null);
+		user.setStudyDegree(null);
+		user.setStudyProgram(null);
+		user.setEnrolledAt(null);
 		user.setAvatar(null);
 		user.setProjects(null);
 		user.setInterests(null);
 		user.setSpecialSkills(null);
 		user.setCustomData(new HashMap<>());
+		user.setResearchGroup(null);
+
+		// Keep: universityId, firstName, lastName, matriculationNumber,
+		// cvFilename, degreeFilename, examinationFilename (needed for thesis evaluation)
 
 		userRepository.save(user);
 
@@ -242,11 +274,61 @@ public class UserDeletionService {
 						+ formatDate(earliestDeletion) + ").");
 	}
 
+	/**
+	 * Converts the user row into a minimal tombstone that prevents re-creation
+	 * via Keycloak SSO. Only universityId is preserved for identification;
+	 * all personal data is cleared.
+	 */
+	private void anonymizeUser(User user) {
+		// Clear persistence context to avoid stale entity references
+		// from prior JPQL deletes (e.g. UserGroup, NotificationSetting).
+		entityManager.clear();
+		User freshUser = userRepository.findById(user.getId()).orElseThrow();
+
+		Instant now = Instant.now();
+		freshUser.setDisabled(true);
+		freshUser.setAnonymizedAt(now);
+		freshUser.setDeletionRequestedAt(now);
+		freshUser.setFirstName(null);
+		freshUser.setLastName(null);
+		freshUser.setEmail(null);
+		freshUser.setMatriculationNumber(null);
+		freshUser.setGender(null);
+		freshUser.setNationality(null);
+		freshUser.setStudyDegree(null);
+		freshUser.setStudyProgram(null);
+		freshUser.setEnrolledAt(null);
+		freshUser.setAvatar(null);
+		freshUser.setCvFilename(null);
+		freshUser.setDegreeFilename(null);
+		freshUser.setExaminationFilename(null);
+		freshUser.setProjects(null);
+		freshUser.setInterests(null);
+		freshUser.setSpecialSkills(null);
+		freshUser.setCustomData(new HashMap<>());
+		freshUser.setResearchGroup(null);
+		userRepository.save(freshUser);
+	}
+
+	private List<String> collectUserFilePaths(User user) {
+		return java.util.stream.Stream.of(
+				user.getCvFilename(), user.getDegreeFilename(),
+				user.getExaminationFilename(), user.getAvatar())
+				.filter(f -> f != null && !f.isBlank())
+				.toList();
+	}
+
 	private void deleteAllUserFiles(User user) {
 		uploadService.deleteFile(user.getCvFilename());
 		uploadService.deleteFile(user.getDegreeFilename());
 		uploadService.deleteFile(user.getExaminationFilename());
 		uploadService.deleteFile(user.getAvatar());
+	}
+
+	private void deleteFilePaths(List<String> filenames) {
+		for (String filename : filenames) {
+			uploadService.deleteFile(filename);
+		}
 	}
 
 	private boolean hasActiveTheses(UUID userId) {
