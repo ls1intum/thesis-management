@@ -54,7 +54,7 @@ export function formatUser(user: IMinimalUser, options: Partial<IFormatUserOptio
 }
 
 export function wordsToFilename(words: string) {
-  return words.replace(' ', ' ')
+  return words.replace(/ /g, '_')
 }
 
 export function formatUserFilename(user: ILightUser): string {
