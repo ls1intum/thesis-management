@@ -2,6 +2,7 @@ package de.tum.cit.aet.thesis.service;
 
 import de.tum.cit.aet.thesis.constants.UploadFileType;
 import de.tum.cit.aet.thesis.exception.UploadException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,7 @@ import java.util.HexFormat;
 import java.util.Set;
 
 /** Handles file uploads and retrieval, including size and type validation and content-based hashing. */
+@Slf4j
 @Service
 public class UploadService {
 	private static final Logger log = LoggerFactory.getLogger(UploadService.class);
@@ -36,7 +38,7 @@ public class UploadService {
 	 */
 	@Autowired
 	public UploadService(@Value("${thesis-management.storage.upload-location}") String uploadLocation) {
-		this.rootLocation = Path.of(uploadLocation);
+		this.rootLocation = Path.of(uploadLocation).toAbsolutePath().normalize();
 
 		File uploadDirectory = rootLocation.toFile();
 
@@ -87,13 +89,14 @@ public class UploadService {
 			}
 
 			String filename = StringUtils.cleanPath(computeFileHash(file) + "." + extension);
+			Path target = rootLocation.resolve(filename).normalize();
 
-			if (filename.contains("..")) {
-				throw new UploadException("Cannot store file with relative path outside current directory");
+			if (!target.startsWith(rootLocation)) {
+				throw new UploadException("Cannot store file outside upload directory");
 			}
 
 			try (InputStream inputStream = file.getInputStream()) {
-				Files.copy(inputStream, rootLocation.resolve(filename), StandardCopyOption.REPLACE_EXISTING);
+				Files.copy(inputStream, target, StandardCopyOption.REPLACE_EXISTING);
 
 				return filename;
 			}
@@ -110,11 +113,13 @@ public class UploadService {
 	 */
 	public FileSystemResource load(String filename) {
 		try {
-			if (filename.contains("..")) {
-				throw new UploadException("Cannot load file with relative path outside current directory");
+			Path resolved = rootLocation.resolve(filename).normalize();
+
+			if (!resolved.startsWith(rootLocation)) {
+				throw new UploadException("Cannot load file outside upload directory");
 			}
 
-			FileSystemResource file =  new FileSystemResource(rootLocation.resolve(filename));
+			FileSystemResource file = new FileSystemResource(resolved);
 
 			file.contentLength();
 

@@ -137,7 +137,7 @@ class UploadServiceTest {
 		void load_PathTraversal_ThrowsException() {
 			assertThatThrownBy(() -> uploadService.load("../../../etc/passwd"))
 					.isInstanceOf(UploadException.class)
-					.hasMessageContaining("relative path");
+					.hasMessageContaining("outside upload directory");
 		}
 
 		@Test
