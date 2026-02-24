@@ -166,6 +166,11 @@ public class UploadService {
 		}
 	}
 
+	/**
+	 * Deletes a file from the upload directory.
+	 *
+	 * @param filename the name of the file to delete
+	 */
 	public void deleteFile(String filename) {
 		if (filename == null || filename.isBlank()) {
 			return;
