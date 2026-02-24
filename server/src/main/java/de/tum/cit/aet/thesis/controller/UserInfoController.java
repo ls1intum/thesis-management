@@ -176,9 +176,14 @@ public class UserInfoController {
 			return ResponseEntity.notFound().build();
 		}
 
+		String oldAvatar = user.getAvatar();
 		String storedFilename = uploadService.storeBytes(imageBytes.get(), "png", 1024 * 1024);
 		user.setAvatar(storedFilename);
 		user = userRepository.save(user);
+
+		if (oldAvatar != null && !oldAvatar.equals(storedFilename)) {
+			uploadService.deleteFile(oldAvatar);
+		}
 
 		return ResponseEntity.ok(UserDto.fromUserEntity(user));
 	}

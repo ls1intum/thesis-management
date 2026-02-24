@@ -23,6 +23,11 @@ public class GravatarService {
 
 	private static final String AVATAR_LOOKUP_URL = "https://www.gravatar.com/avatar/";
 
+	private final HttpClient httpClient = HttpClient.newBuilder()
+			.connectTimeout(Duration.ofSeconds(10))
+			.followRedirects(HttpClient.Redirect.NORMAL)
+			.build();
+
 	/**
 	 * Looks up a profile picture for the given email address.
 	 *
@@ -37,11 +42,7 @@ public class GravatarService {
 		String hash = sha256Hex(email.trim().toLowerCase());
 		String lookupUrl = AVATAR_LOOKUP_URL + hash + "?s=400&d=404";
 
-		try (HttpClient httpClient = HttpClient.newBuilder()
-				.connectTimeout(Duration.ofSeconds(10))
-				.followRedirects(HttpClient.Redirect.NORMAL)
-				.build()) {
-
+		try {
 			HttpRequest request = HttpRequest.newBuilder()
 					.uri(URI.create(lookupUrl))
 					.timeout(Duration.ofSeconds(10))

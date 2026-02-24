@@ -201,6 +201,7 @@ public class DataExportService {
 	}
 
 	/** Processes all pending data export requests by generating ZIP files and sending notification emails. */
+	@Transactional
 	public void processAllPendingExports() {
 		List<DataExport> pending = dataExportRepository.findAllByStateIn(
 				List.of(DataExportState.REQUESTED));
@@ -217,15 +218,19 @@ public class DataExportService {
 				createDataExport(export);
 			} catch (Exception e) {
 				log.error("Failed to create data export {}: {}", export.getId(), e.getMessage(), e);
-				export.setState(DataExportState.FAILED);
-				export.setCreationFinishedAt(Instant.now());
-				dataExportRepository.save(export);
+				// Re-fetch the entity because claimForProcessing() used a JPQL UPDATE
+				// that bypassed the persistence context, leaving this entity stale.
+				DataExport failed = dataExportRepository.findById(export.getId()).orElse(null);
+				if (failed != null) {
+					failed.setState(DataExportState.FAILED);
+					failed.setCreationFinishedAt(Instant.now());
+					dataExportRepository.save(failed);
+				}
 			}
 		}
 	}
 
-	@Transactional
-	void createDataExport(DataExport export) throws IOException {
+	private void createDataExport(DataExport export) throws IOException {
 		export.setState(DataExportState.IN_CREATION);
 
 		User user = export.getUser();

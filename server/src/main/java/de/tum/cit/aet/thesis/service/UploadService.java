@@ -3,6 +3,8 @@ package de.tum.cit.aet.thesis.service;
 import de.tum.cit.aet.thesis.constants.UploadFileType;
 import de.tum.cit.aet.thesis.exception.UploadException;
 import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
@@ -24,6 +26,7 @@ import java.util.Set;
 /** Handles file uploads and retrieval, including size and type validation and content-based hashing. */
 @Service
 public class UploadService {
+	private static final Logger log = LoggerFactory.getLogger(UploadService.class);
 	private final Path rootLocation;
 
 	/**
@@ -170,7 +173,7 @@ public class UploadService {
 			}
 			Files.deleteIfExists(resolved);
 		} catch (IOException e) {
-			// Log but don't throw — best-effort file cleanup
+			log.warn("Failed to delete file {}: {}", filename, e.getMessage());
 		}
 	}
 
