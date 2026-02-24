@@ -36,4 +36,7 @@ public class ResearchGroupSettings {
 
 	@Column(name = "scientific_writing_guide_link")
 	private String scientificWritingGuideLink;
+
+	@Column(name = "include_application_data_in_email", nullable = false)
+	private boolean includeApplicationDataInEmail = false;
 }

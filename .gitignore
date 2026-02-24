@@ -3,6 +3,7 @@
 db_backups
 uploads
 postfix-config
+server/data-exports/
 
 # User-specific stuff
 .idea

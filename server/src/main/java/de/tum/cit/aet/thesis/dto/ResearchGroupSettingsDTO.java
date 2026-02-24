@@ -7,7 +7,8 @@ public record ResearchGroupSettingsDTO(
 		ResearchGroupSettingsPresentationDTO presentationSettings,
 		ResearchGroupSettingsPhasesDTO phaseSettings,
 		ResearchGroupSettingsEmailDTO emailSettings,
-		ResearchGroupSettingsWritingGuideDTO writingGuideSettings
+		ResearchGroupSettingsWritingGuideDTO writingGuideSettings,
+		ResearchGroupSettingsApplicationEmailDTO applicationEmailSettings
 ) {
 	public static ResearchGroupSettingsDTO fromEntity(ResearchGroupSettings settings) {
 		return new ResearchGroupSettingsDTO(
@@ -15,7 +16,8 @@ public record ResearchGroupSettingsDTO(
 				ResearchGroupSettingsPresentationDTO.fromEntity(settings),
 				ResearchGroupSettingsPhasesDTO.fromEntity(settings),
 				ResearchGroupSettingsEmailDTO.fromEntity(settings),
-				ResearchGroupSettingsWritingGuideDTO.fromEntity(settings)
+				ResearchGroupSettingsWritingGuideDTO.fromEntity(settings),
+				ResearchGroupSettingsApplicationEmailDTO.fromEntity(settings)
 		);
 	}
 }

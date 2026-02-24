@@ -1,5 +1,6 @@
 package de.tum.cit.aet.thesis.controller.payload;
 
+import de.tum.cit.aet.thesis.dto.ResearchGroupSettingsApplicationEmailDTO;
 import de.tum.cit.aet.thesis.dto.ResearchGroupSettingsEmailDTO;
 import de.tum.cit.aet.thesis.dto.ResearchGroupSettingsPhasesDTO;
 import de.tum.cit.aet.thesis.dto.ResearchGroupSettingsPresentationDTO;
@@ -12,6 +13,7 @@ public record UpdateResearchGroupSettingsPayload(
 		ResearchGroupSettingsPresentationDTO presentationSettings,
 		ResearchGroupSettingsPhasesDTO phaseSettings,
 		ResearchGroupSettingsEmailDTO emailSettings,
-		ResearchGroupSettingsWritingGuideDTO writingGuideSettings
+		ResearchGroupSettingsWritingGuideDTO writingGuideSettings,
+		ResearchGroupSettingsApplicationEmailDTO applicationEmailSettings
 ) {
 }

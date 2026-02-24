@@ -75,19 +75,26 @@ public class MailingService {
 	 * @param application the newly created application
 	 */
 	public void sendApplicationCreatedEmail(Application application) {
+		boolean includeData = application.getResearchGroup().getResearchGroupSettings() != null
+				&& application.getResearchGroup().getResearchGroupSettings().isIncludeApplicationDataInEmail();
+
 		EmailTemplate researchGroupEmailTemplate = loadTemplate(
 				application.getResearchGroup().getId(),
 				"APPLICATION_CREATED_CHAIR",
 				"en");
 
-		MailBuilder researchGroupMailBuilder = prepareApplicationCreatedMailBuilder(application, researchGroupEmailTemplate);
+		MailBuilder researchGroupMailBuilder = includeData
+				? prepareApplicationCreatedMailBuilder(application, researchGroupEmailTemplate)
+				: prepareMinimalApplicationMailBuilder(application, researchGroupEmailTemplate);
 		researchGroupMailBuilder
 			.sendToChairMembers(application.getResearchGroup().getId())
 			.addNotificationName("new-applications")
 			.filterChairMembersNewApplicationNotifications(application.getTopic(), "new-applications")
 			.send(javaMailSender, uploadService);
 
-		sendNotificationCopy(application.getResearchGroup(), prepareApplicationCreatedMailBuilder(application,researchGroupEmailTemplate));
+		sendNotificationCopy(application.getResearchGroup(), includeData
+				? prepareApplicationCreatedMailBuilder(application, researchGroupEmailTemplate)
+				: prepareMinimalApplicationMailBuilder(application, researchGroupEmailTemplate));
 
 		EmailTemplate studentEmailTemplate = loadTemplate(
 				application.getResearchGroup().getId(),
@@ -121,6 +128,11 @@ public class MailingService {
 				.addStoredAttachment(application.getUser().getDegreeFilename(),
 						getUserFilename(application.getUser(), "Degree Report",
 								application.getUser().getDegreeFilename()))
+				.fillApplicationPlaceholders(application);
+	}
+
+	private MailBuilder prepareMinimalApplicationMailBuilder(Application application, EmailTemplate template) {
+		return new MailBuilder(config, template.getSubject(), template.getBodyHtml())
 				.fillApplicationPlaceholders(application);
 	}
 
