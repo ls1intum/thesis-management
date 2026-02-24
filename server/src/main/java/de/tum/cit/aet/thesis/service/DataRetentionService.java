@@ -15,6 +15,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 
+/** Runs scheduled data retention tasks including application cleanup, user deactivation, and export processing. */
 @Service
 public class DataRetentionService {
 	private static final Logger log = LoggerFactory.getLogger(DataRetentionService.class);
@@ -27,6 +28,17 @@ public class DataRetentionService {
 	private final int retentionDays;
 	private final int inactiveUserDays;
 
+	/**
+	 * Constructs the service with required repositories, dependent services, and configuration values.
+	 *
+	 * @param applicationRepository the application repository
+	 * @param applicationReviewerRepository the application reviewer repository
+	 * @param userRepository the user repository
+	 * @param dataExportService the data export service
+	 * @param userDeletionService the user deletion service
+	 * @param retentionDays the retention period in days
+	 * @param inactiveUserDays the inactive user threshold in days
+	 */
 	public DataRetentionService(ApplicationRepository applicationRepository,
 			ApplicationReviewerRepository applicationReviewerRepository,
 			UserRepository userRepository,
@@ -60,6 +72,11 @@ public class DataRetentionService {
 		}
 	}
 
+	/**
+	 * Disables student accounts that have been inactive longer than the configured threshold.
+	 *
+	 * @return the number of disabled accounts
+	 */
 	public int disableInactiveUsers() {
 		Instant cutoff = Instant.now().minus(inactiveUserDays, ChronoUnit.DAYS);
 
@@ -77,6 +94,11 @@ public class DataRetentionService {
 		return toDisable.size();
 	}
 
+	/**
+	 * Deletes rejected applications that have exceeded the configured retention period.
+	 *
+	 * @return the number of deleted applications
+	 */
 	public int deleteExpiredRejectedApplications() {
 		Instant cutoffDate = Instant.now().minus(retentionDays, ChronoUnit.DAYS);
 

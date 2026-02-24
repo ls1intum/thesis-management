@@ -518,6 +518,11 @@ public class ApplicationService {
 		return application;
 	}
 
+	/**
+	 * Deletes an application by its ID, preventing deletion of accepted applications linked to theses.
+	 *
+	 * @param applicationId the application identifier
+	 */
 	public void deleteApplication(UUID applicationId) {
 		Application application = findById(applicationId);
 

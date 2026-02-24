@@ -372,6 +372,12 @@ public class ApplicationController {
 		);
 	}
 
+	/**
+	 * Deletes an application by its identifier.
+	 *
+	 * @param applicationId the application identifier
+	 * @return response confirming deletion
+	 */
 	@DeleteMapping("/{applicationId}")
 	@PreAuthorize("hasRole('admin')")
 	public ResponseEntity<Map<String, String>> deleteApplication(@PathVariable UUID applicationId) {

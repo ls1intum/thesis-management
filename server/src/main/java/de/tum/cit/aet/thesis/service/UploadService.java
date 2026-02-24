@@ -151,6 +151,11 @@ public class UploadService {
 		}
 	}
 
+	/**
+	 * Deletes the specified file from the upload directory on a best-effort basis.
+	 *
+	 * @param filename the file to delete
+	 */
 	public void deleteFile(String filename) {
 		if (filename == null || filename.isBlank()) {
 			return;

@@ -28,6 +28,13 @@ public class ProfilePictureMigration {
 	private final GravatarService gravatarService;
 	private final UploadService uploadService;
 
+	/**
+	 * Constructs the migration task with the user repository, gravatar service, and upload service.
+	 *
+	 * @param userRepository the user repository
+	 * @param gravatarService the gravatar service
+	 * @param uploadService the upload service
+	 */
 	public ProfilePictureMigration(UserRepository userRepository, GravatarService gravatarService, UploadService uploadService) {
 		this.userRepository = userRepository;
 		this.gravatarService = gravatarService;

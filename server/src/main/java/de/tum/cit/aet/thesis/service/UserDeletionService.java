@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+/** Handles user account deletion, anonymization, and deferred cleanup with legal retention enforcement. */
 @Service
 public class UserDeletionService {
 	private static final Logger log = LoggerFactory.getLogger(UserDeletionService.class);
@@ -55,6 +56,22 @@ public class UserDeletionService {
 	private final jakarta.persistence.EntityManager entityManager;
 	private final Path dataExportPath;
 
+	/**
+	 * Constructs the service with the required repositories, upload service, entity manager, and export path.
+	 *
+	 * @param userRepository the user repository
+	 * @param thesisRoleRepository the thesis role repository
+	 * @param topicRoleRepository the topic role repository
+	 * @param applicationRepository the application repository
+	 * @param applicationReviewerRepository the application reviewer repository
+	 * @param researchGroupRepository the research group repository
+	 * @param dataExportRepository the data export repository
+	 * @param userGroupRepository the user group repository
+	 * @param notificationSettingRepository the notification setting repository
+	 * @param uploadService the upload service
+	 * @param entityManager the entity manager
+	 * @param dataExportPath the data export directory path
+	 */
 	public UserDeletionService(
 			UserRepository userRepository,
 			ThesisRoleRepository thesisRoleRepository,
@@ -82,6 +99,12 @@ public class UserDeletionService {
 		this.dataExportPath = Path.of(dataExportPath);
 	}
 
+	/**
+	 * Returns a preview of what would happen if the given user account were deleted.
+	 *
+	 * @param userId the user identifier
+	 * @return the deletion preview
+	 */
 	public UserDeletionPreviewDto previewDeletion(UUID userId) {
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new ResourceNotFoundException("User not found"));
@@ -120,6 +143,12 @@ public class UserDeletionService {
 		);
 	}
 
+	/**
+	 * Deletes or soft-deletes the user account depending on legal retention requirements.
+	 *
+	 * @param userId the user identifier
+	 * @return the deletion result
+	 */
 	public UserDeletionResultDto deleteOrAnonymizeUser(UUID userId) {
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new ResourceNotFoundException("User not found"));
@@ -163,6 +192,7 @@ public class UserDeletionService {
 		return result;
 	}
 
+	/** Processes all users whose deferred deletion date has passed and performs full cleanup. */
 	public void processDeferredDeletions() {
 		// Collect IDs first because anonymizeUser() clears the persistence context,
 		// which would detach entities loaded in the same session.

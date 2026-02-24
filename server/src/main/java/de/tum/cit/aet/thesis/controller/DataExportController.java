@@ -21,6 +21,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
+/**
+ * REST controller for managing user data export requests and downloads.
+ */
 @RestController
 @RequestMapping("/v2/data-exports")
 @org.springframework.security.access.prepost.PreAuthorize("isAuthenticated()")
@@ -28,6 +31,12 @@ public class DataExportController {
 	private final DataExportService dataExportService;
 	private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
 
+	/**
+	 * Constructs a new DataExportController with the required dependencies.
+	 *
+	 * @param dataExportService the data export service
+	 * @param currentUserProviderProvider the current user provider
+	 */
 	@Autowired
 	public DataExportController(DataExportService dataExportService,
 			ObjectProvider<CurrentUserProvider> currentUserProviderProvider) {
@@ -39,6 +48,11 @@ public class DataExportController {
 		return currentUserProviderProvider.getObject().getUser();
 	}
 
+	/**
+	 * Requests a new data export for the authenticated user.
+	 *
+	 * @return the created data export
+	 */
 	@PostMapping
 	public ResponseEntity<DataExportDto> requestExport() {
 		User user = currentUser();
@@ -56,6 +70,11 @@ public class DataExportController {
 		return ResponseEntity.ok(DataExportDto.fromEntity(export, false, null));
 	}
 
+	/**
+	 * Returns the current data export status for the authenticated user.
+	 *
+	 * @return the export status
+	 */
 	@GetMapping("/status")
 	public ResponseEntity<DataExportDto> getStatus() {
 		User user = currentUser();
@@ -69,6 +88,12 @@ public class DataExportController {
 		return ResponseEntity.ok(DataExportDto.fromEntity(latest, status.canRequest(), status.nextRequestDate()));
 	}
 
+	/**
+	 * Downloads a completed data export archive by its identifier.
+	 *
+	 * @param id the export identifier
+	 * @return the export file resource
+	 */
 	@GetMapping("/{id}/download")
 	public ResponseEntity<Resource> downloadExport(@PathVariable UUID id) {
 		DataExport export = dataExportService.findById(id);

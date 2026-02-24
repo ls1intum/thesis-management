@@ -39,6 +39,14 @@ public class UserInfoController {
 	private final UploadService uploadService;
 	private final GravatarService gravatarService;
 
+	/**
+	 * Constructs a new UserInfoController with the required dependencies.
+	 *
+	 * @param authenticationService the authentication service
+	 * @param userRepository the user repository
+	 * @param uploadService the upload service
+	 * @param gravatarService the gravatar service
+	 */
 	@Autowired
 	public UserInfoController(AuthenticationService authenticationService, UserRepository userRepository, UploadService uploadService, GravatarService gravatarService) {
 		this.authenticationService = authenticationService;

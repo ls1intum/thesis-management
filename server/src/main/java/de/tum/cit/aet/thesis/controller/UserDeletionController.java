@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
+/**
+ * REST controller for handling user account deletion and anonymization.
+ */
 @Slf4j
 @RestController
 @RequestMapping("/v2/user-deletion")
@@ -24,17 +27,35 @@ public class UserDeletionController {
 	private final UserDeletionService userDeletionService;
 	private final AuthenticationService authenticationService;
 
+	/**
+	 * Constructs a new UserDeletionController with the required dependencies.
+	 *
+	 * @param userDeletionService the user deletion service
+	 * @param authenticationService the authentication service
+	 */
 	public UserDeletionController(UserDeletionService userDeletionService, AuthenticationService authenticationService) {
 		this.userDeletionService = userDeletionService;
 		this.authenticationService = authenticationService;
 	}
 
+	/**
+	 * Returns a preview of the data affected by deleting the authenticated user.
+	 *
+	 * @param jwt the authentication token
+	 * @return the deletion preview
+	 */
 	@GetMapping("/me/preview")
 	public ResponseEntity<UserDeletionPreviewDto> previewSelfDeletion(JwtAuthenticationToken jwt) {
 		User user = authenticationService.getAuthenticatedUser(jwt);
 		return ResponseEntity.ok(userDeletionService.previewDeletion(user.getId()));
 	}
 
+	/**
+	 * Deletes or anonymizes the authenticated user's account.
+	 *
+	 * @param jwt the authentication token
+	 * @return the deletion result
+	 */
 	@DeleteMapping("/me")
 	public ResponseEntity<UserDeletionResultDto> deleteSelf(JwtAuthenticationToken jwt) {
 		User user = authenticationService.getAuthenticatedUser(jwt);
@@ -42,12 +63,24 @@ public class UserDeletionController {
 		return ResponseEntity.ok(result);
 	}
 
+	/**
+	 * Returns a preview of the data affected by deleting the specified user.
+	 *
+	 * @param userId the user identifier
+	 * @return the deletion preview
+	 */
 	@GetMapping("/{userId}/preview")
 	@PreAuthorize("hasRole('admin')")
 	public ResponseEntity<UserDeletionPreviewDto> previewUserDeletion(@PathVariable UUID userId) {
 		return ResponseEntity.ok(userDeletionService.previewDeletion(userId));
 	}
 
+	/**
+	 * Deletes or anonymizes the specified user's account.
+	 *
+	 * @param userId the user identifier
+	 * @return the deletion result
+	 */
 	@DeleteMapping("/{userId}")
 	@PreAuthorize("hasRole('admin')")
 	public ResponseEntity<UserDeletionResultDto> deleteUser(@PathVariable UUID userId) {

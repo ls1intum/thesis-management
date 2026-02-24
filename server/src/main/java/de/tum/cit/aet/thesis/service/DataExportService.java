@@ -39,6 +39,7 @@ import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+/** Manages the lifecycle of GDPR data exports including creation, download, and expiration. */
 @Service
 public class DataExportService {
 	private static final Logger log = LoggerFactory.getLogger(DataExportService.class);
@@ -54,6 +55,18 @@ public class DataExportService {
 
 	private final ObjectMapper objectMapper;
 
+	/**
+	 * Constructs the service with required repositories, upload and mailing services, and configuration values.
+	 *
+	 * @param dataExportRepository the data export repository
+	 * @param applicationRepository the application repository
+	 * @param thesisRepository the thesis repository
+	 * @param uploadService the upload service
+	 * @param mailingService the mailing service
+	 * @param exportPath the export directory path
+	 * @param retentionDays the export retention period in days
+	 * @param cooldownDays the cooldown period between exports
+	 */
 	public DataExportService(
 			DataExportRepository dataExportRepository,
 			ApplicationRepository applicationRepository,
@@ -96,8 +109,15 @@ public class DataExportService {
 		return dataExportRepository.save(export);
 	}
 
+	/** Represents whether a user can request a data export and when the next request is allowed. */
 	public record RequestStatus(boolean canRequest, Instant nextRequestDate) {}
 
+	/**
+	 * Checks whether the user is allowed to request a new data export based on cooldown rules.
+	 *
+	 * @param user the user to check
+	 * @return the request status with eligibility info
+	 */
 	public RequestStatus canRequestDataExport(User user) {
 		List<DataExport> exports = dataExportRepository.findAllByUserOrderByCreatedAtDesc(user);
 
@@ -122,6 +142,12 @@ public class DataExportService {
 		return new RequestStatus(true, null);
 	}
 
+	/**
+	 * Returns the most recent data export for the given user, or null if none exists.
+	 *
+	 * @param user the user to query
+	 * @return the latest export or null
+	 */
 	public DataExport getLatestExport(User user) {
 		List<DataExport> exports = dataExportRepository.findAllByUserOrderByCreatedAtDesc(user);
 		if (exports.isEmpty()) {
@@ -130,6 +156,12 @@ public class DataExportService {
 		return exports.getFirst();
 	}
 
+	/**
+	 * Finds a data export by its unique identifier or throws if not found.
+	 *
+	 * @param id the export identifier
+	 * @return the data export entity
+	 */
 	public DataExport findById(UUID id) {
 		return dataExportRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Data export not found"));
@@ -168,6 +200,7 @@ public class DataExportService {
 		return resource;
 	}
 
+	/** Processes all pending data export requests by generating ZIP files and sending notification emails. */
 	public void processAllPendingExports() {
 		List<DataExport> pending = dataExportRepository.findAllByStateIn(
 				List.of(DataExportState.REQUESTED));
@@ -250,6 +283,7 @@ public class DataExportService {
 		}
 	}
 
+	/** Deletes data export files that have exceeded the configured retention period. */
 	public void deleteExpiredExports() {
 		Instant cutoff = Instant.now().minus(retentionDays, ChronoUnit.DAYS);
 		List<DataExport> expired = dataExportRepository.findExpiredExports(
