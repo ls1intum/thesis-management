@@ -40,6 +40,8 @@ public class PDFBuilder {
 	private final List<Section> sections;
 	private final List<Data> data;
 
+	private final List<String> headerItems = new ArrayList<>();
+
 	private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 	private static final PdfFont normalFont = createNormalFont();
 	private static final String THESISMANAGEMENT_URL = "https://thesis.aet.cit.tum.de/";
@@ -53,6 +55,7 @@ public class PDFBuilder {
 
 	// ----------------- Spacing -----------------
 	private static final float MARGIN_PDF_TOP_AND_BOTTOM = 8f;
+	private static final float MARGIN_HEADER_ITEMS_BOTTOM = 8f;
 	private static final float METADATA_MARGIN_LEFT_RIGHT = 15f;
 
 	private record Data(String title, String value) {
@@ -73,6 +76,21 @@ public class PDFBuilder {
 		this.data = new ArrayList<>();
 	}
 
+	// ----------------- Header -----------------
+
+	/**
+	 * Adds a header item to be displayed above the main heading
+	 *
+	 * @param item the header item text
+	 * @return this builder for method chaining
+	 */
+	public PDFBuilder addHeaderItem(String item) {
+		headerItems.add(item);
+		return this;
+	}
+
+	// ----------------- Overview -----------------
+
 	/**
 	 * Adds a key-value data pair to be rendered in the PDF document.
 	 *
@@ -85,6 +103,8 @@ public class PDFBuilder {
 
 		return this;
 	}
+
+	// ----------------- Section Groups -----------------
 
 	/**
 	 * Adds a titled section with HTML content to be rendered in the PDF document.
@@ -99,6 +119,8 @@ public class PDFBuilder {
 		return this;
 	}
 
+	// ----------------- Build PDF -----------------
+
 	/**
 	 * Builds the PDF document and returns it as a byte array resource.
 	 *
@@ -110,6 +132,13 @@ public class PDFBuilder {
 		PdfWriter writer = new PdfWriter(outputStream);
 		PdfDocument pdf = new PdfDocument(writer);
 		Document document = new Document(pdf);
+
+		document.setTopMargin(MARGIN_PDF_TOP_AND_BOTTOM);
+
+		// Header Items
+		if (!headerItems.isEmpty()) {
+			addHeaderItems(document);
+		}
 
 		Paragraph mainHeadingParagraph = new Paragraph(heading)
 				.setFontSize(20)
@@ -158,6 +187,28 @@ public class PDFBuilder {
 	}
 
 	// ----------------- Helper Methods -----------------
+
+	/**
+	 * Adds header items in a single line separated by |
+	 */
+	private void addHeaderItems(Document document) {
+		Paragraph headerLine = new Paragraph()
+				.setFont(normalFont)
+				.setFontSize(FONT_SIZE_METADATA)
+				.setFontColor(METADATA_COLOR)
+				.setTextAlignment(TextAlignment.CENTER)
+				.setMarginTop(0f)
+				.setMarginBottom(MARGIN_HEADER_ITEMS_BOTTOM);
+
+		for (int i = 0; i < headerItems.size(); i++) {
+			headerLine.add(new Text(headerItems.get(i)));
+			if (i < headerItems.size() - 1) {
+				headerLine.add(new Text(" | "));
+			}
+		}
+
+		document.add(headerLine);
+	}
 
 	/**
 	 * Adds metadata text at the bottom of the last PDF page
