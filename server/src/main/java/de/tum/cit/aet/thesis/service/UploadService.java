@@ -126,68 +126,6 @@ public class UploadService {
 		}
 	}
 
-	/**
-	 * Stores raw bytes as a file with the given extension, returning the content-hashed filename.
-	 *
-	 * @param bytes the file content
-	 * @param extension the file extension (e.g. "png")
-	 * @param maxSize the maximum allowed size in bytes
-	 * @return the content-hashed filename
-	 */
-	public String storeBytes(byte[] bytes, String extension, int maxSize) {
-		try {
-			if (bytes == null || bytes.length == 0) {
-				throw new UploadException("Failed to store empty file");
-			}
-
-			if (bytes.length > maxSize) {
-				throw new UploadException("File size exceeds the maximum allowed size");
-			}
-
-			if (extension == null || !extension.matches("[a-zA-Z0-9]+")) {
-				throw new UploadException("Invalid file extension");
-			}
-
-			MessageDigest digest = MessageDigest.getInstance("SHA-256");
-			byte[] hashBytes = digest.digest(bytes);
-			String hash = HexFormat.of().formatHex(hashBytes);
-			String filename = hash + "." + extension;
-
-			Path target = rootLocation.resolve(filename).normalize();
-
-			if (!target.startsWith(rootLocation)) {
-				throw new UploadException("Cannot store file outside upload directory");
-			}
-
-			Files.write(target, bytes);
-			return filename;
-		} catch (IOException | NoSuchAlgorithmException e) {
-			throw new UploadException("Failed to store file", e);
-		}
-	}
-
-	/**
-	 * Deletes a file from the upload directory.
-	 *
-	 * @param filename the name of the file to delete
-	 */
-	public void deleteFile(String filename) {
-		if (filename == null || filename.isBlank()) {
-			return;
-		}
-		try {
-			Path target = rootLocation.resolve(filename).normalize();
-
-			if (!target.startsWith(rootLocation)) {
-				return;
-			}
-
-			Files.deleteIfExists(target);
-		} catch (IOException e) {
-			log.warn("Failed to delete file '{}': {}", filename, e.getMessage());
-		}
-	}
-
 	private String computeFileHash(MultipartFile file) throws IOException, NoSuchAlgorithmException {
 		MessageDigest digest = MessageDigest.getInstance("SHA-256");
 		try (InputStream inputStream = file.getInputStream()) {
