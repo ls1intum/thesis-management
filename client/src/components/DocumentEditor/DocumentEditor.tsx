@@ -7,7 +7,7 @@ import TextAlign from '@tiptap/extension-text-align'
 import Superscript from '@tiptap/extension-superscript'
 import SubScript from '@tiptap/extension-subscript'
 import { ChangeEvent, ComponentProps, useEffect, useRef } from 'react'
-import { Group, Input, Text, useMantineColorScheme } from '@mantine/core'
+import { Input, Text, useMantineColorScheme } from '@mantine/core'
 
 type InputWrapperProps = ComponentProps<typeof Input.Wrapper>
 
@@ -100,18 +100,20 @@ const DocumentEditor = (props: IDocumentEditorProps) => {
     <Input.Wrapper
       {...wrapperProps}
       error={
-        <Group mt={2}>
-          {wrapperProps.error && (
-            <Text ta='right' c='error' fz='xs'>
-              {wrapperProps.error}
-            </Text>
-          )}
-          {maxLength && editMode && (
-            <Text ta='right' c='dimmed' fz='xs' ml='auto'>
-              {editor?.getText().length || 0} / {maxLength}
-            </Text>
-          )}
-        </Group>
+        wrapperProps.error || (maxLength && editMode) ? (
+          <span style={{ display: 'flex', gap: '8px', marginTop: 2 }}>
+            {wrapperProps.error && (
+              <Text component='span' ta='right' c='error' fz='xs'>
+                {wrapperProps.error}
+              </Text>
+            )}
+            {maxLength && editMode && (
+              <Text component='span' ta='right' c='dimmed' fz='xs' ml='auto'>
+                {editor?.getText().length || 0} / {maxLength}
+              </Text>
+            )}
+          </span>
+        ) : undefined
       }
     >
       <RichTextEditor

@@ -201,7 +201,6 @@ public class DataExportService {
 	}
 
 	/** Processes all pending data export requests by generating ZIP files and sending notification emails. */
-	@Transactional
 	public void processAllPendingExports() {
 		List<DataExport> pending = dataExportRepository.findAllByStateIn(
 				List.of(DataExportState.REQUESTED));

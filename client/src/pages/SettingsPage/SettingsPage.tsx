@@ -1,9 +1,10 @@
 import React from 'react'
-import { Space, Tabs } from '@mantine/core'
+import { Divider, Space, Tabs } from '@mantine/core'
 import { EnvelopeOpen, User, UserMinus } from '@phosphor-icons/react'
 import MyInformation from './components/MyInformation/MyInformation'
 import NotificationSettings from './components/NotificationSettings/NotificationSettings'
 import AccountDeletion from './components/AccountDeletion/AccountDeletion'
+import DataExport from './components/DataExport/DataExport'
 import { useNavigate, useParams } from 'react-router'
 
 const SettingsPage = () => {
@@ -33,7 +34,15 @@ const SettingsPage = () => {
       <Tabs.Panel value='notifications'>
         {value === 'notifications' && <NotificationSettings />}
       </Tabs.Panel>
-      <Tabs.Panel value='account'>{value === 'account' && <AccountDeletion />}</Tabs.Panel>
+      <Tabs.Panel value='account'>
+        {value === 'account' && (
+          <>
+            <DataExport />
+            <Divider my='xl' />
+            <AccountDeletion />
+          </>
+        )}
+      </Tabs.Panel>
     </Tabs>
   )
 }
