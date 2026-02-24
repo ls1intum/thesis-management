@@ -1,7 +1,5 @@
 package de.tum.cit.aet.thesis.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import de.tum.cit.aet.thesis.constants.DataExportState;
 import de.tum.cit.aet.thesis.entity.Application;
 import de.tum.cit.aet.thesis.entity.ApplicationReviewer;
@@ -14,6 +12,8 @@ import de.tum.cit.aet.thesis.entity.User;
 import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.repository.ApplicationRepository;
 import de.tum.cit.aet.thesis.repository.DataExportRepository;
+import de.tum.cit.aet.thesis.repository.ThesisAssessmentRepository;
+import de.tum.cit.aet.thesis.repository.ThesisFeedbackRepository;
 import de.tum.cit.aet.thesis.repository.ThesisRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +22,8 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.SerializationFeature;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -47,6 +49,8 @@ public class DataExportService {
 	private final DataExportRepository dataExportRepository;
 	private final ApplicationRepository applicationRepository;
 	private final ThesisRepository thesisRepository;
+	private final ThesisFeedbackRepository thesisFeedbackRepository;
+	private final ThesisAssessmentRepository thesisAssessmentRepository;
 	private final UploadService uploadService;
 	private final MailingService mailingService;
 	private final Path exportPath;
@@ -61,8 +65,11 @@ public class DataExportService {
 	 * @param dataExportRepository the data export repository
 	 * @param applicationRepository the application repository
 	 * @param thesisRepository the thesis repository
+	 * @param thesisFeedbackRepository the thesis feedback repository
+	 * @param thesisAssessmentRepository the thesis assessment repository
 	 * @param uploadService the upload service
 	 * @param mailingService the mailing service
+	 * @param springObjectMapper the Spring-managed ObjectMapper with modules pre-registered
 	 * @param exportPath the export directory path
 	 * @param retentionDays the export retention period in days
 	 * @param cooldownDays the cooldown period between exports
@@ -71,24 +78,30 @@ public class DataExportService {
 			DataExportRepository dataExportRepository,
 			ApplicationRepository applicationRepository,
 			ThesisRepository thesisRepository,
+			ThesisFeedbackRepository thesisFeedbackRepository,
+			ThesisAssessmentRepository thesisAssessmentRepository,
 			UploadService uploadService,
 			MailingService mailingService,
+			ObjectMapper springObjectMapper,
 			@Value("${thesis-management.data-export.path}") String exportPath,
 			@Value("${thesis-management.data-export.retention-days}") int retentionDays,
 			@Value("${thesis-management.data-export.days-between-exports}") int cooldownDays) {
 		this.dataExportRepository = dataExportRepository;
 		this.applicationRepository = applicationRepository;
 		this.thesisRepository = thesisRepository;
+		this.thesisFeedbackRepository = thesisFeedbackRepository;
+		this.thesisAssessmentRepository = thesisAssessmentRepository;
 		this.uploadService = uploadService;
 		this.mailingService = mailingService;
 		this.exportPath = Path.of(exportPath);
 		this.retentionDays = retentionDays;
 		this.cooldownDays = cooldownDays;
 
-		this.objectMapper = new ObjectMapper();
-		this.objectMapper.findAndRegisterModules();
-		this.objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-		this.objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+		// Use Spring's ObjectMapper (Jackson 3.x with built-in Java 8 date/time support)
+		// with export-specific settings applied via rebuild() to avoid mutating the shared instance.
+		this.objectMapper = springObjectMapper.rebuild()
+				.enable(SerializationFeature.INDENT_OUTPUT)
+				.build();
 
 		File dir = this.exportPath.toFile();
 		if (!dir.exists() && !dir.mkdirs()) {
@@ -213,18 +226,20 @@ public class DataExportService {
 				continue; // Another instance already claimed it
 			}
 
+			// Re-fetch with eagerly loaded user because claimForProcessing() used a JPQL
+			// UPDATE that bypassed the persistence context, and DataExport.user is lazy.
+			DataExport claimed = dataExportRepository.findByIdWithUser(export.getId());
+			if (claimed == null) {
+				continue;
+			}
+
 			try {
-				createDataExport(export);
+				createDataExport(claimed);
 			} catch (Exception e) {
-				log.error("Failed to create data export {}: {}", export.getId(), e.getMessage(), e);
-				// Re-fetch the entity because claimForProcessing() used a JPQL UPDATE
-				// that bypassed the persistence context, leaving this entity stale.
-				DataExport failed = dataExportRepository.findById(export.getId()).orElse(null);
-				if (failed != null) {
-					failed.setState(DataExportState.FAILED);
-					failed.setCreationFinishedAt(Instant.now());
-					dataExportRepository.save(failed);
-				}
+				log.error("Failed to create data export {}: {}", claimed.getId(), e.getMessage(), e);
+				claimed.setState(DataExportState.FAILED);
+				claimed.setCreationFinishedAt(Instant.now());
+				dataExportRepository.save(claimed);
 			}
 		}
 	}
@@ -338,7 +353,9 @@ public class DataExportService {
 	}
 
 	private List<Map<String, Object>> buildApplicationsData(User user) {
-		List<Application> applications = applicationRepository.findAllByUser(user);
+		// Use eager query to fetch reviewers and their users in one go,
+		// avoiding LazyInitializationException on ApplicationReviewer.user.
+		List<Application> applications = applicationRepository.findAllByUserIdWithReviewers(user.getId());
 		List<Map<String, Object>> result = new ArrayList<>();
 
 		for (Application app : applications) {
@@ -372,6 +389,20 @@ public class DataExportService {
 
 	private List<Map<String, Object>> buildThesesData(User user) {
 		List<Thesis> theses = thesisRepository.findAllByStudentUserId(user.getId());
+		if (theses.isEmpty()) {
+			return List.of();
+		}
+
+		// Eagerly fetch lazy collections in separate queries to avoid
+		// LazyInitializationException (no @Transactional per project convention).
+		List<UUID> thesisIds = theses.stream().map(Thesis::getId).toList();
+		Map<UUID, List<ThesisFeedback>> feedbackByThesis = thesisFeedbackRepository
+				.findAllByThesisIdInOrderByRequestedAtAsc(thesisIds).stream()
+				.collect(java.util.stream.Collectors.groupingBy(fb -> fb.getThesis().getId()));
+		Map<UUID, List<ThesisAssessment>> assessmentsByThesis = thesisAssessmentRepository
+				.findAllByThesisIdInOrderByCreatedAtDesc(thesisIds).stream()
+				.collect(java.util.stream.Collectors.groupingBy(a -> a.getThesis().getId()));
+
 		List<Map<String, Object>> result = new ArrayList<>();
 
 		for (Thesis thesis : theses) {
@@ -386,9 +417,9 @@ public class DataExportService {
 			data.put("endDate", thesis.getEndDate());
 			data.put("grade", thesis.getFinalGrade());
 
-			// Feedback items
+			// Feedback items (from eagerly fetched data)
 			List<Map<String, Object>> feedbackItems = new ArrayList<>();
-			for (ThesisFeedback fb : thesis.getFeedback()) {
+			for (ThesisFeedback fb : feedbackByThesis.getOrDefault(thesis.getId(), List.of())) {
 				Map<String, Object> fbData = new LinkedHashMap<>();
 				fbData.put("type", fb.getType());
 				fbData.put("feedback", fb.getFeedback());
@@ -398,9 +429,9 @@ public class DataExportService {
 			}
 			data.put("feedback", feedbackItems);
 
-			// Assessment summaries (no free-text management comments)
+			// Assessment summaries (from eagerly fetched data, no free-text management comments)
 			List<Map<String, Object>> assessments = new ArrayList<>();
-			for (ThesisAssessment assessment : thesis.getAssessments()) {
+			for (ThesisAssessment assessment : assessmentsByThesis.getOrDefault(thesis.getId(), List.of())) {
 				Map<String, Object> assessmentData = new LinkedHashMap<>();
 				assessmentData.put("summary", assessment.getSummary());
 				assessmentData.put("positives", assessment.getPositives());
@@ -411,7 +442,7 @@ public class DataExportService {
 			}
 			data.put("assessments", assessments);
 
-			// State changes
+			// State changes (eagerly fetched via Thesis.states with FetchType.EAGER)
 			List<Map<String, Object>> stateChanges = new ArrayList<>();
 			for (ThesisStateChange sc : thesis.getStates()) {
 				Map<String, Object> scData = new LinkedHashMap<>();

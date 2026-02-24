@@ -101,6 +101,14 @@ public interface ApplicationRepository extends JpaRepository<Application, UUID> 
 
 	List<Application> findAllByUser(User user);
 
+	@Query("""
+			SELECT DISTINCT a FROM Application a
+			LEFT JOIN FETCH a.reviewers r
+			LEFT JOIN FETCH r.user
+			WHERE a.user.id = :userId
+			""")
+	List<Application> findAllByUserIdWithReviewers(@Param("userId") UUID userId);
+
 	List<Application> findAllByUserId(UUID userId);
 
 	@Modifying

@@ -20,6 +20,9 @@ public interface DataExportRepository extends JpaRepository<DataExport, UUID> {
 
 	List<DataExport> findAllByStateIn(List<DataExportState> states);
 
+	@Query("SELECT e FROM DataExport e JOIN FETCH e.user WHERE e.id = :id")
+	DataExport findByIdWithUser(@Param("id") UUID id);
+
 	@Modifying
 	@Transactional
 	@Query("UPDATE DataExport e SET e.state = 'IN_CREATION' WHERE e.id = :id AND e.state = :expectedState")
