@@ -34,6 +34,7 @@ export const UserMultiSelect = (props: IUserMultiSelectProps) => {
   const selected: string[] = inputProps.value ?? []
 
   const [loading, setLoading] = useState(false)
+  const [fetchVersion, setFetchVersion] = useState(0)
   const [data, setData] = useState<Array<{ value: string; label: string; user: ILightUser }>>([])
   const [searchValue, setSearchValue] = useState('')
 
@@ -76,7 +77,7 @@ export const UserMultiSelect = (props: IUserMultiSelectProps) => {
         }
       },
     )
-  }, [groups.join(','), debouncedSearchValue])
+  }, [groups.join(','), debouncedSearchValue, fetchVersion])
 
   const mergedData = arrayUnique(
     [
@@ -94,6 +95,7 @@ export const UserMultiSelect = (props: IUserMultiSelectProps) => {
 
   return (
     <MultiSelect
+      {...inputProps}
       data={mergedData}
       renderOption={({ option }) => {
         const item = mergedData.find((row) => row.value === option.value)
@@ -108,6 +110,8 @@ export const UserMultiSelect = (props: IUserMultiSelectProps) => {
       searchable={selected.length < maxValues}
       clearable={true}
       searchValue={searchValue}
+      onClick={() => setFetchVersion((v) => v + 1)}
+      onDropdownOpen={() => setFetchVersion((v) => v + 1)}
       onSearchChange={setSearchValue}
       hidePickedOptions={selected.length < maxValues}
       maxValues={maxValues}
@@ -117,7 +121,6 @@ export const UserMultiSelect = (props: IUserMultiSelectProps) => {
       nothingFoundMessage={!loading ? 'Nothing found...' : 'Loading...'}
       label={label}
       required={required}
-      {...inputProps}
     />
   )
 }

@@ -5,6 +5,7 @@ test.describe('Thesis Workflow - Supervisor creates a thesis', () => {
   test.use({ storageState: authStatePath('supervisor') })
 
   test('supervisor can create a new thesis via the browse theses page', async ({ page }) => {
+    test.setTimeout(120_000) // Extended timeout — form with server-side search fields
     await navigateTo(page, '/theses')
     await expect(
       page.getByRole('heading', { name: 'Browse Theses', exact: true }),
@@ -27,11 +28,9 @@ test.describe('Thesis Workflow - Supervisor creates a thesis', () => {
 
     // Student(s) - search and select
     await searchAndSelectMultiSelect(page, 'Student(s)', /student4/i)
-    await page.keyboard.press('Escape')
 
     // Supervisor(s) - search and select advisor
     await searchAndSelectMultiSelect(page, 'Supervisor(s)', /advisor/i)
-    await page.keyboard.press('Escape')
 
     // Examiner - search and select self (supervisor)
     await searchAndSelectMultiSelect(page, 'Examiner', /supervisor/i)

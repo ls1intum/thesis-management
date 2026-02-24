@@ -17,9 +17,9 @@ test.describe('Theses - Browse (Supervisor)', () => {
   test('browse theses page shows create button for management', async ({ page }) => {
     await navigateTo(page, '/theses')
 
-    await expect(page.getByRole('heading', { name: /browse theses/i })).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByRole('heading', { name: /browse theses/i })).toBeVisible({ timeout: 30_000 })
     // Supervisor should see create thesis button
-    await expect(page.getByRole('button', { name: /create/i }).first()).toBeVisible()
+    await expect(page.getByRole('button', { name: /create/i }).first()).toBeVisible({ timeout: 10_000 })
   })
 })
 

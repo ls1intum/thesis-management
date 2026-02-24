@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @Repository
 public interface UserGroupRepository extends JpaRepository<UserGroup, UserGroupId> {
-	@Modifying
+	@Modifying(clearAutomatically = true, flushAutomatically = true)
 	@Transactional
 	@Query("DELETE FROM UserGroup ug WHERE ug.id.userId = :userId")
 	void deleteByUserId(UUID userId);

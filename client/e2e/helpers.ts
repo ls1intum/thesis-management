@@ -110,27 +110,38 @@ export async function searchAndSelectMultiSelect(
   const option = listbox.getByRole('option', { name: optionPattern }).first()
   const wrapper = page.locator(`.mantine-InputWrapper-root:has(.mantine-InputWrapper-label:text("${label}"))`)
 
-  await textbox.click({ force: true })
-  await expect(option).toBeVisible({ timeout: 10_000 })
-  // First attempt: standard Playwright click
-  await option.click()
-  await page.waitForTimeout(500)
-  // Check if selection registered by looking for a pill
-  const hasPill = await wrapper.locator('.mantine-Pill-root').count() > 0
-  if (!hasPill) {
-    // Fallback: re-open dropdown and use evaluate to dispatch mouse events
+  // Open dropdown and wait for options. Under heavy parallel load the server
+  // may be slow to respond. Each click triggers setFetchVersion++ which ABORTS
+  // any in-flight request and starts a new one, so we must wait long enough for
+  // the server to respond before re-clicking.
+  // IMPORTANT: Do NOT press Escape or click body — both close Mantine modals.
+  let found = false
+  for (let attempt = 0; attempt < 3 && !found; attempt++) {
     await textbox.click({ force: true })
-    const retryOption = listbox.getByRole('option', { name: optionPattern }).first()
-    await expect(retryOption).toBeVisible({ timeout: 10_000 })
-    await retryOption.evaluate((el) => {
-      el.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true, view: window }))
-      el.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, cancelable: true, view: window }))
-      el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }))
-    })
-    await page.waitForTimeout(500)
+    // Give the server ample time to respond before aborting via re-click
+    found = await option.isVisible({ timeout: 20_000 }).catch(() => false)
   }
+
+  await expect(option).toBeVisible({ timeout: 5_000 })
+
+  // Click the option. Retry with force:true if the standard click doesn't register.
+  // Do NOT use evaluate to dispatch synthetic mousedown — it bubbles to the document
+  // and triggers Mantine's Modal "click outside" handler, closing the dialog.
+  for (let clickAttempt = 0; clickAttempt < 3; clickAttempt++) {
+    await option.click({ force: clickAttempt > 0 })
+    await page.waitForTimeout(500)
+    const hasPill = await wrapper.locator('.mantine-Pill-root').count()
+    if (hasPill > 0) break
+    // Re-open dropdown for next attempt
+    await textbox.click({ force: true })
+    await expect(option).toBeVisible({ timeout: 10_000 })
+  }
+
   // Verify selection registered
   await expect(wrapper.locator('.mantine-Pill-root')).toBeVisible({ timeout: 5_000 })
+  // Close the dropdown by pressing Tab (blurs input). Do NOT use Escape — it closes modals.
+  await page.keyboard.press('Tab')
+  await page.waitForTimeout(300)
 }
 
 /**

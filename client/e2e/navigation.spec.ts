@@ -69,7 +69,7 @@ test.describe('Navigation - Student routes', () => {
 
     // Navigate back to Dashboard
     await page.getByRole('link', { name: 'Dashboard' }).click()
-    await expect(page).toHaveURL(/\/dashboard/)
+    await expect(page).toHaveURL(/\/dashboard/, { timeout: 30_000 })
     await expect(page.getByRole('heading', { name: /dashboard/i })).toBeVisible()
   })
 

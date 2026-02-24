@@ -11,6 +11,8 @@ test.describe('Topic Workflow - Supervisor creates a topic', () => {
   test.use({ storageState: authStatePath('supervisor') })
 
   test('supervisor can create a new topic via the manage topics page', async ({ page }) => {
+    test.setTimeout(120_000) // Extended timeout — form with server-side search fields
+
     await navigateTo(page, '/topics')
     await expect(page.getByRole('heading', { name: 'Manage Topics', exact: true })).toBeVisible({
       timeout: 30_000,
@@ -28,14 +30,15 @@ test.describe('Topic Workflow - Supervisor creates a topic', () => {
     // Thesis Types (multi-select) - use force click to bypass wrapper interception
     await clickMultiSelect(page, 'Thesis Types')
     await page.getByRole('option', { name: /master/i }).click()
-    await page.keyboard.press('Escape')
+    // Close the Thesis Types dropdown by pressing Tab (blurs input without closing modal)
+    await page.keyboard.press('Tab')
+    await page.waitForTimeout(1_000)
 
     // Examiner - click to open, then select from results
     await searchAndSelectMultiSelect(page, 'Examiner', /supervisor/i)
 
     // Supervisor(s) - click to open, then select from results
     await searchAndSelectMultiSelect(page, 'Supervisor(s)', /advisor/i)
-    await page.keyboard.press('Escape')
 
     // Research Group should be pre-filled for single-group supervisors
     // Problem Statement (required rich text editor)
