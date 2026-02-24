@@ -44,6 +44,7 @@ public class PDFBuilder {
 
 	private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 	private static final PdfFont normalFont = createNormalFont();
+	private static final PdfFont boldFont = createBoldFont();
 	private static final String THESISMANAGEMENT_URL = "https://thesis.aet.cit.tum.de/";
 
 	// ----------------- Colors -----------------
@@ -51,11 +52,13 @@ public class PDFBuilder {
 	private static final DeviceRgb METADATA_COLOR = new DeviceRgb(0x8d, 0x8d, 0x8f);
 
 	// ----------------- Font Sizes -----------------
+	private static final float FONT_SIZE_MAIN_HEADING = 18f;
 	private static final float FONT_SIZE_METADATA = 7f;
 
 	// ----------------- Spacing -----------------
 	private static final float MARGIN_PDF_TOP_AND_BOTTOM = 8f;
 	private static final float MARGIN_HEADER_ITEMS_BOTTOM = 8f;
+	private static final float HEADER_MARGIN_BOTTOM = 16f;
 	private static final float METADATA_MARGIN_LEFT_RIGHT = 15f;
 
 	private record Data(String title, String value) {
@@ -140,11 +143,13 @@ public class PDFBuilder {
 			addHeaderItems(document);
 		}
 
+		// Main Heading
 		Paragraph mainHeadingParagraph = new Paragraph(heading)
-				.setFontSize(20)
-				.simulateBold()
-				.setMarginBottom(16);
-
+				.setFont(boldFont)
+				.setFontColor(PRIMARY_COLOR)
+				.setFontSize(FONT_SIZE_MAIN_HEADING)
+				.setTextAlignment(TextAlignment.CENTER)
+				.setMarginBottom(HEADER_MARGIN_BOTTOM);
 		document.add(mainHeadingParagraph);
 
 		ConverterProperties converterProperties = new ConverterProperties();
@@ -276,6 +281,17 @@ public class PDFBuilder {
 			return PdfFontFactory.createFont(StandardFonts.HELVETICA);
 		} catch (IOException e) {
 			throw new RuntimeException("Failed to create font", e);
+		}
+	}
+
+	/**
+	 * Creates a bold font instance for use in the PDF document.
+	 */
+	private static PdfFont createBoldFont() {
+		try {
+			return PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD);
+		} catch (IOException e) {
+			throw new RuntimeException("Failed to create bold font", e);
 		}
 	}
 }
