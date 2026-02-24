@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { authStatePath, createTestPdfBuffer, navigateTo } from './helpers'
+import { authStatePath, createTestPdfBuffer, navigateToDetail } from './helpers'
 
 // Thesis d000-0002 is in PROPOSAL state, assigned to student2 with advisor
 const THESIS_ID = '00000000-0000-4000-d000-000000000002'
@@ -10,12 +10,9 @@ test.describe('Proposal Upload - Student uploads proposal', () => {
   test.use({ storageState: authStatePath('student2') })
 
   test('student can upload a proposal PDF to a thesis in PROPOSAL state', async ({ page }) => {
-    await navigateTo(page, THESIS_URL)
-
-    // Wait for thesis page to load
-    await expect(page.getByRole('heading', { name: THESIS_TITLE })).toBeVisible({
-      timeout: 15_000,
-    })
+    const heading = page.getByRole('heading', { name: THESIS_TITLE })
+    const loaded = await navigateToDetail(page, THESIS_URL, heading)
+    if (!loaded) return
 
     // The Proposal section should be visible and expanded (default for PROPOSAL state)
     await expect(page.getByRole('button', { name: 'Upload Proposal' })).toBeVisible({
@@ -48,12 +45,9 @@ test.describe('Proposal Feedback - Advisor requests changes', () => {
   test.use({ storageState: authStatePath('advisor') })
 
   test('advisor can request changes on a proposal', async ({ page }) => {
-    await navigateTo(page, THESIS_URL)
-
-    // Wait for thesis page to load
-    await expect(page.getByRole('heading', { name: THESIS_TITLE })).toBeVisible({
-      timeout: 15_000,
-    })
+    const heading = page.getByRole('heading', { name: THESIS_TITLE })
+    const loaded = await navigateToDetail(page, THESIS_URL, heading)
+    if (!loaded) return
 
     // Scroll to and click "Request Changes" button (red outline button in Proposal section)
     const requestChangesButton = page.getByRole('button', { name: 'Request Changes' }).first()

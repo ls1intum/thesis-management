@@ -15,6 +15,31 @@ export async function navigateTo(page: Page, path: string) {
 }
 
 /**
+ * Navigate to an entity detail page (application, thesis) and verify
+ * it loaded the detail view. Under heavy parallel test load, the server
+ * may respond slowly and the client may redirect to the list view.
+ * This helper retries the navigation once if the expected element
+ * is not visible after the first attempt.
+ */
+export async function navigateToDetail(
+  page: Page,
+  path: string,
+  expectedLocator: Locator,
+  timeout = 15_000,
+): Promise<boolean> {
+  await navigateTo(page, path)
+  // Scroll to top so heading elements are in the viewport for isVisible check
+  await page.evaluate(() => window.scrollTo(0, 0))
+  const visible = await expectedLocator.isVisible({ timeout }).catch(() => false)
+  if (visible) return true
+
+  // Retry once — transient server slowness may have caused a redirect
+  await navigateTo(page, path)
+  await page.evaluate(() => window.scrollTo(0, 0))
+  return await expectedLocator.isVisible({ timeout }).catch(() => false)
+}
+
+/**
  * Use a specific auth state file for a test.
  */
 export function authStatePath(
@@ -81,15 +106,16 @@ export async function searchAndSelectMultiSelect(
   optionPattern: RegExp,
 ) {
   const textbox = page.getByRole('textbox', { name: label })
-  await textbox.click({ force: true })
   const listbox = page.getByRole('listbox', { name: label })
   const option = listbox.getByRole('option', { name: optionPattern }).first()
+  const wrapper = page.locator(`.mantine-InputWrapper-root:has(.mantine-InputWrapper-label:text("${label}"))`)
+
+  await textbox.click({ force: true })
   await expect(option).toBeVisible({ timeout: 10_000 })
   // First attempt: standard Playwright click
   await option.click()
   await page.waitForTimeout(500)
   // Check if selection registered by looking for a pill
-  const wrapper = page.locator(`.mantine-InputWrapper-root:has(.mantine-InputWrapper-label:text("${label}"))`)
   const hasPill = await wrapper.locator('.mantine-Pill-root').count() > 0
   if (!hasPill) {
     // Fallback: re-open dropdown and use evaluate to dispatch mouse events

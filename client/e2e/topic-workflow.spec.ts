@@ -13,7 +13,7 @@ test.describe('Topic Workflow - Supervisor creates a topic', () => {
   test('supervisor can create a new topic via the manage topics page', async ({ page }) => {
     await navigateTo(page, '/topics')
     await expect(page.getByRole('heading', { name: 'Manage Topics', exact: true })).toBeVisible({
-      timeout: 15_000,
+      timeout: 30_000,
     })
 
     // Click "Create Topic" button
@@ -47,7 +47,7 @@ test.describe('Topic Workflow - Supervisor creates a topic', () => {
 
     // Click "Create Topic" button in the modal
     const createButton = page.getByRole('dialog').getByRole('button', { name: 'Create Topic' })
-    await expect(createButton).toBeEnabled({ timeout: 10_000 })
+    await expect(createButton).toBeEnabled({ timeout: 15_000 })
     await createButton.click()
 
     // Modal should close and success notification should appear

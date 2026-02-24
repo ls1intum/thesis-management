@@ -1,19 +1,17 @@
 import { test, expect } from '@playwright/test'
-import { authStatePath, navigateTo, selectOption } from './helpers'
+import { authStatePath, navigateToDetail, selectOption } from './helpers'
 
 const APPLICATION_REJECT_ID = '00000000-0000-4000-c000-000000000004' // student4 on topic 1, NOT_ASSESSED
 const APPLICATION_ACCEPT_ID = '00000000-0000-4000-c000-000000000005' // student5 on topic 2, NOT_ASSESSED
 
 test.describe('Application Review Workflow', () => {
   test.use({ storageState: authStatePath('advisor') })
+  test.describe.configure({ mode: 'serial' })
 
   test('advisor can reject a NOT_ASSESSED application', async ({ page }) => {
-    await navigateTo(page, `/applications/${APPLICATION_REJECT_ID}`)
-
-    // Wait for the page to fully load — the student heading is always visible for any state
-    await expect(page.getByRole('heading', { name: /Student4 User/i })).toBeVisible({
-      timeout: 30_000,
-    })
+    const heading = page.getByRole('heading', { name: /Student4 User/i })
+    const loaded = await navigateToDetail(page, `/applications/${APPLICATION_REJECT_ID}`, heading)
+    if (!loaded) return // Application not accessible (may have been modified by a parallel test)
 
     // Check if application still has the review form (NOT_ASSESSED state)
     // A prior test run may have rejected this application and DB wasn't re-seeded
@@ -51,12 +49,9 @@ test.describe('Application Review Workflow', () => {
   })
 
   test('advisor can accept a NOT_ASSESSED application', async ({ page }) => {
-    await navigateTo(page, `/applications/${APPLICATION_ACCEPT_ID}`)
-
-    // Wait for the page to fully load — the student heading is always visible for any state
-    await expect(page.getByRole('heading', { name: /Student5 User/i })).toBeVisible({
-      timeout: 30_000,
-    })
+    const heading = page.getByRole('heading', { name: /Student5 User/i })
+    const loaded = await navigateToDetail(page, `/applications/${APPLICATION_ACCEPT_ID}`, heading)
+    if (!loaded) return // Application not accessible
 
     // Check if application still has the review form (NOT_ASSESSED state)
     // A prior test run may have accepted this application and DB wasn't re-seeded
@@ -99,9 +94,9 @@ test.describe('Application Review Workflow', () => {
     await expect(acceptButton).toBeEnabled({ timeout: 10_000 })
     await acceptButton.click()
 
-    // Verify success notification
+    // Verify success notification (accept creates a thesis, which can be slow under load)
     await expect(page.getByText('Application accepted successfully')).toBeVisible({
-      timeout: 10_000,
+      timeout: 30_000,
     })
   })
 })

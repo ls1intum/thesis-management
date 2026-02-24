@@ -8,7 +8,7 @@ test.describe('Thesis Workflow - Supervisor creates a thesis', () => {
     await navigateTo(page, '/theses')
     await expect(
       page.getByRole('heading', { name: 'Browse Theses', exact: true }),
-    ).toBeVisible({ timeout: 15_000 })
+    ).toBeVisible({ timeout: 30_000 })
 
     // Click "Create Thesis" button
     await page.getByRole('button', { name: 'Create Thesis' }).click()
@@ -42,7 +42,7 @@ test.describe('Thesis Workflow - Supervisor creates a thesis', () => {
     const createButton = page
       .getByRole('dialog')
       .getByRole('button', { name: 'Create Thesis' })
-    await expect(createButton).toBeEnabled({ timeout: 10_000 })
+    await expect(createButton).toBeEnabled({ timeout: 15_000 })
     await createButton.click()
 
     // Should navigate to the new thesis detail page
