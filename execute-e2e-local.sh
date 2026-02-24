@@ -139,9 +139,12 @@ done
 # ---------------------------------------------------------------------------
 # 1. Docker services (PostgreSQL + Keycloak)
 # ---------------------------------------------------------------------------
-# These are long-lived infrastructure services that don't change with code
-# edits, so we only ensure they are running (docker compose up is idempotent).
+# Reset Docker services each run to ensure a fresh database. This removes
+# anonymous volumes (PostgreSQL data), so Liquibase migrations and seed data
+# recreate a clean state every time.
 
+log "Resetting Docker services (fresh database)..."
+(cd "$ROOT_DIR" && docker compose down -v 2>/dev/null) || true
 log "Starting Docker services..."
 (cd "$ROOT_DIR" && docker compose up -d) 2>&1 | while IFS= read -r line; do echo "     $line"; done
 
