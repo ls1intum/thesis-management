@@ -175,6 +175,13 @@ public class DataExportService {
 				List.of(DataExportState.REQUESTED));
 
 		for (DataExport export : pending) {
+			// Atomically claim this export to prevent duplicate processing
+			// in multi-instance deployments.
+			int updated = dataExportRepository.claimForProcessing(export.getId(), DataExportState.REQUESTED);
+			if (updated == 0) {
+				continue; // Another instance already claimed it
+			}
+
 			try {
 				createDataExport(export);
 			} catch (Exception e) {
@@ -188,7 +195,6 @@ public class DataExportService {
 
 	private void createDataExport(DataExport export) throws IOException {
 		export.setState(DataExportState.IN_CREATION);
-		dataExportRepository.save(export);
 
 		User user = export.getUser();
 		String filename = String.format("export_%s_%d.zip", user.getId(), System.currentTimeMillis());
@@ -392,7 +398,9 @@ public class DataExportService {
 					extension = filename.substring(dotIndex);
 				}
 				zos.putNextEntry(new ZipEntry(entryPrefix + extension));
-				resource.getInputStream().transferTo(zos);
+				try (java.io.InputStream is = resource.getInputStream()) {
+					is.transferTo(zos);
+				}
 				zos.closeEntry();
 			}
 		} catch (Exception e) {

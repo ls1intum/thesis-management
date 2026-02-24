@@ -4,9 +4,11 @@ import de.tum.cit.aet.thesis.constants.DataExportState;
 import de.tum.cit.aet.thesis.entity.DataExport;
 import de.tum.cit.aet.thesis.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
@@ -17,6 +19,11 @@ public interface DataExportRepository extends JpaRepository<DataExport, UUID> {
 	List<DataExport> findAllByUserOrderByCreatedAtDesc(User user);
 
 	List<DataExport> findAllByStateIn(List<DataExportState> states);
+
+	@Modifying
+	@Transactional
+	@Query("UPDATE DataExport e SET e.state = 'IN_CREATION' WHERE e.id = :id AND e.state = :expectedState")
+	int claimForProcessing(@Param("id") UUID id, @Param("expectedState") DataExportState expectedState);
 
 	@Query("""
 			SELECT e FROM DataExport e

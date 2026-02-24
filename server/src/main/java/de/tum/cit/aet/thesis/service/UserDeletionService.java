@@ -169,12 +169,20 @@ public class UserDeletionService {
 	}
 
 	public void processDeferredDeletions() {
-		List<User> pendingUsers = userRepository.findAllByDeletionScheduledForIsNotNull();
+		// Collect IDs first because anonymizeUser() clears the persistence context,
+		// which would detach entities loaded in the same session.
+		List<UUID> pendingUserIds = userRepository.findAllByDeletionScheduledForIsNotNull()
+				.stream().map(User::getId).toList();
 
-		for (User user : pendingUsers) {
-			List<ThesisRole> retentionBlocked = getRetentionBlockedThesisRoles(user.getId());
+		for (UUID userId : pendingUserIds) {
+			User user = userRepository.findById(userId).orElse(null);
+			if (user == null) {
+				continue;
+			}
+
+			List<ThesisRole> retentionBlocked = getRetentionBlockedThesisRoles(userId);
 			if (retentionBlocked.isEmpty()) {
-				log.info("Retention expired for user {}, performing full cleanup", user.getId());
+				log.info("Retention expired for user {}, performing full cleanup", userId);
 
 				// Collect file paths before DB changes
 				List<String> exportFilePaths = collectExportFilePaths(user);
@@ -182,19 +190,19 @@ public class UserDeletionService {
 
 				// Delete all remaining related data
 				deleteDataExportRecords(user);
-				List<Application> remainingApps = applicationRepository.findAllByUserId(user.getId());
+				List<Application> remainingApps = applicationRepository.findAllByUserId(userId);
 				for (Application app : remainingApps) {
 					applicationReviewerRepository.deleteByApplicationId(app.getId());
 				}
-				applicationRepository.deleteAllByUserId(user.getId());
-				topicRoleRepository.deleteAllByIdUserId(user.getId());
-				thesisRoleRepository.deleteAllByIdUserId(user.getId());
+				applicationRepository.deleteAllByUserId(userId);
+				topicRoleRepository.deleteAllByIdUserId(userId);
+				thesisRoleRepository.deleteAllByIdUserId(userId);
 
 				// Fully anonymize the tombstone (clear name + file references)
 				// anonymizeUser clears the persistence context and re-fetches,
 				// so we must set deletionScheduledFor via a separate query.
 				anonymizeUser(user);
-				userRepository.clearDeletionScheduledFor(user.getId());
+				userRepository.clearDeletionScheduledFor(userId);
 
 				// Delete files after DB operations succeeded
 				deleteFilePaths(userFilePaths);
@@ -239,8 +247,9 @@ public class UserDeletionService {
 
 		// Deactivate the account but keep name and thesis-related files intact
 		// so thesis records remain searchable during the legal retention period.
+		// Note: anonymizedAt is NOT set here because the user is not fully anonymized
+		// (name, matriculation number, and thesis files are preserved for retention).
 		user.setDisabled(true);
-		user.setAnonymizedAt(now);
 		user.setDeletionRequestedAt(now);
 		user.setDeletionScheduledFor(earliestDeletion);
 

@@ -23,6 +23,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/v2/data-exports")
+@org.springframework.security.access.prepost.PreAuthorize("isAuthenticated()")
 public class DataExportController {
 	private final DataExportService dataExportService;
 	private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;

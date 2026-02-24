@@ -100,6 +100,10 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 					de.tum.cit.aet.thesis.constants.ThesisState.DROPPED_OUT
 				)
 			)
+			AND NOT EXISTS (
+				SELECT 1 FROM Application a
+				WHERE a.user.id = u.id AND a.createdAt >= :cutoff
+			)
 			""")
 	List<User> findInactiveStudentCandidates(@Param("cutoff") Instant cutoff);
 }

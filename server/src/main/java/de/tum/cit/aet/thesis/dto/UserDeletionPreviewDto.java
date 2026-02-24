@@ -6,11 +6,11 @@ import java.time.Instant;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record UserDeletionPreviewDto(
-		boolean canBeFullyDeleted,
-		boolean hasActiveTheses,
+		Boolean canBeFullyDeleted,
+		Boolean hasActiveTheses,
 		int retentionBlockedThesisCount,
 		Instant earliestFullDeletionDate,
-		boolean isResearchGroupHead,
+		Boolean isResearchGroupHead,
 		String message
 ) {
 }

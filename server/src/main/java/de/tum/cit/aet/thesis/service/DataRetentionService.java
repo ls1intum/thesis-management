@@ -2,6 +2,7 @@ package de.tum.cit.aet.thesis.service;
 
 import de.tum.cit.aet.thesis.entity.User;
 import de.tum.cit.aet.thesis.repository.ApplicationRepository;
+import de.tum.cit.aet.thesis.repository.ApplicationReviewerRepository;
 import de.tum.cit.aet.thesis.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +20,7 @@ public class DataRetentionService {
 	private static final Logger log = LoggerFactory.getLogger(DataRetentionService.class);
 
 	private final ApplicationRepository applicationRepository;
+	private final ApplicationReviewerRepository applicationReviewerRepository;
 	private final UserRepository userRepository;
 	private final DataExportService dataExportService;
 	private final UserDeletionService userDeletionService;
@@ -26,12 +28,14 @@ public class DataRetentionService {
 	private final int inactiveUserDays;
 
 	public DataRetentionService(ApplicationRepository applicationRepository,
+			ApplicationReviewerRepository applicationReviewerRepository,
 			UserRepository userRepository,
 			DataExportService dataExportService,
 			UserDeletionService userDeletionService,
 			@Value("${thesis-management.data-retention.rejected-application-retention-days}") int retentionDays,
 			@Value("${thesis-management.data-retention.inactive-user-days}") int inactiveUserDays) {
 		this.applicationRepository = applicationRepository;
+		this.applicationReviewerRepository = applicationReviewerRepository;
 		this.userRepository = userRepository;
 		this.dataExportService = dataExportService;
 		this.userDeletionService = userDeletionService;
@@ -51,11 +55,7 @@ public class DataRetentionService {
 	public int disableInactiveUsers() {
 		Instant cutoff = Instant.now().minus(inactiveUserDays, ChronoUnit.DAYS);
 
-		List<User> candidates = userRepository.findInactiveStudentCandidates(cutoff);
-
-		List<User> toDisable = candidates.stream()
-				.filter(user -> hasNoRecentActivity(user, cutoff))
-				.toList();
+		List<User> toDisable = userRepository.findInactiveStudentCandidates(cutoff);
 
 		if (toDisable.isEmpty()) {
 			return 0;
@@ -69,13 +69,6 @@ public class DataRetentionService {
 		log.info("Disabled {} inactive student accounts (inactive for more than {} days)", toDisable.size(), inactiveUserDays);
 
 		return toDisable.size();
-	}
-
-	private boolean hasNoRecentActivity(User user, Instant cutoff) {
-		boolean hasRecentApplication = applicationRepository.findAllByUser(user).stream()
-				.anyMatch(app -> app.getCreatedAt().isAfter(cutoff));
-
-		return !hasRecentApplication;
 	}
 
 	public int deleteExpiredRejectedApplications() {
@@ -92,6 +85,7 @@ public class DataRetentionService {
 
 		for (UUID id : expiredIds) {
 			try {
+				applicationReviewerRepository.deleteByApplicationId(id);
 				applicationRepository.deleteApplicationById(id);
 				totalDeleted++;
 			} catch (Exception e) {
