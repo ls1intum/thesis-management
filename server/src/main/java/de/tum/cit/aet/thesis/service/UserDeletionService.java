@@ -182,8 +182,9 @@ public class UserDeletionService {
 		} else {
 			// Retention active — only delete avatar (cosmetic), keep CV/degree/exam
 			// as they are part of the thesis evaluation process.
+			String avatarPath = user.getAvatar();
 			result = performSoftDeletion(user, retentionBlockedRoles);
-			uploadService.deleteFile(user.getAvatar());
+			uploadService.deleteFile(avatarPath);
 		}
 
 		// Delete export files after DB operations succeeded (worst case: orphaned files)
