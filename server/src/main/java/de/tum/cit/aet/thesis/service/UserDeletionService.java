@@ -7,6 +7,7 @@ import de.tum.cit.aet.thesis.dto.UserDeletionResultDto;
 import de.tum.cit.aet.thesis.entity.Application;
 import de.tum.cit.aet.thesis.entity.DataExport;
 import de.tum.cit.aet.thesis.entity.ThesisRole;
+import de.tum.cit.aet.thesis.entity.ThesisStateChange;
 import de.tum.cit.aet.thesis.entity.User;
 import de.tum.cit.aet.thesis.exception.request.AccessDeniedException;
 import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
@@ -21,9 +22,10 @@ import de.tum.cit.aet.thesis.repository.UserGroupRepository;
 import de.tum.cit.aet.thesis.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.file.Path;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -50,6 +52,7 @@ public class UserDeletionService {
 	private final UserGroupRepository userGroupRepository;
 	private final NotificationSettingRepository notificationSettingRepository;
 	private final UploadService uploadService;
+	private final Path dataExportPath;
 
 	public UserDeletionService(
 			UserRepository userRepository,
@@ -61,7 +64,8 @@ public class UserDeletionService {
 			DataExportRepository dataExportRepository,
 			UserGroupRepository userGroupRepository,
 			NotificationSettingRepository notificationSettingRepository,
-			UploadService uploadService) {
+			UploadService uploadService,
+			@Value("${thesis-management.data-export.path}") String dataExportPath) {
 		this.userRepository = userRepository;
 		this.thesisRoleRepository = thesisRoleRepository;
 		this.topicRoleRepository = topicRoleRepository;
@@ -72,6 +76,7 @@ public class UserDeletionService {
 		this.userGroupRepository = userGroupRepository;
 		this.notificationSettingRepository = notificationSettingRepository;
 		this.uploadService = uploadService;
+		this.dataExportPath = Path.of(dataExportPath);
 	}
 
 	public UserDeletionPreviewDto previewDeletion(UUID userId) {
@@ -112,7 +117,6 @@ public class UserDeletionService {
 		);
 	}
 
-	@Transactional
 	public UserDeletionResultDto deleteOrAnonymizeUser(UUID userId) {
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new ResourceNotFoundException("User not found"));
@@ -132,15 +136,17 @@ public class UserDeletionService {
 		// Delete freely-deletable applications (rejected/not-assessed)
 		deleteNonRetainedApplications(userId);
 
-		// Delete data exports (files + records)
-		deleteDataExports(user);
+		// Collect export file paths before deleting DB records, then delete files after
+		List<String> exportFilePaths = collectExportFilePaths(user);
+		deleteDataExportRecords(user);
 
 		List<ThesisRole> retentionBlockedRoles = getRetentionBlockedThesisRoles(userId);
 
+		UserDeletionResultDto result;
 		if (retentionBlockedRoles.isEmpty()) {
-			// No retention — delete all user files and the account
+			// No retention — delete the account first, then clean up files
+			result = performFullDeletion(user);
 			deleteAllUserFiles(user);
-			return performFullDeletion(user);
 		} else {
 			// Retention active — only delete avatar (cosmetic), keep CV/degree/exam
 			// as they are part of the thesis evaluation process.
@@ -149,12 +155,16 @@ public class UserDeletionService {
 			//  time), we can delete user.cvFilename, user.degreeFilename, and
 			//  user.examinationFilename here as well, because the snapshots on the retained
 			//  thesis/application records would still be available for evaluation purposes.
+			result = performSoftDeletion(user, retentionBlockedRoles);
 			uploadService.deleteFile(user.getAvatar());
-			return performSoftDeletion(user, retentionBlockedRoles);
 		}
+
+		// Delete export files after DB operations succeeded (worst case: orphaned files)
+		deleteExportFiles(exportFilePaths);
+
+		return result;
 	}
 
-	@Transactional
 	public void processDeferredDeletions() {
 		List<User> pendingUsers = userRepository.findAllByDeletionRequestedAtIsNotNull();
 
@@ -162,9 +172,12 @@ public class UserDeletionService {
 			List<ThesisRole> retentionBlocked = getRetentionBlockedThesisRoles(user.getId());
 			if (retentionBlocked.isEmpty()) {
 				log.info("Retention expired for user {}, performing full deletion", user.getId());
-				deleteAllUserFiles(user);
-				deleteDataExports(user);
+				List<String> exportFilePaths = collectExportFilePaths(user);
+				deleteDataExportRecords(user);
 				performFullDeletion(user);
+				// Delete files after DB operations succeeded
+				deleteAllUserFiles(user);
+				deleteExportFiles(exportFilePaths);
 			}
 		}
 	}
@@ -172,13 +185,13 @@ public class UserDeletionService {
 	private UserDeletionResultDto performFullDeletion(User user) {
 		UUID userId = user.getId();
 
-		// Delete remaining applications and their reviewers (entity-based to keep Hibernate session consistent)
+		// Delete remaining applications and their reviewers via JPQL to avoid
+		// Hibernate session conflicts with eagerly-loaded collections.
 		List<Application> remainingApps = applicationRepository.findAllByUserId(userId);
 		for (Application app : remainingApps) {
-			applicationReviewerRepository.deleteAll(app.getReviewers());
-			app.getReviewers().clear();
+			applicationReviewerRepository.deleteByApplicationId(app.getId());
 		}
-		applicationRepository.deleteAll(remainingApps);
+		applicationRepository.deleteAllByUserId(userId);
 
 		// Delete topic roles
 		topicRoleRepository.deleteAllByIdUserId(userId);
@@ -186,14 +199,12 @@ public class UserDeletionService {
 		// Delete thesis roles (should be empty if no retention-blocked data)
 		thesisRoleRepository.deleteAllByIdUserId(userId);
 
-		// Explicitly delete user-owned entities to avoid Hibernate session conflicts
-		// (UserGroup is EAGER-fetched and causes TransientPropertyValueException otherwise)
-		notificationSettingRepository.deleteAll(user.getNotificationSettings());
+		// Delete the user via JPQL to avoid Hibernate session conflicts with
+		// eagerly-loaded collections (groups, notification settings) that may
+		// reference already-deleted rows after the JPQL deletes above.
+		notificationSettingRepository.deleteByUserId(userId);
 		userGroupRepository.deleteByUserId(userId);
-		user.getGroups().clear();
-		user.getNotificationSettings().clear();
-
-		userRepository.delete(user);
+		userRepository.deleteUserById(userId);
 
 		log.info("Fully deleted user account {}", userId);
 		return new UserDeletionResultDto("DELETED", "Your account and all associated data have been permanently deleted.");
@@ -221,7 +232,7 @@ public class UserDeletionService {
 		userRepository.save(user);
 
 		// Delete notification settings and user groups (not needed during retention)
-		notificationSettingRepository.deleteAll(user.getNotificationSettings());
+		notificationSettingRepository.deleteByUserId(user.getId());
 		userGroupRepository.deleteByUserId(user.getId());
 
 		log.info("Soft-deleted user account {}, full deletion scheduled for {}", user.getId(), earliestDeletion);
@@ -252,9 +263,15 @@ public class UserDeletionService {
 	}
 
 	private Instant computeRetentionExpiry(ThesisRole role) {
-		// Retention: 5 years after end of calendar year of thesis completion
-		Instant createdAt = role.getThesis().getCreatedAt();
-		ZonedDateTime zdt = createdAt.atZone(ZoneId.of("Europe/Berlin"));
+		// Retention: 5 years after end of calendar year of thesis completion.
+		// Use the actual completion date (state change to FINISHED/DROPPED_OUT),
+		// falling back to createdAt only if no terminal state change is recorded.
+		Instant completedAt = role.getThesis().getStates().stream()
+				.filter(sc -> TERMINAL_STATES.contains(sc.getId().getState()))
+				.map(ThesisStateChange::getChangedAt)
+				.max(Instant::compareTo)
+				.orElse(role.getThesis().getCreatedAt());
+		ZonedDateTime zdt = completedAt.atZone(ZoneId.of("Europe/Berlin"));
 		// End of the calendar year + 5 years
 		return ZonedDateTime.of(zdt.getYear() + RETENTION_YEARS, 12, 31, 23, 59, 59, 0, ZoneId.of("Europe/Berlin"))
 				.toInstant();
@@ -278,24 +295,37 @@ public class UserDeletionService {
 		List<Application> applications = applicationRepository.findAllByUserId(userId);
 		for (Application app : applications) {
 			if (app.getState() == ApplicationState.REJECTED || app.getState() == ApplicationState.NOT_ASSESSED) {
-				applicationReviewerRepository.deleteAll(app.getReviewers());
-				app.getReviewers().clear();
-				applicationRepository.delete(app);
+				applicationReviewerRepository.deleteByApplicationId(app.getId());
+				applicationRepository.deleteApplicationById(app.getId());
 			}
 		}
 	}
 
-	private void deleteDataExports(User user) {
+	private List<String> collectExportFilePaths(User user) {
+		return dataExportRepository.findAllByUserOrderByCreatedAtDesc(user).stream()
+				.map(DataExport::getFilePath)
+				.filter(p -> p != null)
+				.toList();
+	}
+
+	private void deleteDataExportRecords(User user) {
 		List<DataExport> exports = dataExportRepository.findAllByUserOrderByCreatedAtDesc(user);
-		for (DataExport export : exports) {
-			if (export.getFilePath() != null) {
-				try {
-					java.nio.file.Files.deleteIfExists(java.nio.file.Path.of(export.getFilePath()));
-				} catch (java.io.IOException e) {
-					log.warn("Failed to delete export file {}: {}", export.getFilePath(), e.getMessage());
+		dataExportRepository.deleteAll(exports);
+	}
+
+	private void deleteExportFiles(List<String> filePaths) {
+		java.nio.file.Path safeBase = dataExportPath.normalize();
+		for (String path : filePaths) {
+			try {
+				java.nio.file.Path filePath = java.nio.file.Path.of(path).normalize();
+				if (filePath.startsWith(safeBase)) {
+					java.nio.file.Files.deleteIfExists(filePath);
+				} else {
+					log.warn("Skipping export file deletion outside expected directory: {}", path);
 				}
+			} catch (java.io.IOException e) {
+				log.warn("Failed to delete export file {}: {}", path, e.getMessage());
 			}
-			dataExportRepository.delete(export);
 		}
 	}
 }

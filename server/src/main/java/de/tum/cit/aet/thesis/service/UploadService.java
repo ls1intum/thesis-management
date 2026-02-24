@@ -155,8 +155,15 @@ public class UploadService {
 		if (filename == null || filename.isBlank()) {
 			return;
 		}
+		if (filename.contains("..")) {
+			return;
+		}
 		try {
-			Files.deleteIfExists(rootLocation.resolve(filename));
+			Path resolved = rootLocation.resolve(filename).normalize();
+			if (!resolved.startsWith(rootLocation.normalize())) {
+				return;
+			}
+			Files.deleteIfExists(resolved);
 		} catch (IOException e) {
 			// Log but don't throw — best-effort file cleanup
 		}
