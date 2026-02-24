@@ -10,6 +10,10 @@ on:
         description: "The tag of the client image that was built"
         value: ${{ jobs.build-client.outputs.client_image_tag }}
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   build-server:
     runs-on: ubuntu-latest
