@@ -38,7 +38,7 @@ const LandingPageHeader = ({ researchGroupId }: LandingPageHeaderProps) => {
     <Card
       radius='md'
       bg={computedColorScheme === 'dark' ? 'dark.6' : 'gray.1'}
-      p='xl'
+      p='md'
       style={{ flexShrink: 0 }}
     >
       <Flex justify='flex-start' align='center' gap='xl' wrap='nowrap'>
@@ -55,7 +55,7 @@ const LandingPageHeader = ({ researchGroupId }: LandingPageHeaderProps) => {
           </Title>
         </Flex>
 
-        <LogoCircle size={100} logoSize={80} visibleFrom='sm' />
+        <LogoCircle size={80} logoSize={60} visibleFrom='sm' />
       </Flex>
     </Card>
   )
