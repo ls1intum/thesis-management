@@ -151,6 +151,7 @@ public class EmailTemplateService {
 		return emailTemplate;
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public EmailTemplate createEmailTemplate(
 			UUID researchGroupId,
@@ -192,6 +193,7 @@ public class EmailTemplateService {
 		return emailTemplateRepository.save(emailTemplate);
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public EmailTemplate updateEmailTemplate(
 			EmailTemplate emailTemplate,
@@ -219,6 +221,7 @@ public class EmailTemplateService {
 		return emailTemplateRepository.save(emailTemplate);
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public void deleteEmailTemplate(UUID emailTemplateId) {
 		EmailTemplate emailTemplate = emailTemplateRepository.findById(emailTemplateId)

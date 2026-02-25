@@ -33,6 +33,15 @@ repositories {
 	mavenCentral()
 }
 
+// Exclude Jackson 2.x databind from compile classpath to prevent accidental usage.
+// Jackson 3.x (tools.jackson) is the primary Jackson version in Spring Boot 4.x.
+// Jackson 2.x remains on the runtime classpath for third-party libraries (java-jwt, itext).
+configurations.configureEach {
+	if (it.name == "compileClasspath" || it.name == "testCompileClasspath") {
+		exclude group: "com.fasterxml.jackson.core", module: "jackson-databind"
+	}
+}
+
 dependencies {
 	implementation "org.springframework.boot:spring-boot-starter-data-jpa"
 	implementation "org.springframework.boot:spring-boot-starter-webmvc"

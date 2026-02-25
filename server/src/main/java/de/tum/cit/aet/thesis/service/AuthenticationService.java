@@ -68,6 +68,7 @@ public class AuthenticationService {
 				.orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public User updateAuthenticatedUser(JwtAuthenticationToken jwt) {
 		Map<String, Object> attributes = jwt.getTokenAttributes();
@@ -92,6 +93,11 @@ public class AuthenticationService {
 			return newUser;
 		});
 
+		if (user.isAnonymized() || user.getDeletionRequestedAt() != null) {
+			throw new de.tum.cit.aet.thesis.exception.request.AccessDeniedException(
+					"This account has been deleted and can no longer be used");
+		}
+
 		user.setUniversityId(universityId);
 
 		if (email != null && !email.isEmpty()) {
@@ -108,6 +114,12 @@ public class AuthenticationService {
 
 		if (matriculationNumber != null && !matriculationNumber.isEmpty()) {
 			user.setMatriculationNumber(matriculationNumber);
+		}
+
+		user.setLastLoginAt(Instant.now());
+
+		if (user.isDisabled()) {
+			user.setDisabled(false);
 		}
 
 		user = userRepository.save(user);
@@ -209,6 +221,7 @@ public class AuthenticationService {
 		return user.getNotificationSettings();
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public List<NotificationSetting> updateNotificationSettings(User user, String name, String email) {
 		List<NotificationSetting> settings = user.getNotificationSettings();

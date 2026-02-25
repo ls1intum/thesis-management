@@ -16,12 +16,6 @@ services:
     ports:
       - "5144:5432"
 
-  caldav:
-    image: tomsquest/docker-radicale:3.6.0.0
-    container_name: thesis-management-caldav
-    ports:
-      - "5232:5232"
-
   keycloak:
     image: quay.io/keycloak/keycloak:26.5
     container_name: thesis-management-keycloak

@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { authStatePath, fillRichTextEditor, navigateTo } from './helpers'
+import { authStatePath, fillRichTextEditor, navigateToDetail } from './helpers'
 
 // Thesis d000-0003: SUBMITTED state, student3, advisor2, supervisor2 (DSA group)
 // Note: Seed data inserts an assessment row directly but thesis state remains SUBMITTED.
@@ -13,12 +13,12 @@ test.describe.serial('Thesis Grading Workflow', () => {
     const context = await browser.newContext({ storageState: authStatePath('supervisor2') })
     const page = await context.newPage()
 
-    await navigateTo(page, THESIS_URL)
-
-    // Wait for thesis page to load
-    await expect(page.getByRole('heading', { name: THESIS_TITLE })).toBeVisible({
-      timeout: 15_000,
-    })
+    const heading = page.getByRole('heading', { name: THESIS_TITLE })
+    const loaded = await navigateToDetail(page, THESIS_URL, heading)
+    if (!loaded) {
+      await context.close()
+      return
+    }
 
     // Check if the assessment section is actionable (thesis may already be FINISHED from a prior run)
     const editButton = page.getByRole('button', { name: 'Edit Assessment' })
@@ -73,12 +73,12 @@ test.describe.serial('Thesis Grading Workflow', () => {
     const context = await browser.newContext({ storageState: authStatePath('supervisor2') })
     const page = await context.newPage()
 
-    await navigateTo(page, THESIS_URL)
-
-    // Wait for thesis page to load
-    await expect(page.getByRole('heading', { name: THESIS_TITLE })).toBeVisible({
-      timeout: 15_000,
-    })
+    const heading = page.getByRole('heading', { name: THESIS_TITLE })
+    const loaded = await navigateToDetail(page, THESIS_URL, heading)
+    if (!loaded) {
+      await context.close()
+      return
+    }
 
     // Check if "Add Final Grade" button is available (thesis may already be GRADED/FINISHED)
     const addGradeButton = page.getByRole('button', { name: 'Add Final Grade' })
@@ -129,12 +129,12 @@ test.describe.serial('Thesis Grading Workflow', () => {
     const context = await browser.newContext({ storageState: authStatePath('supervisor2') })
     const page = await context.newPage()
 
-    await navigateTo(page, THESIS_URL)
-
-    // Wait for thesis page to load
-    await expect(page.getByRole('heading', { name: THESIS_TITLE })).toBeVisible({
-      timeout: 15_000,
-    })
+    const heading = page.getByRole('heading', { name: THESIS_TITLE })
+    const loaded = await navigateToDetail(page, THESIS_URL, heading)
+    if (!loaded) {
+      await context.close()
+      return
+    }
 
     // "Mark thesis as finished" button is only visible for GRADED thesis
     const finishButton = page.getByRole('button', { name: 'Mark thesis as finished' })

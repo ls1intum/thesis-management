@@ -15,6 +15,31 @@ export async function navigateTo(page: Page, path: string) {
 }
 
 /**
+ * Navigate to an entity detail page (application, thesis) and verify
+ * it loaded the detail view. Under heavy parallel test load, the server
+ * may respond slowly and the client may redirect to the list view.
+ * This helper retries the navigation once if the expected element
+ * is not visible after the first attempt.
+ */
+export async function navigateToDetail(
+  page: Page,
+  path: string,
+  expectedLocator: Locator,
+  timeout = 15_000,
+): Promise<boolean> {
+  await navigateTo(page, path)
+  // Scroll to top so heading elements are in the viewport for isVisible check
+  await page.evaluate(() => window.scrollTo(0, 0))
+  const visible = await expectedLocator.isVisible({ timeout }).catch(() => false)
+  if (visible) return true
+
+  // Retry once — transient server slowness may have caused a redirect
+  await navigateTo(page, path)
+  await page.evaluate(() => window.scrollTo(0, 0))
+  return await expectedLocator.isVisible({ timeout }).catch(() => false)
+}
+
+/**
  * Use a specific auth state file for a test.
  */
 export function authStatePath(
@@ -81,30 +106,42 @@ export async function searchAndSelectMultiSelect(
   optionPattern: RegExp,
 ) {
   const textbox = page.getByRole('textbox', { name: label })
-  await textbox.click({ force: true })
   const listbox = page.getByRole('listbox', { name: label })
   const option = listbox.getByRole('option', { name: optionPattern }).first()
-  await expect(option).toBeVisible({ timeout: 10_000 })
-  // First attempt: standard Playwright click
-  await option.click()
-  await page.waitForTimeout(500)
-  // Check if selection registered by looking for a pill
   const wrapper = page.locator(`.mantine-InputWrapper-root:has(.mantine-InputWrapper-label:text("${label}"))`)
-  const hasPill = await wrapper.locator('.mantine-Pill-root').count() > 0
-  if (!hasPill) {
-    // Fallback: re-open dropdown and use evaluate to dispatch mouse events
+
+  // Open dropdown and wait for options. Under heavy parallel load the server
+  // may be slow to respond. Each click triggers setFetchVersion++ which ABORTS
+  // any in-flight request and starts a new one, so we must wait long enough for
+  // the server to respond before re-clicking.
+  // IMPORTANT: Do NOT press Escape or click body — both close Mantine modals.
+  let found = false
+  for (let attempt = 0; attempt < 3 && !found; attempt++) {
     await textbox.click({ force: true })
-    const retryOption = listbox.getByRole('option', { name: optionPattern }).first()
-    await expect(retryOption).toBeVisible({ timeout: 10_000 })
-    await retryOption.evaluate((el) => {
-      el.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true, view: window }))
-      el.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, cancelable: true, view: window }))
-      el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }))
-    })
-    await page.waitForTimeout(500)
+    // Give the server ample time to respond before aborting via re-click
+    found = await option.isVisible({ timeout: 20_000 }).catch(() => false)
   }
+
+  await expect(option).toBeVisible({ timeout: 5_000 })
+
+  // Click the option. Retry with force:true if the standard click doesn't register.
+  // Do NOT use evaluate to dispatch synthetic mousedown — it bubbles to the document
+  // and triggers Mantine's Modal "click outside" handler, closing the dialog.
+  for (let clickAttempt = 0; clickAttempt < 3; clickAttempt++) {
+    await option.click({ force: clickAttempt > 0 })
+    await page.waitForTimeout(500)
+    const hasPill = await wrapper.locator('.mantine-Pill-root').count()
+    if (hasPill > 0) break
+    // Re-open dropdown for next attempt
+    await textbox.click({ force: true })
+    await expect(option).toBeVisible({ timeout: 10_000 })
+  }
+
   // Verify selection registered
   await expect(wrapper.locator('.mantine-Pill-root')).toBeVisible({ timeout: 5_000 })
+  // Close the dropdown by pressing Tab (blurs input). Do NOT use Escape — it closes modals.
+  await page.keyboard.press('Tab')
+  await page.waitForTimeout(300)
 }
 
 /**

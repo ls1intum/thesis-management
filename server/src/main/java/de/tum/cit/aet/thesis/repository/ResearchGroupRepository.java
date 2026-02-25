@@ -32,5 +32,7 @@ Page<ResearchGroup> searchResearchGroup(
 );
 
 	@Query("SELECT r FROM ResearchGroup r WHERE r.abbreviation = :abbreviation")
-ResearchGroup findByAbbreviation(String abbreviation);
+	ResearchGroup findByAbbreviation(String abbreviation);
+
+	boolean existsByHeadId(UUID headId);
 }

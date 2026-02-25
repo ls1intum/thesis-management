@@ -17,11 +17,13 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import jakarta.mail.Address;
+import jakarta.mail.Multipart;
 import jakarta.mail.internet.MimeMessage;
 
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -31,6 +33,20 @@ class MailingServiceIntegrationTest extends BaseIntegrationTest {
 	@DynamicPropertySource
 	static void configureDynamicProperties(DynamicPropertyRegistry registry) {
 		configureProperties(registry);
+	}
+
+	private int countAttachments(MimeMessage message) throws Exception {
+		if (message.getContent() instanceof Multipart multipart) {
+			int count = 0;
+			for (int i = 0; i < multipart.getCount(); i++) {
+				String disposition = multipart.getBodyPart(i).getDisposition();
+				if (disposition != null && disposition.equalsIgnoreCase("attachment")) {
+					count++;
+				}
+			}
+			return count;
+		}
+		return 0;
 	}
 
 	private List<String> getAllRecipientAddresses(MimeMessage[] emails) {
@@ -77,6 +93,91 @@ class MailingServiceIntegrationTest extends BaseIntegrationTest {
 
 			List<String> recipients = getAllRecipientAddresses(emails);
 			assertThat(recipients).as("Student should receive an email")
+					.anyMatch(addr -> addr.contains(student.universityId()));
+		}
+
+		@Test
+		void createApplication_DefaultSetting_ChairEmailHasNoAttachments() throws Exception {
+			createTestEmailTemplate("APPLICATION_CREATED_CHAIR");
+			createTestEmailTemplate("APPLICATION_CREATED_STUDENT");
+
+			TestUser head = createRandomTestUser(List.of("supervisor"));
+			UUID researchGroupId = createTestResearchGroup("No Attach Group", head.universityId());
+
+			clearEmails();
+
+			TestUser student = createRandomTestUser(List.of("student"));
+			String studentAuth = generateTestAuthenticationHeader(student.universityId(), List.of("student"));
+
+			CreateApplicationPayload payload = new CreateApplicationPayload(
+					null, "No Attachments Thesis", "BACHELOR", Instant.now(), "Test motivation", researchGroupId
+			);
+
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
+							.header("Authorization", studentAuth)
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(payload)))
+					.andExpect(status().isOk());
+
+			MimeMessage[] emails = getReceivedEmails();
+			assertThat(emails.length).isGreaterThanOrEqualTo(1);
+
+			// Find the chair email (sent to the head, not the student)
+			for (MimeMessage email : emails) {
+				List<String> recipients = Arrays.stream(email.getAllRecipients())
+						.map(Address::toString)
+						.toList();
+				boolean isChairEmail = recipients.stream().anyMatch(addr -> addr.contains(head.universityId()));
+				if (isChairEmail) {
+					// With default setting (false), chair email should not have file attachments
+					int attachmentCount = countAttachments(email);
+					assertThat(attachmentCount).as("Chair email should have no file attachments with default setting")
+							.isEqualTo(0);
+				}
+			}
+		}
+
+		@Test
+		void createApplication_WithSettingEnabled_ChairEmailHasAttachments() throws Exception {
+			createTestEmailTemplate("APPLICATION_CREATED_CHAIR");
+			createTestEmailTemplate("APPLICATION_CREATED_STUDENT");
+
+			TestUser head = createRandomTestUser(List.of("supervisor"));
+			UUID researchGroupId = createTestResearchGroup("With Attach Group", head.universityId());
+
+			// Enable includeApplicationDataInEmail
+			String settingsPayload = objectMapper.writeValueAsString(Map.of(
+					"applicationEmailSettings", Map.of("includeApplicationDataInEmail", true)
+			));
+
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/research-group-settings/{id}", researchGroupId)
+							.header("Authorization", createRandomAdminAuthentication())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(settingsPayload))
+					.andExpect(status().isOk());
+
+			clearEmails();
+
+			TestUser student = createRandomTestUser(List.of("student"));
+			String studentAuth = generateTestAuthenticationHeader(student.universityId(), List.of("student"));
+
+			CreateApplicationPayload payload = new CreateApplicationPayload(
+					null, "With Attachments Thesis", "BACHELOR", Instant.now(), "Test motivation", researchGroupId
+			);
+
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
+							.header("Authorization", studentAuth)
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(payload)))
+					.andExpect(status().isOk());
+
+			MimeMessage[] emails = getReceivedEmails();
+			assertThat(emails.length).as("At least one email should be sent")
+					.isGreaterThanOrEqualTo(1);
+
+			// Student email should always be sent regardless of the setting
+			List<String> allRecipients = getAllRecipientAddresses(emails);
+			assertThat(allRecipients).as("Student should receive an email")
 					.anyMatch(addr -> addr.contains(student.universityId()));
 		}
 

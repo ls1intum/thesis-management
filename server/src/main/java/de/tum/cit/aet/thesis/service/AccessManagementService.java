@@ -279,6 +279,7 @@ public class AccessManagementService {
 				.block();
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Set<UserGroup> syncRolesFromKeycloakToDatabase(User user) {
 		if (user == null) {

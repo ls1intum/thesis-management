@@ -42,6 +42,30 @@ test.describe('Research Group Settings - Supervisor', () => {
   })
 })
 
+test.describe('Research Group Settings - Application Email Content', () => {
+  test.use({ storageState: authStatePath('admin') })
+
+  test('application email content toggle is visible and defaults to off', async ({ page }) => {
+    await navigateTo(page, '/research-groups/00000000-0000-4000-a000-000000000001')
+
+    // Should see the settings page
+    await expect(
+      page.getByRole('heading', { name: /research group settings/i }),
+    ).toBeVisible({ timeout: 15_000 })
+
+    // The Application Email Content card should be visible
+    await expect(page.getByText('Application Email Content')).toBeVisible()
+    await expect(
+      page.getByText('Include Personal Details and Attachments'),
+    ).toBeVisible()
+
+    // The toggle description should be visible
+    await expect(
+      page.getByText(/When enabled, application notification emails/),
+    ).toBeVisible()
+  })
+})
+
 test.describe('Research Groups - Student cannot access admin page', () => {
   test('student is denied access to research groups admin', async ({ page }) => {
     await navigateTo(page, '/research-groups')

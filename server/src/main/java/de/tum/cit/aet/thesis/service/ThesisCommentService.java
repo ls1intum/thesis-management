@@ -64,6 +64,7 @@ public class ThesisCommentService {
 		);
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public ThesisComment postComment(Thesis thesis, ThesisCommentType commentType, String message, MultipartFile file) {
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
@@ -98,6 +99,7 @@ public class ThesisCommentService {
 		return uploadService.load(comment.getFilename());
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public ThesisComment deleteComment(ThesisComment comment) {
 		currentUserProvider().assertCanAccessResearchGroup(comment.getResearchGroup());

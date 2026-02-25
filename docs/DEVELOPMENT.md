@@ -122,6 +122,35 @@ After running tests with coverage, the HTML report is available at `server/build
 
 ### Coding Conventions
 
+#### Avoid `@Transactional` in Services
+
+Do **not** annotate service methods with `@Transactional`. Long-running transactions hold database connections for the entire method duration, which degrades connection pool throughput under load. Large transaction scopes also increase lock contention and the risk of deadlocks.
+
+Instead, rely on Spring Data's default per-repository-call transaction behavior: each `save()`, `delete()`, or `@Modifying` query runs in its own short-lived transaction. Design service operations to be **idempotent** so that partial completion can be safely retried.
+
+The only acceptable uses of `@Transactional` are:
+- On `@Modifying` repository methods (required by Spring Data JPA)
+- On simple controller-level read operations that need a consistent snapshot (e.g., loading an entity and its lazy associations in one go)
+
+```java
+// Avoid — holds a connection for the entire multi-step operation
+@Transactional
+public void complexOperation(UUID id) {
+    var entity = repo.findById(id).orElseThrow();
+    // ... long processing ...
+    repo.save(entity);
+    otherRepo.deleteByParentId(id);
+}
+
+// Preferred — each repository call is its own short transaction
+public void complexOperation(UUID id) {
+    var entity = repo.findById(id).orElseThrow();
+    // ... processing ...
+    repo.save(entity);
+    otherRepo.deleteByParentId(id);
+}
+```
+
 #### DTOs
 
 Use Java `record` types for all Data Transfer Objects (DTOs). Records are immutable, concise, and well-suited for API response objects.

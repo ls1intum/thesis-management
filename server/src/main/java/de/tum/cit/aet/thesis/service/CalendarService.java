@@ -1,9 +1,6 @@
 package de.tum.cit.aet.thesis.service;
 
-import net.fortuna.ical4j.data.CalendarBuilder;
-import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.Calendar;
-import net.fortuna.ical4j.model.Component;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.parameter.PartStat;
 import net.fortuna.ical4j.model.parameter.Role;
@@ -16,53 +13,17 @@ import net.fortuna.ical4j.model.property.ProdId;
 import net.fortuna.ical4j.model.property.Uid;
 import net.fortuna.ical4j.model.property.immutable.ImmutableCalScale;
 import net.fortuna.ical4j.model.property.immutable.ImmutableVersion;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import jakarta.mail.internet.InternetAddress;
 
-import java.io.IOException;
-import java.io.Reader;
 import java.net.URI;
 import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
-/** Manages calendar events via a CalDAV server, supporting creation, update, and deletion of iCal events. */
+/** Provides helper methods for building iCalendar feeds (ICS subscription format). */
 @Service
 public class CalendarService {
-	private static final Logger log = LoggerFactory.getLogger(CalendarService.class);
-
-	private final WebClient webClient;
-	private final boolean enabled;
-
-	/**
-	 * Initializes the CalDAV WebClient with the configured URL and authentication credentials.
-	 *
-	 * @param enabled whether the calendar integration is enabled
-	 * @param caldavUrl the CalDAV server URL
-	 * @param caldavUsername the CalDAV authentication username
-	 * @param caldavPassword the CalDAV authentication password
-	 */
-	public CalendarService(
-			@Value("${thesis-management.calendar.enabled}") Boolean enabled,
-			@Value("${thesis-management.calendar.url}") String caldavUrl,
-			@Value("${thesis-management.calendar.username}") String caldavUsername,
-			@Value("${thesis-management.calendar.password}") String caldavPassword
-	) {
-		this.enabled = enabled;
-
-		this.webClient = WebClient.builder()
-				.baseUrl(caldavUrl)
-				.defaultHeaders(headers -> headers.setBasicAuth(caldavUsername, caldavPassword))
-				.build();
-	}
 
 	/**
 	 * Represents a calendar event with scheduling details, organizer, and attendee information.
@@ -86,103 +47,6 @@ public class CalendarService {
 			List<InternetAddress> requiredAttendees,
 			List<InternetAddress> optionalAttendees
 	) {}
-
-	/**
-	 * Creates a new calendar event on the CalDAV server and returns its generated event ID.
-	 *
-	 * @param data the calendar event data
-	 * @return the generated event ID, or null if calendar is disabled or creation fails
-	 */
-	public String createEvent(CalendarEvent data) {
-		if (!enabled) {
-			return null;
-		}
-
-		try {
-			Calendar calendar = getCalendar();
-			String eventId = UUID.randomUUID().toString();
-
-			calendar.add(createVEvent(eventId, data));
-			updateCalendar(calendar);
-
-			return eventId;
-		} catch (Exception exception) {
-			log.warn("Failed to create calendar event", exception);
-		}
-
-		return null;
-	}
-
-	/**
-	 * Updates an existing calendar event identified by its event ID with the provided data.
-	 *
-	 * @param eventId the event ID to update
-	 * @param data the new calendar event data
-	 */
-	public void updateEvent(String eventId, CalendarEvent data) {
-		if (!enabled) {
-			return;
-		}
-
-		if (eventId == null) {
-			return;
-		}
-
-		try {
-			Calendar calendar = getCalendar();
-			Optional<VEvent> event = findVEvent(calendar, eventId);
-
-			event.ifPresent(calendar::remove);
-			calendar.add(createVEvent(eventId, data));
-
-			updateCalendar(calendar);
-		} catch (Exception exception) {
-			log.warn("Failed to create calendar event", exception);
-		}
-	}
-
-	/**
-	 * Deletes a calendar event identified by its event ID from the CalDAV server.
-	 *
-	 * @param eventId the event ID to delete
-	 */
-	public void deleteEvent(String eventId) {
-		if (!enabled) {
-			return;
-		}
-
-		if (eventId == null || eventId.isBlank()) {
-			return;
-		}
-
-		try {
-			Calendar calendar = getCalendar();
-
-			VEvent event = findVEvent(calendar, eventId).orElseThrow();
-			calendar.remove(event);
-
-			updateCalendar(calendar);
-		} catch (Exception exception) {
-			log.warn("Failed to delete calendar event", exception);
-		}
-	}
-
-	/**
-	 * Finds a VEvent in the given calendar by its unique event ID.
-	 *
-	 * @param calendar the iCal calendar to search
-	 * @param eventId the event ID to find
-	 * @return an optional containing the VEvent if found
-	 */
-	public Optional<VEvent> findVEvent(Calendar calendar, String eventId) {
-		return calendar.getComponents(Component.VEVENT).stream()
-				.map(component -> (VEvent) component)
-				.filter(event -> event.getUid()
-						.map(Uid::getValue)
-						.filter(value -> value.equals(eventId))
-						.isPresent())
-				.findFirst();
-	}
 
 	/**
 	 * Builds an iCal VEvent from the given event ID and calendar event data.
@@ -239,35 +103,6 @@ public class CalendarService {
 		}
 
 		return event;
-	}
-
-	private Calendar getCalendar() {
-		String response = webClient.method(HttpMethod.GET)
-				.retrieve()
-				.bodyToMono(String.class)
-				.block();
-
-		if (response == null) {
-			throw new RuntimeException("Calendar response was empty");
-		}
-
-		try {
-			CalendarBuilder builder = new CalendarBuilder();
-			Reader reader = Reader.of(response);
-
-			return builder.build(reader);
-		} catch (IOException | ParserException e) {
-			throw new RuntimeException("Failed to parse calendar", e);
-		}
-	}
-
-	private void updateCalendar(Calendar calendar) {
-		webClient.method(HttpMethod.PUT)
-				.contentType(MediaType.parseMediaType("text/calendar"))
-				.bodyValue(calendar.toString())
-				.retrieve()
-				.bodyToMono(Void.class)
-				.block();
 	}
 
 	/**

@@ -190,6 +190,7 @@ public class ThesisPresentationService {
 		return calendar;
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis createPresentation(
 			Thesis thesis,
@@ -224,6 +225,7 @@ public class ThesisPresentationService {
 		return thesisRepository.save(thesis);
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis updatePresentation(
 			ThesisPresentation presentation,
@@ -251,11 +253,10 @@ public class ThesisPresentationService {
 			mailingService.sendScheduledPresentationEmail("UPDATED", presentation, getPresentationInvite(presentation).toString());
 		}
 
-		updateThesisCalendarEvents(thesis);
-
 		return thesis;
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis updatePresentationNote(ThesisPresentation presentation, String note) {
 		Thesis thesis = presentation.getThesis();
@@ -271,6 +272,7 @@ public class ThesisPresentationService {
 		return thesis;
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis schedulePresentation(
 			ThesisPresentation presentation,
@@ -288,12 +290,6 @@ public class ThesisPresentationService {
 		}
 
 		presentation.setState(ThesisPresentationState.SCHEDULED);
-
-		calendarService.deleteEvent(presentation.getCalendarEvent());
-
-		if (presentation.getVisibility().equals(ThesisPresentationVisibility.PUBLIC)) {
-			presentation.setCalendarEvent(calendarService.createEvent(createPresentationCalendarEvent(presentation)));
-		}
 
 		presentation = thesisPresentationRepository.save(presentation);
 
@@ -349,6 +345,7 @@ public class ThesisPresentationService {
 		return thesis;
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis deletePresentation(ThesisPresentation presentation) {
 		Thesis thesis = presentation.getThesis();
@@ -365,29 +362,11 @@ public class ThesisPresentationService {
 
 		thesis = thesisRepository.save(thesis);
 
-		calendarService.deleteEvent(presentation.getCalendarEvent());
-
 		if (presentation.getState() == ThesisPresentationState.SCHEDULED) {
 			mailingService.sendPresentationDeletedEmail(currentUserProvider().getUser(), presentation);
 		}
 
 		return thesis;
-	}
-
-	/**
-	 * Updates all calendar events associated with the presentations of the given thesis.
-	 *
-	 * @param thesis the thesis whose presentation calendar events should be updated
-	 */
-	public void updateThesisCalendarEvents(Thesis thesis) {
-		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
-		for (ThesisPresentation presentation : thesis.getPresentations()) {
-			String eventId = presentation.getCalendarEvent();
-
-			if (eventId != null) {
-				calendarService.updateEvent(eventId, createPresentationCalendarEvent(presentation));
-			}
-		}
 	}
 
 	/**

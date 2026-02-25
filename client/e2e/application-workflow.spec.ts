@@ -13,6 +13,7 @@ test.describe('Application Workflow - Student submits application', () => {
   test('student can submit an application for a topic through the full stepper', async ({
     page,
   }) => {
+    test.setTimeout(120_000) // Extended timeout — multi-step stepper with file uploads
     await navigateTo(page, '/submit-application')
     await expect(
       page.getByRole('heading', { name: 'Submit Application', exact: true }),

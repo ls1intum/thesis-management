@@ -14,6 +14,8 @@ import { IResearchGroupSettings } from '../../requests/responses/researchGroupSe
 import PresentationSettingsCard from './components/PresentationSettingsCard'
 import ProposalSettingsCard from './components/ProposalSettingsCard'
 import EmailSettingsCard from './components/EmailSettingsCard'
+import ScientificWritingGuideSettingsCard from './components/ScientificWritingGuideSettingsCard'
+import ApplicationEmailContentSettingsCard from './components/ApplicationEmailContentSettingsCard'
 
 const ResearchGroupSettingPage = () => {
   const { researchGroupId } = useParams<{ researchGroupId: string }>()
@@ -124,6 +126,36 @@ const ResearchGroupSettingPage = () => {
                         ({
                           ...prev,
                           emailSettings: emailSettings,
+                        }) as IResearchGroupSettings,
+                    )
+                  }
+                />
+                <ApplicationEmailContentSettingsCard
+                  includeApplicationDataInEmail={
+                    researchGroupSettings?.applicationEmailSettings
+                      ?.includeApplicationDataInEmail ?? false
+                  }
+                  setIncludeApplicationDataInEmail={(value: boolean) =>
+                    setResearchGroupSettings(
+                      (prev) =>
+                        ({
+                          ...prev,
+                          applicationEmailSettings: {
+                            ...prev?.applicationEmailSettings,
+                            includeApplicationDataInEmail: value,
+                          },
+                        }) as IResearchGroupSettings,
+                    )
+                  }
+                />
+                <ScientificWritingGuideSettingsCard
+                  writingGuideSettings={researchGroupSettings?.writingGuideSettings}
+                  setWritingGuideSettings={(writingGuideSettings) =>
+                    setResearchGroupSettings(
+                      (prev) =>
+                        ({
+                          ...prev,
+                          writingGuideSettings: writingGuideSettings,
                         }) as IResearchGroupSettings,
                     )
                   }

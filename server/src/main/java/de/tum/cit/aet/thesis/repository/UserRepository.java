@@ -4,10 +4,13 @@ import de.tum.cit.aet.thesis.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -51,6 +54,9 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 	@Query("SELECT u.id FROM User u WHERE u.matriculationNumber IS NULL")
 	List<UUID> findIdsWithoutMatriculationNumber();
 
+	@Query("SELECT u FROM User u WHERE u.avatar IS NULL OR u.avatar = ''")
+	List<User> findAllByAvatarIsNullOrAvatarIsEmpty();
+
 	@Query("""
 				SELECT DISTINCT u FROM User u
 				WHERE u.id IN (
@@ -62,4 +68,37 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 				)
 			""")
 	List<User> findStudentsWithActiveThesesByResearchGroupId(@Param("researchGroupId") UUID researchGroupId);
+
+	List<User> findAllByDeletionRequestedAtIsNotNull();
+
+	List<User> findAllByDeletionScheduledForIsNotNull();
+
+	@Modifying
+	@Transactional
+	@Query("UPDATE User u SET u.deletionScheduledFor = NULL WHERE u.id = :userId")
+	void clearDeletionScheduledFor(@Param("userId") UUID userId);
+
+	@Query("""
+			SELECT DISTINCT u FROM User u
+			JOIN UserGroup g ON u.id = g.id.userId AND g.id.group = 'student'
+			WHERE u.disabled = FALSE
+			AND COALESCE(u.lastLoginAt, u.joinedAt) < :cutoff
+			AND COALESCE(u.updatedAt, u.joinedAt) < :cutoff
+			AND NOT EXISTS (
+				SELECT 1 FROM UserGroup ug2
+				WHERE ug2.id.userId = u.id AND ug2.id.group IN ('admin', 'supervisor', 'advisor')
+			)
+			AND NOT EXISTS (
+				SELECT 1 FROM ThesisRole tr
+				WHERE tr.user.id = u.id AND tr.thesis.state NOT IN (
+					de.tum.cit.aet.thesis.constants.ThesisState.FINISHED,
+					de.tum.cit.aet.thesis.constants.ThesisState.DROPPED_OUT
+				)
+			)
+			AND NOT EXISTS (
+				SELECT 1 FROM Application a
+				WHERE a.user.id = u.id AND a.createdAt >= :cutoff
+			)
+			""")
+	List<User> findInactiveStudentCandidates(@Param("cutoff") Instant cutoff);
 }

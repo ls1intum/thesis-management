@@ -93,7 +93,8 @@ class ResearchGroupSettingsControllerTest extends BaseIntegrationTest {
 					"rejectSettings", Map.of("automaticRejectEnabled", true, "rejectDuration", 14),
 					"presentationSettings", Map.of("presentationSlotDuration", 60),
 					"phaseSettings", Map.of("proposalPhaseActive", true),
-					"emailSettings", Map.of("applicationNotificationEmail", "notify@test.com")
+					"emailSettings", Map.of("applicationNotificationEmail", "notify@test.com"),
+					"applicationEmailSettings", Map.of("includeApplicationDataInEmail", true)
 			));
 
 			String response = mockMvc.perform(MockMvcRequestBuilders.post("/v2/research-group-settings/{id}", groupId)
@@ -107,6 +108,7 @@ class ResearchGroupSettingsControllerTest extends BaseIntegrationTest {
 			assertThat(json.get("rejectSettings").get("automaticRejectEnabled").asBoolean()).isTrue();
 			assertThat(json.get("rejectSettings").get("rejectDuration").asInt()).isEqualTo(14);
 			assertThat(json.get("emailSettings").get("applicationNotificationEmail").asString()).isEqualTo("notify@test.com");
+			assertThat(json.get("applicationEmailSettings").get("includeApplicationDataInEmail").asBoolean()).isTrue();
 		}
 
 		@Test
@@ -153,6 +155,112 @@ class ResearchGroupSettingsControllerTest extends BaseIntegrationTest {
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(payload))
 					.andExpect(status().isBadRequest());
+		}
+	}
+
+	@Nested
+	class ApplicationEmailSettings {
+		@Test
+		void getSettings_DefaultIncludeApplicationDataInEmail_IsFalse() throws Exception {
+			TestUser head = createRandomTestUser(List.of("supervisor"));
+			UUID groupId = createTestResearchGroup("App Email Default Group", head.universityId());
+
+			String response = mockMvc.perform(MockMvcRequestBuilders.get("/v2/research-group-settings/{id}", groupId)
+							.header("Authorization", createRandomAdminAuthentication()))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			JsonNode json = objectMapper.readTree(response);
+			assertThat(json.has("applicationEmailSettings")).isTrue();
+			assertThat(json.get("applicationEmailSettings").get("includeApplicationDataInEmail").asBoolean()).isFalse();
+		}
+
+		@Test
+		void createSettings_WithApplicationEmailSettings_Success() throws Exception {
+			TestUser head = createRandomTestUser(List.of("supervisor"));
+			UUID groupId = createTestResearchGroup("App Email Create Group", head.universityId());
+
+			String payload = objectMapper.writeValueAsString(Map.of(
+					"applicationEmailSettings", Map.of("includeApplicationDataInEmail", true)
+			));
+
+			String response = mockMvc.perform(MockMvcRequestBuilders.post("/v2/research-group-settings/{id}", groupId)
+							.header("Authorization", createRandomAdminAuthentication())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(payload))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			JsonNode json = objectMapper.readTree(response);
+			assertThat(json.get("applicationEmailSettings").get("includeApplicationDataInEmail").asBoolean()).isTrue();
+		}
+
+		@Test
+		void updateSettings_ToggleApplicationEmailSettings() throws Exception {
+			TestUser head = createRandomTestUser(List.of("supervisor"));
+			UUID groupId = createTestResearchGroup("App Email Toggle Group", head.universityId());
+
+			// Enable
+			String enablePayload = objectMapper.writeValueAsString(Map.of(
+					"applicationEmailSettings", Map.of("includeApplicationDataInEmail", true)
+			));
+
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/research-group-settings/{id}", groupId)
+							.header("Authorization", createRandomAdminAuthentication())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(enablePayload))
+					.andExpect(status().isOk());
+
+			// Disable
+			String disablePayload = objectMapper.writeValueAsString(Map.of(
+					"applicationEmailSettings", Map.of("includeApplicationDataInEmail", false)
+			));
+
+			String response = mockMvc.perform(MockMvcRequestBuilders.post("/v2/research-group-settings/{id}", groupId)
+							.header("Authorization", createRandomAdminAuthentication())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(disablePayload))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			JsonNode json = objectMapper.readTree(response);
+			assertThat(json.get("applicationEmailSettings").get("includeApplicationDataInEmail").asBoolean()).isFalse();
+		}
+
+		@Test
+		void updateSettings_ApplicationEmailDoesNotAffectOtherSettings() throws Exception {
+			TestUser head = createRandomTestUser(List.of("supervisor"));
+			UUID groupId = createTestResearchGroup("App Email Isolated Group", head.universityId());
+
+			// First set reject settings
+			String rejectPayload = objectMapper.writeValueAsString(Map.of(
+					"rejectSettings", Map.of("automaticRejectEnabled", true, "rejectDuration", 14)
+			));
+
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/research-group-settings/{id}", groupId)
+							.header("Authorization", createRandomAdminAuthentication())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(rejectPayload))
+					.andExpect(status().isOk());
+
+			// Then update only application email settings
+			String emailPayload = objectMapper.writeValueAsString(Map.of(
+					"applicationEmailSettings", Map.of("includeApplicationDataInEmail", true)
+			));
+
+			String response = mockMvc.perform(MockMvcRequestBuilders.post("/v2/research-group-settings/{id}", groupId)
+							.header("Authorization", createRandomAdminAuthentication())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(emailPayload))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			JsonNode json = objectMapper.readTree(response);
+			// Application email settings should be updated
+			assertThat(json.get("applicationEmailSettings").get("includeApplicationDataInEmail").asBoolean()).isTrue();
+			// Reject settings should be preserved
+			assertThat(json.get("rejectSettings").get("automaticRejectEnabled").asBoolean()).isTrue();
+			assertThat(json.get("rejectSettings").get("rejectDuration").asInt()).isEqualTo(14);
 		}
 	}
 

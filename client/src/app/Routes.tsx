@@ -42,6 +42,8 @@ const ReviewApplicationPage = lazy(
 const ThesisPage = lazy(() => import('../pages/ThesisPage/ThesisPage'))
 const LandingPage = lazy(() => import('../pages/LandingPage/LandingPage'))
 
+const AdminPage = lazy(() => import('../pages/AdminPage/AdminPage'))
+
 const InterviewOverviewPage = lazy(
   () => import('../pages/InterviewOverviewPage/InterviewOverviewPage'),
 )
@@ -54,6 +56,7 @@ const IntervieweeAssesmentPage = lazy(
 const InterviewBookingPage = lazy(
   () => import('../pages/InterviewBookingPage/InterviewBookingPage'),
 )
+const DataExportPage = lazy(() => import('../pages/DataExportPage/DataExportPage'))
 
 const AppRoutes = () => {
   const auth = useAuthenticationContext()
@@ -206,6 +209,14 @@ const AppRoutes = () => {
             }
           />
           <Route
+            path='/admin'
+            element={
+              <AuthenticatedArea requiredGroups={['admin']}>
+                <AdminPage />
+              </AuthenticatedArea>
+            }
+          />
+          <Route
             path='/interviews'
             element={
               <AuthenticatedArea
@@ -241,6 +252,14 @@ const AppRoutes = () => {
               <PublicArea size={publicBreakpointSize} handleScrollInView={true}>
                 <InterviewBookingPage />
               </PublicArea>
+            }
+          />
+          <Route
+            path='/data-export'
+            element={
+              <AuthenticatedArea>
+                <DataExportPage />
+              </AuthenticatedArea>
             }
           />
           <Route

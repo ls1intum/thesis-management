@@ -340,6 +340,28 @@ VALUES
      'NOT_ASSESSED', NULL,
      NOW() + INTERVAL '60 days', '',
      NOW() - INTERVAL '3 days', NULL,
+     '00000000-0000-4000-a000-000000000001'::UUID),
+
+    -- OLD REJECTED #1: student2 on topic 1, rejected 400 days ago (for data retention e2e test)
+    ('00000000-0000-4000-c000-000000000009'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'student2'),
+     '00000000-0000-4000-b000-000000000001'::UUID,
+     NULL, 'MASTER',
+     'I wanted to explore LLM-based code review but my application was not selected.',
+     'REJECTED', 'FAILED_TOPIC_REQUIREMENTS',
+     NOW() - INTERVAL '380 days', '',
+     NOW() - INTERVAL '410 days', NOW() - INTERVAL '400 days',
+     '00000000-0000-4000-a000-000000000001'::UUID),
+
+    -- OLD REJECTED #2: student3 on topic 2, rejected 500 days ago (for data retention e2e test)
+    ('00000000-0000-4000-c000-00000000000a'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'student3'),
+     '00000000-0000-4000-b000-000000000002'::UUID,
+     NULL, 'BACHELOR',
+     'I was interested in CI pipeline optimization but there was no capacity at the time.',
+     'REJECTED', 'NO_CAPACITY',
+     NOW() - INTERVAL '480 days', '',
+     NOW() - INTERVAL '510 days', NOW() - INTERVAL '500 days',
      '00000000-0000-4000-a000-000000000001'::UUID)
 ON CONFLICT DO NOTHING;
 
@@ -363,7 +385,15 @@ VALUES
     -- Rejected app: advisor2 not interested
     ('00000000-0000-4000-c000-000000000006'::UUID,
      (SELECT user_id FROM users WHERE university_id = 'advisor2'),
-     'NOT_INTERESTED', NOW() - INTERVAL '6 days')
+     'NOT_INTERESTED', NOW() - INTERVAL '6 days'),
+    -- Old rejected app 1: advisor not interested
+    ('00000000-0000-4000-c000-000000000009'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'advisor'),
+     'NOT_INTERESTED', NOW() - INTERVAL '400 days'),
+    -- Old rejected app 2: advisor not interested
+    ('00000000-0000-4000-c000-00000000000a'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'advisor'),
+     'NOT_INTERESTED', NOW() - INTERVAL '500 days')
 ON CONFLICT DO NOTHING;
 
 -- ============================================================================
@@ -1006,4 +1036,167 @@ VALUES
     ('00000000-0000-4000-e900-000000000004'::UUID,
      '00000000-0000-4000-e700-000000000005'::UUID,
      'Strong background in streaming data with hands-on Kafka experience. Demonstrated solid understanding of statistical anomaly detection methods. Very well prepared.')
+ON CONFLICT DO NOTHING;
+
+-- ============================================================================
+-- 25. DATA EXPORT EMAIL TEMPLATE (override for dev)
+-- ============================================================================
+INSERT INTO email_templates (email_template_id, research_group_id, template_case, subject, body_html, language, description, created_at, updated_by, updated_at)
+VALUES (gen_random_uuid(), NULL, 'DATA_EXPORT_READY', 'Your Data Export is Ready',
+'<p th:inline="text">Dear [[${recipient.firstName}]],</p>
+
+<p th:inline="text">
+Your personal data export has been generated and is ready for download. You can download it from your data export page:
+</p>
+
+<p>
+<a target="_blank" rel="noopener noreferrer nofollow" th:href="${downloadUrl}" th:text="${downloadUrl}"></a>
+</p>
+
+<p>
+Please note that the download link will expire in 7 days. After that, you can request a new export.
+</p>
+
+<br/><br/>', 'en', 'Notification when data export is ready for download', NOW(), NULL, NOW())
+ON CONFLICT (template_case, language) WHERE research_group_id IS NULL DO NOTHING;
+
+-- ============================================================================
+-- 26. ACCOUNT DELETION TEST USERS (3 users for testing deletion scenarios)
+-- ============================================================================
+INSERT INTO users (user_id, university_id, matriculation_number, email, first_name, last_name,
+                   gender, nationality, study_degree, study_program, projects, interests,
+                   special_skills, enrolled_at, updated_at, joined_at)
+VALUES
+    -- User with a FINISHED thesis from 7+ years ago (retention expired → full deletion)
+    (gen_random_uuid(), 'delete_old_thesis', '03700011', 'delete_old_thesis@test.local',
+     'OldThesis', 'Deletable', 'MALE', 'DE', 'MASTER', 'COMPUTER_SCIENCE',
+     'Legacy project from years ago', 'Historical research', 'Java, C++',
+     NOW() - INTERVAL '2800 days', NOW(), NOW() - INTERVAL '2800 days'),
+    -- User with a FINISHED thesis from 2 years ago (under retention → soft deletion)
+    (gen_random_uuid(), 'delete_recent_thesis', '03700012', 'delete_recent_thesis@test.local',
+     'RecentThesis', 'Retainable', 'FEMALE', 'DE', 'MASTER', 'INFORMATION_SYSTEMS',
+     'Recent data analytics project', 'Business intelligence', 'Python, SQL',
+     NOW() - INTERVAL '800 days', NOW(), NOW() - INTERVAL '800 days'),
+    -- User with only a rejected application (no thesis → full deletion)
+    (gen_random_uuid(), 'delete_rejected_app', '03700013', 'delete_rejected_app@test.local',
+     'RejectedApp', 'Deletable', 'OTHER', 'US', 'BACHELOR', 'MANAGEMENT_AND_TECHNOLOGY',
+     NULL, 'Web development', 'HTML, CSS, JavaScript',
+     NOW() - INTERVAL '100 days', NOW(), NOW() - INTERVAL '100 days')
+ON CONFLICT (university_id) DO UPDATE SET
+    matriculation_number = COALESCE(users.matriculation_number, EXCLUDED.matriculation_number),
+    email                = COALESCE(users.email, EXCLUDED.email),
+    first_name           = COALESCE(users.first_name, EXCLUDED.first_name),
+    last_name            = COALESCE(users.last_name, EXCLUDED.last_name),
+    gender               = COALESCE(users.gender, EXCLUDED.gender),
+    nationality          = COALESCE(users.nationality, EXCLUDED.nationality),
+    study_degree         = COALESCE(users.study_degree, EXCLUDED.study_degree),
+    study_program        = COALESCE(users.study_program, EXCLUDED.study_program),
+    projects             = COALESCE(users.projects, EXCLUDED.projects),
+    interests            = COALESCE(users.interests, EXCLUDED.interests),
+    special_skills       = COALESCE(users.special_skills, EXCLUDED.special_skills),
+    enrolled_at          = COALESCE(users.enrolled_at, EXCLUDED.enrolled_at);
+
+-- ============================================================================
+-- 27. ACCOUNT DELETION TEST USER GROUPS
+-- ============================================================================
+INSERT INTO user_groups (user_id, "group")
+VALUES
+    ((SELECT user_id FROM users WHERE university_id = 'delete_old_thesis'), 'student'),
+    ((SELECT user_id FROM users WHERE university_id = 'delete_recent_thesis'), 'student'),
+    ((SELECT user_id FROM users WHERE university_id = 'delete_rejected_app'), 'student')
+ON CONFLICT DO NOTHING;
+
+-- ============================================================================
+-- 28. ACCOUNT DELETION TEST THESES
+-- ============================================================================
+-- Thesis 6: FINISHED, created 7+ years ago (retention expired for delete_old_thesis)
+INSERT INTO theses (thesis_id, title, type, language, metadata, info, abstract, state,
+                    visibility, keywords, application_id, start_date, end_date, created_at,
+                    research_group_id)
+VALUES
+    ('00000000-0000-4000-d000-000000000006'::UUID,
+     'Legacy Software Migration Strategies',
+     'MASTER', 'ENGLISH',
+     '{"titles":{},"credits":{}}',
+     '', 'A comprehensive study of legacy software migration strategies applied to enterprise systems.',
+     'FINISHED', 'PUBLIC',
+     ARRAY['legacy systems', 'migration', 'enterprise'],
+     NULL,
+     NOW() - INTERVAL '2800 days', NOW() - INTERVAL '2600 days',
+     NOW() - INTERVAL '2800 days',
+     '00000000-0000-4000-a000-000000000001'::UUID),
+    -- Thesis 7: FINISHED, created 2 years ago (under retention for delete_recent_thesis)
+    ('00000000-0000-4000-d000-000000000007'::UUID,
+     'Business Intelligence Dashboard Design Patterns',
+     'MASTER', 'ENGLISH',
+     '{"titles":{},"credits":{}}',
+     '', 'An analysis of effective dashboard design patterns for business intelligence applications.',
+     'FINISHED', 'PUBLIC',
+     ARRAY['business intelligence', 'dashboards', 'data visualization'],
+     NULL,
+     NOW() - INTERVAL '800 days', NOW() - INTERVAL '620 days',
+     NOW() - INTERVAL '800 days',
+     '00000000-0000-4000-a000-000000000001'::UUID)
+ON CONFLICT DO NOTHING;
+
+-- ============================================================================
+-- 29. ACCOUNT DELETION TEST THESIS ROLES
+-- ============================================================================
+INSERT INTO thesis_roles (thesis_id, user_id, role, position, assigned_at, assigned_by)
+VALUES
+    -- Thesis 6 (old, retention expired): delete_old_thesis as STUDENT, supervisor + advisor
+    ('00000000-0000-4000-d000-000000000006'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'delete_old_thesis'), 'STUDENT', 0,
+     NOW() - INTERVAL '2800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
+    ('00000000-0000-4000-d000-000000000006'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'advisor'), 'ADVISOR', 0,
+     NOW() - INTERVAL '2800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
+    ('00000000-0000-4000-d000-000000000006'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
+     NOW() - INTERVAL '2800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
+    -- Thesis 7 (recent, under retention): delete_recent_thesis as STUDENT, supervisor + advisor
+    ('00000000-0000-4000-d000-000000000007'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'delete_recent_thesis'), 'STUDENT', 0,
+     NOW() - INTERVAL '800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
+    ('00000000-0000-4000-d000-000000000007'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'advisor'), 'ADVISOR', 0,
+     NOW() - INTERVAL '800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
+    ('00000000-0000-4000-d000-000000000007'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
+     NOW() - INTERVAL '800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor'))
+ON CONFLICT DO NOTHING;
+
+-- ============================================================================
+-- 30. ACCOUNT DELETION TEST THESIS STATE CHANGES
+-- ============================================================================
+INSERT INTO thesis_state_changes (thesis_id, state, changed_at)
+VALUES
+    ('00000000-0000-4000-d000-000000000006'::UUID, 'PROPOSAL', NOW() - INTERVAL '2800 days'),
+    ('00000000-0000-4000-d000-000000000006'::UUID, 'WRITING', NOW() - INTERVAL '2780 days'),
+    ('00000000-0000-4000-d000-000000000006'::UUID, 'SUBMITTED', NOW() - INTERVAL '2620 days'),
+    ('00000000-0000-4000-d000-000000000006'::UUID, 'ASSESSED', NOW() - INTERVAL '2610 days'),
+    ('00000000-0000-4000-d000-000000000006'::UUID, 'FINISHED', NOW() - INTERVAL '2600 days'),
+    ('00000000-0000-4000-d000-000000000007'::UUID, 'PROPOSAL', NOW() - INTERVAL '800 days'),
+    ('00000000-0000-4000-d000-000000000007'::UUID, 'WRITING', NOW() - INTERVAL '780 days'),
+    ('00000000-0000-4000-d000-000000000007'::UUID, 'SUBMITTED', NOW() - INTERVAL '640 days'),
+    ('00000000-0000-4000-d000-000000000007'::UUID, 'ASSESSED', NOW() - INTERVAL '630 days'),
+    ('00000000-0000-4000-d000-000000000007'::UUID, 'FINISHED', NOW() - INTERVAL '620 days')
+ON CONFLICT DO NOTHING;
+
+-- ============================================================================
+-- 31. ACCOUNT DELETION TEST APPLICATION (rejected, for delete_rejected_app)
+-- ============================================================================
+INSERT INTO applications (application_id, user_id, topic_id, thesis_title, thesis_type, motivation,
+                          state, reject_reason, desired_start_date, comment, created_at, reviewed_at,
+                          research_group_id)
+VALUES
+    ('00000000-0000-4000-c000-00000000000b'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'delete_rejected_app'),
+     '00000000-0000-4000-b000-000000000001'::UUID,
+     NULL, 'BACHELOR',
+     'I am interested in LLM-based code review but my background did not match the requirements.',
+     'REJECTED', 'FAILED_TOPIC_REQUIREMENTS',
+     NOW() - INTERVAL '60 days', '',
+     NOW() - INTERVAL '90 days', NOW() - INTERVAL '80 days',
+     '00000000-0000-4000-a000-000000000001'::UUID)
 ON CONFLICT DO NOTHING;

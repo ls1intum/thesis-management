@@ -70,9 +70,6 @@ public class ThesisPresentation {
 	@Column(name = "presentation_note_html")
 	private String presentationNoteHtml;
 
-	@Column(name = "calendar_event")
-	private String calendarEvent;
-
 	@NotNull
 	@Column(name = "scheduled_at", nullable = false)
 	private Instant scheduledAt;
