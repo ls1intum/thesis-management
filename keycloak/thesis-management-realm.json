@@ -717,6 +717,35 @@
       "groups": []
     },
     {
+      "username": "group-admin",
+      "email": "group-admin@test.local",
+      "firstName": "GroupAdmin",
+      "lastName": "User",
+      "emailVerified": true,
+      "enabled": true,
+      "attributes": {
+        "matrikelnr": [
+          "03700010"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "group-admin",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "default-roles-thesis-management"
+      ],
+      "clientRoles": {
+        "thesis-management-app": [
+          "group-admin"
+        ]
+      },
+      "groups": []
+    },
+    {
       "username": "student2",
       "email": "student2@test.local",
       "firstName": "Student2",

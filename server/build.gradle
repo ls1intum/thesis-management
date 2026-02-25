@@ -66,7 +66,6 @@ dependencies {
 	implementation "org.postgresql:postgresql:42.7.10"
 
 	implementation "commons-io:commons-io:2.21.0"
-	implementation "com.github.vladimir-bukhtoyarov:bucket4j-core:8.0.1"
 	implementation "org.mnode.ical4j:ical4j:4.2.3"
 	implementation "com.itextpdf:itext-core:9.5.0"
 	implementation "com.itextpdf:html2pdf:6.3.1"

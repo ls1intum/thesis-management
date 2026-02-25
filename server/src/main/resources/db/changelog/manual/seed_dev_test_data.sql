@@ -9,7 +9,7 @@
 -- ============================================================================
 
 -- ============================================================================
--- 1. USERS (10 total: 4 existing + 6 new from Keycloak realm)
+-- 1. USERS (11 total: 4 existing + 7 new from Keycloak realm)
 -- ============================================================================
 INSERT INTO users (user_id, university_id, matriculation_number, email, first_name, last_name,
                    gender, nationality, study_degree, study_program, projects, interests,
@@ -56,7 +56,9 @@ VALUES
      NULL,
      'Web design, media production',
      'Adobe Suite, HTML/CSS',
-     NOW(), NOW(), NOW())
+     NOW(), NOW(), NOW()),
+    (gen_random_uuid(), 'group-admin', '03700010', 'group-admin@test.local', 'GroupAdmin', 'User',
+     NULL, 'DE', NULL, NULL, NULL, NULL, NULL, NULL, NOW(), NOW())
 ON CONFLICT (university_id) DO UPDATE SET
     matriculation_number = COALESCE(users.matriculation_number, EXCLUDED.matriculation_number),
     email                = COALESCE(users.email, EXCLUDED.email),
@@ -85,7 +87,8 @@ VALUES
     ((SELECT user_id FROM users WHERE university_id = 'student2'), 'student'),
     ((SELECT user_id FROM users WHERE university_id = 'student3'), 'student'),
     ((SELECT user_id FROM users WHERE university_id = 'student4'), 'student'),
-    ((SELECT user_id FROM users WHERE university_id = 'student5'), 'student')
+    ((SELECT user_id FROM users WHERE university_id = 'student5'), 'student'),
+    ((SELECT user_id FROM users WHERE university_id = 'group-admin'), 'group-admin')
 ON CONFLICT DO NOTHING;
 
 -- ============================================================================
@@ -124,7 +127,7 @@ ON CONFLICT DO NOTHING;
 -- 5. ASSIGN USERS TO RESEARCH GROUPS
 -- ============================================================================
 UPDATE users SET research_group_id = '00000000-0000-4000-a000-000000000001'::UUID
-WHERE university_id IN ('supervisor', 'advisor', 'advisor2') AND research_group_id IS NULL;
+WHERE university_id IN ('supervisor', 'advisor', 'advisor2', 'group-admin') AND research_group_id IS NULL;
 
 UPDATE users SET research_group_id = '00000000-0000-4000-a000-000000000002'::UUID
 WHERE university_id = 'supervisor2' AND research_group_id IS NULL;

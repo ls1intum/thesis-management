@@ -7,7 +7,7 @@ const LogoutPage = () => {
 
   useEffect(() => {
     auth.logout('/')
-  })
+  }, [])
 
   return <PageLoader />
 }

@@ -146,7 +146,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
   const isSmallerBreakpoint = useIsSmallerBreakpoint('md')
 
   useEffect(() => {
-    if (!auth.isAuthenticated) {
+    if (!auth.isAuthenticated && location.pathname !== '/logout') {
       auth.login()
 
       const interval = setInterval(() => {
@@ -155,7 +155,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
 
       return () => clearInterval(interval)
     }
-  }, [auth.isAuthenticated])
+  }, [auth.isAuthenticated, location.pathname])
 
   useEffect(() => {
     if (navigationType === 'POP') {
