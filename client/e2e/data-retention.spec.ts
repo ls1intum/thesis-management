@@ -17,7 +17,10 @@ test.describe('Data Retention - Admin Operations', () => {
 
     // The application may have been deleted in a prior test run; check if it loaded
     const heading = page.getByRole('heading', { name: /Student2 User/i })
-    const hasApplication = await heading.waitFor({ state: 'visible', timeout: 30_000 }).then(() => true).catch(() => false)
+    const hasApplication = await heading
+      .waitFor({ state: 'visible', timeout: 30_000 })
+      .then(() => true)
+      .catch(() => false)
     if (!hasApplication) {
       // Application was already deleted in a prior run — skip gracefully
       return
@@ -28,21 +31,26 @@ test.describe('Data Retention - Admin Operations', () => {
     await deleteButton.click()
 
     // Confirm in modal
-    await expect(page.getByRole('dialog')).toBeVisible({ timeout: 5_000 })
-    await expect(
-      page.getByRole('dialog').getByRole('heading', { name: 'Delete Application' }),
-    ).toBeVisible()
+    const dialog = page.getByRole('dialog')
+    await expect(dialog).toBeVisible({ timeout: 5_000 })
+    await expect(dialog.getByRole('heading', { name: 'Delete Application' })).toBeVisible()
     await expect(
       page.getByText('Are you sure you want to permanently delete this application?'),
     ).toBeVisible()
 
-    await page.getByRole('dialog').getByRole('button', { name: 'Delete Application' }).click()
+    await dialog.getByRole('button', { name: 'Delete Application' }).click()
 
     // Wait for the dialog to close (indicates the delete request completed)
-    await expect(page.getByRole('dialog')).not.toBeVisible({ timeout: 15_000 })
+    await expect(dialog).not.toBeVisible({ timeout: 15_000 })
 
     // Verify navigation back to applications list (URL no longer contains the application UUID)
     await expect(page).toHaveURL(/\/applications(?:\?|$)/, { timeout: 15_000 })
+
+    // Verify the deleted application is no longer accessible
+    await navigateTo(page, `/applications/${OLD_REJECTED_APPLICATION_ID}`)
+    await expect(page.getByRole('heading', { name: /Student2 User/i })).not.toBeVisible({
+      timeout: 10_000,
+    })
   })
 
   test('admin can trigger batch cleanup from admin page', async ({ page }) => {
@@ -53,6 +61,9 @@ test.describe('Data Retention - Admin Operations', () => {
     })
 
     await expect(page.getByRole('heading', { name: 'Data Retention' })).toBeVisible()
+
+    // Verify the cleanup description text is shown
+    await expect(page.getByText(/permanently delete rejected applications/i)).toBeVisible()
 
     const cleanupButton = page.getByRole('button', { name: 'Run Cleanup' })
     await expect(cleanupButton).toBeVisible()
@@ -65,7 +76,7 @@ test.describe('Data Retention - Admin Operations', () => {
   })
 
   test('recent rejected application survives cleanup', async ({ page }) => {
-    // First trigger cleanup
+    // First trigger cleanup to ensure it runs
     await navigateTo(page, '/admin')
     await expect(page.getByRole('heading', { name: 'Administration' })).toBeVisible({
       timeout: 30_000,
@@ -75,7 +86,7 @@ test.describe('Data Retention - Admin Operations', () => {
       page.getByText(/Deleted \d+ expired rejected application|No expired applications found/),
     ).toBeVisible({ timeout: 15_000 })
 
-    // Now verify the recent rejected application still exists (admin can access DSA group)
+    // Now verify the recent rejected application still exists
     const heading = page.getByRole('heading', { name: /Student5 User/i })
     const loaded = await navigateToDetail(
       page,
@@ -84,6 +95,9 @@ test.describe('Data Retention - Admin Operations', () => {
       30_000,
     )
     expect(loaded).toBe(true)
+
+    // Verify the application is actually rendered with its state badge
+    await expect(page.getByText(/REJECTED/i).first()).toBeVisible({ timeout: 5_000 })
   })
 })
 
@@ -116,9 +130,18 @@ test.describe('Data Retention - Non-Admin Restrictions', () => {
       timeout: 30_000,
     })
 
-    // Administration link should not be in the nav (check by URL since nav may be collapsed)
+    // Administration link should not be in the nav
     await expect(page.locator('a[href="/admin"]')).not.toBeVisible({
       timeout: 3_000,
+    })
+  })
+
+  test('advisor cannot access admin page directly via URL', async ({ page }) => {
+    await navigateTo(page, '/admin')
+
+    // Should not see the admin page content
+    await expect(page.getByRole('heading', { name: 'Administration' })).not.toBeVisible({
+      timeout: 10_000,
     })
   })
 })
