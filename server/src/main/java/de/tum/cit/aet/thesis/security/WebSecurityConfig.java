@@ -38,6 +38,10 @@ public class WebSecurityConfig {
 		http
 				.cors(cors -> cors.configurationSource(corsConfigurationSource))
 				.csrf(AbstractHttpConfigurer::disable)
+				.headers(headers -> headers
+						.frameOptions(frame -> frame.deny())
+						.contentSecurityPolicy(csp -> csp.policyDirectives("frame-ancestors 'none'"))
+				)
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers(HttpMethod.GET, "/v2/topics/**").permitAll()
