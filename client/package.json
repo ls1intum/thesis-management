@@ -37,7 +37,7 @@
   },
   "overrides": {
     "ajv": "8.18.0",
-    "minimatch": "10.2.1",
+    "minimatch": "10.2.3",
     "fork-ts-checker-webpack-plugin": {
       "schema-utils": "4.3.3"
     }
