@@ -115,13 +115,6 @@ public class RequestValidator {
 		return validateEmail(value);
 	}
 
-	/**
-	 * Validates that the given value is non-null, throwing an exception otherwise.
-	 *
-	 * @param value the value to validate
-	 * @param <T> the type of the value
-	 * @return the validated non-null value
-	 */
 	private static final int MAX_PAGE_SIZE = 500;
 
 	/**
@@ -137,6 +130,13 @@ public class RequestValidator {
 		return Math.min(limit, MAX_PAGE_SIZE);
 	}
 
+	/**
+	 * Validates that the given value is not null.
+	 *
+	 * @param value the value to validate
+	 * @param <T> the type of the value
+	 * @return the validated non-null value
+	 */
 	public static <T> T validateNotNull(T value) {
 		if (value == null) {
 			throw new ResourceInvalidParametersException("Required value is null");
