@@ -9,7 +9,6 @@ import { useAuthenticationContext } from '../../../../hooks/authentication'
 
 interface IDeletionPreview {
   canBeFullyDeleted: boolean
-  hasActiveTheses: boolean
   retentionBlockedThesisCount: number
   earliestFullDeletionDate?: string
   isResearchGroupHead: boolean
@@ -78,7 +77,7 @@ const AccountDeletion = () => {
   }
 
   const fullName = `${auth.user?.firstName ?? ''} ${auth.user?.lastName ?? ''}`.trim()
-  const canDelete = !preview.hasActiveTheses && !preview.isResearchGroupHead
+  const canDelete = !preview.isResearchGroupHead
 
   return (
     <Stack>
@@ -89,13 +88,6 @@ const AccountDeletion = () => {
         <Alert color='orange' icon={<Warning />} title='Research Group Head'>
           You are currently head of a research group. Transfer leadership to another member before
           deleting your account.
-        </Alert>
-      )}
-
-      {preview.hasActiveTheses && (
-        <Alert color='orange' icon={<Warning />} title='Active Theses'>
-          You have active theses that must be completed or dropped before you can delete your
-          account.
         </Alert>
       )}
 

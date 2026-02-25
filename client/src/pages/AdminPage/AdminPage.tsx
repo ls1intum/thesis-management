@@ -23,7 +23,6 @@ interface IDataRetentionResult {
 
 interface IDeletionPreview {
   canBeFullyDeleted: boolean
-  hasActiveTheses: boolean
   retentionBlockedThesisCount: number
   earliestFullDeletionDate?: string
   isResearchGroupHead: boolean
@@ -204,15 +203,10 @@ const AdminPage = () => {
                   This user is a research group head.
                 </Alert>
               )}
-              {deletionPreview.hasActiveTheses && (
-                <Alert color='orange' icon={<Warning />}>
-                  This user has active theses.
-                </Alert>
-              )}
               <Group>
                 <Button
                   color='red'
-                  disabled={deletionPreview.hasActiveTheses || deletionPreview.isResearchGroupHead}
+                  disabled={deletionPreview.isResearchGroupHead}
                   loading={deleting}
                   onClick={() => setConfirmOpen(true)}
                 >

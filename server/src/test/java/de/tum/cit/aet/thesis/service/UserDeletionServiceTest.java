@@ -104,11 +104,16 @@ class UserDeletionServiceTest extends BaseIntegrationTest {
 				.andReturn().getResponse().getContentAsString();
 		UUID thesisId = UUID.fromString(objectMapper.readTree(thesisResponse).get("thesisId").asString());
 
-		// Set thesis state to FINISHED and backdate created_at
+		// Set thesis state to FINISHED and backdate created_at and all state changes
 		Instant pastDate = Instant.now().minus(yearsAgoCompleted * 365L, ChronoUnit.DAYS);
 		transactionTemplate.executeWithoutResult(status -> {
 			entityManager.createNativeQuery(
 							"UPDATE theses SET state = 'FINISHED', created_at = :date WHERE thesis_id = :id")
+					.setParameter("date", pastDate)
+					.setParameter("id", thesisId)
+					.executeUpdate();
+			entityManager.createNativeQuery(
+							"UPDATE thesis_state_changes SET changed_at = :date WHERE thesis_id = :id")
 					.setParameter("date", pastDate)
 					.setParameter("id", thesisId)
 					.executeUpdate();
@@ -156,14 +161,13 @@ class UserDeletionServiceTest extends BaseIntegrationTest {
 			var preview = userDeletionService.previewDeletion(student.userId());
 
 			assertThat(preview.canBeFullyDeleted()).isTrue();
-			assertThat(preview.hasActiveTheses()).isFalse();
 			assertThat(preview.retentionBlockedThesisCount()).isZero();
 			assertThat(preview.earliestFullDeletionDate()).isNull();
 			assertThat(preview.isResearchGroupHead()).isFalse();
 		}
 
 		@Test
-		void previewForUserWithActiveThesis_BlocksDeletion() throws Exception {
+		void previewForUserWithActiveThesis_ShowsRetentionBlocked() throws Exception {
 			createTestEmailTemplate("THESIS_CREATED");
 
 			TestUser advisor = createRandomTestUser(List.of("supervisor", "advisor"));
@@ -184,7 +188,8 @@ class UserDeletionServiceTest extends BaseIntegrationTest {
 			var preview = userDeletionService.previewDeletion(student.userId());
 
 			assertThat(preview.canBeFullyDeleted()).isFalse();
-			assertThat(preview.hasActiveTheses()).isTrue();
+			assertThat(preview.retentionBlockedThesisCount()).isPositive();
+			assertThat(preview.earliestFullDeletionDate()).isNotNull();
 		}
 
 		@Test
@@ -205,7 +210,6 @@ class UserDeletionServiceTest extends BaseIntegrationTest {
 			var preview = userDeletionService.previewDeletion(swt.student().userId());
 
 			assertThat(preview.canBeFullyDeleted()).isFalse();
-			assertThat(preview.hasActiveTheses()).isFalse();
 			assertThat(preview.retentionBlockedThesisCount()).isPositive();
 			assertThat(preview.earliestFullDeletionDate()).isNotNull();
 			assertThat(preview.earliestFullDeletionDate()).isAfter(Instant.now());
@@ -217,6 +221,72 @@ class UserDeletionServiceTest extends BaseIntegrationTest {
 
 			var preview = userDeletionService.previewDeletion(swt.student().userId());
 
+			assertThat(preview.canBeFullyDeleted()).isTrue();
+			assertThat(preview.retentionBlockedThesisCount()).isZero();
+		}
+
+		@Test
+		void previewForThesisWithRecentEndDate_UsesEndDateForRetention() throws Exception {
+			StudentWithThesis swt = createStudentWithCompletedThesis(8);
+
+			// Set endDate to 2 years ago (more recent than the 8-year-old createdAt/stateChanges)
+			Instant recentEndDate = Instant.now().minus(2 * 365L, ChronoUnit.DAYS);
+			transactionTemplate.executeWithoutResult(status -> {
+				entityManager.createNativeQuery(
+								"UPDATE theses SET end_date = :date WHERE thesis_id = :id")
+						.setParameter("date", recentEndDate)
+						.setParameter("id", swt.thesisId())
+						.executeUpdate();
+				entityManager.clear();
+			});
+
+			var preview = userDeletionService.previewDeletion(swt.student().userId());
+
+			// endDate is only 2 years ago so retention should still be active
+			assertThat(preview.canBeFullyDeleted()).isFalse();
+			assertThat(preview.retentionBlockedThesisCount()).isPositive();
+			assertThat(preview.earliestFullDeletionDate()).isAfter(Instant.now());
+		}
+
+		@Test
+		void previewForThesisWithNoStateChanges_FallsBackToCreatedAt() throws Exception {
+			createTestEmailTemplate("THESIS_CREATED");
+
+			TestUser advisor = createRandomTestUser(List.of("supervisor", "advisor"));
+			UUID researchGroupId = createTestResearchGroup("NoStates RG", advisor.universityId());
+			TestUser student = createRandomTestUser(List.of("student"));
+
+			CreateThesisPayload payload = new CreateThesisPayload(
+					"No States Thesis", "MASTER", "ENGLISH",
+					List.of(student.userId()), List.of(advisor.userId()),
+					List.of(advisor.userId()), researchGroupId
+			);
+			String thesisResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses")
+							.header("Authorization", createRandomAdminAuthentication())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(payload)))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+			UUID thesisId = UUID.fromString(objectMapper.readTree(thesisResponse).get("thesisId").asString());
+
+			// Delete all state changes and backdate createdAt to 8 years ago
+			Instant eightYearsAgo = Instant.now().minus(8 * 365L, ChronoUnit.DAYS);
+			transactionTemplate.executeWithoutResult(status -> {
+				entityManager.createNativeQuery(
+								"DELETE FROM thesis_state_changes WHERE thesis_id = :id")
+						.setParameter("id", thesisId)
+						.executeUpdate();
+				entityManager.createNativeQuery(
+								"UPDATE theses SET created_at = :date WHERE thesis_id = :id")
+						.setParameter("date", eightYearsAgo)
+						.setParameter("id", thesisId)
+						.executeUpdate();
+				entityManager.clear();
+			});
+
+			var preview = userDeletionService.previewDeletion(student.userId());
+
+			// createdAt is 8 years ago so retention should have expired
 			assertThat(preview.canBeFullyDeleted()).isTrue();
 			assertThat(preview.retentionBlockedThesisCount()).isZero();
 		}
@@ -341,6 +411,38 @@ class UserDeletionServiceTest extends BaseIntegrationTest {
 
 			assertThat(thesisRoleRepository.findAllByIdUserId(swt.student().userId())).isNotEmpty();
 		}
+
+		@Test
+		void softDeletesUserWithActiveNonTerminalThesis() throws Exception {
+			createTestEmailTemplate("THESIS_CREATED");
+
+			TestUser advisor = createRandomTestUser(List.of("supervisor", "advisor"));
+			UUID researchGroupId = createTestResearchGroup("Active Soft RG", advisor.universityId());
+			TestUser student = createRandomTestUser(List.of("student"));
+
+			CreateThesisPayload payload = new CreateThesisPayload(
+					"Active Soft Thesis", "MASTER", "ENGLISH",
+					List.of(student.userId()), List.of(advisor.userId()),
+					List.of(advisor.userId()), researchGroupId
+			);
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses")
+							.header("Authorization", createRandomAdminAuthentication())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(payload)))
+					.andExpect(status().isOk());
+
+			// Thesis is in non-terminal state (PROPOSAL) with recent activity
+			var result = userDeletionService.deleteOrAnonymizeUser(student.userId());
+
+			// Should soft-delete (not block), with retention active
+			assertThat(result.result()).isEqualTo("DEACTIVATED");
+			User user = userRepository.findById(student.userId()).orElseThrow();
+			assertThat(user.isDisabled()).isTrue();
+			assertThat(user.getDeletionRequestedAt()).isNotNull();
+			assertThat(user.getDeletionScheduledFor()).isNotNull();
+			assertThat(user.getDeletionScheduledFor()).isAfter(Instant.now());
+			assertThat(thesisRoleRepository.findAllByIdUserId(student.userId())).isNotEmpty();
+		}
 	}
 
 	@Nested
@@ -359,30 +461,46 @@ class UserDeletionServiceTest extends BaseIntegrationTest {
 		}
 
 		@Test
-		void blocksActiveThesis() throws Exception {
+		void deletesUserWithThesisStuckInWritingForSevenYears() throws Exception {
 			createTestEmailTemplate("THESIS_CREATED");
 
 			TestUser advisor = createRandomTestUser(List.of("supervisor", "advisor"));
-			UUID researchGroupId = createTestResearchGroup("Block Active RG", advisor.universityId());
+			UUID researchGroupId = createTestResearchGroup("Stuck RG", advisor.universityId());
 			TestUser student = createRandomTestUser(List.of("student"));
 
 			CreateThesisPayload payload = new CreateThesisPayload(
-					"Block Active", "MASTER", "ENGLISH",
+					"Stuck Thesis", "MASTER", "ENGLISH",
 					List.of(student.userId()), List.of(advisor.userId()),
 					List.of(advisor.userId()), researchGroupId
 			);
-			mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses")
+			String thesisResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses")
 							.header("Authorization", createRandomAdminAuthentication())
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(objectMapper.writeValueAsString(payload)))
-					.andExpect(status().isOk());
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+			UUID thesisId = UUID.fromString(objectMapper.readTree(thesisResponse).get("thesisId").asString());
 
-			org.junit.jupiter.api.Assertions.assertThrows(
-					de.tum.cit.aet.thesis.exception.request.AccessDeniedException.class,
-					() -> userDeletionService.deleteOrAnonymizeUser(student.userId())
-			);
+			// Backdate the thesis creation and state changes to 8 years ago
+			Instant eightYearsAgo = Instant.now().minus(8 * 365L, ChronoUnit.DAYS);
+			transactionTemplate.executeWithoutResult(status -> {
+				entityManager.createNativeQuery(
+								"UPDATE theses SET created_at = :date WHERE thesis_id = :id")
+						.setParameter("date", eightYearsAgo)
+						.setParameter("id", thesisId)
+						.executeUpdate();
+				entityManager.createNativeQuery(
+								"UPDATE thesis_state_changes SET changed_at = :date WHERE thesis_id = :id")
+						.setParameter("date", eightYearsAgo)
+						.setParameter("id", thesisId)
+						.executeUpdate();
+				entityManager.clear();
+			});
 
-			assertThat(userRepository.findById(student.userId())).isPresent();
+			var result = userDeletionService.deleteOrAnonymizeUser(student.userId());
+
+			assertThat(result.result()).isEqualTo("DELETED");
+			assertTombstone(student.userId());
 		}
 
 		@Test
@@ -418,11 +536,17 @@ class UserDeletionServiceTest extends BaseIntegrationTest {
 			// Verify user still exists (soft-deleted)
 			assertThat(userRepository.findById(swt.student().userId())).isPresent();
 
-			// Backdate thesis to make retention expire (set created_at to 7 years ago)
+			// Backdate thesis and state changes to make retention expire (7 years ago)
+			Instant sevenYearsAgo = Instant.now().minus(7 * 365L, ChronoUnit.DAYS);
 			transactionTemplate.executeWithoutResult(status -> {
 				entityManager.createNativeQuery(
 								"UPDATE theses SET created_at = :date WHERE thesis_id = :id")
-						.setParameter("date", Instant.now().minus(7 * 365L, ChronoUnit.DAYS))
+						.setParameter("date", sevenYearsAgo)
+						.setParameter("id", swt.thesisId())
+						.executeUpdate();
+				entityManager.createNativeQuery(
+								"UPDATE thesis_state_changes SET changed_at = :date WHERE thesis_id = :id")
+						.setParameter("date", sevenYearsAgo)
 						.setParameter("id", swt.thesisId())
 						.executeUpdate();
 				entityManager.clear();

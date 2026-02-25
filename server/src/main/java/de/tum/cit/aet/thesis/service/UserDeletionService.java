@@ -1,7 +1,6 @@
 package de.tum.cit.aet.thesis.service;
 
 import de.tum.cit.aet.thesis.constants.ApplicationState;
-import de.tum.cit.aet.thesis.constants.ThesisState;
 import de.tum.cit.aet.thesis.dto.UserDeletionPreviewDto;
 import de.tum.cit.aet.thesis.dto.UserDeletionResultDto;
 import de.tum.cit.aet.thesis.entity.Application;
@@ -32,7 +31,6 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 /** Handles user account deletion, anonymization, and deferred cleanup with legal retention enforcement. */
@@ -40,7 +38,6 @@ import java.util.UUID;
 public class UserDeletionService {
 	private static final Logger log = LoggerFactory.getLogger(UserDeletionService.class);
 	private static final int RETENTION_YEARS = 5;
-	private static final Set<ThesisState> TERMINAL_STATES = Set.of(ThesisState.FINISHED, ThesisState.DROPPED_OUT);
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MMMM d, yyyy");
 
 	private final UserRepository userRepository;
@@ -110,20 +107,17 @@ public class UserDeletionService {
 				.orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
 		boolean isResearchGroupHead = researchGroupRepository.existsByHeadId(userId);
-		boolean hasActiveTheses = hasActiveTheses(userId);
 		List<ThesisRole> retentionBlockedRoles = getRetentionBlockedThesisRoles(userId);
 		int retentionBlockedCount = (int) retentionBlockedRoles.stream()
 				.map(r -> r.getThesis().getId())
 				.distinct()
 				.count();
 		Instant earliestDeletion = computeEarliestFullDeletion(retentionBlockedRoles);
-		boolean canBeFullyDeleted = !hasActiveTheses && !isResearchGroupHead && retentionBlockedCount == 0;
+		boolean canBeFullyDeleted = !isResearchGroupHead && retentionBlockedCount == 0;
 
 		String message;
 		if (isResearchGroupHead) {
 			message = "You must transfer research group leadership before deleting your account.";
-		} else if (hasActiveTheses) {
-			message = "You have active theses that must be completed or dropped before deletion.";
 		} else if (canBeFullyDeleted) {
 			message = "Your account and all associated data will be permanently deleted.";
 		} else {
@@ -135,7 +129,6 @@ public class UserDeletionService {
 
 		return new UserDeletionPreviewDto(
 				canBeFullyDeleted,
-				hasActiveTheses,
 				retentionBlockedCount,
 				earliestDeletion,
 				isResearchGroupHead,
@@ -159,10 +152,6 @@ public class UserDeletionService {
 
 		if (researchGroupRepository.existsByHeadId(userId)) {
 			throw new AccessDeniedException("Cannot delete account while being a research group head. Transfer leadership first.");
-		}
-
-		if (hasActiveTheses(userId)) {
-			throw new AccessDeniedException("Cannot delete account with active theses. Complete or drop out first.");
 		}
 
 		// Delete freely-deletable applications (rejected/not-assessed)
@@ -370,29 +359,33 @@ public class UserDeletionService {
 		}
 	}
 
-	private boolean hasActiveTheses(UUID userId) {
-		return thesisRoleRepository.findAllByIdUserIdWithThesis(userId).stream()
-				.anyMatch(role -> !TERMINAL_STATES.contains(role.getThesis().getState()));
-	}
-
 	private List<ThesisRole> getRetentionBlockedThesisRoles(UUID userId) {
 		Instant now = Instant.now();
 		return thesisRoleRepository.findAllByIdUserIdWithThesis(userId).stream()
-				.filter(role -> TERMINAL_STATES.contains(role.getThesis().getState()))
 				.filter(role -> computeRetentionExpiry(role).isAfter(now))
 				.toList();
 	}
 
 	private Instant computeRetentionExpiry(ThesisRole role) {
-		// Retention: 5 years after end of calendar year of thesis completion.
-		// Use the actual completion date (state change to FINISHED/DROPPED_OUT),
-		// falling back to createdAt only if no terminal state change is recorded.
-		Instant completedAt = role.getThesis().getStates().stream()
-				.filter(sc -> TERMINAL_STATES.contains(sc.getId().getState()))
+		// Retention: 5 years after end of calendar year of the latest thesis activity.
+		// State-independent: uses max(endDate, max(ALL states.changedAt), createdAt)
+		// so theses stuck in non-terminal states still become deletable after 5+ years.
+		Instant latestActivity = role.getThesis().getCreatedAt();
+
+		Instant endDate = role.getThesis().getEndDate();
+		if (endDate != null && endDate.isAfter(latestActivity)) {
+			latestActivity = endDate;
+		}
+
+		Instant latestStateChange = role.getThesis().getStates().stream()
 				.map(ThesisStateChange::getChangedAt)
 				.max(Instant::compareTo)
-				.orElse(role.getThesis().getCreatedAt());
-		ZonedDateTime zdt = completedAt.atZone(ZoneId.of("Europe/Berlin"));
+				.orElse(null);
+		if (latestStateChange != null && latestStateChange.isAfter(latestActivity)) {
+			latestActivity = latestStateChange;
+		}
+
+		ZonedDateTime zdt = latestActivity.atZone(ZoneId.of("Europe/Berlin"));
 		// End of the calendar year + 5 years
 		return ZonedDateTime.of(zdt.getYear() + RETENTION_YEARS, 12, 31, 23, 59, 59, 0, ZoneId.of("Europe/Berlin"))
 				.toInstant();

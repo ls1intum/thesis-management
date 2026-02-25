@@ -90,9 +90,15 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 			)
 			AND NOT EXISTS (
 				SELECT 1 FROM ThesisRole tr
-				WHERE tr.user.id = u.id AND tr.thesis.state NOT IN (
-					de.tum.cit.aet.thesis.constants.ThesisState.FINISHED,
-					de.tum.cit.aet.thesis.constants.ThesisState.DROPPED_OUT
+				JOIN tr.thesis t
+				WHERE tr.user.id = u.id
+				AND (
+					t.createdAt >= :cutoff
+					OR t.endDate >= :cutoff
+					OR EXISTS (
+						SELECT 1 FROM ThesisStateChange sc
+						WHERE sc.thesis = t AND sc.changedAt >= :cutoff
+					)
 				)
 			)
 			AND NOT EXISTS (

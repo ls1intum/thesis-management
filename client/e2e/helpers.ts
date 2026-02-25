@@ -51,7 +51,10 @@ export function authStatePath(
     | 'advisor2'
     | 'supervisor'
     | 'supervisor2'
-    | 'admin',
+    | 'admin'
+    | 'delete_old_thesis'
+    | 'delete_recent_thesis'
+    | 'delete_rejected_app',
 ): string {
   return `e2e/.auth/${role}.json`
 }

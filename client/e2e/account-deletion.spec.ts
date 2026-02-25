@@ -166,28 +166,34 @@ test.describe('Settings - Account Tab', () => {
 })
 
 // ============================================================================
-// Active thesis blocks deletion
+// Active thesis triggers retention-based soft deletion (not blocking)
 // ============================================================================
 
-test.describe('Account Deletion - Active Thesis Blocks', () => {
-  // student has an active thesis (WRITING state)
+test.describe('Account Deletion - Active Thesis Shows Retention Notice', () => {
+  // student has an active thesis (WRITING state, recent activity)
   test.use({ storageState: authStatePath('student') })
 
-  test('account tab shows active thesis warning and disables delete', async ({ page }) => {
+  test('account tab shows retention notice for user with active thesis', async ({ page }) => {
     await navigateTo(page, '/settings/account')
 
     await expect(page.getByRole('heading', { name: 'Delete Account' })).toBeVisible({
       timeout: 15_000,
     })
 
-    // Active thesis warning should be visible
-    await expect(page.getByText('Active Theses', { exact: true })).toBeVisible({
-      timeout: 10_000,
+    // Active thesis warning should NOT be visible (removed in state-independent retention)
+    await expect(page.getByText('Active Theses', { exact: true })).not.toBeVisible({
+      timeout: 3_000,
     })
 
-    // Delete button should be disabled
+    // Should show data retention notice (thesis has recent activity)
+    await expect(page.getByText('Data Retention Notice', { exact: true })).toBeVisible({
+      timeout: 10_000,
+    })
+    await expect(page.getByText(/legal retention requirements/i)).toBeVisible()
+
+    // Delete button should be ENABLED (active theses no longer block deletion)
     const deleteButton = page.getByRole('button', { name: 'Delete My Account' })
-    await expect(deleteButton).toBeDisabled()
+    await expect(deleteButton).toBeEnabled()
   })
 })
 
@@ -269,5 +275,34 @@ test.describe('Account Deletion - Admin Operations', () => {
 
     // Deletion preview should show
     await expect(page.getByText(/Deletion preview for/i)).toBeVisible({ timeout: 15_000 })
+  })
+
+  test('admin preview for user with active thesis shows no active-thesis alert', async ({
+    page,
+  }) => {
+    await navigateTo(page, '/admin')
+
+    await expect(page.getByRole('heading', { name: 'User Account Deletion' })).toBeVisible({
+      timeout: 30_000,
+    })
+
+    // Search for student (has active WRITING thesis)
+    const searchInput = page.getByPlaceholder(/Search by name, email, or ID/i)
+    await searchInput.fill('student')
+    await page.getByRole('button', { name: 'Search' }).click()
+
+    const userButton = page.getByRole('button', { name: /Student User/i }).first()
+    await expect(userButton).toBeVisible({ timeout: 15_000 })
+    await userButton.click()
+
+    // Deletion preview should show
+    await expect(page.getByText(/Deletion preview for/i)).toBeVisible({ timeout: 15_000 })
+
+    // "active theses" alert should NOT appear (removed in state-independent retention)
+    await expect(page.getByText(/has active theses/i)).not.toBeVisible({ timeout: 3_000 })
+
+    // Delete button should be enabled (active theses no longer block admin deletion)
+    const deleteButton = page.getByRole('button', { name: 'Delete User' })
+    await expect(deleteButton).toBeEnabled()
   })
 })

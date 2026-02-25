@@ -245,7 +245,7 @@ class DataRetentionServiceTest extends BaseIntegrationTest {
 	}
 
 	@Test
-	void doesNotDisableStudentWithActiveThesis() throws Exception {
+	void doesNotDisableStudentWithRecentThesisActivity() throws Exception {
 		createTestEmailTemplate("THESIS_CREATED");
 
 		TestUser advisor = createRandomTestUser(List.of("supervisor", "advisor"));
@@ -275,6 +275,56 @@ class DataRetentionServiceTest extends BaseIntegrationTest {
 		assertThat(disabled).isZero();
 		User user = userRepository.findById(student.userId()).orElseThrow();
 		assertThat(user.isDisabled()).isFalse();
+	}
+
+	@Test
+	void disablesStudentWithOldThesisActivity() throws Exception {
+		createTestEmailTemplate("THESIS_CREATED");
+
+		TestUser advisor = createRandomTestUser(List.of("supervisor", "advisor"));
+		UUID researchGroupId = createTestResearchGroup("Old Thesis RG", advisor.universityId());
+
+		TestUser student = createRandomTestUser(List.of("student"));
+
+		CreateThesisPayload thesisPayload = new CreateThesisPayload(
+				"Old Thesis Test",
+				"MASTER",
+				"ENGLISH",
+				List.of(student.userId()),
+				List.of(advisor.userId()),
+				List.of(advisor.userId()),
+				researchGroupId
+		);
+		String thesisResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses")
+						.header("Authorization", createRandomAdminAuthentication())
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(thesisPayload)))
+				.andExpect(status().isOk())
+				.andReturn().getResponse().getContentAsString();
+		UUID thesisId = UUID.fromString(objectMapper.readTree(thesisResponse).get("thesisId").asString());
+
+		// Backdate thesis activity and user activity to over 1 year ago
+		Instant twoYearsAgo = Instant.now().minus(2 * 365L, ChronoUnit.DAYS);
+		transactionTemplate.executeWithoutResult(status -> {
+			entityManager.createNativeQuery(
+							"UPDATE theses SET created_at = :date WHERE thesis_id = :id")
+					.setParameter("date", twoYearsAgo)
+					.setParameter("id", thesisId)
+					.executeUpdate();
+			entityManager.createNativeQuery(
+							"UPDATE thesis_state_changes SET changed_at = :date WHERE thesis_id = :id")
+					.setParameter("date", twoYearsAgo)
+					.setParameter("id", thesisId)
+					.executeUpdate();
+			entityManager.clear();
+		});
+		backdateUserActivity(student.userId(), 400);
+
+		int disabled = dataRetentionService.disableInactiveUsers();
+
+		assertThat(disabled).isPositive();
+		User user = userRepository.findById(student.userId()).orElseThrow();
+		assertThat(user.isDisabled()).isTrue();
 	}
 
 	@Test
