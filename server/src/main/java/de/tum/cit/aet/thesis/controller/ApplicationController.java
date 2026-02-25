@@ -128,6 +128,7 @@ public class ApplicationController {
 			@RequestParam(required = false, defaultValue = "createdAt") String sortBy,
 			@RequestParam(required = false, defaultValue = "desc") String sortOrder
 	) {
+		limit = RequestValidator.clampPageSize(limit);
 		User authenticatedUser = currentUserProvider().getUser();
 
 		Page<Application> applications = applicationService.getAll(
@@ -168,6 +169,7 @@ public class ApplicationController {
 			@RequestParam(required = false, defaultValue = "0") Integer page,
 			@RequestParam(required = false, defaultValue = "50") Integer limit
 	) {
+		limit = RequestValidator.clampPageSize(limit);
 		Page<Application> applications = applicationService.getAll(
 				null,
 				null,
@@ -178,7 +180,7 @@ public class ApplicationController {
 				null,
 				false,
 				page,
-				limit <= 0 ? Integer.MAX_VALUE : limit,
+				limit,
 				"createdAt",
 				"desc"
 		);

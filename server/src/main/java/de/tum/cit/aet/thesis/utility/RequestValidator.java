@@ -122,6 +122,21 @@ public class RequestValidator {
 	 * @param <T> the type of the value
 	 * @return the validated non-null value
 	 */
+	private static final int MAX_PAGE_SIZE = 500;
+
+	/**
+	 * Caps the page size to a safe maximum to prevent excessive memory usage.
+	 *
+	 * @param limit the requested page size
+	 * @return the clamped page size (between 1 and MAX_PAGE_SIZE)
+	 */
+	public static int clampPageSize(int limit) {
+		if (limit <= 0) {
+			return MAX_PAGE_SIZE;
+		}
+		return Math.min(limit, MAX_PAGE_SIZE);
+	}
+
 	public static <T> T validateNotNull(T value) {
 		if (value == null) {
 			throw new ResourceInvalidParametersException("Required value is null");

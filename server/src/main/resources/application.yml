@@ -53,6 +53,7 @@ spring:
         smtp:
           starttls:
             enable: true
+            required: true
 
 management:
   endpoints:

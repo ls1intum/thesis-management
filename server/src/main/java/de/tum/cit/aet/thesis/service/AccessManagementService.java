@@ -40,8 +40,8 @@ public class AccessManagementService {
 	private final UUID applicationClientUUID;
 	private final UUID studentGroupId;
 
-	private String accessToken;
-	private Instant tokenExpiration;
+	private volatile String accessToken;
+	private volatile Instant tokenExpiration;
 
 	private final UserGroupRepository userGroupRepository;
 

@@ -113,6 +113,7 @@ public class ThesisController {
 			@RequestParam(required = false, defaultValue = "desc") String sortOrder,
 			@RequestParam(required = false, defaultValue = "") UUID[] researchGroupIds
 	) {
+		limit = RequestValidator.clampPageSize(limit);
 		User currentUser = currentUserProvider().getUser();
 
 		Page<Thesis> theses = thesisService.getAll(
@@ -559,7 +560,7 @@ public class ThesisController {
 		return ResponseEntity.ok()
 				.contentType(MediaType.APPLICATION_OCTET_STREAM)
 				.cacheControl(CacheControl.maxAge(1, TimeUnit.DAYS).cachePublic())
-				.header(HttpHeaders.CONTENT_DISPOSITION, String.format("inline; filename=" + file.getFilename(), thesisId))
+				.header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + file.getFilename() + "\"")
 				.body(thesisService.getThesisFile(file));
 	}
 
@@ -764,6 +765,7 @@ public class ThesisController {
 			@RequestParam(required = false, defaultValue = "0") Integer page,
 			@RequestParam(required = false, defaultValue = "50") Integer limit
 	) {
+		limit = RequestValidator.clampPageSize(limit);
 		User currentUser = currentUserProvider().getUser();
 		Thesis thesis = thesisService.findById(thesisId);
 
@@ -796,8 +798,6 @@ public class ThesisController {
 	) {
 		User currentUser = currentUserProvider().getUser();
 		Thesis thesis = thesisService.findById(thesisId);
-
-		System.out.println("Message: " + payload.message() + " , Comment: " + payload.commentType() + " , File: " + (file != null ? file.getOriginalFilename() : "No File"));
 
 		if (payload.commentType() == ThesisCommentType.ADVISOR && !thesis.hasAdvisorAccess(currentUser)) {
 			throw new AccessDeniedException("You need to be an advisor of this thesis to add an advisor comment");
@@ -843,7 +843,7 @@ public class ThesisController {
 		return ResponseEntity.ok()
 				.contentType(MediaType.APPLICATION_OCTET_STREAM)
 				.cacheControl(CacheControl.maxAge(1, TimeUnit.DAYS).cachePublic())
-				.header(HttpHeaders.CONTENT_DISPOSITION, String.format("inline; filename=" + comment.getFilename(), commentId))
+				.header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + comment.getFilename() + "\"")
 				.body(thesisCommentService.getCommentFile(comment));
 	}
 

@@ -20,6 +20,7 @@ import de.tum.cit.aet.thesis.entity.InterviewSlot;
 import de.tum.cit.aet.thesis.entity.Interviewee;
 import de.tum.cit.aet.thesis.entity.Topic;
 import de.tum.cit.aet.thesis.service.InterviewProcessService;
+import de.tum.cit.aet.thesis.utility.RequestValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -74,6 +75,7 @@ public class InterviewProcessController {
 			@RequestParam(required = false, defaultValue = "false") boolean excludeSupervised
 	) {
 
+		limit = RequestValidator.clampPageSize(limit);
 		Page<InterviewProcess> result = interviewProcessService.findAllMyProcesses(
 				searchQuery,
 				page,
@@ -155,6 +157,7 @@ public class InterviewProcessController {
 			@RequestParam(required = false, defaultValue = "") String state
 	) {
 
+		limit = RequestValidator.clampPageSize(limit);
 		Page<Interviewee> interviewProcessDto = interviewProcessService.getInterviewProcessInterviewees(interviewProcessId, searchQuery, page, limit, sortBy, sortOrder, state);
 
 		return ResponseEntity.ok(PaginationDto.fromSpringPage(interviewProcessDto.map(IntervieweeLightWithNextSlotDto::fromIntervieweeEntity)));
@@ -357,6 +360,7 @@ public class InterviewProcessController {
 			@RequestParam(required = false, defaultValue = "50") Integer limit
 	) {
 
+		limit = RequestValidator.clampPageSize(limit);
 		Page<Application> applications = interviewProcessService.getPossibleApplicationsForProcess(interviewProcessId, page, limit);
 
 		return ResponseEntity.ok(PaginationDto.fromSpringPage(
