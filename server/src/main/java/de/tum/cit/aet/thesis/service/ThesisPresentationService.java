@@ -18,6 +18,7 @@ import de.tum.cit.aet.thesis.repository.ThesisPresentationRepository;
 import de.tum.cit.aet.thesis.repository.ThesisRepository;
 import de.tum.cit.aet.thesis.repository.UserRepository;
 import de.tum.cit.aet.thesis.security.CurrentUserProvider;
+import de.tum.cit.aet.thesis.utility.HibernateHelper;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.property.immutable.ImmutableMethod;
 import org.springframework.beans.factory.ObjectProvider;
@@ -116,7 +117,8 @@ public class ThesisPresentationService {
 	 */
 	public Page<ThesisPresentation> getPublicPresentations(boolean includeDrafts, Integer page,
 		Integer limit, String sortBy, String sortOrder, UUID researchGroupId) {
-		Sort.Order order = new Sort.Order(sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
+		Sort.Order order = new Sort.Order(sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,
+				HibernateHelper.validateSortField(ThesisPresentation.class, sortBy));
 
 		ZoneId zone = ZoneId.systemDefault(); // or ZoneId.of("Europe/Berlin") if you want it explicit
 		Instant startOfToday = LocalDate.now(zone)

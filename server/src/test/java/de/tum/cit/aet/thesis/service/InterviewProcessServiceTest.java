@@ -642,15 +642,19 @@ class InterviewProcessServiceTest {
 	@Test
 	void getInterviewProcessTopic_ReturnsTopic() {
 		UUID processId = UUID.randomUUID();
+		ResearchGroup group = new ResearchGroup();
 		InterviewProcess process = new InterviewProcess();
 		Topic topic = new Topic();
 		topic.setTitle("Topic");
+		topic.setResearchGroup(group);
 		process.setTopic(topic);
+		process.setInterviewees(new ArrayList<>());
 		when(interviewProcessRepository.findById(processId)).thenReturn(Optional.of(process));
 
 		Topic result = interviewProcessService.getInterviewProcessTopic(processId);
 
 		assertEquals(topic, result);
+		verify(currentUserProvider).assertCanAccessResearchGroup(group);
 	}
 
 	@Test
@@ -676,11 +680,17 @@ class InterviewProcessServiceTest {
 	@Test
 	void isInterviewProcessCompleted_ReturnsFlag() {
 		UUID processId = UUID.randomUUID();
+		ResearchGroup group = new ResearchGroup();
 		InterviewProcess process = new InterviewProcess();
 		process.setCompleted(true);
+		Topic topic = new Topic();
+		topic.setResearchGroup(group);
+		process.setTopic(topic);
+		process.setInterviewees(new ArrayList<>());
 		when(interviewProcessRepository.findById(processId)).thenReturn(Optional.of(process));
 
 		assertTrue(interviewProcessService.isInterviewProcessCompleted(processId));
+		verify(currentUserProvider).assertCanAccessResearchGroup(group);
 	}
 
 	@Test

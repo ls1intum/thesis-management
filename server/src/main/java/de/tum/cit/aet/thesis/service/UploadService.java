@@ -81,8 +81,20 @@ public class UploadService {
 				);
 			}
 
+			if (type == UploadFileType.DOCUMENT) {
+				allowedExtensions = Set.of(
+						"pdf", "docx", "doc", "xlsx", "xls", "pptx", "ppt",
+						"tex", "zip", "tar", "gz", "txt", "csv", "md",
+						"png", "jpg", "jpeg", "gif", "webp"
+				);
+			}
+
 			String originalFilename = file.getOriginalFilename();
 			String extension = FilenameUtils.getExtension(originalFilename);
+
+			if (extension != null) {
+				extension = extension.toLowerCase(java.util.Locale.ROOT);
+			}
 
 			if (allowedExtensions != null && !allowedExtensions.contains(extension)) {
 				throw new UploadException("File type not allowed");
@@ -147,12 +159,21 @@ public class UploadService {
 				throw new UploadException("File size exceeds the maximum allowed size");
 			}
 
+			if (extension == null || extension.contains("..") || extension.contains("/") || extension.contains("\\")) {
+				throw new UploadException("Invalid file extension");
+			}
+
 			MessageDigest digest = MessageDigest.getInstance("SHA-256");
 			byte[] hashBytes = digest.digest(bytes);
 			String hash = HexFormat.of().formatHex(hashBytes);
 			String filename = hash + "." + extension;
 
-			Files.write(rootLocation.resolve(filename), bytes);
+			Path target = rootLocation.resolve(filename).normalize();
+			if (!target.startsWith(rootLocation)) {
+				throw new UploadException("Cannot store file outside upload directory");
+			}
+
+			Files.write(target, bytes);
 			return filename;
 		} catch (IOException | NoSuchAlgorithmException e) {
 			throw new UploadException("Failed to store file", e);

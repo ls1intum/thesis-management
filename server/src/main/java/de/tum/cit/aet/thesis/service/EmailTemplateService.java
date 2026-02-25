@@ -10,6 +10,7 @@ import de.tum.cit.aet.thesis.repository.EmailTemplateRepository;
 import de.tum.cit.aet.thesis.repository.ResearchGroupRepository;
 import de.tum.cit.aet.thesis.security.CurrentUserProvider;
 import de.tum.cit.aet.thesis.utility.HibernateHelper;
+import de.tum.cit.aet.thesis.utility.TemplateValidator;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -172,6 +173,8 @@ public class EmailTemplateService {
 
 		currentUserProvider().assertCanAccessResearchGroup(researchGroup);
 		validateTemplateCase(templateCase);
+		TemplateValidator.validateTemplateContent(subject);
+		TemplateValidator.validateTemplateContent(bodyHtml);
 
 		// Check if a template with the same case and research group already exists -> update instead of create
 		EmailTemplate emailTemplate = emailTemplateRepository
@@ -209,6 +212,8 @@ public class EmailTemplateService {
 
 		currentUserProvider().assertCanAccessResearchGroup(emailTemplate.getResearchGroup());
 		validateTemplateCase(templateCase);
+		TemplateValidator.validateTemplateContent(subject);
+		TemplateValidator.validateTemplateContent(bodyHtml);
 
 		emailTemplate.setTemplateCase(templateCase);
 		emailTemplate.setDescription(description);

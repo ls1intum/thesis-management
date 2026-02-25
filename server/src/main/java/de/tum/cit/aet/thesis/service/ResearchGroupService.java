@@ -357,7 +357,8 @@ public class ResearchGroupService {
 		ResearchGroup researchGroup = findById(researchGroupId);
 		currentUserProvider().assertCanAccessResearchGroup(researchGroup);
 
-		Sort.Order order = new Sort.Order(sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
+		Sort.Order order = new Sort.Order(sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,
+				HibernateHelper.validateSortField(User.class, sortBy));
 
 		return userRepository
 				.searchUsers(researchGroupId, null, null, PageRequest.of(page, limit, Sort.by(order)));

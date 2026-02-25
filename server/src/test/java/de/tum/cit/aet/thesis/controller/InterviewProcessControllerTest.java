@@ -195,14 +195,12 @@ class InterviewProcessControllerTest {
 	@Test
 	void getInterviewProcessTopic_ReturnsTopicDto() {
 		UUID processId = UUID.randomUUID();
-		InterviewProcess process = new InterviewProcess();
 		Topic topic = new Topic();
 		topic.setId(UUID.randomUUID());
 		topic.setTitle("Interview Topic");
 		topic.setRoles(new ArrayList<>());
 		topic.setResearchGroup(new ResearchGroup());
-		process.setTopic(topic);
-		when(interviewProcessService.findById(processId)).thenReturn(process);
+		when(interviewProcessService.getInterviewProcessTopic(processId)).thenReturn(topic);
 
 		ResponseEntity<?> response = interviewProcessController.getInterviewProcessTopic(processId);
 

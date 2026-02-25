@@ -93,6 +93,7 @@ public class InterviewProcessController {
 	 * @return the booked interview slot or no content if none exists
 	 */
 	@GetMapping("/{interviewProcessId}/my-booking")
+	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<InterviewSlotDto> getMyBookedSlot(
 			@PathVariable("interviewProcessId") UUID interviewProcessId
 	) {
@@ -166,12 +167,13 @@ public class InterviewProcessController {
 	 * @return the topic of the interview process
 	 */
 	@GetMapping("/{interviewProcessId}/topic")
+	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<TopicDto> getInterviewProcessTopic(
 			@PathVariable("interviewProcessId") UUID interviewProcessId
 	) {
-		InterviewProcess interviewProcess = interviewProcessService.findById(interviewProcessId);
+		Topic topic = interviewProcessService.getInterviewProcessTopic(interviewProcessId);
 
-		return ResponseEntity.ok(TopicDto.fromTopicEntity(interviewProcess.getTopic()));
+		return ResponseEntity.ok(TopicDto.fromTopicEntity(topic));
 	}
 
 	/**
@@ -216,6 +218,7 @@ public class InterviewProcessController {
 	 * @return true if the interview process is completed, false otherwise
 	 */
 	@GetMapping("/{interviewProcessId}/completed")
+	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<Boolean> isInterviewProcessCompleted(
 			@PathVariable("interviewProcessId") UUID interviewProcessId
 	) {
@@ -231,7 +234,7 @@ public class InterviewProcessController {
 	 * @return the list of interview slots
 	 */
 	@GetMapping("/{interviewProcessId}/interview-slots")
-	//Not preauthorized to allow interviewees to fetch available slots -> check inside service method if process is accessible to the user
+	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<List<InterviewSlotDto>> getInterviewProcessInterviewSlots(
 			@PathVariable("interviewProcessId") UUID interviewProcessId,
 			@RequestParam(required = false, defaultValue = "false") boolean excludeBooked
@@ -311,6 +314,7 @@ public class InterviewProcessController {
 	 * @return the booked interview slot
 	 */
 	@PutMapping("/{interviewProcessId}/slot/{slotId}/book")
+	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<InterviewSlotDto> bookInterviewSlot(
 			@PathVariable("interviewProcessId") UUID interviewProcessId,
 			@PathVariable("slotId") UUID slotId,
@@ -328,6 +332,7 @@ public class InterviewProcessController {
 	 * @return the updated interview slot after cancellation
 	 */
 	@PutMapping("/{interviewProcessId}/slot/{slotId}/cancel")
+	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<InterviewSlotDto> cancelInterviewSlotBooking(
 			@PathVariable("interviewProcessId") UUID interviewProcessId,
 			@PathVariable("slotId") UUID slotId

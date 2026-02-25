@@ -36,6 +36,7 @@ import de.tum.cit.aet.thesis.repository.ThesisStateChangeRepository;
 import de.tum.cit.aet.thesis.repository.UserRepository;
 import de.tum.cit.aet.thesis.security.CurrentUserProvider;
 import de.tum.cit.aet.thesis.utility.DataFormatter;
+import de.tum.cit.aet.thesis.utility.HibernateHelper;
 import de.tum.cit.aet.thesis.utility.PDFBuilder;
 import de.tum.cit.aet.thesis.utility.RequestValidator;
 import org.springframework.beans.factory.ObjectProvider;
@@ -156,7 +157,8 @@ public class ThesisService {
 		String sortOrder,
 		UUID[] researchGroupIds
 	) {
-		Sort.Order order = new Sort.Order(sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
+		Sort.Order order = new Sort.Order(sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,
+				HibernateHelper.validateSortField(Thesis.class, sortBy));
 		String searchQueryFilter = searchQuery == null || searchQuery.isEmpty() ? null : searchQuery.toLowerCase();
 		Set<ThesisState> statesFilter = states == null || states.length == 0 ? null : new HashSet<>(Arrays.asList(states));
 		Set<String> typesFilter = types == null || types.length == 0 ? null : new HashSet<>(Arrays.asList(types));
@@ -534,7 +536,7 @@ public class ThesisService {
 		ThesisFile thesisFile = new ThesisFile();
 
 		thesisFile.setUploadName(file.getOriginalFilename());
-		thesisFile.setFilename(uploadService.store(file, 25 * 1024 * 1024, UploadFileType.ANY));
+		thesisFile.setFilename(uploadService.store(file, 25 * 1024 * 1024, UploadFileType.DOCUMENT));
 		thesisFile.setUploadedBy(currentUserProvider().getUser());
 		thesisFile.setUploadedAt(Instant.now());
 		thesisFile.setThesis(thesis);
