@@ -63,6 +63,7 @@ export interface IThesis extends IThesisOverview {
   infoText?: string
   abstractText?: string
   applicationId: string | null
+  anonymizedAt?: string
   researchGroup: ILightResearchGroup
   students: ILightUser[]
   advisors: ILightUser[]

@@ -659,6 +659,34 @@ public class MailingService {
 				.send(javaMailSender, uploadService);
 	}
 
+	/**
+	 * Sends a reminder email to the research group head about upcoming thesis anonymization.
+	 *
+	 * @param researchGroup the research group whose theses will be anonymized
+	 * @param theses the list of theses approaching anonymization
+	 * @param anonymizationDate the formatted date when anonymization will occur
+	 */
+	public void sendThesisAnonymizationReminderEmail(ResearchGroup researchGroup, List<Thesis> theses, String anonymizationDate) {
+		EmailTemplate emailTemplate = loadTemplate(
+				null,
+				"THESIS_ANONYMIZATION_REMINDER",
+				"en");
+
+		List<String> thesisTitles = theses.stream().map(Thesis::getTitle).toList();
+
+		Map<String, Object> model = new HashMap<>();
+		model.put("recipient", researchGroup.getHead().getFirstName() + " " + researchGroup.getHead().getLastName());
+		model.put("researchGroupName", researchGroup.getName());
+		model.put("anonymizationDate", anonymizationDate);
+		model.put("theses", thesisTitles);
+
+		MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(), emailTemplate.getBodyHtml());
+		mailBuilder
+				.addPrimaryRecipient(researchGroup.getHead())
+				.fillPlaceholders(model)
+				.send(javaMailSender, uploadService);
+	}
+
 	private String getThesisFilename(Thesis thesis, String name, String originalFilename) {
 		StringBuilder builder = new StringBuilder();
 

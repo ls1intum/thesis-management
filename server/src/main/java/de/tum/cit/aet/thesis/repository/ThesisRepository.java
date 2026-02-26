@@ -90,4 +90,11 @@ public interface ThesisRepository extends JpaRepository<Thesis, UUID> {
 			AND r.id.role = 'STUDENT'
 			""")
 	List<Thesis> findAllByStudentUserId(@Param("userId") UUID userId);
+
+	@Query("""
+			SELECT t FROM Thesis t
+			WHERE t.state IN (de.tum.cit.aet.thesis.constants.ThesisState.FINISHED, de.tum.cit.aet.thesis.constants.ThesisState.DROPPED_OUT)
+			AND t.anonymizedAt IS NULL
+			""")
+	List<Thesis> findAnonymizationCandidates();
 }

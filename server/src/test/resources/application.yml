@@ -61,6 +61,7 @@ thesis-management:
     cron: "-"
     rejected-application-retention-days: 365
     inactive-user-days: 365
+    thesis-anonymization-notification-days: 30
   data-export:
     path: data-exports
     retention-days: 7

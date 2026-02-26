@@ -35,4 +35,5 @@
     <include file="changes/29_user_disabled_flag.sql" relativeToChangelogFile="true" />
     <include file="changes/30_user_deletion.sql" relativeToChangelogFile="true" />
     <include file="changes/31_include_application_data_in_email.sql" relativeToChangelogFile="true" />
+    <include file="changes/32_thesis_anonymization.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>

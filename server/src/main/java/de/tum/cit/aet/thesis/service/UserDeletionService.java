@@ -6,7 +6,6 @@ import de.tum.cit.aet.thesis.dto.UserDeletionResultDto;
 import de.tum.cit.aet.thesis.entity.Application;
 import de.tum.cit.aet.thesis.entity.DataExport;
 import de.tum.cit.aet.thesis.entity.ThesisRole;
-import de.tum.cit.aet.thesis.entity.ThesisStateChange;
 import de.tum.cit.aet.thesis.entity.User;
 import de.tum.cit.aet.thesis.exception.request.AccessDeniedException;
 import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
@@ -19,6 +18,7 @@ import de.tum.cit.aet.thesis.repository.ThesisRoleRepository;
 import de.tum.cit.aet.thesis.repository.TopicRoleRepository;
 import de.tum.cit.aet.thesis.repository.UserGroupRepository;
 import de.tum.cit.aet.thesis.repository.UserRepository;
+import de.tum.cit.aet.thesis.utility.RetentionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,7 +27,6 @@ import org.springframework.stereotype.Service;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
@@ -37,7 +36,6 @@ import java.util.UUID;
 @Service
 public class UserDeletionService {
 	private static final Logger log = LoggerFactory.getLogger(UserDeletionService.class);
-	private static final int RETENTION_YEARS = 5;
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MMMM d, yyyy");
 
 	private final UserRepository userRepository;
@@ -362,38 +360,13 @@ public class UserDeletionService {
 	private List<ThesisRole> getRetentionBlockedThesisRoles(UUID userId) {
 		Instant now = Instant.now();
 		return thesisRoleRepository.findAllByIdUserIdWithThesis(userId).stream()
-				.filter(role -> computeRetentionExpiry(role).isAfter(now))
+				.filter(role -> RetentionUtils.computeRetentionExpiry(role.getThesis()).isAfter(now))
 				.toList();
-	}
-
-	private Instant computeRetentionExpiry(ThesisRole role) {
-		// Retention: 5 years after end of calendar year of the latest thesis activity.
-		// State-independent: uses max(endDate, max(ALL states.changedAt), createdAt)
-		// so theses stuck in non-terminal states still become deletable after 5+ years.
-		Instant latestActivity = role.getThesis().getCreatedAt();
-
-		Instant endDate = role.getThesis().getEndDate();
-		if (endDate != null && endDate.isAfter(latestActivity)) {
-			latestActivity = endDate;
-		}
-
-		Instant latestStateChange = role.getThesis().getStates().stream()
-				.map(ThesisStateChange::getChangedAt)
-				.max(Instant::compareTo)
-				.orElse(null);
-		if (latestStateChange != null && latestStateChange.isAfter(latestActivity)) {
-			latestActivity = latestStateChange;
-		}
-
-		ZonedDateTime zdt = latestActivity.atZone(ZoneId.of("Europe/Berlin"));
-		// End of the calendar year + 5 years
-		return ZonedDateTime.of(zdt.getYear() + RETENTION_YEARS, 12, 31, 23, 59, 59, 0, ZoneId.of("Europe/Berlin"))
-				.toInstant();
 	}
 
 	private Instant computeEarliestFullDeletion(List<ThesisRole> retentionBlockedRoles) {
 		return retentionBlockedRoles.stream()
-				.map(this::computeRetentionExpiry)
+				.map(role -> RetentionUtils.computeRetentionExpiry(role.getThesis()))
 				.max(Instant::compareTo)
 				.orElse(null);
 	}

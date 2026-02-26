@@ -25,6 +25,7 @@ public class DataRetentionService {
 	private final UserRepository userRepository;
 	private final DataExportService dataExportService;
 	private final UserDeletionService userDeletionService;
+	private final ThesisAnonymizationService thesisAnonymizationService;
 	private final int retentionDays;
 	private final int inactiveUserDays;
 
@@ -36,6 +37,7 @@ public class DataRetentionService {
 	 * @param userRepository the user repository
 	 * @param dataExportService the data export service
 	 * @param userDeletionService the user deletion service
+	 * @param thesisAnonymizationService the thesis anonymization service
 	 * @param retentionDays the retention period in days
 	 * @param inactiveUserDays the inactive user threshold in days
 	 */
@@ -44,6 +46,7 @@ public class DataRetentionService {
 			UserRepository userRepository,
 			DataExportService dataExportService,
 			UserDeletionService userDeletionService,
+			ThesisAnonymizationService thesisAnonymizationService,
 			@Value("${thesis-management.data-retention.rejected-application-retention-days}") int retentionDays,
 			@Value("${thesis-management.data-retention.inactive-user-days}") int inactiveUserDays) {
 		this.applicationRepository = applicationRepository;
@@ -51,6 +54,7 @@ public class DataRetentionService {
 		this.userRepository = userRepository;
 		this.dataExportService = dataExportService;
 		this.userDeletionService = userDeletionService;
+		this.thesisAnonymizationService = thesisAnonymizationService;
 		this.retentionDays = retentionDays;
 		this.inactiveUserDays = inactiveUserDays;
 	}
@@ -62,6 +66,8 @@ public class DataRetentionService {
 		runStep("processAllPendingExports", dataExportService::processAllPendingExports);
 		runStep("deleteExpiredExports", dataExportService::deleteExpiredExports);
 		runStep("processDeferredDeletions", userDeletionService::processDeferredDeletions);
+		runStep("sendThesisAnonymizationNotifications", thesisAnonymizationService::sendAnonymizationNotifications);
+		runStep("anonymizeExpiredTheses", thesisAnonymizationService::anonymizeExpiredTheses);
 	}
 
 	private void runStep(String name, Runnable step) {
