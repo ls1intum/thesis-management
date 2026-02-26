@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
@@ -32,7 +33,7 @@ import java.util.UUID;
 @Service
 public class ThesisAnonymizationService {
 	private static final Logger log = LoggerFactory.getLogger(ThesisAnonymizationService.class);
-	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MMMM d, yyyy");
+	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MMMM d, yyyy", Locale.ENGLISH);
 
 	private final ThesisRepository thesisRepository;
 	private final ThesisFileRepository thesisFileRepository;
@@ -112,13 +113,6 @@ public class ThesisAnonymizationService {
 			try {
 				Thesis firstThesis = theses.getFirst();
 
-				// Mark theses as notified before sending email to prevent
-				// repeated notification attempts if email delivery fails
-				for (Thesis thesis : theses) {
-					thesis.setAnonymizationNotifiedAt(now);
-					thesisRepository.save(thesis);
-				}
-
 				// Compute the earliest expiry date across all theses for the email subject line
 				Instant earliestExpiry = theses.stream()
 						.map(RetentionUtils::computeRetentionExpiry)
@@ -126,11 +120,18 @@ public class ThesisAnonymizationService {
 						.orElse(RetentionUtils.computeRetentionExpiry(firstThesis));
 				String anonymizationDate = earliestExpiry.atZone(RetentionUtils.BERLIN).format(DATE_FORMATTER);
 
+				// Send email first — only mark as notified on success.
+				// Duplicate notifications on retry are preferable to zero notifications before data destruction.
 				mailingService.sendThesisAnonymizationReminderEmail(
 						firstThesis.getResearchGroup(),
 						theses,
 						anonymizationDate
 				);
+
+				for (Thesis thesis : theses) {
+					thesis.setAnonymizationNotifiedAt(now);
+					thesisRepository.save(thesis);
+				}
 
 				log.info("Sent anonymization notification for {} theses in research group {}",
 						theses.size(), firstThesis.getResearchGroup().getName());
@@ -177,13 +178,24 @@ public class ThesisAnonymizationService {
 	private void anonymizeThesis(Thesis thesis) {
 		UUID thesisId = thesis.getId();
 
-		// 1. Collect all file paths before deleting records
+		// 1. Mark thesis as anonymized first to prevent re-processing on partial failure.
+		//    If any subsequent step fails, the thesis won't be picked up again by findAnonymizationCandidates().
+		thesis.setAnonymizedAt(Instant.now());
+		thesis.setInfo("");
+		thesis.setAbstractField("");
+		thesis.setFinalFeedback(null);
+		thesis.setKeywords(new HashSet<>());
+		thesis.setMetadata(new ThesisMetadata(new HashMap<>(), new HashMap<>()));
+		thesis.setApplication(null);
+		thesisRepository.save(thesis);
+
+		// 2. Collect all file paths before deleting records
 		List<String> filenames = new ArrayList<>();
 		filenames.addAll(thesisFileRepository.findFilenamesByThesisId(thesisId));
 		filenames.addAll(thesisProposalRepository.findFilenamesByThesisId(thesisId));
 		filenames.addAll(thesisCommentRepository.findFilenamesByThesisId(thesisId));
 
-		// 2. Delete child records in correct FK order
+		// 3. Delete child records in correct FK order
 		thesisPresentationInviteRepository.deleteAllByPresentationThesisId(thesisId);
 		thesisPresentationRepository.deleteAllByThesisId(thesisId);
 		thesisCommentRepository.deleteAllByThesisId(thesisId);
@@ -194,21 +206,7 @@ public class ThesisAnonymizationService {
 		thesisStateChangeRepository.deleteAllByThesisId(thesisId);
 		thesisRoleRepository.deleteAllByThesisId(thesisId);
 
-		// 3. Re-fetch thesis to avoid stale Hibernate references after bulk deletes
-		thesis = thesisRepository.findById(thesisId).orElseThrow();
-
-		// 4. Anonymize thesis record: clear personal/content fields, preserve structural data
-		thesis.setInfo("");
-		thesis.setAbstractField("");
-		thesis.setFinalFeedback(null);
-		thesis.setKeywords(new HashSet<>());
-		thesis.setMetadata(new ThesisMetadata(new HashMap<>(), new HashMap<>()));
-		thesis.setApplication(null);
-		thesis.setAnonymizedAt(Instant.now());
-
-		thesisRepository.save(thesis);
-
-		// 5. Delete collected files from disk
+		// 4. Delete collected files from disk
 		for (String filename : filenames) {
 			try {
 				uploadService.deleteFile(filename);

@@ -151,6 +151,7 @@ test {
 
 	maxParallelForks = 1
 	forkEvery = 0
+	maxHeapSize = "2g"
 
 	testLogging {
 		events "PASSED", "FAILED", "SKIPPED"

@@ -21,7 +21,8 @@ public interface ThesisRepository extends JpaRepository<Thesis, UUID> {
 	@Query("""
 			SELECT DISTINCT t FROM Thesis t
 			LEFT JOIN ThesisRole r ON t.id = r.thesis.id
-			WHERE (
+			WHERE t.anonymizedAt IS NULL
+			AND (
 				:visibilities IS NULL
 				OR (
 					t.visibility IN :visibilities
@@ -93,6 +94,8 @@ public interface ThesisRepository extends JpaRepository<Thesis, UUID> {
 
 	@Query("""
 			SELECT t FROM Thesis t
+			JOIN FETCH t.researchGroup rg
+			LEFT JOIN FETCH rg.head
 			WHERE t.state IN (de.tum.cit.aet.thesis.constants.ThesisState.FINISHED, de.tum.cit.aet.thesis.constants.ThesisState.DROPPED_OUT)
 			AND t.anonymizedAt IS NULL
 			""")

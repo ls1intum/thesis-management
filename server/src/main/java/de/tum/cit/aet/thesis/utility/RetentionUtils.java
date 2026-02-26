@@ -6,6 +6,7 @@ import de.tum.cit.aet.thesis.entity.ThesisStateChange;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Objects;
 
 public final class RetentionUtils {
 	public static final int RETENTION_YEARS = 5;
@@ -37,6 +38,9 @@ public final class RetentionUtils {
 		if (latestActivity == null) {
 			latestActivity = thesis.getCreatedAt();
 		}
+
+		Objects.requireNonNull(latestActivity,
+				"Cannot compute retention expiry: thesis " + thesis.getId() + " has no activity dates");
 
 		ZonedDateTime zdt = latestActivity.atZone(BERLIN);
 		return ZonedDateTime.of(zdt.getYear() + RETENTION_YEARS, 12, 31, 23, 59, 59, 0, BERLIN)

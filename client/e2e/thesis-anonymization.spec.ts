@@ -62,7 +62,7 @@ test.describe('Thesis Anonymization - Admin Operations', () => {
       heading,
       30_000,
     )
-    if (!loaded) return // May not be accessible under parallel test load
+    expect(loaded).toBeTruthy()
 
     // Should NOT show anonymization banner
     await expect(page.getByText(/This thesis was anonymized on/i)).not.toBeVisible({

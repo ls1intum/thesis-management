@@ -668,7 +668,7 @@ public class MailingService {
 	 */
 	public void sendThesisAnonymizationReminderEmail(ResearchGroup researchGroup, List<Thesis> theses, String anonymizationDate) {
 		EmailTemplate emailTemplate = loadTemplate(
-				null,
+				researchGroup.getId(),
 				"THESIS_ANONYMIZATION_REMINDER",
 				"en");
 

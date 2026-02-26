@@ -1207,7 +1207,7 @@ ON CONFLICT DO NOTHING;
 -- ============================================================================
 -- 32. THESIS ANONYMIZATION TEST DATA
 -- ============================================================================
--- Thesis 8: FINISHED, expired retention (6+ years ago) — will be anonymized
+-- Thesis 8: FINISHED, expired retention (7+ years ago) — will be anonymized
 INSERT INTO theses (thesis_id, title, type, language, metadata, info, abstract, state,
                     visibility, keywords, application_id, start_date, end_date, created_at,
                     research_group_id)
@@ -1221,8 +1221,8 @@ VALUES
      'FINISHED', 'PRIVATE',
      ARRAY['data processing', 'legacy systems', 'pipeline evaluation'],
      NULL,
-     NOW() - INTERVAL '2400 days', NOW() - INTERVAL '2200 days',
-     NOW() - INTERVAL '2400 days',
+     NOW() - INTERVAL '2800 days', NOW() - INTERVAL '2600 days',
+     NOW() - INTERVAL '2800 days',
      '00000000-0000-4000-a000-000000000001'::UUID)
 ON CONFLICT DO NOTHING;
 
@@ -1231,24 +1231,24 @@ INSERT INTO thesis_roles (thesis_id, user_id, role, position, assigned_at, assig
 VALUES
     ('00000000-0000-4000-d000-000000000008'::UUID,
      (SELECT user_id FROM users WHERE university_id = 'student2'), 'STUDENT', 0,
-     NOW() - INTERVAL '2400 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
+     NOW() - INTERVAL '2800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
     ('00000000-0000-4000-d000-000000000008'::UUID,
      (SELECT user_id FROM users WHERE university_id = 'advisor'), 'ADVISOR', 0,
-     NOW() - INTERVAL '2400 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
+     NOW() - INTERVAL '2800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
     ('00000000-0000-4000-d000-000000000008'::UUID,
      (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
-     NOW() - INTERVAL '2400 days', (SELECT user_id FROM users WHERE university_id = 'supervisor'))
+     NOW() - INTERVAL '2800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor'))
 ON CONFLICT DO NOTHING;
 
 -- Thesis 8 state changes
 INSERT INTO thesis_state_changes (thesis_id, state, changed_at)
 VALUES
-    ('00000000-0000-4000-d000-000000000008'::UUID, 'PROPOSAL', NOW() - INTERVAL '2400 days'),
-    ('00000000-0000-4000-d000-000000000008'::UUID, 'WRITING', NOW() - INTERVAL '2380 days'),
-    ('00000000-0000-4000-d000-000000000008'::UUID, 'SUBMITTED', NOW() - INTERVAL '2220 days'),
-    ('00000000-0000-4000-d000-000000000008'::UUID, 'ASSESSED', NOW() - INTERVAL '2210 days'),
-    ('00000000-0000-4000-d000-000000000008'::UUID, 'GRADED', NOW() - INTERVAL '2205 days'),
-    ('00000000-0000-4000-d000-000000000008'::UUID, 'FINISHED', NOW() - INTERVAL '2200 days')
+    ('00000000-0000-4000-d000-000000000008'::UUID, 'PROPOSAL', NOW() - INTERVAL '2800 days'),
+    ('00000000-0000-4000-d000-000000000008'::UUID, 'WRITING', NOW() - INTERVAL '2780 days'),
+    ('00000000-0000-4000-d000-000000000008'::UUID, 'SUBMITTED', NOW() - INTERVAL '2620 days'),
+    ('00000000-0000-4000-d000-000000000008'::UUID, 'ASSESSED', NOW() - INTERVAL '2610 days'),
+    ('00000000-0000-4000-d000-000000000008'::UUID, 'GRADED', NOW() - INTERVAL '2605 days'),
+    ('00000000-0000-4000-d000-000000000008'::UUID, 'FINISHED', NOW() - INTERVAL '2600 days')
 ON CONFLICT DO NOTHING;
 
 -- Thesis 8 comment (will be cleaned up during anonymization)
@@ -1260,7 +1260,7 @@ VALUES
      'THESIS',
      'Final review completed. Good work on the pipeline evaluation.',
      NULL, NULL,
-     NOW() - INTERVAL '2200 days',
+     NOW() - INTERVAL '2600 days',
      (SELECT user_id FROM users WHERE university_id = 'advisor'))
 ON CONFLICT DO NOTHING;
 
@@ -1271,9 +1271,9 @@ VALUES
     ('00000000-0000-4000-e000-000000000008'::UUID,
      '00000000-0000-4000-d000-000000000008'::UUID,
      'proposal_legacy_pipeline.pdf',
-     NOW() - INTERVAL '2385 days',
+     NOW() - INTERVAL '2785 days',
      (SELECT user_id FROM users WHERE university_id = 'advisor'),
-     NOW() - INTERVAL '2390 days',
+     NOW() - INTERVAL '2790 days',
      (SELECT user_id FROM users WHERE university_id = 'student2'))
 ON CONFLICT DO NOTHING;
 
@@ -1287,7 +1287,7 @@ VALUES
      'Comprehensive benchmark suite. Clear methodology. Practical migration guidelines.',
      'Limited coverage of streaming pipelines. Could include more industry case studies.',
      '1.7',
-     NOW() - INTERVAL '2210 days',
+     NOW() - INTERVAL '2610 days',
      (SELECT user_id FROM users WHERE university_id = 'advisor'))
 ON CONFLICT DO NOTHING;
 
