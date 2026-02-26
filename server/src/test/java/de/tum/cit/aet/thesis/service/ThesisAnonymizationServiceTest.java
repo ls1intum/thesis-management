@@ -232,6 +232,13 @@ class ThesisAnonymizationServiceTest extends BaseIntegrationTest {
 					.filter(a -> a.getThesis().getId().equals(thesis.getId())).toList()).isEmpty();
 			assertThat(thesisFeedbackRepository.findAll().stream()
 					.filter(f -> f.getThesis().getId().equals(thesis.getId())).toList()).isEmpty();
+			assertThat(thesisRoleRepository.findAll().stream()
+					.filter(r -> r.getThesis().getId().equals(thesis.getId())).toList()).isEmpty();
+			assertThat(thesisStateChangeRepository.findAll().stream()
+					.filter(s -> s.getThesis().getId().equals(thesis.getId())).toList()).isEmpty();
+
+			// Research group preserved
+			assertThat(anonymized.getResearchGroup()).isNotNull();
 		}
 
 		@Test
@@ -286,20 +293,17 @@ class ThesisAnonymizationServiceTest extends BaseIntegrationTest {
 		void notifiesForThesisApproachingExpiry() throws Exception {
 			createTestEmailTemplate("THESIS_ANONYMIZATION_REMINDER");
 
-			// Thesis that will expire in ~15 days (within 30-day lead period)
-			// Create a thesis finished just over 5 years ago at end of this year
-			Instant createdAt = Instant.now().minus(1870, ChronoUnit.DAYS);
-			Instant endDate = Instant.now().minus(1850, ChronoUnit.DAYS);
+			// Thesis finished ~5.2 years ago (endDate in 2020) → retention expiry = Dec 31, 2025
+			// which is in the past and thus within the 30-day notification horizon.
+			// This thesis should definitely be notified.
+			Instant createdAt = Instant.now().minus(1950, ChronoUnit.DAYS);
+			Instant endDate = Instant.now().minus(1900, ChronoUnit.DAYS);
 			Thesis thesis = createTestThesisWithChildren(ThesisState.FINISHED, createdAt, endDate);
 
 			thesisAnonymizationService.sendAnonymizationNotifications();
 
 			Thesis notified = thesisRepository.findById(thesis.getId()).orElseThrow();
-			// The thesis may or may not be within lead window depending on exact timing,
-			// so we check that if it was notified, the flag is set
-			if (notified.getAnonymizationNotifiedAt() != null) {
-				assertThat(notified.getAnonymizationNotifiedAt()).isNotNull();
-			}
+			assertThat(notified.getAnonymizationNotifiedAt()).isNotNull();
 		}
 
 		@Test

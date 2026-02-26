@@ -346,6 +346,7 @@ public class ThesisService {
 			String primaryTitle,
 			Map<String, String> titles
 	) {
+		requireNotAnonymized(thesis);
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
 		if (titles != null) {
 			thesis.setMetadata(new ThesisMetadata(
@@ -368,6 +369,7 @@ public class ThesisService {
 			Thesis thesis,
 			Map<UUID, Number> credits
 	) {
+		requireNotAnonymized(thesis);
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
 		thesis.setMetadata(new ThesisMetadata(
 				thesis.getMetadata().titles(),

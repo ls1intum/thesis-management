@@ -112,19 +112,26 @@ public class ThesisAnonymizationService {
 
 			try {
 				Thesis firstThesis = theses.getFirst();
-				Instant expiry = RetentionUtils.computeRetentionExpiry(firstThesis);
-				String anonymizationDate = expiry.atZone(ZoneId.of("Europe/Berlin")).format(DATE_FORMATTER);
+
+				// Mark theses as notified before sending email to prevent
+				// repeated notification attempts if email delivery fails
+				for (Thesis thesis : theses) {
+					thesis.setAnonymizationNotifiedAt(now);
+					thesisRepository.save(thesis);
+				}
+
+				// Compute the earliest expiry date across all theses for the email subject line
+				Instant earliestExpiry = theses.stream()
+						.map(RetentionUtils::computeRetentionExpiry)
+						.min(Instant::compareTo)
+						.orElse(RetentionUtils.computeRetentionExpiry(firstThesis));
+				String anonymizationDate = earliestExpiry.atZone(ZoneId.of("Europe/Berlin")).format(DATE_FORMATTER);
 
 				mailingService.sendThesisAnonymizationReminderEmail(
 						firstThesis.getResearchGroup(),
 						theses,
 						anonymizationDate
 				);
-
-				for (Thesis thesis : theses) {
-					thesis.setAnonymizationNotifiedAt(now);
-					thesisRepository.save(thesis);
-				}
 
 				log.info("Sent anonymization notification for {} theses in research group {}",
 						theses.size(), firstThesis.getResearchGroup().getName());
@@ -202,9 +209,13 @@ public class ThesisAnonymizationService {
 
 		thesisRepository.save(thesis);
 
-		// 4. Delete collected files from disk
+		// 5. Delete collected files from disk
 		for (String filename : filenames) {
-			uploadService.deleteFile(filename);
+			try {
+				uploadService.deleteFile(filename);
+			} catch (Exception e) {
+				log.warn("Failed to delete file '{}' for thesis {}: {}", filename, thesisId, e.getMessage());
+			}
 		}
 	}
 }
