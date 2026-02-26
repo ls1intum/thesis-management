@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -125,7 +124,7 @@ public class ThesisAnonymizationService {
 						.map(RetentionUtils::computeRetentionExpiry)
 						.min(Instant::compareTo)
 						.orElse(RetentionUtils.computeRetentionExpiry(firstThesis));
-				String anonymizationDate = earliestExpiry.atZone(ZoneId.of("Europe/Berlin")).format(DATE_FORMATTER);
+				String anonymizationDate = earliestExpiry.atZone(RetentionUtils.BERLIN).format(DATE_FORMATTER);
 
 				mailingService.sendThesisAnonymizationReminderEmail(
 						firstThesis.getResearchGroup(),

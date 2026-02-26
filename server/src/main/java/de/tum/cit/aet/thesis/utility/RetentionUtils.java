@@ -9,7 +9,7 @@ import java.time.ZonedDateTime;
 
 public final class RetentionUtils {
 	public static final int RETENTION_YEARS = 5;
-	private static final ZoneId BERLIN = ZoneId.of("Europe/Berlin");
+	public static final ZoneId BERLIN = ZoneId.of("Europe/Berlin");
 
 	private RetentionUtils() {
 	}

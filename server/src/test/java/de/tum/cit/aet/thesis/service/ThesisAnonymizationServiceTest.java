@@ -284,6 +284,20 @@ class ThesisAnonymizationServiceTest extends BaseIntegrationTest {
 			Thesis anonymized = thesisRepository.findById(thesis.getId()).orElseThrow();
 			assertThat(anonymized.isAnonymized()).isTrue();
 		}
+
+		@Test
+		void anonymizesDroppedOutThesisWithoutEndDate() throws Exception {
+			// DROPPED_OUT theses may not have endDate set — retention should fall back to state change date
+			Instant createdAt = Instant.now().minus(2600, ChronoUnit.DAYS);
+			Thesis thesis = createTestThesisWithChildren(ThesisState.DROPPED_OUT, createdAt, null);
+
+			int count = thesisAnonymizationService.anonymizeExpiredTheses();
+
+			assertThat(count).isEqualTo(1);
+			Thesis anonymized = thesisRepository.findById(thesis.getId()).orElseThrow();
+			assertThat(anonymized.isAnonymized()).isTrue();
+			assertThat(anonymized.getAnonymizedAt()).isNotNull();
+		}
 	}
 
 	@Nested

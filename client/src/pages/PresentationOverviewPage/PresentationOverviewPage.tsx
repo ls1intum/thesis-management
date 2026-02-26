@@ -324,7 +324,7 @@ const PresentationOverviewPage = () => {
                                 hasEditAccess={
                                   user?.groups?.includes('admin') ||
                                   user?.researchGroupId === p.thesis.researchGroup.id ||
-                                  p.thesis.students.some(
+                                  (p.thesis.students ?? []).some(
                                     (student) => student.userId === user?.userId,
                                   )
                                 }
