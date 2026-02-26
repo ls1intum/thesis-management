@@ -13,12 +13,17 @@ import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.pdf.action.PdfAction;
 import com.itextpdf.layout.Canvas;
 import com.itextpdf.layout.Document;
+import com.itextpdf.layout.borders.Border;
+import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.Div;
 import com.itextpdf.layout.element.IBlockElement;
 import com.itextpdf.layout.element.IElement;
 import com.itextpdf.layout.element.Link;
 import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.element.Text;
 import com.itextpdf.layout.properties.TextAlignment;
+import com.itextpdf.layout.properties.UnitValue;
 import com.itextpdf.styledxmlparser.resolver.font.BasicFontProvider;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -38,9 +43,9 @@ public class PDFBuilder {
 	private final String heading;
 	private final String currentUserName;
 	private final List<Section> sections;
-	private final List<Data> data;
 
 	private final List<String> headerItems = new ArrayList<>();
+	private final List<OverviewItem> overviewItems = new ArrayList<>();
 
 	private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 	private static final PdfFont normalFont = createNormalFont();
@@ -53,15 +58,19 @@ public class PDFBuilder {
 
 	// ----------------- Font Sizes -----------------
 	private static final float FONT_SIZE_MAIN_HEADING = 18f;
+	private static final float FONT_SIZE_GROUP_TITLE = 14f;
+	private static final float FONT_SIZE_TEXT = 10f;
 	private static final float FONT_SIZE_METADATA = 7f;
 
 	// ----------------- Spacing -----------------
+	private static final float CONTENT_INDENT = 15f;
 	private static final float MARGIN_PDF_TOP_AND_BOTTOM = 8f;
 	private static final float MARGIN_HEADER_ITEMS_BOTTOM = 8f;
+	private static final float MARGIN_OVERVIEW_SECTION_BOTTOM = 0f;
 	private static final float HEADER_MARGIN_BOTTOM = 16f;
 	private static final float METADATA_MARGIN_LEFT_RIGHT = 15f;
 
-	private record Data(String title, String value) {
+	private record OverviewItem(String title, String value) {
 	}
 
 	private record Section(String heading, String htmlContent) {
@@ -76,7 +85,6 @@ public class PDFBuilder {
 		this.heading = heading;
 		this.currentUserName = currentUserName;
 		this.sections = new ArrayList<>();
-		this.data = new ArrayList<>();
 	}
 
 	// ----------------- Header -----------------
@@ -95,15 +103,14 @@ public class PDFBuilder {
 	// ----------------- Overview -----------------
 
 	/**
-	 * Adds a key-value data pair to be rendered in the PDF document.
+	 * Adds a key-value pair to be rendered in the PDF document.
 	 *
 	 * @param title the data label
 	 * @param value the data value
 	 * @return this PDFBuilder instance for method chaining
 	 */
-	public PDFBuilder addData(String title, String value) {
-		data.add(new Data(title, value));
-
+	public PDFBuilder addOverviewItem(String title, String value) {
+		overviewItems.add(new OverviewItem(title, value));
 		return this;
 	}
 
@@ -155,19 +162,9 @@ public class PDFBuilder {
 		ConverterProperties converterProperties = new ConverterProperties();
 		converterProperties.setFontProvider(new BasicFontProvider(true, false, false));
 
-		for (Data row : data) {
-			Paragraph element = new Paragraph()
-					.setFontSize(10)
-					.setMarginBottom(2);
-
-			if (row.title.isEmpty()) {
-				element.add(new Text(""));
-			} else {
-				element.add(new Text(row.title + ": ").simulateBold())
-						.add(new Text(row.value));
-			}
-
-			document.add(element);
+		// Overview Section
+		if (!overviewItems.isEmpty()) {
+			addOverviewSection(document);
 		}
 
 		for (Section row : sections) {
@@ -213,6 +210,52 @@ public class PDFBuilder {
 		}
 
 		document.add(headerLine);
+	}
+
+	/**
+	 * Renders and adds the overview section to the PDF document.
+	 * The section consists of a title and a two-column table of overview items.
+	 * If the number of items is odd, the last entry spans both columns.
+	 */
+	private void addOverviewSection(Document document) {
+		Div container = new Div().setMarginBottom(MARGIN_OVERVIEW_SECTION_BOTTOM);
+
+		Paragraph title = new Paragraph("Overview")
+				.setFont(boldFont)
+				.setFontSize(FONT_SIZE_GROUP_TITLE)
+				.setFontColor(PRIMARY_COLOR)
+				.setMarginBottom(MARGIN_OVERVIEW_SECTION_BOTTOM);
+		container.add(title);
+
+		// Create and populate overview items table
+		Table table = new Table(2);
+		table.setWidth(UnitValue.createPercentValue(100));
+		table.setBorder(Border.NO_BORDER);
+		table.setMarginLeft(CONTENT_INDENT);
+
+		for (int i = 0; i < overviewItems.size(); i++) {
+			OverviewItem item = overviewItems.get(i);
+
+			Paragraph cellContent = new Paragraph()
+					.add(new Text(item.title + ": ").setFont(boldFont).setFontSize(FONT_SIZE_TEXT))
+					.add(new Text(item.value).setFont(normalFont).setFontSize(FONT_SIZE_TEXT))
+					.setMargin(0);
+
+			Cell cell;
+			if (i == overviewItems.size() - 1 && overviewItems.size() % 2 == 1) {
+				cell = new Cell(1, 2);
+			} else {
+				cell = new Cell();
+			}
+
+			cell.add(cellContent).setBorder(Border.NO_BORDER).setPaddingRight(10f);
+
+			table.addCell(cell);
+		}
+
+		container.add(table);
+
+		document.add(container);
 	}
 
 	/**

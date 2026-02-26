@@ -636,25 +636,21 @@ public class ThesisService {
 		builder.addHeaderItem(assesmentTitle + " for: " + students);
 		builder.addHeaderItem("Thesis Type: " + DataFormatter.formatConstantName(thesis.getType()));
 
-		builder
-				.addData("Thesis Type", DataFormatter.formatConstantName(thesis.getType()))
-				.addData("Student", students)
-				.addData("Advisor", advisors)
-				.addData("Supervisor", supervisors)
-				.addData("", "");
-
+		builder.addOverviewItem("Thesis Type", DataFormatter.formatConstantName(thesis.getType()))
+				.addOverviewItem("Student", students)
+				.addOverviewItem("Advisor", advisors)
+				.addOverviewItem("Supervisor", supervisors);
 		for (var stateChange : thesis.getStates()) {
 			if (stateChange.getId().getState() == ThesisState.ASSESSED) {
-				builder.addData("Assessment Date", DataFormatter.formatDate(stateChange.getChangedAt()));
+				builder.addOverviewItem("Assessment Date", DataFormatter.formatDate(stateChange.getChangedAt()));
 			}
 
 			if (stateChange.getId().getState() == ThesisState.SUBMITTED) {
-				builder.addData("Submission Date", DataFormatter.formatDate(stateChange.getChangedAt()));
+				builder.addOverviewItem("Submission Date", DataFormatter.formatDate(stateChange.getChangedAt()));
 			}
 		}
-
 		if (presentation != null) {
-			builder.addData("Presentation Date", DataFormatter.formatDate(presentation.getScheduledAt()));
+			builder.addOverviewItem("Presentation Date", DataFormatter.formatDate(presentation.getScheduledAt()));
 		}
 
 		builder.addSection("Summary", assessment.getSummary())
