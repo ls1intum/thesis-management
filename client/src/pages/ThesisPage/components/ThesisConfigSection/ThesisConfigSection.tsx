@@ -300,7 +300,7 @@ const ThesisConfigSection = () => {
                 required={true}
                 disabled={!access.advisor}
                 label='Student(s)'
-                groups={[]}
+                groups={['student']}
                 initialUsers={thesis.students}
                 {...form.getInputProps('students')}
               />

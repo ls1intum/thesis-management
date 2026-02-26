@@ -70,7 +70,9 @@ export async function fillRichTextEditor(
   parent?: Locator,
 ) {
   const root = parent ?? page
-  const wrapper = root.locator(`.mantine-InputWrapper-root:has(.mantine-InputWrapper-label:text("${label}"))`)
+  const wrapper = root.locator(
+    `.mantine-InputWrapper-root:has(.mantine-InputWrapper-label:text("${label}"))`,
+  )
   const editor = wrapper.locator('.ProseMirror')
   await editor.click()
   // Select all existing content and replace it
@@ -103,15 +105,13 @@ export async function clickMultiSelect(page: Page, label: string) {
  * built-in click doesn't always trigger Mantine's React event handlers
  * in portal-rendered combobox dropdowns.
  */
-export async function searchAndSelectMultiSelect(
-  page: Page,
-  label: string,
-  optionPattern: RegExp,
-) {
+export async function searchAndSelectMultiSelect(page: Page, label: string, optionPattern: RegExp) {
   const textbox = page.getByRole('textbox', { name: label })
   const listbox = page.getByRole('listbox', { name: label })
   const option = listbox.getByRole('option', { name: optionPattern }).first()
-  const wrapper = page.locator(`.mantine-InputWrapper-root:has(.mantine-InputWrapper-label:text("${label}"))`)
+  const wrapper = page.locator(
+    `.mantine-InputWrapper-root:has(.mantine-InputWrapper-label:text("${label}"))`,
+  )
 
   // Open dropdown and wait for options. Under heavy parallel load the server
   // may be slow to respond. Each click triggers setFetchVersion++ which ABORTS
