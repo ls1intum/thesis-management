@@ -19,6 +19,7 @@ import com.itextpdf.layout.element.Div;
 import com.itextpdf.layout.element.IBlockElement;
 import com.itextpdf.layout.element.IElement;
 import com.itextpdf.layout.element.Link;
+import com.itextpdf.layout.element.ListItem;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.element.Text;
@@ -66,9 +67,16 @@ public class PDFBuilder {
 	private static final float CONTENT_INDENT = 15f;
 	private static final float MARGIN_PDF_TOP_AND_BOTTOM = 8f;
 	private static final float MARGIN_HEADER_ITEMS_BOTTOM = 8f;
+	private static final float MARGIN_TITLE_BOTTOM = 8f;
 	private static final float MARGIN_OVERVIEW_SECTION_BOTTOM = 0f;
+	private static final float MARGIN_DATA_ROW_BOTTOM = 6f;
 	private static final float HEADER_MARGIN_BOTTOM = 16f;
+	private static final float LINE_LEADING = 1.0f;
 	private static final float METADATA_MARGIN_LEFT_RIGHT = 15f;
+
+	// ----------------- List & Text Layout -----------------
+	private static final String BULLET_POINT_SYMBOL = "\u2022";
+	private static final float LIST_SYMBOL_INDENT = 12f;
 
 	private record OverviewItem(String title, String value) {
 	}
@@ -169,14 +177,19 @@ public class PDFBuilder {
 
 		for (Section row : sections) {
 			Paragraph sectionHeading = new Paragraph(row.heading)
-					.setFontSize(12)
-					.simulateBold()
-					.setMarginTop(8);
+					.setFont(boldFont)
+					.setFontSize(FONT_SIZE_GROUP_TITLE)
+					.setFontColor(PRIMARY_COLOR)
+					.setMarginBottom(MARGIN_TITLE_BOTTOM);
 			document.add(sectionHeading);
 
-			List<IElement> elements = HtmlConverter.convertToElements(row.htmlContent, converterProperties);
-			for (IElement element : elements) {
-				document.add((IBlockElement) element);
+			for (IBlockElement element : parseHtmlContent(row.htmlContent())) {
+				if (element instanceof Paragraph para) {
+					para.setMarginTop(0).setMarginLeft(CONTENT_INDENT);
+				} else if (element instanceof com.itextpdf.layout.element.List list) {
+					list.setMarginTop(0).setMarginLeft(CONTENT_INDENT);
+				}
+				document.add(element);
 			}
 		}
 
@@ -314,6 +327,52 @@ public class PDFBuilder {
 
 			canvas.close();
 		}
+	}
+
+	/**
+	 * Converts HTML content into styled iText block elements.
+	 * If conversion fails, the content is rendered as plain text.
+	 */
+	private List<IBlockElement> parseHtmlContent(String html) {
+		List<IBlockElement> elements = new ArrayList<>();
+		try {
+			String processedHtml = html.replaceAll("<ol>", "<ul>").replaceAll("</ol>", "</ul>");
+
+			ConverterProperties props = new ConverterProperties();
+
+			List<IElement> pdfElements = HtmlConverter.convertToElements(processedHtml, props);
+
+			for (IElement element : pdfElements) {
+				if (element instanceof IBlockElement block) {
+					if (block instanceof Paragraph para) {
+						para.setFont(normalFont)
+								.setFontSize(FONT_SIZE_TEXT)
+								.setMarginBottom(MARGIN_DATA_ROW_BOTTOM)
+								.setMultipliedLeading(LINE_LEADING);
+						// A direct import of iText's List class is required to distinguish it from
+						// Java's List.
+					} else if (block instanceof com.itextpdf.layout.element.List list) {
+						list.setListSymbol(BULLET_POINT_SYMBOL)
+								.setFont(normalFont)
+								.setFontSize(FONT_SIZE_TEXT)
+								.setMarginBottom(MARGIN_DATA_ROW_BOTTOM)
+								.setPaddingLeft(0f)
+								.setSymbolIndent(LIST_SYMBOL_INDENT);
+						for (IElement item : list.getChildren()) {
+							if (item instanceof ListItem listItem) {
+								listItem.setFont(normalFont).setFontSize(FONT_SIZE_TEXT).setMarginLeft(CONTENT_INDENT);
+							}
+						}
+					}
+					elements.add(block);
+				}
+			}
+		} catch (Exception e) {
+			String plain = html.replaceAll("<[^>]*>", "").replaceAll("&nbsp;", " ").trim();
+			elements.add(new Paragraph(plain).setFont(normalFont).setFontSize(FONT_SIZE_TEXT)
+					.setMarginBottom(MARGIN_DATA_ROW_BOTTOM).setMultipliedLeading(LINE_LEADING));
+		}
+		return elements;
 	}
 
 	/**
