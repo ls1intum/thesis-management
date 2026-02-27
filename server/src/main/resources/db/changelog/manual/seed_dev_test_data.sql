@@ -1296,8 +1296,27 @@ UPDATE theses SET final_grade = '1.7', final_feedback = 'Excellent work on legac
 WHERE thesis_id = '00000000-0000-4000-d000-000000000008'::UUID AND final_grade IS NULL;
 
 -- ============================================================================
--- 33. ADMIN DELETE (ANONYMIZE) SINGLE THESIS TEST DATA
+-- 33. THESIS ANONYMIZATION TEST DATA
 -- ============================================================================
+
+-- Thesis 9: Pre-anonymized thesis for E2E tests (anonymization banner on detail page)
+INSERT INTO theses (thesis_id, title, type, language, metadata, info, abstract, state,
+                    visibility, keywords, application_id, start_date, end_date, created_at,
+                    research_group_id, anonymized_at)
+SELECT
+    '00000000-0000-4000-d000-000000000009'::UUID,
+    'Archived Research on Software Metrics',
+    'MASTER', 'ENGLISH',
+    '{"titles":{},"credits":{}}',
+    '', '',
+    'FINISHED', 'PRIVATE',
+    ARRAY[]::text[],
+    NULL,
+    NOW() - INTERVAL '2800 days', NOW() - INTERVAL '2600 days',
+    NOW() - INTERVAL '2800 days',
+    '00000000-0000-4000-a000-000000000001'::UUID,
+    NOW() - INTERVAL '365 days'
+WHERE NOT EXISTS (SELECT 1 FROM theses WHERE thesis_id = '00000000-0000-4000-d000-000000000009'::UUID);
 
 -- Thesis 10: GRADED, 2800 days ago — old non-terminal thesis, retention expired (state warning only)
 -- Uses GRADED (not FINISHED) so findAnonymizationCandidates() won't pick it up during batch runs.

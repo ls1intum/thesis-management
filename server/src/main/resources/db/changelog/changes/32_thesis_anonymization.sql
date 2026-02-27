@@ -28,24 +28,3 @@ VALUES (
     NOW(),
     NULL
 ) ON CONFLICT DO NOTHING;
-
--- Seed Thesis 9: FINISHED, already anonymized (for testing frontend banner)
--- This must be in this migration file because it references the anonymized_at column added above.
-INSERT INTO theses (thesis_id, title, type, language, metadata, info, abstract, state,
-                    visibility, keywords, application_id, start_date, end_date, created_at,
-                    research_group_id, anonymized_at)
-SELECT
-    '00000000-0000-4000-d000-000000000009'::UUID,
-    'Archived Research on Software Metrics',
-    'MASTER', 'ENGLISH',
-    '{"titles":{},"credits":{}}',
-    '', '',
-    'FINISHED', 'PRIVATE',
-    ARRAY[]::text[],
-    NULL,
-    NOW() - INTERVAL '2800 days', NOW() - INTERVAL '2600 days',
-    NOW() - INTERVAL '2800 days',
-    '00000000-0000-4000-a000-000000000001'::UUID,
-    NOW() - INTERVAL '365 days'
-WHERE EXISTS (SELECT 1 FROM research_groups WHERE research_group_id = '00000000-0000-4000-a000-000000000001'::UUID)
-AND NOT EXISTS (SELECT 1 FROM theses WHERE thesis_id = '00000000-0000-4000-d000-000000000009'::UUID);

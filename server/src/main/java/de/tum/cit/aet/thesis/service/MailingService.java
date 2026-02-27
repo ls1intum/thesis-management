@@ -25,6 +25,8 @@ import de.tum.cit.aet.thesis.utility.DataFormatter;
 import de.tum.cit.aet.thesis.utility.MailBuilder;
 import de.tum.cit.aet.thesis.utility.MailConfig;
 import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -41,6 +43,8 @@ import java.util.UUID;
 /** Service for composing and sending email notifications for applications, theses, interviews, and presentations. */
 @Service
 public class MailingService {
+	private static final Logger log = LoggerFactory.getLogger(MailingService.class);
+
 	private final JavaMailSender javaMailSender;
 	private final UploadService uploadService;
 	private final MailConfig config;
@@ -667,6 +671,11 @@ public class MailingService {
 	 * @param anonymizationDate the formatted date when anonymization will occur
 	 */
 	public void sendThesisAnonymizationReminderEmail(ResearchGroup researchGroup, List<Thesis> theses, String anonymizationDate) {
+		if (researchGroup.getHead() == null) {
+			log.warn("Cannot send anonymization reminder for research group '{}': no head assigned", researchGroup.getName());
+			return;
+		}
+
 		EmailTemplate emailTemplate = loadTemplate(
 				researchGroup.getId(),
 				"THESIS_ANONYMIZATION_REMINDER",

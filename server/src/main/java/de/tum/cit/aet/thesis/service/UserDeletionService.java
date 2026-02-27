@@ -48,11 +48,10 @@ public class UserDeletionService {
 	private final UserGroupRepository userGroupRepository;
 	private final NotificationSettingRepository notificationSettingRepository;
 	private final UploadService uploadService;
-	private final jakarta.persistence.EntityManager entityManager;
 	private final Path dataExportPath;
 
 	/**
-	 * Constructs the service with the required repositories, upload service, entity manager, and export path.
+	 * Constructs the service with the required repositories, upload service, and export path.
 	 *
 	 * @param userRepository the user repository
 	 * @param thesisRoleRepository the thesis role repository
@@ -64,7 +63,6 @@ public class UserDeletionService {
 	 * @param userGroupRepository the user group repository
 	 * @param notificationSettingRepository the notification setting repository
 	 * @param uploadService the upload service
-	 * @param entityManager the entity manager
 	 * @param dataExportPath the data export directory path
 	 */
 	public UserDeletionService(
@@ -78,7 +76,6 @@ public class UserDeletionService {
 			UserGroupRepository userGroupRepository,
 			NotificationSettingRepository notificationSettingRepository,
 			UploadService uploadService,
-			jakarta.persistence.EntityManager entityManager,
 			@Value("${thesis-management.data-export.path}") String dataExportPath) {
 		this.userRepository = userRepository;
 		this.thesisRoleRepository = thesisRoleRepository;
@@ -90,7 +87,6 @@ public class UserDeletionService {
 		this.userGroupRepository = userGroupRepository;
 		this.notificationSettingRepository = notificationSettingRepository;
 		this.uploadService = uploadService;
-		this.entityManager = entityManager;
 		this.dataExportPath = Path.of(dataExportPath);
 	}
 
@@ -182,18 +178,11 @@ public class UserDeletionService {
 
 	/** Processes all users whose deferred deletion date has passed and performs full cleanup. */
 	public void processDeferredDeletions() {
-		// Collect IDs first because anonymizeUser() clears the persistence context,
-		// which would detach entities loaded in the same session.
-		List<UUID> pendingUserIds = userRepository.findAllByDeletionScheduledForIsNotNull()
-				.stream().map(User::getId).toList();
+		List<User> pendingUsers = userRepository.findAllByDeletionScheduledForIsNotNull();
 
-		for (UUID userId : pendingUserIds) {
+		for (User user : pendingUsers) {
 			try {
-				User user = userRepository.findById(userId).orElse(null);
-				if (user == null) {
-					continue;
-				}
-
+				UUID userId = user.getId();
 				List<ThesisRole> retentionBlocked = getRetentionBlockedThesisRoles(userId);
 				if (retentionBlocked.isEmpty()) {
 					log.info("Retention expired for user {}, performing full cleanup", userId);
@@ -213,8 +202,6 @@ public class UserDeletionService {
 					thesisRoleRepository.deleteAllByIdUserId(userId);
 
 					// Fully anonymize the tombstone (clear name + file references)
-					// anonymizeUser clears the persistence context and re-fetches,
-					// so we must set deletionScheduledFor via a separate query.
 					anonymizeUser(user);
 					userRepository.clearDeletionScheduledFor(userId);
 
@@ -223,7 +210,7 @@ public class UserDeletionService {
 					deleteExportFiles(exportFilePaths);
 				}
 			} catch (Exception e) {
-				log.error("Failed to process deferred deletion for user {}: {}", userId, e.getMessage(), e);
+				log.error("Failed to process deferred deletion for user {}: {}", user.getId(), e.getMessage(), e);
 			}
 		}
 	}
@@ -245,14 +232,14 @@ public class UserDeletionService {
 		// Delete thesis roles (should be empty if no retention-blocked data)
 		thesisRoleRepository.deleteAllByIdUserId(userId);
 
-		// Delete user-owned data
+		// Anonymize the user BEFORE deleting user groups and notification settings.
+		// User.groups is eagerly loaded, so bulk-deleting UserGroup rows first would
+		// leave stale references in the persistence context, causing Hibernate errors on save.
+		anonymizeUser(user);
+
+		// Delete user-owned data (safe to do after anonymizeUser since we don't save the User again)
 		notificationSettingRepository.deleteByUserId(userId);
 		userGroupRepository.deleteByUserId(userId);
-
-		// Keep the user row as a tombstone to prevent re-creation via Keycloak SSO.
-		// The universityId is preserved so that updateAuthenticatedUser() finds
-		// this row and the isAnonymized() check blocks access.
-		anonymizeUser(user);
 
 		log.info("Fully deleted user account {}", userId);
 		return new UserDeletionResultDto("DELETED", "Your account and all associated data have been permanently deleted.");
@@ -306,34 +293,29 @@ public class UserDeletionService {
 	 * all personal data is cleared.
 	 */
 	private void anonymizeUser(User user) {
-		// Clear persistence context to avoid stale entity references
-		// from prior JPQL deletes (e.g. UserGroup, NotificationSetting).
-		entityManager.clear();
-		User freshUser = userRepository.findById(user.getId()).orElseThrow();
-
 		Instant now = Instant.now();
-		freshUser.setDisabled(true);
-		freshUser.setAnonymizedAt(now);
-		freshUser.setDeletionRequestedAt(now);
-		freshUser.setFirstName(null);
-		freshUser.setLastName(null);
-		freshUser.setEmail(null);
-		freshUser.setMatriculationNumber(null);
-		freshUser.setGender(null);
-		freshUser.setNationality(null);
-		freshUser.setStudyDegree(null);
-		freshUser.setStudyProgram(null);
-		freshUser.setEnrolledAt(null);
-		freshUser.setAvatar(null);
-		freshUser.setCvFilename(null);
-		freshUser.setDegreeFilename(null);
-		freshUser.setExaminationFilename(null);
-		freshUser.setProjects(null);
-		freshUser.setInterests(null);
-		freshUser.setSpecialSkills(null);
-		freshUser.setCustomData(new HashMap<>());
-		freshUser.setResearchGroup(null);
-		userRepository.save(freshUser);
+		user.setDisabled(true);
+		user.setAnonymizedAt(now);
+		user.setDeletionRequestedAt(now);
+		user.setFirstName(null);
+		user.setLastName(null);
+		user.setEmail(null);
+		user.setMatriculationNumber(null);
+		user.setGender(null);
+		user.setNationality(null);
+		user.setStudyDegree(null);
+		user.setStudyProgram(null);
+		user.setEnrolledAt(null);
+		user.setAvatar(null);
+		user.setCvFilename(null);
+		user.setDegreeFilename(null);
+		user.setExaminationFilename(null);
+		user.setProjects(null);
+		user.setInterests(null);
+		user.setSpecialSkills(null);
+		user.setCustomData(new HashMap<>());
+		user.setResearchGroup(null);
+		userRepository.save(user);
 	}
 
 	private List<String> collectUserFilePaths(User user) {

@@ -229,8 +229,15 @@ public class ThesisAnonymizationService {
 	public void anonymizeThesis(Thesis thesis) {
 		UUID thesisId = thesis.getId();
 
-		// 1. Mark thesis as anonymized first to prevent re-processing on partial failure.
-		//    If any subsequent step fails, the thesis won't be picked up again by findAnonymizationCandidates().
+		// 1. Collect all file paths before deleting records
+		List<String> filenames = new ArrayList<>();
+		filenames.addAll(thesisFileRepository.findFilenamesByThesisId(thesisId));
+		filenames.addAll(thesisProposalRepository.findFilenamesByThesisId(thesisId));
+		filenames.addAll(thesisCommentRepository.findFilenamesByThesisId(thesisId));
+
+		// 2. Mark thesis as anonymized and clear personal data FIRST.
+		//    findAnonymizationCandidates() filters by anonymizedAt IS NULL, so after this save
+		//    the thesis won't be picked up again even if subsequent child deletion fails.
 		thesis.setAnonymizedAt(Instant.now());
 		thesis.setInfo("");
 		thesis.setAbstractField("");
@@ -240,13 +247,10 @@ public class ThesisAnonymizationService {
 		thesis.setApplication(null);
 		thesisRepository.save(thesis);
 
-		// 2. Collect all file paths before deleting records
-		List<String> filenames = new ArrayList<>();
-		filenames.addAll(thesisFileRepository.findFilenamesByThesisId(thesisId));
-		filenames.addAll(thesisProposalRepository.findFilenamesByThesisId(thesisId));
-		filenames.addAll(thesisCommentRepository.findFilenamesByThesisId(thesisId));
-
-		// 3. Delete child records in correct FK order
+		// 3. Delete child records in correct FK order.
+		//    This must happen after saving the thesis to avoid Hibernate stale-state conflicts:
+		//    the Thesis entity eagerly loads states and roles, so bulk-deleting them before save
+		//    would leave the persistence context with references to non-existent rows.
 		thesisPresentationInviteRepository.deleteAllByPresentationThesisId(thesisId);
 		thesisPresentationRepository.deleteAllByThesisId(thesisId);
 		thesisCommentRepository.deleteAllByThesisId(thesisId);
@@ -257,7 +261,7 @@ public class ThesisAnonymizationService {
 		thesisStateChangeRepository.deleteAllByThesisId(thesisId);
 		thesisRoleRepository.deleteAllByThesisId(thesisId);
 
-		// 4. Delete collected files from disk
+		// 4. Delete collected files from disk (best-effort, non-critical)
 		for (String filename : filenames) {
 			try {
 				uploadService.deleteFile(filename);

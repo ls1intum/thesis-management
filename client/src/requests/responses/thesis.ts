@@ -65,9 +65,9 @@ export interface IThesis extends IThesisOverview {
   applicationId: string | null
   anonymizedAt?: string
   researchGroup: ILightResearchGroup
-  students: ILightUser[]
-  advisors: ILightUser[]
-  supervisors: ILightUser[]
+  students?: ILightUser[]
+  advisors?: ILightUser[]
+  supervisors?: ILightUser[]
   files?: Array<{
     fileId: string
     type: string

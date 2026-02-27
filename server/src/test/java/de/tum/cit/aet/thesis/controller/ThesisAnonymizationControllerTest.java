@@ -200,7 +200,7 @@ class ThesisAnonymizationControllerTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 
 			JsonNode json = objectMapper.readTree(response);
-			assertThat(json.get("warnings").size()).isEqualTo(0);
+			assertThat(json.get("warnings")).isNull();
 		}
 
 		@Test
