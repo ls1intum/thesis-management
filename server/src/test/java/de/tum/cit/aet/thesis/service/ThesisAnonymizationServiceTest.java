@@ -301,6 +301,76 @@ class ThesisAnonymizationServiceTest extends BaseIntegrationTest {
 	}
 
 	@Nested
+	class ComputeAnonymizationWarnings {
+
+		@Test
+		void noWarningsForExpiredFinishedThesis() throws Exception {
+			Instant createdAt = Instant.now().minus(2600, ChronoUnit.DAYS);
+			Instant endDate = Instant.now().minus(2400, ChronoUnit.DAYS);
+			Thesis thesis = createTestThesisWithChildren(ThesisState.FINISHED, createdAt, endDate);
+
+			List<String> warnings = thesisAnonymizationService.computeAnonymizationWarnings(thesis);
+			assertThat(warnings).isEmpty();
+		}
+
+		@Test
+		void retentionWarningForRecentFinishedThesis() throws Exception {
+			Instant createdAt = Instant.now().minus(800, ChronoUnit.DAYS);
+			Instant endDate = Instant.now().minus(620, ChronoUnit.DAYS);
+			Thesis thesis = createTestThesisWithChildren(ThesisState.FINISHED, createdAt, endDate);
+
+			List<String> warnings = thesisAnonymizationService.computeAnonymizationWarnings(thesis);
+			assertThat(warnings).hasSize(1);
+			assertThat(warnings.get(0)).contains("retention period");
+		}
+
+		@Test
+		void stateWarningForActiveThesis() throws Exception {
+			Instant createdAt = Instant.now().minus(2600, ChronoUnit.DAYS);
+			Instant endDate = Instant.now().minus(2400, ChronoUnit.DAYS);
+			Thesis thesis = createTestThesisWithChildren(ThesisState.WRITING, createdAt, endDate);
+
+			List<String> warnings = thesisAnonymizationService.computeAnonymizationWarnings(thesis);
+			assertThat(warnings).anyMatch(w -> w.contains("WRITING"));
+		}
+
+		@Test
+		void multipleWarningsForRecentActiveThesis() throws Exception {
+			Instant createdAt = Instant.now().minus(800, ChronoUnit.DAYS);
+			Instant endDate = Instant.now().minus(620, ChronoUnit.DAYS);
+			Thesis thesis = createTestThesisWithChildren(ThesisState.WRITING, createdAt, endDate);
+
+			List<String> warnings = thesisAnonymizationService.computeAnonymizationWarnings(thesis);
+			assertThat(warnings).hasSize(2);
+			assertThat(warnings).anyMatch(w -> w.contains("WRITING"));
+			assertThat(warnings).anyMatch(w -> w.contains("retention period"));
+		}
+
+		@Test
+		void alreadyAnonymizedWarning() throws Exception {
+			Instant createdAt = Instant.now().minus(2600, ChronoUnit.DAYS);
+			Instant endDate = Instant.now().minus(2400, ChronoUnit.DAYS);
+			Thesis thesis = createTestThesisWithChildren(ThesisState.FINISHED, createdAt, endDate);
+			thesis.setAnonymizedAt(Instant.now());
+			thesisRepository.save(thesis);
+
+			List<String> warnings = thesisAnonymizationService.computeAnonymizationWarnings(thesis);
+			assertThat(warnings).hasSize(1);
+			assertThat(warnings.get(0)).contains("already been anonymized");
+		}
+
+		@Test
+		void droppedOutHasNoStateWarning() throws Exception {
+			Instant createdAt = Instant.now().minus(2600, ChronoUnit.DAYS);
+			Instant endDate = Instant.now().minus(2400, ChronoUnit.DAYS);
+			Thesis thesis = createTestThesisWithChildren(ThesisState.DROPPED_OUT, createdAt, endDate);
+
+			List<String> warnings = thesisAnonymizationService.computeAnonymizationWarnings(thesis);
+			assertThat(warnings).noneMatch(w -> w.contains("DROPPED_OUT"));
+		}
+	}
+
+	@Nested
 	class SendAnonymizationNotifications {
 
 		@Test

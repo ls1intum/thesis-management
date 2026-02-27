@@ -8,6 +8,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 
+/** Utility class for computing data retention expiry dates. */
 public final class RetentionUtils {
 	public static final int RETENTION_YEARS = 5;
 	public static final ZoneId BERLIN = ZoneId.of("Europe/Berlin");
@@ -18,6 +19,9 @@ public final class RetentionUtils {
 	/**
 	 * Computes when retention expires for a thesis: 5 years after end of calendar year
 	 * of the latest thesis activity (endDate, max stateChange, or createdAt).
+	 *
+	 * @param thesis the thesis to compute retention expiry for
+	 * @return the instant at which the retention period expires
 	 */
 	public static Instant computeRetentionExpiry(Thesis thesis) {
 		// Use endDate as the primary indicator for completed theses

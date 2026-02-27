@@ -1295,3 +1295,222 @@ ON CONFLICT DO NOTHING;
 UPDATE theses SET final_grade = '1.7', final_feedback = 'Excellent work on legacy pipeline analysis.'
 WHERE thesis_id = '00000000-0000-4000-d000-000000000008'::UUID AND final_grade IS NULL;
 
+-- ============================================================================
+-- 33. ADMIN DELETE (ANONYMIZE) SINGLE THESIS TEST DATA
+-- ============================================================================
+
+-- Thesis 10: GRADED, 2800 days ago — old non-terminal thesis, retention expired (state warning only)
+-- Uses GRADED (not FINISHED) so findAnonymizationCandidates() won't pick it up during batch runs.
+INSERT INTO theses (thesis_id, title, type, language, metadata, info, abstract, state,
+                    visibility, keywords, application_id, start_date, end_date, created_at,
+                    research_group_id)
+VALUES
+    ('00000000-0000-4000-d000-000000000010'::UUID,
+     'Historical Analysis of Compiler Optimization Techniques',
+     'MASTER', 'ENGLISH',
+     '{"titles":{},"credits":{}}',
+     'Comprehensive analysis of compiler optimization strategies across different architectures.',
+     'This thesis examines historical compiler optimization techniques and their evolution.',
+     'GRADED', 'PRIVATE',
+     ARRAY['compilers', 'optimization'],
+     NULL,
+     NOW() - INTERVAL '2800 days', NOW() - INTERVAL '2600 days',
+     NOW() - INTERVAL '2800 days',
+     '00000000-0000-4000-a000-000000000001'::UUID)
+ON CONFLICT DO NOTHING;
+
+-- Thesis 11: FINISHED, 800 days ago — recent thesis, retention active (retention warning)
+INSERT INTO theses (thesis_id, title, type, language, metadata, info, abstract, state,
+                    visibility, keywords, application_id, start_date, end_date, created_at,
+                    research_group_id)
+VALUES
+    ('00000000-0000-4000-d000-000000000011'::UUID,
+     'Machine Learning Approaches to Code Review Automation',
+     'MASTER', 'ENGLISH',
+     '{"titles":{},"credits":{}}',
+     'An evaluation of ML-based approaches for automating code review processes.',
+     'This thesis proposes a machine learning framework for automated code review.',
+     'FINISHED', 'PRIVATE',
+     ARRAY['machine learning', 'code review'],
+     NULL,
+     NOW() - INTERVAL '800 days', NOW() - INTERVAL '620 days',
+     NOW() - INTERVAL '800 days',
+     '00000000-0000-4000-a000-000000000001'::UUID)
+ON CONFLICT DO NOTHING;
+
+-- Thesis 12: WRITING, 30 days ago — active thesis (state warning)
+INSERT INTO theses (thesis_id, title, type, language, metadata, info, abstract, state,
+                    visibility, keywords, application_id, start_date, end_date, created_at,
+                    research_group_id)
+VALUES
+    ('00000000-0000-4000-d000-000000000012'::UUID,
+     'Real-Time Anomaly Detection in Distributed Systems',
+     'BACHELOR', 'ENGLISH',
+     '{"titles":{},"credits":{}}',
+     'Exploring anomaly detection techniques for distributed microservice architectures.',
+     'This thesis designs a real-time anomaly detection system for distributed environments.',
+     'WRITING', 'PRIVATE',
+     ARRAY['anomaly detection', 'distributed systems'],
+     NULL,
+     NOW() - INTERVAL '30 days', NULL,
+     NOW() - INTERVAL '30 days',
+     '00000000-0000-4000-a000-000000000001'::UUID)
+ON CONFLICT DO NOTHING;
+
+-- Thesis 10-12 roles
+INSERT INTO thesis_roles (thesis_id, user_id, role, position, assigned_at, assigned_by)
+VALUES
+    -- Thesis 10 roles
+    ('00000000-0000-4000-d000-000000000010'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'student3'), 'STUDENT', 0,
+     NOW() - INTERVAL '2800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
+    ('00000000-0000-4000-d000-000000000010'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'advisor'), 'ADVISOR', 0,
+     NOW() - INTERVAL '2800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
+    ('00000000-0000-4000-d000-000000000010'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
+     NOW() - INTERVAL '2800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
+    -- Thesis 11 roles
+    ('00000000-0000-4000-d000-000000000011'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'student4'), 'STUDENT', 0,
+     NOW() - INTERVAL '800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
+    ('00000000-0000-4000-d000-000000000011'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'advisor'), 'ADVISOR', 0,
+     NOW() - INTERVAL '800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
+    ('00000000-0000-4000-d000-000000000011'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
+     NOW() - INTERVAL '800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
+    -- Thesis 12 roles
+    ('00000000-0000-4000-d000-000000000012'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'student5'), 'STUDENT', 0,
+     NOW() - INTERVAL '30 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
+    ('00000000-0000-4000-d000-000000000012'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'advisor'), 'ADVISOR', 0,
+     NOW() - INTERVAL '30 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
+    ('00000000-0000-4000-d000-000000000012'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
+     NOW() - INTERVAL '30 days', (SELECT user_id FROM users WHERE university_id = 'supervisor'))
+ON CONFLICT DO NOTHING;
+
+-- Thesis 10-12 state changes
+INSERT INTO thesis_state_changes (thesis_id, state, changed_at)
+VALUES
+    -- Thesis 10 (GRADED, old — not terminal, so batch anonymization skips it)
+    ('00000000-0000-4000-d000-000000000010'::UUID, 'PROPOSAL', NOW() - INTERVAL '2800 days'),
+    ('00000000-0000-4000-d000-000000000010'::UUID, 'WRITING', NOW() - INTERVAL '2780 days'),
+    ('00000000-0000-4000-d000-000000000010'::UUID, 'SUBMITTED', NOW() - INTERVAL '2620 days'),
+    ('00000000-0000-4000-d000-000000000010'::UUID, 'ASSESSED', NOW() - INTERVAL '2610 days'),
+    ('00000000-0000-4000-d000-000000000010'::UUID, 'GRADED', NOW() - INTERVAL '2605 days'),
+    -- Thesis 11 (FINISHED, recent)
+    ('00000000-0000-4000-d000-000000000011'::UUID, 'PROPOSAL', NOW() - INTERVAL '800 days'),
+    ('00000000-0000-4000-d000-000000000011'::UUID, 'WRITING', NOW() - INTERVAL '780 days'),
+    ('00000000-0000-4000-d000-000000000011'::UUID, 'SUBMITTED', NOW() - INTERVAL '640 days'),
+    ('00000000-0000-4000-d000-000000000011'::UUID, 'ASSESSED', NOW() - INTERVAL '630 days'),
+    ('00000000-0000-4000-d000-000000000011'::UUID, 'GRADED', NOW() - INTERVAL '625 days'),
+    ('00000000-0000-4000-d000-000000000011'::UUID, 'FINISHED', NOW() - INTERVAL '620 days'),
+    -- Thesis 12 (WRITING, active)
+    ('00000000-0000-4000-d000-000000000012'::UUID, 'PROPOSAL', NOW() - INTERVAL '30 days'),
+    ('00000000-0000-4000-d000-000000000012'::UUID, 'WRITING', NOW() - INTERVAL '20 days')
+ON CONFLICT DO NOTHING;
+
+-- Thesis 10-12 comments
+INSERT INTO thesis_comments (comment_id, thesis_id, type, message, filename, upload_name,
+                             created_at, created_by)
+VALUES
+    ('00000000-0000-4000-e200-000000000010'::UUID,
+     '00000000-0000-4000-d000-000000000010'::UUID,
+     'THESIS', 'Excellent compiler optimization analysis.', NULL, NULL,
+     NOW() - INTERVAL '2600 days',
+     (SELECT user_id FROM users WHERE university_id = 'advisor')),
+    ('00000000-0000-4000-e200-000000000011'::UUID,
+     '00000000-0000-4000-d000-000000000011'::UUID,
+     'THESIS', 'Good progress on the ML code review framework.', NULL, NULL,
+     NOW() - INTERVAL '700 days',
+     (SELECT user_id FROM users WHERE university_id = 'advisor')),
+    ('00000000-0000-4000-e200-000000000012'::UUID,
+     '00000000-0000-4000-d000-000000000012'::UUID,
+     'THESIS', 'Please add more references to Section 2.', NULL, NULL,
+     NOW() - INTERVAL '10 days',
+     (SELECT user_id FROM users WHERE university_id = 'advisor'))
+ON CONFLICT DO NOTHING;
+
+-- Thesis 10-12 proposals
+INSERT INTO thesis_proposals (proposal_id, thesis_id, proposal_filename, approved_at, approved_by,
+                              created_at, created_by)
+VALUES
+    ('00000000-0000-4000-e000-000000000010'::UUID,
+     '00000000-0000-4000-d000-000000000010'::UUID,
+     'proposal_compiler_opt.pdf',
+     NOW() - INTERVAL '2785 days',
+     (SELECT user_id FROM users WHERE university_id = 'advisor'),
+     NOW() - INTERVAL '2790 days',
+     (SELECT user_id FROM users WHERE university_id = 'student3')),
+    ('00000000-0000-4000-e000-000000000011'::UUID,
+     '00000000-0000-4000-d000-000000000011'::UUID,
+     'proposal_ml_code_review.pdf',
+     NOW() - INTERVAL '785 days',
+     (SELECT user_id FROM users WHERE university_id = 'advisor'),
+     NOW() - INTERVAL '790 days',
+     (SELECT user_id FROM users WHERE university_id = 'student4')),
+    ('00000000-0000-4000-e000-000000000012'::UUID,
+     '00000000-0000-4000-d000-000000000012'::UUID,
+     'proposal_anomaly_detection.pdf',
+     NOW() - INTERVAL '25 days',
+     (SELECT user_id FROM users WHERE university_id = 'advisor'),
+     NOW() - INTERVAL '28 days',
+     (SELECT user_id FROM users WHERE university_id = 'student5'))
+ON CONFLICT DO NOTHING;
+
+-- Thesis 10-11 assessments
+INSERT INTO thesis_assessments (assessment_id, thesis_id, summary, positives, negatives,
+                                grade_suggestion, created_at, created_by)
+VALUES
+    ('00000000-0000-4000-e100-000000000010'::UUID,
+     '00000000-0000-4000-d000-000000000010'::UUID,
+     'Solid analysis of compiler optimization techniques.',
+     'Comprehensive benchmarks. Clear writing style.',
+     'Limited coverage of modern JIT compilers.',
+     '2.0',
+     NOW() - INTERVAL '2610 days',
+     (SELECT user_id FROM users WHERE university_id = 'advisor')),
+    ('00000000-0000-4000-e100-000000000011'::UUID,
+     '00000000-0000-4000-d000-000000000011'::UUID,
+     'Innovative ML approach to code review automation.',
+     'Novel architecture. Good experimental design.',
+     'Small evaluation dataset.',
+     '1.3',
+     NOW() - INTERVAL '630 days',
+     (SELECT user_id FROM users WHERE university_id = 'advisor'))
+ON CONFLICT DO NOTHING;
+
+-- Thesis 10-12 feedback
+INSERT INTO thesis_feedback (feedback_id, thesis_id, type, feedback, completed_at,
+                             requested_at, requested_by)
+VALUES
+    ('00000000-0000-4000-e500-000000000010'::UUID,
+     '00000000-0000-4000-d000-000000000010'::UUID,
+     'THESIS', 'Please revise the benchmark methodology section.',
+     NOW() - INTERVAL '2650 days',
+     NOW() - INTERVAL '2660 days',
+     (SELECT user_id FROM users WHERE university_id = 'advisor')),
+    ('00000000-0000-4000-e500-000000000011'::UUID,
+     '00000000-0000-4000-d000-000000000011'::UUID,
+     'THESIS', 'Add more training data details to the appendix.',
+     NOW() - INTERVAL '650 days',
+     NOW() - INTERVAL '660 days',
+     (SELECT user_id FROM users WHERE university_id = 'advisor')),
+    ('00000000-0000-4000-e500-000000000012'::UUID,
+     '00000000-0000-4000-d000-000000000012'::UUID,
+     'PROPOSAL', 'Clarify the system architecture diagram.',
+     NULL,
+     NOW() - INTERVAL '15 days',
+     (SELECT user_id FROM users WHERE university_id = 'advisor'))
+ON CONFLICT DO NOTHING;
+
+-- Thesis 10-11 final grades
+UPDATE theses SET final_grade = '2.0', final_feedback = 'Good work on compiler optimization analysis.'
+WHERE thesis_id = '00000000-0000-4000-d000-000000000010'::UUID AND final_grade IS NULL;
+
+UPDATE theses SET final_grade = '1.3', final_feedback = 'Excellent ML-based code review system.'
+WHERE thesis_id = '00000000-0000-4000-d000-000000000011'::UUID AND final_grade IS NULL;
+

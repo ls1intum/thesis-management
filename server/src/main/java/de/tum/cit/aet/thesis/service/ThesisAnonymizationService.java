@@ -1,5 +1,6 @@
 package de.tum.cit.aet.thesis.service;
 
+import de.tum.cit.aet.thesis.constants.ThesisState;
 import de.tum.cit.aet.thesis.entity.Thesis;
 import de.tum.cit.aet.thesis.entity.jsonb.ThesisMetadata;
 import de.tum.cit.aet.thesis.repository.ThesisAssessmentRepository;
@@ -49,6 +50,23 @@ public class ThesisAnonymizationService {
 	private final MailingService mailingService;
 	private final int notificationLeadDays;
 
+	/**
+	 * Constructs a new ThesisAnonymizationService with the required repositories and services.
+	 *
+	 * @param thesisRepository the thesis repository
+	 * @param thesisFileRepository the thesis file repository
+	 * @param thesisProposalRepository the thesis proposal repository
+	 * @param thesisCommentRepository the thesis comment repository
+	 * @param thesisAssessmentRepository the thesis assessment repository
+	 * @param thesisFeedbackRepository the thesis feedback repository
+	 * @param thesisPresentationInviteRepository the thesis presentation invite repository
+	 * @param thesisPresentationRepository the thesis presentation repository
+	 * @param thesisStateChangeRepository the thesis state change repository
+	 * @param thesisRoleRepository the thesis role repository
+	 * @param uploadService the upload service for file operations
+	 * @param mailingService the mailing service for notifications
+	 * @param notificationLeadDays the number of days before anonymization to send notifications
+	 */
 	public ThesisAnonymizationService(
 			ThesisRepository thesisRepository,
 			ThesisFileRepository thesisFileRepository,
@@ -175,7 +193,40 @@ public class ThesisAnonymizationService {
 		return anonymizedCount;
 	}
 
-	private void anonymizeThesis(Thesis thesis) {
+	/**
+	 * Computes warnings about anonymizing the given thesis.
+	 *
+	 * @param thesis the thesis to check
+	 * @return a list of warning messages (empty if no warnings)
+	 */
+	public List<String> computeAnonymizationWarnings(Thesis thesis) {
+		List<String> warnings = new ArrayList<>();
+
+		if (thesis.isAnonymized()) {
+			warnings.add("This thesis has already been anonymized.");
+			return warnings;
+		}
+
+		if (thesis.getState() != ThesisState.FINISHED && thesis.getState() != ThesisState.DROPPED_OUT) {
+			warnings.add("This thesis is in state " + thesis.getState() + " and has not been finished or dropped out.");
+		}
+
+		Instant expiry = RetentionUtils.computeRetentionExpiry(thesis);
+		if (!expiry.isBefore(Instant.now())) {
+			String expiryDate = expiry.atZone(RetentionUtils.BERLIN).format(DATE_FORMATTER);
+			warnings.add("The retention period for this thesis has not expired yet. It expires on " + expiryDate + ".");
+		}
+
+		return warnings;
+	}
+
+	/**
+	 * Anonymizes a single thesis by clearing personal data and deleting all associated child records.
+	 * Structural data (title, type, grade, dates) is preserved for statistical purposes.
+	 *
+	 * @param thesis the thesis to anonymize
+	 */
+	public void anonymizeThesis(Thesis thesis) {
 		UUID thesisId = thesis.getId();
 
 		// 1. Mark thesis as anonymized first to prevent re-processing on partial failure.
