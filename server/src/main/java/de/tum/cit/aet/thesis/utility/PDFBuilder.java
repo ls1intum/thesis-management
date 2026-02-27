@@ -14,6 +14,7 @@ import com.itextpdf.kernel.pdf.action.PdfAction;
 import com.itextpdf.layout.Canvas;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.borders.Border;
+import com.itextpdf.layout.element.AbstractElement;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Div;
 import com.itextpdf.layout.element.IBlockElement;
@@ -23,6 +24,7 @@ import com.itextpdf.layout.element.ListItem;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.element.Text;
+import com.itextpdf.layout.properties.Property;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 import com.itextpdf.styledxmlparser.resolver.font.BasicFontProvider;
@@ -186,6 +188,9 @@ public class PDFBuilder {
 			for (IBlockElement element : parseHtmlContent(row.htmlContent())) {
 				if (element instanceof Paragraph para) {
 					para.setMarginTop(0).setMarginLeft(CONTENT_INDENT);
+					if (para.<TextAlignment>getProperty(Property.TEXT_ALIGNMENT) == null) {
+						para.setTextAlignment(TextAlignment.JUSTIFIED);
+					}
 				} else if (element instanceof com.itextpdf.layout.element.List list) {
 					list.setMarginTop(0).setMarginLeft(CONTENT_INDENT);
 				}
@@ -347,23 +352,38 @@ public class PDFBuilder {
 					if (block instanceof Paragraph para) {
 						para.setFont(normalFont)
 								.setFontSize(FONT_SIZE_TEXT)
-								.setMarginBottom(MARGIN_DATA_ROW_BOTTOM)
-								.setMultipliedLeading(LINE_LEADING);
+								.setMarginBottom(MARGIN_DATA_ROW_BOTTOM);
+						fixFontProperties(para);
 						// A direct import of iText's List class is required to distinguish it from
 						// Java's List.
 					} else if (block instanceof com.itextpdf.layout.element.List list) {
 						list.setListSymbol(BULLET_POINT_SYMBOL)
 								.setFont(normalFont)
 								.setFontSize(FONT_SIZE_TEXT)
+								.setMarginTop(0f)
 								.setMarginBottom(MARGIN_DATA_ROW_BOTTOM)
-								.setPaddingLeft(0f)
+								.setPaddingLeft(CONTENT_INDENT)
 								.setSymbolIndent(LIST_SYMBOL_INDENT);
+
 						for (IElement item : list.getChildren()) {
 							if (item instanceof ListItem listItem) {
-								listItem.setFont(normalFont).setFontSize(FONT_SIZE_TEXT).setMarginLeft(CONTENT_INDENT);
+								listItem.setMarginTop(0f).setMarginBottom(0f);
+
+								// adjust the Paragraph inside the ListItem
+								for (IElement liChild : listItem.getChildren()) {
+									if (liChild instanceof Paragraph para) {
+										para.setFont(normalFont)
+												.setFontSize(FONT_SIZE_TEXT)
+												.setMultipliedLeading(1f)
+												.setMarginTop(0f)
+												.setMarginBottom(0f);
+									}
+								}
 							}
 						}
+						fixFontProperties(list);
 					}
+
 					elements.add(block);
 				}
 			}
@@ -373,6 +393,22 @@ public class PDFBuilder {
 					.setMarginBottom(MARGIN_DATA_ROW_BOTTOM).setMultipliedLeading(LINE_LEADING));
 		}
 		return elements;
+	}
+
+	/**
+	 * Recursively enforces font size on all child elements,
+	 * while preserving bold/italic font variants set by HtmlConverter.
+	 */
+	private void fixFontProperties(IElement element) {
+		if (element instanceof Text text) {
+			text.setFontSize(FONT_SIZE_TEXT);
+			// Preserve bold/italic by not overriding the font itself
+		} else if (element instanceof AbstractElement<?> container) {
+			container.setFontSize(FONT_SIZE_TEXT);
+			for (IElement child : container.getChildren()) {
+				fixFontProperties(child);
+			}
+		}
 	}
 
 	/**
