@@ -33,7 +33,7 @@ const ApplicationEmailContentSettingsCard = ({
       (res) => {
         if (res.ok) {
           setIncludeApplicationDataInEmail(
-            res.data.applicationEmailSettings.includeApplicationDataInEmail,
+            res.data.applicationEmailSettings?.includeApplicationDataInEmail ?? previousValue,
           )
         } else {
           setIncludeApplicationDataInEmail(previousValue)

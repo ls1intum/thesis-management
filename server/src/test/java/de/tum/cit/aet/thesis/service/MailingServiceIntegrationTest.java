@@ -81,24 +81,12 @@ class MailingServiceIntegrationTest extends BaseIntegrationTest {
 				.toList();
 	}
 
-	private MimeMessage findChairEmail(MimeMessage[] emails, String headUniversityId) throws Exception {
+	private MimeMessage findEmailByRecipient(MimeMessage[] emails, String universityId) throws Exception {
 		for (MimeMessage email : emails) {
 			List<String> recipients = Arrays.stream(email.getAllRecipients())
 					.map(Address::toString)
 					.toList();
-			if (recipients.stream().anyMatch(addr -> addr.contains(headUniversityId))) {
-				return email;
-			}
-		}
-		return null;
-	}
-
-	private MimeMessage findStudentEmail(MimeMessage[] emails, String studentUniversityId) throws Exception {
-		for (MimeMessage email : emails) {
-			List<String> recipients = Arrays.stream(email.getAllRecipients())
-					.map(Address::toString)
-					.toList();
-			if (recipients.stream().anyMatch(addr -> addr.contains(studentUniversityId))) {
+			if (recipients.stream().anyMatch(addr -> addr.contains(universityId))) {
 				return email;
 			}
 		}
@@ -170,7 +158,7 @@ class MailingServiceIntegrationTest extends BaseIntegrationTest {
 					.isGreaterThanOrEqualTo(2);
 
 			// Find the chair email
-			MimeMessage chairEmail = findChairEmail(emails, head.universityId());
+			MimeMessage chairEmail = findEmailByRecipient(emails, head.universityId());
 			assertThat(chairEmail).as("Chair member (head) should receive an email").isNotNull();
 
 			// Verify minimal email subject
@@ -202,7 +190,7 @@ class MailingServiceIntegrationTest extends BaseIntegrationTest {
 					.doesNotContain("My secret motivation text");
 
 			// Verify that the student still receives their full email
-			MimeMessage studentEmail = findStudentEmail(emails, student.universityId());
+			MimeMessage studentEmail = findEmailByRecipient(emails, student.universityId());
 			assertThat(studentEmail).as("Student should still receive their email").isNotNull();
 		}
 
@@ -234,7 +222,7 @@ class MailingServiceIntegrationTest extends BaseIntegrationTest {
 
 			MimeMessage[] emails = getReceivedEmails();
 
-			MimeMessage chairEmail = findChairEmail(emails, head.universityId());
+			MimeMessage chairEmail = findEmailByRecipient(emails, head.universityId());
 			assertThat(chairEmail).as("Chair member should receive an email").isNotNull();
 
 			// The test template has subject "Test Subject". Minimal email uses "New Thesis Application".
@@ -253,7 +241,7 @@ class MailingServiceIntegrationTest extends BaseIntegrationTest {
 		}
 
 		@Test
-		void createApplication_WithSettingEnabled_UsesCustomTemplateAndIncludesAttachments() throws Exception {
+		void createApplication_WithSettingEnabled_UsesCustomTemplate() throws Exception {
 			createTestEmailTemplate("APPLICATION_CREATED_CHAIR");
 			createTestEmailTemplate("APPLICATION_CREATED_STUDENT");
 
@@ -291,7 +279,7 @@ class MailingServiceIntegrationTest extends BaseIntegrationTest {
 					.isGreaterThanOrEqualTo(2);
 
 			// Chair email should use the custom template
-			MimeMessage chairEmail = findChairEmail(emails, head.universityId());
+			MimeMessage chairEmail = findEmailByRecipient(emails, head.universityId());
 			assertThat(chairEmail).as("Chair member should receive an email when setting is enabled").isNotNull();
 
 			// With setting enabled, the template subject should be used (test template: "Test Subject")
@@ -348,7 +336,7 @@ class MailingServiceIntegrationTest extends BaseIntegrationTest {
 					.andExpect(status().isOk());
 
 			MimeMessage[] emails = getReceivedEmails();
-			MimeMessage chairEmail = findChairEmail(emails, head.universityId());
+			MimeMessage chairEmail = findEmailByRecipient(emails, head.universityId());
 			assertThat(chairEmail).as("Chair member should receive an email").isNotNull();
 
 			// After toggling back to disabled, should use minimal email again
@@ -387,7 +375,7 @@ class MailingServiceIntegrationTest extends BaseIntegrationTest {
 					.andExpect(status().isOk());
 
 			MimeMessage[] emails = getReceivedEmails();
-			MimeMessage chairEmail = findChairEmail(emails, head.universityId());
+			MimeMessage chairEmail = findEmailByRecipient(emails, head.universityId());
 			assertThat(chairEmail).as("Chair email should be sent").isNotNull();
 
 			String chairBody = getEmailBodyText(chairEmail);
@@ -422,7 +410,7 @@ class MailingServiceIntegrationTest extends BaseIntegrationTest {
 					.andExpect(status().isOk());
 
 			MimeMessage[] emails = getReceivedEmails();
-			MimeMessage studentEmail = findStudentEmail(emails, student.universityId());
+			MimeMessage studentEmail = findEmailByRecipient(emails, student.universityId());
 			assertThat(studentEmail).as("Student should receive their email regardless of the setting").isNotNull();
 
 			// Student email should still use the template (not the minimal one)
@@ -457,7 +445,7 @@ class MailingServiceIntegrationTest extends BaseIntegrationTest {
 					.andExpect(status().isOk());
 
 			MimeMessage[] emails = getReceivedEmails();
-			MimeMessage chairEmail = findChairEmail(emails, head.universityId());
+			MimeMessage chairEmail = findEmailByRecipient(emails, head.universityId());
 			assertThat(chairEmail).as("Chair email should be sent").isNotNull();
 
 			String chairBody = getEmailBodyText(chairEmail);
