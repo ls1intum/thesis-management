@@ -58,9 +58,7 @@ const ResearchGroupSettingPage = () => {
       },
       (res) => {
         if (res.ok) {
-          if (res.ok) {
-            setResearchGroupData(res.data)
-          }
+          setResearchGroupData(res.data)
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
         }
@@ -75,9 +73,7 @@ const ResearchGroupSettingPage = () => {
       { method: 'GET', requiresAuth: true },
       (res) => {
         if (res.ok) {
-          if (res.ok) {
-            setResearchGroupSettings(res.data)
-          }
+          setResearchGroupSettings(res.data)
         } else if (res.status === 404) {
           setResearchGroupData(undefined)
         } else {

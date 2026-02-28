@@ -187,7 +187,7 @@ class MailingServiceIntegrationTest extends BaseIntegrationTest {
 			// Verify minimal email body contains applicant name and application link
 			String chairBody = getEmailBodyText(chairEmail);
 			assertThat(chairBody)
-					.as("Minimal chair email body should contain the applicant's first name")
+					.as("Minimal chair email body should contain the applicant's name (university ID used as name in tests)")
 					.contains(student.universityId());
 			assertThat(chairBody)
 					.as("Minimal chair email body should contain the thesis title")

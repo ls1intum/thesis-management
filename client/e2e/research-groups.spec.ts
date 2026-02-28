@@ -189,9 +189,7 @@ test.describe('Research Group Settings - Email Settings Tab', () => {
     await expect(disabledBadge).toBeHidden()
 
     // The template card should now show "Default" badge instead
-    const defaultBadge = page.locator('.mantine-Badge-label', { hasText: 'Default' }).filter({
-      hasText: 'Default',
-    })
+    const defaultBadge = page.locator('.mantine-Badge-label', { hasText: 'Default' })
     // There should be multiple "Default" badges (one for each template), at least one near our template
     await expect(defaultBadge.first()).toBeVisible()
 

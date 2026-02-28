@@ -18,7 +18,7 @@ const ApplicationEmailContentSettingsCard = ({
 }: ApplicationEmailContentSettingsCardProps) => {
   const { researchGroupId } = useParams<{ researchGroupId: string }>()
 
-  const handleChange = (value: boolean) => {
+  const handleChange = (value: boolean, previousValue: boolean) => {
     doRequest<IResearchGroupSettings>(
       `/v2/research-group-settings/${researchGroupId}`,
       {
@@ -32,15 +32,11 @@ const ApplicationEmailContentSettingsCard = ({
       },
       (res) => {
         if (res.ok) {
-          if (
-            res.data.applicationEmailSettings.includeApplicationDataInEmail !==
-            includeApplicationDataInEmail
-          ) {
-            setIncludeApplicationDataInEmail(
-              res.data.applicationEmailSettings.includeApplicationDataInEmail,
-            )
-          }
+          setIncludeApplicationDataInEmail(
+            res.data.applicationEmailSettings.includeApplicationDataInEmail,
+          )
         } else {
+          setIncludeApplicationDataInEmail(previousValue)
           showSimpleError(getApiResponseErrorMessage(res))
         }
       },
@@ -90,8 +86,9 @@ const ApplicationEmailContentSettingsCard = ({
           <Switch
             checked={includeApplicationDataInEmail}
             onChange={(event) => {
+              const previousValue = includeApplicationDataInEmail
               setIncludeApplicationDataInEmail(event.currentTarget.checked)
-              handleChange(event.currentTarget.checked)
+              handleChange(event.currentTarget.checked, previousValue)
             }}
           />
         </Group>
