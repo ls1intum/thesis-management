@@ -61,6 +61,7 @@ public class Thesis {
     private ThesisVisibility visibility;
 
     @JdbcTypeCode(SqlTypes.ARRAY)
+    @NotNull
     @Column(name = "keywords", columnDefinition = "text[]", nullable = false)
     private Set<String> keywords = new HashSet<>();
 
