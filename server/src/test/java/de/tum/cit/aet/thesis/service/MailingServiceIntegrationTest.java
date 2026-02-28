@@ -432,6 +432,44 @@ class MailingServiceIntegrationTest extends BaseIntegrationTest {
 		}
 
 		@Test
+		void createApplication_MinimalEmail_EscapesHtmlInUserInput() throws Exception {
+			createTestEmailTemplate("APPLICATION_CREATED_CHAIR");
+			createTestEmailTemplate("APPLICATION_CREATED_STUDENT");
+
+			TestUser head = createRandomTestUser(List.of("supervisor"));
+			UUID researchGroupId = createTestResearchGroup("XSS Test Group", head.universityId());
+
+			clearEmails();
+
+			TestUser student = createRandomTestUser(List.of("student"));
+			String studentAuth = generateTestAuthenticationHeader(student.universityId(), List.of("student"));
+
+			// Use a thesis title containing HTML/script injection
+			String maliciousTitle = "<script>alert('xss')</script>";
+			CreateApplicationPayload payload = new CreateApplicationPayload(
+					null, maliciousTitle, "BACHELOR", Instant.now(), "Some motivation", researchGroupId
+			);
+
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
+							.header("Authorization", studentAuth)
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(payload)))
+					.andExpect(status().isOk());
+
+			MimeMessage[] emails = getReceivedEmails();
+			MimeMessage chairEmail = findChairEmail(emails, head.universityId());
+			assertThat(chairEmail).as("Chair email should be sent").isNotNull();
+
+			String chairBody = getEmailBodyText(chairEmail);
+			assertThat(chairBody)
+					.as("Minimal email body must NOT contain raw <script> tags (XSS prevention)")
+					.doesNotContain("<script>");
+			assertThat(chairBody)
+					.as("Minimal email body should contain HTML-escaped version of the title")
+					.contains("&lt;script&gt;");
+		}
+
+		@Test
 		void acceptApplication_SendsAcceptanceEmail() throws Exception {
 			createTestEmailTemplate("APPLICATION_CREATED_CHAIR");
 			createTestEmailTemplate("APPLICATION_CREATED_STUDENT");

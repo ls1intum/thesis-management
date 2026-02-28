@@ -28,6 +28,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.HtmlUtils;
 
 import jakarta.mail.util.ByteArrayDataSource;
 
@@ -78,33 +79,23 @@ public class MailingService {
 		boolean includeData = application.getResearchGroup().getResearchGroupSettings() != null
 				&& application.getResearchGroup().getResearchGroupSettings().isIncludeApplicationDataInEmail();
 
-		MailBuilder researchGroupMailBuilder;
-		if (includeData) {
-			EmailTemplate researchGroupEmailTemplate = loadTemplate(
-					application.getResearchGroup().getId(),
-					"APPLICATION_CREATED_CHAIR",
-					"en");
-			researchGroupMailBuilder = prepareApplicationCreatedMailBuilder(application, researchGroupEmailTemplate);
-		} else {
-			researchGroupMailBuilder = prepareMinimalApplicationMailBuilder(application);
-		}
+		EmailTemplate researchGroupEmailTemplate = includeData
+				? loadTemplate(application.getResearchGroup().getId(), "APPLICATION_CREATED_CHAIR", "en")
+				: null;
+
+		MailBuilder researchGroupMailBuilder = includeData
+				? prepareApplicationCreatedMailBuilder(application, researchGroupEmailTemplate)
+				: prepareMinimalApplicationMailBuilder(application);
 		researchGroupMailBuilder
 			.sendToChairMembers(application.getResearchGroup().getId())
 			.addNotificationName("new-applications")
 			.filterChairMembersNewApplicationNotifications(application.getTopic(), "new-applications")
 			.send(javaMailSender, uploadService);
 
-		if (includeData) {
-			EmailTemplate researchGroupEmailTemplate = loadTemplate(
-					application.getResearchGroup().getId(),
-					"APPLICATION_CREATED_CHAIR",
-					"en");
-			sendNotificationCopy(application.getResearchGroup(),
-					prepareApplicationCreatedMailBuilder(application, researchGroupEmailTemplate));
-		} else {
-			sendNotificationCopy(application.getResearchGroup(),
-					prepareMinimalApplicationMailBuilder(application));
-		}
+		MailBuilder notificationCopyMailBuilder = includeData
+				? prepareApplicationCreatedMailBuilder(application, researchGroupEmailTemplate)
+				: prepareMinimalApplicationMailBuilder(application);
+		sendNotificationCopy(application.getResearchGroup(), notificationCopyMailBuilder);
 
 		EmailTemplate studentEmailTemplate = loadTemplate(
 				application.getResearchGroup().getId(),
@@ -159,10 +150,14 @@ public class MailingService {
 
 		String applicationUrl = config.getClientHost() + "/applications/" + application.getId();
 
+		// HTML-escape user-provided values to prevent XSS
+		String safeApplicantName = HtmlUtils.htmlEscape(applicantName);
+		String safeThesisTitle = HtmlUtils.htmlEscape(thesisTitle);
+
 		String subject = "New Thesis Application";
 		String body = "<p>Dear colleague,</p>"
-				+ "<p>A new thesis application has been submitted by <strong>" + applicantName + "</strong>"
-				+ (thesisTitle.isEmpty() ? "." : " for the topic <strong>" + thesisTitle + "</strong>.")
+				+ "<p>A new thesis application has been submitted by <strong>" + safeApplicantName + "</strong>"
+				+ (thesisTitle.isEmpty() ? "." : " for the topic <strong>" + safeThesisTitle + "</strong>.")
 				+ "</p>"
 				+ "<p>You can view the full application details here: "
 				+ "<a target=\"_blank\" rel=\"noopener noreferrer nofollow\" href=\"" + applicationUrl + "\">"
