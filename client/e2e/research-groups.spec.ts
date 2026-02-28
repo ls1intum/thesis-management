@@ -107,8 +107,10 @@ test.describe('Research Group Settings - Email Settings Tab', () => {
 
     await page.getByRole('tab', { name: 'Email Settings' }).click()
 
-    // There should be an info icon (with cursor: help) near the toggle label
-    const tooltipTrigger = page.locator('[style*="cursor: help"]')
+    // There should be an info icon button near the toggle label
+    const tooltipTrigger = page.getByRole('button', {
+      name: 'Information about email template behavior',
+    })
     await expect(tooltipTrigger).toBeVisible()
   })
 

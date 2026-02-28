@@ -206,44 +206,48 @@ const ResearchGroupSettingPage = () => {
               <ResearchGroupMembers researchGroupData={researchGroupData} />
             </Tabs.Panel>
             <Tabs.Panel value='email-templates' pt='md'>
-              <Stack>
-                <EmailSettingsCard
-                  researchgroupEmailSettings={researchGroupSettings?.emailSettings}
-                  setResearchgroupEmailSettings={(emailSettings) =>
-                    setResearchGroupSettings(
-                      (prev) =>
-                        ({
-                          ...prev,
-                          emailSettings: emailSettings,
-                        }) as IResearchGroupSettings,
-                    )
-                  }
-                />
-                <ApplicationEmailContentSettingsCard
-                  includeApplicationDataInEmail={
-                    researchGroupSettings?.applicationEmailSettings
-                      ?.includeApplicationDataInEmail ?? false
-                  }
-                  setIncludeApplicationDataInEmail={(value: boolean) =>
-                    setResearchGroupSettings(
-                      (prev) =>
-                        ({
-                          ...prev,
-                          applicationEmailSettings: {
-                            ...prev?.applicationEmailSettings,
-                            includeApplicationDataInEmail: value,
-                          },
-                        }) as IResearchGroupSettings,
-                    )
-                  }
-                />
-                <EmailTemplatesOverview
-                  includeApplicationDataInEmail={
-                    researchGroupSettings?.applicationEmailSettings
-                      ?.includeApplicationDataInEmail ?? false
-                  }
-                />
-              </Stack>
+              {researchGroupSettingsLoading ? (
+                <Loader />
+              ) : (
+                <Stack>
+                  <EmailSettingsCard
+                    researchgroupEmailSettings={researchGroupSettings?.emailSettings}
+                    setResearchgroupEmailSettings={(emailSettings) =>
+                      setResearchGroupSettings(
+                        (prev) =>
+                          ({
+                            ...prev,
+                            emailSettings: emailSettings,
+                          }) as IResearchGroupSettings,
+                      )
+                    }
+                  />
+                  <ApplicationEmailContentSettingsCard
+                    includeApplicationDataInEmail={
+                      researchGroupSettings?.applicationEmailSettings
+                        ?.includeApplicationDataInEmail ?? false
+                    }
+                    setIncludeApplicationDataInEmail={(value: boolean) =>
+                      setResearchGroupSettings(
+                        (prev) =>
+                          ({
+                            ...prev,
+                            applicationEmailSettings: {
+                              ...prev?.applicationEmailSettings,
+                              includeApplicationDataInEmail: value,
+                            },
+                          }) as IResearchGroupSettings,
+                      )
+                    }
+                  />
+                  <EmailTemplatesOverview
+                    includeApplicationDataInEmail={
+                      researchGroupSettings?.applicationEmailSettings
+                        ?.includeApplicationDataInEmail ?? false
+                    }
+                  />
+                </Stack>
+              )}
             </Tabs.Panel>
           </Tabs>
         </Stack>

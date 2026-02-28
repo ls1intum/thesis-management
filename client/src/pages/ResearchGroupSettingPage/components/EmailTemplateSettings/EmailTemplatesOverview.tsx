@@ -236,7 +236,10 @@ const EmailTemplatesOverview = ({
                           templateCase === 'APPLICATION_CREATED_CHAIR' &&
                           !includeApplicationDataInEmail
                         }
-                        disabledReason='This template is not used when "Include Personal Details and Attachments" is disabled. A minimal notification email is sent instead.'
+                        disabledReason={
+                          'This template is not used when "Include Personal Details and ' +
+                          'Attachments" is disabled. A minimal notification email is sent instead.'
+                        }
                       />
                     ))}
                   </Stack>

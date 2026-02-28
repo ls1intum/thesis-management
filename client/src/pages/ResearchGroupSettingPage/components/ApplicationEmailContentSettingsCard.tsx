@@ -1,4 +1,4 @@
-import { Group, Stack, Switch, Text, Tooltip } from '@mantine/core'
+import { ActionIcon, Group, Stack, Switch, Text, Tooltip } from '@mantine/core'
 import { ResearchGroupSettingsCard } from './ResearchGroupSettingsCard'
 import { doRequest } from '../../../requests/request'
 import { useParams } from 'react-router'
@@ -60,11 +60,23 @@ const ApplicationEmailContentSettingsCard = ({
                 Include Personal Details and Attachments
               </Text>
               <Tooltip
-                label='When disabled, the custom email template for new application notifications is not used. Instead, a minimal email with only the student name, thesis topic, and a link is sent.'
+                label={
+                  'When disabled, the custom email template for new application notifications ' +
+                  'is not used. Instead, a minimal email with only the student name, thesis ' +
+                  'topic, and a link is sent.'
+                }
                 multiline
                 w={300}
+                events={{ hover: true, focus: true, touch: false }}
               >
-                <Info size={16} style={{ color: 'var(--mantine-color-dimmed)', cursor: 'help' }} />
+                <ActionIcon
+                  variant='subtle'
+                  color='gray'
+                  size='sm'
+                  aria-label='Information about email template behavior'
+                >
+                  <Info size={16} />
+                </ActionIcon>
               </Tooltip>
             </Group>
             <Text size='xs' c='dimmed'>
