@@ -78,23 +78,33 @@ public class MailingService {
 		boolean includeData = application.getResearchGroup().getResearchGroupSettings() != null
 				&& application.getResearchGroup().getResearchGroupSettings().isIncludeApplicationDataInEmail();
 
-		EmailTemplate researchGroupEmailTemplate = loadTemplate(
-				application.getResearchGroup().getId(),
-				"APPLICATION_CREATED_CHAIR",
-				"en");
-
-		MailBuilder researchGroupMailBuilder = includeData
-				? prepareApplicationCreatedMailBuilder(application, researchGroupEmailTemplate)
-				: prepareMinimalApplicationMailBuilder(application, researchGroupEmailTemplate);
+		MailBuilder researchGroupMailBuilder;
+		if (includeData) {
+			EmailTemplate researchGroupEmailTemplate = loadTemplate(
+					application.getResearchGroup().getId(),
+					"APPLICATION_CREATED_CHAIR",
+					"en");
+			researchGroupMailBuilder = prepareApplicationCreatedMailBuilder(application, researchGroupEmailTemplate);
+		} else {
+			researchGroupMailBuilder = prepareMinimalApplicationMailBuilder(application);
+		}
 		researchGroupMailBuilder
 			.sendToChairMembers(application.getResearchGroup().getId())
 			.addNotificationName("new-applications")
 			.filterChairMembersNewApplicationNotifications(application.getTopic(), "new-applications")
 			.send(javaMailSender, uploadService);
 
-		sendNotificationCopy(application.getResearchGroup(), includeData
-				? prepareApplicationCreatedMailBuilder(application, researchGroupEmailTemplate)
-				: prepareMinimalApplicationMailBuilder(application, researchGroupEmailTemplate));
+		if (includeData) {
+			EmailTemplate researchGroupEmailTemplate = loadTemplate(
+					application.getResearchGroup().getId(),
+					"APPLICATION_CREATED_CHAIR",
+					"en");
+			sendNotificationCopy(application.getResearchGroup(),
+					prepareApplicationCreatedMailBuilder(application, researchGroupEmailTemplate));
+		} else {
+			sendNotificationCopy(application.getResearchGroup(),
+					prepareMinimalApplicationMailBuilder(application));
+		}
 
 		EmailTemplate studentEmailTemplate = loadTemplate(
 				application.getResearchGroup().getId(),
@@ -131,9 +141,34 @@ public class MailingService {
 				.fillApplicationPlaceholders(application);
 	}
 
-	private MailBuilder prepareMinimalApplicationMailBuilder(Application application, EmailTemplate template) {
-		return new MailBuilder(config, template.getSubject(), template.getBodyHtml())
-				.fillApplicationPlaceholders(application);
+	private MailBuilder prepareMinimalApplicationMailBuilder(Application application) {
+		String applicantName = "";
+		if (application.getUser() != null) {
+			String firstName = application.getUser().getFirstName();
+			String lastName = application.getUser().getLastName();
+			applicantName = ((firstName != null ? firstName : "") + " " + (lastName != null ? lastName : "")).trim();
+		}
+
+		String thesisTitle = "";
+		if (application.getThesisTitle() != null && !application.getThesisTitle().isBlank()) {
+			thesisTitle = application.getThesisTitle();
+		} else if (application.getTopic() != null && application.getTopic().getTitle() != null
+				&& !application.getTopic().getTitle().isBlank()) {
+			thesisTitle = application.getTopic().getTitle();
+		}
+
+		String applicationUrl = config.getClientHost() + "/applications/" + application.getId();
+
+		String subject = "New Thesis Application";
+		String body = "<p>Dear colleague,</p>"
+				+ "<p>A new thesis application has been submitted by <strong>" + applicantName + "</strong>"
+				+ (thesisTitle.isEmpty() ? "." : " for the topic <strong>" + thesisTitle + "</strong>.")
+				+ "</p>"
+				+ "<p>You can view the full application details here: "
+				+ "<a target=\"_blank\" rel=\"noopener noreferrer nofollow\" href=\"" + applicationUrl + "\">"
+				+ applicationUrl + "</a></p>";
+
+		return new MailBuilder(config, subject, body);
 	}
 
 	/**

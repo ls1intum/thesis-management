@@ -10,7 +10,13 @@ import EmailTemplateCard from './EmailTemplateCard'
 import { useParams, useSearchParams } from 'react-router'
 import { MagnifyingGlass } from '@phosphor-icons/react'
 
-const EmailTemplatesOverview = () => {
+interface EmailTemplatesOverviewProps {
+  includeApplicationDataInEmail?: boolean
+}
+
+const EmailTemplatesOverview = ({
+  includeApplicationDataInEmail = true,
+}: EmailTemplatesOverviewProps) => {
   const [loading, setLoading] = useState(true)
   const [emailTemplates, setEmailTemplates] = useState<
     Record<
@@ -102,6 +108,7 @@ const EmailTemplatesOverview = () => {
   }, [searchKey, emailTemplates])
 
   const templateCasesToFetch: string[] = [
+    'APPLICATION_CREATED_CHAIR',
     'THESIS_PRESENTATION_INVITATION_UPDATED',
     'THESIS_PRESENTATION_INVITATION',
     'THESIS_PRESENTATION_INVITATION_CANCELLED',
@@ -225,6 +232,11 @@ const EmailTemplatesOverview = () => {
                       <EmailTemplateCard
                         key={`${category}-${templateCase}`}
                         emailTemplate={template}
+                        disabled={
+                          templateCase === 'APPLICATION_CREATED_CHAIR' &&
+                          !includeApplicationDataInEmail
+                        }
+                        disabledReason='This template is not used when "Include Personal Details and Attachments" is disabled. A minimal notification email is sent instead.'
                       />
                     ))}
                   </Stack>
