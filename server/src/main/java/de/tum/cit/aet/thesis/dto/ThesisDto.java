@@ -53,7 +53,9 @@ public record ThesisDto(
 	List<LightUserDto> advisors,
 	List<LightUserDto> supervisors,
 
-	List<ThesisStateChangeDto> states
+	List<ThesisStateChangeDto> states,
+
+	Instant anonymizedAt
 ) {
 
 public static List<ThesisStateChangeDto> computeStateChanges(Thesis thesis) {
@@ -122,7 +124,8 @@ public static ThesisDto fromThesisEntity(Thesis thesis, boolean advisorAccess,
 		students,
 		advisors,
 		supervisors,
-		states
+		states,
+		thesis.getAnonymizedAt()
 	);
 }
 

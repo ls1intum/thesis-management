@@ -44,7 +44,9 @@ test.describe('Topics - Management (Supervisor)', () => {
   test('manage topics page shows topic list with actions', async ({ page }) => {
     await navigateTo(page, '/topics')
 
-    await expect(page.getByRole('heading', { name: /manage topics/i })).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByRole('heading', { name: /manage topics/i })).toBeVisible({
+      timeout: 15_000,
+    })
     // Create topic button should be visible for management
     await expect(page.getByRole('button', { name: 'Create Topic' })).toBeVisible()
     // Table should have column headers
@@ -56,7 +58,9 @@ test.describe('Topics - Management (Supervisor)', () => {
     await navigateTo(page, '/topics/00000000-0000-4000-b000-000000000001')
 
     // Should show topic title
-    await expect(page.getByRole('heading', { name: /automated code review/i })).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByRole('heading', { name: /automated code review/i })).toBeVisible({
+      timeout: 15_000,
+    })
     // Should show topic information sections
     await expect(page.getByText(/problem statement/i).first()).toBeVisible()
     // Supervisor should see applications section for this topic
@@ -69,8 +73,14 @@ test.describe('Topics - Student view', () => {
     await navigateTo(page, '/topics/00000000-0000-4000-b000-000000000002')
 
     // Should show topic title
-    await expect(page.getByRole('heading', { name: /continuous integration/i })).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByRole('heading', { name: /continuous integration/i })).toBeVisible({
+      timeout: 15_000,
+    })
     // Student should see Apply Now button
-    await expect(page.getByRole('link', { name: /apply now/i }).or(page.getByRole('button', { name: /apply/i }))).toBeVisible()
+    await expect(
+      page
+        .getByRole('link', { name: /apply now/i })
+        .or(page.getByRole('button', { name: /apply/i })),
+    ).toBeVisible()
   })
 })

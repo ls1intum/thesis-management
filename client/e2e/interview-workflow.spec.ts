@@ -9,20 +9,15 @@ test.describe('Interview Workflow', () => {
 
   test('supervisor can view interview process and score an interviewee', async ({ page }) => {
     // Navigate directly to the interviewee assessment page
-    await navigateTo(
-      page,
-      `/interviews/${INTERVIEW_PROCESS_ID}/interviewee/${INTERVIEWEE_ID}`,
-    )
+    await navigateTo(page, `/interviews/${INTERVIEW_PROCESS_ID}/interviewee/${INTERVIEWEE_ID}`)
 
     // Wait for page to load with the interviewee name
-    await expect(
-      page.getByRole('heading', { name: /Interview - Student4 User/i }),
-    ).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByRole('heading', { name: /Interview - Student4 User/i })).toBeVisible({
+      timeout: 15_000,
+    })
 
     // Verify "Interview Assessment" section title
-    await expect(
-      page.getByRole('heading', { name: 'Interview Assessment' }),
-    ).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Interview Assessment' })).toBeVisible()
 
     // Verify "Score" card title is visible
     await expect(page.getByRole('heading', { name: 'Score', exact: true })).toBeVisible()
@@ -31,13 +26,13 @@ test.describe('Interview Workflow', () => {
     await page.getByText('Great Candidate').click()
 
     // Verify score selection registered — Mantine SegmentedControl sets data-active on the label
-    const scoreLabel = page.getByText('Great Candidate').locator('xpath=ancestor::label[@data-active]')
+    const scoreLabel = page
+      .getByText('Great Candidate')
+      .locator('xpath=ancestor::label[@data-active]')
     await expect(scoreLabel).toBeVisible({ timeout: 5_000 })
 
     // Verify "Interview Note" card title is visible
-    await expect(
-      page.getByRole('heading', { name: 'Interview Note', exact: true }),
-    ).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Interview Note', exact: true })).toBeVisible()
 
     // Fill interview note using the ProseMirror editor
     // (InterviewNoteCard uses DocumentEditor without a Mantine InputWrapper label,
@@ -46,7 +41,9 @@ test.describe('Interview Workflow', () => {
     await noteEditor.click()
     const modifier = process.platform === 'darwin' ? 'Meta' : 'Control'
     await page.keyboard.press(`${modifier}+a`)
-    await page.keyboard.type('Good understanding of streaming concepts and anomaly detection methods.')
+    await page.keyboard.type(
+      'Good understanding of streaming concepts and anomaly detection methods.',
+    )
 
     // Wait for auto-save (debounced at 1000ms) — look for "Saved" indicator
     await expect(page.getByText('Saved')).toBeVisible({ timeout: 10_000 })
@@ -56,14 +53,14 @@ test.describe('Interview Workflow', () => {
     await navigateTo(page, `/interviews/${INTERVIEW_PROCESS_ID}`)
 
     // Wait for interview management page to load
-    await expect(
-      page.getByRole('heading', { name: /interview management/i }),
-    ).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByRole('heading', { name: /interview management/i })).toBeVisible({
+      timeout: 15_000,
+    })
 
     // Verify interviewees section is visible
-    await expect(
-      page.getByRole('heading', { name: 'Interviewees', exact: true }),
-    ).toBeVisible({ timeout: 10_000 })
+    await expect(page.getByRole('heading', { name: 'Interviewees', exact: true })).toBeVisible({
+      timeout: 10_000,
+    })
 
     // Click "Add Slot" button to open the modal
     await page.getByRole('button', { name: /Add Slot|^Add$/i }).click()

@@ -1,5 +1,14 @@
 import { test, expect } from '@playwright/test'
 import { authStatePath, createTestPdfBuffer, navigateToDetail } from './helpers'
+import {
+  snapshotMailbox,
+  waitForNewMessages,
+  getSubject,
+  getBody,
+  getToAddresses,
+  assertSentFromApp,
+  hasAttachment,
+} from './mailpit'
 
 // Thesis d000-0002 is in PROPOSAL state, assigned to student2 with advisor
 const THESIS_ID = '00000000-0000-4000-d000-000000000002'
@@ -33,11 +42,41 @@ test.describe('Proposal Upload - Student uploads proposal', () => {
       buffer: createTestPdfBuffer(),
     })
 
+    // Snapshot mailbox BEFORE the upload action
+    const beforeIds = await snapshotMailbox('advisor@test.local')
+
     // Click "Upload File" button in the modal
     await page.getByRole('dialog').getByRole('button', { name: 'Upload File' }).click()
 
     // Modal should close after successful upload
     await expect(page.getByRole('dialog')).not.toBeVisible({ timeout: 15_000 })
+
+    // --- Email verification ---
+    // THESIS_PROPOSAL_UPLOADED is sent to the thesis advisors with the proposal attached
+    const newEmails = await waitForNewMessages('advisor@test.local', beforeIds)
+    expect(newEmails.length).toBeGreaterThanOrEqual(1)
+
+    const proposalEmail = newEmails.find((e) => getSubject(e) === 'Thesis Proposal Added')
+    expect(proposalEmail, 'Proposal upload email with correct subject should be sent').toBeDefined()
+    assertSentFromApp(proposalEmail!)
+    expect(getToAddresses(proposalEmail!)).toContain('advisor@test.local')
+
+    // Body should reference the thesis title, the uploader name, and include a link
+    const proposalBody = getBody(proposalEmail!)
+    expect(proposalBody, 'Should contain the thesis title').toContain(THESIS_TITLE)
+    expect(proposalBody, 'Should mention the student who uploaded').toContain('Student2')
+    expect(proposalBody, 'Should contain a link to the thesis').toContain('/theses/')
+    expect(proposalBody, 'Should reference the attachment').toContain('attachment')
+
+    // The server attaches the proposal PDF via addStoredAttachment. If the stored file
+    // is available (proposalFilename is set and file exists on disk), verify the filename.
+    // The attachment may be absent if the file is not yet persisted when the email is sent.
+    if (hasAttachment(proposalEmail!)) {
+      expect(
+        hasAttachment(proposalEmail!, /Proposal/i),
+        'Attachment filename should contain "Proposal"',
+      ).toBe(true)
+    }
   })
 })
 
@@ -62,11 +101,11 @@ test.describe('Proposal Feedback - Advisor requests changes', () => {
       .getByLabel('New Change Requests (one request per line)')
       .fill('Please add a literature review section\nFix the formatting of the references')
 
+    // Snapshot mailbox BEFORE the action
+    const beforeIds = await snapshotMailbox('student2@test.local')
+
     // Click "Request Changes" button in the modal
-    await page
-      .getByRole('dialog')
-      .getByRole('button', { name: 'Request Changes' })
-      .click()
+    await page.getByRole('dialog').getByRole('button', { name: 'Request Changes' }).click()
 
     // Modal should close after successful submission
     await expect(page.getByRole('dialog')).not.toBeVisible({ timeout: 15_000 })
@@ -75,5 +114,31 @@ test.describe('Proposal Feedback - Advisor requests changes', () => {
     await expect(page.getByText('Please add a literature review section').first()).toBeVisible({
       timeout: 10_000,
     })
+
+    // --- Email verification ---
+    // THESIS_PROPOSAL_REJECTED is sent to the thesis students
+    const newEmails = await waitForNewMessages('student2@test.local', beforeIds)
+    expect(newEmails.length).toBeGreaterThanOrEqual(1)
+
+    const changeRequestEmail = newEmails.find(
+      (e) => getSubject(e) === 'Changes were requested for Proposal',
+    )
+    expect(
+      changeRequestEmail,
+      'Change request email with correct subject should be sent',
+    ).toBeDefined()
+    assertSentFromApp(changeRequestEmail!)
+    expect(getToAddresses(changeRequestEmail!)).toContain('student2@test.local')
+
+    // Body should greet the student, reference the thesis title, mention the reviewer,
+    // contain a thesis link, and list ALL requested changes
+    const body = getBody(changeRequestEmail!)
+    expect(body, 'Should greet the student by first name').toContain('Student2')
+    expect(body, 'Should contain the thesis title').toContain(THESIS_TITLE)
+    expect(body, 'Should contain the first change request').toContain('literature review')
+    expect(body, 'Should contain the second change request').toContain(
+      'formatting of the references',
+    )
+    expect(body, 'Should contain a link to the thesis').toContain('/theses/')
   })
 })

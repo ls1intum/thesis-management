@@ -87,9 +87,21 @@ The seed data includes 6 topics across both research groups:
 
 3 interview processes (2 completed, 1 active) with interviewees, interview slots, and assessments.
 
-## Postfix
+## Email (Mailpit)
 
-Notice: local development does not support mailing functionality. The mails are printed in the console when no postfix instance is configured.
+Local development uses [Mailpit](https://github.com/axllent/mailpit) to capture all outgoing emails. Mailpit is included in `docker-compose.yml` and starts automatically with the other services:
+
+```bash
+docker compose up -d
+```
+
+When the server runs with the `dev` profile, it is pre-configured to send emails to Mailpit (SMTP on port 1025) with mail sending enabled. No additional configuration is needed.
+
+Open the Mailpit web UI to browse captured emails:
+
+**http://localhost:8025**
+
+All emails (including attachments) sent by the application are available there for inspection. This replaces the previous console-only logging approach and makes it easy to verify email content, formatting, and recipients during development and testing.
 
 ## Server
 
@@ -276,7 +288,7 @@ Tests are located in `client/e2e/` and authenticate via the Keycloak login form 
 
 | File | Description |
 |------|-------------|
-| `auth.setup.ts` | Authenticates all test users (student, student2, student3, advisor, advisor2, supervisor, supervisor2, admin) via Keycloak and caches their session state |
+| `auth.setup.ts` | Authenticates all test users (student, student2, student3, advisor, advisor2, supervisor, supervisor2, admin, delete_old_thesis, delete_recent_thesis, delete_rejected_app) via Keycloak and caches their session state |
 | `auth.spec.ts` | Keycloak redirect for unauthenticated users, role-based navigation item visibility for all 5 access levels |
 | `navigation.spec.ts` | Public page rendering (landing page, about, footer), sidebar navigation flow, route access per role |
 | `dashboard.spec.ts` | Dashboard sections per role (My Theses, My Applications) |
@@ -296,16 +308,23 @@ Tests are located in `client/e2e/` and authenticate via the Keycloak login form 
 | `application-review-workflow.spec.ts` | Advisor rejects and accepts NOT_ASSESSED applications: reject with reason, accept with pre-filled thesis details |
 | `thesis-grading-workflow.spec.ts` | Sequential thesis grading: advisor submits assessment, supervisor submits final grade, supervisor marks thesis as finished |
 | `interview-workflow.spec.ts` | Supervisor scores an interviewee with notes, opens add slot modal on interview process page |
+| **Data Management Tests** | |
+| `thesis-anonymization.spec.ts` | Admin triggers anonymization from admin page, idempotent second run, anonymized thesis banner, recent thesis unaffected, student cannot access admin page |
+| `data-retention.spec.ts` | Admin deletes individual application with confirmation modal, batch cleanup from admin page, recent rejected application survives cleanup, advisor cannot see delete button or admin page |
+| `account-deletion.spec.ts` | Self-service account deletion for 3 user types (full deletion, soft deletion with retention, expired retention), research group head blocked, confirmation dialog safety (cancel resets state), admin user search and deletion preview (retention-blocked, active thesis, research group head), route protection |
+| `data-export.spec.ts` | Data export page rendering, requesting an export and verifying processing status, privacy page link for authenticated/unauthenticated users, route protection |
+| `thesis-config-user-search.spec.ts` | Thesis configuration user search filters by role: student selector shows students only |
 
 ### Tested Roles
 
 Every major page is tested with appropriate roles to verify access control:
 
-- **Unauthenticated** — public pages are accessible, protected routes redirect to Keycloak login
-- **Student** — dashboard, submit application, browse theses, settings, presentations; cannot access management pages
-- **Advisor** — dashboard, review applications, manage topics, theses overview, interviews, settings
-- **Supervisor** — same as advisor (management view); additional thesis detail assertions
-- **Admin** — all pages including research groups management
+- **Unauthenticated** — public pages are accessible, protected routes redirect to Keycloak login, data export page inaccessible
+- **Student** — dashboard, submit application, browse theses, settings, presentations, data export, self-service account deletion; cannot access management pages
+- **Advisor** — dashboard, review applications, manage topics, theses overview, interviews, settings; cannot see delete buttons on applications or access admin page
+- **Supervisor** — same as advisor (management view); additional thesis detail assertions; research group head deletion blocked
+- **Admin** — all pages including research groups management, thesis anonymization, data retention cleanup, user account deletion
+- **Dedicated deletion users** — `delete_rejected_app`, `delete_recent_thesis`, `delete_old_thesis` test the full account deletion flow for different retention scenarios
 
 ### Coverage
 
@@ -316,15 +335,19 @@ The E2E tests focus on page accessibility, content rendering, and role-based acc
 | **Authentication & RBAC** | Keycloak redirect, nav item visibility per role, access denied for unauthorized roles | Token refresh, session expiry, logout |
 | **Topics** | Public browsing, search, filters, list/grid toggle, management view, student apply button, **creating a topic end-to-end** | Editing/closing topics, draft topics |
 | **Applications** | Stepper form rendering, pre-selected topic, advisor/supervisor review page access, **submitting an application end-to-end**, **accepting and rejecting applications** | — |
-| **Theses** | Browse per role, overview page, detail page sections, student own thesis, **creating a thesis end-to-end**, **submitting proposal feedback**, **assessment → final grade → mark as finished** | Comments |
+| **Theses** | Browse per role, overview page, detail page sections, student own thesis, **creating a thesis end-to-end**, **submitting proposal feedback**, **assessment → final grade → mark as finished**, user search filters by role | Comments |
+| **Thesis Anonymization** | Admin triggers anonymization, idempotent second run finds nothing, anonymized thesis shows banner, recent thesis unaffected, student cannot access admin page | — |
 | **Interviews** | Supervisor overview and process detail, advisor access, student denied, **scoring interviewees with notes**, **add slot modal** | Creating interview processes, booking slots |
 | **Presentations** | Page access per role, public presentation detail, **creating a presentation draft** | Calendar integration |
-| **Settings** | Tab rendering per role | Editing profile information, notification preferences |
+| **Settings** | Tab rendering per role, **Account tab with deletion UI** | Editing profile information, notification preferences |
+| **Account Deletion** | Self-service full deletion (rejected app user), soft deletion with retention (recent thesis user), full deletion after retention expiry (old thesis user), research group head blocked, confirmation dialog safety (cancel resets state), admin user search and preview (retention, active thesis, research group head), route protection for non-admin | — |
+| **Data Retention** | Admin deletes individual application with confirmation modal, batch cleanup from admin page, recent rejected application survives cleanup, advisor cannot see delete button or access admin page | — |
+| **Data Export** | Page rendering with info text, requesting export and verifying processing status, privacy page link (authenticated and unauthenticated), route protection | Downloading completed export |
 | **Research Groups** | Admin CRUD page, search filtering, student denied | Creating/editing groups, member management |
 | **Dashboard** | Section visibility per role (My Theses, My Applications) | Dashboard data accuracy, links to detail pages |
 | **Navigation** | Public pages, sidebar flow, header logo, footer links, unknown routes | Mobile/responsive layout, deep linking |
 
-**In summary:** The tests cover page rendering/access control across all roles and key end-to-end workflows including topic creation, thesis creation, application submission, presentation scheduling, proposal feedback, application accept/reject, thesis grading (assessment → grade → finish), and interview scoring.
+**In summary:** The tests cover page rendering/access control across all roles and key end-to-end workflows including topic creation, thesis creation, application submission, presentation scheduling, proposal feedback, application accept/reject, thesis grading (assessment → grade → finish), interview scoring, thesis anonymization, data retention cleanup, self-service account deletion (full, soft, and expired-retention), admin user deletion, and GDPR data export.
 
 ### CI Integration
 

@@ -17,6 +17,11 @@ import java.util.UUID;
 public interface ThesisRoleRepository extends JpaRepository<ThesisRole, ThesisRoleId> {
 	List<ThesisRole> deleteByThesisId(UUID thesisId);
 
+	@Modifying
+	@Transactional
+	@Query("DELETE FROM ThesisRole tr WHERE tr.id.thesisId = :thesisId")
+	void deleteAllByThesisId(@Param("thesisId") UUID thesisId);
+
 	@Query("SELECT tr FROM ThesisRole tr JOIN FETCH tr.thesis WHERE tr.id.userId = :userId")
 	List<ThesisRole> findAllByIdUserIdWithThesis(@Param("userId") UUID userId);
 

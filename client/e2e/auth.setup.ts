@@ -10,7 +10,11 @@ const TEST_USERS = [
   { name: 'supervisor2', username: 'supervisor2', password: 'supervisor2' },
   { name: 'admin', username: 'admin', password: 'admin' },
   { name: 'delete_old_thesis', username: 'delete_old_thesis', password: 'delete_old_thesis' },
-  { name: 'delete_recent_thesis', username: 'delete_recent_thesis', password: 'delete_recent_thesis' },
+  {
+    name: 'delete_recent_thesis',
+    username: 'delete_recent_thesis',
+    password: 'delete_recent_thesis',
+  },
   { name: 'delete_rejected_app', username: 'delete_rejected_app', password: 'delete_rejected_app' },
 ] as const
 
@@ -31,16 +35,19 @@ for (const user of TEST_USERS) {
     await expect(page).toHaveURL(/localhost:3000/, { timeout: 30_000 })
 
     // Wait for the app to fully initialize with the auth tokens
-    await page.waitForFunction(() => {
-      try {
-        const tokens = localStorage.getItem('authentication_tokens')
-        if (!tokens) return false
-        const parsed = JSON.parse(tokens)
-        return !!parsed.access_token && !!parsed.refresh_token
-      } catch {
-        return false
-      }
-    }, { timeout: 15_000 })
+    await page.waitForFunction(
+      () => {
+        try {
+          const tokens = localStorage.getItem('authentication_tokens')
+          if (!tokens) return false
+          const parsed = JSON.parse(tokens)
+          return !!parsed.access_token && !!parsed.refresh_token
+        } catch {
+          return false
+        }
+      },
+      { timeout: 15_000 },
+    )
 
     // Save the authenticated state (localStorage + cookies including Keycloak session)
     await page.context().storageState({ path: `e2e/.auth/${user.name}.json` })

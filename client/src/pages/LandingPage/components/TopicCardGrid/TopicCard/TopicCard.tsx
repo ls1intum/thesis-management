@@ -27,11 +27,12 @@ const TopicCard = ({ topic, setOpenTopic }: ITopicCardProps) => {
     if ('type' in topic) {
       // It's a published thesis
       setThesisTypes([topic.type])
-      setStudents(topic.students)
+      setStudents(topic.students ?? [])
       setIsPublished(true)
       setTopicId(topic.thesisId)
     } else {
       setThesisTypes(topic.thesisTypes ?? [])
+      setStudents([])
       setIsPublished(false)
       setTopicId(topic.topicId)
     }
@@ -102,7 +103,7 @@ const TopicCard = ({ topic, setOpenTopic }: ITopicCardProps) => {
             <Users></Users>
             <Text size='sm'>Advisor(s)</Text>
           </Group>
-          <AvatarUserList users={topic.advisors} />
+          <AvatarUserList users={topic.advisors ?? []} />
         </Stack>
 
         {students.length > 0 && (

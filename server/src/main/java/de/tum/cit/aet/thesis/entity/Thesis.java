@@ -105,6 +105,12 @@ public class Thesis {
 	@Column(name = "created_at", nullable = false)
 	private Instant createdAt;
 
+	@Column(name = "anonymized_at")
+	private Instant anonymizedAt;
+
+	@Column(name = "anonymization_notified_at")
+	private Instant anonymizationNotifiedAt;
+
 	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "research_group_id", nullable = false)
@@ -137,6 +143,10 @@ public class Thesis {
 
 	@OneToMany(mappedBy = "thesis", fetch = FetchType.EAGER)
 	private Set<ThesisStateChange> states = new HashSet<>();
+
+	public boolean isAnonymized() {
+		return anonymizedAt != null;
+	}
 
 	public List<User> getStudents() {
 		List<User> result = new ArrayList<>();

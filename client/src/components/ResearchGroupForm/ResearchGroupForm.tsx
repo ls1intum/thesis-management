@@ -132,7 +132,7 @@ const ResearchGroupForm = ({
             {...form.getInputProps('description')}
           />
           <Text size='xs' c='dimmed'>
-            {form.values.description.length}/{descriptionMaxLength} characters
+            {(form.values.description ?? '').length}/{descriptionMaxLength} characters
           </Text>
         </Grid.Col>
 

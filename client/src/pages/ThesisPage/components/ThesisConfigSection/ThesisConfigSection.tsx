@@ -1,6 +1,19 @@
 import { IThesis, ThesisState } from '../../../../requests/responses/thesis'
-import { Accordion, Button, Group, Select, Stack, TagsInput, Text, TextInput } from '@mantine/core'
+import {
+  Accordion,
+  Alert,
+  Button,
+  Group,
+  List,
+  Modal,
+  Select,
+  Stack,
+  TagsInput,
+  Text,
+  TextInput,
+} from '@mantine/core'
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router'
 import { isNotEmpty, useForm } from '@mantine/form'
 import { DateInput, DateTimePicker } from '@mantine/dates'
 import { UserMultiSelect } from '../../../../components/UserMultiSelect/UserMultiSelect'
@@ -20,8 +33,9 @@ import { formatThesisType } from '../../../../utils/format'
 import LanguageSelect from '../../../../components/LanguageSelect/LanguageSelect'
 import { PaginationResponse } from '../../../../requests/responses/pagination'
 import { ILightResearchGroup } from '../../../../requests/responses/researchGroup'
-import { showSimpleError } from '../../../../utils/notification'
+import { showSimpleError, showSimpleSuccess } from '../../../../utils/notification'
 import { useHasGroupAccess } from '../../../../hooks/authentication'
+import { Warning } from '@phosphor-icons/react'
 
 interface IThesisConfigSectionFormValues {
   title: string
@@ -61,7 +75,11 @@ const thesisDatesValidator = (
 const ThesisConfigSection = () => {
   const { thesis, access } = useLoadedThesisContext()
   const hasAdminAccess = useHasGroupAccess('admin')
+  const navigate = useNavigate()
   const [researchGroups, setResearchGroups] = useState<PaginationResponse<ILightResearchGroup>>()
+  const [anonymizeModalOpen, setAnonymizeModalOpen] = useState(false)
+  const [anonymizeWarnings, setAnonymizeWarnings] = useState<string[]>([])
+  const [anonymizeLoading, setAnonymizeLoading] = useState(false)
 
   const form = useForm<IThesisConfigSectionFormValues>({
     mode: 'controlled',
@@ -206,6 +224,46 @@ const ThesisConfigSection = () => {
     }
   }, 'Thesis closed successfully')
 
+  const onDeleteThesisClick = async () => {
+    setAnonymizeLoading(true)
+    try {
+      const response = await doRequest<{ warnings: string[] }>(
+        `/v2/theses/${thesis.thesisId}/anonymize/warnings`,
+        {
+          method: 'GET',
+          requiresAuth: true,
+        },
+      )
+      if (response.ok) {
+        setAnonymizeWarnings(response.data.warnings ?? [])
+        setAnonymizeModalOpen(true)
+      } else {
+        showSimpleError(getApiResponseErrorMessage(response))
+      }
+    } finally {
+      setAnonymizeLoading(false)
+    }
+  }
+
+  const onConfirmAnonymize = async () => {
+    setAnonymizeLoading(true)
+    try {
+      const response = await doRequest(`/v2/theses/${thesis.thesisId}/anonymize`, {
+        method: 'DELETE',
+        requiresAuth: true,
+      })
+      if (response.ok) {
+        showSimpleSuccess('Thesis anonymized successfully')
+        setAnonymizeModalOpen(false)
+        navigate('/theses')
+      } else {
+        showSimpleError(getApiResponseErrorMessage(response))
+      }
+    } finally {
+      setAnonymizeLoading(false)
+    }
+  }
+
   const [updating, onSave] = useThesisUpdateAction(async () => {
     const values = form.values
 
@@ -239,149 +297,196 @@ const ThesisConfigSection = () => {
   }, 'Thesis updated successfully')
 
   return (
-    <Accordion variant='separated' defaultValue=''>
-      <Accordion.Item value='open'>
-        <Accordion.Control>Configuration</Accordion.Control>
-        <Accordion.Panel>
-          <form onSubmit={form.onSubmit(() => void onSave())}>
-            <Stack gap='md'>
-              <TextInput
-                label='Thesis Title'
-                required={true}
-                disabled={!access.advisor}
-                {...form.getInputProps('title')}
-              />
-              <Select
-                label='Thesis Type'
-                required={true}
-                disabled={!access.advisor}
-                data={Object.keys(GLOBAL_CONFIG.thesis_types).map((key) => ({
-                  value: key,
-                  label: formatThesisType(key),
-                }))}
-                {...form.getInputProps('type')}
-              />
-              <LanguageSelect
-                label='Thesis Language'
-                required={true}
-                {...form.getInputProps('language')}
-              />
-              <ThesisVisibilitySelect
-                label='Visibility'
-                required={true}
-                disabled={!access.advisor}
-                {...form.getInputProps('visibility')}
-              />
-              <TagsInput
-                label='Keywords'
-                disabled={!access.advisor}
-                data={form.values.keywords}
-                {...form.getInputProps('keywords')}
-              />
-              <Group grow>
-                <DateInput
-                  label='Start Date'
+    <>
+      <Accordion variant='separated' defaultValue=''>
+        <Accordion.Item value='open'>
+          <Accordion.Control>Configuration</Accordion.Control>
+          <Accordion.Panel>
+            <form onSubmit={form.onSubmit(() => void onSave())}>
+              <Stack gap='md'>
+                <TextInput
+                  label='Thesis Title'
+                  required={true}
                   disabled={!access.advisor}
-                  {...form.getInputProps('startDate')}
-                  onChange={(date) =>
-                    form.setFieldValue('startDate', date ? new Date(date) : undefined)
-                  }
+                  {...form.getInputProps('title')}
                 />
-                <DateInput
-                  label='End Date'
+                <Select
+                  label='Thesis Type'
+                  required={true}
                   disabled={!access.advisor}
-                  {...form.getInputProps('endDate')}
-                  onChange={(date) =>
-                    form.setFieldValue('endDate', date ? new Date(date) : undefined)
-                  }
+                  data={Object.keys(GLOBAL_CONFIG.thesis_types).map((key) => ({
+                    value: key,
+                    label: formatThesisType(key),
+                  }))}
+                  {...form.getInputProps('type')}
                 />
-              </Group>
-              <UserMultiSelect
-                required={true}
-                disabled={!access.advisor}
-                label='Student(s)'
-                groups={['student']}
-                initialUsers={thesis.students}
-                {...form.getInputProps('students')}
-              />
-              <UserMultiSelect
-                required={true}
-                disabled={!access.advisor}
-                label='Supervisor(s)'
-                groups={['advisor', 'supervisor']}
-                initialUsers={thesis.advisors}
-                {...form.getInputProps('advisors')}
-              />
-              <UserMultiSelect
-                required={true}
-                disabled={!access.advisor}
-                label='Examiner'
-                groups={['supervisor']}
-                initialUsers={thesis.supervisors}
-                maxValues={1}
-                {...form.getInputProps('supervisors')}
-              />
-              <Select
-                label='Research Group'
-                required
-                nothingFoundMessage={'Nothing found...'}
-                disabled={!hasAdminAccess}
-                data={(researchGroups?.content ?? []).map((researchGroup: ILightResearchGroup) => ({
-                  label: researchGroup.name,
-                  value: researchGroup.id,
-                }))}
-                {...form.getInputProps('researchGroupId')}
-              />
-              {form.values.states.map((item, index) => (
-                <Group key={item.state} grow>
-                  <Group justify='center'>
-                    <Text ta='center' fw='bold'>
-                      State changed to
-                    </Text>
-                    <ThesisStateBadge state={item.state} />
-                    <Text ta='center' fw='bold'>
-                      at
-                    </Text>
-                  </Group>
-                  <DateTimePicker
-                    required={true}
+                <LanguageSelect
+                  label='Thesis Language'
+                  required={true}
+                  {...form.getInputProps('language')}
+                />
+                <ThesisVisibilitySelect
+                  label='Visibility'
+                  required={true}
+                  disabled={!access.advisor}
+                  {...form.getInputProps('visibility')}
+                />
+                <TagsInput
+                  label='Keywords'
+                  disabled={!access.advisor}
+                  data={form.values.keywords}
+                  {...form.getInputProps('keywords')}
+                />
+                <Group grow>
+                  <DateInput
+                    label='Start Date'
                     disabled={!access.advisor}
-                    value={item.changedAt}
-                    error={form.errors.states}
-                    onChange={(value) => {
-                      form.values.states[index] = {
-                        state: item.state,
-                        changedAt: value ? new Date(value) : null,
-                      }
-                      form.setFieldValue('states', [...form.values.states])
-                    }}
+                    {...form.getInputProps('startDate')}
+                    onChange={(date) =>
+                      form.setFieldValue('startDate', date ? new Date(date) : undefined)
+                    }
+                  />
+                  <DateInput
+                    label='End Date'
+                    disabled={!access.advisor}
+                    {...form.getInputProps('endDate')}
+                    onChange={(date) =>
+                      form.setFieldValue('endDate', date ? new Date(date) : undefined)
+                    }
                   />
                 </Group>
-              ))}
-              {access.advisor && (
-                <Group>
-                  {!isThesisClosed(thesis) && (
-                    <ConfirmationButton
-                      confirmationText='Are you sure you want to close the thesis? This will set the thesis state to DROPPED OUT and cannot be undone.'
-                      confirmationTitle='Close Thesis'
-                      variant='outline'
-                      color='red'
-                      loading={closing}
-                      onClick={onClose}
-                    >
-                      Close Thesis
-                    </ConfirmationButton>
+                <UserMultiSelect
+                  required={true}
+                  disabled={!access.advisor}
+                  label='Student(s)'
+                  groups={['student']}
+                  initialUsers={thesis.students ?? []}
+                  {...form.getInputProps('students')}
+                />
+                <UserMultiSelect
+                  required={true}
+                  disabled={!access.advisor}
+                  label='Supervisor(s)'
+                  groups={['advisor', 'supervisor']}
+                  initialUsers={thesis.advisors ?? []}
+                  {...form.getInputProps('advisors')}
+                />
+                <UserMultiSelect
+                  required={true}
+                  disabled={!access.advisor}
+                  label='Examiner'
+                  groups={['supervisor']}
+                  initialUsers={thesis.supervisors ?? []}
+                  maxValues={1}
+                  {...form.getInputProps('supervisors')}
+                />
+                <Select
+                  label='Research Group'
+                  required
+                  nothingFoundMessage={'Nothing found...'}
+                  disabled={!hasAdminAccess}
+                  data={(researchGroups?.content ?? []).map(
+                    (researchGroup: ILightResearchGroup) => ({
+                      label: researchGroup.name,
+                      value: researchGroup.id,
+                    }),
                   )}
-                  <Button type='submit' ml='auto' loading={updating} disabled={!form.isValid()}>
-                    Update
-                  </Button>
-                </Group>
-              )}
-            </Stack>
-          </form>
-        </Accordion.Panel>
-      </Accordion.Item>
-    </Accordion>
+                  {...form.getInputProps('researchGroupId')}
+                />
+                {form.values.states.map((item, index) => (
+                  <Group key={item.state} grow>
+                    <Group justify='center'>
+                      <Text ta='center' fw='bold'>
+                        State changed to
+                      </Text>
+                      <ThesisStateBadge state={item.state} />
+                      <Text ta='center' fw='bold'>
+                        at
+                      </Text>
+                    </Group>
+                    <DateTimePicker
+                      required={true}
+                      disabled={!access.advisor}
+                      value={item.changedAt}
+                      error={form.errors.states}
+                      onChange={(value) => {
+                        form.values.states[index] = {
+                          state: item.state,
+                          changedAt: value ? new Date(value) : null,
+                        }
+                        form.setFieldValue('states', [...form.values.states])
+                      }}
+                    />
+                  </Group>
+                ))}
+                {access.advisor && (
+                  <Group>
+                    {!isThesisClosed(thesis) && (
+                      <ConfirmationButton
+                        confirmationText='Are you sure you want to close the thesis? This will set the thesis state to DROPPED OUT and cannot be undone.'
+                        confirmationTitle='Close Thesis'
+                        variant='outline'
+                        color='red'
+                        loading={closing}
+                        onClick={onClose}
+                      >
+                        Close Thesis
+                      </ConfirmationButton>
+                    )}
+                    {hasAdminAccess && !thesis.anonymizedAt && (
+                      <Button
+                        variant='outline'
+                        color='red'
+                        loading={anonymizeLoading}
+                        onClick={onDeleteThesisClick}
+                      >
+                        Anonymize Thesis
+                      </Button>
+                    )}
+                    <Button type='submit' ml='auto' loading={updating} disabled={!form.isValid()}>
+                      Update
+                    </Button>
+                  </Group>
+                )}
+              </Stack>
+            </form>
+          </Accordion.Panel>
+        </Accordion.Item>
+      </Accordion>
+
+      {hasAdminAccess && (
+        <Modal
+          opened={anonymizeModalOpen}
+          onClose={() => setAnonymizeModalOpen(false)}
+          title='Anonymize Thesis'
+        >
+          <Stack gap='md'>
+            {anonymizeWarnings.length > 0 && (
+              <Alert color='orange' icon={<Warning />} title='Warnings'>
+                <List size='sm'>
+                  {anonymizeWarnings.map((warning, index) => (
+                    <List.Item key={index}>{warning}</List.Item>
+                  ))}
+                </List>
+              </Alert>
+            )}
+            <Text size='sm'>
+              Are you sure you want to anonymize this thesis? Personal data (files, proposals,
+              comments, assessments, feedback, role assignments) will be removed. Structural thesis
+              metadata is retained for reporting purposes. This action cannot be undone.
+            </Text>
+            <Group justify='flex-end'>
+              <Button variant='default' onClick={() => setAnonymizeModalOpen(false)}>
+                Cancel
+              </Button>
+              <Button color='red' loading={anonymizeLoading} onClick={onConfirmAnonymize}>
+                Anonymize Thesis
+              </Button>
+            </Group>
+          </Stack>
+        </Modal>
+      )}
+    </>
   )
 }
 

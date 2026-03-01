@@ -22,7 +22,9 @@ test.describe('Applications - Student', () => {
 
     await expect(page.getByRole('heading', { name: /dashboard/i })).toBeVisible({ timeout: 30_000 })
     // Student should see My Applications section
-    await expect(page.getByRole('heading', { name: /my applications/i })).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByRole('heading', { name: /my applications/i })).toBeVisible({
+      timeout: 15_000,
+    })
   })
 })
 

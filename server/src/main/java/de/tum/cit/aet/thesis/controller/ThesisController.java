@@ -16,6 +16,8 @@ import de.tum.cit.aet.thesis.controller.payload.UpdateThesisCreditsPayload;
 import de.tum.cit.aet.thesis.controller.payload.UpdateThesisInfoPayload;
 import de.tum.cit.aet.thesis.controller.payload.UpdateThesisPayload;
 import de.tum.cit.aet.thesis.dto.PaginationDto;
+import de.tum.cit.aet.thesis.dto.ThesisAnonymizationResultDto;
+import de.tum.cit.aet.thesis.dto.ThesisAnonymizationWarningsDto;
 import de.tum.cit.aet.thesis.dto.ThesisCommentDto;
 import de.tum.cit.aet.thesis.dto.ThesisDto;
 import de.tum.cit.aet.thesis.dto.ThesisOverviewDto;
@@ -26,6 +28,7 @@ import de.tum.cit.aet.thesis.entity.ThesisPresentation;
 import de.tum.cit.aet.thesis.entity.ThesisProposal;
 import de.tum.cit.aet.thesis.entity.User;
 import de.tum.cit.aet.thesis.security.CurrentUserProvider;
+import de.tum.cit.aet.thesis.service.ThesisAnonymizationService;
 import de.tum.cit.aet.thesis.service.ThesisCommentService;
 import de.tum.cit.aet.thesis.service.ThesisPresentationService;
 import de.tum.cit.aet.thesis.service.ThesisService;
@@ -37,6 +40,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -64,22 +68,25 @@ public class ThesisController {
 	private final ThesisService thesisService;
 	private final ThesisCommentService thesisCommentService;
 	private final ThesisPresentationService thesisPresentationService;
+	private final ThesisAnonymizationService thesisAnonymizationService;
 	private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
 
 	/**
-	 * Injects the thesis service, comment service, presentation service, and current user provider.
+	 * Injects the thesis service, comment service, presentation service, anonymization service, and current user provider.
 	 *
 	 * @param thesisService the service for thesis operations
 	 * @param thesisCommentService the service for thesis comment operations
 	 * @param thesisPresentationService the service for thesis presentation operations
+	 * @param thesisAnonymizationService the service for thesis anonymization operations
 	 * @param currentUserProviderProvider the provider for the current authenticated user
 	 */
 	@Autowired
 	public ThesisController(ThesisService thesisService, ThesisCommentService thesisCommentService, ThesisPresentationService thesisPresentationService,
-		ObjectProvider<CurrentUserProvider> currentUserProviderProvider) {
+		ThesisAnonymizationService thesisAnonymizationService, ObjectProvider<CurrentUserProvider> currentUserProviderProvider) {
 		this.thesisService = thesisService;
 		this.thesisCommentService = thesisCommentService;
 		this.thesisPresentationService = thesisPresentationService;
+		this.thesisAnonymizationService = thesisAnonymizationService;
 		this.currentUserProviderProvider = currentUserProviderProvider;
 	}
 
@@ -977,5 +984,39 @@ public class ThesisController {
 		thesis = thesisService.completeThesis(thesis);
 
 		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
+	}
+
+	/* ANONYMIZATION ENDPOINTS */
+
+	/**
+	 * Returns warnings about anonymizing a specific thesis (e.g. retention not expired, non-terminal state).
+	 *
+	 * @param thesisId the unique identifier of the thesis
+	 * @return the list of warnings
+	 */
+	@GetMapping("/{thesisId}/anonymize/warnings")
+	@PreAuthorize("hasRole('admin')")
+	public ResponseEntity<ThesisAnonymizationWarningsDto> getAnonymizationWarnings(@PathVariable UUID thesisId) {
+		Thesis thesis = thesisService.findById(thesisId);
+		return ResponseEntity.ok(new ThesisAnonymizationWarningsDto(thesisAnonymizationService.computeAnonymizationWarnings(thesis)));
+	}
+
+	/**
+	 * Anonymizes a single thesis, removing all personal data and associated records.
+	 *
+	 * @param thesisId the unique identifier of the thesis to anonymize
+	 * @return the anonymization result
+	 */
+	@DeleteMapping("/{thesisId}/anonymize")
+	@PreAuthorize("hasRole('admin')")
+	public ResponseEntity<ThesisAnonymizationResultDto> anonymizeThesis(@PathVariable UUID thesisId) {
+		Thesis thesis = thesisService.findById(thesisId);
+
+		if (thesis.isAnonymized()) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).build();
+		}
+
+		thesisAnonymizationService.anonymizeThesis(thesis);
+		return ResponseEntity.ok(new ThesisAnonymizationResultDto(1));
 	}
 }

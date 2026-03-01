@@ -6,12 +6,41 @@ import ThesisWritingSection from './components/ThesisWritingSection/ThesisWritin
 import ThesisAssessmentSection from './components/ThesisAssessmentSection/ThesisAssessmentSection'
 import ThesisFinalGradeSection from './components/ThesisFinalGradeSection/ThesisFinalGradeSection'
 import { useParams } from 'react-router'
-import { Stack } from '@mantine/core'
+import { Alert, Stack } from '@mantine/core'
+import { Warning } from '@phosphor-icons/react'
 import ThesisHeader from './components/ThesisHeader/ThesisHeader'
 import ThesisProvider from '../../providers/ThesisProvider/ThesisProvider'
 import ThesisAdvisorCommentsSection from './components/ThesisAdvisorCommentsSection/ThesisAdvisorCommentsSection'
 import ThesisStudentInfoSection from './components/ThesisStudentInfoSection/ThesisStudentInfoSection'
 import ThesisPresentationSection from './components/ThesisPresentationSection/ThesisPresentationSection'
+import { useLoadedThesisContext } from '../../providers/ThesisProvider/hooks'
+import { formatDate } from '../../utils/format'
+
+const ThesisPageContent = () => {
+  const { thesis } = useLoadedThesisContext()
+
+  return (
+    <Stack>
+      <ThesisHeader />
+      {thesis.anonymizedAt && (
+        <Alert color='orange' icon={<Warning />}>
+          This thesis was anonymized on {formatDate(thesis.anonymizedAt)} per data retention policy.
+          Personal data (files, comments, assessments, feedback, and role assignments) has been
+          permanently removed.
+        </Alert>
+      )}
+      <ThesisConfigSection />
+      <ThesisStudentInfoSection />
+      <ThesisAdvisorCommentsSection />
+      <ThesisInfoSection />
+      <ThesisProposalSection />
+      <ThesisWritingSection />
+      <ThesisPresentationSection />
+      <ThesisAssessmentSection />
+      <ThesisFinalGradeSection />
+    </Stack>
+  )
+}
 
 const ThesisPage = () => {
   const { thesisId } = useParams<{ thesisId: string }>()
@@ -20,18 +49,7 @@ const ThesisPage = () => {
 
   return (
     <ThesisProvider thesisId={thesisId} requireLoadedThesis>
-      <Stack>
-        <ThesisHeader />
-        <ThesisConfigSection />
-        <ThesisStudentInfoSection />
-        <ThesisAdvisorCommentsSection />
-        <ThesisInfoSection />
-        <ThesisProposalSection />
-        <ThesisWritingSection />
-        <ThesisPresentationSection />
-        <ThesisAssessmentSection />
-        <ThesisFinalGradeSection />
-      </Stack>
+      <ThesisPageContent />
     </ThesisProvider>
   )
 }

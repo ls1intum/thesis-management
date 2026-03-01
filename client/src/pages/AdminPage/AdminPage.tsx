@@ -21,6 +21,10 @@ interface IDataRetentionResult {
   deletedApplications: number
 }
 
+interface IAnonymizationResult {
+  anonymizedTheses: number
+}
+
 interface IDeletionPreview {
   canBeFullyDeleted: boolean
   retentionBlockedThesisCount: number
@@ -40,6 +44,7 @@ interface IPageResponse<T> {
 
 const AdminPage = () => {
   const [loading, setLoading] = useState(false)
+  const [anonymizationLoading, setAnonymizationLoading] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState<IUser[]>([])
   const [searching, setSearching] = useState(false)
@@ -74,6 +79,32 @@ const AdminPage = () => {
       }
     } finally {
       setLoading(false)
+    }
+  }
+
+  const onRunAnonymization = async () => {
+    setAnonymizationLoading(true)
+
+    try {
+      const response = await doRequest<IAnonymizationResult>(
+        '/v2/data-retention/anonymize-expired-theses',
+        {
+          method: 'POST',
+          requiresAuth: true,
+        },
+      )
+
+      if (response.ok) {
+        if (response.data.anonymizedTheses > 0) {
+          showSimpleSuccess(`Anonymized ${response.data.anonymizedTheses} expired thesis/theses`)
+        } else {
+          showSimpleSuccess('No expired theses found')
+        }
+      } else {
+        showSimpleError(getApiResponseErrorMessage(response))
+      }
+    } finally {
+      setAnonymizationLoading(false)
     }
   }
 
@@ -157,6 +188,21 @@ const AdminPage = () => {
           <Group>
             <Button loading={loading} onClick={onRunCleanup}>
               Run Cleanup
+            </Button>
+          </Group>
+        </Stack>
+      </Card>
+      <Card withBorder>
+        <Stack>
+          <Title order={3}>Thesis Anonymization</Title>
+          <Text>
+            Anonymize theses that have exceeded the 5-year legal retention period. Personal data
+            (files, comments, assessments, feedback, role assignments) will be permanently removed
+            while preserving the thesis record (title, type, grade, dates) for statistical purposes.
+          </Text>
+          <Group>
+            <Button loading={anonymizationLoading} onClick={onRunAnonymization}>
+              Run Anonymization
             </Button>
           </Group>
         </Stack>

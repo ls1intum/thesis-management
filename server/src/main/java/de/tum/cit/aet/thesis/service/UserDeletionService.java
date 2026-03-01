@@ -6,7 +6,6 @@ import de.tum.cit.aet.thesis.dto.UserDeletionResultDto;
 import de.tum.cit.aet.thesis.entity.Application;
 import de.tum.cit.aet.thesis.entity.DataExport;
 import de.tum.cit.aet.thesis.entity.ThesisRole;
-import de.tum.cit.aet.thesis.entity.ThesisStateChange;
 import de.tum.cit.aet.thesis.entity.User;
 import de.tum.cit.aet.thesis.exception.request.AccessDeniedException;
 import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
@@ -19,6 +18,7 @@ import de.tum.cit.aet.thesis.repository.ThesisRoleRepository;
 import de.tum.cit.aet.thesis.repository.TopicRoleRepository;
 import de.tum.cit.aet.thesis.repository.UserGroupRepository;
 import de.tum.cit.aet.thesis.repository.UserRepository;
+import de.tum.cit.aet.thesis.utility.RetentionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,7 +27,6 @@ import org.springframework.stereotype.Service;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
@@ -37,7 +36,6 @@ import java.util.UUID;
 @Service
 public class UserDeletionService {
 	private static final Logger log = LoggerFactory.getLogger(UserDeletionService.class);
-	private static final int RETENTION_YEARS = 5;
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MMMM d, yyyy");
 
 	private final UserRepository userRepository;
@@ -50,11 +48,10 @@ public class UserDeletionService {
 	private final UserGroupRepository userGroupRepository;
 	private final NotificationSettingRepository notificationSettingRepository;
 	private final UploadService uploadService;
-	private final jakarta.persistence.EntityManager entityManager;
 	private final Path dataExportPath;
 
 	/**
-	 * Constructs the service with the required repositories, upload service, entity manager, and export path.
+	 * Constructs the service with the required repositories, upload service, and export path.
 	 *
 	 * @param userRepository the user repository
 	 * @param thesisRoleRepository the thesis role repository
@@ -66,7 +63,6 @@ public class UserDeletionService {
 	 * @param userGroupRepository the user group repository
 	 * @param notificationSettingRepository the notification setting repository
 	 * @param uploadService the upload service
-	 * @param entityManager the entity manager
 	 * @param dataExportPath the data export directory path
 	 */
 	public UserDeletionService(
@@ -80,7 +76,6 @@ public class UserDeletionService {
 			UserGroupRepository userGroupRepository,
 			NotificationSettingRepository notificationSettingRepository,
 			UploadService uploadService,
-			jakarta.persistence.EntityManager entityManager,
 			@Value("${thesis-management.data-export.path}") String dataExportPath) {
 		this.userRepository = userRepository;
 		this.thesisRoleRepository = thesisRoleRepository;
@@ -92,7 +87,6 @@ public class UserDeletionService {
 		this.userGroupRepository = userGroupRepository;
 		this.notificationSettingRepository = notificationSettingRepository;
 		this.uploadService = uploadService;
-		this.entityManager = entityManager;
 		this.dataExportPath = Path.of(dataExportPath);
 	}
 
@@ -165,9 +159,8 @@ public class UserDeletionService {
 
 		UserDeletionResultDto result;
 		if (retentionBlockedRoles.isEmpty()) {
-			// No retention — delete the account first, then clean up files
+			// No retention — delete the account and clean up files
 			result = performFullDeletion(user);
-			deleteAllUserFiles(user);
 		} else {
 			// Retention active — only delete avatar (cosmetic), keep CV/degree/exam
 			// as they are part of the thesis evaluation process.
@@ -184,18 +177,11 @@ public class UserDeletionService {
 
 	/** Processes all users whose deferred deletion date has passed and performs full cleanup. */
 	public void processDeferredDeletions() {
-		// Collect IDs first because anonymizeUser() clears the persistence context,
-		// which would detach entities loaded in the same session.
-		List<UUID> pendingUserIds = userRepository.findAllByDeletionScheduledForIsNotNull()
-				.stream().map(User::getId).toList();
+		List<User> pendingUsers = userRepository.findAllByDeletionScheduledForIsNotNull();
 
-		for (UUID userId : pendingUserIds) {
+		for (User user : pendingUsers) {
 			try {
-				User user = userRepository.findById(userId).orElse(null);
-				if (user == null) {
-					continue;
-				}
-
+				UUID userId = user.getId();
 				List<ThesisRole> retentionBlocked = getRetentionBlockedThesisRoles(userId);
 				if (retentionBlocked.isEmpty()) {
 					log.info("Retention expired for user {}, performing full cleanup", userId);
@@ -215,8 +201,6 @@ public class UserDeletionService {
 					thesisRoleRepository.deleteAllByIdUserId(userId);
 
 					// Fully anonymize the tombstone (clear name + file references)
-					// anonymizeUser clears the persistence context and re-fetches,
-					// so we must set deletionScheduledFor via a separate query.
 					anonymizeUser(user);
 					userRepository.clearDeletionScheduledFor(userId);
 
@@ -225,7 +209,7 @@ public class UserDeletionService {
 					deleteExportFiles(exportFilePaths);
 				}
 			} catch (Exception e) {
-				log.error("Failed to process deferred deletion for user {}: {}", userId, e.getMessage(), e);
+				log.error("Failed to process deferred deletion for user {}: {}", user.getId(), e.getMessage(), e);
 			}
 		}
 	}
@@ -247,14 +231,20 @@ public class UserDeletionService {
 		// Delete thesis roles (should be empty if no retention-blocked data)
 		thesisRoleRepository.deleteAllByIdUserId(userId);
 
-		// Delete user-owned data
+		// Collect file paths BEFORE anonymizing (anonymizeUser nulls the path fields)
+		List<String> userFilePaths = collectUserFilePaths(user);
+
+		// Anonymize the user BEFORE deleting user groups and notification settings.
+		// User.groups is eagerly loaded, so bulk-deleting UserGroup rows first would
+		// leave stale references in the persistence context, causing Hibernate errors on save.
+		anonymizeUser(user);
+
+		// Delete user-owned data (safe to do after anonymizeUser since we don't save the User again)
 		notificationSettingRepository.deleteByUserId(userId);
 		userGroupRepository.deleteByUserId(userId);
 
-		// Keep the user row as a tombstone to prevent re-creation via Keycloak SSO.
-		// The universityId is preserved so that updateAuthenticatedUser() finds
-		// this row and the isAnonymized() check blocks access.
-		anonymizeUser(user);
+		// Delete files after DB operations succeeded (using pre-collected paths)
+		deleteFilePaths(userFilePaths);
 
 		log.info("Fully deleted user account {}", userId);
 		return new UserDeletionResultDto("DELETED", "Your account and all associated data have been permanently deleted.");
@@ -308,34 +298,29 @@ public class UserDeletionService {
 	 * all personal data is cleared.
 	 */
 	private void anonymizeUser(User user) {
-		// Clear persistence context to avoid stale entity references
-		// from prior JPQL deletes (e.g. UserGroup, NotificationSetting).
-		entityManager.clear();
-		User freshUser = userRepository.findById(user.getId()).orElseThrow();
-
 		Instant now = Instant.now();
-		freshUser.setDisabled(true);
-		freshUser.setAnonymizedAt(now);
-		freshUser.setDeletionRequestedAt(now);
-		freshUser.setFirstName(null);
-		freshUser.setLastName(null);
-		freshUser.setEmail(null);
-		freshUser.setMatriculationNumber(null);
-		freshUser.setGender(null);
-		freshUser.setNationality(null);
-		freshUser.setStudyDegree(null);
-		freshUser.setStudyProgram(null);
-		freshUser.setEnrolledAt(null);
-		freshUser.setAvatar(null);
-		freshUser.setCvFilename(null);
-		freshUser.setDegreeFilename(null);
-		freshUser.setExaminationFilename(null);
-		freshUser.setProjects(null);
-		freshUser.setInterests(null);
-		freshUser.setSpecialSkills(null);
-		freshUser.setCustomData(new HashMap<>());
-		freshUser.setResearchGroup(null);
-		userRepository.save(freshUser);
+		user.setDisabled(true);
+		user.setAnonymizedAt(now);
+		user.setDeletionRequestedAt(now);
+		user.setFirstName(null);
+		user.setLastName(null);
+		user.setEmail(null);
+		user.setMatriculationNumber(null);
+		user.setGender(null);
+		user.setNationality(null);
+		user.setStudyDegree(null);
+		user.setStudyProgram(null);
+		user.setEnrolledAt(null);
+		user.setAvatar(null);
+		user.setCvFilename(null);
+		user.setDegreeFilename(null);
+		user.setExaminationFilename(null);
+		user.setProjects(null);
+		user.setInterests(null);
+		user.setSpecialSkills(null);
+		user.setCustomData(new HashMap<>());
+		user.setResearchGroup(null);
+		userRepository.save(user);
 	}
 
 	private List<String> collectUserFilePaths(User user) {
@@ -362,38 +347,13 @@ public class UserDeletionService {
 	private List<ThesisRole> getRetentionBlockedThesisRoles(UUID userId) {
 		Instant now = Instant.now();
 		return thesisRoleRepository.findAllByIdUserIdWithThesis(userId).stream()
-				.filter(role -> computeRetentionExpiry(role).isAfter(now))
+				.filter(role -> RetentionUtils.computeRetentionExpiry(role.getThesis()).isAfter(now))
 				.toList();
-	}
-
-	private Instant computeRetentionExpiry(ThesisRole role) {
-		// Retention: 5 years after end of calendar year of the latest thesis activity.
-		// State-independent: uses max(endDate, max(ALL states.changedAt), createdAt)
-		// so theses stuck in non-terminal states still become deletable after 5+ years.
-		Instant latestActivity = role.getThesis().getCreatedAt();
-
-		Instant endDate = role.getThesis().getEndDate();
-		if (endDate != null && endDate.isAfter(latestActivity)) {
-			latestActivity = endDate;
-		}
-
-		Instant latestStateChange = role.getThesis().getStates().stream()
-				.map(ThesisStateChange::getChangedAt)
-				.max(Instant::compareTo)
-				.orElse(null);
-		if (latestStateChange != null && latestStateChange.isAfter(latestActivity)) {
-			latestActivity = latestStateChange;
-		}
-
-		ZonedDateTime zdt = latestActivity.atZone(ZoneId.of("Europe/Berlin"));
-		// End of the calendar year + 5 years
-		return ZonedDateTime.of(zdt.getYear() + RETENTION_YEARS, 12, 31, 23, 59, 59, 0, ZoneId.of("Europe/Berlin"))
-				.toInstant();
 	}
 
 	private Instant computeEarliestFullDeletion(List<ThesisRole> retentionBlockedRoles) {
 		return retentionBlockedRoles.stream()
-				.map(this::computeRetentionExpiry)
+				.map(role -> RetentionUtils.computeRetentionExpiry(role.getThesis()))
 				.max(Instant::compareTo)
 				.orElse(null);
 	}
