@@ -271,14 +271,16 @@ public class ThesisAnonymizationService {
 			thesis.setAnonymizedAt(null);
 			thesisRepository.save(thesis);
 			throw ex;
-		}
-
-		// 4. Delete collected files from disk (best-effort, non-critical)
-		for (String filename : filenames) {
-			try {
-				uploadService.deleteFile(filename);
-			} catch (Exception e) {
-				log.warn("Failed to delete file '{}' for thesis {}: {}", filename, thesisId, e.getMessage());
+		} finally {
+			// 4. Always attempt to delete pre-collected files from disk (best-effort).
+			//    Using finally ensures files are cleaned up even if DB deletion partially fails,
+			//    since retries won't be able to re-query filenames for already-deleted rows.
+			for (String filename : filenames) {
+				try {
+					uploadService.deleteFile(filename);
+				} catch (Exception e) {
+					log.warn("Failed to delete file '{}' for thesis {}: {}", filename, thesisId, e.getMessage());
+				}
 			}
 		}
 	}
