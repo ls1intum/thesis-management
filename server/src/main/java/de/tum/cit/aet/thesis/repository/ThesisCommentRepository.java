@@ -5,10 +5,13 @@ import de.tum.cit.aet.thesis.entity.ThesisComment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Repository
@@ -23,4 +26,11 @@ public interface ThesisCommentRepository extends JpaRepository<ThesisComment, UU
 			@Param("commentType") ThesisCommentType commentType,
 			Pageable page
 	);
+
+	@Modifying
+	@Transactional
+	void deleteAllByThesisId(UUID thesisId);
+
+	@Query("SELECT c.filename FROM ThesisComment c WHERE c.thesis.id = :thesisId AND c.filename IS NOT NULL")
+	List<String> findFilenamesByThesisId(@Param("thesisId") UUID thesisId);
 }

@@ -82,7 +82,8 @@ public class EmailTemplateService {
 			"INTERVIEW_INVITATION",
 			"INTERVIEW_INVITATION_REMINDER",
 			"INTERVIEW_SLOT_BOOKED_CONFORMATION",
-			"INTERVIEW_SLOT_BOOKED_CANCELLATION"
+			"INTERVIEW_SLOT_BOOKED_CANCELLATION",
+			"THESIS_ANONYMIZATION_REMINDER"
 	);
 	/**
 	 * Returns a paginated and filtered list of email templates for the current user's research group.

@@ -77,7 +77,7 @@ export function formatThesisFilename(
     text += ` ${name}`
   }
 
-  text += ` ${formatUsersFilename(thesis.students)}`
+  text += ` ${formatUsersFilename(thesis.students ?? [])}`
 
   if (version > 0) {
     text += ` v${version}`
