@@ -12,7 +12,7 @@ When the Keycloak container starts, it automatically imports the [`thesis-manage
 docker compose up keycloak -d
 ```
 
-The Keycloak admin console is available at http://localhost:8081 (`admin` / `admin`). See the [Test Users and Roles](#test-users-and-roles) table below for the pre-configured users (password = username).
+The Keycloak admin console is available at http://localhost:8181 (`admin` / `admin`). See the [Test Users and Roles](#test-users-and-roles) table below for the pre-configured users (password = username).
 
 ## PostgreSQL Database
 
@@ -95,26 +95,38 @@ Local development uses [Mailpit](https://github.com/axllent/mailpit) to capture 
 docker compose up -d
 ```
 
-When the server runs with the `dev` profile, it is pre-configured to send emails to Mailpit (SMTP on port 1025) with mail sending enabled. No additional configuration is needed.
+When the server runs with the `dev` profile, it is pre-configured to send emails to Mailpit (SMTP on port 1125) with mail sending enabled. No additional configuration is needed.
+
+> **Important:** The `dev` profile is required for emails to work. Without it, `mail.enabled` defaults to `false` and no emails are sent (you also won't see any mail-related log output).
 
 Open the Mailpit web UI to browse captured emails:
 
-**http://localhost:8025**
+**http://localhost:8125**
 
 All emails (including attachments) sent by the application are available there for inspection. This replaces the previous console-only logging approach and makes it easy to verify email content, formatting, and recipients during development and testing.
 
 ## Server
 
 ### Preconditions
-* Database available at `jdbc:postgresql://db:5144/thesis-management`
-* Keycloak realm `thesis-management` is available under http://localhost:8081 (See [Keycloak Setup](#keycloak-setup))
+* Docker services running: `docker compose up -d`
+* Wait for Keycloak to be ready: `curl -sf http://localhost:8181/realms/thesis-management` (returns JSON when ready)
 
-To start the sever application for local development, navigate to /server folder and execute the following command from the terminal:
+> **Important:** Keycloak takes 30–60 seconds to start. If you start the server before Keycloak is ready, you will get `Connection reset` or `HTTPS required` errors and the server will fail to boot.
+
+To start the server for local development, navigate to /server folder and execute the following command from the terminal:
 ```
-./gradlew bootRun
+./gradlew bootRun --args='--spring.profiles.active=dev'
 ```
 
-Server is served at http://localhost:8080.
+The `dev` profile is required for seed data, Mailpit email delivery, and dev Liquibase contexts. Without it, emails are disabled and no test data is loaded.
+
+Server is served at http://localhost:8180.
+
+### IntelliJ IDEA
+
+A shared run configuration is included at `server/.run/Server (Dev).run.xml`. It starts the server with the `dev` profile and all required settings. Use **Run > Server (Dev)** from the toolbar.
+
+If the run configuration is not detected automatically, go to **File > Settings > Build, Execution, Deployment > Build Tools > Gradle** and ensure the Gradle JVM is set to Java 25.
 
 ### Useful Gradle Commands
 
@@ -216,8 +228,8 @@ const types = topic.thesisTypes  // may be undefined
 ```
 
 #### Preconditions
-* Server running at http://localhost:8080
-* Keycloak realm `thesis-management` is available under http://localhost:8081 (See [Keycloak Setup](#keycloak-setup))
+* Server running at http://localhost:8180
+* Keycloak realm `thesis-management` is available under http://localhost:8181 (See [Keycloak Setup](#keycloak-setup))
 
 To start the client application for local development, navigate to /client folder and execute the following command from the terminal:
 ```
@@ -225,7 +237,7 @@ npm install
 npm run dev
 ```
 
-Client is served at http://localhost:3000. 
+Client is served at http://localhost:3100.
 
 ## E2E Tests (Playwright)
 

@@ -97,8 +97,10 @@ test.describe('Application Workflow - Student submits application', () => {
       'I am highly motivated to work on CI pipeline optimization because it aligns with my research interests in DevOps and continuous integration.',
     )
 
-    // Snapshot mailbox BEFORE submitting (safe for parallel execution)
-    const beforeIds = await snapshotMailbox('student@test.local')
+    // Snapshot mailboxes BEFORE submitting (safe for parallel execution)
+    const beforeStudentIds = await snapshotMailbox('student@test.local')
+    const beforeExaminerIds = await snapshotMailbox('supervisor@test.local')
+    const beforeAdvisorIds = await snapshotMailbox('advisor@test.local')
 
     const submitButton = page.getByRole('button', { name: 'Submit Application' })
     await expect(submitButton).toBeEnabled({ timeout: 10_000 })
@@ -111,16 +113,16 @@ test.describe('Application Workflow - Student submits application', () => {
     // --- Email verification ---
     // Application submission sends:
     // 1. APPLICATION_CREATED_STUDENT → student (confirmation with application details)
-    // 2. APPLICATION_CREATED_CHAIR → research group members (optional, depends on notification preferences)
-    const newEmails = await waitForNewMessages('student@test.local', beforeIds)
+    // 2. APPLICATION_CREATED_CHAIR → each research group member individually
+    //    (filtered by notification preferences; default "own" keeps topic role members)
 
     // Verify student confirmation email (APPLICATION_CREATED_STUDENT template)
-    const studentEmail = findBySubject(newEmails, 'Thesis Application Confirmation')
+    const newStudentEmails = await waitForNewMessages('student@test.local', beforeStudentIds)
+    const studentEmail = findBySubject(newStudentEmails, 'Thesis Application Confirmation')
     expect(studentEmail, 'Student confirmation email should be sent').toBeDefined()
     assertSentFromApp(studentEmail!)
     expect(getToAddresses(studentEmail!)).toContain('student@test.local')
 
-    // Body should contain: greeting, topic title, applicant details, and motivation
     const studentBody = getBody(studentEmail!)
     expect(studentBody, 'Body should greet the student by first name').toContain('Student')
     expect(studentBody, 'Body should contain the topic/thesis title').toContain(
@@ -129,7 +131,29 @@ test.describe('Application Workflow - Student submits application', () => {
     expect(studentBody, 'Body should contain applicant email').toContain('student@test.local')
     expect(studentBody, 'Body should reference the motivation text').toContain('CI pipeline')
 
-    // Note: APPLICATION_CREATED_CHAIR may also be sent to research group members,
-    // but it is filtered by notification preferences and goes to different recipients.
+    // Verify examiner notification email
+    // Topic 2 roles: supervisor=examiner (SUPERVISOR), advisor+advisor2=supervisors (ADVISOR)
+    // All are in ASE group, so all should receive the chair notification.
+    const examinerEmails = await waitForNewMessages('supervisor@test.local', beforeExaminerIds)
+    const examinerChairEmail = findBySubject(examinerEmails, 'New Thesis Application')
+    expect(
+      examinerChairEmail,
+      'Examiner (supervisor@test.local) should receive "New Thesis Application" email',
+    ).toBeDefined()
+    assertSentFromApp(examinerChairEmail!)
+
+    const examinerBody = getBody(examinerChairEmail!)
+    expect(examinerBody, 'Examiner email should mention the applicant').toContain('Student')
+    expect(examinerBody, 'Examiner email should reference the topic').toContain(
+      'Continuous Integration Pipeline Optimization',
+    )
+
+    // Verify supervisor (advisor) also receives the notification
+    const advisorEmails = await waitForNewMessages('advisor@test.local', beforeAdvisorIds)
+    const advisorChairEmail = findBySubject(advisorEmails, 'New Thesis Application')
+    expect(
+      advisorChairEmail,
+      'Supervisor (advisor@test.local) should receive "New Thesis Application" email',
+    ).toBeDefined()
   })
 })

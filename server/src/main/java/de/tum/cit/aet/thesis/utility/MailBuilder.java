@@ -11,7 +11,6 @@ import de.tum.cit.aet.thesis.entity.ThesisPresentation;
 import de.tum.cit.aet.thesis.entity.ThesisProposal;
 import de.tum.cit.aet.thesis.entity.ThesisRole;
 import de.tum.cit.aet.thesis.entity.Topic;
-import de.tum.cit.aet.thesis.entity.TopicRole;
 import de.tum.cit.aet.thesis.entity.User;
 import de.tum.cit.aet.thesis.mailvariables.MailApplication;
 import de.tum.cit.aet.thesis.mailvariables.MailInterviewSlot;
@@ -259,18 +258,33 @@ public class MailBuilder {
 					break;
 				case "own":
 					if (notificationEmailSuggested.equals("none")) {
-						if (topic != null && topic.getRoles().stream().map(TopicRole::getUser).anyMatch(u -> u.getId().equals(user.getId()))) {
+						if (topic != null && topic.getRoles().stream().anyMatch(r -> r.getId().getUserId().equals(user.getId()))) {
 							filteredMembers.add(user);
 						}
 					} else {
-						if (topic == null || topic.getRoles().stream().map(TopicRole::getUser).anyMatch(u -> u.getId().equals(user.getId()))) {
+						if (topic == null || topic.getRoles().stream().anyMatch(r -> r.getId().getUserId().equals(user.getId()))) {
 							filteredMembers.add(user);
 						}
 					}
 					break;
+				case "none":
+					break;
 				default:
+					// Unknown value (e.g. legacy 'yes'/'no') — treat as enabled to avoid silently dropping emails
+					log.warn("Unknown notification setting value '{}' for user {} and notification '{}', treating as enabled",
+							notificationEmail, user.getUniversityId(), notificationName);
+					filteredMembers.add(user);
 					break;
 			}
+		}
+
+		if (filteredMembers.size() < primaryRecipients.size()) {
+			List<String> removed = primaryRecipients.stream()
+					.filter(u -> !filteredMembers.contains(u))
+					.map(User::getUniversityId)
+					.toList();
+			log.info("New-application notification filter removed {} recipients: {} (topic={})",
+					removed.size(), removed, topic != null ? topic.getTitle() : "none");
 		}
 
 		primaryRecipients.clear();
@@ -527,6 +541,11 @@ public class MailBuilder {
 			ccRecipients = new ArrayList<>();
 		}
 
+		if (toRecipients.isEmpty()) {
+			log.info("No recipients for email with subject '{}' after filtering (primary={}, notifications={})",
+					subject, primaryRecipients.size(), notificationNames);
+		}
+
 		for (User recipient : toRecipients) {
 			try {
 				MimeMessage message = mailSender.createMimeMessage();
@@ -579,7 +598,7 @@ public class MailBuilder {
 					log.debug("Sending Mail (postfix disabled)\n{}", MailLogger.getTextFromMimeMessage(message));
 				}
 			} catch (Exception exception) {
-				log.warn("Failed to send email", exception);
+				log.warn("Failed to send email '{}' to {}", subject, recipient.getUniversityId(), exception);
 			}
 		}
 	}

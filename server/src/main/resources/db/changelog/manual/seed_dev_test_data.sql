@@ -219,31 +219,66 @@ VALUES
 ON CONFLICT DO NOTHING;
 
 -- ============================================================================
--- 7. TOPIC ROLES (advisor assignments per topic)
+-- 7. TOPIC ROLES (examiner + supervisor assignments per topic)
+--    Server roles: SUPERVISOR = Examiner (UI), ADVISOR = Supervisor (UI)
 -- ============================================================================
+DELETE FROM topic_roles WHERE topic_id IN (
+    '00000000-0000-4000-b000-000000000001'::UUID,
+    '00000000-0000-4000-b000-000000000002'::UUID,
+    '00000000-0000-4000-b000-000000000003'::UUID,
+    '00000000-0000-4000-b000-000000000004'::UUID,
+    '00000000-0000-4000-b000-000000000005'::UUID,
+    '00000000-0000-4000-b000-000000000006'::UUID
+);
 INSERT INTO topic_roles (topic_id, user_id, role, position, assigned_at, assigned_by)
 VALUES
-    -- Topic 1: advisor
+    -- Topic 1 (ASE, open): examiner=supervisor, supervisor=advisor (different persons)
+    ('00000000-0000-4000-b000-000000000001'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
+     NOW(), (SELECT user_id FROM users WHERE university_id = 'supervisor')),
     ('00000000-0000-4000-b000-000000000001'::UUID,
      (SELECT user_id FROM users WHERE university_id = 'advisor'), 'ADVISOR', 0,
      NOW(), (SELECT user_id FROM users WHERE university_id = 'supervisor')),
-    -- Topic 2: advisor (created it)
+
+    -- Topic 2 (ASE, open): examiner=supervisor, supervisors=advisor+advisor2 (multiple supervisors)
+    ('00000000-0000-4000-b000-000000000002'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
+     NOW(), (SELECT user_id FROM users WHERE university_id = 'supervisor')),
     ('00000000-0000-4000-b000-000000000002'::UUID,
      (SELECT user_id FROM users WHERE university_id = 'advisor'), 'ADVISOR', 0,
      NOW(), (SELECT user_id FROM users WHERE university_id = 'advisor')),
-    -- Topic 3: advisor2
+    ('00000000-0000-4000-b000-000000000002'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'advisor2'), 'ADVISOR', 1,
+     NOW(), (SELECT user_id FROM users WHERE university_id = 'advisor')),
+
+    -- Topic 3 (DSA, open): examiner=supervisor2, supervisor=advisor2
+    ('00000000-0000-4000-b000-000000000003'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'supervisor2'), 'SUPERVISOR', 0,
+     NOW(), (SELECT user_id FROM users WHERE university_id = 'supervisor2')),
     ('00000000-0000-4000-b000-000000000003'::UUID,
      (SELECT user_id FROM users WHERE university_id = 'advisor2'), 'ADVISOR', 0,
      NOW(), (SELECT user_id FROM users WHERE university_id = 'supervisor2')),
-    -- Topic 4: advisor
+
+    -- Topic 4 (ASE, draft): examiner AND supervisor = same person (supervisor)
     ('00000000-0000-4000-b000-000000000004'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'advisor'), 'ADVISOR', 0,
-     NOW(), (SELECT user_id FROM users WHERE university_id = 'advisor')),
-    -- Topic 5: advisor2
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
+     NOW(), (SELECT user_id FROM users WHERE university_id = 'supervisor')),
+    ('00000000-0000-4000-b000-000000000004'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'ADVISOR', 0,
+     NOW(), (SELECT user_id FROM users WHERE university_id = 'supervisor')),
+
+    -- Topic 5 (DSA, draft): examiner=supervisor2, supervisor=advisor2
+    ('00000000-0000-4000-b000-000000000005'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'supervisor2'), 'SUPERVISOR', 0,
+     NOW(), (SELECT user_id FROM users WHERE university_id = 'supervisor2')),
     ('00000000-0000-4000-b000-000000000005'::UUID,
      (SELECT user_id FROM users WHERE university_id = 'advisor2'), 'ADVISOR', 0,
      NOW(), (SELECT user_id FROM users WHERE university_id = 'supervisor2')),
-    -- Topic 6 (closed): advisor
+
+    -- Topic 6 (ASE, closed): examiner=supervisor, supervisor=advisor
+    ('00000000-0000-4000-b000-000000000006'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
+     NOW(), (SELECT user_id FROM users WHERE university_id = 'supervisor')),
     ('00000000-0000-4000-b000-000000000006'::UUID,
      (SELECT user_id FROM users WHERE university_id = 'advisor'), 'ADVISOR', 0,
      NOW(), (SELECT user_id FROM users WHERE university_id = 'supervisor'))
@@ -891,25 +926,27 @@ ON CONFLICT DO NOTHING;
 -- ============================================================================
 INSERT INTO notification_settings (user_id, name, email, updated_at)
 VALUES
-    -- supervisor: all notifications enabled
-    ((SELECT user_id FROM users WHERE university_id = 'supervisor'), 'new-applications', 'yes', NOW()),
-    ((SELECT user_id FROM users WHERE university_id = 'supervisor'), 'thesis-comments', 'yes', NOW()),
-    ((SELECT user_id FROM users WHERE university_id = 'supervisor'), 'unreviewed-application-reminder', 'yes', NOW()),
+    -- supervisor: receives all new application notifications
+    -- Valid values for new-applications: 'none', 'own', 'all'
+    -- Valid values for toggles (thesis-comments, application-review-reminder): 'none', 'all'
+    ((SELECT user_id FROM users WHERE university_id = 'supervisor'), 'new-applications', 'all', NOW()),
+    ((SELECT user_id FROM users WHERE university_id = 'supervisor'), 'thesis-comments', 'all', NOW()),
+    ((SELECT user_id FROM users WHERE university_id = 'supervisor'), 'application-review-reminder', 'all', NOW()),
 
-    -- advisor: selective notifications
-    ((SELECT user_id FROM users WHERE university_id = 'advisor'), 'new-applications', 'yes', NOW()),
-    ((SELECT user_id FROM users WHERE university_id = 'advisor'), 'thesis-comments', 'yes', NOW()),
-    ((SELECT user_id FROM users WHERE university_id = 'advisor'), 'unreviewed-application-reminder', 'no', NOW()),
+    -- advisor: receives new application notifications only for own topics
+    ((SELECT user_id FROM users WHERE university_id = 'advisor'), 'new-applications', 'own', NOW()),
+    ((SELECT user_id FROM users WHERE university_id = 'advisor'), 'thesis-comments', 'all', NOW()),
+    ((SELECT user_id FROM users WHERE university_id = 'advisor'), 'application-review-reminder', 'none', NOW()),
 
-    -- supervisor2: all enabled
-    ((SELECT user_id FROM users WHERE university_id = 'supervisor2'), 'new-applications', 'yes', NOW()),
-    ((SELECT user_id FROM users WHERE university_id = 'supervisor2'), 'thesis-comments', 'yes', NOW()),
-    ((SELECT user_id FROM users WHERE university_id = 'supervisor2'), 'unreviewed-application-reminder', 'yes', NOW()),
+    -- supervisor2: receives all new application notifications
+    ((SELECT user_id FROM users WHERE university_id = 'supervisor2'), 'new-applications', 'all', NOW()),
+    ((SELECT user_id FROM users WHERE university_id = 'supervisor2'), 'thesis-comments', 'all', NOW()),
+    ((SELECT user_id FROM users WHERE university_id = 'supervisor2'), 'application-review-reminder', 'all', NOW()),
 
-    -- advisor2: comments only
-    ((SELECT user_id FROM users WHERE university_id = 'advisor2'), 'new-applications', 'no', NOW()),
-    ((SELECT user_id FROM users WHERE university_id = 'advisor2'), 'thesis-comments', 'yes', NOW()),
-    ((SELECT user_id FROM users WHERE university_id = 'advisor2'), 'unreviewed-application-reminder', 'no', NOW())
+    -- advisor2: no new application notifications, comments only
+    ((SELECT user_id FROM users WHERE university_id = 'advisor2'), 'new-applications', 'none', NOW()),
+    ((SELECT user_id FROM users WHERE university_id = 'advisor2'), 'thesis-comments', 'all', NOW()),
+    ((SELECT user_id FROM users WHERE university_id = 'advisor2'), 'application-review-reminder', 'none', NOW())
 ON CONFLICT DO NOTHING;
 
 -- ============================================================================

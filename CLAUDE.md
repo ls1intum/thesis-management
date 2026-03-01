@@ -42,6 +42,8 @@ Local development uses non-standard ports to avoid conflicts with other projects
 
 Production is unaffected — it uses Traefik on ports 80/443 with internal Docker networking.
 
+Start Docker services with `docker compose up -d` and wait for Keycloak to be ready (`curl -sf http://localhost:8181/realms/thesis-management`) before starting the server. Mailpit catches all outgoing emails in dev — view them at http://localhost:8125.
+
 ## Key Conventions
 
 ### DTO Serialization (`@JsonInclude(NON_EMPTY)`)
