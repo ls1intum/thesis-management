@@ -1,6 +1,6 @@
 import { expect } from '@playwright/test'
 
-const MAILPIT_API = process.env.MAILPIT_URL ?? 'http://localhost:8025/api'
+const MAILPIT_API = process.env.MAILPIT_URL ?? 'http://localhost:8125/api'
 
 interface MailpitAddress {
   Name: string

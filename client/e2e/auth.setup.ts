@@ -32,7 +32,7 @@ for (const user of TEST_USERS) {
     await page.locator('#kc-login').click()
 
     // Wait for redirect back to the app and the dashboard to load
-    await expect(page).toHaveURL(/localhost:3000/, { timeout: 30_000 })
+    await expect(page).toHaveURL(/localhost:\d+/, { timeout: 30_000 })
 
     // Wait for the app to fully initialize with the auth tokens
     await page.waitForFunction(

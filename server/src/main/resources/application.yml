@@ -7,7 +7,7 @@ spring:
   thymeleaf:
     check-template-location: false
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5144/thesis-management}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5444/thesis-management}
     username: ${SPRING_DATASOURCE_USERNAME:thesis-management-postgres}
     password: ${SPRING_DATASOURCE_PASSWORD:thesis-management-postgres}
     driver-class-name: org.postgresql.Driver
@@ -35,12 +35,12 @@ spring:
             scope: openid
         provider:
           keycloak:
-            issuer-uri: ${KEYCLOAK_HOST:http://localhost:8081}/realms/${KEYCLOAK_REALM_NAME:thesis-management}
+            issuer-uri: ${KEYCLOAK_HOST:http://localhost:8181}/realms/${KEYCLOAK_REALM_NAME:thesis-management}
             user-name-attribute: preferred_username
       resourceserver:
         jwt:
-          jwk-set-uri: ${KEYCLOAK_HOST:http://localhost:8081}/realms/${KEYCLOAK_REALM_NAME:thesis-management}/protocol/openid-connect/certs
-          issuer-uri: ${KEYCLOAK_HOST:http://localhost:8081}/realms/${KEYCLOAK_REALM_NAME:thesis-management}
+          jwk-set-uri: ${KEYCLOAK_HOST:http://localhost:8181}/realms/${KEYCLOAK_REALM_NAME:thesis-management}/protocol/openid-connect/certs
+          issuer-uri: ${KEYCLOAK_HOST:http://localhost:8181}/realms/${KEYCLOAK_REALM_NAME:thesis-management}
   mail:
     host: ${POSTFIX_HOST:localhost}
     port: ${POSTFIX_PORT:25}
@@ -70,12 +70,13 @@ management:
       enabled: ${MAIL_ENABLED:false}
 
 server:
+  port: ${SERVER_PORT:8180}
   servlet:
     context-path: /api
 
 thesis-management:
   keycloak:
-    host: ${KEYCLOAK_HOST:http://localhost:8081}
+    host: ${KEYCLOAK_HOST:http://localhost:8181}
     realm-name: ${KEYCLOAK_REALM_NAME:thesis-management}
     client-id: ${KEYCLOAK_CLIENT_ID:thesis-management-app}
     service-client:
@@ -83,7 +84,7 @@ thesis-management:
       secret: ${KEYCLOAK_SERVICE_CLIENT_SECRET:**********}
       student-group-name: ${KEYCLOAK_SERVICE_STUDENT_GROUP_NAME:thesis-students}
   client:
-    host: ${CLIENT_HOST:http://localhost:3000}
+    host: ${CLIENT_HOST:http://localhost:3100}
   mail:
     enabled: ${MAIL_ENABLED:false}
     sender: ${MAIL_SENDER:thesis-dev@test.aet.cit.tum.de}

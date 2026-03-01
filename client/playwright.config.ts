@@ -12,7 +12,7 @@ export default defineConfig({
     timeout: 15_000,
   },
   use: {
-    baseURL: process.env.CLIENT_URL ?? 'http://localhost:3000',
+    baseURL: process.env.CLIENT_URL ?? 'http://localhost:3100',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'on-first-retry',
@@ -32,7 +32,7 @@ export default defineConfig({
     ? undefined
     : {
         command: 'npm run dev',
-        url: 'http://localhost:3000',
+        url: 'http://localhost:3100',
         reuseExistingServer: true,
         timeout: 120_000,
       },

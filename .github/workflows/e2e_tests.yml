@@ -19,7 +19,7 @@ jobs:
           POSTGRES_PASSWORD: thesis-management-postgres
           POSTGRES_DB: thesis-management
         ports:
-          - 5144:5432
+          - 5444:5432
         options: >-
           --health-cmd "pg_isready -d thesis-management -U thesis-management-postgres"
           --health-interval 5s
@@ -29,8 +29,8 @@ jobs:
       mailpit:
         image: axllent/mailpit:v1.29
         ports:
-          - 1025:1025
-          - 8025:8025
+          - 1125:1025
+          - 8125:8025
         options: >-
           --health-cmd "wget -qO- http://localhost:8025/api/v1/messages || exit 1"
           --health-interval 5s
@@ -58,7 +58,7 @@ jobs:
         run: |
           echo "Waiting for Keycloak..."
           for i in $(seq 1 60); do
-            if curl -sf http://localhost:8081/realms/master > /dev/null 2>&1; then
+            if curl -sf http://localhost:8181/realms/master > /dev/null 2>&1; then
               echo "Keycloak is ready"
               break
             fi
@@ -73,12 +73,12 @@ jobs:
       - name: Import Keycloak realm
         run: |
           # Get admin token
-          TOKEN=$(curl -sf -X POST "http://localhost:8081/realms/master/protocol/openid-connect/token" \
+          TOKEN=$(curl -sf -X POST "http://localhost:8181/realms/master/protocol/openid-connect/token" \
             -H "Content-Type: application/x-www-form-urlencoded" \
             -d "username=admin&password=admin&grant_type=password&client_id=admin-cli" | jq -r '.access_token')
 
           # Import realm
-          curl -sf -X POST "http://localhost:8081/admin/realms" \
+          curl -sf -X POST "http://localhost:8181/admin/realms" \
             -H "Authorization: Bearer $TOKEN" \
             -H "Content-Type: application/json" \
             -d @keycloak/thesis-management-realm.json
@@ -99,17 +99,17 @@ jobs:
       # Start server in background with dev profile
       - name: Start server
         working-directory: ./server
-        run: ./gradlew bootRun --args='--spring.profiles.active=dev' &
+        run: ./gradlew bootRun --args='--spring.profiles.active=dev --server.port=8180' &
         env:
-          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5144/thesis-management
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5444/thesis-management
           SPRING_DATASOURCE_USERNAME: thesis-management-postgres
           SPRING_DATASOURCE_PASSWORD: thesis-management-postgres
-          KEYCLOAK_HOST: http://localhost:8081
+          KEYCLOAK_HOST: http://localhost:8181
           KEYCLOAK_REALM_NAME: thesis-management
           KEYCLOAK_CLIENT_ID: thesis-management-app
           KEYCLOAK_SERVICE_CLIENT_ID: thesis-management-service-client
           KEYCLOAK_SERVICE_CLIENT_SECRET: ""
-          CLIENT_HOST: http://localhost:3000
+          CLIENT_HOST: http://localhost:3100
 
       # Set up Node.js for client
       - name: Set up Node.js
@@ -132,8 +132,8 @@ jobs:
         working-directory: ./client
         run: npx webpack serve --env NODE_ENV=development &
         env:
-          SERVER_HOST: http://localhost:8080
-          KEYCLOAK_HOST: http://localhost:8081
+          SERVER_HOST: http://localhost:8180
+          KEYCLOAK_HOST: http://localhost:8181
           KEYCLOAK_REALM_NAME: thesis-management
           KEYCLOAK_CLIENT_ID: thesis-management-app
 
@@ -142,7 +142,7 @@ jobs:
         run: |
           echo "Waiting for Spring Boot server..."
           for i in $(seq 1 120); do
-            if curl -sf http://localhost:8080/api/actuator/health > /dev/null 2>&1; then
+            if curl -sf http://localhost:8180/api/actuator/health > /dev/null 2>&1; then
               echo "Server is ready"
               break
             fi
@@ -157,7 +157,7 @@ jobs:
         run: |
           echo "Waiting for client dev server..."
           for i in $(seq 1 60); do
-            if curl -sf http://localhost:3000 > /dev/null 2>&1; then
+            if curl -sf http://localhost:3100 > /dev/null 2>&1; then
               echo "Client is ready"
               break
             fi
@@ -174,8 +174,8 @@ jobs:
         run: npx playwright test
         env:
           CI: "1"
-          CLIENT_URL: http://localhost:3000
-          KEYCLOAK_HOST: http://localhost:8081
+          CLIENT_URL: http://localhost:3100
+          KEYCLOAK_HOST: http://localhost:8181
           KEYCLOAK_REALM_NAME: thesis-management
           KEYCLOAK_CLIENT_ID: thesis-management-app
 

@@ -14,7 +14,7 @@ services:
       timeout: 5s
       retries: 5
     ports:
-      - "5144:5432"
+      - "5444:5432"
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.5
@@ -26,11 +26,11 @@ services:
       - ./keycloak/thesis-management-realm.json:/opt/keycloak/data/import/thesis-management-realm.json:ro
     entrypoint: /opt/keycloak/bin/kc.sh start-dev --import-realm
     ports:
-      - "8081:8080"
+      - "8181:8080"
 
   mailpit:
     image: axllent/mailpit:v1.29
     container_name: thesis-management-mailpit
     ports:
-      - "1025:1025"
-      - "8025:8025"
+      - "1125:1025"
+      - "8125:8025"
