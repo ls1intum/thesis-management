@@ -21,7 +21,7 @@ const ResearchGroupCard = (props: IResearchGroup) => {
       },
       (res) => {
         if (res.ok) {
-          setResearchGroupMemberNumber(res.data.content.length)
+          setResearchGroupMemberNumber((res.data.content ?? []).length)
         }
       },
     )
