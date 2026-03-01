@@ -54,7 +54,7 @@ export function formatUser(user: IMinimalUser, options: Partial<IFormatUserOptio
 }
 
 export function wordsToFilename(words: string) {
-  return words.replace(' ', ' ')
+  return words.replace(/ /g, '_')
 }
 
 export function formatUserFilename(user: ILightUser): string {
@@ -77,7 +77,7 @@ export function formatThesisFilename(
     text += ` ${name}`
   }
 
-  text += ` ${formatUsersFilename(thesis.students)}`
+  text += ` ${formatUsersFilename(thesis.students ?? [])}`
 
   if (version > 0) {
     text += ` v${version}`

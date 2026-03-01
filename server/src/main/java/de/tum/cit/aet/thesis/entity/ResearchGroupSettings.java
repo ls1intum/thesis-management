@@ -33,4 +33,10 @@ public class ResearchGroupSettings {
 
 	@Column(name = "application_notification_email")
 	private String applicationNotificationEmail;
+
+	@Column(name = "scientific_writing_guide_link")
+	private String scientificWritingGuideLink;
+
+	@Column(name = "include_application_data_in_email", nullable = false)
+	private boolean includeApplicationDataInEmail = false;
 }

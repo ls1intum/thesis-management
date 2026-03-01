@@ -2,7 +2,10 @@ package de.tum.cit.aet.thesis.service;
 
 import de.tum.cit.aet.thesis.constants.UploadFileType;
 import de.tum.cit.aet.thesis.exception.UploadException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
@@ -22,8 +25,10 @@ import java.util.HexFormat;
 import java.util.Set;
 
 /** Handles file uploads and retrieval, including size and type validation and content-based hashing. */
+@Slf4j
 @Service
 public class UploadService {
+	private static final Logger log = LoggerFactory.getLogger(UploadService.class);
 	private final Path rootLocation;
 
 	/**
@@ -33,7 +38,7 @@ public class UploadService {
 	 */
 	@Autowired
 	public UploadService(@Value("${thesis-management.storage.upload-location}") String uploadLocation) {
-		this.rootLocation = Path.of(uploadLocation);
+		this.rootLocation = Path.of(uploadLocation).toAbsolutePath().normalize();
 
 		File uploadDirectory = rootLocation.toFile();
 
@@ -76,21 +81,34 @@ public class UploadService {
 				);
 			}
 
+			if (type == UploadFileType.DOCUMENT) {
+				allowedExtensions = Set.of(
+						"pdf", "docx", "doc", "xlsx", "xls", "pptx", "ppt",
+						"tex", "zip", "tar", "gz", "txt", "csv", "md",
+						"png", "jpg", "jpeg", "gif", "webp"
+				);
+			}
+
 			String originalFilename = file.getOriginalFilename();
 			String extension = FilenameUtils.getExtension(originalFilename);
+
+			if (extension != null) {
+				extension = extension.toLowerCase(java.util.Locale.ROOT);
+			}
 
 			if (allowedExtensions != null && !allowedExtensions.contains(extension)) {
 				throw new UploadException("File type not allowed");
 			}
 
 			String filename = StringUtils.cleanPath(computeFileHash(file) + "." + extension);
+			Path target = rootLocation.resolve(filename).normalize();
 
-			if (filename.contains("..")) {
-				throw new UploadException("Cannot store file with relative path outside current directory");
+			if (!target.startsWith(rootLocation)) {
+				throw new UploadException("Cannot store file outside upload directory");
 			}
 
 			try (InputStream inputStream = file.getInputStream()) {
-				Files.copy(inputStream, rootLocation.resolve(filename), StandardCopyOption.REPLACE_EXISTING);
+				Files.copy(inputStream, target, StandardCopyOption.REPLACE_EXISTING);
 
 				return filename;
 			}
@@ -107,17 +125,81 @@ public class UploadService {
 	 */
 	public FileSystemResource load(String filename) {
 		try {
-			if (filename.contains("..")) {
-				throw new UploadException("Cannot load file with relative path outside current directory");
+			Path resolved = rootLocation.resolve(filename).normalize();
+
+			if (!resolved.startsWith(rootLocation)) {
+				throw new UploadException("Cannot load file outside upload directory");
 			}
 
-			FileSystemResource file =  new FileSystemResource(rootLocation.resolve(filename));
+			FileSystemResource file = new FileSystemResource(resolved);
 
 			file.contentLength();
 
 			return file;
 		} catch (IOException e) {
 			throw new UploadException("Failed to load file", e);
+		}
+	}
+
+	/**
+	 * Stores raw bytes as a file with the given extension, returning the content-hashed filename.
+	 *
+	 * @param bytes the file content
+	 * @param extension the file extension (e.g. "png")
+	 * @param maxSize the maximum allowed size in bytes
+	 * @return the content-hashed filename
+	 */
+	public String storeBytes(byte[] bytes, String extension, int maxSize) {
+		try {
+			if (bytes == null || bytes.length == 0) {
+				throw new UploadException("Failed to store empty file");
+			}
+
+			if (bytes.length > maxSize) {
+				throw new UploadException("File size exceeds the maximum allowed size");
+			}
+
+			if (extension == null || extension.contains("..") || extension.contains("/") || extension.contains("\\")) {
+				throw new UploadException("Invalid file extension");
+			}
+
+			MessageDigest digest = MessageDigest.getInstance("SHA-256");
+			byte[] hashBytes = digest.digest(bytes);
+			String hash = HexFormat.of().formatHex(hashBytes);
+			String filename = hash + "." + extension;
+
+			Path target = rootLocation.resolve(filename).normalize();
+			if (!target.startsWith(rootLocation)) {
+				throw new UploadException("Cannot store file outside upload directory");
+			}
+
+			Files.write(target, bytes);
+			return filename;
+		} catch (IOException | NoSuchAlgorithmException e) {
+			throw new UploadException("Failed to store file", e);
+		}
+	}
+
+	/**
+	 * Deletes the specified file from the upload directory on a best-effort basis.
+	 *
+	 * @param filename the file to delete
+	 */
+	public void deleteFile(String filename) {
+		if (filename == null || filename.isBlank()) {
+			return;
+		}
+		if (filename.contains("..")) {
+			return;
+		}
+		try {
+			Path resolved = rootLocation.resolve(filename).normalize();
+			if (!resolved.startsWith(rootLocation.normalize())) {
+				return;
+			}
+			Files.deleteIfExists(resolved);
+		} catch (IOException e) {
+			log.warn("Failed to delete file {}: {}", filename, e.getMessage());
 		}
 	}
 

@@ -3,6 +3,9 @@ name: E2E Tests
 on:
   workflow_call:
 
+permissions:
+  contents: read
+
 jobs:
   e2e:
     runs-on: ubuntu-latest
@@ -99,7 +102,7 @@ jobs:
 
       # Set up Node.js for client
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '24.7.0'
           cache: 'npm'
@@ -166,7 +169,7 @@ jobs:
           KEYCLOAK_CLIENT_ID: thesis-management-app
 
       - name: Upload Playwright report
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: ${{ !cancelled() }}
         with:
           name: playwright-report
@@ -174,7 +177,7 @@ jobs:
           retention-days: 14
 
       - name: Upload test results
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: ${{ !cancelled() }}
         with:
           name: playwright-results

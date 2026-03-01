@@ -3,6 +3,8 @@ export interface IResearchGroupSettings {
   presentationSettings: IResearchGroupSettingsPresentation
   phaseSettings: IResearchGroupSettingsPhase
   emailSettings: IResearchGroupSettingsEmail
+  writingGuideSettings: IResearchGroupSettingsWritingGuide
+  applicationEmailSettings: IResearchGroupSettingsApplicationEmail
 }
 
 export interface IResearchGroupSettingsReject {
@@ -20,4 +22,12 @@ export interface IResearchGroupSettingsPhase {
 
 export interface IResearchGroupSettingsEmail {
   applicationNotificationEmail?: string | null
+}
+
+export interface IResearchGroupSettingsWritingGuide {
+  scientificWritingGuideLink?: string | null
+}
+
+export interface IResearchGroupSettingsApplicationEmail {
+  includeApplicationDataInEmail: boolean
 }

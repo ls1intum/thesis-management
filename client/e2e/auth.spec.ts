@@ -26,7 +26,9 @@ test.describe('Authentication - Unauthenticated', () => {
   test('about page is accessible without login', async ({ page }) => {
     await navigateTo(page, '/about')
 
-    await expect(page.getByRole('heading', { name: 'Thesis Management', exact: true })).toBeVisible()
+    await expect(
+      page.getByRole('heading', { name: 'Thesis Management', exact: true }),
+    ).toBeVisible()
   })
 })
 

@@ -119,9 +119,7 @@ const CalendarCarousel = ({ disabled = false }: ICalendarCarouselProps) => {
 
   const user = useUser()
 
-  const calendarUrl =
-    GLOBAL_CONFIG.calendar_url ||
-    `${GLOBAL_CONFIG.server_host}/api/v2/calendar/interviews/user/${user ? user.userId : ''}`
+  const calendarUrl = `${GLOBAL_CONFIG.server_host}/api/v2/calendar/interviews/user/${user ? user.userId : ''}`
 
   return (
     <Stack gap={'0.25rem'}>

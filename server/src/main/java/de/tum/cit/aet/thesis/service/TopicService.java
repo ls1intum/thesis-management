@@ -178,6 +178,7 @@ public class TopicService {
 		).toList();
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Topic createTopic(
 			String title,
@@ -222,6 +223,7 @@ public class TopicService {
 		return topicRepository.save(topic);
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Topic updateTopic(
 			Topic topic,

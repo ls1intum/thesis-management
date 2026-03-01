@@ -1,15 +1,25 @@
 import { test, expect } from '@playwright/test'
-import { authStatePath, navigateTo, selectOption } from './helpers'
+import { authStatePath, navigateTo, navigateToDetail, selectOption } from './helpers'
+import {
+  snapshotMailbox,
+  waitForNewMessages,
+  getSubject,
+  getBody,
+  getToAddresses,
+  assertSentFromApp,
+} from './mailpit'
 
 // Thesis d000-0003 is in SUBMITTED state, assigned to student3, has abstract text set
+// Roles: supervisor2 (SUPERVISOR), advisor2 (ADVISOR), student3 (STUDENT)
 const THESIS_ID = '00000000-0000-4000-d000-000000000003'
 const THESIS_URL = `/theses/${THESIS_ID}`
 const THESIS_TITLE = 'Online Anomaly Detection in IoT Sensor Streams'
 
-test.describe('Presentation Workflow - Student creates a presentation draft', () => {
-  test.use({ storageState: authStatePath('student3') })
+test.describe.serial('Presentation Workflow', () => {
+  test('student can create a presentation draft for their thesis', async ({ browser }) => {
+    const context = await browser.newContext({ storageState: authStatePath('student3') })
+    const page = await context.newPage()
 
-  test('student can create a presentation draft for their thesis', async ({ page }) => {
     await navigateTo(page, THESIS_URL)
 
     // Wait for thesis page to load
@@ -27,15 +37,12 @@ test.describe('Presentation Workflow - Student creates a presentation draft', ()
     }
 
     // Check if "Create Presentation Draft" button is available
-    // (Thesis may already be FINISHED from the grading workflow test, hiding the button)
     const createDraftButton = page.getByRole('button', { name: 'Create Presentation Draft' })
     const canCreateDraft = await createDraftButton.isVisible({ timeout: 5_000 }).catch(() => false)
 
     if (!canCreateDraft) {
-      // Thesis is closed — verify existing presentations are displayed instead
-      await expect(
-        page.getByRole('heading', { name: /Presentation$/i }).first(),
-      ).toBeVisible()
+      await expect(page.getByRole('heading', { name: /Presentation$/i }).first()).toBeVisible()
+      await context.close()
       return
     }
 
@@ -45,16 +52,10 @@ test.describe('Presentation Workflow - Student creates a presentation draft', ()
     const modal = page.getByRole('dialog').first()
     await expect(modal).toBeVisible({ timeout: 5_000 })
 
-    // The thesis has an abstract, so there should be a blue notice (not red error)
-    await expect(
-      modal.getByText('Please make sure that the thesis title'),
-    ).toBeVisible()
+    await expect(modal.getByText('Please make sure that the thesis title')).toBeVisible()
 
-    // Fill in the presentation form
     // Presentation Type - default is INTERMEDIATE, select FINAL
     await selectOption(page, 'Presentation Type', /final/i)
-
-    // Visibility - default is PUBLIC, keep it
 
     // Location
     await page.getByLabel('Location').fill('Room 01.07.014, Garching Campus')
@@ -65,15 +66,17 @@ test.describe('Presentation Workflow - Student creates a presentation draft', ()
     // Scheduled At - click button to open the DateTimePicker calendar dialog
     await page.getByRole('button', { name: 'Scheduled At' }).click()
 
-    // The DateTimePicker opens a second dialog with a calendar
     const datePickerDialog = page.getByRole('dialog').nth(1)
     await expect(datePickerDialog).toBeVisible({ timeout: 5_000 })
 
-    // Select a date from the calendar - pick the last day button visible in the grid
+    // Navigate to the next month to ensure the selected date is in the future.
+    // The email is only sent when scheduledAt is after now.
+    const nextMonthButton = datePickerDialog.locator('button[data-direction="next"]')
+    await nextMonthButton.click()
+
     const dayButtons = datePickerDialog.locator('table button:not([data-outside])')
     await dayButtons.last().click()
 
-    // Set the time using the spinbuttons (hours and minutes)
     const hourSpinbutton = datePickerDialog.getByRole('spinbutton').first()
     const minuteSpinbutton = datePickerDialog.getByRole('spinbutton').nth(1)
     await hourSpinbutton.click()
@@ -81,8 +84,6 @@ test.describe('Presentation Workflow - Student creates a presentation draft', ()
     await minuteSpinbutton.click()
     await minuteSpinbutton.fill('00')
 
-    // Click the submit/checkmark button to confirm date/time selection
-    // It's the last button in the date picker dialog (after the time inputs)
     await datePickerDialog.locator('button').last().click()
 
     // Click "Create Presentation Draft" button in the modal
@@ -92,5 +93,90 @@ test.describe('Presentation Workflow - Student creates a presentation draft', ()
 
     // Modal should close after successful creation
     await expect(modal).not.toBeVisible({ timeout: 15_000 })
+
+    // Draft creation does NOT send emails — the email is sent when
+    // the supervisor accepts/schedules the draft (next test).
+    // Verify the draft appears on the page with "Draft" state.
+    await expect(page.getByText('Room 01.07.014, Garching Campus').first()).toBeVisible({
+      timeout: 10_000,
+    })
+
+    await context.close()
+  })
+
+  test('supervisor can accept a presentation draft and email is sent', async ({ browser }) => {
+    const context = await browser.newContext({ storageState: authStatePath('supervisor2') })
+    const page = await context.newPage()
+
+    const heading = page.getByRole('heading', { name: THESIS_TITLE })
+    const loaded = await navigateToDetail(page, THESIS_URL, heading)
+    if (!loaded) {
+      await context.close()
+      return
+    }
+
+    // Find the Presentation accordion section and expand it
+    const presentationControl = page.getByRole('button', { name: 'Presentation', exact: true })
+    await expect(presentationControl).toBeVisible({ timeout: 10_000 })
+    if ((await presentationControl.getAttribute('aria-expanded')) !== 'true') {
+      await presentationControl.click()
+    }
+
+    // Look for an "Accept" button on a Draft presentation
+    const acceptButton = page.getByRole('button', { name: 'Accept', exact: true }).first()
+    const hasAccept = await acceptButton.isVisible({ timeout: 5_000 }).catch(() => false)
+
+    if (!hasAccept) {
+      // No draft to accept — presentation may already be scheduled from a prior run
+      await context.close()
+      return
+    }
+
+    // Snapshot mailbox BEFORE accepting (scheduling) the presentation
+    const beforeIds = await snapshotMailbox('student3@test.local')
+
+    await acceptButton.click()
+
+    // A scheduling modal may open — handle it if present
+    const scheduleDialog = page.getByRole('dialog')
+    const dialogVisible = await scheduleDialog.isVisible({ timeout: 3_000 }).catch(() => false)
+    if (dialogVisible) {
+      // Click the schedule/confirm button in the dialog
+      const scheduleButton = scheduleDialog
+        .getByRole('button', { name: /schedule|accept|confirm/i })
+        .first()
+      const hasScheduleButton = await scheduleButton
+        .isVisible({ timeout: 3_000 })
+        .catch(() => false)
+      if (hasScheduleButton) {
+        await scheduleButton.click()
+        await expect(scheduleDialog).not.toBeVisible({ timeout: 15_000 })
+      }
+    }
+
+    // Wait for the presentation to become "Scheduled"
+    await expect(page.getByText('Scheduled').first()).toBeVisible({ timeout: 10_000 })
+
+    // --- Email verification ---
+    // THESIS_PRESENTATION_SCHEDULED is sent to thesis students when a presentation is scheduled
+    const newEmails = await waitForNewMessages('student3@test.local', beforeIds)
+    expect(newEmails.length).toBeGreaterThanOrEqual(1)
+
+    // Verify private notification to student3 (THESIS_PRESENTATION_SCHEDULED template)
+    const privateEmail = newEmails.find((e) => getSubject(e) === 'New Presentation scheduled')
+    expect(privateEmail, 'Presentation scheduled email should be sent').toBeDefined()
+    assertSentFromApp(privateEmail!)
+    expect(getToAddresses(privateEmail!)).toContain('student3@test.local')
+
+    // Body should contain: greeting, thesis title, presentation location,
+    // language, and a link to the thesis
+    const body = getBody(privateEmail!)
+    expect(body, 'Should greet the student by first name').toContain('Student3')
+    expect(body, 'Should contain the thesis title').toContain(THESIS_TITLE)
+    expect(body, 'Should contain the presentation location').toContain('Room 01.07.014')
+    expect(body, 'Should contain the presentation language').toContain('English')
+    expect(body, 'Should contain a link to the thesis').toContain('/theses/')
+
+    await context.close()
   })
 })

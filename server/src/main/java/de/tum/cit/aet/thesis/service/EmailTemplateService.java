@@ -10,6 +10,7 @@ import de.tum.cit.aet.thesis.repository.EmailTemplateRepository;
 import de.tum.cit.aet.thesis.repository.ResearchGroupRepository;
 import de.tum.cit.aet.thesis.security.CurrentUserProvider;
 import de.tum.cit.aet.thesis.utility.HibernateHelper;
+import de.tum.cit.aet.thesis.utility.TemplateValidator;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -81,7 +82,8 @@ public class EmailTemplateService {
 			"INTERVIEW_INVITATION",
 			"INTERVIEW_INVITATION_REMINDER",
 			"INTERVIEW_SLOT_BOOKED_CONFORMATION",
-			"INTERVIEW_SLOT_BOOKED_CANCELLATION"
+			"INTERVIEW_SLOT_BOOKED_CANCELLATION",
+			"THESIS_ANONYMIZATION_REMINDER"
 	);
 	/**
 	 * Returns a paginated and filtered list of email templates for the current user's research group.
@@ -151,6 +153,7 @@ public class EmailTemplateService {
 		return emailTemplate;
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public EmailTemplate createEmailTemplate(
 			UUID researchGroupId,
@@ -171,6 +174,8 @@ public class EmailTemplateService {
 
 		currentUserProvider().assertCanAccessResearchGroup(researchGroup);
 		validateTemplateCase(templateCase);
+		TemplateValidator.validateTemplateContent(subject);
+		TemplateValidator.validateTemplateContent(bodyHtml);
 
 		// Check if a template with the same case and research group already exists -> update instead of create
 		EmailTemplate emailTemplate = emailTemplateRepository
@@ -192,6 +197,7 @@ public class EmailTemplateService {
 		return emailTemplateRepository.save(emailTemplate);
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public EmailTemplate updateEmailTemplate(
 			EmailTemplate emailTemplate,
@@ -207,6 +213,8 @@ public class EmailTemplateService {
 
 		currentUserProvider().assertCanAccessResearchGroup(emailTemplate.getResearchGroup());
 		validateTemplateCase(templateCase);
+		TemplateValidator.validateTemplateContent(subject);
+		TemplateValidator.validateTemplateContent(bodyHtml);
 
 		emailTemplate.setTemplateCase(templateCase);
 		emailTemplate.setDescription(description);
@@ -219,6 +227,7 @@ public class EmailTemplateService {
 		return emailTemplateRepository.save(emailTemplate);
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public void deleteEmailTemplate(UUID emailTemplateId) {
 		EmailTemplate emailTemplate = emailTemplateRepository.findById(emailTemplateId)

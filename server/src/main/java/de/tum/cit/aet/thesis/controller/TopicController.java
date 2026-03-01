@@ -74,6 +74,7 @@ public class TopicController {
 			@RequestParam(required = false, defaultValue = "desc") String sortOrder,
 			@RequestParam(required = false, defaultValue = "") UUID[] researchGroupIds
 	) {
+		limit = RequestValidator.clampPageSize(limit);
 		Page<Topic> topics = topicService.getAll(
 				onlyOwnResearchGroup,
 				type,
@@ -206,6 +207,7 @@ public class TopicController {
 			@RequestParam(required = false, defaultValue = "50") Integer limit,
 			@RequestParam(required = false, defaultValue = "false") boolean excludeSupervised
 	) {
+		limit = RequestValidator.clampPageSize(limit);
 		Page<TopicInterviewProcessDto> topics = topicService.getPossibleInterviewTopics(
 				search,
 				page,

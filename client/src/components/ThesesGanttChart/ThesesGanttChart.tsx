@@ -69,7 +69,7 @@ const ThesesGanttChart = () => {
         return endDate
       }
 
-      const advisor = thesis.advisors[0]
+      const advisor = (thesis.advisors ?? [])[0]
       if (!advisor) continue
 
       result.push({
@@ -79,7 +79,7 @@ const ThesesGanttChart = () => {
         columns: [
           <AvatarUserList
             key='student'
-            users={thesis.students}
+            users={thesis.students ?? []}
             withUniversityId={false}
             size='xs'
             oneLine

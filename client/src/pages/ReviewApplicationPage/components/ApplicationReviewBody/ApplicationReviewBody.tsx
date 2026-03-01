@@ -1,17 +1,19 @@
 import ApplicationData from '../../../../components/ApplicationData/ApplicationData'
 import ApplicationReviewForm from '../../../../components/ApplicationReviewForm/ApplicationReviewForm'
-import { Divider, Stack } from '@mantine/core'
+import { Divider, Group, Stack } from '@mantine/core'
 import React, { useEffect } from 'react'
 import { IApplication } from '../../../../requests/responses/application'
 import ApplicationRejectButton from '../../../../components/ApplicationRejectButton/ApplicationRejectButton'
+import ApplicationDeleteButton from '../../../../components/ApplicationDeleteButton/ApplicationDeleteButton'
 
 interface IApplicationReviewBodyProps {
   application: IApplication
   onChange: (application: IApplication) => unknown
+  onDelete: () => void
 }
 
 const ApplicationReviewBody = (props: IApplicationReviewBodyProps) => {
-  const { application, onChange } = props
+  const { application, onChange, onDelete } = props
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -22,14 +24,20 @@ const ApplicationReviewBody = (props: IApplicationReviewBodyProps) => {
       <ApplicationData
         application={application}
         rightTitleSection={
-          <ApplicationRejectButton
-            key={application.applicationId}
-            application={application}
-            onUpdate={(newApplication) => {
-              onChange(newApplication)
-            }}
-            ml='auto'
-          />
+          <Group ml='auto' gap='xs'>
+            <ApplicationDeleteButton
+              key={`delete-${application.applicationId}`}
+              application={application}
+              onDelete={onDelete}
+            />
+            <ApplicationRejectButton
+              key={`reject-${application.applicationId}`}
+              application={application}
+              onUpdate={(newApplication) => {
+                onChange(newApplication)
+              }}
+            />
+          </Group>
         }
         bottomSection={
           <Stack>

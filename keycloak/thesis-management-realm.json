@@ -577,7 +577,9 @@
       "emailVerified": true,
       "enabled": true,
       "attributes": {
-        "matrikelnr": ["03700001"]
+        "matrikelnr": [
+          "03700001"
+        ]
       },
       "credentials": [
         {
@@ -604,7 +606,9 @@
       "emailVerified": true,
       "enabled": true,
       "attributes": {
-        "matrikelnr": ["03700002"]
+        "matrikelnr": [
+          "03700002"
+        ]
       },
       "credentials": [
         {
@@ -631,7 +635,9 @@
       "emailVerified": true,
       "enabled": true,
       "attributes": {
-        "matrikelnr": ["03700003"]
+        "matrikelnr": [
+          "03700003"
+        ]
       },
       "credentials": [
         {
@@ -660,7 +666,9 @@
       "emailVerified": true,
       "enabled": true,
       "attributes": {
-        "matrikelnr": ["03700004"]
+        "matrikelnr": [
+          "03700004"
+        ]
       },
       "credentials": [
         {
@@ -687,7 +695,9 @@
       "emailVerified": true,
       "enabled": true,
       "attributes": {
-        "matrikelnr": ["03700005"]
+        "matrikelnr": [
+          "03700005"
+        ]
       },
       "credentials": [
         {
@@ -707,6 +717,35 @@
       "groups": []
     },
     {
+      "username": "group-admin",
+      "email": "group-admin@test.local",
+      "firstName": "GroupAdmin",
+      "lastName": "User",
+      "emailVerified": true,
+      "enabled": true,
+      "attributes": {
+        "matrikelnr": [
+          "03700010"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "group-admin",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "default-roles-thesis-management"
+      ],
+      "clientRoles": {
+        "thesis-management-app": [
+          "group-admin"
+        ]
+      },
+      "groups": []
+    },
+    {
       "username": "student2",
       "email": "student2@test.local",
       "firstName": "Student2",
@@ -714,7 +753,9 @@
       "emailVerified": true,
       "enabled": true,
       "attributes": {
-        "matrikelnr": ["03700006"]
+        "matrikelnr": [
+          "03700006"
+        ]
       },
       "credentials": [
         {
@@ -743,7 +784,9 @@
       "emailVerified": true,
       "enabled": true,
       "attributes": {
-        "matrikelnr": ["03700007"]
+        "matrikelnr": [
+          "03700007"
+        ]
       },
       "credentials": [
         {
@@ -772,7 +815,9 @@
       "emailVerified": true,
       "enabled": true,
       "attributes": {
-        "matrikelnr": ["03700008"]
+        "matrikelnr": [
+          "03700008"
+        ]
       },
       "credentials": [
         {
@@ -801,12 +846,107 @@
       "emailVerified": true,
       "enabled": true,
       "attributes": {
-        "matrikelnr": ["03700009"]
+        "matrikelnr": [
+          "03700009"
+        ]
       },
       "credentials": [
         {
           "type": "password",
           "value": "student5",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "default-roles-thesis-management"
+      ],
+      "clientRoles": {
+        "thesis-management-app": [
+          "student"
+        ]
+      },
+      "groups": [
+        "/thesis-students"
+      ]
+    },
+    {
+      "username": "delete_old_thesis",
+      "email": "delete_old_thesis@test.local",
+      "firstName": "OldThesis",
+      "lastName": "Deletable",
+      "emailVerified": true,
+      "enabled": true,
+      "attributes": {
+        "matrikelnr": [
+          "03700011"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "delete_old_thesis",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "default-roles-thesis-management"
+      ],
+      "clientRoles": {
+        "thesis-management-app": [
+          "student"
+        ]
+      },
+      "groups": [
+        "/thesis-students"
+      ]
+    },
+    {
+      "username": "delete_recent_thesis",
+      "email": "delete_recent_thesis@test.local",
+      "firstName": "RecentThesis",
+      "lastName": "Retainable",
+      "emailVerified": true,
+      "enabled": true,
+      "attributes": {
+        "matrikelnr": [
+          "03700012"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "delete_recent_thesis",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "default-roles-thesis-management"
+      ],
+      "clientRoles": {
+        "thesis-management-app": [
+          "student"
+        ]
+      },
+      "groups": [
+        "/thesis-students"
+      ]
+    },
+    {
+      "username": "delete_rejected_app",
+      "email": "delete_rejected_app@test.local",
+      "firstName": "RejectedApp",
+      "lastName": "Deletable",
+      "emailVerified": true,
+      "enabled": true,
+      "attributes": {
+        "matrikelnr": [
+          "03700013"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "delete_rejected_app",
           "temporary": false
         }
       ],

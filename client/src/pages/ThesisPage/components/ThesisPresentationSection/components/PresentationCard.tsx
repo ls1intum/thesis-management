@@ -307,7 +307,7 @@ const PresentationCard = ({
             )}
             {includeStudents && (
               <AvatarUserList
-                users={thesis.students}
+                users={thesis.students ?? []}
                 size='xs'
                 textSize='sm'
                 textColor='gray'

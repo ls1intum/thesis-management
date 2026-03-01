@@ -108,12 +108,12 @@ class UploadServiceTest {
 		}
 
 		@Test
-		void store_AnyTypeAllowed_Success() {
+		void store_DocumentTypeAllowed_Success() {
 			MockMultipartFile file = new MockMultipartFile(
 					"file", "test.docx", "application/msword", new byte[]{1, 2, 3}
 			);
 
-			String filename = uploadService.store(file, 1024 * 1024, UploadFileType.ANY);
+			String filename = uploadService.store(file, 1024 * 1024, UploadFileType.DOCUMENT);
 			assertThat(filename).endsWith(".docx");
 		}
 	}
@@ -137,7 +137,7 @@ class UploadServiceTest {
 		void load_PathTraversal_ThrowsException() {
 			assertThatThrownBy(() -> uploadService.load("../../../etc/passwd"))
 					.isInstanceOf(UploadException.class)
-					.hasMessageContaining("relative path");
+					.hasMessageContaining("outside upload directory");
 		}
 
 		@Test

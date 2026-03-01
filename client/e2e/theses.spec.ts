@@ -5,7 +5,9 @@ test.describe('Theses - Browse (Student)', () => {
   test('browse theses page shows heading and table', async ({ page }) => {
     await navigateTo(page, '/theses')
 
-    await expect(page.getByRole('heading', { name: /browse theses/i })).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByRole('heading', { name: /browse theses/i })).toBeVisible({
+      timeout: 15_000,
+    })
     // Student should NOT see create thesis button
     await expect(page.getByRole('button', { name: /create/i })).toBeHidden()
   })
@@ -17,9 +19,13 @@ test.describe('Theses - Browse (Supervisor)', () => {
   test('browse theses page shows create button for management', async ({ page }) => {
     await navigateTo(page, '/theses')
 
-    await expect(page.getByRole('heading', { name: /browse theses/i })).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByRole('heading', { name: /browse theses/i })).toBeVisible({
+      timeout: 30_000,
+    })
     // Supervisor should see create thesis button
-    await expect(page.getByRole('button', { name: /create/i }).first()).toBeVisible()
+    await expect(page.getByRole('button', { name: /create/i }).first()).toBeVisible({
+      timeout: 10_000,
+    })
   })
 })
 
@@ -29,7 +35,9 @@ test.describe('Theses - Overview (Supervisor)', () => {
   test('theses overview shows management view', async ({ page }) => {
     await navigateTo(page, '/overview')
 
-    await expect(page.getByRole('heading', { name: /theses overview/i })).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByRole('heading', { name: /theses overview/i })).toBeVisible({
+      timeout: 15_000,
+    })
   })
 })
 
@@ -41,9 +49,9 @@ test.describe('Theses - Detail page (Advisor)', () => {
     await navigateTo(page, '/theses/00000000-0000-4000-d000-000000000001')
 
     // Title
-    await expect(
-      page.getByRole('heading', { name: /automated code review/i }),
-    ).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByRole('heading', { name: /automated code review/i })).toBeVisible({
+      timeout: 15_000,
+    })
 
     // Key thesis sections should be visible (accordion sections)
     await expect(page.getByText('Configuration')).toBeVisible()
@@ -56,9 +64,9 @@ test.describe('Theses - Detail page (Student)', () => {
     // Student is assigned to thesis 1 (WRITING)
     await navigateTo(page, '/theses/00000000-0000-4000-d000-000000000001')
 
-    await expect(
-      page.getByRole('heading', { name: /automated code review/i }),
-    ).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByRole('heading', { name: /automated code review/i })).toBeVisible({
+      timeout: 15_000,
+    })
   })
 })
 

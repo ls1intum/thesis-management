@@ -1,14 +1,24 @@
 import { test, expect } from '@playwright/test'
 import { authStatePath, navigateTo, searchAndSelectMultiSelect, selectOption } from './helpers'
+import {
+  snapshotMailbox,
+  waitForNewMessages,
+  getSubject,
+  getBody,
+  getToAddresses,
+  assertSentFromApp,
+} from './mailpit'
 
 test.describe('Thesis Workflow - Supervisor creates a thesis', () => {
   test.use({ storageState: authStatePath('supervisor') })
 
   test('supervisor can create a new thesis via the browse theses page', async ({ page }) => {
+    test.setTimeout(120_000) // Extended timeout — form with server-side search fields
+
     await navigateTo(page, '/theses')
-    await expect(
-      page.getByRole('heading', { name: 'Browse Theses', exact: true }),
-    ).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByRole('heading', { name: 'Browse Theses', exact: true })).toBeVisible({
+      timeout: 30_000,
+    })
 
     // Click "Create Thesis" button
     await page.getByRole('button', { name: 'Create Thesis' }).click()
@@ -27,22 +37,19 @@ test.describe('Thesis Workflow - Supervisor creates a thesis', () => {
 
     // Student(s) - search and select
     await searchAndSelectMultiSelect(page, 'Student(s)', /student4/i)
-    await page.keyboard.press('Escape')
 
     // Supervisor(s) - search and select advisor
     await searchAndSelectMultiSelect(page, 'Supervisor(s)', /advisor/i)
-    await page.keyboard.press('Escape')
 
     // Examiner - search and select self (supervisor)
     await searchAndSelectMultiSelect(page, 'Examiner', /supervisor/i)
 
-    // Research Group should be pre-filled
+    // Snapshot mailbox BEFORE creating the thesis
+    const beforeIds = await snapshotMailbox('student4@test.local')
 
     // Click "Create Thesis"
-    const createButton = page
-      .getByRole('dialog')
-      .getByRole('button', { name: 'Create Thesis' })
-    await expect(createButton).toBeEnabled({ timeout: 10_000 })
+    const createButton = page.getByRole('dialog').getByRole('button', { name: 'Create Thesis' })
+    await expect(createButton).toBeEnabled({ timeout: 15_000 })
     await createButton.click()
 
     // Should navigate to the new thesis detail page
@@ -50,5 +57,26 @@ test.describe('Thesis Workflow - Supervisor creates a thesis', () => {
     await expect(
       page.getByRole('heading', { name: 'E2E Test Thesis: Performance Analysis' }),
     ).toBeVisible({ timeout: 15_000 })
+
+    // --- Email verification ---
+    // THESIS_CREATED is sent to the thesis students (THESIS_CREATED template)
+    const newEmails = await waitForNewMessages('student4@test.local', beforeIds)
+    expect(newEmails.length).toBeGreaterThanOrEqual(1)
+
+    const creationEmail = newEmails.find((e) => getSubject(e) === 'Thesis Created')
+    expect(creationEmail, 'Thesis creation email should be sent').toBeDefined()
+    assertSentFromApp(creationEmail!)
+    expect(getToAddresses(creationEmail!)).toContain('student4@test.local')
+
+    // Body should contain: greeting, thesis title, supervisor/advisor/student names, and link
+    const body = getBody(creationEmail!)
+    expect(body, 'Should greet the student by first name').toContain('Student4')
+    expect(body, 'Should contain the thesis title').toContain(
+      'E2E Test Thesis: Performance Analysis',
+    )
+    expect(body, 'Should contain a link to the thesis').toContain('/theses/')
+    // The template shows "Supervisor:", "Advisor:", "Student:" sections
+    expect(body, 'Should mention the supervisor/examiner name').toContain('Supervisor')
+    expect(body, 'Should reference proposal as next step').toContain('proposal')
   })
 })

@@ -6,6 +6,7 @@ import de.tum.cit.aet.thesis.constants.ThesisFeedbackType;
 import de.tum.cit.aet.thesis.constants.ThesisPresentationVisibility;
 import de.tum.cit.aet.thesis.cron.model.ApplicationRejectObject;
 import de.tum.cit.aet.thesis.entity.Application;
+import de.tum.cit.aet.thesis.entity.DataExport;
 import de.tum.cit.aet.thesis.entity.EmailTemplate;
 import de.tum.cit.aet.thesis.entity.InterviewSlot;
 import de.tum.cit.aet.thesis.entity.Interviewee;
@@ -24,9 +25,12 @@ import de.tum.cit.aet.thesis.utility.DataFormatter;
 import de.tum.cit.aet.thesis.utility.MailBuilder;
 import de.tum.cit.aet.thesis.utility.MailConfig;
 import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.HtmlUtils;
 
 import jakarta.mail.util.ByteArrayDataSource;
 
@@ -40,6 +44,8 @@ import java.util.UUID;
 /** Service for composing and sending email notifications for applications, theses, interviews, and presentations. */
 @Service
 public class MailingService {
+	private static final Logger log = LoggerFactory.getLogger(MailingService.class);
+
 	private final JavaMailSender javaMailSender;
 	private final UploadService uploadService;
 	private final MailConfig config;
@@ -74,19 +80,26 @@ public class MailingService {
 	 * @param application the newly created application
 	 */
 	public void sendApplicationCreatedEmail(Application application) {
-		EmailTemplate researchGroupEmailTemplate = loadTemplate(
-				application.getResearchGroup().getId(),
-				"APPLICATION_CREATED_CHAIR",
-				"en");
+		boolean includeData = application.getResearchGroup().getResearchGroupSettings() != null
+				&& application.getResearchGroup().getResearchGroupSettings().isIncludeApplicationDataInEmail();
 
-		MailBuilder researchGroupMailBuilder = prepareApplicationCreatedMailBuilder(application, researchGroupEmailTemplate);
+		EmailTemplate researchGroupEmailTemplate = includeData
+				? loadTemplate(application.getResearchGroup().getId(), "APPLICATION_CREATED_CHAIR", "en")
+				: null;
+
+		MailBuilder researchGroupMailBuilder = includeData
+				? prepareApplicationCreatedMailBuilder(application, researchGroupEmailTemplate)
+				: prepareMinimalApplicationMailBuilder(application);
 		researchGroupMailBuilder
 			.sendToChairMembers(application.getResearchGroup().getId())
 			.addNotificationName("new-applications")
 			.filterChairMembersNewApplicationNotifications(application.getTopic(), "new-applications")
 			.send(javaMailSender, uploadService);
 
-		sendNotificationCopy(application.getResearchGroup(), prepareApplicationCreatedMailBuilder(application,researchGroupEmailTemplate));
+		MailBuilder notificationCopyMailBuilder = includeData
+				? prepareApplicationCreatedMailBuilder(application, researchGroupEmailTemplate)
+				: prepareMinimalApplicationMailBuilder(application);
+		sendNotificationCopy(application.getResearchGroup(), notificationCopyMailBuilder);
 
 		EmailTemplate studentEmailTemplate = loadTemplate(
 				application.getResearchGroup().getId(),
@@ -121,6 +134,40 @@ public class MailingService {
 						getUserFilename(application.getUser(), "Degree Report",
 								application.getUser().getDegreeFilename()))
 				.fillApplicationPlaceholders(application);
+	}
+
+	private MailBuilder prepareMinimalApplicationMailBuilder(Application application) {
+		String applicantName = "";
+		if (application.getUser() != null) {
+			String firstName = application.getUser().getFirstName();
+			String lastName = application.getUser().getLastName();
+			applicantName = ((firstName != null ? firstName : "") + " " + (lastName != null ? lastName : "")).trim();
+		}
+
+		String thesisTitle = "";
+		if (application.getThesisTitle() != null && !application.getThesisTitle().isBlank()) {
+			thesisTitle = application.getThesisTitle();
+		} else if (application.getTopic() != null && application.getTopic().getTitle() != null
+				&& !application.getTopic().getTitle().isBlank()) {
+			thesisTitle = application.getTopic().getTitle();
+		}
+
+		String applicationUrl = config.getClientHost() + "/applications/" + application.getId();
+
+		// HTML-escape user-provided values to prevent XSS
+		String safeApplicantName = HtmlUtils.htmlEscape(applicantName);
+		String safeThesisTitle = HtmlUtils.htmlEscape(thesisTitle);
+
+		String subject = "New Thesis Application";
+		String body = "<p>Dear colleague,</p>"
+				+ "<p>A new thesis application has been submitted by <strong>" + safeApplicantName + "</strong>"
+				+ (thesisTitle.isEmpty() ? "." : " for the topic <strong>" + safeThesisTitle + "</strong>.")
+				+ "</p>"
+				+ "<p>You can view the full application details here: "
+				+ "<a target=\"_blank\" rel=\"noopener noreferrer nofollow\" href=\"" + applicationUrl + "\">"
+				+ applicationUrl + "</a></p>";
+
+		return new MailBuilder(config, subject, body);
 	}
 
 	/**
@@ -626,6 +673,57 @@ public class MailingService {
 		}
 
 		return builder.toString();
+	}
+
+	/**
+	 * Sends an email notifying the user that their data export is ready for download.
+	 *
+	 * @param user the user who requested the export
+	 * @param export the completed data export
+	 */
+	public void sendDataExportReadyEmail(User user, DataExport export) {
+		EmailTemplate template = loadTemplate(null, "DATA_EXPORT_READY", "en");
+
+		String downloadUrl = config.getClientHost() + "/data-export";
+
+		new MailBuilder(config, template.getSubject(), template.getBodyHtml())
+				.addPrimaryRecipient(user)
+				.fillUserPlaceholders(user, "user")
+				.fillPlaceholder("downloadUrl", downloadUrl)
+				.send(javaMailSender, uploadService);
+	}
+
+	/**
+	 * Sends a reminder email to the research group head about upcoming thesis anonymization.
+	 *
+	 * @param researchGroup the research group whose theses will be anonymized
+	 * @param theses the list of theses approaching anonymization
+	 * @param anonymizationDate the formatted date when anonymization will occur
+	 */
+	public void sendThesisAnonymizationReminderEmail(ResearchGroup researchGroup, List<Thesis> theses, String anonymizationDate) {
+		if (researchGroup.getHead() == null) {
+			log.warn("Cannot send anonymization reminder for research group '{}': no head assigned", researchGroup.getName());
+			return;
+		}
+
+		EmailTemplate emailTemplate = loadTemplate(
+				researchGroup.getId(),
+				"THESIS_ANONYMIZATION_REMINDER",
+				"en");
+
+		List<String> thesisTitles = theses.stream().map(Thesis::getTitle).toList();
+
+		Map<String, Object> model = new HashMap<>();
+		model.put("recipient", researchGroup.getHead().getFirstName() + " " + researchGroup.getHead().getLastName());
+		model.put("researchGroupName", researchGroup.getName());
+		model.put("anonymizationDate", anonymizationDate);
+		model.put("theses", thesisTitles);
+
+		MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(), emailTemplate.getBodyHtml());
+		mailBuilder
+				.addPrimaryRecipient(researchGroup.getHead())
+				.fillPlaceholders(model)
+				.send(javaMailSender, uploadService);
 	}
 
 	private String getThesisFilename(Thesis thesis, String name, String originalFilename) {

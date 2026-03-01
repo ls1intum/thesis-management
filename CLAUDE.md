@@ -33,6 +33,14 @@ This file provides guidance for Claude Code when working with this repository.
 
 All DTOs use `@JsonInclude(JsonInclude.Include.NON_EMPTY)`. `null`, empty strings, and empty collections are omitted from JSON. The client must handle missing fields with `?? ''`, `?? []`, and `?.`.
 
+### Avoid `@Transactional` in Services
+
+Do **not** use `@Transactional` on service methods. It causes performance issues (long-held DB connections) and concurrency problems (large transaction scopes leading to lock contention). Instead, rely on Spring Data's per-repository-call transactions and design operations to be idempotent. The only acceptable place for `@Transactional` is on `@Modifying` repository methods (where Spring Data requires it) and on simple controller-level read operations that need a consistent view.
+
 ### Role Terminology
 
 The backend/Keycloak uses `supervisor` and `advisor` roles. In the UI these are displayed as "Examiner" and "Supervisor" respectively.
+
+### Keycloak Configuration (Dev Only)
+
+The Keycloak realm JSON (`keycloak/thesis-management-realm.json`) and the default secret in `application.yml` are **for local development only**. Production uses a separate, dedicated Keycloak server with its own configuration. Do not treat dev Keycloak settings (default secrets, disabled brute force protection, implicit flow, etc.) as security issues — they are intentional for developer convenience and do not affect production.

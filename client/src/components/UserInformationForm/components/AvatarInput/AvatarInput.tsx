@@ -1,9 +1,28 @@
 import { getAvatar } from '../../../../utils/user'
 import AvatarEditor from 'react-avatar-editor'
-import { useLoggedInUser } from '../../../../hooks/authentication'
-import { Avatar, Button, Center, Group, Input, Modal, Slider, Stack, Text } from '@mantine/core'
+import { useAuthenticationContext, useLoggedInUser } from '../../../../hooks/authentication'
+import {
+  Avatar,
+  Button,
+  Center,
+  Group,
+  Input,
+  Modal,
+  Slider,
+  Stack,
+  Text,
+  Tooltip,
+} from '@mantine/core'
 import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone'
 import { useMemo, useRef, useState } from 'react'
+import { doRequest } from '../../../../requests/request'
+import { showSimpleError } from '../../../../utils/notification'
+import { IUser } from '../../../../requests/responses/user'
+
+const IMPORT_TOOLTIP =
+  'Imports your profile picture from Gravatar (gravatar.com), a US-based service.' +
+  ' Your email hash is sent from the server, so your IP address is not exposed to the external service.' +
+  ' The image is only fetched once and stored locally.'
 
 interface IAvatarInputProps {
   value: File | undefined
@@ -16,6 +35,7 @@ const AvatarInput = (props: IAvatarInputProps) => {
   const { value, onChange, label, required } = props
 
   const editorRef = useRef<AvatarEditor | null>(null)
+  const { updateUser } = useAuthenticationContext()
   const user = useLoggedInUser()
 
   const avatarUrl = useMemo(() => {
@@ -24,6 +44,7 @@ const AvatarInput = (props: IAvatarInputProps) => {
 
   const [file, setFile] = useState<File>()
   const [scale, setScale] = useState(1)
+  const [importLoading, setImportLoading] = useState(false)
 
   const onSave = async () => {
     const canvas = editorRef.current?.getImageScaledToCanvas().toDataURL()
@@ -37,6 +58,29 @@ const AvatarInput = (props: IAvatarInputProps) => {
     onChange(new File([data], 'avatar.png'))
     setFile(undefined)
     setScale(1)
+  }
+
+  const importProfilePicture = async () => {
+    setImportLoading(true)
+
+    try {
+      const response = await doRequest<IUser>('/v2/user-info/import-profile-picture', {
+        method: 'POST',
+        requiresAuth: true,
+      })
+
+      if (!response.ok) {
+        throw new Error('No profile picture found for your email address.')
+      }
+
+      updateUser(response.data)
+    } catch (e: unknown) {
+      const message =
+        e instanceof Error ? e.message : 'No profile picture found for your email address.'
+      showSimpleError(message)
+    } finally {
+      setImportLoading(false)
+    }
   }
 
   return (
@@ -61,6 +105,20 @@ const AvatarInput = (props: IAvatarInputProps) => {
           </Stack>
         </Group>
       </Dropzone>
+      {user.email && (
+        <Group gap='xs' mt='xs'>
+          <Tooltip label={IMPORT_TOOLTIP} multiline w={300} withArrow>
+            <Button
+              variant='subtle'
+              size='xs'
+              onClick={importProfilePicture}
+              loading={importLoading}
+            >
+              Import from Gravatar
+            </Button>
+          </Tooltip>
+        </Group>
+      )}
       <Modal opened={!!file} onClose={() => setFile(undefined)}>
         {file && (
           <Stack>

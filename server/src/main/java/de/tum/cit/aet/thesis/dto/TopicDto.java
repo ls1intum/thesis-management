@@ -28,11 +28,11 @@ public record TopicDto(
 	Instant intendedStart,
 	Instant applicationDeadline,
 	TopicState state,
-	LightUserDto createdBy,
+	MinimalUserDto createdBy,
 	LightResearchGroupDto researchGroup,
 
-	List<LightUserDto> advisors,
-	List<LightUserDto> supervisors
+	List<MinimalUserDto> advisors,
+	List<MinimalUserDto> supervisors
 ) {
 
 public static TopicDto fromTopicEntity(Topic topic) {
@@ -40,14 +40,14 @@ public static TopicDto fromTopicEntity(Topic topic) {
 	return null;
 	}
 
-	List<LightUserDto> advisors = new ArrayList<>();
-	List<LightUserDto> supervisors = new ArrayList<>();
+	List<MinimalUserDto> advisors = new ArrayList<>();
+	List<MinimalUserDto> supervisors = new ArrayList<>();
 
 	for (TopicRole role : topic.getRoles()) {
 	if (role.getId().getRole() == ThesisRoleName.ADVISOR) {
-		advisors.add(LightUserDto.fromUserEntity(role.getUser()));
+		advisors.add(MinimalUserDto.fromUserEntity(role.getUser()));
 	} else if (role.getId().getRole() == ThesisRoleName.SUPERVISOR) {
-		supervisors.add(LightUserDto.fromUserEntity(role.getUser()));
+		supervisors.add(MinimalUserDto.fromUserEntity(role.getUser()));
 	}
 	}
 
@@ -66,7 +66,7 @@ public static TopicDto fromTopicEntity(Topic topic) {
 		topic.getIntendedStart(),
 		topic.getApplicationDeadline(),
 		topic.getTopicState(),
-		LightUserDto.fromUserEntity(topic.getCreatedBy()),
+		MinimalUserDto.fromUserEntity(topic.getCreatedBy()),
 		LightResearchGroupDto.fromResearchGroupEntity(topic.getResearchGroup()),
 		advisors,
 		supervisors

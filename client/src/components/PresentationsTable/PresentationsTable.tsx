@@ -122,7 +122,7 @@ const PresentationsTable = <T extends IThesisPresentation | IPublishedPresentati
       ellipsis: true,
       render: (presentation) =>
         isPublishedPresentation(presentation) && (
-          <AvatarUserList users={presentation.thesis.students} />
+          <AvatarUserList users={presentation.thesis.students ?? []} />
         ),
     },
     type: {

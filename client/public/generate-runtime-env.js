@@ -9,7 +9,6 @@ const ALLOWED_ENVIRONMENT_VARIABLES = [
   'CHAIR_URL',
   // environments with defaults
   'ALLOW_SUGGESTED_TOPICS',
-  'DEFAULT_SUPERVISOR_UUID',
   'APPLICATION_TITLE',
   'GENDERS',
   'STUDY_DEGREES',
@@ -18,7 +17,6 @@ const ALLOWED_ENVIRONMENT_VARIABLES = [
   'THESIS_TYPES',
   'CUSTOM_DATA',
   'THESIS_FILES',
-  'CALDAV_URL',
 ]
 
 async function generateConfig() {

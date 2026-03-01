@@ -56,7 +56,6 @@ class ThesisServiceTest {
 	@Mock private ThesisAssessmentRepository thesisAssessmentRepository;
 	@Mock private MailingService mailingService;
 	@Mock private AccessManagementService accessManagementService;
-	@Mock private ThesisPresentationService thesisPresentationService;
 	@Mock private ThesisFeedbackRepository thesisFeedbackRepository;
 	@Mock private ThesisFileRepository thesisFileRepository;
 	@Mock private ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
@@ -78,7 +77,7 @@ class ThesisServiceTest {
 				thesisRoleRepository, thesisRepository, thesisStateChangeRepository,
 				userRepository, thesisProposalRepository, thesisAssessmentRepository,
 				uploadService, mailingService, accessManagementService,
-				thesisPresentationService, thesisFeedbackRepository, thesisFileRepository,
+				thesisFeedbackRepository, thesisFileRepository,
 				currentUserProviderProvider, researchGroupRepository, researchGroupSettingsService
 		);
 		when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);

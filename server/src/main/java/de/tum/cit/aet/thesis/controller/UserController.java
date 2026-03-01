@@ -8,6 +8,7 @@ import de.tum.cit.aet.thesis.security.CurrentUserProvider;
 import de.tum.cit.aet.thesis.service.AccessManagementService;
 import de.tum.cit.aet.thesis.service.AccessManagementService.KeycloakUserInformation;
 import de.tum.cit.aet.thesis.service.UserService;
+import de.tum.cit.aet.thesis.utility.RequestValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,6 +81,7 @@ public class UserController {
 			@RequestParam(required = false, defaultValue = "joinedAt") String sortBy,
 			@RequestParam(required = false, defaultValue = "desc") String sortOrder
 	) {
+		limit = RequestValidator.clampPageSize(limit);
 		Page<User> users = userService.getAll(searchQuery, groups, page, limit, sortBy, sortOrder);
 
 		return ResponseEntity.ok(PaginationDto.fromSpringPage(users.map(LightUserDto::fromUserEntity)));

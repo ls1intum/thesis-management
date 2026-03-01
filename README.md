@@ -35,8 +35,14 @@ The videos are grouped by the roles student, supervisor, examiner, and research 
 - [Manage User Settings](https://live.rbg.tum.de/w/artemisintro/53605)  
   Enables students to configure their account settings, including personal information such as study program and contact details, ensuring all details are up-to-date.
 
-- [Book Interview Slot](https://live.rbg.tum.de/w/artemisintro/70067)  
+- [Book Interview Slot](https://live.rbg.tum.de/w/artemisintro/70067)
   Allows students to view available interview slots and book a preferred timeslot.
+
+- **Request Data Export**
+  Allows students to request an export of all their personal data (profile, applications, theses, uploaded files) as a ZIP file. Accessible from the Privacy page or directly at `/data-export`.
+
+- **Import Profile Picture**
+  Allows students to import their profile picture from Gravatar via the profile settings page. The lookup is performed server-side to protect the user's IP address.
 
 #### Supervisor
 
@@ -98,8 +104,19 @@ The videos are grouped by the roles student, supervisor, examiner, and research 
 - [Add Members to Research Group](https://live.rbg.tum.de/w/artemisintro/70056)  
   Shows how research group admins can add members to the research group.
 
-- [Make a Member Research Group Admin](https://live.rbg.tum.de/w/artemisintro/70055)  
+- [Make a Member Research Group Admin](https://live.rbg.tum.de/w/artemisintro/70055)
   Demonstrates how research group admins can grant admin permissions to a member.
+
+- **Configure Scientific Writing Guide**
+  Allows research group admins to set a custom link to scientific writing guidelines in the research group settings. This link is shown to students during the thesis writing phase.
+
+#### Admin
+
+- **Data Retention Management**
+  Admins can view data retention status and manually trigger the cleanup process from the Data Retention admin page. The nightly cleanup automatically deletes rejected applications older than 1 year and expired data export files.
+
+- **Delete Rejected Applications**
+  Admins can permanently delete rejected applications from the application detail page.
 
 #### Thesis Page Permissions
 
@@ -165,6 +182,7 @@ Group heads have the Group Admin role for their group by default (this cannot be
 3. [Customizing E-Mails](docs/MAILS.md)
 4. [Development Setup](docs/DEVELOPMENT.md) (includes [E2E Tests](docs/DEVELOPMENT.md#e2e-tests-playwright))
 5. [Database Changes](docs/DATABASE.md)
+6. [Data Retention Policy](docs/DATA_RETENTION.md)
 
 ## Features
 
@@ -177,10 +195,32 @@ These flowcharts offer a quick reference for understanding how each role engages
 
 ![Thesis Application Flowchart](docs/files/thesis-application-flowchart.svg)
 
+#### Automatic Application Expiration
+
+Applications that have not been reviewed within a configurable period are automatically rejected. Research group admins can configure the expiration delay in weeks (minimum 2 weeks) in the research group settings. When an application expires, the student receives the standard rejection email notification, so they can reapply or pursue other options.
+
+This mechanism ensures that students are not left waiting indefinitely for a response and enables the system to clean up application data after the retention period.
+
 #### Thesis Writing Flowchart
 
 ![Thesis Writing Flowchart](docs/files/thesis-writing-flowchart.svg)
 
+#### Privacy and Data Protection
+
+The platform includes GDPR-compliant privacy and data protection features:
+
+- **Privacy Statement**: A comprehensive privacy page accessible to all users (authenticated and unauthenticated) that documents all data processing activities, legal bases, retention periods, and data subject rights.
+- **Data Export (Art. 15 / Art. 20)**: Authenticated users can request an export of all their personal data from the Data Export page (also linked from the Privacy page). Exports are generated as ZIP files containing structured JSON data (profile, applications, theses, assessments) and uploaded documents (CV, degree report, examination report). Exports are processed overnight and the user receives an email notification with a link to download. Downloads are available for 7 days and users can request a new export every 7 days. See the [Data Retention Policy](docs/DATA_RETENTION.md) for details.
+- **Data Retention**: Automated cleanup of expired data runs nightly. Rejected applications are deleted after 1 year. Data export files are deleted after 7 days. Admins can trigger the cleanup manually from the Data Retention admin page. See the [Data Retention Policy](docs/DATA_RETENTION.md) for the full retention schedule and rationale.
+- **Application Deletion**: Admins can permanently delete rejected applications from the application detail page.
+- **Profile Picture Import**: Users can import their profile picture from Gravatar via their profile settings. The lookup is performed server-side to avoid exposing the user's IP address to external services.
+
+#### Research Group Settings
+
+Research group admins can configure per-group settings:
+
+- **Scientific Writing Guide**: A customizable link to scientific writing guidelines shown to students during the thesis writing phase. Each research group can configure its own link in the research group settings page.
+
 > [!NOTE]
-> **Couldn't find what you were looking for?**  
+> **Couldn't find what you were looking for?**
 > If you need any further help or want to be onboarded to the system, reach out to us at **[thesis-management-support.aet@xcit.tum.de](thesis-management-support.aet@xcit.tum.de)**.

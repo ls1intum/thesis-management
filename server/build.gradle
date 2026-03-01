@@ -33,6 +33,15 @@ repositories {
 	mavenCentral()
 }
 
+// Exclude Jackson 2.x databind from compile classpath to prevent accidental usage.
+// Jackson 3.x (tools.jackson) is the primary Jackson version in Spring Boot 4.x.
+// Jackson 2.x remains on the runtime classpath for third-party libraries (java-jwt, itext).
+configurations.configureEach {
+	if (it.name == "compileClasspath" || it.name == "testCompileClasspath") {
+		exclude group: "com.fasterxml.jackson.core", module: "jackson-databind"
+	}
+}
+
 dependencies {
 	implementation "org.springframework.boot:spring-boot-starter-data-jpa"
 	implementation "org.springframework.boot:spring-boot-starter-webmvc"
@@ -57,7 +66,6 @@ dependencies {
 	implementation "org.postgresql:postgresql:42.7.10"
 
 	implementation "commons-io:commons-io:2.21.0"
-	implementation "com.github.vladimir-bukhtoyarov:bucket4j-core:8.0.1"
 	implementation "org.mnode.ical4j:ical4j:4.2.3"
 	implementation "com.itextpdf:itext-core:9.5.0"
 	implementation "com.itextpdf:html2pdf:6.3.1"
@@ -82,8 +90,8 @@ dependencies {
 	}
 	testImplementation "org.springframework.boot:spring-boot-starter-webmvc-test"
 
-	testImplementation "org.mockito:mockito-core:5.21.0"
-	testImplementation "org.mockito:mockito-junit-jupiter:5.21.0"
+	testImplementation "org.mockito:mockito-core:5.22.0"
+	testImplementation "org.mockito:mockito-junit-jupiter:5.22.0"
 
 	testImplementation "org.testcontainers:testcontainers:${test_container_version}"
 	testImplementation "org.testcontainers:testcontainers-junit-jupiter:${test_container_version}"
@@ -132,7 +140,7 @@ spotless {
 
 
 checkstyle {
-	toolVersion = "13.2.0"
+	toolVersion = "13.3.0"
 	configFile = file("config/checkstyle/checkstyle.xml")
 	maxWarnings = 0
 }
@@ -143,6 +151,7 @@ test {
 
 	maxParallelForks = 1
 	forkEvery = 0
+	maxHeapSize = "2g"
 
 	testLogging {
 		events "PASSED", "FAILED", "SKIPPED"

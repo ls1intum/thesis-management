@@ -22,6 +22,7 @@ import de.tum.cit.aet.thesis.repository.InterviewProcessRepository;
 import de.tum.cit.aet.thesis.repository.ResearchGroupRepository;
 import de.tum.cit.aet.thesis.repository.TopicRepository;
 import de.tum.cit.aet.thesis.security.CurrentUserProvider;
+import de.tum.cit.aet.thesis.utility.HibernateHelper;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -126,7 +127,8 @@ public class ApplicationService {
 			String sortBy,
 			String sortOrder
 	) {
-		Sort.Order order = new Sort.Order(sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
+		Sort.Order order = new Sort.Order(sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,
+				HibernateHelper.validateSortField(Application.class, sortBy));
 
 		ResearchGroup researchGroup = currentUserProvider().getResearchGroupOrThrow();
 		String searchQueryFilter = searchQuery == null || searchQuery.isEmpty() ? null : searchQuery.toLowerCase();
@@ -171,6 +173,7 @@ public class ApplicationService {
 		return applicationRepository.findNotReviewedSuggestedByResearchGroup(researchGroupId);
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Application createApplication(User user, UUID researchGroupId, UUID topicId, String thesisTitle,
 										String thesisType, Instant desiredStartDate, String motivation) {
@@ -204,6 +207,7 @@ public class ApplicationService {
 		return application;
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Application updateApplication(Application application, UUID topicId, String thesisTitle, String thesisType, Instant desiredStartDate, String motivation) {
 		currentUserProvider().assertCanAccessResearchGroup(application.getResearchGroup());
@@ -218,6 +222,7 @@ public class ApplicationService {
 		return application;
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public List<Application> accept(
 			User reviewingUser,
@@ -246,7 +251,7 @@ public class ApplicationService {
 				advisorIds,
 				List.of(application.getUser().getId()),
 				application,
-				false,
+				notifyUser,
 				application.getResearchGroup().getId()
 		);
 
@@ -271,6 +276,7 @@ public class ApplicationService {
 		return result;
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public List<Application> reject(User reviewingUser, Application application,
 			ApplicationRejectReason reason, boolean notifyUser, boolean authenticated) {
@@ -315,6 +321,7 @@ public class ApplicationService {
 		return result;
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public void rejectAllApplicationsAutomatically(Topic topic, int afterDuration, Instant referenceDate, UUID researchGroupId) {
 		List<Application> applications = applicationRepository.findAllByTopic(topic);
@@ -385,6 +392,7 @@ public class ApplicationService {
 		return result;
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public void rejectListOfApplicationsIfOlderThan(
 			List<Application> applications, int afterDuration, UUID researchGroupId) {
@@ -403,6 +411,7 @@ public class ApplicationService {
 		}
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Topic closeTopic(Topic topic, ApplicationRejectReason reason, boolean notifyUser) {
 		currentUserProvider().assertCanAccessResearchGroup(topic.getResearchGroup());
@@ -419,6 +428,7 @@ public class ApplicationService {
 		return topicRepository.save(topic);
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public List<Application> rejectApplicationsForTopic(User closer, Topic topic, ApplicationRejectReason reason, boolean notifyUser) {
 		currentUserProvider().assertCanAccessResearchGroup(topic.getResearchGroup());
@@ -436,6 +446,7 @@ public class ApplicationService {
 		return result;
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Application reviewApplication(Application application, User reviewer, ApplicationReviewReason reason) {
 		currentUserProvider().assertCanAccessResearchGroup(application.getResearchGroup());
@@ -443,6 +454,7 @@ public class ApplicationService {
 		return reviewApplicationWithoutAuth(application, reviewer, reason);
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Application reviewApplicationWithoutAuth(Application application, User reviewer, ApplicationReviewReason reason) {
 		ApplicationReviewer entity = application.getReviewer(reviewer).orElseGet(() -> {
@@ -476,6 +488,7 @@ public class ApplicationService {
 		return applicationRepository.save(application);
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Application updateComment(Application application, String comment) {
 		currentUserProvider().assertCanAccessResearchGroup(application.getResearchGroup());
@@ -505,5 +518,23 @@ public class ApplicationService {
 				.orElseThrow(() -> new ResourceNotFoundException(String.format("Application with id %s not found.", applicationId)));
 		currentUserProvider().assertCanAccessResearchGroup(application.getResearchGroup());
 		return application;
+	}
+
+	/**
+	 * Deletes an application by its ID, preventing deletion of accepted applications linked to theses.
+	 *
+	 * @param applicationId the application identifier
+	 */
+	public void deleteApplication(UUID applicationId) {
+		Application application = findById(applicationId);
+
+		if (application.getState() == ApplicationState.ACCEPTED) {
+			throw new ResourceInvalidParametersException(
+					"Accepted applications cannot be deleted because they are linked to a thesis.");
+		}
+
+		applicationReviewerRepository.deleteAll(application.getReviewers());
+		application.getReviewers().clear();
+		applicationRepository.delete(application);
 	}
 }

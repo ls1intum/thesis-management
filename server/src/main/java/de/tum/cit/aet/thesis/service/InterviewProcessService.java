@@ -13,6 +13,7 @@ import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.repository.InterviewProcessRepository;
 import de.tum.cit.aet.thesis.repository.IntervieweeRepository;
 import de.tum.cit.aet.thesis.security.CurrentUserProvider;
+import de.tum.cit.aet.thesis.utility.HibernateHelper;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.property.immutable.ImmutableMethod;
 import org.springframework.beans.factory.ObjectProvider;
@@ -119,7 +120,7 @@ public class InterviewProcessService {
 
 		Sort.Order order = new Sort.Order(
 				sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,
-				sortBy
+				HibernateHelper.validateSortField(InterviewProcess.class, sortBy)
 		);
 
 		Pageable pageable = limit == -1
@@ -292,7 +293,7 @@ public class InterviewProcessService {
 
 		Sort.Order order = new Sort.Order(
 				sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,
-				sortBy
+				HibernateHelper.validateSortField(Interviewee.class, sortBy)
 		);
 
 	return intervieweeRepository.findAllInterviewees( interviewProcessId, searchQueryFilter, stateFilter, PageRequest.of(page, limit <= 0 ? Integer.MAX_VALUE : limit, Sort.by(order)) );
@@ -414,11 +415,9 @@ public class InterviewProcessService {
 	) {
 		InterviewProcess interviewProcess = findById(interviewProcessId);
 
-		if (currentUserProvider().getUser().getResearchGroup() == null && !currentUserProvider().isAdmin() && !userIsInvitedToInterviewee(interviewProcess)) {
-			throw new IllegalStateException("Current user is not allowed to access the interview slots of this interview process.");
+		if (!userIsInvitedToInterviewee(interviewProcess)) {
+			currentUserProvider().assertCanAccessResearchGroup(interviewProcess.getTopic().getResearchGroup());
 		}
-
-		currentUserProvider().assertCanAccessResearchGroup(interviewProcess.getTopic().getResearchGroup());
 
 		List<InterviewSlot> slots =  interviewProcess.getSlots() == null
 				? new ArrayList<>()
@@ -433,6 +432,9 @@ public class InterviewProcessService {
 	}
 
 	private Boolean userIsInvitedToInterviewee(InterviewProcess interviewProcess) {
+		if (currentUserProvider().getUser() == null) {
+			return false;
+		}
 		UUID currentUserId = currentUserProvider().getUser().getId();
 
 		for (Interviewee interviewee : interviewProcess.getInterviewees()) {
@@ -680,6 +682,11 @@ public class InterviewProcessService {
 	 */
 	public Topic getInterviewProcessTopic(UUID interviewProcessId) {
 		InterviewProcess interviewProcess = findById(interviewProcessId);
+
+		if (!userIsInvitedToInterviewee(interviewProcess)) {
+			currentUserProvider().assertCanAccessResearchGroup(interviewProcess.getTopic().getResearchGroup());
+		}
+
 		return interviewProcess.getTopic();
 	}
 
@@ -711,6 +718,10 @@ public class InterviewProcessService {
 	 */
 	public Boolean isInterviewProcessCompleted(UUID interviewProcessId) {
 		InterviewProcess interviewProcess = findById(interviewProcessId);
+
+		if (!userIsInvitedToInterviewee(interviewProcess)) {
+			currentUserProvider().assertCanAccessResearchGroup(interviewProcess.getTopic().getResearchGroup());
+		}
 
 		return interviewProcess.isCompleted();
 	}
