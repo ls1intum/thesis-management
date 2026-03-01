@@ -150,7 +150,7 @@ log "Starting Docker services..."
 
 # Keycloak's /health endpoint is unavailable in dev mode, so we check the
 # realm endpoint instead to confirm it is ready to accept auth requests.
-wait_for_url "http://localhost:8081/realms/thesis-management" "Keycloak" 90
+wait_for_url "http://localhost:8181/realms/thesis-management" "Keycloak" 90
 
 # ---------------------------------------------------------------------------
 # 2. Server (Spring Boot with dev profile)
@@ -158,10 +158,10 @@ wait_for_url "http://localhost:8081/realms/thesis-management" "Keycloak" 90
 # Always restart the server to ensure the latest Java/Gradle changes are
 # compiled and running. gradlew bootRun recompiles before starting.
 
-if is_port_open 8080; then
-  warn "Server already running on port 8080 — restarting to pick up latest changes..."
+if is_port_open 8180; then
+  warn "Server already running on port 8180 — restarting to pick up latest changes..."
   kill_pid "server"
-  wait_for_port_release 8080
+  wait_for_port_release 8180
 fi
 log "Starting server (dev profile)..."
 (cd "$SERVER_DIR" && exec ./gradlew bootRun --args='--spring.profiles.active=dev' \
@@ -175,10 +175,10 @@ save_pid "server" $!
 # TypeScript/React changes. While webpack dev server supports hot reload,
 # restarting guarantees a consistent state for E2E tests.
 
-if is_port_open 3000; then
-  warn "Client already running on port 3000 — restarting to pick up latest changes..."
+if is_port_open 3100; then
+  warn "Client already running on port 3100 — restarting to pick up latest changes..."
   kill_pid "client"
-  wait_for_port_release 3000
+  wait_for_port_release 3100
 fi
 log "Starting client dev server..."
 (cd "$CLIENT_DIR" && exec npx webpack serve --env NODE_ENV=development \
@@ -191,8 +191,8 @@ save_pid "client" $!
 # The server exposes an actuator health endpoint; the client just needs to
 # serve its index page. We wait for both before running tests.
 
-wait_for_url "http://localhost:8080/api/actuator/health" "Server" 180
-wait_for_url "http://localhost:3000" "Client" 60
+wait_for_url "http://localhost:8180/api/actuator/health" "Server" 180
+wait_for_url "http://localhost:3100" "Client" 60
 
 # ---------------------------------------------------------------------------
 # 5. Run Playwright E2E tests

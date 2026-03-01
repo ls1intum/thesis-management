@@ -27,6 +27,21 @@ This file provides guidance for Claude Code when working with this repository.
 - **Client**: React 19, TypeScript, Mantine UI, Webpack
 - **Deployment**: Docker multi-platform images (amd64/arm64), deployed via GitHub Actions
 
+## Local Dev Ports
+
+Local development uses non-standard ports to avoid conflicts with other projects:
+
+| Service | Port |
+|---------|------|
+| PostgreSQL | 5444 |
+| Keycloak | 8181 |
+| Spring Boot Server | 8180 |
+| Webpack Dev Server | 3100 |
+| Mailpit SMTP | 1125 |
+| Mailpit Web UI | 8125 |
+
+Production is unaffected — it uses Traefik on ports 80/443 with internal Docker networking.
+
 ## Key Conventions
 
 ### DTO Serialization (`@JsonInclude(NON_EMPTY)`)

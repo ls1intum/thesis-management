@@ -3,7 +3,7 @@ spring:
     contexts: dev
   mail:
     host: localhost
-    port: 1025
+    port: 1125
     username: ""
     password: ""
     properties:

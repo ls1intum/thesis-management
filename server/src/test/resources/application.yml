@@ -53,7 +53,7 @@ thesis-management:
       secret: ""
       student-group-name: thesis-students
   client:
-    host: http://localhost:3000
+    host: http://localhost:3100
   mail:
     enabled: true
     sender: thesis-dev@test.aet.cit.tum.de

@@ -31,7 +31,7 @@ const config = (env) => {
       compress: true,
       hot: true,
       historyApiFallback: true,
-      port: 3000,
+      port: 3100,
       client: {
         progress: false,
       },
