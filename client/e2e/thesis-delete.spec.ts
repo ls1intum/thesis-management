@@ -70,6 +70,7 @@ test.describe('Thesis Delete (Anonymize) - Admin', () => {
     await expect(alert).toBeVisible({ timeout: 5_000 })
     await expect(alert.getByText(/retention period/i)).toBeVisible()
     await expect(alert.getByText(/expires on/i)).toBeVisible()
+    await expect(alert.getByText(/WRITING|GRADED|SUBMITTED/i)).not.toBeVisible({ timeout: 2_000 })
 
     // Confirm anonymize despite warning
     await dialog.getByRole('button', { name: 'Anonymize Thesis' }).click()

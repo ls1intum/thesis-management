@@ -185,7 +185,7 @@ public class ThesisAnonymizationService {
 			try {
 				anonymizeThesis(thesis);
 				anonymizedCount++;
-				log.info("Anonymized thesis {} ('{}')", thesis.getId(), thesis.getTitle());
+				log.info("Anonymized thesis {}", thesis.getId());
 			} catch (Exception e) {
 				log.error("Failed to anonymize thesis {}: {}", thesis.getId(), e.getMessage(), e);
 			}
@@ -279,7 +279,7 @@ public class ThesisAnonymizationService {
 				try {
 					uploadService.deleteFile(filename);
 				} catch (Exception e) {
-					log.warn("Failed to delete file '{}' for thesis {}: {}", filename, thesisId, e.getMessage());
+					log.warn("Failed to delete a file for thesis {}: {}", thesisId, e.getMessage());
 				}
 			}
 		}
