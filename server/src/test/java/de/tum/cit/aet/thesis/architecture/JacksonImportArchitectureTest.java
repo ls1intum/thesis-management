@@ -1,6 +1,6 @@
 package de.tum.cit.aet.thesis.architecture;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
@@ -31,7 +31,7 @@ class JacksonImportArchitectureTest {
 	 * but NOT {@code com.fasterxml.jackson.annotation} (shared with Jackson 3.x).
 	 */
 	private static final Pattern FORBIDDEN_IMPORT = Pattern.compile(
-			"^import\\s+com\\.fasterxml\\.jackson\\.(core|databind)\\b"
+			"^import\\s+(?:static\\s+)?com\\.fasterxml\\.jackson\\.(core|databind)\\b"
 	);
 
 	@Test
@@ -54,8 +54,9 @@ class JacksonImportArchitectureTest {
 			});
 		}
 
-		assertTrue(violations.isEmpty(),
-				"Found Jackson 2.x imports (com.fasterxml.jackson.databind or .core) in production code. "
-						+ "Use tools.jackson equivalents instead:\n  - " + String.join("\n  - ", violations));
+		assertThat(violations)
+				.as("Found Jackson 2.x imports (com.fasterxml.jackson.databind or .core) in production code. "
+						+ "Use tools.jackson equivalents instead:\n  - " + String.join("\n  - ", violations))
+				.isEmpty();
 	}
 }

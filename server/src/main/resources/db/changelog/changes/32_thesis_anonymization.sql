@@ -5,6 +5,7 @@
 -- Add anonymization tracking columns to theses table
 ALTER TABLE theses ADD COLUMN anonymized_at TIMESTAMP;
 ALTER TABLE theses ADD COLUMN anonymization_notified_at TIMESTAMP;
+CREATE INDEX idx_theses_anonymized_at ON theses (anonymized_at);
 
 -- Seed the anonymization reminder email template (global, no research group)
 INSERT INTO email_templates (email_template_id, research_group_id, template_case, description, subject, body_html, language, created_at, updated_at, updated_by)

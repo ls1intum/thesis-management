@@ -399,7 +399,7 @@ class ThesisAnonymizationServiceTest extends BaseIntegrationTest {
 			Thesis thesis = createTestThesisWithChildren(ThesisState.FINISHED, createdAt, endDate);
 
 			// Mark as already notified
-			thesis.setAnonymizationNotifiedAt(Instant.now().minus(10, ChronoUnit.DAYS));
+			thesis.setAnonymizationNotifiedAt(Instant.now().minus(10, ChronoUnit.DAYS).truncatedTo(ChronoUnit.MICROS));
 			thesisRepository.save(thesis);
 
 			thesisAnonymizationService.sendAnonymizationNotifications();

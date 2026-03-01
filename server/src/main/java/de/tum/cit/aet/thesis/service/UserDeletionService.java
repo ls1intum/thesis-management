@@ -159,9 +159,8 @@ public class UserDeletionService {
 
 		UserDeletionResultDto result;
 		if (retentionBlockedRoles.isEmpty()) {
-			// No retention — delete the account first, then clean up files
+			// No retention — delete the account and clean up files
 			result = performFullDeletion(user);
-			deleteAllUserFiles(user);
 		} else {
 			// Retention active — only delete avatar (cosmetic), keep CV/degree/exam
 			// as they are part of the thesis evaluation process.
@@ -232,6 +231,9 @@ public class UserDeletionService {
 		// Delete thesis roles (should be empty if no retention-blocked data)
 		thesisRoleRepository.deleteAllByIdUserId(userId);
 
+		// Collect file paths BEFORE anonymizing (anonymizeUser nulls the path fields)
+		List<String> userFilePaths = collectUserFilePaths(user);
+
 		// Anonymize the user BEFORE deleting user groups and notification settings.
 		// User.groups is eagerly loaded, so bulk-deleting UserGroup rows first would
 		// leave stale references in the persistence context, causing Hibernate errors on save.
@@ -240,6 +242,9 @@ public class UserDeletionService {
 		// Delete user-owned data (safe to do after anonymizeUser since we don't save the User again)
 		notificationSettingRepository.deleteByUserId(userId);
 		userGroupRepository.deleteByUserId(userId);
+
+		// Delete files after DB operations succeeded (using pre-collected paths)
+		deleteFilePaths(userFilePaths);
 
 		log.info("Fully deleted user account {}", userId);
 		return new UserDeletionResultDto("DELETED", "Your account and all associated data have been permanently deleted.");

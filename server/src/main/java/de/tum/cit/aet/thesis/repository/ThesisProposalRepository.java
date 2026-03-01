@@ -17,6 +17,6 @@ public interface ThesisProposalRepository extends JpaRepository<ThesisProposal, 
 	@Transactional
 	void deleteAllByThesisId(UUID thesisId);
 
-	@Query("SELECT p.proposalFilename FROM ThesisProposal p WHERE p.thesis.id = :thesisId")
+	@Query("SELECT p.proposalFilename FROM ThesisProposal p WHERE p.thesis.id = :thesisId AND p.proposalFilename IS NOT NULL")
 	List<String> findFilenamesByThesisId(@Param("thesisId") UUID thesisId);
 }

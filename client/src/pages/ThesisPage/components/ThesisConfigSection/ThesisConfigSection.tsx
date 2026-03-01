@@ -253,7 +253,7 @@ const ThesisConfigSection = () => {
         requiresAuth: true,
       })
       if (response.ok) {
-        showSimpleSuccess('Thesis deleted successfully')
+        showSimpleSuccess('Thesis anonymized successfully')
         setAnonymizeModalOpen(false)
         navigate('/theses')
       } else {
@@ -360,7 +360,7 @@ const ThesisConfigSection = () => {
                   disabled={!access.advisor}
                   label='Student(s)'
                   groups={['student']}
-                  initialUsers={thesis.students}
+                  initialUsers={thesis.students ?? []}
                   {...form.getInputProps('students')}
                 />
                 <UserMultiSelect
@@ -368,7 +368,7 @@ const ThesisConfigSection = () => {
                   disabled={!access.advisor}
                   label='Supervisor(s)'
                   groups={['advisor', 'supervisor']}
-                  initialUsers={thesis.advisors}
+                  initialUsers={thesis.advisors ?? []}
                   {...form.getInputProps('advisors')}
                 />
                 <UserMultiSelect
@@ -376,7 +376,7 @@ const ThesisConfigSection = () => {
                   disabled={!access.advisor}
                   label='Examiner'
                   groups={['supervisor']}
-                  initialUsers={thesis.supervisors}
+                  initialUsers={thesis.supervisors ?? []}
                   maxValues={1}
                   {...form.getInputProps('supervisors')}
                 />
@@ -440,7 +440,7 @@ const ThesisConfigSection = () => {
                         loading={anonymizeLoading}
                         onClick={onDeleteThesisClick}
                       >
-                        Delete Thesis
+                        Anonymize Thesis
                       </Button>
                     )}
                     <Button type='submit' ml='auto' loading={updating} disabled={!form.isValid()}>
@@ -458,7 +458,7 @@ const ThesisConfigSection = () => {
         <Modal
           opened={anonymizeModalOpen}
           onClose={() => setAnonymizeModalOpen(false)}
-          title='Delete Thesis'
+          title='Anonymize Thesis'
         >
           <Stack gap='md'>
             {anonymizeWarnings.length > 0 && (
@@ -471,16 +471,16 @@ const ThesisConfigSection = () => {
               </Alert>
             )}
             <Text size='sm'>
-              Are you sure you want to permanently delete this thesis? All associated data (files,
-              proposals, comments, assessments, feedback) will be removed. This action cannot be
-              undone.
+              Are you sure you want to anonymize this thesis? Personal data (files, proposals,
+              comments, assessments, feedback, role assignments) will be removed. Structural thesis
+              metadata is retained for reporting purposes. This action cannot be undone.
             </Text>
             <Group justify='flex-end'>
               <Button variant='default' onClick={() => setAnonymizeModalOpen(false)}>
                 Cancel
               </Button>
               <Button color='red' loading={anonymizeLoading} onClick={onConfirmAnonymize}>
-                Delete Thesis
+                Anonymize Thesis
               </Button>
             </Group>
           </Stack>

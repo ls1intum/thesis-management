@@ -32,6 +32,7 @@ const TopicCard = ({ topic, setOpenTopic }: ITopicCardProps) => {
       setTopicId(topic.thesisId)
     } else {
       setThesisTypes(topic.thesisTypes ?? [])
+      setStudents([])
       setIsPublished(false)
       setTopicId(topic.topicId)
     }

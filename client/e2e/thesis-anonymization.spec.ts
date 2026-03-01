@@ -26,7 +26,7 @@ test.describe('Thesis Anonymization - Admin Operations', () => {
     await anonymizeButton.click()
 
     // Thesis 8 (expired retention) should be anonymized
-    await expect(page.getByText(/Anonymized \d+ expired thesis/)).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByText(/Anonymized \d+ expired thes(is|es)/)).toBeVisible({ timeout: 15_000 })
   })
 
   test('second anonymization run finds no new theses', async ({ page }) => {

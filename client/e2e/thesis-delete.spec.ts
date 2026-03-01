@@ -20,15 +20,15 @@ test.describe('Thesis Delete (Anonymize) - Admin', () => {
     // Open Configuration accordion
     await page.getByText('Configuration').click()
 
-    // Delete Thesis button should be visible for admin on non-anonymized thesis
-    const deleteButton = page.getByRole('button', { name: 'Delete Thesis' })
+    // Anonymize Thesis button should be visible for admin on non-anonymized thesis
+    const deleteButton = page.getByRole('button', { name: 'Anonymize Thesis' })
     await expect(deleteButton).toBeVisible({ timeout: 5_000 })
     await deleteButton.click()
 
     // Modal should open with correct title
     const dialog = page.getByRole('dialog')
     await expect(dialog).toBeVisible({ timeout: 5_000 })
-    await expect(dialog.getByRole('heading', { name: 'Delete Thesis' })).toBeVisible()
+    await expect(dialog.getByRole('heading', { name: 'Anonymize Thesis' })).toBeVisible()
 
     // Old GRADED thesis: state warning (not terminal) but NO retention warning (expired)
     const alert = dialog.locator('.mantine-Alert-root')
@@ -38,7 +38,7 @@ test.describe('Thesis Delete (Anonymize) - Admin', () => {
 
     // Confirmation text should be present
     await expect(
-      dialog.getByText(/permanently delete this thesis/i),
+      dialog.getByText(/anonymize this thesis/i),
     ).toBeVisible()
     await expect(dialog.getByText(/This action cannot be undone/i)).toBeVisible()
 
@@ -46,7 +46,7 @@ test.describe('Thesis Delete (Anonymize) - Admin', () => {
     await expect(dialog.getByRole('button', { name: 'Cancel' })).toBeVisible()
 
     // Confirm delete
-    await dialog.getByRole('button', { name: 'Delete Thesis' }).click()
+    await dialog.getByRole('button', { name: 'Anonymize Thesis' }).click()
 
     // Should redirect to /theses list after successful deletion
     await expect(page).toHaveURL(/\/theses(?:\?|$)/, { timeout: 15_000 })
@@ -59,7 +59,7 @@ test.describe('Thesis Delete (Anonymize) - Admin', () => {
 
     await page.getByText('Configuration').click()
 
-    const deleteButton = page.getByRole('button', { name: 'Delete Thesis' })
+    const deleteButton = page.getByRole('button', { name: 'Anonymize Thesis' })
     await expect(deleteButton).toBeVisible({ timeout: 5_000 })
     await deleteButton.click()
 
@@ -73,7 +73,7 @@ test.describe('Thesis Delete (Anonymize) - Admin', () => {
     await expect(alert.getByText(/expires on/i)).toBeVisible()
 
     // Confirm delete despite warning
-    await dialog.getByRole('button', { name: 'Delete Thesis' }).click()
+    await dialog.getByRole('button', { name: 'Anonymize Thesis' }).click()
 
     await expect(page).toHaveURL(/\/theses(?:\?|$)/, { timeout: 15_000 })
   })
@@ -85,7 +85,7 @@ test.describe('Thesis Delete (Anonymize) - Admin', () => {
 
     await page.getByText('Configuration').click()
 
-    const deleteButton = page.getByRole('button', { name: 'Delete Thesis' })
+    const deleteButton = page.getByRole('button', { name: 'Anonymize Thesis' })
     await expect(deleteButton).toBeVisible({ timeout: 5_000 })
     await deleteButton.click()
 
@@ -100,7 +100,7 @@ test.describe('Thesis Delete (Anonymize) - Admin', () => {
     await expect(alert.getByText(/retention period/i)).toBeVisible()
 
     // Confirm delete despite warnings
-    await dialog.getByRole('button', { name: 'Delete Thesis' }).click()
+    await dialog.getByRole('button', { name: 'Anonymize Thesis' }).click()
 
     await expect(page).toHaveURL(/\/theses(?:\?|$)/, { timeout: 15_000 })
   })
@@ -109,7 +109,7 @@ test.describe('Thesis Delete (Anonymize) - Admin', () => {
 test.describe('Thesis Delete (Anonymize) - Non-Admin Restrictions', () => {
   test.use({ storageState: authStatePath('supervisor') })
 
-  test('supervisor does not see Delete Thesis button', async ({ page }) => {
+  test('supervisor does not see Anonymize Thesis button', async ({ page }) => {
     // Use thesis 1 where supervisor has SUPERVISOR role — not affected by admin delete tests
     const heading = page.getByRole('heading', { name: /Automated Code Review/i })
     const loaded = await navigateToDetail(
@@ -123,9 +123,9 @@ test.describe('Thesis Delete (Anonymize) - Non-Admin Restrictions', () => {
     // Open Configuration accordion
     await page.getByText('Configuration').click()
 
-    // Supervisor should see Update button (they have advisor access) but NOT Delete Thesis
+    // Supervisor should see Update button (they have advisor access) but NOT Anonymize Thesis
     await expect(page.getByRole('button', { name: 'Update' })).toBeVisible({ timeout: 5_000 })
-    await expect(page.getByRole('button', { name: 'Delete Thesis' })).not.toBeVisible({
+    await expect(page.getByRole('button', { name: 'Anonymize Thesis' })).not.toBeVisible({
       timeout: 3_000,
     })
   })

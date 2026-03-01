@@ -131,6 +131,11 @@ public class ThesisAnonymizationService {
 			try {
 				Thesis firstThesis = theses.getFirst();
 
+				if (firstThesis.getResearchGroup().getHead() == null) {
+					log.warn("Skipping anonymization reminder for research group {}: no head assigned", entry.getKey());
+					continue;
+				}
+
 				// Compute the earliest expiry date across all theses for the email subject line
 				Instant earliestExpiry = theses.stream()
 						.map(RetentionUtils::computeRetentionExpiry)
@@ -251,15 +256,22 @@ public class ThesisAnonymizationService {
 		//    This must happen after saving the thesis to avoid Hibernate stale-state conflicts:
 		//    the Thesis entity eagerly loads states and roles, so bulk-deleting them before save
 		//    would leave the persistence context with references to non-existent rows.
-		thesisPresentationInviteRepository.deleteAllByPresentationThesisId(thesisId);
-		thesisPresentationRepository.deleteAllByThesisId(thesisId);
-		thesisCommentRepository.deleteAllByThesisId(thesisId);
-		thesisFileRepository.deleteAllByThesisId(thesisId);
-		thesisProposalRepository.deleteAllByThesisId(thesisId);
-		thesisAssessmentRepository.deleteAllByThesisId(thesisId);
-		thesisFeedbackRepository.deleteAllByThesisId(thesisId);
-		thesisStateChangeRepository.deleteAllByThesisId(thesisId);
-		thesisRoleRepository.deleteAllByThesisId(thesisId);
+		try {
+			thesisPresentationInviteRepository.deleteAllByPresentationThesisId(thesisId);
+			thesisPresentationRepository.deleteAllByThesisId(thesisId);
+			thesisCommentRepository.deleteAllByThesisId(thesisId);
+			thesisFileRepository.deleteAllByThesisId(thesisId);
+			thesisProposalRepository.deleteAllByThesisId(thesisId);
+			thesisAssessmentRepository.deleteAllByThesisId(thesisId);
+			thesisFeedbackRepository.deleteAllByThesisId(thesisId);
+			thesisStateChangeRepository.deleteAllByThesisId(thesisId);
+			thesisRoleRepository.deleteAllByThesisId(thesisId);
+		} catch (Exception ex) {
+			// Keep thesis eligible for retry if cleanup failed
+			thesis.setAnonymizedAt(null);
+			thesisRepository.save(thesis);
+			throw ex;
+		}
 
 		// 4. Delete collected files from disk (best-effort, non-critical)
 		for (String filename : filenames) {
