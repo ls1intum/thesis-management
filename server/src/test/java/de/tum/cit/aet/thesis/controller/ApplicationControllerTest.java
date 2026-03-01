@@ -615,6 +615,7 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 			TestUser advisor = createTestUser("advisor-accept", List.of("advisor"));
 			TestUser supervisor = createTestUser("supervisor-accept", List.of("supervisor"));
 			createTestEmailTemplate("APPLICATION_ACCEPTED");
+			createTestEmailTemplate("THESIS_CREATED");
 
 			AcceptApplicationPayload payload = new AcceptApplicationPayload(
 					"Final Thesis Title", "MASTER", "ENGLISH",
@@ -693,6 +694,7 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 			createTestEmailTemplate("APPLICATION_CREATED_CHAIR");
 			createTestEmailTemplate("APPLICATION_CREATED_STUDENT");
 			createTestEmailTemplate("APPLICATION_ACCEPTED");
+			createTestEmailTemplate("THESIS_CREATED");
 			createTestEmailTemplate("APPLICATION_REJECTED_TOPIC_FILLED");
 
 			UUID topicId = createTestTopic("Close Topic Test");

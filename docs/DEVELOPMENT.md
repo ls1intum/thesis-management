@@ -87,9 +87,21 @@ The seed data includes 6 topics across both research groups:
 
 3 interview processes (2 completed, 1 active) with interviewees, interview slots, and assessments.
 
-## Postfix
+## Email (Mailpit)
 
-Notice: local development does not support mailing functionality. The mails are printed in the console when no postfix instance is configured.
+Local development uses [Mailpit](https://github.com/axllent/mailpit) to capture all outgoing emails. Mailpit is included in `docker-compose.yml` and starts automatically with the other services:
+
+```bash
+docker compose up -d
+```
+
+When the server runs with the `dev` profile, it is pre-configured to send emails to Mailpit (SMTP on port 1025) with mail sending enabled. No additional configuration is needed.
+
+Open the Mailpit web UI to browse captured emails:
+
+**http://localhost:8025**
+
+All emails (including attachments) sent by the application are available there for inspection. This replaces the previous console-only logging approach and makes it easy to verify email content, formatting, and recipients during development and testing.
 
 ## Server
 

@@ -24,7 +24,9 @@ test.describe('Navigation - Public pages', () => {
     await navigateTo(page, '/about')
 
     // Main heading
-    await expect(page.getByRole('heading', { name: 'Thesis Management', exact: true })).toBeVisible()
+    await expect(
+      page.getByRole('heading', { name: 'Thesis Management', exact: true }),
+    ).toBeVisible()
     // Section headings
     await expect(page.getByRole('heading', { name: 'Project Managers' })).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Contributors' })).toBeVisible()
@@ -86,7 +88,9 @@ test.describe('Navigation - Supervisor routes', () => {
   test('management pages are accessible', async ({ page }) => {
     // Theses Overview
     await navigateTo(page, '/overview')
-    await expect(page.getByRole('heading', { name: /theses overview/i })).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByRole('heading', { name: /theses overview/i })).toBeVisible({
+      timeout: 15_000,
+    })
 
     // Application Review
     await navigateTo(page, '/applications')
@@ -107,6 +111,8 @@ test.describe('Navigation - Admin routes', () => {
 
   test('admin-only pages are accessible', async ({ page }) => {
     await navigateTo(page, '/research-groups')
-    await expect(page.getByRole('heading', { name: /research groups/i })).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByRole('heading', { name: /research groups/i })).toBeVisible({
+      timeout: 15_000,
+    })
   })
 })

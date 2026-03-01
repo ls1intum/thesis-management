@@ -7,7 +7,9 @@ test.describe('Research Groups - Admin', () => {
   test('research groups page shows groups and search', async ({ page }) => {
     await navigateTo(page, '/research-groups')
 
-    await expect(page.getByRole('heading', { name: /research groups/i })).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByRole('heading', { name: /research groups/i })).toBeVisible({
+      timeout: 15_000,
+    })
     // Search input should be present
     await expect(page.getByPlaceholder(/search research groups/i)).toBeVisible()
     // Create button should be visible
@@ -20,7 +22,9 @@ test.describe('Research Groups - Admin', () => {
   test('search filters research groups', async ({ page }) => {
     await navigateTo(page, '/research-groups')
 
-    await expect(page.getByRole('heading', { name: /research groups/i })).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByRole('heading', { name: /research groups/i })).toBeVisible({
+      timeout: 15_000,
+    })
     // Search for ASE
     await page.getByPlaceholder(/search research groups/i).fill('Applied Software')
     // ASE should still be visible
@@ -37,7 +41,10 @@ test.describe('Research Group Settings - Supervisor', () => {
 
     // Supervisor should see either group settings or an unauthorized page
     await expect(
-      page.getByText('Applied Software Engineering').first().or(page.getByText(/unauthorized/i)),
+      page
+        .getByText('Applied Software Engineering')
+        .first()
+        .or(page.getByText(/unauthorized/i)),
     ).toBeVisible({ timeout: 15_000 })
   })
 })
@@ -50,9 +57,9 @@ test.describe('Research Group Settings - Email Settings Tab', () => {
   test('Email Settings tab exists and contains email-related settings', async ({ page }) => {
     await navigateTo(page, researchGroupUrl)
 
-    await expect(
-      page.getByRole('heading', { name: /research group settings/i }),
-    ).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByRole('heading', { name: /research group settings/i })).toBeVisible({
+      timeout: 15_000,
+    })
 
     // Email Settings tab should exist
     const emailSettingsTab = page.getByRole('tab', { name: 'Email Settings' })
@@ -70,24 +77,20 @@ test.describe('Research Group Settings - Email Settings Tab', () => {
     ).toBeVisible()
 
     // Email Templates section should also be visible
-    await expect(
-      page.getByRole('heading', { name: 'Email Templates', level: 3 }),
-    ).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Email Templates', level: 3 })).toBeVisible()
   })
 
   test('Application Email Content card shows toggle and description', async ({ page }) => {
     await navigateTo(page, researchGroupUrl)
 
-    await expect(
-      page.getByRole('heading', { name: /research group settings/i }),
-    ).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByRole('heading', { name: /research group settings/i })).toBeVisible({
+      timeout: 15_000,
+    })
 
     await page.getByRole('tab', { name: 'Email Settings' }).click()
 
     // The toggle label should be visible
-    await expect(
-      page.getByText('Include Personal Details and Attachments'),
-    ).toBeVisible()
+    await expect(page.getByText('Include Personal Details and Attachments')).toBeVisible()
 
     // The description text should explain the behavior
     await expect(
@@ -101,9 +104,9 @@ test.describe('Research Group Settings - Email Settings Tab', () => {
   test('Application Email Content toggle has info tooltip icon', async ({ page }) => {
     await navigateTo(page, researchGroupUrl)
 
-    await expect(
-      page.getByRole('heading', { name: /research group settings/i }),
-    ).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByRole('heading', { name: /research group settings/i })).toBeVisible({
+      timeout: 15_000,
+    })
 
     await page.getByRole('tab', { name: 'Email Settings' }).click()
 
@@ -117,9 +120,9 @@ test.describe('Research Group Settings - Email Settings Tab', () => {
   test('APPLICATION_CREATED_CHAIR template is shown in Email Templates', async ({ page }) => {
     await navigateTo(page, researchGroupUrl)
 
-    await expect(
-      page.getByRole('heading', { name: /research group settings/i }),
-    ).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByRole('heading', { name: /research group settings/i })).toBeVisible({
+      timeout: 15_000,
+    })
 
     await page.getByRole('tab', { name: 'Email Settings' }).click()
 
@@ -132,9 +135,9 @@ test.describe('Research Group Settings - Email Settings Tab', () => {
   test('APPLICATION_CREATED_CHAIR template is disabled when toggle is off', async ({ page }) => {
     await navigateTo(page, researchGroupUrl)
 
-    await expect(
-      page.getByRole('heading', { name: /research group settings/i }),
-    ).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByRole('heading', { name: /research group settings/i })).toBeVisible({
+      timeout: 15_000,
+    })
 
     await page.getByRole('tab', { name: 'Email Settings' }).click()
 
@@ -160,14 +163,12 @@ test.describe('Research Group Settings - Email Settings Tab', () => {
     await expect(editButton).toBeDisabled()
   })
 
-  test('APPLICATION_CREATED_CHAIR template becomes enabled when toggle is on', async ({
-    page,
-  }) => {
+  test('APPLICATION_CREATED_CHAIR template becomes enabled when toggle is on', async ({ page }) => {
     await navigateTo(page, researchGroupUrl)
 
-    await expect(
-      page.getByRole('heading', { name: /research group settings/i }),
-    ).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByRole('heading', { name: /research group settings/i })).toBeVisible({
+      timeout: 15_000,
+    })
 
     await page.getByRole('tab', { name: 'Email Settings' }).click()
 
@@ -209,9 +210,9 @@ test.describe('Research Group Settings - Email Settings Tab', () => {
   test('email settings are NOT on the General tab', async ({ page }) => {
     await navigateTo(page, researchGroupUrl)
 
-    await expect(
-      page.getByRole('heading', { name: /research group settings/i }),
-    ).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByRole('heading', { name: /research group settings/i })).toBeVisible({
+      timeout: 15_000,
+    })
 
     // On the General tab (default), Application Email Content should NOT be visible
     await expect(

@@ -5,6 +5,10 @@ If no research group specific template is found, the default template will be us
 
 > **Note on Role Terminology:** The server uses `supervisor` and `advisor` roles internally. In the UI, these are displayed as "Examiner" and "Supervisor" respectively to align with CIT terminology.
 
+## Local Testing with Mailpit
+
+For local development, all emails are captured by [Mailpit](https://github.com/axllent/mailpit) which is included in the dev Docker Compose setup. Start it with `docker compose up -d` and open **http://localhost:8025** to inspect emails including their content, recipients, and attachments. See [DEVELOPMENT.md](DEVELOPMENT.md#email-mailpit) for setup details.
+
 ## Templates
 
 | Template Case                                                                                                                                  | TO                             | CC                    | BCC                   | Description                                                                    |

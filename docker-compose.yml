@@ -27,3 +27,10 @@ services:
     entrypoint: /opt/keycloak/bin/kc.sh start-dev --import-realm
     ports:
       - "8081:8080"
+
+  mailpit:
+    image: axllent/mailpit:v1.29
+    container_name: thesis-management-mailpit
+    ports:
+      - "1025:1025"
+      - "8025:8025"

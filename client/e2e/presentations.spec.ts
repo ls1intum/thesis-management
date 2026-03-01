@@ -5,7 +5,9 @@ test.describe('Presentations - Student', () => {
   test('presentations page shows heading', async ({ page }) => {
     await navigateTo(page, '/presentations')
 
-    await expect(page.getByRole('heading', { name: 'Presentations', exact: true })).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByRole('heading', { name: 'Presentations', exact: true })).toBeVisible({
+      timeout: 15_000,
+    })
   })
 })
 
@@ -15,7 +17,9 @@ test.describe('Presentations - Supervisor', () => {
   test('presentations page is accessible for supervisor', async ({ page }) => {
     await navigateTo(page, '/presentations')
 
-    await expect(page.getByRole('heading', { name: 'Presentations', exact: true })).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByRole('heading', { name: 'Presentations', exact: true })).toBeVisible({
+      timeout: 15_000,
+    })
   })
 })
 
@@ -27,6 +31,8 @@ test.describe('Presentations - Public', () => {
     await navigateTo(page, '/presentations/00000000-0000-4000-e300-000000000002')
 
     // Should show presentation info (thesis title)
-    await expect(page.getByRole('heading', { name: /anomaly detection/i })).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByRole('heading', { name: /anomaly detection/i })).toBeVisible({
+      timeout: 15_000,
+    })
   })
 })

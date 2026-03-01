@@ -6,6 +6,14 @@ import {
   navigateTo,
   selectOption,
 } from './helpers'
+import {
+  snapshotMailbox,
+  waitForNewMessages,
+  getBody,
+  getToAddresses,
+  assertSentFromApp,
+  findBySubject,
+} from './mailpit'
 
 test.describe('Application Workflow - Student submits application', () => {
   test.use({ storageState: authStatePath('student') })
@@ -89,6 +97,9 @@ test.describe('Application Workflow - Student submits application', () => {
       'I am highly motivated to work on CI pipeline optimization because it aligns with my research interests in DevOps and continuous integration.',
     )
 
+    // Snapshot mailbox BEFORE submitting (safe for parallel execution)
+    const beforeIds = await snapshotMailbox('student@test.local')
+
     const submitButton = page.getByRole('button', { name: 'Submit Application' })
     await expect(submitButton).toBeEnabled({ timeout: 10_000 })
     await submitButton.click()
@@ -96,5 +107,29 @@ test.describe('Application Workflow - Student submits application', () => {
     // Verify we're still on the application page (no crash)
     await page.waitForTimeout(2_000)
     await expect(page).toHaveURL(/\/submit-application/)
+
+    // --- Email verification ---
+    // Application submission sends:
+    // 1. APPLICATION_CREATED_STUDENT → student (confirmation with application details)
+    // 2. APPLICATION_CREATED_CHAIR → research group members (optional, depends on notification preferences)
+    const newEmails = await waitForNewMessages('student@test.local', beforeIds)
+
+    // Verify student confirmation email (APPLICATION_CREATED_STUDENT template)
+    const studentEmail = findBySubject(newEmails, 'Thesis Application Confirmation')
+    expect(studentEmail, 'Student confirmation email should be sent').toBeDefined()
+    assertSentFromApp(studentEmail!)
+    expect(getToAddresses(studentEmail!)).toContain('student@test.local')
+
+    // Body should contain: greeting, topic title, applicant details, and motivation
+    const studentBody = getBody(studentEmail!)
+    expect(studentBody, 'Body should greet the student by first name').toContain('Student')
+    expect(studentBody, 'Body should contain the topic/thesis title').toContain(
+      'Continuous Integration Pipeline Optimization',
+    )
+    expect(studentBody, 'Body should contain applicant email').toContain('student@test.local')
+    expect(studentBody, 'Body should reference the motivation text').toContain('CI pipeline')
+
+    // Note: APPLICATION_CREATED_CHAIR may also be sent to research group members,
+    // but it is filtered by notification preferences and goes to different recipients.
   })
 })

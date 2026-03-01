@@ -251,7 +251,7 @@ public class ApplicationService {
 				advisorIds,
 				List.of(application.getUser().getId()),
 				application,
-				false,
+				notifyUser,
 				application.getResearchGroup().getId()
 		);
 
