@@ -37,7 +37,7 @@
   },
   "overrides": {
     "ajv": "8.18.0",
-    "minimatch": "10.2.3",
+    "minimatch": "10.2.4",
     "fork-ts-checker-webpack-plugin": {
       "schema-utils": "4.3.3"
     }
@@ -109,7 +109,7 @@
     "ts-node": "10.9.2",
     "typescript": "5.9.3",
     "typescript-plugin-css-modules": "5.2.0",
-    "webpack": "5.105.2",
+    "webpack": "5.105.3",
     "webpack-bundle-analyzer": "5.2.0",
     "webpack-cli": "6.0.1",
     "webpack-dev-server": "5.2.3",
