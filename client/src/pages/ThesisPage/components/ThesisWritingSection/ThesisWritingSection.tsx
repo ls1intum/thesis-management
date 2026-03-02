@@ -58,7 +58,9 @@ const ThesisWritingSection = () => {
     } else {
       if (access.student && thesis.state === ThesisState.SUBMITTED) {
         // It is not possible to return this message in the endpoint, the client already catches that the student is not permitted to submit and returns a 403
-        showSimpleError('Cannot upload files after final submission. Please contact your advisor.')
+        showSimpleError(
+          'Cannot upload files after final submission. Please contact your supervisor.',
+        )
       } else {
         showSimpleError(getApiResponseErrorMessage(response))
       }

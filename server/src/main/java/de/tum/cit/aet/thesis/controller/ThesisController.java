@@ -951,7 +951,7 @@ public class ThesisController {
 		Thesis thesis = thesisService.findById(thesisId);
 
 		if (!thesis.hasExaminerAccess(currentUser)) {
-			throw new AccessDeniedException("You need to be a supervisor of this thesis to add a final grade");
+			throw new AccessDeniedException("You need to be an examiner of this thesis to add a final grade");
 		}
 
 		thesis = thesisService.gradeThesis(
@@ -978,7 +978,7 @@ public class ThesisController {
 		Thesis thesis = thesisService.findById(thesisId);
 
 		if (!thesis.hasExaminerAccess(currentUser)) {
-			throw new AccessDeniedException("You need to be a supervisor of this thesis to close the thesis");
+			throw new AccessDeniedException("You need to be an examiner of this thesis to close the thesis");
 		}
 
 		thesis = thesisService.completeThesis(thesis);

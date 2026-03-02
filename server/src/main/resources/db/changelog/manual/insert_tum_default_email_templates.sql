@@ -28,7 +28,7 @@ FROM defaults d
 </p>
 
 <p th:inline="text">
-  [[${advisor.firstName}]]&nbsp;[[${advisor.lastName}]] would be your advisor. Please coordinate the
+  [[${advisor.firstName}]]&nbsp;[[${advisor.lastName}]] would be your supervisor. Please coordinate the
   next steps with [[${advisor.firstName}]] [[${advisor.lastName}]] via email.
 </p>
 

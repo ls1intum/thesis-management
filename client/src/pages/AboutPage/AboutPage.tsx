@@ -44,7 +44,7 @@ const AboutPage = () => {
         Thesis Management addresses inefficient manual thesis management processes at large
         universities through a web-based platform. The system digitizes the entire lifecycle from
         student applications to final grading and supports multiple research groups within an
-        institution. The platform serves three stakeholders: supervisors (professors), advisors
+        institution. The platform serves three stakeholders: examiners (professors), supervisors
         (doctoral candidates), and students. Key features include:
       </Text>
       <List>
@@ -60,8 +60,8 @@ const AboutPage = () => {
           A Gantt chart overview showing timelines and progress across multiple theses
         </List.Item>
         <List.Item>
-          Role-based access control with specific permissions for students, advisors, and
-          supervisors
+          Role-based access control with specific permissions for students, supervisors, and
+          examiners
         </List.Item>
         <List.Item>Automated notifications for important milestones and updates</List.Item>
         <List.Item>
@@ -110,7 +110,7 @@ const AboutPage = () => {
         implemented in Thesis Management. These diagram illustrates the step-by-step workflows
         involved, from thesis topic selection and application submission to the final grading and
         completion stages. It highlights key actions, decision points, and interactions between
-        students, advisors, and supervisors, clarifying how tasks are sequenced and managed within
+        students, supervisors, and examiners, clarifying how tasks are sequenced and managed within
         the system. These flowcharts offer a quick reference for understanding how each role engages
         in the thesis process, ensuring transparency and consistency in task progression and
         responsibilities across different stages.

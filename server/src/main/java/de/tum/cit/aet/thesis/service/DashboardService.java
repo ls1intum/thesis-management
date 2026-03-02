@@ -84,7 +84,7 @@ public class DashboardService {
 			}
 		}
 
-		// general advisor, supervisor tasks
+		// general supervisor tasks
 		for (Thesis thesis : thesisRepository.findActiveThesesForRole(user.getId(), researchGroupId, Set.of(ThesisRoleName.SUPERVISOR), null)) {
 			if (thesis.getState().equals(ThesisState.PROPOSAL)) {
 				continue;
@@ -156,7 +156,7 @@ public class DashboardService {
 			}
 
 			tasks.add(new TaskDto(
-					"Schedule a presentation date for thesis \"" + thesis.getTitle() + "\" with the advisor.",
+					"Schedule a presentation date for thesis \"" + thesis.getTitle() + "\" with the supervisor.",
 					getThesisLink(thesis),
 					40
 			));

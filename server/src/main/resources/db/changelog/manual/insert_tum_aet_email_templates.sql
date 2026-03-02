@@ -42,7 +42,7 @@ WITH defaults
 </p>
 
 <p th:inline="text">
-  [[${advisor.firstName}]]&nbsp;[[${advisor.lastName}]] would be your advisor. Please coordinate the
+  [[${advisor.firstName}]]&nbsp;[[${advisor.lastName}]] would be your supervisor. Please coordinate the
   next steps with [[${advisor.firstName}]] [[${advisor.lastName}]] using the following link:
   <a target="_blank" rel="noopener noreferrer nofollow" th:href="${config.workspaceUrl}">[[${config.workspaceUrl}]]</a>
 </p>

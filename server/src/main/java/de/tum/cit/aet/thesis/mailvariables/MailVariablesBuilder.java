@@ -91,7 +91,7 @@ public class MailVariablesBuilder {
 	private List<MailVariableDto> userTemplateVariables(String templateCase) {
 		return switch (templateCase) {
 			case "APPLICATION_ACCEPTED", "APPLICATION_ACCEPTED_NO_ADVISOR" ->
-					MailUser.templateVariables("advisor", "Advisor", "User");
+					MailUser.templateVariables("advisor", "Supervisor", "User");
 			case "THESIS_CREATED" -> MailUser.templateVariables("creatingUser", "Creating User", "User");
 			case "THESIS_CLOSED", "THESIS_PRESENTATION_DELETED" ->
 					MailUser.templateVariables("deletingUser", "Deleting User", "User");
