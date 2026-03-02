@@ -93,7 +93,9 @@ public class PDFBuilder {
 	/**
 	 * Initializes a new PDF builder with the given main heading.
 	 *
-	 * @param heading the main heading for the PDF document
+	 * @param heading         the main heading for the PDF document
+	 * @param currentUserName the name of the user generating the PDF, used in
+	 *                        metadata
 	 */
 	public PDFBuilder(String heading, String currentUserName) {
 		this.heading = heading;
