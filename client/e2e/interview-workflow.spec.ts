@@ -5,9 +5,9 @@ const INTERVIEW_PROCESS_ID = '00000000-0000-4000-e600-000000000001' // Topic 3, 
 const INTERVIEWEE_ID = '00000000-0000-4000-e700-000000000001' // student4, NULL score
 
 test.describe('Interview Workflow', () => {
-  test.use({ storageState: authStatePath('supervisor2') })
+  test.use({ storageState: authStatePath('examiner2') })
 
-  test('supervisor can view interview process and score an interviewee', async ({ page }) => {
+  test('examiner can view interview process and score an interviewee', async ({ page }) => {
     // Navigate directly to the interviewee assessment page
     await navigateTo(page, `/interviews/${INTERVIEW_PROCESS_ID}/interviewee/${INTERVIEWEE_ID}`)
 
@@ -49,7 +49,7 @@ test.describe('Interview Workflow', () => {
     await expect(page.getByText('Saved')).toBeVisible({ timeout: 10_000 })
   })
 
-  test('supervisor can open the add slot modal on interview process page', async ({ page }) => {
+  test('examiner can open the add slot modal on interview process page', async ({ page }) => {
     await navigateTo(page, `/interviews/${INTERVIEW_PROCESS_ID}`)
 
     // Wait for interview management page to load

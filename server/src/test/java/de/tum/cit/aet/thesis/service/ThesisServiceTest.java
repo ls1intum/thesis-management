@@ -91,8 +91,8 @@ class ThesisServiceTest {
 
 	@Test
 	void createThesis_WithValidData_CreatesThesis() {
-		User examiner = EntityMockFactory.createUserWithGroup("Supervisor", "supervisor");
-		User supervisor = EntityMockFactory.createUserWithGroup("Advisor", "advisor");
+		User examiner = EntityMockFactory.createUserWithGroup("Examiner", "supervisor");
+		User supervisor = EntityMockFactory.createUserWithGroup("Supervisor", "advisor");
 		User student = EntityMockFactory.createUserWithGroup("Student", "student");
 
 		List<UUID> examinerIds = new ArrayList<>(List.of(examiner.getId()));

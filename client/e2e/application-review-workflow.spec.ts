@@ -13,10 +13,10 @@ const APPLICATION_REJECT_ID = '00000000-0000-4000-c000-000000000004' // student4
 const APPLICATION_ACCEPT_ID = '00000000-0000-4000-c000-000000000005' // student5 on topic 2, NOT_ASSESSED
 
 test.describe('Application Review Workflow', () => {
-  test.use({ storageState: authStatePath('advisor') })
+  test.use({ storageState: authStatePath('supervisor') })
   test.describe.configure({ mode: 'serial' })
 
-  test('advisor can reject a NOT_ASSESSED application', async ({ page }) => {
+  test('supervisor can reject a NOT_ASSESSED application', async ({ page }) => {
     const heading = page.getByRole('heading', { name: /Student4 User/i })
     const loaded = await navigateToDetail(page, `/applications/${APPLICATION_REJECT_ID}`, heading)
     if (!loaded) return // Application not accessible (may have been modified by a parallel test)
@@ -74,7 +74,7 @@ test.describe('Application Review Workflow', () => {
     expect(body, 'Rejection email should mention requirements').toContain('requirements')
   })
 
-  test('advisor can accept a NOT_ASSESSED application', async ({ page }) => {
+  test('supervisor can accept a NOT_ASSESSED application', async ({ page }) => {
     const heading = page.getByRole('heading', { name: /Student5 User/i })
     const loaded = await navigateToDetail(page, `/applications/${APPLICATION_ACCEPT_ID}`, heading)
     if (!loaded) return // Application not accessible
@@ -135,10 +135,10 @@ test.describe('Application Review Workflow', () => {
     assertSentFromApp(acceptanceEmail!)
     expect(getToAddresses(acceptanceEmail!)).toContain('student5@test.local')
 
-    // Body should greet student, mention the advisor, and include a thesis link
+    // Body should greet student, mention the supervisor, and include a thesis link
     const acceptBody = getBody(acceptanceEmail!)
     expect(acceptBody, 'Should greet the student by first name').toContain('Student5')
-    expect(acceptBody, 'Should mention the advisor for coordination').toContain('advisor')
+    expect(acceptBody, 'Should mention the supervisor for coordination').toContain('supervisor')
     expect(acceptBody, 'Should contain a link to the thesis').toContain('/theses/')
 
     // Verify thesis creation email was also sent to student5 (THESIS_CREATED template)

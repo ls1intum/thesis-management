@@ -19,10 +19,10 @@ test.describe('Settings - Student', () => {
   })
 })
 
-test.describe('Settings - Advisor', () => {
-  test.use({ storageState: authStatePath('advisor') })
+test.describe('Settings - Supervisor', () => {
+  test.use({ storageState: authStatePath('supervisor') })
 
-  test('settings page is accessible for advisor', async ({ page }) => {
+  test('settings page is accessible for supervisor', async ({ page }) => {
     await navigateTo(page, '/settings')
 
     await expect(page.getByText('My Information')).toBeVisible({ timeout: 15_000 })

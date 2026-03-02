@@ -7,10 +7,10 @@ import {
   searchAndSelectMultiSelect,
 } from './helpers'
 
-test.describe('Topic Workflow - Supervisor creates a topic', () => {
-  test.use({ storageState: authStatePath('supervisor') })
+test.describe('Topic Workflow - Examiner creates a topic', () => {
+  test.use({ storageState: authStatePath('examiner') })
 
-  test('supervisor can create a new topic via the manage topics page', async ({ page }) => {
+  test('examiner can create a new topic via the manage topics page', async ({ page }) => {
     test.setTimeout(120_000) // Extended timeout — form with server-side search fields
 
     await navigateTo(page, '/topics')
@@ -35,12 +35,12 @@ test.describe('Topic Workflow - Supervisor creates a topic', () => {
     await page.waitForTimeout(1_000)
 
     // Examiner - click to open, then select from results
-    await searchAndSelectMultiSelect(page, 'Examiner', /supervisor/i)
+    await searchAndSelectMultiSelect(page, 'Examiner', /examiner/i)
 
     // Supervisor(s) - click to open, then select from results
-    await searchAndSelectMultiSelect(page, 'Supervisor(s)', /advisor/i)
+    await searchAndSelectMultiSelect(page, 'Supervisor(s)', /supervisor/i)
 
-    // Research Group should be pre-filled for single-group supervisors
+    // Research Group should be pre-filled for single-group examiners
     // Problem Statement (required rich text editor)
     await fillRichTextEditor(
       page,

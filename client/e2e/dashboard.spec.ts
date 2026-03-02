@@ -13,8 +13,8 @@ test.describe('Dashboard - Student', () => {
   })
 })
 
-test.describe('Dashboard - Advisor', () => {
-  test.use({ storageState: authStatePath('advisor') })
+test.describe('Dashboard - Supervisor', () => {
+  test.use({ storageState: authStatePath('supervisor') })
 
   test('shows dashboard with My Theses section', async ({ page }) => {
     await navigateTo(page, '/dashboard')
@@ -24,8 +24,8 @@ test.describe('Dashboard - Advisor', () => {
   })
 })
 
-test.describe('Dashboard - Supervisor', () => {
-  test.use({ storageState: authStatePath('supervisor') })
+test.describe('Dashboard - Examiner', () => {
+  test.use({ storageState: authStatePath('examiner') })
 
   test('shows dashboard with management view', async ({ page }) => {
     await navigateTo(page, '/dashboard')

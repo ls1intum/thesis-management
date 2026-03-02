@@ -210,16 +210,17 @@ public class MailingService {
 	}
 
 	/**
-	 * Sends an application acceptance email to the student with advisor and thesis details.
+	 * Sends an application acceptance email to the student with supervisor and thesis details.
 	 *
 	 * @param application the accepted application
 	 * @param thesis the thesis created from the application
 	 */
 	public void sendApplicationAcceptanceEmail(Application application, Thesis thesis) {
+		// Variable named "advisor" to match the email template placeholder key ${advisor.*}
 		User advisor = thesis.getSupervisors().getFirst();
-		User supervisor = thesis.getExaminers().getFirst();
+		User examiner = thesis.getExaminers().getFirst();
 
-		String templateCase = advisor.getId().equals(supervisor.getId()) ? "APPLICATION_ACCEPTED_NO_ADVISOR" :
+		String templateCase = advisor.getId().equals(examiner.getId()) ? "APPLICATION_ACCEPTED_NO_SUPERVISOR" :
 				"APPLICATION_ACCEPTED";
 
 		EmailTemplate emailTemplate = loadTemplate(
@@ -338,12 +339,12 @@ public class MailingService {
 				templateCase,
 				"en");
 
-		User advisor = slot.getInterviewProcess().getTopic().getSupervisors().getFirst();
+		User supervisor = slot.getInterviewProcess().getTopic().getSupervisors().getFirst();
 
 		MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(), emailTemplate.getBodyHtml());
 		mailBuilder
 				.addPrimaryRecipient(slot.getInterviewee().getApplication().getUser())
-				.addSecondaryRecipient(advisor)
+				.addSecondaryRecipient(supervisor)
 				.addNotificationName(emailTemplate.getSubject())
 				.fillApplicationPlaceholders(slot.getInterviewee().getApplication())
 				.fillIntervieweePlaceholders(slot.getInterviewee())

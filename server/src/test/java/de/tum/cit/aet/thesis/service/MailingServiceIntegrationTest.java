@@ -462,7 +462,7 @@ class MailingServiceIntegrationTest extends BaseIntegrationTest {
 			createTestEmailTemplate("APPLICATION_CREATED_CHAIR");
 			createTestEmailTemplate("APPLICATION_CREATED_STUDENT");
 			createTestEmailTemplate("APPLICATION_ACCEPTED");
-			createTestEmailTemplate("APPLICATION_ACCEPTED_NO_ADVISOR");
+			createTestEmailTemplate("APPLICATION_ACCEPTED_NO_SUPERVISOR");
 			createTestEmailTemplate("THESIS_CREATED");
 
 			TestUser student = createRandomTestUser(List.of("student"));

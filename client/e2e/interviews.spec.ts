@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test'
 import { authStatePath, navigateTo } from './helpers'
 
-test.describe('Interviews - Supervisor', () => {
-  test.use({ storageState: authStatePath('supervisor') })
+test.describe('Interviews - Examiner', () => {
+  test.use({ storageState: authStatePath('examiner') })
 
   test('interview overview shows interview topics and upcoming interviews', async ({ page }) => {
     await navigateTo(page, '/interviews')
@@ -29,8 +29,8 @@ test.describe('Interviews - Supervisor', () => {
   })
 })
 
-test.describe('Interviews - Advisor', () => {
-  test.use({ storageState: authStatePath('advisor') })
+test.describe('Interviews - Supervisor', () => {
+  test.use({ storageState: authStatePath('supervisor') })
 
   test('interview overview is accessible', async ({ page }) => {
     await navigateTo(page, '/interviews')

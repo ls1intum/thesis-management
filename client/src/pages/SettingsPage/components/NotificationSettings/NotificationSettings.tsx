@@ -101,8 +101,8 @@ const NotificationSettings = () => {
             'title',
             'type',
             'students',
-            'advisors',
             'supervisors',
+            'examiners',
             'researchGroup',
             'actions',
           ]}

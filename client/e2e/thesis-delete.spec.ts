@@ -4,8 +4,8 @@ import { authStatePath, navigateToDetail } from './helpers'
 const OLD_THESIS_ID = '00000000-0000-4000-d000-000000000010'
 const RECENT_THESIS_ID = '00000000-0000-4000-d000-000000000011'
 const ACTIVE_THESIS_ID = '00000000-0000-4000-d000-000000000012'
-// Thesis 1 — always available, supervisor has SUPERVISOR role on it
-const SUPERVISOR_THESIS_ID = '00000000-0000-4000-d000-000000000001'
+// Thesis 1 — always available, examiner has EXAMINER role on it
+const EXAMINER_THESIS_ID = '00000000-0000-4000-d000-000000000001'
 
 test.describe('Thesis Delete (Anonymize) - Admin', () => {
   test.use({ storageState: authStatePath('admin') })
@@ -112,7 +112,7 @@ test.describe('Thesis Delete (Anonymize) - Modal Interactions', () => {
   test('admin can cancel anonymization modal without effect', async ({ page }) => {
     // Use thesis 1 which won't be affected by serial delete tests
     const heading = page.getByRole('heading', { name: /Automated Code Review/i })
-    const loaded = await navigateToDetail(page, `/theses/${SUPERVISOR_THESIS_ID}`, heading, 30_000)
+    const loaded = await navigateToDetail(page, `/theses/${EXAMINER_THESIS_ID}`, heading, 30_000)
     expect(loaded).toBeTruthy()
 
     await page.getByText('Configuration').click()
@@ -140,7 +140,7 @@ test.describe('Thesis Delete (Anonymize) - Modal Interactions', () => {
 
   test('anonymization modal closes via X button', async ({ page }) => {
     const heading = page.getByRole('heading', { name: /Automated Code Review/i })
-    const loaded = await navigateToDetail(page, `/theses/${SUPERVISOR_THESIS_ID}`, heading, 30_000)
+    const loaded = await navigateToDetail(page, `/theses/${EXAMINER_THESIS_ID}`, heading, 30_000)
     expect(loaded).toBeTruthy()
 
     await page.getByText('Configuration').click()
@@ -161,18 +161,18 @@ test.describe('Thesis Delete (Anonymize) - Modal Interactions', () => {
 })
 
 test.describe('Thesis Delete (Anonymize) - Non-Admin Restrictions', () => {
-  test.use({ storageState: authStatePath('supervisor') })
+  test.use({ storageState: authStatePath('examiner') })
 
-  test('supervisor does not see Anonymize Thesis button', async ({ page }) => {
-    // Use thesis 1 where supervisor has SUPERVISOR role — not affected by admin delete tests
+  test('examiner does not see Anonymize Thesis button', async ({ page }) => {
+    // Use thesis 1 where examiner has EXAMINER role — not affected by admin delete tests
     const heading = page.getByRole('heading', { name: /Automated Code Review/i })
-    const loaded = await navigateToDetail(page, `/theses/${SUPERVISOR_THESIS_ID}`, heading, 30_000)
+    const loaded = await navigateToDetail(page, `/theses/${EXAMINER_THESIS_ID}`, heading, 30_000)
     expect(loaded).toBeTruthy()
 
     // Open Configuration accordion
     await page.getByText('Configuration').click()
 
-    // Supervisor should see Update button (they have advisor access) but NOT Anonymize Thesis
+    // Examiner should see Update button (they have supervisor access) but NOT Anonymize Thesis
     await expect(page.getByRole('button', { name: 'Update' })).toBeVisible({ timeout: 5_000 })
     await expect(page.getByRole('button', { name: 'Anonymize Thesis' })).not.toBeVisible({
       timeout: 3_000,
@@ -185,7 +185,7 @@ test.describe('Thesis Delete (Anonymize) - Student Restrictions', () => {
 
   test('student does not see Anonymize Thesis button', async ({ page }) => {
     const heading = page.getByRole('heading', { name: /Automated Code Review/i })
-    const loaded = await navigateToDetail(page, `/theses/${SUPERVISOR_THESIS_ID}`, heading, 30_000)
+    const loaded = await navigateToDetail(page, `/theses/${EXAMINER_THESIS_ID}`, heading, 30_000)
     expect(loaded).toBeTruthy()
 
     // Students should not see the Configuration section's admin controls

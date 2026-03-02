@@ -51,7 +51,7 @@ FROM defaults d
 
 <p>Best regards,<br/>
 The Thesis Coordination Team</p>
-', 'Application was accepted with different advisor and supervisor'), ('APPLICATION_ACCEPTED_NO_ADVISOR', 'Thesis Application Acceptance', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
+', 'Application was accepted with different supervisor and examiner'), ('APPLICATION_ACCEPTED_NO_SUPERVISOR', 'Thesis Application Acceptance', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">
 I am delighted to inform you that I would like to take the next steps in
@@ -78,7 +78,7 @@ You can view your thesis details and tasks on: <a target="_blank" rel="noopener 
 </p>
 
 <p>Best regards,<br/>
-The Thesis Coordination Team</p>', 'Application was accepted with same advisor and supervisor'), ('APPLICATION_CREATED_CHAIR', 'New Thesis Application', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
+The Thesis Coordination Team</p>', 'Application was accepted with same supervisor and examiner'), ('APPLICATION_CREATED_CHAIR', 'New Thesis Application', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">there is a new thesis application by <strong>[[${application.applicantFirstName}]]&nbsp;[[${application.applicantLastName}]]</strong>.</p>
 <p th:inline="text">We received the following thesis application details:</p>
@@ -146,7 +146,7 @@ Full Details: <a target="_blank" rel="noopener noreferrer nofollow" th:href="${a
 <div style="text-align: center;font-size: 10px">
     Manage your notification settings <a th:href="${config.clientHost + ''/settings/notifications''}">here</a>
 </div>
-<br/><br/>', 'All supervisors and advisors get a summary about a new application'), ('APPLICATION_CREATED_STUDENT', 'Thesis Application Confirmation', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
+<br/><br/>', 'All examiners and supervisors get a summary about a new application'), ('APPLICATION_CREATED_STUDENT', 'Thesis Application Confirmation', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">With this email, we confirm your thesis application.</p>
 <p th:inline="text">We received the following details:</p>
@@ -346,7 +346,7 @@ Review Applications: <a target="_blank" rel="noopener noreferrer nofollow" th:hr
 
 <p th:inline="text">
 [[${deletingUser.firstName}]] [[${deletingUser.lastName}]] closed thesis "[[${thesis.title}]]".
-Please contact your advisor or supervisor if you think that this was a mistake.
+Please contact your supervisor or examiner if you think that this was a mistake.
 </p>
 
 <p th:inline="text">
@@ -376,7 +376,7 @@ Please contact your advisor or supervisor if you think that this was a mistake.
 <div style="text-align: center;font-size: 10px">
     Manage your notification settings <a th:href="${config.clientHost + ''/settings/notifications''}">here</a>
 </div>
-<br/><br/>', 'New comment on a thesis. TO depends whether its a student or advisor comment'), ('THESIS_CREATED', 'Thesis Created', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
+<br/><br/>', 'New comment on a thesis. TO depends whether its a student or supervisor comment'), ('THESIS_CREATED', 'Thesis Created', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">
 [[${creatingUser.firstName}]] [[${creatingUser.lastName}]] created and assigned a thesis to you: <a target="_blank" rel="noopener noreferrer nofollow" th:href="${thesisUrl}">[[${thesisUrl}]]</a>

@@ -115,8 +115,8 @@ class TopicServiceTest {
 		List<UUID> supervisorIds = List.of(UUID.randomUUID());
 		UUID researchGroupId = testResearchGroup.getId();
 
-		User examiner = EntityMockFactory.createUserWithGroup("Supervisor", "supervisor");
-		User supervisor = EntityMockFactory.createUserWithGroup("Advisor", "advisor");
+		User examiner = EntityMockFactory.createUserWithGroup("Examiner", "supervisor");
+		User supervisor = EntityMockFactory.createUserWithGroup("Supervisor", "advisor");
 
 		when(userRepository.findAllById(examinerIds)).thenReturn(new ArrayList<>(List.of(examiner)));
 		when(userRepository.findAllById(supervisorIds)).thenReturn(new ArrayList<>(List.of(supervisor)));
@@ -148,7 +148,7 @@ class TopicServiceTest {
 	@Test
 	void createTopic_WithInvalidExaminer_ThrowsException() {
 		User invalidExaminer = EntityMockFactory.createUserWithGroup("Student", "student");
-		User supervisor = EntityMockFactory.createUserWithGroup("Advisor", "advisor");
+		User supervisor = EntityMockFactory.createUserWithGroup("Supervisor", "advisor");
 
 		List<UUID> examinerIds = new ArrayList<>(List.of(invalidExaminer.getId()));
 		List<UUID> supervisorIds = new ArrayList<>(List.of(supervisor.getId()));
@@ -181,8 +181,8 @@ class TopicServiceTest {
 
 	@Test
 	void updateTopic_WithValidData_UpdatesTopic() {
-		User examiner = EntityMockFactory.createUserWithGroup("Supervisor", "supervisor");
-		User supervisor = EntityMockFactory.createUserWithGroup("Advisor", "advisor");
+		User examiner = EntityMockFactory.createUserWithGroup("Examiner", "supervisor");
+		User supervisor = EntityMockFactory.createUserWithGroup("Supervisor", "advisor");
 
 		List<UUID> examinerIds = new ArrayList<>(List.of(examiner.getId()));
 		List<UUID> supervisorIds = new ArrayList<>(List.of(supervisor.getId()));

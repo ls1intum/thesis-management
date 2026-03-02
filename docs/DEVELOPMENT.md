@@ -46,15 +46,15 @@ To activate the dev profile, either:
 
 #### Test Users and Roles
 
-> **Note on Role Terminology:** The server / Keycloak uses `supervisor` and `advisor` roles internally. In the UI, these are displayed as "Examiner" and "Supervisor" respectively to align with CIT terminology.
+> **Note on Role Terminology:** The server uses `EXAMINER` and `SUPERVISOR` as thesis role names, matching the UI labels "Examiner" and "Supervisor". Keycloak groups remain `supervisor` and `advisor` for backward compatibility — do not rename them. Usernames match the UI role labels for clarity.
 
-| Username    | First Name  | Last Name | Email                    | Role (Server) | UI Label   |
+| Username    | First Name  | Last Name | Email                    | Keycloak Role | UI Label   |
 |-------------|-------------|-----------|--------------------------|---------------|------------|
 | admin       | Admin       | User      | admin@test.local         | admin         | Admin      |
-| supervisor  | Supervisor  | User      | supervisor@test.local    | supervisor    | Examiner   |
-| supervisor2 | Supervisor2 | User      | supervisor2@test.local   | supervisor    | Examiner   |
-| advisor     | Advisor     | User      | advisor@test.local       | advisor       | Supervisor |
-| advisor2    | Advisor2    | User      | advisor2@test.local      | advisor       | Supervisor |
+| examiner    | Examiner    | User      | examiner@test.local      | supervisor    | Examiner   |
+| examiner2   | Examiner2   | User      | examiner2@test.local     | supervisor    | Examiner   |
+| supervisor  | Supervisor  | User      | supervisor@test.local    | advisor       | Supervisor |
+| supervisor2 | Supervisor2 | User      | supervisor2@test.local   | advisor       | Supervisor |
 | student     | Student     | User      | student@test.local       | student       | Student    |
 | student2    | Student2    | User      | student2@test.local      | student       | Student    |
 | student3    | Student3    | User      | student3@test.local      | student       | Student    |
@@ -63,10 +63,10 @@ To activate the dev profile, either:
 
 #### Research Groups
 
-| Name                          | Abbreviation | Head        | Members                          |
-|-------------------------------|--------------|-------------|----------------------------------|
-| Applied Software Engineering  | ASE          | supervisor  | supervisor, advisor, advisor2    |
-| Data Science and Analytics    | DSA          | supervisor2 | supervisor2                      |
+| Name                          | Abbreviation | Head        | Members                              |
+|-------------------------------|--------------|-------------|--------------------------------------|
+| Applied Software Engineering  | ASE          | examiner    | examiner, supervisor, supervisor2    |
+| Data Science and Analytics    | DSA          | examiner2   | examiner2                            |
 
 #### Topics
 
@@ -300,29 +300,29 @@ Tests are located in `client/e2e/` and authenticate via the Keycloak login form 
 
 | File | Description |
 |------|-------------|
-| `auth.setup.ts` | Authenticates all test users (student, student2, student3, advisor, advisor2, supervisor, supervisor2, admin, delete_old_thesis, delete_recent_thesis, delete_rejected_app) via Keycloak and caches their session state |
+| `auth.setup.ts` | Authenticates all test users (student, student2, student3, supervisor, supervisor2, examiner, examiner2, admin, delete_old_thesis, delete_recent_thesis, delete_rejected_app) via Keycloak and caches their session state |
 | `auth.spec.ts` | Keycloak redirect for unauthenticated users, role-based navigation item visibility for all 5 access levels |
 | `navigation.spec.ts` | Public page rendering (landing page, about, footer), sidebar navigation flow, route access per role |
 | `dashboard.spec.ts` | Dashboard sections per role (My Theses, My Applications) |
-| `topics.spec.ts` | Public topic browsing with search, filters, and list/grid toggle; supervisor management view; student apply button |
-| `applications.spec.ts` | Student application stepper form, pre-selected topic flow, advisor and supervisor review page access |
+| `topics.spec.ts` | Public topic browsing with search, filters, and list/grid toggle; examiner management view; student apply button |
+| `applications.spec.ts` | Student application stepper form, pre-selected topic flow, supervisor and examiner review page access |
 | `theses.spec.ts` | Browse view per role, theses overview, thesis detail page sections, student viewing own thesis |
-| `interviews.spec.ts` | Supervisor interview overview and process detail, advisor access, student access denied |
-| `presentations.spec.ts` | Student and supervisor presentations page, public presentation detail access |
-| `settings.spec.ts` | My Information and Notification Settings tabs for student and advisor |
-| `research-groups.spec.ts` | Admin research group CRUD with search filtering, supervisor group access, student access denied |
+| `interviews.spec.ts` | Examiner interview overview and process detail, supervisor access, student access denied |
+| `presentations.spec.ts` | Student and examiner presentations page, public presentation detail access |
+| `settings.spec.ts` | My Information and Notification Settings tabs for student and supervisor |
+| `research-groups.spec.ts` | Admin research group CRUD with search filtering, examiner group access, student access denied |
 | **Workflow Tests** | |
-| `topic-workflow.spec.ts` | Supervisor creates a new topic end-to-end: fills title, thesis types, examiner, supervisor, problem statement |
-| `thesis-workflow.spec.ts` | Supervisor creates a new thesis end-to-end: fills title, type, language, student, supervisor, examiner |
+| `topic-workflow.spec.ts` | Examiner creates a new topic end-to-end: fills title, thesis types, examiner, supervisor, problem statement |
+| `thesis-workflow.spec.ts` | Examiner creates a new thesis end-to-end: fills title, type, language, student, supervisor, examiner |
 | `application-workflow.spec.ts` | Student submits an application through the full stepper: topic selection, student info, file uploads, motivation |
 | `presentation-workflow.spec.ts` | Student creates a presentation draft for a submitted thesis: type, visibility, location, language, date/time |
-| `proposal-feedback-workflow.spec.ts` | Advisor submits proposal feedback on a thesis in PROPOSAL state: opens feedback dialog, enters comment, submits |
-| `application-review-workflow.spec.ts` | Advisor rejects and accepts NOT_ASSESSED applications: reject with reason, accept with pre-filled thesis details |
-| `thesis-grading-workflow.spec.ts` | Sequential thesis grading: advisor submits assessment, supervisor submits final grade, supervisor marks thesis as finished |
-| `interview-workflow.spec.ts` | Supervisor scores an interviewee with notes, opens add slot modal on interview process page |
+| `proposal-feedback-workflow.spec.ts` | Supervisor submits proposal feedback on a thesis in PROPOSAL state: opens feedback dialog, enters comment, submits |
+| `application-review-workflow.spec.ts` | Supervisor rejects and accepts NOT_ASSESSED applications: reject with reason, accept with pre-filled thesis details |
+| `thesis-grading-workflow.spec.ts` | Sequential thesis grading: examiner2 submits assessment, examiner2 submits final grade, examiner2 marks thesis as finished |
+| `interview-workflow.spec.ts` | Examiner scores an interviewee with notes, opens add slot modal on interview process page |
 | **Data Management Tests** | |
 | `thesis-anonymization.spec.ts` | Admin triggers anonymization from admin page, idempotent second run, anonymized thesis banner, recent thesis unaffected, student cannot access admin page |
-| `data-retention.spec.ts` | Admin deletes individual application with confirmation modal, batch cleanup from admin page, recent rejected application survives cleanup, advisor cannot see delete button or admin page |
+| `data-retention.spec.ts` | Admin deletes individual application with confirmation modal, batch cleanup from admin page, recent rejected application survives cleanup, supervisor cannot see delete button or admin page |
 | `account-deletion.spec.ts` | Self-service account deletion for 3 user types (full deletion, soft deletion with retention, expired retention), research group head blocked, confirmation dialog safety (cancel resets state), admin user search and deletion preview (retention-blocked, active thesis, research group head), route protection |
 | `data-export.spec.ts` | Data export page rendering, requesting an export and verifying processing status, privacy page link for authenticated/unauthenticated users, route protection |
 | `thesis-config-user-search.spec.ts` | Thesis configuration user search filters by role: student selector shows students only |
@@ -333,8 +333,8 @@ Every major page is tested with appropriate roles to verify access control:
 
 - **Unauthenticated** — public pages are accessible, protected routes redirect to Keycloak login, data export page inaccessible
 - **Student** — dashboard, submit application, browse theses, settings, presentations, data export, self-service account deletion; cannot access management pages
-- **Advisor** — dashboard, review applications, manage topics, theses overview, interviews, settings; cannot see delete buttons on applications or access admin page
-- **Supervisor** — same as advisor (management view); additional thesis detail assertions; research group head deletion blocked
+- **Supervisor** — dashboard, review applications, manage topics, theses overview, interviews, settings; cannot see delete buttons on applications or access admin page
+- **Examiner** — same as supervisor (management view); additional thesis detail assertions; research group head deletion blocked
 - **Admin** — all pages including research groups management, thesis anonymization, data retention cleanup, user account deletion
 - **Dedicated deletion users** — `delete_rejected_app`, `delete_recent_thesis`, `delete_old_thesis` test the full account deletion flow for different retention scenarios
 
@@ -346,14 +346,14 @@ The E2E tests focus on page accessibility, content rendering, and role-based acc
 |------|---------|-----------------|
 | **Authentication & RBAC** | Keycloak redirect, nav item visibility per role, access denied for unauthorized roles | Token refresh, session expiry, logout |
 | **Topics** | Public browsing, search, filters, list/grid toggle, management view, student apply button, **creating a topic end-to-end** | Editing/closing topics, draft topics |
-| **Applications** | Stepper form rendering, pre-selected topic, advisor/supervisor review page access, **submitting an application end-to-end**, **accepting and rejecting applications** | — |
+| **Applications** | Stepper form rendering, pre-selected topic, supervisor/examiner review page access, **submitting an application end-to-end**, **accepting and rejecting applications** | — |
 | **Theses** | Browse per role, overview page, detail page sections, student own thesis, **creating a thesis end-to-end**, **submitting proposal feedback**, **assessment → final grade → mark as finished**, user search filters by role | Comments |
 | **Thesis Anonymization** | Admin triggers anonymization, idempotent second run finds nothing, anonymized thesis shows banner, recent thesis unaffected, student cannot access admin page | — |
-| **Interviews** | Supervisor overview and process detail, advisor access, student denied, **scoring interviewees with notes**, **add slot modal** | Creating interview processes, booking slots |
+| **Interviews** | Examiner overview and process detail, supervisor access, student denied, **scoring interviewees with notes**, **add slot modal** | Creating interview processes, booking slots |
 | **Presentations** | Page access per role, public presentation detail, **creating a presentation draft** | Calendar integration |
 | **Settings** | Tab rendering per role, **Account tab with deletion UI** | Editing profile information, notification preferences |
 | **Account Deletion** | Self-service full deletion (rejected app user), soft deletion with retention (recent thesis user), full deletion after retention expiry (old thesis user), research group head blocked, confirmation dialog safety (cancel resets state), admin user search and preview (retention, active thesis, research group head), route protection for non-admin | — |
-| **Data Retention** | Admin deletes individual application with confirmation modal, batch cleanup from admin page, recent rejected application survives cleanup, advisor cannot see delete button or access admin page | — |
+| **Data Retention** | Admin deletes individual application with confirmation modal, batch cleanup from admin page, recent rejected application survives cleanup, supervisor cannot see delete button or access admin page | — |
 | **Data Export** | Page rendering with info text, requesting export and verifying processing status, privacy page link (authenticated and unauthenticated), route protection | Downloading completed export |
 | **Research Groups** | Admin CRUD page, search filtering, student denied | Creating/editing groups, member management |
 | **Dashboard** | Section visibility per role (My Theses, My Applications) | Dashboard data accuracy, links to detail pages |

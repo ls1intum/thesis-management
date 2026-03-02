@@ -332,8 +332,8 @@ public abstract class BaseIntegrationTest {
 	}
 
 	protected UUID createTestTopic(String title) throws Exception {
-		TestUser advisor = createRandomTestUser(List.of("supervisor", "advisor"));
-		UUID researchGroupId = createTestResearchGroup("Test Research Group " + UUID.randomUUID(), advisor.universityId());
+		TestUser staffMember = createRandomTestUser(List.of("supervisor", "advisor"));
+		UUID researchGroupId = createTestResearchGroup("Test Research Group " + UUID.randomUUID(), staffMember.universityId());
 
 		ReplaceTopicPayload payload = new ReplaceTopicPayload(
 				title,
@@ -342,8 +342,8 @@ public abstract class BaseIntegrationTest {
 				"Test Requirements",
 				"Test Goals",
 				"Test References",
-				List.of(advisor.userId()),
-				List.of(advisor.userId()),
+				List.of(staffMember.userId()),
+				List.of(staffMember.userId()),
 				researchGroupId,
 				null,
 				null,
@@ -362,17 +362,17 @@ public abstract class BaseIntegrationTest {
 	}
 
 	protected UUID createTestThesis(String title) throws Exception {
-		TestUser advisor = createRandomTestUser(List.of("supervisor", "advisor"));
-		UUID researchGroupId = createTestResearchGroup("Test Research Group", advisor.universityId());
+		TestUser staffMember = createRandomTestUser(List.of("supervisor", "advisor"));
+		UUID researchGroupId = createTestResearchGroup("Test Research Group", staffMember.universityId());
 		createTestEmailTemplate("THESIS_CREATED");
 
 		CreateThesisPayload payload = new CreateThesisPayload(
 				title,
 				"MASTER",
 				"ENGLISH",
-				List.of(advisor.userId()),
-				List.of(advisor.userId()),
-				List.of(advisor.userId()),
+				List.of(staffMember.userId()),
+				List.of(staffMember.userId()),
+				List.of(staffMember.userId()),
 				researchGroupId
 		);
 

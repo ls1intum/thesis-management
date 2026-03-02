@@ -17,7 +17,7 @@ type availableAdditionalInformation =
   | 'info'
   | 'state'
   | 'keywords'
-  | 'advisor-comments'
+  | 'supervisor-comments'
 
 interface IThesisDataProps {
   thesis: IThesis | IPublishedThesis
@@ -91,7 +91,7 @@ const ThesisData = (props: IThesisDataProps) => {
       {additionalInformation.includes('info') && isThesis(thesis) && (
         <DocumentEditor label='Additional Information' value={thesis.infoText} />
       )}
-      {additionalInformation.includes('advisor-comments') &&
+      {additionalInformation.includes('supervisor-comments') &&
         access.supervisor &&
         isThesis(thesis) && (
           <ThesisCommentsProvider limit={10} thesis={thesis} commentType='SUPERVISOR'>

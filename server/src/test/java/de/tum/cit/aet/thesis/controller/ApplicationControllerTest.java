@@ -752,20 +752,20 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 		}
 
 		@Test
-		void acceptApplication_WithNotify_SameAdvisorSupervisor_UsesNoAdvisorTemplate() throws Exception {
+		void acceptApplication_WithNotify_SameSupervisorExaminer_UsesNoSupervisorTemplate() throws Exception {
 			createTestEmailTemplate("APPLICATION_CREATED_CHAIR");
 			createTestEmailTemplate("APPLICATION_CREATED_STUDENT");
-			createTestEmailTemplate("APPLICATION_ACCEPTED_NO_ADVISOR");
+			createTestEmailTemplate("APPLICATION_ACCEPTED_NO_SUPERVISOR");
 			createTestEmailTemplate("THESIS_CREATED");
 
 			TestUser student = createRandomTestUser(List.of("student"));
 			String studentAuth = generateTestAuthenticationHeader(student.universityId(), List.of("student"));
 
 			TestUser supervisor = createRandomTestUser(List.of("supervisor", "advisor"));
-			UUID researchGroupId = createTestResearchGroup("Accept No Advisor", supervisor.universityId());
+			UUID researchGroupId = createTestResearchGroup("Accept No Supervisor", supervisor.universityId());
 
 			CreateApplicationPayload appPayload = new CreateApplicationPayload(
-					null, "No Advisor Thesis", "MASTER", Instant.now(), "Motivation", researchGroupId
+					null, "No Supervisor Thesis", "MASTER", Instant.now(), "Motivation", researchGroupId
 			);
 
 			String appResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
@@ -779,9 +779,9 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 
 			clearEmails();
 
-			// Same user as both advisor and supervisor triggers APPLICATION_ACCEPTED_NO_ADVISOR template
+			// Same user as both supervisor and examiner triggers APPLICATION_ACCEPTED_NO_SUPERVISOR template
 			AcceptApplicationPayload acceptPayload = new AcceptApplicationPayload(
-					"No Advisor Thesis", "MASTER", "ENGLISH",
+					"No Supervisor Thesis", "MASTER", "ENGLISH",
 					List.of(supervisor.userId()),
 					List.of(supervisor.userId()),
 					true, false

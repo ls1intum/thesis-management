@@ -32,14 +32,14 @@ test.describe('Research Groups - Admin', () => {
   })
 })
 
-test.describe('Research Group Settings - Supervisor', () => {
-  test.use({ storageState: authStatePath('supervisor') })
+test.describe('Research Group Settings - Examiner', () => {
+  test.use({ storageState: authStatePath('examiner') })
 
-  test('supervisor can access their research group settings', async ({ page }) => {
+  test('examiner can access their research group settings', async ({ page }) => {
     // UUID matches the ASE research group seeded in seed_dev_test_data.sql
     await navigateTo(page, '/research-groups/00000000-0000-4000-a000-000000000001')
 
-    // Supervisor should see either group settings or an unauthorized page
+    // Examiner should see either group settings or an unauthorized page
     await expect(
       page
         .getByText('Applied Software Engineering')

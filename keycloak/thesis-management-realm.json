@@ -570,9 +570,9 @@
       "groups": []
     },
     {
-      "username": "supervisor",
-      "email": "supervisor@test.local",
-      "firstName": "Supervisor",
+      "username": "examiner",
+      "email": "examiner@test.local",
+      "firstName": "Examiner",
       "lastName": "User",
       "emailVerified": true,
       "enabled": true,
@@ -584,7 +584,7 @@
       "credentials": [
         {
           "type": "password",
-          "value": "supervisor",
+          "value": "examiner",
           "temporary": false
         }
       ],
@@ -599,9 +599,9 @@
       "groups": []
     },
     {
-      "username": "advisor",
-      "email": "advisor@test.local",
-      "firstName": "Advisor",
+      "username": "supervisor",
+      "email": "supervisor@test.local",
+      "firstName": "Supervisor",
       "lastName": "User",
       "emailVerified": true,
       "enabled": true,
@@ -613,7 +613,7 @@
       "credentials": [
         {
           "type": "password",
-          "value": "advisor",
+          "value": "supervisor",
           "temporary": false
         }
       ],
@@ -659,9 +659,9 @@
       ]
     },
     {
-      "username": "supervisor2",
-      "email": "supervisor2@test.local",
-      "firstName": "Supervisor2",
+      "username": "examiner2",
+      "email": "examiner2@test.local",
+      "firstName": "Examiner2",
       "lastName": "User",
       "emailVerified": true,
       "enabled": true,
@@ -673,7 +673,7 @@
       "credentials": [
         {
           "type": "password",
-          "value": "supervisor2",
+          "value": "examiner2",
           "temporary": false
         }
       ],
@@ -688,9 +688,9 @@
       "groups": []
     },
     {
-      "username": "advisor2",
-      "email": "advisor2@test.local",
-      "firstName": "Advisor2",
+      "username": "supervisor2",
+      "email": "supervisor2@test.local",
+      "firstName": "Supervisor2",
       "lastName": "User",
       "emailVerified": true,
       "enabled": true,
@@ -702,7 +702,7 @@
       "credentials": [
         {
           "type": "password",
-          "value": "advisor2",
+          "value": "supervisor2",
           "temporary": false
         }
       ],

@@ -11,10 +11,10 @@ test.describe('Presentations - Student', () => {
   })
 })
 
-test.describe('Presentations - Supervisor', () => {
-  test.use({ storageState: authStatePath('supervisor') })
+test.describe('Presentations - Examiner', () => {
+  test.use({ storageState: authStatePath('examiner') })
 
-  test('presentations page is accessible for supervisor', async ({ page }) => {
+  test('presentations page is accessible for examiner', async ({ page }) => {
     await navigateTo(page, '/presentations')
 
     await expect(page.getByRole('heading', { name: 'Presentations', exact: true })).toBeVisible({

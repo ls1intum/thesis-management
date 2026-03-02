@@ -104,7 +104,7 @@ public class TopicController {
 	}
 
 	/**
-	 * Creates a new topic with the specified details, supervisors, and advisors.
+	 * Creates a new topic with the specified details, examiners, and supervisors.
 	 *
 	 * @param payload the topic creation payload
 	 * @return the created topic
@@ -133,7 +133,7 @@ public class TopicController {
 	}
 
 	/**
-	 * Updates an existing topic with new details, supervisors, and advisors.
+	 * Updates an existing topic with new details, examiners, and supervisors.
 	 *
 	 * @param topicId the topic ID to update
 	 * @param payload the topic update payload
