@@ -191,7 +191,7 @@ public class PDFBuilder {
 					.setMarginBottom(MARGIN_TITLE_BOTTOM);
 			document.add(sectionHeading);
 
-			for (IBlockElement element : parseHtmlContent(row.htmlContent())) {
+			for (IBlockElement element : parseHtmlContent(row.htmlContent(), converterProperties)) {
 				if (element instanceof Paragraph para) {
 					para.setMarginTop(0).setMarginLeft(CONTENT_INDENT);
 					if (para.<TextAlignment>getProperty(Property.TEXT_ALIGNMENT) == null) {
@@ -344,14 +344,11 @@ public class PDFBuilder {
 	 * Converts HTML content into styled iText block elements.
 	 * If conversion fails, the content is rendered as plain text.
 	 */
-	private List<IBlockElement> parseHtmlContent(String html) {
+	private List<IBlockElement> parseHtmlContent(String html, ConverterProperties props) {
 		List<IBlockElement> elements = new ArrayList<>();
 		try {
-			String processedHtml = html.replaceAll("<ol>", "<ul>").replaceAll("</ol>", "</ul>");
 
-			ConverterProperties props = new ConverterProperties();
-
-			List<IElement> pdfElements = HtmlConverter.convertToElements(processedHtml, props);
+			List<IElement> pdfElements = HtmlConverter.convertToElements(html, props);
 
 			for (IElement element : pdfElements) {
 				if (element instanceof IBlockElement block) {
