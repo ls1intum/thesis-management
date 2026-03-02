@@ -394,7 +394,7 @@ public class MailingService {
 	}
 
 	/**
-	 * Sends a proposal upload notification email to thesis advisors with the proposal as an attachment.
+	 * Sends a proposal upload notification email to thesis supervisors with the proposal as an attachment.
 	 *
 	 * @param proposal the uploaded thesis proposal
 	 */
@@ -462,7 +462,7 @@ public class MailingService {
 	}
 
 	/**
-	 * Sends a new comment notification email to advisors or students depending on the comment type.
+	 * Sends a new comment notification email to supervisors or students depending on the comment type.
 	 *
 	 * @param comment the newly posted thesis comment
 	 */
@@ -585,7 +585,7 @@ public class MailingService {
 	}
 
 	/**
-	 * Sends a final thesis submission notification email to the thesis advisors.
+	 * Sends a final thesis submission notification email to the thesis supervisors.
 	 *
 	 * @param thesis the submitted thesis
 	 */

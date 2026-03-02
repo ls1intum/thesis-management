@@ -201,7 +201,7 @@ public class ThesisController {
 		Thesis thesis = thesisService.findById(thesisId);
 
 		if (!thesis.hasSupervisorAccess(currentUser)) {
-			throw new AccessDeniedException("You need to be an advisor of this thesis to update the thesis");
+			throw new AccessDeniedException("You need to be a supervisor of this thesis to update the thesis");
 		}
 
 		thesis = thesisService.updateThesis(
@@ -295,7 +295,7 @@ public class ThesisController {
 		Thesis thesis = thesisService.findById(thesisId);
 
 		if (!thesis.hasSupervisorAccess(currentUser)) {
-			throw new AccessDeniedException("You need to be an advisor of this thesis to update the student credits");
+			throw new AccessDeniedException("You need to be a supervisor of this thesis to update the student credits");
 		}
 
 		thesis = thesisService.updateThesisCredits(
@@ -349,7 +349,7 @@ public class ThesisController {
 		Thesis thesis = thesisService.findById(thesisId);
 
 		if (!thesis.hasSupervisorAccess(currentUser)) {
-			throw new AccessDeniedException("You need to be a advisor of this thesis to delete a feedback item");
+			throw new AccessDeniedException("You need to be a supervisor of this thesis to delete a feedback item");
 		}
 
 		thesis = thesisService.deleteFeedback(thesis, feedbackId);
@@ -373,7 +373,7 @@ public class ThesisController {
 		Thesis thesis = thesisService.findById(thesisId);
 
 		if (!thesis.hasSupervisorAccess(currentUser)) {
-			throw new AccessDeniedException("You need to be an advisor of this thesis to request changes");
+			throw new AccessDeniedException("You need to be a supervisor of this thesis to request changes");
 		}
 
 		thesis = thesisService.requestChanges(
@@ -459,7 +459,7 @@ public class ThesisController {
 		}
 
 		if (thesis.getState() != ThesisState.PROPOSAL && !thesis.hasSupervisorAccess(currentUser)) {
-			throw new AccessDeniedException("Only advisors can upload a new proposal if thesis state is not PROPOSAL");
+			throw new AccessDeniedException("Only supervisors can upload a new proposal if thesis state is not PROPOSAL");
 		}
 
 		thesis = thesisService.uploadProposal(thesis, RequestValidator.validateNotNull(proposalFile));
@@ -481,7 +481,7 @@ public class ThesisController {
 		Thesis thesis = thesisService.findById(thesisId);
 
 		if (!thesis.hasSupervisorAccess(currentUser)) {
-			throw new AccessDeniedException("You need to be an advisor of this thesis to accept a proposal");
+			throw new AccessDeniedException("You need to be a supervisor of this thesis to accept a proposal");
 		}
 
 		thesis = thesisService.acceptProposal(thesis);
@@ -535,7 +535,7 @@ public class ThesisController {
 		}
 
 		if (thesis.getState() != ThesisState.WRITING && !thesis.hasSupervisorAccess(currentUser)) {
-			throw new AccessDeniedException("Only advisors can upload a new file if thesis state is not WRITING");
+			throw new AccessDeniedException("Only supervisors can upload a new file if thesis state is not WRITING");
 		}
 
 		thesis = thesisService.uploadThesisFile(thesis, type, RequestValidator.validateNotNull(file));
@@ -650,7 +650,7 @@ public class ThesisController {
 		}
 
 		if (presentation.getState() == ThesisPresentationState.SCHEDULED && !thesis.hasSupervisorAccess(currentUser)) {
-			throw new AccessDeniedException("You need to be an advisor of this thesis to update a scheduled presentation");
+			throw new AccessDeniedException("You need to be a supervisor of this thesis to update a scheduled presentation");
 		}
 
 		thesis = thesisPresentationService.updatePresentation(
@@ -719,7 +719,7 @@ public class ThesisController {
 		Thesis thesis = presentation.getThesis();
 
 		if (!thesis.hasSupervisorAccess(currentUser)) {
-			throw new AccessDeniedException("You need to be an advisor of this thesis to schedule a presentation");
+			throw new AccessDeniedException("You need to be a supervisor of this thesis to schedule a presentation");
 		}
 
 		thesis = thesisPresentationService.schedulePresentation(
@@ -777,7 +777,7 @@ public class ThesisController {
 		Thesis thesis = thesisService.findById(thesisId);
 
 		if (commentType == ThesisCommentType.SUPERVISOR && !thesis.hasSupervisorAccess(currentUser)) {
-			throw new AccessDeniedException("You need to be an advisor of this thesis to view advisor comments");
+			throw new AccessDeniedException("You need to be a supervisor of this thesis to view supervisor comments");
 		}
 
 		if (!thesis.hasReadAccess(currentUser)) {
@@ -807,7 +807,7 @@ public class ThesisController {
 		Thesis thesis = thesisService.findById(thesisId);
 
 		if (payload.commentType() == ThesisCommentType.SUPERVISOR && !thesis.hasSupervisorAccess(currentUser)) {
-			throw new AccessDeniedException("You need to be an advisor of this thesis to add an advisor comment");
+			throw new AccessDeniedException("You need to be a supervisor of this thesis to add a supervisor comment");
 		}
 
 		if (!thesis.hasStudentAccess(currentUser)) {
@@ -840,7 +840,7 @@ public class ThesisController {
 		ThesisComment comment = thesisCommentService.findById(thesisId, commentId);
 
 		if (comment.getType() == ThesisCommentType.SUPERVISOR && !comment.getThesis().hasSupervisorAccess(currentUser)) {
-			throw new AccessDeniedException("You need to be a advisor of this thesis to view an advisor file");
+			throw new AccessDeniedException("You need to be a supervisor of this thesis to view a supervisor file");
 		}
 
 		if (!comment.getThesis().hasReadAccess(currentUser)) {
@@ -894,7 +894,7 @@ public class ThesisController {
 		Thesis thesis = thesisService.findById(thesisId);
 
 		if (!thesis.hasSupervisorAccess(currentUser)) {
-			throw new AccessDeniedException("You need to be a advisor of this thesis to add an assessment");
+			throw new AccessDeniedException("You need to be a supervisor of this thesis to add an assessment");
 		}
 
 		return ResponseEntity.ok()
@@ -919,7 +919,7 @@ public class ThesisController {
 		Thesis thesis = thesisService.findById(thesisId);
 
 		if (!thesis.hasSupervisorAccess(currentUser)) {
-			throw new AccessDeniedException("You need to be a advisor of this thesis to add an assessment");
+			throw new AccessDeniedException("You need to be a supervisor of this thesis to add an assessment");
 		}
 
 		thesis = thesisService.submitAssessment(

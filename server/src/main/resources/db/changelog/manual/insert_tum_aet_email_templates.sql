@@ -412,8 +412,8 @@ Please contact your advisor or supervisor if you think that this was a mistake.
 
 <p th:inline="text">
 <strong>Title</strong>: [[${thesis.title}]]<br />
+<strong>Examiner</strong>: [[${thesis.examiners}]]<br />
 <strong>Supervisor</strong>: [[${thesis.supervisors}]]<br />
-<strong>Advisor</strong>: [[${thesis.advisors}]]<br />
 <strong>Student</strong>: [[${thesis.students}]]<br />
 </p>
 
@@ -423,7 +423,7 @@ The next step is that you write a proposal and submit it on <a target="_blank" r
                                          ('THESIS_FINAL_GRADE', 'Final Grade available for Thesis', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">
-[[${thesis.supervisors}]] added the final grade to your thesis "[[${thesis.title}]]"
+[[${thesis.examiners}]] added the final grade to your thesis "[[${thesis.title}]]"
 </p>
 
 <p th:inline="text">
@@ -574,8 +574,8 @@ online at [[${presentation.streamUrl}]]
 <div>Title:</div>
 <div>[[${thesis.title}]]</div>
 <br/>
-<div>Supervisor: [[${thesis.supervisors}]]</div>
-<div>Advisor(s): [[${thesis.advisors}]]</div>
+<div>Examiner: [[${thesis.examiners}]]</div>
+<div>Supervisor(s): [[${thesis.supervisors}]]</div>
 <br/>
 <div>
 The presentation will be in [[${presentation.language}]]. Everybody is cordially invited to attend.
@@ -625,8 +625,8 @@ online at [[${presentation.streamUrl}]]
 <div>Title:</div>
 <div>[[${thesis.title}]]</div>
 <br/>
-<div>Supervisor: [[${thesis.supervisors}]]</div>
-<div>Advisor(s): [[${thesis.advisors}]]</div>
+<div>Examiner: [[${thesis.examiners}]]</div>
+<div>Supervisor(s): [[${thesis.supervisors}]]</div>
 <br/>
 <div>
 The presentation will be in [[${presentation.language}]]. Everybody is cordially invited to attend.

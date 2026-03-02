@@ -10,7 +10,7 @@ import {
 } from './mailpit'
 
 // Thesis d000-0003 is in SUBMITTED state, assigned to student3, has abstract text set
-// Roles: supervisor2 (SUPERVISOR), advisor2 (ADVISOR), student3 (STUDENT)
+// Roles: supervisor2 (EXAMINER), advisor2 (SUPERVISOR), student3 (STUDENT)
 const THESIS_ID = '00000000-0000-4000-d000-000000000003'
 const THESIS_URL = `/theses/${THESIS_ID}`
 const THESIS_TITLE = 'Online Anomaly Detection in IoT Sensor Streams'

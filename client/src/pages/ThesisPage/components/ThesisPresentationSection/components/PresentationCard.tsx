@@ -281,8 +281,8 @@ const PresentationCard = ({
                       <Text size='xs'>Edit Presentation</Text>
                     </Group>
                   </Menu.Item>
-                  {'advisors' in thesis &&
-                    'supervisors' in thesis &&
+                  {'supervisors' in thesis &&
+                    'examiners' in thesis &&
                     hasSupervisorAccess(thesis, user) && (
                       <Menu.Item
                         onClick={() => {

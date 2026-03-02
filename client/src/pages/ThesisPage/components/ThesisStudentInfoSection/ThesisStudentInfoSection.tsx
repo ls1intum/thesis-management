@@ -49,7 +49,7 @@ const ThesisStudentInfoSection = () => {
       data: row,
     })),
     ...(thesis.supervisors ?? []).map((row) => ({
-      type: 'advisor',
+      type: 'supervisor',
       data: row,
     })),
   ]
@@ -70,7 +70,7 @@ const ThesisStudentInfoSection = () => {
                 <Grid>
                   <Grid.Col span={{ md: 2 }}>
                     <LabeledItem
-                      label={user.type === 'student' ? 'Student' : 'Advisor'}
+                      label={user.type === 'student' ? 'Student' : 'Supervisor'}
                       value={formatUser(user.data)}
                     />
                   </Grid.Col>

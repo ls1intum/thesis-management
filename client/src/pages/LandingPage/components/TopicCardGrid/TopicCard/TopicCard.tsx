@@ -101,7 +101,7 @@ const TopicCard = ({ topic, setOpenTopic }: ITopicCardProps) => {
         <Stack gap='xs' pt='1rem' flex={1}>
           <Group gap={'xs'} c='dimmed'>
             <Users></Users>
-            <Text size='sm'>Advisor(s)</Text>
+            <Text size='sm'>Supervisor(s)</Text>
           </Group>
           <AvatarUserList users={topic.supervisors ?? []} />
         </Stack>

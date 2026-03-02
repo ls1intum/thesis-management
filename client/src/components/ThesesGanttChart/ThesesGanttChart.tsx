@@ -69,13 +69,13 @@ const ThesesGanttChart = () => {
         return endDate
       }
 
-      const advisor = (thesis.supervisors ?? [])[0]
-      if (!advisor) continue
+      const supervisor = (thesis.supervisors ?? [])[0]
+      if (!supervisor) continue
 
       result.push({
         id: thesis.thesisId,
-        groupId: advisor.userId,
-        groupNode: <AvatarUser user={advisor} />,
+        groupId: supervisor.userId,
+        groupNode: <AvatarUser user={supervisor} />,
         columns: [
           <AvatarUserList
             key='student'

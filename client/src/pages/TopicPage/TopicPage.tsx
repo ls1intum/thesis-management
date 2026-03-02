@@ -32,19 +32,21 @@ const TopicPage = () => {
     return <PageLoader />
   }
 
-  const checkIfUserIsSupervisorOrAdvisor = () => {
+  const checkIfUserIsExaminerOrSupervisor = () => {
     if (!user) return false
     const userId = user.userId
-    const isSupervisor = (topic.examiners ?? []).some((supervisor) => supervisor.userId === userId)
-    const isAdvisor = (topic.supervisors ?? []).some((advisor) => advisor.userId === userId)
-    return isSupervisor || isAdvisor
+    const isExaminer = (topic.examiners ?? []).some((examiner) => examiner.userId === userId)
+    const isSupervisor = (topic.supervisors ?? []).some(
+      (supervisor) => supervisor.userId === userId,
+    )
+    return isExaminer || isSupervisor
   }
 
   return (
     <Stack gap={'2rem'}>
       <Stack gap={'1rem'}>
         <Title>{topic.title}</Title>
-        {!managementAccess && !checkIfUserIsSupervisorOrAdvisor() && (
+        {!managementAccess && !checkIfUserIsExaminerOrSupervisor() && (
           <Button
             component={Link}
             to={`/submit-application/${topic.topicId}`}

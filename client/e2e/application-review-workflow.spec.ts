@@ -97,18 +97,18 @@ test.describe('Application Review Workflow', () => {
       await selectOption(page, 'Thesis Language', /english/i)
     }
 
-    // Supervisor and Advisor(s) should be pre-filled from the topic (pills visible)
-    const supervisorWrapper = page.locator(
-      '.mantine-InputWrapper-root:has(.mantine-InputWrapper-label:text("Supervisor"))',
+    // Examiner and Supervisor(s) should be pre-filled from the topic (pills visible)
+    const examinerWrapper = page.locator(
+      '.mantine-InputWrapper-root:has(.mantine-InputWrapper-label:text("Examiner"))',
     )
-    await expect(supervisorWrapper.locator('.mantine-Pill-root').first()).toBeVisible({
+    await expect(examinerWrapper.locator('.mantine-Pill-root').first()).toBeVisible({
       timeout: 10_000,
     })
 
-    const advisorWrapper = page.locator(
-      '.mantine-InputWrapper-root:has(.mantine-InputWrapper-label:text("Advisor(s)"))',
+    const supervisorWrapper = page.locator(
+      '.mantine-InputWrapper-root:has(.mantine-InputWrapper-label:text("Supervisor(s)"))',
     )
-    await expect(advisorWrapper.locator('.mantine-Pill-root').first()).toBeVisible({
+    await expect(supervisorWrapper.locator('.mantine-Pill-root').first()).toBeVisible({
       timeout: 10_000,
     })
 
