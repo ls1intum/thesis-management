@@ -95,14 +95,14 @@ const TopicsTable = (props: ITopicOverviewsTableProps) => {
       title: 'Examiner',
       width: 180,
       ellipsis: true,
-      render: (topic) => <AvatarUserList users={topic.supervisors} />,
+      render: (topic) => <AvatarUserList users={topic.examiners} />,
     },
     advisor: {
       accessor: 'advisor',
       title: 'Supervisor(s)',
       width: 180,
       ellipsis: true,
-      render: (topic) => <AvatarUserList users={topic.advisors} />,
+      render: (topic) => <AvatarUserList users={topic.supervisors} />,
     },
     researchGroup: {
       accessor: 'researchGroup.name',

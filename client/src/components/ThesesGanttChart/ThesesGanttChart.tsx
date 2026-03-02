@@ -69,7 +69,7 @@ const ThesesGanttChart = () => {
         return endDate
       }
 
-      const advisor = (thesis.advisors ?? [])[0]
+      const advisor = (thesis.supervisors ?? [])[0]
       if (!advisor) continue
 
       result.push({

@@ -160,18 +160,6 @@ public class Thesis {
 		return result;
 	}
 
-	public List<User> getAdvisors() {
-		List<User> result = new ArrayList<>();
-
-		for (ThesisRole role : getRoles()) {
-			if (role.getId().getRole() == ThesisRoleName.ADVISOR) {
-				result.add(role.getUser());
-			}
-		}
-
-		return result;
-	}
-
 	public List<User> getSupervisors() {
 		List<User> result = new ArrayList<>();
 
@@ -184,7 +172,19 @@ public class Thesis {
 		return result;
 	}
 
-	public boolean hasSupervisorAccess(User user) {
+	public List<User> getExaminers() {
+		List<User> result = new ArrayList<>();
+
+		for (ThesisRole role : getRoles()) {
+			if (role.getId().getRole() == ThesisRoleName.EXAMINER) {
+				result.add(role.getUser());
+			}
+		}
+
+		return result;
+	}
+
+	public boolean hasExaminerAccess(User user) {
 		if (user == null) {
 			return false;
 		}
@@ -195,7 +195,7 @@ public class Thesis {
 
 		for (ThesisRole role : roles) {
 			if (
-					role.getId().getRole().equals(ThesisRoleName.SUPERVISOR) &&
+					role.getId().getRole().equals(ThesisRoleName.EXAMINER) &&
 							user.hasAnyGroup("supervisor") &&
 							role.getUser().getId().equals(user.getId())
 			) {
@@ -206,18 +206,18 @@ public class Thesis {
 		return false;
 	}
 
-	public boolean hasAdvisorAccess(User user) {
+	public boolean hasSupervisorAccess(User user) {
 		if (user == null) {
 			return false;
 		}
 
-		if (hasSupervisorAccess(user)) {
+		if (hasExaminerAccess(user)) {
 			return true;
 		}
 
 		for (ThesisRole role : roles) {
 			if (
-					role.getId().getRole().equals(ThesisRoleName.ADVISOR) &&
+					role.getId().getRole().equals(ThesisRoleName.SUPERVISOR) &&
 							user.hasAnyGroup("advisor") &&
 							role.getUser().getId().equals(user.getId())
 			) {
@@ -233,7 +233,7 @@ public class Thesis {
 			return false;
 		}
 
-		if (hasAdvisorAccess(user)) {
+		if (hasSupervisorAccess(user)) {
 			return true;
 		}
 

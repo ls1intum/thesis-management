@@ -220,7 +220,7 @@ ON CONFLICT DO NOTHING;
 
 -- ============================================================================
 -- 7. TOPIC ROLES (examiner + supervisor assignments per topic)
---    Server roles: SUPERVISOR = Examiner (UI), ADVISOR = Supervisor (UI)
+--    Server roles: EXAMINER = Examiner (UI), SUPERVISOR = Supervisor (UI)
 -- ============================================================================
 DELETE FROM topic_roles WHERE topic_id IN (
     '00000000-0000-4000-b000-000000000001'::UUID,
@@ -234,53 +234,53 @@ INSERT INTO topic_roles (topic_id, user_id, role, position, assigned_at, assigne
 VALUES
     -- Topic 1 (ASE, open): examiner=supervisor, supervisor=advisor (different persons)
     ('00000000-0000-4000-b000-000000000001'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'EXAMINER', 0,
      NOW(), (SELECT user_id FROM users WHERE university_id = 'supervisor')),
     ('00000000-0000-4000-b000-000000000001'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'advisor'), 'ADVISOR', 0,
+     (SELECT user_id FROM users WHERE university_id = 'advisor'), 'SUPERVISOR', 0,
      NOW(), (SELECT user_id FROM users WHERE university_id = 'supervisor')),
 
     -- Topic 2 (ASE, open): examiner=supervisor, supervisors=advisor+advisor2 (multiple supervisors)
     ('00000000-0000-4000-b000-000000000002'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'EXAMINER', 0,
      NOW(), (SELECT user_id FROM users WHERE university_id = 'supervisor')),
     ('00000000-0000-4000-b000-000000000002'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'advisor'), 'ADVISOR', 0,
+     (SELECT user_id FROM users WHERE university_id = 'advisor'), 'SUPERVISOR', 0,
      NOW(), (SELECT user_id FROM users WHERE university_id = 'advisor')),
     ('00000000-0000-4000-b000-000000000002'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'advisor2'), 'ADVISOR', 1,
+     (SELECT user_id FROM users WHERE university_id = 'advisor2'), 'SUPERVISOR', 1,
      NOW(), (SELECT user_id FROM users WHERE university_id = 'advisor')),
 
     -- Topic 3 (DSA, open): examiner=supervisor2, supervisor=advisor2
     ('00000000-0000-4000-b000-000000000003'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'supervisor2'), 'SUPERVISOR', 0,
+     (SELECT user_id FROM users WHERE university_id = 'supervisor2'), 'EXAMINER', 0,
      NOW(), (SELECT user_id FROM users WHERE university_id = 'supervisor2')),
     ('00000000-0000-4000-b000-000000000003'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'advisor2'), 'ADVISOR', 0,
+     (SELECT user_id FROM users WHERE university_id = 'advisor2'), 'SUPERVISOR', 0,
      NOW(), (SELECT user_id FROM users WHERE university_id = 'supervisor2')),
 
     -- Topic 4 (ASE, draft): examiner AND supervisor = same person (supervisor)
     ('00000000-0000-4000-b000-000000000004'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'EXAMINER', 0,
      NOW(), (SELECT user_id FROM users WHERE university_id = 'supervisor')),
     ('00000000-0000-4000-b000-000000000004'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'ADVISOR', 0,
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
      NOW(), (SELECT user_id FROM users WHERE university_id = 'supervisor')),
 
     -- Topic 5 (DSA, draft): examiner=supervisor2, supervisor=advisor2
     ('00000000-0000-4000-b000-000000000005'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'supervisor2'), 'SUPERVISOR', 0,
+     (SELECT user_id FROM users WHERE university_id = 'supervisor2'), 'EXAMINER', 0,
      NOW(), (SELECT user_id FROM users WHERE university_id = 'supervisor2')),
     ('00000000-0000-4000-b000-000000000005'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'advisor2'), 'ADVISOR', 0,
+     (SELECT user_id FROM users WHERE university_id = 'advisor2'), 'SUPERVISOR', 0,
      NOW(), (SELECT user_id FROM users WHERE university_id = 'supervisor2')),
 
     -- Topic 6 (ASE, closed): examiner=supervisor, supervisor=advisor
     ('00000000-0000-4000-b000-000000000006'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'EXAMINER', 0,
      NOW(), (SELECT user_id FROM users WHERE university_id = 'supervisor')),
     ('00000000-0000-4000-b000-000000000006'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'advisor'), 'ADVISOR', 0,
+     (SELECT user_id FROM users WHERE university_id = 'advisor'), 'SUPERVISOR', 0,
      NOW(), (SELECT user_id FROM users WHERE university_id = 'supervisor'))
 ON CONFLICT DO NOTHING;
 
@@ -517,10 +517,10 @@ VALUES
      (SELECT user_id FROM users WHERE university_id = 'student'), 'STUDENT', 0,
      NOW() - INTERVAL '30 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
     ('00000000-0000-4000-d000-000000000001'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'advisor'), 'ADVISOR', 0,
+     (SELECT user_id FROM users WHERE university_id = 'advisor'), 'SUPERVISOR', 0,
      NOW() - INTERVAL '30 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
     ('00000000-0000-4000-d000-000000000001'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'EXAMINER', 0,
      NOW() - INTERVAL '30 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
 
     -- Thesis 2 (PROPOSAL): student2 + advisor + supervisor
@@ -528,10 +528,10 @@ VALUES
      (SELECT user_id FROM users WHERE university_id = 'student2'), 'STUDENT', 0,
      NOW() - INTERVAL '18 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
     ('00000000-0000-4000-d000-000000000002'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'advisor'), 'ADVISOR', 0,
+     (SELECT user_id FROM users WHERE university_id = 'advisor'), 'SUPERVISOR', 0,
      NOW() - INTERVAL '18 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
     ('00000000-0000-4000-d000-000000000002'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'EXAMINER', 0,
      NOW() - INTERVAL '18 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
 
     -- Thesis 3 (SUBMITTED): student3 + advisor2 + supervisor2
@@ -539,10 +539,10 @@ VALUES
      (SELECT user_id FROM users WHERE university_id = 'student3'), 'STUDENT', 0,
      NOW() - INTERVAL '180 days', (SELECT user_id FROM users WHERE university_id = 'supervisor2')),
     ('00000000-0000-4000-d000-000000000003'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'advisor2'), 'ADVISOR', 0,
+     (SELECT user_id FROM users WHERE university_id = 'advisor2'), 'SUPERVISOR', 0,
      NOW() - INTERVAL '180 days', (SELECT user_id FROM users WHERE university_id = 'supervisor2')),
     ('00000000-0000-4000-d000-000000000003'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'supervisor2'), 'SUPERVISOR', 0,
+     (SELECT user_id FROM users WHERE university_id = 'supervisor2'), 'EXAMINER', 0,
      NOW() - INTERVAL '180 days', (SELECT user_id FROM users WHERE university_id = 'supervisor2')),
 
     -- Thesis 4 (FINISHED): student + advisor + supervisor (old thesis)
@@ -550,10 +550,10 @@ VALUES
      (SELECT user_id FROM users WHERE university_id = 'student'), 'STUDENT', 0,
      NOW() - INTERVAL '365 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
     ('00000000-0000-4000-d000-000000000004'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'advisor'), 'ADVISOR', 0,
+     (SELECT user_id FROM users WHERE university_id = 'advisor'), 'SUPERVISOR', 0,
      NOW() - INTERVAL '365 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
     ('00000000-0000-4000-d000-000000000004'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'EXAMINER', 0,
      NOW() - INTERVAL '365 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
 
     -- Thesis 5 (DROPPED_OUT): student5 + advisor2 + supervisor2
@@ -561,10 +561,10 @@ VALUES
      (SELECT user_id FROM users WHERE university_id = 'student5'), 'STUDENT', 0,
      NOW() - INTERVAL '120 days', (SELECT user_id FROM users WHERE university_id = 'supervisor2')),
     ('00000000-0000-4000-d000-000000000005'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'advisor2'), 'ADVISOR', 0,
+     (SELECT user_id FROM users WHERE university_id = 'advisor2'), 'SUPERVISOR', 0,
      NOW() - INTERVAL '120 days', (SELECT user_id FROM users WHERE university_id = 'supervisor2')),
     ('00000000-0000-4000-d000-000000000005'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'supervisor2'), 'SUPERVISOR', 0,
+     (SELECT user_id FROM users WHERE university_id = 'supervisor2'), 'EXAMINER', 0,
      NOW() - INTERVAL '120 days', (SELECT user_id FROM users WHERE university_id = 'supervisor2'))
 ON CONFLICT DO NOTHING;
 
@@ -696,7 +696,7 @@ VALUES
     -- Thesis 1 (WRITING): advisor feedback on progress
     ('00000000-0000-4000-e200-000000000001'::UUID,
      '00000000-0000-4000-d000-000000000001'::UUID,
-     'ADVISOR',
+     'SUPERVISOR',
      'Good progress on the literature review. Please make sure to include the recent work by Chen et al. on automated PR review.',
      NULL, NULL,
      NOW() - INTERVAL '20 days',
@@ -714,7 +714,7 @@ VALUES
     -- Thesis 1 (WRITING): advisor with file attachment
     ('00000000-0000-4000-e200-000000000003'::UUID,
      '00000000-0000-4000-d000-000000000001'::UUID,
-     'ADVISOR',
+     'SUPERVISOR',
      'Here are my detailed comments on your Chapter 3 draft. Please address the points highlighted in the PDF.',
      'chapter3_review_notes.pdf', 'chapter3_review_notes.pdf',
      NOW() - INTERVAL '10 days',
@@ -723,7 +723,7 @@ VALUES
     -- Thesis 2 (PROPOSAL): advisor comment on proposal
     ('00000000-0000-4000-e200-000000000004'::UUID,
      '00000000-0000-4000-d000-000000000002'::UUID,
-     'ADVISOR',
+     'SUPERVISOR',
      'Your proposal looks promising. Please elaborate more on the test selection algorithm and add a timeline for the milestones.',
      NULL, NULL,
      NOW() - INTERVAL '8 days',
@@ -1189,20 +1189,20 @@ VALUES
      (SELECT user_id FROM users WHERE university_id = 'delete_old_thesis'), 'STUDENT', 0,
      NOW() - INTERVAL '2800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
     ('00000000-0000-4000-d000-000000000006'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'advisor'), 'ADVISOR', 0,
+     (SELECT user_id FROM users WHERE university_id = 'advisor'), 'SUPERVISOR', 0,
      NOW() - INTERVAL '2800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
     ('00000000-0000-4000-d000-000000000006'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'EXAMINER', 0,
      NOW() - INTERVAL '2800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
     -- Thesis 7 (recent, under retention): delete_recent_thesis as STUDENT, supervisor + advisor
     ('00000000-0000-4000-d000-000000000007'::UUID,
      (SELECT user_id FROM users WHERE university_id = 'delete_recent_thesis'), 'STUDENT', 0,
      NOW() - INTERVAL '800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
     ('00000000-0000-4000-d000-000000000007'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'advisor'), 'ADVISOR', 0,
+     (SELECT user_id FROM users WHERE university_id = 'advisor'), 'SUPERVISOR', 0,
      NOW() - INTERVAL '800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
     ('00000000-0000-4000-d000-000000000007'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'EXAMINER', 0,
      NOW() - INTERVAL '800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor'))
 ON CONFLICT DO NOTHING;
 
@@ -1270,10 +1270,10 @@ VALUES
      (SELECT user_id FROM users WHERE university_id = 'student2'), 'STUDENT', 0,
      NOW() - INTERVAL '2800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
     ('00000000-0000-4000-d000-000000000008'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'advisor'), 'ADVISOR', 0,
+     (SELECT user_id FROM users WHERE university_id = 'advisor'), 'SUPERVISOR', 0,
      NOW() - INTERVAL '2800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
     ('00000000-0000-4000-d000-000000000008'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'EXAMINER', 0,
      NOW() - INTERVAL '2800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor'))
 ON CONFLICT DO NOTHING;
 
@@ -1421,30 +1421,30 @@ VALUES
      (SELECT user_id FROM users WHERE university_id = 'student3'), 'STUDENT', 0,
      NOW() - INTERVAL '2800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
     ('00000000-0000-4000-d000-000000000010'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'advisor'), 'ADVISOR', 0,
+     (SELECT user_id FROM users WHERE university_id = 'advisor'), 'SUPERVISOR', 0,
      NOW() - INTERVAL '2800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
     ('00000000-0000-4000-d000-000000000010'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'EXAMINER', 0,
      NOW() - INTERVAL '2800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
     -- Thesis 11 roles
     ('00000000-0000-4000-d000-000000000011'::UUID,
      (SELECT user_id FROM users WHERE university_id = 'student4'), 'STUDENT', 0,
      NOW() - INTERVAL '800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
     ('00000000-0000-4000-d000-000000000011'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'advisor'), 'ADVISOR', 0,
+     (SELECT user_id FROM users WHERE university_id = 'advisor'), 'SUPERVISOR', 0,
      NOW() - INTERVAL '800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
     ('00000000-0000-4000-d000-000000000011'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'EXAMINER', 0,
      NOW() - INTERVAL '800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
     -- Thesis 12 roles
     ('00000000-0000-4000-d000-000000000012'::UUID,
      (SELECT user_id FROM users WHERE university_id = 'student5'), 'STUDENT', 0,
      NOW() - INTERVAL '30 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
     ('00000000-0000-4000-d000-000000000012'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'advisor'), 'ADVISOR', 0,
+     (SELECT user_id FROM users WHERE university_id = 'advisor'), 'SUPERVISOR', 0,
      NOW() - INTERVAL '30 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
     ('00000000-0000-4000-d000-000000000012'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'EXAMINER', 0,
      NOW() - INTERVAL '30 days', (SELECT user_id FROM users WHERE university_id = 'supervisor'))
 ON CONFLICT DO NOTHING;
 

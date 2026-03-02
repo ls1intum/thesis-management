@@ -22,8 +22,8 @@ public record ThesisOverviewDto(
 	Instant createdAt,
 	Set<String> keywords,
 	List<MinimalUserDto> students,
-	List<MinimalUserDto> advisors,
 	List<MinimalUserDto> supervisors,
+	List<MinimalUserDto> examiners,
 	MinimalResearchGroupDto researchGroup,
 	List<ThesisDto.ThesisStateChangeDto> states,
 	List<ThesisPresentationOverviewDto> presentations
@@ -55,9 +55,9 @@ public record ThesisOverviewDto(
 
 		List<MinimalUserDto> students = thesis.getStudents().stream()
 			.map(MinimalUserDto::fromUserEntity).toList();
-		List<MinimalUserDto> advisors = thesis.getAdvisors().stream()
-			.map(MinimalUserDto::fromUserEntity).toList();
 		List<MinimalUserDto> supervisors = thesis.getSupervisors().stream()
+			.map(MinimalUserDto::fromUserEntity).toList();
+		List<MinimalUserDto> examiners = thesis.getExaminers().stream()
 			.map(MinimalUserDto::fromUserEntity).toList();
 
 		List<ThesisDto.ThesisStateChangeDto> states = ThesisDto.computeStateChanges(thesis);
@@ -75,8 +75,8 @@ public record ThesisOverviewDto(
 			thesis.getCreatedAt(),
 			thesis.getKeywords(),
 			students,
-			advisors,
 			supervisors,
+			examiners,
 			MinimalResearchGroupDto.fromResearchGroupEntity(thesis.getResearchGroup()),
 			states,
 			presentations

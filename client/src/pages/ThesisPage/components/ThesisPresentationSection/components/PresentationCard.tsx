@@ -46,7 +46,7 @@ import {
 import { useThesisUpdateAction } from '../../../../../providers/ThesisProvider/hooks'
 import { doRequest } from '../../../../../requests/request'
 import { ApiError } from '../../../../../requests/handler'
-import { hasAdvisorAccess } from '../../../../../utils/thesis'
+import { hasSupervisorAccess } from '../../../../../utils/thesis'
 import { useUser } from '../../../../../hooks/authentication'
 import { useState } from 'react'
 import ReplacePresentationModal from '../../../../../components/PresentationsTable/components/ReplacePresentationModal/ReplacePresentationModal'
@@ -283,7 +283,7 @@ const PresentationCard = ({
                   </Menu.Item>
                   {'advisors' in thesis &&
                     'supervisors' in thesis &&
-                    hasAdvisorAccess(thesis, user) && (
+                    hasSupervisorAccess(thesis, user) && (
                       <Menu.Item
                         onClick={() => {
                           setOpenDeleteModal(true)

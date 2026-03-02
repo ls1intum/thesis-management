@@ -8,8 +8,8 @@ public record CreateThesisPayload(
 		String thesisType,
 		String language,
 		List<UUID> studentIds,
-		List<UUID> advisorIds,
 		List<UUID> supervisorIds,
+		List<UUID> examinerIds,
 		UUID researchGroupId
 ) {
 }

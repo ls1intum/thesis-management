@@ -39,7 +39,7 @@ const ThesisStudentInfoSection = () => {
     }
   }, 'Credits updated successfully')
 
-  if (!access.advisor) {
+  if (!access.supervisor) {
     return null
   }
 
@@ -48,7 +48,7 @@ const ThesisStudentInfoSection = () => {
       type: 'student',
       data: row,
     })),
-    ...(thesis.advisors ?? []).map((row) => ({
+    ...(thesis.supervisors ?? []).map((row) => ({
       type: 'advisor',
       data: row,
     })),

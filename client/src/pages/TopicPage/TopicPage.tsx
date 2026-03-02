@@ -35,10 +35,8 @@ const TopicPage = () => {
   const checkIfUserIsSupervisorOrAdvisor = () => {
     if (!user) return false
     const userId = user.userId
-    const isSupervisor = (topic.supervisors ?? []).some(
-      (supervisor) => supervisor.userId === userId,
-    )
-    const isAdvisor = (topic.advisors ?? []).some((advisor) => advisor.userId === userId)
+    const isSupervisor = (topic.examiners ?? []).some((supervisor) => supervisor.userId === userId)
+    const isAdvisor = (topic.supervisors ?? []).some((advisor) => advisor.userId === userId)
     return isSupervisor || isAdvisor
   }
 

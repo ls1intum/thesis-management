@@ -130,7 +130,7 @@ const ThesisWritingSection = () => {
                             aspectRatio={16 / 10}
                             actionButton={
                               ((access.student && thesis.state === ThesisState.WRITING) ||
-                                access.advisor) &&
+                                access.supervisor) &&
                               !isThesisClosed(thesis) ? (
                                 <UploadFileButton
                                   maxSize={25 * 1024 * 1024}
@@ -216,7 +216,7 @@ const ThesisWritingSection = () => {
                                       </AuthenticatedFileDownloadButton>
                                     )}
                                     {((access.student && thesis.state === ThesisState.WRITING) ||
-                                      access.advisor) &&
+                                      access.supervisor) &&
                                       !isThesisClosed(thesis) && (
                                         <UploadFileButton
                                           onUpload={(file) => onFileUpload(key, file)}
@@ -256,7 +256,7 @@ const ThesisWritingSection = () => {
                           uploadedBy: file.uploadedBy,
                           uploadedAt: file.uploadedAt,
                           onDelete:
-                            access.advisor && !isThesisClosed(thesis)
+                            access.supervisor && !isThesisClosed(thesis)
                               ? async () => {
                                   const response = await doRequest<IThesis>(
                                     `/v2/theses/${thesis.thesisId}/files/${file.fileId}`,

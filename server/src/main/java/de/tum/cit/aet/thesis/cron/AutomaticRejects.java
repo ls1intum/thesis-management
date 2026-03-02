@@ -81,7 +81,7 @@ public class AutomaticRejects {
 					applicationService.getListOfApplicationsThatWillBeRejected(topic, settings.getRejectDuration(), referenceDate);
 				if (!topicRejectsInNextSevenDays.isEmpty()) {
 					topic.getRoles().forEach(role -> {
-						if (role.getId().getRole() == ThesisRoleName.ADVISOR || role.getId().getRole() == ThesisRoleName.SUPERVISOR) {
+						if (role.getId().getRole() == ThesisRoleName.SUPERVISOR || role.getId().getRole() == ThesisRoleName.EXAMINER) {
 							User loadEntireUser = userService.findById(role.getUser().getId());
 
 							if (!reminderApplicationsByUser.containsKey(role.getUser())) {

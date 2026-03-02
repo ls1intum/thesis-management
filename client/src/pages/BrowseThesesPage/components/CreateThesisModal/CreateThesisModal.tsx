@@ -34,8 +34,8 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
     type: string | null
     language: string | null
     students: string[]
-    advisors: string[]
-    supervisors: string[]
+    supervisorIds: string[]
+    examinerIds: string[]
     researchGroupId: string
   }>({
     mode: 'controlled',
@@ -44,8 +44,8 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
       type: null,
       language: getDefaultLanguage(),
       students: [],
-      advisors: [],
-      supervisors: [],
+      supervisorIds: [],
+      examinerIds: [],
       researchGroupId: '',
     },
     validateInputOnBlur: true,
@@ -54,8 +54,8 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
       type: isNotEmpty('Thesis type must not be empty'),
       language: isNotEmpty('Thesis language must not be empty'),
       students: isNotEmptyUserList('student'),
-      advisors: isNotEmptyUserList('advisor'),
-      supervisors: isNotEmptyUserList('supervisor'),
+      supervisorIds: isNotEmptyUserList('supervisor'),
+      examinerIds: isNotEmptyUserList('examiner'),
       researchGroupId: isNotEmpty('Research group must not be empty'),
     },
   })
@@ -82,7 +82,7 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
           if ((res.data.content ?? []).length === 1) {
             form.setValues({
               researchGroupId: (res.data.content ?? [])[0].id,
-              supervisors: [(res.data.content ?? [])[0].head.userId],
+              examinerIds: [(res.data.content ?? [])[0].head.userId],
             })
           }
         } else {
@@ -117,8 +117,8 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
                 thesisType: values.type,
                 language: values.language,
                 studentIds: values.students,
-                advisorIds: values.advisors,
-                supervisorIds: values.supervisors,
+                supervisorIds: values.supervisorIds,
+                examinerIds: values.examinerIds,
                 researchGroupId: values.researchGroupId,
               },
             })
@@ -165,14 +165,14 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
             label='Supervisor(s)'
             required={true}
             groups={['advisor', 'supervisor']}
-            {...form.getInputProps('advisors')}
+            {...form.getInputProps('supervisorIds')}
           />
           <UserMultiSelect
             label='Examiner'
             required={true}
             groups={['supervisor']}
             maxValues={1}
-            {...form.getInputProps('supervisors')}
+            {...form.getInputProps('examinerIds')}
           />
           <Select
             label='Research Group'

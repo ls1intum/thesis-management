@@ -18,7 +18,7 @@ import { useThesisUpdateAction } from '../../providers/ThesisProvider/hooks'
 import { doRequest } from '../../requests/request'
 import { ApiError } from '../../requests/handler'
 import { useUser } from '../../hooks/authentication'
-import { hasAdvisorAccess, hasStudentAccess, isThesisClosed } from '../../utils/thesis'
+import { hasSupervisorAccess, hasStudentAccess, isThesisClosed } from '../../utils/thesis'
 
 type PresentationColumn =
   | 'state'
@@ -186,7 +186,7 @@ const PresentationsTable = <T extends IThesisPresentation | IPublishedPresentati
           <Center onClick={(e) => e.stopPropagation()}>
             {hasStudentAccess(thesis, user) && (
               <Group gap='xs'>
-                {presentation.state === 'DRAFTED' && hasAdvisorAccess(thesis, user) && (
+                {presentation.state === 'DRAFTED' && hasSupervisorAccess(thesis, user) && (
                   <Button
                     loading={loading}
                     size='xs'
@@ -195,7 +195,7 @@ const PresentationsTable = <T extends IThesisPresentation | IPublishedPresentati
                     <Check />
                   </Button>
                 )}
-                {(presentation.state === 'DRAFTED' || hasAdvisorAccess(thesis, user)) && (
+                {(presentation.state === 'DRAFTED' || hasSupervisorAccess(thesis, user)) && (
                   <Button
                     loading={loading}
                     size='xs'
@@ -204,7 +204,7 @@ const PresentationsTable = <T extends IThesisPresentation | IPublishedPresentati
                     <Pencil />
                   </Button>
                 )}
-                {(presentation.state === 'DRAFTED' || hasAdvisorAccess(thesis, user)) && (
+                {(presentation.state === 'DRAFTED' || hasSupervisorAccess(thesis, user)) && (
                   <Button
                     loading={loading}
                     size='xs'

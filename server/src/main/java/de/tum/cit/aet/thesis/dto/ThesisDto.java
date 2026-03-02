@@ -50,8 +50,8 @@ public record ThesisDto(
 	List<ThesisPresentationDto> presentations,
 
 	List<LightUserDto> students,
-	List<LightUserDto> advisors,
 	List<LightUserDto> supervisors,
+	List<LightUserDto> examiners,
 
 	List<ThesisStateChangeDto> states,
 
@@ -79,7 +79,7 @@ public static List<ThesisStateChangeDto> computeStateChanges(Thesis thesis) {
 	return states;
 }
 
-public static ThesisDto fromThesisEntity(Thesis thesis, boolean advisorAccess,
+public static ThesisDto fromThesisEntity(Thesis thesis, boolean supervisorAccess,
 	boolean studentAccess) {
 	if (thesis == null) {
 	return null;
@@ -87,9 +87,9 @@ public static ThesisDto fromThesisEntity(Thesis thesis, boolean advisorAccess,
 
 	List<LightUserDto> students = thesis.getStudents().stream().map(LightUserDto::fromUserEntity)
 		.toList();
-	List<LightUserDto> advisors = thesis.getAdvisors().stream().map(LightUserDto::fromUserEntity)
+	List<LightUserDto> supervisors = thesis.getSupervisors().stream().map(LightUserDto::fromUserEntity)
 		.toList();
-	List<LightUserDto> supervisors = thesis.getSupervisors().stream()
+	List<LightUserDto> examiners = thesis.getExaminers().stream()
 		.map(LightUserDto::fromUserEntity).toList();
 
 	List<ThesisStateChangeDto> states = computeStateChanges(thesis);
@@ -114,7 +114,7 @@ public static ThesisDto fromThesisEntity(Thesis thesis, boolean advisorAccess,
 		thesis.getEndDate(),
 		thesis.getCreatedAt(),
 		LightResearchGroupDto.fromResearchGroupEntity(thesis.getResearchGroup()),
-		advisorAccess && !assessments.isEmpty()
+		supervisorAccess && !assessments.isEmpty()
 			? ThesisDto.ThesisAssessmentDto.fromAssessmentEntity(assessments.getFirst()) : null,
 		proposals.stream().map(ThesisProposalDto::fromProposalEntity).toList(),
 		thesis.getFeedback().stream().map(ThesisFeedbackDto::fromThesisFeedbackEntity).toList(),
@@ -122,8 +122,8 @@ public static ThesisDto fromThesisEntity(Thesis thesis, boolean advisorAccess,
 		studentAccess ? ThesisGradeDto.fromThesisEntity(thesis) : null,
 		presentations.stream().map(ThesisPresentationDto::fromPresentationEntity).toList(),
 		students,
-		advisors,
 		supervisors,
+		examiners,
 		states,
 		thesis.getAnonymizedAt()
 	);

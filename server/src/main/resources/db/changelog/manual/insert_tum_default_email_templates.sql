@@ -384,8 +384,8 @@ Please contact your advisor or supervisor if you think that this was a mistake.
 
 <p th:inline="text">
 <strong>Title</strong>: [[${thesis.title}]]<br />
+<strong>Examiner</strong>: [[${thesis.examiners}]]<br />
 <strong>Supervisor</strong>: [[${thesis.supervisors}]]<br />
-<strong>Advisor</strong>: [[${thesis.advisors}]]<br />
 <strong>Student</strong>: [[${thesis.students}]]<br />
 </p>
 
@@ -394,7 +394,7 @@ The next step is that you write a proposal and submit it on <a target="_blank" r
 </p>', 'New thesis was created and assigned to a student'), ('THESIS_FINAL_GRADE', 'Final Grade available for Thesis', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">
-[[${thesis.supervisors}]] added the final grade to your thesis "[[${thesis.title}]]"
+[[${thesis.examiners}]] added the final grade to your thesis "[[${thesis.title}]]"
 </p>
 
 <p th:inline="text">
@@ -524,9 +524,9 @@ The next step is to write an assessment about the thesis.
 <div style="text-align: center;font-size: 10px">
     Manage your notification settings <a th:href="${config.clientHost + ''/settings/notifications''}">here</a>
 </div>
-<br/><br/>', 'Presentation was updated'), ('THESIS_PRESENTATION_INVITATION', 'Thesis Presentation Invitation', '<h2 style="text-align: center;">INVITATION</h2><p style="text-align: center;">As part of their [[${thesis.type}]]''s thesis<br><strong>[[${thesis.students}]]</strong><br>will give their [[${presentation.type}]] presentation on<br><strong>[[${presentation.scheduledAt}]]</strong><br>online at [[${presentation.streamUrl}]]<br>and&nbsp;onsite in <strong>[[${presentation.location}]]</strong><br><br>Title:<br>[[${thesis.title}]]<br><br>Supervisor: [[${thesis.supervisors}]]<br>Advisor(s): [[${thesis.advisors}]]<br><br>The presentation will be in [[${presentation.language}]]. Everybody is cordially invited to attend.</p><p><strong>Abstract</strong><br><span th:utext="${thesis.abstractText}"></span></p><p>Full Details: [[${presentationUrl}]]</p><p><hr/>
+<br/><br/>', 'Presentation was updated'), ('THESIS_PRESENTATION_INVITATION', 'Thesis Presentation Invitation', '<h2 style="text-align: center;">INVITATION</h2><p style="text-align: center;">As part of their [[${thesis.type}]]''s thesis<br><strong>[[${thesis.students}]]</strong><br>will give their [[${presentation.type}]] presentation on<br><strong>[[${presentation.scheduledAt}]]</strong><br>online at [[${presentation.streamUrl}]]<br>and&nbsp;onsite in <strong>[[${presentation.location}]]</strong><br><br>Title:<br>[[${thesis.title}]]<br><br>Examiner: [[${thesis.examiners}]]<br>Supervisor(s): [[${thesis.supervisors}]]<br><br>The presentation will be in [[${presentation.language}]]. Everybody is cordially invited to attend.</p><p><strong>Abstract</strong><br><span th:utext="${thesis.abstractText}"></span></p><p>Full Details: [[${presentationUrl}]]</p><p><hr/>
 </hr><div style="text-align: center;font-size: 10px"> Manage your notification settings <a th:href="${config.clientHost + ''/settings/notifications''}">here</a></div>', 'Public Presentation Invitation'), ('THESIS_PRESENTATION_INVITATION_CANCELLED', 'Thesis Presentation Cancelled', '<p>Dear [[${recipient.firstName}]],</p><p>The [[${thesis.type}]] thesis presentation of <strong>[[${thesis.students}]]</strong> scheduled at [[${presentation.scheduledAt}]] was cancelled.</p><p><hr/>
-</hr><div style="text-align: center;font-size: 10px"> Manage your notification settings <a th:href="${config.clientHost + ''/settings/notifications''}">here</a></div>', 'Public Presentation was deleted'), ('THESIS_PRESENTATION_INVITATION_UPDATED', 'Thesis Presentation Updated', '<h2 style="text-align: center;">INVITATION</h2><p style="text-align: center;">As part of their [[${thesis.type}]]''s thesis<br><strong>[[${thesis.students}]]</strong><br>will give their [[${presentation.type}]] presentation on<br><strong>[[${presentation.scheduledAt}]]</strong><br>online at [[${presentation.streamUrl}]]<br>and&nbsp;onsite in <strong>[[${presentation.location}]]</strong><br><br>Title:<br>[[${thesis.title}]]</p><p style="text-align: center;"></p><p style="text-align: center;">Supervisor: [[${thesis.supervisors}]]<br>Advisor(s): [[${thesis.advisors}]]<br></p><p style="text-align: center;">The presentation will be in [[${presentation.language}]]. Everybody is cordially invited to attend.</p><p><strong>Abstract</strong><br><span th:utext="${thesis.abstractText}"></span></p><p>Full Details: [[${presentationUrl}]]</p><p><hr/>
+</hr><div style="text-align: center;font-size: 10px"> Manage your notification settings <a th:href="${config.clientHost + ''/settings/notifications''}">here</a></div>', 'Public Presentation was deleted'), ('THESIS_PRESENTATION_INVITATION_UPDATED', 'Thesis Presentation Updated', '<h2 style="text-align: center;">INVITATION</h2><p style="text-align: center;">As part of their [[${thesis.type}]]''s thesis<br><strong>[[${thesis.students}]]</strong><br>will give their [[${presentation.type}]] presentation on<br><strong>[[${presentation.scheduledAt}]]</strong><br>online at [[${presentation.streamUrl}]]<br>and&nbsp;onsite in <strong>[[${presentation.location}]]</strong><br><br>Title:<br>[[${thesis.title}]]</p><p style="text-align: center;"></p><p style="text-align: center;">Examiner: [[${thesis.examiners}]]<br>Supervisor(s): [[${thesis.supervisors}]]<br></p><p style="text-align: center;">The presentation will be in [[${presentation.language}]]. Everybody is cordially invited to attend.</p><p><strong>Abstract</strong><br><span th:utext="${thesis.abstractText}"></span></p><p>Full Details: [[${presentationUrl}]]</p><p><hr/>
 </hr><div style="text-align: center;font-size: 10px"> Manage your notification settings <a th:href="${config.clientHost + ''/settings/notifications''}">here</a></div>', 'Public Presentation was updated'), ('THESIS_PROPOSAL_ACCEPTED', 'Thesis Proposal Accepted', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">

@@ -267,8 +267,8 @@ class TopicControllerTest extends BaseIntegrationTest {
 		assertThat(firstTopic.has("topicId")).isTrue();
 		assertThat(firstTopic.has("title")).isTrue();
 		assertThat(firstTopic.has("state")).isTrue();
-		assertThat(firstTopic.has("advisors")).isTrue();
 		assertThat(firstTopic.has("supervisors")).isTrue();
+		assertThat(firstTopic.has("examiners")).isTrue();
 
 		// Fields excluded from overview (only in detail TopicDto)
 		assertThat(firstTopic.has("problemStatement")).isFalse();

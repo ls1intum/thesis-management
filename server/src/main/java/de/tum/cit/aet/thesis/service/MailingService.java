@@ -216,8 +216,8 @@ public class MailingService {
 	 * @param thesis the thesis created from the application
 	 */
 	public void sendApplicationAcceptanceEmail(Application application, Thesis thesis) {
-		User advisor = thesis.getAdvisors().getFirst();
-		User supervisor = thesis.getSupervisors().getFirst();
+		User advisor = thesis.getSupervisors().getFirst();
+		User supervisor = thesis.getExaminers().getFirst();
 
 		String templateCase = advisor.getId().equals(supervisor.getId()) ? "APPLICATION_ACCEPTED_NO_ADVISOR" :
 				"APPLICATION_ACCEPTED";
@@ -338,7 +338,7 @@ public class MailingService {
 				templateCase,
 				"en");
 
-		User advisor = slot.getInterviewProcess().getTopic().getAdvisors().getFirst();
+		User advisor = slot.getInterviewProcess().getTopic().getSupervisors().getFirst();
 
 		MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(), emailTemplate.getBodyHtml());
 		mailBuilder
@@ -406,7 +406,7 @@ public class MailingService {
 		MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(), emailTemplate.getBodyHtml());
 		mailBuilder
 				.addPrimarySender(proposal.getCreatedBy())
-				.sendToThesisAdvisors(proposal.getThesis())
+				.sendToThesisSupervisors(proposal.getThesis())
 				.addNotificationName(NOTIFICATION_NAME_START + proposal.getThesis().getId())
 				.fillThesisProposalPlaceholders(proposal)
 				.addStoredAttachment(proposal.getProposalFilename(), getThesisFilename(proposal.getThesis(), "Proposal", proposal.getProposalFilename()))
@@ -473,8 +473,8 @@ public class MailingService {
 				"en");
 		MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(), emailTemplate.getBodyHtml());
 
-		if (comment.getType() == ThesisCommentType.ADVISOR) {
-			mailBuilder.sendToThesisAdvisors(comment.getThesis());
+		if (comment.getType() == ThesisCommentType.SUPERVISOR) {
+			mailBuilder.sendToThesisSupervisors(comment.getThesis());
 		} else {
 			mailBuilder.sendToThesisStudents(comment.getThesis());
 		}
@@ -597,7 +597,7 @@ public class MailingService {
 		MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(),
 				emailTemplate.getBodyHtml());
 		mailBuilder
-				.sendToThesisAdvisors(thesis)
+				.sendToThesisSupervisors(thesis)
 				.addNotificationName(NOTIFICATION_NAME_START + thesis.getId())
 				.fillThesisPlaceholders(thesis)
 				//.addStoredAttachment(thesis.getFinalThesisFilename(), getThesisFilename(thesis, "File", thesis.getFinalThesisFilename()))
@@ -619,7 +619,7 @@ public class MailingService {
 				emailTemplate.getBodyHtml());
 		mailBuilder
 				.addPrimarySender(assessment.getCreatedBy())
-				.sendToThesisSupervisors(assessment.getThesis())
+				.sendToThesisExaminers(assessment.getThesis())
 				.addNotificationName(NOTIFICATION_NAME_START + assessment.getThesis().getId())
 				.fillThesisAssessmentPlaceholders(assessment)
 				.send(javaMailSender, uploadService);

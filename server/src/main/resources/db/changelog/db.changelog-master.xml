@@ -35,6 +35,7 @@
     <include file="changes/30_user_deletion.sql" relativeToChangelogFile="true" />
     <include file="changes/31_include_application_data_in_email.sql" relativeToChangelogFile="true" />
     <include file="changes/32_thesis_anonymization.sql" relativeToChangelogFile="true" />
+    <include file="changes/33_rename_thesis_roles.sql" relativeToChangelogFile="true" />
 
     <!-- Dev/test seed data — must be last so it can reference all columns from prior migrations -->
     <include file="changes/23_seed_dev_test_data.xml" relativeToChangelogFile="true" />

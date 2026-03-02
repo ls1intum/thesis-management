@@ -181,7 +181,7 @@ public class ThesisService {
 		} else if (currentUserProvider().isAdmin()) {
 			userId = null; // Admins can see all theses
 			visibilitySet = null;
-		} else if ((currentUserProvider().isAdvisor() || currentUserProvider().isSupervisor()) && fetchAll) {
+		} else if ((currentUserProvider().isSupervisor() || currentUserProvider().isExaminer()) && fetchAll) {
 			researchGroupIdsFilter = new HashSet<>(Arrays.asList(currentUserProvider().getResearchGroupOrThrow().getId()));
 			visibilitySet = Set.of(ThesisVisibility.PUBLIC, ThesisVisibility.STUDENT, ThesisVisibility.INTERNAL);
 		} else if (currentUserProvider().isStudent() && fetchAll) {
@@ -207,8 +207,8 @@ public class ThesisService {
 			String thesisTitle,
 			String thesisType,
 			String language,
+			List<UUID> examinerIds,
 			List<UUID> supervisorIds,
-			List<UUID> advisorIds,
 			List<UUID> studentIds,
 			Application application,
 			boolean notifyUser,
@@ -237,7 +237,7 @@ public class ThesisService {
 
 		thesis = thesisRepository.save(thesis);
 
-		assignThesisRoles(thesis, supervisorIds, advisorIds, studentIds);
+		assignThesisRoles(thesis, examinerIds, supervisorIds, studentIds);
 		saveStateChange(thesis, nextState);
 
 		if (notifyUser) {
@@ -288,8 +288,8 @@ public class ThesisService {
 			Instant startDate,
 			Instant endDate,
 			List<UUID> studentIds,
-			List<UUID> advisorIds,
 			List<UUID> supervisorIds,
+			List<UUID> examinerIds,
 			List<ThesisStatePayload> states,
 			UUID researchGroupId
 	) {
@@ -311,7 +311,7 @@ public class ThesisService {
 		thesis.setStartDate(startDate);
 		thesis.setEndDate(endDate);
 
-		assignThesisRoles(thesis, supervisorIds, advisorIds, studentIds);
+		assignThesisRoles(thesis, examinerIds, supervisorIds, studentIds);
 
 		for (ThesisStatePayload state : states) {
 			saveStateChange(thesis, state.state(), state.changedAt());
@@ -646,16 +646,16 @@ public class ThesisService {
 		ThesisPresentation presentation = thesis.getPresentations().getFirst();
 
 		String students = String.join(", ", thesis.getStudents().stream().map(student -> student.getFirstName() + " " + student.getLastName()).toList());
-		String advisors = String.join(", ", thesis.getAdvisors().stream().map(advisor -> advisor.getFirstName() + " " + advisor.getLastName()).toList());
 		String supervisors = String.join(", ", thesis.getSupervisors().stream().map(supervisor -> supervisor.getFirstName() + " " + supervisor.getLastName()).toList());
+		String examiners = String.join(", ", thesis.getExaminers().stream().map(examiner -> examiner.getFirstName() + " " + examiner.getLastName()).toList());
 
 		PDFBuilder builder = new PDFBuilder("Assessment of \"" + thesis.getTitle() + "\"");
 
 		builder
 				.addData("Thesis Type", DataFormatter.formatConstantName(thesis.getType()))
 				.addData("Student", students)
-				.addData("Advisor", advisors)
 				.addData("Supervisor", supervisors)
+				.addData("Examiner", examiners)
 				.addData("", "");
 
 		for (var stateChange : thesis.getStates()) {
@@ -759,25 +759,25 @@ public class ThesisService {
 
 	private void assignThesisRoles(
 			Thesis thesis,
+			List<UUID> examinerIds,
 			List<UUID> supervisorIds,
-			List<UUID> advisorIds,
 			List<UUID> studentIds
 	) {
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+		List<User> examiners = userRepository.findAllById(examinerIds);
 		List<User> supervisors = userRepository.findAllById(supervisorIds);
-		List<User> advisors = userRepository.findAllById(advisorIds);
 		List<User> students = userRepository.findAllById(studentIds);
 
+		examiners.sort(Comparator.comparing(user -> examinerIds.indexOf(user.getId())));
 		supervisors.sort(Comparator.comparing(user -> supervisorIds.indexOf(user.getId())));
-		advisors.sort(Comparator.comparing(user -> advisorIds.indexOf(user.getId())));
 		students.sort(Comparator.comparing(user -> studentIds.indexOf(user.getId())));
+
+		if (examiners.isEmpty() || examiners.size() != examinerIds.size()) {
+			throw new ResourceInvalidParametersException("No examiners selected or examiners not found");
+		}
 
 		if (supervisors.isEmpty() || supervisors.size() != supervisorIds.size()) {
 			throw new ResourceInvalidParametersException("No supervisors selected or supervisors not found");
-		}
-
-		if (advisors.isEmpty() || advisors.size() != advisorIds.size()) {
-			throw new ResourceInvalidParametersException("No advisors selected or advisors not found");
 		}
 
 		if (students.isEmpty() || students.size() != studentIds.size()) {
@@ -787,24 +787,24 @@ public class ThesisService {
 		thesisRoleRepository.deleteByThesisId(thesis.getId());
 		thesis.setRoles(new ArrayList<>());
 
+		for (int i = 0; i < examiners.size(); i++) {
+			User examiner = examiners.get(i);
+
+			if (!examiner.hasAnyGroup("supervisor")) {
+				throw new ResourceInvalidParametersException("User is not an examiner");
+			}
+
+			saveThesisRole(thesis, examiner, ThesisRoleName.EXAMINER, i);
+		}
+
 		for (int i = 0; i < supervisors.size(); i++) {
 			User supervisor = supervisors.get(i);
 
-			if (!supervisor.hasAnyGroup("supervisor")) {
+			if (!supervisor.hasAnyGroup("advisor", "supervisor")) {
 				throw new ResourceInvalidParametersException("User is not a supervisor");
 			}
 
 			saveThesisRole(thesis, supervisor, ThesisRoleName.SUPERVISOR, i);
-		}
-
-		for (int i = 0; i < advisors.size(); i++) {
-			User advisor = advisors.get(i);
-
-			if (!advisor.hasAnyGroup("advisor", "supervisor")) {
-				throw new ResourceInvalidParametersException("User is not an advisor");
-			}
-
-			saveThesisRole(thesis, advisor, ThesisRoleName.ADVISOR, i);
 		}
 
 		for (int i = 0; i < students.size(); i++) {

@@ -468,8 +468,8 @@ class MailingServiceIntegrationTest extends BaseIntegrationTest {
 			TestUser student = createRandomTestUser(List.of("student"));
 			String studentAuth = generateTestAuthenticationHeader(student.universityId(), List.of("student"));
 
-			TestUser advisor = createRandomTestUser(List.of("supervisor", "advisor"));
-			UUID researchGroupId = createTestResearchGroup("Accept Email Group", advisor.universityId());
+			TestUser supervisor = createRandomTestUser(List.of("supervisor", "advisor"));
+			UUID researchGroupId = createTestResearchGroup("Accept Email Group", supervisor.universityId());
 
 			CreateApplicationPayload appPayload = new CreateApplicationPayload(
 					null, "Accept Email Thesis", "MASTER", Instant.now(), "Motivation", researchGroupId
@@ -488,8 +488,8 @@ class MailingServiceIntegrationTest extends BaseIntegrationTest {
 
 			AcceptApplicationPayload acceptPayload = new AcceptApplicationPayload(
 					"Accept Email Thesis", "MASTER", "ENGLISH",
-					List.of(advisor.userId()),
-					List.of(advisor.userId()),
+					List.of(supervisor.userId()),
+					List.of(supervisor.userId()),
 					true, false
 			);
 

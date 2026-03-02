@@ -612,14 +612,14 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 		@Test
 		void acceptApplication_Success() throws Exception {
 			UUID applicationId = createTestApplication(createRandomAdminAuthentication(), "Accept Application");
-			TestUser advisor = createTestUser("advisor-accept", List.of("advisor"));
-			TestUser supervisor = createTestUser("supervisor-accept", List.of("supervisor"));
+			TestUser supervisor = createTestUser("advisor-accept", List.of("advisor"));
+			TestUser examiner = createTestUser("supervisor-accept", List.of("supervisor"));
 			createTestEmailTemplate("APPLICATION_ACCEPTED");
 			createTestEmailTemplate("THESIS_CREATED");
 
 			AcceptApplicationPayload payload = new AcceptApplicationPayload(
 					"Final Thesis Title", "MASTER", "ENGLISH",
-					List.of(advisor.userId()), List.of(supervisor.userId()),
+					List.of(supervisor.userId()), List.of(examiner.userId()),
 					true, true
 			);
 
@@ -648,13 +648,13 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 		@Test
 		void acceptApplication_AlreadyAccepted_ReturnsBadRequest() throws Exception {
 			UUID applicationId = createTestApplication(createRandomAdminAuthentication(), "Accept Application");
-			TestUser advisor = createTestUser("advisor-accept2", List.of("advisor"));
-			TestUser supervisor = createTestUser("supervisor-accept2", List.of("supervisor"));
+			TestUser supervisor = createTestUser("advisor-accept2", List.of("advisor"));
+			TestUser examiner = createTestUser("supervisor-accept2", List.of("supervisor"));
 			createTestEmailTemplate("APPLICATION_ACCEPTED");
 
 			AcceptApplicationPayload payload = new AcceptApplicationPayload(
 					"Final Thesis", "MASTER", "ENGLISH",
-					List.of(advisor.userId()), List.of(supervisor.userId()),
+					List.of(supervisor.userId()), List.of(examiner.userId()),
 					false, false
 			);
 
@@ -724,12 +724,12 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 			UUID appId2 = UUID.fromString(objectMapper.readTree(response2).get("applicationId").asString());
 
-			TestUser advisor = createTestUser("advisor-close", List.of("advisor"));
-			TestUser supervisor = createTestUser("supervisor-close", List.of("supervisor"));
+			TestUser supervisor = createTestUser("advisor-close", List.of("advisor"));
+			TestUser examiner = createTestUser("supervisor-close", List.of("supervisor"));
 
 			AcceptApplicationPayload acceptPayload = new AcceptApplicationPayload(
 					"Accepted Thesis", "MASTER", "ENGLISH",
-					List.of(advisor.userId()), List.of(supervisor.userId()),
+					List.of(supervisor.userId()), List.of(examiner.userId()),
 					true, true  // notifyUser=true, closeTopic=true
 			);
 
@@ -761,8 +761,8 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 			TestUser student = createRandomTestUser(List.of("student"));
 			String studentAuth = generateTestAuthenticationHeader(student.universityId(), List.of("student"));
 
-			TestUser advisor = createRandomTestUser(List.of("supervisor", "advisor"));
-			UUID researchGroupId = createTestResearchGroup("Accept No Advisor", advisor.universityId());
+			TestUser supervisor = createRandomTestUser(List.of("supervisor", "advisor"));
+			UUID researchGroupId = createTestResearchGroup("Accept No Advisor", supervisor.universityId());
 
 			CreateApplicationPayload appPayload = new CreateApplicationPayload(
 					null, "No Advisor Thesis", "MASTER", Instant.now(), "Motivation", researchGroupId
@@ -782,8 +782,8 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 			// Same user as both advisor and supervisor triggers APPLICATION_ACCEPTED_NO_ADVISOR template
 			AcceptApplicationPayload acceptPayload = new AcceptApplicationPayload(
 					"No Advisor Thesis", "MASTER", "ENGLISH",
-					List.of(advisor.userId()),
-					List.of(advisor.userId()),
+					List.of(supervisor.userId()),
+					List.of(supervisor.userId()),
 					true, false
 			);
 
@@ -800,13 +800,13 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 		@Test
 		void acceptApplication_VerifyThesisCreated() throws Exception {
 			UUID applicationId = createTestApplication(createRandomAdminAuthentication(), "Thesis Source Application");
-			TestUser advisor = createTestUser("advisor-verify", List.of("advisor"));
-			TestUser supervisor = createTestUser("supervisor-verify", List.of("supervisor"));
+			TestUser supervisor = createTestUser("advisor-verify", List.of("advisor"));
+			TestUser examiner = createTestUser("supervisor-verify", List.of("supervisor"));
 			createTestEmailTemplate("APPLICATION_ACCEPTED");
 
 			AcceptApplicationPayload payload = new AcceptApplicationPayload(
 					"Created Thesis Title", "BACHELOR", "GERMAN",
-					List.of(advisor.userId()), List.of(supervisor.userId()),
+					List.of(supervisor.userId()), List.of(examiner.userId()),
 					false, false
 			);
 
@@ -1023,13 +1023,13 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 			createTestEmailTemplate("INTERVIEW_INVITATION");
 			createTestEmailTemplate("INTERVIEW_INVITATION_REMINDER");
 
-			TestUser advisor = createRandomTestUser(List.of("supervisor", "advisor"));
-			UUID researchGroupId = createTestResearchGroup("Close IP Group", advisor.universityId());
+			TestUser supervisor = createRandomTestUser(List.of("supervisor", "advisor"));
+			UUID researchGroupId = createTestResearchGroup("Close IP Group", supervisor.universityId());
 
 			ReplaceTopicPayload topicPayload = new ReplaceTopicPayload(
 					"Close IP Topic", Set.of("MASTER"),
 					"PS", "Req", "Goals", "Refs",
-					List.of(advisor.userId()), List.of(advisor.userId()),
+					List.of(supervisor.userId()), List.of(supervisor.userId()),
 					researchGroupId, null, null, false
 			);
 			String topicResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/topics")
@@ -1054,10 +1054,10 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 			UUID applicationId = UUID.fromString(objectMapper.readTree(appResponse).get("applicationId").asString());
 
 			// Create interview process for the topic
-			String advisorAuth = generateTestAuthenticationHeader(advisor.universityId(), List.of("supervisor", "advisor"));
+			String supervisorAuth = generateTestAuthenticationHeader(supervisor.universityId(), List.of("supervisor", "advisor"));
 			CreateInterviewProcessPayload processPayload = new CreateInterviewProcessPayload(topicId, List.of(applicationId));
 			String processResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/interview-process")
-							.header("Authorization", advisorAuth)
+							.header("Authorization", supervisorAuth)
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(objectMapper.writeValueAsString(processPayload)))
 					.andExpect(status().isOk())

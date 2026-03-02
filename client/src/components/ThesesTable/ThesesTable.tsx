@@ -64,17 +64,17 @@ const ThesesTable = (props: IThesesTableProps) => {
       },
     },
     supervisors: {
-      accessor: 'supervisors',
+      accessor: 'examiners',
       title: 'Examiner',
       width: 180,
-      render: (thesis) => <AvatarUserList users={thesis.supervisors ?? []} />,
+      render: (thesis) => <AvatarUserList users={thesis.examiners ?? []} />,
     },
     advisors: {
-      accessor: 'advisors',
+      accessor: 'supervisors',
       title: 'Supervisor(s)',
       ellipsis: true,
       width: 180,
-      render: (thesis) => <AvatarUserList users={thesis.advisors ?? []} />,
+      render: (thesis) => <AvatarUserList users={thesis.supervisors ?? []} />,
     },
     students: {
       accessor: 'students',

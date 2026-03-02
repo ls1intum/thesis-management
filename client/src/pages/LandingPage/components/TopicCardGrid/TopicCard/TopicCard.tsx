@@ -103,7 +103,7 @@ const TopicCard = ({ topic, setOpenTopic }: ITopicCardProps) => {
             <Users></Users>
             <Text size='sm'>Advisor(s)</Text>
           </Group>
-          <AvatarUserList users={topic.advisors ?? []} />
+          <AvatarUserList users={topic.supervisors ?? []} />
         </Stack>
 
         {students.length > 0 && (

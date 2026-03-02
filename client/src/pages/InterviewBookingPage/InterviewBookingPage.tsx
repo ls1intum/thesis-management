@@ -186,13 +186,13 @@ const InterviewBookingPage = () => {
           icon: <BuildingOfficeIcon />,
         },
         {
-          title: 'Advisor(s)',
-          content: <AvatarUserList users={topicInformation.advisors} size='xs' />,
+          title: 'Supervisor(s)',
+          content: <AvatarUserList users={topicInformation.supervisors} size='xs' />,
           icon: <UsersIcon />,
         },
         {
-          title: 'Supervisor(s)',
-          content: <AvatarUserList users={topicInformation.supervisors} size='xs' />,
+          title: 'Examiner(s)',
+          content: <AvatarUserList users={topicInformation.examiners} size='xs' />,
           icon: <UsersIcon />,
         },
       ]}

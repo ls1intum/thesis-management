@@ -52,11 +52,11 @@ public boolean isStudent() {
 	return getUser().hasAnyGroup("student");
 }
 
-public boolean isAdvisor() {
+public boolean isSupervisor() {
 	return getUser().hasAnyGroup("advisor");
 }
 
-public boolean isSupervisor() {
+public boolean isExaminer() {
 	return getUser().hasAnyGroup("supervisor");
 }
 
