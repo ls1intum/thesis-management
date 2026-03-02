@@ -102,7 +102,7 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
         examinerIds:
           (application.topic?.examiners ?? []).length > 0
             ? (application.topic?.examiners ?? []).map((examiner) => examiner.userId)
-            : [application.researchGroup.head.userId],
+            : [application.researchGroup?.head?.userId].filter(Boolean),
         notifyUser: true,
         closeTopic: false,
       })

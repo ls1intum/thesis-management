@@ -41,6 +41,9 @@ test.describe('Topic Workflow - Examiner creates a topic', () => {
     await searchAndSelectMultiSelect(page, 'Supervisor(s)', /supervisor/i)
 
     // Research Group should be pre-filled for single-group examiners
+    const researchGroupInput = page.getByRole('textbox', { name: 'Research Group' })
+    await expect(researchGroupInput).not.toHaveValue('', { timeout: 5_000 })
+
     // Problem Statement (required rich text editor)
     await fillRichTextEditor(
       page,

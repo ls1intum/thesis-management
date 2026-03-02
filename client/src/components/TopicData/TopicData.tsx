@@ -19,13 +19,13 @@ const TopicData = (props: ITopicDataProps) => {
         <Grid.Col span={{ md: 3 }}>
           <LabeledItem
             label={pluralize('Examiner', (topic.examiners ?? []).length)}
-            value={<AvatarUserList users={topic.examiners} />}
+            value={<AvatarUserList users={topic.examiners ?? []} />}
           />
         </Grid.Col>
         <Grid.Col span={{ md: 3 }}>
           <LabeledItem
             label={pluralize('Supervisor', (topic.supervisors ?? []).length)}
-            value={<AvatarUserList users={topic.supervisors} />}
+            value={<AvatarUserList users={topic.supervisors ?? []} />}
           />
         </Grid.Col>
         <Grid.Col span={{ md: 3 }}>

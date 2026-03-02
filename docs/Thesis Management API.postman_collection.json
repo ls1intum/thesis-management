@@ -1953,7 +1953,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"thesisTitle\": \"Test\",\n    \"thesisType\": \"BACHELOR\",\n    \"language\": \"ENGLISCH\",\n    \"visibility\": \"PUBLIC\",\n    \"keywords\": [\n        \"test\"\n    ],\n    \"startDate\": {{$timestamp}},\n    \"endDate\": {{$timestamp}},\n    \"studentIds\": [\n        \"7d015f04-2ee0-4a84-8427-bb5d60380651\"\n    ],\n    \"supervisorIds\": [\n        \"76638673-ca5e-4000-8f5c-3da377bf0eda\"\n    ],\n    \"examinerIds\": [\n        \"76638673-ca5e-4000-8f5c-3da377bf0eda\"\n    ],\n    \"states\": [\n        {\n            \"state\": \"PROPOSAL\",\n            \"changedAt\": {{$timestamp}}\n        }\n    ]\n}",
+									"raw": "{\n    \"thesisTitle\": \"Test\",\n    \"thesisType\": \"BACHELOR\",\n    \"language\": \"ENGLISH\",\n    \"visibility\": \"PUBLIC\",\n    \"keywords\": [\n        \"test\"\n    ],\n    \"startDate\": {{$timestamp}},\n    \"endDate\": {{$timestamp}},\n    \"studentIds\": [\n        \"7d015f04-2ee0-4a84-8427-bb5d60380651\"\n    ],\n    \"supervisorIds\": [\n        \"76638673-ca5e-4000-8f5c-3da377bf0eda\"\n    ],\n    \"examinerIds\": [\n        \"76638673-ca5e-4000-8f5c-3da377bf0eda\"\n    ],\n    \"states\": [\n        {\n            \"state\": \"PROPOSAL\",\n            \"changedAt\": {{$timestamp}}\n        }\n    ]\n}",
 									"options": {
 										"raw": {
 											"headerFamily": "json",
@@ -2019,7 +2019,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"thesisTitle\": \"Test\",\n    \"thesisType\": \"BACHELOR\",\n    \"language\": \"ENGLISCH\",\n    \"visibility\": \"PUBLIC\",\n    \"keywords\": [\n        \"test\"\n    ],\n    \"startDate\": {{$timestamp}},\n    \"endDate\": {{$timestamp}},\n    \"studentIds\": [\n        \"7d015f04-2ee0-4a84-8427-bb5d60380651\"\n    ],\n    \"supervisorIds\": [\n        \"76638673-ca5e-4000-8f5c-3da377bf0eda\"\n    ],\n    \"examinerIds\": [\n        \"76638673-ca5e-4000-8f5c-3da377bf0eda\"\n    ],\n    \"states\": [\n        {\n            \"state\": \"PROPOSAL\",\n            \"changedAt\": {{$timestamp}}\n        }\n    ]\n}",
+									"raw": "{\n    \"thesisTitle\": \"Test\",\n    \"thesisType\": \"BACHELOR\",\n    \"language\": \"ENGLISH\",\n    \"visibility\": \"PUBLIC\",\n    \"keywords\": [\n        \"test\"\n    ],\n    \"startDate\": {{$timestamp}},\n    \"endDate\": {{$timestamp}},\n    \"studentIds\": [\n        \"7d015f04-2ee0-4a84-8427-bb5d60380651\"\n    ],\n    \"supervisorIds\": [\n        \"76638673-ca5e-4000-8f5c-3da377bf0eda\"\n    ],\n    \"examinerIds\": [\n        \"76638673-ca5e-4000-8f5c-3da377bf0eda\"\n    ],\n    \"states\": [\n        {\n            \"state\": \"PROPOSAL\",\n            \"changedAt\": {{$timestamp}}\n        }\n    ]\n}",
 									"options": {
 										"raw": {
 											"headerFamily": "json",
@@ -2151,7 +2151,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"thesisTitle\": \"Test\",\n    \"thesisType\": \"BACHELOR\",\n    \"language\": \"ENGLISCH\",\n    \"studentIds\": [\n        \"7d015f04-2ee0-4a84-8427-bb5d60380651\"\n    ],\n    \"supervisorIds\": [\n        \"76638673-ca5e-4000-8f5c-3da377bf0eda\"\n    ],\n    \"examinerIds\": [\n        \"76638673-ca5e-4000-8f5c-3da377bf0eda\"\n    ]\n}",
+							"raw": "{\n    \"thesisTitle\": \"Test\",\n    \"thesisType\": \"BACHELOR\",\n    \"language\": \"ENGLISH\",\n    \"studentIds\": [\n        \"7d015f04-2ee0-4a84-8427-bb5d60380651\"\n    ],\n    \"supervisorIds\": [\n        \"76638673-ca5e-4000-8f5c-3da377bf0eda\"\n    ],\n    \"examinerIds\": [\n        \"76638673-ca5e-4000-8f5c-3da377bf0eda\"\n    ]\n}",
 							"options": {
 								"raw": {
 									"headerFamily": "json",

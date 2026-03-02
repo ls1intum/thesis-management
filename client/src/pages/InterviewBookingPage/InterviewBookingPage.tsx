@@ -187,12 +187,12 @@ const InterviewBookingPage = () => {
         },
         {
           title: 'Supervisor(s)',
-          content: <AvatarUserList users={topicInformation.supervisors} size='xs' />,
+          content: <AvatarUserList users={topicInformation.supervisors ?? []} size='xs' />,
           icon: <UsersIcon />,
         },
         {
           title: 'Examiner(s)',
-          content: <AvatarUserList users={topicInformation.examiners} size='xs' />,
+          content: <AvatarUserList users={topicInformation.examiners ?? []} size='xs' />,
           icon: <UsersIcon />,
         },
       ]}

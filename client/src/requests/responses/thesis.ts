@@ -125,9 +125,9 @@ export interface IPublishedThesis {
   startDate: string | null
   endDate: string | null
   abstractText?: string
-  students?: ILightUser[]
-  supervisors?: ILightUser[]
-  examiners?: ILightUser[]
+  students?: IMinimalUser[]
+  supervisors?: IMinimalUser[]
+  examiners?: IMinimalUser[]
   researchGroup: ILightResearchGroup
 }
 

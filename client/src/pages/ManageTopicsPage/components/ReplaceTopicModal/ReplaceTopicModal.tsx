@@ -235,7 +235,7 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
               label='Examiner'
               required
               groups={['supervisor']}
-              initialUsers={topic?.examiners}
+              initialUsers={topic?.examiners ?? []}
               maxValues={1}
               {...form.getInputProps('examinerIds')}
             />
@@ -243,7 +243,7 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
               label='Supervisor(s)'
               required
               groups={['advisor', 'supervisor']}
-              initialUsers={topic?.supervisors}
+              initialUsers={topic?.supervisors ?? []}
               {...form.getInputProps('supervisorIds')}
             />
             <Select

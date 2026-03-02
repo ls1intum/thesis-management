@@ -894,7 +894,7 @@ public class ThesisController {
 		Thesis thesis = thesisService.findById(thesisId);
 
 		if (!thesis.hasSupervisorAccess(currentUser)) {
-			throw new AccessDeniedException("You need to be a supervisor of this thesis to add an assessment");
+			throw new AccessDeniedException("You need to be a supervisor of this thesis to download the assessment");
 		}
 
 		return ResponseEntity.ok()
