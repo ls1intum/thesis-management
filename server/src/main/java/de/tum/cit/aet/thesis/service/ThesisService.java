@@ -678,11 +678,11 @@ public class ThesisService {
 		String supervisors = String.join(", ", thesis.getSupervisors().stream()
 				.map(supervisor -> supervisor.getFirstName() + " " + supervisor.getLastName()).toList());
 
-		String assesmentTitle = "Assessment of \"" + thesis.getTitle() + "\"";
+		String assessmentTitle = "Assessment of \"" + thesis.getTitle() + "\"";
 
-		PDFBuilder builder = new PDFBuilder(assesmentTitle, currentUserName);
+		PDFBuilder builder = new PDFBuilder(assessmentTitle, currentUserName);
 
-		builder.addHeaderItem(assesmentTitle + " for: " + students);
+		builder.addHeaderItem(assessmentTitle + " for: " + students);
 		builder.addHeaderItem("Thesis Type: " + DataFormatter.formatConstantName(thesis.getType()));
 
 		builder.addOverviewItem("Thesis Type", DataFormatter.formatConstantName(thesis.getType()))
