@@ -94,7 +94,6 @@ public class ThesisService {
 	 * @param mailingService               the mailing service for sending
 	 *                                     notifications
 	 * @param accessManagementService      the access management service
-	 * @param thesisPresentationService    the thesis presentation service
 	 * @param thesisFeedbackRepository     the thesis feedback repository
 	 * @param thesisFileRepository         the thesis file repository
 	 * @param currentUserProviderProvider  the provider for the current user context
