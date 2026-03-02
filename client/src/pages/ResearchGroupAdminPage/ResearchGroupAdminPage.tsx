@@ -1,6 +1,17 @@
 import { useEffect, useState } from 'react'
 import { usePageTitle } from '../../hooks/theme'
-import { Box, Button, Flex, Loader, SimpleGrid, Stack, TextInput, Title } from '@mantine/core'
+import {
+  Box,
+  Button,
+  Flex,
+  Loader,
+  SimpleGrid,
+  Stack,
+  TextInput,
+  Title,
+  Text,
+  Pagination,
+} from '@mantine/core'
 import { MagnifyingGlass, Plus, UsersThree } from '@phosphor-icons/react'
 import { doRequest } from '../../requests/request'
 import { PaginationResponse } from '../../requests/responses/pagination'
@@ -26,6 +37,9 @@ const ResearchGroupAdminPage = () => {
 
   const [createResearchGroupModalOpened, setCreateResearchGroupModalOpened] = useState(false)
 
+  const [page, setPage] = useState(0)
+  const limit = 30
+
   const fetchResearchGroups = () => {
     setResearchGroupsLoading(true)
     doRequest<PaginationResponse<IResearchGroup>>(
@@ -34,8 +48,8 @@ const ResearchGroupAdminPage = () => {
         method: 'GET',
         requiresAuth: true,
         params: {
-          page: 0,
-          limit: -1,
+          page: page,
+          limit: limit,
           search: debouncedSearch.trim(),
         },
       },
@@ -63,7 +77,7 @@ const ResearchGroupAdminPage = () => {
 
   useEffect(() => {
     fetchResearchGroups()
-  }, [debouncedSearch])
+  }, [debouncedSearch, page])
 
   const handleCreateResearchGroup = async (values: ResearchGroupFormValues) => {
     const body = {
@@ -99,7 +113,7 @@ const ResearchGroupAdminPage = () => {
   }
 
   return (
-    <Stack>
+    <Stack h={'100%'}>
       <Title>Research Groups</Title>
       <Flex
         justify='space-between'
@@ -124,31 +138,53 @@ const ResearchGroupAdminPage = () => {
           Create Research Group
         </Button>
       </Flex>
-      {researchGroupsLoading ? (
-        <Flex justify='center' align='center'>
-          <Loader color='blue' />
-        </Flex>
-      ) : researchGroups && (researchGroups.content ?? []).length === 0 ? (
-        <NoContentFoundCard
-          title={searchKey.length === 0 ? 'No Research Groups Found' : 'No Research Groups Found'}
-          subtle={
-            searchKey.length === 0
-              ? 'There are no research groups yet. Create one to get started.'
-              : 'Try changing the search term or create a new research group.'
-          }
-          icon={searchKey.length === 0 ? <UsersThree size={32} /> : <MagnifyingGlass size={32} />}
+      <Box flex={1}>
+        {researchGroupsLoading ? (
+          <Flex justify='center' align='center'>
+            <Loader color='blue' />
+          </Flex>
+        ) : researchGroups && (researchGroups.content ?? []).length === 0 ? (
+          <NoContentFoundCard
+            title={searchKey.length === 0 ? 'No Research Groups Found' : 'No Research Groups Found'}
+            subtle={
+              searchKey.length === 0
+                ? 'There are no research groups yet. Create one to get started.'
+                : 'Try changing the search term or create a new research group.'
+            }
+            icon={searchKey.length === 0 ? <UsersThree size={32} /> : <MagnifyingGlass size={32} />}
+          />
+        ) : (
+          <SimpleGrid
+            cols={{ base: 1, sm: 2, xl: 3 }}
+            spacing={{ base: 'xs', sm: 'sm', xl: 'md' }}
+            verticalSpacing={{ base: 'xs', sm: 'sm', xl: 'md' }}
+          >
+            {(researchGroups?.content ?? []).map((group) => (
+              <ResearchGroupCard {...group} key={group.id} />
+            ))}
+          </SimpleGrid>
+        )}
+      </Box>
+
+      <Flex justify={'space-between'} align={'center'} gap='md'>
+        <Text size='sm'>
+          {researchGroups && researchGroups.totalElements > 0 ? (
+            <>
+              {page * limit + 1}–{Math.min((page + 1) * limit, researchGroups.totalElements)} /{' '}
+              {researchGroups.totalElements}
+            </>
+          ) : (
+            '0 results'
+          )}
+        </Text>
+
+        <Pagination
+          value={page + 1}
+          onChange={(p) => setPage(p - 1)}
+          total={researchGroups ? researchGroups.totalPages : 1}
+          size='sm'
         />
-      ) : (
-        <SimpleGrid
-          cols={{ base: 1, sm: 2, xl: 3 }}
-          spacing={{ base: 'xs', sm: 'sm', xl: 'md' }}
-          verticalSpacing={{ base: 'xs', sm: 'sm', xl: 'md' }}
-        >
-          {(researchGroups?.content ?? []).map((group) => (
-            <ResearchGroupCard {...group} key={group.id} />
-          ))}
-        </SimpleGrid>
-      )}
+      </Flex>
 
       <CreateResearchGroupModal
         opened={createResearchGroupModalOpened}
