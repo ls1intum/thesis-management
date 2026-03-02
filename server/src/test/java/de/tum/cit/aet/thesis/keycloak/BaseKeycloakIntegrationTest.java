@@ -33,6 +33,7 @@ import org.testcontainers.postgresql.PostgreSQLContainer;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
@@ -120,6 +121,11 @@ public abstract class BaseKeycloakIntegrationTest {
 		DB_CONTAINER.start();
 		KEYCLOAK_CONTAINER.start();
 
+		// Docker Desktop on macOS may route traffic through a non-localhost interface,
+		// causing Keycloak to enforce HTTPS for admin operations. Disable this
+		// requirement on the master realm so the admin client can authenticate via HTTP.
+		disableMasterRealmSslRequirement();
+
 		// Only generate the secret once per JVM — generating a new secret would
 		// invalidate the previous one, breaking any already-initialized
 		// AccessManagementService instances in cached Spring contexts.
@@ -143,6 +149,26 @@ public abstract class BaseKeycloakIntegrationTest {
 
 		registry.add("thesis-management.keycloak.host", KEYCLOAK_CONTAINER::getAuthServerUrl);
 		registry.add("thesis-management.keycloak.service-client.secret", () -> serviceClientSecret);
+	}
+
+	private static void disableMasterRealmSslRequirement() {
+		try {
+			KEYCLOAK_CONTAINER.execInContainer(
+					"/opt/keycloak/bin/kcadm.sh", "config", "credentials",
+					"--server", "http://localhost:8080",
+					"--realm", "master",
+					"--user", KEYCLOAK_CONTAINER.getAdminUsername(),
+					"--password", KEYCLOAK_CONTAINER.getAdminPassword());
+			KEYCLOAK_CONTAINER.execInContainer(
+					"/opt/keycloak/bin/kcadm.sh", "update", "realms/master",
+					"-s", "sslRequired=NONE",
+					"--server", "http://localhost:8080",
+					"--realm", "master",
+					"--user", KEYCLOAK_CONTAINER.getAdminUsername(),
+					"--password", KEYCLOAK_CONTAINER.getAdminPassword());
+		} catch (IOException | InterruptedException e) {
+			throw new RuntimeException("Failed to disable SSL requirement on Keycloak master realm", e);
+		}
 	}
 
 	@BeforeEach
