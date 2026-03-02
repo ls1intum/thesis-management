@@ -50,7 +50,7 @@ jobs:
           docker run -d --name keycloak \
             -e KC_BOOTSTRAP_ADMIN_USERNAME=admin \
             -e KC_BOOTSTRAP_ADMIN_PASSWORD=admin \
-            -p 8081:8080 \
+            -p 8181:8080 \
             quay.io/keycloak/keycloak:26.5 \
             start-dev
 
