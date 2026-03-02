@@ -10,6 +10,10 @@ on:
         description: "The tag of the client image that was built"
         value: ${{ jobs.build-client.outputs.client_image_tag }}
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   build-server:
     runs-on: ubuntu-latest
@@ -24,7 +28,7 @@ jobs:
 
       - name: Get changed files in the server folder
         id: changed-files
-        uses: tj-actions/changed-files@v45
+        uses: tj-actions/changed-files@v47
         with:
           files: server/**
 
@@ -58,7 +62,7 @@ jobs:
 
       - name: Build and push Docker Image
         if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: ./
           file: ./server.Dockerfile
@@ -87,7 +91,7 @@ jobs:
 
       - name: Get changed files in the client folder
         id: changed-files
-        uses: tj-actions/changed-files@v45
+        uses: tj-actions/changed-files@v47
         with:
           files: client/**
 
@@ -121,7 +125,7 @@ jobs:
 
       - name: Build and push Docker Image
         if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: ./
           file: ./client.Dockerfile

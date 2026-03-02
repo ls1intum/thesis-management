@@ -40,8 +40,8 @@ public class AccessManagementService {
 	private final UUID applicationClientUUID;
 	private final UUID studentGroupId;
 
-	private String accessToken;
-	private Instant tokenExpiration;
+	private volatile String accessToken;
+	private volatile Instant tokenExpiration;
 
 	private final UserGroupRepository userGroupRepository;
 
@@ -279,6 +279,7 @@ public class AccessManagementService {
 				.block();
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Set<UserGroup> syncRolesFromKeycloakToDatabase(User user) {
 		if (user == null) {

@@ -11,6 +11,10 @@ concurrency:
   group: deploy-dev-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   run-tests:
     uses: ./.github/workflows/run_tests.yml

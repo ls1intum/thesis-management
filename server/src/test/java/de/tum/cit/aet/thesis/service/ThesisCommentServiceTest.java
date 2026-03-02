@@ -163,7 +163,7 @@ class ThesisCommentServiceTest {
 		assertNotNull(result);
 		assertEquals("Test Message", result.getMessage());
 		assertEquals("stored-file-name", result.getFilename());
-		verify(uploadService).store(eq(file), any(), eq(UploadFileType.ANY));
+		verify(uploadService).store(eq(file), any(), eq(UploadFileType.DOCUMENT));
 		verify(thesisCommentRepository).save(any(ThesisComment.class));
 		verify(mailingService).sendNewCommentEmail(result);
 	}

@@ -41,9 +41,9 @@ export interface IThesisOverview {
   endDate: string | null
   createdAt: string
   keywords?: string[]
-  students: IMinimalUser[]
-  advisors: IMinimalUser[]
-  supervisors: IMinimalUser[]
+  students?: IMinimalUser[]
+  advisors?: IMinimalUser[]
+  supervisors?: IMinimalUser[]
   researchGroup?: IMinimalResearchGroup
   states?: Array<{
     state: ThesisState
@@ -63,10 +63,12 @@ export interface IThesis extends IThesisOverview {
   infoText?: string
   abstractText?: string
   applicationId: string | null
+  anonymized?: boolean
+  anonymizedAt?: string
   researchGroup: ILightResearchGroup
-  students: ILightUser[]
-  advisors: ILightUser[]
-  supervisors: ILightUser[]
+  students?: ILightUser[]
+  advisors?: ILightUser[]
+  supervisors?: ILightUser[]
   files?: Array<{
     fileId: string
     type: string
@@ -123,9 +125,9 @@ export interface IPublishedThesis {
   startDate: string | null
   endDate: string | null
   abstractText?: string
-  students: ILightUser[]
-  advisors: ILightUser[]
-  supervisors: ILightUser[]
+  students?: ILightUser[]
+  advisors?: ILightUser[]
+  supervisors?: ILightUser[]
   researchGroup: ILightResearchGroup
 }
 

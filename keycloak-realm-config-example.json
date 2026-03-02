@@ -835,16 +835,16 @@
       "description": "",
       "rootUrl": "",
       "adminUrl": "",
-      "baseUrl": "http://localhost:3000",
+      "baseUrl": "http://localhost:3100",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "redirectUris": [
-        "http://localhost:3000/*"
+        "http://localhost:3100/*"
       ],
       "webOrigins": [
-        "http://localhost:3000"
+        "http://localhost:3100"
       ],
       "notBefore": 0,
       "bearerOnly": false,
@@ -858,7 +858,7 @@
       "protocol": "openid-connect",
       "attributes": {
         "oidc.ciba.grant.enabled": "false",
-        "post.logout.redirect.uris": "http://localhost:3000/*",
+        "post.logout.redirect.uris": "http://localhost:3100/*",
         "oauth2.device.authorization.grant.enabled": "false",
         "backchannel.logout.session.required": "true",
         "backchannel.logout.revoke.offline.tokens": "false"

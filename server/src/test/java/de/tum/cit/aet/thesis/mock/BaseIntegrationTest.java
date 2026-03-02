@@ -13,6 +13,7 @@ import de.tum.cit.aet.thesis.controller.payload.CreateThesisPayload;
 import de.tum.cit.aet.thesis.controller.payload.ReplaceTopicPayload;
 import de.tum.cit.aet.thesis.repository.ApplicationRepository;
 import de.tum.cit.aet.thesis.repository.ApplicationReviewerRepository;
+import de.tum.cit.aet.thesis.repository.DataExportRepository;
 import de.tum.cit.aet.thesis.repository.EmailTemplateRepository;
 import de.tum.cit.aet.thesis.repository.InterviewProcessRepository;
 import de.tum.cit.aet.thesis.repository.IntervieweeRepository;
@@ -70,6 +71,9 @@ public abstract class BaseIntegrationTest {
 
 	@Autowired
 	private ApplicationReviewerRepository applicationReviewerRepository;
+
+	@Autowired
+	private DataExportRepository dataExportRepository;
 
 	@Autowired
 	private IntervieweeRepository intervieweeRepository;
@@ -188,6 +192,7 @@ public abstract class BaseIntegrationTest {
 	// Deletion order matters: child tables with foreign keys must be deleted before parent tables.
 	@BeforeEach
 	void deleteDatabase() {
+		dataExportRepository.deleteAll();
 		emailTemplateRepository.deleteAll();
 		thesisCommentRepository.deleteAll();
 		thesisFeedbackRepository.deleteAll();

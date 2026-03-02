@@ -1,12 +1,12 @@
 import TopicsProvider from '../../providers/TopicsProvider/TopicsProvider'
 import TopicsTable from '../../components/TopicsTable/TopicsTable'
 import { TopicState } from '../../requests/responses/topic'
-import { Button, Group, Stack, Center } from '@mantine/core'
+import { Alert, Button, Group, Stack, Center } from '@mantine/core'
 import { Link, useParams, useSearchParams } from 'react-router'
 import PublishedTheses from './components/PublishedTheses/PublishedTheses'
 import { usePageTitle } from '../../hooks/theme'
 import LandingPageHeader from './components/LandingPageHeader/LandingPageHeader'
-import { ListIcon, SquaresFourIcon } from '@phosphor-icons/react'
+import { InfoIcon, ListIcon, SquaresFourIcon } from '@phosphor-icons/react'
 import { useEffect, useMemo, useState } from 'react'
 import { useDebouncedValue } from '@mantine/hooks'
 import { GLOBAL_CONFIG } from '../../config/global'
@@ -16,6 +16,7 @@ import { doRequest } from '../../requests/request'
 import { showSimpleError } from '../../utils/notification'
 import { getApiResponseErrorMessage } from '../../requests/handler'
 import TopicSearchFilters from '../../components/TopicSearchFilters/TopicSearchFilters'
+import { TOPIC_DISCLAIMER_TEXT } from '../../components/TopicDisclaimerAlert/TopicDisclaimerAlert'
 
 const LandingPage = () => {
   usePageTitle('Find a Thesis Topic')
@@ -134,6 +135,10 @@ const LandingPage = () => {
           researchGroups.find((group) => group.abbreviation === researchGroupAbbreviation)?.id
         }
       />
+
+      <Alert variant='light' color='blue' icon={<InfoIcon />} style={{ flexShrink: 0 }}>
+        {TOPIC_DISCLAIMER_TEXT}
+      </Alert>
 
       <TopicSearchFilters
         searchKey={searchKey}

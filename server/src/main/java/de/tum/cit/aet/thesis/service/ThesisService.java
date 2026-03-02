@@ -36,6 +36,7 @@ import de.tum.cit.aet.thesis.repository.ThesisStateChangeRepository;
 import de.tum.cit.aet.thesis.repository.UserRepository;
 import de.tum.cit.aet.thesis.security.CurrentUserProvider;
 import de.tum.cit.aet.thesis.utility.DataFormatter;
+import de.tum.cit.aet.thesis.utility.HibernateHelper;
 import de.tum.cit.aet.thesis.utility.PDFBuilder;
 import de.tum.cit.aet.thesis.utility.RequestValidator;
 import org.springframework.beans.factory.ObjectProvider;
@@ -74,7 +75,6 @@ public class ThesisService {
 	private final ThesisAssessmentRepository thesisAssessmentRepository;
 	private final MailingService mailingService;
 	private final AccessManagementService accessManagementService;
-	private final ThesisPresentationService thesisPresentationService;
 	private final ThesisFeedbackRepository thesisFeedbackRepository;
 	private final ThesisFileRepository thesisFileRepository;
 	private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
@@ -112,7 +112,6 @@ public class ThesisService {
 			UploadService uploadService,
 			MailingService mailingService,
 			AccessManagementService accessManagementService,
-			ThesisPresentationService thesisPresentationService,
 			ThesisFeedbackRepository thesisFeedbackRepository, ThesisFileRepository thesisFileRepository,
 			ObjectProvider<CurrentUserProvider> currentUserProviderProvider,
 			ResearchGroupRepository researchGroupRepository,
@@ -126,7 +125,6 @@ public class ThesisService {
 		this.thesisAssessmentRepository = thesisAssessmentRepository;
 		this.mailingService = mailingService;
 		this.accessManagementService = accessManagementService;
-		this.thesisPresentationService = thesisPresentationService;
 		this.thesisFeedbackRepository = thesisFeedbackRepository;
 		this.thesisFileRepository = thesisFileRepository;
 		this.currentUserProviderProvider = currentUserProviderProvider;
@@ -136,6 +134,18 @@ public class ThesisService {
 
 	private CurrentUserProvider currentUserProvider() {
 		return currentUserProviderProvider.getObject();
+	}
+
+	private void requireNotAnonymized(Thesis thesis) {
+		if (thesis.isAnonymized()) {
+			throw new ResourceInvalidParametersException("This thesis has been anonymized and cannot be modified.");
+		}
+	}
+
+	private void requireNotAnonymized(Thesis thesis) {
+		if (thesis.isAnonymized()) {
+			throw new ResourceInvalidParametersException("This thesis has been anonymized and cannot be modified.");
+		}
 	}
 
 	/**
@@ -167,7 +177,8 @@ public class ThesisService {
 			String sortBy,
 			String sortOrder,
 			UUID[] researchGroupIds) {
-		Sort.Order order = new Sort.Order(sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
+		Sort.Order order = new Sort.Order(sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,
+				HibernateHelper.validateSortField(Thesis.class, sortBy));
 		String searchQueryFilter = searchQuery == null || searchQuery.isEmpty() ? null : searchQuery.toLowerCase();
 		Set<ThesisState> statesFilter = states == null || states.length == 0 ? null
 				: new HashSet<>(Arrays.asList(states));
@@ -205,6 +216,8 @@ public class ThesisService {
 				PageRequest.of(page, limit, Sort.by(order)));
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance
+	// issue and concurrency problems
 	@Transactional
 	public Thesis createThesis(
 			String thesisTitle,
@@ -255,8 +268,11 @@ public class ThesisService {
 		return thesis;
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance
+	// issue and concurrency problems
 	@Transactional
 	public Thesis closeThesis(Thesis thesis) {
+		requireNotAnonymized(thesis);
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
 		if (thesis.getState() == ThesisState.DROPPED_OUT || thesis.getState() == ThesisState.FINISHED) {
 			throw new ResourceInvalidParametersException("Thesis is already completed");
@@ -278,6 +294,8 @@ public class ThesisService {
 		return thesis;
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance
+	// issue and concurrency problems
 	@Transactional
 	public Thesis updateThesis(
 			Thesis thesis,
@@ -293,6 +311,7 @@ public class ThesisService {
 			List<UUID> supervisorIds,
 			List<ThesisStatePayload> states,
 			UUID researchGroupId) {
+		requireNotAnonymized(thesis);
 		ResearchGroup researchGroup = researchGroupRepository.findById(researchGroupId)
 				.orElseThrow(() -> new ResourceNotFoundException("Research group not found"));
 		currentUserProvider().assertCanAccessResearchGroup(researchGroup);
@@ -318,32 +337,34 @@ public class ThesisService {
 
 		thesis = thesisRepository.save(thesis);
 
-		thesisPresentationService.updateThesisCalendarEvents(thesis);
-
 		return thesis;
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance
+	// issue and concurrency problems
 	@Transactional
 	public Thesis updateThesisInfo(
 			Thesis thesis,
 			String abstractText,
 			String infoText) {
+		requireNotAnonymized(thesis);
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
 		thesis.setAbstractField(abstractText != null ? abstractText : "");
 		thesis.setInfo(infoText != null ? infoText : "");
 
 		thesis = thesisRepository.save(thesis);
 
-		thesisPresentationService.updateThesisCalendarEvents(thesis);
-
 		return thesis;
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance
+	// issue and concurrency problems
 	@Transactional
 	public Thesis updateThesisTitles(
 			Thesis thesis,
 			String primaryTitle,
 			Map<String, String> titles) {
+		requireNotAnonymized(thesis);
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
 		if (titles != null) {
 			thesis.setMetadata(new ThesisMetadata(
@@ -356,15 +377,16 @@ public class ThesisService {
 
 		thesis = thesisRepository.save(thesis);
 
-		thesisPresentationService.updateThesisCalendarEvents(thesis);
-
 		return thesis;
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance
+	// issue and concurrency problems
 	@Transactional
 	public Thesis updateThesisCredits(
 			Thesis thesis,
 			Map<UUID, Number> credits) {
+		requireNotAnonymized(thesis);
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
 		thesis.setMetadata(new ThesisMetadata(
 				thesis.getMetadata().titles(),
@@ -383,6 +405,7 @@ public class ThesisService {
 	 * @return the updated thesis
 	 */
 	public Thesis completeFeedback(Thesis thesis, UUID feedbackId, boolean completed) {
+		requireNotAnonymized(thesis);
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
 		ThesisFeedback feedback = thesis.getFeedbackItem(feedbackId)
 				.orElseThrow(() -> new ResourceNotFoundException("Feedback id not found"));
@@ -394,8 +417,11 @@ public class ThesisService {
 		return thesis;
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance
+	// issue and concurrency problems
 	@Transactional
 	public Thesis deleteFeedback(Thesis thesis, UUID feedbackId) {
+		requireNotAnonymized(thesis);
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
 		thesis.getFeedbackItem(feedbackId)
 				.orElseThrow(() -> new ResourceNotFoundException("Feedback id not found"));
@@ -408,9 +434,12 @@ public class ThesisService {
 		return thesis;
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance
+	// issue and concurrency problems
 	@Transactional
 	public Thesis requestChanges(Thesis thesis, ThesisFeedbackType type,
 			List<RequestChangesPayload.RequestedChange> requestedChanges) {
+		requireNotAnonymized(thesis);
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
 		for (var requestedChange : requestedChanges) {
 			ThesisFeedback feedback = new ThesisFeedback();
@@ -449,8 +478,11 @@ public class ThesisService {
 		return uploadService.load(proposal.getProposalFilename());
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance
+	// issue and concurrency problems
 	@Transactional
 	public Thesis uploadProposal(Thesis thesis, MultipartFile proposalFile) {
+		requireNotAnonymized(thesis);
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
 		ThesisProposal proposal = new ThesisProposal();
 
@@ -471,8 +503,11 @@ public class ThesisService {
 		return thesisRepository.save(thesis);
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance
+	// issue and concurrency problems
 	@Transactional
 	public Thesis deleteProposal(Thesis thesis, UUID proposalId) {
+		requireNotAnonymized(thesis);
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
 		thesis.getProposalById(proposalId)
 				.orElseThrow(() -> new ResourceNotFoundException("Proposal id not found"));
@@ -485,8 +520,11 @@ public class ThesisService {
 		return thesis;
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance
+	// issue and concurrency problems
 	@Transactional
 	public Thesis acceptProposal(Thesis thesis) {
+		requireNotAnonymized(thesis);
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
 		List<ThesisProposal> proposals = thesis.getProposals();
 
@@ -512,8 +550,11 @@ public class ThesisService {
 
 	/* WRITING */
 
+	// TODO: we should avoid using @Transactional because it can lead to performance
+	// issue and concurrency problems
 	@Transactional
 	public Thesis submitThesis(Thesis thesis) {
+		requireNotAnonymized(thesis);
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
 		if (thesis.getLatestFile("THESIS").isEmpty()) {
 			throw new ResourceInvalidParametersException("Thesis file not uploaded yet");
@@ -528,13 +569,16 @@ public class ThesisService {
 		return thesisRepository.save(thesis);
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance
+	// issue and concurrency problems
 	@Transactional
 	public Thesis uploadThesisFile(Thesis thesis, String type, MultipartFile file) {
+		requireNotAnonymized(thesis);
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
 		ThesisFile thesisFile = new ThesisFile();
 
 		thesisFile.setUploadName(file.getOriginalFilename());
-		thesisFile.setFilename(uploadService.store(file, 25 * 1024 * 1024, UploadFileType.ANY));
+		thesisFile.setFilename(uploadService.store(file, 25 * 1024 * 1024, UploadFileType.DOCUMENT));
 		thesisFile.setUploadedBy(currentUserProvider().getUser());
 		thesisFile.setUploadedAt(Instant.now());
 		thesisFile.setThesis(thesis);
@@ -546,8 +590,11 @@ public class ThesisService {
 		return thesisRepository.save(thesis);
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance
+	// issue and concurrency problems
 	@Transactional
 	public Thesis deleteThesisFile(Thesis thesis, UUID fileId) {
+		requireNotAnonymized(thesis);
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
 		thesis.getFileById(fileId)
 				.orElseThrow(() -> new ResourceNotFoundException("File id not found"));
@@ -575,6 +622,8 @@ public class ThesisService {
 	}
 
 	/* ASSESSMENT */
+	// TODO: we should avoid using @Transactional because it can lead to performance
+	// issue and concurrency problems
 	@Transactional
 	public Thesis submitAssessment(
 			Thesis thesis,
@@ -582,6 +631,7 @@ public class ThesisService {
 			String positives,
 			String negatives,
 			String gradeSuggestion) {
+		requireNotAnonymized(thesis);
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
 		ThesisAssessment assessment = new ThesisAssessment();
 
@@ -662,8 +712,11 @@ public class ThesisService {
 	}
 
 	/* GRADING */
+	// TODO: we should avoid using @Transactional because it can lead to performance
+	// issue and concurrency problems
 	@Transactional
 	public Thesis gradeThesis(Thesis thesis, String finalGrade, String finalFeedback, ThesisVisibility visibility) {
+		requireNotAnonymized(thesis);
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
 		thesis.setState(ThesisState.GRADED);
 		thesis.setVisibility(visibility);
@@ -677,8 +730,11 @@ public class ThesisService {
 		return thesisRepository.save(thesis);
 	}
 
+	// TODO: we should avoid using @Transactional because it can lead to performance
+	// issue and concurrency problems
 	@Transactional
 	public Thesis completeThesis(Thesis thesis) {
+		requireNotAnonymized(thesis);
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
 		thesis.setState(ThesisState.FINISHED);
 

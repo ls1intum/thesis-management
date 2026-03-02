@@ -66,6 +66,7 @@ public class EmailTemplateController {
 			@RequestParam(required = false, defaultValue = "desc") String sortOrder,
 			@RequestParam(required = false) UUID researchGroupId
 	) {
+		limit = RequestValidator.clampPageSize(limit);
 		Page<EmailTemplate> emailTemplates = emailTemplateService.getAll(
 				templateCases,
 				languages,

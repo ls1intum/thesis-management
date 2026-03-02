@@ -54,6 +54,7 @@ public class AutomaticRejects {
 	}
 
 	@Scheduled(cron = "0 00 09 * * *")
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public void rejectOldApplications() {
 		List<ResearchGroupSettings> enabledResearchGroups = researchGroupSettingsRepository.findAllByAutomaticRejectEnabled();

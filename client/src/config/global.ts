@@ -103,12 +103,10 @@ export const GLOBAL_CONFIG: IGlobalConfig = {
     },
   },
 
-  default_supervisors: getEnvironmentVariable('DEFAULT_SUPERVISOR_UUID')?.split(';') || [],
-  calendar_url: getEnvironmentVariable('CALDAV_URL') || '',
-  server_host: getEnvironmentVariable('SERVER_HOST') || 'http://localhost:8080',
+  server_host: getEnvironmentVariable('SERVER_HOST') || 'http://localhost:8180',
 
   keycloak: {
-    host: getEnvironmentVariable('KEYCLOAK_HOST') || 'http://localhost:8081',
+    host: getEnvironmentVariable('KEYCLOAK_HOST') || 'http://localhost:8181',
     realm: getEnvironmentVariable('KEYCLOAK_REALM_NAME') || 'thesis-management',
     client_id: getEnvironmentVariable('KEYCLOAK_CLIENT_ID') || 'thesis-management-app',
   },

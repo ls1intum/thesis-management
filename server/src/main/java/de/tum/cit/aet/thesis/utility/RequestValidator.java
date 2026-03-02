@@ -115,8 +115,23 @@ public class RequestValidator {
 		return validateEmail(value);
 	}
 
+	private static final int MAX_PAGE_SIZE = 500;
+
 	/**
-	 * Validates that the given value is non-null, throwing an exception otherwise.
+	 * Caps the page size to a safe maximum to prevent excessive memory usage.
+	 *
+	 * @param limit the requested page size
+	 * @return the clamped page size (between 1 and MAX_PAGE_SIZE)
+	 */
+	public static int clampPageSize(int limit) {
+		if (limit <= 0) {
+			return MAX_PAGE_SIZE;
+		}
+		return Math.min(limit, MAX_PAGE_SIZE);
+	}
+
+	/**
+	 * Validates that the given value is not null.
 	 *
 	 * @param value the value to validate
 	 * @param <T> the type of the value

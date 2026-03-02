@@ -24,6 +24,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,6 +35,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -126,6 +128,7 @@ public class ApplicationController {
 			@RequestParam(required = false, defaultValue = "createdAt") String sortBy,
 			@RequestParam(required = false, defaultValue = "desc") String sortOrder
 	) {
+		limit = RequestValidator.clampPageSize(limit);
 		User authenticatedUser = currentUserProvider().getUser();
 
 		Page<Application> applications = applicationService.getAll(
@@ -166,6 +169,7 @@ public class ApplicationController {
 			@RequestParam(required = false, defaultValue = "0") Integer page,
 			@RequestParam(required = false, defaultValue = "50") Integer limit
 	) {
+		limit = RequestValidator.clampPageSize(limit);
 		Page<Application> applications = applicationService.getAll(
 				null,
 				null,
@@ -176,7 +180,7 @@ public class ApplicationController {
 				null,
 				false,
 				page,
-				limit <= 0 ? Integer.MAX_VALUE : limit,
+				limit,
 				"createdAt",
 				"desc"
 		);
@@ -368,5 +372,18 @@ public class ApplicationController {
 		return ResponseEntity.ok(
 				applications.stream().map(item -> ApplicationDto.fromApplicationEntity(item, item.hasManagementAccess(authenticatedUser))).toList()
 		);
+	}
+
+	/**
+	 * Deletes an application by its identifier.
+	 *
+	 * @param applicationId the application identifier
+	 * @return response confirming deletion
+	 */
+	@DeleteMapping("/{applicationId}")
+	@PreAuthorize("hasRole('admin')")
+	public ResponseEntity<Map<String, String>> deleteApplication(@PathVariable UUID applicationId) {
+		applicationService.deleteApplication(applicationId);
+		return ResponseEntity.ok(Map.of("status", "deleted"));
 	}
 }

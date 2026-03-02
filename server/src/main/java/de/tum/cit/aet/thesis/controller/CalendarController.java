@@ -57,8 +57,13 @@ public class CalendarController {
 	public ResponseEntity<String> getCalendar(@PathVariable(required = false) String researchGroupAbbreviation) {
 		ResearchGroup researchGroup = researchGroupService.findByAbbreviation(researchGroupAbbreviation);
 		if (researchGroup == null) {
-			log.error("Research group with abbreviation '{}' not found", researchGroupAbbreviation);
-			return ResponseEntity.status(404).body("Research group with abbreviation '" + researchGroupAbbreviation + "' not found");
+			String safeAbbr = researchGroupAbbreviation != null
+					? researchGroupAbbreviation.replaceAll("[\\r\\n]", "_")
+					: "<null>";
+			log.error("Research group with abbreviation '{}' not found", safeAbbr);
+			return ResponseEntity.status(404)
+					.contentType(MediaType.TEXT_PLAIN)
+					.body("Research group not found");
 		}
 
 		return ResponseEntity.ok()

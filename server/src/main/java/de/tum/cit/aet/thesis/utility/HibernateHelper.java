@@ -1,5 +1,7 @@
 package de.tum.cit.aet.thesis.utility;
 
+import de.tum.cit.aet.thesis.exception.request.ResourceInvalidParametersException;
+
 import jakarta.persistence.Column;
 
 import java.lang.reflect.Field;
@@ -14,6 +16,7 @@ public class HibernateHelper {
 	 * @param entityClass the entity class to inspect
 	 * @param fieldName the name of the field
 	 * @return the database column name
+	 * @throws ResourceInvalidParametersException if the field does not exist on the entity
 	 */
 	public static String getColumnName(Class<?> entityClass, String fieldName) {
 		try {
@@ -25,7 +28,25 @@ public class HibernateHelper {
 			// If no Column annotation, return field name as fallback
 			return fieldName;
 		} catch (NoSuchFieldException e) {
-			throw new RuntimeException("Field not found: " + fieldName, e);
+			throw new ResourceInvalidParametersException("Invalid sort field: " + fieldName);
+		}
+	}
+
+	/**
+	 * Validates that a field exists on the given entity class and returns the Java field name.
+	 * Use this for JPQL-based queries where the entity property name (not the DB column name) is required.
+	 *
+	 * @param entityClass the entity class to inspect
+	 * @param fieldName the name of the field to validate
+	 * @return the validated field name (unchanged)
+	 * @throws ResourceInvalidParametersException if the field does not exist on the entity
+	 */
+	public static String validateSortField(Class<?> entityClass, String fieldName) {
+		try {
+			entityClass.getDeclaredField(fieldName);
+			return fieldName;
+		} catch (NoSuchFieldException e) {
+			throw new ResourceInvalidParametersException("Invalid sort field: " + fieldName);
 		}
 	}
 }

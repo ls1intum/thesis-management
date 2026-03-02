@@ -67,6 +67,7 @@ public ResponseEntity<PaginationDto<ResearchGroupDto>> getResearchGroups(
 	@RequestParam(required = false, defaultValue = "name") String sortBy,
 	@RequestParam(required = false, defaultValue = "desc") String sortOrder
 ) {
+	limit = RequestValidator.clampPageSize(limit);
 	Page<ResearchGroup> researchGroups = researchGroupService.getAll(
 		heads,
 		campuses,
@@ -154,6 +155,7 @@ public ResponseEntity<ResearchGroupDto> getResearchGroup(
 		@RequestParam(required = false, defaultValue = "joinedAt") String sortBy,
 		@RequestParam(required = false, defaultValue = "desc") String sortOrder
 	) {
+	limit = RequestValidator.clampPageSize(limit);
 	Page<User> users = researchGroupService.getAllResearchGroupMembers(researchGroupId, page, limit, sortBy, sortOrder);
 
 	return ResponseEntity.ok(PaginationDto.fromSpringPage(users.map(LightUserDto::fromUserEntity)));

@@ -74,7 +74,14 @@ const ReviewApplicationPage = () => {
         {!isSmallScreen && (
           <Grid.Col span={{ md: 9 }}>
             {application ? (
-              <ApplicationReviewBody application={application} onChange={setApplication} />
+              <ApplicationReviewBody
+                application={application}
+                onChange={setApplication}
+                onDelete={() => {
+                  setApplication(undefined)
+                  navigate('/applications', { replace: true })
+                }}
+              />
             ) : (
               <Center h='80vh'>
                 <Text ta='center' fw='bold'>

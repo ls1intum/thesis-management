@@ -9,10 +9,12 @@ import de.tum.cit.aet.thesis.constants.ThesisState;
 import de.tum.cit.aet.thesis.controller.payload.CreateApplicationPayload;
 import de.tum.cit.aet.thesis.controller.payload.CreateThesisPayload;
 import de.tum.cit.aet.thesis.controller.payload.ReplacePresentationPayload;
+import de.tum.cit.aet.thesis.entity.ResearchGroupSettings;
 import de.tum.cit.aet.thesis.entity.Thesis;
 import de.tum.cit.aet.thesis.entity.ThesisStateChange;
 import de.tum.cit.aet.thesis.entity.key.ThesisStateChangeId;
 import de.tum.cit.aet.thesis.mock.BaseIntegrationTest;
+import de.tum.cit.aet.thesis.repository.ResearchGroupSettingsRepository;
 import de.tum.cit.aet.thesis.repository.ThesisRepository;
 import de.tum.cit.aet.thesis.repository.ThesisStateChangeRepository;
 import org.junit.jupiter.api.Nested;
@@ -43,6 +45,9 @@ class DashboardControllerTest extends BaseIntegrationTest {
 
 	@Autowired
 	private ThesisStateChangeRepository thesisStateChangeRepository;
+
+	@Autowired
+	private ResearchGroupSettingsRepository researchGroupSettingsRepository;
 
 	private UUID createThesisWithState(String title, ThesisState targetState,
 			List<UUID> students, List<UUID> advisors, List<UUID> supervisors, UUID researchGroupId) throws Exception {
@@ -90,7 +95,20 @@ class DashboardControllerTest extends BaseIntegrationTest {
 	class StudentTasks {
 		@Test
 		void getTasks_AsStudent_ReturnsScientificWritingGuideTask() throws Exception {
-			String auth = createRandomAuthentication("student");
+			TestUser student = createRandomTestUser(List.of("student"));
+			TestUser head = createRandomTestUser(List.of("supervisor"));
+			UUID researchGroupId = createTestResearchGroup("Writing Guide Group", head.universityId());
+
+			mockMvc.perform(MockMvcRequestBuilders.put("/v2/research-groups/{id}/assign/{username}", researchGroupId, student.universityId())
+							.header("Authorization", createRandomAdminAuthentication()))
+					.andExpect(status().isOk());
+
+			ResearchGroupSettings settings = new ResearchGroupSettings();
+			settings.setResearchGroupId(researchGroupId);
+			settings.setScientificWritingGuideLink("https://example.com/writing-guide");
+			researchGroupSettingsRepository.save(settings);
+
+			String auth = generateTestAuthenticationHeader(student.universityId(), List.of("student"));
 
 			String response = mockMvc.perform(MockMvcRequestBuilders.get("/v2/dashboard/tasks")
 							.header("Authorization", auth))
@@ -99,15 +117,7 @@ class DashboardControllerTest extends BaseIntegrationTest {
 
 			JsonNode json = objectMapper.readTree(response);
 			assertThat(json.size()).isGreaterThanOrEqualTo(1);
-
-			boolean hasWritingGuide = false;
-			for (JsonNode task : json) {
-				if (task.get("message").asString().contains("scientific writing")) {
-					hasWritingGuide = true;
-					break;
-				}
-			}
-			assertThat(hasWritingGuide).isTrue();
+			assertThat(hasTaskContaining(json, "scientific writing")).isTrue();
 		}
 
 		@Test

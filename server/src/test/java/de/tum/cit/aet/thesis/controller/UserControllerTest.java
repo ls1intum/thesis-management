@@ -123,6 +123,57 @@ class UserControllerTest extends BaseIntegrationTest {
 		}
 
 		@Test
+		void getUsers_FilterByStudentGroup_ExcludesAdvisorsAndSupervisors() throws Exception {
+			TestUser student = createTestUser("filter_student", List.of("student"));
+			TestUser advisor = createTestUser("filter_advisor", List.of("advisor"));
+			TestUser supervisor = createTestUser("filter_supervisor", List.of("supervisor"));
+			String adminAuth = createRandomAdminAuthentication();
+
+			// Test 1: groups=student (used by student selector) returns students only
+			String studentResponse = mockMvc.perform(MockMvcRequestBuilders.get("/v2/users")
+							.header("Authorization", adminAuth)
+							.param("groups", "student"))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			List<String> studentResults = extractUniversityIds(studentResponse);
+			assertThat(studentResults).contains("filter_student");
+			assertThat(studentResults).doesNotContain("filter_advisor", "filter_supervisor");
+
+			// Test 2: groups=advisor,supervisor (used by supervisor selector via comma-separated single param,
+			// matching how the client sends it via URLSearchParams with groups.join(','))
+			String advisorResponse = mockMvc.perform(MockMvcRequestBuilders.get("/v2/users")
+							.header("Authorization", adminAuth)
+							.param("groups", "advisor,supervisor"))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			List<String> advisorResults = extractUniversityIds(advisorResponse);
+			assertThat(advisorResults).contains("filter_advisor", "filter_supervisor");
+			assertThat(advisorResults).doesNotContain("filter_student");
+
+			// Test 3: groups=supervisor (used by examiner selector) returns supervisors only
+			String supervisorResponse = mockMvc.perform(MockMvcRequestBuilders.get("/v2/users")
+							.header("Authorization", adminAuth)
+							.param("groups", "supervisor"))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			List<String> supervisorResults = extractUniversityIds(supervisorResponse);
+			assertThat(supervisorResults).contains("filter_supervisor");
+			assertThat(supervisorResults).doesNotContain("filter_student", "filter_advisor");
+		}
+
+		private List<String> extractUniversityIds(String response) throws Exception {
+			JsonNode content = objectMapper.readTree(response).get("content");
+			List<String> ids = new ArrayList<>();
+			for (JsonNode user : content) {
+				ids.add(user.get("universityId").asString());
+			}
+			return ids;
+		}
+
+		@Test
 		void getUsers_SearchByName() throws Exception {
 			TestUser user = createTestUser("searchuser123", List.of("student"));
 			String adminAuth = createRandomAdminAuthentication();

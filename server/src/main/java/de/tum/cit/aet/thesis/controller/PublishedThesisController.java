@@ -5,6 +5,7 @@ import de.tum.cit.aet.thesis.dto.PaginationDto;
 import de.tum.cit.aet.thesis.dto.PublishedThesisDto;
 import de.tum.cit.aet.thesis.entity.Thesis;
 import de.tum.cit.aet.thesis.service.ThesisService;
+import de.tum.cit.aet.thesis.utility.RequestValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -60,6 +61,7 @@ public class PublishedThesisController {
 			@RequestParam(required = false, defaultValue = "") UUID[] researchGroupIds,
 			@RequestParam(required = false) String[] types
 	) {
+		limit = RequestValidator.clampPageSize(limit);
 		Page<Thesis> theses = thesisService.getAll(
 				null,
 				true,

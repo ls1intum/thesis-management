@@ -21,7 +21,7 @@ const ResearchGroupCard = (props: IResearchGroup) => {
       },
       (res) => {
         if (res.ok) {
-          setResearchGroupMemberNumber(res.data.content.length)
+          setResearchGroupMemberNumber((res.data.content ?? []).length)
         }
       },
     )
@@ -63,12 +63,12 @@ const ResearchGroupCard = (props: IResearchGroup) => {
       </Flex>
 
       <Stack gap={5} style={{ flexGrow: 1 }}>
-        <Text size='sm' c='dimmed' py={5}>
-          <Flex justify={'start'} align={'center'} gap={5}>
-            <Buildings size={16} />
+        <Flex justify={'start'} align={'center'} gap={5} py={5}>
+          <Buildings size={16} color='var(--mantine-color-dimmed)' style={{ flexShrink: 0 }} />
+          <Text size='sm' c='dimmed'>
             {props.campus ? props.campus : 'No campus specified'}
-          </Flex>
-        </Text>
+          </Text>
+        </Flex>
 
         <Text size='sm' c='dimmed'>
           {props.description ? props.description : 'No description provided'}

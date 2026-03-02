@@ -52,19 +52,19 @@ thesis-management:
       id: thesis-management-service-client
       secret: ""
       student-group-name: thesis-students
-  calendar:
-    enabled: true
-    url: http://localhost:18080
-    username: test
-    password: test
   client:
-    host: http://localhost:3000
+    host: http://localhost:3100
   mail:
     enabled: true
-    sender: test@ios.ase.cit.tum.de
-    signature: ""
-    workspace-url: https://slack.com
-    bcc-recipients: ""
+    sender: thesis-dev@test.aet.cit.tum.de
+  data-retention:
+    cron: "-"
+    rejected-application-retention-days: 365
+    inactive-user-days: 365
+    thesis-anonymization-notification-days: 30
+  data-export:
+    path: data-exports
+    retention-days: 7
+    days-between-exports: 7
   storage:
     upload-location: uploads
-  scientific-writing-guide: http://localhost:3000/writing-guide

@@ -2,6 +2,7 @@ package de.tum.cit.aet.thesis.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 import de.tum.cit.aet.thesis.constants.ApplicationRejectReason;
@@ -157,11 +158,11 @@ class ApplicationServiceTest {
 	}
 
 	@Test
-	void accept_WithValidData_AcceptsApplicationAndCreatesThesis() {
+	void accept_WithNotifyUser_AcceptsApplicationAndCreatesThesisWithNotification() {
 		User reviewer = new User();
 		reviewer.setId(UUID.randomUUID());
 		when(applicationRepository.save(any(Application.class))).thenAnswer(invocation -> invocation.getArgument(0));
-		when(thesisService.createThesis(any(), any(), any(), any(), any(), any(), any(), anyBoolean(), any()))
+		when(thesisService.createThesis(any(), any(), any(), any(), any(), any(), any(), eq(true), any()))
 				.thenReturn(EntityMockFactory.createThesis("Test Thesis", testResearchGroup));
 		when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
 
@@ -179,8 +180,35 @@ class ApplicationServiceTest {
 
 		assertFalse(results.isEmpty());
 		assertEquals(ApplicationState.ACCEPTED, results.getFirst().getState());
-		verify(thesisService).createThesis(any(), any(), any(), any(), any(), any(), any(), anyBoolean(), any());
+		verify(thesisService).createThesis(any(), any(), any(), any(), any(), any(), any(), eq(true), any());
 		verify(mailingService).sendApplicationAcceptanceEmail(any(), any());
+	}
+
+	@Test
+	void accept_WithoutNotifyUser_CreatesThesisWithoutNotification() {
+		User reviewer = new User();
+		reviewer.setId(UUID.randomUUID());
+		when(applicationRepository.save(any(Application.class))).thenAnswer(invocation -> invocation.getArgument(0));
+		when(thesisService.createThesis(any(), any(), any(), any(), any(), any(), any(), eq(false), any()))
+				.thenReturn(EntityMockFactory.createThesis("Test Thesis", testResearchGroup));
+		when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
+
+		List<Application> results = applicationService.accept(
+				reviewer,
+				testApplication,
+				"Test Thesis",
+				"Bachelor",
+				"ENGLISH",
+				List.of(UUID.randomUUID()),
+				List.of(UUID.randomUUID()),
+				false,
+				false
+		);
+
+		assertFalse(results.isEmpty());
+		assertEquals(ApplicationState.ACCEPTED, results.getFirst().getState());
+		verify(thesisService).createThesis(any(), any(), any(), any(), any(), any(), any(), eq(false), any());
+		verify(mailingService, never()).sendApplicationAcceptanceEmail(any(), any());
 	}
 
 	@Test

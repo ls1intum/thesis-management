@@ -4,6 +4,7 @@ import de.tum.cit.aet.thesis.dto.PaginationDto;
 import de.tum.cit.aet.thesis.dto.PublishedPresentationDto;
 import de.tum.cit.aet.thesis.entity.ThesisPresentation;
 import de.tum.cit.aet.thesis.service.ThesisPresentationService;
+import de.tum.cit.aet.thesis.utility.RequestValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -53,6 +54,7 @@ public class PublishedPresentationController {
 			@RequestParam(required = false, defaultValue = "asc") String sortOrder,
 			@RequestParam(required = false) UUID researchGroupId
 	) {
+		limit = RequestValidator.clampPageSize(limit);
 		Page<ThesisPresentation> presentations = thesisPresentationService.getPublicPresentations(
 				includeDrafts,
 				page,

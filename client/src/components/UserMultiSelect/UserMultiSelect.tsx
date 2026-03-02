@@ -34,17 +34,13 @@ export const UserMultiSelect = (props: IUserMultiSelectProps) => {
   const selected: string[] = inputProps.value ?? []
 
   const [loading, setLoading] = useState(false)
-  const [focused, setFocused] = useState(false)
+  const [fetchVersion, setFetchVersion] = useState(0)
   const [data, setData] = useState<Array<{ value: string; label: string; user: ILightUser }>>([])
   const [searchValue, setSearchValue] = useState('')
 
   const [debouncedSearchValue] = useDebouncedValue(searchValue, 500)
 
   useEffect(() => {
-    if (!focused) {
-      return
-    }
-
     setLoading(true)
 
     return doRequest<PaginationResponse<ILightUser>>(
@@ -77,10 +73,11 @@ export const UserMultiSelect = (props: IUserMultiSelectProps) => {
           setLoading(false)
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
+          setLoading(false)
         }
       },
     )
-  }, [groups.join(','), debouncedSearchValue, focused])
+  }, [groups.join(','), debouncedSearchValue, fetchVersion])
 
   const mergedData = arrayUnique(
     [
@@ -96,14 +93,9 @@ export const UserMultiSelect = (props: IUserMultiSelectProps) => {
     (a, b) => a.value === b.value,
   )
 
-  useEffect(() => {
-    if (selected.some((a) => !mergedData.some((b) => a === b.value))) {
-      setFocused(true)
-    }
-  }, [mergedData.map((row) => row.value).join(','), selected.join(',')])
-
   return (
     <MultiSelect
+      {...inputProps}
       data={mergedData}
       renderOption={({ option }) => {
         const item = mergedData.find((row) => row.value === option.value)
@@ -118,7 +110,8 @@ export const UserMultiSelect = (props: IUserMultiSelectProps) => {
       searchable={selected.length < maxValues}
       clearable={true}
       searchValue={searchValue}
-      onClick={() => setFocused(true)}
+      onClick={() => setFetchVersion((v) => v + 1)}
+      onDropdownOpen={() => setFetchVersion((v) => v + 1)}
       onSearchChange={setSearchValue}
       hidePickedOptions={selected.length < maxValues}
       maxValues={maxValues}
@@ -128,7 +121,6 @@ export const UserMultiSelect = (props: IUserMultiSelectProps) => {
       nothingFoundMessage={!loading ? 'Nothing found...' : 'Loading...'}
       label={label}
       required={required}
-      {...inputProps}
     />
   )
 }

@@ -13,8 +13,16 @@ public class CorsConfig {
 	public CorsConfigurationSource corsConfigurationSource(@Value("${thesis-management.client.host}") String clientHost) {
 		CorsConfiguration configuration = new CorsConfiguration();
 		configuration.addAllowedOrigin(clientHost);
-		configuration.addAllowedMethod("*");
-		configuration.addAllowedHeader("*");
+		configuration.addAllowedMethod("GET");
+		configuration.addAllowedMethod("POST");
+		configuration.addAllowedMethod("PUT");
+		configuration.addAllowedMethod("DELETE");
+		configuration.addAllowedMethod("PATCH");
+		configuration.addAllowedMethod("OPTIONS");
+		configuration.addAllowedHeader("Authorization");
+		configuration.addAllowedHeader("Content-Type");
+		configuration.addAllowedHeader("Accept");
+		configuration.addAllowedHeader("X-Requested-With");
 		configuration.setAllowCredentials(true);
 
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

@@ -20,6 +20,7 @@ import de.tum.cit.aet.thesis.entity.InterviewSlot;
 import de.tum.cit.aet.thesis.entity.Interviewee;
 import de.tum.cit.aet.thesis.entity.Topic;
 import de.tum.cit.aet.thesis.service.InterviewProcessService;
+import de.tum.cit.aet.thesis.utility.RequestValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -74,6 +75,7 @@ public class InterviewProcessController {
 			@RequestParam(required = false, defaultValue = "false") boolean excludeSupervised
 	) {
 
+		limit = RequestValidator.clampPageSize(limit);
 		Page<InterviewProcess> result = interviewProcessService.findAllMyProcesses(
 				searchQuery,
 				page,
@@ -93,6 +95,7 @@ public class InterviewProcessController {
 	 * @return the booked interview slot or no content if none exists
 	 */
 	@GetMapping("/{interviewProcessId}/my-booking")
+	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<InterviewSlotDto> getMyBookedSlot(
 			@PathVariable("interviewProcessId") UUID interviewProcessId
 	) {
@@ -154,6 +157,7 @@ public class InterviewProcessController {
 			@RequestParam(required = false, defaultValue = "") String state
 	) {
 
+		limit = RequestValidator.clampPageSize(limit);
 		Page<Interviewee> interviewProcessDto = interviewProcessService.getInterviewProcessInterviewees(interviewProcessId, searchQuery, page, limit, sortBy, sortOrder, state);
 
 		return ResponseEntity.ok(PaginationDto.fromSpringPage(interviewProcessDto.map(IntervieweeLightWithNextSlotDto::fromIntervieweeEntity)));
@@ -166,12 +170,13 @@ public class InterviewProcessController {
 	 * @return the topic of the interview process
 	 */
 	@GetMapping("/{interviewProcessId}/topic")
+	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<TopicDto> getInterviewProcessTopic(
 			@PathVariable("interviewProcessId") UUID interviewProcessId
 	) {
-		InterviewProcess interviewProcess = interviewProcessService.findById(interviewProcessId);
+		Topic topic = interviewProcessService.getInterviewProcessTopic(interviewProcessId);
 
-		return ResponseEntity.ok(TopicDto.fromTopicEntity(interviewProcess.getTopic()));
+		return ResponseEntity.ok(TopicDto.fromTopicEntity(topic));
 	}
 
 	/**
@@ -216,6 +221,7 @@ public class InterviewProcessController {
 	 * @return true if the interview process is completed, false otherwise
 	 */
 	@GetMapping("/{interviewProcessId}/completed")
+	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<Boolean> isInterviewProcessCompleted(
 			@PathVariable("interviewProcessId") UUID interviewProcessId
 	) {
@@ -231,7 +237,7 @@ public class InterviewProcessController {
 	 * @return the list of interview slots
 	 */
 	@GetMapping("/{interviewProcessId}/interview-slots")
-	//Not preauthorized to allow interviewees to fetch available slots -> check inside service method if process is accessible to the user
+	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<List<InterviewSlotDto>> getInterviewProcessInterviewSlots(
 			@PathVariable("interviewProcessId") UUID interviewProcessId,
 			@RequestParam(required = false, defaultValue = "false") boolean excludeBooked
@@ -311,6 +317,7 @@ public class InterviewProcessController {
 	 * @return the booked interview slot
 	 */
 	@PutMapping("/{interviewProcessId}/slot/{slotId}/book")
+	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<InterviewSlotDto> bookInterviewSlot(
 			@PathVariable("interviewProcessId") UUID interviewProcessId,
 			@PathVariable("slotId") UUID slotId,
@@ -328,6 +335,7 @@ public class InterviewProcessController {
 	 * @return the updated interview slot after cancellation
 	 */
 	@PutMapping("/{interviewProcessId}/slot/{slotId}/cancel")
+	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<InterviewSlotDto> cancelInterviewSlotBooking(
 			@PathVariable("interviewProcessId") UUID interviewProcessId,
 			@PathVariable("slotId") UUID slotId
@@ -352,6 +360,7 @@ public class InterviewProcessController {
 			@RequestParam(required = false, defaultValue = "50") Integer limit
 	) {
 
+		limit = RequestValidator.clampPageSize(limit);
 		Page<Application> applications = interviewProcessService.getPossibleApplicationsForProcess(interviewProcessId, page, limit);
 
 		return ResponseEntity.ok(PaginationDto.fromSpringPage(

@@ -8,6 +8,10 @@ concurrency:
   group: deploy-prod
   cancel-in-progress: false
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   run-tests:
     uses: ./.github/workflows/run_tests.yml
