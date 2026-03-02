@@ -54,8 +54,8 @@ public class PDFBuilder {
 
 	// Lazily initialized font holders, never accessed directly, use
 	// getNormalFont() / getBoldFont()
-	private static PdfFont normalFont;
-	private static PdfFont boldFont;
+	private static volatile PdfFont normalFont;
+	private static volatile PdfFont boldFont;
 
 	private static final String THESISMANAGEMENT_URL = "https://thesis.aet.cit.tum.de/";
 
