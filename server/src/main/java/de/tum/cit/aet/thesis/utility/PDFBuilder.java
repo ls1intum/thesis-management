@@ -51,8 +51,12 @@ public class PDFBuilder {
 	private final List<OverviewItem> overviewItems = new ArrayList<>();
 
 	private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
-	private static final PdfFont normalFont = createNormalFont();
-	private static final PdfFont boldFont = createBoldFont();
+
+	// Lazily initialized font holders, never accessed directly, use
+	// getNormalFont() / getBoldFont()
+	private static PdfFont normalFont;
+	private static PdfFont boldFont;
+
 	private static final String THESISMANAGEMENT_URL = "https://thesis.aet.cit.tum.de/";
 
 	// ----------------- Colors -----------------
@@ -162,7 +166,7 @@ public class PDFBuilder {
 
 		// Main Heading
 		Paragraph mainHeadingParagraph = new Paragraph(heading)
-				.setFont(boldFont)
+				.setFont(getBoldFont())
 				.setFontColor(PRIMARY_COLOR)
 				.setFontSize(FONT_SIZE_MAIN_HEADING)
 				.setTextAlignment(TextAlignment.CENTER)
@@ -178,8 +182,8 @@ public class PDFBuilder {
 		}
 
 		for (Section row : sections) {
-			Paragraph sectionHeading = new Paragraph(row.heading)
-					.setFont(boldFont)
+			Paragraph sectionHeading = new Paragraph(row.heading())
+					.setFont(getBoldFont())
 					.setFontSize(FONT_SIZE_GROUP_TITLE)
 					.setFontColor(PRIMARY_COLOR)
 					.setMarginBottom(MARGIN_TITLE_BOTTOM);
@@ -213,7 +217,7 @@ public class PDFBuilder {
 	 */
 	private void addHeaderItems(Document document) {
 		Paragraph headerLine = new Paragraph()
-				.setFont(normalFont)
+				.setFont(getNormalFont())
 				.setFontSize(FONT_SIZE_METADATA)
 				.setFontColor(METADATA_COLOR)
 				.setTextAlignment(TextAlignment.CENTER)
@@ -239,7 +243,7 @@ public class PDFBuilder {
 		Div container = new Div().setMarginBottom(MARGIN_OVERVIEW_SECTION_BOTTOM);
 
 		Paragraph title = new Paragraph("Overview")
-				.setFont(boldFont)
+				.setFont(getBoldFont())
 				.setFontSize(FONT_SIZE_GROUP_TITLE)
 				.setFontColor(PRIMARY_COLOR)
 				.setMarginBottom(MARGIN_OVERVIEW_SECTION_BOTTOM);
@@ -255,8 +259,8 @@ public class PDFBuilder {
 			OverviewItem item = overviewItems.get(i);
 
 			Paragraph cellContent = new Paragraph()
-					.add(new Text(item.title + ": ").setFont(boldFont).setFontSize(FONT_SIZE_TEXT))
-					.add(new Text(item.value).setFont(normalFont).setFontSize(FONT_SIZE_TEXT))
+					.add(new Text(item.title() + ": ").setFont(getBoldFont()).setFontSize(FONT_SIZE_TEXT))
+					.add(new Text(item.value()).setFont(getNormalFont()).setFontSize(FONT_SIZE_TEXT))
 					.setMargin(0);
 
 			Cell cell;
@@ -289,7 +293,7 @@ public class PDFBuilder {
 			Canvas canvas = new Canvas(page, pageSize);
 
 			Paragraph metadataParagraph = new Paragraph()
-					.setFont(normalFont)
+					.setFont(getNormalFont())
 					.setFontSize(FONT_SIZE_METADATA)
 					.setFontColor(METADATA_COLOR)
 					.setTextAlignment(TextAlignment.CENTER)
@@ -307,7 +311,7 @@ public class PDFBuilder {
 
 			// Add Thesis Management as a clickable Link
 			Link thesisManagementLink = new Link("Thesis Management", PdfAction.createURI(THESISMANAGEMENT_URL));
-			thesisManagementLink.setFontColor(PRIMARY_COLOR).setUnderline().setFont(normalFont)
+			thesisManagementLink.setFontColor(PRIMARY_COLOR).setUnderline().setFont(getNormalFont())
 					.setFontSize(FONT_SIZE_METADATA);
 
 			metadataParagraph.add(thesisManagementLink);
@@ -320,7 +324,7 @@ public class PDFBuilder {
 			// --- Page Number ---
 			Paragraph pageNumber = new Paragraph(
 					String.format("%s %d %s %d", "Page", i, "of", totalPages))
-					.setFont(normalFont)
+					.setFont(getNormalFont())
 					.setFontSize(FONT_SIZE_METADATA)
 					.setFontColor(METADATA_COLOR);
 
@@ -350,7 +354,7 @@ public class PDFBuilder {
 			for (IElement element : pdfElements) {
 				if (element instanceof IBlockElement block) {
 					if (block instanceof Paragraph para) {
-						para.setFont(normalFont)
+						para.setFont(getNormalFont())
 								.setFontSize(FONT_SIZE_TEXT)
 								.setMarginBottom(MARGIN_DATA_ROW_BOTTOM);
 						fixFontProperties(para);
@@ -358,7 +362,7 @@ public class PDFBuilder {
 						// Java's List.
 					} else if (block instanceof com.itextpdf.layout.element.List list) {
 						list.setListSymbol(BULLET_POINT_SYMBOL)
-								.setFont(normalFont)
+								.setFont(getNormalFont())
 								.setFontSize(FONT_SIZE_TEXT)
 								.setMarginTop(0f)
 								.setMarginBottom(MARGIN_DATA_ROW_BOTTOM)
@@ -372,7 +376,7 @@ public class PDFBuilder {
 								// adjust the Paragraph inside the ListItem
 								for (IElement liChild : listItem.getChildren()) {
 									if (liChild instanceof Paragraph para) {
-										para.setFont(normalFont)
+										para.setFont(getNormalFont())
 												.setFontSize(FONT_SIZE_TEXT)
 												.setMultipliedLeading(1f)
 												.setMarginTop(0f)
@@ -389,7 +393,7 @@ public class PDFBuilder {
 			}
 		} catch (Exception e) {
 			String plain = html.replaceAll("<[^>]*>", "").replaceAll("&nbsp;", " ").trim();
-			elements.add(new Paragraph(plain).setFont(normalFont).setFontSize(FONT_SIZE_TEXT)
+			elements.add(new Paragraph(plain).setFont(getNormalFont()).setFontSize(FONT_SIZE_TEXT)
 					.setMarginBottom(MARGIN_DATA_ROW_BOTTOM).setMultipliedLeading(LINE_LEADING));
 		}
 		return elements;
@@ -412,24 +416,53 @@ public class PDFBuilder {
 	}
 
 	/**
-	 * Creates a normal font instance for use in the PDF document.
+	 * Returns the shared normal (Helvetica) font, initializing it on first use.
+	 * Falls back to Helvetica-Bold if the standard font cannot be loaded.
 	 */
-	private static PdfFont createNormalFont() {
-		try {
-			return PdfFontFactory.createFont(StandardFonts.HELVETICA);
-		} catch (IOException e) {
-			throw new RuntimeException("Failed to create font", e);
+	private static PdfFont getNormalFont() {
+		if (normalFont == null) {
+			synchronized (PDFBuilder.class) {
+				if (normalFont == null) {
+					normalFont = loadFont(StandardFonts.HELVETICA, StandardFonts.HELVETICA_BOLD);
+				}
+			}
 		}
+		return normalFont;
 	}
 
 	/**
-	 * Creates a bold font instance for use in the PDF document.
+	 * Returns the shared bold (Helvetica-Bold) font, initializing it on first use.
+	 * Falls back to the normal font if the bold variant cannot be loaded.
 	 */
-	private static PdfFont createBoldFont() {
+	private static PdfFont getBoldFont() {
+		if (boldFont == null) {
+			synchronized (PDFBuilder.class) {
+				if (boldFont == null) {
+					boldFont = loadFont(StandardFonts.HELVETICA_BOLD, StandardFonts.HELVETICA);
+				}
+			}
+		}
+		return boldFont;
+	}
+
+	/**
+	 * Attempts to create a PdfFont for {@code preferredStandardFont}; on failure
+	 * falls back to {@code fallbackStandardFont}; if that also fails a
+	 * RuntimeException is thrown so the caller receives a clear error rather than a
+	 * silent {@code null} reference.
+	 */
+	private static PdfFont loadFont(String preferredStandardFont, String fallbackStandardFont) {
 		try {
-			return PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD);
-		} catch (IOException e) {
-			throw new RuntimeException("Failed to create bold font", e);
+			return PdfFontFactory.createFont(preferredStandardFont);
+		} catch (IOException primary) {
+			try {
+				return PdfFontFactory.createFont(fallbackStandardFont);
+			} catch (IOException fallback) {
+				throw new RuntimeException(
+						"Failed to load both preferred font '" + preferredStandardFont
+								+ "' and fallback font '" + fallbackStandardFont + "'",
+						fallback);
+			}
 		}
 	}
 }

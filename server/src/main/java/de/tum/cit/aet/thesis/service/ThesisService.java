@@ -142,12 +142,6 @@ public class ThesisService {
 		}
 	}
 
-	private void requireNotAnonymized(Thesis thesis) {
-		if (thesis.isAnonymized()) {
-			throw new ResourceInvalidParametersException("This thesis has been anonymized and cannot be modified.");
-		}
-	}
-
 	/**
 	 * Returns a paginated and filtered list of theses based on user role,
 	 * visibility, and search criteria.
@@ -669,8 +663,13 @@ public class ThesisService {
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
 		User currentUser = currentUserProvider().getUser();
 		String currentUserName = currentUser.getFirstName() + " " + currentUser.getLastName();
+		if (thesis.getAssessments() == null || thesis.getAssessments().isEmpty()) {
+			throw new ResourceNotFoundException("No assessment found for thesis");
+		}
 		ThesisAssessment assessment = thesis.getAssessments().getFirst();
-		ThesisPresentation presentation = thesis.getPresentations().getFirst();
+		ThesisPresentation presentation = (thesis.getPresentations() != null && !thesis.getPresentations().isEmpty())
+				? thesis.getPresentations().getFirst()
+				: null;
 
 		String students = String.join(", ", thesis.getStudents().stream()
 				.map(student -> student.getFirstName() + " " + student.getLastName()).toList());
