@@ -29,10 +29,10 @@ SET description = REPLACE(description, 'All supervisors and advisors get a summa
 WHERE template_case = 'APPLICATION_CREATED_CHAIR'
   AND research_group_id IS NULL;
 
--- APPLICATION_REJECTED (all rejection variants): Update body wording
+-- THESIS_CLOSED: Update body wording
 UPDATE email_templates
 SET body_html = REPLACE(body_html, 'contact your advisor or supervisor', 'contact your supervisor or examiner')
-WHERE template_case LIKE 'APPLICATION_REJECTED%'
+WHERE template_case = 'THESIS_CLOSED'
   AND research_group_id IS NULL;
 
 -- THESIS_COMMENT_POSTED: Update description (also fixes "its" → "it's" and adds "on")
@@ -61,14 +61,6 @@ SET body_html = REPLACE(body_html,
     'Supervisor: [[${thesis.examiners}]]<br>Advisor(s): [[${thesis.supervisors}]]',
     'Examiner: [[${thesis.examiners}]]<br>Supervisor(s): [[${thesis.supervisors}]]')
 WHERE template_case = 'THESIS_PRESENTATION_INVITATION'
-  AND research_group_id IS NULL;
-
--- THESIS_PRESENTATION_INVITATION_CANCELLED: Rename role labels in body
-UPDATE email_templates
-SET body_html = REPLACE(body_html,
-    'Supervisor: [[${thesis.examiners}]]<br>Advisor(s): [[${thesis.supervisors}]]',
-    'Examiner: [[${thesis.examiners}]]<br>Supervisor(s): [[${thesis.supervisors}]]')
-WHERE template_case = 'THESIS_PRESENTATION_INVITATION_CANCELLED'
   AND research_group_id IS NULL;
 
 -- THESIS_PRESENTATION_INVITATION_UPDATED: Rename role labels in body
