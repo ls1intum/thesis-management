@@ -145,6 +145,12 @@ checkstyle {
 	maxWarnings = 0
 }
 
+bootRun {
+	systemProperty "spring.profiles.active", "dev"
+	environment "LIQUIBASE_CONTEXTS", "dev,prod"
+	environment "SERVER_PORT", "8180"
+}
+
 test {
 	useJUnitPlatform()
 	finalizedBy jacocoTestReport

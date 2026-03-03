@@ -4,8 +4,6 @@ import de.tum.cit.aet.thesis.constants.UploadFileType;
 import de.tum.cit.aet.thesis.exception.UploadException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
@@ -28,7 +26,6 @@ import java.util.Set;
 @Slf4j
 @Service
 public class UploadService {
-	private static final Logger log = LoggerFactory.getLogger(UploadService.class);
 	private final Path rootLocation;
 
 	/**
