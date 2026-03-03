@@ -46,8 +46,8 @@ interface IThesisConfigSectionFormValues {
   startDate: Date | undefined
   endDate: Date | undefined
   students: string[]
-  advisors: string[]
-  supervisors: string[]
+  supervisorIds: string[]
+  examinerIds: string[]
   researchGroupId: string
   states: Array<{ state: ThesisState; changedAt: Date | null }>
 }
@@ -92,8 +92,8 @@ const ThesisConfigSection = () => {
       startDate: thesis.startDate ? new Date(thesis.startDate) : undefined,
       endDate: thesis.endDate ? new Date(thesis.endDate) : undefined,
       students: (thesis.students ?? []).map((student) => student.userId),
-      advisors: (thesis.advisors ?? []).map((advisor) => advisor.userId),
-      supervisors: (thesis.supervisors ?? []).map((supervisor) => supervisor.userId),
+      supervisorIds: (thesis.supervisors ?? []).map((supervisor) => supervisor.userId),
+      examinerIds: (thesis.examiners ?? []).map((examiner) => examiner.userId),
       researchGroupId: thesis.researchGroup?.id ?? '',
       states: (thesis.states ?? []).map((state) => ({
         state: state.state,
@@ -112,8 +112,8 @@ const ThesisConfigSection = () => {
         }
       },
       students: isNotEmptyUserList('student'),
-      advisors: isNotEmptyUserList('advisor'),
-      supervisors: isNotEmptyUserList('supervisor'),
+      supervisorIds: isNotEmptyUserList('supervisor'),
+      examinerIds: isNotEmptyUserList('examiner'),
       researchGroupId: isNotEmpty('Research group must not be empty'),
       startDate: thesisDatesValidator,
       endDate: thesisDatesValidator,
@@ -149,8 +149,8 @@ const ThesisConfigSection = () => {
       startDate: thesis.startDate ? new Date(thesis.startDate) : undefined,
       endDate: thesis.endDate ? new Date(thesis.endDate) : undefined,
       students: (thesis.students ?? []).map((student) => student.userId),
-      advisors: (thesis.advisors ?? []).map((advisor) => advisor.userId),
-      supervisors: (thesis.supervisors ?? []).map((supervisor) => supervisor.userId),
+      supervisorIds: (thesis.supervisors ?? []).map((supervisor) => supervisor.userId),
+      examinerIds: (thesis.examiners ?? []).map((examiner) => examiner.userId),
       researchGroupId: thesis.researchGroup?.id ?? '',
       states: (thesis.states ?? []).map((state) => ({
         state: state.state,
@@ -279,8 +279,8 @@ const ThesisConfigSection = () => {
         startDate: values.startDate,
         endDate: values.endDate,
         studentIds: values.students,
-        advisorIds: values.advisors,
-        supervisorIds: values.supervisors,
+        supervisorIds: values.supervisorIds,
+        examinerIds: values.examinerIds,
         researchGroupId: values.researchGroupId,
         states: values.states.map((state) => ({
           state: state.state,
@@ -307,13 +307,13 @@ const ThesisConfigSection = () => {
                 <TextInput
                   label='Thesis Title'
                   required={true}
-                  disabled={!access.advisor}
+                  disabled={!access.supervisor}
                   {...form.getInputProps('title')}
                 />
                 <Select
                   label='Thesis Type'
                   required={true}
-                  disabled={!access.advisor}
+                  disabled={!access.supervisor}
                   data={Object.keys(GLOBAL_CONFIG.thesis_types).map((key) => ({
                     value: key,
                     label: formatThesisType(key),
@@ -328,19 +328,19 @@ const ThesisConfigSection = () => {
                 <ThesisVisibilitySelect
                   label='Visibility'
                   required={true}
-                  disabled={!access.advisor}
+                  disabled={!access.supervisor}
                   {...form.getInputProps('visibility')}
                 />
                 <TagsInput
                   label='Keywords'
-                  disabled={!access.advisor}
+                  disabled={!access.supervisor}
                   data={form.values.keywords}
                   {...form.getInputProps('keywords')}
                 />
                 <Group grow>
                   <DateInput
                     label='Start Date'
-                    disabled={!access.advisor}
+                    disabled={!access.supervisor}
                     {...form.getInputProps('startDate')}
                     onChange={(date) =>
                       form.setFieldValue('startDate', date ? new Date(date) : undefined)
@@ -348,7 +348,7 @@ const ThesisConfigSection = () => {
                   />
                   <DateInput
                     label='End Date'
-                    disabled={!access.advisor}
+                    disabled={!access.supervisor}
                     {...form.getInputProps('endDate')}
                     onChange={(date) =>
                       form.setFieldValue('endDate', date ? new Date(date) : undefined)
@@ -357,7 +357,7 @@ const ThesisConfigSection = () => {
                 </Group>
                 <UserMultiSelect
                   required={true}
-                  disabled={!access.advisor}
+                  disabled={!access.supervisor}
                   label='Student(s)'
                   groups={['student']}
                   initialUsers={thesis.students ?? []}
@@ -365,20 +365,20 @@ const ThesisConfigSection = () => {
                 />
                 <UserMultiSelect
                   required={true}
-                  disabled={!access.advisor}
+                  disabled={!access.supervisor}
                   label='Supervisor(s)'
                   groups={['advisor', 'supervisor']}
-                  initialUsers={thesis.advisors ?? []}
-                  {...form.getInputProps('advisors')}
+                  initialUsers={thesis.supervisors ?? []}
+                  {...form.getInputProps('supervisorIds')}
                 />
                 <UserMultiSelect
                   required={true}
-                  disabled={!access.advisor}
+                  disabled={!access.supervisor}
                   label='Examiner'
                   groups={['supervisor']}
-                  initialUsers={thesis.supervisors ?? []}
+                  initialUsers={thesis.examiners ?? []}
                   maxValues={1}
-                  {...form.getInputProps('supervisors')}
+                  {...form.getInputProps('examinerIds')}
                 />
                 <Select
                   label='Research Group'
@@ -406,7 +406,7 @@ const ThesisConfigSection = () => {
                     </Group>
                     <DateTimePicker
                       required={true}
-                      disabled={!access.advisor}
+                      disabled={!access.supervisor}
                       value={item.changedAt}
                       error={form.errors.states}
                       onChange={(value) => {
@@ -419,7 +419,7 @@ const ThesisConfigSection = () => {
                     />
                   </Group>
                 ))}
-                {access.advisor && (
+                {access.supervisor && (
                   <Group>
                     {!isThesisClosed(thesis) && (
                       <ConfirmationButton

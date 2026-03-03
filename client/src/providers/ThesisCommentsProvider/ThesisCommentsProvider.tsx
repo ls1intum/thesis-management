@@ -8,7 +8,7 @@ import { getApiResponseErrorMessage } from '../../requests/handler'
 
 interface IThesisCommentsProviderProps {
   thesis: IThesis
-  commentType: 'THESIS' | 'ADVISOR'
+  commentType: 'THESIS' | 'SUPERVISOR'
   limit: number
 }
 

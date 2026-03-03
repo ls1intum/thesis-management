@@ -70,14 +70,21 @@ export function useThesisAccess(thesis: IThesis | IPublishedThesis | undefined |
 
   return useMemo(() => {
     const access = {
+      examiner: false,
       supervisor: false,
-      advisor: false,
       student: false,
     }
 
     if (user && thesis) {
       if (
         user.groups?.includes('admin') ||
+        (thesis.examiners ?? []).some((examiner) => user.userId === examiner.userId)
+      ) {
+        access.examiner = true
+      }
+
+      if (
+        access.examiner ||
         (thesis.supervisors ?? []).some((supervisor) => user.userId === supervisor.userId)
       ) {
         access.supervisor = true
@@ -85,13 +92,6 @@ export function useThesisAccess(thesis: IThesis | IPublishedThesis | undefined |
 
       if (
         access.supervisor ||
-        (thesis.advisors ?? []).some((advisor) => user.userId === advisor.userId)
-      ) {
-        access.advisor = true
-      }
-
-      if (
-        access.advisor ||
         (thesis.students ?? []).some((student) => user.userId === student.userId)
       ) {
         access.student = true

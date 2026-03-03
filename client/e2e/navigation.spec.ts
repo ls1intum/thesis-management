@@ -82,8 +82,8 @@ test.describe('Navigation - Student routes', () => {
   })
 })
 
-test.describe('Navigation - Supervisor routes', () => {
-  test.use({ storageState: authStatePath('supervisor') })
+test.describe('Navigation - Examiner routes', () => {
+  test.use({ storageState: authStatePath('examiner') })
 
   test('management pages are accessible', async ({ page }) => {
     // Theses Overview

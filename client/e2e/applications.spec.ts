@@ -28,8 +28,8 @@ test.describe('Applications - Student', () => {
   })
 })
 
-test.describe('Applications - Advisor review', () => {
-  test.use({ storageState: authStatePath('advisor') })
+test.describe('Applications - Supervisor review', () => {
+  test.use({ storageState: authStatePath('supervisor') })
 
   test('review page loads with application sidebar', async ({ page }) => {
     await navigateTo(page, '/applications')
@@ -40,8 +40,8 @@ test.describe('Applications - Advisor review', () => {
   })
 })
 
-test.describe('Applications - Supervisor review', () => {
-  test.use({ storageState: authStatePath('supervisor') })
+test.describe('Applications - Examiner review', () => {
+  test.use({ storageState: authStatePath('examiner') })
 
   test('review page is accessible', async ({ page }) => {
     await navigateTo(page, '/applications')

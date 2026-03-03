@@ -56,7 +56,7 @@ Do **not** use `@Transactional` on service methods. It causes performance issues
 
 ### Role Terminology
 
-The backend/Keycloak uses `supervisor` and `advisor` roles. In the UI these are displayed as "Examiner" and "Supervisor" respectively.
+The backend uses `EXAMINER` and `SUPERVISOR` as thesis role names (`ThesisRoleName` enum), matching the UI labels "Examiner" and "Supervisor". Keycloak groups remain `supervisor` and `advisor` for backward compatibility — do not rename them.
 
 ### Keycloak Configuration (Dev Only)
 

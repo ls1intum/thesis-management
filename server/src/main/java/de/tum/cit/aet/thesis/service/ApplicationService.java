@@ -230,8 +230,8 @@ public class ApplicationService {
 			String thesisTitle,
 			String thesisType,
 			String language,
-			List<UUID> advisorIds,
 			List<UUID> supervisorIds,
+			List<UUID> examinerIds,
 			boolean notifyUser,
 			boolean closeTopic
 	) {
@@ -247,8 +247,8 @@ public class ApplicationService {
 				thesisTitle,
 				thesisType,
 				language,
+				examinerIds,
 				supervisorIds,
-				advisorIds,
 				List.of(application.getUser().getId()),
 				application,
 				notifyUser,
@@ -343,10 +343,10 @@ public class ApplicationService {
 								"Research Group not found: " + researchGroupId));
 				User reviewingUser = topicGroup.getHead();
 
-				Optional<TopicRole> supervisor = topic.getRoles().stream().filter((role) -> role.getId().getRole() == ThesisRoleName.SUPERVISOR).findFirst();
+				Optional<TopicRole> examiner = topic.getRoles().stream().filter((role) -> role.getId().getRole() == ThesisRoleName.EXAMINER).findFirst();
 
-				if (supervisor.isPresent()) {
-					reviewingUser = supervisor.orElseThrow().getUser();
+				if (examiner.isPresent()) {
+					reviewingUser = examiner.orElseThrow().getUser();
 				}
 
 				reject(reviewingUser, application, ApplicationRejectReason.GENERAL, true, false);

@@ -13,8 +13,8 @@ export interface ITopicOverview {
   state: TopicState
   thesisTypes?: string[]
   createdAt: string
-  advisors: IMinimalUser[]
   supervisors: IMinimalUser[]
+  examiners: IMinimalUser[]
   researchGroup?: IMinimalResearchGroup
 }
 
@@ -25,8 +25,8 @@ export function toTopicOverview(topic: ITopic): ITopicOverview {
     state: topic.state,
     thesisTypes: topic.thesisTypes,
     createdAt: topic.createdAt,
-    advisors: topic.advisors,
     supervisors: topic.supervisors,
+    examiners: topic.examiners,
     researchGroup: topic.researchGroup,
   }
 }
@@ -43,6 +43,6 @@ export interface ITopic extends ITopicOverview {
   applicationDeadline: string | null
   createdBy: ILightUser
   researchGroup: ILightResearchGroup
-  advisors: ILightUser[]
   supervisors: ILightUser[]
+  examiners: ILightUser[]
 }

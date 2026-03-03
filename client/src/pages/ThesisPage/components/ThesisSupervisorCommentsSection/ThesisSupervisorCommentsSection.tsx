@@ -4,10 +4,10 @@ import ThesisCommentsProvider from '../../../../providers/ThesisCommentsProvider
 import ThesisCommentsList from '../../../../components/ThesisCommentsList/ThesisCommentsList'
 import ThesisCommentsForm from '../../../../components/ThesisCommentsForm/ThesisCommentsForm'
 
-const ThesisAdvisorCommentsSection = () => {
+const ThesisSupervisorCommentsSection = () => {
   const { thesis, access } = useLoadedThesisContext()
 
-  if (!access.advisor) {
+  if (!access.supervisor) {
     return null
   }
 
@@ -16,13 +16,13 @@ const ThesisAdvisorCommentsSection = () => {
       <Accordion.Item value='open'>
         <Accordion.Control>
           <Group gap='xs'>
-            <Text>Advisor Comments</Text>
+            <Text>Supervisor Comments</Text>
             <Badge color='grey'>Not visible to student</Badge>
           </Group>
         </Accordion.Control>
         <Accordion.Panel>
           <Stack>
-            <ThesisCommentsProvider limit={10} thesis={thesis} commentType='ADVISOR'>
+            <ThesisCommentsProvider limit={10} thesis={thesis} commentType='SUPERVISOR'>
               <ThesisCommentsList />
               <ThesisCommentsForm />
             </ThesisCommentsProvider>
@@ -33,4 +33,4 @@ const ThesisAdvisorCommentsSection = () => {
   )
 }
 
-export default ThesisAdvisorCommentsSection
+export default ThesisSupervisorCommentsSection

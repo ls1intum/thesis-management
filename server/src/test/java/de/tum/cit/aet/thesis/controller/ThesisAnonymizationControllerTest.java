@@ -82,9 +82,9 @@ class ThesisAnonymizationControllerTest extends BaseIntegrationTest {
 	private UserRepository userRepo;
 
 	private Thesis createTestThesisWithChildren(ThesisState state, Instant createdAt, Instant endDate) throws Exception {
-		TestUser supervisor = createRandomTestUser(List.of("supervisor"));
-		UUID researchGroupId = createTestResearchGroup("Anon Controller Test RG", supervisor.universityId());
-		TestUser advisor = createRandomTestUser(List.of("advisor"));
+		TestUser examiner = createRandomTestUser(List.of("supervisor"));
+		UUID researchGroupId = createTestResearchGroup("Anon Controller Test RG", examiner.universityId());
+		TestUser supervisor = createRandomTestUser(List.of("advisor"));
 		TestUser student = createRandomTestUser(List.of("student"));
 
 		Thesis thesis = new Thesis();
@@ -107,8 +107,8 @@ class ThesisAnonymizationControllerTest extends BaseIntegrationTest {
 		thesis = thesisRepository.save(thesis);
 
 		// Add roles
+		addRole(thesis, examiner.userId(), ThesisRoleName.EXAMINER, 0);
 		addRole(thesis, supervisor.userId(), ThesisRoleName.SUPERVISOR, 0);
-		addRole(thesis, advisor.userId(), ThesisRoleName.ADVISOR, 0);
 		addRole(thesis, student.userId(), ThesisRoleName.STUDENT, 0);
 
 		// Add state changes
@@ -122,7 +122,7 @@ class ThesisAnonymizationControllerTest extends BaseIntegrationTest {
 		comment.setType(ThesisCommentType.THESIS);
 		comment.setMessage("Test comment");
 		comment.setCreatedAt(createdAt.plus(50, ChronoUnit.DAYS));
-		comment.setCreatedBy(userRepo.findById(advisor.userId()).orElseThrow());
+		comment.setCreatedBy(userRepo.findById(supervisor.userId()).orElseThrow());
 		thesisCommentRepository.save(comment);
 
 		// Add proposal
@@ -141,7 +141,7 @@ class ThesisAnonymizationControllerTest extends BaseIntegrationTest {
 		assessment.setNegatives("Test negatives");
 		assessment.setGradeSuggestion("1.7");
 		assessment.setCreatedAt(createdAt.plus(90, ChronoUnit.DAYS));
-		assessment.setCreatedBy(userRepo.findById(advisor.userId()).orElseThrow());
+		assessment.setCreatedBy(userRepo.findById(supervisor.userId()).orElseThrow());
 		thesisAssessmentRepository.save(assessment);
 
 		// Add feedback
@@ -150,7 +150,7 @@ class ThesisAnonymizationControllerTest extends BaseIntegrationTest {
 		feedback.setType(ThesisFeedbackType.THESIS);
 		feedback.setFeedback("Test feedback");
 		feedback.setRequestedAt(createdAt.plus(80, ChronoUnit.DAYS));
-		feedback.setRequestedBy(userRepo.findById(advisor.userId()).orElseThrow());
+		feedback.setRequestedBy(userRepo.findById(supervisor.userId()).orElseThrow());
 		thesisFeedbackRepository.save(feedback);
 
 		return thesis;
@@ -285,14 +285,14 @@ class ThesisAnonymizationControllerTest extends BaseIntegrationTest {
 
 		@Test
 		void forbiddenForNonAdmin() throws Exception {
-			String advisorAuth = createRandomAuthentication("advisor");
+			String supervisorAuth = createRandomAuthentication("advisor");
 			Instant createdAt = Instant.now().minus(2600, ChronoUnit.DAYS);
 			Instant endDate = Instant.now().minus(2400, ChronoUnit.DAYS);
 			Thesis thesis = createTestThesisWithChildren(ThesisState.FINISHED, createdAt, endDate);
 
 			mockMvc.perform(MockMvcRequestBuilders.get(
 							"/v2/theses/{thesisId}/anonymize/warnings", thesis.getId())
-							.header("Authorization", advisorAuth))
+							.header("Authorization", supervisorAuth))
 					.andExpect(status().isForbidden());
 		}
 	}
@@ -402,14 +402,14 @@ class ThesisAnonymizationControllerTest extends BaseIntegrationTest {
 
 		@Test
 		void forbiddenForNonAdmin() throws Exception {
-			String advisorAuth = createRandomAuthentication("advisor");
+			String supervisorAuth = createRandomAuthentication("advisor");
 			Instant createdAt = Instant.now().minus(2600, ChronoUnit.DAYS);
 			Instant endDate = Instant.now().minus(2400, ChronoUnit.DAYS);
 			Thesis thesis = createTestThesisWithChildren(ThesisState.FINISHED, createdAt, endDate);
 
 			mockMvc.perform(MockMvcRequestBuilders.delete(
 							"/v2/theses/{thesisId}/anonymize", thesis.getId())
-							.header("Authorization", advisorAuth))
+							.header("Authorization", supervisorAuth))
 					.andExpect(status().isForbidden());
 		}
 	}

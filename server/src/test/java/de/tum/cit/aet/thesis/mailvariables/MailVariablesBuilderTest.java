@@ -17,7 +17,7 @@ class MailVariablesBuilderTest {
 	@Nested
 	class ApplicationAccepted {
 		@ParameterizedTest
-		@ValueSource(strings = {"APPLICATION_ACCEPTED", "APPLICATION_ACCEPTED_NO_ADVISOR"})
+		@ValueSource(strings = {"APPLICATION_ACCEPTED", "APPLICATION_ACCEPTED_NO_SUPERVISOR"})
 		void returnsApplicationAndThesisAndUserVariables(String templateCase) {
 			List<MailVariableDto> variables = builder.getMailVariables(templateCase);
 

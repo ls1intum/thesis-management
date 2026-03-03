@@ -6,8 +6,8 @@ export interface IThesisContext {
   updateThesis: (thesis: IThesis) => unknown
   access: {
     student: boolean
-    advisor: boolean
     supervisor: boolean
+    examiner: boolean
   }
 }
 

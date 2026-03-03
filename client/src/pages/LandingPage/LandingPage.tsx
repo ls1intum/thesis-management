@@ -166,7 +166,7 @@ const LandingPage = () => {
           {topicView === GLOBAL_CONFIG.topic_views_options.OPEN ? (
             listRepresentation === 'list' ? (
               <TopicsTable
-                columns={['title', 'types', 'advisor', 'researchGroup', 'actions']}
+                columns={['title', 'types', 'supervisor', 'researchGroup', 'actions']}
                 noBorder
                 extraColumns={{
                   actions: {

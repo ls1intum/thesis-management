@@ -294,14 +294,14 @@ public class MailBuilder {
 	}
 
 	/**
-	 * Adds all thesis supervisors as primary recipients.
+	 * Adds all thesis examiners as primary recipients.
 	 *
 	 * @param thesis the thesis
 	 * @return this builder
 	 */
-	public MailBuilder sendToThesisSupervisors(Thesis thesis) {
+	public MailBuilder sendToThesisExaminers(Thesis thesis) {
 		for (ThesisRole role : thesis.getRoles()) {
-			if (role.getId().getRole() == ThesisRoleName.SUPERVISOR) {
+			if (role.getId().getRole() == ThesisRoleName.EXAMINER) {
 				addPrimaryRecipient(role.getUser());
 			}
 		}
@@ -310,16 +310,16 @@ public class MailBuilder {
 	}
 
 	/**
-	 * Adds all thesis advisors and supervisors as primary recipients.
+	 * Adds all thesis supervisors and examiners as primary recipients.
 	 *
 	 * @param thesis the thesis
 	 * @return this builder
 	 */
-	public MailBuilder sendToThesisAdvisors(Thesis thesis) {
+	public MailBuilder sendToThesisSupervisors(Thesis thesis) {
 		for (ThesisRole role : thesis.getRoles()) {
-			if (role.getId().getRole() == ThesisRoleName.ADVISOR) {
+			if (role.getId().getRole() == ThesisRoleName.SUPERVISOR) {
 				addPrimaryRecipient(role.getUser());
-			} else if (role.getId().getRole() == ThesisRoleName.SUPERVISOR) {
+			} else if (role.getId().getRole() == ThesisRoleName.EXAMINER) {
 				addPrimaryRecipient(role.getUser());
 			}
 		}

@@ -14,7 +14,7 @@ const ThesisAssessmentSection = () => {
 
   const [assessmentModal, setAssessmentModal] = useState(false)
 
-  if (!access.advisor || !checkMinimumThesisState(thesis, ThesisState.SUBMITTED)) {
+  if (!access.supervisor || !checkMinimumThesisState(thesis, ThesisState.SUBMITTED)) {
     return <></>
   }
 
@@ -49,7 +49,7 @@ const ThesisAssessmentSection = () => {
                   Download as PDF
                 </AuthenticatedFileDownloadButton>
               )}
-              {access.advisor && !isThesisClosed(thesis) && (
+              {access.supervisor && !isThesisClosed(thesis) && (
                 <Button ml='auto' onClick={() => setAssessmentModal(true)}>
                   {thesis.assessment ? 'Edit Assessment' : 'Add Assessment'}
                 </Button>

@@ -104,7 +104,7 @@ public class TopicController {
 	}
 
 	/**
-	 * Creates a new topic with the specified details, supervisors, and advisors.
+	 * Creates a new topic with the specified details, examiners, and supervisors.
 	 *
 	 * @param payload the topic creation payload
 	 * @return the created topic
@@ -121,8 +121,8 @@ public class TopicController {
 				RequestValidator.validateStringMaxLength(payload.requirements(), StringLimits.UNLIMITED_TEXT.getLimit()),
 				RequestValidator.validateStringMaxLength(payload.goals(), StringLimits.UNLIMITED_TEXT.getLimit()),
 				RequestValidator.validateStringMaxLength(payload.references(), StringLimits.UNLIMITED_TEXT.getLimit()),
+				RequestValidator.validateNotNull(payload.examinerIds()),
 				RequestValidator.validateNotNull(payload.supervisorIds()),
-				RequestValidator.validateNotNull(payload.advisorIds()),
 				RequestValidator.validateNotNull(payload.researchGroupId()),
 				payload.intendedStart(),
 				payload.applicationDeadline(),
@@ -133,7 +133,7 @@ public class TopicController {
 	}
 
 	/**
-	 * Updates an existing topic with new details, supervisors, and advisors.
+	 * Updates an existing topic with new details, examiners, and supervisors.
 	 *
 	 * @param topicId the topic ID to update
 	 * @param payload the topic update payload
@@ -155,8 +155,8 @@ public class TopicController {
 				RequestValidator.validateStringMaxLength(payload.requirements(), StringLimits.UNLIMITED_TEXT.getLimit()),
 				RequestValidator.validateStringMaxLength(payload.goals(), StringLimits.UNLIMITED_TEXT.getLimit()),
 				RequestValidator.validateStringMaxLength(payload.references(), StringLimits.UNLIMITED_TEXT.getLimit()),
+				RequestValidator.validateNotNull(payload.examinerIds()),
 				RequestValidator.validateNotNull(payload.supervisorIds()),
-				RequestValidator.validateNotNull(payload.advisorIds()),
 				RequestValidator.validateNotNull(payload.researchGroupId()),
 				payload.intendedStart(),
 				payload.applicationDeadline(),

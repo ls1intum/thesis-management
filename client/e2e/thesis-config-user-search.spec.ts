@@ -2,12 +2,12 @@ import { test, expect } from '@playwright/test'
 import { authStatePath, navigateTo } from './helpers'
 
 test.describe('Thesis Configuration - User search filters by role', () => {
-  test.use({ storageState: authStatePath('advisor') })
+  test.use({ storageState: authStatePath('supervisor') })
 
-  test('student selector shows students and not advisors or supervisors', async ({ page }) => {
+  test('student selector shows students and not supervisors or examiners', async ({ page }) => {
     test.setTimeout(120_000)
 
-    // Navigate to thesis 1 (WRITING state, advisor is assigned)
+    // Navigate to thesis 1 (WRITING state, supervisor is assigned)
     await navigateTo(page, '/theses/00000000-0000-4000-d000-000000000001')
     await expect(page.getByRole('heading', { name: /automated code review/i })).toBeVisible({
       timeout: 15_000,
@@ -35,8 +35,8 @@ test.describe('Thesis Configuration - User search filters by role', () => {
     // Verify students appear in the dropdown (student2-5 are available; student is already selected as a pill)
     await expect(studentListbox.getByRole('option', { name: /student2/i })).toBeVisible()
 
-    // Verify advisors and supervisors do NOT appear in the student dropdown
-    await expect(studentListbox.getByRole('option', { name: /^Advisor/i })).toHaveCount(0)
+    // Verify supervisors and examiners do NOT appear in the student dropdown
+    await expect(studentListbox.getByRole('option', { name: /^Examiner/i })).toHaveCount(0)
     await expect(studentListbox.getByRole('option', { name: /^Supervisor/i })).toHaveCount(0)
 
     // Close dropdown via Tab (do NOT use Escape — it closes Mantine accordions/modals)

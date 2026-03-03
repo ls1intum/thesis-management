@@ -13,8 +13,8 @@ test.describe('Theses - Browse (Student)', () => {
   })
 })
 
-test.describe('Theses - Browse (Supervisor)', () => {
-  test.use({ storageState: authStatePath('supervisor') })
+test.describe('Theses - Browse (Examiner)', () => {
+  test.use({ storageState: authStatePath('examiner') })
 
   test('browse theses page shows create button for management', async ({ page }) => {
     await navigateTo(page, '/theses')
@@ -22,15 +22,15 @@ test.describe('Theses - Browse (Supervisor)', () => {
     await expect(page.getByRole('heading', { name: /browse theses/i })).toBeVisible({
       timeout: 30_000,
     })
-    // Supervisor should see create thesis button
+    // Examiner should see create thesis button
     await expect(page.getByRole('button', { name: /create/i }).first()).toBeVisible({
       timeout: 10_000,
     })
   })
 })
 
-test.describe('Theses - Overview (Supervisor)', () => {
-  test.use({ storageState: authStatePath('supervisor') })
+test.describe('Theses - Overview (Examiner)', () => {
+  test.use({ storageState: authStatePath('examiner') })
 
   test('theses overview shows management view', async ({ page }) => {
     await navigateTo(page, '/overview')
@@ -41,8 +41,8 @@ test.describe('Theses - Overview (Supervisor)', () => {
   })
 })
 
-test.describe('Theses - Detail page (Advisor)', () => {
-  test.use({ storageState: authStatePath('advisor') })
+test.describe('Theses - Detail page (Supervisor)', () => {
+  test.use({ storageState: authStatePath('supervisor') })
 
   test('thesis detail shows sections for WRITING thesis', async ({ page }) => {
     // Thesis 1: WRITING state, "Automated Code Review Using LLMs"
@@ -71,9 +71,9 @@ test.describe('Theses - Detail page (Student)', () => {
 })
 
 test.describe('Theses - Dashboard integration', () => {
-  test.use({ storageState: authStatePath('supervisor') })
+  test.use({ storageState: authStatePath('examiner') })
 
-  test('supervisor dashboard shows My Theses section', async ({ page }) => {
+  test('examiner dashboard shows My Theses section', async ({ page }) => {
     await navigateTo(page, '/dashboard')
 
     await expect(page.getByRole('heading', { name: /dashboard/i })).toBeVisible({ timeout: 15_000 })

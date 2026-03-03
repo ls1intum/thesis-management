@@ -4,7 +4,7 @@ import { authStatePath, navigateTo, navigateToDetail } from './helpers'
 const EXPIRED_THESIS_ID = '00000000-0000-4000-d000-000000000008'
 const ALREADY_ANONYMIZED_THESIS_ID = '00000000-0000-4000-d000-000000000009'
 const RECENT_FINISHED_THESIS_ID = '00000000-0000-4000-d000-000000000004'
-// Thesis 1 — always available, not anonymized, supervisor has SUPERVISOR role on it
+// Thesis 1 — always available, not anonymized, examiner has EXAMINER role on it
 const NON_ANONYMIZED_THESIS_ID = '00000000-0000-4000-d000-000000000001'
 
 test.describe('Thesis Anonymization - Admin Batch Operations', () => {
@@ -161,10 +161,10 @@ test.describe('Thesis Anonymization - Non-Admin Restrictions', () => {
   })
 })
 
-test.describe('Thesis Anonymization - Advisor Restrictions', () => {
-  test.use({ storageState: authStatePath('advisor') })
+test.describe('Thesis Anonymization - Supervisor Restrictions', () => {
+  test.use({ storageState: authStatePath('supervisor') })
 
-  test('advisor cannot access admin page for batch anonymization', async ({ page }) => {
+  test('supervisor cannot access admin page for batch anonymization', async ({ page }) => {
     await navigateTo(page, '/admin')
 
     await expect(page.getByRole('heading', { name: 'Administration' })).not.toBeVisible({
@@ -172,7 +172,7 @@ test.describe('Thesis Anonymization - Advisor Restrictions', () => {
     })
   })
 
-  test('advisor does not see anonymize button on thesis detail', async ({ page }) => {
+  test('supervisor does not see anonymize button on thesis detail', async ({ page }) => {
     const heading = page.getByRole('heading', { name: /Automated Code Review/i })
     const loaded = await navigateToDetail(
       page,
@@ -185,7 +185,7 @@ test.describe('Thesis Anonymization - Advisor Restrictions', () => {
     // Open Configuration accordion
     await page.getByText('Configuration').click()
 
-    // Advisor should see Update button but NOT Anonymize Thesis
+    // Supervisor should see Update button but NOT Anonymize Thesis
     await expect(page.getByRole('button', { name: 'Update' })).toBeVisible({ timeout: 5_000 })
     await expect(page.getByRole('button', { name: 'Anonymize Thesis' })).not.toBeVisible({
       timeout: 3_000,

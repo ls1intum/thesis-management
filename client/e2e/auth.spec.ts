@@ -58,25 +58,6 @@ test.describe('Authentication - Student', () => {
   })
 })
 
-test.describe('Authentication - Advisor', () => {
-  test.use({ storageState: authStatePath('advisor') })
-
-  test('sees management nav items but not admin items', async ({ page }) => {
-    await navigateTo(page, '/dashboard')
-
-    await expect(page.getByRole('heading', { name: /dashboard/i })).toBeVisible({ timeout: 15_000 })
-    // Advisor should see management items
-    await expect(page.getByRole('link', { name: 'Review Applications' })).toBeVisible()
-    await expect(page.getByRole('link', { name: 'Manage Topics' })).toBeVisible()
-    await expect(page.getByRole('link', { name: 'Theses Overview' })).toBeVisible()
-    await expect(page.getByRole('link', { name: 'Interviews' })).toBeVisible()
-    // Advisor should NOT see Submit Application (hidden from advisor/supervisor)
-    await expect(page.getByRole('link', { name: 'Submit Application' })).toBeHidden()
-    // Advisor should NOT see admin-only items
-    await expect(page.getByRole('link', { name: 'Research Groups' })).toBeHidden()
-  })
-})
-
 test.describe('Authentication - Supervisor', () => {
   test.use({ storageState: authStatePath('supervisor') })
 
@@ -89,9 +70,28 @@ test.describe('Authentication - Supervisor', () => {
     await expect(page.getByRole('link', { name: 'Manage Topics' })).toBeVisible()
     await expect(page.getByRole('link', { name: 'Theses Overview' })).toBeVisible()
     await expect(page.getByRole('link', { name: 'Interviews' })).toBeVisible()
-    // Supervisor should NOT see Submit Application
+    // Supervisor should NOT see Submit Application (hidden from supervisor/examiner)
     await expect(page.getByRole('link', { name: 'Submit Application' })).toBeHidden()
     // Supervisor should NOT see admin-only items
+    await expect(page.getByRole('link', { name: 'Research Groups' })).toBeHidden()
+  })
+})
+
+test.describe('Authentication - Examiner', () => {
+  test.use({ storageState: authStatePath('examiner') })
+
+  test('sees management nav items but not admin items', async ({ page }) => {
+    await navigateTo(page, '/dashboard')
+
+    await expect(page.getByRole('heading', { name: /dashboard/i })).toBeVisible({ timeout: 15_000 })
+    // Examiner should see management items
+    await expect(page.getByRole('link', { name: 'Review Applications' })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Manage Topics' })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Theses Overview' })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Interviews' })).toBeVisible()
+    // Examiner should NOT see Submit Application
+    await expect(page.getByRole('link', { name: 'Submit Application' })).toBeHidden()
+    // Examiner should NOT see admin-only items
     await expect(page.getByRole('link', { name: 'Research Groups' })).toBeHidden()
   })
 })

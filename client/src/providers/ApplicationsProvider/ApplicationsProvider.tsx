@@ -62,8 +62,8 @@ const ApplicationsProvider = (props: PropsWithChildren<IApplicationsProviderProp
         ...(topics ?? [])
           .filter(
             (topic) =>
-              (topic.supervisors ?? []).some((supervisor) => supervisor.userId === user.userId) ||
-              (topic.advisors ?? []).some((advisor) => advisor.userId === user.userId),
+              (topic.examiners ?? []).some((examiner) => examiner.userId === user.userId) ||
+              (topic.supervisors ?? []).some((supervisor) => supervisor.userId === user.userId),
           )
           .map((topic) => topic.topicId),
       ]

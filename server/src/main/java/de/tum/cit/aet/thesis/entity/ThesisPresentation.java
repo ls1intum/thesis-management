@@ -89,7 +89,7 @@ public class ThesisPresentation {
 	private List<ThesisPresentationInvite> invites = new ArrayList<>();
 
 	public boolean hasManagementAccess(User user) {
-		return thesis.hasAdvisorAccess(user) || createdBy.getId().equals(user.getId());
+		return thesis.hasSupervisorAccess(user) || createdBy.getId().equals(user.getId());
 	}
 
 	public ResearchGroup getResearchGroup() {

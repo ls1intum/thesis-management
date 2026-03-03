@@ -16,8 +16,8 @@ public record PublishedThesisDto(
 		Instant endDate,
 		String abstractText,
 		List<MinimalUserDto> students,
-		List<MinimalUserDto> advisors,
 		List<MinimalUserDto> supervisors,
+		List<MinimalUserDto> examiners,
 		LightResearchGroupDto researchGroup
 ) {
 	public static PublishedThesisDto fromThesisEntity(Thesis thesis) {
@@ -34,8 +34,8 @@ public record PublishedThesisDto(
 				thesis.getEndDate(),
 				thesis.getAbstractField(),
 				thesis.getStudents().stream().map(MinimalUserDto::fromUserEntity).toList(),
-				thesis.getAdvisors().stream().map(MinimalUserDto::fromUserEntity).toList(),
 				thesis.getSupervisors().stream().map(MinimalUserDto::fromUserEntity).toList(),
+				thesis.getExaminers().stream().map(MinimalUserDto::fromUserEntity).toList(),
 				LightResearchGroupDto.fromResearchGroupEntity(thesis.getResearchGroup())
 		);
 	}

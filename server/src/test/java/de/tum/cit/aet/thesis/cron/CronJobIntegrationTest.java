@@ -243,7 +243,7 @@ class CronJobIntegrationTest extends BaseIntegrationTest {
 					})
 					.map(Address::toString)
 					.toList();
-			assertThat(recipients).as("Advisor should receive a reminder email")
+			assertThat(recipients).as("Supervisor should receive a reminder email")
 					.anyMatch(addr -> addr.contains(advisor.universityId()));
 		}
 

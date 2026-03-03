@@ -18,9 +18,9 @@ VALUES
     -- Existing Keycloak users
     (gen_random_uuid(), 'admin', NULL, 'admin@test.local', 'Admin', 'User',
      NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NOW(), NOW()),
-    (gen_random_uuid(), 'supervisor', '03700001', 'supervisor@test.local', 'Supervisor', 'User',
+    (gen_random_uuid(), 'examiner', '03700001', 'examiner@test.local', 'Examiner', 'User',
      'MALE', 'DE', NULL, NULL, NULL, NULL, NULL, NULL, NOW(), NOW()),
-    (gen_random_uuid(), 'advisor', '03700002', 'advisor@test.local', 'Advisor', 'User',
+    (gen_random_uuid(), 'supervisor', '03700002', 'supervisor@test.local', 'Supervisor', 'User',
      'FEMALE', 'DE', NULL, NULL, NULL, NULL, NULL, NULL, NOW(), NOW()),
     (gen_random_uuid(), 'student', '03700003', 'student@test.local', 'Student', 'User',
      'MALE', 'DE', 'MASTER', 'COMPUTER_SCIENCE',
@@ -29,9 +29,9 @@ VALUES
      'Java, Spring Boot, PostgreSQL',
      NOW(), NOW(), NOW()),
     -- New Keycloak users
-    (gen_random_uuid(), 'supervisor2', '03700004', 'supervisor2@test.local', 'Supervisor2', 'User',
+    (gen_random_uuid(), 'examiner2', '03700004', 'examiner2@test.local', 'Examiner2', 'User',
      'FEMALE', 'US', NULL, NULL, NULL, NULL, NULL, NULL, NOW(), NOW()),
-    (gen_random_uuid(), 'advisor2', '03700005', 'advisor2@test.local', 'Advisor2', 'User',
+    (gen_random_uuid(), 'supervisor2', '03700005', 'supervisor2@test.local', 'Supervisor2', 'User',
      'MALE', 'UK', NULL, NULL, NULL, NULL, NULL, NULL, NOW(), NOW()),
     (gen_random_uuid(), 'student2', '03700006', 'student2@test.local', 'Student2', 'User',
      'FEMALE', 'US', 'BACHELOR', 'INFORMATION_SYSTEMS',
@@ -79,11 +79,11 @@ ON CONFLICT (university_id) DO UPDATE SET
 INSERT INTO user_groups (user_id, "group")
 VALUES
     ((SELECT user_id FROM users WHERE university_id = 'admin'), 'admin'),
-    ((SELECT user_id FROM users WHERE university_id = 'supervisor'), 'supervisor'),
-    ((SELECT user_id FROM users WHERE university_id = 'advisor'), 'advisor'),
+    ((SELECT user_id FROM users WHERE university_id = 'examiner'), 'supervisor'),
+    ((SELECT user_id FROM users WHERE university_id = 'supervisor'), 'advisor'),
     ((SELECT user_id FROM users WHERE university_id = 'student'), 'student'),
-    ((SELECT user_id FROM users WHERE university_id = 'supervisor2'), 'supervisor'),
-    ((SELECT user_id FROM users WHERE university_id = 'advisor2'), 'advisor'),
+    ((SELECT user_id FROM users WHERE university_id = 'examiner2'), 'supervisor'),
+    ((SELECT user_id FROM users WHERE university_id = 'supervisor2'), 'advisor'),
     ((SELECT user_id FROM users WHERE university_id = 'student2'), 'student'),
     ((SELECT user_id FROM users WHERE university_id = 'student3'), 'student'),
     ((SELECT user_id FROM users WHERE university_id = 'student4'), 'student'),
@@ -98,19 +98,19 @@ INSERT INTO research_groups (research_group_id, head_user_id, name, abbreviation
                              website_url, campus, created_at, created_by, updated_at, updated_by, archived)
 VALUES
     ('00000000-0000-4000-a000-000000000001'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'supervisor'),
+     (SELECT user_id FROM users WHERE university_id = 'examiner'),
      'Applied Software Engineering', 'ASE',
      'The ASE group focuses on modern software engineering practices, agile development, and continuous integration. Our research bridges academia and industry.',
      'https://ase.cit.tum.de/', 'Munich - Main Campus',
-     NOW(), (SELECT user_id FROM users WHERE university_id = 'supervisor'),
-     NOW(), (SELECT user_id FROM users WHERE university_id = 'supervisor'), FALSE),
+     NOW(), (SELECT user_id FROM users WHERE university_id = 'examiner'),
+     NOW(), (SELECT user_id FROM users WHERE university_id = 'examiner'), FALSE),
     ('00000000-0000-4000-a000-000000000002'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'supervisor2'),
+     (SELECT user_id FROM users WHERE university_id = 'examiner2'),
      'Data Science and Analytics', 'DSA',
      'DSA researches scalable data processing, machine learning pipelines, and applied statistics for real-world decision support systems.',
      'https://dsa.cit.tum.de/', 'Munich - Garching',
-     NOW(), (SELECT user_id FROM users WHERE university_id = 'supervisor2'),
-     NOW(), (SELECT user_id FROM users WHERE university_id = 'supervisor2'), FALSE)
+     NOW(), (SELECT user_id FROM users WHERE university_id = 'examiner2'),
+     NOW(), (SELECT user_id FROM users WHERE university_id = 'examiner2'), FALSE)
 ON CONFLICT DO NOTHING;
 
 -- ============================================================================
@@ -127,10 +127,10 @@ ON CONFLICT DO NOTHING;
 -- 5. ASSIGN USERS TO RESEARCH GROUPS
 -- ============================================================================
 UPDATE users SET research_group_id = '00000000-0000-4000-a000-000000000001'::UUID
-WHERE university_id IN ('supervisor', 'advisor', 'advisor2', 'group-admin') AND research_group_id IS NULL;
+WHERE university_id IN ('examiner', 'supervisor', 'supervisor2', 'group-admin') AND research_group_id IS NULL;
 
 UPDATE users SET research_group_id = '00000000-0000-4000-a000-000000000002'::UUID
-WHERE university_id = 'supervisor2' AND research_group_id IS NULL;
+WHERE university_id = 'examiner2' AND research_group_id IS NULL;
 
 -- ============================================================================
 -- 6. TOPICS (6 topics across both groups)
@@ -149,7 +149,7 @@ VALUES
      'Zhang et al., "LLM-Assisted Code Review: A Survey", ICSE 2024.',
      NOW() - INTERVAL '10 days', NULL,
      NOW(), NOW() - INTERVAL '10 days',
-     (SELECT user_id FROM users WHERE university_id = 'supervisor'),
+     (SELECT user_id FROM users WHERE university_id = 'examiner'),
      '00000000-0000-4000-a000-000000000001'::UUID),
 
     -- OPEN topic 2 (ASE)
@@ -162,7 +162,7 @@ VALUES
      'Memon et al., "Regression Test Selection for CI", FSE 2023.',
      NOW() - INTERVAL '5 days', NULL,
      NOW(), NOW() - INTERVAL '5 days',
-     (SELECT user_id FROM users WHERE university_id = 'advisor'),
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'),
      '00000000-0000-4000-a000-000000000001'::UUID),
 
     -- OPEN topic 3 (DSA)
@@ -175,7 +175,7 @@ VALUES
      'Aggarwal, "Outlier Analysis", Springer 2022. Gama et al., "Concept Drift Adaptation", ACM CSUR 2014.',
      NOW() - INTERVAL '3 days', NULL,
      NOW(), NOW() - INTERVAL '3 days',
-     (SELECT user_id FROM users WHERE university_id = 'supervisor2'),
+     (SELECT user_id FROM users WHERE university_id = 'examiner2'),
      '00000000-0000-4000-a000-000000000002'::UUID),
 
     -- DRAFT topic 1 (ASE)
@@ -188,7 +188,7 @@ VALUES
      'Deterding et al., "Gamification: Designing for Motivation", Interactions 2012.',
      NULL, NULL,
      NOW(), NOW() - INTERVAL '1 day',
-     (SELECT user_id FROM users WHERE university_id = 'advisor'),
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'),
      '00000000-0000-4000-a000-000000000001'::UUID),
 
     -- DRAFT topic 2 (DSA)
@@ -201,7 +201,7 @@ VALUES
      'McMahan et al., "Communication-Efficient Learning", AISTATS 2017.',
      NULL, NULL,
      NOW(), NOW() - INTERVAL '2 days',
-     (SELECT user_id FROM users WHERE university_id = 'supervisor2'),
+     (SELECT user_id FROM users WHERE university_id = 'examiner2'),
      '00000000-0000-4000-a000-000000000002'::UUID),
 
     -- CLOSED topic (ASE)
@@ -214,13 +214,13 @@ VALUES
      'Newman, "Monolith to Microservices", O Reilly 2019.',
      NOW() - INTERVAL '60 days', NOW() - INTERVAL '10 days',
      NOW() - INTERVAL '10 days', NOW() - INTERVAL '60 days',
-     (SELECT user_id FROM users WHERE university_id = 'supervisor'),
+     (SELECT user_id FROM users WHERE university_id = 'examiner'),
      '00000000-0000-4000-a000-000000000001'::UUID)
 ON CONFLICT DO NOTHING;
 
 -- ============================================================================
 -- 7. TOPIC ROLES (examiner + supervisor assignments per topic)
---    Server roles: SUPERVISOR = Examiner (UI), ADVISOR = Supervisor (UI)
+--    Server roles: EXAMINER = Examiner (UI), SUPERVISOR = Supervisor (UI)
 -- ============================================================================
 DELETE FROM topic_roles WHERE topic_id IN (
     '00000000-0000-4000-b000-000000000001'::UUID,
@@ -232,56 +232,56 @@ DELETE FROM topic_roles WHERE topic_id IN (
 );
 INSERT INTO topic_roles (topic_id, user_id, role, position, assigned_at, assigned_by)
 VALUES
-    -- Topic 1 (ASE, open): examiner=supervisor, supervisor=advisor (different persons)
+    -- Topic 1 (ASE, open): examiner=examiner, supervisor=supervisor (different persons)
+    ('00000000-0000-4000-b000-000000000001'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'examiner'), 'EXAMINER', 0,
+     NOW(), (SELECT user_id FROM users WHERE university_id = 'examiner')),
     ('00000000-0000-4000-b000-000000000001'::UUID,
      (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
-     NOW(), (SELECT user_id FROM users WHERE university_id = 'supervisor')),
-    ('00000000-0000-4000-b000-000000000001'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'advisor'), 'ADVISOR', 0,
-     NOW(), (SELECT user_id FROM users WHERE university_id = 'supervisor')),
+     NOW(), (SELECT user_id FROM users WHERE university_id = 'examiner')),
 
-    -- Topic 2 (ASE, open): examiner=supervisor, supervisors=advisor+advisor2 (multiple supervisors)
+    -- Topic 2 (ASE, open): examiner=examiner, supervisors=supervisor+supervisor2 (multiple supervisors)
+    ('00000000-0000-4000-b000-000000000002'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'examiner'), 'EXAMINER', 0,
+     NOW(), (SELECT user_id FROM users WHERE university_id = 'examiner')),
     ('00000000-0000-4000-b000-000000000002'::UUID,
      (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
      NOW(), (SELECT user_id FROM users WHERE university_id = 'supervisor')),
     ('00000000-0000-4000-b000-000000000002'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'advisor'), 'ADVISOR', 0,
-     NOW(), (SELECT user_id FROM users WHERE university_id = 'advisor')),
-    ('00000000-0000-4000-b000-000000000002'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'advisor2'), 'ADVISOR', 1,
-     NOW(), (SELECT user_id FROM users WHERE university_id = 'advisor')),
+     (SELECT user_id FROM users WHERE university_id = 'supervisor2'), 'SUPERVISOR', 1,
+     NOW(), (SELECT user_id FROM users WHERE university_id = 'supervisor')),
 
-    -- Topic 3 (DSA, open): examiner=supervisor2, supervisor=advisor2
+    -- Topic 3 (DSA, open): examiner=examiner2, supervisor=supervisor2
+    ('00000000-0000-4000-b000-000000000003'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'examiner2'), 'EXAMINER', 0,
+     NOW(), (SELECT user_id FROM users WHERE university_id = 'examiner2')),
     ('00000000-0000-4000-b000-000000000003'::UUID,
      (SELECT user_id FROM users WHERE university_id = 'supervisor2'), 'SUPERVISOR', 0,
-     NOW(), (SELECT user_id FROM users WHERE university_id = 'supervisor2')),
-    ('00000000-0000-4000-b000-000000000003'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'advisor2'), 'ADVISOR', 0,
-     NOW(), (SELECT user_id FROM users WHERE university_id = 'supervisor2')),
+     NOW(), (SELECT user_id FROM users WHERE university_id = 'examiner2')),
 
-    -- Topic 4 (ASE, draft): examiner AND supervisor = same person (supervisor)
+    -- Topic 4 (ASE, draft): examiner AND supervisor = same person (examiner)
     ('00000000-0000-4000-b000-000000000004'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
-     NOW(), (SELECT user_id FROM users WHERE university_id = 'supervisor')),
+     (SELECT user_id FROM users WHERE university_id = 'examiner'), 'EXAMINER', 0,
+     NOW(), (SELECT user_id FROM users WHERE university_id = 'examiner')),
     ('00000000-0000-4000-b000-000000000004'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'ADVISOR', 0,
-     NOW(), (SELECT user_id FROM users WHERE university_id = 'supervisor')),
+     (SELECT user_id FROM users WHERE university_id = 'examiner'), 'SUPERVISOR', 0,
+     NOW(), (SELECT user_id FROM users WHERE university_id = 'examiner')),
 
-    -- Topic 5 (DSA, draft): examiner=supervisor2, supervisor=advisor2
+    -- Topic 5 (DSA, draft): examiner=examiner2, supervisor=supervisor2
+    ('00000000-0000-4000-b000-000000000005'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'examiner2'), 'EXAMINER', 0,
+     NOW(), (SELECT user_id FROM users WHERE university_id = 'examiner2')),
     ('00000000-0000-4000-b000-000000000005'::UUID,
      (SELECT user_id FROM users WHERE university_id = 'supervisor2'), 'SUPERVISOR', 0,
-     NOW(), (SELECT user_id FROM users WHERE university_id = 'supervisor2')),
-    ('00000000-0000-4000-b000-000000000005'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'advisor2'), 'ADVISOR', 0,
-     NOW(), (SELECT user_id FROM users WHERE university_id = 'supervisor2')),
+     NOW(), (SELECT user_id FROM users WHERE university_id = 'examiner2')),
 
-    -- Topic 6 (ASE, closed): examiner=supervisor, supervisor=advisor
+    -- Topic 6 (ASE, closed): examiner=examiner, supervisor=supervisor
+    ('00000000-0000-4000-b000-000000000006'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'examiner'), 'EXAMINER', 0,
+     NOW(), (SELECT user_id FROM users WHERE university_id = 'examiner')),
     ('00000000-0000-4000-b000-000000000006'::UUID,
      (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
-     NOW(), (SELECT user_id FROM users WHERE university_id = 'supervisor')),
-    ('00000000-0000-4000-b000-000000000006'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'advisor'), 'ADVISOR', 0,
-     NOW(), (SELECT user_id FROM users WHERE university_id = 'supervisor'))
+     NOW(), (SELECT user_id FROM users WHERE university_id = 'examiner'))
 ON CONFLICT DO NOTHING;
 
 -- ============================================================================
@@ -404,33 +404,33 @@ VALUES
 ON CONFLICT DO NOTHING;
 
 -- ============================================================================
--- 9. APPLICATION REVIEWERS (advisor reviews on assessed applications)
+-- 9. APPLICATION REVIEWERS (supervisor user reviews on assessed applications)
 -- ============================================================================
 INSERT INTO application_reviewers (application_id, user_id, reason, reviewed_at)
 VALUES
-    -- Accepted app 1: advisor interested
+    -- Accepted app 1: supervisor interested
     ('00000000-0000-4000-c000-000000000001'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'advisor'),
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'),
      'INTERESTED', NOW() - INTERVAL '32 days'),
-    -- Accepted app 2: advisor interested
+    -- Accepted app 2: supervisor interested
     ('00000000-0000-4000-c000-000000000002'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'advisor'),
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'),
      'INTERESTED', NOW() - INTERVAL '22 days'),
-    -- Accepted app 3: advisor2 interested
+    -- Accepted app 3: supervisor2 interested
     ('00000000-0000-4000-c000-000000000003'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'advisor2'),
+     (SELECT user_id FROM users WHERE university_id = 'supervisor2'),
      'INTERESTED', NOW() - INTERVAL '17 days'),
-    -- Rejected app: advisor2 not interested
+    -- Rejected app: supervisor2 not interested
     ('00000000-0000-4000-c000-000000000006'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'advisor2'),
+     (SELECT user_id FROM users WHERE university_id = 'supervisor2'),
      'NOT_INTERESTED', NOW() - INTERVAL '6 days'),
-    -- Old rejected app 1: advisor not interested
+    -- Old rejected app 1: supervisor not interested
     ('00000000-0000-4000-c000-000000000009'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'advisor'),
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'),
      'NOT_INTERESTED', NOW() - INTERVAL '400 days'),
-    -- Old rejected app 2: advisor not interested
+    -- Old rejected app 2: supervisor not interested
     ('00000000-0000-4000-c000-00000000000a'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'advisor'),
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'),
      'NOT_INTERESTED', NOW() - INTERVAL '500 days')
 ON CONFLICT DO NOTHING;
 
@@ -512,60 +512,60 @@ ON CONFLICT DO NOTHING;
 -- ============================================================================
 INSERT INTO thesis_roles (thesis_id, user_id, role, position, assigned_at, assigned_by)
 VALUES
-    -- Thesis 1 (WRITING): student + advisor + supervisor
+    -- Thesis 1 (WRITING): student=student, supervisor=supervisor, examiner=examiner
     ('00000000-0000-4000-d000-000000000001'::UUID,
      (SELECT user_id FROM users WHERE university_id = 'student'), 'STUDENT', 0,
-     NOW() - INTERVAL '30 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
-    ('00000000-0000-4000-d000-000000000001'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'advisor'), 'ADVISOR', 0,
-     NOW() - INTERVAL '30 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
+     NOW() - INTERVAL '30 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
     ('00000000-0000-4000-d000-000000000001'::UUID,
      (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
-     NOW() - INTERVAL '30 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
+     NOW() - INTERVAL '30 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
+    ('00000000-0000-4000-d000-000000000001'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'examiner'), 'EXAMINER', 0,
+     NOW() - INTERVAL '30 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
 
-    -- Thesis 2 (PROPOSAL): student2 + advisor + supervisor
+    -- Thesis 2 (PROPOSAL): student=student2, supervisor=supervisor, examiner=examiner
     ('00000000-0000-4000-d000-000000000002'::UUID,
      (SELECT user_id FROM users WHERE university_id = 'student2'), 'STUDENT', 0,
-     NOW() - INTERVAL '18 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
-    ('00000000-0000-4000-d000-000000000002'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'advisor'), 'ADVISOR', 0,
-     NOW() - INTERVAL '18 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
+     NOW() - INTERVAL '18 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
     ('00000000-0000-4000-d000-000000000002'::UUID,
      (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
-     NOW() - INTERVAL '18 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
+     NOW() - INTERVAL '18 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
+    ('00000000-0000-4000-d000-000000000002'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'examiner'), 'EXAMINER', 0,
+     NOW() - INTERVAL '18 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
 
-    -- Thesis 3 (SUBMITTED): student3 + advisor2 + supervisor2
+    -- Thesis 3 (SUBMITTED): student=student3, supervisor=supervisor2, examiner=examiner2
     ('00000000-0000-4000-d000-000000000003'::UUID,
      (SELECT user_id FROM users WHERE university_id = 'student3'), 'STUDENT', 0,
-     NOW() - INTERVAL '180 days', (SELECT user_id FROM users WHERE university_id = 'supervisor2')),
-    ('00000000-0000-4000-d000-000000000003'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'advisor2'), 'ADVISOR', 0,
-     NOW() - INTERVAL '180 days', (SELECT user_id FROM users WHERE university_id = 'supervisor2')),
+     NOW() - INTERVAL '180 days', (SELECT user_id FROM users WHERE university_id = 'examiner2')),
     ('00000000-0000-4000-d000-000000000003'::UUID,
      (SELECT user_id FROM users WHERE university_id = 'supervisor2'), 'SUPERVISOR', 0,
-     NOW() - INTERVAL '180 days', (SELECT user_id FROM users WHERE university_id = 'supervisor2')),
+     NOW() - INTERVAL '180 days', (SELECT user_id FROM users WHERE university_id = 'examiner2')),
+    ('00000000-0000-4000-d000-000000000003'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'examiner2'), 'EXAMINER', 0,
+     NOW() - INTERVAL '180 days', (SELECT user_id FROM users WHERE university_id = 'examiner2')),
 
-    -- Thesis 4 (FINISHED): student + advisor + supervisor (old thesis)
+    -- Thesis 4 (FINISHED): student=student, supervisor=supervisor, examiner=examiner (old thesis)
     ('00000000-0000-4000-d000-000000000004'::UUID,
      (SELECT user_id FROM users WHERE university_id = 'student'), 'STUDENT', 0,
-     NOW() - INTERVAL '365 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
-    ('00000000-0000-4000-d000-000000000004'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'advisor'), 'ADVISOR', 0,
-     NOW() - INTERVAL '365 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
+     NOW() - INTERVAL '365 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
     ('00000000-0000-4000-d000-000000000004'::UUID,
      (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
-     NOW() - INTERVAL '365 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
+     NOW() - INTERVAL '365 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
+    ('00000000-0000-4000-d000-000000000004'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'examiner'), 'EXAMINER', 0,
+     NOW() - INTERVAL '365 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
 
-    -- Thesis 5 (DROPPED_OUT): student5 + advisor2 + supervisor2
+    -- Thesis 5 (DROPPED_OUT): student=student5, supervisor=supervisor2, examiner=examiner2
     ('00000000-0000-4000-d000-000000000005'::UUID,
      (SELECT user_id FROM users WHERE university_id = 'student5'), 'STUDENT', 0,
-     NOW() - INTERVAL '120 days', (SELECT user_id FROM users WHERE university_id = 'supervisor2')),
-    ('00000000-0000-4000-d000-000000000005'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'advisor2'), 'ADVISOR', 0,
-     NOW() - INTERVAL '120 days', (SELECT user_id FROM users WHERE university_id = 'supervisor2')),
+     NOW() - INTERVAL '120 days', (SELECT user_id FROM users WHERE university_id = 'examiner2')),
     ('00000000-0000-4000-d000-000000000005'::UUID,
      (SELECT user_id FROM users WHERE university_id = 'supervisor2'), 'SUPERVISOR', 0,
-     NOW() - INTERVAL '120 days', (SELECT user_id FROM users WHERE university_id = 'supervisor2'))
+     NOW() - INTERVAL '120 days', (SELECT user_id FROM users WHERE university_id = 'examiner2')),
+    ('00000000-0000-4000-d000-000000000005'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'examiner2'), 'EXAMINER', 0,
+     NOW() - INTERVAL '120 days', (SELECT user_id FROM users WHERE university_id = 'examiner2'))
 ON CONFLICT DO NOTHING;
 
 -- ============================================================================
@@ -610,7 +610,7 @@ VALUES
      '00000000-0000-4000-d000-000000000001'::UUID,
      'proposal_llm_code_review_v1.pdf',
      NOW() - INTERVAL '26 days',
-     (SELECT user_id FROM users WHERE university_id = 'advisor'),
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'),
      NOW() - INTERVAL '28 days',
      (SELECT user_id FROM users WHERE university_id = 'student')),
 
@@ -627,7 +627,7 @@ VALUES
      '00000000-0000-4000-d000-000000000003'::UUID,
      'proposal_anomaly_detection_final.pdf',
      NOW() - INTERVAL '172 days',
-     (SELECT user_id FROM users WHERE university_id = 'advisor2'),
+     (SELECT user_id FROM users WHERE university_id = 'supervisor2'),
      NOW() - INTERVAL '175 days',
      (SELECT user_id FROM users WHERE university_id = 'student3')),
 
@@ -636,7 +636,7 @@ VALUES
      '00000000-0000-4000-d000-000000000004'::UUID,
      'proposal_microservices_migration.pdf',
      NOW() - INTERVAL '352 days',
-     (SELECT user_id FROM users WHERE university_id = 'advisor'),
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'),
      NOW() - INTERVAL '358 days',
      (SELECT user_id FROM users WHERE university_id = 'student')),
 
@@ -645,7 +645,7 @@ VALUES
      '00000000-0000-4000-d000-000000000005'::UUID,
      'proposal_federated_learning.pdf',
      NOW() - INTERVAL '112 days',
-     (SELECT user_id FROM users WHERE university_id = 'advisor2'),
+     (SELECT user_id FROM users WHERE university_id = 'supervisor2'),
      NOW() - INTERVAL '115 days',
      (SELECT user_id FROM users WHERE university_id = 'student5'))
 ON CONFLICT DO NOTHING;
@@ -656,7 +656,7 @@ ON CONFLICT DO NOTHING;
 INSERT INTO thesis_assessments (assessment_id, thesis_id, summary, positives, negatives,
                                 grade_suggestion, created_at, created_by)
 VALUES
-    -- Thesis 4 (FINISHED): assessment by advisor
+    -- Thesis 4 (FINISHED): assessment by supervisor (supervisor role)
     ('00000000-0000-4000-e100-000000000001'::UUID,
      '00000000-0000-4000-d000-000000000004'::UUID,
      'The thesis presents a comprehensive migration framework from monolithic to microservice architectures. The approach is well-structured and the evaluation is thorough.',
@@ -664,9 +664,9 @@ VALUES
      'The performance evaluation could be more detailed. Some edge cases in the dependency analysis are not covered.',
      '1.3',
      NOW() - INTERVAL '95 days',
-     (SELECT user_id FROM users WHERE university_id = 'advisor')),
+     (SELECT user_id FROM users WHERE university_id = 'supervisor')),
 
-    -- Thesis 4 (FINISHED): assessment by supervisor
+    -- Thesis 4 (FINISHED): assessment by examiner (examiner role)
     ('00000000-0000-4000-e100-000000000002'::UUID,
      '00000000-0000-4000-d000-000000000004'::UUID,
      'A solid contribution to the field of software architecture migration. The tooling aspect adds significant practical value beyond the academic contribution.',
@@ -674,9 +674,9 @@ VALUES
      'The scalability analysis for very large monoliths is limited. Could benefit from additional case studies.',
      '1.3',
      NOW() - INTERVAL '92 days',
-     (SELECT user_id FROM users WHERE university_id = 'supervisor')),
+     (SELECT user_id FROM users WHERE university_id = 'examiner')),
 
-    -- Thesis 3 (SUBMITTED): early assessment by advisor2
+    -- Thesis 3 (SUBMITTED): early assessment by supervisor2
     ('00000000-0000-4000-e100-000000000003'::UUID,
      '00000000-0000-4000-d000-000000000003'::UUID,
      'The thesis addresses a relevant problem in IoT anomaly detection. The proposed framework shows promising results on the benchmark datasets.',
@@ -684,7 +684,7 @@ VALUES
      'The concept drift adaptation mechanism needs more rigorous evaluation. The latency benchmarks should include more baseline comparisons.',
      '1.7',
      NOW() - INTERVAL '1 day',
-     (SELECT user_id FROM users WHERE university_id = 'advisor2'))
+     (SELECT user_id FROM users WHERE university_id = 'supervisor2'))
 ON CONFLICT DO NOTHING;
 
 -- ============================================================================
@@ -693,14 +693,14 @@ ON CONFLICT DO NOTHING;
 INSERT INTO thesis_comments (comment_id, thesis_id, type, message, filename, upload_name,
                              created_at, created_by)
 VALUES
-    -- Thesis 1 (WRITING): advisor feedback on progress
+    -- Thesis 1 (WRITING): supervisor user feedback on progress
     ('00000000-0000-4000-e200-000000000001'::UUID,
      '00000000-0000-4000-d000-000000000001'::UUID,
-     'ADVISOR',
+     'SUPERVISOR',
      'Good progress on the literature review. Please make sure to include the recent work by Chen et al. on automated PR review.',
      NULL, NULL,
      NOW() - INTERVAL '20 days',
-     (SELECT user_id FROM users WHERE university_id = 'advisor')),
+     (SELECT user_id FROM users WHERE university_id = 'supervisor')),
 
     -- Thesis 1 (WRITING): student response
     ('00000000-0000-4000-e200-000000000002'::UUID,
@@ -711,32 +711,32 @@ VALUES
      NOW() - INTERVAL '18 days',
      (SELECT user_id FROM users WHERE university_id = 'student')),
 
-    -- Thesis 1 (WRITING): advisor with file attachment
+    -- Thesis 1 (WRITING): supervisor user with file attachment
     ('00000000-0000-4000-e200-000000000003'::UUID,
      '00000000-0000-4000-d000-000000000001'::UUID,
-     'ADVISOR',
+     'SUPERVISOR',
      'Here are my detailed comments on your Chapter 3 draft. Please address the points highlighted in the PDF.',
      'chapter3_review_notes.pdf', 'chapter3_review_notes.pdf',
      NOW() - INTERVAL '10 days',
-     (SELECT user_id FROM users WHERE university_id = 'advisor')),
+     (SELECT user_id FROM users WHERE university_id = 'supervisor')),
 
-    -- Thesis 2 (PROPOSAL): advisor comment on proposal
+    -- Thesis 2 (PROPOSAL): supervisor user comment on proposal
     ('00000000-0000-4000-e200-000000000004'::UUID,
      '00000000-0000-4000-d000-000000000002'::UUID,
-     'ADVISOR',
+     'SUPERVISOR',
      'Your proposal looks promising. Please elaborate more on the test selection algorithm and add a timeline for the milestones.',
      NULL, NULL,
      NOW() - INTERVAL '8 days',
-     (SELECT user_id FROM users WHERE university_id = 'advisor')),
+     (SELECT user_id FROM users WHERE university_id = 'supervisor')),
 
-    -- Thesis 3 (SUBMITTED): supervisor comment
+    -- Thesis 3 (SUBMITTED): examiner2 user comment
     ('00000000-0000-4000-e200-000000000005'::UUID,
      '00000000-0000-4000-d000-000000000003'::UUID,
      'THESIS',
      'The thesis has been submitted. Please prepare for the final presentation and share the slides at least one week in advance.',
      NULL, NULL,
      NOW() - INTERVAL '1 day',
-     (SELECT user_id FROM users WHERE university_id = 'supervisor2')),
+     (SELECT user_id FROM users WHERE university_id = 'examiner2')),
 
     -- Thesis 4 (FINISHED): final comment
     ('00000000-0000-4000-e200-000000000006'::UUID,
@@ -745,7 +745,7 @@ VALUES
      'Congratulations on completing your thesis! The final version has been archived.',
      NULL, NULL,
      NOW() - INTERVAL '60 days',
-     (SELECT user_id FROM users WHERE university_id = 'supervisor'))
+     (SELECT user_id FROM users WHERE university_id = 'examiner'))
 ON CONFLICT DO NOTHING;
 
 -- ============================================================================
@@ -761,7 +761,7 @@ VALUES
      'Room 01.07.023, Boltzmannstr. 3', NULL,
      NOW() + INTERVAL '7 days',
      NOW() - INTERVAL '5 days',
-     (SELECT user_id FROM users WHERE university_id = 'advisor')),
+     (SELECT user_id FROM users WHERE university_id = 'supervisor')),
 
     -- Thesis 3 (SUBMITTED): scheduled final presentation
     ('00000000-0000-4000-e300-000000000002'::UUID,
@@ -770,7 +770,7 @@ VALUES
      'Room 00.08.038, Boltzmannstr. 3', 'https://tum-live.de/w/thesis-presentations',
      NOW() + INTERVAL '14 days',
      NOW() - INTERVAL '3 days',
-     (SELECT user_id FROM users WHERE university_id = 'supervisor2')),
+     (SELECT user_id FROM users WHERE university_id = 'examiner2')),
 
     -- Thesis 4 (FINISHED): past intermediate presentation
     ('00000000-0000-4000-e300-000000000003'::UUID,
@@ -779,7 +779,7 @@ VALUES
      'Room 01.07.023, Boltzmannstr. 3', NULL,
      NOW() - INTERVAL '200 days',
      NOW() - INTERVAL '210 days',
-     (SELECT user_id FROM users WHERE university_id = 'advisor')),
+     (SELECT user_id FROM users WHERE university_id = 'supervisor')),
 
     -- Thesis 4 (FINISHED): past final presentation
     ('00000000-0000-4000-e300-000000000004'::UUID,
@@ -788,7 +788,7 @@ VALUES
      'Room 00.08.038, Boltzmannstr. 3', 'https://tum-live.de/w/thesis-presentations',
      NOW() - INTERVAL '70 days',
      NOW() - INTERVAL '80 days',
-     (SELECT user_id FROM users WHERE university_id = 'supervisor')),
+     (SELECT user_id FROM users WHERE university_id = 'examiner')),
 
     -- Thesis 5 (DROPPED_OUT): drafted but never happened
     ('00000000-0000-4000-e300-000000000005'::UUID,
@@ -797,7 +797,7 @@ VALUES
      NULL, NULL,
      NOW() - INTERVAL '40 days',
      NOW() - INTERVAL '50 days',
-     (SELECT user_id FROM users WHERE university_id = 'advisor2'))
+     (SELECT user_id FROM users WHERE university_id = 'supervisor2'))
 ON CONFLICT DO NOTHING;
 
 -- ============================================================================
@@ -805,18 +805,18 @@ ON CONFLICT DO NOTHING;
 -- ============================================================================
 INSERT INTO thesis_presentation_invites (presentation_id, email, invited_at)
 VALUES
-    -- Thesis 1 intermediate: invite advisor2 as guest
-    ('00000000-0000-4000-e300-000000000001'::UUID, 'advisor2@test.local', NOW() - INTERVAL '4 days'),
-    ('00000000-0000-4000-e300-000000000001'::UUID, 'supervisor@test.local', NOW() - INTERVAL '4 days'),
+    -- Thesis 1 intermediate: invite supervisor2 user as guest
+    ('00000000-0000-4000-e300-000000000001'::UUID, 'supervisor2@test.local', NOW() - INTERVAL '4 days'),
+    ('00000000-0000-4000-e300-000000000001'::UUID, 'examiner@test.local', NOW() - INTERVAL '4 days'),
 
     -- Thesis 3 final: invite external reviewer + team
     ('00000000-0000-4000-e300-000000000002'::UUID, 'external.reviewer@university.edu', NOW() - INTERVAL '2 days'),
-    ('00000000-0000-4000-e300-000000000002'::UUID, 'advisor@test.local', NOW() - INTERVAL '2 days'),
     ('00000000-0000-4000-e300-000000000002'::UUID, 'supervisor@test.local', NOW() - INTERVAL '2 days'),
+    ('00000000-0000-4000-e300-000000000002'::UUID, 'examiner@test.local', NOW() - INTERVAL '2 days'),
 
     -- Thesis 4 final (past): invites for the completed presentation
-    ('00000000-0000-4000-e300-000000000004'::UUID, 'advisor2@test.local', NOW() - INTERVAL '75 days'),
-    ('00000000-0000-4000-e300-000000000004'::UUID, 'supervisor2@test.local', NOW() - INTERVAL '75 days')
+    ('00000000-0000-4000-e300-000000000004'::UUID, 'supervisor2@test.local', NOW() - INTERVAL '75 days'),
+    ('00000000-0000-4000-e300-000000000004'::UUID, 'examiner2@test.local', NOW() - INTERVAL '75 days')
 ON CONFLICT DO NOTHING;
 
 -- ============================================================================
@@ -873,7 +873,7 @@ VALUES
      'The proposal is well-structured. Please clarify the evaluation metrics in Section 4 before proceeding.',
      NOW() - INTERVAL '26 days',
      NOW() - INTERVAL '28 days',
-     (SELECT user_id FROM users WHERE university_id = 'advisor')),
+     (SELECT user_id FROM users WHERE university_id = 'supervisor')),
 
     -- Thesis 2 (PROPOSAL): pending proposal feedback
     ('00000000-0000-4000-e500-000000000002'::UUID,
@@ -882,7 +882,7 @@ VALUES
      '',
      NULL,
      NOW() - INTERVAL '8 days',
-     (SELECT user_id FROM users WHERE university_id = 'advisor')),
+     (SELECT user_id FROM users WHERE university_id = 'supervisor')),
 
     -- Thesis 3 (SUBMITTED): completed thesis feedback
     ('00000000-0000-4000-e500-000000000003'::UUID,
@@ -891,7 +891,7 @@ VALUES
      'The thesis is comprehensive and well-written. Minor revisions needed in the conclusion section regarding future work directions.',
      NOW() - INTERVAL '3 days',
      NOW() - INTERVAL '5 days',
-     (SELECT user_id FROM users WHERE university_id = 'advisor2')),
+     (SELECT user_id FROM users WHERE university_id = 'supervisor2')),
 
     -- Thesis 3 (SUBMITTED): pending presentation feedback
     ('00000000-0000-4000-e500-000000000004'::UUID,
@@ -900,7 +900,7 @@ VALUES
      '',
      NULL,
      NOW() - INTERVAL '1 day',
-     (SELECT user_id FROM users WHERE university_id = 'supervisor2')),
+     (SELECT user_id FROM users WHERE university_id = 'examiner2')),
 
     -- Thesis 4 (FINISHED): completed thesis feedback
     ('00000000-0000-4000-e500-000000000005'::UUID,
@@ -909,7 +909,7 @@ VALUES
      'Excellent work overall. The migration framework is practical and well-evaluated. The writing quality is very good.',
      NOW() - INTERVAL '100 days',
      NOW() - INTERVAL '115 days',
-     (SELECT user_id FROM users WHERE university_id = 'advisor')),
+     (SELECT user_id FROM users WHERE university_id = 'supervisor')),
 
     -- Thesis 4 (FINISHED): completed presentation feedback
     ('00000000-0000-4000-e500-000000000006'::UUID,
@@ -918,7 +918,7 @@ VALUES
      'Clear and engaging presentation. Good handling of questions. Slides were well-designed and the demo was impressive.',
      NOW() - INTERVAL '68 days',
      NOW() - INTERVAL '70 days',
-     (SELECT user_id FROM users WHERE university_id = 'supervisor'))
+     (SELECT user_id FROM users WHERE university_id = 'examiner'))
 ON CONFLICT DO NOTHING;
 
 -- ============================================================================
@@ -926,27 +926,27 @@ ON CONFLICT DO NOTHING;
 -- ============================================================================
 INSERT INTO notification_settings (user_id, name, email, updated_at)
 VALUES
-    -- supervisor: receives all new application notifications
+    -- examiner user: receives all new application notifications
     -- Valid values for new-applications: 'none', 'own', 'all'
     -- Valid values for toggles (thesis-comments, application-review-reminder): 'none', 'all'
-    ((SELECT user_id FROM users WHERE university_id = 'supervisor'), 'new-applications', 'all', NOW()),
+    ((SELECT user_id FROM users WHERE university_id = 'examiner'), 'new-applications', 'all', NOW()),
+    ((SELECT user_id FROM users WHERE university_id = 'examiner'), 'thesis-comments', 'all', NOW()),
+    ((SELECT user_id FROM users WHERE university_id = 'examiner'), 'application-review-reminder', 'all', NOW()),
+
+    -- supervisor user: receives new application notifications only for own topics
+    ((SELECT user_id FROM users WHERE university_id = 'supervisor'), 'new-applications', 'own', NOW()),
     ((SELECT user_id FROM users WHERE university_id = 'supervisor'), 'thesis-comments', 'all', NOW()),
-    ((SELECT user_id FROM users WHERE university_id = 'supervisor'), 'application-review-reminder', 'all', NOW()),
+    ((SELECT user_id FROM users WHERE university_id = 'supervisor'), 'application-review-reminder', 'none', NOW()),
 
-    -- advisor: receives new application notifications only for own topics
-    ((SELECT user_id FROM users WHERE university_id = 'advisor'), 'new-applications', 'own', NOW()),
-    ((SELECT user_id FROM users WHERE university_id = 'advisor'), 'thesis-comments', 'all', NOW()),
-    ((SELECT user_id FROM users WHERE university_id = 'advisor'), 'application-review-reminder', 'none', NOW()),
+    -- examiner2: receives all new application notifications
+    ((SELECT user_id FROM users WHERE university_id = 'examiner2'), 'new-applications', 'all', NOW()),
+    ((SELECT user_id FROM users WHERE university_id = 'examiner2'), 'thesis-comments', 'all', NOW()),
+    ((SELECT user_id FROM users WHERE university_id = 'examiner2'), 'application-review-reminder', 'all', NOW()),
 
-    -- supervisor2: receives all new application notifications
-    ((SELECT user_id FROM users WHERE university_id = 'supervisor2'), 'new-applications', 'all', NOW()),
+    -- supervisor2: no new application notifications, comments only
+    ((SELECT user_id FROM users WHERE university_id = 'supervisor2'), 'new-applications', 'none', NOW()),
     ((SELECT user_id FROM users WHERE university_id = 'supervisor2'), 'thesis-comments', 'all', NOW()),
-    ((SELECT user_id FROM users WHERE university_id = 'supervisor2'), 'application-review-reminder', 'all', NOW()),
-
-    -- advisor2: no new application notifications, comments only
-    ((SELECT user_id FROM users WHERE university_id = 'advisor2'), 'new-applications', 'none', NOW()),
-    ((SELECT user_id FROM users WHERE university_id = 'advisor2'), 'thesis-comments', 'all', NOW()),
-    ((SELECT user_id FROM users WHERE university_id = 'advisor2'), 'application-review-reminder', 'none', NOW())
+    ((SELECT user_id FROM users WHERE university_id = 'supervisor2'), 'application-review-reminder', 'none', NOW())
 ON CONFLICT DO NOTHING;
 
 -- ============================================================================
@@ -1184,26 +1184,26 @@ ON CONFLICT DO NOTHING;
 -- ============================================================================
 INSERT INTO thesis_roles (thesis_id, user_id, role, position, assigned_at, assigned_by)
 VALUES
-    -- Thesis 6 (old, retention expired): delete_old_thesis as STUDENT, supervisor + advisor
+    -- Thesis 6 (old, retention expired): delete_old_thesis as STUDENT, examiner + supervisor
     ('00000000-0000-4000-d000-000000000006'::UUID,
      (SELECT user_id FROM users WHERE university_id = 'delete_old_thesis'), 'STUDENT', 0,
-     NOW() - INTERVAL '2800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
-    ('00000000-0000-4000-d000-000000000006'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'advisor'), 'ADVISOR', 0,
-     NOW() - INTERVAL '2800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
+     NOW() - INTERVAL '2800 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
     ('00000000-0000-4000-d000-000000000006'::UUID,
      (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
-     NOW() - INTERVAL '2800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
-    -- Thesis 7 (recent, under retention): delete_recent_thesis as STUDENT, supervisor + advisor
+     NOW() - INTERVAL '2800 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
+    ('00000000-0000-4000-d000-000000000006'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'examiner'), 'EXAMINER', 0,
+     NOW() - INTERVAL '2800 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
+    -- Thesis 7 (recent, under retention): delete_recent_thesis as STUDENT, examiner + supervisor
     ('00000000-0000-4000-d000-000000000007'::UUID,
      (SELECT user_id FROM users WHERE university_id = 'delete_recent_thesis'), 'STUDENT', 0,
-     NOW() - INTERVAL '800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
-    ('00000000-0000-4000-d000-000000000007'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'advisor'), 'ADVISOR', 0,
-     NOW() - INTERVAL '800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
+     NOW() - INTERVAL '800 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
     ('00000000-0000-4000-d000-000000000007'::UUID,
      (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
-     NOW() - INTERVAL '800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor'))
+     NOW() - INTERVAL '800 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
+    ('00000000-0000-4000-d000-000000000007'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'examiner'), 'EXAMINER', 0,
+     NOW() - INTERVAL '800 days', (SELECT user_id FROM users WHERE university_id = 'examiner'))
 ON CONFLICT DO NOTHING;
 
 -- ============================================================================
@@ -1268,13 +1268,13 @@ INSERT INTO thesis_roles (thesis_id, user_id, role, position, assigned_at, assig
 VALUES
     ('00000000-0000-4000-d000-000000000008'::UUID,
      (SELECT user_id FROM users WHERE university_id = 'student2'), 'STUDENT', 0,
-     NOW() - INTERVAL '2800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
-    ('00000000-0000-4000-d000-000000000008'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'advisor'), 'ADVISOR', 0,
-     NOW() - INTERVAL '2800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
+     NOW() - INTERVAL '2800 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
     ('00000000-0000-4000-d000-000000000008'::UUID,
      (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
-     NOW() - INTERVAL '2800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor'))
+     NOW() - INTERVAL '2800 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
+    ('00000000-0000-4000-d000-000000000008'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'examiner'), 'EXAMINER', 0,
+     NOW() - INTERVAL '2800 days', (SELECT user_id FROM users WHERE university_id = 'examiner'))
 ON CONFLICT DO NOTHING;
 
 -- Thesis 8 state changes
@@ -1298,7 +1298,7 @@ VALUES
      'Final review completed. Good work on the pipeline evaluation.',
      NULL, NULL,
      NOW() - INTERVAL '2600 days',
-     (SELECT user_id FROM users WHERE university_id = 'advisor'))
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'))
 ON CONFLICT DO NOTHING;
 
 -- Thesis 8 proposal
@@ -1309,7 +1309,7 @@ VALUES
      '00000000-0000-4000-d000-000000000008'::UUID,
      'proposal_legacy_pipeline.pdf',
      NOW() - INTERVAL '2785 days',
-     (SELECT user_id FROM users WHERE university_id = 'advisor'),
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'),
      NOW() - INTERVAL '2790 days',
      (SELECT user_id FROM users WHERE university_id = 'student2'))
 ON CONFLICT DO NOTHING;
@@ -1325,7 +1325,7 @@ VALUES
      'Limited coverage of streaming pipelines. Could include more industry case studies.',
      '1.7',
      NOW() - INTERVAL '2610 days',
-     (SELECT user_id FROM users WHERE university_id = 'advisor'))
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'))
 ON CONFLICT DO NOTHING;
 
 -- Thesis 8 final grade
@@ -1419,33 +1419,33 @@ VALUES
     -- Thesis 10 roles
     ('00000000-0000-4000-d000-000000000010'::UUID,
      (SELECT user_id FROM users WHERE university_id = 'student3'), 'STUDENT', 0,
-     NOW() - INTERVAL '2800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
-    ('00000000-0000-4000-d000-000000000010'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'advisor'), 'ADVISOR', 0,
-     NOW() - INTERVAL '2800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
+     NOW() - INTERVAL '2800 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
     ('00000000-0000-4000-d000-000000000010'::UUID,
      (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
-     NOW() - INTERVAL '2800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
+     NOW() - INTERVAL '2800 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
+    ('00000000-0000-4000-d000-000000000010'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'examiner'), 'EXAMINER', 0,
+     NOW() - INTERVAL '2800 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
     -- Thesis 11 roles
     ('00000000-0000-4000-d000-000000000011'::UUID,
      (SELECT user_id FROM users WHERE university_id = 'student4'), 'STUDENT', 0,
-     NOW() - INTERVAL '800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
-    ('00000000-0000-4000-d000-000000000011'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'advisor'), 'ADVISOR', 0,
-     NOW() - INTERVAL '800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
+     NOW() - INTERVAL '800 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
     ('00000000-0000-4000-d000-000000000011'::UUID,
      (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
-     NOW() - INTERVAL '800 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
+     NOW() - INTERVAL '800 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
+    ('00000000-0000-4000-d000-000000000011'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'examiner'), 'EXAMINER', 0,
+     NOW() - INTERVAL '800 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
     -- Thesis 12 roles
     ('00000000-0000-4000-d000-000000000012'::UUID,
      (SELECT user_id FROM users WHERE university_id = 'student5'), 'STUDENT', 0,
-     NOW() - INTERVAL '30 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
-    ('00000000-0000-4000-d000-000000000012'::UUID,
-     (SELECT user_id FROM users WHERE university_id = 'advisor'), 'ADVISOR', 0,
-     NOW() - INTERVAL '30 days', (SELECT user_id FROM users WHERE university_id = 'supervisor')),
+     NOW() - INTERVAL '30 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
     ('00000000-0000-4000-d000-000000000012'::UUID,
      (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
-     NOW() - INTERVAL '30 days', (SELECT user_id FROM users WHERE university_id = 'supervisor'))
+     NOW() - INTERVAL '30 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
+    ('00000000-0000-4000-d000-000000000012'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'examiner'), 'EXAMINER', 0,
+     NOW() - INTERVAL '30 days', (SELECT user_id FROM users WHERE university_id = 'examiner'))
 ON CONFLICT DO NOTHING;
 
 -- Thesis 10-12 state changes
@@ -1477,17 +1477,17 @@ VALUES
      '00000000-0000-4000-d000-000000000010'::UUID,
      'THESIS', 'Excellent compiler optimization analysis.', NULL, NULL,
      NOW() - INTERVAL '2600 days',
-     (SELECT user_id FROM users WHERE university_id = 'advisor')),
+     (SELECT user_id FROM users WHERE university_id = 'supervisor')),
     ('00000000-0000-4000-e200-000000000011'::UUID,
      '00000000-0000-4000-d000-000000000011'::UUID,
      'THESIS', 'Good progress on the ML code review framework.', NULL, NULL,
      NOW() - INTERVAL '700 days',
-     (SELECT user_id FROM users WHERE university_id = 'advisor')),
+     (SELECT user_id FROM users WHERE university_id = 'supervisor')),
     ('00000000-0000-4000-e200-000000000012'::UUID,
      '00000000-0000-4000-d000-000000000012'::UUID,
      'THESIS', 'Please add more references to Section 2.', NULL, NULL,
      NOW() - INTERVAL '10 days',
-     (SELECT user_id FROM users WHERE university_id = 'advisor'))
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'))
 ON CONFLICT DO NOTHING;
 
 -- Thesis 10-12 proposals
@@ -1498,21 +1498,21 @@ VALUES
      '00000000-0000-4000-d000-000000000010'::UUID,
      'proposal_compiler_opt.pdf',
      NOW() - INTERVAL '2785 days',
-     (SELECT user_id FROM users WHERE university_id = 'advisor'),
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'),
      NOW() - INTERVAL '2790 days',
      (SELECT user_id FROM users WHERE university_id = 'student3')),
     ('00000000-0000-4000-e000-000000000011'::UUID,
      '00000000-0000-4000-d000-000000000011'::UUID,
      'proposal_ml_code_review.pdf',
      NOW() - INTERVAL '785 days',
-     (SELECT user_id FROM users WHERE university_id = 'advisor'),
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'),
      NOW() - INTERVAL '790 days',
      (SELECT user_id FROM users WHERE university_id = 'student4')),
     ('00000000-0000-4000-e000-000000000012'::UUID,
      '00000000-0000-4000-d000-000000000012'::UUID,
      'proposal_anomaly_detection.pdf',
      NOW() - INTERVAL '25 days',
-     (SELECT user_id FROM users WHERE university_id = 'advisor'),
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'),
      NOW() - INTERVAL '28 days',
      (SELECT user_id FROM users WHERE university_id = 'student5'))
 ON CONFLICT DO NOTHING;
@@ -1528,7 +1528,7 @@ VALUES
      'Limited coverage of modern JIT compilers.',
      '2.0',
      NOW() - INTERVAL '2610 days',
-     (SELECT user_id FROM users WHERE university_id = 'advisor')),
+     (SELECT user_id FROM users WHERE university_id = 'supervisor')),
     ('00000000-0000-4000-e100-000000000011'::UUID,
      '00000000-0000-4000-d000-000000000011'::UUID,
      'Innovative ML approach to code review automation.',
@@ -1536,7 +1536,7 @@ VALUES
      'Small evaluation dataset.',
      '1.3',
      NOW() - INTERVAL '630 days',
-     (SELECT user_id FROM users WHERE university_id = 'advisor'))
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'))
 ON CONFLICT DO NOTHING;
 
 -- Thesis 10-12 feedback
@@ -1548,19 +1548,19 @@ VALUES
      'THESIS', 'Please revise the benchmark methodology section.',
      NOW() - INTERVAL '2650 days',
      NOW() - INTERVAL '2660 days',
-     (SELECT user_id FROM users WHERE university_id = 'advisor')),
+     (SELECT user_id FROM users WHERE university_id = 'supervisor')),
     ('00000000-0000-4000-e500-000000000011'::UUID,
      '00000000-0000-4000-d000-000000000011'::UUID,
      'THESIS', 'Add more training data details to the appendix.',
      NOW() - INTERVAL '650 days',
      NOW() - INTERVAL '660 days',
-     (SELECT user_id FROM users WHERE university_id = 'advisor')),
+     (SELECT user_id FROM users WHERE university_id = 'supervisor')),
     ('00000000-0000-4000-e500-000000000012'::UUID,
      '00000000-0000-4000-d000-000000000012'::UUID,
      'PROPOSAL', 'Clarify the system architecture diagram.',
      NULL,
      NOW() - INTERVAL '15 days',
-     (SELECT user_id FROM users WHERE university_id = 'advisor'))
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'))
 ON CONFLICT DO NOTHING;
 
 -- Thesis 10-11 final grades

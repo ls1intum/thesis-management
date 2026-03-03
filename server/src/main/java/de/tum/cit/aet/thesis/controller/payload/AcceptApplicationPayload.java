@@ -7,8 +7,8 @@ public record AcceptApplicationPayload(
 		String thesisTitle,
 		String thesisType,
 		String language,
-		List<UUID> advisorIds,
 		List<UUID> supervisorIds,
+		List<UUID> examinerIds,
 		Boolean notifyUser,
 		Boolean closeTopic
 ) { }

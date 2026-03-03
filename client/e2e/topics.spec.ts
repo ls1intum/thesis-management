@@ -38,8 +38,8 @@ test.describe('Topics - Public landing page', () => {
   })
 })
 
-test.describe('Topics - Management (Supervisor)', () => {
-  test.use({ storageState: authStatePath('supervisor') })
+test.describe('Topics - Management (Examiner)', () => {
+  test.use({ storageState: authStatePath('examiner') })
 
   test('manage topics page shows topic list with actions', async ({ page }) => {
     await navigateTo(page, '/topics')
@@ -63,7 +63,7 @@ test.describe('Topics - Management (Supervisor)', () => {
     })
     // Should show topic information sections
     await expect(page.getByText(/problem statement/i).first()).toBeVisible()
-    // Supervisor should see applications section for this topic
+    // Examiner should see applications section for this topic
   })
 })
 

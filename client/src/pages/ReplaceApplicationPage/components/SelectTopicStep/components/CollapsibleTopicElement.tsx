@@ -91,18 +91,18 @@ const CollapsibleTopicElement = ({ topic, onApply }: ICollapsibleTopicElementPro
                 <>
                   <Grid>
                     <Grid.Col span={4}>
-                      {(fullTopic.supervisors ?? []).length > 0 && (
+                      {(fullTopic.examiners ?? []).length > 0 && (
                         <LabeledItem
-                          label={pluralize('Examiner', fullTopic.supervisors.length)}
-                          value={<AvatarUserList users={fullTopic.supervisors} size='xs' />}
+                          label={pluralize('Examiner', fullTopic.examiners.length)}
+                          value={<AvatarUserList users={fullTopic.examiners} size='xs' />}
                         />
                       )}
                     </Grid.Col>
                     <Grid.Col span={8}>
-                      {(fullTopic.advisors ?? []).length > 0 && (
+                      {(fullTopic.supervisors ?? []).length > 0 && (
                         <LabeledItem
-                          label={pluralize('Supervisor', fullTopic.advisors.length)}
-                          value={<AvatarUserList users={fullTopic.advisors} size='xs' />}
+                          label={pluralize('Supervisor', fullTopic.supervisors.length)}
+                          value={<AvatarUserList users={fullTopic.supervisors} size='xs' />}
                         />
                       )}
                     </Grid.Col>

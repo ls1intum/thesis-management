@@ -99,8 +99,8 @@ test.describe('Application Workflow - Student submits application', () => {
 
     // Snapshot mailboxes BEFORE submitting (safe for parallel execution)
     const beforeStudentIds = await snapshotMailbox('student@test.local')
-    const beforeExaminerIds = await snapshotMailbox('supervisor@test.local')
-    const beforeAdvisorIds = await snapshotMailbox('advisor@test.local')
+    const beforeExaminerIds = await snapshotMailbox('examiner@test.local')
+    const beforeSupervisorIds = await snapshotMailbox('supervisor@test.local')
 
     const submitButton = page.getByRole('button', { name: 'Submit Application' })
     await expect(submitButton).toBeEnabled({ timeout: 10_000 })
@@ -132,13 +132,13 @@ test.describe('Application Workflow - Student submits application', () => {
     expect(studentBody, 'Body should reference the motivation text').toContain('CI pipeline')
 
     // Verify examiner notification email
-    // Topic 2 roles: supervisor=examiner (SUPERVISOR), advisor+advisor2=supervisors (ADVISOR)
+    // Topic 2 roles: examiner=examiner (EXAMINER), supervisor+supervisor2=supervisors (SUPERVISOR)
     // All are in ASE group, so all should receive the chair notification.
-    const examinerEmails = await waitForNewMessages('supervisor@test.local', beforeExaminerIds)
+    const examinerEmails = await waitForNewMessages('examiner@test.local', beforeExaminerIds)
     const examinerChairEmail = findBySubject(examinerEmails, 'New Thesis Application')
     expect(
       examinerChairEmail,
-      'Examiner (supervisor@test.local) should receive "New Thesis Application" email',
+      'Examiner (examiner@test.local) should receive "New Thesis Application" email',
     ).toBeDefined()
     assertSentFromApp(examinerChairEmail!)
 
@@ -148,12 +148,12 @@ test.describe('Application Workflow - Student submits application', () => {
       'Continuous Integration Pipeline Optimization',
     )
 
-    // Verify supervisor (advisor) also receives the notification
-    const advisorEmails = await waitForNewMessages('advisor@test.local', beforeAdvisorIds)
-    const advisorChairEmail = findBySubject(advisorEmails, 'New Thesis Application')
+    // Verify supervisor (supervisor user) also receives the notification
+    const supervisorEmails = await waitForNewMessages('supervisor@test.local', beforeSupervisorIds)
+    const supervisorChairEmail = findBySubject(supervisorEmails, 'New Thesis Application')
     expect(
-      advisorChairEmail,
-      'Supervisor (advisor@test.local) should receive "New Thesis Application" email',
+      supervisorChairEmail,
+      'Supervisor (supervisor@test.local) should receive "New Thesis Application" email',
     ).toBeDefined()
   })
 })
