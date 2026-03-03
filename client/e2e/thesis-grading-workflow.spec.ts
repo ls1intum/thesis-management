@@ -7,6 +7,7 @@ import {
   getBody,
   getToAddresses,
   assertSentFromApp,
+  assertEmailFooter,
 } from './mailpit'
 
 // Thesis d000-0003: SUBMITTED state, student3, supervisor2, examiner2 (DSA group)
@@ -174,6 +175,7 @@ test.describe.serial('Thesis Grading Workflow', () => {
     const gradeEmail = newEmails.find((e) => getSubject(e) === 'Final Grade available for Thesis')
     expect(gradeEmail, 'Final grade email should be sent').toBeDefined()
     assertSentFromApp(gradeEmail!)
+    assertEmailFooter(gradeEmail!)
     expect(getToAddresses(gradeEmail!)).toContain('student3@test.local')
 
     // Body should contain: greeting, thesis title, examiner name, final grade,

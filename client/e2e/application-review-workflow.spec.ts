@@ -6,6 +6,7 @@ import {
   getBody,
   getToAddresses,
   assertSentFromApp,
+  assertEmailFooter,
   findBySubject,
 } from './mailpit'
 
@@ -63,6 +64,7 @@ test.describe('Application Review Workflow', () => {
     const rejectionEmail = findBySubject(newEmails, 'Thesis Application Rejection')
     expect(rejectionEmail, 'Rejection email with correct subject should be sent').toBeDefined()
     assertSentFromApp(rejectionEmail!)
+    assertEmailFooter(rejectionEmail!)
     expect(getToAddresses(rejectionEmail!)).toContain('student4@test.local')
 
     // Body should greet the student by first name and reference the topic title
@@ -133,6 +135,7 @@ test.describe('Application Review Workflow', () => {
     const acceptanceEmail = findBySubject(newEmails, 'Thesis Application Acceptance')
     expect(acceptanceEmail, 'Acceptance email should be sent').toBeDefined()
     assertSentFromApp(acceptanceEmail!)
+    assertEmailFooter(acceptanceEmail!)
     expect(getToAddresses(acceptanceEmail!)).toContain('student5@test.local')
 
     // Body should greet student, mention the supervisor, and include a thesis link
@@ -145,6 +148,7 @@ test.describe('Application Review Workflow', () => {
     const thesisEmail = findBySubject(newEmails, 'Thesis Created')
     expect(thesisEmail, 'Thesis creation email should be sent').toBeDefined()
     assertSentFromApp(thesisEmail!)
+    assertEmailFooter(thesisEmail!)
     expect(getToAddresses(thesisEmail!)).toContain('student5@test.local')
 
     // Body should contain the thesis title and a link to the thesis
