@@ -159,7 +159,7 @@ public class MailingService {
 		String safeThesisTitle = HtmlUtils.htmlEscape(thesisTitle);
 
 		String subject = "New Thesis Application";
-		String body = "<p>Dear colleague,</p>"
+		String body = "<p th:inline=\"text\">Dear [[${recipient.firstName}]],</p>"
 				+ "<p>A new thesis application has been submitted by <strong>" + safeApplicantName + "</strong>"
 				+ (thesisTitle.isEmpty() ? "." : " for the topic <strong>" + safeThesisTitle + "</strong>.")
 				+ "</p>"
