@@ -99,6 +99,7 @@ public class MailBuilder {
 
 		this.variables = new HashMap<>();
 		this.variables.put("config", config.getConfigDto());
+		this.variables.put("emailSignature", "<p>Regards,<br/>The Thesis Management Team.</p>");
 
 		this.fileAttachments = new ArrayList<>();
 		this.rawAttachments = new ArrayList<>();
@@ -370,6 +371,19 @@ public class MailBuilder {
 	}
 
 	/**
+	 * Overrides the default email signature with a custom one.
+	 *
+	 * @param signature the custom HTML signature
+	 * @return this builder
+	 */
+	public MailBuilder withSignature(String signature) {
+		if (signature != null && !signature.isBlank()) {
+			this.variables.put("emailSignature", signature);
+		}
+		return this;
+	}
+
+	/**
 	 * Fills user placeholders under the given placeholder key.
 	 *
 	 * @param user the user entity
@@ -573,7 +587,12 @@ public class MailBuilder {
 				Multipart messageContent = new MimeMultipart();
 
 				BodyPart messageBody = new MimeBodyPart();
-				messageBody.setContent(config.getTemplateEngine().process(templateHtml, templateContext), "text/html; charset=utf-8");
+				String renderedHtml = config.getTemplateEngine().process(templateHtml, templateContext);
+				renderedHtml += "<hr/><div style=\"text-align: center; font-size: 10px;\">"
+						+ "You can (un)subscribe to similar emails in your "
+						+ "<a href=\"" + config.getClientHost() + "/settings/notifications\">"
+						+ "notification settings in Thesis Management</a>.</div>";
+				messageBody.setContent(renderedHtml, "text/html; charset=utf-8");
 				messageContent.addBodyPart(messageBody);
 
 				for (StoredAttachment data : fileAttachments) {

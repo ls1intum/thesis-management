@@ -80,6 +80,8 @@ public class ResearchGroupSettingsController {
 			String validatedEmail = RequestValidator.validateEmailAllowNull(
 					newSettings.emailSettings().applicationNotificationEmail() == null ? null : newSettings.emailSettings().applicationNotificationEmail().trim());
 			toSave.setApplicationNotificationEmail(validatedEmail);
+			String signature = newSettings.emailSettings().emailSignature();
+			toSave.setEmailSignature(signature != null && !signature.trim().isEmpty() ? signature.trim() : null);
 		}
 		if (newSettings.writingGuideSettings() != null) {
 			String link = newSettings.writingGuideSettings().scientificWritingGuideLink();

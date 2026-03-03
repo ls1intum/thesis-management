@@ -28,5 +28,5 @@ Your personal data export has been generated and is ready for download. You can 
 Please note that the download link will expire in 7 days. After that, you can request a new export.
 </p>
 
-<br/><br/>', 'en', 'Notification when data export is ready for download', NOW(), NULL, NOW())
+<div th:utext="${emailSignature}"></div>', 'en', 'Notification when data export is ready for download', NOW(), NULL, NOW())
 ON CONFLICT (template_case, language) WHERE research_group_id IS NULL DO NOTHING;

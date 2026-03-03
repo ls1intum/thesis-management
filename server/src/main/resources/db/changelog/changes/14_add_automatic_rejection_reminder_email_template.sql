@@ -21,7 +21,6 @@ The following application(s) require your attention:
 <p th:inline="text">
 Please review the applications, if you don''t want them to be rejected automatically.
 </p>
-<p>Best regards,<br/>
-The Thesis Coordination Team</p>',
+<div th:utext="${emailSignature}"></div>',
         'This will be send out when you have soon to be automatically rejected applications.'
     );

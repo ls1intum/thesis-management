@@ -7,6 +7,7 @@ import {
   getBody,
   getToAddresses,
   assertSentFromApp,
+  assertEmailFooter,
   hasAttachment,
 } from './mailpit'
 
@@ -59,6 +60,7 @@ test.describe('Proposal Upload - Student uploads proposal', () => {
     const proposalEmail = newEmails.find((e) => getSubject(e) === 'Thesis Proposal Added')
     expect(proposalEmail, 'Proposal upload email with correct subject should be sent').toBeDefined()
     assertSentFromApp(proposalEmail!)
+    assertEmailFooter(proposalEmail!)
     expect(getToAddresses(proposalEmail!)).toContain('supervisor@test.local')
 
     // Body should reference the thesis title, the uploader name, and include a link
@@ -128,6 +130,7 @@ test.describe('Proposal Feedback - Supervisor requests changes', () => {
       'Change request email with correct subject should be sent',
     ).toBeDefined()
     assertSentFromApp(changeRequestEmail!)
+    assertEmailFooter(changeRequestEmail!)
     expect(getToAddresses(changeRequestEmail!)).toContain('student2@test.local')
 
     // Body should greet the student, reference the thesis title, mention the reviewer,

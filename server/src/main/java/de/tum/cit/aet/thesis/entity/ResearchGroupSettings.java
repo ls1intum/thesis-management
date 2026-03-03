@@ -39,4 +39,7 @@ public class ResearchGroupSettings {
 
 	@Column(name = "include_application_data_in_email", nullable = false)
 	private boolean includeApplicationDataInEmail = false;
+
+	@Column(name = "email_signature")
+	private String emailSignature;
 }
