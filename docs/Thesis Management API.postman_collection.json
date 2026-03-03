@@ -2216,7 +2216,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"title\": \"title\",\n  \"thesisTypes\": [\"BACHELOR\"],\n  \"problemStatement\": \"prolbem statement\",\n  \"requirements\": \"requirements\",\n  \"goals\": \"goals\",\n  \"references\": \"references\",\n  \"examinerIds\": [\"fdde346c-4ad0-4e5a-82b8-93191553e325\"],\n  \"supervisorIds\": [\"fdde346c-4ad0-4e5a-82b8-93191553e325\"]\n}",
+									"raw": "{\n  \"title\": \"title\",\n  \"thesisTypes\": [\"BACHELOR\"],\n  \"problemStatement\": \"problem statement\",\n  \"requirements\": \"requirements\",\n  \"goals\": \"goals\",\n  \"references\": \"references\",\n  \"examinerIds\": [\"fdde346c-4ad0-4e5a-82b8-93191553e325\"],\n  \"supervisorIds\": [\"fdde346c-4ad0-4e5a-82b8-93191553e325\"]\n}",
 									"options": {
 										"raw": {
 											"headerFamily": "json",
@@ -2351,7 +2351,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"title\": \"title\",\n  \"thesisTypes\": [\"BACHELOR\"],\n  \"problemStatement\": \"prolbem statement\",\n  \"requirements\": \"requirements\",\n  \"goals\": \"goals\",\n  \"references\": \"references\",\n  \"examinerIds\": [\"fdde346c-4ad0-4e5a-82b8-93191553e325\"],\n  \"supervisorIds\": [\"fdde346c-4ad0-4e5a-82b8-93191553e325\"]\n}",
+							"raw": "{\n  \"title\": \"title\",\n  \"thesisTypes\": [\"BACHELOR\"],\n  \"problemStatement\": \"problem statement\",\n  \"requirements\": \"requirements\",\n  \"goals\": \"goals\",\n  \"references\": \"references\",\n  \"examinerIds\": [\"fdde346c-4ad0-4e5a-82b8-93191553e325\"],\n  \"supervisorIds\": [\"fdde346c-4ad0-4e5a-82b8-93191553e325\"]\n}",
 							"options": {
 								"raw": {
 									"headerFamily": "json",

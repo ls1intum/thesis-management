@@ -350,14 +350,14 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
             required={true}
             groups={['supervisor']}
             maxValues={1}
-            initialUsers={application.topic?.examiners}
+            initialUsers={application.topic?.examiners ?? []}
             {...form.getInputProps('examinerIds')}
           />
           <UserMultiSelect
             label='Supervisor(s)'
             required={true}
             groups={['advisor', 'supervisor']}
-            initialUsers={application.topic?.supervisors}
+            initialUsers={application.topic?.supervisors ?? []}
             {...form.getInputProps('supervisorIds')}
           />
 

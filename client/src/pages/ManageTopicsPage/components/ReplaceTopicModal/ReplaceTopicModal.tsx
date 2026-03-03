@@ -139,9 +139,10 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
           })
 
           if ((res.data.content ?? []).length === 1) {
+            const onlyGroup = (res.data.content ?? [])[0]
             form.setValues({
-              researchGroupId: (res.data.content ?? [])[0].id,
-              examinerIds: [(res.data.content ?? [])[0].head.userId],
+              researchGroupId: onlyGroup.id,
+              examinerIds: onlyGroup.head?.userId ? [onlyGroup.head.userId] : [],
             })
           }
         } else {
