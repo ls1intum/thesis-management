@@ -5,6 +5,10 @@
 -- terminology (old "Advisor" → "Supervisor", old "Supervisor" → "Examiner").
 -- This ensures existing deployments receive the updated wording. Fresh installs
 -- already get correct text from the seed changeset (21).
+--
+-- Note: Migration 33 already renamed Thymeleaf variables
+-- (${thesis.supervisors} → ${thesis.examiners}, ${thesis.advisors} → ${thesis.supervisors})
+-- so the REPLACE patterns here match the post-migration-33 state of body_html.
 
 -- APPLICATION_ACCEPTED: Update description and body wording
 UPDATE email_templates
@@ -31,38 +35,46 @@ SET body_html = REPLACE(body_html, 'contact your advisor or supervisor', 'contac
 WHERE template_case LIKE 'APPLICATION_REJECTED%'
   AND research_group_id IS NULL;
 
--- THESIS_COMMENT_POSTED: Update description (also fixes "its" → "it's")
+-- THESIS_COMMENT_POSTED: Update description (also fixes "its" → "it's" and adds "on")
 UPDATE email_templates
 SET description = 'New comment on a thesis. TO depends on whether it''s a student or supervisor comment'
 WHERE template_case = 'THESIS_COMMENT_POSTED'
   AND research_group_id IS NULL;
 
--- THESIS_CREATED: Update body — replace "Advisor" label with "Examiner" and variable
+-- THESIS_CREATED: Rename role labels (variables already updated by migration 33)
+-- Post-migration 33 state: <strong>Supervisor</strong>: [[${thesis.examiners}]] / <strong>Advisor</strong>: [[${thesis.supervisors}]]
+-- Two-pass: rename "Supervisor" label to "Examiner" first, then "Advisor" label to "Supervisor"
 UPDATE email_templates
-SET body_html = REPLACE(REPLACE(body_html, '<strong>Advisor</strong>: [[${thesis.advisors}]]', '<strong>Examiner</strong>: [[${thesis.examiners}]]'), '${thesis.advisors}', '${thesis.examiners}')
+SET body_html = REPLACE(
+    REPLACE(body_html,
+        '<strong>Supervisor</strong>: [[${thesis.examiners}]]',
+        '<strong>Examiner</strong>: [[${thesis.examiners}]]'),
+    '<strong>Advisor</strong>: [[${thesis.supervisors}]]',
+    '<strong>Supervisor</strong>: [[${thesis.supervisors}]]')
 WHERE template_case = 'THESIS_CREATED'
   AND research_group_id IS NULL;
 
--- THESIS_FINAL_GRADE: Update body — replace supervisors variable with examiners
+-- THESIS_PRESENTATION_INVITATION: Rename role labels in body
+-- Post-migration 33 state: Supervisor: [[${thesis.examiners}]]<br>Advisor(s): [[${thesis.supervisors}]]
 UPDATE email_templates
-SET body_html = REPLACE(body_html, '[[${thesis.supervisors}]] added the final grade', '[[${thesis.examiners}]] added the final grade')
-WHERE template_case = 'THESIS_FINAL_GRADE'
-  AND research_group_id IS NULL;
-
--- THESIS_PRESENTATION_INVITATION: Update body — rename role labels
-UPDATE email_templates
-SET body_html = REPLACE(REPLACE(body_html, 'Supervisor: [[${thesis.supervisors}]]<br>Advisor(s): [[${thesis.advisors}]]', 'Examiner: [[${thesis.examiners}]]<br>Supervisor(s): [[${thesis.supervisors}]]'), '${thesis.advisors}', '${thesis.supervisors}')
+SET body_html = REPLACE(body_html,
+    'Supervisor: [[${thesis.examiners}]]<br>Advisor(s): [[${thesis.supervisors}]]',
+    'Examiner: [[${thesis.examiners}]]<br>Supervisor(s): [[${thesis.supervisors}]]')
 WHERE template_case = 'THESIS_PRESENTATION_INVITATION'
   AND research_group_id IS NULL;
 
--- THESIS_PRESENTATION_INVITATION_CANCELLED: Update body — rename role labels
+-- THESIS_PRESENTATION_INVITATION_CANCELLED: Rename role labels in body
 UPDATE email_templates
-SET body_html = REPLACE(REPLACE(body_html, 'Supervisor: [[${thesis.supervisors}]]<br>Advisor(s): [[${thesis.advisors}]]', 'Examiner: [[${thesis.examiners}]]<br>Supervisor(s): [[${thesis.supervisors}]]'), '${thesis.advisors}', '${thesis.supervisors}')
+SET body_html = REPLACE(body_html,
+    'Supervisor: [[${thesis.examiners}]]<br>Advisor(s): [[${thesis.supervisors}]]',
+    'Examiner: [[${thesis.examiners}]]<br>Supervisor(s): [[${thesis.supervisors}]]')
 WHERE template_case = 'THESIS_PRESENTATION_INVITATION_CANCELLED'
   AND research_group_id IS NULL;
 
--- THESIS_PRESENTATION_INVITATION_UPDATED: Update body — rename role labels
+-- THESIS_PRESENTATION_INVITATION_UPDATED: Rename role labels in body
 UPDATE email_templates
-SET body_html = REPLACE(REPLACE(body_html, 'Supervisor: [[${thesis.supervisors}]]<br>Advisor(s): [[${thesis.advisors}]]', 'Examiner: [[${thesis.examiners}]]<br>Supervisor(s): [[${thesis.supervisors}]]'), '${thesis.advisors}', '${thesis.supervisors}')
+SET body_html = REPLACE(body_html,
+    'Supervisor: [[${thesis.examiners}]]<br>Advisor(s): [[${thesis.supervisors}]]',
+    'Examiner: [[${thesis.examiners}]]<br>Supervisor(s): [[${thesis.supervisors}]]')
 WHERE template_case = 'THESIS_PRESENTATION_INVITATION_UPDATED'
   AND research_group_id IS NULL;
