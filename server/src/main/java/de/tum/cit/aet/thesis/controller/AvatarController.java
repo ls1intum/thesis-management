@@ -36,6 +36,13 @@ public class AvatarController {
 	private final UploadService uploadService;
 	private final UserRepository userRepository;
 
+	/**
+	 * Constructs the avatar controller with required services.
+	 *
+	 * @param userService the user service
+	 * @param uploadService the upload service
+	 * @param userRepository the user repository for visibility checks
+	 */
 	@Autowired
 	public AvatarController(UserService userService, UploadService uploadService,
 			UserRepository userRepository) {
