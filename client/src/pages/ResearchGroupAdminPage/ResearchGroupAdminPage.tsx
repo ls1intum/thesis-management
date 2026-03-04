@@ -40,7 +40,7 @@ const ResearchGroupAdminPage = () => {
   const [page, setPage] = useState(0)
   const limit = 30
 
-  const fetchResearchGroups = () => {
+  const fetchResearchGroups = (searchPage: number) => {
     setResearchGroupsLoading(true)
     doRequest<PaginationResponse<IResearchGroup>>(
       '/v2/research-groups',
@@ -48,7 +48,7 @@ const ResearchGroupAdminPage = () => {
         method: 'GET',
         requiresAuth: true,
         params: {
-          page: page,
+          page: searchPage,
           limit: limit,
           search: debouncedSearch.trim(),
         },
@@ -59,6 +59,9 @@ const ResearchGroupAdminPage = () => {
             ...res.data,
             content: res.data.content,
           })
+          if (searchPage !== page) {
+            setPage(searchPage)
+          }
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
           setResearchGroups({
@@ -76,8 +79,8 @@ const ResearchGroupAdminPage = () => {
   }
 
   useEffect(() => {
-    fetchResearchGroups()
-  }, [debouncedSearch, page])
+    fetchResearchGroups(0)
+  }, [debouncedSearch])
 
   const handleCreateResearchGroup = async (values: ResearchGroupFormValues) => {
     const body = {
@@ -104,7 +107,7 @@ const ResearchGroupAdminPage = () => {
             color: 'green',
           })
           setCreateResearchGroupModalOpened(false)
-          fetchResearchGroups()
+          fetchResearchGroups(page)
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
         }
@@ -180,7 +183,10 @@ const ResearchGroupAdminPage = () => {
 
         <Pagination
           value={page + 1}
-          onChange={(p) => setPage(p - 1)}
+          onChange={(p) => {
+            setPage(p - 1)
+            fetchResearchGroups(p - 1)
+          }}
           total={researchGroups ? researchGroups.totalPages : 1}
           size='sm'
         />
