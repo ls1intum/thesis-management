@@ -210,10 +210,11 @@ public class ApplicationService {
 		application.setComment("");
 		application.setState(ApplicationState.NOT_ASSESSED);
 		application.setDesiredStartDate(desiredStartDate);
-		application.setCreatedAt(Instant.now());
+		Instant now = Instant.now();
+		application.setCreatedAt(now);
 
 		// Record the server-side consent timestamp as proof of privacy statement acceptance (GDPR Art. 7(1)).
-		application.setConsentTimestamp(Instant.now());
+		application.setConsentTimestamp(now);
 
 		ResearchGroup researchGroup = topic != null
 				? topic.getResearchGroup()
