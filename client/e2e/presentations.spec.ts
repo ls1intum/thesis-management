@@ -62,6 +62,16 @@ test.describe('Presentations - Public', () => {
     await expect(page.getByRole('heading', { name: /automated code review/i })).toBeHidden({
       timeout: 10_000,
     })
+
+    // Should show an access denied or not found message
+    await expect(
+      page
+        .getByText(/not found/i)
+        .or(page.getByText(/error/i))
+        .or(page.getByText(/access denied/i))
+        .or(page.getByText(/login/i))
+        .first(),
+    ).toBeVisible({ timeout: 5_000 })
   })
 
   test('non-existent presentation shows appropriate error', async ({ page }) => {

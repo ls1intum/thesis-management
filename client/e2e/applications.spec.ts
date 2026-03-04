@@ -137,5 +137,8 @@ test.describe('Applications - Examiner review', () => {
     await expect(
       page.getByRole('button', { name: 'Automated Code Review Using Large Language Models' }),
     ).toBeVisible()
+
+    // Application state should be NOT_ASSESSED (displayed as "Not Assessed")
+    await expect(page.getByText(/not assessed/i).first()).toBeVisible()
   })
 })

@@ -22,7 +22,7 @@ test.describe('Topics - Public landing page', () => {
 
     // Can switch between Open Topics and Published Topics
     await page.getByText('Published Topics').click()
-    // Published topics tab should be active
+    // Published topics section should be active
     await expect(page.getByText('Published Topics')).toBeVisible()
     // Switch back
     await page.getByText('Open Topics').click()
@@ -116,8 +116,9 @@ test.describe('Topics - Management (Examiner)', () => {
     })
     // Should show problem statement from seed
     await expect(page.getByText(/CI pipelines in large projects/i).first()).toBeVisible()
-    // Should show bachelor type
+    // Should show both thesis types
     await expect(page.getByText(/bachelor/i).first()).toBeVisible()
+    await expect(page.getByText(/master/i).first()).toBeVisible()
   })
 })
 

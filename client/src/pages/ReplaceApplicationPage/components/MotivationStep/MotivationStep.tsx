@@ -146,9 +146,10 @@ const MotivationStep = (props: IMotivationStepProps) => {
             thesisType: values.thesisType,
             desiredStartDate: values.desiredStartDate,
             motivation: values.motivation,
-            // Privacy consent flag sent to the server on new applications (POST).
-            // The server validates this is true and records a consent timestamp (GDPR Art. 7(1)).
-            // On updates (PUT), the server ignores this field since consent was already given.
+            // Privacy consent is always true here because the stepper flow requires the user
+            // to accept the privacy notice checkbox in UserInformationForm (step 1) before
+            // reaching this step. The server validates this flag and records a consent timestamp
+            // (GDPR Art. 7(1)). On updates (PUT), the server ignores this field.
             ...(application ? {} : { consentToPrivacyPolicy: true }),
           },
         },

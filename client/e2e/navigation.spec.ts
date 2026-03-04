@@ -61,15 +61,21 @@ test.describe('Navigation - Public pages', () => {
   test('privacy page is accessible without login', async ({ page }) => {
     await navigateTo(page, '/privacy')
 
-    // Privacy page should render with privacy-related content
-    await expect(page.getByText(/privacy/i).first()).toBeVisible({ timeout: 15_000 })
+    await expect(page).toHaveURL(/\/privacy/)
+    // Privacy page should render with privacy-specific content
+    await expect(page.getByRole('heading', { name: /privacy/i }).first()).toBeVisible({
+      timeout: 15_000,
+    })
   })
 
   test('imprint page is accessible without login', async ({ page }) => {
     await navigateTo(page, '/imprint')
 
-    // Imprint page should render
-    await expect(page.getByText(/imprint/i).first()).toBeVisible({ timeout: 15_000 })
+    await expect(page).toHaveURL(/\/imprint/)
+    // Imprint page should render with imprint-specific content
+    await expect(page.getByRole('heading', { name: /imprint/i }).first()).toBeVisible({
+      timeout: 15_000,
+    })
   })
 })
 

@@ -73,7 +73,7 @@ test.describe('Topic Workflow - Examiner creates a topic', () => {
 test.describe('Topic Workflow - Examiner2 creates a topic for DSA group', () => {
   test.use({ storageState: authStatePath('examiner2') })
 
-  test('examiner2 can access the create topic form with DSA group pre-filled', async ({
+  test('examiner2 can access the create topic form', async ({
     page,
   }) => {
     test.setTimeout(120_000)

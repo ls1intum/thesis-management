@@ -123,6 +123,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 					JOIN topr.topic top
 					WHERE topr.user.id = :userId
 					AND top.closedAt IS NULL
+					AND top.publishedAt IS NOT NULL
 				)
 				OR EXISTS (
 					SELECT 1 FROM ResearchGroup rg

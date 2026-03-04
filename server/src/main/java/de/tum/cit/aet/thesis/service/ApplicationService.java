@@ -192,8 +192,6 @@ public class ApplicationService {
 	 * @param motivation       the applicant's motivation text
 	 * @return the persisted application with consent timestamp set
 	 */
-	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
-	@Transactional
 	public Application createApplication(User user, UUID researchGroupId, UUID topicId, String thesisTitle,
 										String thesisType, Instant desiredStartDate, String motivation) {
 		Topic topic = topicId == null ? null : topicService.findById(topicId);

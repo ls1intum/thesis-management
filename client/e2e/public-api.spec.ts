@@ -36,12 +36,12 @@ test.describe('Public API - Avatar access control', () => {
     )
 
     // Avatar request for a publicly visible user should pass the visibility check.
-    // Returns 200 if avatar exists, 404 if no avatar file is set, or 500 if file missing on disk.
+    // Returns 200 if avatar exists, or 404 if no avatar file is set.
     // Must NOT be 401 or 403 (blocked by authentication/authorization).
     const avatarResponse = await request.get(`${API_BASE}/api/v2/avatars/${studentUserId}`)
     expect(avatarResponse.status()).not.toBe(401)
     expect(avatarResponse.status()).not.toBe(403)
-    expect([200, 404, 500]).toContain(avatarResponse.status())
+    expect([200, 404]).toContain(avatarResponse.status())
   })
 
   test('unauthenticated request for avatar of non-existent user returns 404', async ({
