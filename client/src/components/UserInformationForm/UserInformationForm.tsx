@@ -32,6 +32,18 @@ interface IUserInformationFormProps {
   onComplete?: () => unknown
 }
 
+/**
+ * User profile form shown during the application process.
+ *
+ * **Privacy consent checkbox and localStorage (not a GDPR issue):**
+ * The `declarationOfConsentAccepted` checkbox stores its state in `localStorage` purely as a UX
+ * convenience — it pre-fills the checkbox so returning users don't have to re-tick it every session.
+ * This localStorage value is NOT used as proof of consent. The actual GDPR-compliant consent proof
+ * is a server-side `consent_timestamp` recorded on the `Application` entity when the student
+ * submits an application (see `ApplicationController.createApplication` and `ApplicationService`).
+ * The application flow enforces: UserInformationForm (profile + consent checkbox) -> MotivationStep
+ * (sends `consentToPrivacyPolicy: true` to server) -> server validates and records timestamp.
+ */
 const UserInformationForm = (props: IUserInformationFormProps) => {
   const { requireCompletion, includeAvatar, onComplete } = props
 
@@ -66,6 +78,9 @@ const UserInformationForm = (props: IUserInformationFormProps) => {
       specialSkills: '',
       projects: '',
       interests: '',
+      // UX convenience only: pre-fills the consent checkbox from localStorage so the user
+      // doesn't have to re-tick it every session. NOT used as proof of consent — that is
+      // tracked server-side via Application.consentTimestamp (GDPR Art. 7(1)).
       declarationOfConsentAccepted: localStorage.getItem('declarationOfConsentAccepted') === 'true',
       avatar: undefined,
       examinationReport: undefined,
@@ -184,6 +199,8 @@ const UserInformationForm = (props: IUserInformationFormProps) => {
       onSubmit={form.onSubmit(async (values) => {
         setLoading(true)
 
+        // Persist the consent checkbox state in localStorage as a UX convenience only.
+        // The actual consent proof is recorded server-side when the application is submitted.
         localStorage.setItem('declarationOfConsentAccepted', 'true')
 
         try {

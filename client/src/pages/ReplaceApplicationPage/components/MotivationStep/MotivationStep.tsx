@@ -146,6 +146,10 @@ const MotivationStep = (props: IMotivationStepProps) => {
             thesisType: values.thesisType,
             desiredStartDate: values.desiredStartDate,
             motivation: values.motivation,
+            // Privacy consent flag sent to the server on new applications (POST).
+            // The server validates this is true and records a consent timestamp (GDPR Art. 7(1)).
+            // On updates (PUT), the server ignores this field since consent was already given.
+            ...(application ? {} : { consentToPrivacyPolicy: true }),
           },
         },
       )

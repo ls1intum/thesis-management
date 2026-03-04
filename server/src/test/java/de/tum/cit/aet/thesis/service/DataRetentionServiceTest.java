@@ -82,8 +82,8 @@ class DataRetentionServiceTest extends BaseIntegrationTest {
 
 		String studentAuth = createRandomAuthentication("student");
 		CreateApplicationPayload appPayload = new CreateApplicationPayload(
-				topicId, null, "MASTER", Instant.now(), "Retention test", null
-		);
+				topicId, null, "MASTER", Instant.now(), "Retention test", null,
+		true);
 		String appResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 						.header("Authorization", studentAuth)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -157,8 +157,8 @@ class DataRetentionServiceTest extends BaseIntegrationTest {
 
 		String studentAuth = createRandomAuthentication("student");
 		CreateApplicationPayload appPayload = new CreateApplicationPayload(
-				topicId, null, "MASTER", Instant.now(), "Non-rejected test", null
-		);
+				topicId, null, "MASTER", Instant.now(), "Non-rejected test", null,
+		true);
 		String appResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 						.header("Authorization", studentAuth)
 						.contentType(MediaType.APPLICATION_JSON)

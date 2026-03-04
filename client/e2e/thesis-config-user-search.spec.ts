@@ -34,6 +34,11 @@ test.describe('Thesis Configuration - User search filters by role', () => {
 
     // Verify students appear in the dropdown (student2-5 are available; student is already selected as a pill)
     await expect(studentListbox.getByRole('option', { name: /student2/i })).toBeVisible()
+    await expect(studentListbox.getByRole('option', { name: /student3/i })).toBeVisible()
+
+    // Verify student4 and student5 also appear (all student-role users should be listed)
+    await expect(studentListbox.getByRole('option', { name: /student4/i })).toBeVisible()
+    await expect(studentListbox.getByRole('option', { name: /student5/i })).toBeVisible()
 
     // Verify supervisors and examiners do NOT appear in the student dropdown
     await expect(studentListbox.getByRole('option', { name: /^Examiner/i })).toHaveCount(0)

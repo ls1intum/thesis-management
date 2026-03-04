@@ -403,6 +403,9 @@ VALUES
      '00000000-0000-4000-a000-000000000001'::UUID)
 ON CONFLICT DO NOTHING;
 
+-- Set consent_timestamp on all seeded applications (simulates privacy consent at submission time)
+UPDATE applications SET consent_timestamp = created_at WHERE consent_timestamp IS NULL;
+
 -- ============================================================================
 -- 9. APPLICATION REVIEWERS (supervisor user reviews on assessed applications)
 -- ============================================================================
@@ -1240,6 +1243,9 @@ VALUES
      NOW() - INTERVAL '90 days', NOW() - INTERVAL '80 days',
      '00000000-0000-4000-a000-000000000001'::UUID)
 ON CONFLICT DO NOTHING;
+
+UPDATE applications SET consent_timestamp = created_at
+WHERE application_id = '00000000-0000-4000-c000-00000000000b'::UUID AND consent_timestamp IS NULL;
 
 -- ============================================================================
 -- 32. THESIS ANONYMIZATION TEST DATA
