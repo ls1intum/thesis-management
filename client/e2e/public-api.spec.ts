@@ -83,7 +83,7 @@ test.describe('Public API - Avatar access control', () => {
     expect(thesis.researchGroup).toBeDefined()
     expect(thesis.researchGroup.name).toBeDefined()
 
-    // All published theses should be FINISHED and PUBLIC visibility
+    // All published theses should be FINISHED (visibility is enforced server-side)
     for (const t of data.content) {
       expect(t.state).toBe('FINISHED')
       expect(t.thesisId).toBeDefined()

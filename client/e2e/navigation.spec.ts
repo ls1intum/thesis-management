@@ -98,7 +98,9 @@ test.describe('Navigation - Student routes', () => {
     await expect(page).toHaveURL(/\/submit-application/, { timeout: 15_000 })
 
     // Navigate back to Dashboard
-    await page.getByRole('link', { name: 'Dashboard' }).click()
+    const dashboardLink = page.getByRole('link', { name: 'Dashboard' })
+    await expect(dashboardLink).toBeVisible({ timeout: 10_000 })
+    await dashboardLink.click()
     await expect(page).toHaveURL(/\/dashboard/, { timeout: 30_000 })
     await expect(page.getByRole('heading', { name: /dashboard/i })).toBeVisible({ timeout: 15_000 })
   })

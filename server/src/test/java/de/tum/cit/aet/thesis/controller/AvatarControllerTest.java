@@ -174,7 +174,7 @@ class AvatarControllerTest extends BaseIntegrationTest {
 
 			var topicJson = objectMapper.readTree(topic);
 			UUID supervisorUserId = UUID.fromString(
-					topicJson.get("supervisors").get(0).get("userId").asString());
+					topicJson.get("supervisors").get(0).get("userId").asText());
 
 			// Verify the repository query confirms this user IS publicly visible
 			assertThat(userRepository.isUserPubliclyVisible(supervisorUserId)).isTrue();
