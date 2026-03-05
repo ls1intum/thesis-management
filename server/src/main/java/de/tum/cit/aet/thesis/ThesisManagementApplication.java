@@ -20,7 +20,7 @@ import java.net.UnknownHostException;
 public class ThesisManagementApplication {
 	private static final Logger log = LoggerFactory.getLogger(ThesisManagementApplication.class);
 
-	public static final long appStart = System.nanoTime();
+	public static final long APP_START = System.nanoTime();
 
 	/**
 	 * Starts the Spring Boot application.
@@ -59,8 +59,7 @@ public class ThesisManagementApplication {
 		String hostAddress = "localhost";
 		try {
 			hostAddress = InetAddress.getLocalHost().getHostAddress();
-		}
-		catch (UnknownHostException e) {
+		} catch (UnknownHostException e) {
 			log.warn("The host name could not be determined, using `localhost` as fallback");
 		}
 		log.info("""
@@ -78,6 +77,6 @@ public class ThesisManagementApplication {
 
 				""", env.getProperty("spring.application.name"), protocol, serverPort, contextPath, protocol, hostAddress, serverPort, contextPath,
 				env.getActiveProfiles().length == 0 ? env.getDefaultProfiles() : env.getActiveProfiles(), version, gitCommitId, gitBranch,
-				TimeLogUtil.formatDurationFrom(appStart));
+				TimeLogUtil.formatDurationFrom(APP_START));
 	}
 }
