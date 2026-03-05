@@ -1,5 +1,44 @@
 # Development Setup
 
+## Quick Start
+
+Run these commands from the project root to get the full app running locally:
+
+```bash
+# 1. Start all Docker services (PostgreSQL, Keycloak, Mailpit)
+docker compose up -d
+
+# 2. Wait for Keycloak to be ready (takes 5-10 seconds)
+#    Run this until it returns JSON:
+curl -sf http://localhost:8181/realms/thesis-management
+
+# 3. Start the server (in a separate terminal)
+cd server
+./gradlew bootRun --args='--spring.profiles.active=dev'
+
+# 4. Start the client (in a separate terminal)
+cd client
+npm install
+npm run dev
+```
+
+The application is now available at http://localhost:3100. Log in with any [test user](#test-users-and-roles) (password = username).
+
+### Local Dev Ports
+
+Local development ports deviate from typical ports (typically +100) to avoid conflicts with other apps.
+
+| Service | Port |
+|---------|------|
+| PostgreSQL | 5444 |
+| Keycloak | 8181 |
+| Spring Boot Server | 8180 |
+| Webpack Dev Server | 3100 |
+| Mailpit SMTP | 1125 |
+| Mailpit Web UI | 8125 |
+
+These ports are also used during e2e testing. The production system, however, uses the default ports (e.g. 8080 for the server and 3000 for the client).
+
 ## Application Architecture
 
 ![Architecture](files/subsystem-decomposition.svg)
@@ -21,16 +60,34 @@ For local development start a database container by executing the following comm
 docker compose up db -d
 ```
 
-### Liquibase Migration
+## Email (Mailpit)
 
-To apply the latest database schema changes using Liquibase, run the following command:
+Local development uses [Mailpit](https://github.com/axllent/mailpit) to capture all outgoing emails. Mailpit is included in `docker-compose.yml` and starts automatically with the other services:
 
 ```bash
-cd ../server
-./gradlew bootRun
+docker compose up -d
 ```
 
-This will apply all migrations defined under `server/src/main/resources/db/changelog/changes`.
+When the server runs with the `dev` profile, it is pre-configured to send emails to Mailpit (SMTP on port 1125) with mail sending enabled. No additional configuration is needed.
+
+> **Important:** The `dev` profile is required for emails to work. Without it, `mail.enabled` defaults to `false` and no emails are sent (you also won't see any mail-related log output).
+
+Open the Mailpit web UI to browse captured emails:
+
+**http://localhost:8125**
+
+All emails (including attachments) sent by the application are available there for inspection. This replaces the previous console-only logging approach and makes it easy to verify email content, formatting, and recipients during development and testing.
+
+## Database Migrations (Liquibase)
+
+Liquibase migrations run automatically when the server starts. All migrations are defined under `server/src/main/resources/db/changelog/changes`.
+
+To apply the latest schema changes, simply start the server with the `dev` profile:
+
+```bash
+cd server
+./gradlew bootRun --args='--spring.profiles.active=dev'
+```
 
 ### Automatic Dev Seed Data
 
@@ -41,8 +98,6 @@ The seed data script (`server/src/main/resources/db/changelog/manual/seed_dev_te
 To activate the dev profile, either:
 - Set the environment variable `SPRING_PROFILES_ACTIVE=dev`
 - Or pass `--spring.profiles.active=dev` when starting the server
-
-> 💡 Tip: Default email templates are now inserted automatically by Liquibase migrations.
 
 #### Test Users and Roles
 
@@ -87,44 +142,26 @@ The seed data includes 6 topics across both research groups:
 
 3 interview processes (2 completed, 1 active) with interviewees, interview slots, and assessments.
 
-## Email (Mailpit)
-
-Local development uses [Mailpit](https://github.com/axllent/mailpit) to capture all outgoing emails. Mailpit is included in `docker-compose.yml` and starts automatically with the other services:
-
-```bash
-docker compose up -d
-```
-
-When the server runs with the `dev` profile, it is pre-configured to send emails to Mailpit (SMTP on port 1125) with mail sending enabled. No additional configuration is needed.
-
-> **Important:** The `dev` profile is required for emails to work. Without it, `mail.enabled` defaults to `false` and no emails are sent (you also won't see any mail-related log output).
-
-Open the Mailpit web UI to browse captured emails:
-
-**http://localhost:8125**
-
-All emails (including attachments) sent by the application are available there for inspection. This replaces the previous console-only logging approach and makes it easy to verify email content, formatting, and recipients during development and testing.
-
 ## Server
 
 ### Preconditions
 * Docker services running: `docker compose up -d`
 * Wait for Keycloak to be ready: `curl -sf http://localhost:8181/realms/thesis-management` (returns JSON when ready)
 
-> **Important:** Keycloak takes 30–60 seconds to start. If you start the server before Keycloak is ready, you will get `Connection reset` or `HTTPS required` errors and the server will fail to boot.
+> **Important:** Keycloak takes 30-60 seconds to start. If you start the server before Keycloak is ready, you will get `Connection reset` or `HTTPS required` errors and the server will fail to boot.
 
-To start the server for local development, navigate to /server folder and execute the following command from the terminal:
+To start the server for local development, navigate to the `server/` folder and execute the following command from the terminal:
 ```
 ./gradlew bootRun --args='--spring.profiles.active=dev'
 ```
 
-The `dev` profile is required for seed data, Mailpit email delivery, and dev Liquibase contexts. Without it, emails are disabled and no test data is loaded.
+The `dev` profile is required for seed data, Mailpit email delivery, and dev Liquibase contexts. Without it, emails are disabled, no test data is loaded, and the server starts on port 8080 instead of 8180.
 
 Server is served at http://localhost:8180.
 
 ### IntelliJ IDEA
 
-A shared run configuration is included at `server/.run/Server (Dev).run.xml`. It starts the server with the `dev` profile and all required settings. Use **Run > Server (Dev)** from the toolbar.
+A shared run configuration is included at `server/.run/Thesis Management Server (Dev).run.xml`. It starts the server with the `dev` profile and all required settings. Use **Run > Thesis Management Server (Dev)** from the toolbar.
 
 If the run configuration is not detected automatically, go to **File > Settings > Build, Execution, Deployment > Build Tools > Gradle** and ensure the Gradle JVM is set to Java 25.
 
@@ -132,10 +169,10 @@ If the run configuration is not detected automatically, go to **File > Settings 
 
 | Command | Description |
 |---------|-------------|
+| `./gradlew bootRun --args='--spring.profiles.active=dev'` | Start the server for local development |
 | `./gradlew test` | Run all server tests |
 | `./gradlew test jacocoTestReport` | Run tests with JaCoCo coverage report |
 | `./gradlew build -x test` | Build the server without running tests |
-| `./gradlew bootRun` | Start the server for local development |
 | `./gradlew spotlessApply` | Auto-format code (imports, whitespace, tabs) |
 | `./gradlew spotlessCheck` | Check code formatting without modifying files |
 | `./gradlew checkstyleMain` | Run Checkstyle on main source code |
@@ -229,9 +266,9 @@ const types = topic.thesisTypes  // may be undefined
 
 #### Preconditions
 * Server running at http://localhost:8180
-* Keycloak realm `thesis-management` is available under http://localhost:8181 (See [Keycloak Setup](#keycloak-setup))
+* Keycloak realm `thesis-management` is available under http://localhost:8181 (See [Keycloak](#keycloak))
 
-To start the client application for local development, navigate to /client folder and execute the following command from the terminal:
+To start the client application for local development, navigate to the `client/` folder and execute the following commands from the terminal:
 ```
 npm install
 npm run dev
@@ -247,7 +284,7 @@ The project includes end-to-end tests using [Playwright](https://playwright.dev/
 
 The E2E tests require all dev services to be running:
 
-1. **PostgreSQL + Keycloak**: `docker compose up -d`
+1. **PostgreSQL + Keycloak + Mailpit**: `docker compose up -d`
 2. **Server** (dev profile with seed data): `cd server && ./gradlew bootRun --args='--spring.profiles.active=dev'`
 3. **Client** (dev server): `cd client && npm run dev`
 4. **Install Playwright browsers** (first time only): `cd client && npx playwright install chromium`
@@ -347,7 +384,7 @@ The E2E tests focus on page accessibility, content rendering, and role-based acc
 | **Authentication & RBAC** | Keycloak redirect, nav item visibility per role, access denied for unauthorized roles | Token refresh, session expiry, logout |
 | **Topics** | Public browsing, search, filters, list/grid toggle, management view, student apply button, **creating a topic end-to-end** | Editing/closing topics, draft topics |
 | **Applications** | Stepper form rendering, pre-selected topic, supervisor/examiner review page access, **submitting an application end-to-end**, **accepting and rejecting applications** | — |
-| **Theses** | Browse per role, overview page, detail page sections, student own thesis, **creating a thesis end-to-end**, **submitting proposal feedback**, **assessment → final grade → mark as finished**, user search filters by role | Comments |
+| **Theses** | Browse per role, overview page, detail page sections, student own thesis, **creating a thesis end-to-end**, **submitting proposal feedback**, **assessment > final grade > mark as finished**, user search filters by role | Comments |
 | **Thesis Anonymization** | Admin triggers anonymization, idempotent second run finds nothing, anonymized thesis shows banner, recent thesis unaffected, student cannot access admin page | — |
 | **Interviews** | Examiner overview and process detail, supervisor access, student denied, **scoring interviewees with notes**, **add slot modal** | Creating interview processes, booking slots |
 | **Presentations** | Page access per role, public presentation detail, **creating a presentation draft** | Calendar integration |
@@ -359,7 +396,7 @@ The E2E tests focus on page accessibility, content rendering, and role-based acc
 | **Dashboard** | Section visibility per role (My Theses, My Applications) | Dashboard data accuracy, links to detail pages |
 | **Navigation** | Public pages, sidebar flow, header logo, footer links, unknown routes | Mobile/responsive layout, deep linking |
 
-**In summary:** The tests cover page rendering/access control across all roles and key end-to-end workflows including topic creation, thesis creation, application submission, presentation scheduling, proposal feedback, application accept/reject, thesis grading (assessment → grade → finish), interview scoring, thesis anonymization, data retention cleanup, self-service account deletion (full, soft, and expired-retention), admin user deletion, and GDPR data export.
+**In summary:** The tests cover page rendering/access control across all roles and key end-to-end workflows including topic creation, thesis creation, application submission, presentation scheduling, proposal feedback, application accept/reject, thesis grading (assessment > grade > finish), interview scoring, thesis anonymization, data retention cleanup, self-service account deletion (full, soft, and expired-retention), admin user deletion, and GDPR data export.
 
 ### CI Integration
 
@@ -369,28 +406,27 @@ Test artifacts (screenshots, traces, videos) are uploaded on failure and availab
 
 ## Postman Collection
 
-A ready-to-use Postman Collection is included: [`TUMApply API.postman_collection.json`](./Thesis%20Management%20API.postman_collection.json).
+A ready-to-use Postman Collection is included: [`Thesis Management API.postman_collection.json`](./Thesis%20Management%20API.postman_collection.json).
 
 ### Key Features
 
-- ✅ **Pre-configured OAuth2 Authentication**  
-  The collection handles the full OAuth2 flow using Keycloak. When sending a request, Postman 
-  will automatically open a login window (otherwise go to the Collection > Authorization > Click 
-  on "Get New Access Token" at the bottom) if the token is missing or expired. Token refresh is 
+- **Pre-configured OAuth2 Authentication**
+  The collection handles the full OAuth2 flow using Keycloak. When sending a request, Postman
+  will automatically open a login window (otherwise go to the Collection > Authorization > Click
+  on "Get New Access Token" at the bottom) if the token is missing or expired. Token refresh is
   also handled automatically.
 
-- ✅ **Collection-Level Configuration**  
+- **Collection-Level Configuration**
   Authentication and common headers are defined at the collection level, so you don't need to configure them for each individual request.
 
-- ✅ **Collection Variables**  
+- **Collection Variables**
   Key values like `{{baseUrl}}`, `{{accessToken}}`, `{{clientId}}`, etc. are pre-configured as variables. This makes the collection flexible and easy to adapt to different environments.
 
 ### How to Use
 
 1. Open Postman and click **Import** on the top left.
-2. Upload the provided [`TUMApply API.postman_collection.json`](./Thesis%20Management%20API.postman_collection.json).
-   postman_collection.json).
+2. Upload the provided [`Thesis Management API.postman_collection.json`](./Thesis%20Management%20API.postman_collection.json).
 3. The collection will appear in the sidebar.
 4. Start sending requests — OAuth2 authentication will be handled automatically.
 
-> 💡 No manual token handling is needed. Just sign in via Keycloak when prompted.
+> No manual token handling is needed. Just sign in via Keycloak when prompted.
