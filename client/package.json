@@ -60,7 +60,7 @@
     "@tiptap/extension-underline": "3.20.0",
     "@tiptap/starter-kit": "3.20.0",
     "@types/dompurify": "3.2.0",
-    "dompurify": "3.3.1",
+    "dompurify": "github:cure53/DOMPurify#3.3.2",
     "embla-carousel": "8.6.0",
     "embla-carousel-react": "8.6.0",
     "i18n-iso-countries": "7.14.0",
