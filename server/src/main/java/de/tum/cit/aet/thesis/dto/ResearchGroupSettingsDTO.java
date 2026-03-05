@@ -8,16 +8,22 @@ public record ResearchGroupSettingsDTO(
 		ResearchGroupSettingsPhasesDTO phaseSettings,
 		ResearchGroupSettingsEmailDTO emailSettings,
 		ResearchGroupSettingsWritingGuideDTO writingGuideSettings,
-		ResearchGroupSettingsApplicationEmailDTO applicationEmailSettings
+		ResearchGroupSettingsApplicationEmailDTO applicationEmailSettings,
+		ResearchGroupSettingsGradingSchemeDTO gradingSchemeSettings
 ) {
 	public static ResearchGroupSettingsDTO fromEntity(ResearchGroupSettings settings) {
+		return fromEntity(settings, null);
+	}
+
+	public static ResearchGroupSettingsDTO fromEntity(ResearchGroupSettings settings, ResearchGroupSettingsGradingSchemeDTO gradingScheme) {
 		return new ResearchGroupSettingsDTO(
 				ResearchGroupSettingsRejectDTO.fromEntity(settings),
 				ResearchGroupSettingsPresentationDTO.fromEntity(settings),
 				ResearchGroupSettingsPhasesDTO.fromEntity(settings),
 				ResearchGroupSettingsEmailDTO.fromEntity(settings),
 				ResearchGroupSettingsWritingGuideDTO.fromEntity(settings),
-				ResearchGroupSettingsApplicationEmailDTO.fromEntity(settings)
+				ResearchGroupSettingsApplicationEmailDTO.fromEntity(settings),
+				gradingScheme
 		);
 	}
 }

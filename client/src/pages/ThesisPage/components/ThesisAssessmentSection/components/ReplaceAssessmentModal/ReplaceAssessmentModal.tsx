@@ -1,4 +1,17 @@
-import { Button, Modal, Stack, TextInput } from '@mantine/core'
+import {
+  ActionIcon,
+  Alert,
+  Badge,
+  Button,
+  Group,
+  Modal,
+  NumberInput,
+  Stack,
+  Table,
+  Text,
+  TextInput,
+} from '@mantine/core'
+import { Plus, Trash } from '@phosphor-icons/react'
 import { useEffect, useState } from 'react'
 import DocumentEditor from '../../../../../../components/DocumentEditor/DocumentEditor'
 import { doRequest } from '../../../../../../requests/request'
@@ -8,6 +21,34 @@ import {
   useThesisUpdateAction,
 } from '../../../../../../providers/ThesisProvider/hooks'
 import { ApiError } from '../../../../../../requests/handler'
+import { IResearchGroupSettingsGradingScheme } from '../../../../../../requests/responses/researchGroupSettings'
+
+interface IGradeComponent {
+  name: string
+  weight: number
+  isBonus: boolean
+  grade: number | ''
+}
+
+function calculateGrade(components: IGradeComponent[]): number | null {
+  if (components.length === 0) return null
+  if (components.some((c) => c.grade === '' || c.grade === undefined)) return null
+
+  let weightedSum = 0
+  let bonusSum = 0
+
+  for (const c of components) {
+    if (c.isBonus) {
+      bonusSum += Number(c.grade)
+    } else {
+      weightedSum += c.weight * Number(c.grade)
+    }
+  }
+
+  let calculated = weightedSum / 100 + bonusSum
+  calculated = Math.max(1.0, Math.min(5.0, calculated))
+  return Math.round(calculated * 10) / 10
+}
 
 interface IReplaceAssessmentModalProps {
   opened: boolean
@@ -23,8 +64,25 @@ const ReplaceAssessmentModal = (props: IReplaceAssessmentModalProps) => {
   const [positives, setPositives] = useState('')
   const [negatives, setNegatives] = useState('')
   const [gradeSuggestion, setGradeSuggestion] = useState('')
+  const [gradeComponents, setGradeComponents] = useState<IGradeComponent[]>([])
+  const [schemeLoaded, setSchemeLoaded] = useState(false)
 
   const isEmpty = !summary || !positives || !negatives || !gradeSuggestion
+
+  const calculatedGrade = calculateGrade(gradeComponents)
+
+  const regularWeightSum = gradeComponents
+    .filter((c) => !c.isBonus)
+    .reduce((sum, c) => sum + (c.weight ?? 0), 0)
+  const weightsValid = gradeComponents.length === 0 || regularWeightSum === 100
+  const allGradesFilled = gradeComponents.every((c) => c.grade !== '' && c.grade !== undefined)
+  const gradeComponentsValid = gradeComponents.length === 0 || (weightsValid && allGradesFilled)
+
+  const gradeSuggestionNum = parseFloat(gradeSuggestion)
+  const deviationWarning =
+    calculatedGrade !== null &&
+    !isNaN(gradeSuggestionNum) &&
+    Math.abs(gradeSuggestionNum - calculatedGrade) > 0.3
 
   const [submitting, onSave] = useThesisUpdateAction(async () => {
     const response = await doRequest<IThesis>(`/v2/theses/${thesis.thesisId}/assessment`, {
@@ -35,6 +93,15 @@ const ReplaceAssessmentModal = (props: IReplaceAssessmentModalProps) => {
         positives,
         negatives,
         gradeSuggestion,
+        gradeComponents:
+          gradeComponents.length > 0
+            ? gradeComponents.map((c) => ({
+                name: c.name,
+                weight: c.weight,
+                isBonus: c.isBonus,
+                grade: Number(c.grade),
+              }))
+            : undefined,
       },
     })
 
@@ -52,7 +119,61 @@ const ReplaceAssessmentModal = (props: IReplaceAssessmentModalProps) => {
     setPositives(thesis.assessment?.positives || '')
     setNegatives(thesis.assessment?.negatives || '')
     setGradeSuggestion(thesis.assessment?.gradeSuggestion || '')
+
+    if (thesis.assessment?.gradeComponents && thesis.assessment.gradeComponents.length > 0) {
+      setGradeComponents(
+        thesis.assessment.gradeComponents.map((c) => ({
+          name: c.name,
+          weight: c.weight,
+          isBonus: c.isBonus,
+          grade: c.grade,
+        })),
+      )
+      setSchemeLoaded(true)
+    } else {
+      setSchemeLoaded(false)
+    }
   }, [thesis.assessment])
+
+  useEffect(() => {
+    if (opened && !schemeLoaded && thesis.researchGroup?.id) {
+      doRequest<IResearchGroupSettingsGradingScheme>(
+        `/v2/research-group-settings/${thesis.researchGroup.id}/grading-scheme`,
+        { method: 'GET', requiresAuth: true },
+        (res) => {
+          if (res.ok && res.data.components && res.data.components.length > 0) {
+            setGradeComponents(
+              res.data.components.map((c) => ({
+                name: c.name,
+                weight: c.weight,
+                isBonus: c.isBonus,
+                grade: '' as const,
+              })),
+            )
+          }
+          setSchemeLoaded(true)
+        },
+      )
+    }
+  }, [opened, schemeLoaded, thesis.researchGroup?.id])
+
+  useEffect(() => {
+    if (calculatedGrade !== null) {
+      setGradeSuggestion(String(calculatedGrade))
+    }
+  }, [calculatedGrade])
+
+  const updateComponent = (index: number, updates: Partial<IGradeComponent>) => {
+    setGradeComponents((prev) => prev.map((c, i) => (i === index ? { ...c, ...updates } : c)))
+  }
+
+  const addComponent = () => {
+    setGradeComponents((prev) => [...prev, { name: '', weight: 0, isBonus: false, grade: '' }])
+  }
+
+  const removeComponent = (index: number) => {
+    setGradeComponents((prev) => prev.filter((_, i) => i !== index))
+  }
 
   return (
     <Modal opened={opened} onClose={onClose} size='xl' title='Submit Assessment'>
@@ -81,13 +202,124 @@ const ReplaceAssessmentModal = (props: IReplaceAssessmentModalProps) => {
           onChange={(e) => setNegatives(e.target.value)}
           maxLength={2000}
         />
+
+        {gradeComponents.length > 0 && (
+          <Stack gap='xs'>
+            <Text fw={500} size='sm'>
+              Grade Components
+            </Text>
+            <Table>
+              <Table.Thead>
+                <Table.Tr>
+                  <Table.Th>Name</Table.Th>
+                  <Table.Th w={100}>Weight</Table.Th>
+                  <Table.Th w={100}>Grade</Table.Th>
+                  <Table.Th w={60}></Table.Th>
+                </Table.Tr>
+              </Table.Thead>
+              <Table.Tbody>
+                {gradeComponents.map((component, index) => (
+                  <Table.Tr key={index}>
+                    <Table.Td>
+                      <TextInput
+                        value={component.name}
+                        onChange={(e) => updateComponent(index, { name: e.target.value })}
+                        size='sm'
+                      />
+                    </Table.Td>
+                    <Table.Td>
+                      {component.isBonus ? (
+                        <Badge color='blue'>Bonus</Badge>
+                      ) : (
+                        <NumberInput
+                          value={component.weight}
+                          onChange={(val) =>
+                            updateComponent(index, {
+                              weight: typeof val === 'number' ? val : 0,
+                            })
+                          }
+                          min={0}
+                          max={100}
+                          suffix='%'
+                          size='sm'
+                        />
+                      )}
+                    </Table.Td>
+                    <Table.Td>
+                      <NumberInput
+                        value={component.grade}
+                        onChange={(val) =>
+                          updateComponent(index, {
+                            grade: typeof val === 'number' ? val : '',
+                          })
+                        }
+                        min={component.isBonus ? -5 : 1}
+                        max={5}
+                        step={0.1}
+                        decimalScale={1}
+                        size='sm'
+                      />
+                    </Table.Td>
+                    <Table.Td>
+                      <ActionIcon
+                        variant='subtle'
+                        color='red'
+                        size='sm'
+                        onClick={() => removeComponent(index)}
+                      >
+                        <Trash size={14} />
+                      </ActionIcon>
+                    </Table.Td>
+                  </Table.Tr>
+                ))}
+              </Table.Tbody>
+            </Table>
+
+            <Group>
+              <Button
+                variant='subtle'
+                leftSection={<Plus size={14} />}
+                onClick={addComponent}
+                size='xs'
+              >
+                Add Component
+              </Button>
+            </Group>
+
+            {!weightsValid && (
+              <Alert color='yellow' title='Weight Warning'>
+                Regular component weights sum to {regularWeightSum}%, but must equal 100%.
+              </Alert>
+            )}
+
+            {calculatedGrade !== null && (
+              <Text size='sm' fw={500}>
+                Calculated Grade: {calculatedGrade}
+              </Text>
+            )}
+          </Stack>
+        )}
+
+        {gradeComponents.length === 0 && (
+          <Button variant='subtle' leftSection={<Plus size={14} />} onClick={addComponent}>
+            Add Grade Components
+          </Button>
+        )}
+
+        {deviationWarning && (
+          <Alert color='orange' title='Grade Deviation'>
+            The grade suggestion ({gradeSuggestion}) deviates from the calculated grade (
+            {calculatedGrade}) by more than 0.3.
+          </Alert>
+        )}
+
         <TextInput
           label='Grade Suggestion'
           required
           value={gradeSuggestion}
           onChange={(e) => setGradeSuggestion(e.target.value)}
         />
-        <Button onClick={onSave} disabled={isEmpty} loading={submitting}>
+        <Button onClick={onSave} disabled={isEmpty || !gradeComponentsValid} loading={submitting}>
           Submit Assessment
         </Button>
       </Stack>

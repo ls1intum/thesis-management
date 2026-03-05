@@ -6,6 +6,7 @@ import de.tum.cit.aet.thesis.constants.ThesisRoleName;
 import de.tum.cit.aet.thesis.constants.ThesisState;
 import de.tum.cit.aet.thesis.constants.ThesisVisibility;
 import de.tum.cit.aet.thesis.constants.UploadFileType;
+import de.tum.cit.aet.thesis.controller.payload.GradeComponentPayload;
 import de.tum.cit.aet.thesis.controller.payload.RequestChangesPayload;
 import de.tum.cit.aet.thesis.controller.payload.ThesisStatePayload;
 import de.tum.cit.aet.thesis.entity.Application;
@@ -15,6 +16,7 @@ import de.tum.cit.aet.thesis.entity.Thesis;
 import de.tum.cit.aet.thesis.entity.ThesisAssessment;
 import de.tum.cit.aet.thesis.entity.ThesisFeedback;
 import de.tum.cit.aet.thesis.entity.ThesisFile;
+import de.tum.cit.aet.thesis.entity.ThesisGradeComponent;
 import de.tum.cit.aet.thesis.entity.ThesisPresentation;
 import de.tum.cit.aet.thesis.entity.ThesisProposal;
 import de.tum.cit.aet.thesis.entity.ThesisRole;
@@ -29,6 +31,7 @@ import de.tum.cit.aet.thesis.repository.ResearchGroupRepository;
 import de.tum.cit.aet.thesis.repository.ThesisAssessmentRepository;
 import de.tum.cit.aet.thesis.repository.ThesisFeedbackRepository;
 import de.tum.cit.aet.thesis.repository.ThesisFileRepository;
+import de.tum.cit.aet.thesis.repository.ThesisGradeComponentRepository;
 import de.tum.cit.aet.thesis.repository.ThesisProposalRepository;
 import de.tum.cit.aet.thesis.repository.ThesisRepository;
 import de.tum.cit.aet.thesis.repository.ThesisRoleRepository;
@@ -49,6 +52,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -74,28 +79,11 @@ public class ThesisService {
 	private final AccessManagementService accessManagementService;
 	private final ThesisFeedbackRepository thesisFeedbackRepository;
 	private final ThesisFileRepository thesisFileRepository;
+	private final ThesisGradeComponentRepository thesisGradeComponentRepository;
 	private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
 	private final ResearchGroupRepository researchGroupRepository;
 	private final ResearchGroupSettingsService researchGroupSettingsService;
 
-	/**
-	 * Injects all required repositories and services for thesis management.
-	 *
-	 * @param thesisRoleRepository the thesis role repository
-	 * @param thesisRepository the thesis repository
-	 * @param thesisStateChangeRepository the thesis state change repository
-	 * @param userRepository the user repository
-	 * @param thesisProposalRepository the thesis proposal repository
-	 * @param thesisAssessmentRepository the thesis assessment repository
-	 * @param uploadService the upload service for file storage
-	 * @param mailingService the mailing service for sending notifications
-	 * @param accessManagementService the access management service
-	 * @param thesisFeedbackRepository the thesis feedback repository
-	 * @param thesisFileRepository the thesis file repository
-	 * @param currentUserProviderProvider the provider for the current user context
-	 * @param researchGroupRepository the research group repository
-	 * @param researchGroupSettingsService the research group settings service
-	 */
 	@Autowired
 	public ThesisService(
 			ThesisRoleRepository thesisRoleRepository,
@@ -108,6 +96,7 @@ public class ThesisService {
 			MailingService mailingService,
 			AccessManagementService accessManagementService,
 			ThesisFeedbackRepository thesisFeedbackRepository, ThesisFileRepository thesisFileRepository,
+			ThesisGradeComponentRepository thesisGradeComponentRepository,
 			ObjectProvider<CurrentUserProvider> currentUserProviderProvider, ResearchGroupRepository researchGroupRepository, ResearchGroupSettingsService researchGroupSettingsService
 	) {
 		this.thesisRoleRepository = thesisRoleRepository;
@@ -121,6 +110,7 @@ public class ThesisService {
 		this.accessManagementService = accessManagementService;
 		this.thesisFeedbackRepository = thesisFeedbackRepository;
 		this.thesisFileRepository = thesisFileRepository;
+		this.thesisGradeComponentRepository = thesisGradeComponentRepository;
 		this.currentUserProviderProvider = currentUserProviderProvider;
 		this.researchGroupRepository = researchGroupRepository;
 		this.researchGroupSettingsService = researchGroupSettingsService;
@@ -605,7 +595,8 @@ public class ThesisService {
 			String summary,
 			String positives,
 			String negatives,
-			String gradeSuggestion
+			String gradeSuggestion,
+			List<GradeComponentPayload> gradeComponentPayloads
 	) {
 		requireNotAnonymized(thesis);
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
@@ -621,6 +612,25 @@ public class ThesisService {
 
 		thesisAssessmentRepository.save(assessment);
 
+		if (gradeComponentPayloads != null && !gradeComponentPayloads.isEmpty()) {
+			validateGradeComponents(gradeComponentPayloads);
+
+			List<ThesisGradeComponent> gradeComponents = new ArrayList<>();
+			for (int i = 0; i < gradeComponentPayloads.size(); i++) {
+				GradeComponentPayload payload = gradeComponentPayloads.get(i);
+				ThesisGradeComponent component = new ThesisGradeComponent();
+				component.setAssessment(assessment);
+				component.setName(payload.name());
+				component.setWeight(payload.weight());
+				component.setIsBonus(payload.isBonus());
+				component.setGrade(payload.grade());
+				component.setPosition(i);
+				gradeComponents.add(component);
+			}
+			assessment.setGradeComponents(gradeComponents);
+			thesisAssessmentRepository.save(assessment);
+		}
+
 		List<ThesisAssessment> assessments = Objects.requireNonNullElse(thesis.getAssessments(), new ArrayList<>());
 		assessments.addFirst(assessment);
 
@@ -632,6 +642,59 @@ public class ThesisService {
 		mailingService.sendAssessmentAddedEmail(assessment);
 
 		return thesisRepository.save(thesis);
+	}
+
+	private void validateGradeComponents(List<GradeComponentPayload> components) {
+		BigDecimal ONE = BigDecimal.ONE;
+		BigDecimal FIVE = BigDecimal.valueOf(5);
+		BigDecimal HUNDRED = BigDecimal.valueOf(100);
+
+		BigDecimal regularWeightSum = BigDecimal.ZERO;
+		for (GradeComponentPayload component : components) {
+			if (component.name() == null || component.name().isBlank()) {
+				throw new ResourceInvalidParametersException("Grade component name must not be empty.");
+			}
+			if (!component.isBonus()) {
+				if (component.grade().compareTo(ONE) < 0 || component.grade().compareTo(FIVE) > 0) {
+					throw new ResourceInvalidParametersException("Grade must be between 1.0 and 5.0.");
+				}
+				regularWeightSum = regularWeightSum.add(component.weight());
+			}
+		}
+		if (regularWeightSum.compareTo(HUNDRED) != 0) {
+			throw new ResourceInvalidParametersException("Regular component weights must sum to 100%.");
+		}
+	}
+
+	public static BigDecimal calculateGradeFromComponents(List<? extends GradeComponentData> components) {
+		BigDecimal weightedSum = BigDecimal.ZERO;
+		BigDecimal bonusSum = BigDecimal.ZERO;
+
+		for (GradeComponentData component : components) {
+			if (component.isBonus()) {
+				bonusSum = bonusSum.add(component.grade());
+			} else {
+				weightedSum = weightedSum.add(component.weight().multiply(component.grade()));
+			}
+		}
+
+		BigDecimal calculated = weightedSum.divide(BigDecimal.valueOf(100), 1, RoundingMode.HALF_UP).add(bonusSum);
+		BigDecimal ONE = BigDecimal.ONE;
+		BigDecimal FIVE = BigDecimal.valueOf(5);
+
+		if (calculated.compareTo(ONE) < 0) {
+			calculated = ONE;
+		}
+		if (calculated.compareTo(FIVE) > 0) {
+			calculated = FIVE;
+		}
+		return calculated.setScale(1, RoundingMode.HALF_UP);
+	}
+
+	public interface GradeComponentData {
+		BigDecimal weight();
+		boolean isBonus();
+		BigDecimal grade();
 	}
 
 	/**
@@ -674,8 +737,21 @@ public class ThesisService {
 
 		builder.addSection("Summary", assessment.getSummary())
 				.addSection("Strengths", assessment.getPositives())
-				.addSection("Weaknesses", assessment.getNegatives())
-				.addSection("Grade Suggestion", assessment.getGradeSuggestion());
+				.addSection("Weaknesses", assessment.getNegatives());
+
+		if (assessment.getGradeComponents() != null && !assessment.getGradeComponents().isEmpty()) {
+			StringBuilder gradeTable = new StringBuilder();
+			for (ThesisGradeComponent component : assessment.getGradeComponents()) {
+				if (component.getIsBonus()) {
+					gradeTable.append(String.format("%s (Bonus): %s%n", component.getName(), component.getGrade()));
+				} else {
+					gradeTable.append(String.format("%s (%s%%): %s%n", component.getName(), component.getWeight(), component.getGrade()));
+				}
+			}
+			builder.addSection("Grade Components", gradeTable.toString());
+		}
+
+		builder.addSection("Grade Suggestion", assessment.getGradeSuggestion());
 
 		return builder.build();
 	}

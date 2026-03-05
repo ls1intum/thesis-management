@@ -1,5 +1,5 @@
 import { IThesis } from '../../../../../../requests/responses/thesis'
-import { Button, Modal, Stack, TextInput } from '@mantine/core'
+import { Alert, Button, Modal, Stack, Text, TextInput } from '@mantine/core'
 import { doRequest } from '../../../../../../requests/request'
 import { useEffect, useState } from 'react'
 import DocumentEditor from '../../../../../../components/DocumentEditor/DocumentEditor'
@@ -29,6 +29,31 @@ const SubmitFinalGradeModal = (props: ISubmitFinalGradeModalProps) => {
     setFeedback(thesis.grade?.feedback || '')
     setVisibility(thesis.visibility)
   }, [thesis])
+
+  const gradeComponents = thesis.assessment?.gradeComponents ?? []
+  const calculatedGrade =
+    gradeComponents.length > 0
+      ? (() => {
+          let weightedSum = 0
+          let bonusSum = 0
+          for (const c of gradeComponents) {
+            if (c.isBonus) {
+              bonusSum += c.grade
+            } else {
+              weightedSum += c.weight * c.grade
+            }
+          }
+          let calc = weightedSum / 100 + bonusSum
+          calc = Math.max(1.0, Math.min(5.0, calc))
+          return Math.round(calc * 10) / 10
+        })()
+      : null
+
+  const finalGradeNum = parseFloat(finalGrade)
+  const deviationWarning =
+    calculatedGrade !== null &&
+    !isNaN(finalGradeNum) &&
+    Math.abs(finalGradeNum - calculatedGrade) > 0.3
 
   const isEmpty = !finalGrade
 
@@ -61,12 +86,23 @@ const SubmitFinalGradeModal = (props: ISubmitFinalGradeModalProps) => {
           value={visibility}
           onChange={(e) => e && setVisibility(e)}
         />
+        {calculatedGrade !== null && (
+          <Text size='sm' c='dimmed'>
+            Calculated from assessment components: {calculatedGrade}
+          </Text>
+        )}
         <TextInput
           required
           label='Final Grade'
           value={finalGrade}
           onChange={(e) => setFinalGrade(e.target.value)}
         />
+        {deviationWarning && (
+          <Alert color='orange' title='Grade Deviation'>
+            The final grade ({finalGrade}) deviates from the calculated assessment grade (
+            {calculatedGrade}) by more than 0.3.
+          </Alert>
+        )}
         <DocumentEditor
           label='Feedback (Visible to student)'
           value={feedback}

@@ -927,7 +927,8 @@ public class ThesisController {
 				RequestValidator.validateStringMaxLength(payload.summary(), StringLimits.UNLIMITED_TEXT.getLimit()),
 				RequestValidator.validateStringMaxLength(payload.positives(), StringLimits.UNLIMITED_TEXT.getLimit()),
 				RequestValidator.validateStringMaxLength(payload.negatives(), StringLimits.UNLIMITED_TEXT.getLimit()),
-				RequestValidator.validateStringMaxLength(payload.gradeSuggestion(), StringLimits.THESIS_GRADE.getLimit())
+				RequestValidator.validateStringMaxLength(payload.gradeSuggestion(), StringLimits.THESIS_GRADE.getLimit()),
+				payload.gradeComponents()
 		);
 
 		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasSupervisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));

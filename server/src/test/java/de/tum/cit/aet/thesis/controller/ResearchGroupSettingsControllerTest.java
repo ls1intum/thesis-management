@@ -265,6 +265,295 @@ class ResearchGroupSettingsControllerTest extends BaseIntegrationTest {
 	}
 
 	@Nested
+	class GradingSchemeSettings {
+		@Test
+		void getSettings_DefaultGradingSchemeIsEmpty() throws Exception {
+			TestUser head = createRandomTestUser(List.of("supervisor"));
+			UUID groupId = createTestResearchGroup("Grading Default Group", head.universityId());
+
+			String response = mockMvc.perform(MockMvcRequestBuilders.get("/v2/research-group-settings/{id}", groupId)
+							.header("Authorization", createRandomAdminAuthentication()))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			JsonNode json = objectMapper.readTree(response);
+			assertThat(json.has("gradingSchemeSettings")).isTrue();
+			assertThat(json.get("gradingSchemeSettings").get("components").size()).isEqualTo(0);
+		}
+
+		@Test
+		void createGradingScheme_WithValidComponents_Success() throws Exception {
+			TestUser head = createRandomTestUser(List.of("supervisor"));
+			UUID groupId = createTestResearchGroup("Grading Create Group", head.universityId());
+
+			String payload = objectMapper.writeValueAsString(Map.of(
+					"gradingSchemeSettings", Map.of(
+							"components", List.of(
+									Map.of("name", "Thesis Content", "weight", 40, "isBonus", false),
+									Map.of("name", "Methodology", "weight", 30, "isBonus", false),
+									Map.of("name", "Presentation", "weight", 30, "isBonus", false)
+							)
+					)
+			));
+
+			String response = mockMvc.perform(MockMvcRequestBuilders.post("/v2/research-group-settings/{id}", groupId)
+							.header("Authorization", createRandomAdminAuthentication())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(payload))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			JsonNode json = objectMapper.readTree(response);
+			JsonNode components = json.get("gradingSchemeSettings").get("components");
+			assertThat(components.size()).isEqualTo(3);
+			assertThat(components.get(0).get("name").asString()).isEqualTo("Thesis Content");
+			assertThat(components.get(0).get("weight").asDouble()).isEqualTo(40.0);
+			assertThat(components.get(0).get("isBonus").asBoolean()).isFalse();
+			assertThat(components.get(0).get("position").asInt()).isEqualTo(0);
+			assertThat(components.get(1).get("name").asString()).isEqualTo("Methodology");
+			assertThat(components.get(1).get("weight").asDouble()).isEqualTo(30.0);
+			assertThat(components.get(1).get("position").asInt()).isEqualTo(1);
+			assertThat(components.get(2).get("name").asString()).isEqualTo("Presentation");
+			assertThat(components.get(2).get("weight").asDouble()).isEqualTo(30.0);
+			assertThat(components.get(2).get("position").asInt()).isEqualTo(2);
+		}
+
+		@Test
+		void createGradingScheme_WithBonusComponent_Success() throws Exception {
+			TestUser head = createRandomTestUser(List.of("supervisor"));
+			UUID groupId = createTestResearchGroup("Grading Bonus Group", head.universityId());
+
+			String payload = objectMapper.writeValueAsString(Map.of(
+					"gradingSchemeSettings", Map.of(
+							"components", List.of(
+									Map.of("name", "Content", "weight", 50, "isBonus", false),
+									Map.of("name", "Methods", "weight", 50, "isBonus", false),
+									Map.of("name", "Extra Credit", "weight", 0, "isBonus", true)
+							)
+					)
+			));
+
+			String response = mockMvc.perform(MockMvcRequestBuilders.post("/v2/research-group-settings/{id}", groupId)
+							.header("Authorization", createRandomAdminAuthentication())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(payload))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			JsonNode json = objectMapper.readTree(response);
+			JsonNode components = json.get("gradingSchemeSettings").get("components");
+			assertThat(components.size()).isEqualTo(3);
+			assertThat(components.get(2).get("name").asString()).isEqualTo("Extra Credit");
+			assertThat(components.get(2).get("isBonus").asBoolean()).isTrue();
+		}
+
+		@Test
+		void createGradingScheme_WeightsNotSumTo100_ReturnsBadRequest() throws Exception {
+			TestUser head = createRandomTestUser(List.of("supervisor"));
+			UUID groupId = createTestResearchGroup("Grading Invalid Weight Group", head.universityId());
+
+			String payload = objectMapper.writeValueAsString(Map.of(
+					"gradingSchemeSettings", Map.of(
+							"components", List.of(
+									Map.of("name", "Content", "weight", 40, "isBonus", false),
+									Map.of("name", "Methods", "weight", 30, "isBonus", false)
+							)
+					)
+			));
+
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/research-group-settings/{id}", groupId)
+							.header("Authorization", createRandomAdminAuthentication())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(payload))
+					.andExpect(status().isBadRequest());
+		}
+
+		@Test
+		void createGradingScheme_EmptyComponentName_ReturnsBadRequest() throws Exception {
+			TestUser head = createRandomTestUser(List.of("supervisor"));
+			UUID groupId = createTestResearchGroup("Grading Empty Name Group", head.universityId());
+
+			String payload = objectMapper.writeValueAsString(Map.of(
+					"gradingSchemeSettings", Map.of(
+							"components", List.of(
+									Map.of("name", "", "weight", 100, "isBonus", false)
+							)
+					)
+			));
+
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/research-group-settings/{id}", groupId)
+							.header("Authorization", createRandomAdminAuthentication())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(payload))
+					.andExpect(status().isBadRequest());
+		}
+
+		@Test
+		void updateGradingScheme_ReplacesExistingComponents() throws Exception {
+			TestUser head = createRandomTestUser(List.of("supervisor"));
+			UUID groupId = createTestResearchGroup("Grading Replace Group", head.universityId());
+
+			// Create initial scheme
+			String initial = objectMapper.writeValueAsString(Map.of(
+					"gradingSchemeSettings", Map.of(
+							"components", List.of(
+									Map.of("name", "Old Component", "weight", 100, "isBonus", false)
+							)
+					)
+			));
+
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/research-group-settings/{id}", groupId)
+							.header("Authorization", createRandomAdminAuthentication())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(initial))
+					.andExpect(status().isOk());
+
+			// Replace with new scheme
+			String updated = objectMapper.writeValueAsString(Map.of(
+					"gradingSchemeSettings", Map.of(
+							"components", List.of(
+									Map.of("name", "New A", "weight", 60, "isBonus", false),
+									Map.of("name", "New B", "weight", 40, "isBonus", false)
+							)
+					)
+			));
+
+			String response = mockMvc.perform(MockMvcRequestBuilders.post("/v2/research-group-settings/{id}", groupId)
+							.header("Authorization", createRandomAdminAuthentication())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(updated))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			JsonNode json = objectMapper.readTree(response);
+			JsonNode components = json.get("gradingSchemeSettings").get("components");
+			assertThat(components.size()).isEqualTo(2);
+			assertThat(components.get(0).get("name").asString()).isEqualTo("New A");
+			assertThat(components.get(1).get("name").asString()).isEqualTo("New B");
+		}
+
+		@Test
+		void updateGradingScheme_DoesNotAffectOtherSettings() throws Exception {
+			TestUser head = createRandomTestUser(List.of("supervisor"));
+			UUID groupId = createTestResearchGroup("Grading Isolated Group", head.universityId());
+
+			// Set reject settings first
+			String rejectPayload = objectMapper.writeValueAsString(Map.of(
+					"rejectSettings", Map.of("automaticRejectEnabled", true, "rejectDuration", 14)
+			));
+
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/research-group-settings/{id}", groupId)
+							.header("Authorization", createRandomAdminAuthentication())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(rejectPayload))
+					.andExpect(status().isOk());
+
+			// Set grading scheme
+			String gradingPayload = objectMapper.writeValueAsString(Map.of(
+					"gradingSchemeSettings", Map.of(
+							"components", List.of(
+									Map.of("name", "Content", "weight", 100, "isBonus", false)
+							)
+					)
+			));
+
+			String response = mockMvc.perform(MockMvcRequestBuilders.post("/v2/research-group-settings/{id}", groupId)
+							.header("Authorization", createRandomAdminAuthentication())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(gradingPayload))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			JsonNode json = objectMapper.readTree(response);
+			assertThat(json.get("gradingSchemeSettings").get("components").size()).isEqualTo(1);
+			assertThat(json.get("rejectSettings").get("automaticRejectEnabled").asBoolean()).isTrue();
+			assertThat(json.get("rejectSettings").get("rejectDuration").asInt()).isEqualTo(14);
+		}
+
+		@Test
+		void getGradingScheme_AsSupervisor_Success() throws Exception {
+			TestUser head = createRandomTestUser(List.of("supervisor"));
+			UUID groupId = createTestResearchGroup("Grading Supervisor Access Group", head.universityId());
+
+			// Create scheme as admin
+			String payload = objectMapper.writeValueAsString(Map.of(
+					"gradingSchemeSettings", Map.of(
+							"components", List.of(
+									Map.of("name", "Content", "weight", 60, "isBonus", false),
+									Map.of("name", "Methods", "weight", 40, "isBonus", false)
+							)
+					)
+			));
+
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/research-group-settings/{id}", groupId)
+							.header("Authorization", createRandomAdminAuthentication())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(payload))
+					.andExpect(status().isOk());
+
+			// Fetch as supervisor via grading-scheme endpoint
+			String supervisorAuth = generateTestAuthenticationHeader(head.universityId(), List.of("supervisor"));
+			String response = mockMvc.perform(MockMvcRequestBuilders.get("/v2/research-group-settings/{id}/grading-scheme", groupId)
+							.header("Authorization", supervisorAuth))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			JsonNode json = objectMapper.readTree(response);
+			assertThat(json.get("components").size()).isEqualTo(2);
+			assertThat(json.get("components").get(0).get("name").asString()).isEqualTo("Content");
+			assertThat(json.get("components").get(1).get("name").asString()).isEqualTo("Methods");
+		}
+
+		@Test
+		void getGradingScheme_AsStudent_Forbidden() throws Exception {
+			TestUser head = createRandomTestUser(List.of("supervisor"));
+			UUID groupId = createTestResearchGroup("Grading Student Forbidden Group", head.universityId());
+
+			mockMvc.perform(MockMvcRequestBuilders.get("/v2/research-group-settings/{id}/grading-scheme", groupId)
+							.header("Authorization", createRandomAuthentication("student")))
+					.andExpect(status().isForbidden());
+		}
+
+		@Test
+		void clearGradingScheme_EmptyComponentsList() throws Exception {
+			TestUser head = createRandomTestUser(List.of("supervisor"));
+			UUID groupId = createTestResearchGroup("Grading Clear Group", head.universityId());
+
+			// Create scheme
+			String createPayload = objectMapper.writeValueAsString(Map.of(
+					"gradingSchemeSettings", Map.of(
+							"components", List.of(
+									Map.of("name", "Content", "weight", 100, "isBonus", false)
+							)
+					)
+			));
+
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/research-group-settings/{id}", groupId)
+							.header("Authorization", createRandomAdminAuthentication())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(createPayload))
+					.andExpect(status().isOk());
+
+			// Clear scheme with empty list
+			String clearPayload = objectMapper.writeValueAsString(Map.of(
+					"gradingSchemeSettings", Map.of(
+							"components", List.of()
+					)
+			));
+
+			String response = mockMvc.perform(MockMvcRequestBuilders.post("/v2/research-group-settings/{id}", groupId)
+							.header("Authorization", createRandomAdminAuthentication())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(clearPayload))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			JsonNode json = objectMapper.readTree(response);
+			assertThat(json.get("gradingSchemeSettings").get("components").size()).isEqualTo(0);
+		}
+	}
+
+	@Nested
 	class GetPhaseSettings {
 		@Test
 		void getPhaseSettings_ReturnsDefaults() throws Exception {

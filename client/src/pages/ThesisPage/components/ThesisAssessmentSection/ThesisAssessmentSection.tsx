@@ -1,6 +1,6 @@
 import { ThesisState } from '../../../../requests/responses/thesis'
 import { useState } from 'react'
-import { Accordion, Button, Stack, Text, Badge, Group } from '@mantine/core'
+import { Accordion, Badge, Button, Group, Stack, Table, Text } from '@mantine/core'
 import ReplaceAssessmentModal from './components/ReplaceAssessmentModal/ReplaceAssessmentModal'
 import DocumentEditor from '../../../../components/DocumentEditor/DocumentEditor'
 import { checkMinimumThesisState, isThesisClosed } from '../../../../utils/thesis'
@@ -8,6 +8,25 @@ import { useLoadedThesisContext } from '../../../../providers/ThesisProvider/hoo
 import LabeledItem from '../../../../components/LabeledItem/LabeledItem'
 import { formatThesisFilename } from '../../../../utils/format'
 import { AuthenticatedFileDownloadButton } from '../../../../components/AuthenticatedFileDownloadButton/AuthenticatedFileDownloadButton'
+
+function calculateGradeFromComponents(
+  components: Array<{ weight: number; isBonus: boolean; grade: number }>,
+): number {
+  let weightedSum = 0
+  let bonusSum = 0
+
+  for (const c of components) {
+    if (c.isBonus) {
+      bonusSum += c.grade
+    } else {
+      weightedSum += c.weight * c.grade
+    }
+  }
+
+  let calculated = weightedSum / 100 + bonusSum
+  calculated = Math.max(1.0, Math.min(5.0, calculated))
+  return Math.round(calculated * 10) / 10
+}
 
 const ThesisAssessmentSection = () => {
   const { thesis, access } = useLoadedThesisContext()
@@ -17,6 +36,10 @@ const ThesisAssessmentSection = () => {
   if (!access.supervisor || !checkMinimumThesisState(thesis, ThesisState.SUBMITTED)) {
     return <></>
   }
+
+  const gradeComponents = thesis.assessment?.gradeComponents ?? []
+  const calculatedGrade =
+    gradeComponents.length > 0 ? calculateGradeFromComponents(gradeComponents) : null
 
   return (
     <Accordion variant='separated' defaultValue='open'>
@@ -34,6 +57,38 @@ const ThesisAssessmentSection = () => {
                 <DocumentEditor label='Summary' value={thesis.assessment.summary} />
                 <DocumentEditor label='Strengths' value={thesis.assessment.positives} />
                 <DocumentEditor label='Weaknesses' value={thesis.assessment.negatives} />
+
+                {gradeComponents.length > 0 && (
+                  <Stack gap='xs'>
+                    <Text fw={500} size='sm'>
+                      Grade Components
+                    </Text>
+                    <Table>
+                      <Table.Thead>
+                        <Table.Tr>
+                          <Table.Th>Name</Table.Th>
+                          <Table.Th>Weight</Table.Th>
+                          <Table.Th>Grade</Table.Th>
+                        </Table.Tr>
+                      </Table.Thead>
+                      <Table.Tbody>
+                        {gradeComponents.map((c) => (
+                          <Table.Tr key={c.gradeComponentId}>
+                            <Table.Td>{c.name}</Table.Td>
+                            <Table.Td>
+                              {c.isBonus ? <Badge color='blue'>Bonus</Badge> : `${c.weight}%`}
+                            </Table.Td>
+                            <Table.Td>{c.grade}</Table.Td>
+                          </Table.Tr>
+                        ))}
+                      </Table.Tbody>
+                    </Table>
+                    <Text size='sm' fw={500}>
+                      Calculated Grade: {calculatedGrade}
+                    </Text>
+                  </Stack>
+                )}
+
                 <LabeledItem label='Grade Suggestion' value={thesis.assessment.gradeSuggestion} />
               </Stack>
             ) : (
