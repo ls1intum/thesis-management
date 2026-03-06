@@ -18,25 +18,24 @@ export async function navigateTo(page: Page, path: string) {
  * Navigate to an entity detail page (application, thesis) and verify
  * it loaded the detail view. Under heavy parallel test load, the server
  * may respond slowly and the client may redirect to the list view.
- * This helper retries the navigation once if the expected element
- * is not visible after the first attempt.
+ * This helper retries navigation up to {@link maxRetries} times if the
+ * expected element is not visible after each attempt.
  */
 export async function navigateToDetail(
   page: Page,
   path: string,
   expectedLocator: Locator,
   timeout = 15_000,
+  maxRetries = 3,
 ): Promise<boolean> {
-  await navigateTo(page, path)
-  // Scroll to top so heading elements are in the viewport for isVisible check
-  await page.evaluate(() => window.scrollTo(0, 0))
-  const visible = await expectedLocator.isVisible({ timeout }).catch(() => false)
-  if (visible) return true
-
-  // Retry once — transient server slowness may have caused a redirect
-  await navigateTo(page, path)
-  await page.evaluate(() => window.scrollTo(0, 0))
-  return await expectedLocator.isVisible({ timeout }).catch(() => false)
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    await navigateTo(page, path)
+    // Scroll to top so heading elements are in the viewport for isVisible check
+    await page.evaluate(() => window.scrollTo(0, 0))
+    const visible = await expectedLocator.isVisible({ timeout }).catch(() => false)
+    if (visible) return true
+  }
+  return false
 }
 
 /**
