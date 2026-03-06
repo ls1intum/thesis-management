@@ -12,14 +12,28 @@ import { getApiResponseErrorMessage } from '../../requests/handler'
 import AvatarUser from '../AvatarUser/AvatarUser'
 
 interface IUserMultiSelectProps extends GetInputPropsReturnType {
+  /** Maximum number of users that can be selected. Defaults to Infinity. */
   maxValues?: number
+  /** Keycloak group names to filter the user search results by (e.g. ['student'], ['advisor', 'supervisor']). */
   groups: string[]
+  /** Whether the select is disabled. When disabled, no API calls are made. */
   disabled?: boolean
+  /** Label displayed above the select input. */
   label?: string
+  /** Whether the field is required. */
   required?: boolean
+  /** Pre-loaded users to display as selected options without requiring an API call. */
   initialUsers?: ILightUser[]
 }
 
+/**
+ * A searchable multi-select component for choosing users from the system.
+ *
+ * Users are fetched from the `/v2/users` API endpoint with group filtering and search support.
+ * To avoid unnecessary API calls on mount, the component uses lazy fetching: no request is made
+ * until the user interacts with the dropdown (click or open). Already-selected users are displayed
+ * using the `initialUsers` prop without requiring a fetch.
+ */
 export const UserMultiSelect = (props: IUserMultiSelectProps) => {
   const {
     groups,
@@ -34,6 +48,8 @@ export const UserMultiSelect = (props: IUserMultiSelectProps) => {
   const selected: string[] = inputProps.value ?? []
 
   const [loading, setLoading] = useState(false)
+  // Incremented on user interaction (click/dropdown open) to trigger a fetch.
+  // Starts at 0 meaning no fetch has been requested yet.
   const [fetchVersion, setFetchVersion] = useState(0)
   const [data, setData] = useState<Array<{ value: string; label: string; user: ILightUser }>>([])
   const [searchValue, setSearchValue] = useState('')
@@ -41,7 +57,8 @@ export const UserMultiSelect = (props: IUserMultiSelectProps) => {
   const [debouncedSearchValue] = useDebouncedValue(searchValue, 500)
 
   useEffect(() => {
-    if (disabled) {
+    // Skip fetching when disabled or until the user interacts with the dropdown
+    if (disabled || fetchVersion === 0) {
       setLoading(false)
       return
     }
@@ -62,6 +79,7 @@ export const UserMultiSelect = (props: IUserMultiSelectProps) => {
       },
       (res) => {
         if (res.ok) {
+          // Merge newly fetched users with previously selected ones to avoid losing selections
           setData((prevState) =>
             arrayUnique(
               [
@@ -84,6 +102,8 @@ export const UserMultiSelect = (props: IUserMultiSelectProps) => {
     )
   }, [groups.join(','), debouncedSearchValue, fetchVersion, disabled])
 
+  // Combine fetched data with initialUsers so selected options are always visible,
+  // even before the first API call
   const mergedData = arrayUnique(
     [
       ...data,
@@ -115,7 +135,6 @@ export const UserMultiSelect = (props: IUserMultiSelectProps) => {
       searchable={selected.length < maxValues}
       clearable={true}
       searchValue={searchValue}
-      onClick={() => setFetchVersion((v) => v + 1)}
       onDropdownOpen={() => setFetchVersion((v) => v + 1)}
       onSearchChange={setSearchValue}
       hidePickedOptions={selected.length < maxValues}
