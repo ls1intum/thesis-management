@@ -51,7 +51,7 @@ test.describe('Applications - Examiner review', () => {
   })
 
   test('application detail shows student data and topic', async ({ page }) => {
-    test.setTimeout(90_000)
+    test.setTimeout(120_000)
     // Navigate to ACCEPTED application: student on topic 1 (stable across re-runs)
     const heading = page.getByRole('heading', { name: 'Student User' })
     const loaded = await navigateToDetail(
@@ -60,11 +60,7 @@ test.describe('Applications - Examiner review', () => {
       heading,
       30_000,
     )
-    if (!loaded) {
-      // Under heavy parallel load the server may not respond in time; skip gracefully
-      test.skip(true, 'Application detail did not load under heavy parallel load')
-      return
-    }
+    expect(loaded, 'Application detail page should load').toBeTruthy()
 
     // Topic accordion button with topic title
     await expect(

@@ -62,17 +62,17 @@ test.describe('Navigation - Student routes', () => {
 
     // Navigate to Browse Theses
     await page.getByRole('link', { name: 'Browse Theses' }).click()
-    await expect(page).toHaveURL(/\/theses/)
-    await expect(page.getByRole('heading', { name: /browse theses/i })).toBeVisible()
+    await expect(page).toHaveURL(/\/theses/, { timeout: 15_000 })
+    await expect(page.getByRole('heading', { name: /browse theses/i })).toBeVisible({ timeout: 15_000 })
 
     // Navigate to Submit Application
     await page.getByRole('link', { name: 'Submit Application' }).click()
-    await expect(page).toHaveURL(/\/submit-application/)
+    await expect(page).toHaveURL(/\/submit-application/, { timeout: 15_000 })
 
     // Navigate back to Dashboard
     await page.getByRole('link', { name: 'Dashboard' }).click()
     await expect(page).toHaveURL(/\/dashboard/, { timeout: 30_000 })
-    await expect(page.getByRole('heading', { name: /dashboard/i })).toBeVisible()
+    await expect(page.getByRole('heading', { name: /dashboard/i })).toBeVisible({ timeout: 15_000 })
   })
 
   test('header logo navigates to dashboard when authenticated', async ({ page }) => {
