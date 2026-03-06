@@ -41,6 +41,11 @@ export const UserMultiSelect = (props: IUserMultiSelectProps) => {
   const [debouncedSearchValue] = useDebouncedValue(searchValue, 500)
 
   useEffect(() => {
+    if (disabled) {
+      setLoading(false)
+      return
+    }
+
     setLoading(true)
 
     return doRequest<PaginationResponse<ILightUser>>(
@@ -77,7 +82,7 @@ export const UserMultiSelect = (props: IUserMultiSelectProps) => {
         }
       },
     )
-  }, [groups.join(','), debouncedSearchValue, fetchVersion])
+  }, [groups.join(','), debouncedSearchValue, fetchVersion, disabled])
 
   const mergedData = arrayUnique(
     [
