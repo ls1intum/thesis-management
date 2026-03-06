@@ -147,6 +147,9 @@ public class ResearchGroupSettingsController {
 					throw new ResourceInvalidParametersException("Component name must not be empty.");
 				}
 				if (!Boolean.TRUE.equals(dto.isBonus())) {
+					if (dto.weight() == null) {
+						throw new ResourceInvalidParametersException("Component weight must not be null.");
+					}
 					regularWeightSum = regularWeightSum.add(dto.weight());
 				}
 			}

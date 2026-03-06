@@ -19,6 +19,6 @@ CREATE TABLE thesis_grade_components (
     name               VARCHAR(255) NOT NULL,
     weight             NUMERIC(5,2) NOT NULL,
     is_bonus           BOOLEAN NOT NULL DEFAULT FALSE,
-    grade              NUMERIC(2,1) NOT NULL,
+    grade              NUMERIC(3,1) NOT NULL,
     position           INT NOT NULL DEFAULT 0
 );

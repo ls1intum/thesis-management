@@ -31,7 +31,6 @@ import de.tum.cit.aet.thesis.repository.ResearchGroupRepository;
 import de.tum.cit.aet.thesis.repository.ThesisAssessmentRepository;
 import de.tum.cit.aet.thesis.repository.ThesisFeedbackRepository;
 import de.tum.cit.aet.thesis.repository.ThesisFileRepository;
-import de.tum.cit.aet.thesis.repository.ThesisGradeComponentRepository;
 import de.tum.cit.aet.thesis.repository.ThesisProposalRepository;
 import de.tum.cit.aet.thesis.repository.ThesisRepository;
 import de.tum.cit.aet.thesis.repository.ThesisRoleRepository;
@@ -79,7 +78,6 @@ public class ThesisService {
 	private final AccessManagementService accessManagementService;
 	private final ThesisFeedbackRepository thesisFeedbackRepository;
 	private final ThesisFileRepository thesisFileRepository;
-	private final ThesisGradeComponentRepository thesisGradeComponentRepository;
 	private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
 	private final ResearchGroupRepository researchGroupRepository;
 	private final ResearchGroupSettingsService researchGroupSettingsService;
@@ -96,7 +94,6 @@ public class ThesisService {
 			MailingService mailingService,
 			AccessManagementService accessManagementService,
 			ThesisFeedbackRepository thesisFeedbackRepository, ThesisFileRepository thesisFileRepository,
-			ThesisGradeComponentRepository thesisGradeComponentRepository,
 			ObjectProvider<CurrentUserProvider> currentUserProviderProvider, ResearchGroupRepository researchGroupRepository, ResearchGroupSettingsService researchGroupSettingsService
 	) {
 		this.thesisRoleRepository = thesisRoleRepository;
@@ -110,7 +107,6 @@ public class ThesisService {
 		this.accessManagementService = accessManagementService;
 		this.thesisFeedbackRepository = thesisFeedbackRepository;
 		this.thesisFileRepository = thesisFileRepository;
-		this.thesisGradeComponentRepository = thesisGradeComponentRepository;
 		this.currentUserProviderProvider = currentUserProviderProvider;
 		this.researchGroupRepository = researchGroupRepository;
 		this.researchGroupSettingsService = researchGroupSettingsService;
@@ -649,14 +645,22 @@ public class ThesisService {
 		BigDecimal FIVE = BigDecimal.valueOf(5);
 		BigDecimal HUNDRED = BigDecimal.valueOf(100);
 
+		BigDecimal NEG_FIVE = BigDecimal.valueOf(-5);
 		BigDecimal regularWeightSum = BigDecimal.ZERO;
 		for (GradeComponentPayload component : components) {
 			if (component.name() == null || component.name().isBlank()) {
 				throw new ResourceInvalidParametersException("Grade component name must not be empty.");
 			}
-			if (!component.isBonus()) {
+			if (component.isBonus()) {
+				if (component.grade().compareTo(NEG_FIVE) < 0 || component.grade().compareTo(FIVE) > 0) {
+					throw new ResourceInvalidParametersException("Bonus grade must be between -5.0 and 5.0.");
+				}
+			} else {
 				if (component.grade().compareTo(ONE) < 0 || component.grade().compareTo(FIVE) > 0) {
 					throw new ResourceInvalidParametersException("Grade must be between 1.0 and 5.0.");
+				}
+				if (component.weight() == null) {
+					throw new ResourceInvalidParametersException("Component weight must not be null.");
 				}
 				regularWeightSum = regularWeightSum.add(component.weight());
 			}

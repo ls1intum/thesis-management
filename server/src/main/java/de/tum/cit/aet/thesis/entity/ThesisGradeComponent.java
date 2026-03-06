@@ -45,7 +45,7 @@ public class ThesisGradeComponent {
 	private Boolean isBonus = false;
 
 	@NotNull
-	@Column(name = "grade", nullable = false, precision = 2, scale = 1)
+	@Column(name = "grade", nullable = false, precision = 3, scale = 1)
 	private BigDecimal grade;
 
 	@NotNull

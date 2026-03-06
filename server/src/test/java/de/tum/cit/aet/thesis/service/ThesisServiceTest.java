@@ -23,7 +23,6 @@ import de.tum.cit.aet.thesis.repository.ResearchGroupRepository;
 import de.tum.cit.aet.thesis.repository.ThesisAssessmentRepository;
 import de.tum.cit.aet.thesis.repository.ThesisFeedbackRepository;
 import de.tum.cit.aet.thesis.repository.ThesisFileRepository;
-import de.tum.cit.aet.thesis.repository.ThesisGradeComponentRepository;
 import de.tum.cit.aet.thesis.repository.ThesisProposalRepository;
 import de.tum.cit.aet.thesis.repository.ThesisRepository;
 import de.tum.cit.aet.thesis.repository.ThesisRoleRepository;
@@ -59,7 +58,6 @@ class ThesisServiceTest {
 	@Mock private AccessManagementService accessManagementService;
 	@Mock private ThesisFeedbackRepository thesisFeedbackRepository;
 	@Mock private ThesisFileRepository thesisFileRepository;
-	@Mock private ThesisGradeComponentRepository thesisGradeComponentRepository;
 	@Mock private ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
 	@Mock
 	private ResearchGroupRepository researchGroupRepository;
@@ -80,7 +78,6 @@ class ThesisServiceTest {
 				userRepository, thesisProposalRepository, thesisAssessmentRepository,
 				uploadService, mailingService, accessManagementService,
 				thesisFeedbackRepository, thesisFileRepository,
-				thesisGradeComponentRepository,
 				currentUserProviderProvider, researchGroupRepository, researchGroupSettingsService
 		);
 		when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
