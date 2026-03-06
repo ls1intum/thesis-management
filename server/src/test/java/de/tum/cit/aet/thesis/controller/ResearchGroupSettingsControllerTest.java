@@ -277,8 +277,9 @@ class ResearchGroupSettingsControllerTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 
 			JsonNode json = objectMapper.readTree(response);
-			assertThat(json.has("gradingSchemeSettings")).isTrue();
-			assertThat(json.get("gradingSchemeSettings").get("components").size()).isEqualTo(0);
+			// With @JsonInclude(NON_EMPTY), empty components list is omitted
+			assertThat(!json.has("gradingSchemeSettings") || !json.get("gradingSchemeSettings").has("components")
+					|| json.get("gradingSchemeSettings").get("components").size() == 0).isTrue();
 		}
 
 		@Test
@@ -549,7 +550,9 @@ class ResearchGroupSettingsControllerTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 
 			JsonNode json = objectMapper.readTree(response);
-			assertThat(json.get("gradingSchemeSettings").get("components").size()).isEqualTo(0);
+			// With @JsonInclude(NON_EMPTY), empty components list is omitted
+			assertThat(!json.has("gradingSchemeSettings") || !json.get("gradingSchemeSettings").has("components")
+					|| json.get("gradingSchemeSettings").get("components").size() == 0).isTrue();
 		}
 	}
 

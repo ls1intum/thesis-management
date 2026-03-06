@@ -40,7 +40,7 @@ const GradingSchemeSettingsCard = ({
     .filter((c) => !c.isBonus)
     .reduce((sum, c) => sum + (c.weight ?? 0), 0)
 
-  const weightsValid = components.length === 0 || regularWeightSum === 100
+  const weightsValid = components.length === 0 || Math.abs(regularWeightSum - 100) < 0.01
 
   const updateComponent = (index: number, updates: Partial<IGradingSchemeComponent>) => {
     const updated = components.map((c, i) => (i === index ? { ...c, ...updates } : c))
@@ -99,7 +99,10 @@ const GradingSchemeSettingsCard = ({
   return (
     <ResearchGroupSettingsCard
       title='Grading Scheme'
-      subtle='Define the default grading components for thesis assessments in this research group. Supervisors can use these to break down grades into weighted components.'
+      subtle={
+        'Define the default grading components for thesis assessments in this research group. ' +
+        'Supervisors can use these to break down grades into weighted components.'
+      }
     >
       <Stack>
         {components.length > 0 && (

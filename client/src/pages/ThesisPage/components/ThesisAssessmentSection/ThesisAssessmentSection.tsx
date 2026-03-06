@@ -8,25 +8,7 @@ import { useLoadedThesisContext } from '../../../../providers/ThesisProvider/hoo
 import LabeledItem from '../../../../components/LabeledItem/LabeledItem'
 import { formatThesisFilename } from '../../../../utils/format'
 import { AuthenticatedFileDownloadButton } from '../../../../components/AuthenticatedFileDownloadButton/AuthenticatedFileDownloadButton'
-
-function calculateGradeFromComponents(
-  components: Array<{ weight: number; isBonus: boolean; grade: number }>,
-): number {
-  let weightedSum = 0
-  let bonusSum = 0
-
-  for (const c of components) {
-    if (c.isBonus) {
-      bonusSum += c.grade
-    } else {
-      weightedSum += c.weight * c.grade
-    }
-  }
-
-  let calculated = weightedSum / 100 + bonusSum
-  calculated = Math.max(1.0, Math.min(5.0, calculated))
-  return Math.round(calculated * 10) / 10
-}
+import { calculateGradeFromComponents } from '../../../../utils/grade'
 
 const ThesisAssessmentSection = () => {
   const { thesis, access } = useLoadedThesisContext()

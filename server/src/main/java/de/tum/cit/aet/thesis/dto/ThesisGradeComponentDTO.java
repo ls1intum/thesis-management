@@ -1,10 +1,12 @@
 package de.tum.cit.aet.thesis.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.thesis.entity.ThesisGradeComponent;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record ThesisGradeComponentDTO(
 		UUID gradeComponentId,
 		String name,

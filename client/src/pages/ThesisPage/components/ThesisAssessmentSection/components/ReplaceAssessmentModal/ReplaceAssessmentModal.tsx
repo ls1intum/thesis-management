@@ -22,6 +22,7 @@ import {
 } from '../../../../../../providers/ThesisProvider/hooks'
 import { ApiError } from '../../../../../../requests/handler'
 import { IResearchGroupSettingsGradingScheme } from '../../../../../../requests/responses/researchGroupSettings'
+import { calculateGradeFromComponents } from '../../../../../../utils/grade'
 
 interface IGradeComponent {
   name: string
@@ -34,20 +35,9 @@ function calculateGrade(components: IGradeComponent[]): number | null {
   if (components.length === 0) return null
   if (components.some((c) => c.grade === '' || c.grade === undefined)) return null
 
-  let weightedSum = 0
-  let bonusSum = 0
-
-  for (const c of components) {
-    if (c.isBonus) {
-      bonusSum += Number(c.grade)
-    } else {
-      weightedSum += c.weight * Number(c.grade)
-    }
-  }
-
-  let calculated = weightedSum / 100 + bonusSum
-  calculated = Math.max(1.0, Math.min(5.0, calculated))
-  return Math.round(calculated * 10) / 10
+  return calculateGradeFromComponents(
+    components.map((c) => ({ weight: c.weight, isBonus: c.isBonus, grade: Number(c.grade) })),
+  )
 }
 
 interface IReplaceAssessmentModalProps {
@@ -66,6 +56,7 @@ const ReplaceAssessmentModal = (props: IReplaceAssessmentModalProps) => {
   const [gradeSuggestion, setGradeSuggestion] = useState('')
   const [gradeComponents, setGradeComponents] = useState<IGradeComponent[]>([])
   const [schemeLoaded, setSchemeLoaded] = useState(false)
+  const [gradeSuggestionManuallyEdited, setGradeSuggestionManuallyEdited] = useState(false)
 
   const isEmpty = !summary || !positives || !negatives || !gradeSuggestion
 
@@ -74,9 +65,11 @@ const ReplaceAssessmentModal = (props: IReplaceAssessmentModalProps) => {
   const regularWeightSum = gradeComponents
     .filter((c) => !c.isBonus)
     .reduce((sum, c) => sum + (c.weight ?? 0), 0)
-  const weightsValid = gradeComponents.length === 0 || regularWeightSum === 100
+  const weightsValid = gradeComponents.length === 0 || Math.abs(regularWeightSum - 100) < 0.01
   const allGradesFilled = gradeComponents.every((c) => c.grade !== '' && c.grade !== undefined)
-  const gradeComponentsValid = gradeComponents.length === 0 || (weightsValid && allGradesFilled)
+  const allNamesFilled = gradeComponents.every((c) => c.name?.trim())
+  const gradeComponentsValid =
+    gradeComponents.length === 0 || (weightsValid && allGradesFilled && allNamesFilled)
 
   const gradeSuggestionNum = parseFloat(gradeSuggestion)
   const deviationWarning =
@@ -95,11 +88,12 @@ const ReplaceAssessmentModal = (props: IReplaceAssessmentModalProps) => {
         gradeSuggestion,
         gradeComponents:
           gradeComponents.length > 0
-            ? gradeComponents.map((c) => ({
+            ? gradeComponents.map((c, i) => ({
                 name: c.name,
                 weight: c.weight,
                 isBonus: c.isBonus,
                 grade: Number(c.grade),
+                position: i,
               }))
             : undefined,
       },
@@ -119,6 +113,8 @@ const ReplaceAssessmentModal = (props: IReplaceAssessmentModalProps) => {
     setPositives(thesis.assessment?.positives || '')
     setNegatives(thesis.assessment?.negatives || '')
     setGradeSuggestion(thesis.assessment?.gradeSuggestion || '')
+
+    setGradeSuggestionManuallyEdited(false)
 
     if (thesis.assessment?.gradeComponents && thesis.assessment.gradeComponents.length > 0) {
       setGradeComponents(
@@ -158,10 +154,10 @@ const ReplaceAssessmentModal = (props: IReplaceAssessmentModalProps) => {
   }, [opened, schemeLoaded, thesis.researchGroup?.id])
 
   useEffect(() => {
-    if (calculatedGrade !== null) {
+    if (calculatedGrade !== null && !gradeSuggestionManuallyEdited) {
       setGradeSuggestion(String(calculatedGrade))
     }
-  }, [calculatedGrade])
+  }, [calculatedGrade, gradeSuggestionManuallyEdited])
 
   const updateComponent = (index: number, updates: Partial<IGradeComponent>) => {
     setGradeComponents((prev) => prev.map((c, i) => (i === index ? { ...c, ...updates } : c)))
@@ -317,7 +313,10 @@ const ReplaceAssessmentModal = (props: IReplaceAssessmentModalProps) => {
           label='Grade Suggestion'
           required
           value={gradeSuggestion}
-          onChange={(e) => setGradeSuggestion(e.target.value)}
+          onChange={(e) => {
+            setGradeSuggestion(e.target.value)
+            setGradeSuggestionManuallyEdited(true)
+          }}
         />
         <Button onClick={onSave} disabled={isEmpty || !gradeComponentsValid} loading={submitting}>
           Submit Assessment

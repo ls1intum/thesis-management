@@ -1,5 +1,6 @@
 package de.tum.cit.aet.thesis.utility;
 
+/** Utility for measuring and formatting elapsed time durations. */
 public class TimeLogUtil {
 
 	/**

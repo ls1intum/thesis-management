@@ -52,7 +52,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -82,6 +81,24 @@ public class ThesisService {
 	private final ResearchGroupRepository researchGroupRepository;
 	private final ResearchGroupSettingsService researchGroupSettingsService;
 
+	/**
+	 * Injects all required repositories, services, and providers.
+	 *
+	 * @param thesisRoleRepository the thesis role repository
+	 * @param thesisRepository the thesis repository
+	 * @param thesisStateChangeRepository the thesis state change repository
+	 * @param userRepository the user repository
+	 * @param thesisProposalRepository the thesis proposal repository
+	 * @param thesisAssessmentRepository the thesis assessment repository
+	 * @param uploadService the upload service
+	 * @param mailingService the mailing service
+	 * @param accessManagementService the access management service
+	 * @param thesisFeedbackRepository the thesis feedback repository
+	 * @param thesisFileRepository the thesis file repository
+	 * @param currentUserProviderProvider the current user provider
+	 * @param researchGroupRepository the research group repository
+	 * @param researchGroupSettingsService the research group settings service
+	 */
 	@Autowired
 	public ThesisService(
 			ThesisRoleRepository thesisRoleRepository,
@@ -617,7 +634,7 @@ public class ThesisService {
 				ThesisGradeComponent component = new ThesisGradeComponent();
 				component.setAssessment(assessment);
 				component.setName(payload.name());
-				component.setWeight(payload.weight());
+				component.setWeight(payload.isBonus() ? BigDecimal.ZERO : payload.weight());
 				component.setIsBonus(payload.isBonus());
 				component.setGrade(payload.grade());
 				component.setPosition(i);
@@ -641,64 +658,39 @@ public class ThesisService {
 	}
 
 	private void validateGradeComponents(List<GradeComponentPayload> components) {
-		BigDecimal ONE = BigDecimal.ONE;
-		BigDecimal FIVE = BigDecimal.valueOf(5);
-		BigDecimal HUNDRED = BigDecimal.valueOf(100);
+		BigDecimal minGrade = BigDecimal.ONE;
+		BigDecimal maxGrade = BigDecimal.valueOf(5);
+		BigDecimal hundredPercent = BigDecimal.valueOf(100);
+		BigDecimal minBonusGrade = BigDecimal.valueOf(-5);
 
-		BigDecimal NEG_FIVE = BigDecimal.valueOf(-5);
 		BigDecimal regularWeightSum = BigDecimal.ZERO;
 		for (GradeComponentPayload component : components) {
 			if (component.name() == null || component.name().isBlank()) {
 				throw new ResourceInvalidParametersException("Grade component name must not be empty.");
 			}
+			if (component.name().length() > 255) {
+				throw new ResourceInvalidParametersException("Grade component name must not exceed 255 characters.");
+			}
 			if (component.isBonus()) {
-				if (component.grade().compareTo(NEG_FIVE) < 0 || component.grade().compareTo(FIVE) > 0) {
+				if (component.grade().compareTo(minBonusGrade) < 0 || component.grade().compareTo(maxGrade) > 0) {
 					throw new ResourceInvalidParametersException("Bonus grade must be between -5.0 and 5.0.");
 				}
 			} else {
-				if (component.grade().compareTo(ONE) < 0 || component.grade().compareTo(FIVE) > 0) {
+				if (component.grade().compareTo(minGrade) < 0 || component.grade().compareTo(maxGrade) > 0) {
 					throw new ResourceInvalidParametersException("Grade must be between 1.0 and 5.0.");
 				}
 				if (component.weight() == null) {
 					throw new ResourceInvalidParametersException("Component weight must not be null.");
 				}
+				if (component.weight().compareTo(BigDecimal.ZERO) <= 0) {
+					throw new ResourceInvalidParametersException("Component weight must be positive.");
+				}
 				regularWeightSum = regularWeightSum.add(component.weight());
 			}
 		}
-		if (regularWeightSum.compareTo(HUNDRED) != 0) {
+		if (regularWeightSum.compareTo(hundredPercent) != 0) {
 			throw new ResourceInvalidParametersException("Regular component weights must sum to 100%.");
 		}
-	}
-
-	public static BigDecimal calculateGradeFromComponents(List<? extends GradeComponentData> components) {
-		BigDecimal weightedSum = BigDecimal.ZERO;
-		BigDecimal bonusSum = BigDecimal.ZERO;
-
-		for (GradeComponentData component : components) {
-			if (component.isBonus()) {
-				bonusSum = bonusSum.add(component.grade());
-			} else {
-				weightedSum = weightedSum.add(component.weight().multiply(component.grade()));
-			}
-		}
-
-		BigDecimal calculated = weightedSum.divide(BigDecimal.valueOf(100), 1, RoundingMode.HALF_UP).add(bonusSum);
-		BigDecimal ONE = BigDecimal.ONE;
-		BigDecimal FIVE = BigDecimal.valueOf(5);
-
-		if (calculated.compareTo(ONE) < 0) {
-			calculated = ONE;
-		}
-		if (calculated.compareTo(FIVE) > 0) {
-			calculated = FIVE;
-		}
-		return calculated.setScale(1, RoundingMode.HALF_UP);
-	}
-
-	public interface GradeComponentData {
-		BigDecimal weight();
-		boolean isBonus();
-		BigDecimal grade();
 	}
 
 	/**

@@ -9,6 +9,7 @@ import {
 } from '../../../../../../providers/ThesisProvider/hooks'
 import { ApiError } from '../../../../../../requests/handler'
 import ThesisVisibilitySelect from '../../../ThesisVisibilitySelect/ThesisVisibilitySelect'
+import { calculateGradeFromComponents } from '../../../../../../utils/grade'
 
 interface ISubmitFinalGradeModalProps {
   opened: boolean
@@ -32,22 +33,7 @@ const SubmitFinalGradeModal = (props: ISubmitFinalGradeModalProps) => {
 
   const gradeComponents = thesis.assessment?.gradeComponents ?? []
   const calculatedGrade =
-    gradeComponents.length > 0
-      ? (() => {
-          let weightedSum = 0
-          let bonusSum = 0
-          for (const c of gradeComponents) {
-            if (c.isBonus) {
-              bonusSum += c.grade
-            } else {
-              weightedSum += c.weight * c.grade
-            }
-          }
-          let calc = weightedSum / 100 + bonusSum
-          calc = Math.max(1.0, Math.min(5.0, calc))
-          return Math.round(calc * 10) / 10
-        })()
-      : null
+    gradeComponents.length > 0 ? calculateGradeFromComponents(gradeComponents) : null
 
   const finalGradeNum = parseFloat(finalGrade)
   const deviationWarning =
