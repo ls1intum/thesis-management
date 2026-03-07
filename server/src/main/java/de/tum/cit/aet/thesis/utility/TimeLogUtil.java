@@ -1,5 +1,8 @@
 package de.tum.cit.aet.thesis.utility;
 
+/**
+ * Utility class for formatting time durations in a human-readable way.
+ */
 public class TimeLogUtil {
 
 	/**
