@@ -450,7 +450,7 @@ VALUES
      'WRITING', 'PRIVATE',
      ARRAY['LLM', 'code review', 'software engineering', 'automation'],
      '00000000-0000-4000-c000-000000000001'::UUID,
-     NOW() - INTERVAL '25 days', NULL,
+     NOW() - INTERVAL '25 days', NOW() + INTERVAL '155 days',
      NOW() - INTERVAL '30 days',
      '00000000-0000-4000-a000-000000000001'::UUID),
 
@@ -467,13 +467,13 @@ VALUES
      NOW() - INTERVAL '18 days',
      '00000000-0000-4000-a000-000000000001'::UUID),
 
-    -- Thesis 3: SUBMITTED (student3, DSA)
+    -- Thesis 3: ASSESSED (student3, DSA)
     ('00000000-0000-4000-d000-000000000003'::UUID,
      'Online Anomaly Detection in IoT Sensor Streams',
      'MASTER', 'ENGLISH',
      '{"titles":{},"credits":{}}',
      '', 'This thesis presents a novel framework for real-time anomaly detection in IoT sensor data streams using adaptive statistical methods.',
-     'SUBMITTED', 'INTERNAL',
+     'ASSESSED', 'INTERNAL',
      ARRAY['anomaly detection', 'IoT', 'streaming', 'machine learning'],
      '00000000-0000-4000-c000-000000000003'::UUID,
      NOW() - INTERVAL '180 days', NOW() - INTERVAL '2 days',
@@ -534,7 +534,7 @@ VALUES
      (SELECT user_id FROM users WHERE university_id = 'examiner'), 'EXAMINER', 0,
      NOW() - INTERVAL '18 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
 
-    -- Thesis 3 (SUBMITTED): student=student3, supervisor=supervisor2, examiner=examiner2
+    -- Thesis 3 (ASSESSED): student=student3, supervisor=supervisor2, examiner=examiner2
     ('00000000-0000-4000-d000-000000000003'::UUID,
      (SELECT user_id FROM users WHERE university_id = 'student3'), 'STUDENT', 0,
      NOW() - INTERVAL '180 days', (SELECT user_id FROM users WHERE university_id = 'examiner2')),
@@ -580,10 +580,11 @@ VALUES
     -- Thesis 2: PROPOSAL
     ('00000000-0000-4000-d000-000000000002'::UUID, 'PROPOSAL', NOW() - INTERVAL '18 days'),
 
-    -- Thesis 3: PROPOSAL -> WRITING -> SUBMITTED
+    -- Thesis 3: PROPOSAL -> WRITING -> SUBMITTED -> ASSESSED
     ('00000000-0000-4000-d000-000000000003'::UUID, 'PROPOSAL', NOW() - INTERVAL '180 days'),
     ('00000000-0000-4000-d000-000000000003'::UUID, 'WRITING', NOW() - INTERVAL '170 days'),
     ('00000000-0000-4000-d000-000000000003'::UUID, 'SUBMITTED', NOW() - INTERVAL '2 days'),
+    ('00000000-0000-4000-d000-000000000003'::UUID, 'ASSESSED', NOW() - INTERVAL '1 day'),
 
     -- Thesis 4: PROPOSAL -> WRITING -> SUBMITTED -> ASSESSED -> GRADED -> FINISHED
     ('00000000-0000-4000-d000-000000000004'::UUID, 'PROPOSAL', NOW() - INTERVAL '365 days'),
@@ -598,6 +599,10 @@ VALUES
     ('00000000-0000-4000-d000-000000000005'::UUID, 'WRITING', NOW() - INTERVAL '110 days'),
     ('00000000-0000-4000-d000-000000000005'::UUID, 'DROPPED_OUT', NOW() - INTERVAL '30 days')
 ON CONFLICT DO NOTHING;
+
+-- Thesis 4: set final grade (assigned during GRADED state)
+UPDATE theses SET final_grade = '1.3', final_feedback = 'Excellent migration framework with strong practical relevance.'
+WHERE thesis_id = '00000000-0000-4000-d000-000000000004'::UUID AND final_grade IS NULL;
 
 -- ============================================================================
 -- 13. THESIS PROPOSALS
@@ -622,7 +627,7 @@ VALUES
      NOW() - INTERVAL '10 days',
      (SELECT user_id FROM users WHERE university_id = 'student2')),
 
-    -- Thesis 3 (SUBMITTED): approved proposal
+    -- Thesis 3 (ASSESSED): approved proposal
     ('00000000-0000-4000-e000-000000000003'::UUID,
      '00000000-0000-4000-d000-000000000003'::UUID,
      'proposal_anomaly_detection_final.pdf',
@@ -676,7 +681,7 @@ VALUES
      NOW() - INTERVAL '92 days',
      (SELECT user_id FROM users WHERE university_id = 'examiner')),
 
-    -- Thesis 3 (SUBMITTED): early assessment by supervisor2
+    -- Thesis 3 (ASSESSED): assessment by supervisor2
     ('00000000-0000-4000-e100-000000000003'::UUID,
      '00000000-0000-4000-d000-000000000003'::UUID,
      'The thesis addresses a relevant problem in IoT anomaly detection. The proposed framework shows promising results on the benchmark datasets.',
@@ -729,7 +734,7 @@ VALUES
      NOW() - INTERVAL '8 days',
      (SELECT user_id FROM users WHERE university_id = 'supervisor')),
 
-    -- Thesis 3 (SUBMITTED): examiner2 user comment
+    -- Thesis 3 (ASSESSED): examiner2 user comment
     ('00000000-0000-4000-e200-000000000005'::UUID,
      '00000000-0000-4000-d000-000000000003'::UUID,
      'THESIS',
@@ -763,7 +768,7 @@ VALUES
      NOW() - INTERVAL '5 days',
      (SELECT user_id FROM users WHERE university_id = 'supervisor')),
 
-    -- Thesis 3 (SUBMITTED): scheduled final presentation
+    -- Thesis 3 (ASSESSED): scheduled final presentation
     ('00000000-0000-4000-e300-000000000002'::UUID,
      '00000000-0000-4000-d000-000000000003'::UUID,
      'FINAL', 'SCHEDULED', 'PUBLIC', 'ENGLISH',
@@ -831,14 +836,14 @@ VALUES
      NOW() - INTERVAL '5 days',
      (SELECT user_id FROM users WHERE university_id = 'student')),
 
-    -- Thesis 3 (SUBMITTED): final thesis
+    -- Thesis 3 (ASSESSED): final thesis
     ('00000000-0000-4000-e400-000000000002'::UUID,
      '00000000-0000-4000-d000-000000000003'::UUID,
      'THESIS', 'thesis_anomaly_detection_final.pdf', 'thesis_anomaly_detection_final.pdf',
      NOW() - INTERVAL '2 days',
      (SELECT user_id FROM users WHERE university_id = 'student3')),
 
-    -- Thesis 3 (SUBMITTED): presentation slides
+    -- Thesis 3 (ASSESSED): presentation slides
     ('00000000-0000-4000-e400-000000000003'::UUID,
      '00000000-0000-4000-d000-000000000003'::UUID,
      'PRESENTATION', 'slides_anomaly_detection.pdf', 'slides_anomaly_detection.pdf',
@@ -884,7 +889,7 @@ VALUES
      NOW() - INTERVAL '8 days',
      (SELECT user_id FROM users WHERE university_id = 'supervisor')),
 
-    -- Thesis 3 (SUBMITTED): completed thesis feedback
+    -- Thesis 3 (ASSESSED): completed thesis feedback
     ('00000000-0000-4000-e500-000000000003'::UUID,
      '00000000-0000-4000-d000-000000000003'::UUID,
      'THESIS',
@@ -893,7 +898,7 @@ VALUES
      NOW() - INTERVAL '5 days',
      (SELECT user_id FROM users WHERE university_id = 'supervisor2')),
 
-    -- Thesis 3 (SUBMITTED): pending presentation feedback
+    -- Thesis 3 (ASSESSED): pending presentation feedback
     ('00000000-0000-4000-e500-000000000004'::UUID,
      '00000000-0000-4000-d000-000000000003'::UUID,
      'PRESENTATION',
@@ -1215,13 +1220,25 @@ VALUES
     ('00000000-0000-4000-d000-000000000006'::UUID, 'WRITING', NOW() - INTERVAL '2780 days'),
     ('00000000-0000-4000-d000-000000000006'::UUID, 'SUBMITTED', NOW() - INTERVAL '2620 days'),
     ('00000000-0000-4000-d000-000000000006'::UUID, 'ASSESSED', NOW() - INTERVAL '2610 days'),
+    ('00000000-0000-4000-d000-000000000006'::UUID, 'GRADED', NOW() - INTERVAL '2605 days'),
     ('00000000-0000-4000-d000-000000000006'::UUID, 'FINISHED', NOW() - INTERVAL '2600 days'),
+
+    -- Thesis 7 (FINISHED, recent — under retention)
     ('00000000-0000-4000-d000-000000000007'::UUID, 'PROPOSAL', NOW() - INTERVAL '800 days'),
     ('00000000-0000-4000-d000-000000000007'::UUID, 'WRITING', NOW() - INTERVAL '780 days'),
     ('00000000-0000-4000-d000-000000000007'::UUID, 'SUBMITTED', NOW() - INTERVAL '640 days'),
     ('00000000-0000-4000-d000-000000000007'::UUID, 'ASSESSED', NOW() - INTERVAL '630 days'),
+    ('00000000-0000-4000-d000-000000000007'::UUID, 'GRADED', NOW() - INTERVAL '625 days'),
     ('00000000-0000-4000-d000-000000000007'::UUID, 'FINISHED', NOW() - INTERVAL '620 days')
 ON CONFLICT DO NOTHING;
+
+-- Thesis 6: set final grade (assigned during GRADED state)
+UPDATE theses SET final_grade = '1.7', final_feedback = 'Solid contribution to legacy migration research.'
+WHERE thesis_id = '00000000-0000-4000-d000-000000000006'::UUID AND final_grade IS NULL;
+
+-- Thesis 7: set final grade (assigned during GRADED state)
+UPDATE theses SET final_grade = '1.3', final_feedback = 'Strong analysis of dashboard design patterns with practical recommendations.'
+WHERE thesis_id = '00000000-0000-4000-d000-000000000007'::UUID AND final_grade IS NULL;
 
 -- ============================================================================
 -- 31. ACCOUNT DELETION TEST APPLICATION (rejected, for delete_rejected_app)
@@ -1408,7 +1425,7 @@ VALUES
      'WRITING', 'PRIVATE',
      ARRAY['anomaly detection', 'distributed systems'],
      NULL,
-     NOW() - INTERVAL '30 days', NULL,
+     NOW() - INTERVAL '30 days', NOW() + INTERVAL '150 days',
      NOW() - INTERVAL '30 days',
      '00000000-0000-4000-a000-000000000001'::UUID)
 ON CONFLICT DO NOTHING;
