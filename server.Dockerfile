@@ -6,7 +6,8 @@ COPY server/gradlew server/build.gradle server/settings.gradle server/gradle.pro
 COPY server/gradle ./gradle
 RUN ./gradlew dependencies --no-daemon
 
-# Copy source code and build
+# Copy source code and .git (needed by gradle-git-properties plugin)
+COPY .git ../.git
 COPY server/src ./src
 RUN ./gradlew build -x test -x checkstyleMain -x checkstyleTest --no-daemon
 

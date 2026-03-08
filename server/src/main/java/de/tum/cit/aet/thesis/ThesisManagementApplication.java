@@ -32,7 +32,7 @@ public class ThesisManagementApplication {
 		var context = app.run(args);
 		Environment env = context.getEnvironment();
 		var buildProperties = context.getBean(BuildProperties.class);
-		var gitProperties = context.getBean(GitProperties.class);
+		var gitProperties = context.getBeanProvider(GitProperties.class).getIfAvailable();
 		logApplicationStartup(env, buildProperties, gitProperties);
 	}
 
@@ -41,7 +41,7 @@ public class ThesisManagementApplication {
 	 *
 	 * @param env the Spring environment containing configuration properties
 	 * @param buildProperties the build properties containing version information
-	 * @param gitProperties the git properties containing commit and branch information
+	 * @param gitProperties the git properties containing commit and branch information, or null if unavailable
 	 */
 	private static void logApplicationStartup(Environment env, BuildProperties buildProperties, GitProperties gitProperties) {
 		String protocol = "http";
@@ -50,8 +50,8 @@ public class ThesisManagementApplication {
 		}
 		String serverPort = env.getProperty("server.port");
 		String version = buildProperties.getVersion();
-		String gitCommitId = gitProperties.getShortCommitId();
-		String gitBranch = gitProperties.getBranch();
+		String gitCommitId = gitProperties != null ? gitProperties.getShortCommitId() : "unknown";
+		String gitBranch = gitProperties != null ? gitProperties.getBranch() : "unknown";
 		String contextPath = env.getProperty("server.servlet.context-path");
 		if (StringUtils.isBlank(contextPath)) {
 			contextPath = "/";
