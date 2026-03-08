@@ -39,7 +39,7 @@ const ThesisPresentationSection = () => {
                 thesis={thesis}
                 thesisType={thesis.type}
                 hasEditAccess={access.student || false}
-                hasAcceptAccess={access.advisor}
+                hasAcceptAccess={access.supervisor}
               />
             ))}
           </Stack>

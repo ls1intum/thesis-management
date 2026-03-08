@@ -68,12 +68,24 @@ public class ApplicationController {
 	/**
 	 * Creates a new thesis application for the authenticated user.
 	 *
-	 * @param payload the payload containing the application details
+	 * <p>The payload must include {@code consentToPrivacyPolicy = true} to confirm that the
+	 * applicant has read and accepted the privacy statement. This is validated server-side to
+	 * prevent bypassing the consent requirement via direct REST calls. The server records
+	 * {@link java.time.Instant#now()} as the consent timestamp on the application entity,
+	 * providing demonstrable proof of consent per GDPR Art. 7(1).</p>
+	 *
+	 * @param payload the payload containing the application details and privacy consent flag
 	 * @return the created application
 	 */
 	@PostMapping
 	public ResponseEntity<ApplicationDto> createApplication(@RequestBody CreateApplicationPayload payload) {
 		User authenticatedUser = currentUserProvider().getUser();
+
+		// GDPR Art. 7(1): Validate that the applicant has explicitly accepted the privacy statement.
+		// This server-side check prevents bypassing the consent checkbox via direct API calls.
+		if (!Boolean.TRUE.equals(payload.consentToPrivacyPolicy())) {
+			throw new ResourceInvalidParametersException("You must accept the privacy statement before submitting an application.");
+		}
 
 		if (payload.topicId() == null && payload.thesisTitle() == null) {
 			throw new ResourceInvalidParametersException("Either topic id or a thesis title must be provided");
@@ -331,8 +343,8 @@ public class ApplicationController {
 				RequestValidator.validateStringMaxLength(payload.thesisTitle(), StringLimits.THESIS_TITLE.getLimit()),
 				RequestValidator.validateStringMaxLength(payload.thesisType(), StringLimits.SHORTTEXT.getLimit()),
 				RequestValidator.validateStringMaxLength(payload.language(), StringLimits.SHORTTEXT.getLimit()),
-				RequestValidator.validateNotNull(payload.advisorIds()),
 				RequestValidator.validateNotNull(payload.supervisorIds()),
+				RequestValidator.validateNotNull(payload.examinerIds()),
 				RequestValidator.validateNotNull(payload.notifyUser()),
 				RequestValidator.validateNotNull(payload.closeTopic())
 		);

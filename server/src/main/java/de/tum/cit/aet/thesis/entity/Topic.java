@@ -100,11 +100,11 @@ public class Topic {
 	@OrderBy("position ASC")
 	private List<TopicRole> roles = new ArrayList<>();
 
-	public List<User> getAdvisors() {
+	public List<User> getSupervisors() {
 		List<User> result = new ArrayList<>();
 
 		for (TopicRole role : getRoles()) {
-			if (role.getId().getRole() == ThesisRoleName.ADVISOR) {
+			if (role.getId().getRole() == ThesisRoleName.SUPERVISOR) {
 				result.add(role.getUser());
 			}
 		}

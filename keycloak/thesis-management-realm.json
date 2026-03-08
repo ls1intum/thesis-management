@@ -26,7 +26,7 @@
   "oauth2DeviceCodeLifespan": 600,
   "oauth2DevicePollingInterval": 5,
   "enabled": true,
-  "sslRequired": "external",
+  "sslRequired": "none",
   "registrationAllowed": false,
   "registrationEmailAsUsername": false,
   "rememberMe": false,
@@ -570,9 +570,9 @@
       "groups": []
     },
     {
-      "username": "supervisor",
-      "email": "supervisor@test.local",
-      "firstName": "Supervisor",
+      "username": "examiner",
+      "email": "examiner@test.local",
+      "firstName": "Examiner",
       "lastName": "User",
       "emailVerified": true,
       "enabled": true,
@@ -584,7 +584,7 @@
       "credentials": [
         {
           "type": "password",
-          "value": "supervisor",
+          "value": "examiner",
           "temporary": false
         }
       ],
@@ -599,9 +599,9 @@
       "groups": []
     },
     {
-      "username": "advisor",
-      "email": "advisor@test.local",
-      "firstName": "Advisor",
+      "username": "supervisor",
+      "email": "supervisor@test.local",
+      "firstName": "Supervisor",
       "lastName": "User",
       "emailVerified": true,
       "enabled": true,
@@ -613,7 +613,7 @@
       "credentials": [
         {
           "type": "password",
-          "value": "advisor",
+          "value": "supervisor",
           "temporary": false
         }
       ],
@@ -659,9 +659,9 @@
       ]
     },
     {
-      "username": "supervisor2",
-      "email": "supervisor2@test.local",
-      "firstName": "Supervisor2",
+      "username": "examiner2",
+      "email": "examiner2@test.local",
+      "firstName": "Examiner2",
       "lastName": "User",
       "emailVerified": true,
       "enabled": true,
@@ -673,7 +673,7 @@
       "credentials": [
         {
           "type": "password",
-          "value": "supervisor2",
+          "value": "examiner2",
           "temporary": false
         }
       ],
@@ -688,9 +688,9 @@
       "groups": []
     },
     {
-      "username": "advisor2",
-      "email": "advisor2@test.local",
-      "firstName": "Advisor2",
+      "username": "supervisor2",
+      "email": "supervisor2@test.local",
+      "firstName": "Supervisor2",
       "lastName": "User",
       "emailVerified": true,
       "enabled": true,
@@ -702,7 +702,7 @@
       "credentials": [
         {
           "type": "password",
-          "value": "advisor2",
+          "value": "supervisor2",
           "temporary": false
         }
       ],
@@ -1285,16 +1285,16 @@
       "description": "",
       "rootUrl": "",
       "adminUrl": "",
-      "baseUrl": "http://localhost:3000",
+      "baseUrl": "http://localhost:3100",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "redirectUris": [
-        "http://localhost:3000/*"
+        "http://localhost:3100/*"
       ],
       "webOrigins": [
-        "http://localhost:3000"
+        "http://localhost:3100"
       ],
       "notBefore": 0,
       "bearerOnly": false,
@@ -1310,7 +1310,7 @@
         "realm_client": "false",
         "oidc.ciba.grant.enabled": "false",
         "backchannel.logout.session.required": "true",
-        "post.logout.redirect.uris": "http://localhost:3000/*",
+        "post.logout.redirect.uris": "http://localhost:3100/*",
         "oauth2.device.authorization.grant.enabled": "false",
         "backchannel.logout.revoke.offline.tokens": "false"
       },

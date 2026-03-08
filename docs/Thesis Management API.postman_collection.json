@@ -14,33 +14,21 @@
 					"item": [
 						{
 							"name": "Get Application",
-							"protocolProfileBehavior": {
-								"disableBodyPruning": true
-							},
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"test\": \"123\"\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
 								"url": {
-									"raw": "{{baseUrl}}/applications/:application_id",
+									"raw": "{{baseUrl}}/applications/:applicationId",
 									"host": [
 										"{{baseUrl}}"
 									],
 									"path": [
 										"applications",
-										":application_id"
+										":applicationId"
 									],
 									"variable": [
 										{
-											"key": "application_id",
+											"key": "applicationId",
 											"value": ""
 										}
 									]
@@ -55,7 +43,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"topic_id\": \"e97bb95b-e838-4c8b-9386-a47a71e682f9\",\n    \"thesisTitle\": \"title\",\n    \"thesisType\": \"BACHELOR\",\n    \"desiredStartDate\": {{$timestamp}},\n    \"motivation\": \"motivation\",\n    \"researchGroupId\": \"4d856690-bb2b-4584-b89a-c92a20ffd5d9\"\n}",
+									"raw": "{\n    \"topicId\": \"\",\n    \"thesisTitle\": \"My Thesis\",\n    \"thesisType\": \"BACHELOR\",\n    \"desiredStartDate\": \"2025-04-01T00:00:00Z\",\n    \"motivation\": \"My motivation\",\n    \"researchGroupId\": \"\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -63,19 +51,18 @@
 									}
 								},
 								"url": {
-									"raw": "{{baseUrl}}/applications/:application_id",
+									"raw": "{{baseUrl}}/applications/:applicationId",
 									"host": [
 										"{{baseUrl}}"
 									],
 									"path": [
 										"applications",
-										":application_id"
+										":applicationId"
 									],
 									"variable": [
 										{
-											"key": "application_id",
-											"value": "c2706d97-ee87-40ff-a02d-d1beb09048f3",
-											"description": "(Required) "
+											"key": "applicationId",
+											"value": ""
 										}
 									]
 								}
@@ -89,7 +76,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"thesisTitle\": \"title\",\n    \"thesisType\": \"BACHELOR\",\n    \"language\": \"ENGLISH\",\n    \"advisorIds\": [\"76638673-ca5e-4000-8f5c-3da377bf0eda\"],\n    \"supervisorIds\": [\"76638673-ca5e-4000-8f5c-3da377bf0eda\"],\n    \"notifyUser\": true,\n    \"closeTopic\": false\n}",
+									"raw": "{\n    \"thesisTitle\": \"My Thesis\",\n    \"thesisType\": \"BACHELOR\",\n    \"language\": \"ENGLISH\",\n    \"supervisorIds\": [],\n    \"examinerIds\": [],\n    \"notifyUser\": true,\n    \"closeTopic\": false\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -97,20 +84,19 @@
 									}
 								},
 								"url": {
-									"raw": "{{baseUrl}}/applications/:application_id/accept",
+									"raw": "{{baseUrl}}/applications/:applicationId/accept",
 									"host": [
 										"{{baseUrl}}"
 									],
 									"path": [
 										"applications",
-										":application_id",
+										":applicationId",
 										"accept"
 									],
 									"variable": [
 										{
-											"key": "application_id",
-											"value": "c2706d97-ee87-40ff-a02d-d1beb09048f3",
-											"description": "(Required) "
+											"key": "applicationId",
+											"value": ""
 										}
 									]
 								}
@@ -118,13 +104,13 @@
 							"response": []
 						},
 						{
-							"name": "Comment Application",
+							"name": "Update Comment",
 							"request": {
 								"method": "PUT",
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"comment\": \"Comment\"\n}",
+									"raw": "{\n    \"comment\": \"Internal note about this application\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -132,20 +118,19 @@
 									}
 								},
 								"url": {
-									"raw": "{{baseUrl}}/applications/:application_id/comment",
+									"raw": "{{baseUrl}}/applications/:applicationId/comment",
 									"host": [
 										"{{baseUrl}}"
 									],
 									"path": [
 										"applications",
-										":application_id",
+										":applicationId",
 										"comment"
 									],
 									"variable": [
 										{
-											"key": "application_id",
-											"value": "c2706d97-ee87-40ff-a02d-d1beb09048f3",
-											"description": "(Required) "
+											"key": "applicationId",
+											"value": ""
 										}
 									]
 								}
@@ -159,7 +144,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"reason\": \"TOPIC_FILLED\",\n    \"notifyUser\": true\n}",
+									"raw": "{\n    \"reason\": \"NOT_SUITABLE\",\n    \"notifyUser\": true\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -167,20 +152,19 @@
 									}
 								},
 								"url": {
-									"raw": "{{baseUrl}}/applications/:application_id/reject",
+									"raw": "{{baseUrl}}/applications/:applicationId/reject",
 									"host": [
 										"{{baseUrl}}"
 									],
 									"path": [
 										"applications",
-										":application_id",
+										":applicationId",
 										"reject"
 									],
 									"variable": [
 										{
-											"key": "application_id",
-											"value": "c2706d97-ee87-40ff-a02d-d1beb09048f3",
-											"description": "(Required) "
+											"key": "applicationId",
+											"value": ""
 										}
 									]
 								}
@@ -194,7 +178,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"reason\": \"INTERESTED\"\n}",
+									"raw": "{\n    \"reason\": \"SUITABLE\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -202,23 +186,47 @@
 									}
 								},
 								"url": {
-									"raw": "{{baseUrl}}/applications/:application_id/review",
+									"raw": "{{baseUrl}}/applications/:applicationId/review",
 									"host": [
 										"{{baseUrl}}"
 									],
 									"path": [
 										"applications",
-										":application_id",
+										":applicationId",
 										"review"
 									],
 									"variable": [
 										{
-											"key": "application_id",
-											"value": "c2706d97-ee87-40ff-a02d-d1beb09048f3",
-											"description": "(Required) "
+											"key": "applicationId",
+											"value": ""
 										}
 									]
 								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Application",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/applications/:applicationId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"applications",
+										":applicationId"
+									],
+									"variable": [
+										{
+											"key": "applicationId",
+											"value": ""
+										}
+									]
+								},
+								"description": "Admin only. Permanently deletes an application."
 							},
 							"response": []
 						}
@@ -230,7 +238,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/applications?fetchAll=true",
+							"raw": "{{baseUrl}}/applications?fetchAll=true&page=0&limit=50&sortBy=createdAt&sortOrder=desc",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -239,57 +247,57 @@
 							],
 							"query": [
 								{
-									"key": "search",
-									"value": "\"Test\"",
-									"disabled": true
-								},
-								{
-									"key": "state",
-									"value": "ACCEPTED",
-									"disabled": true
-								},
-								{
-									"key": "topics",
-									"value": "54696a2c-b4f6-432e-a5c8-1d8f190c35bc",
-									"disabled": true
-								},
-								{
-									"key": "types",
-									"value": "Test",
-									"disabled": true
-								},
-								{
-									"key": "previous",
-									"value": "54696a2c-b4f6-432e-a5c8-1d8f190c35bc",
-									"disabled": true
-								},
-								{
-									"key": "includeSuggestedTopics",
-									"value": "true",
-									"disabled": true
-								},
-								{
 									"key": "fetchAll",
 									"value": "true"
 								},
 								{
 									"key": "page",
-									"value": "0",
-									"disabled": true
+									"value": "0"
 								},
 								{
 									"key": "limit",
-									"value": "50",
-									"disabled": true
+									"value": "50"
 								},
 								{
 									"key": "sortBy",
-									"value": "createdAt",
-									"disabled": true
+									"value": "createdAt"
 								},
 								{
 									"key": "sortOrder",
-									"value": "asc",
+									"value": "desc"
+								},
+								{
+									"key": "search",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "state",
+									"value": "",
+									"description": "Filter by state (e.g. NOT_ASSESSED, ACCEPTED, REJECTED, INTERVIEWING)",
+									"disabled": true
+								},
+								{
+									"key": "topic",
+									"value": "",
+									"description": "Filter by topic ID",
+									"disabled": true
+								},
+								{
+									"key": "types",
+									"value": "",
+									"description": "Filter by thesis type",
+									"disabled": true
+								},
+								{
+									"key": "previous",
+									"value": "",
+									"description": "Filter by previous application states",
+									"disabled": true
+								},
+								{
+									"key": "includeSuggestedTopics",
+									"value": "true",
 									"disabled": true
 								}
 							]
@@ -298,16 +306,48 @@
 					"response": []
 				},
 				{
-					"name": "Creates a new application",
+					"name": "Get Interview Applications",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/applications/interview-applications?topicId=&page=0&limit=50",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"applications",
+								"interview-applications"
+							],
+							"query": [
+								{
+									"key": "topicId",
+									"value": ""
+								},
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "limit",
+									"value": "50"
+								}
+							]
+						},
+						"description": "Retrieves applications eligible for interview scheduling for a given topic. Requires admin/advisor/supervisor role."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Application",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"topic_id\": \"54696a2c-b4f6-432e-a5c8-1d8f190c35bc\",\n    \"thesisTitle\": \"title\",\n    \"thesisType\": \"BACHELOR\",\n    \"desiredStartDate\": {{$timestamp}},\n    \"motivation\": \"motivation\",\n    \"researchGroupId\": \"4d5c6f1b-6e83-4e5e-9f6a-2657dc724aec\"\n}",
+							"raw": "{\n    \"topicId\": \"\",\n    \"thesisTitle\": \"My Thesis\",\n    \"thesisType\": \"BACHELOR\",\n    \"desiredStartDate\": \"2025-04-01T00:00:00Z\",\n    \"motivation\": \"My motivation\",\n    \"researchGroupId\": \"\"\n}",
 							"options": {
 								"raw": {
-									"headerFamily": "json",
 									"language": "json"
 								}
 							}
@@ -327,81 +367,948 @@
 			]
 		},
 		{
-			"name": "Avatars",
+			"name": "Theses",
 			"item": [
 				{
-					"name": "Get User Avatar",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/avatars/:userId",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"avatars",
-								":userId"
-							],
-							"variable": [
-								{
-									"key": "userId",
-									"value": "fdde346c-4ad0-4e5a-82b8-93191553e325"
-								}
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Calendar",
-			"item": [
-				{
-					"name": "Get Calendar",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/calendar/presentations",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"calendar",
-								"presentations"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Email Templates",
-			"item": [
-				{
-					"name": "Specific Email Template",
+					"name": "Specific Thesis",
 					"item": [
 						{
-							"name": "Get Email Template",
+							"name": "Assessment",
+							"item": [
+								{
+									"name": "Get Assessment",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/theses/:thesisId/assessment",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"theses",
+												":thesisId",
+												"assessment"
+											],
+											"variable": [
+												{
+													"key": "thesisId",
+													"value": ""
+												}
+											]
+										},
+										"description": "Downloads the assessment PDF. Requires supervisor access."
+									},
+									"response": []
+								},
+								{
+									"name": "Add Assessment",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"summary\": \"Assessment summary\",\n    \"positives\": \"Positive aspects\",\n    \"negatives\": \"Areas for improvement\",\n    \"gradeSuggestion\": \"1.3\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/theses/:thesisId/assessment",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"theses",
+												":thesisId",
+												"assessment"
+											],
+											"variable": [
+												{
+													"key": "thesisId",
+													"value": ""
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Comments",
+							"item": [
+								{
+									"name": "Get Comments",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/theses/:thesisId/comments?commentType=THESIS&page=0&limit=50",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"theses",
+												":thesisId",
+												"comments"
+											],
+											"query": [
+												{
+													"key": "commentType",
+													"value": "THESIS"
+												},
+												{
+													"key": "page",
+													"value": "0"
+												},
+												{
+													"key": "limit",
+													"value": "50"
+												}
+											],
+											"variable": [
+												{
+													"key": "thesisId",
+													"value": ""
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get Comment File",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/theses/:thesisId/comments/:commentId/file",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"theses",
+												":thesisId",
+												"comments",
+												":commentId",
+												"file"
+											],
+											"variable": [
+												{
+													"key": "thesisId",
+													"value": ""
+												},
+												{
+													"key": "commentId",
+													"value": ""
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Add Comment",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "data",
+													"value": "{\"message\": \"My comment\", \"commentType\": \"THESIS\"}",
+													"type": "text",
+													"contentType": "application/json"
+												},
+												{
+													"key": "file",
+													"type": "file",
+													"src": "",
+													"disabled": true
+												}
+											]
+										},
+										"url": {
+											"raw": "{{baseUrl}}/theses/:thesisId/comments",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"theses",
+												":thesisId",
+												"comments"
+											],
+											"variable": [
+												{
+													"key": "thesisId",
+													"value": ""
+												}
+											]
+										},
+										"description": "Multipart request with 'data' (JSON) and optional 'file' parts."
+									},
+									"response": []
+								},
+								{
+									"name": "Delete Comment",
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/theses/:thesisId/comments/:commentId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"theses",
+												":thesisId",
+												"comments",
+												":commentId"
+											],
+											"variable": [
+												{
+													"key": "thesisId",
+													"value": ""
+												},
+												{
+													"key": "commentId",
+													"value": ""
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Credits",
+							"item": [
+								{
+									"name": "Update Credits",
+									"request": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"credits\": {}\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/theses/:thesisId/credits",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"theses",
+												":thesisId",
+												"credits"
+											],
+											"variable": [
+												{
+													"key": "thesisId",
+													"value": ""
+												}
+											]
+										},
+										"description": "Credits is a map of student UUID to credit points number."
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Feedback",
+							"item": [
+								{
+									"name": "Add Feedback",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"type\": \"PROPOSAL\",\n    \"requestedChanges\": [\n        {\n            \"feedback\": \"Please revise the introduction\",\n            \"completed\": false\n        }\n    ]\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/theses/:thesisId/feedback",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"theses",
+												":thesisId",
+												"feedback"
+											],
+											"variable": [
+												{
+													"key": "thesisId",
+													"value": ""
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Complete Feedback",
+									"request": {
+										"method": "PUT",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/theses/:thesisId/feedback/:feedbackId/:action",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"theses",
+												":thesisId",
+												"feedback",
+												":feedbackId",
+												":action"
+											],
+											"variable": [
+												{
+													"key": "thesisId",
+													"value": ""
+												},
+												{
+													"key": "feedbackId",
+													"value": ""
+												},
+												{
+													"key": "action",
+													"value": "complete",
+													"description": "complete or incomplete"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Delete Feedback",
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/theses/:thesisId/feedback/:feedbackId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"theses",
+												":thesisId",
+												"feedback",
+												":feedbackId"
+											],
+											"variable": [
+												{
+													"key": "thesisId",
+													"value": ""
+												},
+												{
+													"key": "feedbackId",
+													"value": ""
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Files",
+							"item": [
+								{
+									"name": "Get File",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/theses/:thesisId/files/:fileId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"theses",
+												":thesisId",
+												"files",
+												":fileId"
+											],
+											"variable": [
+												{
+													"key": "thesisId",
+													"value": ""
+												},
+												{
+													"key": "fileId",
+													"value": ""
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Add File",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "type",
+													"value": "THESIS",
+													"type": "text"
+												},
+												{
+													"key": "file",
+													"type": "file",
+													"src": ""
+												}
+											]
+										},
+										"url": {
+											"raw": "{{baseUrl}}/theses/:thesisId/files",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"theses",
+												":thesisId",
+												"files"
+											],
+											"variable": [
+												{
+													"key": "thesisId",
+													"value": ""
+												}
+											]
+										},
+										"description": "Multipart request with 'type' (text) and 'file' (binary) parts."
+									},
+									"response": []
+								},
+								{
+									"name": "Delete File",
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/theses/:thesisId/files/:fileId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"theses",
+												":thesisId",
+												"files",
+												":fileId"
+											],
+											"variable": [
+												{
+													"key": "thesisId",
+													"value": ""
+												},
+												{
+													"key": "fileId",
+													"value": ""
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Grade",
+							"item": [
+								{
+									"name": "Add Grade",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"finalGrade\": \"1.3\",\n    \"finalFeedback\": \"Excellent work\",\n    \"visibility\": \"INTERNAL\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/theses/:thesisId/grade",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"theses",
+												":thesisId",
+												"grade"
+											],
+											"variable": [
+												{
+													"key": "thesisId",
+													"value": ""
+												}
+											]
+										},
+										"description": "Requires examiner access."
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Info",
+							"item": [
+								{
+									"name": "Update Thesis Info",
+									"request": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"abstractText\": \"Thesis abstract\",\n    \"infoText\": \"Additional info\",\n    \"primaryTitle\": \"My Thesis Title\",\n    \"secondaryTitles\": {}\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/theses/:thesisId/info",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"theses",
+												":thesisId",
+												"info"
+											],
+											"variable": [
+												{
+													"key": "thesisId",
+													"value": ""
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Presentations",
+							"item": [
+								{
+									"name": "Add Presentation",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"type\": \"INTERMEDIATE\",\n    \"visibility\": \"PUBLIC\",\n    \"location\": \"Room 101\",\n    \"streamUrl\": \"\",\n    \"language\": \"ENGLISH\",\n    \"date\": \"2025-06-15T14:00:00Z\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/theses/:thesisId/presentations",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"theses",
+												":thesisId",
+												"presentations"
+											],
+											"variable": [
+												{
+													"key": "thesisId",
+													"value": ""
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Update Presentation",
+									"request": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"type\": \"INTERMEDIATE\",\n    \"visibility\": \"PUBLIC\",\n    \"location\": \"Room 101\",\n    \"streamUrl\": \"\",\n    \"language\": \"ENGLISH\",\n    \"date\": \"2025-06-15T14:00:00Z\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/theses/:thesisId/presentations/:presentationId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"theses",
+												":thesisId",
+												"presentations",
+												":presentationId"
+											],
+											"variable": [
+												{
+													"key": "thesisId",
+													"value": ""
+												},
+												{
+													"key": "presentationId",
+													"value": ""
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Update Presentation Note",
+									"request": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"note\": \"Presentation notes\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/theses/:thesisId/presentations/:presentationId/note",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"theses",
+												":thesisId",
+												"presentations",
+												":presentationId",
+												"note"
+											],
+											"variable": [
+												{
+													"key": "thesisId",
+													"value": ""
+												},
+												{
+													"key": "presentationId",
+													"value": ""
+												}
+											]
+										},
+										"description": "Only available for scheduled presentations."
+									},
+									"response": []
+								},
+								{
+									"name": "Schedule Presentation",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"inviteChairMembers\": true,\n    \"inviteThesisStudents\": true,\n    \"optionalAttendees\": []\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/theses/:thesisId/presentations/:presentationId/schedule",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"theses",
+												":thesisId",
+												"presentations",
+												":presentationId",
+												"schedule"
+											],
+											"variable": [
+												{
+													"key": "thesisId",
+													"value": ""
+												},
+												{
+													"key": "presentationId",
+													"value": ""
+												}
+											]
+										},
+										"description": "Requires supervisor access."
+									},
+									"response": []
+								},
+								{
+									"name": "Delete Presentation",
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/theses/:thesisId/presentations/:presentationId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"theses",
+												":thesisId",
+												"presentations",
+												":presentationId"
+											],
+											"variable": [
+												{
+													"key": "thesisId",
+													"value": ""
+												},
+												{
+													"key": "presentationId",
+													"value": ""
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Proposal",
+							"item": [
+								{
+									"name": "Get Proposal",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/theses/:thesisId/proposal/:proposalId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"theses",
+												":thesisId",
+												"proposal",
+												":proposalId"
+											],
+											"variable": [
+												{
+													"key": "thesisId",
+													"value": ""
+												},
+												{
+													"key": "proposalId",
+													"value": ""
+												}
+											]
+										},
+										"description": "Downloads the proposal PDF."
+									},
+									"response": []
+								},
+								{
+									"name": "Add Proposal",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "proposal",
+													"type": "file",
+													"src": ""
+												}
+											]
+										},
+										"url": {
+											"raw": "{{baseUrl}}/theses/:thesisId/proposal",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"theses",
+												":thesisId",
+												"proposal"
+											],
+											"variable": [
+												{
+													"key": "thesisId",
+													"value": ""
+												}
+											]
+										},
+										"description": "Multipart request with 'proposal' file part (PDF)."
+									},
+									"response": []
+								},
+								{
+									"name": "Accept Proposal",
+									"request": {
+										"method": "PUT",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/theses/:thesisId/proposal/accept",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"theses",
+												":thesisId",
+												"proposal",
+												"accept"
+											],
+											"variable": [
+												{
+													"key": "thesisId",
+													"value": ""
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Delete Proposal",
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/theses/:thesisId/proposal/:proposalId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"theses",
+												":thesisId",
+												"proposal",
+												":proposalId"
+											],
+											"variable": [
+												{
+													"key": "thesisId",
+													"value": ""
+												},
+												{
+													"key": "proposalId",
+													"value": ""
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Anonymization",
+							"item": [
+								{
+									"name": "Get Anonymization Warnings",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/theses/:thesisId/anonymize/warnings",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"theses",
+												":thesisId",
+												"anonymize",
+												"warnings"
+											],
+											"variable": [
+												{
+													"key": "thesisId",
+													"value": ""
+												}
+											]
+										},
+										"description": "Admin only. Returns warnings about anonymizing a specific thesis."
+									},
+									"response": []
+								},
+								{
+									"name": "Anonymize Thesis",
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/theses/:thesisId/anonymize",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"theses",
+												":thesisId",
+												"anonymize"
+											],
+											"variable": [
+												{
+													"key": "thesisId",
+													"value": ""
+												}
+											]
+										},
+										"description": "Admin only. Anonymizes a single thesis, removing all personal data."
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Get Thesis",
 							"request": {
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{baseUrl}}/email-templates/:emailTemplateId",
+									"raw": "{{baseUrl}}/theses/:thesisId",
 									"host": [
 										"{{baseUrl}}"
 									],
 									"path": [
-										"email-templates",
-										":emailTemplateId"
+										"theses",
+										":thesisId"
 									],
 									"variable": [
 										{
-											"key": "emailTemplateId",
-											"value": "19725285-79ee-4e3e-858a-bf45e98805ef"
+											"key": "thesisId",
+											"value": ""
 										}
 									]
 								}
@@ -409,13 +1316,13 @@
 							"response": []
 						},
 						{
-							"name": "Update Email Template",
+							"name": "Update Thesis",
 							"request": {
 								"method": "PUT",
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"researchGroupId\": \"4e0bcf8b-fb68-4de5-b9a3-c09db4378b19\",\n    \"templateCase\": \"Test2\",\n    \"description\": \"Test\",\n    \"subject\": \"Test\",\n    \"bodyHtml\": \"Test\",\n    \"language\": \"Test\"\n}",
+									"raw": "{\n    \"thesisTitle\": \"Updated Title\",\n    \"thesisType\": \"BACHELOR\",\n    \"language\": \"ENGLISH\",\n    \"visibility\": \"INTERNAL\",\n    \"keywords\": [],\n    \"startDate\": null,\n    \"endDate\": null,\n    \"studentIds\": [],\n    \"supervisorIds\": [],\n    \"examinerIds\": [],\n    \"states\": [],\n    \"researchGroupId\": \"\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -423,18 +1330,18 @@
 									}
 								},
 								"url": {
-									"raw": "{{baseUrl}}/email-templates/:emailTemplateId",
+									"raw": "{{baseUrl}}/theses/:thesisId",
 									"host": [
 										"{{baseUrl}}"
 									],
 									"path": [
-										"email-templates",
-										":emailTemplateId"
+										"theses",
+										":thesisId"
 									],
 									"variable": [
 										{
-											"key": "emailTemplateId",
-											"value": "659264b6-03ca-4d83-8718-4869f7eef316"
+											"key": "thesisId",
+											"value": ""
 										}
 									]
 								}
@@ -442,270 +1349,101 @@
 							"response": []
 						},
 						{
-							"name": "Delete Email Template",
+							"name": "Submit Thesis",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/theses/:thesisId/thesis/final-submission",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"theses",
+										":thesisId",
+										"thesis",
+										"final-submission"
+									],
+									"variable": [
+										{
+											"key": "thesisId",
+											"value": ""
+										}
+									]
+								},
+								"description": "Final submission — advances thesis state. Requires student access."
+							},
+							"response": []
+						},
+						{
+							"name": "Complete Thesis",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/theses/:thesisId/complete",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"theses",
+										":thesisId",
+										"complete"
+									],
+									"variable": [
+										{
+											"key": "thesisId",
+											"value": ""
+										}
+									]
+								},
+								"description": "Marks thesis as finished. Requires examiner access."
+							},
+							"response": []
+						},
+						{
+							"name": "Close Thesis",
 							"request": {
 								"method": "DELETE",
 								"header": [],
 								"url": {
-									"raw": "{{baseUrl}}/email-templates/:emailTemplateId",
+									"raw": "{{baseUrl}}/theses/:thesisId",
 									"host": [
 										"{{baseUrl}}"
 									],
 									"path": [
-										"email-templates",
-										":emailTemplateId"
+										"theses",
+										":thesisId"
 									],
 									"variable": [
 										{
-											"key": "emailTemplateId",
-											"value": "659264b6-03ca-4d83-8718-4869f7eef316"
+											"key": "thesisId",
+											"value": ""
 										}
 									]
-								}
+								},
+								"description": "Closes a thesis (DROPPED_OUT). Requires supervisor access."
 							},
 							"response": []
 						}
 					]
 				},
 				{
-					"name": "Get All Email Templates",
+					"name": "Get All Theses",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/email-templates",
+							"raw": "{{baseUrl}}/theses?fetchAll=true&page=0&limit=50&sortBy=createdAt&sortOrder=desc",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"email-templates"
+								"theses"
 							],
 							"query": [
 								{
-									"key": "search",
-									"value": "",
-									"disabled": true
-								},
-								{
-									"key": "templateCases",
-									"value": "APPLICATION_ACCEPTED",
-									"disabled": true
-								},
-								{
-									"key": "languages",
-									"value": "en",
-									"disabled": true
-								},
-								{
-									"key": "page",
-									"value": "0",
-									"disabled": true
-								},
-								{
-									"key": "limit",
-									"value": "50",
-									"disabled": true
-								},
-								{
-									"key": "sortBy",
-									"value": "templateCase",
-									"disabled": true
-								},
-								{
-									"key": "sortOrder",
-									"value": "asc",
-									"disabled": true
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Add Email Template",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"researchGroupId\": \"4e0bcf8b-fb68-4de5-b9a3-c09db4378b19\",\n    \"templateCase\": \"Test\",\n    \"description\": \"Test\",\n    \"subject\": \"Test\",\n    \"bodyHtml\": \"Test\",\n    \"language\": \"Test\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/email-templates",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"email-templates"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Keycloak",
-			"item": [
-				{
-					"name": "Access Token",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"const response = pm.response.json();",
-									"const expiresIn = response.expires_in;",
-									"",
-									"pm.environment.set(\"access_token\", response.access_token);",
-									"pm.environment.set(\"refresh_token\", response.refresh_token);",
-									"pm.environment.set(\"access_token_expiry\", Math.floor(Date.now() / 1000) + expiresIn - 10);"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "client_id",
-									"value": "{{clientId}}",
-									"type": "text"
-								},
-								{
-									"key": "username",
-									"value": "{{username}}",
-									"type": "text"
-								},
-								{
-									"key": "password",
-									"value": "{{password}}",
-									"type": "text"
-								},
-								{
-									"key": "grant_type",
-									"value": "password",
-									"type": "text"
-								}
-							]
-						},
-						"url": {
-							"raw": "{{baseKeycloakUrl}}/realms/{{realm}}/protocol/openid-connect/token",
-							"host": [
-								"{{baseKeycloakUrl}}"
-							],
-							"path": [
-								"realms",
-								"{{realm}}",
-								"protocol",
-								"openid-connect",
-								"token"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Refresh Token",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "client_id",
-									"value": "{{clientId}}",
-									"type": "text"
-								},
-								{
-									"key": "grant_type",
-									"value": "refresh_token",
-									"type": "text"
-								},
-								{
-									"key": "refresh_token",
-									"value": "{{refreshToken}}",
-									"type": "text"
-								}
-							]
-						},
-						"url": {
-							"raw": "{{baseKeycloakUrl}}/realms/{{realm}}/protocol/openid-connect/token",
-							"host": [
-								"{{baseKeycloakUrl}}"
-							],
-							"path": [
-								"realms",
-								"{{realm}}",
-								"protocol",
-								"openid-connect",
-								"token"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Published Presentations",
-			"item": [
-				{
-					"name": "Specific Presentation",
-					"item": [
-						{
-							"name": "Get Presentation",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{baseUrl}}/published-presentations/:presentationId",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"published-presentations",
-										":presentationId"
-									],
-									"variable": [
-										{
-											"key": "presentationId",
-											"value": "d0b63a29-cc30-437a-8c8f-0796e91eeff6"
-										}
-									]
-								}
-							},
-							"response": []
-						}
-					]
-				},
-				{
-					"name": "Get All Presentations",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/published-presentations?includeDrafts=true&page=0&limit=50&sortBy=scheduledAt&sortOrder=asc",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"published-presentations"
-							],
-							"query": [
-								{
-									"key": "includeDrafts",
+									"key": "fetchAll",
 									"value": "true"
 								},
 								{
@@ -718,44 +1456,158 @@
 								},
 								{
 									"key": "sortBy",
-									"value": "scheduledAt"
+									"value": "createdAt"
 								},
 								{
 									"key": "sortOrder",
-									"value": "asc"
+									"value": "desc"
+								},
+								{
+									"key": "search",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "state",
+									"value": "",
+									"description": "Filter by state (e.g. PROPOSAL, WRITING, SUBMITTED, FINISHED, DROPPED_OUT)",
+									"disabled": true
+								},
+								{
+									"key": "type",
+									"value": "",
+									"description": "Filter by thesis type",
+									"disabled": true
+								},
+								{
+									"key": "researchGroupIds",
+									"value": "",
+									"disabled": true
 								}
 							]
 						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Thesis",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"thesisTitle\": \"New Thesis\",\n    \"thesisType\": \"BACHELOR\",\n    \"language\": \"ENGLISH\",\n    \"studentIds\": [],\n    \"supervisorIds\": [],\n    \"examinerIds\": [],\n    \"researchGroupId\": \"\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/theses",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"theses"
+							]
+						},
+						"description": "Requires admin/advisor/supervisor role."
 					},
 					"response": []
 				}
 			]
 		},
 		{
-			"name": "Published Theses",
+			"name": "Topics",
 			"item": [
 				{
-					"name": "Specific Published Thesis",
+					"name": "Specific Topic",
 					"item": [
 						{
-							"name": "Get Published Thesis",
+							"name": "Get Topic",
 							"request": {
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{baseUrl}}/published-theses/:thesisId/thesis",
+									"raw": "{{baseUrl}}/topics/:topicId",
 									"host": [
 										"{{baseUrl}}"
 									],
 									"path": [
-										"published-theses",
-										":thesisId",
-										"thesis"
+										"topics",
+										":topicId"
 									],
 									"variable": [
 										{
-											"key": "thesisId",
-											"value": "d34084cc-0d98-4563-938c-17003c8a4935"
+											"key": "topicId",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Topic",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\": \"Updated Topic\",\n    \"thesisTypes\": [\"BACHELOR\", \"MASTER\"],\n    \"problemStatement\": \"Problem description\",\n    \"requirements\": \"Requirements\",\n    \"goals\": \"Goals\",\n    \"references\": \"References\",\n    \"examinerIds\": [],\n    \"supervisorIds\": [],\n    \"researchGroupId\": \"\",\n    \"intendedStart\": null,\n    \"applicationDeadline\": null,\n    \"isDraft\": false\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/topics/:topicId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"topics",
+										":topicId"
+									],
+									"variable": [
+										{
+											"key": "topicId",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Close Topic",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"reason\": \"NOT_SUITABLE\",\n    \"notifyUser\": true\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/topics/:topicId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"topics",
+										":topicId"
+									],
+									"variable": [
+										{
+											"key": "topicId",
+											"value": ""
 										}
 									]
 								}
@@ -765,17 +1617,17 @@
 					]
 				},
 				{
-					"name": "Get All Published Theses",
+					"name": "Get All Topics",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/published-theses?page=0&limit=50&sortBy=endDate&sortOrder=asc",
+							"raw": "{{baseUrl}}/topics?page=0&limit=50&sortBy=createdAt&sortOrder=desc",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"published-theses"
+								"topics"
 							],
 							"query": [
 								{
@@ -788,12 +1640,104 @@
 								},
 								{
 									"key": "sortBy",
-									"value": "endDate"
+									"value": "createdAt"
 								},
 								{
 									"key": "sortOrder",
-									"value": "asc"
+									"value": "desc"
+								},
+								{
+									"key": "search",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "onlyOwnResearchGroup",
+									"value": "true",
+									"disabled": true
+								},
+								{
+									"key": "type",
+									"value": "",
+									"description": "Filter by thesis type",
+									"disabled": true
+								},
+								{
+									"key": "states",
+									"value": "",
+									"description": "Filter by topic state",
+									"disabled": true
+								},
+								{
+									"key": "researchGroupIds",
+									"value": "",
+									"disabled": true
 								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Interview Topics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/topics/interview-topics?page=0&limit=50",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"topics",
+								"interview-topics"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "limit",
+									"value": "50"
+								},
+								{
+									"key": "search",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "excludeSupervised",
+									"value": "false",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Retrieves topics eligible for interview processes. Requires admin/advisor/supervisor role."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Topic",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"New Topic\",\n    \"thesisTypes\": [\"BACHELOR\"],\n    \"problemStatement\": \"Problem description\",\n    \"requirements\": \"\",\n    \"goals\": \"\",\n    \"references\": \"\",\n    \"examinerIds\": [],\n    \"supervisorIds\": [],\n    \"researchGroupId\": \"\",\n    \"intendedStart\": null,\n    \"applicationDeadline\": null,\n    \"isDraft\": false\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/topics",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"topics"
 							]
 						}
 					},
@@ -824,7 +1768,7 @@
 									"variable": [
 										{
 											"key": "researchGroupId",
-											"value": "4d5c6f1b-6e83-4e5e-9f6a-2657dc724aec"
+											"value": ""
 										}
 									]
 								}
@@ -838,7 +1782,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"headId\": \"76638673-ca5e-4000-8f5c-3da377bf0eda\",\n    \"name\": \"Test\",\n    \"abbreviation\": \"Test\",\n    \"campus\": \"Test\",\n    \"description\": \"Test\",\n    \"websiteUrl\": \"Test\"\n}",
+									"raw": "{\n    \"headUsername\": \"examiner\",\n    \"name\": \"Applied Software Engineering\",\n    \"abbreviation\": \"ASE\",\n    \"campus\": \"Garching\",\n    \"description\": \"Description\",\n    \"websiteUrl\": \"https://example.com\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -857,7 +1801,7 @@
 									"variable": [
 										{
 											"key": "researchGroupId",
-											"value": "b9111d31-7ccf-4d9b-869e-12d5e9ac4fc1"
+											"value": ""
 										}
 									]
 								}
@@ -882,10 +1826,11 @@
 									"variable": [
 										{
 											"key": "researchGroupId",
-											"value": "b9111d31-7ccf-4d9b-869e-12d5e9ac4fc1"
+											"value": ""
 										}
 									]
-								}
+								},
+								"description": "Admin only."
 							},
 							"response": []
 						},
@@ -895,7 +1840,7 @@
 								"method": "PUT",
 								"header": [],
 								"url": {
-									"raw": "{{baseUrl}}/research-groups/:researchGroupId/assign/:userId",
+									"raw": "{{baseUrl}}/research-groups/:researchGroupId/assign/:username",
 									"host": [
 										"{{baseUrl}}"
 									],
@@ -903,16 +1848,158 @@
 										"research-groups",
 										":researchGroupId",
 										"assign",
+										":username"
+									],
+									"variable": [
+										{
+											"key": "researchGroupId",
+											"value": ""
+										},
+										{
+											"key": "username",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Remove User from Research Group",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/research-groups/:researchGroupId/remove/:userId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"research-groups",
+										":researchGroupId",
+										"remove",
 										":userId"
 									],
 									"variable": [
 										{
 											"key": "researchGroupId",
-											"value": "df062fe9-1072-4fe4-af01-858d315af30d"
+											"value": ""
 										},
 										{
 											"key": "userId",
-											"value": "b8d13e55-0b27-4b58-9b57-ca3c726f8a70"
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Members",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/research-groups/:researchGroupId/members?page=0&limit=50&sortBy=joinedAt&sortOrder=desc",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"research-groups",
+										":researchGroupId",
+										"members"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "0"
+										},
+										{
+											"key": "limit",
+											"value": "50"
+										},
+										{
+											"key": "sortBy",
+											"value": "joinedAt"
+										},
+										{
+											"key": "sortOrder",
+											"value": "desc"
+										}
+									],
+									"variable": [
+										{
+											"key": "researchGroupId",
+											"value": ""
+										}
+									]
+								},
+								"description": "Requires admin or group-admin role."
+							},
+							"response": []
+						},
+						{
+							"name": "Update Member Role",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/research-groups/:researchGroupId/member/:userId/role?role=EXAMINER",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"research-groups",
+										":researchGroupId",
+										"member",
+										":userId",
+										"role"
+									],
+									"query": [
+										{
+											"key": "role",
+											"value": "EXAMINER"
+										}
+									],
+									"variable": [
+										{
+											"key": "researchGroupId",
+											"value": ""
+										},
+										{
+											"key": "userId",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Toggle Group Admin",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/research-groups/:researchGroupId/member/:userId/group-admin",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"research-groups",
+										":researchGroupId",
+										"member",
+										":userId",
+										"group-admin"
+									],
+									"variable": [
+										{
+											"key": "researchGroupId",
+											"value": ""
+										},
+										{
+											"key": "userId",
+											"value": ""
 										}
 									]
 								}
@@ -927,7 +2014,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/research-groups",
+							"raw": "{{baseUrl}}/research-groups?page=0&limit=50&sortBy=name&sortOrder=desc",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -936,47 +2023,91 @@
 							],
 							"query": [
 								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "limit",
+									"value": "50"
+								},
+								{
+									"key": "sortBy",
+									"value": "name"
+								},
+								{
+									"key": "sortOrder",
+									"value": "desc"
+								},
+								{
 									"key": "search",
-									"value": "Tes",
+									"value": "",
 									"disabled": true
 								},
 								{
 									"key": "heads",
-									"value": "fc139fff-f87d-4113-beab-7de4bc76babc",
+									"value": "",
+									"description": "Filter by head username",
 									"disabled": true
 								},
 								{
 									"key": "campuses",
-									"value": "Munich - Garching",
+									"value": "",
+									"description": "Filter by campus",
 									"disabled": true
 								},
 								{
 									"key": "includeArchived",
-									"value": "true",
-									"disabled": true
-								},
-								{
-									"key": "page",
-									"value": "0",
-									"disabled": true
-								},
-								{
-									"key": "limit",
-									"value": "50",
-									"disabled": true
-								},
-								{
-									"key": "sortBy",
-									"value": "name",
-									"disabled": true
-								},
-								{
-									"key": "sortOrder",
-									"value": "asc",
+									"value": "false",
 									"disabled": true
 								}
 							]
 						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Light Research Groups",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/research-groups/light",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"research-groups",
+								"light"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Lightweight list of all research groups (id, name, abbreviation)."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Active Light Research Groups",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/research-groups/light/active",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"research-groups",
+								"light",
+								"active"
+							]
+						},
+						"description": "Lightweight list of active research groups for the current user."
 					},
 					"response": []
 				},
@@ -987,7 +2118,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"headId\": \"76638673-ca5e-4000-8f5c-3da377bf0eda\",\n    \"name\": \"Test\",\n    \"abbreviation\": \"Test\",\n    \"campus\": \"Test\",\n    \"description\": \"Test\",\n    \"websiteUrl\": \"Test\"\n}",
+							"raw": "{\n    \"headUsername\": \"examiner\",\n    \"name\": \"New Research Group\",\n    \"abbreviation\": \"NRG\",\n    \"campus\": \"Garching\",\n    \"description\": \"Description\",\n    \"websiteUrl\": \"https://example.com\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1002,1170 +2133,94 @@
 							"path": [
 								"research-groups"
 							]
-						}
+						},
+						"description": "Admin only."
 					},
 					"response": []
 				}
 			]
 		},
 		{
-			"name": "Tasks",
+			"name": "Research Group Settings",
 			"item": [
 				{
-					"name": "Get All Tasks",
+					"name": "Get Settings",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/dashboard/tasks",
+							"raw": "{{baseUrl}}/research-group-settings/:researchGroupId",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"dashboard",
-								"tasks"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Theses",
-			"item": [
-				{
-					"name": "Specific Thesis",
-					"item": [
-						{
-							"name": "Assessment",
-							"item": [
-								{
-									"name": "Get Assessment",
-									"request": {
-										"method": "GET",
-										"header": [
-											{
-												"key": "Content-Type",
-												"value": "application/json"
-											}
-										],
-										"url": {
-											"raw": "{{baseUrl}}/theses/:thesis_id/assessment",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"theses",
-												":thesis_id",
-												"assessment"
-											],
-											"variable": [
-												{
-													"key": "thesis_id",
-													"value": "d34084cc-0d98-4563-938c-17003c8a4935"
-												}
-											]
-										}
-									},
-									"response": []
-								},
-								{
-									"name": "Add Assessment",
-									"request": {
-										"method": "POST",
-										"header": [
-											{
-												"key": "Content-Type",
-												"value": "application/json"
-											}
-										],
-										"body": {
-											"mode": "raw",
-											"raw": "{\n  \"summary\": \"summary\",\n  \"positives\": \"positives\",\n  \"negatives\": \"negatives\",\n  \"gradeSuggestion\": \"2.7\"\n}",
-											"options": {
-												"raw": {
-													"headerFamily": "json",
-													"language": "json"
-												}
-											}
-										},
-										"url": {
-											"raw": "{{baseUrl}}/theses/:thesis_id/assessment",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"theses",
-												":thesis_id",
-												"assessment"
-											],
-											"variable": [
-												{
-													"key": "thesis_id",
-													"value": "d34084cc-0d98-4563-938c-17003c8a4935",
-													"description": "(Required) "
-												}
-											]
-										}
-									},
-									"response": []
-								}
-							]
-						},
-						{
-							"name": "Comments",
-							"item": [
-								{
-									"name": "Get Comments",
-									"request": {
-										"method": "GET",
-										"header": [],
-										"url": {
-											"raw": "{{baseUrl}}/theses/:thesis_id/comments",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"theses",
-												":thesis_id",
-												"comments"
-											],
-											"variable": [
-												{
-													"key": "thesis_id",
-													"value": "180c941a-868d-4ea0-b294-543a30362e68",
-													"description": "(Required) "
-												}
-											]
-										}
-									},
-									"response": []
-								},
-								{
-									"name": "Get Comment File",
-									"request": {
-										"method": "GET",
-										"header": [],
-										"url": {
-											"raw": "{{baseUrl}}/theses/:thesis_id/comments/:commentId/file",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"theses",
-												":thesis_id",
-												"comments",
-												":commentId",
-												"file"
-											],
-											"variable": [
-												{
-													"key": "thesis_id",
-													"value": "8e2e14ff-0231-4d37-9c26-f7d4f6e1392e"
-												},
-												{
-													"key": "commentId",
-													"value": "cfe9e1f2-74d9-45f6-9d6d-b16211e59cb9"
-												}
-											]
-										}
-									},
-									"response": []
-								},
-								{
-									"name": "Add Comment",
-									"protocolProfileBehavior": {
-										"disabledSystemHeaders": {}
-									},
-									"request": {
-										"method": "POST",
-										"header": [
-											{
-												"key": "Content-Type",
-												"value": "application/json",
-												"disabled": true
-											}
-										],
-										"body": {
-											"mode": "formdata",
-											"formdata": [
-												{
-													"key": "data",
-													"value": "{\"message\": \"test message\", \"commentType\": \"ADVISOR\"}",
-													"type": "text"
-												},
-												{
-													"key": "file",
-													"type": "file",
-													"src": "/Users/marcfett/Downloads/Test PDF.pdf"
-												}
-											]
-										},
-										"url": {
-											"raw": "{{baseUrl}}/theses/:thesis_id/comments",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"theses",
-												":thesis_id",
-												"comments"
-											],
-											"variable": [
-												{
-													"key": "thesis_id",
-													"value": "180c941a-868d-4ea0-b294-543a30362e68",
-													"description": "(Required) "
-												}
-											]
-										}
-									},
-									"response": []
-								},
-								{
-									"name": "Delete Comment",
-									"protocolProfileBehavior": {
-										"disabledSystemHeaders": {}
-									},
-									"request": {
-										"method": "DELETE",
-										"header": [
-											{
-												"key": "Content-Type",
-												"value": "application/json",
-												"disabled": true
-											}
-										],
-										"url": {
-											"raw": "{{baseUrl}}/theses/:thesis_id/comments/:commentId",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"theses",
-												":thesis_id",
-												"comments",
-												":commentId"
-											],
-											"variable": [
-												{
-													"key": "thesis_id",
-													"value": "d34084cc-0d98-4563-938c-17003c8a4935",
-													"description": "(Required) "
-												},
-												{
-													"key": "commentId",
-													"value": "11ae7ce5-9251-4f7b-82a0-e20eac706f2c"
-												}
-											]
-										}
-									},
-									"response": []
-								}
-							]
-						},
-						{
-							"name": "Credits",
-							"item": [
-								{
-									"name": "Update Credits",
-									"request": {
-										"method": "PUT",
-										"header": [],
-										"body": {
-											"mode": "raw",
-											"raw": "{\n    \"credits\": {\n        \"fdde346c-4ad0-4e5a-82b8-93191553e325\": 15\n    }\n}",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
-										"url": {
-											"raw": "{{baseUrl}}/theses/:thesis_id/credits",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"theses",
-												":thesis_id",
-												"credits"
-											],
-											"variable": [
-												{
-													"key": "thesis_id",
-													"value": "acabc92a-d4ac-4bb4-9d35-02703ed39ac1"
-												}
-											]
-										}
-									},
-									"response": []
-								}
-							]
-						},
-						{
-							"name": "Feedback",
-							"item": [
-								{
-									"name": "Add Feedback",
-									"request": {
-										"method": "POST",
-										"header": [],
-										"body": {
-											"mode": "raw",
-											"raw": "{\n    \"type\": \"PROPOSAL\",\n    \"requestedChanges\": [\n        {\n            \"feedback\": \"feedback\",\n            \"completed\": false\n        }\n    ]\n}",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
-										"url": {
-											"raw": "{{baseUrl}}/theses/:thesis_id/feedback",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"theses",
-												":thesis_id",
-												"feedback"
-											],
-											"variable": [
-												{
-													"key": "thesis_id",
-													"value": "acabc92a-d4ac-4bb4-9d35-02703ed39ac1"
-												}
-											]
-										}
-									},
-									"response": []
-								},
-								{
-									"name": "Complete Feedback",
-									"request": {
-										"method": "PUT",
-										"header": [],
-										"body": {
-											"mode": "raw",
-											"raw": "{\n    \"type\": \"PROPOSAL\",\n    \"requestedChanges\": [\n        {\n            \"feedback\": \"feedback\",\n            \"completed\": false\n        }\n    ]\n}",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
-										"url": {
-											"raw": "{{baseUrl}}/theses/:thesis_id/feedback/:feedbackId/:action",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"theses",
-												":thesis_id",
-												"feedback",
-												":feedbackId",
-												":action"
-											],
-											"variable": [
-												{
-													"key": "thesis_id",
-													"value": "acabc92a-d4ac-4bb4-9d35-02703ed39ac1"
-												},
-												{
-													"key": "feedbackId",
-													"value": "872ceb19-1bb2-4ead-a098-abf387d47ba1"
-												},
-												{
-													"key": "action",
-													"value": "complete"
-												}
-											]
-										}
-									},
-									"response": []
-								},
-								{
-									"name": "Delete Feedback",
-									"request": {
-										"method": "DELETE",
-										"header": [],
-										"url": {
-											"raw": "{{baseUrl}}/theses/:thesis_id/feedback/:feedbackId",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"theses",
-												":thesis_id",
-												"feedback",
-												":feedbackId"
-											],
-											"variable": [
-												{
-													"key": "thesis_id",
-													"value": "986a60ee-a856-44b1-af5b-01c039461045"
-												},
-												{
-													"key": "feedbackId",
-													"value": "fcf897a4-b2cb-431a-b424-10aa952e2c40"
-												}
-											]
-										}
-									},
-									"response": []
-								}
-							]
-						},
-						{
-							"name": "Files",
-							"item": [
-								{
-									"name": "Get File",
-									"protocolProfileBehavior": {
-										"disableBodyPruning": true
-									},
-									"request": {
-										"method": "GET",
-										"header": [],
-										"body": {
-											"mode": "formdata",
-											"formdata": [
-												{
-													"key": "type",
-													"value": "THESIS",
-													"type": "text"
-												},
-												{
-													"key": "file",
-													"type": "file",
-													"src": []
-												}
-											]
-										},
-										"url": {
-											"raw": "{{baseUrl}}/theses/:thesis_id/files/:fileId",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"theses",
-												":thesis_id",
-												"files",
-												":fileId"
-											],
-											"variable": [
-												{
-													"key": "thesis_id",
-													"value": "180c941a-868d-4ea0-b294-543a30362e68"
-												},
-												{
-													"key": "fileId",
-													"value": "f52c83c0-ba9d-46be-801e-4e1436dc4e10"
-												}
-											]
-										}
-									},
-									"response": []
-								},
-								{
-									"name": "Add File",
-									"request": {
-										"method": "POST",
-										"header": [],
-										"body": {
-											"mode": "formdata",
-											"formdata": [
-												{
-													"key": "type",
-													"value": "THESIS",
-													"type": "text"
-												},
-												{
-													"key": "file",
-													"type": "file",
-													"src": []
-												}
-											]
-										},
-										"url": {
-											"raw": "{{baseUrl}}/theses/:thesis_id/files",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"theses",
-												":thesis_id",
-												"files"
-											],
-											"variable": [
-												{
-													"key": "thesis_id",
-													"value": "180c941a-868d-4ea0-b294-543a30362e68"
-												}
-											]
-										}
-									},
-									"response": []
-								},
-								{
-									"name": "Delete File",
-									"request": {
-										"method": "DELETE",
-										"header": [],
-										"body": {
-											"mode": "formdata",
-											"formdata": [
-												{
-													"key": "type",
-													"value": "THESIS",
-													"type": "text"
-												},
-												{
-													"key": "file",
-													"type": "file",
-													"src": []
-												}
-											]
-										},
-										"url": {
-											"raw": "{{baseUrl}}/theses/:thesis_id/files/:fileId",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"theses",
-												":thesis_id",
-												"files",
-												":fileId"
-											],
-											"variable": [
-												{
-													"key": "thesis_id",
-													"value": "180c941a-868d-4ea0-b294-543a30362e68"
-												},
-												{
-													"key": "fileId",
-													"value": "f52c83c0-ba9d-46be-801e-4e1436dc4e10"
-												}
-											]
-										}
-									},
-									"response": []
-								}
-							]
-						},
-						{
-							"name": "Grade",
-							"item": [
-								{
-									"name": "Update Credits",
-									"request": {
-										"method": "POST",
-										"header": [],
-										"body": {
-											"mode": "raw",
-											"raw": "{\n    \"finalGrade\": \"2.7\",\n    \"finalFeedback\": \"finalFeedback\",\n    \"visibility\": \"PUBLIC\"\n}",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
-										"url": {
-											"raw": "{{baseUrl}}/theses/:thesis_id/grade",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"theses",
-												":thesis_id",
-												"grade"
-											],
-											"variable": [
-												{
-													"key": "thesis_id",
-													"value": "acabc92a-d4ac-4bb4-9d35-02703ed39ac1"
-												}
-											]
-										}
-									},
-									"response": []
-								}
-							]
-						},
-						{
-							"name": "Info",
-							"item": [
-								{
-									"name": "Update Thesis Info",
-									"request": {
-										"method": "PUT",
-										"header": [],
-										"body": {
-											"mode": "raw",
-											"raw": "{\n    \"abstractText\": \"abstractText\",\n    \"infoText\": \"infoText\",\n    \"primaryTitle\": \"primaryTitle\",\n    \"secondaryTitles\": {\n        \"test\": \"test\"\n    }\n}",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
-										"url": {
-											"raw": "{{baseUrl}}/theses/:thesis_id/info",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"theses",
-												":thesis_id",
-												"info"
-											],
-											"variable": [
-												{
-													"key": "thesis_id",
-													"value": "acabc92a-d4ac-4bb4-9d35-02703ed39ac1"
-												}
-											]
-										}
-									},
-									"response": []
-								}
-							]
-						},
-						{
-							"name": "Presentations",
-							"item": [
-								{
-									"name": "Specific Presentation",
-									"item": [
-										{
-											"name": "Update Presentation",
-											"request": {
-												"method": "PUT",
-												"header": [],
-												"body": {
-													"mode": "raw",
-													"raw": "{\n    \"type\": \"INTERMEDIATE\",\n    \"visibility\": \"PUBLIC\",\n    \"location\": \"TUM\",\n    \"streamUrl\": \"https://www.google.de\",\n    \"language\": \"ENGLISH\",\n    \"date\": {{$timestamp}}\n}",
-													"options": {
-														"raw": {
-															"language": "json"
-														}
-													}
-												},
-												"url": {
-													"raw": "{{baseUrl}}/theses/:thesis_id/presentations/:presentationId",
-													"host": [
-														"{{baseUrl}}"
-													],
-													"path": [
-														"theses",
-														":thesis_id",
-														"presentations",
-														":presentationId"
-													],
-													"variable": [
-														{
-															"key": "thesis_id",
-															"value": "180c941a-868d-4ea0-b294-543a30362e68"
-														},
-														{
-															"key": "presentationId",
-															"value": "d0b63a29-cc30-437a-8c8f-0796e91eeff6"
-														}
-													]
-												}
-											},
-											"response": []
-										},
-										{
-											"name": "Schedule Presentation",
-											"request": {
-												"method": "POST",
-												"header": [],
-												"body": {
-													"mode": "raw",
-													"raw": "{\n    \"optionalAttendees\": [],\n    \"inviteChairMember\": true,\n    \"inviteThesisStudents\": true\n}",
-													"options": {
-														"raw": {
-															"language": "json"
-														}
-													}
-												},
-												"url": {
-													"raw": "{{baseUrl}}/theses/:thesis_id/presentations/:presentationId/schedule",
-													"host": [
-														"{{baseUrl}}"
-													],
-													"path": [
-														"theses",
-														":thesis_id",
-														"presentations",
-														":presentationId",
-														"schedule"
-													],
-													"variable": [
-														{
-															"key": "thesis_id",
-															"value": "180c941a-868d-4ea0-b294-543a30362e68"
-														},
-														{
-															"key": "presentationId",
-															"value": "d0b63a29-cc30-437a-8c8f-0796e91eeff6"
-														}
-													]
-												}
-											},
-											"response": []
-										},
-										{
-											"name": "Delete Presentation",
-											"request": {
-												"method": "DELETE",
-												"header": [],
-												"url": {
-													"raw": "{{baseUrl}}/theses/:thesis_id/presentations/:presentationId",
-													"host": [
-														"{{baseUrl}}"
-													],
-													"path": [
-														"theses",
-														":thesis_id",
-														"presentations",
-														":presentationId"
-													],
-													"variable": [
-														{
-															"key": "thesis_id",
-															"value": "180c941a-868d-4ea0-b294-543a30362e68"
-														},
-														{
-															"key": "presentationId",
-															"value": "d0b63a29-cc30-437a-8c8f-0796e91eeff6"
-														}
-													]
-												}
-											},
-											"response": []
-										}
-									]
-								},
-								{
-									"name": "Add Presentation",
-									"request": {
-										"method": "POST",
-										"header": [],
-										"body": {
-											"mode": "raw",
-											"raw": "{\n    \"type\": \"INTERMEDIATE\",\n    \"visibility\": \"PUBLIC\",\n    \"location\": \"TUM\",\n    \"streamUrl\": \"https://www.google.de\",\n    \"language\": \"ENGLISH\",\n    \"date\": {{$timestamp}}\n}",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
-										"url": {
-											"raw": "{{baseUrl}}/theses/:thesis_id/presentations",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"theses",
-												":thesis_id",
-												"presentations"
-											],
-											"variable": [
-												{
-													"key": "thesis_id",
-													"value": "8e2e14ff-0231-4d37-9c26-f7d4f6e1392e"
-												}
-											]
-										}
-									},
-									"response": []
-								}
-							]
-						},
-						{
-							"name": "Proposal",
-							"item": [
-								{
-									"name": "Specific Proposal",
-									"item": [
-										{
-											"name": "Get Proposal",
-											"request": {
-												"method": "GET",
-												"header": [],
-												"url": {
-													"raw": "{{baseUrl}}/theses/:thesis_id/proposal/:proposalId",
-													"host": [
-														"{{baseUrl}}"
-													],
-													"path": [
-														"theses",
-														":thesis_id",
-														"proposal",
-														":proposalId"
-													],
-													"variable": [
-														{
-															"key": "thesis_id",
-															"value": "8e2e14ff-0231-4d37-9c26-f7d4f6e1392e"
-														},
-														{
-															"key": "proposalId",
-															"value": "a152a2a2-6d72-4a0a-bea3-3bd82b43bb04"
-														}
-													]
-												}
-											},
-											"response": []
-										},
-										{
-											"name": "Delete Proposal",
-											"request": {
-												"method": "DELETE",
-												"header": [],
-												"url": {
-													"raw": "{{baseUrl}}/theses/:thesis_id/proposal/:proposalId",
-													"host": [
-														"{{baseUrl}}"
-													],
-													"path": [
-														"theses",
-														":thesis_id",
-														"proposal",
-														":proposalId"
-													],
-													"variable": [
-														{
-															"key": "thesis_id",
-															"value": "8e2e14ff-0231-4d37-9c26-f7d4f6e1392e"
-														},
-														{
-															"key": "proposalId",
-															"value": "a152a2a2-6d72-4a0a-bea3-3bd82b43bb04"
-														}
-													]
-												}
-											},
-											"response": []
-										}
-									]
-								},
-								{
-									"name": "Add Proposal",
-									"request": {
-										"method": "POST",
-										"header": [],
-										"body": {
-											"mode": "formdata",
-											"formdata": [
-												{
-													"key": "proposalFile",
-													"type": "file",
-													"src": []
-												}
-											]
-										},
-										"url": {
-											"raw": "{{baseUrl}}/theses/:thesis_id/proposal",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"theses",
-												":thesis_id",
-												"proposal"
-											],
-											"variable": [
-												{
-													"key": "thesis_id",
-													"value": "acabc92a-d4ac-4bb4-9d35-02703ed39ac1"
-												}
-											]
-										}
-									},
-									"response": []
-								},
-								{
-									"name": "Accept Proposal",
-									"request": {
-										"method": "PUT",
-										"header": [],
-										"url": {
-											"raw": "{{baseUrl}}/theses/:thesis_id/proposal/accept",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"theses",
-												":thesis_id",
-												"proposal",
-												"accept"
-											],
-											"variable": [
-												{
-													"key": "thesis_id",
-													"value": "acabc92a-d4ac-4bb4-9d35-02703ed39ac1"
-												}
-											]
-										}
-									},
-									"response": []
-								}
-							]
-						},
-						{
-							"name": "Get Thesis",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{baseUrl}}/theses/:thesis_id",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"theses",
-										":thesis_id"
-									],
-									"variable": [
-										{
-											"key": "thesis_id",
-											"value": "acabc92a-d4ac-4bb4-9d35-02703ed39ac1"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Update Thesis",
-							"request": {
-								"method": "PUT",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"thesisTitle\": \"Test\",\n    \"thesisType\": \"BACHELOR\",\n    \"language\": \"ENGLISCH\",\n    \"visibility\": \"PUBLIC\",\n    \"keywords\": [\n        \"test\"\n    ],\n    \"startDate\": {{$timestamp}},\n    \"endDate\": {{$timestamp}},\n    \"studentIds\": [\n        \"7d015f04-2ee0-4a84-8427-bb5d60380651\"\n    ],\n    \"advisorIds\": [\n        \"76638673-ca5e-4000-8f5c-3da377bf0eda\"\n    ],\n    \"supervisorIds\": [\n        \"76638673-ca5e-4000-8f5c-3da377bf0eda\"\n    ],\n    \"states\": [\n        {\n            \"state\": \"PROPOSAL\",\n            \"changedAt\": {{$timestamp}}\n        }\n    ]\n}",
-									"options": {
-										"raw": {
-											"headerFamily": "json",
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "{{baseUrl}}/theses/:thesis_id",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"theses",
-										":thesis_id"
-									],
-									"variable": [
-										{
-											"key": "thesis_id",
-											"value": "acabc92a-d4ac-4bb4-9d35-02703ed39ac1",
-											"description": "(Required) "
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Submit Thesis",
-							"request": {
-								"method": "PUT",
-								"header": [],
-								"url": {
-									"raw": "{{baseUrl}}/theses/:thesis_id/thesis/final-submission",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"theses",
-										":thesis_id",
-										"thesis",
-										"final-submission"
-									],
-									"variable": [
-										{
-											"key": "thesis_id",
-											"value": "acabc92a-d4ac-4bb4-9d35-02703ed39ac1"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Complete Thesis",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"thesisTitle\": \"Test\",\n    \"thesisType\": \"BACHELOR\",\n    \"language\": \"ENGLISCH\",\n    \"visibility\": \"PUBLIC\",\n    \"keywords\": [\n        \"test\"\n    ],\n    \"startDate\": {{$timestamp}},\n    \"endDate\": {{$timestamp}},\n    \"studentIds\": [\n        \"7d015f04-2ee0-4a84-8427-bb5d60380651\"\n    ],\n    \"advisorIds\": [\n        \"76638673-ca5e-4000-8f5c-3da377bf0eda\"\n    ],\n    \"supervisorIds\": [\n        \"76638673-ca5e-4000-8f5c-3da377bf0eda\"\n    ],\n    \"states\": [\n        {\n            \"state\": \"PROPOSAL\",\n            \"changedAt\": {{$timestamp}}\n        }\n    ]\n}",
-									"options": {
-										"raw": {
-											"headerFamily": "json",
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "{{baseUrl}}/theses/:thesis_id/complete",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"theses",
-										":thesis_id",
-										"complete"
-									],
-									"variable": [
-										{
-											"key": "thesis_id",
-											"value": "acabc92a-d4ac-4bb4-9d35-02703ed39ac1",
-											"description": "(Required) "
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Close Thesis",
-							"request": {
-								"method": "DELETE",
-								"header": [],
-								"url": {
-									"raw": "{{baseUrl}}/theses/:thesis_id",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"theses",
-										":thesis_id"
-									],
-									"variable": [
-										{
-											"key": "thesis_id",
-											"value": "acabc92a-d4ac-4bb4-9d35-02703ed39ac1",
-											"description": "(Required) "
-										}
-									]
-								}
-							},
-							"response": []
-						}
-					]
-				},
-				{
-					"name": "Get All Theses",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/theses",
-							"host": [
-								"{{baseUrl}}"
+								"research-group-settings",
+								":researchGroupId"
 							],
-							"path": [
-								"theses"
-							],
-							"query": [
+							"variable": [
 								{
-									"key": "search",
-									"value": "123",
-									"disabled": true
-								},
-								{
-									"key": "state",
-									"value": "WRITING",
-									"disabled": true
-								},
-								{
-									"key": "type",
-									"value": "BACHELOR",
-									"disabled": true
-								},
-								{
-									"key": "fetchAll",
-									"value": "true",
-									"disabled": true
-								},
-								{
-									"key": "page",
-									"value": "0",
-									"disabled": true
-								},
-								{
-									"key": "limit",
-									"value": "50",
-									"disabled": true
-								},
-								{
-									"key": "sortBy",
-									"value": "createdAt",
-									"disabled": true
-								},
-								{
-									"key": "sortOrder",
-									"value": "asc",
-									"disabled": true
-								},
-								{
-									"key": "onlyOwnResearchGroup",
-									"value": "false",
-									"disabled": true
+									"key": "researchGroupId",
+									"value": ""
 								}
 							]
-						}
+						},
+						"description": "Requires admin or group-admin role."
 					},
 					"response": []
 				},
 				{
-					"name": "Create Thesis",
+					"name": "Update Settings",
 					"request": {
 						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
+						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"thesisTitle\": \"Test\",\n    \"thesisType\": \"BACHELOR\",\n    \"language\": \"ENGLISCH\",\n    \"studentIds\": [\n        \"7d015f04-2ee0-4a84-8427-bb5d60380651\"\n    ],\n    \"advisorIds\": [\n        \"76638673-ca5e-4000-8f5c-3da377bf0eda\"\n    ],\n    \"supervisorIds\": [\n        \"76638673-ca5e-4000-8f5c-3da377bf0eda\"\n    ]\n}",
+							"raw": "{\n    \"rejectSettings\": {\n        \"automaticRejectEnabled\": false,\n        \"rejectDuration\": 30\n    },\n    \"presentationSettings\": {\n        \"presentationSlotDuration\": 30\n    },\n    \"phaseSettings\": {\n        \"proposalPhaseActive\": true\n    },\n    \"emailSettings\": {\n        \"applicationNotificationEmail\": null\n    },\n    \"writingGuideSettings\": {\n        \"scientificWritingGuideLink\": null\n    },\n    \"applicationEmailSettings\": {\n        \"includeApplicationDataInEmail\": false\n    }\n}",
 							"options": {
 								"raw": {
-									"headerFamily": "json",
 									"language": "json"
 								}
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/theses",
+							"raw": "{{baseUrl}}/research-group-settings/:researchGroupId",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"theses"
+								"research-group-settings",
+								":researchGroupId"
+							],
+							"variable": [
+								{
+									"key": "researchGroupId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Phase Settings",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/research-group-settings/:researchGroupId/phase-settings",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"research-group-settings",
+								":researchGroupId",
+								"phase-settings"
+							],
+							"variable": [
+								{
+									"key": "researchGroupId",
+									"value": ""
+								}
 							]
 						}
 					},
@@ -2174,30 +2229,54 @@
 			]
 		},
 		{
-			"name": "Topics",
+			"name": "Interview Process",
 			"item": [
 				{
-					"name": "Specific Topic",
+					"name": "Specific Process",
 					"item": [
+						{
+							"name": "Get Interview Process",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/interview-process/:interviewProcessId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"interview-process",
+										":interviewProcessId"
+									],
+									"variable": [
+										{
+											"key": "interviewProcessId",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						},
 						{
 							"name": "Get Topic",
 							"request": {
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{baseUrl}}/topics/:topic_id",
+									"raw": "{{baseUrl}}/interview-process/:interviewProcessId/topic",
 									"host": [
 										"{{baseUrl}}"
 									],
 									"path": [
-										"topics",
-										":topic_id"
+										"interview-process",
+										":interviewProcessId",
+										"topic"
 									],
 									"variable": [
 										{
-											"key": "topic_id",
-											"value": "54696a2c-b4f6-432e-a5c8-1d8f190c35bc",
-											"description": "(Required) "
+											"key": "interviewProcessId",
+											"value": ""
 										}
 									]
 								}
@@ -2205,39 +2284,24 @@
 							"response": []
 						},
 						{
-							"name": "Update Topic",
+							"name": "Is Completed",
 							"request": {
-								"method": "PUT",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n  \"title\": \"title\",\n  \"thesisTypes\": [\"BACHELOR\"],\n  \"problemStatement\": \"prolbem statement\",\n  \"requirements\": \"requirements\",\n  \"goals\": \"goals\",\n  \"references\": \"references\",\n  \"supervisorIds\": [\"fdde346c-4ad0-4e5a-82b8-93191553e325\"],\n  \"advisorIds\": [\"fdde346c-4ad0-4e5a-82b8-93191553e325\"]\n}",
-									"options": {
-										"raw": {
-											"headerFamily": "json",
-											"language": "json"
-										}
-									}
-								},
+								"method": "GET",
+								"header": [],
 								"url": {
-									"raw": "{{baseUrl}}/topics/:topic_id",
+									"raw": "{{baseUrl}}/interview-process/:interviewProcessId/completed",
 									"host": [
 										"{{baseUrl}}"
 									],
 									"path": [
-										"topics",
-										":topic_id"
+										"interview-process",
+										":interviewProcessId",
+										"completed"
 									],
 									"variable": [
 										{
-											"key": "topic_id",
-											"value": "54696a2c-b4f6-432e-a5c8-1d8f190c35bc",
-											"description": "(Required) "
+											"key": "interviewProcessId",
+											"value": ""
 										}
 									]
 								}
@@ -2245,13 +2309,121 @@
 							"response": []
 						},
 						{
-							"name": "Delete Topic",
+							"name": "Get My Booking",
 							"request": {
-								"method": "DELETE",
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/interview-process/:interviewProcessId/my-booking",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"interview-process",
+										":interviewProcessId",
+										"my-booking"
+									],
+									"variable": [
+										{
+											"key": "interviewProcessId",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Interviewees",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/interview-process/:interviewProcessId/interviewees?page=0&limit=50&sortBy=lastInvited&sortOrder=asc",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"interview-process",
+										":interviewProcessId",
+										"interviewees"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "0"
+										},
+										{
+											"key": "limit",
+											"value": "50"
+										},
+										{
+											"key": "sortBy",
+											"value": "lastInvited"
+										},
+										{
+											"key": "sortOrder",
+											"value": "asc"
+										},
+										{
+											"key": "searchQuery",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "state",
+											"value": "",
+											"disabled": true
+										}
+									],
+									"variable": [
+										{
+											"key": "interviewProcessId",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Interviewee",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/interview-process/:interviewProcessId/interviewee/:intervieweeId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"interview-process",
+										":interviewProcessId",
+										"interviewee",
+										":intervieweeId"
+									],
+									"variable": [
+										{
+											"key": "interviewProcessId",
+											"value": ""
+										},
+										{
+											"key": "intervieweeId",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Interviewee Assessment",
+							"request": {
+								"method": "POST",
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"reason\": \"TOPIC_FILLED\",\n    \"notifyUser\": true\n}",
+									"raw": "{\n    \"intervieweeNote\": \"Good candidate\",\n    \"score\": 8\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -2259,19 +2431,229 @@
 									}
 								},
 								"url": {
-									"raw": "{{baseUrl}}/topics/:topic_id",
+									"raw": "{{baseUrl}}/interview-process/:interviewProcessId/interviewee/:intervieweeId",
 									"host": [
 										"{{baseUrl}}"
 									],
 									"path": [
-										"topics",
-										":topic_id"
+										"interview-process",
+										":interviewProcessId",
+										"interviewee",
+										":intervieweeId"
 									],
 									"variable": [
 										{
-											"key": "topic_id",
-											"value": "54696a2c-b4f6-432e-a5c8-1d8f190c35bc",
-											"description": "(Required) "
+											"key": "interviewProcessId",
+											"value": ""
+										},
+										{
+											"key": "intervieweeId",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Interview Slots",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/interview-process/:interviewProcessId/interview-slots?excludeBooked=false",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"interview-process",
+										":interviewProcessId",
+										"interview-slots"
+									],
+									"query": [
+										{
+											"key": "excludeBooked",
+											"value": "false"
+										}
+									],
+									"variable": [
+										{
+											"key": "interviewProcessId",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Book Slot",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"intervieweeUserId\": \"\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/interview-process/:interviewProcessId/slot/:slotId/book",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"interview-process",
+										":interviewProcessId",
+										"slot",
+										":slotId",
+										"book"
+									],
+									"variable": [
+										{
+											"key": "interviewProcessId",
+											"value": ""
+										},
+										{
+											"key": "slotId",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Cancel Slot Booking",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/interview-process/:interviewProcessId/slot/:slotId/cancel",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"interview-process",
+										":interviewProcessId",
+										"slot",
+										":slotId",
+										"cancel"
+									],
+									"variable": [
+										{
+											"key": "interviewProcessId",
+											"value": ""
+										},
+										{
+											"key": "slotId",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Invite Interviewees",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"intervieweeIds\": []\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/interview-process/:interviewProcessId/invite",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"interview-process",
+										":interviewProcessId",
+										"invite"
+									],
+									"variable": [
+										{
+											"key": "interviewProcessId",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Interview Applications",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/interview-process/:interviewProcessId/interview-applications?page=0&limit=50",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"interview-process",
+										":interviewProcessId",
+										"interview-applications"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "0"
+										},
+										{
+											"key": "limit",
+											"value": "50"
+										}
+									],
+									"variable": [
+										{
+											"key": "interviewProcessId",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Add Interviewees",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"intervieweeApplicationIds\": []\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/interview-process/:interviewProcessId/interviewees",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"interview-process",
+										":interviewProcessId",
+										"interviewees"
+									],
+									"variable": [
+										{
+											"key": "interviewProcessId",
+											"value": ""
 										}
 									]
 								}
@@ -2281,56 +2663,42 @@
 					]
 				},
 				{
-					"name": "Get All Topics",
+					"name": "Get All Interview Processes",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/topics",
+							"raw": "{{baseUrl}}/interview-process?page=0&limit=20&sortBy=completed&sortOrder=asc",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"topics"
+								"interview-process"
 							],
 							"query": [
 								{
-									"key": "search",
-									"value": "T",
-									"disabled": true
-								},
-								{
-									"key": "type",
-									"value": "BACHELOR",
-									"disabled": true
-								},
-								{
-									"key": "includedClosed",
-									"value": "true",
-									"disabled": true
-								},
-								{
 									"key": "page",
-									"value": "0",
-									"disabled": true
+									"value": "0"
 								},
 								{
 									"key": "limit",
-									"value": "50",
-									"disabled": true
+									"value": "20"
 								},
 								{
 									"key": "sortBy",
-									"value": "createdAt",
-									"disabled": true
+									"value": "completed"
 								},
 								{
 									"key": "sortOrder",
-									"value": "asc",
+									"value": "asc"
+								},
+								{
+									"key": "searchQuery",
+									"value": "",
 									"disabled": true
 								},
 								{
-									"key": "onlyOwnResearchGroup",
+									"key": "excludeSupervised",
 									"value": "false",
 									"disabled": true
 								}
@@ -2340,34 +2708,226 @@
 					"response": []
 				},
 				{
-					"name": "Create Topic",
+					"name": "Get Upcoming Interviews",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/interview-process/upcoming-interviews",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"interview-process",
+								"upcoming-interviews"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Interview Process",
 					"request": {
 						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
+						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"title\": \"title\",\n  \"thesisTypes\": [\"BACHELOR\"],\n  \"problemStatement\": \"prolbem statement\",\n  \"requirements\": \"requirements\",\n  \"goals\": \"goals\",\n  \"references\": \"references\",\n  \"supervisorIds\": [\"fdde346c-4ad0-4e5a-82b8-93191553e325\"],\n  \"advisorIds\": [\"fdde346c-4ad0-4e5a-82b8-93191553e325\"]\n}",
+							"raw": "{\n    \"topicId\": \"\",\n    \"intervieweeApplicationIds\": []\n}",
 							"options": {
 								"raw": {
-									"headerFamily": "json",
 									"language": "json"
 								}
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/topics",
+							"raw": "{{baseUrl}}/interview-process",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"topics"
+								"interview-process"
 							]
 						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Interview Slots",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"interviewProcessId\": \"\",\n    \"interviewSlots\": []\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/interview-process/interview-slots",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"interview-process",
+								"interview-slots"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Specific User",
+					"item": [
+						{
+							"name": "Get CV",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/users/:userId/cv",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":userId",
+										"cv"
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Degree Report",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/users/:userId/degree-report",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":userId",
+										"degree-report"
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Examination Report",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/users/:userId/examination-report",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":userId",
+										"examination-report"
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Get All Users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users?searchQuery=&groups=student&page=0&limit=50&sortBy=joinedAt&sortOrder=desc",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							],
+							"query": [
+								{
+									"key": "searchQuery",
+									"value": ""
+								},
+								{
+									"key": "groups",
+									"value": "student"
+								},
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "limit",
+									"value": "50"
+								},
+								{
+									"key": "sortBy",
+									"value": "joinedAt"
+								},
+								{
+									"key": "sortOrder",
+									"value": "desc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Keycloak Users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/keycloak?searchKey=",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"keycloak"
+							],
+							"query": [
+								{
+									"key": "searchKey",
+									"value": ""
+								}
+							]
+						},
+						"description": "Searches Keycloak for users and returns them with local account status. Requires admin or group-admin role."
 					},
 					"response": []
 				}
@@ -2404,7 +2964,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"name\": \"Test\",\n    \"email\": \"test@test.de\"\n}",
+									"raw": "{\n    \"name\": \"APPLICATION_STATUS\",\n    \"email\": \"enabled\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -2445,9 +3005,6 @@
 				},
 				{
 					"name": "Update Current User",
-					"protocolProfileBehavior": {
-						"disabledSystemHeaders": {}
-					},
 					"request": {
 						"method": "PUT",
 						"header": [],
@@ -2456,31 +3013,32 @@
 							"formdata": [
 								{
 									"key": "data",
-									"value": "{\n\"matriculationNumber\": \"123456\",\n\"firstName\": \"Max\",\n\"lastName\": \"Mustermann\",\n\"gender\": \"male\",\n\"nationality\": \"German\",\n\"email\": \"max.mustermann@example.com\",\n\"studyDegree\": \"Bachelor\",\n\"studyProgram\": \"Informatik\",\n\"enrolledAt\": \"2023-01-01T00:00:00Z\",\n\"specialSkills\": \"Java, Spring Boot\",\n\"interests\": \"AI, Machine Learning\",\n\"projects\": \"Thesis Project\",\n\"customData\": {\n    \"key1\": \"value1\",\n    \"key2\": \"value2\"\n}\n}",
-									"type": "text"
+									"value": "{\"firstName\": \"John\", \"lastName\": \"Doe\", \"gender\": null, \"nationality\": null, \"email\": \"john@test.local\", \"studyDegree\": null, \"studyProgram\": null, \"enrolledAt\": null, \"specialSkills\": null, \"interests\": null, \"projects\": null, \"customData\": {}}",
+									"type": "text",
+									"contentType": "application/json"
+								},
+								{
+									"key": "avatar",
+									"type": "file",
+									"src": "",
+									"disabled": true
 								},
 								{
 									"key": "examinationReport",
 									"type": "file",
-									"src": [],
+									"src": "",
 									"disabled": true
 								},
 								{
 									"key": "cv",
 									"type": "file",
-									"src": [],
+									"src": "",
 									"disabled": true
 								},
 								{
 									"key": "degreeReport",
 									"type": "file",
-									"src": [],
-									"disabled": true
-								},
-								{
-									"key": "avatar",
-									"type": "file",
-									"src": [],
+									"src": "",
 									"disabled": true
 								}
 							]
@@ -2493,6 +3051,185 @@
 							"path": [
 								"user-info"
 							]
+						},
+						"description": "Multipart request with 'data' (JSON) and optional file parts (avatar, examinationReport, cv, degreeReport)."
+					},
+					"response": []
+				},
+				{
+					"name": "Import Profile Picture",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/user-info/import-profile-picture",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user-info",
+								"import-profile-picture"
+							]
+						},
+						"description": "Imports the user's Gravatar profile picture server-side."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User Deletion",
+			"item": [
+				{
+					"name": "Preview Self Deletion",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/user-deletion/me/preview",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user-deletion",
+								"me",
+								"preview"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Self",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/user-deletion/me",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user-deletion",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Preview User Deletion (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/user-deletion/:userId/preview",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user-deletion",
+								":userId",
+								"preview"
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": ""
+								}
+							]
+						},
+						"description": "Admin only."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User (Admin)",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/user-deletion/:userId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user-deletion",
+								":userId"
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": ""
+								}
+							]
+						},
+						"description": "Admin only."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Data Exports",
+			"item": [
+				{
+					"name": "Request Export",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/data-exports",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"data-exports"
+							]
+						},
+						"description": "Requests a GDPR data export for the authenticated user."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Export Status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/data-exports/status",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"data-exports",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Download Export",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/data-exports/:id/download",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"data-exports",
+								":id",
+								"download"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
 						}
 					},
 					"response": []
@@ -2500,30 +3237,159 @@
 			]
 		},
 		{
-			"name": "Users",
+			"name": "Data Retention",
 			"item": [
 				{
-					"name": "Specific User",
+					"name": "Cleanup Rejected Applications",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/data-retention/cleanup-rejected-applications",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"data-retention",
+								"cleanup-rejected-applications"
+							]
+						},
+						"description": "Admin only. Deletes expired rejected applications based on retention policy."
+					},
+					"response": []
+				},
+				{
+					"name": "Anonymize Expired Theses",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/data-retention/anonymize-expired-theses",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"data-retention",
+								"anonymize-expired-theses"
+							]
+						},
+						"description": "Admin only. Anonymizes theses past the 5-year retention period."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Avatars",
+			"item": [
+				{
+					"name": "Get User Avatar",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/avatars/:userId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"avatars",
+								":userId"
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Calendar",
+			"item": [
+				{
+					"name": "Get Presentation Calendar",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/calendar/presentations/:researchGroupAbbreviation",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"calendar",
+								"presentations",
+								":researchGroupAbbreviation"
+							],
+							"variable": [
+								{
+									"key": "researchGroupAbbreviation",
+									"value": "ASE"
+								}
+							]
+						},
+						"description": "Returns an iCalendar (.ics) feed of thesis presentations for a research group."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Interview Calendar",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/calendar/interviews/user/:userId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"calendar",
+								"interviews",
+								"user",
+								":userId"
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": ""
+								}
+							]
+						},
+						"description": "Returns an iCalendar (.ics) feed of interview appointments for a user."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Email Templates",
+			"item": [
+				{
+					"name": "Specific Email Template",
 					"item": [
 						{
-							"name": "Get CV",
+							"name": "Get Email Template",
 							"request": {
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{baseUrl}}/users/:userId/cv",
+									"raw": "{{baseUrl}}/email-templates/:emailTemplateId",
 									"host": [
 										"{{baseUrl}}"
 									],
 									"path": [
-										"users",
-										":userId",
-										"cv"
+										"email-templates",
+										":emailTemplateId"
 									],
 									"variable": [
 										{
-											"key": "userId",
-											"value": "7d015f04-2ee0-4a84-8427-bb5d60380651"
+											"key": "emailTemplateId",
+											"value": ""
 										}
 									]
 								}
@@ -2531,24 +3397,32 @@
 							"response": []
 						},
 						{
-							"name": "Get Degree Report",
+							"name": "Update Email Template",
 							"request": {
-								"method": "GET",
+								"method": "PUT",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"researchGroupId\": \"\",\n    \"templateCase\": \"APPLICATION_ACCEPTED\",\n    \"description\": \"Sent when an application is accepted\",\n    \"subject\": \"Your application was accepted\",\n    \"bodyHtml\": \"<p>Congratulations!</p>\",\n    \"language\": \"ENGLISH\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
 								"url": {
-									"raw": "{{baseUrl}}/users/:userId/degree-report",
+									"raw": "{{baseUrl}}/email-templates/:emailTemplateId",
 									"host": [
 										"{{baseUrl}}"
 									],
 									"path": [
-										"users",
-										":userId",
-										"degree-report"
+										"email-templates",
+										":emailTemplateId"
 									],
 									"variable": [
 										{
-											"key": "userId",
-											"value": "7d015f04-2ee0-4a84-8427-bb5d60380651"
+											"key": "emailTemplateId",
+											"value": ""
 										}
 									]
 								}
@@ -2556,53 +3430,186 @@
 							"response": []
 						},
 						{
-							"name": "Get Examination Report",
+							"name": "Delete Email Template",
 							"request": {
-								"method": "GET",
+								"method": "DELETE",
 								"header": [],
 								"url": {
-									"raw": "{{baseUrl}}/users/:userId/examination-report",
+									"raw": "{{baseUrl}}/email-templates/:emailTemplateId",
 									"host": [
 										"{{baseUrl}}"
 									],
 									"path": [
-										"users",
-										":userId",
-										"examination-report"
+										"email-templates",
+										":emailTemplateId"
 									],
 									"variable": [
 										{
-											"key": "userId",
-											"value": "7d015f04-2ee0-4a84-8427-bb5d60380651"
+											"key": "emailTemplateId",
+											"value": ""
 										}
 									]
 								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Template Variables",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/email-templates/:emailTemplateId/variables",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"email-templates",
+										":emailTemplateId",
+										"variables"
+									],
+									"variable": [
+										{
+											"key": "emailTemplateId",
+											"value": ""
+										}
+									]
+								},
+								"description": "Returns variable metadata for template editing."
 							},
 							"response": []
 						}
 					]
 				},
 				{
-					"name": "Get All Users",
+					"name": "Get All Email Templates",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/users?searchQuery=F&groups=student&page=0&limit=50&sortBy=joinedAt&sortOrder=asc",
+							"raw": "{{baseUrl}}/email-templates?page=0&limit=50&sortBy=templateCase&sortOrder=desc",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"users"
+								"email-templates"
 							],
 							"query": [
 								{
-									"key": "searchQuery",
-									"value": "F"
+									"key": "page",
+									"value": "0"
 								},
 								{
-									"key": "groups",
-									"value": "student"
+									"key": "limit",
+									"value": "50"
+								},
+								{
+									"key": "sortBy",
+									"value": "templateCase"
+								},
+								{
+									"key": "sortOrder",
+									"value": "desc"
+								},
+								{
+									"key": "search",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "templateCases",
+									"value": "",
+									"description": "Filter by template case",
+									"disabled": true
+								},
+								{
+									"key": "languages",
+									"value": "",
+									"description": "Filter by language",
+									"disabled": true
+								},
+								{
+									"key": "researchGroupId",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Email Template",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"researchGroupId\": \"\",\n    \"templateCase\": \"APPLICATION_ACCEPTED\",\n    \"description\": \"Sent when an application is accepted\",\n    \"subject\": \"Your application was accepted\",\n    \"bodyHtml\": \"<p>Congratulations!</p>\",\n    \"language\": \"ENGLISH\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/email-templates",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"email-templates"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Published Presentations",
+			"item": [
+				{
+					"name": "Get Presentation",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/published-presentations/:presentationId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"published-presentations",
+								":presentationId"
+							],
+							"variable": [
+								{
+									"key": "presentationId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Presentations",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/published-presentations?includeDrafts=false&page=0&limit=50&sortBy=scheduledAt&sortOrder=asc",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"published-presentations"
+							],
+							"query": [
+								{
+									"key": "includeDrafts",
+									"value": "false"
 								},
 								{
 									"key": "page",
@@ -2614,12 +3621,220 @@
 								},
 								{
 									"key": "sortBy",
-									"value": "joinedAt"
+									"value": "scheduledAt"
 								},
 								{
 									"key": "sortOrder",
 									"value": "asc"
+								},
+								{
+									"key": "researchGroupId",
+									"value": "",
+									"disabled": true
 								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Published Theses",
+			"item": [
+				{
+					"name": "Get Published Thesis File",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/published-theses/:thesisId/thesis",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"published-theses",
+								":thesisId",
+								"thesis"
+							],
+							"variable": [
+								{
+									"key": "thesisId",
+									"value": ""
+								}
+							]
+						},
+						"description": "Downloads the PDF of a finished thesis."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Published Theses",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/published-theses?page=0&limit=50&sortBy=endDate&sortOrder=desc",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"published-theses"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "limit",
+									"value": "50"
+								},
+								{
+									"key": "sortBy",
+									"value": "endDate"
+								},
+								{
+									"key": "sortOrder",
+									"value": "desc"
+								},
+								{
+									"key": "search",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "researchGroupIds",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "types",
+									"value": "",
+									"description": "Filter by thesis type",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Dashboard",
+			"item": [
+				{
+					"name": "Get Tasks",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/dashboard/tasks",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"dashboard",
+								"tasks"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Keycloak",
+			"item": [
+				{
+					"name": "Access Token",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{clientId}}",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{username}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseKeycloakUrl}}/realms/{{realm}}/protocol/openid-connect/token",
+							"host": [
+								"{{baseKeycloakUrl}}"
+							],
+							"path": [
+								"realms",
+								"{{realm}}",
+								"protocol",
+								"openid-connect",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "refresh_token",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{clientId}}",
+									"type": "text"
+								},
+								{
+									"key": "refresh_token",
+									"value": "{{refreshToken}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseKeycloakUrl}}/realms/{{realm}}/protocol/openid-connect/token",
+							"host": [
+								"{{baseKeycloakUrl}}"
+							],
+							"path": [
+								"realms",
+								"{{realm}}",
+								"protocol",
+								"openid-connect",
+								"token"
 							]
 						}
 					},
@@ -2688,53 +3903,8 @@
 			"listen": "prerequest",
 			"script": {
 				"type": "text/javascript",
-				"packages": {},
 				"exec": [
-					"const currentTime = Math.floor(Date.now() / 1000);",
-					"const accessTokenExp = parseInt(pm.environment.get(\"access_token_exp\") || \"0\");",
-					"",
-					"if (currentTime >= accessTokenExp) {",
-					"    console.log(\"Access token expired or not present. Requesting new token...\");",
-					"",
-					"    const server = pm.environment.get(\"server\");",
-					"    const realm = pm.environment.get(\"realm\");",
-					"    const clientId = pm.environment.get(\"client_id\");",
-					"    const username = pm.environment.get(\"username\");",
-					"    const password = pm.environment.get(\"password\");",
-					"",
-					"    const tokenUrl = `${server}/realms/${realm}/protocol/openid-connect/token`;",
-					"",
-					"    const formBody = `client_id=${encodeURIComponent(clientId)}&grant_type=password&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;",
-					"",
-					"    pm.sendRequest({",
-					"        url: tokenUrl,",
-					"        method: 'POST',",
-					"        header: {",
-					"            'Content-Type': 'application/x-www-form-urlencoded'",
-					"        },",
-					"        body: {",
-					"            mode: 'raw',",
-					"            raw: formBody",
-					"        }",
-					"    }, function (err, res) {",
-					"        if (err || res.code !== 200) {",
-					"            console.error(\"Token refresh failed\", err || res.status);",
-					"        } else {",
-					"            const json = res.json();",
-					"",
-					"            pm.environment.set(\"access_token\", json.access_token);",
-					"            pm.environment.set(\"refresh_token\", json.refresh_token); // Falls erneuert wurde",
-					"",
-					"            const expiresIn = json.expires_in || 300;",
-					"            const newExp = Math.floor(Date.now() / 1000) + expiresIn;",
-					"            pm.environment.set(\"access_token_exp\", newExp.toString());",
-					"",
-					"            console.log(\"Access token refreshed\");",
-					"        }",
-					"    });",
-					"} else {",
-					"    console.log(\"Access token is still valid.\");",
-					"}"
+					""
 				]
 			}
 		},
@@ -2742,7 +3912,6 @@
 			"listen": "test",
 			"script": {
 				"type": "text/javascript",
-				"packages": {},
 				"exec": [
 					""
 				]
@@ -2752,42 +3921,35 @@
 	"variable": [
 		{
 			"key": "baseUrl",
-			"value": "http://localhost:8080/api/v2"
+			"value": "http://localhost:8180/api/v2"
 		},
 		{
 			"key": "baseKeycloakUrl",
-			"value": "http://localhost:8081",
-			"type": "string"
+			"value": "http://localhost:8181"
 		},
 		{
 			"key": "redirectUrl",
-			"value": "http://localhost:3000/dashboard",
-			"type": "string"
+			"value": "http://localhost:3100/dashboard"
 		},
 		{
 			"key": "realm",
-			"value": "thesis-management",
-			"type": "string"
+			"value": "thesis-management"
 		},
 		{
 			"key": "clientId",
-			"value": "thesis-management-app",
-			"type": "string"
+			"value": "thesis-management-app"
 		},
 		{
 			"key": "username",
-			"value": "",
-			"type": "string"
+			"value": ""
 		},
 		{
 			"key": "password",
-			"value": "",
-			"type": "string"
+			"value": ""
 		},
 		{
 			"key": "refreshToken",
-			"value": "",
-			"type": "string"
+			"value": ""
 		}
 	]
 }

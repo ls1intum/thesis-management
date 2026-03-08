@@ -314,8 +314,8 @@ test.describe('Account Deletion - Active Thesis Shows Retention Notice', () => {
 // ============================================================================
 
 test.describe('Account Deletion - Research Group Head Blocks', () => {
-  // supervisor is head of ASE research group
-  test.use({ storageState: authStatePath('supervisor') })
+  // examiner is head of ASE research group
+  test.use({ storageState: authStatePath('examiner') })
 
   test('account tab shows research group head warning and disables delete', async ({ page }) => {
     await navigateTo(page, '/settings/account')
@@ -493,17 +493,17 @@ test.describe('Account Deletion - Admin Operations', () => {
       timeout: 30_000,
     })
 
-    // Search for supervisor (research group head)
+    // Search for examiner (research group head)
     const searchInput = page.getByPlaceholder(/Search by name, email, or ID/i)
-    await searchInput.fill('Supervisor User')
+    await searchInput.fill('Examiner User')
     await page.getByRole('button', { name: 'Search' }).click()
 
-    const userButton = page.getByRole('button', { name: /Supervisor User/i }).first()
+    const userButton = page.getByRole('button', { name: /Examiner User/i }).first()
     await expect(userButton).toBeVisible({ timeout: 15_000 })
     await userButton.click()
 
     // Deletion preview should show
-    await expect(page.getByText(/Deletion preview for.*Supervisor/i)).toBeVisible({
+    await expect(page.getByText(/Deletion preview for.*Examiner/i)).toBeVisible({
       timeout: 15_000,
     })
 
@@ -521,9 +521,9 @@ test.describe('Account Deletion - Admin Operations', () => {
 // ============================================================================
 
 test.describe('Account Deletion - Route Protection', () => {
-  test.use({ storageState: authStatePath('advisor') })
+  test.use({ storageState: authStatePath('supervisor') })
 
-  test('advisor cannot access admin page directly', async ({ page }) => {
+  test('supervisor cannot access admin page directly', async ({ page }) => {
     await navigateTo(page, '/admin')
 
     // Should not see the admin page content

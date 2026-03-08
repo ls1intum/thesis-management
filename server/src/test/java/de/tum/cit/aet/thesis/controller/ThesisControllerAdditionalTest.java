@@ -209,15 +209,15 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 	@Nested
 	class ThesisSearchAndPagination {
 		private UUID createUniqueThesis(String title) throws Exception {
-			TestUser advisor = createRandomTestUser(List.of("supervisor", "advisor"));
+			TestUser supervisor = createRandomTestUser(List.of("supervisor", "advisor"));
 			UUID researchGroupId = createTestResearchGroup(
-					"Test Group " + UUID.randomUUID(), advisor.universityId());
+					"Test Group " + UUID.randomUUID(), supervisor.universityId());
 			createTestEmailTemplate("THESIS_CREATED");
 
 			CreateThesisPayload payload = new CreateThesisPayload(
 					title, "MASTER", "ENGLISH",
-					List.of(advisor.userId()), List.of(advisor.userId()),
-					List.of(advisor.userId()), researchGroupId
+					List.of(supervisor.userId()), List.of(supervisor.userId()),
+					List.of(supervisor.userId()), researchGroupId
 			);
 
 			String response = mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses")
@@ -348,7 +348,7 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 			assertThat(firstThesis.has("type")).isTrue();
 			assertThat(firstThesis.has("state")).isTrue();
 			assertThat(firstThesis.has("students")).isTrue();
-			assertThat(firstThesis.has("advisors")).isTrue();
+			assertThat(firstThesis.has("supervisors")).isTrue();
 			// Overview DTO does not include language or visibility
 			assertThat(firstThesis.has("language")).isFalse();
 			assertThat(firstThesis.has("visibility")).isFalse();
@@ -399,17 +399,17 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 	class ThesisDatabaseVerification {
 		@Test
 		void createThesis_VerifyDatabaseState() throws Exception {
-			TestUser advisor = createTestUser("db-supervisor", List.of("supervisor", "advisor"));
-			UUID researchGroupId = createTestResearchGroup("DB Test Group", advisor.universityId());
+			TestUser supervisor = createTestUser("db-supervisor", List.of("supervisor", "advisor"));
+			UUID researchGroupId = createTestResearchGroup("DB Test Group", supervisor.universityId());
 			createTestEmailTemplate("THESIS_CREATED");
 
 			CreateThesisPayload payload = new CreateThesisPayload(
 					"Database State Thesis",
 					"BACHELOR",
 					"GERMAN",
-					List.of(advisor.userId()),
-					List.of(advisor.userId()),
-					List.of(advisor.userId()),
+					List.of(supervisor.userId()),
+					List.of(supervisor.userId()),
+					List.of(supervisor.userId()),
 					researchGroupId
 			);
 
@@ -553,12 +553,12 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 		}
 
 		@Test
-		void getComments_AsAdvisorType_Success() throws Exception {
+		void getComments_AsSupervisorType_Success() throws Exception {
 			UUID thesisId = createTestThesis("Test Thesis");
 
 			String response = mockMvc.perform(MockMvcRequestBuilders.get("/v2/theses/{thesisId}/comments", thesisId)
 							.header("Authorization", createRandomAdminAuthentication())
-							.param("commentType", ThesisCommentType.ADVISOR.name()))
+							.param("commentType", ThesisCommentType.SUPERVISOR.name()))
 					.andExpect(status().isOk())
 					.andReturn().getResponse().getContentAsString();
 
@@ -568,13 +568,13 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 		}
 
 		@Test
-		void getComments_AsAdvisorType_AccessDenied_AsNonMemberStudent() throws Exception {
+		void getComments_AsSupervisorType_AccessDenied_AsNonMemberStudent() throws Exception {
 			UUID thesisId = createTestThesis("Test Thesis");
 			String studentAuth = createRandomAuthentication("student");
 
 			mockMvc.perform(MockMvcRequestBuilders.get("/v2/theses/{thesisId}/comments", thesisId)
 							.header("Authorization", studentAuth)
-							.param("commentType", ThesisCommentType.ADVISOR.name()))
+							.param("commentType", ThesisCommentType.SUPERVISOR.name()))
 					.andExpect(status().isForbidden());
 		}
 
@@ -632,19 +632,19 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 	}
 
 	@Nested
-	class ThesisSupervisorRoleAccess {
+	class ThesisExaminerRoleAccess {
 		@Test
-		void gradeThesis_Success_AsSupervisor() throws Exception {
-			TestUser supervisor = createRandomTestUser(List.of("supervisor", "advisor"));
+		void gradeThesis_Success_AsExaminer() throws Exception {
+			TestUser examiner = createRandomTestUser(List.of("supervisor", "advisor"));
 			UUID researchGroupId = createTestResearchGroup(
-					"Supervisor Test Group", supervisor.universityId());
+					"Supervisor Test Group", examiner.universityId());
 			createTestEmailTemplate("THESIS_CREATED");
 			createTestEmailTemplate("THESIS_FINAL_GRADE");
 
 			CreateThesisPayload thesisPayload = new CreateThesisPayload(
 					"Supervisor Grade Test", "MASTER", "ENGLISH",
-					List.of(supervisor.userId()), List.of(supervisor.userId()),
-					List.of(supervisor.userId()), researchGroupId
+					List.of(examiner.userId()), List.of(examiner.userId()),
+					List.of(examiner.userId()), researchGroupId
 			);
 
 			String response = mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses")
@@ -655,15 +655,15 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 			UUID thesisId = UUID.fromString(objectMapper.readTree(response).get("thesisId").asString());
 
-			String supervisorAuth = generateTestAuthenticationHeader(
-					supervisor.universityId(), List.of("supervisor", "advisor"));
+			String examinerAuth = generateTestAuthenticationHeader(
+					examiner.universityId(), List.of("supervisor", "advisor"));
 
 			AddThesisGradePayload gradePayload = new AddThesisGradePayload(
 					"1.3", "Good work", ThesisVisibility.PUBLIC
 			);
 
 			mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses/{thesisId}/grade", thesisId)
-							.header("Authorization", supervisorAuth)
+							.header("Authorization", examinerAuth)
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(objectMapper.writeValueAsString(gradePayload)))
 					.andExpect(status().isOk());
@@ -674,17 +674,17 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 		}
 
 		@Test
-		void completeThesis_Success_AsSupervisor() throws Exception {
-			TestUser supervisor = createRandomTestUser(List.of("supervisor", "advisor"));
+		void completeThesis_Success_AsExaminer() throws Exception {
+			TestUser examiner = createRandomTestUser(List.of("supervisor", "advisor"));
 			UUID researchGroupId = createTestResearchGroup(
-					"Supervisor Complete Group", supervisor.universityId());
+					"Supervisor Complete Group", examiner.universityId());
 			createTestEmailTemplate("THESIS_CREATED");
 			createTestEmailTemplate("THESIS_FINAL_GRADE");
 
 			CreateThesisPayload thesisPayload = new CreateThesisPayload(
 					"Supervisor Complete Test", "MASTER", "ENGLISH",
-					List.of(supervisor.userId()), List.of(supervisor.userId()),
-					List.of(supervisor.userId()), researchGroupId
+					List.of(examiner.userId()), List.of(examiner.userId()),
+					List.of(examiner.userId()), researchGroupId
 			);
 
 			String response = mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses")
@@ -695,20 +695,20 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 			UUID thesisId = UUID.fromString(objectMapper.readTree(response).get("thesisId").asString());
 
-			String supervisorAuth = generateTestAuthenticationHeader(
-					supervisor.universityId(), List.of("supervisor", "advisor"));
+			String examinerAuth = generateTestAuthenticationHeader(
+					examiner.universityId(), List.of("supervisor", "advisor"));
 
 			AddThesisGradePayload gradePayload = new AddThesisGradePayload(
 					"1.0", "Perfect", ThesisVisibility.PUBLIC
 			);
 			mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses/{thesisId}/grade", thesisId)
-							.header("Authorization", supervisorAuth)
+							.header("Authorization", examinerAuth)
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(objectMapper.writeValueAsString(gradePayload)))
 					.andExpect(status().isOk());
 
 			mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses/{thesisId}/complete", thesisId)
-							.header("Authorization", supervisorAuth))
+							.header("Authorization", examinerAuth))
 					.andExpect(status().isOk());
 
 			Thesis thesis = thesisRepository.findById(thesisId).orElseThrow();
@@ -716,17 +716,17 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 		}
 
 		@Test
-		void gradeThesis_AccessDenied_AsAdvisorOnly() throws Exception {
-			TestUser advisor = createRandomTestUser(List.of("advisor"));
-			TestUser supervisor = createRandomTestUser(List.of("supervisor"));
+		void gradeThesis_AccessDenied_AsSupervisorOnly() throws Exception {
+			TestUser supervisor = createRandomTestUser(List.of("advisor"));
+			TestUser examiner = createRandomTestUser(List.of("supervisor"));
 			UUID researchGroupId = createTestResearchGroup(
-					"Advisor Grade Group", supervisor.universityId());
+					"Supervisor Grade Group", examiner.universityId());
 			createTestEmailTemplate("THESIS_CREATED");
 
 			CreateThesisPayload thesisPayload = new CreateThesisPayload(
-					"Advisor Grade Test", "MASTER", "ENGLISH",
-					List.of(advisor.userId()), List.of(advisor.userId()),
-					List.of(supervisor.userId()), researchGroupId
+					"Supervisor Grade Test", "MASTER", "ENGLISH",
+					List.of(supervisor.userId()), List.of(supervisor.userId()),
+					List.of(examiner.userId()), researchGroupId
 			);
 
 			String response = mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses")
@@ -738,15 +738,15 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 			UUID thesisId = UUID.fromString(objectMapper.readTree(response).get("thesisId").asString());
 
 			// Advisor (non-supervisor) should not be able to grade
-			String advisorAuth = generateTestAuthenticationHeader(
-					advisor.universityId(), List.of("advisor"));
+			String supervisorAuth = generateTestAuthenticationHeader(
+					supervisor.universityId(), List.of("advisor"));
 
 			AddThesisGradePayload gradePayload = new AddThesisGradePayload(
 					"1.0", "Feedback", ThesisVisibility.PUBLIC
 			);
 
 			mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses/{thesisId}/grade", thesisId)
-							.header("Authorization", advisorAuth)
+							.header("Authorization", supervisorAuth)
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(objectMapper.writeValueAsString(gradePayload)))
 					.andExpect(status().isForbidden());
@@ -756,16 +756,16 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 	@Nested
 	class ThesisInfoUpdate {
 		@Test
-		void updateThesisInfo_Success_AsAdvisor() throws Exception {
+		void updateThesisInfo_Success_AsSupervisor() throws Exception {
 			TestUser student = createRandomTestUser(List.of("student"));
-			TestUser advisor = createRandomTestUser(List.of("supervisor", "advisor"));
-			UUID researchGroupId = createTestResearchGroup("Info Group", advisor.universityId());
+			TestUser supervisor = createRandomTestUser(List.of("supervisor", "advisor"));
+			UUID researchGroupId = createTestResearchGroup("Info Group", supervisor.universityId());
 			createTestEmailTemplate("THESIS_CREATED");
 
 			CreateThesisPayload thesisPayload = new CreateThesisPayload(
 					"Info Update Thesis", "MASTER", "ENGLISH",
-					List.of(student.userId()), List.of(advisor.userId()),
-					List.of(advisor.userId()), researchGroupId
+					List.of(student.userId()), List.of(supervisor.userId()),
+					List.of(supervisor.userId()), researchGroupId
 			);
 
 			String response = mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses")
@@ -776,8 +776,8 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 			UUID thesisId = UUID.fromString(objectMapper.readTree(response).get("thesisId").asString());
 
-			String advisorAuth = generateTestAuthenticationHeader(
-					advisor.universityId(), List.of("supervisor", "advisor"));
+			String supervisorAuth = generateTestAuthenticationHeader(
+					supervisor.universityId(), List.of("supervisor", "advisor"));
 
 			UpdateThesisInfoPayload infoPayload = new UpdateThesisInfoPayload(
 					"This is the abstract", "Additional info text",
@@ -786,7 +786,7 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 
 			String updateResponse = mockMvc.perform(MockMvcRequestBuilders.put(
 									"/v2/theses/{thesisId}/info", thesisId)
-							.header("Authorization", advisorAuth)
+							.header("Authorization", supervisorAuth)
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(objectMapper.writeValueAsString(infoPayload)))
 					.andExpect(status().isOk())
@@ -817,15 +817,15 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 	@Nested
 	class ThesisCreditsUpdate {
 		@Test
-		void updateThesisCredits_Success_AsAdvisor() throws Exception {
-			TestUser advisor = createRandomTestUser(List.of("supervisor", "advisor"));
-			UUID researchGroupId = createTestResearchGroup("Credits Group", advisor.universityId());
+		void updateThesisCredits_Success_AsSupervisor() throws Exception {
+			TestUser supervisor = createRandomTestUser(List.of("supervisor", "advisor"));
+			UUID researchGroupId = createTestResearchGroup("Credits Group", supervisor.universityId());
 			createTestEmailTemplate("THESIS_CREATED");
 
 			CreateThesisPayload thesisPayload = new CreateThesisPayload(
 					"Credits Update Thesis", "MASTER", "ENGLISH",
-					List.of(advisor.userId()), List.of(advisor.userId()),
-					List.of(advisor.userId()), researchGroupId
+					List.of(supervisor.userId()), List.of(supervisor.userId()),
+					List.of(supervisor.userId()), researchGroupId
 			);
 
 			String response = mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses")
@@ -836,16 +836,16 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 			UUID thesisId = UUID.fromString(objectMapper.readTree(response).get("thesisId").asString());
 
-			String advisorAuth = generateTestAuthenticationHeader(
-					advisor.universityId(), List.of("supervisor", "advisor"));
+			String supervisorAuth = generateTestAuthenticationHeader(
+					supervisor.universityId(), List.of("supervisor", "advisor"));
 
 			UpdateThesisCreditsPayload creditsPayload = new UpdateThesisCreditsPayload(
-					Map.of(advisor.userId(), 30)
+					Map.of(supervisor.userId(), 30)
 			);
 
 			mockMvc.perform(MockMvcRequestBuilders.put(
 							"/v2/theses/{thesisId}/credits", thesisId)
-							.header("Authorization", advisorAuth)
+							.header("Authorization", supervisorAuth)
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(objectMapper.writeValueAsString(creditsPayload)))
 					.andExpect(status().isOk());
@@ -871,18 +871,18 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 
 	@Nested
 	class ThesisLifecycle {
-		private record ThesisSetup(UUID thesisId, String advisorAuth, TestUser advisor) {}
+		private record ThesisSetup(UUID thesisId, String supervisorAuth, TestUser supervisor) {}
 
 		private ThesisSetup createThesisWithAdvisor() throws Exception {
 			TestUser student = createRandomTestUser(List.of("student"));
-			TestUser advisor = createRandomTestUser(List.of("supervisor", "advisor"));
-			UUID researchGroupId = createTestResearchGroup("Lifecycle Group", advisor.universityId());
+			TestUser supervisor = createRandomTestUser(List.of("supervisor", "advisor"));
+			UUID researchGroupId = createTestResearchGroup("Lifecycle Group", supervisor.universityId());
 			createTestEmailTemplate("THESIS_CREATED");
 
 			CreateThesisPayload thesisPayload = new CreateThesisPayload(
 					"Lifecycle Thesis", "MASTER", "ENGLISH",
-					List.of(student.userId()), List.of(advisor.userId()),
-					List.of(advisor.userId()), researchGroupId
+					List.of(student.userId()), List.of(supervisor.userId()),
+					List.of(supervisor.userId()), researchGroupId
 			);
 
 			String response = mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses")
@@ -892,9 +892,9 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 					.andExpect(status().isOk())
 					.andReturn().getResponse().getContentAsString();
 			UUID thesisId = UUID.fromString(objectMapper.readTree(response).get("thesisId").asString());
-			String advisorAuth = generateTestAuthenticationHeader(
-					advisor.universityId(), List.of("supervisor", "advisor"));
-			return new ThesisSetup(thesisId, advisorAuth, advisor);
+			String supervisorAuth = generateTestAuthenticationHeader(
+					supervisor.universityId(), List.of("supervisor", "advisor"));
+			return new ThesisSetup(thesisId, supervisorAuth, supervisor);
 		}
 
 		@Test
@@ -910,7 +910,7 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 			);
 			mockMvc.perform(MockMvcRequestBuilders.multipart("/v2/theses/{thesisId}/proposal", setup.thesisId)
 							.file(proposalFile)
-							.header("Authorization", setup.advisorAuth))
+							.header("Authorization", setup.supervisorAuth))
 					.andExpect(status().isOk());
 
 			Thesis thesis = thesisRepository.findById(setup.thesisId).orElseThrow();
@@ -918,7 +918,7 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 
 			// Accept proposal
 			mockMvc.perform(MockMvcRequestBuilders.put("/v2/theses/{thesisId}/proposal/accept", setup.thesisId)
-							.header("Authorization", setup.advisorAuth))
+							.header("Authorization", setup.supervisorAuth))
 					.andExpect(status().isOk());
 
 			thesis = thesisRepository.findById(setup.thesisId).orElseThrow();
@@ -938,7 +938,7 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 			);
 			mockMvc.perform(MockMvcRequestBuilders.multipart("/v2/theses/{thesisId}/proposal", setup.thesisId)
 							.file(proposalFile)
-							.header("Authorization", setup.advisorAuth))
+							.header("Authorization", setup.supervisorAuth))
 					.andExpect(status().isOk());
 
 			// Request changes
@@ -948,7 +948,7 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 			);
 
 			mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses/{thesisId}/feedback", setup.thesisId)
-							.header("Authorization", setup.advisorAuth)
+							.header("Authorization", setup.supervisorAuth)
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(objectMapper.writeValueAsString(changesPayload)))
 					.andExpect(status().isOk());
@@ -972,10 +972,10 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 			);
 			mockMvc.perform(MockMvcRequestBuilders.multipart("/v2/theses/{thesisId}/proposal", setup.thesisId)
 							.file(proposalFile)
-							.header("Authorization", setup.advisorAuth))
+							.header("Authorization", setup.supervisorAuth))
 					.andExpect(status().isOk());
 			mockMvc.perform(MockMvcRequestBuilders.put("/v2/theses/{thesisId}/proposal/accept", setup.thesisId)
-							.header("Authorization", setup.advisorAuth))
+							.header("Authorization", setup.supervisorAuth))
 					.andExpect(status().isOk());
 
 			// Upload thesis file to enable final submission
@@ -988,12 +988,12 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 			mockMvc.perform(MockMvcRequestBuilders.multipart("/v2/theses/{thesisId}/files", setup.thesisId)
 							.file(thesisFile)
 							.file(thesisType)
-							.header("Authorization", setup.advisorAuth))
+							.header("Authorization", setup.supervisorAuth))
 					.andExpect(status().isOk());
 
 			// Submit thesis
 			mockMvc.perform(MockMvcRequestBuilders.put("/v2/theses/{thesisId}/thesis/final-submission", setup.thesisId)
-							.header("Authorization", setup.advisorAuth))
+							.header("Authorization", setup.supervisorAuth))
 					.andExpect(status().isOk());
 
 			Thesis thesis = thesisRepository.findById(setup.thesisId).orElseThrow();
@@ -1004,7 +1004,7 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 					"Good thesis", "Clear structure", "Minor issues", "1.3"
 			);
 			mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses/{thesisId}/assessment", setup.thesisId)
-							.header("Authorization", setup.advisorAuth)
+							.header("Authorization", setup.supervisorAuth)
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(objectMapper.writeValueAsString(assessmentPayload)))
 					.andExpect(status().isOk());
@@ -1017,7 +1017,7 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 					"1.3", "Well done", ThesisVisibility.PUBLIC
 			);
 			mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses/{thesisId}/grade", setup.thesisId)
-							.header("Authorization", setup.advisorAuth)
+							.header("Authorization", setup.supervisorAuth)
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(objectMapper.writeValueAsString(gradePayload)))
 					.andExpect(status().isOk());
@@ -1033,12 +1033,12 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 			createTestEmailTemplate("THESIS_PRESENTATION_INVITATION_CANCELLED");
 
 			ThesisSetup setup = createThesisWithAdvisor();
-			UUID presentationId = createScheduledPresentation(setup.thesisId, setup.advisorAuth);
+			UUID presentationId = createScheduledPresentation(setup.thesisId, setup.supervisorAuth);
 
 			mockMvc.perform(MockMvcRequestBuilders.delete(
 							"/v2/theses/{thesisId}/presentations/{presentationId}",
 							setup.thesisId, presentationId)
-							.header("Authorization", setup.advisorAuth))
+							.header("Authorization", setup.supervisorAuth))
 					.andExpect(status().isOk());
 		}
 	}
@@ -1046,16 +1046,16 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 	@Nested
 	class ThesisClose {
 		@Test
-		void closeThesis_Success_AsAdvisor() throws Exception {
-			TestUser advisor = createRandomTestUser(List.of("supervisor", "advisor"));
-			UUID researchGroupId = createTestResearchGroup("Close Group", advisor.universityId());
+		void closeThesis_Success_AsSupervisor() throws Exception {
+			TestUser supervisor = createRandomTestUser(List.of("supervisor", "advisor"));
+			UUID researchGroupId = createTestResearchGroup("Close Group", supervisor.universityId());
 			createTestEmailTemplate("THESIS_CREATED");
 			createTestEmailTemplate("THESIS_CLOSED");
 
 			CreateThesisPayload thesisPayload = new CreateThesisPayload(
 					"Close Thesis Test", "MASTER", "ENGLISH",
-					List.of(advisor.userId()), List.of(advisor.userId()),
-					List.of(advisor.userId()), researchGroupId
+					List.of(supervisor.userId()), List.of(supervisor.userId()),
+					List.of(supervisor.userId()), researchGroupId
 			);
 
 			String response = mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses")
@@ -1066,12 +1066,12 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 			UUID thesisId = UUID.fromString(objectMapper.readTree(response).get("thesisId").asString());
 
-			String advisorAuth = generateTestAuthenticationHeader(
-					advisor.universityId(), List.of("supervisor", "advisor"));
+			String supervisorAuth = generateTestAuthenticationHeader(
+					supervisor.universityId(), List.of("supervisor", "advisor"));
 
 			String closeResponse = mockMvc.perform(MockMvcRequestBuilders.delete(
 							"/v2/theses/{thesisId}", thesisId)
-							.header("Authorization", advisorAuth))
+							.header("Authorization", supervisorAuth))
 					.andExpect(status().isOk())
 					.andReturn().getResponse().getContentAsString();
 
@@ -1099,13 +1099,13 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 		@Test
 		void updateThesisInfo_Success() throws Exception {
 			createTestEmailTemplate("THESIS_CREATED");
-			TestUser advisor = createRandomTestUser(List.of("supervisor", "advisor"));
-			UUID researchGroupId = createTestResearchGroup("Info RG", advisor.universityId());
+			TestUser supervisor = createRandomTestUser(List.of("supervisor", "advisor"));
+			UUID researchGroupId = createTestResearchGroup("Info RG", supervisor.universityId());
 
 			CreateThesisPayload createPayload = new CreateThesisPayload(
 					"Info Test Thesis", "MASTER", "ENGLISH",
-					List.of(advisor.userId()), List.of(advisor.userId()),
-					List.of(advisor.userId()), researchGroupId
+					List.of(supervisor.userId()), List.of(supervisor.userId()),
+					List.of(supervisor.userId()), researchGroupId
 			);
 			String adminAuth = createRandomAdminAuthentication();
 			String createResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses")
@@ -1116,13 +1116,13 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 			UUID thesisId = UUID.fromString(objectMapper.readTree(createResponse).get("thesisId").asString());
 
-			String advisorAuth = generateTestAuthenticationHeader(advisor.universityId(), List.of("supervisor", "advisor"));
+			String supervisorAuth = generateTestAuthenticationHeader(supervisor.universityId(), List.of("supervisor", "advisor"));
 
 			UpdateThesisInfoPayload infoPayload = new UpdateThesisInfoPayload(
 					"Test abstract text", "Test info text", "Updated Title", null
 			);
 			String response = mockMvc.perform(MockMvcRequestBuilders.put("/v2/theses/{thesisId}/info", thesisId)
-							.header("Authorization", advisorAuth)
+							.header("Authorization", supervisorAuth)
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(objectMapper.writeValueAsString(infoPayload)))
 					.andExpect(status().isOk())
@@ -1136,13 +1136,13 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 		@Test
 		void updateThesisInfo_WithNullValues_Success() throws Exception {
 			createTestEmailTemplate("THESIS_CREATED");
-			TestUser advisor = createRandomTestUser(List.of("supervisor", "advisor"));
-			UUID researchGroupId = createTestResearchGroup("Null Info RG", advisor.universityId());
+			TestUser supervisor = createRandomTestUser(List.of("supervisor", "advisor"));
+			UUID researchGroupId = createTestResearchGroup("Null Info RG", supervisor.universityId());
 
 			CreateThesisPayload createPayload = new CreateThesisPayload(
 					"Null Info Thesis", "MASTER", "ENGLISH",
-					List.of(advisor.userId()), List.of(advisor.userId()),
-					List.of(advisor.userId()), researchGroupId
+					List.of(supervisor.userId()), List.of(supervisor.userId()),
+					List.of(supervisor.userId()), researchGroupId
 			);
 			String adminAuth = createRandomAdminAuthentication();
 			String createResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses")
@@ -1153,13 +1153,13 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 			UUID thesisId = UUID.fromString(objectMapper.readTree(createResponse).get("thesisId").asString());
 
-			String advisorAuth = generateTestAuthenticationHeader(advisor.universityId(), List.of("supervisor", "advisor"));
+			String supervisorAuth = generateTestAuthenticationHeader(supervisor.universityId(), List.of("supervisor", "advisor"));
 
 			UpdateThesisInfoPayload infoPayload = new UpdateThesisInfoPayload(
 					null, null, null, null
 			);
 			mockMvc.perform(MockMvcRequestBuilders.put("/v2/theses/{thesisId}/info", thesisId)
-							.header("Authorization", advisorAuth)
+							.header("Authorization", supervisorAuth)
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(objectMapper.writeValueAsString(infoPayload)))
 					.andExpect(status().isOk());
@@ -1171,13 +1171,13 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 		@Test
 		void updateThesisCredits_Success() throws Exception {
 			createTestEmailTemplate("THESIS_CREATED");
-			TestUser advisor = createRandomTestUser(List.of("supervisor", "advisor"));
-			UUID researchGroupId = createTestResearchGroup("Credits RG", advisor.universityId());
+			TestUser supervisor = createRandomTestUser(List.of("supervisor", "advisor"));
+			UUID researchGroupId = createTestResearchGroup("Credits RG", supervisor.universityId());
 
 			CreateThesisPayload createPayload = new CreateThesisPayload(
 					"Credits Test Thesis", "MASTER", "ENGLISH",
-					List.of(advisor.userId()), List.of(advisor.userId()),
-					List.of(advisor.userId()), researchGroupId
+					List.of(supervisor.userId()), List.of(supervisor.userId()),
+					List.of(supervisor.userId()), researchGroupId
 			);
 			String adminAuth = createRandomAdminAuthentication();
 			String createResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses")
@@ -1188,11 +1188,11 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 			UUID thesisId = UUID.fromString(objectMapper.readTree(createResponse).get("thesisId").asString());
 
-			String advisorAuth = generateTestAuthenticationHeader(advisor.universityId(), List.of("supervisor", "advisor"));
+			String supervisorAuth = generateTestAuthenticationHeader(supervisor.universityId(), List.of("supervisor", "advisor"));
 
-			UpdateThesisCreditsPayload creditsPayload = new UpdateThesisCreditsPayload(Map.of(advisor.userId(), 30));
+			UpdateThesisCreditsPayload creditsPayload = new UpdateThesisCreditsPayload(Map.of(supervisor.userId(), 30));
 			mockMvc.perform(MockMvcRequestBuilders.put("/v2/theses/{thesisId}/credits", thesisId)
-							.header("Authorization", advisorAuth)
+							.header("Authorization", supervisorAuth)
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(objectMapper.writeValueAsString(creditsPayload)))
 					.andExpect(status().isOk());

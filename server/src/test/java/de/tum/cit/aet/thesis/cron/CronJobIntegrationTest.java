@@ -92,8 +92,8 @@ class CronJobIntegrationTest extends BaseIntegrationTest {
 		// Create application
 		String studentAuth = createRandomAuthentication("student");
 		CreateApplicationPayload appPayload = new CreateApplicationPayload(
-				topicId, null, "MASTER", Instant.now(), "Cron test", null
-		);
+				topicId, null, "MASTER", Instant.now(), "Cron test", null,
+		true);
 		String appResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 						.header("Authorization", studentAuth)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -158,8 +158,8 @@ class CronJobIntegrationTest extends BaseIntegrationTest {
 			String studentAuth = createRandomAuthentication("student");
 			CreateApplicationPayload appPayload = new CreateApplicationPayload(
 					UUID.fromString(objectMapper.readTree(topicResponse).get("topicId").asString()),
-					null, "MASTER", Instant.now(), "Recent cron test", null
-			);
+					null, "MASTER", Instant.now(), "Recent cron test", null,
+			true);
 			String appResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 							.header("Authorization", studentAuth)
 							.contentType(MediaType.APPLICATION_JSON)
@@ -206,8 +206,8 @@ class CronJobIntegrationTest extends BaseIntegrationTest {
 
 			String studentAuth = createRandomAuthentication("student");
 			CreateApplicationPayload appPayload = new CreateApplicationPayload(
-					topicId, null, "MASTER", Instant.now(), "Reminder cron test", null
-			);
+					topicId, null, "MASTER", Instant.now(), "Reminder cron test", null,
+			true);
 			mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 							.header("Authorization", studentAuth)
 							.contentType(MediaType.APPLICATION_JSON)
@@ -243,7 +243,7 @@ class CronJobIntegrationTest extends BaseIntegrationTest {
 					})
 					.map(Address::toString)
 					.toList();
-			assertThat(recipients).as("Advisor should receive a reminder email")
+			assertThat(recipients).as("Supervisor should receive a reminder email")
 					.anyMatch(addr -> addr.contains(advisor.universityId()));
 		}
 
@@ -280,8 +280,8 @@ class CronJobIntegrationTest extends BaseIntegrationTest {
 
 			String studentAuth = createRandomAuthentication("student");
 			CreateApplicationPayload appPayload = new CreateApplicationPayload(
-					topicId, null, "MASTER", Instant.now(), "Deadline test", null
-			);
+					topicId, null, "MASTER", Instant.now(), "Deadline test", null,
+			true);
 			String appResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 							.header("Authorization", studentAuth)
 							.contentType(MediaType.APPLICATION_JSON)
@@ -338,8 +338,8 @@ class CronJobIntegrationTest extends BaseIntegrationTest {
 
 			String studentAuth = createRandomAuthentication("student");
 			CreateApplicationPayload appPayload = new CreateApplicationPayload(
-					topicId, null, "MASTER", Instant.now(), "No auto test", null
-			);
+					topicId, null, "MASTER", Instant.now(), "No auto test", null,
+			true);
 			String appResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 							.header("Authorization", studentAuth)
 							.contentType(MediaType.APPLICATION_JSON)

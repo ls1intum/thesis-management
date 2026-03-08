@@ -8,7 +8,7 @@ const ThesisVisibilitySelect = (props: SelectProps) => {
       'Every authenticated user can see the thesis. If thesis is completed, it will be publicly visible on the landing page',
     STUDENT:
       'All students that have a not completed thesis assigned  in your research group can see the thesis',
-    INTERNAL: 'All advisors and supervisors of the research group can see the thesis',
+    INTERNAL: 'All supervisors and examiners of the research group can see the thesis',
     PRIVATE: 'Only assigned users can see the thesis',
   }
 

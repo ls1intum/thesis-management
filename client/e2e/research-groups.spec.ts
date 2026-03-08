@@ -14,9 +14,13 @@ test.describe('Research Groups - Admin', () => {
     await expect(page.getByPlaceholder(/search research groups/i)).toBeVisible()
     // Create button should be visible
     await expect(page.getByRole('button', { name: /create research group/i })).toBeVisible()
-    // Seeded research groups should appear (ASE and DSA)
-    await expect(page.getByText('Data Science and Analytics').first()).toBeVisible()
+    // Both seeded research groups should appear
     await expect(page.getByText('Applied Software Engineering').first()).toBeVisible()
+    await expect(page.getByText('Data Science and Analytics').first()).toBeVisible()
+
+    // Should show group abbreviations
+    await expect(page.getByText('ASE').first()).toBeVisible()
+    await expect(page.getByText('DSA').first()).toBeVisible()
   })
 
   test('search filters research groups', async ({ page }) => {
@@ -29,17 +33,40 @@ test.describe('Research Groups - Admin', () => {
     await page.getByPlaceholder(/search research groups/i).fill('Applied Software')
     // ASE should still be visible
     await expect(page.getByText('Applied Software Engineering').first()).toBeVisible()
+    // DSA should be filtered out
+    await expect(page.getByText('Data Science and Analytics')).toBeHidden({ timeout: 3_000 })
+  })
+
+  test('research group settings page shows tabs and group info', async ({ page }) => {
+    await navigateTo(page, '/research-groups/00000000-0000-4000-a000-000000000001')
+
+    // Should show Research Group Settings heading
+    await expect(page.getByRole('heading', { name: /research group settings/i })).toBeVisible({
+      timeout: 15_000,
+    })
+
+    // General tab should be visible (and selected by default)
+    await expect(page.getByRole('tab', { name: 'General' })).toBeVisible()
+    // Members tab should exist
+    await expect(page.getByRole('tab', { name: 'Members' })).toBeVisible()
+    // Email Settings tab should also exist
+    await expect(page.getByRole('tab', { name: 'Email Settings' })).toBeVisible()
+
+    // Group name should be in the Name input field
+    await expect(page.getByRole('textbox', { name: 'Name' })).toHaveValue(
+      'Applied Software Engineering',
+    )
   })
 })
 
-test.describe('Research Group Settings - Supervisor', () => {
-  test.use({ storageState: authStatePath('supervisor') })
+test.describe('Research Group Settings - Examiner', () => {
+  test.use({ storageState: authStatePath('examiner') })
 
-  test('supervisor can access their research group settings', async ({ page }) => {
+  test('examiner can access their research group settings', async ({ page }) => {
     // UUID matches the ASE research group seeded in seed_dev_test_data.sql
     await navigateTo(page, '/research-groups/00000000-0000-4000-a000-000000000001')
 
-    // Supervisor should see either group settings or an unauthorized page
+    // Examiner should see either group settings or an unauthorized page
     await expect(
       page
         .getByText('Applied Software Engineering')
@@ -227,5 +254,28 @@ test.describe('Research Groups - Student cannot access admin page', () => {
 
     // Student should not see the admin page content
     await expect(page.getByRole('heading', { name: /research groups/i })).toBeHidden()
+  })
+})
+
+test.describe('Research Groups - DSA group settings', () => {
+  test.use({ storageState: authStatePath('admin') })
+
+  test('DSA research group settings are accessible', async ({ page }) => {
+    await navigateTo(page, '/research-groups/00000000-0000-4000-a000-000000000002')
+
+    // Should show Research Group Settings heading
+    await expect(page.getByRole('heading', { name: /research group settings/i })).toBeVisible({
+      timeout: 15_000,
+    })
+
+    // DSA group name should be in the Name input field
+    await expect(page.getByRole('textbox', { name: 'Name' })).toHaveValue(
+      'Data Science and Analytics',
+    )
+
+    // Should have General, Members, and Email Settings tabs
+    await expect(page.getByRole('tab', { name: 'General' })).toBeVisible()
+    await expect(page.getByRole('tab', { name: 'Members' })).toBeVisible()
+    await expect(page.getByRole('tab', { name: 'Email Settings' })).toBeVisible()
   })
 })

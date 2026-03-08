@@ -9,8 +9,8 @@ import {
   assertSentFromApp,
 } from './mailpit'
 
-// Thesis d000-0003 is in SUBMITTED state, assigned to student3, has abstract text set
-// Roles: supervisor2 (SUPERVISOR), advisor2 (ADVISOR), student3 (STUDENT)
+// Thesis d000-0003 is in ASSESSED state, assigned to student3, has abstract text set
+// Roles: examiner2 (EXAMINER), supervisor2 (SUPERVISOR), student3 (STUDENT)
 const THESIS_ID = '00000000-0000-4000-d000-000000000003'
 const THESIS_URL = `/theses/${THESIS_ID}`
 const THESIS_TITLE = 'Online Anomaly Detection in IoT Sensor Streams'
@@ -95,7 +95,7 @@ test.describe.serial('Presentation Workflow', () => {
     await expect(modal).not.toBeVisible({ timeout: 15_000 })
 
     // Draft creation does NOT send emails — the email is sent when
-    // the supervisor accepts/schedules the draft (next test).
+    // the examiner accepts/schedules the draft (next test).
     // Verify the draft appears on the page with "Draft" state.
     await expect(page.getByText('Room 01.07.014, Garching Campus').first()).toBeVisible({
       timeout: 10_000,
@@ -104,8 +104,8 @@ test.describe.serial('Presentation Workflow', () => {
     await context.close()
   })
 
-  test('supervisor can accept a presentation draft and email is sent', async ({ browser }) => {
-    const context = await browser.newContext({ storageState: authStatePath('supervisor2') })
+  test('examiner can accept a presentation draft and email is sent', async ({ browser }) => {
+    const context = await browser.newContext({ storageState: authStatePath('examiner2') })
     const page = await context.newPage()
 
     const heading = page.getByRole('heading', { name: THESIS_TITLE })

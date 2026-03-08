@@ -80,7 +80,8 @@ const ThesisProposalSection = () => {
                 type='pdf'
                 aspectRatio={16 / 6}
                 actionButton={
-                  ((access.student && thesis.state === ThesisState.PROPOSAL) || access.advisor) &&
+                  ((access.student && thesis.state === ThesisState.PROPOSAL) ||
+                    access.supervisor) &&
                   !isThesisClosed(thesis) ? (
                     <UploadFileButton
                       onUpload={onUpload}
@@ -123,7 +124,7 @@ const ThesisProposalSection = () => {
                   uploadedAt: row.createdAt,
                   name: `Proposal v${proposals.length - index}`,
                   onDelete:
-                    access.advisor && !isThesisClosed(thesis)
+                    access.supervisor && !isThesisClosed(thesis)
                       ? async () => {
                           const response = await doRequest<IThesis>(
                             `/v2/theses/${thesis.thesisId}/proposal/${row.proposalId}`,
@@ -144,10 +145,10 @@ const ThesisProposalSection = () => {
               />
             )}
             <Group ml='auto'>
-              {proposal && access.advisor && thesis.state === ThesisState.PROPOSAL && (
+              {proposal && access.supervisor && thesis.state === ThesisState.PROPOSAL && (
                 <ThesisFeedbackRequestButton type='PROPOSAL' />
               )}
-              {access.advisor && thesis.state === ThesisState.PROPOSAL && (
+              {access.supervisor && thesis.state === ThesisState.PROPOSAL && (
                 <ConfirmationButton
                   confirmationTitle='Accept Proposal'
                   confirmationText='Are you sure you want to accept the proposal?'

@@ -40,11 +40,11 @@ public interface TopicRepository extends JpaRepository<Topic, UUID> {
 			"AND ( :userId IS NULL " +
 			"      OR ( :excludeSupervised = true " +
 			"           AND EXISTS (SELECT 1 FROM TopicRole r " +
-			"           WHERE r.topic = t AND r.id.userId = :userId AND r.id.role = 'ADVISOR')) " +
+			"           WHERE r.topic = t AND r.id.userId = :userId AND r.id.role = 'SUPERVISOR')) " +
 			"      OR ( :excludeSupervised = false " +
 			"           AND EXISTS (SELECT 1 FROM TopicRole r " +
 			"           WHERE r.topic = t AND r.id.userId = :userId " +
-			"           AND (r.id.role = 'ADVISOR' OR r.id.role = 'SUPERVISOR')) )" +
+			"           AND (r.id.role = 'SUPERVISOR' OR r.id.role = 'EXAMINER')) )" +
 			"    )")
 	Page<Topic> findOpenTopicsForUserByRoles(
 			@Param("searchQuery") String searchQuery,

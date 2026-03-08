@@ -10,8 +10,8 @@ import ThesisTypeBadge from '../../pages/LandingPage/components/ThesisTypBadge/T
 type TopicColumn =
   | 'title'
   | 'types'
-  | 'advisor'
   | 'supervisor'
+  | 'examiner'
   | 'researchGroup'
   | 'state'
   | 'createdAt'
@@ -26,7 +26,7 @@ interface ITopicOverviewsTableProps {
 const TopicsTable = (props: ITopicOverviewsTableProps) => {
   const {
     extraColumns = {},
-    columns = ['title', 'types', 'supervisor', 'advisor'],
+    columns = ['title', 'types', 'examiner', 'supervisor'],
     noBorder = false,
   } = props
 
@@ -90,19 +90,19 @@ const TopicsTable = (props: ITopicOverviewsTableProps) => {
         </Stack>
       ),
     },
-    supervisor: {
-      accessor: 'supervisor',
+    examiner: {
+      accessor: 'examiner',
       title: 'Examiner',
       width: 180,
       ellipsis: true,
-      render: (topic) => <AvatarUserList users={topic.supervisors} />,
+      render: (topic) => <AvatarUserList users={topic.examiners ?? []} />,
     },
-    advisor: {
-      accessor: 'advisor',
+    supervisor: {
+      accessor: 'supervisor',
       title: 'Supervisor(s)',
       width: 180,
       ellipsis: true,
-      render: (topic) => <AvatarUserList users={topic.advisors} />,
+      render: (topic) => <AvatarUserList users={topic.supervisors ?? []} />,
     },
     researchGroup: {
       accessor: 'researchGroup.name',

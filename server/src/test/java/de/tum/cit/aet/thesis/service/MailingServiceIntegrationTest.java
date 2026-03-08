@@ -109,8 +109,8 @@ class MailingServiceIntegrationTest extends BaseIntegrationTest {
 			String studentAuth = generateTestAuthenticationHeader(student.universityId(), List.of("student"));
 
 			CreateApplicationPayload payload = new CreateApplicationPayload(
-					null, "Email Test Thesis", "BACHELOR", Instant.now(), "Test motivation", researchGroupId
-			);
+					null, "Email Test Thesis", "BACHELOR", Instant.now(), "Test motivation", researchGroupId,
+			true);
 
 			mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 							.header("Authorization", studentAuth)
@@ -144,8 +144,8 @@ class MailingServiceIntegrationTest extends BaseIntegrationTest {
 			String studentAuth = generateTestAuthenticationHeader(student.universityId(), List.of("student"));
 
 			CreateApplicationPayload payload = new CreateApplicationPayload(
-					null, "Minimal Email Thesis", "BACHELOR", Instant.now(), "My secret motivation text", researchGroupId
-			);
+					null, "Minimal Email Thesis", "BACHELOR", Instant.now(), "My secret motivation text", researchGroupId,
+			true);
 
 			mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 							.header("Authorization", studentAuth)
@@ -211,8 +211,8 @@ class MailingServiceIntegrationTest extends BaseIntegrationTest {
 			String studentAuth = generateTestAuthenticationHeader(student.universityId(), List.of("student"));
 
 			CreateApplicationPayload payload = new CreateApplicationPayload(
-					null, "Template Override Test", "MASTER", Instant.now(), "Some motivation", researchGroupId
-			);
+					null, "Template Override Test", "MASTER", Instant.now(), "Some motivation", researchGroupId,
+			true);
 
 			mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 							.header("Authorization", studentAuth)
@@ -265,8 +265,8 @@ class MailingServiceIntegrationTest extends BaseIntegrationTest {
 			String studentAuth = generateTestAuthenticationHeader(student.universityId(), List.of("student"));
 
 			CreateApplicationPayload payload = new CreateApplicationPayload(
-					null, "Full Email Thesis", "BACHELOR", Instant.now(), "Enabled motivation", researchGroupId
-			);
+					null, "Full Email Thesis", "BACHELOR", Instant.now(), "Enabled motivation", researchGroupId,
+			true);
 
 			mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 							.header("Authorization", studentAuth)
@@ -326,8 +326,8 @@ class MailingServiceIntegrationTest extends BaseIntegrationTest {
 			String studentAuth = generateTestAuthenticationHeader(student.universityId(), List.of("student"));
 
 			CreateApplicationPayload payload = new CreateApplicationPayload(
-					null, "Toggle Test Thesis", "BACHELOR", Instant.now(), "Toggle motivation", researchGroupId
-			);
+					null, "Toggle Test Thesis", "BACHELOR", Instant.now(), "Toggle motivation", researchGroupId,
+			true);
 
 			mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 							.header("Authorization", studentAuth)
@@ -365,8 +365,8 @@ class MailingServiceIntegrationTest extends BaseIntegrationTest {
 
 			String specificTitle = "Exploring Neural Network Architectures";
 			CreateApplicationPayload payload = new CreateApplicationPayload(
-					null, specificTitle, "MASTER", Instant.now(), "Some motivation", researchGroupId
-			);
+					null, specificTitle, "MASTER", Instant.now(), "Some motivation", researchGroupId,
+			true);
 
 			mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 							.header("Authorization", studentAuth)
@@ -400,8 +400,8 @@ class MailingServiceIntegrationTest extends BaseIntegrationTest {
 			String studentAuth = generateTestAuthenticationHeader(student.universityId(), List.of("student"));
 
 			CreateApplicationPayload payload = new CreateApplicationPayload(
-					null, "Student Email Test", "BACHELOR", Instant.now(), "Student motivation", researchGroupId
-			);
+					null, "Student Email Test", "BACHELOR", Instant.now(), "Student motivation", researchGroupId,
+			true);
 
 			mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 							.header("Authorization", studentAuth)
@@ -435,8 +435,8 @@ class MailingServiceIntegrationTest extends BaseIntegrationTest {
 			// Use a thesis title containing HTML/script injection
 			String maliciousTitle = "<script>alert('xss')</script>";
 			CreateApplicationPayload payload = new CreateApplicationPayload(
-					null, maliciousTitle, "BACHELOR", Instant.now(), "Some motivation", researchGroupId
-			);
+					null, maliciousTitle, "BACHELOR", Instant.now(), "Some motivation", researchGroupId,
+			true);
 
 			mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 							.header("Authorization", studentAuth)
@@ -462,18 +462,18 @@ class MailingServiceIntegrationTest extends BaseIntegrationTest {
 			createTestEmailTemplate("APPLICATION_CREATED_CHAIR");
 			createTestEmailTemplate("APPLICATION_CREATED_STUDENT");
 			createTestEmailTemplate("APPLICATION_ACCEPTED");
-			createTestEmailTemplate("APPLICATION_ACCEPTED_NO_ADVISOR");
+			createTestEmailTemplate("APPLICATION_ACCEPTED_NO_SUPERVISOR");
 			createTestEmailTemplate("THESIS_CREATED");
 
 			TestUser student = createRandomTestUser(List.of("student"));
 			String studentAuth = generateTestAuthenticationHeader(student.universityId(), List.of("student"));
 
-			TestUser advisor = createRandomTestUser(List.of("supervisor", "advisor"));
-			UUID researchGroupId = createTestResearchGroup("Accept Email Group", advisor.universityId());
+			TestUser supervisor = createRandomTestUser(List.of("supervisor", "advisor"));
+			UUID researchGroupId = createTestResearchGroup("Accept Email Group", supervisor.universityId());
 
 			CreateApplicationPayload appPayload = new CreateApplicationPayload(
-					null, "Accept Email Thesis", "MASTER", Instant.now(), "Motivation", researchGroupId
-			);
+					null, "Accept Email Thesis", "MASTER", Instant.now(), "Motivation", researchGroupId,
+			true);
 
 			String appResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 							.header("Authorization", studentAuth)
@@ -488,8 +488,8 @@ class MailingServiceIntegrationTest extends BaseIntegrationTest {
 
 			AcceptApplicationPayload acceptPayload = new AcceptApplicationPayload(
 					"Accept Email Thesis", "MASTER", "ENGLISH",
-					List.of(advisor.userId()),
-					List.of(advisor.userId()),
+					List.of(supervisor.userId()),
+					List.of(supervisor.userId()),
 					true, false
 			);
 
@@ -521,8 +521,8 @@ class MailingServiceIntegrationTest extends BaseIntegrationTest {
 			UUID researchGroupId = createTestResearchGroup("Reject Email Group", head.universityId());
 
 			CreateApplicationPayload appPayload = new CreateApplicationPayload(
-					null, "Reject Email Thesis", "MASTER", Instant.now(), "Motivation", researchGroupId
-			);
+					null, "Reject Email Thesis", "MASTER", Instant.now(), "Motivation", researchGroupId,
+			true);
 
 			String appResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 							.header("Authorization", studentAuth)

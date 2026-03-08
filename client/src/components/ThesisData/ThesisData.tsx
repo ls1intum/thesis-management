@@ -17,7 +17,7 @@ type availableAdditionalInformation =
   | 'info'
   | 'state'
   | 'keywords'
-  | 'advisor-comments'
+  | 'supervisor-comments'
 
 interface IThesisDataProps {
   thesis: IThesis | IPublishedThesis
@@ -37,14 +37,14 @@ const ThesisData = (props: IThesisDataProps) => {
       <Grid>
         <Grid.Col span={{ md: 4 }}>
           <LabeledItem
-            label={pluralize('Examiner', (thesis.supervisors ?? []).length)}
-            value={<AvatarUserList users={thesis.supervisors ?? []} withUniversityId={true} />}
+            label={pluralize('Examiner', (thesis.examiners ?? []).length)}
+            value={<AvatarUserList users={thesis.examiners ?? []} withUniversityId={true} />}
           />
         </Grid.Col>
         <Grid.Col span={{ md: 4 }}>
           <LabeledItem
-            label={pluralize('Supervisor', (thesis.advisors ?? []).length)}
-            value={<AvatarUserList users={thesis.advisors ?? []} withUniversityId={true} />}
+            label={pluralize('Supervisor', (thesis.supervisors ?? []).length)}
+            value={<AvatarUserList users={thesis.supervisors ?? []} withUniversityId={true} />}
           />
         </Grid.Col>
         <Grid.Col span={{ md: 4 }}>
@@ -91,14 +91,16 @@ const ThesisData = (props: IThesisDataProps) => {
       {additionalInformation.includes('info') && isThesis(thesis) && (
         <DocumentEditor label='Additional Information' value={thesis.infoText} />
       )}
-      {additionalInformation.includes('advisor-comments') && access.advisor && isThesis(thesis) && (
-        <ThesisCommentsProvider limit={10} thesis={thesis} commentType='ADVISOR'>
-          <Divider />
-          <Title order={4}>Advisor Comments (Not visible to student)</Title>
-          <ThesisCommentsList />
-          <ThesisCommentsForm />
-        </ThesisCommentsProvider>
-      )}
+      {additionalInformation.includes('supervisor-comments') &&
+        access.supervisor &&
+        isThesis(thesis) && (
+          <ThesisCommentsProvider limit={10} thesis={thesis} commentType='SUPERVISOR'>
+            <Divider />
+            <Title order={4}>Supervisor Comments (Not visible to student)</Title>
+            <ThesisCommentsList />
+            <ThesisCommentsForm />
+          </ThesisCommentsProvider>
+        )}
     </Stack>
   )
 }

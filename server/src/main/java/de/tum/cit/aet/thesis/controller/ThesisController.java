@@ -156,7 +156,7 @@ public class ThesisController {
 			throw new AccessDeniedException("You do not have the required permissions to view this thesis");
 		}
 
-		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
+		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasSupervisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
 
 	/**
@@ -175,14 +175,14 @@ public class ThesisController {
 				RequestValidator.validateStringMaxLength(payload.thesisTitle(), StringLimits.THESIS_TITLE.getLimit()),
 				RequestValidator.validateStringMaxLength(payload.thesisType(), StringLimits.SHORTTEXT.getLimit()),
 				RequestValidator.validateStringMaxLength(payload.language(), StringLimits.SHORTTEXT.getLimit()),
+				RequestValidator.validateNotNull(payload.examinerIds()),
 				RequestValidator.validateNotNull(payload.supervisorIds()),
-				RequestValidator.validateNotNull(payload.advisorIds()),
 				RequestValidator.validateNotNull(payload.studentIds()),
 				null,
 				true,
 				RequestValidator.validateNotNull(payload.researchGroupId())
 		);
-		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
+		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasSupervisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
 
 	/**
@@ -200,8 +200,8 @@ public class ThesisController {
 		User currentUser = currentUserProvider().getUser();
 		Thesis thesis = thesisService.findById(thesisId);
 
-		if (!thesis.hasAdvisorAccess(currentUser)) {
-			throw new AccessDeniedException("You need to be an advisor of this thesis to update the thesis");
+		if (!thesis.hasSupervisorAccess(currentUser)) {
+			throw new AccessDeniedException("You need to be a supervisor of this thesis to update the thesis");
 		}
 
 		thesis = thesisService.updateThesis(
@@ -214,13 +214,13 @@ public class ThesisController {
 				payload.startDate(),
 				payload.endDate(),
 				RequestValidator.validateNotNull(payload.studentIds()),
-				RequestValidator.validateNotNull(payload.advisorIds()),
 				RequestValidator.validateNotNull(payload.supervisorIds()),
+				RequestValidator.validateNotNull(payload.examinerIds()),
 				RequestValidator.validateNotNull(payload.states()),
 				RequestValidator.validateNotNull(payload.researchGroupId())
 		);
 
-		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
+		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasSupervisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
 
 	/**
@@ -236,13 +236,13 @@ public class ThesisController {
 		User currentUser = currentUserProvider().getUser();
 		Thesis thesis = thesisService.findById(thesisId);
 
-		if (!thesis.hasAdvisorAccess(currentUser)) {
-			throw new AccessDeniedException("You do not have the required permissions to view this thesis");
+		if (!thesis.hasSupervisorAccess(currentUser)) {
+			throw new AccessDeniedException("You do not have the required permissions to close this thesis");
 		}
 
 		thesis = thesisService.closeThesis(thesis);
 
-		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
+		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasSupervisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
 
 	/**
@@ -276,7 +276,7 @@ public class ThesisController {
 				payload.secondaryTitles()
 		);
 
-		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
+		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasSupervisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
 
 	/**
@@ -294,8 +294,8 @@ public class ThesisController {
 		User currentUser = currentUserProvider().getUser();
 		Thesis thesis = thesisService.findById(thesisId);
 
-		if (!thesis.hasAdvisorAccess(currentUser)) {
-			throw new AccessDeniedException("You need to be an advisor of this thesis to update the student credits");
+		if (!thesis.hasSupervisorAccess(currentUser)) {
+			throw new AccessDeniedException("You need to be a supervisor of this thesis to update the student credits");
 		}
 
 		thesis = thesisService.updateThesisCredits(
@@ -303,7 +303,7 @@ public class ThesisController {
 				payload.credits()
 		);
 
-		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
+		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasSupervisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
 
 	/* FEEDBACK ENDPOINTS */
@@ -330,7 +330,7 @@ public class ThesisController {
 
 		thesis = thesisService.completeFeedback(thesis, feedbackId, action.equals("complete"));
 
-		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
+		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasSupervisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
 
 	/**
@@ -348,13 +348,13 @@ public class ThesisController {
 		User currentUser = currentUserProvider().getUser();
 		Thesis thesis = thesisService.findById(thesisId);
 
-		if (!thesis.hasAdvisorAccess(currentUser)) {
-			throw new AccessDeniedException("You need to be a advisor of this thesis to delete a feedback item");
+		if (!thesis.hasSupervisorAccess(currentUser)) {
+			throw new AccessDeniedException("You need to be a supervisor of this thesis to delete a feedback item");
 		}
 
 		thesis = thesisService.deleteFeedback(thesis, feedbackId);
 
-		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
+		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasSupervisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
 
 	/**
@@ -372,8 +372,8 @@ public class ThesisController {
 		User currentUser = currentUserProvider().getUser();
 		Thesis thesis = thesisService.findById(thesisId);
 
-		if (!thesis.hasAdvisorAccess(currentUser)) {
-			throw new AccessDeniedException("You need to be an advisor of this thesis to request changes");
+		if (!thesis.hasSupervisorAccess(currentUser)) {
+			throw new AccessDeniedException("You need to be a supervisor of this thesis to request changes");
 		}
 
 		thesis = thesisService.requestChanges(
@@ -382,7 +382,7 @@ public class ThesisController {
 				RequestValidator.validateNotNull(payload.requestedChanges())
 		);
 
-		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
+		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasSupervisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
 
 	/* PROPOSAL ENDPOINTS */
@@ -430,13 +430,13 @@ public class ThesisController {
 		User currentUser = currentUserProvider().getUser();
 		Thesis thesis = thesisService.findById(thesisId);
 
-		if (!thesis.hasAdvisorAccess(currentUser)) {
+		if (!thesis.hasSupervisorAccess(currentUser)) {
 			throw new AccessDeniedException("You do not have the required permissions to delete this proposal");
 		}
 
 		thesis = thesisService.deleteProposal(thesis, proposalId);
 
-		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
+		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasSupervisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
 
 	/**
@@ -458,13 +458,13 @@ public class ThesisController {
 			throw new AccessDeniedException("You need to be a student of this thesis to add a proposal");
 		}
 
-		if (thesis.getState() != ThesisState.PROPOSAL && !thesis.hasAdvisorAccess(currentUser)) {
-			throw new AccessDeniedException("Only advisors can upload a new proposal if thesis state is not PROPOSAL");
+		if (thesis.getState() != ThesisState.PROPOSAL && !thesis.hasSupervisorAccess(currentUser)) {
+			throw new AccessDeniedException("Only supervisors can upload a new proposal if thesis state is not PROPOSAL");
 		}
 
 		thesis = thesisService.uploadProposal(thesis, RequestValidator.validateNotNull(proposalFile));
 
-		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
+		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasSupervisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
 
 	/**
@@ -480,13 +480,13 @@ public class ThesisController {
 		User currentUser = currentUserProvider().getUser();
 		Thesis thesis = thesisService.findById(thesisId);
 
-		if (!thesis.hasAdvisorAccess(currentUser)) {
-			throw new AccessDeniedException("You need to be an advisor of this thesis to accept a proposal");
+		if (!thesis.hasSupervisorAccess(currentUser)) {
+			throw new AccessDeniedException("You need to be a supervisor of this thesis to accept a proposal");
 		}
 
 		thesis = thesisService.acceptProposal(thesis);
 
-		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
+		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasSupervisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
 
 	/* WRITING ENDPOINTS */
@@ -510,7 +510,7 @@ public class ThesisController {
 
 		thesis = thesisService.submitThesis(thesis);
 
-		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
+		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasSupervisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
 
 	/**
@@ -534,13 +534,13 @@ public class ThesisController {
 			throw new AccessDeniedException("You need to be a student of this thesis to upload thesis files");
 		}
 
-		if (thesis.getState() != ThesisState.WRITING && !thesis.hasAdvisorAccess(currentUser)) {
-			throw new AccessDeniedException("Only advisors can upload a new file if thesis state is not WRITING");
+		if (thesis.getState() != ThesisState.WRITING && !thesis.hasSupervisorAccess(currentUser)) {
+			throw new AccessDeniedException("Only supervisors can upload a new file if thesis state is not WRITING");
 		}
 
 		thesis = thesisService.uploadThesisFile(thesis, type, RequestValidator.validateNotNull(file));
 
-		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
+		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasSupervisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
 
 	/**
@@ -586,13 +586,13 @@ public class ThesisController {
 		User currentUser = currentUserProvider().getUser();
 		Thesis thesis = thesisService.findById(thesisId);
 
-		if (!thesis.hasAdvisorAccess(currentUser)) {
+		if (!thesis.hasSupervisorAccess(currentUser)) {
 			throw new AccessDeniedException("You do not have the required permissions to delete this file");
 		}
 
 		thesis = thesisService.deleteThesisFile(thesis, fileId);
 
-		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
+		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasSupervisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
 
 	/**
@@ -624,7 +624,7 @@ public class ThesisController {
 				RequestValidator.validateNotNull(payload.date())
 		);
 
-		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
+		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasSupervisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
 
 	/**
@@ -649,8 +649,8 @@ public class ThesisController {
 			throw new AccessDeniedException("You need to be a student of this thesis to update a presentation");
 		}
 
-		if (presentation.getState() == ThesisPresentationState.SCHEDULED && !thesis.hasAdvisorAccess(currentUser)) {
-			throw new AccessDeniedException("You need to be an advisor of this thesis to update a scheduled presentation");
+		if (presentation.getState() == ThesisPresentationState.SCHEDULED && !thesis.hasSupervisorAccess(currentUser)) {
+			throw new AccessDeniedException("You need to be a supervisor of this thesis to update a scheduled presentation");
 		}
 
 		thesis = thesisPresentationService.updatePresentation(
@@ -663,7 +663,7 @@ public class ThesisController {
 				RequestValidator.validateNotNull(payload.date())
 		);
 
-		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
+		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasSupervisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
 
 	/**
@@ -697,7 +697,7 @@ public class ThesisController {
 				RequestValidator.validateStringMaxLength(payload.note(), StringLimits.UNLIMITED_TEXT.getLimit())
 		);
 
-		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
+		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasSupervisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
 
 	/**
@@ -718,8 +718,8 @@ public class ThesisController {
 		ThesisPresentation presentation = thesisPresentationService.findById(thesisId, presentationId);
 		Thesis thesis = presentation.getThesis();
 
-		if (!thesis.hasAdvisorAccess(currentUser)) {
-			throw new AccessDeniedException("You need to be an advisor of this thesis to schedule a presentation");
+		if (!thesis.hasSupervisorAccess(currentUser)) {
+			throw new AccessDeniedException("You need to be a supervisor of this thesis to schedule a presentation");
 		}
 
 		thesis = thesisPresentationService.schedulePresentation(
@@ -729,7 +729,7 @@ public class ThesisController {
 				RequestValidator.validateNotNull(payload.optionalAttendees())
 		);
 
-		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
+		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasSupervisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
 
 	/**
@@ -753,7 +753,7 @@ public class ThesisController {
 
 		Thesis thesis = thesisPresentationService.deletePresentation(presentation);
 
-		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
+		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasSupervisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
 
 	/**
@@ -776,8 +776,8 @@ public class ThesisController {
 		User currentUser = currentUserProvider().getUser();
 		Thesis thesis = thesisService.findById(thesisId);
 
-		if (commentType == ThesisCommentType.ADVISOR && !thesis.hasAdvisorAccess(currentUser)) {
-			throw new AccessDeniedException("You need to be an advisor of this thesis to view advisor comments");
+		if (commentType == ThesisCommentType.SUPERVISOR && !thesis.hasSupervisorAccess(currentUser)) {
+			throw new AccessDeniedException("You need to be a supervisor of this thesis to view supervisor comments");
 		}
 
 		if (!thesis.hasReadAccess(currentUser)) {
@@ -806,8 +806,8 @@ public class ThesisController {
 		User currentUser = currentUserProvider().getUser();
 		Thesis thesis = thesisService.findById(thesisId);
 
-		if (payload.commentType() == ThesisCommentType.ADVISOR && !thesis.hasAdvisorAccess(currentUser)) {
-			throw new AccessDeniedException("You need to be an advisor of this thesis to add an advisor comment");
+		if (payload.commentType() == ThesisCommentType.SUPERVISOR && !thesis.hasSupervisorAccess(currentUser)) {
+			throw new AccessDeniedException("You need to be a supervisor of this thesis to add a supervisor comment");
 		}
 
 		if (!thesis.hasStudentAccess(currentUser)) {
@@ -839,8 +839,8 @@ public class ThesisController {
 		User currentUser = currentUserProvider().getUser();
 		ThesisComment comment = thesisCommentService.findById(thesisId, commentId);
 
-		if (comment.getType() == ThesisCommentType.ADVISOR && !comment.getThesis().hasAdvisorAccess(currentUser)) {
-			throw new AccessDeniedException("You need to be a advisor of this thesis to view an advisor file");
+		if (comment.getType() == ThesisCommentType.SUPERVISOR && !comment.getThesis().hasSupervisorAccess(currentUser)) {
+			throw new AccessDeniedException("You need to be a supervisor of this thesis to view a supervisor file");
 		}
 
 		if (!comment.getThesis().hasReadAccess(currentUser)) {
@@ -893,8 +893,8 @@ public class ThesisController {
 		User currentUser = currentUserProvider().getUser();
 		Thesis thesis = thesisService.findById(thesisId);
 
-		if (!thesis.hasAdvisorAccess(currentUser)) {
-			throw new AccessDeniedException("You need to be a advisor of this thesis to add an assessment");
+		if (!thesis.hasSupervisorAccess(currentUser)) {
+			throw new AccessDeniedException("You need to be a supervisor of this thesis to download the assessment");
 		}
 
 		return ResponseEntity.ok()
@@ -918,8 +918,8 @@ public class ThesisController {
 		User currentUser = currentUserProvider().getUser();
 		Thesis thesis = thesisService.findById(thesisId);
 
-		if (!thesis.hasAdvisorAccess(currentUser)) {
-			throw new AccessDeniedException("You need to be a advisor of this thesis to add an assessment");
+		if (!thesis.hasSupervisorAccess(currentUser)) {
+			throw new AccessDeniedException("You need to be a supervisor of this thesis to add an assessment");
 		}
 
 		thesis = thesisService.submitAssessment(
@@ -930,7 +930,7 @@ public class ThesisController {
 				RequestValidator.validateStringMaxLength(payload.gradeSuggestion(), StringLimits.THESIS_GRADE.getLimit())
 		);
 
-		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
+		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasSupervisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
 
 	/* GRADE ENDPOINTS */
@@ -950,8 +950,8 @@ public class ThesisController {
 		User currentUser = currentUserProvider().getUser();
 		Thesis thesis = thesisService.findById(thesisId);
 
-		if (!thesis.hasSupervisorAccess(currentUser)) {
-			throw new AccessDeniedException("You need to be a supervisor of this thesis to add a final grade");
+		if (!thesis.hasExaminerAccess(currentUser)) {
+			throw new AccessDeniedException("You need to be an examiner of this thesis to add a final grade");
 		}
 
 		thesis = thesisService.gradeThesis(
@@ -961,7 +961,7 @@ public class ThesisController {
 				RequestValidator.validateNotNull(payload.visibility())
 		);
 
-		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
+		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasSupervisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
 
 	/**
@@ -977,13 +977,13 @@ public class ThesisController {
 		User currentUser = currentUserProvider().getUser();
 		Thesis thesis = thesisService.findById(thesisId);
 
-		if (!thesis.hasSupervisorAccess(currentUser)) {
-			throw new AccessDeniedException("You need to be a supervisor of this thesis to close the thesis");
+		if (!thesis.hasExaminerAccess(currentUser)) {
+			throw new AccessDeniedException("You need to be an examiner of this thesis to close the thesis");
 		}
 
 		thesis = thesisService.completeThesis(thesis);
 
-		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasAdvisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
+		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasSupervisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
 
 	/* ANONYMIZATION ENDPOINTS */

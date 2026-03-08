@@ -27,6 +27,23 @@ This file provides guidance for Claude Code when working with this repository.
 - **Client**: React 19, TypeScript, Mantine UI, Webpack
 - **Deployment**: Docker multi-platform images (amd64/arm64), deployed via GitHub Actions
 
+## Local Dev Ports
+
+Local development uses non-standard ports to avoid conflicts with other projects:
+
+| Service | Port |
+|---------|------|
+| PostgreSQL | 5444 |
+| Keycloak | 8181 |
+| Spring Boot Server | 8180 |
+| Webpack Dev Server | 3100 |
+| Mailpit SMTP | 1125 |
+| Mailpit Web UI | 8125 |
+
+Production is unaffected — it uses Traefik on ports 80/443 with internal Docker networking.
+
+Start Docker services with `docker compose up -d` and wait for Keycloak to be ready (`curl -sf http://localhost:8181/realms/thesis-management`) before starting the server. Mailpit catches all outgoing emails in dev — view them at http://localhost:8125.
+
 ## Key Conventions
 
 ### DTO Serialization (`@JsonInclude(NON_EMPTY)`)
@@ -39,7 +56,7 @@ Do **not** use `@Transactional` on service methods. It causes performance issues
 
 ### Role Terminology
 
-The backend/Keycloak uses `supervisor` and `advisor` roles. In the UI these are displayed as "Examiner" and "Supervisor" respectively.
+The backend uses `EXAMINER` and `SUPERVISOR` as thesis role names (`ThesisRoleName` enum), matching the UI labels "Examiner" and "Supervisor". Keycloak groups remain `supervisor` and `advisor` for backward compatibility — do not rename them.
 
 ### Keycloak Configuration (Dev Only)
 

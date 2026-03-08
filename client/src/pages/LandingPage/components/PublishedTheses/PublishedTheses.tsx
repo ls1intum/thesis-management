@@ -109,11 +109,11 @@ const PublishedTheses = ({ search, representationType, filters, limit }: Publish
             render: (thesis) => <AvatarUserList users={thesis.students ?? []} />,
           },
           {
-            accessor: 'advisors',
+            accessor: 'supervisors',
             title: 'Supervisor(s)',
             ellipsis: true,
             width: 180,
-            render: (thesis) => <AvatarUserList users={thesis.advisors ?? []} />,
+            render: (thesis) => <AvatarUserList users={thesis.supervisors ?? []} />,
           },
           {
             accessor: 'researchGroup.name',

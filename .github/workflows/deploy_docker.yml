@@ -150,6 +150,7 @@ jobs:
             SERVER_IMAGE_TAG=${SERVER_TAG:-latest}
             CLIENT_IMAGE_TAG=${CLIENT_TAG:-latest}
             ENVEOF
+            sed -i 's/^[[:space:]]*//' .env.prod
 
       # Pull new images while old containers are still running and serving traffic.
       # This is the slow step (~1-2 min), but causes zero downtime since old

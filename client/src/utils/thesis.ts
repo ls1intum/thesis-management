@@ -19,25 +19,9 @@ export function hasStudentAccess(
 
   const users = [
     ...(thesis.students ?? []),
-    ...(thesis.advisors ?? []),
     ...(thesis.supervisors ?? []),
+    ...(thesis.examiners ?? []),
   ]
-
-  return !!(
-    users.some((row) => row.userId === user?.userId) ||
-    user?.groups?.some((name) => name === 'admin')
-  )
-}
-
-export function hasAdvisorAccess(
-  thesis: IPublishedThesis | undefined,
-  user: ILightUser | undefined,
-) {
-  if (!thesis) {
-    return false
-  }
-
-  const users = [...(thesis.advisors ?? []), ...(thesis.supervisors ?? [])]
 
   return !!(
     users.some((row) => row.userId === user?.userId) ||
@@ -49,8 +33,24 @@ export function hasSupervisorAccess(
   thesis: IPublishedThesis | undefined,
   user: ILightUser | undefined,
 ) {
+  if (!thesis) {
+    return false
+  }
+
+  const users = [...(thesis.supervisors ?? []), ...(thesis.examiners ?? [])]
+
   return !!(
-    (thesis?.supervisors ?? []).some((row) => row.userId === user?.userId) ||
+    users.some((row) => row.userId === user?.userId) ||
+    user?.groups?.some((name) => name === 'admin')
+  )
+}
+
+export function hasExaminerAccess(
+  thesis: IPublishedThesis | undefined,
+  user: ILightUser | undefined,
+) {
+  return !!(
+    (thesis?.examiners ?? []).some((row) => row.userId === user?.userId) ||
     user?.groups?.some((name) => name === 'admin')
   )
 }

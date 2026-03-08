@@ -16,8 +16,8 @@ public record UpdateThesisPayload(
 		Instant startDate,
 		Instant endDate,
 		List<UUID> studentIds,
-		List<UUID> advisorIds,
 		List<UUID> supervisorIds,
+		List<UUID> examinerIds,
 		List<ThesisStatePayload> states,
 		UUID researchGroupId
 ) {

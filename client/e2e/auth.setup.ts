@@ -4,10 +4,10 @@ const TEST_USERS = [
   { name: 'student', username: 'student', password: 'student' },
   { name: 'student2', username: 'student2', password: 'student2' },
   { name: 'student3', username: 'student3', password: 'student3' },
-  { name: 'advisor', username: 'advisor', password: 'advisor' },
-  { name: 'advisor2', username: 'advisor2', password: 'advisor2' },
   { name: 'supervisor', username: 'supervisor', password: 'supervisor' },
   { name: 'supervisor2', username: 'supervisor2', password: 'supervisor2' },
+  { name: 'examiner', username: 'examiner', password: 'examiner' },
+  { name: 'examiner2', username: 'examiner2', password: 'examiner2' },
   { name: 'admin', username: 'admin', password: 'admin' },
   { name: 'delete_old_thesis', username: 'delete_old_thesis', password: 'delete_old_thesis' },
   {
@@ -32,7 +32,7 @@ for (const user of TEST_USERS) {
     await page.locator('#kc-login').click()
 
     // Wait for redirect back to the app and the dashboard to load
-    await expect(page).toHaveURL(/localhost:3000/, { timeout: 30_000 })
+    await expect(page).toHaveURL(/localhost:\d+/, { timeout: 30_000 })
 
     // Wait for the app to fully initialize with the auth tokens
     await page.waitForFunction(

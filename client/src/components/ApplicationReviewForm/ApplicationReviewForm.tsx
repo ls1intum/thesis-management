@@ -44,8 +44,8 @@ interface IApplicationReviewForm {
   type: string | null
   language: string | null
   comment: string
-  advisors: string[]
-  supervisors: string[]
+  supervisorIds: string[]
+  examinerIds: string[]
   notifyUser: boolean
   closeTopic: boolean
 }
@@ -70,8 +70,8 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
       type: null,
       language: getDefaultLanguage(),
       comment: '',
-      advisors: [],
-      supervisors: [],
+      supervisorIds: [],
+      examinerIds: [],
       notifyUser: true,
       closeTopic: false,
     },
@@ -79,8 +79,8 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
     validate: {
       title: isNotEmpty('Thesis title must not be empty'),
       type: isNotEmpty('Thesis type must not be empty'),
-      advisors: isNotEmptyUserList('advisor'),
-      supervisors: isNotEmptyUserList('supervisor'),
+      supervisorIds: isNotEmptyUserList('supervisor'),
+      examinerIds: isNotEmptyUserList('examiner'),
       language: isNotEmpty('Thesis language must not be empty'),
     },
   })
@@ -96,11 +96,13 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
             ? application.user.studyDegree
             : null,
         language: getDefaultLanguage(),
-        advisors: (application.topic?.advisors ?? []).map((advisor) => advisor.userId),
-        supervisors:
-          (application.topic?.supervisors ?? []).length > 0
-            ? (application.topic?.supervisors ?? []).map((supervisor) => supervisor.userId)
-            : [application.researchGroup.head.userId],
+        supervisorIds: (application.topic?.supervisors ?? []).map(
+          (supervisor) => supervisor.userId,
+        ),
+        examinerIds:
+          (application.topic?.examiners ?? []).length > 0
+            ? (application.topic?.examiners ?? []).map((examiner) => examiner.userId)
+            : [application.researchGroup?.head?.userId].filter(Boolean),
         notifyUser: true,
         closeTopic: false,
       })
@@ -154,8 +156,8 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
             thesisTitle: values.title,
             thesisType: values.type,
             language: values.language,
-            advisorIds: values.advisors,
-            supervisorIds: values.supervisors,
+            supervisorIds: values.supervisorIds,
+            examinerIds: values.examinerIds,
             notifyUser: values.notifyUser,
             closeTopic: values.closeTopic,
           },
@@ -344,19 +346,19 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
           />
 
           <UserMultiSelect
-            label='Supervisor'
+            label='Examiner'
             required={true}
             groups={['supervisor']}
             maxValues={1}
-            initialUsers={application.topic?.supervisors}
-            {...form.getInputProps('supervisors')}
+            initialUsers={application.topic?.examiners ?? []}
+            {...form.getInputProps('examinerIds')}
           />
           <UserMultiSelect
-            label='Advisor(s)'
+            label='Supervisor(s)'
             required={true}
             groups={['advisor', 'supervisor']}
-            initialUsers={application.topic?.advisors}
-            {...form.getInputProps('advisors')}
+            initialUsers={application.topic?.supervisors ?? []}
+            {...form.getInputProps('supervisorIds')}
           />
 
           <Checkbox

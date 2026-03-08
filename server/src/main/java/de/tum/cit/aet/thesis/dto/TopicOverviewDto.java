@@ -19,8 +19,8 @@ public record TopicOverviewDto(
 	TopicState state,
 	Set<String> thesisTypes,
 	Instant createdAt,
-	List<MinimalUserDto> advisors,
 	List<MinimalUserDto> supervisors,
+	List<MinimalUserDto> examiners,
 	MinimalResearchGroupDto researchGroup
 ) {
 
@@ -29,14 +29,14 @@ public record TopicOverviewDto(
 			return null;
 		}
 
-		List<MinimalUserDto> advisors = new ArrayList<>();
 		List<MinimalUserDto> supervisors = new ArrayList<>();
+		List<MinimalUserDto> examiners = new ArrayList<>();
 
 		for (TopicRole role : topic.getRoles()) {
-			if (role.getId().getRole() == ThesisRoleName.ADVISOR) {
-				advisors.add(MinimalUserDto.fromUserEntity(role.getUser()));
-			} else if (role.getId().getRole() == ThesisRoleName.SUPERVISOR) {
+			if (role.getId().getRole() == ThesisRoleName.SUPERVISOR) {
 				supervisors.add(MinimalUserDto.fromUserEntity(role.getUser()));
+			} else if (role.getId().getRole() == ThesisRoleName.EXAMINER) {
+				examiners.add(MinimalUserDto.fromUserEntity(role.getUser()));
 			}
 		}
 
@@ -46,8 +46,8 @@ public record TopicOverviewDto(
 			topic.getTopicState(),
 			topic.getThesisTypes(),
 			topic.getCreatedAt(),
-			advisors,
 			supervisors,
+			examiners,
 			MinimalResearchGroupDto.fromResearchGroupEntity(topic.getResearchGroup())
 		);
 	}

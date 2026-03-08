@@ -53,8 +53,8 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
     goals: string
     references: string
     thesisTypes: string[]
+    examinerIds: string[]
     supervisorIds: string[]
-    advisorIds: string[]
     researchGroupId: string
     intendedStart: Date | undefined
     applicationDeadline: Date | undefined
@@ -67,8 +67,8 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
       requirements: '',
       goals: '',
       references: '',
+      examinerIds: [],
       supervisorIds: [],
-      advisorIds: [],
       researchGroupId: '',
       intendedStart: undefined,
       applicationDeadline: undefined,
@@ -77,8 +77,8 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
     validate: {
       title: isNotEmpty('Title is required'),
       problemStatement: isNotEmpty('Problem statement is required'),
+      examinerIds: isNotEmptyUserList('examiner'),
       supervisorIds: isNotEmptyUserList('supervisor'),
-      advisorIds: isNotEmptyUserList('advisor'),
       researchGroupId: isNotEmpty('Research group is required'),
     },
   })
@@ -94,8 +94,8 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
         requirements: topic.requirements ?? '',
         goals: topic.goals ?? '',
         references: topic.references ?? '',
+        examinerIds: (topic.examiners ?? []).map((examiner) => examiner.userId),
         supervisorIds: (topic.supervisors ?? []).map((supervisor) => supervisor.userId),
-        advisorIds: (topic.advisors ?? []).map((advisor) => advisor.userId),
         researchGroupId: topic.researchGroup.id,
         intendedStart: topic.intendedStart ? new Date(topic.intendedStart) : undefined,
         applicationDeadline: topic.applicationDeadline
@@ -139,9 +139,10 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
           })
 
           if ((res.data.content ?? []).length === 1) {
+            const onlyGroup = (res.data.content ?? [])[0]
             form.setValues({
-              researchGroupId: (res.data.content ?? [])[0].id,
-              supervisorIds: [(res.data.content ?? [])[0].head.userId],
+              researchGroupId: onlyGroup.id,
+              examinerIds: onlyGroup.head?.userId ? [onlyGroup.head.userId] : [],
             })
           }
         } else {
@@ -175,8 +176,8 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
           requirements: form.values.requirements,
           goals: form.values.goals,
           references: form.values.references,
+          examinerIds: form.values.examinerIds,
           supervisorIds: form.values.supervisorIds,
-          advisorIds: form.values.advisorIds,
           researchGroupId: form.values.researchGroupId,
           intendedStart: form.values.intendedStart ?? null,
           applicationDeadline: form.values.applicationDeadline ?? null,
@@ -235,16 +236,16 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
               label='Examiner'
               required
               groups={['supervisor']}
-              initialUsers={topic?.supervisors}
+              initialUsers={topic?.examiners ?? []}
               maxValues={1}
-              {...form.getInputProps('supervisorIds')}
+              {...form.getInputProps('examinerIds')}
             />
             <UserMultiSelect
               label='Supervisor(s)'
               required
               groups={['advisor', 'supervisor']}
-              initialUsers={topic?.advisors}
-              {...form.getInputProps('advisorIds')}
+              initialUsers={topic?.supervisors ?? []}
+              {...form.getInputProps('supervisorIds')}
             />
             <Select
               label='Research Group'

@@ -1,9 +1,12 @@
+server:
+  port: 8180
+
 spring:
   liquibase:
     contexts: dev
   mail:
     host: localhost
-    port: 1025
+    port: 1125
     username: ""
     password: ""
     properties:

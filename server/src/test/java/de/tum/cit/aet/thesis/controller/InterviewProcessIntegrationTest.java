@@ -57,8 +57,8 @@ class InterviewProcessIntegrationTest extends BaseIntegrationTest {
 		TestUser student = createRandomTestUser(List.of("student"));
 		String studentAuth = generateTestAuthenticationHeader(student.universityId(), List.of("student"));
 		CreateApplicationPayload appPayload = new CreateApplicationPayload(
-				topicId, null, "MASTER", Instant.now(), "Interview motivation", researchGroupId
-		);
+				topicId, null, "MASTER", Instant.now(), "Interview motivation", researchGroupId,
+		true);
 		String appResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 						.header("Authorization", studentAuth)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -307,8 +307,8 @@ class InterviewProcessIntegrationTest extends BaseIntegrationTest {
 			TestUser student2 = createRandomTestUser(List.of("student"));
 			String student2Auth = generateTestAuthenticationHeader(student2.universityId(), List.of("student"));
 			CreateApplicationPayload appPayload = new CreateApplicationPayload(
-					setup.topicId, null, "BACHELOR", Instant.now(), "Another motivation", null
-			);
+					setup.topicId, null, "BACHELOR", Instant.now(), "Another motivation", null,
+			true);
 			String appResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 							.header("Authorization", student2Auth)
 							.contentType(MediaType.APPLICATION_JSON)

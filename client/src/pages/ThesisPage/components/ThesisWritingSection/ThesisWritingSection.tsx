@@ -58,7 +58,9 @@ const ThesisWritingSection = () => {
     } else {
       if (access.student && thesis.state === ThesisState.SUBMITTED) {
         // It is not possible to return this message in the endpoint, the client already catches that the student is not permitted to submit and returns a 403
-        showSimpleError('Cannot upload files after final submission. Please contact your advisor.')
+        showSimpleError(
+          'Cannot upload files after final submission. Please contact your supervisor.',
+        )
       } else {
         showSimpleError(getApiResponseErrorMessage(response))
       }
@@ -130,7 +132,7 @@ const ThesisWritingSection = () => {
                             aspectRatio={16 / 10}
                             actionButton={
                               ((access.student && thesis.state === ThesisState.WRITING) ||
-                                access.advisor) &&
+                                access.supervisor) &&
                               !isThesisClosed(thesis) ? (
                                 <UploadFileButton
                                   maxSize={25 * 1024 * 1024}
@@ -216,7 +218,7 @@ const ThesisWritingSection = () => {
                                       </AuthenticatedFileDownloadButton>
                                     )}
                                     {((access.student && thesis.state === ThesisState.WRITING) ||
-                                      access.advisor) &&
+                                      access.supervisor) &&
                                       !isThesisClosed(thesis) && (
                                         <UploadFileButton
                                           onUpload={(file) => onFileUpload(key, file)}
@@ -256,7 +258,7 @@ const ThesisWritingSection = () => {
                           uploadedBy: file.uploadedBy,
                           uploadedAt: file.uploadedAt,
                           onDelete:
-                            access.advisor && !isThesisClosed(thesis)
+                            access.supervisor && !isThesisClosed(thesis)
                               ? async () => {
                                   const response = await doRequest<IThesis>(
                                     `/v2/theses/${thesis.thesisId}/files/${file.fileId}`,

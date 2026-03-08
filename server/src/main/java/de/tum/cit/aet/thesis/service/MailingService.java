@@ -159,7 +159,7 @@ public class MailingService {
 		String safeThesisTitle = HtmlUtils.htmlEscape(thesisTitle);
 
 		String subject = "New Thesis Application";
-		String body = "<p>Dear colleague,</p>"
+		String body = "<p th:inline=\"text\">Dear [[${recipient.firstName}]],</p>"
 				+ "<p>A new thesis application has been submitted by <strong>" + safeApplicantName + "</strong>"
 				+ (thesisTitle.isEmpty() ? "." : " for the topic <strong>" + safeThesisTitle + "</strong>.")
 				+ "</p>"
@@ -210,16 +210,17 @@ public class MailingService {
 	}
 
 	/**
-	 * Sends an application acceptance email to the student with advisor and thesis details.
+	 * Sends an application acceptance email to the student with supervisor and thesis details.
 	 *
 	 * @param application the accepted application
 	 * @param thesis the thesis created from the application
 	 */
 	public void sendApplicationAcceptanceEmail(Application application, Thesis thesis) {
-		User advisor = thesis.getAdvisors().getFirst();
-		User supervisor = thesis.getSupervisors().getFirst();
+		// Variable named "advisor" to match the email template placeholder key ${advisor.*}
+		User advisor = thesis.getSupervisors().getFirst();
+		User examiner = thesis.getExaminers().getFirst();
 
-		String templateCase = advisor.getId().equals(supervisor.getId()) ? "APPLICATION_ACCEPTED_NO_ADVISOR" :
+		String templateCase = advisor.getId().equals(examiner.getId()) ? "APPLICATION_ACCEPTED_NO_SUPERVISOR" :
 				"APPLICATION_ACCEPTED";
 
 		EmailTemplate emailTemplate = loadTemplate(
@@ -338,12 +339,12 @@ public class MailingService {
 				templateCase,
 				"en");
 
-		User advisor = slot.getInterviewProcess().getTopic().getAdvisors().getFirst();
+		User supervisor = slot.getInterviewProcess().getTopic().getSupervisors().getFirst();
 
 		MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(), emailTemplate.getBodyHtml());
 		mailBuilder
 				.addPrimaryRecipient(slot.getInterviewee().getApplication().getUser())
-				.addSecondaryRecipient(advisor)
+				.addSecondaryRecipient(supervisor)
 				.addNotificationName(emailTemplate.getSubject())
 				.fillApplicationPlaceholders(slot.getInterviewee().getApplication())
 				.fillIntervieweePlaceholders(slot.getInterviewee())
@@ -394,7 +395,7 @@ public class MailingService {
 	}
 
 	/**
-	 * Sends a proposal upload notification email to thesis advisors with the proposal as an attachment.
+	 * Sends a proposal upload notification email to thesis supervisors with the proposal as an attachment.
 	 *
 	 * @param proposal the uploaded thesis proposal
 	 */
@@ -406,7 +407,7 @@ public class MailingService {
 		MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(), emailTemplate.getBodyHtml());
 		mailBuilder
 				.addPrimarySender(proposal.getCreatedBy())
-				.sendToThesisAdvisors(proposal.getThesis())
+				.sendToThesisSupervisors(proposal.getThesis())
 				.addNotificationName(NOTIFICATION_NAME_START + proposal.getThesis().getId())
 				.fillThesisProposalPlaceholders(proposal)
 				.addStoredAttachment(proposal.getProposalFilename(), getThesisFilename(proposal.getThesis(), "Proposal", proposal.getProposalFilename()))
@@ -462,7 +463,7 @@ public class MailingService {
 	}
 
 	/**
-	 * Sends a new comment notification email to advisors or students depending on the comment type.
+	 * Sends a new comment notification email to supervisors or students depending on the comment type.
 	 *
 	 * @param comment the newly posted thesis comment
 	 */
@@ -473,8 +474,8 @@ public class MailingService {
 				"en");
 		MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(), emailTemplate.getBodyHtml());
 
-		if (comment.getType() == ThesisCommentType.ADVISOR) {
-			mailBuilder.sendToThesisAdvisors(comment.getThesis());
+		if (comment.getType() == ThesisCommentType.SUPERVISOR) {
+			mailBuilder.sendToThesisSupervisors(comment.getThesis());
 		} else {
 			mailBuilder.sendToThesisStudents(comment.getThesis());
 		}
@@ -585,7 +586,7 @@ public class MailingService {
 	}
 
 	/**
-	 * Sends a final thesis submission notification email to the thesis advisors.
+	 * Sends a final thesis submission notification email to the thesis supervisors.
 	 *
 	 * @param thesis the submitted thesis
 	 */
@@ -597,7 +598,7 @@ public class MailingService {
 		MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(),
 				emailTemplate.getBodyHtml());
 		mailBuilder
-				.sendToThesisAdvisors(thesis)
+				.sendToThesisSupervisors(thesis)
 				.addNotificationName(NOTIFICATION_NAME_START + thesis.getId())
 				.fillThesisPlaceholders(thesis)
 				//.addStoredAttachment(thesis.getFinalThesisFilename(), getThesisFilename(thesis, "File", thesis.getFinalThesisFilename()))
@@ -619,7 +620,7 @@ public class MailingService {
 				emailTemplate.getBodyHtml());
 		mailBuilder
 				.addPrimarySender(assessment.getCreatedBy())
-				.sendToThesisSupervisors(assessment.getThesis())
+				.sendToThesisExaminers(assessment.getThesis())
 				.addNotificationName(NOTIFICATION_NAME_START + assessment.getThesis().getId())
 				.fillThesisAssessmentPlaceholders(assessment)
 				.send(javaMailSender, uploadService);

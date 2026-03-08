@@ -7,8 +7,8 @@ import lombok.Getter;
 @Getter
 public enum ThesisRoleName {
 	STUDENT("STUDENT"),
-	ADVISOR("ADVISOR"),
-	SUPERVISOR("SUPERVISOR");
+	SUPERVISOR("SUPERVISOR"),
+	EXAMINER("EXAMINER");
 
 	private final String value;
 }

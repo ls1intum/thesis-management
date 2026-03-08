@@ -70,7 +70,7 @@ const DownloadAllFilesButton = () => {
       const fileRequests = files.map((item) => ({ ...item, zip }))
 
       const commentsZip = zip.folder('comments')
-      const commentTypes = access.advisor ? ['THESIS', 'ADVISOR'] : ['THESIS']
+      const commentTypes = access.supervisor ? ['THESIS', 'SUPERVISOR'] : ['THESIS']
 
       for (const commentType of commentTypes) {
         const response = await doRequest<PaginationResponse<IThesisComment>>(
