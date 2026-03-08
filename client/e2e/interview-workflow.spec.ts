@@ -105,5 +105,8 @@ test.describe('Interview Workflow', () => {
 
     // Should show Interviewees section header
     await expect(page.getByRole('heading', { name: 'Interviewees', exact: true })).toBeVisible()
+
+    // Should show filter tabs for interviewees (All, Assessed, Not Assessed)
+    await expect(page.getByText(/All/i).first()).toBeVisible()
   })
 })
