@@ -57,7 +57,7 @@ jobs:
 
       - name: Install Docker Buildx
         if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
@@ -131,7 +131,7 @@ jobs:
 
       - name: Install Docker Buildx
         if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
