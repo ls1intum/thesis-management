@@ -79,7 +79,10 @@ test.describe('Presentations - Public', () => {
 
     // Should show not found or error state, not a blank page
     await expect(
-      page.getByText(/not found/i).or(page.getByText(/error/i)).first(),
+      page
+        .getByText(/not found/i)
+        .or(page.getByText(/error/i))
+        .first(),
     ).toBeVisible({ timeout: 15_000 })
   })
 })

@@ -79,12 +79,8 @@ test.describe('Theses - Detail page (Supervisor)', () => {
     await expect(page.getByText('Involved Persons')).toBeVisible()
 
     // Thesis accordion sections should be present for supervisor
-    await expect(
-      page.getByRole('button', { name: 'Proposal', exact: true }),
-    ).toBeVisible()
-    await expect(
-      page.getByRole('button', { name: 'Presentation', exact: true }),
-    ).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Proposal', exact: true })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Presentation', exact: true })).toBeVisible()
     // Supervisor should see comments section
     await expect(page.getByRole('button', { name: /supervisor comments/i })).toBeVisible()
   })
@@ -114,12 +110,8 @@ test.describe('Theses - Detail page (Student)', () => {
 
     // Should show thesis accordion sections visible to students
     await expect(page.getByRole('button', { name: 'Configuration' })).toBeVisible()
-    await expect(
-      page.getByRole('button', { name: 'Proposal', exact: true }),
-    ).toBeVisible()
-    await expect(
-      page.getByRole('button', { name: 'Presentation', exact: true }),
-    ).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Proposal', exact: true })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Presentation', exact: true })).toBeVisible()
 
     // Student should see the Comments section
     await expect(page.getByRole('button', { name: 'Comments' })).toBeVisible()

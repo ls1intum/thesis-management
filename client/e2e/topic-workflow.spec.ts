@@ -73,9 +73,7 @@ test.describe('Topic Workflow - Examiner creates a topic', () => {
 test.describe('Topic Workflow - Examiner2 creates a topic for DSA group', () => {
   test.use({ storageState: authStatePath('examiner2') })
 
-  test('examiner2 can access the create topic form', async ({
-    page,
-  }) => {
+  test('examiner2 can access the create topic form with DSA group pre-filled', async ({ page }) => {
     test.setTimeout(120_000)
 
     await navigateTo(page, '/topics')
@@ -93,6 +91,10 @@ test.describe('Topic Workflow - Examiner2 creates a topic for DSA group', () => 
 
     // Verify essential fields exist in the form
     await expect(dialog.getByLabel('Title')).toBeVisible()
+
+    // Research Group should be pre-filled with DSA for examiner2
+    const researchGroupInput = dialog.getByRole('textbox', { name: 'Research Group' })
+    await expect(researchGroupInput).not.toHaveValue('', { timeout: 5_000 })
 
     // Close without creating
     const closeButton = dialog

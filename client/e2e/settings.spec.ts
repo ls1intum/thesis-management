@@ -30,8 +30,8 @@ test.describe('Settings - Student', () => {
     await expect(page).toHaveURL(/\/settings\/notifications/)
     await expect(page.getByText('Notification Settings')).toBeVisible({ timeout: 15_000 })
 
-    // Should show notification preference options (email notification toggles)
-    await expect(page.getByText(/email/i).first()).toBeVisible()
+    // Should show notification preference options
+    await expect(page.getByText('Presentation Invitations')).toBeVisible()
   })
 })
 
@@ -71,6 +71,6 @@ test.describe('Settings - Examiner', () => {
     await expect(page.getByText('Notification Settings')).toBeVisible({ timeout: 15_000 })
 
     // Examiner has notification settings configured in seed data
-    await expect(page.getByText(/email/i).first()).toBeVisible()
+    await expect(page.getByText('Presentation Invitations')).toBeVisible()
   })
 })

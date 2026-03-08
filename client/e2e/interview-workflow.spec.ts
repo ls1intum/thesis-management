@@ -62,6 +62,7 @@ test.describe('Interview Workflow', () => {
 
     // Seeded interviewees for process 1: student4 (NULL score) and student5 (scored 45)
     await expect(page.getByText(/Student4/i).first()).toBeVisible({ timeout: 10_000 })
+    await expect(page.getByText(/Student5/i).first()).toBeVisible({ timeout: 10_000 })
 
     // Click "Add Slot" button to open the modal
     await page.getByRole('button', { name: /Add Slot|^Add$/i }).click()

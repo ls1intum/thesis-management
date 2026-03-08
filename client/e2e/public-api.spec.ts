@@ -31,9 +31,7 @@ test.describe('Public API - Avatar access control', () => {
 
     const studentUserId = publicThesis.students[0].userId
     expect(studentUserId, 'Public thesis student should have a userId').toBeDefined()
-    expect(studentUserId).toMatch(
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
-    )
+    expect(studentUserId).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/)
 
     // Avatar request for a publicly visible user should pass the visibility check.
     // Returns 200 if avatar exists, or 404 if no avatar file is set.

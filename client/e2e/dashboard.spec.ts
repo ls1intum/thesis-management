@@ -31,7 +31,9 @@ test.describe('Dashboard - Supervisor', () => {
     await expect(page.getByText(/Automated Code Review/i).first()).toBeVisible({ timeout: 10_000 })
 
     // Supervisor should also see thesis 2
-    await expect(page.getByText(/CI Pipeline Optimization/i).first()).toBeVisible({ timeout: 5_000 })
+    await expect(page.getByText(/CI Pipeline Optimization/i).first()).toBeVisible({
+      timeout: 5_000,
+    })
   })
 })
 
@@ -46,7 +48,9 @@ test.describe('Dashboard - Examiner', () => {
 
     // Examiner is assigned to thesis 1 (WRITING) and thesis 2 (PROPOSAL) as examiner
     await expect(page.getByText(/Automated Code Review/i).first()).toBeVisible({ timeout: 10_000 })
-    await expect(page.getByText(/CI Pipeline Optimization/i).first()).toBeVisible({ timeout: 5_000 })
+    await expect(page.getByText(/CI Pipeline Optimization/i).first()).toBeVisible({
+      timeout: 5_000,
+    })
   })
 })
 
