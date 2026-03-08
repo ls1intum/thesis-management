@@ -57,27 +57,37 @@ test.describe('Application Workflow - Student submits application', () => {
     await expect(firstNameLabel).toBeVisible({ timeout: 15_000 })
     await expect(firstNameLabel).toHaveValue('Student')
 
-    // Upload required files if file inputs exist
+    // Upload required files — wait for each Dropzone to mount its file input.
+    // If a file is already uploaded (preview visible instead of dropzone), skip it.
     const pdfBuffer = createTestPdfBuffer()
     for (const label of ['Examination Report', 'CV', 'Bachelor Report']) {
       const wrapper = page.locator(
         `.mantine-InputWrapper-root:has(.mantine-InputWrapper-label:text("${label}"))`,
       )
+      // Skip if file is already uploaded (preview iframe or card visible)
+      const alreadyUploaded = await wrapper
+        .locator('iframe, .mantine-Card-root')
+        .first()
+        .isVisible({ timeout: 2_000 })
+        .catch(() => false)
+      if (alreadyUploaded) continue
+
+      // Wait for the Dropzone file input to be attached in the DOM (may take time under load)
       const fileInput = wrapper.locator('input[type="file"]')
-      if ((await fileInput.count()) > 0) {
-        await fileInput.setInputFiles({
-          name: `${label.toLowerCase().replace(/ /g, '-')}.pdf`,
-          mimeType: 'application/pdf',
-          buffer: pdfBuffer,
-        })
-      }
+      await fileInput.waitFor({ state: 'attached', timeout: 15_000 })
+      await fileInput.setInputFiles({
+        name: `${label.toLowerCase().replace(/ /g, '-')}.pdf`,
+        mimeType: 'application/pdf',
+        buffer: pdfBuffer,
+      })
     }
 
     // Accept privacy notice if not already checked
-    const privacyCheckbox = page.getByLabel(/privacy/i).or(page.getByRole('checkbox').first())
+    const privacyCheckbox = page.getByRole('checkbox', { name: /privacy/i })
     if (!(await privacyCheckbox.isChecked())) {
       await privacyCheckbox.check()
     }
+    await expect(privacyCheckbox).toBeChecked({ timeout: 5_000 })
 
     const updateButton = page.getByRole('button', { name: 'Update Information', exact: true })
     await expect(updateButton).toBeEnabled({ timeout: 30_000 })

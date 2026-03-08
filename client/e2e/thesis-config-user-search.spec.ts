@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { authStatePath, navigateTo } from './helpers'
+import { authStatePath, expandAccordion, navigateTo } from './helpers'
 
 test.describe('Thesis Configuration - User search filters by role', () => {
   test.use({ storageState: authStatePath('supervisor') })
@@ -13,10 +13,10 @@ test.describe('Thesis Configuration - User search filters by role', () => {
       timeout: 15_000,
     })
 
-    // Open the Configuration accordion
-    await page.getByText('Configuration').click()
-
+    // Open the Configuration accordion (retry under heavy parallel load)
     const studentTextbox = page.getByRole('textbox', { name: 'Student(s)' })
+    await expandAccordion(page, 'Configuration', studentTextbox)
+
     const studentListbox = page.getByRole('listbox', { name: 'Student(s)' })
 
     // Open the student dropdown with retry loop (server may be slow under parallel load).
@@ -76,9 +76,11 @@ test.describe('Thesis Configuration - Lazy user fetching', () => {
       })
 
       // Open the Configuration accordion to render the UserMultiSelect components
-      await page.getByText('Configuration').click()
-      // Wait for any deferred effects to settle
-      await page.waitForTimeout(2_000)
+      await expandAccordion(
+        page,
+        'Configuration',
+        page.locator('.mantine-Accordion-panel').filter({ hasText: 'Thesis Title' }),
+      )
 
       // Students should not trigger any /v2/users requests (selects are disabled
       // and lazy fetching skips the initial load)
@@ -106,9 +108,11 @@ test.describe('Thesis Configuration - Lazy user fetching', () => {
       })
 
       // Open the Configuration accordion to render the UserMultiSelect components
-      await page.getByText('Configuration').click()
-      // Wait for any deferred effects to settle
-      await page.waitForTimeout(2_000)
+      await expandAccordion(
+        page,
+        'Configuration',
+        page.getByRole('textbox', { name: 'Student(s)' }),
+      )
 
       // No /v2/users requests should have been made yet (lazy fetching)
       expect(userRequests).toHaveLength(0)
