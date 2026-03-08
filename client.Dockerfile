@@ -1,26 +1,24 @@
-FROM node:24-alpine as build
-
+FROM node:24-alpine AS build
 WORKDIR /app
+ENV CI=1
 
-COPY . .
+# Copy dependency files first for layer caching
+COPY client/package.json client/package-lock.json ./
+RUN npm ci
 
-WORKDIR /app/client
-ENV CI 1
-
-RUN npm install
+# Copy source and build
+COPY client/ ./
 RUN npm run build
 
 FROM nginx:stable-alpine
 
-COPY --from=build /app/client/build /usr/share/nginx/html
-COPY ./client/nginx/nginx.conf /etc/nginx/conf.d/default.conf
+# Install runtime libraries required by the node binary
+RUN apk add --no-cache libstdc++ libgcc
 
-# use same node version like in the build image
-COPY --from=build /usr/lib /usr/lib
-COPY --from=build /usr/local/share /usr/local/share
-COPY --from=build /usr/local/lib /usr/local/lib
-COPY --from=build /usr/local/include /usr/local/include
-COPY --from=build /usr/local/bin /usr/local/bin
+COPY --from=build /usr/local/bin/node /usr/local/bin/node
+
+COPY --from=build /app/build /usr/share/nginx/html
+COPY client/nginx/nginx.conf /etc/nginx/conf.d/default.conf
 
 WORKDIR /usr/share/nginx/html
 
