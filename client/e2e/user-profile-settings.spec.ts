@@ -2,6 +2,8 @@ import { test, expect } from '@playwright/test'
 import { authStatePath, navigateTo, createTestPdfBuffer } from './helpers'
 
 test.describe('User Profile Settings - Read Only Fields', () => {
+  test.use({ storageState: authStatePath('student') })
+
   test('student can see readonly and editable fields', async ({ page }) => {
     await navigateTo(page, '/settings')
 

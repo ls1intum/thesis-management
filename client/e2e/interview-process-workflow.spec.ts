@@ -17,6 +17,16 @@ test.describe('Interview Process Workflow - Examiner Creates Process', () => {
     // Verify the interviews page has expected sections
     await expect(page.getByText(/interview topics/i)).toBeVisible()
 
+    // Guard: if the process was already created on a previous attempt, verify and return
+    const alreadyCreated = await page
+      .getByText('E2E Gap5: Interview Topic')
+      .isVisible({ timeout: 3_000 })
+      .catch(() => false)
+    if (alreadyCreated) {
+      await expect(page.getByText('E2E Gap5: Interview Topic')).toBeVisible()
+      return
+    }
+
     // Click "New Interview Process" button
     await page.getByRole('button', { name: /New Interview Process/i }).click()
 

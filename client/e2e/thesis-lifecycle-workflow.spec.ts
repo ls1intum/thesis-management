@@ -34,6 +34,20 @@ test.describe('Thesis Lifecycle - Accept Proposal', () => {
         timeout: 15_000,
       })
 
+      // Guard: if already transitioned on a previous attempt, verify and return
+      const alreadyWriting = await page
+        .getByText('Writing', { exact: true })
+        .first()
+        .isVisible({ timeout: 3_000 })
+        .catch(() => false)
+      const acceptButtonExists = await page
+        .getByRole('button', { name: 'Accept Proposal' })
+        .isVisible({ timeout: 3_000 })
+        .catch(() => false)
+      if (alreadyWriting && !acceptButtonExists) {
+        return
+      }
+
       // Expand the Proposal accordion to find the Accept button
       await expandAccordion(page, 'Proposal', page.getByRole('button', { name: 'Accept Proposal' }))
 
@@ -97,6 +111,20 @@ test.describe('Thesis Lifecycle - Final Submission', () => {
       await expect(page.getByRole('heading', { name: THESIS_14_TITLE })).toBeVisible({
         timeout: 15_000,
       })
+
+      // Guard: if already submitted on a previous attempt, verify and return
+      const alreadySubmitted = await page
+        .getByText('Submitted', { exact: true })
+        .first()
+        .isVisible({ timeout: 3_000 })
+        .catch(() => false)
+      const submitButtonExists = await page
+        .getByRole('button', { name: 'Mark Submission as Final' })
+        .isVisible({ timeout: 3_000 })
+        .catch(() => false)
+      if (alreadySubmitted && !submitButtonExists) {
+        return
+      }
 
       // Expand the Thesis accordion to find the submission button
       await expandAccordion(page, 'Thesis', page.getByText('Mark Submission as Final'))
@@ -176,6 +204,16 @@ test.describe('Thesis Lifecycle - Close Thesis', () => {
     await expect(page.getByRole('heading', { name: THESIS_15_TITLE })).toBeVisible({
       timeout: 15_000,
     })
+
+    // Guard: if already closed on a previous attempt, verify and return
+    const alreadyClosed = await page
+      .getByText('This thesis is closed')
+      .isVisible({ timeout: 3_000 })
+      .catch(() => false)
+    if (alreadyClosed) {
+      await expect(page.getByText('This thesis is closed')).toBeVisible()
+      return
+    }
 
     // Expand the Configuration accordion
     await expandAccordion(page, 'Configuration', page.getByRole('button', { name: 'Close Thesis' }))

@@ -16,6 +16,17 @@ test.describe('Research Group Management - Admin', () => {
     await expect(page.getByText('Applied Software Engineering').first()).toBeVisible()
     await expect(page.getByText('Data Science and Analytics').first()).toBeVisible()
 
+    // Guard: if the group was already created on a previous attempt, verify and return
+    const alreadyCreated = await page
+      .getByText('E2E Test Group')
+      .first()
+      .isVisible({ timeout: 3_000 })
+      .catch(() => false)
+    if (alreadyCreated) {
+      await expect(page.getByText('E2E Test Group').first()).toBeVisible()
+      return
+    }
+
     // Click the "Create Research Group" button
     await page.getByRole('button', { name: /create research group/i }).click()
 

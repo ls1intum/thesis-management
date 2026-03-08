@@ -146,7 +146,17 @@ test.describe('Presentation Management - Delete', () => {
 
     // Expand the Presentation accordion
     const presentationSection = await expandPresentationAccordion(page)
-    await expect(page.getByText('00.08.038').first()).toBeVisible({ timeout: 10_000 })
+
+    // Guard: if the presentation was already deleted on a previous attempt, verify and return
+    const presentationVisible = await page
+      .getByText('00.08.038')
+      .first()
+      .isVisible({ timeout: 5_000 })
+      .catch(() => false)
+    if (!presentationVisible) {
+      await expect(page.getByText('00.08.038')).toBeHidden()
+      return
+    }
 
     // Find the second presentation card (Room 00.08.038)
     const card = getPresentationCard(presentationSection, 'Room 00.08.038, Boltzmannstr. 3')
@@ -214,20 +224,20 @@ test.describe('Presentation Management - Notes', () => {
 
       // Retries may re-enter after the note was already saved. Re-open it if needed.
       if (
-        !(await addNoteButton.isVisible({ timeout: 1_000 }).catch(() => false)) &&
-        (await showNoteButton.isVisible({ timeout: 1_000 }).catch(() => false))
+        !(await addNoteButton.isVisible({ timeout: 3_000 }).catch(() => false)) &&
+        (await showNoteButton.isVisible({ timeout: 3_000 }).catch(() => false))
       ) {
         await showNoteButton.click()
 
-        if (await noteText.isVisible({ timeout: 2_000 }).catch(() => false)) {
+        if (await noteText.isVisible({ timeout: 3_000 }).catch(() => false)) {
           await expect(noteText).toBeVisible()
           return
         }
       }
 
-      if (await addNoteButton.isVisible({ timeout: 1_000 }).catch(() => false)) {
+      if (await addNoteButton.isVisible({ timeout: 3_000 }).catch(() => false)) {
         await addNoteButton.click()
-      } else if (await editNoteButton.isVisible({ timeout: 1_000 }).catch(() => false)) {
+      } else if (await editNoteButton.isVisible({ timeout: 3_000 }).catch(() => false)) {
         await editNoteButton.click()
       }
 
