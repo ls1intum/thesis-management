@@ -72,7 +72,7 @@ jobs:
 
       - name: Build and push Docker Image
         if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: ./
           file: ./server.Dockerfile
@@ -146,7 +146,7 @@ jobs:
 
       - name: Build and push Docker Image
         if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: ./
           file: ./client.Dockerfile
