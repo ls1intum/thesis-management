@@ -12,7 +12,9 @@ RUN npm run build
 
 FROM nginx:stable-alpine
 
-# Install only the node binary (not entire /usr/lib etc.)
+# Install runtime libraries required by the node binary
+RUN apk add --no-cache libstdc++ libgcc
+
 COPY --from=build /usr/local/bin/node /usr/local/bin/node
 
 COPY --from=build /app/build /usr/share/nginx/html

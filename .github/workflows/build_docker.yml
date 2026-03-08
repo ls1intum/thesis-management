@@ -37,11 +37,12 @@ jobs:
         run: echo "version=$(grep '^version = ' server/build.gradle | sed 's/version = "\(.*\)"/\1/')" >> "$GITHUB_OUTPUT"
 
       - name: Check that version is not already released
-        if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+        if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch) && steps.changed-files.outputs.any_changed == 'true'
         run: |
           VERSION="${{ steps.version.outputs.version }}"
           git fetch --tags --quiet
-          if git tag -l | grep -qE "^v?${VERSION}$"; then
+          if git rev-parse -q --verify "refs/tags/${VERSION}" >/dev/null || \
+             git rev-parse -q --verify "refs/tags/v${VERSION}" >/dev/null; then
             echo "::error::Version ${VERSION} has already been released (git tag exists). Please bump the version using supporting_scripts/update_version.sh before merging."
             exit 1
           fi
@@ -77,15 +78,15 @@ jobs:
           file: ./server.Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=server-image
+          cache-to: type=gha,scope=server-image,mode=max
 
       - id: output-tag
         run: |
           if [[ "${{ steps.changed-files.outputs.any_changed }}" == "true" ]]; then
             echo "server_image_tag=${{ steps.meta.outputs.version }}" >> "$GITHUB_OUTPUT"
           else
-            echo "server_image_tag=${{ steps.version.outputs.version }}" >> "$GITHUB_OUTPUT"
+            echo "server_image_tag=latest" >> "$GITHUB_OUTPUT"
           fi
 
   build-client:
@@ -110,11 +111,12 @@ jobs:
         run: echo "version=$(node -p "require('./client/package.json').version")" >> "$GITHUB_OUTPUT"
 
       - name: Check that version is not already released
-        if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+        if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch) && steps.changed-files.outputs.any_changed == 'true'
         run: |
           VERSION="${{ steps.version.outputs.version }}"
           git fetch --tags --quiet
-          if git tag -l | grep -qE "^v?${VERSION}$"; then
+          if git rev-parse -q --verify "refs/tags/${VERSION}" >/dev/null || \
+             git rev-parse -q --verify "refs/tags/v${VERSION}" >/dev/null; then
             echo "::error::Version ${VERSION} has already been released (git tag exists). Please bump the version using supporting_scripts/update_version.sh before merging."
             exit 1
           fi
@@ -150,13 +152,13 @@ jobs:
           file: ./client.Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=client-image
+          cache-to: type=gha,scope=client-image,mode=max
 
       - id: output-tag
         run: |
           if [[ "${{ steps.changed-files.outputs.any_changed }}" == "true" ]]; then
             echo "client_image_tag=${{ steps.meta.outputs.version }}" >> "$GITHUB_OUTPUT"
           else
-            echo "client_image_tag=${{ steps.version.outputs.version }}" >> "$GITHUB_OUTPUT"
+            echo "client_image_tag=latest" >> "$GITHUB_OUTPUT"
           fi
