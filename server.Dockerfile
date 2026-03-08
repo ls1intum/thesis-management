@@ -8,7 +8,7 @@ RUN ./gradlew dependencies --no-daemon
 
 # Copy source code and build
 COPY server/src ./src
-RUN ./gradlew build -x test --no-daemon
+RUN ./gradlew build -x test -x checkstyleMain -x checkstyleTest --no-daemon
 
 FROM azul/zulu-openjdk:25.0.2-jre
 
