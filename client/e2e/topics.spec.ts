@@ -20,12 +20,14 @@ test.describe('Topics - Public landing page', () => {
     await expect(page.getByText(/Continuous Integration/i).first()).toBeVisible({ timeout: 5_000 })
     await expect(page.getByText(/Anomaly Detection/i).first()).toBeVisible({ timeout: 5_000 })
 
-    // Can switch between Open Topics and Published Topics (Mantine SegmentedControl uses radio inputs)
-    await page.getByRole('radio', { name: 'Published Topics' }).click({ force: true })
-    // Published Topics radio should be checked
-    await expect(page.getByRole('radio', { name: 'Published Topics' })).toBeChecked()
+    // Can switch between Open Topics and Published Topics (Mantine SegmentedControl)
+    await page.getByText('Published Topics').click()
+    // Published Topics should be the active selection (SegmentedControl sets data-active on active label)
+    await expect(
+      page.locator('label[data-active]').filter({ hasText: 'Published Topics' }),
+    ).toBeVisible()
     // Switch back
-    await page.getByRole('radio', { name: 'Open Topics' }).click({ force: true })
+    await page.getByText('Open Topics').click()
     await expect(page.getByText(/Automated Code Review/i).first()).toBeVisible({ timeout: 10_000 })
   })
 
