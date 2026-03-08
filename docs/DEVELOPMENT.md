@@ -400,9 +400,55 @@ The E2E tests focus on page accessibility, content rendering, and role-based acc
 
 ### CI Integration
 
-E2E tests run automatically in CI via the `e2e_tests.yml` reusable workflow, which is called from `dev.yml` on PRs and pushes to develop/main. The CI workflow spins up PostgreSQL and Keycloak as service containers, starts the server with the dev profile, builds and serves the client, and runs the Playwright tests.
+E2E tests run automatically in CI via the `e2e_tests.yml` reusable workflow, which is called from `dev.yml` on PRs and pushes to develop/main. Test artifacts (Playwright report, screenshots, traces, videos) are uploaded as GitHub Actions artifacts and retained for 14 days.
 
-Test artifacts (screenshots, traces, videos) are uploaded on failure and available in the GitHub Actions artifacts.
+#### CI Architecture
+
+The CI environment mirrors the local setup: only infrastructure runs in containers, while the server and client run as native processes on the GitHub Actions runner.
+
+| Component | How it runs in CI |
+|-----------|-------------------|
+| PostgreSQL | GitHub Actions service container |
+| Mailpit | GitHub Actions service container |
+| Keycloak | `docker run` (service containers don't support custom entrypoint commands like `start-dev`), realm imported via REST API |
+| Server | `./gradlew bootRun` as a background process on the runner |
+| Client | `npx webpack serve` as a background process on the runner |
+
+CI-specific Playwright settings (controlled by `CI=1`): 2 workers (vs 8 locally), 2 retries (vs 1), no automatic `webServer` startup, and the `github` reporter is added alongside the HTML report.
+
+#### Why Server and Client Run Natively (Not in Docker)
+
+An alternative approach is to run the server and client in Docker containers during E2E tests, using the same (or similar) images as production. This is closer to the production environment but comes with significant trade-offs. The following analysis explains why we chose to run them natively.
+
+**How the E2E environment differs from production:**
+
+| Aspect | E2E (current) | Production |
+|--------|---------------|------------|
+| Server | `gradlew bootRun` (dev profile, full JDK) | Packaged JAR in `zulu-openjdk:25-jre` |
+| Client | Webpack dev server (HMR, unminified JS) | Static build served by nginx |
+| Reverse proxy | None | Traefik (TLS, rate limiting, compression) |
+| Ports | 8180 / 3100 | 8080 / 80 behind Traefik on 443 |
+
+**Trade-off analysis:**
+
+| Factor | Native processes (current) | Docker containers |
+|--------|:-:|:-:|
+| **CI speed** | ++ | -- |
+| **Production fidelity** | - | ++ |
+| **Catches infra bugs** (nginx config, Traefik routing) | -- | + |
+| **Debugging ease** | ++ | - |
+| **Maintenance effort** | + | - |
+| **Catches application-level bugs** | = | = |
+
+- **Speed (major advantage of native):** Docker image builds add significant time. The server Dockerfile runs a full Gradle build inside a multi-stage image (JDK build stage → JRE runtime stage), and the client Dockerfile runs `npm install` + `npm run build` and copies the output into an nginx image. Without layer caching, this adds 5-10 minutes. Additionally, the Docker build workflow (`build_docker.yml`) currently runs in **parallel** with E2E tests. If E2E tests depended on those images, they would become **sequential** — E2E couldn't start until both images were built and loaded. With native processes, `gradlew bootRun` compiles and starts in one step, and the Webpack dev server starts without needing a production build at all.
+
+- **Production fidelity (main advantage of Docker):** The Webpack dev server handles client-side routing natively, but in production nginx needs an explicit `try_files` configuration — a broken `nginx.conf` would not be caught by native E2E tests. Similarly, the runtime environment injection (`generate-runtime-env.js`) only runs inside the Docker client image. The server also differs: `bootRun` uses the full JDK with dev tooling, while production runs a packaged JAR on a minimal JRE.
+
+- **Why the fidelity gap is acceptable here:** The nginx config is a simple SPA setup that rarely changes. Spring Boot JAR vs `bootRun` differences are negligible for functional testing. E2E tests exercise application logic (UI flows, API interactions, authentication), not infrastructure routing. Any Docker-specific issues (broken Dockerfile, bad nginx config) are still caught by the parallel `build_docker.yml` job — just not by the E2E tests themselves.
+
+- **Debugging:** Native processes write logs directly to files (`.e2e-server.log`, `.e2e-client.log`) that are easy to inspect. With Docker, logs require `docker logs` and may be lost when containers are removed. Stack traces from `gradlew bootRun` are straightforward; in a container, you may need additional log driver configuration.
+
+**Conclusion:** For this project, the speed advantage of native processes outweighs the marginal fidelity improvement of Docker. The application is a straightforward Spring Boot + React SPA with a simple infrastructure layer. Projects with more complex infrastructure (multiple backend services, custom proxy logic, SSR) would benefit more from the Docker-based approach.
 
 ## Postman Collection
 
