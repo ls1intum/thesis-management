@@ -1,3 +1,6 @@
+server:
+  port: 8180
+
 spring:
   liquibase:
     contexts: dev

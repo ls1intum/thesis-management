@@ -312,8 +312,8 @@ public abstract class BaseIntegrationTest {
 				"BACHELOR",
 				Instant.now(),
 				"Test motivation",
-				createDefaultResearchGroup()
-		);
+				createDefaultResearchGroup(),
+				true);
 
 		String response = mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 						.header("Authorization", authorization)

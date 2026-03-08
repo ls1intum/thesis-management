@@ -38,6 +38,7 @@
     <include file="changes/33_rename_thesis_roles.sql" relativeToChangelogFile="true" />
     <include file="changes/34_rename_email_template_case.sql" relativeToChangelogFile="true" />
     <include file="changes/35_update_email_template_role_wording.sql" relativeToChangelogFile="true" />
+    <include file="changes/36_privacy_consent.sql" relativeToChangelogFile="true" />
 
     <!-- Dev/test seed data — must be last so it can reference all columns from prior migrations -->
     <include file="changes/23_seed_dev_test_data.xml" relativeToChangelogFile="true" />

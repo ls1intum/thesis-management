@@ -80,8 +80,8 @@ class ApplicationServiceIntegrationTest extends BaseIntegrationTest {
 		// Create application
 		String studentAuth = createRandomAuthentication("student");
 		CreateApplicationPayload appPayload = new CreateApplicationPayload(
-				topicId, null, "MASTER", Instant.now(), "Auto reject test", null
-		);
+				topicId, null, "MASTER", Instant.now(), "Auto reject test", null,
+		true);
 		String appResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 						.header("Authorization", studentAuth)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -159,8 +159,8 @@ class ApplicationServiceIntegrationTest extends BaseIntegrationTest {
 			// Create recent application (not old enough)
 			String studentAuth = createRandomAuthentication("student");
 			CreateApplicationPayload appPayload = new CreateApplicationPayload(
-					topicId, null, "MASTER", Instant.now(), "Recent app", null
-			);
+					topicId, null, "MASTER", Instant.now(), "Recent app", null,
+			true);
 			String appResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 							.header("Authorization", studentAuth)
 							.contentType(MediaType.APPLICATION_JSON)
@@ -231,8 +231,8 @@ class ApplicationServiceIntegrationTest extends BaseIntegrationTest {
 
 			String studentAuth = createRandomAuthentication("student");
 			CreateApplicationPayload appPayload = new CreateApplicationPayload(
-					topicId, null, "MASTER", Instant.now(), "Recent app", null
-			);
+					topicId, null, "MASTER", Instant.now(), "Recent app", null,
+			true);
 			mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 							.header("Authorization", studentAuth)
 							.contentType(MediaType.APPLICATION_JSON)
@@ -288,8 +288,8 @@ class ApplicationServiceIntegrationTest extends BaseIntegrationTest {
 
 			String studentAuth = createRandomAuthentication("student");
 			CreateApplicationPayload appPayload = new CreateApplicationPayload(
-					topicId, null, "MASTER", Instant.now(), "Recent list app", null
-			);
+					topicId, null, "MASTER", Instant.now(), "Recent list app", null,
+			true);
 			String appResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 							.header("Authorization", studentAuth)
 							.contentType(MediaType.APPLICATION_JSON)
@@ -322,8 +322,8 @@ class ApplicationServiceIntegrationTest extends BaseIntegrationTest {
 			// Create a suggested application (no topic, just a thesis title and research group)
 			String studentAuth = createRandomAuthentication("student");
 			CreateApplicationPayload appPayload = new CreateApplicationPayload(
-					null, "My Suggested Thesis", "MASTER", Instant.now(), "Suggested test", researchGroupId
-			);
+					null, "My Suggested Thesis", "MASTER", Instant.now(), "Suggested test", researchGroupId,
+			true);
 			mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 							.header("Authorization", studentAuth)
 							.contentType(MediaType.APPLICATION_JSON)

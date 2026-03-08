@@ -9,15 +9,15 @@ import {
   assertSentFromApp,
 } from './mailpit'
 
-// Thesis d000-0003: SUBMITTED state, student3, supervisor2, examiner2 (DSA group)
-// Note: Seed data inserts an assessment row directly but thesis state remains SUBMITTED.
+// Thesis d000-0003: ASSESSED state, student3, supervisor2, examiner2 (DSA group)
+// Seed data includes an assessment by supervisor2, matching the ASSESSED state.
 // examiner2 has both supervisor and examiner access (as examiner on the thesis).
 const THESIS_ID = '00000000-0000-4000-d000-000000000003'
 const THESIS_URL = `/theses/${THESIS_ID}`
 const THESIS_TITLE = 'Online Anomaly Detection in IoT Sensor Streams'
 
 test.describe.serial('Thesis Grading Workflow', () => {
-  test('examiner can submit an assessment on a SUBMITTED thesis', async ({ browser }) => {
+  test('examiner can submit an assessment on an ASSESSED thesis', async ({ browser }) => {
     const context = await browser.newContext({ storageState: authStatePath('examiner2') })
     const page = await context.newPage()
 
