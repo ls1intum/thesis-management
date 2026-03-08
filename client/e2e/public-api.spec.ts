@@ -102,7 +102,7 @@ test.describe('Public API - Avatar access control', () => {
     // Thesis 1 (WRITING, PRIVATE) should NOT be in published theses
     expect(titles).not.toContain('Automated Code Review Using Large Language Models')
 
-    // Thesis 3 (SUBMITTED, INTERNAL) should NOT be in published theses
+    // Thesis 3 (ASSESSED, INTERNAL) should NOT be in published theses
     expect(titles).not.toContain('Online Anomaly Detection in IoT Sensor Streams')
   })
 

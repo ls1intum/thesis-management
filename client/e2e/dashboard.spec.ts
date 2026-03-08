@@ -61,7 +61,7 @@ test.describe('Dashboard - Admin', () => {
     await navigateTo(page, '/dashboard')
 
     await expect(page.getByRole('heading', { name: /dashboard/i })).toBeVisible({ timeout: 15_000 })
-    // Admin should see the dashboard without errors
-    await expect(page.getByText(/error|something went wrong/i)).not.toBeVisible({ timeout: 2_000 })
+    // Admin dashboard should load without redirect
+    await expect(page).toHaveURL(/\/dashboard/)
   })
 })

@@ -165,11 +165,18 @@ export async function expandAccordion(
   contentLocator: Locator,
   maxAttempts = 3,
 ) {
-  const control = page.locator('.mantine-Accordion-control').filter({ hasText: sectionLabel })
+  const item = page.locator('.mantine-Accordion-item').filter({ hasText: sectionLabel })
+  const control = item.locator('.mantine-Accordion-control')
   await control.waitFor({ state: 'visible', timeout: 10_000 })
 
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
-    await control.click()
+    // Only click if the accordion is not already expanded (prevent close-reopen toggling)
+    const isExpanded = await item
+      .evaluate((el) => el.hasAttribute('data-active'))
+      .catch(() => false)
+    if (!isExpanded) {
+      await control.click()
+    }
     const visible = await contentLocator.isVisible({ timeout: 8_000 }).catch(() => false)
     if (visible) return
     // Small pause before retrying — the click may need the accordion animation to settle

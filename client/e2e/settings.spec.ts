@@ -58,6 +58,7 @@ test.describe('Settings - Examiner', () => {
     await navigateTo(page, '/settings')
 
     await expect(page.getByText('My Information')).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByText('Notification Settings')).toBeVisible()
 
     // Verify examiner-specific profile data from seed
     await expect(page.getByLabel('First Name')).toHaveValue('Examiner')

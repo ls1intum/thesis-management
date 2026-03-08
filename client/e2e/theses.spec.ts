@@ -121,15 +121,15 @@ test.describe('Theses - Detail page (Student)', () => {
 test.describe('Theses - Detail page (Examiner2)', () => {
   test.use({ storageState: authStatePath('examiner2') })
 
-  test('examiner2 can view thesis 3 (SUBMITTED state)', async ({ page }) => {
-    // Thesis 3: SUBMITTED state, "Online Anomaly Detection in IoT Sensor Streams"
+  test('examiner2 can view thesis 3 (ASSESSED state)', async ({ page }) => {
+    // Thesis 3: ASSESSED state, "Online Anomaly Detection in IoT Sensor Streams"
     await navigateTo(page, '/theses/00000000-0000-4000-d000-000000000003')
 
     await expect(page.getByRole('heading', { name: /anomaly detection/i })).toBeVisible({
       timeout: 15_000,
     })
 
-    // Should show thesis sections for SUBMITTED state
+    // Should show thesis sections for ASSESSED state
     await expect(page.getByText('Configuration')).toBeVisible()
     await expect(page.getByRole('button', { name: 'Proposal', exact: true })).toBeVisible()
   })
