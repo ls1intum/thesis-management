@@ -18,6 +18,10 @@ test.describe('Navigation - Public pages', () => {
     // Table headers for list view
     await expect(page.getByText('Title').first()).toBeVisible()
     await expect(page.getByText('Thesis Types').first()).toBeVisible()
+
+    // Should show open topics from seed data
+    await expect(page.getByText(/Automated Code Review/i).first()).toBeVisible({ timeout: 10_000 })
+    await expect(page.getByText(/Continuous Integration/i).first()).toBeVisible({ timeout: 5_000 })
   })
 
   test('about page renders full content', async ({ page }) => {
@@ -53,24 +57,53 @@ test.describe('Navigation - Public pages', () => {
 
     await expect(page.getByText('Find a Thesis Topic')).toBeVisible({ timeout: 15_000 })
   })
+
+  test('privacy page is accessible without login', async ({ page }) => {
+    await navigateTo(page, '/privacy')
+
+    await expect(page).toHaveURL(/\/privacy/)
+    // Privacy page should render with privacy-specific content
+    await expect(page.getByRole('heading', { name: /privacy/i }).first()).toBeVisible({
+      timeout: 15_000,
+    })
+  })
+
+  test('imprint page is accessible without login', async ({ page }) => {
+    await navigateTo(page, '/imprint')
+
+    await expect(page).toHaveURL(/\/imprint/)
+    // Imprint page should render with imprint-specific content
+    await expect(page.getByRole('heading', { name: /imprint/i }).first()).toBeVisible({
+      timeout: 15_000,
+    })
+  })
 })
 
 test.describe('Navigation - Student routes', () => {
   test('can navigate between pages via sidebar', async ({ page }) => {
+    test.setTimeout(60_000)
+
     await navigateTo(page, '/dashboard')
     await expect(page.getByRole('heading', { name: /dashboard/i })).toBeVisible({ timeout: 15_000 })
 
     // Navigate to Browse Theses
     await page.getByRole('link', { name: 'Browse Theses' }).click()
     await expect(page).toHaveURL(/\/theses/, { timeout: 15_000 })
-    await expect(page.getByRole('heading', { name: /browse theses/i })).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByRole('heading', { name: /browse theses/i })).toBeVisible({
+      timeout: 15_000,
+    })
 
     // Navigate to Submit Application
     await page.getByRole('link', { name: 'Submit Application' }).click()
     await expect(page).toHaveURL(/\/submit-application/, { timeout: 15_000 })
+    // Wait for the page to settle (API calls for topics) before navigating away
+    await expect(
+      page.getByRole('heading', { name: 'Submit Application', exact: true }),
+    ).toBeVisible({ timeout: 15_000 })
 
     // Navigate back to Dashboard
-    await page.getByRole('link', { name: 'Dashboard' }).click()
+    const dashboardLink = page.getByRole('link', { name: 'Dashboard' })
+    await dashboardLink.click()
     await expect(page).toHaveURL(/\/dashboard/, { timeout: 30_000 })
     await expect(page.getByRole('heading', { name: /dashboard/i })).toBeVisible({ timeout: 15_000 })
   })
@@ -79,6 +112,21 @@ test.describe('Navigation - Student routes', () => {
     await navigateTo(page, '/theses')
     await page.getByText('Thesis Management').first().click()
     await expect(page).toHaveURL(/\/dashboard/)
+  })
+
+  test('student can navigate to settings page', async ({ page }) => {
+    await navigateTo(page, '/settings')
+
+    await expect(page.getByText('My Information')).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByText('Notification Settings')).toBeVisible()
+  })
+
+  test('student can navigate to presentations page', async ({ page }) => {
+    await navigateTo(page, '/presentations')
+
+    await expect(page.getByRole('heading', { name: 'Presentations', exact: true })).toBeVisible({
+      timeout: 15_000,
+    })
   })
 })
 
@@ -95,6 +143,7 @@ test.describe('Navigation - Examiner routes', () => {
     // Application Review
     await navigateTo(page, '/applications')
     await expect(page).toHaveURL(/\/applications/)
+    await expect(page.getByPlaceholder(/search applications/i)).toBeVisible({ timeout: 15_000 })
 
     // Manage Topics
     await navigateTo(page, '/topics')
@@ -114,5 +163,11 @@ test.describe('Navigation - Admin routes', () => {
     await expect(page.getByRole('heading', { name: /research groups/i })).toBeVisible({
       timeout: 15_000,
     })
+
+    // Admin should see both seeded research groups
+    await expect(page.getByText('Applied Software Engineering').first()).toBeVisible({
+      timeout: 10_000,
+    })
+    await expect(page.getByText('Data Science and Analytics').first()).toBeVisible()
   })
 })

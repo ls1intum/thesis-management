@@ -339,30 +339,32 @@ Tests are located in `client/e2e/` and authenticate via the Keycloak login form 
 |------|-------------|
 | `auth.setup.ts` | Authenticates all test users (student, student2, student3, supervisor, supervisor2, examiner, examiner2, admin, delete_old_thesis, delete_recent_thesis, delete_rejected_app) via Keycloak and caches their session state |
 | `auth.spec.ts` | Keycloak redirect for unauthenticated users, role-based navigation item visibility for all 5 access levels |
-| `navigation.spec.ts` | Public page rendering (landing page, about, footer), sidebar navigation flow, route access per role |
-| `dashboard.spec.ts` | Dashboard sections per role (My Theses, My Applications) |
-| `topics.spec.ts` | Public topic browsing with search, filters, and list/grid toggle; examiner management view; student apply button |
-| `applications.spec.ts` | Student application stepper form, pre-selected topic flow, supervisor and examiner review page access |
-| `theses.spec.ts` | Browse view per role, theses overview, thesis detail page sections, student viewing own thesis |
-| `interviews.spec.ts` | Examiner interview overview and process detail, supervisor access, student access denied |
-| `presentations.spec.ts` | Student and examiner presentations page, public presentation detail access |
-| `settings.spec.ts` | My Information and Notification Settings tabs for student and supervisor |
-| `research-groups.spec.ts` | Admin research group CRUD with search filtering, examiner group access, student access denied |
+| `navigation.spec.ts` | Public page rendering (landing page, about, footer, privacy, imprint), sidebar navigation flow, route access per role |
+| `dashboard.spec.ts` | Dashboard sections per role (My Theses, My Applications), seed data verification |
+| `topics.spec.ts` | Public topic browsing with search filtering, list/grid toggle, tab switching with aria-selected validation; examiner management view with seed data; student apply button |
+| `applications.spec.ts` | Student application stepper form, pre-selected topic flow, supervisor and examiner review page access, NOT_ASSESSED application detail with state assertion |
+| `theses.spec.ts` | Browse view per role with seed data assertions, theses overview, thesis detail page sections, student viewing own thesis, examiner2 thesis views |
+| `interviews.spec.ts` | Examiner interview overview and process detail with seed data, supervisor access, examiner2 views, student access denied |
+| `presentations.spec.ts` | Student, examiner, and supervisor presentations page with seed data, public presentation detail access, private presentation access denied |
+| `settings.spec.ts` | My Information tab with seed data verification for student/supervisor/examiner, Notification Settings with email notification assertions |
+| `research-groups.spec.ts` | Admin research group CRUD with search filtering, DSA group settings, examiner group access, student access denied |
+| `public-api.spec.ts` | Published-theses API endpoint structure, avatar access control for publicly visible users, avatar denied for non-public users, pagination endpoint |
 | **Workflow Tests** | |
-| `topic-workflow.spec.ts` | Examiner creates a new topic end-to-end: fills title, thesis types, examiner, supervisor, problem statement |
+| `topic-workflow.spec.ts` | Examiner creates a new topic end-to-end: fills title, thesis types, examiner, supervisor, problem statement; examiner2 verifies DSA group pre-fill |
 | `thesis-workflow.spec.ts` | Examiner creates a new thesis end-to-end: fills title, type, language, student, supervisor, examiner |
 | `application-workflow.spec.ts` | Student submits an application through the full stepper: topic selection, student info, file uploads, motivation |
 | `presentation-workflow.spec.ts` | Student creates a presentation draft for a submitted thesis: type, visibility, location, language, date/time |
 | `proposal-feedback-workflow.spec.ts` | Supervisor submits proposal feedback on a thesis in PROPOSAL state: opens feedback dialog, enters comment, submits |
 | `application-review-workflow.spec.ts` | Supervisor rejects and accepts NOT_ASSESSED applications: reject with reason, accept with pre-filled thesis details |
 | `thesis-grading-workflow.spec.ts` | Sequential thesis grading: examiner2 submits assessment, examiner2 submits final grade, examiner2 marks thesis as finished |
-| `interview-workflow.spec.ts` | Examiner scores an interviewee with notes, opens add slot modal on interview process page |
+| `interview-workflow.spec.ts` | Examiner scores an interviewee with notes, opens add slot modal on interview process page, verifies both seeded interviewees |
 | **Data Management Tests** | |
 | `thesis-anonymization.spec.ts` | Admin triggers anonymization from admin page, idempotent second run, anonymized thesis banner, recent thesis unaffected, student cannot access admin page |
+| `thesis-delete.spec.ts` | Admin anonymizes old/recent/active theses with appropriate warnings, examiner anonymizes own thesis, student cannot see anonymize button |
 | `data-retention.spec.ts` | Admin deletes individual application with confirmation modal, batch cleanup from admin page, recent rejected application survives cleanup, supervisor cannot see delete button or admin page |
 | `account-deletion.spec.ts` | Self-service account deletion for 3 user types (full deletion, soft deletion with retention, expired retention), research group head blocked, confirmation dialog safety (cancel resets state), admin user search and deletion preview (retention-blocked, active thesis, research group head), route protection |
 | `data-export.spec.ts` | Data export page rendering, requesting an export and verifying processing status, privacy page link for authenticated/unauthenticated users, route protection |
-| `thesis-config-user-search.spec.ts` | Thesis configuration user search filters by role: student selector shows students only |
+| `thesis-config-user-search.spec.ts` | Thesis configuration user search filters by role (student selector shows students only, excludes supervisors/examiners), lazy user fetching verification (no /v2/users requests until dropdown opened) |
 
 ### Tested Roles
 
@@ -382,21 +384,23 @@ The E2E tests focus on page accessibility, content rendering, and role-based acc
 | Area | Covered | Not yet covered |
 |------|---------|-----------------|
 | **Authentication & RBAC** | Keycloak redirect, nav item visibility per role, access denied for unauthorized roles | Token refresh, session expiry, logout |
-| **Topics** | Public browsing, search, filters, list/grid toggle, management view, student apply button, **creating a topic end-to-end** | Editing/closing topics, draft topics |
-| **Applications** | Stepper form rendering, pre-selected topic, supervisor/examiner review page access, **submitting an application end-to-end**, **accepting and rejecting applications** | — |
-| **Theses** | Browse per role, overview page, detail page sections, student own thesis, **creating a thesis end-to-end**, **submitting proposal feedback**, **assessment > final grade > mark as finished**, user search filters by role | Comments |
+| **Topics** | Public browsing, search filtering, list/grid toggle, tab switching with aria-selected validation, management view with seed data, student apply button, **creating a topic end-to-end**, examiner2 DSA group pre-fill | Editing/closing topics, draft topics |
+| **Applications** | Stepper form rendering, pre-selected topic, supervisor/examiner review page access, NOT_ASSESSED application detail with state assertion, **submitting an application end-to-end**, **accepting and rejecting applications** | — |
+| **Theses** | Browse per role with seed data, overview page, detail page sections, student own thesis, examiner2 views, **creating a thesis end-to-end**, **submitting proposal feedback**, **assessment > final grade > mark as finished**, user search filters by role, lazy user fetching | Comments |
 | **Thesis Anonymization** | Admin triggers anonymization, idempotent second run finds nothing, anonymized thesis shows banner, recent thesis unaffected, student cannot access admin page | — |
-| **Interviews** | Examiner overview and process detail, supervisor access, student denied, **scoring interviewees with notes**, **add slot modal** | Creating interview processes, booking slots |
-| **Presentations** | Page access per role, public presentation detail, **creating a presentation draft** | Calendar integration |
-| **Settings** | Tab rendering per role, **Account tab with deletion UI** | Editing profile information, notification preferences |
+| **Thesis Delete** | Admin anonymizes old/recent/active theses with state warnings, examiner anonymizes own thesis, student cannot see anonymize button | — |
+| **Interviews** | Examiner overview and process detail with seed data, supervisor access, examiner2 views, student denied, **scoring interviewees with notes**, **add slot modal**, both seeded interviewees verified | Creating interview processes, booking slots |
+| **Presentations** | Page access per role with seed data, public presentation detail, private presentation access denied, **creating a presentation draft** | Calendar integration |
+| **Settings** | Tab rendering with seed data verification for student/supervisor/examiner, notification preferences with email notification assertions, **Account tab with deletion UI** | Editing profile information |
+| **Public API** | Published-theses endpoint structure and content, avatar access control (allowed for publicly visible users, denied for non-public), pagination endpoint | — |
 | **Account Deletion** | Self-service full deletion (rejected app user), soft deletion with retention (recent thesis user), full deletion after retention expiry (old thesis user), research group head blocked, confirmation dialog safety (cancel resets state), admin user search and preview (retention, active thesis, research group head), route protection for non-admin | — |
 | **Data Retention** | Admin deletes individual application with confirmation modal, batch cleanup from admin page, recent rejected application survives cleanup, supervisor cannot see delete button or access admin page | — |
 | **Data Export** | Page rendering with info text, requesting export and verifying processing status, privacy page link (authenticated and unauthenticated), route protection | Downloading completed export |
-| **Research Groups** | Admin CRUD page, search filtering, student denied | Creating/editing groups, member management |
-| **Dashboard** | Section visibility per role (My Theses, My Applications) | Dashboard data accuracy, links to detail pages |
-| **Navigation** | Public pages, sidebar flow, header logo, footer links, unknown routes | Mobile/responsive layout, deep linking |
+| **Research Groups** | Admin CRUD page, search filtering, DSA group settings, student denied | Creating/editing groups, member management |
+| **Dashboard** | Section visibility per role (My Theses, My Applications), seed data verification | Dashboard data accuracy, links to detail pages |
+| **Navigation** | Public pages (including privacy and imprint), sidebar flow, header logo, footer links, unknown routes | Mobile/responsive layout, deep linking |
 
-**In summary:** The tests cover page rendering/access control across all roles and key end-to-end workflows including topic creation, thesis creation, application submission, presentation scheduling, proposal feedback, application accept/reject, thesis grading (assessment > grade > finish), interview scoring, thesis anonymization, data retention cleanup, self-service account deletion (full, soft, and expired-retention), admin user deletion, and GDPR data export.
+**In summary:** The tests cover page rendering/access control across all roles and key end-to-end workflows including topic creation, thesis creation, application submission, presentation scheduling, proposal feedback, application accept/reject, thesis grading (assessment > grade > finish), interview scoring, thesis anonymization, thesis delete (anonymize), data retention cleanup, self-service account deletion (full, soft, and expired-retention), admin user deletion, GDPR data export, and public API access control (published-theses endpoint, avatar visibility).
 
 ### CI Integration
 

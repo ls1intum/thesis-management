@@ -7,6 +7,7 @@ server/data-exports/
 
 # User-specific stuff
 .idea
+.vscode
 *.iml
 
 # Dependencies

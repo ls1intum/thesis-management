@@ -35,8 +35,6 @@ test.describe('Interview Workflow', () => {
     await expect(page.getByRole('heading', { name: 'Interview Note', exact: true })).toBeVisible()
 
     // Fill interview note using the ProseMirror editor
-    // (InterviewNoteCard uses DocumentEditor without a Mantine InputWrapper label,
-    // so we target the ProseMirror editor directly)
     const noteEditor = page.locator('.ProseMirror').first()
     await noteEditor.click()
     const modifier = process.platform === 'darwin' ? 'Meta' : 'Control'
@@ -62,6 +60,10 @@ test.describe('Interview Workflow', () => {
       timeout: 10_000,
     })
 
+    // Seeded interviewees for process 1: student4 (NULL score) and student5 (scored 45)
+    await expect(page.getByText(/Student4/i).first()).toBeVisible({ timeout: 10_000 })
+    await expect(page.getByText(/Student5/i).first()).toBeVisible({ timeout: 10_000 })
+
     // Click "Add Slot" button to open the modal
     await page.getByRole('button', { name: /Add Slot|^Add$/i }).click()
 
@@ -70,7 +72,7 @@ test.describe('Interview Workflow', () => {
     await expect(dialog).toBeVisible({ timeout: 5_000 })
     await expect(dialog.getByText('Add Interview Slot')).toBeVisible()
 
-    // Verify Interview Length SegmentedControl is visible with options
+    // Verify Interview Length SegmentedControl is visible with all options
     await expect(dialog.getByText('Interview Length')).toBeVisible()
     await expect(dialog.getByText('30min').first()).toBeVisible()
     await expect(dialog.getByText('45min').first()).toBeVisible()
@@ -78,7 +80,30 @@ test.describe('Interview Workflow', () => {
     // Verify "Select Dates" section is visible
     await expect(dialog.getByText('Select Dates')).toBeVisible()
 
-    // Verify "Save Slots" button exists
+    // Verify "Save Slots" button exists and is initially present
     await expect(dialog.getByRole('button', { name: 'Save Slots' })).toBeVisible()
+
+    // Close modal via Cancel/close without saving
+    const closeButton = dialog
+      .getByRole('button', { name: 'Cancel' })
+      .or(dialog.locator('button.mantine-Modal-close'))
+    await closeButton.first().click()
+    await expect(dialog).not.toBeVisible({ timeout: 3_000 })
+  })
+
+  test('interview process page shows interview slots section', async ({ page }) => {
+    await navigateTo(page, `/interviews/${INTERVIEW_PROCESS_ID}`)
+
+    await expect(page.getByRole('heading', { name: /interview management/i })).toBeVisible({
+      timeout: 15_000,
+    })
+
+    // Should show the "Add Slot" button (examiner2 can add slots)
+    await expect(page.getByRole('button', { name: /Add Slot|^Add$/i })).toBeVisible({
+      timeout: 10_000,
+    })
+
+    // Should show Interviewees section header
+    await expect(page.getByRole('heading', { name: 'Interviewees', exact: true })).toBeVisible()
   })
 })

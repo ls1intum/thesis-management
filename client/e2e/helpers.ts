@@ -151,6 +151,42 @@ export async function searchAndSelectMultiSelect(page: Page, label: string, opti
 }
 
 /**
+ * Expand a Mantine Accordion section by clicking its control and waiting
+ * for the panel content to appear.  Under heavy parallel load the first
+ * click sometimes doesn't register, so this helper retries up to
+ * {@link maxAttempts} times.
+ *
+ * @param contentLocator  A locator for an element inside the accordion panel
+ *                        that becomes visible only when the panel is expanded.
+ */
+export async function expandAccordion(
+  page: Page,
+  sectionLabel: string,
+  contentLocator: Locator,
+  maxAttempts = 3,
+) {
+  const item = page.locator('.mantine-Accordion-item').filter({ hasText: sectionLabel })
+  const control = item.locator('.mantine-Accordion-control')
+  await control.waitFor({ state: 'visible', timeout: 10_000 })
+
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    // Only click if the accordion is not already expanded (prevent close-reopen toggling)
+    const isExpanded = await item
+      .evaluate((el) => el.hasAttribute('data-active'))
+      .catch(() => false)
+    if (!isExpanded) {
+      await control.click()
+    }
+    const visible = await contentLocator.isVisible({ timeout: 8_000 }).catch(() => false)
+    if (visible) return
+    // Small pause before retrying — the click may need the accordion animation to settle
+    await page.waitForTimeout(500)
+  }
+  // Final assertion so the test fails with a clear message if all attempts failed
+  await expect(contentLocator).toBeVisible({ timeout: 5_000 })
+}
+
+/**
  * Create a minimal valid PDF buffer for file upload tests.
  */
 export function createTestPdfBuffer(): Buffer {
