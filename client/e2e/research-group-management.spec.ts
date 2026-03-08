@@ -104,10 +104,12 @@ test.describe('Research Group Management - Admin Settings', () => {
       timeout: 10_000,
     })
 
-    // Verify member list loads with expected members
-    await expect(
-      page.getByText('Supervisor').first().or(page.getByText('Examiner').first()),
-    ).toBeVisible({ timeout: 10_000 })
+    // Verify member list loads with expected seeded members
+    const membersTable = page.locator('table')
+    await expect(membersTable.getByText('Supervisor User', { exact: true })).toBeVisible({
+      timeout: 10_000,
+    })
+    await expect(membersTable.getByText('Examiner User', { exact: true })).toBeVisible()
 
     // Verify "Add Member" button is visible
     await expect(page.getByRole('button', { name: /add member/i })).toBeVisible()

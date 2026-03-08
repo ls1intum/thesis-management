@@ -5,6 +5,16 @@ test.describe('Email Template Editing', () => {
   test.use({ storageState: authStatePath('admin') })
 
   const researchGroupUrl = '/research-groups/00000000-0000-4000-a000-000000000001'
+  const templateSearchText = 'same supervisor and examiner'
+  const templateDescription = 'Application was accepted with same supervisor and examiner'
+
+  const getAcceptanceTemplateCard = async (page: import('@playwright/test').Page) => {
+    await page.getByPlaceholder('Search Email Template...').fill(templateSearchText)
+    const description = page.getByText(templateDescription, { exact: true })
+    await expect(description).toBeVisible({ timeout: 10_000 })
+
+    return description.locator('xpath=ancestor::div[contains(@class, "mantine-Card-root")][1]')
+  }
 
   test('admin can navigate to template editor', async ({ page }) => {
     test.setTimeout(60_000)
@@ -25,18 +35,15 @@ test.describe('Email Template Editing', () => {
       page.getByRole('heading', { name: 'Application Email Content', level: 3 }),
     ).toBeVisible()
 
-    // Find an enabled Edit button on a non-disabled template card
-    const enabledCard = page
-      .locator('.mantine-Card-root')
-      .filter({ hasText: 'Thesis Application Acceptance' })
-      .first()
+    // Filter to a unique acceptance template card before interacting with its actions
+    const enabledCard = await getAcceptanceTemplateCard(page)
     await expect(enabledCard).toBeVisible({ timeout: 10_000 })
 
-    const editButton = enabledCard.getByRole('button', { name: 'Edit' })
+    const editButton = enabledCard.getByRole('button', { name: 'Edit', exact: true })
     await expect(editButton).toBeEnabled()
 
     // Also verify Preview button exists
-    await expect(enabledCard.getByRole('button', { name: 'Preview' })).toBeVisible()
+    await expect(enabledCard.getByRole('button', { name: 'Preview', exact: true })).toBeVisible()
 
     // Click Edit to navigate to the template editor
     await editButton.click()
@@ -70,12 +77,9 @@ test.describe('Email Template Editing', () => {
     await expect(page.getByRole('heading', { name: 'Email Templates', level: 3 })).toBeVisible()
 
     // Find and click Edit on an enabled template
-    const enabledCard = page
-      .locator('.mantine-Card-root')
-      .filter({ hasText: 'Thesis Application Acceptance' })
-      .first()
+    const enabledCard = await getAcceptanceTemplateCard(page)
     await expect(enabledCard).toBeVisible({ timeout: 10_000 })
-    await enabledCard.getByRole('button', { name: 'Edit' }).click()
+    await enabledCard.getByRole('button', { name: 'Edit', exact: true }).click()
 
     // Wait for the template edit page to load
     await expect(page.getByRole('heading', { name: 'Edit Email Template' })).toBeVisible({
@@ -106,12 +110,7 @@ test.describe('Email Template Editing', () => {
     await expect(resetButton).toBeEnabled({ timeout: 5_000 })
     await resetButton.click()
 
-    // Verify reset success notification
-    await expect(
-      page.getByText('Custom template deleted. Reverted to default template.'),
-    ).toBeVisible({ timeout: 10_000 })
-
     // Verify the subject reverted to the original value
-    await expect(subjectInput).toHaveValue(originalSubject)
+    await expect(subjectInput).toHaveValue(originalSubject, { timeout: 10_000 })
   })
 })

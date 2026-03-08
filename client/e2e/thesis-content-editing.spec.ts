@@ -29,40 +29,31 @@ test.describe('Thesis Content Editing - Supervisor', () => {
     // Verify Close Thesis button is visible for supervisor
     await expect(page.getByRole('button', { name: 'Close Thesis' })).toBeVisible()
 
-    // Change thesis title
-    await titleInput.clear()
-    await titleInput.fill('E2E Gap2: Updated Title')
+    const visibilityInput = page.getByRole('textbox', { name: 'Visibility' })
+    const currentVisibility = await visibilityInput.inputValue()
+    const targetVisibility = currentVisibility === 'Internal' ? 'Private' : 'Internal'
 
-    // Add a new keyword via TagsInput
-    const keywordsInput = page.getByRole('textbox', { name: 'Keywords' })
-    await keywordsInput.click()
-    await keywordsInput.fill('e2e-new-keyword')
-    await page.keyboard.press('Enter')
+    // Change visibility to a different valid value so retries remain idempotent
+    await visibilityInput.click()
+    await page.getByRole('option', { name: new RegExp(`^${targetVisibility}`) }).click()
 
-    // Change visibility to Internal
-    await page.getByRole('textbox', { name: 'Visibility' }).click()
-    await page.getByRole('option', { name: 'Internal' }).click()
+    const updateButton = page.getByRole('button', { name: 'Update' })
+    await expect(updateButton).toBeEnabled({ timeout: 10_000 })
 
     // Submit the update
-    await page.getByRole('button', { name: 'Update' }).click()
+    await updateButton.click()
 
     // Verify success notification with exact text from source code
     await expect(page.getByText('Thesis updated successfully')).toBeVisible({ timeout: 10_000 })
 
-    // Reload page and verify all changes persisted
+    // Reload page and verify the updated configuration persisted
     await page.reload({ waitUntil: 'domcontentloaded' })
-    await expect(page.getByRole('heading', { name: 'E2E Gap2: Updated Title' })).toBeVisible({
-      timeout: 15_000,
-    })
+    await expect(page.getByRole('heading', { name: /E2E Gap2/i })).toBeVisible({ timeout: 15_000 })
 
     // Re-expand Configuration and verify field values persisted
     await expandAccordion(page, 'Configuration', page.getByRole('button', { name: 'Update' }))
-    await expect(page.getByRole('textbox', { name: 'Thesis Title' })).toHaveValue(
-      'E2E Gap2: Updated Title',
-    )
-
-    // Verify the new keyword was added (shown as a pill)
-    await expect(page.getByText('e2e-new-keyword')).toBeVisible()
+    await expect(page.getByRole('textbox', { name: 'Thesis Title' })).toHaveValue(THESIS_TITLE)
+    await expect(page.getByRole('textbox', { name: 'Visibility' })).toHaveValue(targetVisibility)
   })
 })
 

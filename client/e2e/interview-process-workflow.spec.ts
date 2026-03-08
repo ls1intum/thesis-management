@@ -23,7 +23,9 @@ test.describe('Interview Process Workflow - Examiner Creates Process', () => {
     // Verify the creation dialog opens
     const dialog = page.getByRole('dialog')
     await expect(dialog).toBeVisible({ timeout: 5_000 })
-    await expect(dialog.getByText('Create Interview Process')).toBeVisible()
+    await expect(
+      dialog.locator('.mantine-Modal-title').filter({ hasText: /^Create Interview Process$/ }),
+    ).toBeVisible()
 
     // Search for Topic 9
     const searchInput = dialog.getByPlaceholder('Select topic...')

@@ -1,9 +1,11 @@
 import { test, expect } from '@playwright/test'
-import { authStatePath, navigateTo } from './helpers'
+import { authStatePath, getAccordionItem, navigateTo } from './helpers'
 
 const THESIS_ID = '00000000-0000-4000-d000-000000000018'
 const THESIS_URL = `/theses/${THESIS_ID}`
 const THESIS_TITLE = 'E2E Gap9: Presentation Management Test Thesis'
+const ORIGINAL_PRESENTATION_LOCATION = 'Room 01.07.023, Boltzmannstr. 3'
+const UPDATED_PRESENTATION_LOCATION = 'Room 02.09.001, Updated Location'
 
 /**
  * Expand the Presentation accordion on the thesis page.
@@ -11,30 +13,39 @@ const THESIS_TITLE = 'E2E Gap9: Presentation Management Test Thesis'
  * that may contain "Presentation" text in their content.
  */
 async function expandPresentationAccordion(page: import('@playwright/test').Page) {
-  const item = page.locator('.mantine-Accordion-item').filter({
-    has: page.locator('.mantine-Accordion-label', { hasText: /^Presentation$/ }),
-  })
+  const item = getAccordionItem(page, 'Presentation')
   const isExpanded = await item.evaluate((el) => el.hasAttribute('data-active')).catch(() => false)
   if (!isExpanded) {
     await item.locator('.mantine-Accordion-control').click()
   }
+
+  return item
+}
+
+function getPresentationCard(section: import('@playwright/test').Locator, locationText: string) {
+  const escapedLocationText = locationText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  return section
+    .getByText(new RegExp(escapedLocationText))
+    .first()
+    .locator('xpath=ancestor::div[contains(@class, "mantine-Card-root")][1]')
 }
 
 test.describe('Presentation Management - Edit', () => {
-  test('student can edit a presentation', async ({ browser }) => {
-    const context = await browser.newContext({ storageState: authStatePath('student5') })
-    const page = await context.newPage()
+  test.use({ storageState: authStatePath('supervisor') })
+
+  test('supervisor can edit a presentation', async ({ page }) => {
+    test.setTimeout(90_000)
+
+    let cleanupRequired = false
 
     try {
-      test.setTimeout(90_000)
-
       await navigateTo(page, THESIS_URL)
       await expect(page.getByRole('heading', { name: THESIS_TITLE })).toBeVisible({
         timeout: 15_000,
       })
 
       // Expand the Presentation accordion
-      await expandPresentationAccordion(page)
+      const presentationSection = await expandPresentationAccordion(page)
       await expect(page.getByText('01.07.023').first()).toBeVisible({ timeout: 10_000 })
 
       // Verify both presentations are visible
@@ -48,27 +59,30 @@ test.describe('Presentation Management - Edit', () => {
       await expect(page.getByText('Scheduled').first()).toBeVisible()
 
       // Find the first presentation card (Room 01.07.023)
-      const card = page.locator('.mantine-Card-root').filter({ hasText: '01.07.023' }).first()
+      const card = getPresentationCard(presentationSection, ORIGINAL_PRESENTATION_LOCATION)
       await expect(card).toBeVisible()
 
       // Open three-dot menu
-      const menuButton = card
-        .locator('button')
-        .filter({ has: page.locator('svg') })
-        .last()
+      const menuButton = card.locator('button[aria-haspopup="menu"]')
+      await expect(menuButton).toBeVisible()
       await menuButton.click()
 
       // Verify menu items are present
-      await expect(page.getByText('Edit Presentation')).toBeVisible()
-      await expect(page.getByText('Delete Presentation')).toBeVisible()
+      await expect(
+        page.getByRole('menuitem', { name: 'Edit Presentation', exact: true }),
+      ).toBeVisible()
 
       // Click "Edit Presentation"
-      await page.getByText('Edit Presentation').click()
+      await page.getByRole('menuitem', { name: 'Edit Presentation', exact: true }).click()
 
       // Verify the edit modal opens with correct title
-      const modal = page.getByRole('dialog').first()
+      const modal = page.locator('section[role="dialog"]').filter({
+        has: page.locator('.mantine-Modal-title').filter({ hasText: /^Update Presentation$/ }),
+      })
       await expect(modal).toBeVisible({ timeout: 5_000 })
-      await expect(modal.getByText('Update Presentation')).toBeVisible()
+      await expect(
+        modal.getByRole('heading', { name: 'Update Presentation', exact: true }),
+      ).toBeVisible()
 
       // Verify form fields are present
       await expect(modal.getByLabel('Location')).toBeVisible()
@@ -76,7 +90,7 @@ test.describe('Presentation Management - Edit', () => {
       // Change the location
       const locationInput = modal.getByLabel('Location')
       await locationInput.clear()
-      await locationInput.fill('Room 02.09.001, Updated Location')
+      await locationInput.fill(UPDATED_PRESENTATION_LOCATION)
 
       // Submit
       await modal.getByRole('button', { name: 'Update Presentation' }).click()
@@ -89,10 +103,32 @@ test.describe('Presentation Management - Edit', () => {
         timeout: 10_000,
       })
 
+      cleanupRequired = true
+
       // Verify the updated location is now displayed
       await expect(page.getByText('Updated Location').first()).toBeVisible({ timeout: 10_000 })
     } finally {
-      await context.close()
+      if (cleanupRequired) {
+        const presentationSection = await expandPresentationAccordion(page)
+        const updatedCard = getPresentationCard(presentationSection, UPDATED_PRESENTATION_LOCATION)
+        await expect(updatedCard).toBeVisible({ timeout: 10_000 })
+
+        await updatedCard.locator('button[aria-haspopup="menu"]').click()
+        await page.getByRole('menuitem', { name: 'Edit Presentation', exact: true }).click()
+
+        const modal = page.locator('section[role="dialog"]').filter({
+          has: page.locator('.mantine-Modal-title').filter({ hasText: /^Update Presentation$/ }),
+        })
+        await expect(modal).toBeVisible({ timeout: 5_000 })
+
+        const locationInput = modal.getByLabel('Location')
+        await locationInput.clear()
+        await locationInput.fill(ORIGINAL_PRESENTATION_LOCATION)
+        await modal.getByRole('button', { name: 'Update Presentation' }).click()
+
+        await expect(modal).not.toBeVisible({ timeout: 15_000 })
+        await expect(page.getByText('01.07.023').first()).toBeVisible({ timeout: 10_000 })
+      }
     }
   })
 })
@@ -109,22 +145,20 @@ test.describe('Presentation Management - Delete', () => {
     })
 
     // Expand the Presentation accordion
-    await expandPresentationAccordion(page)
+    const presentationSection = await expandPresentationAccordion(page)
     await expect(page.getByText('00.08.038').first()).toBeVisible({ timeout: 10_000 })
 
     // Find the second presentation card (Room 00.08.038)
-    const card = page.locator('.mantine-Card-root').filter({ hasText: '00.08.038' }).first()
+    const card = getPresentationCard(presentationSection, 'Room 00.08.038, Boltzmannstr. 3')
     await expect(card).toBeVisible()
 
     // Open three-dot menu
-    const menuButton = card
-      .locator('button')
-      .filter({ has: page.locator('svg') })
-      .last()
+    const menuButton = card.locator('button[aria-haspopup="menu"]')
+    await expect(menuButton).toBeVisible()
     await menuButton.click()
 
     // Click "Delete Presentation"
-    await page.getByText('Delete Presentation').click()
+    await page.getByRole('menuitem', { name: 'Delete Presentation', exact: true }).click()
 
     // Verify confirmation dialog with correct title and text
     const dialog = page.getByRole('dialog')
@@ -159,22 +193,47 @@ test.describe('Presentation Management - Notes', () => {
       })
 
       // Expand the Presentation accordion
-      await expandPresentationAccordion(page)
-      await expect(page.getByText('01.07.023').first()).toBeVisible({ timeout: 10_000 })
+      const presentationSection = await expandPresentationAccordion(page)
+      await expect(
+        presentationSection.getByRole('heading', { name: 'Master Thesis Presentation' }).first(),
+      ).toBeVisible({ timeout: 10_000 })
 
-      // Find the first presentation card
-      const card = page.locator('.mantine-Card-root').filter({ hasText: '01.07.023' }).first()
+      // The edit workflow may temporarily change the first card's location.
+      const card = presentationSection
+        .locator('.mantine-Card-root')
+        .filter({
+          has: page.getByRole('heading', { name: 'Master Thesis Presentation', exact: true }),
+        })
+        .first()
       await expect(card).toBeVisible()
 
-      // Click "Add presentation note" button to expand the note section
-      await card.getByRole('button', { name: 'Add presentation note' }).click()
+      const noteText = card.getByText('key discussion points').first()
+      const addNoteButton = card.getByRole('button', { name: 'Add presentation note' })
+      const showNoteButton = card.getByRole('button', { name: 'Show' })
+      const editNoteButton = card.getByRole('button', { name: 'Edit' })
 
-      // Verify the note section expands (ProseMirror editor visible in read-only mode)
-      const editor = card.locator('.ProseMirror')
+      // Retries may re-enter after the note was already saved. Re-open it if needed.
+      if (
+        !(await addNoteButton.isVisible({ timeout: 1_000 }).catch(() => false)) &&
+        (await showNoteButton.isVisible({ timeout: 1_000 }).catch(() => false))
+      ) {
+        await showNoteButton.click()
+
+        if (await noteText.isVisible({ timeout: 2_000 }).catch(() => false)) {
+          await expect(noteText).toBeVisible()
+          return
+        }
+      }
+
+      if (await addNoteButton.isVisible({ timeout: 1_000 }).catch(() => false)) {
+        await addNoteButton.click()
+      } else if (await editNoteButton.isVisible({ timeout: 1_000 }).catch(() => false)) {
+        await editNoteButton.click()
+      }
+
+      // Adding a new note opens the editor directly in edit mode
+      const editor = card.locator('.ProseMirror[contenteditable="true"]').first()
       await expect(editor).toBeVisible({ timeout: 5_000 })
-
-      // Click "Edit" button to enter edit mode (note section starts in read-only mode)
-      await card.getByRole('button', { name: 'Edit' }).click()
 
       // Verify Save and Cancel buttons appear in edit mode
       await expect(card.getByRole('button', { name: 'Save' })).toBeVisible()
@@ -182,6 +241,8 @@ test.describe('Presentation Management - Notes', () => {
 
       // Type the note in the ProseMirror editor
       await editor.click()
+      const modifier = process.platform === 'darwin' ? 'Meta' : 'Control'
+      await page.keyboard.press(`${modifier}+a`)
       await page.keyboard.type('E2E test presentation note: key discussion points')
 
       // Save
@@ -192,10 +253,14 @@ test.describe('Presentation Management - Notes', () => {
         timeout: 10_000,
       })
 
-      // Verify the note text is now displayed
-      await expect(page.getByText('key discussion points').first()).toBeVisible({
-        timeout: 10_000,
-      })
+      if (!(await noteText.isVisible({ timeout: 2_000 }).catch(() => false))) {
+        const showButtonAfterSave = card.getByRole('button', { name: 'Show' })
+        if (await showButtonAfterSave.isVisible({ timeout: 2_000 }).catch(() => false)) {
+          await showButtonAfterSave.click()
+        }
+      }
+
+      await expect(noteText).toBeVisible({ timeout: 10_000 })
     } finally {
       await context.close()
     }

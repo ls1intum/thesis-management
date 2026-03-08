@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { authStatePath, expandAccordion, navigateTo } from './helpers'
+import { authStatePath, createTestPdfBuffer, expandAccordion, navigateTo } from './helpers'
 import {
   snapshotMailbox,
   waitForNewMessages,
@@ -50,7 +50,7 @@ test.describe('Thesis Lifecycle - Accept Proposal', () => {
       // Verify confirmation dialog opens with correct title and text
       const dialog = page.getByRole('dialog')
       await expect(dialog).toBeVisible({ timeout: 10_000 })
-      await expect(dialog.getByText('Accept Proposal')).toBeVisible()
+      await expect(dialog.getByRole('heading', { name: 'Accept Proposal', exact: true })).toBeVisible()
       await expect(dialog.getByText(/accept the proposal/i)).toBeVisible()
 
       // Verify Cancel and Confirm buttons are present
@@ -104,6 +104,35 @@ test.describe('Thesis Lifecycle - Final Submission', () => {
       // Verify "Mark Submission as Final" button is visible and enabled (thesis file exists)
       const submitButton = page.getByRole('button', { name: 'Mark Submission as Final' })
       await expect(submitButton).toBeVisible({ timeout: 10_000 })
+
+      if (!(await submitButton.isEnabled())) {
+        const presentationFileRow = page.locator('tr').filter({ hasText: 'Presentation (PDF)' }).first()
+        await expect(presentationFileRow).toBeVisible({ timeout: 10_000 })
+
+        await presentationFileRow.locator('button').last().click()
+
+        const uploadDialog = page.getByRole('dialog')
+        await expect(uploadDialog).toBeVisible({ timeout: 10_000 })
+        await expect(
+          uploadDialog.getByRole('heading', { name: 'File Upload', exact: true }),
+        ).toBeVisible()
+
+        await uploadDialog.locator('input[type="file"]').setInputFiles({
+          name: 'final-submission-presentation.pdf',
+          mimeType: 'application/pdf',
+          buffer: createTestPdfBuffer(),
+        })
+
+        const uploadFileButton = uploadDialog.getByRole('button', { name: 'Upload File' })
+        await expect(uploadFileButton).toBeEnabled({ timeout: 10_000 })
+        await uploadFileButton.click()
+
+        await expect(uploadDialog).toBeHidden({ timeout: 10_000 })
+        await expect(page.getByText('File uploaded successfully')).toBeVisible({
+          timeout: 10_000,
+        })
+      }
+
       await expect(submitButton).toBeEnabled()
 
       // Click "Mark Submission as Final"
@@ -112,9 +141,13 @@ test.describe('Thesis Lifecycle - Final Submission', () => {
       // Verify confirmation dialog opens with correct title and text
       const dialog = page.getByRole('dialog')
       await expect(dialog).toBeVisible({ timeout: 10_000 })
-      await expect(dialog.getByText('Final Submission')).toBeVisible()
-      await expect(dialog.getByText(/submit your thesis/i)).toBeVisible()
-      await expect(dialog.getByText(/cannot be undone/i)).toBeVisible()
+      await expect(dialog.getByRole('heading', { name: 'Final Submission', exact: true })).toBeVisible()
+      await expect(
+        dialog.getByText(
+          'Are you sure you want to submit your thesis? This action cannot be undone.',
+        ),
+      ).toBeVisible()
+      await expect(dialog.getByText(/official submission website/i)).toBeVisible()
 
       // Verify Cancel and Confirm buttons
       await expect(dialog.getByRole('button', { name: 'Cancel' })).toBeVisible()
@@ -157,7 +190,7 @@ test.describe('Thesis Lifecycle - Close Thesis', () => {
     // Verify confirmation dialog opens with correct title and text
     const dialog = page.getByRole('dialog')
     await expect(dialog).toBeVisible({ timeout: 10_000 })
-    await expect(dialog.getByText('Close Thesis')).toBeVisible()
+    await expect(dialog.getByRole('heading', { name: 'Close Thesis', exact: true })).toBeVisible()
     await expect(dialog.getByText(/DROPPED OUT/i)).toBeVisible()
     await expect(dialog.getByText(/cannot be undone/i)).toBeVisible()
 
