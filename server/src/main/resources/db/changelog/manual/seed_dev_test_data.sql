@@ -1593,3 +1593,409 @@ WHERE thesis_id = '00000000-0000-4000-d000-000000000010'::UUID AND final_grade I
 UPDATE theses SET final_grade = '1.3', final_feedback = 'Excellent ML-based code review system.'
 WHERE thesis_id = '00000000-0000-4000-d000-000000000011'::UUID AND final_grade IS NULL;
 
+-- ============================================================================
+-- 34. E2E COVERAGE GAP TEST DATA — TOPICS 7-9
+-- ============================================================================
+INSERT INTO topics (topic_id, title, thesis_types, problem_statement, requirements, goals,
+                    "references", published_at, closed_at, updated_at, created_at, created_by,
+                    research_group_id)
+VALUES
+    -- Topic 7 (ASE, OPEN): for editing + closing tests
+    ('00000000-0000-4000-b000-000000000007'::UUID,
+     'E2E Gap4: Editable Open Topic',
+     ARRAY['MASTER'],
+     'This topic exists for E2E testing of topic editing and closing workflows.',
+     'Basic software engineering skills.',
+     'Test topic editing and closing with notifications.',
+     'N/A',
+     NOW() - INTERVAL '5 days', NULL,
+     NOW(), NOW() - INTERVAL '5 days',
+     (SELECT user_id FROM users WHERE university_id = 'examiner'),
+     '00000000-0000-4000-a000-000000000001'::UUID),
+
+    -- Topic 8 (ASE, DRAFT): for closing draft tests
+    ('00000000-0000-4000-b000-000000000008'::UUID,
+     'E2E Gap4: Closable Draft Topic',
+     ARRAY['BACHELOR'],
+     'This draft topic exists for E2E testing of draft closure.',
+     'Interest in testing.',
+     'Test draft closing without notifications.',
+     'N/A',
+     NULL, NULL,
+     NOW(), NOW() - INTERVAL '3 days',
+     (SELECT user_id FROM users WHERE university_id = 'examiner'),
+     '00000000-0000-4000-a000-000000000001'::UUID),
+
+    -- Topic 9 (ASE, OPEN): for interview creation tests
+    ('00000000-0000-4000-b000-000000000009'::UUID,
+     'E2E Gap5: Interview Topic',
+     ARRAY['MASTER'],
+     'This topic exists for E2E testing of interview process creation.',
+     'Interest in interviews.',
+     'Test creating interview processes with applicant selection.',
+     'N/A',
+     NOW() - INTERVAL '4 days', NULL,
+     NOW(), NOW() - INTERVAL '4 days',
+     (SELECT user_id FROM users WHERE university_id = 'examiner'),
+     '00000000-0000-4000-a000-000000000001'::UUID)
+ON CONFLICT DO NOTHING;
+
+-- Topic 7-9 roles
+INSERT INTO topic_roles (topic_id, user_id, role, position, assigned_at, assigned_by)
+VALUES
+    ('00000000-0000-4000-b000-000000000007'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'examiner'), 'EXAMINER', 0,
+     NOW(), (SELECT user_id FROM users WHERE university_id = 'examiner')),
+    ('00000000-0000-4000-b000-000000000007'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
+     NOW(), (SELECT user_id FROM users WHERE university_id = 'examiner')),
+
+    ('00000000-0000-4000-b000-000000000008'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'examiner'), 'EXAMINER', 0,
+     NOW(), (SELECT user_id FROM users WHERE university_id = 'examiner')),
+    ('00000000-0000-4000-b000-000000000008'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
+     NOW(), (SELECT user_id FROM users WHERE university_id = 'examiner')),
+
+    ('00000000-0000-4000-b000-000000000009'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'examiner'), 'EXAMINER', 0,
+     NOW(), (SELECT user_id FROM users WHERE university_id = 'examiner')),
+    ('00000000-0000-4000-b000-000000000009'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
+     NOW(), (SELECT user_id FROM users WHERE university_id = 'examiner'))
+ON CONFLICT DO NOTHING;
+
+-- Topic 7: 1 NOT_ASSESSED application from student5 (for close-with-notify)
+-- Topic 9: 2 NOT_ASSESSED applications from student4 and student5 (for interview creation)
+INSERT INTO applications (application_id, user_id, topic_id, thesis_title, thesis_type, motivation,
+                          state, reject_reason, desired_start_date, comment, created_at, reviewed_at,
+                          research_group_id)
+VALUES
+    ('00000000-0000-4000-c000-000000000012'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'student4'),
+     '00000000-0000-4000-b000-000000000009'::UUID,
+     NULL, 'MASTER',
+     'I am interested in this interview topic for E2E testing.',
+     'NOT_ASSESSED', NULL,
+     NOW() + INTERVAL '30 days', '',
+     NOW() - INTERVAL '2 days', NULL,
+     '00000000-0000-4000-a000-000000000001'::UUID),
+
+    ('00000000-0000-4000-c000-000000000013'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'student5'),
+     '00000000-0000-4000-b000-000000000009'::UUID,
+     NULL, 'MASTER',
+     'I would like to participate in the interview process for this topic.',
+     'NOT_ASSESSED', NULL,
+     NOW() + INTERVAL '30 days', '',
+     NOW() - INTERVAL '1 day', NULL,
+     '00000000-0000-4000-a000-000000000001'::UUID),
+
+    ('00000000-0000-4000-c000-000000000014'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'student5'),
+     '00000000-0000-4000-b000-000000000007'::UUID,
+     NULL, 'MASTER',
+     'I am interested in this editable topic.',
+     'NOT_ASSESSED', NULL,
+     NOW() + INTERVAL '30 days', '',
+     NOW() - INTERVAL '1 day', NULL,
+     '00000000-0000-4000-a000-000000000001'::UUID)
+ON CONFLICT DO NOTHING;
+
+UPDATE applications SET consent_timestamp = created_at
+WHERE application_id IN (
+    '00000000-0000-4000-c000-000000000012'::UUID,
+    '00000000-0000-4000-c000-000000000013'::UUID,
+    '00000000-0000-4000-c000-000000000014'::UUID
+) AND consent_timestamp IS NULL;
+
+-- ============================================================================
+-- 35. E2E COVERAGE GAP TEST DATA — THESES 13-18
+-- ============================================================================
+INSERT INTO theses (thesis_id, title, type, language, metadata, info, abstract, state,
+                    visibility, keywords, application_id, start_date, end_date, created_at,
+                    research_group_id)
+VALUES
+    -- Thesis 13: PROPOSAL (student4, ASE) — Gap 1: Accept Proposal
+    ('00000000-0000-4000-d000-000000000013'::UUID,
+     'E2E Gap1: Proposal Acceptance Test Thesis',
+     'MASTER', 'ENGLISH',
+     '{"titles":{},"credits":{}}',
+     '', '',
+     'PROPOSAL', 'PRIVATE',
+     ARRAY['e2e', 'proposal'],
+     NULL,
+     NULL, NULL,
+     NOW() - INTERVAL '10 days',
+     '00000000-0000-4000-a000-000000000001'::UUID),
+
+    -- Thesis 14: WRITING (student5, ASE) — Gap 1: Final Submission
+    ('00000000-0000-4000-d000-000000000014'::UUID,
+     'E2E Gap1: Final Submission Test Thesis',
+     'BACHELOR', 'ENGLISH',
+     '{"titles":{},"credits":{}}',
+     '', '',
+     'WRITING', 'PRIVATE',
+     ARRAY['e2e', 'submission'],
+     NULL,
+     NOW() - INTERVAL '20 days', NOW() + INTERVAL '160 days',
+     NOW() - INTERVAL '25 days',
+     '00000000-0000-4000-a000-000000000001'::UUID),
+
+    -- Thesis 15: WRITING (student3, ASE) — Gap 1: Close Thesis
+    ('00000000-0000-4000-d000-000000000015'::UUID,
+     'E2E Gap1: Close Thesis Test',
+     'MASTER', 'ENGLISH',
+     '{"titles":{},"credits":{}}',
+     '', '',
+     'WRITING', 'PRIVATE',
+     ARRAY['e2e', 'close'],
+     NULL,
+     NOW() - INTERVAL '15 days', NOW() + INTERVAL '165 days',
+     NOW() - INTERVAL '20 days',
+     '00000000-0000-4000-a000-000000000001'::UUID),
+
+    -- Thesis 16: WRITING (student4, ASE) — Gap 2: Config + Info editing
+    ('00000000-0000-4000-d000-000000000016'::UUID,
+     'E2E Gap2: Content Editing Test Thesis',
+     'MASTER', 'ENGLISH',
+     '{"titles":{},"credits":{}}',
+     '', '',
+     'WRITING', 'PRIVATE',
+     ARRAY['e2e', 'editing'],
+     NULL,
+     NOW() - INTERVAL '12 days', NOW() + INTERVAL '168 days',
+     NOW() - INTERVAL '15 days',
+     '00000000-0000-4000-a000-000000000001'::UUID),
+
+    -- Thesis 17: WRITING (student2, ASE) — Gap 3: Comments
+    ('00000000-0000-4000-d000-000000000017'::UUID,
+     'E2E Gap3: Comments Test Thesis',
+     'MASTER', 'ENGLISH',
+     '{"titles":{},"credits":{}}',
+     '', '',
+     'WRITING', 'PRIVATE',
+     ARRAY['e2e', 'comments'],
+     NULL,
+     NOW() - INTERVAL '10 days', NOW() + INTERVAL '170 days',
+     NOW() - INTERVAL '12 days',
+     '00000000-0000-4000-a000-000000000001'::UUID),
+
+    -- Thesis 18: WRITING (student5, ASE) — Gap 9: Presentation management
+    ('00000000-0000-4000-d000-000000000018'::UUID,
+     'E2E Gap9: Presentation Management Test Thesis',
+     'MASTER', 'ENGLISH',
+     '{"titles":{},"credits":{}}',
+     '', 'This thesis investigates presentation management workflows in academic systems.',
+     'WRITING', 'PRIVATE',
+     ARRAY['e2e', 'presentation'],
+     NULL,
+     NOW() - INTERVAL '8 days', NOW() + INTERVAL '172 days',
+     NOW() - INTERVAL '10 days',
+     '00000000-0000-4000-a000-000000000001'::UUID)
+ON CONFLICT DO NOTHING;
+
+-- Thesis 13-18 roles
+INSERT INTO thesis_roles (thesis_id, user_id, role, position, assigned_at, assigned_by)
+VALUES
+    -- Thesis 13: student4, supervisor2 (SUPERVISOR), examiner (EXAMINER) — ASE group
+    ('00000000-0000-4000-d000-000000000013'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'student4'), 'STUDENT', 0,
+     NOW() - INTERVAL '10 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
+    ('00000000-0000-4000-d000-000000000013'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'supervisor2'), 'SUPERVISOR', 0,
+     NOW() - INTERVAL '10 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
+    ('00000000-0000-4000-d000-000000000013'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'examiner'), 'EXAMINER', 0,
+     NOW() - INTERVAL '10 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
+
+    -- Thesis 14: student5, supervisor (SUPERVISOR), examiner (EXAMINER)
+    ('00000000-0000-4000-d000-000000000014'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'student5'), 'STUDENT', 0,
+     NOW() - INTERVAL '25 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
+    ('00000000-0000-4000-d000-000000000014'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
+     NOW() - INTERVAL '25 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
+    ('00000000-0000-4000-d000-000000000014'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'examiner'), 'EXAMINER', 0,
+     NOW() - INTERVAL '25 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
+
+    -- Thesis 15: student3, supervisor (SUPERVISOR), examiner (EXAMINER)
+    ('00000000-0000-4000-d000-000000000015'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'student3'), 'STUDENT', 0,
+     NOW() - INTERVAL '20 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
+    ('00000000-0000-4000-d000-000000000015'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
+     NOW() - INTERVAL '20 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
+    ('00000000-0000-4000-d000-000000000015'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'examiner'), 'EXAMINER', 0,
+     NOW() - INTERVAL '20 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
+
+    -- Thesis 16: student4, supervisor (SUPERVISOR), examiner (EXAMINER)
+    ('00000000-0000-4000-d000-000000000016'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'student4'), 'STUDENT', 0,
+     NOW() - INTERVAL '15 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
+    ('00000000-0000-4000-d000-000000000016'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
+     NOW() - INTERVAL '15 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
+    ('00000000-0000-4000-d000-000000000016'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'examiner'), 'EXAMINER', 0,
+     NOW() - INTERVAL '15 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
+
+    -- Thesis 17: student2, supervisor (SUPERVISOR), examiner (EXAMINER)
+    ('00000000-0000-4000-d000-000000000017'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'student2'), 'STUDENT', 0,
+     NOW() - INTERVAL '12 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
+    ('00000000-0000-4000-d000-000000000017'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
+     NOW() - INTERVAL '12 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
+    ('00000000-0000-4000-d000-000000000017'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'examiner'), 'EXAMINER', 0,
+     NOW() - INTERVAL '12 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
+
+    -- Thesis 18: student5, supervisor (SUPERVISOR), examiner (EXAMINER)
+    ('00000000-0000-4000-d000-000000000018'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'student5'), 'STUDENT', 0,
+     NOW() - INTERVAL '10 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
+    ('00000000-0000-4000-d000-000000000018'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
+     NOW() - INTERVAL '10 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
+    ('00000000-0000-4000-d000-000000000018'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'examiner'), 'EXAMINER', 0,
+     NOW() - INTERVAL '10 days', (SELECT user_id FROM users WHERE university_id = 'examiner'))
+ON CONFLICT DO NOTHING;
+
+-- Thesis 13-18 state changes
+INSERT INTO thesis_state_changes (thesis_id, state, changed_at)
+VALUES
+    -- Thesis 13: PROPOSAL only
+    ('00000000-0000-4000-d000-000000000013'::UUID, 'PROPOSAL', NOW() - INTERVAL '10 days'),
+    -- Thesis 14: PROPOSAL -> WRITING
+    ('00000000-0000-4000-d000-000000000014'::UUID, 'PROPOSAL', NOW() - INTERVAL '25 days'),
+    ('00000000-0000-4000-d000-000000000014'::UUID, 'WRITING', NOW() - INTERVAL '20 days'),
+    -- Thesis 15: PROPOSAL -> WRITING
+    ('00000000-0000-4000-d000-000000000015'::UUID, 'PROPOSAL', NOW() - INTERVAL '20 days'),
+    ('00000000-0000-4000-d000-000000000015'::UUID, 'WRITING', NOW() - INTERVAL '15 days'),
+    -- Thesis 16: PROPOSAL -> WRITING
+    ('00000000-0000-4000-d000-000000000016'::UUID, 'PROPOSAL', NOW() - INTERVAL '15 days'),
+    ('00000000-0000-4000-d000-000000000016'::UUID, 'WRITING', NOW() - INTERVAL '12 days'),
+    -- Thesis 17: PROPOSAL -> WRITING
+    ('00000000-0000-4000-d000-000000000017'::UUID, 'PROPOSAL', NOW() - INTERVAL '12 days'),
+    ('00000000-0000-4000-d000-000000000017'::UUID, 'WRITING', NOW() - INTERVAL '10 days'),
+    -- Thesis 18: PROPOSAL -> WRITING
+    ('00000000-0000-4000-d000-000000000018'::UUID, 'PROPOSAL', NOW() - INTERVAL '10 days'),
+    ('00000000-0000-4000-d000-000000000018'::UUID, 'WRITING', NOW() - INTERVAL '8 days')
+ON CONFLICT DO NOTHING;
+
+-- Thesis 13-18 proposals
+INSERT INTO thesis_proposals (proposal_id, thesis_id, proposal_filename, approved_at, approved_by,
+                              created_at, created_by)
+VALUES
+    -- Thesis 13: pending proposal (not approved — for accept test)
+    ('00000000-0000-4000-e000-000000000013'::UUID,
+     '00000000-0000-4000-d000-000000000013'::UUID,
+     'proposal_gap1_accept.pdf',
+     NULL, NULL,
+     NOW() - INTERVAL '8 days',
+     (SELECT user_id FROM users WHERE university_id = 'student4')),
+
+    -- Thesis 14: approved proposal
+    ('00000000-0000-4000-e000-000000000014'::UUID,
+     '00000000-0000-4000-d000-000000000014'::UUID,
+     'proposal_gap1_submit.pdf',
+     NOW() - INTERVAL '21 days',
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'),
+     NOW() - INTERVAL '23 days',
+     (SELECT user_id FROM users WHERE university_id = 'student5')),
+
+    -- Thesis 15: approved proposal
+    ('00000000-0000-4000-e000-000000000015'::UUID,
+     '00000000-0000-4000-d000-000000000015'::UUID,
+     'proposal_gap1_close.pdf',
+     NOW() - INTERVAL '16 days',
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'),
+     NOW() - INTERVAL '18 days',
+     (SELECT user_id FROM users WHERE university_id = 'student3')),
+
+    -- Thesis 16: approved proposal
+    ('00000000-0000-4000-e000-000000000016'::UUID,
+     '00000000-0000-4000-d000-000000000016'::UUID,
+     'proposal_gap2_edit.pdf',
+     NOW() - INTERVAL '13 days',
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'),
+     NOW() - INTERVAL '14 days',
+     (SELECT user_id FROM users WHERE university_id = 'student4')),
+
+    -- Thesis 17: approved proposal
+    ('00000000-0000-4000-e000-000000000017'::UUID,
+     '00000000-0000-4000-d000-000000000017'::UUID,
+     'proposal_gap3_comments.pdf',
+     NOW() - INTERVAL '11 days',
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'),
+     NOW() - INTERVAL '12 days',
+     (SELECT user_id FROM users WHERE university_id = 'student2')),
+
+    -- Thesis 18: approved proposal
+    ('00000000-0000-4000-e000-000000000018'::UUID,
+     '00000000-0000-4000-d000-000000000018'::UUID,
+     'proposal_gap9_presentation.pdf',
+     NOW() - INTERVAL '9 days',
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'),
+     NOW() - INTERVAL '10 days',
+     (SELECT user_id FROM users WHERE university_id = 'student5'))
+ON CONFLICT DO NOTHING;
+
+-- Thesis 14: thesis file (needed for "Mark Submission as Final" button to be enabled)
+INSERT INTO thesis_files (file_id, thesis_id, type, filename, upload_name, uploaded_at, uploaded_by)
+VALUES
+    ('00000000-0000-4000-e400-000000000014'::UUID,
+     '00000000-0000-4000-d000-000000000014'::UUID,
+     'THESIS', 'thesis_gap1_submission.pdf', 'thesis_gap1_submission.pdf',
+     NOW() - INTERVAL '3 days',
+     (SELECT user_id FROM users WHERE university_id = 'student5'))
+ON CONFLICT DO NOTHING;
+
+-- Thesis 17: 2 seeded supervisor comments
+INSERT INTO thesis_comments (comment_id, thesis_id, type, message, filename, upload_name,
+                             created_at, created_by)
+VALUES
+    ('00000000-0000-4000-e200-000000000017'::UUID,
+     '00000000-0000-4000-d000-000000000017'::UUID,
+     'SUPERVISOR',
+     'Please review the literature on distributed consensus algorithms before writing Chapter 3.',
+     NULL, NULL,
+     NOW() - INTERVAL '8 days',
+     (SELECT user_id FROM users WHERE university_id = 'supervisor')),
+
+    ('00000000-0000-4000-e200-000000000117'::UUID,
+     '00000000-0000-4000-d000-000000000017'::UUID,
+     'SUPERVISOR',
+     'Good progress on the implementation chapter. Consider adding more benchmarks.',
+     NULL, NULL,
+     NOW() - INTERVAL '5 days',
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'))
+ON CONFLICT DO NOTHING;
+
+-- Thesis 18: 2 SCHEDULED presentations (one with note for editing, one without for deletion)
+INSERT INTO thesis_presentations (presentation_id, thesis_id, type, state, visibility, language,
+                                  location, stream_url, scheduled_at, created_at, created_by)
+VALUES
+    -- Presentation with note (for editing test)
+    ('00000000-0000-4000-e300-000000000018'::UUID,
+     '00000000-0000-4000-d000-000000000018'::UUID,
+     'INTERMEDIATE', 'SCHEDULED', 'PRIVATE', 'ENGLISH',
+     'Room 01.07.023, Boltzmannstr. 3', NULL,
+     NOW() + INTERVAL '14 days',
+     NOW() - INTERVAL '3 days',
+     (SELECT user_id FROM users WHERE university_id = 'supervisor')),
+
+    -- Presentation without note (for deletion test)
+    ('00000000-0000-4000-e300-000000000118'::UUID,
+     '00000000-0000-4000-d000-000000000018'::UUID,
+     'INTERMEDIATE', 'SCHEDULED', 'PRIVATE', 'ENGLISH',
+     'Room 00.08.038, Boltzmannstr. 3', NULL,
+     NOW() + INTERVAL '21 days',
+     NOW() - INTERVAL '2 days',
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'))
+ON CONFLICT DO NOTHING;
+
