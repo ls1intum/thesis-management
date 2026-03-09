@@ -2029,3 +2029,45 @@ VALUES
      NOW(), (SELECT user_id FROM users WHERE university_id = 'examiner'))
 ON CONFLICT DO NOTHING;
 
+-- ============================================================================
+-- 41. E2E COVERAGE GAP TEST DATA — INTERVIEW SLOT BOOKING
+-- ============================================================================
+
+-- INTERVIEWING application for student2 on topic 3 (for booking e2e test)
+INSERT INTO applications (application_id, user_id, topic_id, thesis_title, thesis_type, motivation,
+                          state, reject_reason, desired_start_date, comment, created_at, reviewed_at,
+                          research_group_id)
+VALUES
+    ('00000000-0000-4000-c000-000000000015'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'student2'),
+     '00000000-0000-4000-b000-000000000003'::UUID,
+     NULL, 'MASTER',
+     'I am interested in anomaly detection and have experience with streaming data analysis.',
+     'INTERVIEWING', NULL,
+     NOW() + INTERVAL '30 days', '',
+     NOW() - INTERVAL '3 days', NULL,
+     '00000000-0000-4000-a000-000000000002'::UUID)
+ON CONFLICT DO NOTHING;
+
+UPDATE applications SET consent_timestamp = created_at
+WHERE application_id = '00000000-0000-4000-c000-000000000015'::UUID AND consent_timestamp IS NULL;
+
+-- Interviewee for student2 in process 1 (topic 3)
+INSERT INTO interviewees (interviewee_id, interview_process_id, last_invited, score, application_id)
+VALUES
+    ('00000000-0000-4000-e700-000000000006'::UUID,
+     '00000000-0000-4000-e600-000000000001'::UUID,
+     NOW() - INTERVAL '2 days', NULL,
+     '00000000-0000-4000-c000-000000000015'::UUID)
+ON CONFLICT DO NOTHING;
+
+-- Additional available slot for process 1 (dedicated to booking test)
+INSERT INTO interview_slots (slot_id, interview_process_id, start_date, end_date,
+                             interviewee_id, location, stream_link)
+VALUES
+    ('00000000-0000-4000-e800-000000000007'::UUID,
+     '00000000-0000-4000-e600-000000000001'::UUID,
+     NOW() + INTERVAL '4 days', NOW() + INTERVAL '4 days' + INTERVAL '45 minutes',
+     NULL, 'Room 01.07.023, Boltzmannstr. 3', NULL)
+ON CONFLICT DO NOTHING;
+
