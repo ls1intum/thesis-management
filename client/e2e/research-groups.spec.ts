@@ -53,7 +53,7 @@ test.describe('Research Groups - Admin', () => {
     await expect(page.getByRole('tab', { name: 'Email Settings' })).toBeVisible()
 
     // Group name should be in the Name input field
-    await expect(page.getByRole('textbox', { name: 'Name' })).toHaveValue(
+    await expect(page.getByRole('textbox', { name: 'Name', exact: true })).toHaveValue(
       'Applied Software Engineering',
     )
   })
@@ -269,7 +269,7 @@ test.describe('Research Groups - DSA group settings', () => {
     })
 
     // DSA group name should be in the Name input field
-    await expect(page.getByRole('textbox', { name: 'Name' })).toHaveValue(
+    await expect(page.locator('input[data-path="name"]')).toHaveValue(
       'Data Science and Analytics',
     )
 

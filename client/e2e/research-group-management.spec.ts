@@ -87,7 +87,7 @@ test.describe('Research Group Management - Admin Settings', () => {
 
     // Verify Group Information card
     await expect(page.getByRole('heading', { name: 'Group Information', level: 3 })).toBeVisible()
-    await expect(page.getByRole('textbox', { name: 'Name' })).toHaveValue(
+    await expect(page.getByRole('textbox', { name: 'Name', exact: true })).toHaveValue(
       'Applied Software Engineering',
     )
 
