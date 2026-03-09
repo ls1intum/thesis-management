@@ -64,7 +64,7 @@ test.describe('Research Group Settings - Admin', () => {
     // Click Email Settings tab
     await page.getByText('Email Settings').first().click()
 
-    // Should show email template configuration
-    await expect(page.getByText(/email/i).first()).toBeVisible({ timeout: 10_000 })
+    // Should show email template configuration with specific settings
+    await expect(page.getByText('Application Email Content').first()).toBeVisible({ timeout: 10_000 })
   })
 })

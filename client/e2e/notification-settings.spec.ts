@@ -76,6 +76,8 @@ test.describe('Notification Settings - Examiner toggle preferences', () => {
 })
 
 test.describe('Notification Settings - Student preferences', () => {
+  test.use({ storageState: authStatePath('student') })
+
   test('student sees limited notification options', async ({ page }) => {
     await navigateTo(page, '/settings/notifications')
     await expect(page.getByText('Notification Settings')).toBeVisible({ timeout: 15_000 })

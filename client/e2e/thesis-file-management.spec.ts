@@ -52,6 +52,8 @@ test.describe('Thesis File Management - WRITING thesis', () => {
 })
 
 test.describe('Thesis File Management - Student view', () => {
+  test.use({ storageState: authStatePath('student') })
+
   test('student can view file section with upload controls for their WRITING thesis', async ({
     page,
   }) => {
