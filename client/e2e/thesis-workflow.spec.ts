@@ -9,10 +9,10 @@ import {
   assertSentFromApp,
 } from './mailpit'
 
-test.describe('Thesis Workflow - Supervisor creates a thesis', () => {
-  test.use({ storageState: authStatePath('supervisor') })
+test.describe('Thesis Workflow - Examiner creates a thesis', () => {
+  test.use({ storageState: authStatePath('examiner') })
 
-  test('supervisor can create a new thesis via the browse theses page', async ({ page }) => {
+  test('examiner can create a new thesis via the browse theses page', async ({ page }) => {
     test.setTimeout(120_000) // Extended timeout — form with server-side search fields
 
     await navigateTo(page, '/theses')
@@ -38,11 +38,11 @@ test.describe('Thesis Workflow - Supervisor creates a thesis', () => {
     // Student(s) - search and select
     await searchAndSelectMultiSelect(page, 'Student(s)', /student4/i)
 
-    // Supervisor(s) - search and select advisor
-    await searchAndSelectMultiSelect(page, 'Supervisor(s)', /advisor/i)
+    // Supervisor(s) - search and select supervisor
+    await searchAndSelectMultiSelect(page, 'Supervisor(s)', /supervisor/i)
 
-    // Examiner - search and select self (supervisor)
-    await searchAndSelectMultiSelect(page, 'Examiner', /supervisor/i)
+    // Examiner - search and select self (examiner)
+    await searchAndSelectMultiSelect(page, 'Examiner', /examiner/i)
 
     // Snapshot mailbox BEFORE creating the thesis
     const beforeIds = await snapshotMailbox('student4@test.local')
@@ -68,15 +68,15 @@ test.describe('Thesis Workflow - Supervisor creates a thesis', () => {
     assertSentFromApp(creationEmail!)
     expect(getToAddresses(creationEmail!)).toContain('student4@test.local')
 
-    // Body should contain: greeting, thesis title, supervisor/advisor/student names, and link
+    // Body should contain: greeting, thesis title, examiner/supervisor/student names, and link
     const body = getBody(creationEmail!)
     expect(body, 'Should greet the student by first name').toContain('Student4')
     expect(body, 'Should contain the thesis title').toContain(
       'E2E Test Thesis: Performance Analysis',
     )
     expect(body, 'Should contain a link to the thesis').toContain('/theses/')
-    // The template shows "Supervisor:", "Advisor:", "Student:" sections
-    expect(body, 'Should mention the supervisor/examiner name').toContain('Supervisor')
+    // The template shows "Examiner:", "Supervisor:", "Student:" sections
+    expect(body, 'Should mention the examiner name').toContain('Examiner')
     expect(body, 'Should reference proposal as next step').toContain('proposal')
   })
 })

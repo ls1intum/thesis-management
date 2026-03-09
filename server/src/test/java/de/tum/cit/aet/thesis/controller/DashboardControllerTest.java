@@ -50,9 +50,9 @@ class DashboardControllerTest extends BaseIntegrationTest {
 	private ResearchGroupSettingsRepository researchGroupSettingsRepository;
 
 	private UUID createThesisWithState(String title, ThesisState targetState,
-			List<UUID> students, List<UUID> advisors, List<UUID> supervisors, UUID researchGroupId) throws Exception {
+			List<UUID> students, List<UUID> supervisors, List<UUID> examiners, UUID researchGroupId) throws Exception {
 		CreateThesisPayload payload = new CreateThesisPayload(
-				title, "MASTER", "ENGLISH", students, advisors, supervisors, researchGroupId
+				title, "MASTER", "ENGLISH", students, supervisors, examiners, researchGroupId
 		);
 
 		String thesisResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses")
@@ -334,8 +334,8 @@ class DashboardControllerTest extends BaseIntegrationTest {
 
 			String studentAuth = createRandomAuthentication("student");
 			CreateApplicationPayload appPayload = new CreateApplicationPayload(
-					null, "Test App Title", "BACHELOR", Instant.now(), "Motivation", researchGroupId
-			);
+					null, "Test App Title", "BACHELOR", Instant.now(), "Motivation", researchGroupId,
+			true);
 
 			mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 							.header("Authorization", studentAuth)

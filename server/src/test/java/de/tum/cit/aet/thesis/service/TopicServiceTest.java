@@ -111,15 +111,15 @@ class TopicServiceTest {
 
 	@Test
 	void createTopic_WithValidData_CreatesTopic() {
+		List<UUID> examinerIds = List.of(UUID.randomUUID());
 		List<UUID> supervisorIds = List.of(UUID.randomUUID());
-		List<UUID> advisorIds = List.of(UUID.randomUUID());
 		UUID researchGroupId = testResearchGroup.getId();
 
-		User supervisor = EntityMockFactory.createUserWithGroup("Supervisor", "supervisor");
-		User advisor = EntityMockFactory.createUserWithGroup("Advisor", "advisor");
+		User examiner = EntityMockFactory.createUserWithGroup("Examiner", "supervisor");
+		User supervisor = EntityMockFactory.createUserWithGroup("Supervisor", "advisor");
 
+		when(userRepository.findAllById(examinerIds)).thenReturn(new ArrayList<>(List.of(examiner)));
 		when(userRepository.findAllById(supervisorIds)).thenReturn(new ArrayList<>(List.of(supervisor)));
-		when(userRepository.findAllById(advisorIds)).thenReturn(new ArrayList<>(List.of(advisor)));
 		when(topicRepository.save(any(Topic.class))).thenAnswer(invocation -> invocation.getArgument(0));
 		when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
 		when(currentUserProvider.getUser()).thenReturn(testUser);
@@ -132,8 +132,8 @@ class TopicServiceTest {
 				"Requirements",
 				"Goals",
 				"References",
+				examinerIds,
 				supervisorIds,
-				advisorIds,
 				researchGroupId,
 				null,
 				null,
@@ -146,16 +146,16 @@ class TopicServiceTest {
 	}
 
 	@Test
-	void createTopic_WithInvalidSupervisor_ThrowsException() {
-		User invalidSupervisor = EntityMockFactory.createUserWithGroup("Student", "student");
-		User advisor = EntityMockFactory.createUserWithGroup("Advisor", "advisor");
+	void createTopic_WithInvalidExaminer_ThrowsException() {
+		User invalidExaminer = EntityMockFactory.createUserWithGroup("Student", "student");
+		User supervisor = EntityMockFactory.createUserWithGroup("Supervisor", "advisor");
 
-		List<UUID> supervisorIds = new ArrayList<>(List.of(invalidSupervisor.getId()));
-		List<UUID> advisorIds = new ArrayList<>(List.of(advisor.getId()));
+		List<UUID> examinerIds = new ArrayList<>(List.of(invalidExaminer.getId()));
+		List<UUID> supervisorIds = new ArrayList<>(List.of(supervisor.getId()));
 		UUID researchGroupId = testUser.getResearchGroup().getId();
 
-		when(userRepository.findAllById(supervisorIds)).thenReturn(new ArrayList<>(List.of(invalidSupervisor)));
-		when(userRepository.findAllById(advisorIds)).thenReturn(new ArrayList<>(List.of(advisor)));
+		when(userRepository.findAllById(examinerIds)).thenReturn(new ArrayList<>(List.of(invalidExaminer)));
+		when(userRepository.findAllById(supervisorIds)).thenReturn(new ArrayList<>(List.of(supervisor)));
 		when(topicRepository.save(any(Topic.class))).thenAnswer(invocation -> invocation.getArgument(0));
 		when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
 		when(currentUserProvider.getUser()).thenReturn(testUser);
@@ -169,8 +169,8 @@ class TopicServiceTest {
 						"Requirements",
 						"Goals",
 						"References",
+						examinerIds,
 						supervisorIds,
-						advisorIds,
 						researchGroupId,
 						null,
 						null,
@@ -181,15 +181,15 @@ class TopicServiceTest {
 
 	@Test
 	void updateTopic_WithValidData_UpdatesTopic() {
-		User supervisor = EntityMockFactory.createUserWithGroup("Supervisor", "supervisor");
-		User advisor = EntityMockFactory.createUserWithGroup("Advisor", "advisor");
+		User examiner = EntityMockFactory.createUserWithGroup("Examiner", "supervisor");
+		User supervisor = EntityMockFactory.createUserWithGroup("Supervisor", "advisor");
 
+		List<UUID> examinerIds = new ArrayList<>(List.of(examiner.getId()));
 		List<UUID> supervisorIds = new ArrayList<>(List.of(supervisor.getId()));
-		List<UUID> advisorIds = new ArrayList<>(List.of(advisor.getId()));
 		UUID researchGroupId = testUser.getResearchGroup().getId();
 
+		when(userRepository.findAllById(examinerIds)).thenReturn(new ArrayList<>(List.of(examiner)));
 		when(userRepository.findAllById(supervisorIds)).thenReturn(new ArrayList<>(List.of(supervisor)));
-		when(userRepository.findAllById(advisorIds)).thenReturn(new ArrayList<>(List.of(advisor)));
 		when(topicRepository.save(any(Topic.class))).thenAnswer(invocation -> invocation.getArgument(0));
 		when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
 		when(currentUserProvider.getUser()).thenReturn(testUser);
@@ -203,8 +203,8 @@ class TopicServiceTest {
 				"Updated Requirements",
 				"Updated Goals",
 				"Updated References",
+				examinerIds,
 				supervisorIds,
-				advisorIds,
 				researchGroupId,
 				null,
 				null,

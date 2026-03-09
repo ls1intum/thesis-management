@@ -86,22 +86,22 @@ class ThesisServiceTest {
 		testResearchGroup = EntityMockFactory.createResearchGroup("Test Research Group");
 		testUser.setResearchGroup(testResearchGroup);
 		testThesis = EntityMockFactory.createThesis("Test Thesis", testResearchGroup);
-		EntityMockFactory.setupThesisRole(testThesis, testUser, ThesisRoleName.SUPERVISOR);
+		EntityMockFactory.setupThesisRole(testThesis, testUser, ThesisRoleName.EXAMINER);
 	}
 
 	@Test
 	void createThesis_WithValidData_CreatesThesis() {
-		User supervisor = EntityMockFactory.createUserWithGroup("Supervisor", "supervisor");
-		User advisor = EntityMockFactory.createUserWithGroup("Advisor", "advisor");
+		User examiner = EntityMockFactory.createUserWithGroup("Examiner", "supervisor");
+		User supervisor = EntityMockFactory.createUserWithGroup("Supervisor", "advisor");
 		User student = EntityMockFactory.createUserWithGroup("Student", "student");
 
+		List<UUID> examinerIds = new ArrayList<>(List.of(examiner.getId()));
 		List<UUID> supervisorIds = new ArrayList<>(List.of(supervisor.getId()));
-		List<UUID> advisorIds = new ArrayList<>(List.of(advisor.getId()));
 		List<UUID> studentIds = new ArrayList<>(List.of(student.getId()));
 		UUID researchGroupId = testResearchGroup.getId();
 
+		when(userRepository.findAllById(examinerIds)).thenReturn(new ArrayList<>(List.of(examiner)));
 		when(userRepository.findAllById(supervisorIds)).thenReturn(new ArrayList<>(List.of(supervisor)));
-		when(userRepository.findAllById(advisorIds)).thenReturn(new ArrayList<>(List.of(advisor)));
 		when(userRepository.findAllById(studentIds)).thenReturn(new ArrayList<>(List.of(student)));
 		when(thesisRepository.save(any(Thesis.class))).thenAnswer(invocation -> invocation.getArgument(0));
 		when(currentUserProvider.getUser()).thenReturn(testUser);
@@ -111,8 +111,8 @@ class ThesisServiceTest {
 				"Test Thesis",
 				"Bachelor",
 				"ENGLISH",
+				examinerIds,
 				supervisorIds,
-				advisorIds,
 				studentIds,
 				null,
 				true,

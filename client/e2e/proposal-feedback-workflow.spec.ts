@@ -10,7 +10,7 @@ import {
   hasAttachment,
 } from './mailpit'
 
-// Thesis d000-0002 is in PROPOSAL state, assigned to student2 with advisor
+// Thesis d000-0002 is in PROPOSAL state, assigned to student2 with supervisor
 const THESIS_ID = '00000000-0000-4000-d000-000000000002'
 const THESIS_URL = `/theses/${THESIS_ID}`
 const THESIS_TITLE = 'CI Pipeline Optimization Through Intelligent Test Selection'
@@ -43,7 +43,7 @@ test.describe('Proposal Upload - Student uploads proposal', () => {
     })
 
     // Snapshot mailbox BEFORE the upload action
-    const beforeIds = await snapshotMailbox('advisor@test.local')
+    const beforeIds = await snapshotMailbox('supervisor@test.local')
 
     // Click "Upload File" button in the modal
     await page.getByRole('dialog').getByRole('button', { name: 'Upload File' }).click()
@@ -52,14 +52,14 @@ test.describe('Proposal Upload - Student uploads proposal', () => {
     await expect(page.getByRole('dialog')).not.toBeVisible({ timeout: 15_000 })
 
     // --- Email verification ---
-    // THESIS_PROPOSAL_UPLOADED is sent to the thesis advisors with the proposal attached
-    const newEmails = await waitForNewMessages('advisor@test.local', beforeIds)
+    // THESIS_PROPOSAL_UPLOADED is sent to the thesis supervisors with the proposal attached
+    const newEmails = await waitForNewMessages('supervisor@test.local', beforeIds)
     expect(newEmails.length).toBeGreaterThanOrEqual(1)
 
     const proposalEmail = newEmails.find((e) => getSubject(e) === 'Thesis Proposal Added')
     expect(proposalEmail, 'Proposal upload email with correct subject should be sent').toBeDefined()
     assertSentFromApp(proposalEmail!)
-    expect(getToAddresses(proposalEmail!)).toContain('advisor@test.local')
+    expect(getToAddresses(proposalEmail!)).toContain('supervisor@test.local')
 
     // Body should reference the thesis title, the uploader name, and include a link
     const proposalBody = getBody(proposalEmail!)
@@ -80,10 +80,10 @@ test.describe('Proposal Upload - Student uploads proposal', () => {
   })
 })
 
-test.describe('Proposal Feedback - Advisor requests changes', () => {
-  test.use({ storageState: authStatePath('advisor') })
+test.describe('Proposal Feedback - Supervisor requests changes', () => {
+  test.use({ storageState: authStatePath('supervisor') })
 
-  test('advisor can request changes on a proposal', async ({ page }) => {
+  test('supervisor can request changes on a proposal', async ({ page }) => {
     const heading = page.getByRole('heading', { name: THESIS_TITLE })
     const loaded = await navigateToDetail(page, THESIS_URL, heading)
     if (!loaded) return

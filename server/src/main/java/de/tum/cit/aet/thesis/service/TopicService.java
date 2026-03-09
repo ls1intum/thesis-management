@@ -187,8 +187,8 @@ public class TopicService {
 			String requirements,
 			String goals,
 			String references,
+			List<UUID> examinerIds,
 			List<UUID> supervisorIds,
-			List<UUID> advisorIds,
 			UUID researchGroupId,
 			Instant intendedStart,
 			Instant applicationDeadline,
@@ -218,7 +218,7 @@ public class TopicService {
 
 		topic = topicRepository.save(topic);
 
-		assignTopicRoles(topic, advisorIds, supervisorIds);
+		assignTopicRoles(topic, supervisorIds, examinerIds);
 
 		return topicRepository.save(topic);
 	}
@@ -233,8 +233,8 @@ public class TopicService {
 			String requirements,
 			String goals,
 			String references,
+			List<UUID> examinerIds,
 			List<UUID> supervisorIds,
-			List<UUID> advisorIds,
 			UUID researchGroupId,
 			Instant intendedStart,
 			Instant applicationDeadline,
@@ -258,7 +258,7 @@ public class TopicService {
 		topic.setIntendedStart(intendedStart);
 		topic.setApplicationDeadline(applicationDeadline);
 
-		assignTopicRoles(topic, advisorIds, supervisorIds);
+		assignTopicRoles(topic, supervisorIds, examinerIds);
 
 		return topicRepository.save(topic);
 	}
@@ -274,43 +274,43 @@ public class TopicService {
 				.orElseThrow(() -> new ResourceNotFoundException(String.format("Topic with id %s not found.", topicId)));
 	}
 
-	private void assignTopicRoles(Topic topic, List<UUID> advisorIds, List<UUID> supervisorIds) {
+	private void assignTopicRoles(Topic topic, List<UUID> supervisorIds, List<UUID> examinerIds) {
 		currentUserProvider().assertCanAccessResearchGroup(topic.getResearchGroup());
 		List<User> supervisors = userRepository.findAllById(supervisorIds);
-		List<User> advisors = userRepository.findAllById(advisorIds);
+		List<User> examiners = userRepository.findAllById(examinerIds);
 
 		supervisors.sort(Comparator.comparing(user -> supervisorIds.indexOf(user.getId())));
-		advisors.sort(Comparator.comparing(user -> advisorIds.indexOf(user.getId())));
+		examiners.sort(Comparator.comparing(user -> examinerIds.indexOf(user.getId())));
 
 		if (supervisors.isEmpty() || supervisors.size() != supervisorIds.size()) {
 			throw new ResourceInvalidParametersException("No supervisors selected or supervisors not found");
 		}
 
-		if (advisors.isEmpty() || advisors.size() != advisorIds.size()) {
-			throw new ResourceInvalidParametersException("No advisors selected or advisors not found");
+		if (examiners.isEmpty() || examiners.size() != examinerIds.size()) {
+			throw new ResourceInvalidParametersException("No examiners selected or examiners not found");
 		}
 
 		topicRoleRepository.deleteByTopicId(topic.getId());
 		topic.setRoles(new ArrayList<>());
 
+		for (int i = 0; i < examiners.size(); i++) {
+			User examiner = examiners.get(i);
+
+			if (!examiner.hasAnyGroup("supervisor")) {
+				throw new ResourceInvalidParametersException("User is not an examiner");
+			}
+
+			saveTopicRole(topic, examiner, ThesisRoleName.EXAMINER, i);
+		}
+
 		for (int i = 0; i < supervisors.size(); i++) {
 			User supervisor = supervisors.get(i);
 
-			if (!supervisor.hasAnyGroup("supervisor")) {
+			if (!supervisor.hasAnyGroup("advisor", "supervisor")) {
 				throw new ResourceInvalidParametersException("User is not a supervisor");
 			}
 
 			saveTopicRole(topic, supervisor, ThesisRoleName.SUPERVISOR, i);
-		}
-
-		for (int i = 0; i < advisors.size(); i++) {
-			User advisor = advisors.get(i);
-
-			if (!advisor.hasAnyGroup("advisor", "supervisor")) {
-				throw new ResourceInvalidParametersException("User is not an advisor");
-			}
-
-			saveTopicRole(topic, advisor, ThesisRoleName.ADVISOR, i);
 		}
 	}
 

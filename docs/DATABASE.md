@@ -75,14 +75,12 @@ cd ~
 Then run the upgrade
 
 ```bash
-DB_USER=thesistrack
-DB_NAME=thesistrack
 
 # 1. Stop the application server (keep DB running)
 docker compose -f docker-compose.prod.yml --env-file=.env.prod stop server client
 
 # 2. Create a full database dump
-docker exec thesis-management-db pg_dump -Fc -U "$DB_USER" "$DB_NAME" > thesis_dump.dump
+docker exec thesis-management-db pg_dump -Fc -U "thesistrack" "thesistrack" > thesis_dump.dump
 
 # 3. Stop and remove the old DB container
 docker compose -f docker-compose.prod.yml --env-file=.env.prod down db
@@ -98,15 +96,14 @@ sed -i 's|postgres:17.*-alpine|postgres:18.2-alpine|' docker-compose.prod.yml
 docker compose -f docker-compose.prod.yml --env-file=.env.prod up -d db
 
 # 7. Wait for the database to be ready
-until docker exec thesis-management-db pg_isready -U "$DB_USER"; do sleep 1; done
+until docker exec thesis-management-db pg_isready -U "thesistrack"; do sleep 1; done
 
 # 8. Copy the dump into the new container and restore
 docker cp thesis_dump.dump thesis-management-db:/tmp/thesis_dump.dump
-docker exec thesis-management-db pg_restore -U "$DB_USER" -d "$DB_NAME" \
-  --no-owner --no-acl --exit-on-error /tmp/thesis_dump.dump
+docker exec thesis-management-db pg_restore -U "thesistrack" -d "thesistrack" --no-owner --no-acl --exit-on-error /tmp/thesis_dump.dump
 
 # 9. Verify data integrity
-docker exec thesis-management-db psql -U "$DB_USER" -d "$DB_NAME" -c "\dt+"
+docker exec thesis-management-db psql -U "thesistrack" -d "thesistrack" -c "\dt+"
 
 # 10. Start the full application stack
 docker compose -f docker-compose.prod.yml --env-file=.env.prod up -d

@@ -98,7 +98,7 @@ const ThesisFeedbackOverview = (props: IThesisFeedbackOverviewProps) => {
                   </Table.Td>
                   <Table.Td width={170}>{formatDate(item.requestedAt)}</Table.Td>
                   <Table.Td width={80}>
-                    {access.advisor && (
+                    {access.supervisor && (
                       <Center>
                         <Button size='xs' loading={deleting} onClick={() => deleteFeedback(item)}>
                           <Trash />

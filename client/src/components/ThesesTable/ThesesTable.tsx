@@ -11,8 +11,8 @@ import AvatarUserList from '../AvatarUserList/AvatarUserList'
 
 type ThesisColumn =
   | 'state'
+  | 'examiners'
   | 'supervisors'
-  | 'advisors'
   | 'students'
   | 'researchGroup'
   | 'type'
@@ -33,7 +33,7 @@ const ThesesTable = (props: IThesesTableProps) => {
       'title',
       'type',
       'students',
-      'advisors',
+      'supervisors',
       'researchGroup',
       'start_date',
       'end_date',
@@ -63,18 +63,18 @@ const ThesesTable = (props: IThesesTableProps) => {
         )
       },
     },
-    supervisors: {
-      accessor: 'supervisors',
+    examiners: {
+      accessor: 'examiners',
       title: 'Examiner',
       width: 180,
-      render: (thesis) => <AvatarUserList users={thesis.supervisors ?? []} />,
+      render: (thesis) => <AvatarUserList users={thesis.examiners ?? []} />,
     },
-    advisors: {
-      accessor: 'advisors',
+    supervisors: {
+      accessor: 'supervisors',
       title: 'Supervisor(s)',
       ellipsis: true,
       width: 180,
-      render: (thesis) => <AvatarUserList users={thesis.advisors ?? []} />,
+      render: (thesis) => <AvatarUserList users={thesis.supervisors ?? []} />,
     },
     students: {
       accessor: 'students',

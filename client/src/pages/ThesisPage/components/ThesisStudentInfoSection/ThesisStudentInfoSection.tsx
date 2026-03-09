@@ -39,7 +39,7 @@ const ThesisStudentInfoSection = () => {
     }
   }, 'Credits updated successfully')
 
-  if (!access.advisor) {
+  if (!access.supervisor) {
     return null
   }
 
@@ -48,8 +48,8 @@ const ThesisStudentInfoSection = () => {
       type: 'student',
       data: row,
     })),
-    ...(thesis.advisors ?? []).map((row) => ({
-      type: 'advisor',
+    ...(thesis.supervisors ?? []).map((row) => ({
+      type: 'supervisor',
       data: row,
     })),
   ]
@@ -70,7 +70,7 @@ const ThesisStudentInfoSection = () => {
                 <Grid>
                   <Grid.Col span={{ md: 2 }}>
                     <LabeledItem
-                      label={user.type === 'student' ? 'Student' : 'Advisor'}
+                      label={user.type === 'student' ? 'Student' : 'Supervisor'}
                       value={formatUser(user.data)}
                     />
                   </Grid.Col>

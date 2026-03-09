@@ -60,10 +60,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
-/**
- * Manages the full thesis lifecycle, including creation, state transitions,
- * proposals, assessments, and grading.
- */
+/** Manages the full thesis lifecycle, including creation, state transitions, proposals, assessments, and grading. */
 @Service
 public class ThesisService {
 	private final ThesisRoleRepository thesisRoleRepository;
@@ -84,20 +81,19 @@ public class ThesisService {
 	/**
 	 * Injects all required repositories and services for thesis management.
 	 *
-	 * @param thesisRoleRepository         the thesis role repository
-	 * @param thesisRepository             the thesis repository
-	 * @param thesisStateChangeRepository  the thesis state change repository
-	 * @param userRepository               the user repository
-	 * @param thesisProposalRepository     the thesis proposal repository
-	 * @param thesisAssessmentRepository   the thesis assessment repository
-	 * @param uploadService                the upload service for file storage
-	 * @param mailingService               the mailing service for sending
-	 *                                     notifications
-	 * @param accessManagementService      the access management service
-	 * @param thesisFeedbackRepository     the thesis feedback repository
-	 * @param thesisFileRepository         the thesis file repository
-	 * @param currentUserProviderProvider  the provider for the current user context
-	 * @param researchGroupRepository      the research group repository
+	 * @param thesisRoleRepository the thesis role repository
+	 * @param thesisRepository the thesis repository
+	 * @param thesisStateChangeRepository the thesis state change repository
+	 * @param userRepository the user repository
+	 * @param thesisProposalRepository the thesis proposal repository
+	 * @param thesisAssessmentRepository the thesis assessment repository
+	 * @param uploadService the upload service for file storage
+	 * @param mailingService the mailing service for sending notifications
+	 * @param accessManagementService the access management service
+	 * @param thesisFeedbackRepository the thesis feedback repository
+	 * @param thesisFileRepository the thesis file repository
+	 * @param currentUserProviderProvider the provider for the current user context
+	 * @param researchGroupRepository the research group repository
 	 * @param researchGroupSettingsService the research group settings service
 	 */
 	@Autowired
@@ -112,9 +108,8 @@ public class ThesisService {
 			MailingService mailingService,
 			AccessManagementService accessManagementService,
 			ThesisFeedbackRepository thesisFeedbackRepository, ThesisFileRepository thesisFileRepository,
-			ObjectProvider<CurrentUserProvider> currentUserProviderProvider,
-			ResearchGroupRepository researchGroupRepository,
-			ResearchGroupSettingsService researchGroupSettingsService) {
+			ObjectProvider<CurrentUserProvider> currentUserProviderProvider, ResearchGroupRepository researchGroupRepository, ResearchGroupSettingsService researchGroupSettingsService
+	) {
 		this.thesisRoleRepository = thesisRoleRepository;
 		this.thesisRepository = thesisRepository;
 		this.thesisStateChangeRepository = thesisStateChangeRepository;
@@ -142,39 +137,36 @@ public class ThesisService {
 	}
 
 	/**
-	 * Returns a paginated and filtered list of theses based on user role,
-	 * visibility, and search criteria.
+	 * Returns a paginated and filtered list of theses based on user role, visibility, and search criteria.
 	 *
-	 * @param userId           the ID of the user requesting the list, or null for
-	 *                         public access
-	 * @param fetchAll         whether to fetch all accessible theses beyond the
-	 *                         user's own
-	 * @param searchQuery      the search query to filter theses
-	 * @param states           the thesis states to filter by
-	 * @param types            the thesis types to filter by
-	 * @param page             the page number for pagination
-	 * @param limit            the number of results per page
-	 * @param sortBy           the field to sort by
-	 * @param sortOrder        the sort direction, "asc" or "desc"
+	 * @param userId the ID of the user requesting the list, or null for public access
+	 * @param fetchAll whether to fetch all accessible theses beyond the user's own
+	 * @param searchQuery the search query to filter theses
+	 * @param states the thesis states to filter by
+	 * @param types the thesis types to filter by
+	 * @param page the page number for pagination
+	 * @param limit the number of results per page
+	 * @param sortBy the field to sort by
+	 * @param sortOrder the sort direction, "asc" or "desc"
 	 * @param researchGroupIds the research group IDs to filter by
 	 * @return the paginated list of theses
 	 */
 	public Page<Thesis> getAll(
-			UUID userId,
-			boolean fetchAll,
-			String searchQuery,
-			ThesisState[] states,
-			String[] types,
-			int page,
-			int limit,
-			String sortBy,
-			String sortOrder,
-			UUID[] researchGroupIds) {
+		UUID userId,
+		boolean fetchAll,
+		String searchQuery,
+		ThesisState[] states,
+		String[] types,
+		int page,
+		int limit,
+		String sortBy,
+		String sortOrder,
+		UUID[] researchGroupIds
+	) {
 		Sort.Order order = new Sort.Order(sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,
 				HibernateHelper.validateSortField(Thesis.class, sortBy));
 		String searchQueryFilter = searchQuery == null || searchQuery.isEmpty() ? null : searchQuery.toLowerCase();
-		Set<ThesisState> statesFilter = states == null || states.length == 0 ? null
-				: new HashSet<>(Arrays.asList(states));
+		Set<ThesisState> statesFilter = states == null || states.length == 0 ? null : new HashSet<>(Arrays.asList(states));
 		Set<String> typesFilter = types == null || types.length == 0 ? null : new HashSet<>(Arrays.asList(types));
 
 		Set<UUID> researchGroupIdsFilter = null;
@@ -189,9 +181,8 @@ public class ThesisService {
 		} else if (currentUserProvider().isAdmin()) {
 			userId = null; // Admins can see all theses
 			visibilitySet = null;
-		} else if ((currentUserProvider().isAdvisor() || currentUserProvider().isSupervisor()) && fetchAll) {
-			researchGroupIdsFilter = new HashSet<>(
-					Arrays.asList(currentUserProvider().getResearchGroupOrThrow().getId()));
+		} else if ((currentUserProvider().isSupervisor() || currentUserProvider().isExaminer()) && fetchAll) {
+			researchGroupIdsFilter = new HashSet<>(Arrays.asList(currentUserProvider().getResearchGroupOrThrow().getId()));
 			visibilitySet = Set.of(ThesisVisibility.PUBLIC, ThesisVisibility.STUDENT, ThesisVisibility.INTERNAL);
 		} else if (currentUserProvider().isStudent() && fetchAll) {
 			visibilitySet = Set.of(ThesisVisibility.PUBLIC, ThesisVisibility.STUDENT);
@@ -206,31 +197,30 @@ public class ThesisService {
 				searchQueryFilter,
 				statesFilter,
 				typesFilter,
-				PageRequest.of(page, limit, Sort.by(order)));
+				PageRequest.of(page, limit, Sort.by(order))
+		);
 	}
 
-	// TODO: we should avoid using @Transactional because it can lead to performance
-	// issue and concurrency problems
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis createThesis(
 			String thesisTitle,
 			String thesisType,
 			String language,
+			List<UUID> examinerIds,
 			List<UUID> supervisorIds,
-			List<UUID> advisorIds,
 			List<UUID> studentIds,
 			Application application,
 			boolean notifyUser,
-			UUID researchGroupId) {
+			UUID researchGroupId
+	) {
 		ResearchGroup researchGroup = researchGroupRepository.findById(researchGroupId)
 				.orElseThrow(() -> new ResourceNotFoundException("Research group not found"));
 
-		ResearchGroupSettings researchGroupSettings = researchGroupSettingsService.getByResearchGroupId(researchGroupId)
-				.orElseGet(ResearchGroupSettings::new);
+		ResearchGroupSettings researchGroupSettings = researchGroupSettingsService.getByResearchGroupId(researchGroupId).orElseGet(ResearchGroupSettings::new);
 		Thesis thesis = new Thesis();
 
-		ThesisState nextState = researchGroupSettings.isProposalPhaseActive() ? ThesisState.PROPOSAL
-				: ThesisState.WRITING;
+		ThesisState nextState = researchGroupSettings.isProposalPhaseActive() ? ThesisState.PROPOSAL : ThesisState.WRITING;
 
 		thesis.setTitle(thesisTitle);
 		thesis.setType(thesisType);
@@ -247,7 +237,7 @@ public class ThesisService {
 
 		thesis = thesisRepository.save(thesis);
 
-		assignThesisRoles(thesis, supervisorIds, advisorIds, studentIds);
+		assignThesisRoles(thesis, examinerIds, supervisorIds, studentIds);
 		saveStateChange(thesis, nextState);
 
 		if (notifyUser) {
@@ -261,8 +251,7 @@ public class ThesisService {
 		return thesis;
 	}
 
-	// TODO: we should avoid using @Transactional because it can lead to performance
-	// issue and concurrency problems
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis closeThesis(Thesis thesis) {
 		requireNotAnonymized(thesis);
@@ -287,8 +276,7 @@ public class ThesisService {
 		return thesis;
 	}
 
-	// TODO: we should avoid using @Transactional because it can lead to performance
-	// issue and concurrency problems
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis updateThesis(
 			Thesis thesis,
@@ -300,10 +288,11 @@ public class ThesisService {
 			Instant startDate,
 			Instant endDate,
 			List<UUID> studentIds,
-			List<UUID> advisorIds,
 			List<UUID> supervisorIds,
+			List<UUID> examinerIds,
 			List<ThesisStatePayload> states,
-			UUID researchGroupId) {
+			UUID researchGroupId
+	) {
 		requireNotAnonymized(thesis);
 		ResearchGroup researchGroup = researchGroupRepository.findById(researchGroupId)
 				.orElseThrow(() -> new ResourceNotFoundException("Research group not found"));
@@ -322,7 +311,7 @@ public class ThesisService {
 		thesis.setStartDate(startDate);
 		thesis.setEndDate(endDate);
 
-		assignThesisRoles(thesis, supervisorIds, advisorIds, studentIds);
+		assignThesisRoles(thesis, examinerIds, supervisorIds, studentIds);
 
 		for (ThesisStatePayload state : states) {
 			saveStateChange(thesis, state.state(), state.changedAt());
@@ -333,13 +322,13 @@ public class ThesisService {
 		return thesis;
 	}
 
-	// TODO: we should avoid using @Transactional because it can lead to performance
-	// issue and concurrency problems
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis updateThesisInfo(
 			Thesis thesis,
 			String abstractText,
-			String infoText) {
+			String infoText
+	) {
 		requireNotAnonymized(thesis);
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
 		thesis.setAbstractField(abstractText != null ? abstractText : "");
@@ -350,19 +339,20 @@ public class ThesisService {
 		return thesis;
 	}
 
-	// TODO: we should avoid using @Transactional because it can lead to performance
-	// issue and concurrency problems
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis updateThesisTitles(
 			Thesis thesis,
 			String primaryTitle,
-			Map<String, String> titles) {
+			Map<String, String> titles
+	) {
 		requireNotAnonymized(thesis);
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
 		if (titles != null) {
 			thesis.setMetadata(new ThesisMetadata(
 					titles,
-					thesis.getMetadata().credits()));
+					thesis.getMetadata().credits()
+			));
 		}
 		if (primaryTitle != null) {
 			thesis.setTitle(primaryTitle);
@@ -373,17 +363,18 @@ public class ThesisService {
 		return thesis;
 	}
 
-	// TODO: we should avoid using @Transactional because it can lead to performance
-	// issue and concurrency problems
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis updateThesisCredits(
 			Thesis thesis,
-			Map<UUID, Number> credits) {
+			Map<UUID, Number> credits
+	) {
 		requireNotAnonymized(thesis);
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
 		thesis.setMetadata(new ThesisMetadata(
 				thesis.getMetadata().titles(),
-				credits));
+				credits
+		));
 
 		return thesisRepository.save(thesis);
 	}
@@ -392,9 +383,9 @@ public class ThesisService {
 	/**
 	 * Marks a feedback item as completed or not completed.
 	 *
-	 * @param thesis     the thesis containing the feedback
+	 * @param thesis the thesis containing the feedback
 	 * @param feedbackId the ID of the feedback item
-	 * @param completed  whether the feedback is completed
+	 * @param completed whether the feedback is completed
 	 * @return the updated thesis
 	 */
 	public Thesis completeFeedback(Thesis thesis, UUID feedbackId, boolean completed) {
@@ -410,8 +401,7 @@ public class ThesisService {
 		return thesis;
 	}
 
-	// TODO: we should avoid using @Transactional because it can lead to performance
-	// issue and concurrency problems
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis deleteFeedback(Thesis thesis, UUID feedbackId) {
 		requireNotAnonymized(thesis);
@@ -422,16 +412,15 @@ public class ThesisService {
 		thesisFeedbackRepository.deleteById(feedbackId);
 
 		thesis.setFeedback(new ArrayList<>(
-				thesis.getFeedback().stream().filter(feedback -> !feedback.getId().equals(feedbackId)).toList()));
+				thesis.getFeedback().stream().filter(feedback -> !feedback.getId().equals(feedbackId)).toList()
+		));
 
 		return thesis;
 	}
 
-	// TODO: we should avoid using @Transactional because it can lead to performance
-	// issue and concurrency problems
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
-	public Thesis requestChanges(Thesis thesis, ThesisFeedbackType type,
-			List<RequestChangesPayload.RequestedChange> requestedChanges) {
+	public Thesis requestChanges(Thesis thesis, ThesisFeedbackType type, List<RequestChangesPayload.RequestedChange> requestedChanges) {
 		requireNotAnonymized(thesis);
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
 		for (var requestedChange : requestedChanges) {
@@ -441,8 +430,7 @@ public class ThesisService {
 			feedback.setRequestedBy(currentUserProvider().getUser());
 			feedback.setThesis(thesis);
 			feedback.setType(type);
-			feedback.setFeedback(RequestValidator.validateStringMaxLength(requestedChange.feedback(),
-					StringLimits.LONGTEXT.getLimit()));
+			feedback.setFeedback(RequestValidator.validateStringMaxLength(requestedChange.feedback(), StringLimits.LONGTEXT.getLimit()));
 			feedback.setCompletedAt(requestedChange.completed() ? Instant.now() : null);
 
 			feedback = thesisFeedbackRepository.save(feedback);
@@ -471,8 +459,7 @@ public class ThesisService {
 		return uploadService.load(proposal.getProposalFilename());
 	}
 
-	// TODO: we should avoid using @Transactional because it can lead to performance
-	// issue and concurrency problems
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis uploadProposal(Thesis thesis, MultipartFile proposalFile) {
 		requireNotAnonymized(thesis);
@@ -496,8 +483,7 @@ public class ThesisService {
 		return thesisRepository.save(thesis);
 	}
 
-	// TODO: we should avoid using @Transactional because it can lead to performance
-	// issue and concurrency problems
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis deleteProposal(Thesis thesis, UUID proposalId) {
 		requireNotAnonymized(thesis);
@@ -508,13 +494,13 @@ public class ThesisService {
 		thesisProposalRepository.deleteById(proposalId);
 
 		thesis.setProposals(new ArrayList<>(
-				thesis.getProposals().stream().filter(proposal -> !proposal.getId().equals(proposalId)).toList()));
+				thesis.getProposals().stream().filter(proposal -> !proposal.getId().equals(proposalId)).toList()
+		));
 
 		return thesis;
 	}
 
-	// TODO: we should avoid using @Transactional because it can lead to performance
-	// issue and concurrency problems
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis acceptProposal(Thesis thesis) {
 		requireNotAnonymized(thesis);
@@ -543,8 +529,7 @@ public class ThesisService {
 
 	/* WRITING */
 
-	// TODO: we should avoid using @Transactional because it can lead to performance
-	// issue and concurrency problems
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis submitThesis(Thesis thesis) {
 		requireNotAnonymized(thesis);
@@ -562,8 +547,7 @@ public class ThesisService {
 		return thesisRepository.save(thesis);
 	}
 
-	// TODO: we should avoid using @Transactional because it can lead to performance
-	// issue and concurrency problems
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis uploadThesisFile(Thesis thesis, String type, MultipartFile file) {
 		requireNotAnonymized(thesis);
@@ -583,8 +567,7 @@ public class ThesisService {
 		return thesisRepository.save(thesis);
 	}
 
-	// TODO: we should avoid using @Transactional because it can lead to performance
-	// issue and concurrency problems
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis deleteThesisFile(Thesis thesis, UUID fileId) {
 		requireNotAnonymized(thesis);
@@ -595,14 +578,14 @@ public class ThesisService {
 		thesisFileRepository.deleteById(fileId);
 
 		thesis.setFiles(new ArrayList<>(
-				thesis.getFiles().stream().filter(file -> !file.getId().equals(fileId)).toList()));
+				thesis.getFiles().stream().filter(file -> !file.getId().equals(fileId)).toList()
+		));
 
 		return thesis;
 	}
 
 	/**
-	 * Loads and returns the file resource for the given thesis file, checking read
-	 * access.
+	 * Loads and returns the file resource for the given thesis file, checking read access.
 	 *
 	 * @param file the thesis file entity
 	 * @return the file resource
@@ -615,15 +598,15 @@ public class ThesisService {
 	}
 
 	/* ASSESSMENT */
-	// TODO: we should avoid using @Transactional because it can lead to performance
-	// issue and concurrency problems
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis submitAssessment(
 			Thesis thesis,
 			String summary,
 			String positives,
 			String negatives,
-			String gradeSuggestion) {
+			String gradeSuggestion
+	) {
 		requireNotAnonymized(thesis);
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
 		ThesisAssessment assessment = new ThesisAssessment();
@@ -652,8 +635,7 @@ public class ThesisService {
 	}
 
 	/**
-	 * Generates and returns a PDF document containing the thesis assessment
-	 * details.
+	 * Generates and returns a PDF document containing the thesis assessment details.
 	 *
 	 * @param thesis the thesis to generate the assessment PDF for
 	 * @return the generated PDF file resource
@@ -666,16 +648,11 @@ public class ThesisService {
 			throw new ResourceNotFoundException("No assessment found for thesis");
 		}
 		ThesisAssessment assessment = thesis.getAssessments().getFirst();
-		ThesisPresentation presentation = (thesis.getPresentations() != null && !thesis.getPresentations().isEmpty())
-				? thesis.getPresentations().getFirst()
-				: null;
+		ThesisPresentation presentation = thesis.getPresentations().getFirst();
 
-		String students = String.join(", ", thesis.getStudents().stream()
-				.map(student -> student.getFirstName() + " " + student.getLastName()).toList());
-		String advisors = String.join(", ", thesis.getAdvisors().stream()
-				.map(advisor -> advisor.getFirstName() + " " + advisor.getLastName()).toList());
-		String supervisors = String.join(", ", thesis.getSupervisors().stream()
-				.map(supervisor -> supervisor.getFirstName() + " " + supervisor.getLastName()).toList());
+		String students = String.join(", ", thesis.getStudents().stream().map(student -> student.getFirstName() + " " + student.getLastName()).toList());
+		String supervisors = String.join(", ", thesis.getSupervisors().stream().map(supervisor -> supervisor.getFirstName() + " " + supervisor.getLastName()).toList());
+		String examiners = String.join(", ", thesis.getExaminers().stream().map(examiner -> examiner.getFirstName() + " " + examiner.getLastName()).toList());
 
 		String assessmentTitle = "Assessment of \"" + thesis.getTitle() + "\"";
 
@@ -686,8 +663,8 @@ public class ThesisService {
 
 		builder.addOverviewItem("Thesis Type", DataFormatter.formatConstantName(thesis.getType()))
 				.addOverviewItem("Student", students)
-				.addOverviewItem("Advisor", advisors)
-				.addOverviewItem("Supervisor", supervisors);
+				.addOverviewItem("Supervisor", supervisors)
+				.addOverviewItem("Examiner", examiners);
 		for (var stateChange : thesis.getStates()) {
 			if (stateChange.getId().getState() == ThesisState.ASSESSED) {
 				builder.addOverviewItem("Assessment Date", DataFormatter.formatDate(stateChange.getChangedAt()));
@@ -710,8 +687,7 @@ public class ThesisService {
 	}
 
 	/* GRADING */
-	// TODO: we should avoid using @Transactional because it can lead to performance
-	// issue and concurrency problems
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis gradeThesis(Thesis thesis, String finalGrade, String finalFeedback, ThesisVisibility visibility) {
 		requireNotAnonymized(thesis);
@@ -728,8 +704,7 @@ public class ThesisService {
 		return thesisRepository.save(thesis);
 	}
 
-	// TODO: we should avoid using @Transactional because it can lead to performance
-	// issue and concurrency problems
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis completeThesis(Thesis thesis) {
 		requireNotAnonymized(thesis);
@@ -753,7 +728,7 @@ public class ThesisService {
 
 	private boolean existsPendingThesis(User user) {
 		Page<Thesis> theses = thesisRepository.searchTheses(
-				null,
+			null,
 				user.getId(),
 				null,
 				null,
@@ -762,24 +737,24 @@ public class ThesisService {
 						ThesisState.WRITING,
 						ThesisState.SUBMITTED,
 						ThesisState.ASSESSED,
-						ThesisState.GRADED),
+						ThesisState.GRADED
+				),
 				null,
-				PageRequest.ofSize(1));
+				PageRequest.ofSize(1)
+		);
 
 		return theses.getTotalElements() > 0;
 	}
 
 	/**
-	 * Finds a thesis by its ID, verifying the current user has read access or
-	 * belongs to the research group.
+	 * Finds a thesis by its ID, verifying the current user has read access or belongs to the research group.
 	 *
 	 * @param thesisId the ID of the thesis to find
 	 * @return the found thesis
 	 */
 	public Thesis findById(UUID thesisId) {
 		Thesis thesis = thesisRepository.findById(thesisId)
-				.orElseThrow(
-						() -> new ResourceNotFoundException(String.format("Thesis with id %s not found.", thesisId)));
+				.orElseThrow(() -> new ResourceNotFoundException(String.format("Thesis with id %s not found.", thesisId)));
 
 		if (!thesis.hasReadAccess(null)) {
 			currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
@@ -790,24 +765,25 @@ public class ThesisService {
 
 	private void assignThesisRoles(
 			Thesis thesis,
+			List<UUID> examinerIds,
 			List<UUID> supervisorIds,
-			List<UUID> advisorIds,
-			List<UUID> studentIds) {
+			List<UUID> studentIds
+	) {
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+		List<User> examiners = userRepository.findAllById(examinerIds);
 		List<User> supervisors = userRepository.findAllById(supervisorIds);
-		List<User> advisors = userRepository.findAllById(advisorIds);
 		List<User> students = userRepository.findAllById(studentIds);
 
+		examiners.sort(Comparator.comparing(user -> examinerIds.indexOf(user.getId())));
 		supervisors.sort(Comparator.comparing(user -> supervisorIds.indexOf(user.getId())));
-		advisors.sort(Comparator.comparing(user -> advisorIds.indexOf(user.getId())));
 		students.sort(Comparator.comparing(user -> studentIds.indexOf(user.getId())));
+
+		if (examiners.isEmpty() || examiners.size() != examinerIds.size()) {
+			throw new ResourceInvalidParametersException("No examiners selected or examiners not found");
+		}
 
 		if (supervisors.isEmpty() || supervisors.size() != supervisorIds.size()) {
 			throw new ResourceInvalidParametersException("No supervisors selected or supervisors not found");
-		}
-
-		if (advisors.isEmpty() || advisors.size() != advisorIds.size()) {
-			throw new ResourceInvalidParametersException("No advisors selected or advisors not found");
 		}
 
 		if (students.isEmpty() || students.size() != studentIds.size()) {
@@ -817,24 +793,24 @@ public class ThesisService {
 		thesisRoleRepository.deleteByThesisId(thesis.getId());
 		thesis.setRoles(new ArrayList<>());
 
+		for (int i = 0; i < examiners.size(); i++) {
+			User examiner = examiners.get(i);
+
+			if (!examiner.hasAnyGroup("supervisor")) {
+				throw new ResourceInvalidParametersException("User is not an examiner");
+			}
+
+			saveThesisRole(thesis, examiner, ThesisRoleName.EXAMINER, i);
+		}
+
 		for (int i = 0; i < supervisors.size(); i++) {
 			User supervisor = supervisors.get(i);
 
-			if (!supervisor.hasAnyGroup("supervisor")) {
+			if (!supervisor.hasAnyGroup("advisor", "supervisor")) {
 				throw new ResourceInvalidParametersException("User is not a supervisor");
 			}
 
 			saveThesisRole(thesis, supervisor, ThesisRoleName.SUPERVISOR, i);
-		}
-
-		for (int i = 0; i < advisors.size(); i++) {
-			User advisor = advisors.get(i);
-
-			if (!advisor.hasAnyGroup("advisor", "supervisor")) {
-				throw new ResourceInvalidParametersException("User is not an advisor");
-			}
-
-			saveThesisRole(thesis, advisor, ThesisRoleName.ADVISOR, i);
 		}
 
 		for (int i = 0; i < students.size(); i++) {

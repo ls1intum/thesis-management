@@ -67,13 +67,13 @@ const TopicAdittionalInformationCard = ({ topic }: ITopicAdittionalInformationCa
         <TopicAdittionalInformationSection
           icon={<Users size={iconSize} />}
           title='Examiners'
-          content={<AvatarUserList users={topic.supervisors} />}
+          content={<AvatarUserList users={topic.examiners ?? []} />}
         />
         <Divider />
         <TopicAdittionalInformationSection
           icon={<Users size={iconSize} />}
           title='Supervisors'
-          content={<AvatarUserList users={topic.advisors} />}
+          content={<AvatarUserList users={topic.supervisors ?? []} />}
         />
       </Stack>
     </Card>

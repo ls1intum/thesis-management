@@ -32,6 +32,21 @@ jobs:
         with:
           files: server/**
 
+      - name: Extract version from build.gradle
+        id: version
+        run: echo "version=$(grep '^version = ' server/build.gradle | sed 's/version = "\(.*\)"/\1/')" >> "$GITHUB_OUTPUT"
+
+      - name: Check that version is not already released
+        if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch) && steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          git fetch --tags --quiet
+          if git rev-parse -q --verify "refs/tags/${VERSION}" >/dev/null || \
+             git rev-parse -q --verify "refs/tags/v${VERSION}" >/dev/null; then
+            echo "::error::Version ${VERSION} has already been released (git tag exists). Please bump the version using supporting_scripts/update_version.sh before merging."
+            exit 1
+          fi
+
       - name: Log in to the Container registry
         if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
         uses: docker/login-action@v3
@@ -39,12 +54,6 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Set up QEMU
-        if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
-        uses: docker/setup-qemu-action@v3
-        with:
-          platforms: all
 
       - name: Install Docker Buildx
         if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
@@ -56,6 +65,7 @@ jobs:
         with:
           images: ghcr.io/ls1intum/thesis-management/thesis-management-server
           tags: |
+            type=raw,value=${{ steps.version.outputs.version }},enable={{is_default_branch}}
             type=raw,value=latest,enable={{is_default_branch}}
             type=ref,event=branch
             type=ref,event=pr
@@ -66,9 +76,10 @@ jobs:
         with:
           context: ./
           file: ./server.Dockerfile
-          platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
+          cache-from: type=gha,scope=server-image
+          cache-to: type=gha,scope=server-image,mode=max
 
       - id: output-tag
         run: |
@@ -95,6 +106,21 @@ jobs:
         with:
           files: client/**
 
+      - name: Extract version from package.json
+        id: version
+        run: echo "version=$(node -p "require('./client/package.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: Check that version is not already released
+        if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch) && steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          git fetch --tags --quiet
+          if git rev-parse -q --verify "refs/tags/${VERSION}" >/dev/null || \
+             git rev-parse -q --verify "refs/tags/v${VERSION}" >/dev/null; then
+            echo "::error::Version ${VERSION} has already been released (git tag exists). Please bump the version using supporting_scripts/update_version.sh before merging."
+            exit 1
+          fi
+
       - name: Log in to the Container registry
         if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
         uses: docker/login-action@v3
@@ -102,12 +128,6 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Set up QEMU
-        if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
-        uses: docker/setup-qemu-action@v3
-        with:
-          platforms: all
 
       - name: Install Docker Buildx
         if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
@@ -119,6 +139,7 @@ jobs:
         with:
           images: ghcr.io/ls1intum/thesis-management/thesis-management-client
           tags: |
+            type=raw,value=${{ steps.version.outputs.version }},enable={{is_default_branch}}
             type=raw,value=latest,enable={{is_default_branch}}
             type=ref,event=branch
             type=ref,event=pr
@@ -129,9 +150,10 @@ jobs:
         with:
           context: ./
           file: ./client.Dockerfile
-          platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
+          cache-from: type=gha,scope=client-image
+          cache-to: type=gha,scope=client-image,mode=max
 
       - id: output-tag
         run: |

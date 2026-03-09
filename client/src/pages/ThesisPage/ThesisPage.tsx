@@ -10,7 +10,7 @@ import { Alert, Stack } from '@mantine/core'
 import { Warning } from '@phosphor-icons/react'
 import ThesisHeader from './components/ThesisHeader/ThesisHeader'
 import ThesisProvider from '../../providers/ThesisProvider/ThesisProvider'
-import ThesisAdvisorCommentsSection from './components/ThesisAdvisorCommentsSection/ThesisAdvisorCommentsSection'
+import ThesisSupervisorCommentsSection from './components/ThesisSupervisorCommentsSection/ThesisSupervisorCommentsSection'
 import ThesisStudentInfoSection from './components/ThesisStudentInfoSection/ThesisStudentInfoSection'
 import ThesisPresentationSection from './components/ThesisPresentationSection/ThesisPresentationSection'
 import { useLoadedThesisContext } from '../../providers/ThesisProvider/hooks'
@@ -31,7 +31,7 @@ const ThesisPageContent = () => {
       )}
       <ThesisConfigSection />
       <ThesisStudentInfoSection />
-      <ThesisAdvisorCommentsSection />
+      <ThesisSupervisorCommentsSection />
       <ThesisInfoSection />
       <ThesisProposalSection />
       <ThesisWritingSection />

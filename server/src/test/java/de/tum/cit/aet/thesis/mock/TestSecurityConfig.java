@@ -10,6 +10,7 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -40,7 +41,16 @@ public class TestSecurityConfig {
 				.cors(Customizer.withDefaults())
 				.csrf(AbstractHttpConfigurer::disable)
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				.authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
+				.authorizeHttpRequests(auth -> auth
+						.requestMatchers(HttpMethod.GET, "/v2/topics/**").permitAll()
+						.requestMatchers(HttpMethod.GET, "/v2/published-theses/**").permitAll()
+						.requestMatchers(HttpMethod.GET, "/v2/published-presentations/**").permitAll()
+						.requestMatchers(HttpMethod.GET, "/v2/research-groups/**").permitAll()
+						.requestMatchers(HttpMethod.GET, "/v2/calendar/**").permitAll()
+						.requestMatchers(HttpMethod.GET, "/v2/avatars/**").permitAll()
+						.requestMatchers(HttpMethod.GET, "/actuator/info").permitAll()
+						.requestMatchers(HttpMethod.GET, "/actuator/health").permitAll()
+						.anyRequest().authenticated())
 				.oauth2ResourceServer(server -> {
 					server.jwt(jwt -> jwt.decoder(jwtDecoder()).jwtAuthenticationConverter(jwtAuthenticationConverter()));
 				});

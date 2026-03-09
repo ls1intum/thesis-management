@@ -8,15 +8,16 @@ plugins {
 	id "org.springframework.boot" version "4.0.3"
 	id "io.spring.dependency-management" version "1.1.7"
 	id "com.github.ben-manes.versions" version "0.53.0"
-	id "com.diffplug.spotless" version "8.2.1"
+	id "com.diffplug.spotless" version "8.3.0"
 }
 
 group = "de.tum.cit.aet.thesis"
-version = "4.9.1"
+version = "4.10.1"
 description = "Thesis Management"
 
 gitProperties {
     dotGitDirectory = file("../.git")
+    failOnNoGitDirectory = false
 }
 
 springBoot {
@@ -143,6 +144,12 @@ checkstyle {
 	toolVersion = "13.3.0"
 	configFile = file("config/checkstyle/checkstyle.xml")
 	maxWarnings = 0
+}
+
+bootRun {
+	systemProperty "spring.profiles.active", "dev"
+	environment "LIQUIBASE_CONTEXTS", "dev,prod"
+	environment "SERVER_PORT", "8180"
 }
 
 test {

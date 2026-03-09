@@ -99,7 +99,7 @@ const ThesisInfoSection = () => {
             />
             <Grid>
               <Grid.Col span={{ md: 6 }}>
-                {access.advisor && thesis.applicationId && (
+                {access.supervisor && thesis.applicationId && (
                   <Button
                     component={Link}
                     variant='outline'

@@ -29,11 +29,11 @@ public interface InterviewProcessRepository extends JpaRepository<InterviewProce
 			"AND ( :userId IS NULL " +
 			"      OR ( :excludeSupervised = true " +
 			"           AND EXISTS (SELECT 1 FROM TopicRole r " +
-			"           WHERE r.topic = t AND r.id.userId = :userId AND r.id.role = 'ADVISOR')) " +
+			"           WHERE r.topic = t AND r.id.userId = :userId AND r.id.role = 'SUPERVISOR')) " +
 			"      OR ( :excludeSupervised = false " +
 			"           AND EXISTS (SELECT 1 FROM TopicRole r " +
 			"           WHERE r.topic = t AND r.id.userId = :userId " +
-			"           AND (r.id.role = 'ADVISOR' OR r.id.role = 'SUPERVISOR')) )" +
+			"           AND (r.id.role = 'SUPERVISOR' OR r.id.role = 'EXAMINER')) )" +
 			"    )")
 	Page<InterviewProcess> searchMyInterviewProcesses(
 			@Param("userId") UUID userId,
@@ -51,7 +51,7 @@ public interface InterviewProcessRepository extends JpaRepository<InterviewProce
 			FROM TopicRole r
 			WHERE r.topic = t
 			AND r.id.userId = :userId
-			AND (r.id.role = 'ADVISOR')
+			AND (r.id.role = 'SUPERVISOR')
 		)
 	""")
 	List<InterviewSlot> findAllMyInterviewSlots(@Param("userId") UUID userId);

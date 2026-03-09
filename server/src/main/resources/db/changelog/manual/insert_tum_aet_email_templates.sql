@@ -42,7 +42,7 @@ WITH defaults
 </p>
 
 <p th:inline="text">
-  [[${advisor.firstName}]]&nbsp;[[${advisor.lastName}]] would be your advisor. Please coordinate the
+  [[${advisor.firstName}]]&nbsp;[[${advisor.lastName}]] would be your supervisor. Please coordinate the
   next steps with [[${advisor.firstName}]] [[${advisor.lastName}]] using the following link:
   <a target="_blank" rel="noopener noreferrer nofollow" th:href="${config.workspaceUrl}">[[${config.workspaceUrl}]]</a>
 </p>
@@ -65,8 +65,8 @@ WITH defaults
 </p>
 
 <div th:utext="${config.signature}"></div>
-', 'Application was accepted with different advisor and supervisor'),
-                                         ('APPLICATION_ACCEPTED_NO_ADVISOR', 'Thesis Application Acceptance', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
+', 'Application was accepted with different supervisor and examiner'),
+                                         ('APPLICATION_ACCEPTED_NO_SUPERVISOR', 'Thesis Application Acceptance', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">
 I am delighted to inform you that I would like to take the next steps in
@@ -93,7 +93,7 @@ project.
 You can view your thesis details and tasks on: <a target="_blank" rel="noopener noreferrer nofollow" th:href="${thesisUrl}">[[${thesisUrl}]]</a>
 </p>
 
-<div th:utext="${config.signature}"></div>', 'Application was accepted with same advisor and supervisor'),
+<div th:utext="${config.signature}"></div>', 'Application was accepted with same supervisor and examiner'),
                                          ('APPLICATION_CREATED_CHAIR', 'New Thesis Application', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">there is a new thesis application by <strong>[[${application.applicantFirstName}]]&nbsp;[[${application.applicantLastName}]]</strong>.</p>
@@ -163,7 +163,7 @@ Full Details: <a target="_blank" rel="noopener noreferrer nofollow" th:href="${a
     Manage your notification settings <a th:href="${config.clientHost + ''/settings/notifications''}">here</a>
 </div>
 <br/><br/>',
-                                          'All supervisors and advisors get a summary about a new application'),
+                                          'All examiners and supervisors get a summary about a new application'),
                                          ('APPLICATION_CREATED_STUDENT', 'Thesis Application Confirmation', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">With this email, we confirm your thesis application.</p>
@@ -371,7 +371,7 @@ Review Applications: <a target="_blank" rel="noopener noreferrer nofollow" th:hr
 
 <p th:inline="text">
 [[${deletingUser.firstName}]] [[${deletingUser.lastName}]] closed thesis "[[${thesis.title}]]".
-Please contact your advisor or supervisor if you think that this was a mistake.
+Please contact your supervisor or examiner if you think that this was a mistake.
 </p>
 
 <p th:inline="text">
@@ -403,7 +403,7 @@ Please contact your advisor or supervisor if you think that this was a mistake.
     Manage your notification settings <a th:href="${config.clientHost + ''/settings/notifications''}">here</a>
 </div>
 <br/><br/>',
-                                          'New comment on a thesis. TO depends whether its a student or advisor comment'),
+                                          'New comment on a thesis. TO depends whether it''s a student or supervisor comment'),
                                          ('THESIS_CREATED', 'Thesis Created', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">
@@ -412,8 +412,8 @@ Please contact your advisor or supervisor if you think that this was a mistake.
 
 <p th:inline="text">
 <strong>Title</strong>: [[${thesis.title}]]<br />
+<strong>Examiner</strong>: [[${thesis.examiners}]]<br />
 <strong>Supervisor</strong>: [[${thesis.supervisors}]]<br />
-<strong>Advisor</strong>: [[${thesis.advisors}]]<br />
 <strong>Student</strong>: [[${thesis.students}]]<br />
 </p>
 
@@ -423,7 +423,7 @@ The next step is that you write a proposal and submit it on <a target="_blank" r
                                          ('THESIS_FINAL_GRADE', 'Final Grade available for Thesis', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">
-[[${thesis.supervisors}]] added the final grade to your thesis "[[${thesis.title}]]"
+[[${thesis.examiners}]] added the final grade to your thesis "[[${thesis.title}]]"
 </p>
 
 <p th:inline="text">
@@ -574,8 +574,8 @@ online at [[${presentation.streamUrl}]]
 <div>Title:</div>
 <div>[[${thesis.title}]]</div>
 <br/>
-<div>Supervisor: [[${thesis.supervisors}]]</div>
-<div>Advisor(s): [[${thesis.advisors}]]</div>
+<div>Examiner: [[${thesis.examiners}]]</div>
+<div>Supervisor(s): [[${thesis.supervisors}]]</div>
 <br/>
 <div>
 The presentation will be in [[${presentation.language}]]. Everybody is cordially invited to attend.
@@ -625,8 +625,8 @@ online at [[${presentation.streamUrl}]]
 <div>Title:</div>
 <div>[[${thesis.title}]]</div>
 <br/>
-<div>Supervisor: [[${thesis.supervisors}]]</div>
-<div>Advisor(s): [[${thesis.advisors}]]</div>
+<div>Examiner: [[${thesis.examiners}]]</div>
+<div>Supervisor(s): [[${thesis.supervisors}]]</div>
 <br/>
 <div>
 The presentation will be in [[${presentation.language}]]. Everybody is cordially invited to attend.

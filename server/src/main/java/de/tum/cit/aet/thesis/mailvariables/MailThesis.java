@@ -12,8 +12,8 @@ public record MailThesis(
 		String title,
 		String type,
 		String students,
+		String examiners,
 		String supervisors,
-		String advisors,
 		String abstractText,
 		String finalGrade,
 		String finalFeedback
@@ -47,8 +47,8 @@ public record MailThesis(
 				valueOrEmpty(thesis.getTitle()),
 				valueOrEmpty(DataFormatter.formatConstantName(thesis.getType())),
 				valueOrEmpty(formatUsers(thesis.getStudents())),
+				valueOrEmpty(formatUsers(thesis.getExaminers())),
 				valueOrEmpty(formatUsers(thesis.getSupervisors())),
-				valueOrEmpty(formatUsers(thesis.getAdvisors())),
 				valueOrEmpty(thesis.getAbstractField()),
 				includeFinalGrade ? valueOrEmpty(thesis.getFinalGrade()) : "",
 				includeFinalGrade ? valueOrEmpty(thesis.getFinalFeedback()) : ""
@@ -65,8 +65,8 @@ public record MailThesis(
 				new MailVariableDto("Thesis Title", "[[${thesis.title}]]", "Deep Learning for NLP", "Thesis"),
 				new MailVariableDto("Thesis Type", "[[${thesis.type}]]", "Bachelor Thesis", "Thesis"),
 				new MailVariableDto("Thesis Student(s)", "[[${thesis.students}]]", "Max Mustermann", "Thesis"),
-				new MailVariableDto("Thesis Supervisor(s)", "[[${thesis.supervisors}]]", "Maria Musterfrau", "Thesis"),
-				new MailVariableDto("Thesis Advisor(s)", "[[${thesis.advisors}]]", "Alex Example", "Thesis"),
+				new MailVariableDto("Thesis Examiner(s)", "[[${thesis.examiners}]]", "Maria Musterfrau", "Thesis"),
+				new MailVariableDto("Thesis Supervisor(s)", "[[${thesis.supervisors}]]", "Alex Example", "Thesis"),
 				new MailVariableDto("Thesis Abstract", "<span th:utext=\"${thesis.abstractText}\"></span>", "Abstract text", "Thesis"),
 				new MailVariableDto("Thesis URL", "[[${thesisUrl}]]", "https://thesis-management.com/theses/123", "Thesis")
 		);

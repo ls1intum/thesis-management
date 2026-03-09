@@ -73,8 +73,8 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 
 			UUID researchGroupId = createDefaultResearchGroup();
 			CreateApplicationPayload payload = new CreateApplicationPayload(
-					null, "Test Thesis", "MASTER", Instant.now(), "Test motivation", researchGroupId
-			);
+					null, "Test Thesis", "MASTER", Instant.now(), "Test motivation", researchGroupId,
+			true);
 
 			String response = mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 							.header("Authorization", createRandomAdminAuthentication())
@@ -101,8 +101,8 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 			UUID topicId = createTestTopic("Test Topic");
 
 			CreateApplicationPayload payload = new CreateApplicationPayload(
-					topicId, null, "MASTER", Instant.now(), "Motivation for topic", null
-			);
+					topicId, null, "MASTER", Instant.now(), "Motivation for topic", null,
+			true);
 
 			String response = mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 							.header("Authorization", createRandomAdminAuthentication())
@@ -121,8 +121,8 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 		void createApplication_MissingTopicAndTitle_ReturnsBadRequest() throws Exception {
 			UUID researchGroupId = createDefaultResearchGroup();
 			CreateApplicationPayload payload = new CreateApplicationPayload(
-					null, null, "MASTER", Instant.now(), "Motivation", researchGroupId
-			);
+					null, null, "MASTER", Instant.now(), "Motivation", researchGroupId,
+			true);
 
 			mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 							.header("Authorization", createRandomAdminAuthentication())
@@ -142,8 +142,8 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 			String auth = createRandomAdminAuthentication();
 
 			CreateApplicationPayload payload = new CreateApplicationPayload(
-					topicId, null, "MASTER", Instant.now(), "First application", null
-			);
+					topicId, null, "MASTER", Instant.now(), "First application", null,
+			true);
 
 			mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 							.header("Authorization", auth)
@@ -167,8 +167,8 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 
 			UUID researchGroupId = createDefaultResearchGroup();
 			CreateApplicationPayload payload = new CreateApplicationPayload(
-					null, "Database Check Thesis", "BACHELOR", Instant.now(), "Verify DB state", researchGroupId
-			);
+					null, "Database Check Thesis", "BACHELOR", Instant.now(), "Verify DB state", researchGroupId,
+			true);
 
 			String response = mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 							.header("Authorization", createRandomAdminAuthentication())
@@ -187,6 +187,51 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 			assertThat(application.getComment()).isEmpty();
 			assertThat(application.getCreatedAt()).isNotNull();
 			assertThat(application.getUser()).isNotNull();
+			assertThat(application.getConsentTimestamp()).isNotNull();
+			// Consent timestamp should be close to creation time (within 5 seconds)
+			assertThat(application.getConsentTimestamp())
+					.isAfter(application.getCreatedAt().minusSeconds(5))
+					.isBefore(application.getCreatedAt().plusSeconds(5));
+		}
+
+		@Test
+		void createApplication_WithoutConsent_ReturnsBadRequest() throws Exception {
+			UUID researchGroupId = createDefaultResearchGroup();
+			CreateApplicationPayload payload = new CreateApplicationPayload(
+					null, "No Consent Thesis", "MASTER", Instant.now(), "Test motivation", researchGroupId,
+			false);
+
+			String response = mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
+							.header("Authorization", createRandomAdminAuthentication())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(payload)))
+					.andExpect(status().isBadRequest())
+					.andReturn().getResponse().getContentAsString();
+
+			JsonNode error = objectMapper.readTree(response);
+			assertThat(error.get("message").asString()).contains("privacy statement");
+
+			assertThat(applicationRepository.count()).isZero();
+		}
+
+		@Test
+		void createApplication_WithNullConsent_ReturnsBadRequest() throws Exception {
+			UUID researchGroupId = createDefaultResearchGroup();
+			CreateApplicationPayload payload = new CreateApplicationPayload(
+					null, "Null Consent Thesis", "MASTER", Instant.now(), "Test motivation", researchGroupId,
+			null);
+
+			String response = mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
+							.header("Authorization", createRandomAdminAuthentication())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(payload)))
+					.andExpect(status().isBadRequest())
+					.andReturn().getResponse().getContentAsString();
+
+			JsonNode error = objectMapper.readTree(response);
+			assertThat(error.get("message").asString()).contains("privacy statement");
+
+			assertThat(applicationRepository.count()).isZero();
 		}
 	}
 
@@ -361,8 +406,8 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 			createTestEmailTemplate("APPLICATION_CREATED_STUDENT");
 
 			CreateApplicationPayload payload = new CreateApplicationPayload(
-					topicId, null, "MASTER", Instant.now(), "Interview motivation", null
-			);
+					topicId, null, "MASTER", Instant.now(), "Interview motivation", null,
+			true);
 
 			mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 							.header("Authorization", createRandomAdminAuthentication())
@@ -401,8 +446,8 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 
 			UUID newResearchGroupId = createDefaultResearchGroup();
 			CreateApplicationPayload updatePayload = new CreateApplicationPayload(
-					null, "Updated Thesis", "BACHELOR", Instant.now(), "Updated motivation", newResearchGroupId
-			);
+					null, "Updated Thesis", "BACHELOR", Instant.now(), "Updated motivation", newResearchGroupId,
+			true);
 
 			String response = mockMvc.perform(MockMvcRequestBuilders.put("/v2/applications/{applicationId}", applicationId)
 							.header("Authorization", authorization)
@@ -431,8 +476,8 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 			String differentStudentAuth = createRandomAuthentication("student");
 			CreateApplicationPayload updatePayload = new CreateApplicationPayload(
 					null, "Hacked Title", "MASTER", Instant.now(), "Hacked motivation",
-					createDefaultResearchGroup()
-			);
+					createDefaultResearchGroup(),
+			true);
 
 			mockMvc.perform(MockMvcRequestBuilders.put("/v2/applications/{applicationId}", applicationId)
 							.header("Authorization", differentStudentAuth)
@@ -459,8 +504,8 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 
 			CreateApplicationPayload updatePayload = new CreateApplicationPayload(
 					null, "Should Fail", "MASTER", Instant.now(), "Should Fail",
-					createDefaultResearchGroup()
-			);
+					createDefaultResearchGroup(),
+			true);
 
 			mockMvc.perform(MockMvcRequestBuilders.put("/v2/applications/{applicationId}", applicationId)
 							.header("Authorization", adminAuth)
@@ -612,14 +657,14 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 		@Test
 		void acceptApplication_Success() throws Exception {
 			UUID applicationId = createTestApplication(createRandomAdminAuthentication(), "Accept Application");
-			TestUser advisor = createTestUser("advisor-accept", List.of("advisor"));
-			TestUser supervisor = createTestUser("supervisor-accept", List.of("supervisor"));
+			TestUser supervisor = createTestUser("advisor-accept", List.of("advisor"));
+			TestUser examiner = createTestUser("supervisor-accept", List.of("supervisor"));
 			createTestEmailTemplate("APPLICATION_ACCEPTED");
 			createTestEmailTemplate("THESIS_CREATED");
 
 			AcceptApplicationPayload payload = new AcceptApplicationPayload(
 					"Final Thesis Title", "MASTER", "ENGLISH",
-					List.of(advisor.userId()), List.of(supervisor.userId()),
+					List.of(supervisor.userId()), List.of(examiner.userId()),
 					true, true
 			);
 
@@ -648,13 +693,13 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 		@Test
 		void acceptApplication_AlreadyAccepted_ReturnsBadRequest() throws Exception {
 			UUID applicationId = createTestApplication(createRandomAdminAuthentication(), "Accept Application");
-			TestUser advisor = createTestUser("advisor-accept2", List.of("advisor"));
-			TestUser supervisor = createTestUser("supervisor-accept2", List.of("supervisor"));
+			TestUser supervisor = createTestUser("advisor-accept2", List.of("advisor"));
+			TestUser examiner = createTestUser("supervisor-accept2", List.of("supervisor"));
 			createTestEmailTemplate("APPLICATION_ACCEPTED");
 
 			AcceptApplicationPayload payload = new AcceptApplicationPayload(
 					"Final Thesis", "MASTER", "ENGLISH",
-					List.of(advisor.userId()), List.of(supervisor.userId()),
+					List.of(supervisor.userId()), List.of(examiner.userId()),
 					false, false
 			);
 
@@ -702,8 +747,8 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 			// Two different students apply for the same topic
 			String student1Auth = createRandomAuthentication("student");
 			CreateApplicationPayload payload1 = new CreateApplicationPayload(
-					topicId, null, "MASTER", Instant.now(), "Motivation 1", null
-			);
+					topicId, null, "MASTER", Instant.now(), "Motivation 1", null,
+			true);
 			String response1 = mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 							.header("Authorization", student1Auth)
 							.contentType(MediaType.APPLICATION_JSON)
@@ -714,8 +759,8 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 
 			String student2Auth = createRandomAuthentication("student");
 			CreateApplicationPayload payload2 = new CreateApplicationPayload(
-					topicId, null, "MASTER", Instant.now(), "Motivation 2", null
-			);
+					topicId, null, "MASTER", Instant.now(), "Motivation 2", null,
+			true);
 			String response2 = mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 							.header("Authorization", student2Auth)
 							.contentType(MediaType.APPLICATION_JSON)
@@ -724,12 +769,12 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 			UUID appId2 = UUID.fromString(objectMapper.readTree(response2).get("applicationId").asString());
 
-			TestUser advisor = createTestUser("advisor-close", List.of("advisor"));
-			TestUser supervisor = createTestUser("supervisor-close", List.of("supervisor"));
+			TestUser supervisor = createTestUser("advisor-close", List.of("advisor"));
+			TestUser examiner = createTestUser("supervisor-close", List.of("supervisor"));
 
 			AcceptApplicationPayload acceptPayload = new AcceptApplicationPayload(
 					"Accepted Thesis", "MASTER", "ENGLISH",
-					List.of(advisor.userId()), List.of(supervisor.userId()),
+					List.of(supervisor.userId()), List.of(examiner.userId()),
 					true, true  // notifyUser=true, closeTopic=true
 			);
 
@@ -752,21 +797,21 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 		}
 
 		@Test
-		void acceptApplication_WithNotify_SameAdvisorSupervisor_UsesNoAdvisorTemplate() throws Exception {
+		void acceptApplication_WithNotify_SameSupervisorExaminer_UsesNoSupervisorTemplate() throws Exception {
 			createTestEmailTemplate("APPLICATION_CREATED_CHAIR");
 			createTestEmailTemplate("APPLICATION_CREATED_STUDENT");
-			createTestEmailTemplate("APPLICATION_ACCEPTED_NO_ADVISOR");
+			createTestEmailTemplate("APPLICATION_ACCEPTED_NO_SUPERVISOR");
 			createTestEmailTemplate("THESIS_CREATED");
 
 			TestUser student = createRandomTestUser(List.of("student"));
 			String studentAuth = generateTestAuthenticationHeader(student.universityId(), List.of("student"));
 
-			TestUser advisor = createRandomTestUser(List.of("supervisor", "advisor"));
-			UUID researchGroupId = createTestResearchGroup("Accept No Advisor", advisor.universityId());
+			TestUser supervisor = createRandomTestUser(List.of("supervisor", "advisor"));
+			UUID researchGroupId = createTestResearchGroup("Accept No Supervisor", supervisor.universityId());
 
 			CreateApplicationPayload appPayload = new CreateApplicationPayload(
-					null, "No Advisor Thesis", "MASTER", Instant.now(), "Motivation", researchGroupId
-			);
+					null, "No Supervisor Thesis", "MASTER", Instant.now(), "Motivation", researchGroupId,
+			true);
 
 			String appResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 							.header("Authorization", studentAuth)
@@ -779,11 +824,11 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 
 			clearEmails();
 
-			// Same user as both advisor and supervisor triggers APPLICATION_ACCEPTED_NO_ADVISOR template
+			// Same user as both supervisor and examiner triggers APPLICATION_ACCEPTED_NO_SUPERVISOR template
 			AcceptApplicationPayload acceptPayload = new AcceptApplicationPayload(
-					"No Advisor Thesis", "MASTER", "ENGLISH",
-					List.of(advisor.userId()),
-					List.of(advisor.userId()),
+					"No Supervisor Thesis", "MASTER", "ENGLISH",
+					List.of(supervisor.userId()),
+					List.of(supervisor.userId()),
 					true, false
 			);
 
@@ -800,13 +845,13 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 		@Test
 		void acceptApplication_VerifyThesisCreated() throws Exception {
 			UUID applicationId = createTestApplication(createRandomAdminAuthentication(), "Thesis Source Application");
-			TestUser advisor = createTestUser("advisor-verify", List.of("advisor"));
-			TestUser supervisor = createTestUser("supervisor-verify", List.of("supervisor"));
+			TestUser supervisor = createTestUser("advisor-verify", List.of("advisor"));
+			TestUser examiner = createTestUser("supervisor-verify", List.of("supervisor"));
 			createTestEmailTemplate("APPLICATION_ACCEPTED");
 
 			AcceptApplicationPayload payload = new AcceptApplicationPayload(
 					"Created Thesis Title", "BACHELOR", "GERMAN",
-					List.of(advisor.userId()), List.of(supervisor.userId()),
+					List.of(supervisor.userId()), List.of(examiner.userId()),
 					false, false
 			);
 
@@ -907,8 +952,8 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 			UUID topicId2 = createTestTopic("Topic for App 2");
 
 			CreateApplicationPayload payload1 = new CreateApplicationPayload(
-					topicId1, null, "MASTER", Instant.now(), "Motivation 1", null
-			);
+					topicId1, null, "MASTER", Instant.now(), "Motivation 1", null,
+			true);
 			String response1 = mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 							.header("Authorization", studentAuth)
 							.contentType(MediaType.APPLICATION_JSON)
@@ -918,8 +963,8 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 			UUID appId1 = UUID.fromString(objectMapper.readTree(response1).get("applicationId").asString());
 
 			CreateApplicationPayload payload2 = new CreateApplicationPayload(
-					topicId2, null, "MASTER", Instant.now(), "Motivation 2", null
-			);
+					topicId2, null, "MASTER", Instant.now(), "Motivation 2", null,
+			true);
 			String response2 = mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 							.header("Authorization", studentAuth)
 							.contentType(MediaType.APPLICATION_JSON)
@@ -1023,13 +1068,13 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 			createTestEmailTemplate("INTERVIEW_INVITATION");
 			createTestEmailTemplate("INTERVIEW_INVITATION_REMINDER");
 
-			TestUser advisor = createRandomTestUser(List.of("supervisor", "advisor"));
-			UUID researchGroupId = createTestResearchGroup("Close IP Group", advisor.universityId());
+			TestUser supervisor = createRandomTestUser(List.of("supervisor", "advisor"));
+			UUID researchGroupId = createTestResearchGroup("Close IP Group", supervisor.universityId());
 
 			ReplaceTopicPayload topicPayload = new ReplaceTopicPayload(
 					"Close IP Topic", Set.of("MASTER"),
 					"PS", "Req", "Goals", "Refs",
-					List.of(advisor.userId()), List.of(advisor.userId()),
+					List.of(supervisor.userId()), List.of(supervisor.userId()),
 					researchGroupId, null, null, false
 			);
 			String topicResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/topics")
@@ -1043,8 +1088,8 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 			// Create application for the topic
 			String studentAuth = createRandomAuthentication("student");
 			CreateApplicationPayload appPayload = new CreateApplicationPayload(
-					topicId, null, "MASTER", Instant.now(), "Interview motivation", null
-			);
+					topicId, null, "MASTER", Instant.now(), "Interview motivation", null,
+			true);
 			String appResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 							.header("Authorization", studentAuth)
 							.contentType(MediaType.APPLICATION_JSON)
@@ -1054,10 +1099,10 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 			UUID applicationId = UUID.fromString(objectMapper.readTree(appResponse).get("applicationId").asString());
 
 			// Create interview process for the topic
-			String advisorAuth = generateTestAuthenticationHeader(advisor.universityId(), List.of("supervisor", "advisor"));
+			String supervisorAuth = generateTestAuthenticationHeader(supervisor.universityId(), List.of("supervisor", "advisor"));
 			CreateInterviewProcessPayload processPayload = new CreateInterviewProcessPayload(topicId, List.of(applicationId));
 			String processResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/interview-process")
-							.header("Authorization", advisorAuth)
+							.header("Authorization", supervisorAuth)
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(objectMapper.writeValueAsString(processPayload)))
 					.andExpect(status().isOk())
@@ -1130,8 +1175,8 @@ class ApplicationControllerTest extends BaseIntegrationTest {
 
 			String studentAuth = createRandomAuthentication("student");
 			CreateApplicationPayload payload = new CreateApplicationPayload(
-					topicId, null, "MASTER", Instant.now(), "Topic filter test", null
-			);
+					topicId, null, "MASTER", Instant.now(), "Topic filter test", null,
+			true);
 			mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 							.header("Authorization", studentAuth)
 							.contentType(MediaType.APPLICATION_JSON)

@@ -7,6 +7,7 @@ server/data-exports/
 
 # User-specific stuff
 .idea
+.vscode
 *.iml
 
 # Dependencies
@@ -19,3 +20,4 @@ node_modules/
 .e2e-pids/
 .e2e-server.log
 .e2e-client.log
+/docs/files/.$subsystem-decomposition.drawio.bkp

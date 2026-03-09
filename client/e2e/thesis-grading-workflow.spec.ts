@@ -9,16 +9,16 @@ import {
   assertSentFromApp,
 } from './mailpit'
 
-// Thesis d000-0003: SUBMITTED state, student3, advisor2, supervisor2 (DSA group)
-// Note: Seed data inserts an assessment row directly but thesis state remains SUBMITTED.
-// supervisor2 has both advisor and supervisor access (as supervisor on the thesis).
+// Thesis d000-0003: ASSESSED state, student3, supervisor2, examiner2 (DSA group)
+// Seed data includes an assessment by supervisor2, matching the ASSESSED state.
+// examiner2 has both supervisor and examiner access (as examiner on the thesis).
 const THESIS_ID = '00000000-0000-4000-d000-000000000003'
 const THESIS_URL = `/theses/${THESIS_ID}`
 const THESIS_TITLE = 'Online Anomaly Detection in IoT Sensor Streams'
 
 test.describe.serial('Thesis Grading Workflow', () => {
-  test('supervisor can submit an assessment on a SUBMITTED thesis', async ({ browser }) => {
-    const context = await browser.newContext({ storageState: authStatePath('supervisor2') })
+  test('examiner can submit an assessment on an ASSESSED thesis', async ({ browser }) => {
+    const context = await browser.newContext({ storageState: authStatePath('examiner2') })
     const page = await context.newPage()
 
     const heading = page.getByRole('heading', { name: THESIS_TITLE })
@@ -75,7 +75,7 @@ test.describe.serial('Thesis Grading Workflow', () => {
     await dialog.getByLabel('Grade Suggestion').fill('1.3')
 
     // Snapshot mailbox BEFORE submitting
-    const beforeIds = await snapshotMailbox('supervisor2@test.local')
+    const beforeIds = await snapshotMailbox('examiner2@test.local')
 
     const submitButton = dialog.getByRole('button', { name: 'Submit Assessment' })
     await expect(submitButton).toBeEnabled({ timeout: 5_000 })
@@ -90,29 +90,29 @@ test.describe.serial('Thesis Grading Workflow', () => {
     })
 
     // --- Email verification ---
-    // THESIS_ASSESSMENT_ADDED is sent to thesis supervisors EXCEPT the sender.
+    // THESIS_ASSESSMENT_ADDED is sent to thesis examiners EXCEPT the sender.
     // MailBuilder excludes the primarySender from recipients when secondaryRecipients
-    // is empty (MailBuilder.java line 508). Since supervisor2 is both the submitter
-    // and the only supervisor on this thesis, no email is sent.
+    // is empty (MailBuilder.java line 508). Since examiner2 is both the submitter
+    // and the only examiner on this thesis, no email is sent.
     //
     // NOTE: To fully test the THESIS_ASSESSMENT_ADDED email template, a test with
-    // a thesis that has multiple supervisors would be needed (so the non-submitting
-    // supervisor receives the email). This is a known coverage gap.
+    // a thesis that has multiple examiners would be needed (so the non-submitting
+    // examiner receives the email). This is a known coverage gap.
     //
-    // We verify that NO assessment email was sent to supervisor2 (confirms the
+    // We verify that NO assessment email was sent to examiner2 (confirms the
     // sender-exclusion logic works correctly).
-    const afterIds = await snapshotMailbox('supervisor2@test.local')
+    const afterIds = await snapshotMailbox('examiner2@test.local')
     const newIds = [...afterIds].filter((id) => !beforeIds.has(id))
     expect(
       newIds.length,
-      'No assessment email should be sent to the supervisor who submitted it',
+      'No assessment email should be sent to the examiner who submitted it',
     ).toBe(0)
 
     await context.close()
   })
 
-  test('supervisor can submit a final grade on an ASSESSED thesis', async ({ browser }) => {
-    const context = await browser.newContext({ storageState: authStatePath('supervisor2') })
+  test('examiner can submit a final grade on an ASSESSED thesis', async ({ browser }) => {
+    const context = await browser.newContext({ storageState: authStatePath('examiner2') })
     const page = await context.newPage()
 
     const heading = page.getByRole('heading', { name: THESIS_TITLE })
@@ -176,7 +176,7 @@ test.describe.serial('Thesis Grading Workflow', () => {
     assertSentFromApp(gradeEmail!)
     expect(getToAddresses(gradeEmail!)).toContain('student3@test.local')
 
-    // Body should contain: greeting, thesis title, supervisor name, final grade,
+    // Body should contain: greeting, thesis title, examiner name, final grade,
     // feedback text, and a link to the thesis
     const body = getBody(gradeEmail!)
     expect(body, 'Should greet the student by first name').toContain('Student3')
@@ -184,13 +184,13 @@ test.describe.serial('Thesis Grading Workflow', () => {
     expect(body, 'Should contain the final grade value').toContain('1.3')
     expect(body, 'Should contain the feedback text').toContain('Excellent work overall')
     expect(body, 'Should contain a link to the thesis').toContain('/theses/')
-    expect(body, 'Should mention the supervisor name').toContain('Supervisor2')
+    expect(body, 'Should mention the examiner name').toContain('Examiner2')
 
     await context.close()
   })
 
-  test('supervisor can mark a GRADED thesis as finished', async ({ browser }) => {
-    const context = await browser.newContext({ storageState: authStatePath('supervisor2') })
+  test('examiner can mark a GRADED thesis as finished', async ({ browser }) => {
+    const context = await browser.newContext({ storageState: authStatePath('examiner2') })
     const page = await context.newPage()
 
     const heading = page.getByRole('heading', { name: THESIS_TITLE })

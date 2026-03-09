@@ -82,9 +82,9 @@ class ThesisAnonymizationServiceTest extends BaseIntegrationTest {
 	private ResearchGroupRepository researchGroupRepository;
 
 	private Thesis createTestThesisWithChildren(ThesisState state, Instant createdAt, Instant endDate) throws Exception {
-		TestUser supervisor = createRandomTestUser(List.of("supervisor"));
-		UUID researchGroupId = createTestResearchGroup("Anon Test RG", supervisor.universityId());
-		TestUser advisor = createRandomTestUser(List.of("advisor"));
+		TestUser examiner = createRandomTestUser(List.of("supervisor"));
+		UUID researchGroupId = createTestResearchGroup("Anon Test RG", examiner.universityId());
+		TestUser supervisor = createRandomTestUser(List.of("advisor"));
 		TestUser student = createRandomTestUser(List.of("student"));
 
 		Thesis thesis = new Thesis();
@@ -107,8 +107,8 @@ class ThesisAnonymizationServiceTest extends BaseIntegrationTest {
 		thesis = thesisRepository.save(thesis);
 
 		// Add roles
+		addRole(thesis, examiner.userId(), ThesisRoleName.EXAMINER, 0);
 		addRole(thesis, supervisor.userId(), ThesisRoleName.SUPERVISOR, 0);
-		addRole(thesis, advisor.userId(), ThesisRoleName.ADVISOR, 0);
 		addRole(thesis, student.userId(), ThesisRoleName.STUDENT, 0);
 
 		// Add state changes
@@ -122,7 +122,7 @@ class ThesisAnonymizationServiceTest extends BaseIntegrationTest {
 		comment.setType(ThesisCommentType.THESIS);
 		comment.setMessage("Test comment");
 		comment.setCreatedAt(createdAt.plus(50, ChronoUnit.DAYS));
-		comment.setCreatedBy(userRepository().findById(advisor.userId()).orElseThrow());
+		comment.setCreatedBy(userRepository().findById(supervisor.userId()).orElseThrow());
 		thesisCommentRepository.save(comment);
 
 		// Add proposal
@@ -141,7 +141,7 @@ class ThesisAnonymizationServiceTest extends BaseIntegrationTest {
 		assessment.setNegatives("Test negatives");
 		assessment.setGradeSuggestion("1.7");
 		assessment.setCreatedAt(createdAt.plus(90, ChronoUnit.DAYS));
-		assessment.setCreatedBy(userRepository().findById(advisor.userId()).orElseThrow());
+		assessment.setCreatedBy(userRepository().findById(supervisor.userId()).orElseThrow());
 		thesisAssessmentRepository.save(assessment);
 
 		// Add feedback
@@ -150,7 +150,7 @@ class ThesisAnonymizationServiceTest extends BaseIntegrationTest {
 		feedback.setType(ThesisFeedbackType.THESIS);
 		feedback.setFeedback("Test feedback");
 		feedback.setRequestedAt(createdAt.plus(80, ChronoUnit.DAYS));
-		feedback.setRequestedBy(userRepository().findById(advisor.userId()).orElseThrow());
+		feedback.setRequestedBy(userRepository().findById(supervisor.userId()).orElseThrow());
 		thesisFeedbackRepository.save(feedback);
 
 		return thesis;
