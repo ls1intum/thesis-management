@@ -305,13 +305,10 @@ test.describe.serial('Assessment with Grade Components', () => {
     const gradeCount = await gradeInputs.count()
     expect(gradeCount).toBeGreaterThanOrEqual(3)
 
-    const modifier = process.platform === 'darwin' ? 'Meta' : 'Control'
     const grades = ['1.3', '1.7', '2.0']
     for (let i = 0; i < 3; i++) {
-      await gradeInputs.nth(i).click()
-      await page.keyboard.press(`${modifier}+a`)
-      await page.keyboard.type(grades[i])
-      await page.keyboard.press('Tab')
+      await gradeInputs.nth(i).fill('')
+      await gradeInputs.nth(i).fill(grades[i])
     }
 
     // Scroll down in dialog to reveal calculated grade

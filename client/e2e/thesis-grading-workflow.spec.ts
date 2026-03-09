@@ -71,6 +71,17 @@ test.describe.serial('Thesis Grading Workflow', () => {
       dialog,
     )
 
+    // Fill in grade component grades if present (DSA group has a grading scheme)
+    const gradeInputs = dialog.locator('table tbody tr td:nth-child(3) input')
+    const gradeCount = await gradeInputs.count()
+    if (gradeCount > 0) {
+      const grades = ['1.3', '1.7', '2.0']
+      for (let i = 0; i < Math.min(gradeCount, grades.length); i++) {
+        await gradeInputs.nth(i).fill('')
+        await gradeInputs.nth(i).fill(grades[i])
+      }
+    }
+
     await dialog.getByLabel('Grade Suggestion').clear()
     await dialog.getByLabel('Grade Suggestion').fill('1.3')
 
