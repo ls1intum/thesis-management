@@ -38,28 +38,24 @@ test.describe('Research Group Management - Admin', () => {
     await modal.getByRole('textbox', { name: 'Name' }).fill('E2E Test Group')
     await modal.getByRole('textbox', { name: 'Abbreviation' }).fill('E2E')
 
-    // Select a Group Head — uses KeycloakUserAutocomplete with 300ms debounce + API call
+    // Select a Group Head — uses KeycloakUserAutocomplete with 300ms debounce + API call.
+    // Use pressSequentially (real keystrokes) because fill() does not reliably trigger
+    // Mantine's controlled onChange in headless CI environments.
     const groupHeadInput = modal.getByRole('textbox', { name: 'Group Head' })
-
-    // Set up response listener before typing to catch the API response
-    const keycloakResponse = page.waitForResponse(
-      (resp) => resp.url().includes('/v2/users/keycloak') && resp.status() === 200,
-      { timeout: 15_000 },
-    )
-
-    // Type the search term
     await groupHeadInput.click()
-    await groupHeadInput.fill('admin')
+    await groupHeadInput.pressSequentially('admin', { delay: 50 })
 
-    // Wait for the Keycloak API to respond with user results
-    await keycloakResponse
-
-    // Re-click the input to ensure the dropdown opens now that data is available.
-    // Mantine's Autocomplete may have closed the dropdown when data was initially empty.
-    await groupHeadInput.click()
-
-    // Select the first matching option
+    // Wait for the dropdown option to appear (300ms debounce + API response time).
+    // If it doesn't appear, clear and retype — the Autocomplete may have closed the
+    // dropdown before data arrived.
     const option = page.getByRole('option').first()
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const visible = await option.isVisible({ timeout: 10_000 }).catch(() => false)
+      if (visible) break
+      // Clear and retype to re-trigger the search
+      await groupHeadInput.clear()
+      await groupHeadInput.pressSequentially('admin', { delay: 50 })
+    }
     await expect(option).toBeVisible({ timeout: 10_000 })
     await option.click()
 
