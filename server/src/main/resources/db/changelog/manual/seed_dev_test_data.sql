@@ -1999,3 +1999,33 @@ VALUES
      (SELECT user_id FROM users WHERE university_id = 'supervisor'))
 ON CONFLICT DO NOTHING;
 
+-- ============================================================================
+-- 40. E2E COVERAGE GAP TEST DATA — PUBLISHABLE DRAFT TOPIC
+-- ============================================================================
+INSERT INTO topics (topic_id, title, thesis_types, problem_statement, requirements, goals,
+                    "references", published_at, closed_at, updated_at, created_at, created_by,
+                    research_group_id)
+VALUES
+    ('00000000-0000-4000-b000-000000000010'::UUID,
+     'E2E Gap6: Publishable Draft Topic',
+     ARRAY['MASTER'],
+     'This draft topic exists for E2E testing of the draft-to-published transition.',
+     'Interest in testing.',
+     'Test publishing a draft topic via the edit modal.',
+     'N/A',
+     NULL, NULL,
+     NOW(), NOW() - INTERVAL '2 days',
+     (SELECT user_id FROM users WHERE university_id = 'examiner'),
+     '00000000-0000-4000-a000-000000000001'::UUID)
+ON CONFLICT DO NOTHING;
+
+INSERT INTO topic_roles (topic_id, user_id, role, position, assigned_at, assigned_by)
+VALUES
+    ('00000000-0000-4000-b000-000000000010'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'examiner'), 'EXAMINER', 0,
+     NOW(), (SELECT user_id FROM users WHERE university_id = 'examiner')),
+    ('00000000-0000-4000-b000-000000000010'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
+     NOW(), (SELECT user_id FROM users WHERE university_id = 'examiner'))
+ON CONFLICT DO NOTHING;
+

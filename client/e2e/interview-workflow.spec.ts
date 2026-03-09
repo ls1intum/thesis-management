@@ -106,7 +106,13 @@ test.describe('Interview Workflow', () => {
     // Should show Interviewees section header
     await expect(page.getByRole('heading', { name: 'Interviewees', exact: true })).toBeVisible()
 
-    // Should show filter tabs for interviewees (All, Assessed, Not Assessed)
-    await expect(page.getByText(/All/i).first()).toBeVisible()
+    // Should show filter tabs for interviewees (Mantine SegmentedControl)
+    const filterTabs = page.getByRole('radiogroup')
+    await expect(filterTabs).toBeVisible()
+    await expect(filterTabs.getByText('All')).toBeVisible()
+    await expect(filterTabs.getByText('Uncontacted')).toBeVisible()
+    await expect(filterTabs.getByText('Invited')).toBeVisible()
+    await expect(filterTabs.getByText('Scheduled')).toBeVisible()
+    await expect(filterTabs.getByText('Completed')).toBeVisible()
   })
 })
