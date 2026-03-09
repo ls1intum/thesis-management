@@ -38,13 +38,13 @@ test.describe('Research Group Management - Admin', () => {
     await modal.getByRole('textbox', { name: 'Name' }).fill('E2E Test Group')
     await modal.getByRole('textbox', { name: 'Abbreviation' }).fill('E2E')
 
-    // Select a Group Head
+    // Select a Group Head — uses KeycloakUserAutocomplete with 300ms debounce + API call
     const groupHeadInput = modal.getByRole('textbox', { name: 'Group Head' })
     await groupHeadInput.fill('admin')
-    // Mantine v7 Autocomplete renders options as role="option" inside a listbox
-    const autocompleteOption = page.getByRole('option').first()
-    await expect(autocompleteOption).toBeVisible({ timeout: 10_000 })
-    await autocompleteOption.click()
+    // Wait for Keycloak API response — the listbox appears when options are ready
+    const listbox = page.getByRole('listbox', { name: 'Group Head' })
+    await expect(listbox).toBeVisible({ timeout: 15_000 })
+    await listbox.getByRole('option').first().click()
 
     // Submit the form
     await modal.getByRole('button', { name: /create research group/i }).click()
