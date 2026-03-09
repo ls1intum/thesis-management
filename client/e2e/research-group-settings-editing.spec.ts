@@ -27,12 +27,10 @@ test.describe('Research Group Settings Editing - Admin', () => {
     await expect(appSettingsHeading).toBeVisible({ timeout: 15_000 })
     await appSettingsHeading.scrollIntoViewIfNeeded()
 
-    // Find auto-reject switch: it's the first switch on the page, inside Application Settings
-    // Use nth(0) to get the first switch explicitly
-    const allSwitchTracks = page.locator('.mantine-Switch-track')
-    const autoRejectTrack = allSwitchTracks.nth(0)
-    const allSwitchInputs = page.locator('input[role="switch"]')
-    const autoRejectInput = allSwitchInputs.nth(0)
+    // Scope to the Application Settings card so the test is resilient to new switches
+    const appSettingsCard = page.locator('.mantine-Card-root').filter({ hasText: 'Application Settings' })
+    const autoRejectTrack = appSettingsCard.locator('.mantine-Switch-track').first()
+    const autoRejectInput = appSettingsCard.locator('input[role="switch"]').first()
 
     await autoRejectTrack.scrollIntoViewIfNeeded()
 
@@ -164,11 +162,10 @@ test.describe('Research Group Settings Editing - Admin', () => {
     await expect(proposalSettingsHeading).toBeVisible({ timeout: 15_000 })
     await proposalSettingsHeading.scrollIntoViewIfNeeded()
 
-    // The proposal switch is the second switch on the page (index 1)
-    const allSwitchTracks = page.locator('.mantine-Switch-track')
-    const proposalTrack = allSwitchTracks.nth(1)
-    const allSwitchInputs = page.locator('input[role="switch"]')
-    const proposalInput = allSwitchInputs.nth(1)
+    // Scope to the Proposal Settings card so the test is resilient to new switches
+    const proposalSettingsCard = page.locator('.mantine-Card-root').filter({ hasText: 'Proposal Settings' })
+    const proposalTrack = proposalSettingsCard.locator('.mantine-Switch-track').first()
+    const proposalInput = proposalSettingsCard.locator('input[role="switch"]').first()
 
     await proposalTrack.scrollIntoViewIfNeeded()
 

@@ -1,8 +1,25 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, Page } from '@playwright/test'
 import { authStatePath, navigateTo } from './helpers'
 
 // Active interview process for topic 3 (Anomaly Detection), DSA group
 const ACTIVE_PROCESS_ID = '00000000-0000-4000-e600-000000000001'
+const BOOKING_URL = `/interview_booking/${ACTIVE_PROCESS_ID}`
+
+/**
+ * Cancel any existing booking so the page shows "Select your Interview Slot".
+ */
+async function ensureNoBooking(page: Page) {
+  const scheduledHeading = page.getByRole('heading', { name: 'Interview Scheduled' })
+  const isScheduled = await scheduledHeading.isVisible({ timeout: 15_000 }).catch(() => false)
+  if (isScheduled) {
+    await page.getByRole('button', { name: 'Cancel Interview' }).click()
+    const dialog = page.getByRole('dialog')
+    await dialog.getByRole('button', { name: 'Cancel Interview' }).click()
+    await expect(
+      page.getByRole('heading', { name: 'Select your Interview Slot' }),
+    ).toBeVisible({ timeout: 15_000 })
+  }
+}
 
 test.describe('Interview Booking - Student with existing booking', () => {
   // student4 has a booked slot (slot e800-...01) for process 1
@@ -59,31 +76,24 @@ test.describe('Interview Booking - Student without booking', () => {
   test('student sees slot selection interface for active interview process', async ({ page }) => {
     test.setTimeout(60_000)
 
-    await navigateTo(page, `/interview_booking/${ACTIVE_PROCESS_ID}`)
+    await navigateTo(page, BOOKING_URL)
 
-    // Should show "Select your Interview Slot" heading (student has no booking)
+    // Ensure we're in the slot selection state (cancel any accidental booking)
+    await ensureNoBooking(page)
+
+    // Should show "Select your Interview Slot" heading
     await expect(
-      page
-        .getByRole('heading', { name: 'Select your Interview Slot' })
-        .or(page.getByRole('heading', { name: 'Interview Scheduled' })),
+      page.getByRole('heading', { name: 'Select your Interview Slot' }),
     ).toBeVisible({ timeout: 30_000 })
 
-    // If showing slot selection, verify the summary and booking UI
-    const isSlotSelection = await page
-      .getByRole('heading', { name: 'Select your Interview Slot' })
-      .isVisible()
-      .catch(() => false)
+    // Should show Summary section
+    await expect(page.getByRole('heading', { name: 'Summary' })).toBeVisible()
 
-    if (isSlotSelection) {
-      // Should show Summary section
-      await expect(page.getByRole('heading', { name: 'Summary' })).toBeVisible()
+    // Should show topic information in the summary
+    await expect(page.getByText('Thesis Topic')).toBeVisible()
 
-      // Should show topic information in the summary
-      await expect(page.getByText('Thesis Topic')).toBeVisible()
-
-      // Reserve button should be disabled until a slot is selected
-      await expect(page.getByRole('button', { name: 'Reserve Interview Slot' })).toBeDisabled()
-    }
+    // Reserve button should be disabled until a slot is selected
+    await expect(page.getByRole('button', { name: 'Reserve Interview Slot' })).toBeDisabled()
   })
 })
 
