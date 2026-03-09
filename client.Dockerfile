@@ -1,4 +1,4 @@
-FROM node:24-alpine AS build
+FROM node:24.7.0-alpine AS build
 WORKDIR /app
 ENV CI=1
 
