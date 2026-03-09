@@ -115,7 +115,7 @@ test.describe('Authentication - Admin', () => {
     await expect(page.getByRole('link', { name: 'Theses Overview' })).toBeVisible()
     await expect(page.getByRole('link', { name: 'Research Groups' })).toBeVisible()
 
-    // Admin should NOT see Submit Application (not a student)
-    await expect(page.getByRole('link', { name: 'Submit Application' })).toBeHidden()
+    // Admin also sees Submit Application (not hidden from admin role)
+    await expect(page.getByRole('link', { name: 'Submit Application' })).toBeVisible()
   })
 })
