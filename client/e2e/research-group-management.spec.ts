@@ -40,10 +40,27 @@ test.describe('Research Group Management - Admin', () => {
 
     // Select a Group Head — uses KeycloakUserAutocomplete with 300ms debounce + API call
     const groupHeadInput = modal.getByRole('textbox', { name: 'Group Head' })
+
+    // Set up response listener before typing to catch the API response
+    const keycloakResponse = page.waitForResponse(
+      (resp) => resp.url().includes('/v2/users/keycloak') && resp.status() === 200,
+      { timeout: 15_000 },
+    )
+
+    // Type the search term
+    await groupHeadInput.click()
     await groupHeadInput.fill('admin')
-    // Wait for Keycloak API response — the dropdown options appear after debounce + network
+
+    // Wait for the Keycloak API to respond with user results
+    await keycloakResponse
+
+    // Re-click the input to ensure the dropdown opens now that data is available.
+    // Mantine's Autocomplete may have closed the dropdown when data was initially empty.
+    await groupHeadInput.click()
+
+    // Select the first matching option
     const option = page.getByRole('option').first()
-    await expect(option).toBeVisible({ timeout: 15_000 })
+    await expect(option).toBeVisible({ timeout: 10_000 })
     await option.click()
 
     // Submit the form
