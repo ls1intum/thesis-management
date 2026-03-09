@@ -421,22 +421,16 @@ The E2E tests cover page accessibility, content rendering, role-based access con
 | **Navigation** | Public pages (landing, about, privacy, imprint), sidebar flow between pages, header logo navigation, footer links, unknown routes → landing page | Mobile/responsive layout, deep linking |
 | **Landing Page** | Topic search and filtering UI, view toggle | Research group-specific landing pages (`/:abbreviation`), published theses section |
 
-#### Notable gaps
+#### Remaining gaps
 
-Three previously identified major coverage gaps have been addressed:
+The following functional areas have no or incomplete E2E coverage:
 
-1. ~~**Actual file upload/download**~~ — Covered by `thesis-file-upload.spec.ts`: student uploads thesis PDF and presentation file, supervisor uploads and verifies download button and file preview.
-2. ~~**Actual interview slot booking/cancellation**~~ — Covered by `interview-slot-booking.spec.ts`: student books an available slot (serial flow), then cancels the booking via confirmation modal.
-3. ~~**Editing research group settings**~~ — Covered by `research-group-settings-editing.spec.ts`: admin toggles auto-reject with warning alert, changes presentation slot duration with persistence after reload, toggles proposal phase.
-
-The following functional areas still have no or incomplete E2E coverage:
-
-1. **Inviting interviewees** — The `InviteConfirmationModal` is implemented but no test actually selects candidates and sends invitations.
+1. **Inviting interviewees** — The `InviteConfirmationModal` exists but no test selects candidates and sends invitations.
 2. **Adding/removing research group members** — The "Add Member" button is verified as visible, but no test fills the `AddResearchGroupMemberModal` or removes a member via `DeleteMemberModal`.
-3. **Editing submitted applications** — The `/edit-application/:applicationId` route and `PUT /v2/applications/{id}` endpoint exist but are never tested end-to-end.
+3. **Editing submitted applications** — The `/edit-application/:applicationId` route and `PUT /v2/applications/{id}` endpoint are never tested.
 4. **Interview slot creation (form submission)** — `interview-workflow.spec.ts` opens the "Add Slots" modal but does not fill in the form or submit it.
-5. **Accepting applicants from interview process** — The `AcceptApplicantModal` in the interview management page is not exercised by any test.
-6. **Dashboard task list navigation** — Task sections are verified as present with seed data, but clicking tasks to navigate to detail pages is untested.
+5. **Accepting applicants from interview process** — The `AcceptApplicantModal` in the interview management page is not exercised.
+6. **Dashboard task list navigation** — Task sections are verified as present, but clicking tasks to navigate to detail pages is untested.
 
 ### CI Integration
 
