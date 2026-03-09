@@ -38,25 +38,14 @@ test.describe('Research Group Management - Admin', () => {
     await modal.getByRole('textbox', { name: 'Name' }).fill('E2E Test Group')
     await modal.getByRole('textbox', { name: 'Abbreviation' }).fill('E2E')
 
-    // Select a Group Head — uses KeycloakUserAutocomplete with 300ms debounce + API call.
-    // Use pressSequentially (real keystrokes) because fill() does not reliably trigger
-    // Mantine's controlled onChange in headless CI environments.
+    // Select a Group Head — uses KeycloakUserAutocomplete with 300ms debounce + API call
     const groupHeadInput = modal.getByRole('textbox', { name: 'Group Head' })
     await groupHeadInput.click()
     await groupHeadInput.pressSequentially('admin', { delay: 50 })
 
-    // Wait for the dropdown option to appear (300ms debounce + API response time).
-    // If it doesn't appear, clear and retype — the Autocomplete may have closed the
-    // dropdown before data arrived.
+    // Wait for autocomplete dropdown to load (debounce + Keycloak API response)
     const option = page.getByRole('option').first()
-    for (let attempt = 0; attempt < 3; attempt++) {
-      const visible = await option.isVisible({ timeout: 10_000 }).catch(() => false)
-      if (visible) break
-      // Clear and retype to re-trigger the search
-      await groupHeadInput.clear()
-      await groupHeadInput.pressSequentially('admin', { delay: 50 })
-    }
-    await expect(option).toBeVisible({ timeout: 10_000 })
+    await expect(option).toBeVisible({ timeout: 15_000 })
     await option.click()
 
     // Submit the form
