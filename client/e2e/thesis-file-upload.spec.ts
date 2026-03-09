@@ -143,17 +143,18 @@ test.describe('Thesis File Upload - Supervisor uploads and verifies download', (
     await expect(dialog).toBeHidden({ timeout: 10_000 })
     await expect(page.getByText('File uploaded successfully')).toBeVisible({ timeout: 10_000 })
 
-    // Verify "Download" button exists and is visible
-    const downloadButton = page.getByRole('button', { name: 'Download' }).first()
+    // Scope assertions to the Files section
+    const filesSection = page.getByLabel('Files')
+
+    // Verify "Download" button exists and is visible within Files section
+    const downloadButton = filesSection.getByRole('button', { name: 'Download' }).first()
     await downloadButton.scrollIntoViewIfNeeded()
     await expect(downloadButton).toBeVisible()
 
-    // Verify file preview area exists (AuthenticatedFilePreview renders an iframe)
-    // The iframe may be hidden behind other elements but should be in the DOM
-    await expect(page.locator('iframe').first()).toHaveCount(1)
+    // Verify file preview area exists within Files section (AuthenticatedFilePreview renders an iframe)
+    await expect(filesSection.locator('iframe')).toHaveCount(1)
 
     // Verify file history shows the uploaded file
-    const filesSection = page.getByLabel('Files')
     await expect(filesSection.getByText(/Thesis v\d+/i).first()).toBeVisible({ timeout: 10_000 })
   })
 })

@@ -142,7 +142,7 @@ test.describe('Research Group Settings Editing - Admin', () => {
     }
 
     const durationTextbox2 = page.getByRole('textbox', { name: /minutes/i })
-    await expect(durationTextbox2).toHaveValue(/45/)
+    await expect(durationTextbox2).toHaveValue('45')
 
     // Restore to 30
     await durationTextbox2.click()

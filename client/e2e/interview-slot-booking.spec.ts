@@ -1,9 +1,43 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, Page } from '@playwright/test'
 import { authStatePath, navigateTo } from './helpers'
 
 // Active interview process for topic 3 (Anomaly Detection), DSA group
 const ACTIVE_PROCESS_ID = '00000000-0000-4000-e600-000000000001'
 const BOOKING_URL = `/interview_booking/${ACTIVE_PROCESS_ID}`
+
+/**
+ * Cancel any existing booking so the page shows "Select your Interview Slot".
+ */
+async function ensureNoBooking(page: Page) {
+  const scheduledHeading = page.getByRole('heading', { name: 'Interview Scheduled' })
+  const isScheduled = await scheduledHeading.isVisible({ timeout: 15_000 }).catch(() => false)
+  if (isScheduled) {
+    await page.getByRole('button', { name: 'Cancel Interview' }).click()
+    const dialog = page.getByRole('dialog')
+    await dialog.getByRole('button', { name: 'Cancel Interview' }).click()
+    await expect(
+      page.getByRole('heading', { name: 'Select your Interview Slot' }),
+    ).toBeVisible({ timeout: 15_000 })
+  }
+}
+
+/**
+ * Book the first available slot so the page shows "Interview Scheduled".
+ */
+async function ensureBooked(page: Page) {
+  const selectHeading = page.getByRole('heading', { name: 'Select your Interview Slot' })
+  const isUnbooked = await selectHeading.isVisible({ timeout: 15_000 }).catch(() => false)
+  if (isUnbooked) {
+    const slotTimeHeading = page.getByRole('heading', { level: 6 }).first()
+    await slotTimeHeading.click()
+    const reserveButton = page.getByRole('button', { name: 'Reserve Interview Slot' })
+    await expect(reserveButton).toBeEnabled({ timeout: 10_000 })
+    await reserveButton.click()
+    await expect(
+      page.getByRole('heading', { name: 'Interview Scheduled' }),
+    ).toBeVisible({ timeout: 30_000 })
+  }
+}
 
 test.describe('Interview Slot Booking - Full Flow', () => {
   // student2 has an INTERVIEWING application and interviewee record for process 1
@@ -16,10 +50,13 @@ test.describe('Interview Slot Booking - Full Flow', () => {
 
     await navigateTo(page, BOOKING_URL)
 
-    // Should show "Select your Interview Slot" heading (student2 has no booking)
+    // Ensure clean state (cancel any leftover booking from a failed prior run)
+    await ensureNoBooking(page)
+
+    // Should show "Select your Interview Slot" heading
     await expect(
       page.getByRole('heading', { name: 'Select your Interview Slot' }),
-    ).toBeVisible({ timeout: 30_000 })
+    ).toBeVisible({ timeout: 10_000 })
 
     // Verify Summary heading visible
     await expect(page.getByRole('heading', { name: 'Summary' })).toBeVisible()
@@ -75,10 +112,13 @@ test.describe('Interview Slot Booking - Full Flow', () => {
 
     await navigateTo(page, BOOKING_URL)
 
-    // Should show "Interview Scheduled" (student2 just booked in previous test)
+    // Ensure booked state (book a slot if a retry cancelled the previous booking)
+    await ensureBooked(page)
+
+    // Should show "Interview Scheduled"
     await expect(
       page.getByRole('heading', { name: 'Interview Scheduled' }),
-    ).toBeVisible({ timeout: 30_000 })
+    ).toBeVisible({ timeout: 10_000 })
 
     // Click "Cancel Interview"
     const cancelButton = page.getByRole('button', { name: 'Cancel Interview' })
