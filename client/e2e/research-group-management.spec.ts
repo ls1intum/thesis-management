@@ -41,8 +41,8 @@ test.describe('Research Group Management - Admin', () => {
     // Select a Group Head
     const groupHeadInput = modal.getByRole('textbox', { name: 'Group Head' })
     await groupHeadInput.fill('admin')
-    // Mantine v7 Autocomplete renders options via Combobox internally
-    const autocompleteOption = page.locator('.mantine-Combobox-option').first()
+    // Mantine v7 Autocomplete renders options as role="option" inside a listbox
+    const autocompleteOption = page.getByRole('option').first()
     await expect(autocompleteOption).toBeVisible({ timeout: 10_000 })
     await autocompleteOption.click()
 
