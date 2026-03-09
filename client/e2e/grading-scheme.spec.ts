@@ -69,9 +69,9 @@ test.describe('Grading Scheme Settings - Admin', () => {
     await expect(rows).toHaveCount(3)
 
     // Verify the seeded weights (40, 30, 30)
-    await expect(rows.nth(0).locator('td:nth-child(2) input')).toHaveValue('40')
-    await expect(rows.nth(1).locator('td:nth-child(2) input')).toHaveValue('30')
-    await expect(rows.nth(2).locator('td:nth-child(2) input')).toHaveValue('30')
+    await expect(rows.nth(0).locator('td:nth-child(2) input')).toHaveValue('40%')
+    await expect(rows.nth(1).locator('td:nth-child(2) input')).toHaveValue('30%')
+    await expect(rows.nth(2).locator('td:nth-child(2) input')).toHaveValue('30%')
 
     // Verify none are bonus components (checkboxes should be unchecked)
     for (let i = 0; i < 3; i++) {
@@ -120,7 +120,7 @@ test.describe('Grading Scheme Settings - Admin', () => {
     // Verify the component persisted with correct name and weight
     await expect(cardAfter.locator('input[value="Research Quality"]')).toBeVisible({ timeout: 10_000 })
     await expect(cardAfter.locator('table tbody tr')).toHaveCount(1)
-    await expect(cardAfter.locator('table tbody tr td:nth-child(2) input')).toHaveValue('100')
+    await expect(cardAfter.locator('table tbody tr td:nth-child(2) input')).toHaveValue('100%')
   })
 
   test('shows weight warning when weights do not sum to 100', async ({ page }) => {
@@ -179,8 +179,9 @@ test.describe('Grading Scheme Settings - Admin', () => {
 })
 
 test.describe('Grading Scheme Settings - Access Control', () => {
+  test.use({ storageState: authStatePath('supervisor') })
+
   test('supervisor can view grading scheme but settings are read-only', async ({ page }) => {
-    test.use({ storageState: authStatePath('supervisor') })
     await navigateTo(page, `/research-groups/00000000-0000-4000-a000-000000000001`)
     await hideWebpackOverlay(page)
 
@@ -242,9 +243,9 @@ test.describe.serial('Assessment with Grade Components', () => {
 
     // Verify the weights are pre-filled from the scheme (40, 30, 30)
     const weightInputs = dialog.locator('table tbody tr td:nth-child(2) input')
-    await expect(weightInputs.nth(0)).toHaveValue('40')
-    await expect(weightInputs.nth(1)).toHaveValue('30')
-    await expect(weightInputs.nth(2)).toHaveValue('30')
+    await expect(weightInputs.nth(0)).toHaveValue('40%')
+    await expect(weightInputs.nth(1)).toHaveValue('30%')
+    await expect(weightInputs.nth(2)).toHaveValue('30%')
 
     // Verify exactly 3 component rows
     await expect(dialog.locator('table tbody tr')).toHaveCount(3)
