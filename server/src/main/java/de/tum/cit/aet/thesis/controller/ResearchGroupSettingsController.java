@@ -92,11 +92,12 @@ public class ResearchGroupSettingsController {
 					newSettings.applicationEmailSettings().includeApplicationDataInEmail());
 		}
 
+		ResearchGroupSettings saved = service.saveOrUpdate(toSave);
+
 		if (newSettings.gradingSchemeSettings() != null) {
 			service.saveGradingScheme(researchGroupId, newSettings.gradingSchemeSettings());
 		}
 
-		ResearchGroupSettings saved = service.saveOrUpdate(toSave);
 		ResearchGroupSettingsGradingSchemeDTO gradingScheme = service.getGradingScheme(researchGroupId);
 		return ResponseEntity.ok(ResearchGroupSettingsDTO.fromEntity(saved, gradingScheme));
 	}

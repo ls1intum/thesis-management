@@ -117,38 +117,40 @@ public class ResearchGroupSettingsService {
 				.orElseThrow(() -> new ResourceNotFoundException("Research group not found"));
 		currentUserProvider().assertCanAccessResearchGroup(researchGroup);
 
-		if (gradingScheme.components() != null) {
-			if (gradingScheme.components().size() > 50) {
-				throw new ResourceInvalidParametersException("A maximum of 50 grading scheme components is allowed.");
-			}
+		if (gradingScheme.components() == null) {
+			return;
+		}
 
-			BigDecimal regularWeightSum = BigDecimal.ZERO;
-			for (GradingSchemeComponentDTO dto : gradingScheme.components()) {
-				if (dto.name() == null || dto.name().isBlank()) {
-					throw new ResourceInvalidParametersException("Component name must not be empty.");
-				}
-				if (dto.name().length() > 255) {
-					throw new ResourceInvalidParametersException("Component name must not exceed 255 characters.");
-				}
-				if (!Boolean.TRUE.equals(dto.isBonus())) {
-					if (dto.weight() == null) {
-						throw new ResourceInvalidParametersException("Component weight must not be null.");
-					}
-					if (dto.weight().compareTo(BigDecimal.ZERO) <= 0) {
-						throw new ResourceInvalidParametersException("Component weight must be positive.");
-					}
-					regularWeightSum = regularWeightSum.add(dto.weight());
-				}
+		if (gradingScheme.components().size() > 50) {
+			throw new ResourceInvalidParametersException("A maximum of 50 grading scheme components is allowed.");
+		}
+
+		BigDecimal regularWeightSum = BigDecimal.ZERO;
+		for (GradingSchemeComponentDTO dto : gradingScheme.components()) {
+			if (dto.name() == null || dto.name().isBlank()) {
+				throw new ResourceInvalidParametersException("Component name must not be empty.");
 			}
-			if (!gradingScheme.components().isEmpty()
-					&& regularWeightSum.compareTo(BigDecimal.valueOf(100)) != 0) {
-				throw new ResourceInvalidParametersException("Regular component weights must sum to 100%.");
+			if (dto.name().length() > 255) {
+				throw new ResourceInvalidParametersException("Component name must not exceed 255 characters.");
 			}
+			if (!Boolean.TRUE.equals(dto.isBonus())) {
+				if (dto.weight() == null) {
+					throw new ResourceInvalidParametersException("Component weight must not be null.");
+				}
+				if (dto.weight().compareTo(BigDecimal.ZERO) <= 0) {
+					throw new ResourceInvalidParametersException("Component weight must be positive.");
+				}
+				regularWeightSum = regularWeightSum.add(dto.weight());
+			}
+		}
+		if (!gradingScheme.components().isEmpty()
+				&& regularWeightSum.compareTo(BigDecimal.valueOf(100)) != 0) {
+			throw new ResourceInvalidParametersException("Regular component weights must sum to 100%.");
 		}
 
 		gradingSchemeComponentRepository.deleteAllByResearchGroupId(researchGroupId);
 
-		if (gradingScheme.components() != null && !gradingScheme.components().isEmpty()) {
+		if (!gradingScheme.components().isEmpty()) {
 			List<GradingSchemeComponent> entities = new ArrayList<>();
 			for (int i = 0; i < gradingScheme.components().size(); i++) {
 				GradingSchemeComponentDTO dto = gradingScheme.components().get(i);

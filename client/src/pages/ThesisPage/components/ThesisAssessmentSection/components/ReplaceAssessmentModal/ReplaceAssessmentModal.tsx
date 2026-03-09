@@ -137,7 +137,10 @@ const ReplaceAssessmentModal = (props: IReplaceAssessmentModalProps) => {
         `/v2/research-group-settings/${thesis.researchGroup.id}/grading-scheme`,
         { method: 'GET', requiresAuth: true },
         (res) => {
-          if (res.ok && res.data.components && res.data.components.length > 0) {
+          if (!res.ok) {
+            return
+          }
+          if (res.data.components && res.data.components.length > 0) {
             setGradeComponents(
               res.data.components.map((c) => ({
                 name: c.name,
