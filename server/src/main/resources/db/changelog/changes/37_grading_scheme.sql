@@ -12,6 +12,8 @@ CREATE TABLE grading_scheme_components (
     position          INT NOT NULL DEFAULT 0
 );
 
+CREATE INDEX idx_grading_scheme_components_research_group ON grading_scheme_components(research_group_id);
+
 -- Per-assessment grade breakdown (snapshot at assessment time)
 CREATE TABLE thesis_grade_components (
     grade_component_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -22,3 +24,5 @@ CREATE TABLE thesis_grade_components (
     grade              NUMERIC(3,1) NOT NULL,
     position           INT NOT NULL DEFAULT 0
 );
+
+CREATE INDEX idx_thesis_grade_components_assessment ON thesis_grade_components(assessment_id);

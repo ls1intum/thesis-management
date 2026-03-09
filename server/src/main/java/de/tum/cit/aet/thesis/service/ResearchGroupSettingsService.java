@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -117,6 +118,10 @@ public class ResearchGroupSettingsService {
 		currentUserProvider().assertCanAccessResearchGroup(researchGroup);
 
 		if (gradingScheme.components() != null) {
+			if (gradingScheme.components().size() > 50) {
+				throw new ResourceInvalidParametersException("A maximum of 50 grading scheme components is allowed.");
+			}
+
 			BigDecimal regularWeightSum = BigDecimal.ZERO;
 			for (GradingSchemeComponentDTO dto : gradingScheme.components()) {
 				if (dto.name() == null || dto.name().isBlank()) {
@@ -143,7 +148,8 @@ public class ResearchGroupSettingsService {
 
 		gradingSchemeComponentRepository.deleteAllByResearchGroupId(researchGroupId);
 
-		if (gradingScheme.components() != null) {
+		if (gradingScheme.components() != null && !gradingScheme.components().isEmpty()) {
+			List<GradingSchemeComponent> entities = new ArrayList<>();
 			for (int i = 0; i < gradingScheme.components().size(); i++) {
 				GradingSchemeComponentDTO dto = gradingScheme.components().get(i);
 				GradingSchemeComponent entity = new GradingSchemeComponent();
@@ -152,8 +158,9 @@ public class ResearchGroupSettingsService {
 				entity.setWeight(Boolean.TRUE.equals(dto.isBonus()) ? BigDecimal.ZERO : dto.weight());
 				entity.setIsBonus(Boolean.TRUE.equals(dto.isBonus()));
 				entity.setPosition(i);
-				gradingSchemeComponentRepository.save(entity);
+				entities.add(entity);
 			}
+			gradingSchemeComponentRepository.saveAll(entities);
 		}
 	}
 }

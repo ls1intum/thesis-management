@@ -663,6 +663,10 @@ public class ThesisService {
 		BigDecimal hundredPercent = BigDecimal.valueOf(100);
 		BigDecimal minBonusGrade = BigDecimal.valueOf(-5);
 
+		if (components.size() > 50) {
+			throw new ResourceInvalidParametersException("A maximum of 50 grade components is allowed.");
+		}
+
 		BigDecimal regularWeightSum = BigDecimal.ZERO;
 		for (GradeComponentPayload component : components) {
 			if (component.name() == null || component.name().isBlank()) {
@@ -670,6 +674,9 @@ public class ThesisService {
 			}
 			if (component.name().length() > 255) {
 				throw new ResourceInvalidParametersException("Grade component name must not exceed 255 characters.");
+			}
+			if (component.grade() == null) {
+				throw new ResourceInvalidParametersException("Grade must not be null.");
 			}
 			if (component.isBonus()) {
 				if (component.grade().compareTo(minBonusGrade) < 0 || component.grade().compareTo(maxGrade) > 0) {

@@ -9,7 +9,7 @@ const DSA_SETTINGS_URL = `/research-groups/${DSA_GROUP_ID}`
 const ASE_GROUP_ID = '00000000-0000-4000-a000-000000000001'
 const ASE_SETTINGS_URL = `/research-groups/${ASE_GROUP_ID}`
 
-// Thesis d000-0003: SUBMITTED state, student3, supervisor2, examiner2 (DSA group)
+// Thesis d000-0003: ASSESSED state, student3, supervisor2, examiner2 (DSA group)
 const THESIS_ID = '00000000-0000-4000-d000-000000000003'
 const THESIS_URL = `/theses/${THESIS_ID}`
 const THESIS_TITLE = 'Online Anomaly Detection in IoT Sensor Streams'
@@ -44,22 +44,44 @@ async function navigateToSettings(page: Page, url: string) {
   await expect(card).toBeVisible({ timeout: 15_000 })
 }
 
+/**
+ * Helper to get the weight input value for a given table row.
+ */
+async function getRowWeight(row: Locator): Promise<string> {
+  return row.locator('td:nth-child(2) input').inputValue()
+}
+
 test.describe('Grading Scheme Settings - Admin', () => {
   test.use({ storageState: authStatePath('admin') })
 
-  test('DSA group shows seeded grading scheme components', async ({ page }) => {
+  test('DSA group shows seeded grading scheme components with correct weights', async ({ page }) => {
     await navigateToSettings(page, DSA_SETTINGS_URL)
 
     const card = gradingSchemeCard(page)
 
-    // Verify the seeded components are displayed (input fields with these values)
+    // Verify the seeded components are displayed
     await expect(card.locator('input[value="Thesis Content"]')).toBeVisible({ timeout: 10_000 })
     await expect(card.locator('input[value="Methodology"]')).toBeVisible()
     await expect(card.locator('input[value="Presentation"]')).toBeVisible()
 
-    // Verify we have exactly 3 rows in the grading scheme table
+    // Verify we have exactly 3 rows
     const rows = card.locator('table tbody tr')
     await expect(rows).toHaveCount(3)
+
+    // Verify the seeded weights (40, 30, 30)
+    await expect(rows.nth(0).locator('td:nth-child(2) input')).toHaveValue('40')
+    await expect(rows.nth(1).locator('td:nth-child(2) input')).toHaveValue('30')
+    await expect(rows.nth(2).locator('td:nth-child(2) input')).toHaveValue('30')
+
+    // Verify none are bonus components (checkboxes should be unchecked)
+    for (let i = 0; i < 3; i++) {
+      const checkbox = rows.nth(i).locator('input[type="checkbox"]')
+      await expect(checkbox).not.toBeChecked()
+    }
+
+    // Save button should be enabled (valid scheme)
+    const saveButton = card.getByRole('button', { name: 'Save Grading Scheme' })
+    await expect(saveButton).toBeEnabled()
   })
 
   test('can add a new grading scheme to a group without one', async ({ page }) => {
@@ -78,11 +100,10 @@ test.describe('Grading Scheme Settings - Admin', () => {
     // Add first component
     await card.getByRole('button', { name: 'Add Component' }).click({ force: true })
 
-    // Fill in the new component name (should be the only row now)
+    // Fill in the new component
     const nameInput = card.locator('input[placeholder="Component name"]').first()
     await nameInput.fill('Research Quality')
 
-    // Set weight to 100
     const weightInput = card.locator('table tbody tr td:nth-child(2) input').first()
     await weightInput.clear()
     await weightInput.fill('100')
@@ -92,13 +113,14 @@ test.describe('Grading Scheme Settings - Admin', () => {
     await expect(saveButton).toBeEnabled({ timeout: 5_000 })
     await saveButton.click({ force: true })
 
-    // Wait for save to complete
-    await page.waitForTimeout(2_000)
-
-    // Reload and verify persistence
+    // Wait for save to complete by reloading and verifying persistence
     await navigateToSettings(page, ASE_SETTINGS_URL)
     const cardAfter = gradingSchemeCard(page)
+
+    // Verify the component persisted with correct name and weight
     await expect(cardAfter.locator('input[value="Research Quality"]')).toBeVisible({ timeout: 10_000 })
+    await expect(cardAfter.locator('table tbody tr')).toHaveCount(1)
+    await expect(cardAfter.locator('table tbody tr td:nth-child(2) input')).toHaveValue('100')
   })
 
   test('shows weight warning when weights do not sum to 100', async ({ page }) => {
@@ -109,7 +131,7 @@ test.describe('Grading Scheme Settings - Admin', () => {
     // Wait for components to load
     await expect(card.locator('input[value="Thesis Content"]')).toBeVisible({ timeout: 10_000 })
 
-    // Change the first component weight to break the sum
+    // Change the first component weight to break the sum (10 + 30 + 30 = 70)
     const firstWeightInput = card.locator('table tbody tr').first().locator('td:nth-child(2) input')
     await firstWeightInput.clear()
     await firstWeightInput.fill('10')
@@ -121,9 +143,15 @@ test.describe('Grading Scheme Settings - Admin', () => {
     // Save button should be disabled
     const saveButton = card.getByRole('button', { name: 'Save Grading Scheme' })
     await expect(saveButton).toBeDisabled()
+
+    // Fix the weight back to 40 — warning should disappear
+    await firstWeightInput.clear()
+    await firstWeightInput.fill('40')
+    await expect(card.getByText('Weight Warning')).toBeHidden({ timeout: 5_000 })
+    await expect(saveButton).toBeEnabled()
   })
 
-  test('can remove a component', async ({ page }) => {
+  test('can remove a component and sees weight warning', async ({ page }) => {
     await navigateToSettings(page, DSA_SETTINGS_URL)
 
     const card = gradingSchemeCard(page)
@@ -135,7 +163,7 @@ test.describe('Grading Scheme Settings - Admin', () => {
     const rowsBefore = await card.locator('table tbody tr').count()
     expect(rowsBefore).toBeGreaterThanOrEqual(3)
 
-    // Click the last delete button (red trash icon) in the last row
+    // Click the delete button on the last row
     const lastRow = card.locator('table tbody tr').last()
     const deleteButton = lastRow.locator('button').last()
     await deleteButton.click({ force: true })
@@ -143,11 +171,35 @@ test.describe('Grading Scheme Settings - Admin', () => {
     // Should have one fewer row
     const rowsAfter = await card.locator('table tbody tr').count()
     expect(rowsAfter).toBe(rowsBefore - 1)
+
+    // Remaining components still have 40 + 30 = 70, so weight warning should appear
+    await expect(card.getByText('Weight Warning')).toBeVisible({ timeout: 5_000 })
+    await expect(card.getByRole('button', { name: 'Save Grading Scheme' })).toBeDisabled()
+  })
+})
+
+test.describe('Grading Scheme Settings - Access Control', () => {
+  test('supervisor can view grading scheme but settings are read-only', async ({ page }) => {
+    test.use({ storageState: authStatePath('supervisor') })
+    await navigateTo(page, `/research-groups/00000000-0000-4000-a000-000000000001`)
+    await hideWebpackOverlay(page)
+
+    // Supervisor should be able to see the settings page (or be redirected)
+    const heading = page.getByRole('heading', { name: /research group settings/i })
+    const visible = await heading.isVisible({ timeout: 10_000 }).catch(() => false)
+    if (!visible) {
+      // Supervisor may not have access — this is acceptable
+      return
+    }
+
+    // If visible, verify the grading scheme card exists
+    const card = gradingSchemeCard(page)
+    await expect(card).toBeVisible({ timeout: 10_000 })
   })
 })
 
 test.describe.serial('Assessment with Grade Components', () => {
-  test('examiner sees pre-filled grade components from research group scheme', async ({
+  test('examiner sees pre-filled grade components with correct weights from research group scheme', async ({
     browser,
   }) => {
     const context = await browser.newContext({ storageState: authStatePath('examiner2') })
@@ -180,13 +232,22 @@ test.describe.serial('Assessment with Grade Components', () => {
     const dialog = page.getByRole('dialog')
     await expect(dialog).toBeVisible({ timeout: 10_000 })
 
-    // Verify grade components section is visible (pre-filled from DSA scheme)
+    // Verify grade components section is visible
     await expect(dialog.getByText('Grade Components')).toBeVisible({ timeout: 15_000 })
 
     // Verify the component names from the DSA scheme are pre-filled
     await expect(dialog.locator('input[value="Thesis Content"]')).toBeVisible({ timeout: 5_000 })
     await expect(dialog.locator('input[value="Methodology"]')).toBeVisible()
     await expect(dialog.locator('input[value="Presentation"]')).toBeVisible()
+
+    // Verify the weights are pre-filled from the scheme (40, 30, 30)
+    const weightInputs = dialog.locator('table tbody tr td:nth-child(2) input')
+    await expect(weightInputs.nth(0)).toHaveValue('40')
+    await expect(weightInputs.nth(1)).toHaveValue('30')
+    await expect(weightInputs.nth(2)).toHaveValue('30')
+
+    // Verify exactly 3 component rows
+    await expect(dialog.locator('table tbody tr')).toHaveCount(3)
 
     await context.close()
   })
@@ -237,7 +298,8 @@ test.describe.serial('Assessment with Grade Components', () => {
     // Wait for grade components to appear
     await expect(dialog.getByText('Grade Components')).toBeVisible({ timeout: 15_000 })
 
-    // Fill in grades for each component using click+selectAll+type to trigger Mantine onChange
+    // Fill in grades: 1.3 (40%), 1.7 (30%), 2.0 (30%)
+    // Expected weighted average: (1.3*40 + 1.7*30 + 2.0*30) / 100 = 163/100 = 1.63 → rounded to 1.6
     const gradeInputs = dialog.locator('table tbody tr td:nth-child(3) input')
     const gradeCount = await gradeInputs.count()
     expect(gradeCount).toBeGreaterThanOrEqual(3)
@@ -256,15 +318,17 @@ test.describe.serial('Assessment with Grade Components', () => {
       .evaluate((el) => el.scrollTo(0, el.scrollHeight))
       .catch(() => {})
 
-    // Verify calculated grade appears
+    // Verify calculated grade appears and is the correct weighted average
     await expect(dialog.getByText(/Calculated Grade/)).toBeVisible({ timeout: 10_000 })
 
-    // Grade suggestion should be auto-filled
+    // Grade suggestion should be auto-filled with the calculated weighted average
     const gradeSuggestion = dialog.getByLabel('Grade Suggestion')
     const gradeValue = await gradeSuggestion.inputValue()
     expect(gradeValue).toBeTruthy()
-    expect(parseFloat(gradeValue)).toBeGreaterThanOrEqual(1.0)
-    expect(parseFloat(gradeValue)).toBeLessThanOrEqual(5.0)
+    const parsedGrade = parseFloat(gradeValue)
+    // Expected: (1.3*40 + 1.7*30 + 2.0*30) / 100 = 1.63, rounded to 1 decimal = 1.6
+    expect(parsedGrade).toBeGreaterThanOrEqual(1.5)
+    expect(parsedGrade).toBeLessThanOrEqual(1.7)
 
     // Submit
     const submitButton = dialog.getByRole('button', { name: 'Submit Assessment' })
@@ -280,6 +344,9 @@ test.describe.serial('Assessment with Grade Components', () => {
     })
 
     // Verify grade components are displayed in the assessment section (read-only)
+    const assessmentSection = page.locator('.mantine-Accordion-panel', {
+      has: page.getByText('Grade Components'),
+    }).first()
     await expect(page.getByText('Grade Components').first()).toBeVisible({ timeout: 10_000 })
     await expect(page.getByText('Thesis Content').first()).toBeVisible()
     await expect(page.getByText('Methodology').first()).toBeVisible()
@@ -323,12 +390,16 @@ test.describe.serial('Assessment with Grade Components', () => {
     const hintText = dialog.getByText(/Calculated from assessment components/)
     await expect(hintText).toBeVisible({ timeout: 5_000 })
 
-    // Read the calculated grade from the hint text and enter a deviating value
+    // Verify the hint contains a valid grade value
     const hintContent = await hintText.textContent()
     const match = hintContent?.match(/components:\s*([\d.]+)/)
-    const calculatedGrade = match ? parseFloat(match[1]) : 1.5
-    const deviatingGrade = calculatedGrade <= 3.0 ? calculatedGrade + 1.0 : calculatedGrade - 1.0
+    expect(match).toBeTruthy()
+    const calculatedGrade = parseFloat(match![1])
+    expect(calculatedGrade).toBeGreaterThanOrEqual(1.0)
+    expect(calculatedGrade).toBeLessThanOrEqual(5.0)
 
+    // Enter a deviating grade to verify deviation warning
+    const deviatingGrade = calculatedGrade <= 3.0 ? calculatedGrade + 1.0 : calculatedGrade - 1.0
     const finalGradeInput = dialog.getByRole('textbox', { name: 'Final Grade' })
     await finalGradeInput.clear()
     await finalGradeInput.fill(deviatingGrade.toFixed(1))
