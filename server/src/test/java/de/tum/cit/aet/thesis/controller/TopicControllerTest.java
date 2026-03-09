@@ -170,8 +170,8 @@ class TopicControllerTest extends BaseIntegrationTest {
 		// Create two applications for this topic
 		String student1Auth = createRandomAuthentication("student");
 		CreateApplicationPayload appPayload1 = new CreateApplicationPayload(
-				topicId, null, "MASTER", Instant.now(), "Motivation 1", null
-		);
+				topicId, null, "MASTER", Instant.now(), "Motivation 1", null,
+		true);
 		mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 						.header("Authorization", student1Auth)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -180,8 +180,8 @@ class TopicControllerTest extends BaseIntegrationTest {
 
 		String student2Auth = createRandomAuthentication("student");
 		CreateApplicationPayload appPayload2 = new CreateApplicationPayload(
-				topicId, null, "MASTER", Instant.now(), "Motivation 2", null
-		);
+				topicId, null, "MASTER", Instant.now(), "Motivation 2", null,
+		true);
 		mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 						.header("Authorization", student2Auth)
 						.contentType(MediaType.APPLICATION_JSON)

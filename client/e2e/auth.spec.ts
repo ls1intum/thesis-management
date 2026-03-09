@@ -55,6 +55,11 @@ test.describe('Authentication - Student', () => {
     // Header should show app title and user avatar (not Login button)
     await expect(page.getByText('Thesis Management').first()).toBeVisible()
     await expect(page.locator('header').getByText('Login')).toBeHidden()
+
+    // Footer links should be visible on authenticated pages too
+    await expect(page.getByText('About')).toBeVisible()
+    await expect(page.getByText('Imprint')).toBeVisible()
+    await expect(page.getByText('Privacy')).toBeVisible()
   })
 })
 
@@ -109,5 +114,8 @@ test.describe('Authentication - Admin', () => {
     await expect(page.getByRole('link', { name: 'Browse Theses' })).toBeVisible()
     await expect(page.getByRole('link', { name: 'Theses Overview' })).toBeVisible()
     await expect(page.getByRole('link', { name: 'Research Groups' })).toBeVisible()
+
+    // Admin also sees Submit Application (not hidden from admin role)
+    await expect(page.getByRole('link', { name: 'Submit Application' })).toBeVisible()
   })
 })

@@ -18,11 +18,19 @@ test.describe('Topic Workflow - Examiner creates a topic', () => {
       timeout: 30_000,
     })
 
-    // Click "Create Topic" button
-    await page.getByRole('button', { name: 'Create Topic' }).click()
+    // Verify Create Topic button is present
+    const createTopicButton = page.getByRole('button', { name: 'Create Topic' })
+    await expect(createTopicButton).toBeVisible()
 
-    // Modal should open
-    await expect(page.getByRole('dialog')).toBeVisible({ timeout: 5_000 })
+    // Click "Create Topic" button
+    await createTopicButton.click()
+
+    // Modal should open with form fields
+    const dialog = page.getByRole('dialog')
+    await expect(dialog).toBeVisible({ timeout: 5_000 })
+
+    // Verify essential form fields are present
+    await expect(dialog.getByLabel('Title')).toBeVisible()
 
     // Fill in the topic form
     await page.getByLabel('Title').fill('E2E Test Topic: Automated Testing Strategies')
@@ -59,5 +67,40 @@ test.describe('Topic Workflow - Examiner creates a topic', () => {
     // Modal should close and success notification should appear
     await expect(page.getByRole('dialog')).not.toBeVisible({ timeout: 15_000 })
     await expect(page.getByText('Topic created successfully')).toBeVisible({ timeout: 10_000 })
+  })
+})
+
+test.describe('Topic Workflow - Examiner2 creates a topic for DSA group', () => {
+  test.use({ storageState: authStatePath('examiner2') })
+
+  test('examiner2 can access the create topic form with DSA group pre-filled', async ({ page }) => {
+    test.setTimeout(120_000)
+
+    await navigateTo(page, '/topics')
+    await expect(page.getByRole('heading', { name: 'Manage Topics', exact: true })).toBeVisible({
+      timeout: 30_000,
+    })
+
+    // Should show seeded DSA topics (Anomaly Detection is Topic 3, DSA group)
+    await expect(page.getByText(/Anomaly Detection/i).first()).toBeVisible({ timeout: 10_000 })
+
+    // Open the Create Topic modal
+    await page.getByRole('button', { name: 'Create Topic' }).click()
+    const dialog = page.getByRole('dialog')
+    await expect(dialog).toBeVisible({ timeout: 5_000 })
+
+    // Verify essential fields exist in the form
+    await expect(dialog.getByLabel('Title')).toBeVisible()
+
+    // Research Group should be pre-filled with DSA for examiner2
+    const researchGroupInput = dialog.getByRole('textbox', { name: 'Research Group' })
+    await expect(researchGroupInput).not.toHaveValue('', { timeout: 5_000 })
+
+    // Close without creating
+    const closeButton = dialog
+      .getByRole('button', { name: 'Cancel' })
+      .or(dialog.locator('button.mantine-Modal-close'))
+    await closeButton.first().click()
+    await expect(dialog).not.toBeVisible({ timeout: 3_000 })
   })
 })

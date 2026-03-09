@@ -173,8 +173,25 @@ public class ApplicationService {
 		return applicationRepository.findNotReviewedSuggestedByResearchGroup(researchGroupId);
 	}
 
-	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
-	@Transactional
+	/**
+	 * Creates a new thesis application and records the privacy consent timestamp.
+	 *
+	 * <p>The consent timestamp ({@link Application#getConsentTimestamp()}) is set to
+	 * {@link Instant#now()} at the moment the application is persisted. This provides
+	 * server-side proof that the student accepted the privacy statement, as required by
+	 * GDPR Art. 7(1). The consent flag is validated in
+	 * {@link de.tum.cit.aet.thesis.controller.ApplicationController#createApplication}
+	 * before this method is called.</p>
+	 *
+	 * @param user             the authenticated user submitting the application
+	 * @param researchGroupId  the target research group ID (used if no topic is provided)
+	 * @param topicId          the topic to apply for (may be null for custom thesis titles)
+	 * @param thesisTitle      the suggested thesis title (may be null if applying for a topic)
+	 * @param thesisType       the type of thesis
+	 * @param desiredStartDate the desired start date
+	 * @param motivation       the applicant's motivation text
+	 * @return the persisted application with consent timestamp set
+	 */
 	public Application createApplication(User user, UUID researchGroupId, UUID topicId, String thesisTitle,
 										String thesisType, Instant desiredStartDate, String motivation) {
 		Topic topic = topicId == null ? null : topicService.findById(topicId);
@@ -193,7 +210,12 @@ public class ApplicationService {
 		application.setComment("");
 		application.setState(ApplicationState.NOT_ASSESSED);
 		application.setDesiredStartDate(desiredStartDate);
-		application.setCreatedAt(Instant.now());
+		Instant now = Instant.now();
+		application.setCreatedAt(now);
+
+		// Record the server-side consent timestamp as proof of privacy statement acceptance (GDPR Art. 7(1)).
+		application.setConsentTimestamp(now);
+
 		ResearchGroup researchGroup = topic != null
 				? topic.getResearchGroup()
 				: researchGroupRepository.findById(researchGroupId).orElseThrow(() -> new ResourceNotFoundException(

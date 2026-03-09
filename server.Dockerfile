@@ -1,9 +1,15 @@
 FROM azul/zulu-openjdk:25.0.2-jdk AS build
-
-COPY --chown=gradle:gradle . /home/gradle/thesis-management
 WORKDIR /home/gradle/thesis-management/server
 
-RUN ./gradlew build -x test --no-daemon
+# Copy dependency files first for layer caching
+COPY server/gradlew server/build.gradle server/settings.gradle server/gradle.properties ./
+COPY server/gradle ./gradle
+RUN ./gradlew dependencies --no-daemon
+
+# Copy source code and .git (needed by gradle-git-properties plugin)
+COPY .git ../.git
+COPY server/src ./src
+RUN ./gradlew build -x test -x checkstyleMain -x checkstyleTest --no-daemon
 
 FROM azul/zulu-openjdk:25.0.2-jre
 

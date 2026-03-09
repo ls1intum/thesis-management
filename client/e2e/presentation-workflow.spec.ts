@@ -9,7 +9,7 @@ import {
   assertSentFromApp,
 } from './mailpit'
 
-// Thesis d000-0003 is in SUBMITTED state, assigned to student3, has abstract text set
+// Thesis d000-0003 is in ASSESSED state, assigned to student3, has abstract text set
 // Roles: examiner2 (EXAMINER), supervisor2 (SUPERVISOR), student3 (STUDENT)
 const THESIS_ID = '00000000-0000-4000-d000-000000000003'
 const THESIS_URL = `/theses/${THESIS_ID}`

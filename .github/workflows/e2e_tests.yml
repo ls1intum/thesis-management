@@ -13,7 +13,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:18.2-alpine
+        image: postgres:18.3-alpine
         env:
           POSTGRES_USER: thesis-management-postgres
           POSTGRES_PASSWORD: thesis-management-postgres
@@ -108,7 +108,7 @@ jobs:
           KEYCLOAK_REALM_NAME: thesis-management
           KEYCLOAK_CLIENT_ID: thesis-management-app
           KEYCLOAK_SERVICE_CLIENT_ID: thesis-management-service-client
-          KEYCLOAK_SERVICE_CLIENT_SECRET: ""
+          KEYCLOAK_SERVICE_CLIENT_SECRET: "**********"
           CLIENT_HOST: http://localhost:3100
 
       # Set up Node.js for client

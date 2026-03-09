@@ -125,22 +125,23 @@ To activate the dev profile, either:
 
 #### Topics
 
-The seed data includes 6 topics across both research groups:
-- 3 **open** topics (published and accepting applications)
-- 2 **draft** topics (not yet published)
+The seed data includes 10 topics across both research groups:
+- 4 **open** topics (published and accepting applications)
+- 3 **draft** topics (not yet published)
 - 1 **closed** topic
+- 1 **open** topic dedicated to interview process E2E tests
 
 #### Applications
 
-8 applications in various states: `ACCEPTED`, `NOT_ASSESSED`, `REJECTED`, `INTERVIEWING`, and one free-form application without a topic.
+11 applications in various states: `ACCEPTED`, `NOT_ASSESSED`, `REJECTED`, `INTERVIEWING`, and one free-form application without a topic. Includes 2 old rejected applications for data retention E2E tests and 1 additional INTERVIEWING application for interview slot booking E2E tests.
 
 #### Theses
 
-5 theses covering key lifecycle states: `PROPOSAL`, `WRITING`, `SUBMITTED`, `FINISHED`, and `DROPPED_OUT`. Each thesis includes associated roles, state history, proposals, comments, files, feedback, presentations, and assessments where applicable.
+11 theses covering key lifecycle states: `PROPOSAL`, `WRITING`, `SUBMITTED`, `FINISHED`, and `DROPPED_OUT`. Includes 6 additional theses (IDs 13-18) dedicated to E2E coverage gap tests: proposal acceptance, final submission, close thesis, content editing, comments, and presentation management. Each thesis includes associated roles, state history, proposals, comments, files, feedback, presentations, and assessments where applicable.
 
 #### Interview Processes
 
-3 interview processes (2 completed, 1 active) with interviewees, interview slots, and assessments.
+4 interview processes (2 completed, 1 active, 1 for E2E tests) with interviewees, interview slots, and assessments.
 
 ## Server
 
@@ -337,32 +338,52 @@ Tests are located in `client/e2e/` and authenticate via the Keycloak login form 
 
 | File | Description |
 |------|-------------|
-| `auth.setup.ts` | Authenticates all test users (student, student2, student3, supervisor, supervisor2, examiner, examiner2, admin, delete_old_thesis, delete_recent_thesis, delete_rejected_app) via Keycloak and caches their session state |
+| `auth.setup.ts` | Authenticates all test users (student, student2, student3, student4, student5, supervisor, supervisor2, examiner, examiner2, admin, delete_old_thesis, delete_recent_thesis, delete_rejected_app) via Keycloak and caches their session state |
 | `auth.spec.ts` | Keycloak redirect for unauthenticated users, role-based navigation item visibility for all 5 access levels |
-| `navigation.spec.ts` | Public page rendering (landing page, about, footer), sidebar navigation flow, route access per role |
-| `dashboard.spec.ts` | Dashboard sections per role (My Theses, My Applications) |
-| `topics.spec.ts` | Public topic browsing with search, filters, and list/grid toggle; examiner management view; student apply button |
-| `applications.spec.ts` | Student application stepper form, pre-selected topic flow, supervisor and examiner review page access |
-| `theses.spec.ts` | Browse view per role, theses overview, thesis detail page sections, student viewing own thesis |
-| `interviews.spec.ts` | Examiner interview overview and process detail, supervisor access, student access denied |
-| `presentations.spec.ts` | Student and examiner presentations page, public presentation detail access |
-| `settings.spec.ts` | My Information and Notification Settings tabs for student and supervisor |
-| `research-groups.spec.ts` | Admin research group CRUD with search filtering, examiner group access, student access denied |
+| `navigation.spec.ts` | Public page rendering (landing page, about, footer, privacy, imprint), sidebar navigation flow, route access per role |
+| `dashboard.spec.ts` | Dashboard sections per role (My Theses, My Applications), seed data verification |
+| `topics.spec.ts` | Public topic browsing with search filtering, list/grid toggle, tab switching with aria-selected validation; examiner management view with seed data; student apply button |
+| `applications.spec.ts` | Student application stepper form, pre-selected topic flow, supervisor and examiner review page access, NOT_ASSESSED application detail with state assertion |
+| `theses.spec.ts` | Browse view per role with seed data assertions, theses overview, thesis detail page sections, student viewing own thesis, examiner2 thesis views |
+| `interviews.spec.ts` | Examiner interview overview and process detail with seed data, supervisor access, examiner2 views, student access denied |
+| `presentations.spec.ts` | Student, examiner, and supervisor presentations page with seed data, public presentation detail access, private presentation access denied |
+| `settings.spec.ts` | My Information tab with seed data verification for student/supervisor/examiner, Notification Settings with email notification assertions |
+| `research-groups.spec.ts` | Admin research group CRUD with search filtering, DSA group settings, examiner group access, student access denied |
+| `public-api.spec.ts` | Published-theses API endpoint structure, avatar access control for publicly visible users, avatar denied for non-public users, pagination endpoint |
 | **Workflow Tests** | |
-| `topic-workflow.spec.ts` | Examiner creates a new topic end-to-end: fills title, thesis types, examiner, supervisor, problem statement |
+| `topic-workflow.spec.ts` | Examiner creates a new topic end-to-end: fills title, thesis types, examiner, supervisor, problem statement; examiner2 verifies DSA group pre-fill |
 | `thesis-workflow.spec.ts` | Examiner creates a new thesis end-to-end: fills title, type, language, student, supervisor, examiner |
 | `application-workflow.spec.ts` | Student submits an application through the full stepper: topic selection, student info, file uploads, motivation |
 | `presentation-workflow.spec.ts` | Student creates a presentation draft for a submitted thesis: type, visibility, location, language, date/time |
 | `proposal-feedback-workflow.spec.ts` | Supervisor submits proposal feedback on a thesis in PROPOSAL state: opens feedback dialog, enters comment, submits |
 | `application-review-workflow.spec.ts` | Supervisor rejects and accepts NOT_ASSESSED applications: reject with reason, accept with pre-filled thesis details |
 | `thesis-grading-workflow.spec.ts` | Sequential thesis grading: examiner2 submits assessment, examiner2 submits final grade, examiner2 marks thesis as finished |
-| `interview-workflow.spec.ts` | Examiner scores an interviewee with notes, opens add slot modal on interview process page |
+| `interview-workflow.spec.ts` | Examiner scores an interviewee with notes, opens add slot modal on interview process page, verifies both seeded interviewees, filter tabs (All/Uncontacted/Invited/Scheduled/Completed) |
+| `thesis-lifecycle-workflow.spec.ts` | Thesis lifecycle transitions: supervisor2 accepts proposal (PROPOSAL → WRITING with email verification), student submits thesis (WRITING → SUBMITTED), supervisor closes thesis (DROPPED_OUT) |
+| `thesis-content-editing.spec.ts` | Supervisor edits thesis configuration (visibility, title persistence after reload), student edits thesis info (abstract via rich text editor), student cannot modify config fields (disabled inputs, hidden buttons) |
+| `thesis-comments.spec.ts` | Supervisor views existing comments with "Not visible to student" badges, adds text comment with post/disable state verification, adds comment with PDF file attachment, student cannot see supervisor-only comments |
+| `topic-editing-lifecycle.spec.ts` | Examiner edits open topic (title change with modal verification), examiner closes open topic (reason select, notify students checkbox), examiner closes draft topic (different dialog title, no reason/notify options), closed topics have no action buttons |
+| `interview-process-workflow.spec.ts` | Examiner creates new interview process: topic search, applicant selection, process creation with success notification; student views interview booking page with scheduled slot |
+| `presentation-management.spec.ts` | Supervisor edits presentation (location change with cleanup), supervisor deletes presentation with confirmation dialog, student adds presentation note via rich text editor |
+| `research-group-management.spec.ts` | Admin creates research group (name, abbreviation, group head autocomplete), admin views group settings (General/Members/Email Settings tabs, settings cards), admin views group members (member table, search, add member button) |
+| `email-template-editing.spec.ts` | Admin navigates to template editor (search, edit/preview buttons), admin edits and saves template subject with reset to default |
+| `user-profile-settings.spec.ts` | Student verifies readonly fields (first name, last name, email, matriculation number), student updates profile fields (gender, semester, privacy consent), student uploads documents (examination report, CV) |
 | **Data Management Tests** | |
 | `thesis-anonymization.spec.ts` | Admin triggers anonymization from admin page, idempotent second run, anonymized thesis banner, recent thesis unaffected, student cannot access admin page |
+| `thesis-delete.spec.ts` | Admin anonymizes old/recent/active theses with appropriate warnings, examiner anonymizes own thesis, student cannot see anonymize button |
 | `data-retention.spec.ts` | Admin deletes individual application with confirmation modal, batch cleanup from admin page, recent rejected application survives cleanup, supervisor cannot see delete button or admin page |
 | `account-deletion.spec.ts` | Self-service account deletion for 3 user types (full deletion, soft deletion with retention, expired retention), research group head blocked, confirmation dialog safety (cancel resets state), admin user search and deletion preview (retention-blocked, active thesis, research group head), route protection |
 | `data-export.spec.ts` | Data export page rendering, requesting an export and verifying processing status, privacy page link for authenticated/unauthenticated users, route protection |
-| `thesis-config-user-search.spec.ts` | Thesis configuration user search filters by role: student selector shows students only |
+| `thesis-config-user-search.spec.ts` | Thesis configuration user search filters by role (student selector shows students only, excludes supervisors/examiners), lazy user fetching verification (no /v2/users requests until dropdown opened) |
+| **Coverage Gap Tests** | |
+| `topic-publish.spec.ts` | Examiner publishes a draft topic via edit modal (Save & Create Topic), verifies transition from Draft to Open tab |
+| `research-group-settings.spec.ts` | Admin views research group settings (Group Information with seed data, Application/Proposal/Presentation settings cards), Members tab, Email Settings tab |
+| `notification-settings.spec.ts` | Examiner toggles notification preferences (Presentation Invitations switch toggle + restore), per-thesis notification toggles, student sees limited options (no management-only settings) |
+| `interview-booking.spec.ts` | Student with existing booking sees Interview Scheduled page (topic info, slot details, cancel option), student without booking sees slot selection UI, completed process shows completion message |
+| `thesis-file-management.spec.ts` | Supervisor views file section for WRITING thesis (upload controls, file types, upload history, submission button), student views same with upload controls, PROPOSAL thesis lacks file section |
+| `thesis-file-upload.spec.ts` | Student uploads thesis PDF and verifies file history update, student uploads presentation file via file types table, supervisor uploads thesis file and verifies download button and file preview |
+| `interview-slot-booking.spec.ts` | Student books an available interview slot (slot selection, reserve, verification of scheduled state with topic info), student cancels booked slot (confirmation modal, return to slot selection) |
+| `research-group-settings-editing.spec.ts` | Admin toggles application auto-reject (initial state, toggle off with warning alert, toggle back on), admin changes presentation slot duration (persistence after reload), admin toggles proposal phase setting |
 
 ### Tested Roles
 
@@ -377,32 +398,91 @@ Every major page is tested with appropriate roles to verify access control:
 
 ### Coverage
 
-The E2E tests focus on page accessibility, content rendering, and role-based access control. The table below summarizes what is currently covered and what is not.
+The E2E tests cover page accessibility, content rendering, role-based access control, and key end-to-end workflows. The table below summarizes what is covered and what is not.
 
 | Area | Covered | Not yet covered |
 |------|---------|-----------------|
-| **Authentication & RBAC** | Keycloak redirect, nav item visibility per role, access denied for unauthorized roles | Token refresh, session expiry, logout |
-| **Topics** | Public browsing, search, filters, list/grid toggle, management view, student apply button, **creating a topic end-to-end** | Editing/closing topics, draft topics |
-| **Applications** | Stepper form rendering, pre-selected topic, supervisor/examiner review page access, **submitting an application end-to-end**, **accepting and rejecting applications** | — |
-| **Theses** | Browse per role, overview page, detail page sections, student own thesis, **creating a thesis end-to-end**, **submitting proposal feedback**, **assessment > final grade > mark as finished**, user search filters by role | Comments |
-| **Thesis Anonymization** | Admin triggers anonymization, idempotent second run finds nothing, anonymized thesis shows banner, recent thesis unaffected, student cannot access admin page | — |
-| **Interviews** | Examiner overview and process detail, supervisor access, student denied, **scoring interviewees with notes**, **add slot modal** | Creating interview processes, booking slots |
-| **Presentations** | Page access per role, public presentation detail, **creating a presentation draft** | Calendar integration |
-| **Settings** | Tab rendering per role, **Account tab with deletion UI** | Editing profile information, notification preferences |
-| **Account Deletion** | Self-service full deletion (rejected app user), soft deletion with retention (recent thesis user), full deletion after retention expiry (old thesis user), research group head blocked, confirmation dialog safety (cancel resets state), admin user search and preview (retention, active thesis, research group head), route protection for non-admin | — |
-| **Data Retention** | Admin deletes individual application with confirmation modal, batch cleanup from admin page, recent rejected application survives cleanup, supervisor cannot see delete button or access admin page | — |
-| **Data Export** | Page rendering with info text, requesting export and verifying processing status, privacy page link (authenticated and unauthenticated), route protection | Downloading completed export |
-| **Research Groups** | Admin CRUD page, search filtering, student denied | Creating/editing groups, member management |
-| **Dashboard** | Section visibility per role (My Theses, My Applications) | Dashboard data accuracy, links to detail pages |
-| **Navigation** | Public pages, sidebar flow, header logo, footer links, unknown routes | Mobile/responsive layout, deep linking |
+| **Authentication & RBAC** | Keycloak redirect, nav item visibility per role (student, supervisor, examiner, admin), access denied for unauthorized roles, user menu display | Logout flow, token refresh, session expiry |
+| **Topics** | Public browsing with search filtering, list/grid toggle, tab switching (Open/Published), management view with seed data, student apply button, **creating a topic end-to-end** (examiner + examiner2 with group pre-fill), **editing existing topics** (title change), **closing open topics** (reason, notify students), **closing draft topics** (different dialog, no reason/notify), **publishing draft topics** (draft → open via edit modal) | — |
+| **Applications** | Stepper form with topic selection and filters, pre-selected topic flow, file uploads with privacy consent, supervisor/examiner review page with search, NOT_ASSESSED application detail, **submitting an application end-to-end** (with email verification), **accepting and rejecting applications** (with email verification) | Editing submitted applications, application filtering by state/topic |
+| **Theses** | Browse per role with seed data, overview page, detail page sections (Configuration, Involved Persons, Proposal, Presentation, Comments), student own thesis, examiner2 ASSESSED thesis, **creating a thesis end-to-end** (with THESIS_CREATED email), **proposal upload** (with email), **proposal change request** (with email), **assessment → final grade → mark as finished**, user search filters by role, lazy user fetching, **proposal acceptance** (PROPOSAL → WRITING with email), **thesis submission** (WRITING → SUBMITTED), **close thesis** (DROPPED_OUT), **editing thesis configuration** (visibility, title persistence), **editing thesis info** (abstract via rich text editor), **student config restrictions** (disabled inputs, hidden buttons), **supervisor/student comments** (text + file attachment, visibility restrictions), **file management** (upload controls, file types table, upload history, submission button, PROPOSAL state lacks file section), **file upload/download** (student uploads thesis PDF + presentation file, supervisor uploads thesis + verifies download button and file preview) | Feedback requests on thesis content |
+| **Thesis Anonymization** | Admin batch anonymization, idempotent second run, anonymized thesis banner with structural data preserved, pre-anonymized thesis banner, recent thesis unaffected, non-admin restrictions (student + supervisor) | — |
+| **Thesis Delete** | Admin anonymizes old/recent/active theses with state + retention warnings, modal cancel/close interactions, non-admin restrictions (examiner + student) | — |
+| **Interviews** | Examiner overview with interview topics + upcoming interviews, process detail with interviewees + filter tabs (All/Uncontacted/Invited/Scheduled/Completed), supervisor access, examiner2 views, student denied, **scoring interviewees** (SegmentedControl + notes), **add slot modal** (length + date), interview slots section, **creating new interview process** (topic search, applicant selection), **student interview booking page** (booked slot with topic info + cancel, slot selection UI, completed process message), **slot booking/cancellation** (student books available slot, verifies scheduled state, cancels booking with confirmation modal, returns to slot selection) | Inviting interviewees, accepting applicants from interviews, completing slot creation form submission |
+| **Presentations** | Page access per role with seed data, public presentation detail, private presentation access denied, non-existent presentation error, **creating a presentation draft**, **examiner accepts/schedules presentation** (with THESIS_PRESENTATION_SCHEDULED email), **editing presentations** (location change with cleanup), **deleting presentations** (confirmation dialog), **presentation notes** (student adds note via rich text editor) | — |
+| **Settings** | My Information tab with profile data verification (student/supervisor/examiner), Notification Settings tab with email notification assertions, Account tab with deletion UI, **editing profile fields** (gender, semester, privacy consent), **uploading user documents** (examination report, CV), **readonly field verification** (first name, last name, email, matriculation number), **notification preference changes** (toggle switches + restore, per-thesis toggles, role-appropriate options) | — |
+| **Research Groups** | Admin page with search filtering, group settings page (General, Members, Email Settings tabs), DSA group settings, examiner group access, Email Settings tab with application email content toggle + email template enable/disable, student access denied, **creating new research groups** (name, abbreviation, group head), **viewing group members** (member table, search, add member button), **email template editing** (navigate to editor, edit subject, save, reset to default), **settings page** (Group Information with seed data, Application/Proposal/Presentation settings cards, Members tab, Email Settings tab), **settings editing** (auto-reject toggle with warning alert, presentation slot duration change with persistence, proposal phase toggle) | Adding/removing members, changing member roles |
+| **Public API** | Published-theses endpoint structure + content + pagination, avatar access control (allowed for publicly visible users, denied for non-public/non-existent), unauthenticated application creation rejected | — |
+| **Account Deletion** | Self-service: full deletion, soft deletion with retention, full deletion after retention expiry; research group head blocked; confirmation dialog safety (cancel resets state); admin: user search + deletion preview (retention-blocked, active thesis, research group head); route protection | — |
+| **Data Retention** | Admin individual application deletion with confirmation, batch cleanup of expired rejected applications, recent rejected application survives, non-admin restrictions (supervisor cannot see delete button/admin page/direct URL) | — |
+| **Data Export** | Page rendering with request button, requesting export + processing status, privacy page link (authenticated sees it, unauthenticated does not), route protection (authenticated allowed, unauthenticated redirected) | Downloading completed export |
+| **Email Notifications** | THESIS_CREATED, APPLICATION_CREATED_STUDENT, APPLICATION_CREATED_CHAIR, APPLICATION_REJECTED_TOPIC_REQUIREMENTS, APPLICATION_ACCEPTED, THESIS_PROPOSAL_UPLOADED, THESIS_PROPOSAL_REJECTED, THESIS_PROPOSAL_ACCEPTED, THESIS_PRESENTATION_SCHEDULED, THESIS_FINAL_GRADE — all verified via Mailpit integration | — |
+| **Dashboard** | Section visibility per role (My Theses, My Applications), seed data verification (thesis states, accepted applications) | Task list content accuracy, navigation from tasks to detail pages |
+| **Navigation** | Public pages (landing, about, privacy, imprint), sidebar flow between pages, header logo navigation, footer links, unknown routes → landing page | Mobile/responsive layout, deep linking |
+| **Landing Page** | Topic search and filtering UI, view toggle | Research group-specific landing pages (`/:abbreviation`), published theses section |
 
-**In summary:** The tests cover page rendering/access control across all roles and key end-to-end workflows including topic creation, thesis creation, application submission, presentation scheduling, proposal feedback, application accept/reject, thesis grading (assessment > grade > finish), interview scoring, thesis anonymization, data retention cleanup, self-service account deletion (full, soft, and expired-retention), admin user deletion, and GDPR data export.
+#### Remaining gaps
+
+The following functional areas have no or incomplete E2E coverage:
+
+1. **Inviting interviewees** — The `InviteConfirmationModal` exists but no test selects candidates and sends invitations.
+2. **Adding/removing research group members** — The "Add Member" button is verified as visible, but no test fills the `AddResearchGroupMemberModal` or removes a member via `DeleteMemberModal`.
+3. **Editing submitted applications** — The `/edit-application/:applicationId` route and `PUT /v2/applications/{id}` endpoint are never tested.
+4. **Interview slot creation (form submission)** — `interview-workflow.spec.ts` opens the "Add Slots" modal but does not fill in the form or submit it.
+5. **Accepting applicants from interview process** — The `AcceptApplicantModal` in the interview management page is not exercised.
+6. **Dashboard task list navigation** — Task sections are verified as present, but clicking tasks to navigate to detail pages is untested.
 
 ### CI Integration
 
-E2E tests run automatically in CI via the `e2e_tests.yml` reusable workflow, which is called from `dev.yml` on PRs and pushes to develop/main. The CI workflow spins up PostgreSQL and Keycloak as service containers, starts the server with the dev profile, builds and serves the client, and runs the Playwright tests.
+E2E tests run automatically in CI via the `e2e_tests.yml` reusable workflow, which is called from `dev.yml` on PRs and pushes to develop/main. Test artifacts (Playwright report, screenshots, traces, videos) are uploaded as GitHub Actions artifacts and retained for 14 days.
 
-Test artifacts (screenshots, traces, videos) are uploaded on failure and available in the GitHub Actions artifacts.
+#### CI Architecture
+
+The CI environment mirrors the local setup: only infrastructure runs in containers, while the server and client run as native processes on the GitHub Actions runner.
+
+| Component | How it runs in CI |
+|-----------|-------------------|
+| PostgreSQL | GitHub Actions service container |
+| Mailpit | GitHub Actions service container |
+| Keycloak | `docker run` (service containers don't support custom entrypoint commands like `start-dev`), realm imported via REST API |
+| Server | `./gradlew bootRun` as a background process on the runner |
+| Client | `npx webpack serve` as a background process on the runner |
+
+CI-specific Playwright settings (controlled by `CI=1`): 2 workers (vs 8 locally), 2 retries (vs 1), no automatic `webServer` startup, and the `github` reporter is added alongside the HTML report.
+
+#### Why Server and Client Run Natively (Not in Docker)
+
+An alternative approach is to run the server and client in Docker containers during E2E tests, using the same (or similar) images as production. This is closer to the production environment but comes with significant trade-offs. The following analysis explains why we chose to run them natively.
+
+**How the E2E environment differs from production:**
+
+| Aspect | E2E (current) | Production |
+|--------|---------------|------------|
+| Server | `gradlew bootRun` (dev profile, full JDK) | Packaged JAR in `zulu-openjdk:25-jre` |
+| Client | Webpack dev server (HMR, unminified JS) | Static build served by nginx |
+| Reverse proxy | None | Traefik (TLS, rate limiting, compression) |
+| Ports | 8180 / 3100 | 8080 / 80 behind Traefik on 443 |
+
+**Trade-off analysis:**
+
+| Factor | Native processes (current) | Docker containers |
+|--------|:-:|:-:|
+| **CI speed** | ++ | -- |
+| **Production fidelity** | - | ++ |
+| **Catches infra bugs** (nginx config, Traefik routing) | -- | + |
+| **Debugging ease** | ++ | - |
+| **Maintenance effort** | + | - |
+| **Catches application-level bugs** | = | = |
+
+- **Speed (major advantage of native):** Docker image builds add significant time. The server Dockerfile runs a full Gradle build inside a multi-stage image (JDK build stage → JRE runtime stage), and the client Dockerfile runs `npm install` + `npm run build` and copies the output into an nginx image. Without layer caching, this adds 5-10 minutes. Additionally, the Docker build workflow (`build_docker.yml`) currently runs in **parallel** with E2E tests. If E2E tests depended on those images, they would become **sequential** — E2E couldn't start until both images were built and loaded. With native processes, `gradlew bootRun` compiles and starts in one step, and the Webpack dev server starts without needing a production build at all.
+
+- **Production fidelity (main advantage of Docker):** The Webpack dev server handles client-side routing natively, but in production nginx needs an explicit `try_files` configuration — a broken `nginx.conf` would not be caught by native E2E tests. Similarly, the runtime environment injection (`generate-runtime-env.js`) only runs inside the Docker client image. The server also differs: `bootRun` uses the full JDK with dev tooling, while production runs a packaged JAR on a minimal JRE.
+
+- **Why the fidelity gap is acceptable here:** The nginx config is a simple SPA setup that rarely changes. Spring Boot JAR vs `bootRun` differences are negligible for functional testing. E2E tests exercise application logic (UI flows, API interactions, authentication), not infrastructure routing. Any Docker-specific issues (broken Dockerfile, bad nginx config) are still caught by the parallel `build_docker.yml` job — just not by the E2E tests themselves.
+
+- **Debugging:** Native processes write logs directly to files (`.e2e-server.log`, `.e2e-client.log`) that are easy to inspect. With Docker, logs require `docker logs` and may be lost when containers are removed. Stack traces from `gradlew bootRun` are straightforward; in a container, you may need additional log driver configuration.
+
+**Conclusion:** For this project, the speed advantage of native processes outweighs the marginal fidelity improvement of Docker. The application is a straightforward Spring Boot + React SPA with a simple infrastructure layer. Projects with more complex infrastructure (multiple backend services, custom proxy logic, SSR) would benefit more from the Docker-based approach.
 
 ## Postman Collection
 

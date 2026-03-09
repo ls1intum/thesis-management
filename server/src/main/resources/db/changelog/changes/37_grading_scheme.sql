@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset thesis:36_grading_scheme
+--changeset thesis:37_grading_scheme
 
 -- Default grading scheme per research group
 CREATE TABLE grading_scheme_components (
