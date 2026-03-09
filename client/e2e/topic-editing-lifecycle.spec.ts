@@ -105,7 +105,8 @@ test.describe.serial('Topic 7 - Edit then Close', () => {
 
     // Select a reason (Mantine Select renders options in a portal, so we use keyboard navigation)
     await reasonInput.click()
-    await page.waitForTimeout(500)
+    // Wait for the dropdown options to appear
+    await expect(page.getByRole('option').first()).toBeVisible({ timeout: 5_000 })
     await page.keyboard.press('ArrowDown')
     await page.keyboard.press('Enter')
     await expect(reasonInput).not.toHaveValue('')

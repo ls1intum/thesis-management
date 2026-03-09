@@ -38,7 +38,7 @@ test.describe('Research Group Settings Editing - Admin', () => {
     const isChecked = await autoRejectInput.isChecked()
     if (!isChecked) {
       await autoRejectTrack.click()
-      await page.waitForTimeout(500)
+      await expect(autoRejectInput).toBeChecked({ timeout: 10_000 })
     }
 
     // === Verify ON state ===
@@ -60,10 +60,9 @@ test.describe('Research Group Settings Editing - Admin', () => {
 
     // === Toggle OFF ===
     await autoRejectTrack.click()
-    await page.waitForTimeout(500)
 
     // Verify switch unchecked
-    await expect(autoRejectInput).not.toBeChecked()
+    await expect(autoRejectInput).not.toBeChecked({ timeout: 10_000 })
 
     // Verify "Enable automatic rejection" label text
     await expect(page.getByText('Enable automatic rejection')).toBeVisible()
@@ -79,10 +78,9 @@ test.describe('Research Group Settings Editing - Admin', () => {
 
     // === Toggle back ON (restore) ===
     await autoRejectTrack.click()
-    await page.waitForTimeout(500)
 
     // Verify switch checked
-    await expect(autoRejectInput).toBeChecked()
+    await expect(autoRejectInput).toBeChecked({ timeout: 10_000 })
 
     // Verify "Disable automatic rejection" label
     await expect(page.getByText('Disable automatic rejection')).toBeVisible()
@@ -114,39 +112,37 @@ test.describe('Research Group Settings Editing - Admin', () => {
     const durationTextbox = page.getByRole('textbox', { name: /minutes/i })
     await expect(durationTextbox).toBeVisible()
 
-    // Clear and type new value (45)
+    // Set up response listener before triggering the save (fires immediately on change)
+    const savePromise = page.waitForResponse(
+      (resp) => resp.url().includes('/research-group-settings/') && resp.request().method() === 'POST',
+      { timeout: 10_000 },
+    )
+    // Clear and type new value (45) — triggers save via onChange
     await durationTextbox.click()
     await durationTextbox.fill('45')
+    await savePromise
 
-    // Tab out to trigger auto-save, wait for debounce + network
-    await page.keyboard.press('Tab')
-    await page.waitForTimeout(2000)
+    // Reload page and verify value persists
+    await navigateToSettings(page)
 
-    // Reload page and verify value persists (retry navigation once if value didn't save)
-    for (let attempt = 0; attempt < 2; attempt++) {
-      await navigateToSettings(page)
-
-      const presentationSettingsHeading2 = page.getByRole('heading', {
-        name: 'Presentation Settings',
-        level: 3,
-      })
-      await expect(presentationSettingsHeading2).toBeVisible({ timeout: 15_000 })
-      await presentationSettingsHeading2.scrollIntoViewIfNeeded()
-
-      const durationTextbox2 = page.getByRole('textbox', { name: /minutes/i })
-      const value = await durationTextbox2.inputValue()
-      if (value.includes('45')) break
-      if (attempt === 0) await page.waitForTimeout(1000)
-    }
+    const presentationSettingsHeading2 = page.getByRole('heading', {
+      name: 'Presentation Settings',
+      level: 3,
+    })
+    await expect(presentationSettingsHeading2).toBeVisible({ timeout: 15_000 })
+    await presentationSettingsHeading2.scrollIntoViewIfNeeded()
 
     const durationTextbox2 = page.getByRole('textbox', { name: /minutes/i })
     await expect(durationTextbox2).toHaveValue('45 minutes')
 
     // Restore to 30
+    const restorePromise = page.waitForResponse(
+      (resp) => resp.url().includes('/research-group-settings/') && resp.request().method() === 'POST',
+      { timeout: 10_000 },
+    )
     await durationTextbox2.click()
     await durationTextbox2.fill('30')
-    await page.keyboard.press('Tab')
-    await page.waitForTimeout(1000)
+    await restorePromise
   })
 
   test('admin toggles proposal phase setting', async ({ page }) => {
@@ -173,7 +169,7 @@ test.describe('Research Group Settings Editing - Admin', () => {
     const isChecked = await proposalInput.isChecked()
     if (!isChecked) {
       await proposalTrack.click()
-      await page.waitForTimeout(500)
+      await expect(proposalInput).toBeChecked({ timeout: 10_000 })
     }
 
     // === Verify ON state ===
@@ -185,20 +181,18 @@ test.describe('Research Group Settings Editing - Admin', () => {
 
     // === Toggle OFF ===
     await proposalTrack.click()
-    await page.waitForTimeout(500)
 
     // Verify switch toggled
-    await expect(proposalInput).not.toBeChecked()
+    await expect(proposalInput).not.toBeChecked({ timeout: 10_000 })
 
     // Verify "Enable Proposal Phase" label
     await expect(page.getByText('Enable Proposal Phase')).toBeVisible()
 
     // === Toggle back ON (restore) ===
     await proposalTrack.click()
-    await page.waitForTimeout(500)
 
     // Verify "Disable Proposal Phase" label restored
-    await expect(proposalInput).toBeChecked()
+    await expect(proposalInput).toBeChecked({ timeout: 10_000 })
     await expect(page.getByText('Disable Proposal Phase')).toBeVisible()
   })
 })

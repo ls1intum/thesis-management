@@ -41,10 +41,10 @@ test.describe('Research Group Management - Admin', () => {
     // Select a Group Head — uses KeycloakUserAutocomplete with 300ms debounce + API call
     const groupHeadInput = modal.getByRole('textbox', { name: 'Group Head' })
     await groupHeadInput.fill('admin')
-    // Wait for Keycloak API response — the listbox appears when options are ready
-    const listbox = page.getByRole('listbox', { name: 'Group Head' })
-    await expect(listbox).toBeVisible({ timeout: 15_000 })
-    await listbox.getByRole('option').first().click()
+    // Wait for Keycloak API response — the dropdown options appear after debounce + network
+    const option = page.getByRole('option').first()
+    await expect(option).toBeVisible({ timeout: 15_000 })
+    await option.click()
 
     // Submit the form
     await modal.getByRole('button', { name: /create research group/i }).click()

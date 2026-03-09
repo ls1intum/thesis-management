@@ -43,25 +43,21 @@ test.describe('Notification Settings - Examiner toggle preferences', () => {
     const wasChecked = await presentationSwitch.isChecked()
     await presentationSwitch.click({ force: true })
 
-    // Wait for the API call to complete
-    await page.waitForTimeout(1_000)
-
-    // Verify the toggle state changed
+    // Verify the toggle state changed (Playwright auto-retries until timeout)
     if (wasChecked) {
-      await expect(presentationSwitch).not.toBeChecked()
+      await expect(presentationSwitch).not.toBeChecked({ timeout: 10_000 })
     } else {
-      await expect(presentationSwitch).toBeChecked()
+      await expect(presentationSwitch).toBeChecked({ timeout: 10_000 })
     }
 
     // Toggle it back to restore original state
     await presentationSwitch.click({ force: true })
-    await page.waitForTimeout(1_000)
 
     // Verify it's restored
     if (wasChecked) {
-      await expect(presentationSwitch).toBeChecked()
+      await expect(presentationSwitch).toBeChecked({ timeout: 10_000 })
     } else {
-      await expect(presentationSwitch).not.toBeChecked()
+      await expect(presentationSwitch).not.toBeChecked({ timeout: 10_000 })
     }
   })
 
