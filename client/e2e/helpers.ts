@@ -46,6 +46,8 @@ export function authStatePath(
     | 'student'
     | 'student2'
     | 'student3'
+    | 'student4'
+    | 'student5'
     | 'supervisor'
     | 'supervisor2'
     | 'examiner'
@@ -165,8 +167,8 @@ export async function expandAccordion(
   contentLocator: Locator,
   maxAttempts = 3,
 ) {
-  const item = page.locator('.mantine-Accordion-item').filter({ hasText: sectionLabel })
-  const control = item.locator('.mantine-Accordion-control')
+  const item = getAccordionItem(page, sectionLabel)
+  const control = item.locator('.mantine-Accordion-control').first()
   await control.waitFor({ state: 'visible', timeout: 10_000 })
 
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
@@ -184,6 +186,17 @@ export async function expandAccordion(
   }
   // Final assertion so the test fails with a clear message if all attempts failed
   await expect(contentLocator).toBeVisible({ timeout: 5_000 })
+}
+
+export function getAccordionItem(page: Page, sectionLabel: string) {
+  return page
+    .locator('.mantine-Accordion-item')
+    .filter({
+      has: page.locator('.mantine-Accordion-control').filter({
+        has: page.getByText(sectionLabel, { exact: true }),
+      }),
+    })
+    .first()
 }
 
 /**

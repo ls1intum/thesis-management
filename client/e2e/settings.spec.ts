@@ -30,8 +30,11 @@ test.describe('Settings - Student', () => {
     await expect(page).toHaveURL(/\/settings\/notifications/)
     await expect(page.getByText('Notification Settings')).toBeVisible({ timeout: 15_000 })
 
-    // Should show notification preference options
+    // Should show notification preference options (toggles, auto-saved)
     await expect(page.getByText('Presentation Invitations')).toBeVisible()
+
+    // Student should also see Thesis Comments toggle
+    await expect(page.getByText('Thesis Comments')).toBeVisible()
   })
 })
 
@@ -73,5 +76,10 @@ test.describe('Settings - Examiner', () => {
 
     // Examiner has notification settings configured in seed data
     await expect(page.getByText('Presentation Invitations')).toBeVisible()
+
+    // Examiner should see additional notification types (new-applications, thesis-comments, review reminder)
+    await expect(page.getByText('New Applications')).toBeVisible()
+    await expect(page.getByText('Application Review Reminder')).toBeVisible()
+    await expect(page.getByText('Thesis Comments')).toBeVisible()
   })
 })

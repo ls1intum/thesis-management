@@ -2,14 +2,16 @@ import { test, expect } from '@playwright/test'
 import { authStatePath, navigateTo } from './helpers'
 
 test.describe('Presentations - Student', () => {
-  test('presentations page shows heading and content', async ({ page }) => {
+  test('presentations page shows heading and calendar subscription', async ({ page }) => {
     await navigateTo(page, '/presentations')
 
     await expect(page.getByRole('heading', { name: 'Presentations', exact: true })).toBeVisible({
       timeout: 15_000,
     })
-    // Presentations page should have a calendar or schedule view
-    await expect(page.locator('main')).toBeVisible()
+
+    // Calendar subscription section should be visible
+    await expect(page.getByText('Subscribe to Calendar')).toBeVisible()
+
     // Should not show error state
     await expect(page.getByText(/error|something went wrong/i)).not.toBeVisible({ timeout: 2_000 })
   })
@@ -18,14 +20,16 @@ test.describe('Presentations - Student', () => {
 test.describe('Presentations - Examiner', () => {
   test.use({ storageState: authStatePath('examiner') })
 
-  test('presentations page is accessible for examiner with management controls', async ({
-    page,
-  }) => {
+  test('presentations page shows calendar subscription for examiner', async ({ page }) => {
     await navigateTo(page, '/presentations')
 
     await expect(page.getByRole('heading', { name: 'Presentations', exact: true })).toBeVisible({
       timeout: 15_000,
     })
+
+    // Calendar subscription section should be visible
+    await expect(page.getByText('Subscribe to Calendar')).toBeVisible()
+
     // Should not show error state
     await expect(page.getByText(/error|something went wrong/i)).not.toBeVisible({ timeout: 2_000 })
   })

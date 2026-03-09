@@ -18,6 +18,9 @@ test.describe('Theses - Browse (Student)', () => {
     await expect(page.getByText(/Monolith to Microservices/i).first()).toBeVisible({
       timeout: 5_000,
     })
+
+    // Should show state badges for visible theses
+    await expect(page.getByText('Writing').first()).toBeVisible()
   })
 })
 
@@ -40,6 +43,10 @@ test.describe('Theses - Browse (Examiner)', () => {
     await expect(page.getByText(/CI Pipeline Optimization/i).first()).toBeVisible({
       timeout: 5_000,
     })
+
+    // Should show state badges
+    await expect(page.getByText('Writing').first()).toBeVisible()
+    await expect(page.getByText('Proposal').first()).toBeVisible()
   })
 })
 
@@ -59,6 +66,10 @@ test.describe('Theses - Overview (Examiner)', () => {
     await expect(page.getByText(/CI Pipeline Optimization/i).first()).toBeVisible({
       timeout: 5_000,
     })
+
+    // Should show state badges in overview
+    await expect(page.getByText('Writing').first()).toBeVisible()
+    await expect(page.getByText('Proposal').first()).toBeVisible()
   })
 })
 
@@ -83,6 +94,11 @@ test.describe('Theses - Detail page (Supervisor)', () => {
     await expect(page.getByRole('button', { name: 'Presentation', exact: true })).toBeVisible()
     // Supervisor should see comments section
     await expect(page.getByRole('button', { name: /supervisor comments/i })).toBeVisible()
+
+    // Info section should be expanded by default and show thesis fields
+    await expect(page.getByText('English Title')).toBeVisible()
+    await expect(page.getByText('German Title')).toBeVisible()
+    await expect(page.getByText('Abstract')).toBeVisible()
   })
 
   test('thesis detail shows PROPOSAL state thesis', async ({ page }) => {
