@@ -25,6 +25,7 @@ import { IResearchGroupSettingsGradingScheme } from '../../../../../../requests/
 import { calculateGradeFromComponents } from '../../../../../../utils/grade'
 
 interface IGradeComponent {
+  key: string
   name: string
   weight: number
   isBonus: boolean
@@ -119,6 +120,7 @@ const ReplaceAssessmentModal = (props: IReplaceAssessmentModalProps) => {
     if (thesis.assessment?.gradeComponents && thesis.assessment.gradeComponents.length > 0) {
       setGradeComponents(
         thesis.assessment.gradeComponents.map((c) => ({
+          key: crypto.randomUUID(),
           name: c.name,
           weight: c.weight,
           isBonus: c.isBonus,
@@ -143,6 +145,7 @@ const ReplaceAssessmentModal = (props: IReplaceAssessmentModalProps) => {
           if (res.data.components && res.data.components.length > 0) {
             setGradeComponents(
               res.data.components.map((c) => ({
+                key: crypto.randomUUID(),
                 name: c.name,
                 weight: c.weight,
                 isBonus: c.isBonus,
@@ -167,7 +170,10 @@ const ReplaceAssessmentModal = (props: IReplaceAssessmentModalProps) => {
   }
 
   const addComponent = () => {
-    setGradeComponents((prev) => [...prev, { name: '', weight: 0, isBonus: false, grade: '' }])
+    setGradeComponents((prev) => [
+      ...prev,
+      { key: crypto.randomUUID(), name: '', weight: 0, isBonus: false, grade: '' },
+    ])
   }
 
   const removeComponent = (index: number) => {
@@ -218,7 +224,7 @@ const ReplaceAssessmentModal = (props: IReplaceAssessmentModalProps) => {
               </Table.Thead>
               <Table.Tbody>
                 {gradeComponents.map((component, index) => (
-                  <Table.Tr key={index}>
+                  <Table.Tr key={component.key}>
                     <Table.Td>
                       <TextInput
                         value={component.name}

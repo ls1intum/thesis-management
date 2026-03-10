@@ -672,6 +672,9 @@ public class ThesisService {
 
 		BigDecimal regularWeightSum = BigDecimal.ZERO;
 		for (GradeComponentPayload component : components) {
+			if (component == null) {
+				throw new ResourceInvalidParametersException("Grade component must not be null.");
+			}
 			if (component.name() == null || component.name().isBlank()) {
 				throw new ResourceInvalidParametersException("Grade component name must not be empty.");
 			}
