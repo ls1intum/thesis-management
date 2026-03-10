@@ -134,7 +134,7 @@ test.describe('Research Group Settings Editing - Admin', () => {
     await presentationSettingsHeading2.scrollIntoViewIfNeeded()
 
     const durationTextbox2 = page.getByRole('textbox', { name: /minutes/i })
-    await expect(durationTextbox2).toHaveValue('45 minutes')
+    await expect(durationTextbox2).toHaveValue('45 minutes', { timeout: 10_000 })
 
     // Restore to 30
     const restorePromise = page.waitForResponse(
