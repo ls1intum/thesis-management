@@ -14,6 +14,7 @@ import de.tum.cit.aet.thesis.security.CurrentUserProvider;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -112,12 +113,14 @@ public class ResearchGroupSettingsService {
 	 * @param researchGroupId the ID of the research group
 	 * @param gradingScheme the new grading scheme to save
 	 */
-	public void saveGradingScheme(UUID researchGroupId, ResearchGroupSettingsGradingSchemeDTO gradingScheme) {
-		ResearchGroup researchGroup = researchGroupRepository.findById(researchGroupId)
-				.orElseThrow(() -> new ResourceNotFoundException("Research group not found"));
-		currentUserProvider().assertCanAccessResearchGroup(researchGroup);
-
-		if (gradingScheme.components() == null) {
+	/**
+	 * Validates the grading scheme without persisting it. Call this before saving
+	 * to ensure validation errors are raised before any other data is committed.
+	 *
+	 * @param gradingScheme the grading scheme to validate
+	 */
+	public void validateGradingScheme(ResearchGroupSettingsGradingSchemeDTO gradingScheme) {
+		if (gradingScheme.components() == null || gradingScheme.components().isEmpty()) {
 			return;
 		}
 
@@ -149,10 +152,23 @@ public class ResearchGroupSettingsService {
 				regularWeightSum = regularWeightSum.add(dto.weight());
 			}
 		}
-		if (!gradingScheme.components().isEmpty()
-				&& regularWeightSum.compareTo(BigDecimal.valueOf(100)) != 0) {
+		if (regularWeightSum.compareTo(BigDecimal.valueOf(100)) != 0) {
 			throw new ResourceInvalidParametersException("Regular component weights must sum to 100%.");
 		}
+	}
+
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
+	@Transactional
+	public void saveGradingScheme(UUID researchGroupId, ResearchGroupSettingsGradingSchemeDTO gradingScheme) {
+		ResearchGroup researchGroup = researchGroupRepository.findById(researchGroupId)
+				.orElseThrow(() -> new ResourceNotFoundException("Research group not found"));
+		currentUserProvider().assertCanAccessResearchGroup(researchGroup);
+
+		if (gradingScheme.components() == null) {
+			return;
+		}
+
+		validateGradingScheme(gradingScheme);
 
 		gradingSchemeComponentRepository.deleteAllByResearchGroupId(researchGroupId);
 

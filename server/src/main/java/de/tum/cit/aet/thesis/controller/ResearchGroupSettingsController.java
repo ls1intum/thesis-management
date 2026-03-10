@@ -92,6 +92,10 @@ public class ResearchGroupSettingsController {
 					newSettings.applicationEmailSettings().includeApplicationDataInEmail());
 		}
 
+		if (newSettings.gradingSchemeSettings() != null) {
+			service.validateGradingScheme(newSettings.gradingSchemeSettings());
+		}
+
 		ResearchGroupSettings saved = service.saveOrUpdate(toSave);
 
 		if (newSettings.gradingSchemeSettings() != null) {
