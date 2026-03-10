@@ -14,13 +14,16 @@ import de.tum.cit.aet.thesis.security.CurrentUserProvider;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /** Manages research group-specific settings such as presentation slot duration. */
 @Service
@@ -107,13 +110,6 @@ public class ResearchGroupSettingsService {
 	}
 
 	/**
-	 * Validates and saves a grading scheme for a research group, verifying the current user's access.
-	 * Deletes existing components and replaces them with the new ones.
-	 *
-	 * @param researchGroupId the ID of the research group
-	 * @param gradingScheme the new grading scheme to save
-	 */
-	/**
 	 * Validates the grading scheme without persisting it. Call this before saving
 	 * to ensure validation errors are raised before any other data is committed.
 	 *
@@ -157,8 +153,13 @@ public class ResearchGroupSettingsService {
 		}
 	}
 
-	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
-	@Transactional
+	/**
+	 * Validates and saves a grading scheme for a research group, verifying the current user's access.
+	 * Updates existing components by ID, creates new ones, and deletes removed ones.
+	 *
+	 * @param researchGroupId the ID of the research group
+	 * @param gradingScheme the new grading scheme to save
+	 */
 	public void saveGradingScheme(UUID researchGroupId, ResearchGroupSettingsGradingSchemeDTO gradingScheme) {
 		ResearchGroup researchGroup = researchGroupRepository.findById(researchGroupId)
 				.orElseThrow(() -> new ResourceNotFoundException("Research group not found"));
@@ -170,21 +171,35 @@ public class ResearchGroupSettingsService {
 
 		validateGradingScheme(gradingScheme);
 
-		gradingSchemeComponentRepository.deleteAllByResearchGroupId(researchGroupId);
+		List<GradingSchemeComponent> existing = gradingSchemeComponentRepository
+				.findByResearchGroupIdOrderByPositionAsc(researchGroupId);
+		Map<UUID, GradingSchemeComponent> existingById = existing.stream()
+				.collect(Collectors.toMap(GradingSchemeComponent::getId, Function.identity()));
 
-		if (!gradingScheme.components().isEmpty()) {
-			List<GradingSchemeComponent> entities = new ArrayList<>();
-			for (int i = 0; i < gradingScheme.components().size(); i++) {
-				GradingSchemeComponentDTO dto = gradingScheme.components().get(i);
-				GradingSchemeComponent entity = new GradingSchemeComponent();
+		Set<UUID> incomingIds = new HashSet<>();
+		for (int i = 0; i < gradingScheme.components().size(); i++) {
+			GradingSchemeComponentDTO dto = gradingScheme.components().get(i);
+			GradingSchemeComponent entity;
+
+			if (dto.componentId() != null && existingById.containsKey(dto.componentId())) {
+				entity = existingById.get(dto.componentId());
+				incomingIds.add(dto.componentId());
+			} else {
+				entity = new GradingSchemeComponent();
 				entity.setResearchGroup(researchGroup);
-				entity.setName(dto.name());
-				entity.setWeight(Boolean.TRUE.equals(dto.isBonus()) ? BigDecimal.ZERO : dto.weight());
-				entity.setIsBonus(Boolean.TRUE.equals(dto.isBonus()));
-				entity.setPosition(i);
-				entities.add(entity);
 			}
-			gradingSchemeComponentRepository.saveAll(entities);
+
+			entity.setName(dto.name());
+			entity.setWeight(Boolean.TRUE.equals(dto.isBonus()) ? BigDecimal.ZERO : dto.weight());
+			entity.setIsBonus(Boolean.TRUE.equals(dto.isBonus()));
+			entity.setPosition(i);
+			gradingSchemeComponentRepository.save(entity);
+		}
+
+		for (GradingSchemeComponent old : existing) {
+			if (!incomingIds.contains(old.getId())) {
+				gradingSchemeComponentRepository.deleteById(old.getId());
+			}
 		}
 	}
 }

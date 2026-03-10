@@ -72,7 +72,7 @@ test.describe.serial('Thesis Grading Workflow', () => {
     )
 
     // Fill in grade component grades if present (DSA group has a grading scheme)
-    const gradeInputs = dialog.locator('table tbody tr td:nth-child(3) input')
+    const gradeInputs = dialog.locator('table tbody tr td:nth-child(4) input')
     const gradeCount = await gradeInputs.count()
     if (gradeCount > 0) {
       const grades = ['1.3', '1.7', '2.0']

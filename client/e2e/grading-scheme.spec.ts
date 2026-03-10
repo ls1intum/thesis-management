@@ -317,7 +317,7 @@ test.describe.serial('Assessment with Grade Components', () => {
     await expect(dialog.getByText('Grade Components')).toBeVisible({ timeout: 15_000 })
 
     // Fill in grades: 1.3 (40%), 1.7 (30%), 2.0 (30%)
-    const gradeInputs = dialog.locator('table tbody tr td:nth-child(3) input')
+    const gradeInputs = dialog.locator('table tbody tr td:nth-child(4) input')
     const gradeCount = await gradeInputs.count()
     expect(gradeCount).toBeGreaterThanOrEqual(3)
 
