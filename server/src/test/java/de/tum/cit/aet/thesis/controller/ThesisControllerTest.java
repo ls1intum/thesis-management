@@ -1150,6 +1150,111 @@ class ThesisControllerTest extends BaseIntegrationTest {
 		}
 
 		@Test
+		void createAssessment_WithNegativeBonusGrade_Fails() throws Exception {
+			UUID thesisId = createTestThesis("Test Thesis Negative Bonus");
+			createTestEmailTemplate("THESIS_ASSESSMENT_ADDED");
+
+			CreateAssessmentPayload payload = new CreateAssessmentPayload(
+					"Summary", "Positives", "Negatives", "1.0",
+					List.of(
+							new GradeComponentPayload("Content", new BigDecimal("100.00"), false, new BigDecimal("1.3")),
+							new GradeComponentPayload("Bonus", new BigDecimal("0.00"), true, new BigDecimal("-0.3"))
+					)
+			);
+
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses/{thesisId}/assessment", thesisId)
+							.header("Authorization", createRandomAdminAuthentication())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(payload)))
+					.andExpect(status().isBadRequest());
+		}
+
+		@Test
+		void createAssessment_WithBonusGradeExceedingMax_Fails() throws Exception {
+			UUID thesisId = createTestThesis("Test Thesis Bonus Too High");
+			createTestEmailTemplate("THESIS_ASSESSMENT_ADDED");
+
+			CreateAssessmentPayload payload = new CreateAssessmentPayload(
+					"Summary", "Positives", "Negatives", "1.0",
+					List.of(
+							new GradeComponentPayload("Content", new BigDecimal("100.00"), false, new BigDecimal("1.3")),
+							new GradeComponentPayload("Bonus", new BigDecimal("0.00"), true, new BigDecimal("5.1"))
+					)
+			);
+
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses/{thesisId}/assessment", thesisId)
+							.header("Authorization", createRandomAdminAuthentication())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(payload)))
+					.andExpect(status().isBadRequest());
+		}
+
+		@Test
+		void createAssessment_WithBonusZero_Success() throws Exception {
+			UUID thesisId = createTestThesis("Test Thesis Bonus Zero");
+			createTestEmailTemplate("THESIS_ASSESSMENT_ADDED");
+
+			CreateAssessmentPayload payload = new CreateAssessmentPayload(
+					"Summary", "Positives", "Negatives", "1.0",
+					List.of(
+							new GradeComponentPayload("Content", new BigDecimal("100.00"), false, new BigDecimal("1.3")),
+							new GradeComponentPayload("Bonus", new BigDecimal("0.00"), true, new BigDecimal("0.0"))
+					)
+			);
+
+			String response = mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses/{thesisId}/assessment", thesisId)
+							.header("Authorization", createRandomAdminAuthentication())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(payload)))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			JsonNode json = objectMapper.readTree(response);
+			JsonNode gradeComponents = json.get("assessment").get("gradeComponents");
+			assertThat(gradeComponents.size()).isEqualTo(2);
+			assertThat(gradeComponents.get(1).get("isBonus").asBoolean()).isTrue();
+			assertThat(gradeComponents.get(1).get("grade").asDouble()).isEqualTo(0.0);
+		}
+
+		@Test
+		void createAssessment_WithGradePrecisionExceeded_Fails() throws Exception {
+			UUID thesisId = createTestThesis("Test Thesis Precision");
+			createTestEmailTemplate("THESIS_ASSESSMENT_ADDED");
+
+			CreateAssessmentPayload payload = new CreateAssessmentPayload(
+					"Summary", "Positives", "Negatives", "1.0",
+					List.of(
+							new GradeComponentPayload("Content", new BigDecimal("100.00"), false, new BigDecimal("1.35"))
+					)
+			);
+
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses/{thesisId}/assessment", thesisId)
+							.header("Authorization", createRandomAdminAuthentication())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(payload)))
+					.andExpect(status().isBadRequest());
+		}
+
+		@Test
+		void createAssessment_WithNullGrade_Fails() throws Exception {
+			UUID thesisId = createTestThesis("Test Thesis Null Grade");
+			createTestEmailTemplate("THESIS_ASSESSMENT_ADDED");
+
+			CreateAssessmentPayload payload = new CreateAssessmentPayload(
+					"Summary", "Positives", "Negatives", "1.0",
+					List.of(
+							new GradeComponentPayload("Content", new BigDecimal("100.00"), false, null)
+					)
+			);
+
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses/{thesisId}/assessment", thesisId)
+							.header("Authorization", createRandomAdminAuthentication())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(payload)))
+					.andExpect(status().isBadRequest());
+		}
+
+		@Test
 		void createAssessment_WithoutGradeComponents_BackwardCompatible() throws Exception {
 			UUID thesisId = createTestThesis("Test Thesis No Components");
 			createTestEmailTemplate("THESIS_ASSESSMENT_ADDED");
