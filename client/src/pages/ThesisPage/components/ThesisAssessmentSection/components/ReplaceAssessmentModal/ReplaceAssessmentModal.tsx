@@ -263,12 +263,12 @@ const ReplaceAssessmentModal = (props: IReplaceAssessmentModalProps) => {
                             grade: val === '' ? '' : val,
                           })
                         }
-                        min={component.isBonus ? -5 : 1}
+                        min={component.isBonus ? 0 : 1}
                         max={5}
                         step={0.1}
                         decimalScale={1}
                         allowDecimal
-                        placeholder={component.isBonus ? 'e.g. -0.3 or +0.3' : 'e.g. 1.3'}
+                        placeholder={component.isBonus ? 'e.g. 0.3' : 'e.g. 1.3'}
                         size='sm'
                       />
                     </Table.Td>
@@ -307,8 +307,8 @@ const ReplaceAssessmentModal = (props: IReplaceAssessmentModalProps) => {
 
             {gradeComponents.some((c) => c.isBonus) && (
               <Text size='xs' c='dimmed'>
-                Bonus components adjust the final grade directly (e.g. -0.3 improves the grade, +0.3
-                penalizes).
+                Bonus components improve the final grade (e.g. a bonus of 0.3 subtracts 0.3 from the
+                calculated grade).
               </Text>
             )}
 

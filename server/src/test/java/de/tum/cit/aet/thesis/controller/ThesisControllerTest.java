@@ -1073,7 +1073,7 @@ class ThesisControllerTest extends BaseIntegrationTest {
 					List.of(
 							new GradeComponentPayload("Content", new BigDecimal("50.00"), false, new BigDecimal("1.3")),
 							new GradeComponentPayload("Methods", new BigDecimal("50.00"), false, new BigDecimal("1.7")),
-							new GradeComponentPayload("Bonus", new BigDecimal("0.00"), true, new BigDecimal("-0.3"))
+							new GradeComponentPayload("Bonus", new BigDecimal("0.00"), true, new BigDecimal("0.3"))
 					)
 			);
 
@@ -1088,7 +1088,7 @@ class ThesisControllerTest extends BaseIntegrationTest {
 			JsonNode gradeComponents = json.get("assessment").get("gradeComponents");
 			assertThat(gradeComponents.size()).isEqualTo(3);
 			assertThat(gradeComponents.get(2).get("isBonus").asBoolean()).isTrue();
-			assertThat(gradeComponents.get(2).get("grade").asDouble()).isEqualTo(-0.3);
+			assertThat(gradeComponents.get(2).get("grade").asDouble()).isEqualTo(0.3);
 		}
 
 		@Test

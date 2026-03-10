@@ -664,7 +664,7 @@ public class ThesisService {
 		BigDecimal minGrade = BigDecimal.ONE;
 		BigDecimal maxGrade = BigDecimal.valueOf(5);
 		BigDecimal hundredPercent = BigDecimal.valueOf(100);
-		BigDecimal minBonusGrade = BigDecimal.valueOf(-5);
+		BigDecimal minBonusGrade = BigDecimal.ZERO;
 
 		if (components.size() > 50) {
 			throw new ResourceInvalidParametersException("A maximum of 50 grade components is allowed.");
@@ -689,7 +689,7 @@ public class ThesisService {
 			}
 			if (component.isBonus()) {
 				if (component.grade().compareTo(minBonusGrade) < 0 || component.grade().compareTo(maxGrade) > 0) {
-					throw new ResourceInvalidParametersException("Bonus grade must be between -5.0 and 5.0.");
+					throw new ResourceInvalidParametersException("Bonus value must be between 0.0 and 5.0.");
 				}
 			} else {
 				if (component.grade().compareTo(minGrade) < 0 || component.grade().compareTo(maxGrade) > 0) {
