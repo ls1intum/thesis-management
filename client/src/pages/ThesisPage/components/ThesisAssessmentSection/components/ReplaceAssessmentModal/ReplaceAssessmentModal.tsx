@@ -1,8 +1,8 @@
 import {
   ActionIcon,
   Alert,
-  Badge,
   Button,
+  Checkbox,
   Group,
   Modal,
   NumberInput,
@@ -223,6 +223,7 @@ const ReplaceAssessmentModal = (props: IReplaceAssessmentModalProps) => {
                 <Table.Tr>
                   <Table.Th>Name</Table.Th>
                   <Table.Th w={100}>Weight</Table.Th>
+                  <Table.Th w={70}>Bonus</Table.Th>
                   <Table.Th w={100}>Grade</Table.Th>
                   <Table.Th w={60}></Table.Th>
                 </Table.Tr>
@@ -238,22 +239,31 @@ const ReplaceAssessmentModal = (props: IReplaceAssessmentModalProps) => {
                       />
                     </Table.Td>
                     <Table.Td>
-                      {component.isBonus ? (
-                        <Badge color='teal'>Bonus</Badge>
-                      ) : (
-                        <NumberInput
-                          value={component.weight}
-                          onChange={(val) =>
-                            updateComponent(index, {
-                              weight: typeof val === 'number' ? val : 0,
-                            })
-                          }
-                          min={0}
-                          max={100}
-                          suffix='%'
-                          size='sm'
-                        />
-                      )}
+                      <NumberInput
+                        value={component.weight}
+                        onChange={(val) =>
+                          updateComponent(index, {
+                            weight: typeof val === 'number' ? val : 0,
+                          })
+                        }
+                        min={0}
+                        max={100}
+                        suffix='%'
+                        size='sm'
+                        disabled={component.isBonus}
+                      />
+                    </Table.Td>
+                    <Table.Td>
+                      <Checkbox
+                        checked={component.isBonus}
+                        onChange={(e) =>
+                          updateComponent(index, {
+                            isBonus: e.currentTarget.checked,
+                            weight: e.currentTarget.checked ? 0 : component.weight,
+                            grade: '',
+                          })
+                        }
+                      />
                     </Table.Td>
                     <Table.Td>
                       <NumberInput
