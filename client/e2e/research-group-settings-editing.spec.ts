@@ -112,14 +112,16 @@ test.describe('Research Group Settings Editing - Admin', () => {
     const durationTextbox = page.getByRole('textbox', { name: /minutes/i })
     await expect(durationTextbox).toBeVisible()
 
-    // Set up response listener before typing (onChange fires POST immediately)
+    // Clear the input then type new value. Each keystroke triggers onChange → POST.
+    // Set up listener that matches the POST containing the final value (45).
     const savePromise = page.waitForResponse(
-      (resp) => resp.url().includes('/research-group-settings/') && resp.request().method() === 'POST',
-      { timeout: 10_000 },
+      (resp) =>
+        resp.url().includes('/research-group-settings/') &&
+        resp.request().method() === 'POST' &&
+        resp.request().postData()?.includes('45'),
+      { timeout: 15_000 },
     )
-    // Select all and type new value
-    await durationTextbox.click()
-    await page.keyboard.press('Meta+a')
+    await durationTextbox.clear()
     await durationTextbox.pressSequentially('45', { delay: 50 })
     await savePromise
 
@@ -138,11 +140,13 @@ test.describe('Research Group Settings Editing - Admin', () => {
 
     // Restore to 30
     const restorePromise = page.waitForResponse(
-      (resp) => resp.url().includes('/research-group-settings/') && resp.request().method() === 'POST',
-      { timeout: 10_000 },
+      (resp) =>
+        resp.url().includes('/research-group-settings/') &&
+        resp.request().method() === 'POST' &&
+        resp.request().postData()?.includes('30'),
+      { timeout: 15_000 },
     )
-    await durationTextbox2.click()
-    await page.keyboard.press('Meta+a')
+    await durationTextbox2.clear()
     await durationTextbox2.pressSequentially('30', { delay: 50 })
     await restorePromise
   })
