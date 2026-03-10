@@ -127,6 +127,9 @@ public class ResearchGroupSettingsService {
 
 		BigDecimal regularWeightSum = BigDecimal.ZERO;
 		for (GradingSchemeComponentDTO dto : gradingScheme.components()) {
+			if (dto == null) {
+				throw new ResourceInvalidParametersException("Component must not be null.");
+			}
 			if (dto.name() == null || dto.name().isBlank()) {
 				throw new ResourceInvalidParametersException("Component name must not be empty.");
 			}

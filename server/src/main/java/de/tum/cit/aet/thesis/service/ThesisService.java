@@ -623,10 +623,13 @@ public class ThesisService {
 		assessment.setNegatives(negatives);
 		assessment.setGradeSuggestion(gradeSuggestion);
 
+		if (gradeComponentPayloads != null && !gradeComponentPayloads.isEmpty()) {
+			validateGradeComponents(gradeComponentPayloads);
+		}
+
 		thesisAssessmentRepository.save(assessment);
 
 		if (gradeComponentPayloads != null && !gradeComponentPayloads.isEmpty()) {
-			validateGradeComponents(gradeComponentPayloads);
 
 			List<ThesisGradeComponent> gradeComponents = new ArrayList<>();
 			for (int i = 0; i < gradeComponentPayloads.size(); i++) {

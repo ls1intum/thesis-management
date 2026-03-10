@@ -265,6 +265,7 @@ const ReplaceAssessmentModal = (props: IReplaceAssessmentModalProps) => {
                         color='red'
                         size='sm'
                         onClick={() => removeComponent(index)}
+                        aria-label='Remove component'
                       >
                         <Trash size={14} />
                       </ActionIcon>
