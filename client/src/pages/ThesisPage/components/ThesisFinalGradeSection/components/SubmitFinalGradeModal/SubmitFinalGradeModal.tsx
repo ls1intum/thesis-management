@@ -74,7 +74,7 @@ const SubmitFinalGradeModal = (props: ISubmitFinalGradeModalProps) => {
         />
         {calculatedGrade !== null && (
           <Text size='sm' c='dimmed'>
-            Calculated from assessment components: {calculatedGrade}
+            Calculated from assessment components: {calculatedGrade?.toFixed(1)}
           </Text>
         )}
         <TextInput
@@ -86,7 +86,7 @@ const SubmitFinalGradeModal = (props: ISubmitFinalGradeModalProps) => {
         {deviationWarning && (
           <Alert color='orange' title='Grade Deviation'>
             The final grade ({finalGrade}) deviates from the calculated assessment grade (
-            {calculatedGrade}) by more than 0.3.
+            {calculatedGrade?.toFixed(1)}) by more than 0.3.
           </Alert>
         )}
         <DocumentEditor

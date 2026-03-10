@@ -66,7 +66,7 @@ const ThesisAssessmentSection = () => {
                       </Table.Tbody>
                     </Table>
                     <Text size='sm' fw={500}>
-                      Calculated Grade: {calculatedGrade}
+                      Calculated Grade: {calculatedGrade?.toFixed(1)}
                     </Text>
                   </Stack>
                 )}

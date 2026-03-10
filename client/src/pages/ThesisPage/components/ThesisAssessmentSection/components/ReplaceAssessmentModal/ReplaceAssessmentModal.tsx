@@ -32,15 +32,28 @@ interface IGradeComponent {
   grade: number | string
 }
 
+function isOptionalGrade(c: IGradeComponent): boolean {
+  return c.isBonus || c.weight === 0
+}
+
 function calculateGrade(components: IGradeComponent[]): number | null {
   if (components.length === 0) return null
+  // Components with weight 0 or bonus flag can be left empty (default to grade 0)
   if (
-    components.some((c) => c.grade === '' || c.grade === undefined || typeof c.grade !== 'number')
+    components.some(
+      (c) =>
+        !isOptionalGrade(c) &&
+        (c.grade === '' || c.grade === undefined || typeof c.grade !== 'number'),
+    )
   )
     return null
 
   return calculateGradeFromComponents(
-    components.map((c) => ({ weight: c.weight, isBonus: c.isBonus, grade: Number(c.grade) })),
+    components.map((c) => ({
+      weight: c.weight,
+      isBonus: c.isBonus,
+      grade: isOptionalGrade(c) && (c.grade === '' || c.grade === undefined) ? 0 : Number(c.grade),
+    })),
   )
 }
 
@@ -71,7 +84,7 @@ const ReplaceAssessmentModal = (props: IReplaceAssessmentModalProps) => {
     .reduce((sum, c) => sum + (c.weight ?? 0), 0)
   const weightsValid = gradeComponents.length === 0 || Math.abs(regularWeightSum - 100) < 0.01
   const allGradesFilled = gradeComponents.every(
-    (c) => typeof c.grade === 'number' && !isNaN(c.grade),
+    (c) => isOptionalGrade(c) || (typeof c.grade === 'number' && !isNaN(c.grade)),
   )
   const allNamesFilled = gradeComponents.every((c) => c.name?.trim())
   const gradeComponentsValid =
@@ -98,7 +111,10 @@ const ReplaceAssessmentModal = (props: IReplaceAssessmentModalProps) => {
                 name: c.name,
                 weight: c.weight,
                 isBonus: c.isBonus,
-                grade: Number(c.grade),
+                grade:
+                  isOptionalGrade(c) && (c.grade === '' || c.grade === undefined)
+                    ? 0
+                    : Number(c.grade),
                 position: i,
               }))
             : undefined,
@@ -166,7 +182,7 @@ const ReplaceAssessmentModal = (props: IReplaceAssessmentModalProps) => {
 
   useEffect(() => {
     if (calculatedGrade !== null && !gradeSuggestionManuallyEdited) {
-      setGradeSuggestion(String(calculatedGrade))
+      setGradeSuggestion(calculatedGrade.toFixed(1))
     }
   }, [calculatedGrade, gradeSuggestionManuallyEdited])
 
@@ -224,7 +240,7 @@ const ReplaceAssessmentModal = (props: IReplaceAssessmentModalProps) => {
                   <Table.Th>Name</Table.Th>
                   <Table.Th w={100}>Weight</Table.Th>
                   <Table.Th w={70}>Bonus</Table.Th>
-                  <Table.Th w={100}>Grade</Table.Th>
+                  <Table.Th w={120}>Grade</Table.Th>
                   <Table.Th w={60}></Table.Th>
                 </Table.Tr>
               </Table.Thead>
@@ -324,7 +340,7 @@ const ReplaceAssessmentModal = (props: IReplaceAssessmentModalProps) => {
 
             {calculatedGrade !== null && (
               <Text size='sm' fw={500}>
-                Calculated Grade: {calculatedGrade}
+                Calculated Grade: {calculatedGrade.toFixed(1)}
               </Text>
             )}
           </Stack>
@@ -339,7 +355,7 @@ const ReplaceAssessmentModal = (props: IReplaceAssessmentModalProps) => {
         {deviationWarning && (
           <Alert color='orange' title='Grade Deviation'>
             The grade suggestion ({gradeSuggestion}) deviates from the calculated grade (
-            {calculatedGrade}) by more than 0.3.
+            {calculatedGrade?.toFixed(1)}) by more than 0.3.
           </Alert>
         )}
 

@@ -179,12 +179,15 @@ export async function expandAccordion(
     if (!isExpanded) {
       await control.click()
     }
+    // Scroll to the content locator so it enters the viewport
+    await contentLocator.scrollIntoViewIfNeeded().catch(() => {})
     const visible = await contentLocator.isVisible({ timeout: 8_000 }).catch(() => false)
     if (visible) return
     // Small pause before retrying — the click may need the accordion animation to settle
     await page.waitForTimeout(500)
   }
-  // Final assertion so the test fails with a clear message if all attempts failed
+  // Final scroll + assertion so the test fails with a clear message if all attempts failed
+  await contentLocator.scrollIntoViewIfNeeded().catch(() => {})
   await expect(contentLocator).toBeVisible({ timeout: 5_000 })
 }
 

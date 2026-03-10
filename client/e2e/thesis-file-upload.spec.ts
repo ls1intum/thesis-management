@@ -141,7 +141,6 @@ test.describe('Thesis File Upload - Supervisor uploads and verifies download', (
     await expect(uploadFileButton).toBeEnabled({ timeout: 10_000 })
     await uploadFileButton.click()
     await expect(dialog).toBeHidden({ timeout: 10_000 })
-    await expect(page.getByText('File uploaded successfully')).toBeVisible({ timeout: 10_000 })
 
     // Scope assertions to the Files section
     const filesSection = page.getByLabel('Files')

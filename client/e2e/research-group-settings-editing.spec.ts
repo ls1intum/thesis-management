@@ -112,14 +112,15 @@ test.describe('Research Group Settings Editing - Admin', () => {
     const durationTextbox = page.getByRole('textbox', { name: /minutes/i })
     await expect(durationTextbox).toBeVisible()
 
-    // Set up response listener before triggering the save (fires immediately on change)
+    // Set up response listener before typing (onChange fires POST immediately)
     const savePromise = page.waitForResponse(
       (resp) => resp.url().includes('/research-group-settings/') && resp.request().method() === 'POST',
       { timeout: 10_000 },
     )
-    // Clear and type new value (45) — triggers save via onChange
+    // Select all and type new value
     await durationTextbox.click()
-    await durationTextbox.fill('45')
+    await page.keyboard.press('Meta+a')
+    await durationTextbox.pressSequentially('45', { delay: 50 })
     await savePromise
 
     // Reload page and verify value persists
@@ -141,7 +142,8 @@ test.describe('Research Group Settings Editing - Admin', () => {
       { timeout: 10_000 },
     )
     await durationTextbox2.click()
-    await durationTextbox2.fill('30')
+    await page.keyboard.press('Meta+a')
+    await durationTextbox2.pressSequentially('30', { delay: 50 })
     await restorePromise
   })
 
