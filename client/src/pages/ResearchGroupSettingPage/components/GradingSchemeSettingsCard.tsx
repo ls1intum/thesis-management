@@ -51,7 +51,13 @@ const GradingSchemeSettingsCard = ({
     setGradingSchemeSettings({
       components: [
         ...components,
-        { name: '', weight: 0, isBonus: false, position: components.length },
+        {
+          componentId: crypto.randomUUID(),
+          name: '',
+          weight: 0,
+          isBonus: false,
+          position: components.length,
+        },
       ],
     })
   }
@@ -117,7 +123,7 @@ const GradingSchemeSettingsCard = ({
             </Table.Thead>
             <Table.Tbody>
               {components.map((component, index) => (
-                <Table.Tr key={index}>
+                <Table.Tr key={component.componentId ?? index}>
                   <Table.Td>
                     <TextInput
                       value={component.name}
@@ -157,6 +163,7 @@ const GradingSchemeSettingsCard = ({
                         size='sm'
                         onClick={() => moveComponent(index, -1)}
                         disabled={index === 0}
+                        aria-label='Move up'
                       >
                         <ArrowUp size={14} />
                       </ActionIcon>
@@ -165,6 +172,7 @@ const GradingSchemeSettingsCard = ({
                         size='sm'
                         onClick={() => moveComponent(index, 1)}
                         disabled={index === components.length - 1}
+                        aria-label='Move down'
                       >
                         <ArrowDown size={14} />
                       </ActionIcon>
@@ -173,6 +181,7 @@ const GradingSchemeSettingsCard = ({
                         color='red'
                         size='sm'
                         onClick={() => removeComponent(index)}
+                        aria-label='Remove component'
                       >
                         <Trash size={14} />
                       </ActionIcon>

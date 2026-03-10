@@ -137,6 +137,9 @@ public class ResearchGroupSettingsService {
 				if (dto.weight() == null) {
 					throw new ResourceInvalidParametersException("Component weight must not be null.");
 				}
+				if (dto.weight().scale() > 2) {
+					throw new ResourceInvalidParametersException("Weight must have at most 2 decimal places.");
+				}
 				if (dto.weight().compareTo(BigDecimal.ZERO) <= 0) {
 					throw new ResourceInvalidParametersException("Component weight must be positive.");
 				}

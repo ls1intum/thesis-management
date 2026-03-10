@@ -678,6 +678,9 @@ public class ThesisService {
 			if (component.grade() == null) {
 				throw new ResourceInvalidParametersException("Grade must not be null.");
 			}
+			if (component.grade().scale() > 1) {
+				throw new ResourceInvalidParametersException("Grade must have at most 1 decimal place.");
+			}
 			if (component.isBonus()) {
 				if (component.grade().compareTo(minBonusGrade) < 0 || component.grade().compareTo(maxGrade) > 0) {
 					throw new ResourceInvalidParametersException("Bonus grade must be between -5.0 and 5.0.");
@@ -688,6 +691,9 @@ public class ThesisService {
 				}
 				if (component.weight() == null) {
 					throw new ResourceInvalidParametersException("Component weight must not be null.");
+				}
+				if (component.weight().scale() > 2) {
+					throw new ResourceInvalidParametersException("Weight must have at most 2 decimal places.");
 				}
 				if (component.weight().compareTo(BigDecimal.ZERO) <= 0) {
 					throw new ResourceInvalidParametersException("Component weight must be positive.");
