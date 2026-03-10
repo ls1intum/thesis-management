@@ -29,12 +29,15 @@ interface IGradeComponent {
   name: string
   weight: number
   isBonus: boolean
-  grade: number | ''
+  grade: number | string
 }
 
 function calculateGrade(components: IGradeComponent[]): number | null {
   if (components.length === 0) return null
-  if (components.some((c) => c.grade === '' || c.grade === undefined)) return null
+  if (
+    components.some((c) => c.grade === '' || c.grade === undefined || typeof c.grade !== 'number')
+  )
+    return null
 
   return calculateGradeFromComponents(
     components.map((c) => ({ weight: c.weight, isBonus: c.isBonus, grade: Number(c.grade) })),
@@ -67,7 +70,9 @@ const ReplaceAssessmentModal = (props: IReplaceAssessmentModalProps) => {
     .filter((c) => !c.isBonus)
     .reduce((sum, c) => sum + (c.weight ?? 0), 0)
   const weightsValid = gradeComponents.length === 0 || Math.abs(regularWeightSum - 100) < 0.01
-  const allGradesFilled = gradeComponents.every((c) => c.grade !== '' && c.grade !== undefined)
+  const allGradesFilled = gradeComponents.every(
+    (c) => typeof c.grade === 'number' && !isNaN(c.grade),
+  )
   const allNamesFilled = gradeComponents.every((c) => c.name?.trim())
   const gradeComponentsValid =
     gradeComponents.length === 0 || (weightsValid && allGradesFilled && allNamesFilled)
@@ -234,7 +239,7 @@ const ReplaceAssessmentModal = (props: IReplaceAssessmentModalProps) => {
                     </Table.Td>
                     <Table.Td>
                       {component.isBonus ? (
-                        <Badge color='blue'>Bonus</Badge>
+                        <Badge color='teal'>Bonus</Badge>
                       ) : (
                         <NumberInput
                           value={component.weight}
@@ -255,13 +260,15 @@ const ReplaceAssessmentModal = (props: IReplaceAssessmentModalProps) => {
                         value={component.grade}
                         onChange={(val) =>
                           updateComponent(index, {
-                            grade: typeof val === 'number' ? val : '',
+                            grade: val === '' ? '' : val,
                           })
                         }
                         min={component.isBonus ? -5 : 1}
                         max={5}
                         step={0.1}
                         decimalScale={1}
+                        allowDecimal
+                        placeholder={component.isBonus ? 'e.g. 0.3 or -0.3' : 'e.g. 1.3'}
                         size='sm'
                       />
                     </Table.Td>
@@ -296,6 +303,13 @@ const ReplaceAssessmentModal = (props: IReplaceAssessmentModalProps) => {
               <Alert color='yellow' title='Weight Warning'>
                 Regular component weights sum to {regularWeightSum}%, but must equal 100%.
               </Alert>
+            )}
+
+            {gradeComponents.some((c) => c.isBonus) && (
+              <Text size='xs' c='dimmed'>
+                Bonus components adjust the final grade directly (e.g. 0.3 improves by 0.3, -0.3
+                penalizes by 0.3).
+              </Text>
             )}
 
             {calculatedGrade !== null && (
