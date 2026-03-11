@@ -64,6 +64,9 @@ test.describe('Applications - Supervisor review', () => {
 
     // Should show application data from seed — supervisor reviewed apps 1, 2
     await expect(page.getByText(/Student/i).first()).toBeVisible({ timeout: 10_000 })
+
+    // Supervisor should NOT see Submit Application link (not a student)
+    await expect(page.getByRole('link', { name: 'Submit Application' })).toBeHidden()
   })
 })
 
@@ -78,6 +81,9 @@ test.describe('Applications - Examiner review', () => {
 
     // Should show applications from seed data
     await expect(page.getByText(/Student/i).first()).toBeVisible({ timeout: 10_000 })
+
+    // Examiner should NOT see Submit Application link (not a student)
+    await expect(page.getByRole('link', { name: 'Submit Application' })).toBeHidden()
   })
 
   test('application detail shows student data and topic information', async ({ page }) => {

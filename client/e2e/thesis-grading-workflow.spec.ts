@@ -71,14 +71,27 @@ test.describe.serial('Thesis Grading Workflow', () => {
       dialog,
     )
 
+    // Fill in grade component grades if present (DSA group has a grading scheme)
+    const gradeInputs = dialog.locator('table tbody tr td:nth-child(4) input')
+    const gradeCount = await gradeInputs.count()
+    if (gradeCount > 0) {
+      const grades = ['1.3', '1.7', '2.0']
+      for (let i = 0; i < Math.min(gradeCount, grades.length); i++) {
+        await gradeInputs.nth(i).click({ clickCount: 3 })
+        await gradeInputs.nth(i).pressSequentially(grades[i], { delay: 50 })
+        await gradeInputs.nth(i).press('Tab')
+      }
+    }
+
     await dialog.getByLabel('Grade Suggestion').clear()
     await dialog.getByLabel('Grade Suggestion').fill('1.3')
 
     // Snapshot mailbox BEFORE submitting
     const beforeIds = await snapshotMailbox('examiner2@test.local')
 
+    // Wait for all form state to propagate before checking submit button
     const submitButton = dialog.getByRole('button', { name: 'Submit Assessment' })
-    await expect(submitButton).toBeEnabled({ timeout: 5_000 })
+    await expect(submitButton).toBeEnabled({ timeout: 10_000 })
     await submitButton.click()
 
     // Modal should close

@@ -19,6 +19,11 @@ test.describe('Interviews - Examiner', () => {
     // Should show seeded interview topics — examiner heads ASE group with completed process 2
     // Topic 1 (LLM Code Review) has a completed interview process
     await expect(page.getByText(/Automated Code Review/i).first()).toBeVisible({ timeout: 10_000 })
+    // Topic 2 (CI Pipeline) has completed process 3
+    await expect(page.getByText(/Continuous Integration/i).first()).toBeVisible({ timeout: 5_000 })
+
+    // Verify "New Interview Process" button is available for examiner
+    await expect(page.getByRole('button', { name: /New Interview Process/i })).toBeVisible()
   })
 
   test('interview process detail page loads with expected sections', async ({ page }) => {

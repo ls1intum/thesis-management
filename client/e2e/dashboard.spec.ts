@@ -12,9 +12,17 @@ test.describe('Dashboard - Student', () => {
 
     // Student is assigned to thesis 1 (WRITING) and thesis 4 (FINISHED)
     await expect(page.getByText(/Automated Code Review/i).first()).toBeVisible({ timeout: 10_000 })
+    await expect(page.getByText(/Monolith to Microservices/i).first()).toBeVisible({ timeout: 5_000 })
+
+    // Verify thesis state badges are shown
+    await expect(page.getByText('Writing').first()).toBeVisible()
+    await expect(page.getByText('Finished').first()).toBeVisible()
 
     // Student has an ACCEPTED application for topic 1 — should show application data
     await expect(page.getByText(/accepted/i).first()).toBeVisible({ timeout: 10_000 })
+
+    // Student should NOT see management-only sections
+    await expect(page.getByRole('heading', { name: /review applications/i })).toBeHidden()
   })
 })
 
@@ -29,11 +37,16 @@ test.describe('Dashboard - Supervisor', () => {
 
     // Supervisor is assigned to thesis 1 (WRITING) and thesis 2 (PROPOSAL)
     await expect(page.getByText(/Automated Code Review/i).first()).toBeVisible({ timeout: 10_000 })
-
-    // Supervisor should also see thesis 2
     await expect(page.getByText(/CI Pipeline Optimization/i).first()).toBeVisible({
       timeout: 5_000,
     })
+
+    // Verify thesis state badges are displayed for supervisor's theses
+    await expect(page.getByText('Writing').first()).toBeVisible()
+    await expect(page.getByText('Proposal').first()).toBeVisible()
+
+    // Supervisor should NOT see My Applications section (not a student)
+    await expect(page.getByRole('heading', { name: /my applications/i })).toBeHidden()
   })
 })
 
@@ -51,6 +64,13 @@ test.describe('Dashboard - Examiner', () => {
     await expect(page.getByText(/CI Pipeline Optimization/i).first()).toBeVisible({
       timeout: 5_000,
     })
+
+    // Verify state badges
+    await expect(page.getByText('Writing').first()).toBeVisible()
+    await expect(page.getByText('Proposal').first()).toBeVisible()
+
+    // Examiner should NOT see My Applications section (not a student)
+    await expect(page.getByRole('heading', { name: /my applications/i })).toBeHidden()
   })
 })
 
@@ -63,5 +83,8 @@ test.describe('Dashboard - Admin', () => {
     await expect(page.getByRole('heading', { name: /dashboard/i })).toBeVisible({ timeout: 15_000 })
     // Admin dashboard should load without redirect
     await expect(page).toHaveURL(/\/dashboard/)
+
+    // Admin should NOT see My Applications section (not a student)
+    await expect(page.getByRole('heading', { name: /my applications/i })).toBeHidden()
   })
 })

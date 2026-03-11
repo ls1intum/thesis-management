@@ -16,6 +16,7 @@ import ProposalSettingsCard from './components/ProposalSettingsCard'
 import EmailSettingsCard from './components/EmailSettingsCard'
 import ScientificWritingGuideSettingsCard from './components/ScientificWritingGuideSettingsCard'
 import ApplicationEmailContentSettingsCard from './components/ApplicationEmailContentSettingsCard'
+import GradingSchemeSettingsCard from './components/GradingSchemeSettingsCard'
 
 const ResearchGroupSettingPage = () => {
   const { researchGroupId } = useParams<{ researchGroupId: string }>()
@@ -190,6 +191,18 @@ const ResearchGroupSettingPage = () => {
                                 ...prev?.presentationSettings,
                                 presentationSlotDuration: value,
                               },
+                            }) as IResearchGroupSettings,
+                        )
+                      }
+                    />
+                    <GradingSchemeSettingsCard
+                      gradingSchemeSettings={researchGroupSettings?.gradingSchemeSettings}
+                      setGradingSchemeSettings={(gradingSchemeSettings) =>
+                        setResearchGroupSettings(
+                          (prev) =>
+                            ({
+                              ...prev,
+                              gradingSchemeSettings,
                             }) as IResearchGroupSettings,
                         )
                       }
