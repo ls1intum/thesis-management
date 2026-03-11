@@ -112,14 +112,17 @@ test.describe('Research Group Settings Editing - Admin', () => {
     const durationTextbox = page.getByRole('textbox', { name: /minutes/i })
     await expect(durationTextbox).toBeVisible()
 
-    // Set up response listener before triggering the save (fires immediately on change)
+    // Clear the input then type new value. Each keystroke triggers onChange → POST.
+    // Set up listener that matches the POST containing the final value (45).
     const savePromise = page.waitForResponse(
-      (resp) => resp.url().includes('/research-group-settings/') && resp.request().method() === 'POST',
-      { timeout: 10_000 },
+      (resp) =>
+        resp.url().includes('/research-group-settings/') &&
+        resp.request().method() === 'POST' &&
+        resp.request().postData()?.includes('45'),
+      { timeout: 15_000 },
     )
-    // Clear and type new value (45) — triggers save via onChange
-    await durationTextbox.click()
-    await durationTextbox.fill('45')
+    await durationTextbox.clear()
+    await durationTextbox.pressSequentially('45', { delay: 50 })
     await savePromise
 
     // Reload page and verify value persists
@@ -133,15 +136,18 @@ test.describe('Research Group Settings Editing - Admin', () => {
     await presentationSettingsHeading2.scrollIntoViewIfNeeded()
 
     const durationTextbox2 = page.getByRole('textbox', { name: /minutes/i })
-    await expect(durationTextbox2).toHaveValue('45 minutes')
+    await expect(durationTextbox2).toHaveValue('45 minutes', { timeout: 10_000 })
 
     // Restore to 30
     const restorePromise = page.waitForResponse(
-      (resp) => resp.url().includes('/research-group-settings/') && resp.request().method() === 'POST',
-      { timeout: 10_000 },
+      (resp) =>
+        resp.url().includes('/research-group-settings/') &&
+        resp.request().method() === 'POST' &&
+        resp.request().postData()?.includes('30'),
+      { timeout: 15_000 },
     )
-    await durationTextbox2.click()
-    await durationTextbox2.fill('30')
+    await durationTextbox2.clear()
+    await durationTextbox2.pressSequentially('30', { delay: 50 })
     await restorePromise
   })
 

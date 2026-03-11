@@ -6,6 +6,7 @@ import de.tum.cit.aet.thesis.constants.ThesisRoleName;
 import de.tum.cit.aet.thesis.constants.ThesisState;
 import de.tum.cit.aet.thesis.constants.ThesisVisibility;
 import de.tum.cit.aet.thesis.constants.UploadFileType;
+import de.tum.cit.aet.thesis.controller.payload.GradeComponentPayload;
 import de.tum.cit.aet.thesis.controller.payload.RequestChangesPayload;
 import de.tum.cit.aet.thesis.controller.payload.ThesisStatePayload;
 import de.tum.cit.aet.thesis.entity.Application;
@@ -15,6 +16,7 @@ import de.tum.cit.aet.thesis.entity.Thesis;
 import de.tum.cit.aet.thesis.entity.ThesisAssessment;
 import de.tum.cit.aet.thesis.entity.ThesisFeedback;
 import de.tum.cit.aet.thesis.entity.ThesisFile;
+import de.tum.cit.aet.thesis.entity.ThesisGradeComponent;
 import de.tum.cit.aet.thesis.entity.ThesisPresentation;
 import de.tum.cit.aet.thesis.entity.ThesisProposal;
 import de.tum.cit.aet.thesis.entity.ThesisRole;
@@ -49,6 +51,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -79,7 +82,7 @@ public class ThesisService {
 	private final ResearchGroupSettingsService researchGroupSettingsService;
 
 	/**
-	 * Injects all required repositories and services for thesis management.
+	 * Injects all required repositories, services, and providers.
 	 *
 	 * @param thesisRoleRepository the thesis role repository
 	 * @param thesisRepository the thesis repository
@@ -87,12 +90,12 @@ public class ThesisService {
 	 * @param userRepository the user repository
 	 * @param thesisProposalRepository the thesis proposal repository
 	 * @param thesisAssessmentRepository the thesis assessment repository
-	 * @param uploadService the upload service for file storage
-	 * @param mailingService the mailing service for sending notifications
+	 * @param uploadService the upload service
+	 * @param mailingService the mailing service
 	 * @param accessManagementService the access management service
 	 * @param thesisFeedbackRepository the thesis feedback repository
 	 * @param thesisFileRepository the thesis file repository
-	 * @param currentUserProviderProvider the provider for the current user context
+	 * @param currentUserProviderProvider the current user provider
 	 * @param researchGroupRepository the research group repository
 	 * @param researchGroupSettingsService the research group settings service
 	 */
@@ -605,7 +608,8 @@ public class ThesisService {
 			String summary,
 			String positives,
 			String negatives,
-			String gradeSuggestion
+			String gradeSuggestion,
+			List<GradeComponentPayload> gradeComponentPayloads
 	) {
 		requireNotAnonymized(thesis);
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
@@ -619,7 +623,29 @@ public class ThesisService {
 		assessment.setNegatives(negatives);
 		assessment.setGradeSuggestion(gradeSuggestion);
 
+		if (gradeComponentPayloads != null && !gradeComponentPayloads.isEmpty()) {
+			validateGradeComponents(gradeComponentPayloads);
+		}
+
 		thesisAssessmentRepository.save(assessment);
+
+		if (gradeComponentPayloads != null && !gradeComponentPayloads.isEmpty()) {
+
+			List<ThesisGradeComponent> gradeComponents = new ArrayList<>();
+			for (int i = 0; i < gradeComponentPayloads.size(); i++) {
+				GradeComponentPayload payload = gradeComponentPayloads.get(i);
+				ThesisGradeComponent component = new ThesisGradeComponent();
+				component.setAssessment(assessment);
+				component.setName(payload.name());
+				component.setWeight(payload.isBonus() ? BigDecimal.ZERO : payload.weight());
+				component.setIsBonus(payload.isBonus());
+				component.setGrade(payload.grade());
+				component.setPosition(i);
+				gradeComponents.add(component);
+			}
+			assessment.setGradeComponents(gradeComponents);
+			thesisAssessmentRepository.save(assessment);
+		}
 
 		List<ThesisAssessment> assessments = Objects.requireNonNullElse(thesis.getAssessments(), new ArrayList<>());
 		assessments.addFirst(assessment);
@@ -632,6 +658,58 @@ public class ThesisService {
 		mailingService.sendAssessmentAddedEmail(assessment);
 
 		return thesisRepository.save(thesis);
+	}
+
+	private void validateGradeComponents(List<GradeComponentPayload> components) {
+		BigDecimal minGrade = BigDecimal.ONE;
+		BigDecimal maxGrade = BigDecimal.valueOf(5);
+		BigDecimal hundredPercent = BigDecimal.valueOf(100);
+		BigDecimal minBonusGrade = BigDecimal.ZERO;
+
+		if (components.size() > 50) {
+			throw new ResourceInvalidParametersException("A maximum of 50 grade components is allowed.");
+		}
+
+		BigDecimal regularWeightSum = BigDecimal.ZERO;
+		for (GradeComponentPayload component : components) {
+			if (component == null) {
+				throw new ResourceInvalidParametersException("Grade component must not be null.");
+			}
+			if (component.name() == null || component.name().isBlank()) {
+				throw new ResourceInvalidParametersException("Grade component name must not be empty.");
+			}
+			if (component.name().length() > 255) {
+				throw new ResourceInvalidParametersException("Grade component name must not exceed 255 characters.");
+			}
+			if (component.grade() == null) {
+				throw new ResourceInvalidParametersException("Grade must not be null.");
+			}
+			if (component.grade().scale() > 1) {
+				throw new ResourceInvalidParametersException("Grade must have at most 1 decimal place.");
+			}
+			if (component.isBonus()) {
+				if (component.grade().compareTo(minBonusGrade) < 0 || component.grade().compareTo(maxGrade) > 0) {
+					throw new ResourceInvalidParametersException("Bonus value must be between 0.0 and 5.0.");
+				}
+			} else {
+				if (component.grade().compareTo(minGrade) < 0 || component.grade().compareTo(maxGrade) > 0) {
+					throw new ResourceInvalidParametersException("Grade must be between 1.0 and 5.0.");
+				}
+				if (component.weight() == null) {
+					throw new ResourceInvalidParametersException("Component weight must not be null.");
+				}
+				if (component.weight().scale() > 2) {
+					throw new ResourceInvalidParametersException("Weight must have at most 2 decimal places.");
+				}
+				if (component.weight().compareTo(BigDecimal.ZERO) <= 0) {
+					throw new ResourceInvalidParametersException("Component weight must be positive.");
+				}
+				regularWeightSum = regularWeightSum.add(component.weight());
+			}
+		}
+		if (regularWeightSum.compareTo(hundredPercent) != 0) {
+			throw new ResourceInvalidParametersException("Regular component weights must sum to 100%.");
+		}
 	}
 
 	/**
@@ -674,8 +752,21 @@ public class ThesisService {
 
 		builder.addSection("Summary", assessment.getSummary())
 				.addSection("Strengths", assessment.getPositives())
-				.addSection("Weaknesses", assessment.getNegatives())
-				.addSection("Grade Suggestion", assessment.getGradeSuggestion());
+				.addSection("Weaknesses", assessment.getNegatives());
+
+		if (assessment.getGradeComponents() != null && !assessment.getGradeComponents().isEmpty()) {
+			StringBuilder gradeTable = new StringBuilder();
+			for (ThesisGradeComponent component : assessment.getGradeComponents()) {
+				if (component.getIsBonus()) {
+					gradeTable.append(String.format("%s (Bonus): %s%n", component.getName(), component.getGrade()));
+				} else {
+					gradeTable.append(String.format("%s (%s%%): %s%n", component.getName(), component.getWeight(), component.getGrade()));
+				}
+			}
+			builder.addSection("Grade Components", gradeTable.toString());
+		}
+
+		builder.addSection("Grade Suggestion", assessment.getGradeSuggestion());
 
 		return builder.build();
 	}

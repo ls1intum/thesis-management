@@ -135,7 +135,8 @@ public record ThesisAssessmentDto(
 	String negatives,
 	String gradeSuggestion,
 	String createdAt,
-	LightUserDto createdBy
+	LightUserDto createdBy,
+	List<ThesisGradeComponentDTO> gradeComponents
 ) {
 
 	public static ThesisAssessmentDto fromAssessmentEntity(ThesisAssessment assessment) {
@@ -143,13 +144,18 @@ public record ThesisAssessmentDto(
 		return null;
 	}
 
+	List<ThesisGradeComponentDTO> gradeComponents = assessment.getGradeComponents() != null
+		? assessment.getGradeComponents().stream().map(ThesisGradeComponentDTO::fromEntity).toList()
+		: List.of();
+
 	return new ThesisAssessmentDto(
 		assessment.getSummary(),
 		assessment.getPositives(),
 		assessment.getNegatives(),
 		assessment.getGradeSuggestion(),
 		assessment.getCreatedAt().toString(),
-		LightUserDto.fromUserEntity(assessment.getCreatedBy())
+		LightUserDto.fromUserEntity(assessment.getCreatedBy()),
+		gradeComponents
 	);
 	}
 }

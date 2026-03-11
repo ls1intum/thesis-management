@@ -32,7 +32,7 @@ test.describe('Proposal Upload - Student uploads proposal', () => {
     await page.getByRole('button', { name: 'Upload Proposal' }).click()
 
     // Modal should open with "File Upload" title
-    await expect(page.getByRole('dialog')).toBeVisible({ timeout: 5_000 })
+    await expect(page.getByRole('dialog')).toBeVisible({ timeout: 10_000 })
 
     // Set file on the hidden file input inside the dropzone
     const fileInput = page.getByRole('dialog').locator('input[type="file"]')

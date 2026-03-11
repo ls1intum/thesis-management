@@ -2,6 +2,7 @@ package de.tum.cit.aet.thesis.controller;
 
 import de.tum.cit.aet.thesis.controller.payload.UpdateResearchGroupSettingsPayload;
 import de.tum.cit.aet.thesis.dto.ResearchGroupSettingsDTO;
+import de.tum.cit.aet.thesis.dto.ResearchGroupSettingsGradingSchemeDTO;
 import de.tum.cit.aet.thesis.dto.ResearchGroupSettingsPhasesDTO;
 import de.tum.cit.aet.thesis.entity.ResearchGroupSettings;
 import de.tum.cit.aet.thesis.service.ResearchGroupSettingsService;
@@ -47,7 +48,8 @@ public class ResearchGroupSettingsController {
 		Optional<ResearchGroupSettings> settings = service.getByResearchGroupId(researchGroupId);
 		ResearchGroupSettings returnSettings = settings.orElseGet(ResearchGroupSettings::new);
 
-		return ResponseEntity.ok(ResearchGroupSettingsDTO.fromEntity(returnSettings));
+		ResearchGroupSettingsGradingSchemeDTO gradingScheme = service.getGradingScheme(researchGroupId);
+		return ResponseEntity.ok(ResearchGroupSettingsDTO.fromEntity(returnSettings, gradingScheme));
 	}
 
 	/**
@@ -90,8 +92,18 @@ public class ResearchGroupSettingsController {
 					newSettings.applicationEmailSettings().includeApplicationDataInEmail());
 		}
 
+		if (newSettings.gradingSchemeSettings() != null) {
+			service.validateGradingScheme(newSettings.gradingSchemeSettings());
+		}
+
 		ResearchGroupSettings saved = service.saveOrUpdate(toSave);
-		return ResponseEntity.ok(ResearchGroupSettingsDTO.fromEntity(saved));
+
+		if (newSettings.gradingSchemeSettings() != null) {
+			service.saveGradingScheme(researchGroupId, newSettings.gradingSchemeSettings());
+		}
+
+		ResearchGroupSettingsGradingSchemeDTO gradingScheme = service.getGradingScheme(researchGroupId);
+		return ResponseEntity.ok(ResearchGroupSettingsDTO.fromEntity(saved, gradingScheme));
 	}
 
 	/**
@@ -108,5 +120,17 @@ public class ResearchGroupSettingsController {
 
 		return ResponseEntity.ok(
 				ResearchGroupSettingsPhasesDTO.fromEntity(settings));
+	}
+
+	/**
+	 * Retrieves the grading scheme for a research group.
+	 *
+	 * @param researchGroupId the ID of the research group
+	 * @return the grading scheme
+	 */
+	@GetMapping("/{researchGroupId}/grading-scheme")
+	@PreAuthorize("hasAnyRole('admin', 'group-admin', 'supervisor', 'advisor')")
+	public ResponseEntity<ResearchGroupSettingsGradingSchemeDTO> getGradingScheme(@PathVariable UUID researchGroupId) {
+		return ResponseEntity.ok(service.getGradingScheme(researchGroupId));
 	}
 }

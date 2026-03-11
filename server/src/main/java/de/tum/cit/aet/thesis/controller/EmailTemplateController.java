@@ -55,7 +55,7 @@ public class EmailTemplateController {
 	 * @return the paginated list of email templates
 	 */
 	@GetMapping
-	@PreAuthorize("hasAnyRole('admin', 'supervisor', 'advisor')")
+	@PreAuthorize("hasAnyRole('admin', 'group-admin', 'supervisor', 'advisor')")
 	public ResponseEntity<PaginationDto<EmailTemplateDto>> getEmailTemplates(
 			@RequestParam(required = false) String search,
 			@RequestParam(required = false, defaultValue = "") String[] templateCases,
@@ -89,7 +89,7 @@ public class EmailTemplateController {
 	 * @return the email template
 	 */
 	@GetMapping("/{emailTemplateId}")
-	@PreAuthorize("hasAnyRole('admin', 'supervisor', 'advisor')")
+	@PreAuthorize("hasAnyRole('admin', 'group-admin', 'supervisor', 'advisor')")
 	public ResponseEntity<EmailTemplateDto> getEmailTemplate(
 			@PathVariable("emailTemplateId") UUID emailTemplateId
 	) {
@@ -105,7 +105,7 @@ public class EmailTemplateController {
 	 * @return the created email template
 	 */
 	@PostMapping
-	@PreAuthorize("hasAnyRole('admin', 'supervisor', 'advisor')")
+	@PreAuthorize("hasAnyRole('admin', 'group-admin', 'supervisor', 'advisor')")
 	public ResponseEntity<EmailTemplateDto> createEmailTemplate(
 			@RequestBody CreateEmailTemplatePayload payload
 	) {
@@ -129,7 +129,7 @@ public class EmailTemplateController {
 	 * @return the updated email template
 	 */
 	@PutMapping("/{emailTemplateId}")
-	@PreAuthorize("hasAnyRole('admin', 'supervisor', 'advisor')")
+	@PreAuthorize("hasAnyRole('admin', 'group-admin', 'supervisor', 'advisor')")
 	public ResponseEntity<EmailTemplateDto> updateEmailTemplate(
 			@PathVariable("emailTemplateId") UUID emailTemplateId,
 			@RequestBody CreateEmailTemplatePayload payload
@@ -155,7 +155,7 @@ public class EmailTemplateController {
 	 * @return a boolean indicating whether the deletion was successful
 	 */
 	@DeleteMapping("/{emailTemplateId}")
-	@PreAuthorize("hasAnyRole('admin', 'supervisor', 'advisor')")
+	@PreAuthorize("hasAnyRole('admin', 'group-admin', 'supervisor', 'advisor')")
 	public ResponseEntity<Boolean> deleteEmailTemplate(
 			@PathVariable("emailTemplateId") UUID emailTemplateId
 	) {
@@ -171,7 +171,7 @@ public class EmailTemplateController {
 	 * @return variable metadata for template editing
 	 */
 	@GetMapping("/{emailTemplateId}/variables")
-	@PreAuthorize("hasAnyRole('admin', 'supervisor', 'advisor')")
+	@PreAuthorize("hasAnyRole('admin', 'group-admin', 'supervisor', 'advisor')")
 	public ResponseEntity<List<MailVariableDto>> getEmailTemplateVariables(
 			@PathVariable("emailTemplateId") UUID emailTemplateId
 	) {

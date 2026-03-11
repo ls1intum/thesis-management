@@ -124,6 +124,16 @@ VALUES
 ON CONFLICT DO NOTHING;
 
 -- ============================================================================
+-- 4b. GRADING SCHEME COMPONENTS (DSA group has a default grading scheme)
+-- ============================================================================
+INSERT INTO grading_scheme_components (component_id, research_group_id, name, weight, is_bonus, position)
+VALUES
+    ('00000000-0000-4000-f000-000000000001'::UUID, '00000000-0000-4000-a000-000000000002'::UUID, 'Thesis Content', 40.00, FALSE, 0),
+    ('00000000-0000-4000-f000-000000000002'::UUID, '00000000-0000-4000-a000-000000000002'::UUID, 'Methodology', 30.00, FALSE, 1),
+    ('00000000-0000-4000-f000-000000000003'::UUID, '00000000-0000-4000-a000-000000000002'::UUID, 'Presentation', 30.00, FALSE, 2)
+ON CONFLICT DO NOTHING;
+
+-- ============================================================================
 -- 5. ASSIGN USERS TO RESEARCH GROUPS
 -- ============================================================================
 UPDATE users SET research_group_id = '00000000-0000-4000-a000-000000000001'::UUID
