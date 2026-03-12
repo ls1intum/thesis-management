@@ -203,6 +203,17 @@ export function getAccordionItem(page: Page, sectionLabel: string) {
 }
 
 /**
+ * Hide the webpack-dev-server overlay iframe that intercepts pointer events.
+ * This overlay appears when ResizeObserver errors fire and blocks all UI interactions.
+ */
+export async function hideWebpackOverlay(page: Page) {
+  await page.evaluate(() => {
+    const iframe = document.getElementById('webpack-dev-server-client-overlay')
+    if (iframe) (iframe as HTMLElement).style.display = 'none'
+  })
+}
+
+/**
  * Create a minimal valid PDF buffer for file upload tests.
  */
 export function createTestPdfBuffer(): Buffer {

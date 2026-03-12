@@ -1,5 +1,11 @@
 import { test, expect, Page, Locator } from '@playwright/test'
-import { authStatePath, fillRichTextEditor, navigateTo, navigateToDetail } from './helpers'
+import {
+  authStatePath,
+  fillRichTextEditor,
+  hideWebpackOverlay,
+  navigateTo,
+  navigateToDetail,
+} from './helpers'
 
 // DSA group (a000-000000000002) has a default grading scheme in seed data
 const DSA_GROUP_ID = '00000000-0000-4000-a000-000000000002'
@@ -13,16 +19,6 @@ const ASE_SETTINGS_URL = `/research-groups/${ASE_GROUP_ID}`
 const THESIS_ID = '00000000-0000-4000-d000-000000000003'
 const THESIS_URL = `/theses/${THESIS_ID}`
 const THESIS_TITLE = 'Online Anomaly Detection in IoT Sensor Streams'
-
-/**
- * Hide the webpack-dev-server overlay iframe that intercepts pointer events.
- */
-async function hideWebpackOverlay(page: Page) {
-  await page.evaluate(() => {
-    const iframe = document.getElementById('webpack-dev-server-client-overlay')
-    if (iframe) (iframe as HTMLElement).style.display = 'none'
-  })
-}
 
 /**
  * Get the Grading Scheme card locator scoped to its Mantine Card container.

@@ -1,6 +1,14 @@
 import { test, expect } from '@playwright/test'
+import fs from 'fs'
+import path from 'path'
 
 const API_BASE = process.env.SERVER_URL ?? 'http://localhost:8180'
+
+// Fixed UUID from seed data for the avatar_test_supervisor user.
+// This user has a SUPERVISOR role on a non-public thesis (Thesis 3: ASSESSED/INTERNAL)
+// but no open published topics, no finished PUBLIC theses, and is not a research group head.
+const AVATAR_TEST_USER_ID = '00000000-0000-4000-aaaa-000000000001'
+const AVATAR_TEST_FILENAME = 'avatar_test_supervisor.png'
 
 test.describe('Public API - Avatar access control', () => {
   test.use({ storageState: { cookies: [], origins: [] } })
@@ -40,6 +48,34 @@ test.describe('Public API - Avatar access control', () => {
     expect(avatarResponse.status()).not.toBe(401)
     expect(avatarResponse.status()).not.toBe(403)
     expect([200, 404]).toContain(avatarResponse.status())
+  })
+
+  test('unauthenticated request for avatar of supervisor on non-public thesis returns 200', async ({
+    request,
+  }) => {
+    // Ensure the avatar file exists on disk so the endpoint can serve it.
+    // The server runs from the server/ directory, so uploads are at ../server/uploads/.
+    const uploadsDir = path.resolve(__dirname, '..', '..', 'server', 'uploads')
+    const avatarPath = path.join(uploadsDir, AVATAR_TEST_FILENAME)
+    if (!fs.existsSync(avatarPath)) {
+      fs.mkdirSync(uploadsDir, { recursive: true })
+      // Minimal valid 1x1 PNG
+      const png = Buffer.from(
+        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+        'base64',
+      )
+      fs.writeFileSync(avatarPath, png)
+    }
+
+    // This user (avatar_test_supervisor) is a SUPERVISOR on Thesis 3 (ASSESSED/INTERNAL).
+    // They have NO open published topics, NO finished PUBLIC theses, and are NOT a research group head.
+    // With the old visibility check (only public theses/open topics/group heads), this would return 404.
+    // With the new check (any non-STUDENT thesis role), this should return 200.
+    const avatarResponse = await request.get(
+      `${API_BASE}/api/v2/avatars/${AVATAR_TEST_USER_ID}`,
+    )
+    expect(avatarResponse.status()).toBe(200)
+    expect(avatarResponse.headers()['content-type']).toContain('image/png')
   })
 
   test('unauthenticated request for avatar of non-existent user returns 404', async ({

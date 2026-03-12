@@ -37,6 +37,9 @@ test.describe('Thesis Content Editing - Supervisor', () => {
     await visibilityInput.click()
     await page.getByRole('option', { name: new RegExp(`^${targetVisibility}`) }).click()
 
+    // Wait for the select value to update before submitting
+    await expect(visibilityInput).toHaveValue(targetVisibility, { timeout: 5_000 })
+
     const updateButton = page.getByRole('button', { name: 'Update' })
     await expect(updateButton).toBeEnabled({ timeout: 10_000 })
 

@@ -58,6 +58,11 @@ VALUES
      'Adobe Suite, HTML/CSS',
      NOW(), NOW(), NOW()),
     (gen_random_uuid(), 'group-admin', '03700010', 'group-admin@test.local', 'GroupAdmin', 'User',
+     NULL, 'DE', NULL, NULL, NULL, NULL, NULL, NULL, NOW(), NOW()),
+    -- DB-only user (no Keycloak account) for avatar visibility e2e test.
+    -- Has a SUPERVISOR thesis role but no open topics, no public theses, and is not a research group head.
+    ('00000000-0000-4000-aaaa-000000000001'::UUID, 'avatar_test_supervisor', '03700099',
+     'avatar_test@test.local', 'AvatarTest', 'Supervisor',
      NULL, 'DE', NULL, NULL, NULL, NULL, NULL, NULL, NOW(), NOW())
 ON CONFLICT (university_id) DO UPDATE SET
     matriculation_number = COALESCE(users.matriculation_number, EXCLUDED.matriculation_number),
@@ -72,6 +77,10 @@ ON CONFLICT (university_id) DO UPDATE SET
     interests            = COALESCE(users.interests, EXCLUDED.interests),
     special_skills       = COALESCE(users.special_skills, EXCLUDED.special_skills),
     enrolled_at          = COALESCE(users.enrolled_at, EXCLUDED.enrolled_at);
+
+-- Set avatar for the avatar visibility test user
+UPDATE users SET avatar = 'avatar_test_supervisor.png'
+WHERE university_id = 'avatar_test_supervisor' AND avatar IS NULL;
 
 -- ============================================================================
 -- 2. USER GROUPS (role assignments)
@@ -568,6 +577,11 @@ VALUES
     ('00000000-0000-4000-d000-000000000004'::UUID,
      (SELECT user_id FROM users WHERE university_id = 'examiner'), 'EXAMINER', 0,
      NOW() - INTERVAL '365 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
+
+    -- Thesis 3: additional supervisor for avatar visibility e2e test
+    ('00000000-0000-4000-d000-000000000003'::UUID,
+     '00000000-0000-4000-aaaa-000000000001'::UUID, 'SUPERVISOR', 1,
+     NOW() - INTERVAL '180 days', (SELECT user_id FROM users WHERE university_id = 'examiner2')),
 
     -- Thesis 5 (DROPPED_OUT): student=student5, supervisor=supervisor2, examiner=examiner2
     ('00000000-0000-4000-d000-000000000005'::UUID,
