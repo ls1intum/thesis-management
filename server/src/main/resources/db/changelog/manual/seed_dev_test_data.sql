@@ -82,6 +82,12 @@ ON CONFLICT (university_id) DO UPDATE SET
 UPDATE users SET avatar = 'avatar_test_supervisor.png'
 WHERE university_id = 'avatar_test_supervisor' AND avatar IS NULL;
 
+-- Set avatar for the student user (STUDENT on thesis 1: WRITING/PRIVATE).
+-- This user is NOT publicly visible, so unauthenticated avatar requests return 404.
+-- Used by the authenticated avatar loading e2e test.
+UPDATE users SET avatar = 'avatar_test_student.png'
+WHERE university_id = 'student' AND avatar IS NULL;
+
 -- ============================================================================
 -- 2. USER GROUPS (role assignments)
 -- ============================================================================
