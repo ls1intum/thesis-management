@@ -64,7 +64,6 @@ services:
       - KEYCLOAK_CLIENT_ID
       - KEYCLOAK_SERVICE_CLIENT_ID
       - KEYCLOAK_SERVICE_CLIENT_SECRET
-      - KEYCLOAK_SERVICE_STUDENT_GROUP_NAME
       - MAIL_SENDER
     networks:
       - thesis-management-network

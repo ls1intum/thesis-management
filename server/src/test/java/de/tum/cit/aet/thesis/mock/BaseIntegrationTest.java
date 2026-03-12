@@ -278,6 +278,13 @@ public abstract class BaseIntegrationTest {
 		UUID userId = UUID.fromString(JsonPath.parse(response).read("$.userId", String.class));
 		String actualUniversityId = JsonPath.parse(response).read("$.universityId", String.class);
 
+		// Seed user_groups in DB since updateAuthenticatedUser no longer writes groups
+		for (String role : roles) {
+			jdbcTemplate.update(
+					"INSERT INTO user_groups (user_id, \"group\") VALUES (?::uuid, ?) ON CONFLICT DO NOTHING",
+					userId.toString(), role);
+		}
+
 		return new TestUser(userId, actualUniversityId);
 	}
 

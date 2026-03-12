@@ -9,23 +9,20 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import jakarta.transaction.Transactional;
-
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 /**
- * Manages user roles and group assignments in Keycloak and synchronizes them with the local database.
+ * Manages user roles via the local database and provides user lookup from Keycloak.
+ * Authorization (group assignments) is handled entirely through the user_groups table.
+ * Keycloak is used only for authentication and user search.
  */
 @Service
 public class AccessManagementService {
@@ -36,9 +33,6 @@ public class AccessManagementService {
 	private final String keycloakRealmName;
 	private final String serviceClientId;
 	private final String serviceClientSecret;
-	private final String clientId;
-	private final UUID applicationClientUUID;
-	private final UUID studentGroupId;
 
 	private volatile String accessToken;
 	private volatile Instant tokenExpiration;
@@ -46,15 +40,14 @@ public class AccessManagementService {
 	private final UserGroupRepository userGroupRepository;
 
 	/**
-	 * Initializes the Keycloak WebClient and resolves the application client UUID and student group ID.
+	 * Constructs the access management service with Keycloak connection settings for user lookup
+	 * and the user group repository for authorization changes.
 	 *
-	 * @param keycloakHost the Keycloak server host URL
+	 * @param keycloakHost the Keycloak server URL
 	 * @param keycloakRealmName the Keycloak realm name
-	 * @param serviceClientId the service client ID for authentication
-	 * @param serviceClientSecret the service client secret for authentication
-	 * @param studentGroupName the name of the student group in Keycloak
-	 * @param clientId the application client ID
-	 * @param userGroupRepository the user group repository
+	 * @param serviceClientId the service client ID for Keycloak API access
+	 * @param serviceClientSecret the service client secret for Keycloak API access
+	 * @param userGroupRepository the repository for managing user group assignments
 	 */
 	@Autowired
 	public AccessManagementService(
@@ -62,100 +55,38 @@ public class AccessManagementService {
 			@Value("${thesis-management.keycloak.realm-name}") String keycloakRealmName,
 			@Value("${thesis-management.keycloak.service-client.id}") String serviceClientId,
 			@Value("${thesis-management.keycloak.service-client.secret}") String serviceClientSecret,
-			@Value("${thesis-management.keycloak.service-client.student-group-name}") String studentGroupName,
-			@Value("${thesis-management.keycloak.client-id}") String clientId,
 			UserGroupRepository userGroupRepository
 	) {
 		this.userGroupRepository = userGroupRepository;
 		this.keycloakRealmName = keycloakRealmName;
 		this.serviceClientId = serviceClientId;
 		this.serviceClientSecret = serviceClientSecret;
-		this.clientId = clientId;
 
 		this.webClient = WebClient.builder()
 				.baseUrl(keycloakHost)
 				.build();
-
-		UUID applicationClientUUID = null;
-		try {
-			applicationClientUUID = clientId.isBlank() || serviceClientSecret.isBlank() ? null : getApplicationClientUUID();
-		} catch (RuntimeException exception) {
-			log.warn("Could not fetch client id from configured service client", exception);
-		}
-		this.applicationClientUUID = applicationClientUUID;
-
-		UUID studentGroupId = null;
-		try {
-			studentGroupId = studentGroupName.isBlank() || serviceClientSecret.isBlank() ? null : getGroupId(studentGroupName);
-		} catch (RuntimeException exception) {
-			log.warn("Could not fetch group id from configured student group", exception);
-		}
-		this.studentGroupId = studentGroupId;
 	}
 
 	/**
-	 * Assigns the configured student Keycloak group to the given user.
+	 * Assigns the student group to the given user in the database.
 	 *
 	 * @param user the user to assign the student group to
 	 */
 	public void addStudentGroup(User user) {
-		if (studentGroupId == null) {
-			return;
-		}
-
-		try {
-			assignKeycloakGroup(getUserId(user.getUniversityId()), studentGroupId);
-		} catch (RuntimeException exception) {
-			log.warn("Could not assign keycloak group to user", exception);
-		}
+		addGroup(user, "student");
 	}
 
 	/**
-	 * Removes the configured student Keycloak group from the given user.
+	 * Removes the student group from the given user in the database.
 	 *
 	 * @param user the user to remove the student group from
 	 */
 	public void removeStudentGroup(User user) {
-		if (studentGroupId == null) {
-			return;
-		}
-
-		try {
-			removeKeycloakGroup(getUserId(user.getUniversityId()), studentGroupId);
-		} catch (RuntimeException exception) {
-			log.warn("Could not remove keycloak group from user", exception);
-		}
+		removeGroup(user, "student");
 	}
-
-	private void assignKeycloakGroup(UUID userId, UUID groupId) {
-		if (userId == null || groupId == null) {
-			throw new RuntimeException("User id or group id is null");
-		}
-
-		webClient.method(HttpMethod.PUT)
-				.uri("/admin/realms/" + keycloakRealmName + "/users/" + userId + "/groups/" + groupId)
-				.headers(headers -> headers.addAll(getAuthenticationHeaders()))
-				.retrieve()
-				.bodyToMono(Void.class)
-				.block();
-	}
-
-	private void removeKeycloakGroup(UUID userId, UUID groupId) {
-		if (userId == null || groupId == null) {
-			throw new RuntimeException("User id or group id is null");
-		}
-
-		webClient.method(HttpMethod.DELETE)
-				.uri("/admin/realms/" + keycloakRealmName + "/users/" + userId + "/groups/" + groupId)
-				.headers(headers -> headers.addAll(getAuthenticationHeaders()))
-				.retrieve()
-				.bodyToMono(Void.class)
-				.block();
-	}
-
 
 	/**
-	 * Assigns the advisor Keycloak role to the user and removes any conflicting supervisor or student roles.
+	 * Assigns the advisor role to the user, removing any conflicting supervisor or student roles.
 	 *
 	 * @param user the user to assign the advisor role to
 	 */
@@ -164,19 +95,13 @@ public class AccessManagementService {
 			throw new RuntimeException("User is null");
 		}
 
-		try {
-			UUID userId = getUserId(user.getUniversityId());
-			assignKeycloakRole(userId, "advisor");
-
-			removeKeycloakRole(userId, "supervisor");
-			removeKeycloakRole(userId, "student");
-		} catch (RuntimeException exception) {
-			log.warn("Could not assign advisor role to user", exception);
-		}
+		removeGroup(user, "student");
+		removeGroup(user, "supervisor");
+		addGroup(user, "advisor");
 	}
 
 	/**
-	 * Assigns the supervisor and advisor Keycloak roles to the user and removes the student role.
+	 * Assigns the supervisor and advisor roles to the user and removes the student role.
 	 *
 	 * @param user the user to assign the supervisor role to
 	 */
@@ -185,20 +110,13 @@ public class AccessManagementService {
 			throw new RuntimeException("User is null");
 		}
 
-		try {
-			UUID userId = getUserId(user.getUniversityId());
-			// As of right now supervisors also get the role advisor by default
-			assignKeycloakRole(userId, "supervisor");
-			assignKeycloakRole(userId, "advisor");
-
-			removeKeycloakRole(userId, "student");
-		} catch (RuntimeException exception) {
-			log.warn("Could not assign supervisor role to user", exception);
-		}
+		removeGroup(user, "student");
+		addGroup(user, "supervisor");
+		addGroup(user, "advisor");
 	}
 
 	/**
-	 * Assigns the group-admin Keycloak role to the given user.
+	 * Assigns the group-admin role to the given user.
 	 *
 	 * @param user the user to assign the group-admin role to
 	 */
@@ -207,16 +125,11 @@ public class AccessManagementService {
 			throw new RuntimeException("User is null");
 		}
 
-		try {
-			UUID userId = getUserId(user.getUniversityId());
-			assignKeycloakRole(userId, "group-admin");
-		} catch (RuntimeException exception) {
-			log.warn("Could not assign groupadmin role to user", exception);
-		}
+		addGroup(user, "group-admin");
 	}
 
 	/**
-	 * Removes the group-admin Keycloak role from the given user.
+	 * Removes the group-admin role from the given user.
 	 *
 	 * @param user the user to remove the group-admin role from
 	 */
@@ -225,16 +138,11 @@ public class AccessManagementService {
 			throw new RuntimeException("User is null");
 		}
 
-		try {
-			UUID userId = getUserId(user.getUniversityId());
-			removeKeycloakRole(userId, "group-admin");
-		} catch (RuntimeException exception) {
-			log.warn("Could not remove groupadmin role from user", exception);
-		}
+		removeGroup(user, "group-admin");
 	}
 
 	/**
-	 * Removes all research group-related Keycloak roles from the user and reassigns the student role.
+	 * Removes all research group-related roles from the user and reassigns the student role.
 	 *
 	 * @param user the user to remove research group roles from
 	 */
@@ -243,93 +151,35 @@ public class AccessManagementService {
 			throw new RuntimeException("User is null");
 		}
 
-		UUID userId = getUserId(user.getUniversityId());
-		assignKeycloakRole(userId, "student");
-
-		removeKeycloakRole(userId, "advisor");
-		removeKeycloakRole(userId, "supervisor");
-		removeKeycloakRole(userId, "group-admin");
+		removeGroup(user, "advisor");
+		removeGroup(user, "supervisor");
+		removeGroup(user, "group-admin");
+		addGroup(user, "student");
 	}
 
-	private void removeKeycloakRole(UUID userId, String roleName) {
-		Role roleObject = getClientRoleByName(roleName);
+	private void addGroup(User user, String group) {
+		userGroupRepository.insertIfNotExists(user.getId(), group);
 
-		webClient.method(HttpMethod.DELETE)
-				.uri("/admin/realms/" + keycloakRealmName + "/users/" + userId + "/role-mappings/clients/" + applicationClientUUID)
-				.headers(headers -> headers.addAll(getAuthenticationHeaders()))
-				.bodyValue(List.of(roleObject))
-				.retrieve()
-				.toBodilessEntity()
-				.block();
-	}
+		// Update in-memory set if the group isn't already present
+		boolean alreadyPresent = user.getGroups().stream()
+				.anyMatch(ug -> ug.getId().getGroup().equals(group));
+		if (!alreadyPresent) {
+			UserGroup entity = new UserGroup();
+			UserGroupId entityId = new UserGroupId();
 
-	private void assignKeycloakRole(UUID userId, String role) {
-		if (userId == null || role == null) {
-			throw new RuntimeException("User id or role is null");
+			entityId.setUserId(user.getId());
+			entityId.setGroup(group);
+
+			entity.setUser(user);
+			entity.setId(entityId);
+
+			user.getGroups().add(entity);
 		}
-
-		Role roleObject = getClientRoleByName(role);
-
-		webClient.post()
-				.uri("/admin/realms/" + keycloakRealmName + "/users/" + userId + "/role-mappings/clients/" + applicationClientUUID)
-				.headers(headers -> headers.addAll(getAuthenticationHeaders()))
-				.bodyValue(List.of(roleObject))
-				.retrieve()
-				.toBodilessEntity()
-				.block();
 	}
 
-	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
-	@Transactional
-	public Set<UserGroup> syncRolesFromKeycloakToDatabase(User user) {
-		if (user == null) {
-			throw new IllegalArgumentException("User cannot be null");
-		}
-
-		UUID keycloakUserId = getUserId(user.getUniversityId());
-
-		// Fetch all client roles from Keycloak for the given user
-		List<Role> keycloakRoles = webClient.get()
-				.uri("/admin/realms/" + keycloakRealmName + "/users/" + keycloakUserId + "/role-mappings/clients/" + applicationClientUUID)
-				.headers(headers -> headers.addAll(getAuthenticationHeaders()))
-				.retrieve()
-				.bodyToFlux(Role.class)
-				.collectList()
-				.block();
-
-		// Delete old group assignments
-		userGroupRepository.deleteByUserId(user.getId());
-
-		// Create and persist new user groups
-		Set<UserGroup> userGroups = new HashSet<>();
-
-		if (keycloakRoles != null && !keycloakRoles.isEmpty()) {
-			for (Role role : keycloakRoles) {
-				UserGroup entity = new UserGroup();
-				UserGroupId entityId = new UserGroupId();
-
-				entityId.setUserId(user.getId());
-				entityId.setGroup(role.name());
-
-				entity.setUser(user);
-				entity.setId(entityId);
-
-				userGroups.add(userGroupRepository.save(entity));
-			}
-		}
-
-		return userGroups;
-	}
-
-	private record Role(String id, String name, String description, boolean composite, boolean clientRole, String containerId) {}
-
-	private Role getClientRoleByName(String roleName) {
-		return webClient.get()
-				.uri("/admin/realms/" + keycloakRealmName + "/clients/" + applicationClientUUID + "/roles/" + roleName)
-				.headers(headers -> headers.addAll(getAuthenticationHeaders()))
-				.retrieve()
-				.bodyToMono(Role.class)
-				.block();
+	private void removeGroup(User user, String group) {
+		userGroupRepository.deleteByUserIdAndGroup(user.getId(), group);
+		user.getGroups().removeIf(ug -> ug.getId().getGroup().equals(group));
 	}
 
 	private record TokensResponse(String access_token) { }
@@ -361,48 +211,6 @@ public class AccessManagementService {
 		return authenticationHeaders;
 	}
 
-	private record GroupElement(UUID id, String name) {}
-
-	private UUID getGroupId(String groupName) {
-		List<GroupElement> groups = webClient.method(HttpMethod.GET)
-				.uri("/admin/realms/" + keycloakRealmName + "/groups")
-				.headers(headers -> headers.addAll(getAuthenticationHeaders()))
-				.retrieve()
-				.bodyToFlux(GroupElement.class)
-				.collectList()
-				.block();
-
-		if (groups == null) {
-			throw new RuntimeException("Groups request was empty");
-		}
-
-		return groups.stream()
-				.filter(group -> group.name().equals(groupName))
-				.findFirst()
-				.map(GroupElement::id)
-				.orElseThrow(() -> new RuntimeException("Group not found: " + groupName));
-	}
-
-	private record ClientElement(UUID id, String clientId, String name) {}
-	private UUID getApplicationClientUUID() {
-		ClientElement client = webClient.method(HttpMethod.GET)
-				.uri(uriBuilder -> uriBuilder
-						.path("/admin/realms/" + keycloakRealmName + "/clients")
-						.queryParam("clientId", clientId)
-						.build())
-				.headers(headers -> headers.addAll(getAuthenticationHeaders()))
-				.retrieve()
-				.bodyToFlux(ClientElement.class)
-				.next()
-				.block();
-
-		if (client == null) {
-			throw new IllegalStateException("Client not found: " + clientId);
-		}
-
-		return client.id();
-	}
-
 	/**
 	 * Fetches a user by their username from Keycloak.
 	 * In case of Tum the username is the university ID.
@@ -432,10 +240,6 @@ public class AccessManagementService {
 		return users.stream()
 				.findFirst()
 				.orElseThrow(() -> new RuntimeException("User not found: " + username));
-	}
-
-	private UUID getUserId(String username) {
-		return getUserByUsername(username).id;
 	}
 
 	/**

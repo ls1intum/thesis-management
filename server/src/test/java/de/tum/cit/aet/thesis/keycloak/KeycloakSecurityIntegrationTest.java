@@ -39,6 +39,8 @@ class KeycloakSecurityIntegrationTest extends BaseKeycloakIntegrationTest {
 
 	@Test
 	void testStudentUserInfo() throws Exception {
+		createLocalUserWithGroups("student", "student");
+
 		mockMvc.perform(MockMvcRequestBuilders.get("/v2/user-info")
 						.header("Authorization", authHeaderFor("student")))
 				.andExpect(status().isOk())
@@ -48,6 +50,8 @@ class KeycloakSecurityIntegrationTest extends BaseKeycloakIntegrationTest {
 
 	@Test
 	void testAdminCanAccessUsersEndpoint() throws Exception {
+		createLocalUserWithGroups("admin", "admin");
+
 		mockMvc.perform(MockMvcRequestBuilders.get("/v2/user-info")
 						.header("Authorization", authHeaderFor("admin")))
 				.andExpect(status().isOk());
@@ -59,6 +63,8 @@ class KeycloakSecurityIntegrationTest extends BaseKeycloakIntegrationTest {
 
 	@Test
 	void testStudentCannotAccessUsersEndpoint() throws Exception {
+		createLocalUserWithGroups("student", "student");
+
 		mockMvc.perform(MockMvcRequestBuilders.get("/v2/user-info")
 						.header("Authorization", authHeaderFor("student")))
 				.andExpect(status().isOk());
@@ -70,12 +76,14 @@ class KeycloakSecurityIntegrationTest extends BaseKeycloakIntegrationTest {
 
 	@Test
 	void testExaminerPassesSecurityButNeedsResearchGroup() throws Exception {
+		createLocalUserWithGroups("examiner", "supervisor", "advisor");
+
 		mockMvc.perform(MockMvcRequestBuilders.get("/v2/user-info")
 						.header("Authorization", authHeaderFor("examiner")))
 				.andExpect(status().isOk());
 
 		// Examiner passes @PreAuthorize but gets application-level 403
-		// because no research group is assigned — this proves the JWT role check passed
+		// because no research group is assigned — this proves the DB role check passed
 		mockMvc.perform(MockMvcRequestBuilders.get("/v2/users")
 						.header("Authorization", authHeaderFor("examiner")))
 				.andExpect(status().isForbidden())

@@ -2,7 +2,6 @@ package de.tum.cit.aet.thesis.mock;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
 
 import com.auth0.jwt.JWT;
 import de.tum.cit.aet.thesis.service.AccessManagementService;
@@ -103,11 +102,7 @@ public class TestSecurityConfig {
 	public AccessManagementService accessManagementService() {
 		AccessManagementService mock = Mockito.mock(AccessManagementService.class);
 
-		// Mock behavior
 		doNothing().when(mock).assignSupervisorRole(any());
-
-		when(mock.syncRolesFromKeycloakToDatabase(any()))
-				.thenReturn(Collections.emptySet());
 
 		return mock;
 	}

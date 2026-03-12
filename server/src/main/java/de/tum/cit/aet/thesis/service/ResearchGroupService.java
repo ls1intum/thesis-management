@@ -2,7 +2,6 @@ package de.tum.cit.aet.thesis.service;
 
 import de.tum.cit.aet.thesis.entity.ResearchGroup;
 import de.tum.cit.aet.thesis.entity.User;
-import de.tum.cit.aet.thesis.entity.UserGroup;
 import de.tum.cit.aet.thesis.exception.request.AccessDeniedException;
 import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.repository.ResearchGroupRepository;
@@ -231,11 +230,8 @@ public class ResearchGroupService {
 			throw new AccessDeniedException("User is already assigned to a research group.");
 		}
 
-		//Add supervisor role in keycloak
 		accessManagementService.assignSupervisorRole(head);
 		accessManagementService.assignGroupAdminRole(head);
-		Set<UserGroup> updatedGroupsHead = accessManagementService.syncRolesFromKeycloakToDatabase(head);
-		head.setGroups(updatedGroupsHead);
 
 		ResearchGroup researchGroup = new ResearchGroup();
 		researchGroup.setHead(head);
@@ -317,10 +313,6 @@ public class ResearchGroupService {
 				accessManagementService.assignSupervisorRole(head);
 				accessManagementService.assignGroupAdminRole(head);
 				accessManagementService.removeResearchGroupRoles(oldHead);
-				Set<UserGroup> updatedGroupsHead = accessManagementService.syncRolesFromKeycloakToDatabase(head);
-				head.setGroups(updatedGroupsHead);
-				Set<UserGroup> updatedGroupsOldHead = accessManagementService.syncRolesFromKeycloakToDatabase(oldHead);
-				oldHead.setGroups(updatedGroupsOldHead);
 			} catch (Exception e) {
 				throw new AccessDeniedException("There was an error changing the head of the group, please try again.");
 			}
@@ -403,10 +395,7 @@ public class ResearchGroupService {
 
 		user.setResearchGroup(researchGroup);
 
-		//Assign member the advisor role in keycloak and update database
 		accessManagementService.assignAdvisorRole(user);
-		Set<UserGroup> updatedGroups = accessManagementService.syncRolesFromKeycloakToDatabase(user);
-		user.setGroups(updatedGroups);
 
 		userRepository.save(user);
 		return user;
@@ -436,11 +425,8 @@ public class ResearchGroupService {
 		}
 
 
-		//Remove advisor role in keycloak and update database
 		try {
 			accessManagementService.removeResearchGroupRoles(user);
-			Set<UserGroup> updatedGroups = accessManagementService.syncRolesFromKeycloakToDatabase(user);
-			user.setGroups(updatedGroups);
 			user.setResearchGroup(null);
 
 			userRepository.save(user);
@@ -484,9 +470,6 @@ public class ResearchGroupService {
 			throw new IllegalArgumentException("Invalid role: " + role);
 		}
 
-		Set<UserGroup> updatedGroups = accessManagementService.syncRolesFromKeycloakToDatabase(user);
-		user.setGroups(updatedGroups);
-
 		userRepository.save(user);
 
 		return user;
@@ -511,9 +494,6 @@ public class ResearchGroupService {
 		} else {
 			accessManagementService.assignGroupAdminRole(user);
 		}
-
-		Set<UserGroup> newGroups = accessManagementService.syncRolesFromKeycloakToDatabase(user);
-		user.setGroups(newGroups);
 
 		return user;
 	}

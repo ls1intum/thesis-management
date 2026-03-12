@@ -24,7 +24,6 @@ import tools.jackson.databind.JsonNode;
 import jakarta.servlet.ServletException;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -313,8 +312,6 @@ class UserControllerTest extends BaseIntegrationTest {
 			reset(accessManagementService);
 			// Re-establish baseline stubs from TestSecurityConfig
 			doNothing().when(accessManagementService).assignSupervisorRole(any());
-			when(accessManagementService.syncRolesFromKeycloakToDatabase(any()))
-					.thenReturn(Collections.emptySet());
 		}
 
 		@Test

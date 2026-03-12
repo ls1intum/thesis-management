@@ -41,6 +41,8 @@
     <include file="changes/36_privacy_consent.sql" relativeToChangelogFile="true" />
     <include file="changes/37_grading_scheme.sql" relativeToChangelogFile="true" />
 
+    <include file="changes/38_fix_missing_student_groups.sql" relativeToChangelogFile="true" />
+
     <!-- Dev/test seed data — must be last so it can reference all columns from prior migrations -->
     <include file="changes/23_seed_dev_test_data.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>

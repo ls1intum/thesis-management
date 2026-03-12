@@ -213,6 +213,27 @@ public void complexOperation(UUID id) {
 }
 ```
 
+#### Authorization Architecture: DB as Single Source of Truth
+
+**Keycloak is used for authentication only** (verifying user identity via JWT tokens). **The `user_groups` database table is the single source of truth for authorization** (roles and permissions).
+
+In OAuth2 applications where roles change frequently at runtime (e.g. a student becomes a supervisor, a user joins a research group), it is a best practice to separate authentication from authorization (see [OAuth 2.0 Simplified: Separation of Roles](https://www.oauth.com/oauth2-servers/differences-between-oauth-1-2/separation-of-roles/) and [Auth0: Permissions, Privileges, and Scopes](https://auth0.com/blog/permissions-privileges-and-scopes/)). JWT claims are static snapshots issued at login time and become stale when roles change mid-session. Storing authorization in the application database ensures that role changes take effect immediately, avoids coupling the authorization model to the identity provider's group or role schema, and keeps the application fully functional even when the identity provider's Admin API is unreachable.
+
+**How it works:**
+
+Spring Security authorities are loaded from the `user_groups` table on every request via `JwtAuthConverter`, not from JWT `resource_access` claims. All role mutations (`addStudentGroup`, `assignSupervisorRole`, `assignAdvisorRole`, `assignGroupAdminRole`, etc.) write directly to the `user_groups` table through `UserGroupRepository` without calling the Keycloak Admin API. The `updateAuthenticatedUser()` method syncs profile data (name, email, matriculation number) from the JWT but does not touch groups. New users with no groups automatically receive the `student` group. `@PreAuthorize` annotations (e.g. `hasRole('admin')`) check authorities derived from `user_groups`, not from JWT claims.
+
+**What still uses Keycloak:**
+
+Keycloak issues JWT tokens for user login, and Spring Security validates them. The `AccessManagementService.getUserByUsername()` and `getAllUsers()` methods query the Keycloak Admin API to search users by name (used in the admin UI for adding users to research groups). This is a read-only lookup, not role management.
+
+**Key rules for developers:**
+
+1. Never read roles or groups from the JWT token or Keycloak Admin API for authorization decisions.
+2. Never write roles or groups to Keycloak. Always use `UserGroupRepository` or `AccessManagementService` methods.
+3. When adding a new role check, use `@PreAuthorize("hasRole('...')")`. The authorities come from the DB automatically.
+4. Keycloak groups in the realm JSON (`keycloak/thesis-management-realm.json`) are only relevant for local dev seed data and do not affect production authorization.
+
 #### DTOs
 
 Use Java `record` types for all Data Transfer Objects (DTOs). Records are immutable, concise, and well-suited for API response objects.

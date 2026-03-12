@@ -48,11 +48,9 @@ thesis-management:
   keycloak:
     host: http://unreachable:8081
     realm-name: thesis-management
-    client-id: thesis-management-app
     service-client:
       id: thesis-management-service-client
       secret: ""
-      student-group-name: thesis-students
   client:
     host: http://localhost:3100
   mail:

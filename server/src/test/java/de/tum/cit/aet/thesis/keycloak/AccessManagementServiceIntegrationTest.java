@@ -7,15 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import de.tum.cit.aet.thesis.entity.User;
-import de.tum.cit.aet.thesis.entity.UserGroup;
 import de.tum.cit.aet.thesis.repository.UserRepository;
 import de.tum.cit.aet.thesis.service.AccessManagementService;
 import de.tum.cit.aet.thesis.service.AccessManagementService.KeycloakUserInformation;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.keycloak.admin.client.Keycloak;
-import org.keycloak.representations.idm.GroupRepresentation;
-import org.keycloak.representations.idm.RoleRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -31,57 +26,20 @@ class AccessManagementServiceIntegrationTest extends BaseKeycloakIntegrationTest
 	@Autowired
 	private UserRepository userRepository;
 
-	/**
-	 * Resets Keycloak state that may have been mutated by tests.
-	 * Runs after every test so cleanup happens even when assertions fail.
-	 */
-	@AfterEach
-	void resetKeycloakState() {
-		Keycloak adminClient = KEYCLOAK_CONTAINER.getKeycloakAdminClient();
-		String appClientUuid = adminClient.realm("thesis-management")
-				.clients().findByClientId("thesis-management-app").get(0).getId();
-
-		// Reset "student" user's client roles back to only "student"
-		resetUserRoles(adminClient, appClientUuid, "student", List.of("student"));
-
-		// Reset "supervisor" user's client roles back to only "advisor"
-		resetUserRoles(adminClient, appClientUuid, "supervisor", List.of("advisor"));
-
-		// Remove "supervisor" user from thesis-students group if present
-		String supervisorKeycloakId = adminClient.realm("thesis-management")
-				.users().search("supervisor", true).get(0).getId();
-		List<GroupRepresentation> supervisorGroups = adminClient.realm("thesis-management")
-				.users().get(supervisorKeycloakId).groups();
-		supervisorGroups.stream()
-				.filter(g -> g.getName().equals("thesis-students"))
-				.findFirst()
-				.ifPresent(g -> adminClient.realm("thesis-management")
-						.users().get(supervisorKeycloakId).leaveGroup(g.getId()));
-	}
-
-	private void resetUserRoles(Keycloak adminClient, String appClientUuid, String username, List<String> expectedRoles) {
-		String keycloakUserId = adminClient.realm("thesis-management")
-				.users().search(username, true).get(0).getId();
-		List<RoleRepresentation> currentRoles = adminClient.realm("thesis-management")
-				.users().get(keycloakUserId).roles().clientLevel(appClientUuid).listAll();
-		if (!currentRoles.isEmpty()) {
-			adminClient.realm("thesis-management")
-					.users().get(keycloakUserId).roles().clientLevel(appClientUuid).remove(currentRoles);
-		}
-		List<RoleRepresentation> rolesToAssign = expectedRoles.stream()
-				.map(roleName -> adminClient.realm("thesis-management")
-						.clients().get(appClientUuid).roles().get(roleName).toRepresentation())
-				.toList();
-		adminClient.realm("thesis-management")
-				.users().get(keycloakUserId).roles().clientLevel(appClientUuid).add(rolesToAssign);
-	}
-
 	private User createLocalUser(String username) throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/v2/user-info")
 						.header("Authorization", authHeaderFor(username)))
 				.andExpect(status().isOk());
 
 		return userRepository.findByUniversityId(username).orElseThrow();
+	}
+
+	private Set<String> getGroupNames(User user) {
+		// Refresh user from DB to get current groups
+		User refreshed = userRepository.findById(user.getId()).orElseThrow();
+		return refreshed.getGroups().stream()
+				.map(g -> g.getId().getGroup())
+				.collect(Collectors.toSet());
 	}
 
 	@Test
@@ -103,44 +61,12 @@ class AccessManagementServiceIntegrationTest extends BaseKeycloakIntegrationTest
 	}
 
 	@Test
-	void testSyncRolesFromKeycloakToDatabase_Admin() throws Exception {
-		User admin = createLocalUser("admin");
-
-		Set<UserGroup> groups = accessManagementService.syncRolesFromKeycloakToDatabase(admin);
-
-		Set<String> roleNames = groups.stream()
-				.map(g -> g.getId().getGroup())
-				.collect(Collectors.toSet());
-		assertTrue(roleNames.contains("admin"));
-	}
-
-	@Test
-	void testSyncRolesFromKeycloakToDatabase_Student() throws Exception {
-		User student = createLocalUser("student");
-
-		Set<UserGroup> groups = accessManagementService.syncRolesFromKeycloakToDatabase(student);
-
-		Set<String> roleNames = groups.stream()
-				.map(g -> g.getId().getGroup())
-				.collect(Collectors.toSet());
-		assertTrue(roleNames.contains("student"));
-	}
-
-	@Test
 	void testAssignSupervisorRole() throws Exception {
 		User student = createLocalUser("student");
 
 		accessManagementService.assignSupervisorRole(student);
 
-		Keycloak adminClient = KEYCLOAK_CONTAINER.getKeycloakAdminClient();
-		String keycloakUserId = adminClient.realm("thesis-management")
-				.users().search("student", true).get(0).getId();
-		String appClientUuid = adminClient.realm("thesis-management")
-				.clients().findByClientId("thesis-management-app").get(0).getId();
-		List<RoleRepresentation> roles = adminClient.realm("thesis-management")
-				.users().get(keycloakUserId).roles().clientLevel(appClientUuid).listAll();
-
-		Set<String> roleNames = roles.stream().map(RoleRepresentation::getName).collect(Collectors.toSet());
+		Set<String> roleNames = getGroupNames(student);
 		assertTrue(roleNames.contains("supervisor"));
 		assertTrue(roleNames.contains("advisor"));
 		assertFalse(roleNames.contains("student"));
@@ -152,15 +78,7 @@ class AccessManagementServiceIntegrationTest extends BaseKeycloakIntegrationTest
 
 		accessManagementService.assignAdvisorRole(student);
 
-		Keycloak adminClient = KEYCLOAK_CONTAINER.getKeycloakAdminClient();
-		String keycloakUserId = adminClient.realm("thesis-management")
-				.users().search("student", true).get(0).getId();
-		String appClientUuid = adminClient.realm("thesis-management")
-				.clients().findByClientId("thesis-management-app").get(0).getId();
-		List<RoleRepresentation> roles = adminClient.realm("thesis-management")
-				.users().get(keycloakUserId).roles().clientLevel(appClientUuid).listAll();
-
-		Set<String> roleNames = roles.stream().map(RoleRepresentation::getName).collect(Collectors.toSet());
+		Set<String> roleNames = getGroupNames(student);
 		assertTrue(roleNames.contains("advisor"));
 		assertFalse(roleNames.contains("supervisor"));
 		assertFalse(roleNames.contains("student"));
@@ -168,19 +86,11 @@ class AccessManagementServiceIntegrationTest extends BaseKeycloakIntegrationTest
 
 	@Test
 	void testAssignGroupAdminRole() throws Exception {
-		User supervisor = createLocalUser("supervisor");
+		User supervisor = createLocalUserWithGroups("supervisor", "advisor");
 
 		accessManagementService.assignGroupAdminRole(supervisor);
 
-		Keycloak adminClient = KEYCLOAK_CONTAINER.getKeycloakAdminClient();
-		String keycloakUserId = adminClient.realm("thesis-management")
-				.users().search("supervisor", true).get(0).getId();
-		String appClientUuid = adminClient.realm("thesis-management")
-				.clients().findByClientId("thesis-management-app").get(0).getId();
-		List<RoleRepresentation> roles = adminClient.realm("thesis-management")
-				.users().get(keycloakUserId).roles().clientLevel(appClientUuid).listAll();
-
-		Set<String> roleNames = roles.stream().map(RoleRepresentation::getName).collect(Collectors.toSet());
+		Set<String> roleNames = getGroupNames(supervisor);
 		assertTrue(roleNames.contains("group-admin"));
 		assertTrue(roleNames.contains("advisor"), "Original advisor role should be preserved");
 	}
@@ -193,15 +103,7 @@ class AccessManagementServiceIntegrationTest extends BaseKeycloakIntegrationTest
 		accessManagementService.assignGroupAdminRole(supervisor);
 		accessManagementService.removeGroupAdminRole(supervisor);
 
-		Keycloak adminClient = KEYCLOAK_CONTAINER.getKeycloakAdminClient();
-		String keycloakUserId = adminClient.realm("thesis-management")
-				.users().search("supervisor", true).get(0).getId();
-		String appClientUuid = adminClient.realm("thesis-management")
-				.clients().findByClientId("thesis-management-app").get(0).getId();
-		List<RoleRepresentation> roles = adminClient.realm("thesis-management")
-				.users().get(keycloakUserId).roles().clientLevel(appClientUuid).listAll();
-
-		Set<String> roleNames = roles.stream().map(RoleRepresentation::getName).collect(Collectors.toSet());
+		Set<String> roleNames = getGroupNames(supervisor);
 		assertFalse(roleNames.contains("group-admin"));
 	}
 
@@ -215,15 +117,7 @@ class AccessManagementServiceIntegrationTest extends BaseKeycloakIntegrationTest
 		// Now remove all research group roles
 		accessManagementService.removeResearchGroupRoles(student);
 
-		Keycloak adminClient = KEYCLOAK_CONTAINER.getKeycloakAdminClient();
-		String keycloakUserId = adminClient.realm("thesis-management")
-				.users().search("student", true).get(0).getId();
-		String appClientUuid = adminClient.realm("thesis-management")
-				.clients().findByClientId("thesis-management-app").get(0).getId();
-		List<RoleRepresentation> roles = adminClient.realm("thesis-management")
-				.users().get(keycloakUserId).roles().clientLevel(appClientUuid).listAll();
-
-		Set<String> roleNames = roles.stream().map(RoleRepresentation::getName).collect(Collectors.toSet());
+		Set<String> roleNames = getGroupNames(student);
 		assertTrue(roleNames.contains("student"), "Student role should be reassigned");
 		assertFalse(roleNames.contains("advisor"), "Advisor role should be removed");
 		assertFalse(roleNames.contains("supervisor"), "Supervisor role should be removed");
@@ -247,21 +141,15 @@ class AccessManagementServiceIntegrationTest extends BaseKeycloakIntegrationTest
 	void testAddAndRemoveStudentGroup() throws Exception {
 		User supervisor = createLocalUser("supervisor");
 
-		Keycloak adminClient = KEYCLOAK_CONTAINER.getKeycloakAdminClient();
-		String keycloakUserId = adminClient.realm("thesis-management")
-				.users().search("supervisor", true).get(0).getId();
-
 		accessManagementService.addStudentGroup(supervisor);
 
-		List<GroupRepresentation> groups = adminClient.realm("thesis-management")
-				.users().get(keycloakUserId).groups();
-		assertTrue(groups.stream().anyMatch(g -> g.getName().equals("thesis-students")));
+		Set<String> groupsAfterAdd = getGroupNames(supervisor);
+		assertTrue(groupsAfterAdd.contains("student"));
 
 		accessManagementService.removeStudentGroup(supervisor);
 
-		groups = adminClient.realm("thesis-management")
-				.users().get(keycloakUserId).groups();
-		assertFalse(groups.stream().anyMatch(g -> g.getName().equals("thesis-students")));
+		Set<String> groupsAfterRemove = getGroupNames(supervisor);
+		assertFalse(groupsAfterRemove.contains("student"));
 	}
 
 }
