@@ -84,6 +84,11 @@ public class PDFBuilder {
 	private static final String BULLET_POINT_SYMBOL = "\u2022";
 	private static final float LIST_SYMBOL_INDENT = 12f;
 
+	// ----------------- HTML Cleanup Regexes -----------------
+	private static final String HTML_TAG_REGEX = "<[^>]*>";
+	private static final String NBSP_REGEX = "&nbsp;";
+	private static final String NBSP_REPLACEMENT = " ";
+
 	private record OverviewItem(String title, String value) {
 	}
 
@@ -391,7 +396,7 @@ public class PDFBuilder {
 				}
 			}
 		} catch (Exception e) {
-			String plain = html.replaceAll("<[^>]*>", "").replaceAll("&nbsp;", " ").trim();
+			String plain = html.replaceAll(HTML_TAG_REGEX, "").replaceAll(NBSP_REGEX, NBSP_REPLACEMENT).trim();
 			elements.add(new Paragraph(plain).setFont(getNormalFont()).setFontSize(FONT_SIZE_TEXT)
 					.setMarginBottom(MARGIN_DATA_ROW_BOTTOM).setMultipliedLeading(LINE_LEADING));
 		}
