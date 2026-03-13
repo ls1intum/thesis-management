@@ -3,12 +3,9 @@ package de.tum.cit.aet.thesis.service;
 import de.tum.cit.aet.thesis.constants.UploadFileType;
 import de.tum.cit.aet.thesis.entity.NotificationSetting;
 import de.tum.cit.aet.thesis.entity.User;
-import de.tum.cit.aet.thesis.entity.UserGroup;
 import de.tum.cit.aet.thesis.entity.key.NotificationSettingId;
-import de.tum.cit.aet.thesis.entity.key.UserGroupId;
 import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.repository.NotificationSettingRepository;
-import de.tum.cit.aet.thesis.repository.UserGroupRepository;
 import de.tum.cit.aet.thesis.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -17,33 +14,33 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /** Manages user authentication, profile synchronization, and notification settings based on JWT tokens. */
 @Service
 public class AuthenticationService {
 	private final UserRepository userRepository;
-	private final UserGroupRepository userGroupRepository;
 	private final UploadService uploadService;
 	private final NotificationSettingRepository notificationSettingRepository;
+	private final AccessManagementService accessManagementService;
 
 	/**
-	 * Injects the user, user group, upload, and notification setting repositories.
+	 * Constructs the authentication service with the required dependencies.
 	 *
 	 * @param userRepository the user repository
-	 * @param userGroupRepository the user group repository
-	 * @param uploadService the upload service for file storage
+	 * @param uploadService the upload service
 	 * @param notificationSettingRepository the notification setting repository
+	 * @param accessManagementService the access management service for default group assignment
 	 */
 	@Autowired
-	public AuthenticationService(UserRepository userRepository, UserGroupRepository userGroupRepository, UploadService uploadService, NotificationSettingRepository notificationSettingRepository) {
+	public AuthenticationService(UserRepository userRepository, UploadService uploadService,
+			NotificationSettingRepository notificationSettingRepository,
+			AccessManagementService accessManagementService) {
 		this.userRepository = userRepository;
-		this.userGroupRepository = userGroupRepository;
 		this.uploadService = uploadService;
 		this.notificationSettingRepository = notificationSettingRepository;
+		this.accessManagementService = accessManagementService;
 	}
 
 	/**
@@ -68,8 +65,13 @@ public class AuthenticationService {
 				.orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
 	}
 
-	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
-	@Transactional
+	/**
+	 * Creates or updates the local user from the JWT token's profile claims.
+	 * Assigns the default student group to new users with no existing groups.
+	 *
+	 * @param jwt the JWT authentication token
+	 * @return the created or updated user
+	 */
 	public User updateAuthenticatedUser(JwtAuthenticationToken jwt) {
 		Map<String, Object> attributes = jwt.getTokenAttributes();
 		String universityId = getUniversityId(jwt);
@@ -78,10 +80,6 @@ public class AuthenticationService {
 		String firstName = (String) attributes.get("given_name");
 		String lastName = (String) attributes.get("family_name");
 		String matriculationNumber = (String) attributes.get("matrikelnr");
-
-		List<String> groups = jwt.getAuthorities().stream()
-				.filter(authority -> authority.getAuthority().startsWith("ROLE_"))
-				.map(authority -> authority.getAuthority().replace("ROLE_", "")).toList();
 
 		User user = userRepository.findByUniversityId(universityId).orElseGet(() -> {
 			User newUser = new User();
@@ -124,26 +122,11 @@ public class AuthenticationService {
 
 		user = userRepository.save(user);
 
-		userGroupRepository.deleteByUserId(user.getId());
-
-		Set<UserGroup> userGroups = new HashSet<>();
-
-		for (String group : groups) {
-			UserGroup entity = new UserGroup();
-			UserGroupId entityId = new UserGroupId();
-
-			entityId.setUserId(user.getId());
-			entityId.setGroup(group);
-
-			entity.setUser(user);
-			entity.setId(entityId);
-
-			userGroups.add(userGroupRepository.save(entity));
+		if (user.hasNoGroup()) {
+			accessManagementService.addStudentGroup(user);
 		}
 
-		user.setGroups(userGroups);
-
-		return userRepository.save(user);
+		return user;
 	}
 
 	/**

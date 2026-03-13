@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { authStatePath, expandAccordion, navigateTo } from './helpers'
+import { authStatePath, expandAccordion, hideWebpackOverlay, navigateTo } from './helpers'
 
 test.describe('Thesis Configuration - User search filters by role', () => {
   test.use({ storageState: authStatePath('supervisor') })
@@ -9,6 +9,7 @@ test.describe('Thesis Configuration - User search filters by role', () => {
 
     // Navigate to thesis 1 (WRITING state, supervisor is assigned)
     await navigateTo(page, '/theses/00000000-0000-4000-d000-000000000001')
+    await hideWebpackOverlay(page)
     await expect(page.getByRole('heading', { name: /automated code review/i })).toBeVisible({
       timeout: 15_000,
     })
@@ -71,6 +72,7 @@ test.describe('Thesis Configuration - Lazy user fetching', () => {
       })
 
       await navigateTo(page, '/theses/00000000-0000-4000-d000-000000000001')
+      await hideWebpackOverlay(page)
       await expect(page.getByRole('heading', { name: /automated code review/i })).toBeVisible({
         timeout: 15_000,
       })
@@ -103,6 +105,7 @@ test.describe('Thesis Configuration - Lazy user fetching', () => {
       })
 
       await navigateTo(page, '/theses/00000000-0000-4000-d000-000000000001')
+      await hideWebpackOverlay(page)
       await expect(page.getByRole('heading', { name: /automated code review/i })).toBeVisible({
         timeout: 15_000,
       })

@@ -23,8 +23,9 @@ import java.util.concurrent.TimeUnit;
 /**
  * REST controller for serving user avatar images.
  *
- * <p>Avatars are served publicly only for users who appear in publicly visible data
- * (published theses, open topics, or research group head listings). For all other users,
+ * <p>Avatars are served publicly for users who appear in publicly visible data:
+ * supervisors or examiners on non-anonymized theses, students on finished PUBLIC theses,
+ * role holders on open topics, or research group heads. For all other users,
  * the requester must be authenticated. This prevents leaking profile pictures of students
  * who have no public presence in the system.</p>
  */
@@ -55,8 +56,9 @@ public class AvatarController {
 	 * Retrieves the avatar image for a user by their ID.
 	 *
 	 * <p>For unauthenticated requests, the avatar is only served if the user appears in
-	 * publicly visible data (e.g. a finished thesis with PUBLIC visibility, an open topic,
-	 * or as a research group head). Authenticated users can access any avatar.</p>
+	 * publicly visible data (e.g. a supervisor/examiner on a non-anonymized thesis, a student
+	 * on a finished PUBLIC thesis, an open topic role holder, or a research group head).
+	 * Authenticated users can access any avatar.</p>
 	 *
 	 * @param userId the ID of the user
 	 * @return the avatar image as a resource, or 404 if not found or not accessible

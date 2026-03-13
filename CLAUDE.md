@@ -54,6 +54,16 @@ All DTOs use `@JsonInclude(JsonInclude.Include.NON_EMPTY)`. `null`, empty string
 
 Do **not** use `@Transactional` on service methods. It causes performance issues (long-held DB connections) and concurrency problems (large transaction scopes leading to lock contention). Instead, rely on Spring Data's per-repository-call transactions and design operations to be idempotent. The only acceptable place for `@Transactional` is on `@Modifying` repository methods (where Spring Data requires it) and on simple controller-level read operations that need a consistent view.
 
+### Authorization Architecture: DB as Single Source of Truth
+
+**Keycloak handles authentication only (identity verification via JWT). The `user_groups` database table is the single source of truth for authorization (roles/permissions).** This follows the OAuth2 best practice of separating authentication from authorization in applications where roles change frequently at runtime (see [Separation of Roles](https://www.oauth.com/oauth2-servers/differences-between-oauth-1-2/separation-of-roles/)). Storing authorization in the database ensures role changes take effect immediately (rather than waiting for a new JWT), avoids coupling to the identity provider's role schema, and keeps the application functional when the identity provider's Admin API is unreachable.
+
+- Spring Security authorities are loaded from `user_groups` via `JwtAuthConverter` on every request, not from JWT `resource_access` claims.
+- All role changes (`addStudentGroup`, `assignSupervisorRole`, etc.) write directly to the `user_groups` table via `UserGroupRepository` without calling the Keycloak Admin API.
+- `updateAuthenticatedUser()` syncs profile data (name, email, matriculation number) from the JWT but does not overwrite groups. New users with no groups automatically receive the `student` group.
+- The Keycloak Admin API (`AccessManagementService.getUserByUsername`, `getAllUsers`) is still used for user lookup (searching users by name) but never for role assignment or retrieval.
+- `@PreAuthorize` annotations (e.g. `hasRole('admin')`) check authorities derived from `user_groups`, not from JWT claims.
+
 ### Role Terminology
 
 The backend uses `EXAMINER` and `SUPERVISOR` as thesis role names (`ThesisRoleName` enum), matching the UI labels "Examiner" and "Supervisor". Keycloak groups remain `supervisor` and `advisor` for backward compatibility — do not rename them.

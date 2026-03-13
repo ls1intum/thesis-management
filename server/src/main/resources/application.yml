@@ -79,11 +79,9 @@ thesis-management:
   keycloak:
     host: ${KEYCLOAK_HOST:http://localhost:8181}
     realm-name: ${KEYCLOAK_REALM_NAME:thesis-management}
-    client-id: ${KEYCLOAK_CLIENT_ID:thesis-management-app}
     service-client:
       id: ${KEYCLOAK_SERVICE_CLIENT_ID:thesis-management-service-client}
       secret: ${KEYCLOAK_SERVICE_CLIENT_SECRET:**********}
-      student-group-name: ${KEYCLOAK_SERVICE_STUDENT_GROUP_NAME:thesis-students}
   client:
     host: ${CLIENT_HOST:http://localhost:3100}
   mail:

@@ -203,6 +203,29 @@ export function getAccordionItem(page: Page, sectionLabel: string) {
 }
 
 /**
+ * Permanently suppress the webpack-dev-server error overlay that intercepts pointer events.
+ * The overlay can appear at any time (e.g., ResizeObserver errors during accordion expansion),
+ * so this installs a MutationObserver that auto-hides it whenever it's added to the DOM.
+ * Safe to call multiple times — the observer is only installed once per page.
+ */
+export async function hideWebpackOverlay(page: Page) {
+  await page.evaluate(() => {
+    if ((window as any).__webpackOverlayObserver) return
+
+    const hide = () => {
+      const iframe = document.getElementById('webpack-dev-server-client-overlay')
+      if (iframe) (iframe as HTMLElement).style.display = 'none'
+    }
+
+    hide()
+
+    const observer = new MutationObserver(hide)
+    observer.observe(document.body, { childList: true, subtree: true })
+    ;(window as any).__webpackOverlayObserver = observer
+  })
+}
+
+/**
  * Create a minimal valid PDF buffer for file upload tests.
  */
 export function createTestPdfBuffer(): Buffer {

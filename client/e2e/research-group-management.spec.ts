@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { authStatePath, navigateTo } from './helpers'
+import { authStatePath, hideWebpackOverlay, navigateTo } from './helpers'
 
 test.describe('Research Group Management - Admin', () => {
   test.use({ storageState: authStatePath('admin') })
@@ -8,6 +8,7 @@ test.describe('Research Group Management - Admin', () => {
     test.setTimeout(90_000)
 
     await navigateTo(page, '/research-groups')
+    await hideWebpackOverlay(page)
     await expect(page.getByRole('heading', { name: /research groups/i })).toBeVisible({
       timeout: 15_000,
     })
@@ -38,14 +39,22 @@ test.describe('Research Group Management - Admin', () => {
     await modal.getByRole('textbox', { name: 'Name' }).fill('E2E Test Group')
     await modal.getByRole('textbox', { name: 'Abbreviation' }).fill('E2E')
 
-    // Select a Group Head — uses KeycloakUserAutocomplete with 300ms debounce + API call
+    // Select a Group Head — uses KeycloakUserAutocomplete with 300ms debounce + API call.
+    // Retry typing if no options appear (Keycloak may be slow under parallel load).
     const groupHeadInput = modal.getByRole('textbox', { name: 'Group Head' })
-    await groupHeadInput.click()
-    await groupHeadInput.pressSequentially('admin', { delay: 50 })
-
-    // Wait for autocomplete dropdown to load (debounce + Keycloak API response)
     const option = page.getByRole('option').first()
-    await expect(option).toBeVisible({ timeout: 15_000 })
+    let optionFound = false
+    for (let attempt = 0; attempt < 3 && !optionFound; attempt++) {
+      await groupHeadInput.click()
+      if (attempt > 0) {
+        // Clear previous text before retrying
+        const modifier = process.platform === 'darwin' ? 'Meta' : 'Control'
+        await page.keyboard.press(`${modifier}+a`)
+      }
+      await groupHeadInput.pressSequentially('admin', { delay: 50 })
+      optionFound = await option.isVisible({ timeout: 15_000 }).catch(() => false)
+    }
+    await expect(option).toBeVisible({ timeout: 5_000 })
     await option.click()
 
     // Submit the form
@@ -70,6 +79,7 @@ test.describe('Research Group Management - Admin Settings', () => {
 
   test('admin can view and edit group settings', async ({ page }) => {
     await navigateTo(page, aseSettingsUrl)
+    await hideWebpackOverlay(page)
 
     // Verify page heading
     await expect(page.getByRole('heading', { name: /research group settings/i })).toBeVisible({
@@ -106,6 +116,7 @@ test.describe('Research Group Management - Admin Settings', () => {
 
   test('admin can view group members', async ({ page }) => {
     await navigateTo(page, aseSettingsUrl)
+    await hideWebpackOverlay(page)
     await expect(page.getByRole('heading', { name: /research group settings/i })).toBeVisible({
       timeout: 15_000,
     })

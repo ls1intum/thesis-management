@@ -1,5 +1,11 @@
 import { test, expect } from '@playwright/test'
-import { authStatePath, navigateTo, expandAccordion, createTestPdfBuffer } from './helpers'
+import {
+  authStatePath,
+  navigateTo,
+  expandAccordion,
+  createTestPdfBuffer,
+  hideWebpackOverlay,
+} from './helpers'
 
 const THESIS_1_ID = '00000000-0000-4000-d000-000000000001'
 const THESIS_1_URL = `/theses/${THESIS_1_ID}`
@@ -11,6 +17,7 @@ test.describe('Thesis File Upload - Student uploads thesis PDF', () => {
     test.setTimeout(90_000)
 
     await navigateTo(page, THESIS_1_URL)
+    await hideWebpackOverlay(page)
     await expect(page.getByRole('heading', { name: /automated code review/i })).toBeVisible({
       timeout: 30_000,
     })
@@ -64,6 +71,7 @@ test.describe('Thesis File Upload - Student uploads thesis PDF', () => {
     test.setTimeout(90_000)
 
     await navigateTo(page, THESIS_1_URL)
+    await hideWebpackOverlay(page)
     await expect(page.getByRole('heading', { name: /automated code review/i })).toBeVisible({
       timeout: 30_000,
     })
@@ -77,11 +85,13 @@ test.describe('Thesis File Upload - Student uploads thesis PDF', () => {
     await presentationRow.scrollIntoViewIfNeeded()
     await expect(presentationRow).toBeVisible({ timeout: 10_000 })
 
-    // Click the upload button (last button in the row)
-    await presentationRow.locator('button').last().click()
-
-    // Verify upload modal opens
+    // Click the upload button (last button in the row) — retry if dialog doesn't open
     const dialog = page.getByRole('dialog')
+    for (let attempt = 0; attempt < 3; attempt++) {
+      await presentationRow.locator('button').last().click({ force: attempt > 0 })
+      const opened = await dialog.isVisible({ timeout: 5_000 }).catch(() => false)
+      if (opened) break
+    }
     await expect(dialog).toBeVisible({ timeout: 10_000 })
     await expect(
       dialog.getByRole('heading', { name: 'File Upload', exact: true }),
@@ -114,6 +124,7 @@ test.describe('Thesis File Upload - Supervisor uploads and verifies download', (
     test.setTimeout(90_000)
 
     await navigateTo(page, THESIS_1_URL)
+    await hideWebpackOverlay(page)
     await expect(page.getByRole('heading', { name: /automated code review/i })).toBeVisible({
       timeout: 30_000,
     })

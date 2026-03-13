@@ -163,6 +163,30 @@ class AvatarControllerTest extends BaseIntegrationTest {
 		}
 
 		@Test
+		void getAvatar_UnauthenticatedRequest_SupervisorOnInternalThesis_PassesVisibilityCheck() throws Exception {
+			// Supervisors/examiners should be publicly visible regardless of thesis visibility.
+			UUID thesisId = createTestThesis("Internal Thesis Avatar Test");
+			Thesis thesis = thesisRepository.findById(thesisId).orElseThrow();
+			thesis.setVisibility(ThesisVisibility.INTERNAL);
+			thesis.setState(ThesisState.WRITING);
+			thesisRepository.save(thesis);
+
+			// Find the supervisor on this thesis
+			ThesisRole role = thesisRoleRepository.findAll().stream()
+					.filter(r -> r.getId().getThesisId().equals(thesisId)
+							&& r.getId().getRole() != de.tum.cit.aet.thesis.constants.ThesisRoleName.STUDENT)
+					.findFirst().orElseThrow();
+			UUID supervisorUserId = role.getId().getUserId();
+
+			// Verify the repository query confirms this user IS publicly visible
+			assertThat(userRepository.isUserPubliclyVisible(supervisorUserId)).isTrue();
+
+			// Without avatar file, returns 404. The key assertion is isUserPubliclyVisible.
+			mockMvc.perform(MockMvcRequestBuilders.get("/v2/avatars/{userId}", supervisorUserId))
+					.andExpect(status().isNotFound());
+		}
+
+		@Test
 		void getAvatar_UnauthenticatedRequest_UserOnPublishedTopic_PassesVisibilityCheck() throws Exception {
 			// Users on published open topics are publicly visible.
 			UUID topicId = createTestTopic("Avatar Topic Test");

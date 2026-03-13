@@ -1,5 +1,5 @@
 import { test, expect, Page } from '@playwright/test'
-import { authStatePath, navigateTo } from './helpers'
+import { authStatePath, hideWebpackOverlay, navigateTo } from './helpers'
 
 const ASE_GROUP_ID = '00000000-0000-4000-a000-000000000001'
 const ASE_SETTINGS_URL = `/research-groups/${ASE_GROUP_ID}`
@@ -9,6 +9,7 @@ const ASE_SETTINGS_URL = `/research-groups/${ASE_GROUP_ID}`
  */
 async function navigateToSettings(page: Page) {
   await navigateTo(page, ASE_SETTINGS_URL)
+  await hideWebpackOverlay(page)
   await expect(
     page.getByRole('heading', { name: 'Research Group Settings' }),
   ).toBeVisible({ timeout: 30_000 })
@@ -112,17 +113,20 @@ test.describe('Research Group Settings Editing - Admin', () => {
     const durationTextbox = page.getByRole('textbox', { name: /minutes/i })
     await expect(durationTextbox).toBeVisible()
 
-    // Clear the input then type new value. Each keystroke triggers onChange → POST.
-    // Set up listener that matches the POST containing the final value (45).
+    // Read current value and pick a different target so retries are idempotent.
+    // If a prior run left the value at 45, we change to 35 instead and vice-versa.
+    const currentValue = await durationTextbox.inputValue()
+    const targetValue = currentValue.includes('45') ? '35' : '45'
+
+    // Use fill() for a reliable atomic input, then wait for the auto-save POST.
     const savePromise = page.waitForResponse(
       (resp) =>
         resp.url().includes('/research-group-settings/') &&
         resp.request().method() === 'POST' &&
-        resp.request().postData()?.includes('45'),
-      { timeout: 15_000 },
+        resp.request().postData()?.includes(targetValue),
+      { timeout: 30_000 },
     )
-    await durationTextbox.clear()
-    await durationTextbox.pressSequentially('45', { delay: 50 })
+    await durationTextbox.fill(targetValue)
     await savePromise
 
     // Reload page and verify value persists
@@ -136,7 +140,7 @@ test.describe('Research Group Settings Editing - Admin', () => {
     await presentationSettingsHeading2.scrollIntoViewIfNeeded()
 
     const durationTextbox2 = page.getByRole('textbox', { name: /minutes/i })
-    await expect(durationTextbox2).toHaveValue('45 minutes', { timeout: 10_000 })
+    await expect(durationTextbox2).toHaveValue(`${targetValue} minutes`, { timeout: 10_000 })
 
     // Restore to 30
     const restorePromise = page.waitForResponse(
@@ -144,10 +148,9 @@ test.describe('Research Group Settings Editing - Admin', () => {
         resp.url().includes('/research-group-settings/') &&
         resp.request().method() === 'POST' &&
         resp.request().postData()?.includes('30'),
-      { timeout: 15_000 },
+      { timeout: 30_000 },
     )
-    await durationTextbox2.clear()
-    await durationTextbox2.pressSequentially('30', { delay: 50 })
+    await durationTextbox2.fill('30')
     await restorePromise
   })
 

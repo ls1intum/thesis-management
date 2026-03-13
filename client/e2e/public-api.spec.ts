@@ -1,6 +1,15 @@
 import { test, expect } from '@playwright/test'
+import fs from 'fs'
+import path from 'path'
+import { authStatePath, hideWebpackOverlay, navigateTo } from './helpers'
 
 const API_BASE = process.env.SERVER_URL ?? 'http://localhost:8180'
+
+// Fixed UUID from seed data for the avatar_test_supervisor user.
+// This user has a SUPERVISOR role on a non-public thesis (Thesis 3: ASSESSED/INTERNAL)
+// but no open published topics, no finished PUBLIC theses, and is not a research group head.
+const AVATAR_TEST_USER_ID = '00000000-0000-4000-aaaa-000000000001'
+const AVATAR_TEST_FILENAME = 'avatar_test_supervisor.png'
 
 test.describe('Public API - Avatar access control', () => {
   test.use({ storageState: { cookies: [], origins: [] } })
@@ -40,6 +49,34 @@ test.describe('Public API - Avatar access control', () => {
     expect(avatarResponse.status()).not.toBe(401)
     expect(avatarResponse.status()).not.toBe(403)
     expect([200, 404]).toContain(avatarResponse.status())
+  })
+
+  test('unauthenticated request for avatar of supervisor on non-public thesis returns 200', async ({
+    request,
+  }) => {
+    // Ensure the avatar file exists on disk so the endpoint can serve it.
+    // The server runs from the server/ directory, so uploads are at ../server/uploads/.
+    const uploadsDir = path.resolve(__dirname, '..', '..', 'server', 'uploads')
+    const avatarPath = path.join(uploadsDir, AVATAR_TEST_FILENAME)
+    if (!fs.existsSync(avatarPath)) {
+      fs.mkdirSync(uploadsDir, { recursive: true })
+      // Minimal valid 1x1 PNG
+      const png = Buffer.from(
+        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+        'base64',
+      )
+      fs.writeFileSync(avatarPath, png)
+    }
+
+    // This user (avatar_test_supervisor) is a SUPERVISOR on Thesis 3 (ASSESSED/INTERNAL).
+    // They have NO open published topics, NO finished PUBLIC theses, and are NOT a research group head.
+    // With the old visibility check (only public theses/open topics/group heads), this would return 404.
+    // With the new check (any non-STUDENT thesis role), this should return 200.
+    const avatarResponse = await request.get(
+      `${API_BASE}/api/v2/avatars/${AVATAR_TEST_USER_ID}`,
+    )
+    expect(avatarResponse.status()).toBe(200)
+    expect(avatarResponse.headers()['content-type']).toContain('image/png')
   })
 
   test('unauthenticated request for avatar of non-existent user returns 404', async ({
@@ -124,6 +161,73 @@ test.describe('Public API - Avatar access control', () => {
     const data2 = await response2.json()
     expect(data2.content ?? []).toHaveLength(0)
     expect(data2.pageNumber).toBe(999)
+  })
+})
+
+test.describe('Authenticated avatar loading', () => {
+  test.use({ storageState: authStatePath('supervisor') })
+
+  // The student user is a STUDENT on thesis 1 (WRITING/PRIVATE).
+  // The CustomAvatar component must use authenticated fetch (doRequest with
+  // Authorization header) instead of plain <img src> so that avatars of
+  // non-publicly-visible users load correctly.
+  const STUDENT_AVATAR_FILENAME = 'avatar_test_student.png'
+
+  test('avatar requests use Authorization header when user is authenticated', async ({
+    page,
+  }) => {
+    test.setTimeout(60_000)
+
+    // Ensure the student avatar file exists on disk
+    const uploadsDir = path.resolve(__dirname, '..', '..', 'server', 'uploads')
+    const avatarPath = path.join(uploadsDir, STUDENT_AVATAR_FILENAME)
+    if (!fs.existsSync(avatarPath)) {
+      fs.mkdirSync(uploadsDir, { recursive: true })
+      const png = Buffer.from(
+        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+        'base64',
+      )
+      fs.writeFileSync(avatarPath, png)
+    }
+
+    // Track all avatar requests and whether they include an Authorization header.
+    // With the fix (doRequest + blob URLs), avatar fetches include the Bearer token.
+    // Without the fix (plain <img src>), the browser sends no Authorization header,
+    // causing 404 for non-publicly-visible users on production.
+    const avatarRequests: { url: string; hasAuth: boolean }[] = []
+    page.on('request', (request) => {
+      if (request.url().includes('/v2/avatars/')) {
+        avatarRequests.push({
+          url: request.url(),
+          hasAuth: request.headers()['authorization'] !== undefined,
+        })
+      }
+    })
+
+    // Navigate to the Browse Theses page which renders AvatarUserList for
+    // students, supervisors, and examiners in the table columns.
+    await navigateTo(page, '/theses')
+    await hideWebpackOverlay(page)
+    await expect(page.getByRole('heading', { name: /browse theses/i })).toBeVisible({
+      timeout: 15_000,
+    })
+
+    // Wait for the table to render with thesis data
+    await expect(page.getByText('Automated Code Review')).toBeVisible({ timeout: 15_000 })
+
+    // Wait for avatar requests to complete (CustomAvatar fetches asynchronously)
+    await page.waitForTimeout(3_000)
+
+    // Verify at least one avatar request was made (the student has an avatar)
+    expect(avatarRequests.length, 'Expected at least one avatar request').toBeGreaterThan(0)
+
+    // Verify ALL avatar requests include the Authorization header.
+    // Without the fix, <img src> sends unauthenticated requests.
+    const unauthenticated = avatarRequests.filter((r) => !r.hasAuth)
+    expect(
+      unauthenticated,
+      `Avatar requests without Authorization header: ${JSON.stringify(unauthenticated)}`,
+    ).toHaveLength(0)
   })
 })
 

@@ -22,3 +22,4 @@ node_modules/
 .e2e-client.log
 /docs/files/.$subsystem-decomposition.drawio.bkp
 /test-results
+/server/test-results
