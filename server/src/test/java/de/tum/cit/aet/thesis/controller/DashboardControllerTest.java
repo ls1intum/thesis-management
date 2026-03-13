@@ -14,9 +14,11 @@ import de.tum.cit.aet.thesis.entity.Thesis;
 import de.tum.cit.aet.thesis.entity.ThesisStateChange;
 import de.tum.cit.aet.thesis.entity.key.ThesisStateChangeId;
 import de.tum.cit.aet.thesis.mock.BaseIntegrationTest;
+import de.tum.cit.aet.thesis.repository.ResearchGroupRepository;
 import de.tum.cit.aet.thesis.repository.ResearchGroupSettingsRepository;
 import de.tum.cit.aet.thesis.repository.ThesisRepository;
 import de.tum.cit.aet.thesis.repository.ThesisStateChangeRepository;
+import de.tum.cit.aet.thesis.repository.UserRepository;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +50,12 @@ class DashboardControllerTest extends BaseIntegrationTest {
 
 	@Autowired
 	private ResearchGroupSettingsRepository researchGroupSettingsRepository;
+
+	@Autowired
+	private UserRepository userRepository;
+
+	@Autowired
+	private ResearchGroupRepository researchGroupRepository;
 
 	private UUID createThesisWithState(String title, ThesisState targetState,
 			List<UUID> students, List<UUID> supervisors, List<UUID> examiners, UUID researchGroupId) throws Exception {
@@ -99,9 +107,12 @@ class DashboardControllerTest extends BaseIntegrationTest {
 			TestUser head = createRandomTestUser(List.of("supervisor"));
 			UUID researchGroupId = createTestResearchGroup("Writing Guide Group", head.universityId());
 
-			mockMvc.perform(MockMvcRequestBuilders.put("/v2/research-groups/{id}/assign/{username}", researchGroupId, student.universityId())
-							.header("Authorization", createRandomAdminAuthentication()))
-					.andExpect(status().isOk());
+			// Set research group directly on the student (the assignment endpoint would
+			// change their role to advisor, which is correct but this test needs a student
+			// in a research group to verify the writing guide task)
+			var user = userRepository.findById(student.userId()).orElseThrow();
+			user.setResearchGroup(researchGroupRepository.findById(researchGroupId).orElseThrow());
+			userRepository.save(user);
 
 			ResearchGroupSettings settings = new ResearchGroupSettings();
 			settings.setResearchGroupId(researchGroupId);

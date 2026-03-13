@@ -1,9 +1,7 @@
 package de.tum.cit.aet.thesis.mock;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-
 import com.auth0.jwt.JWT;
+import de.tum.cit.aet.thesis.repository.UserGroupRepository;
 import de.tum.cit.aet.thesis.service.AccessManagementService;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -99,11 +97,17 @@ public class TestSecurityConfig {
 	}
 
 	@Bean
-	public AccessManagementService accessManagementService() {
-		AccessManagementService mock = Mockito.mock(AccessManagementService.class);
-
-		doNothing().when(mock).assignSupervisorRole(any());
-
-		return mock;
+	public AccessManagementService accessManagementService(UserGroupRepository userGroupRepository) {
+		// Use a spy of the real service so DB operations (role mutations) execute against
+		// the test database. Keycloak user-lookup methods (getUserByUsername, getAllUsers)
+		// are not called by default — tests that need them can stub them individually.
+		AccessManagementService realService = new AccessManagementService(
+				"http://unreachable:8081",
+				"thesis-management",
+				"test-client",
+				"test-secret",
+				userGroupRepository
+		);
+		return Mockito.spy(realService);
 	}
 }

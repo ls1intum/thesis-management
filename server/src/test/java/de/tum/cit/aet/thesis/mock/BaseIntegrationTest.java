@@ -278,7 +278,10 @@ public abstract class BaseIntegrationTest {
 		UUID userId = UUID.fromString(JsonPath.parse(response).read("$.userId", String.class));
 		String actualUniversityId = JsonPath.parse(response).read("$.universityId", String.class);
 
-		// Seed user_groups in DB since updateAuthenticatedUser no longer writes groups
+		// Clear auto-assigned groups (e.g., student from updateAuthenticatedUser)
+		// so only the explicitly requested groups are present
+		jdbcTemplate.update("DELETE FROM user_groups WHERE user_id = ?::uuid", userId.toString());
+
 		for (String role : roles) {
 			jdbcTemplate.update(
 					"INSERT INTO user_groups (user_id, \"group\") VALUES (?::uuid, ?) ON CONFLICT DO NOTHING",

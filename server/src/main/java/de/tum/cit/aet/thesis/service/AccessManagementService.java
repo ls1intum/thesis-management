@@ -34,8 +34,9 @@ public class AccessManagementService {
 	private final String serviceClientId;
 	private final String serviceClientSecret;
 
-	private volatile String accessToken;
-	private volatile Instant tokenExpiration;
+	private String accessToken;
+	private Instant tokenExpiration;
+	private final Object tokenLock = new Object();
 
 	private final UserGroupRepository userGroupRepository;
 
@@ -91,10 +92,6 @@ public class AccessManagementService {
 	 * @param user the user to assign the advisor role to
 	 */
 	public void assignAdvisorRole(User user) {
-		if (user == null) {
-			throw new RuntimeException("User is null");
-		}
-
 		removeGroup(user, "student");
 		removeGroup(user, "supervisor");
 		addGroup(user, "advisor");
@@ -106,10 +103,6 @@ public class AccessManagementService {
 	 * @param user the user to assign the supervisor role to
 	 */
 	public void assignSupervisorRole(User user) {
-		if (user == null) {
-			throw new RuntimeException("User is null");
-		}
-
 		removeGroup(user, "student");
 		addGroup(user, "supervisor");
 		addGroup(user, "advisor");
@@ -121,10 +114,6 @@ public class AccessManagementService {
 	 * @param user the user to assign the group-admin role to
 	 */
 	public void assignGroupAdminRole(User user) {
-		if (user == null) {
-			throw new RuntimeException("User is null");
-		}
-
 		addGroup(user, "group-admin");
 	}
 
@@ -134,10 +123,6 @@ public class AccessManagementService {
 	 * @param user the user to remove the group-admin role from
 	 */
 	public void removeGroupAdminRole(User user) {
-		if (user == null) {
-			throw new RuntimeException("User is null");
-		}
-
 		removeGroup(user, "group-admin");
 	}
 
@@ -147,10 +132,6 @@ public class AccessManagementService {
 	 * @param user the user to remove research group roles from
 	 */
 	public void removeResearchGroupRoles(User user) {
-		if (user == null) {
-			throw new RuntimeException("User is null");
-		}
-
 		removeGroup(user, "advisor");
 		removeGroup(user, "supervisor");
 		removeGroup(user, "group-admin");
@@ -158,6 +139,7 @@ public class AccessManagementService {
 	}
 
 	private void addGroup(User user, String group) {
+		java.util.Objects.requireNonNull(user, "user must not be null");
 		userGroupRepository.insertIfNotExists(user.getId(), group);
 
 		// Update in-memory set if the group isn't already present
@@ -178,6 +160,7 @@ public class AccessManagementService {
 	}
 
 	private void removeGroup(User user, String group) {
+		java.util.Objects.requireNonNull(user, "user must not be null");
 		userGroupRepository.deleteByUserIdAndGroup(user.getId(), group);
 		user.getGroups().removeIf(ug -> ug.getId().getGroup().equals(group));
 	}
@@ -185,30 +168,32 @@ public class AccessManagementService {
 	private record TokensResponse(String access_token) { }
 
 	private HttpHeaders getAuthenticationHeaders() {
-		if (tokenExpiration == null || Instant.now().isAfter(tokenExpiration)) {
-			TokensResponse response = webClient.post()
-					.uri("/realms/" + keycloakRealmName + "/protocol/openid-connect/token")
-					.body(
-							BodyInserters.fromFormData("grant_type", "client_credentials")
-									.with("client_id", serviceClientId)
-									.with("client_secret", serviceClientSecret)
-					)
-					.retrieve()
-					.bodyToMono(TokensResponse.class)
-					.block();
+		synchronized (tokenLock) {
+			if (tokenExpiration == null || Instant.now().isAfter(tokenExpiration)) {
+				TokensResponse response = webClient.post()
+						.uri("/realms/" + keycloakRealmName + "/protocol/openid-connect/token")
+						.body(
+								BodyInserters.fromFormData("grant_type", "client_credentials")
+										.with("client_id", serviceClientId)
+										.with("client_secret", serviceClientSecret)
+						)
+						.retrieve()
+						.bodyToMono(TokensResponse.class)
+						.block();
 
-			if (response == null) {
-				throw new RuntimeException("Access token not returned");
+				if (response == null) {
+					throw new RuntimeException("Access token not returned");
+				}
+
+				accessToken = response.access_token();
+				tokenExpiration = Instant.now().plus(30, ChronoUnit.SECONDS);
 			}
 
-			accessToken = response.access_token();
-			tokenExpiration = Instant.now().plus(30, ChronoUnit.SECONDS);
+			HttpHeaders authenticationHeaders = new HttpHeaders();
+			authenticationHeaders.set("Authorization", "Bearer " + accessToken);
+
+			return authenticationHeaders;
 		}
-
-		HttpHeaders authenticationHeaders = new HttpHeaders();
-		authenticationHeaders.set("Authorization", "Bearer " + accessToken);
-
-		return authenticationHeaders;
 	}
 
 	/**
