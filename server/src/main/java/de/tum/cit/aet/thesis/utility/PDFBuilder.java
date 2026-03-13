@@ -54,8 +54,8 @@ public class PDFBuilder {
 
 	// Lazily initialized font holders, never accessed directly, use
 	// getNormalFont() / getBoldFont()
-	private static volatile PdfFont normalFont;
-	private static volatile PdfFont boldFont;
+	private volatile PdfFont normalFont;
+	private volatile PdfFont boldFont;
 
 	private static final String THESISMANAGEMENT_URL = "https://thesis.aet.cit.tum.de/";
 
@@ -418,7 +418,7 @@ public class PDFBuilder {
 	 * Returns the shared normal (Helvetica) font, initializing it on first use.
 	 * Falls back to Helvetica-Bold if the standard font cannot be loaded.
 	 */
-	private static PdfFont getNormalFont() {
+	private PdfFont getNormalFont() {
 		if (normalFont == null) {
 			synchronized (PDFBuilder.class) {
 				if (normalFont == null) {
@@ -433,7 +433,7 @@ public class PDFBuilder {
 	 * Returns the shared bold (Helvetica-Bold) font, initializing it on first use.
 	 * Falls back to the normal font if the bold variant cannot be loaded.
 	 */
-	private static PdfFont getBoldFont() {
+	private PdfFont getBoldFont() {
 		if (boldFont == null) {
 			synchronized (PDFBuilder.class) {
 				if (boldFont == null) {
