@@ -784,16 +784,31 @@ public class ThesisService {
 				.addSection("Weaknesses", assessment.getNegatives());
 
 		if (assessment.getGradeComponents() != null && !assessment.getGradeComponents().isEmpty()) {
-			StringBuilder gradeTable = new StringBuilder();
-			for (ThesisGradeComponent component : assessment.getGradeComponents()) {
-				if (component.getIsBonus()) {
-					gradeTable.append(String.format("%s (Bonus): %s%n", component.getName(), component.getGrade()));
-				} else {
-					gradeTable.append(String.format("%s (%s%%): %s%n", component.getName(), component.getWeight(),
-							component.getGrade()));
-				}
-			}
-			builder.addSection("Grade Components", gradeTable.toString());
+			List<List<PDFBuilder.TableCell>> rows = assessment.getGradeComponents().stream()
+					.map(c -> {
+						PDFBuilder.TableCell weightCell = c.getIsBonus()
+								? new PDFBuilder.BadgeCell("BONUS")
+								: new PDFBuilder.TextCell(c.getWeight().toBigInteger() + "%");
+						return List.of(
+								new PDFBuilder.TextCell(c.getName()),
+								weightCell,
+								new PDFBuilder.TextCell(c.getGrade().toString()));
+					})
+					.toList();
+
+			// // The HTTP client appends a trailing '?' to the URL, which ends up in the
+			// parameter value
+			String cleanedGrade = calculatedGrade != null
+					? calculatedGrade.replace("?", "").trim()
+					: null;
+
+			builder.addTable(
+					"Grade Components",
+					List.of("Name", "Weight", "Grade"),
+					rows,
+					cleanedGrade != null && !cleanedGrade.isBlank()
+							? "Calculated Grade: " + cleanedGrade
+							: null);
 		}
 
 		builder.addSection("Grade Suggestion", assessment.getGradeSuggestion());
