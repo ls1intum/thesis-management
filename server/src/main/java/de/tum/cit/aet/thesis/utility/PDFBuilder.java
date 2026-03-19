@@ -204,8 +204,9 @@ public class PDFBuilder {
 	 * Appends a titled table section.
 	 *
 	 * <p>
-	 * Cells whose value equals {@value #BONUS_KEYWORD} (case-insensitive) are
-	 * rendered as a highlighted badge instead of plain text.
+	 * Use {@link BadgeCell} for cells that should be rendered as a highlighted
+	 * badge
+	 * instead of plain text.
 	 *
 	 * @param heading the section heading shown above the table
 	 * @param headers column header labels
@@ -301,8 +302,8 @@ public class PDFBuilder {
 	 *
 	 * <p>
 	 * The first row is a styled header row. Data rows alternate background
-	 * colors for readability. Any cell value equal to {@value #BONUS_KEYWORD}
-	 * (case-insensitive) is rendered as a coloured badge.
+	 * colors for readability. {@link BadgeCell} entries are rendered as coloured
+	 * badges.
 	 */
 	private void renderTableBlock(Document document, TableBlock tableBlock) {
 		Paragraph sectionHeading = new Paragraph(tableBlock.heading())
