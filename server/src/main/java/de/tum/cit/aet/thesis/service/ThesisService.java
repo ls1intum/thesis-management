@@ -155,16 +155,16 @@ public class ThesisService {
 	 * @return the paginated list of theses
 	 */
 	public Page<Thesis> getAll(
-			UUID userId,
-			boolean fetchAll,
-			String searchQuery,
-			ThesisState[] states,
-			String[] types,
-			int page,
-			int limit,
-			String sortBy,
-			String sortOrder,
-			UUID[] researchGroupIds
+		UUID userId,
+		boolean fetchAll,
+		String searchQuery,
+		ThesisState[] states,
+		String[] types,
+		int page,
+		int limit,
+		String sortBy,
+		String sortOrder,
+		UUID[] researchGroupIds
 	) {
 		Sort.Order order = new Sort.Order(sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,
 				HibernateHelper.validateSortField(Thesis.class, sortBy));
@@ -842,7 +842,7 @@ public class ThesisService {
 
 	private boolean existsPendingThesis(User user) {
 		Page<Thesis> theses = thesisRepository.searchTheses(
-				null,
+			null,
 				user.getId(),
 				null,
 				null,
