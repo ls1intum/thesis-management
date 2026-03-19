@@ -79,7 +79,7 @@ const ThesisAssessmentSection = () => {
             <Group>
               {thesis.assessment && (
                 <AuthenticatedFileDownloadButton
-                  url={`/v2/theses/${thesis.thesisId}/assessment`}
+                  url={`/v2/theses/${thesis.thesisId}/assessment?calculatedGrade=${calculatedGrade?.toFixed(1)}`}
                   filename={formatThesisFilename(thesis, 'Assessment', 'assessment.pdf', 0)}
                   variant='outline'
                 >

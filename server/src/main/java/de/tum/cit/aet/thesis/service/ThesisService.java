@@ -733,9 +733,10 @@ public class ThesisService {
 	 * details.
 	 *
 	 * @param thesis the thesis to generate the assessment PDF for
+	 * @param calculatedGrade an optional pre-calculated grade from gradeComponents
 	 * @return the generated PDF file resource
 	 */
-	public Resource getAssessmentFile(Thesis thesis) {
+	public Resource getAssessmentFile(Thesis thesis, String calculatedGrade) {
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
 		User currentUser = currentUserProvider().getUser();
 		String currentUserName = currentUser.getFirstName() + " " + currentUser.getLastName();
