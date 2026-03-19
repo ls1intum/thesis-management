@@ -60,7 +60,6 @@ public class PDFBuilder {
 	private static final String THESISMANAGEMENT_URL = "https://thesis.aet.cit.tum.de/";
 
 	// ----------------- Colors -----------------
-	private static final DeviceRgb PRIMARY_COLOR = new DeviceRgb(0x50, 0x4c, 0x97);
 	private static final DeviceRgb METADATA_COLOR = new DeviceRgb(0x8d, 0x8d, 0x8f);
 
 	// ----------------- Font Sizes -----------------
@@ -174,7 +173,6 @@ public class PDFBuilder {
 		// Main Heading
 		Paragraph mainHeadingParagraph = new Paragraph(heading)
 				.setFont(getBoldFont())
-				.setFontColor(PRIMARY_COLOR)
 				.setFontSize(FONT_SIZE_MAIN_HEADING)
 				.setTextAlignment(TextAlignment.CENTER)
 				.setMarginBottom(HEADER_MARGIN_BOTTOM);
@@ -252,7 +250,6 @@ public class PDFBuilder {
 		Paragraph title = new Paragraph("Overview")
 				.setFont(getBoldFont())
 				.setFontSize(FONT_SIZE_GROUP_TITLE)
-				.setFontColor(PRIMARY_COLOR)
 				.setMarginBottom(MARGIN_OVERVIEW_SECTION_BOTTOM);
 		container.add(title);
 
@@ -318,7 +315,7 @@ public class PDFBuilder {
 
 			// Add Thesis Management as a clickable Link
 			Link thesisManagementLink = new Link("Thesis Management", PdfAction.createURI(THESISMANAGEMENT_URL));
-			thesisManagementLink.setFontColor(PRIMARY_COLOR).setUnderline().setFont(getNormalFont())
+			thesisManagementLink.setUnderline().setFont(getNormalFont())
 					.setFontSize(FONT_SIZE_METADATA);
 
 			metadataParagraph.add(thesisManagementLink);
