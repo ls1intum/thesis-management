@@ -377,8 +377,8 @@ class ThesisAnonymizationServiceTest extends BaseIntegrationTest {
 		void notifiesForThesisApproachingExpiry() throws Exception {
 			createTestEmailTemplate("THESIS_ANONYMIZATION_REMINDER");
 
-			// Thesis finished ~6.3 years ago → retention expiry at least 5 years ago
-			// which is in the past and thus within the 30-day notification horizon.
+			// Thesis finished ~6.3 years ago → retention expiry is safely in the past
+			// and thus within the 30-day notification horizon.
 			// This thesis should definitely be notified.
 			Instant createdAt = Instant.now().minus(2300, ChronoUnit.DAYS);
 			Instant endDate = Instant.now().minus(2250, ChronoUnit.DAYS);
