@@ -377,11 +377,11 @@ class ThesisAnonymizationServiceTest extends BaseIntegrationTest {
 		void notifiesForThesisApproachingExpiry() throws Exception {
 			createTestEmailTemplate("THESIS_ANONYMIZATION_REMINDER");
 
-			// Thesis finished ~5.2 years ago (endDate in 2020) → retention expiry = Dec 31, 2025
-			// which is in the past and thus within the 30-day notification horizon.
+			// Thesis finished ~6.3 years ago → retention expiry is safely in the past
+			// and thus within the 30-day notification horizon.
 			// This thesis should definitely be notified.
-			Instant createdAt = Instant.now().minus(1950, ChronoUnit.DAYS);
-			Instant endDate = Instant.now().minus(1900, ChronoUnit.DAYS);
+			Instant createdAt = Instant.now().minus(2300, ChronoUnit.DAYS);
+			Instant endDate = Instant.now().minus(2250, ChronoUnit.DAYS);
 			Thesis thesis = createTestThesisWithChildren(ThesisState.FINISHED, createdAt, endDate);
 
 			thesisAnonymizationService.sendAnonymizationNotifications();
