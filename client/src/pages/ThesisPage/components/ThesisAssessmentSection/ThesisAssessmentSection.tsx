@@ -22,6 +22,7 @@ const ThesisAssessmentSection = () => {
   const gradeComponents = thesis.assessment?.gradeComponents ?? []
   const calculatedGrade =
     gradeComponents.length > 0 ? calculateGradeFromComponents(gradeComponents) : null
+  const gradeParam = calculatedGrade != null ? `?calculatedGrade=${calculatedGrade.toFixed(1)}` : ''
 
   return (
     <Accordion variant='separated' defaultValue='open'>
@@ -79,7 +80,7 @@ const ThesisAssessmentSection = () => {
             <Group>
               {thesis.assessment && (
                 <AuthenticatedFileDownloadButton
-                  url={`/v2/theses/${thesis.thesisId}/assessment?calculatedGrade=${calculatedGrade?.toFixed(1)}`}
+                  url={`/v2/theses/${thesis.thesisId}/assessment${gradeParam}`}
                   filename={formatThesisFilename(thesis, 'Assessment', 'assessment.pdf', 0)}
                   variant='outline'
                 >
