@@ -884,12 +884,13 @@ public class ThesisController {
 	 * Downloads the assessment PDF file for a thesis.
 	 *
 	 * @param thesisId the unique identifier of the thesis
+	 * @param calculatedGrade an optional calculated grade from gradeComponents
 	 * @return the assessment PDF file as a resource
 	 */
 	@GetMapping("/{thesisId}/assessment")
 	public ResponseEntity<Resource> getAssessmentFile(
-			@PathVariable UUID thesisId
-	) {
+			@PathVariable UUID thesisId,
+			@RequestParam(required = false) String calculatedGrade) {
 		User currentUser = currentUserProvider().getUser();
 		Thesis thesis = thesisService.findById(thesisId);
 
@@ -900,7 +901,7 @@ public class ThesisController {
 		return ResponseEntity.ok()
 				.contentType(MediaType.APPLICATION_PDF)
 				.header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=assessment.pdf")
-				.body(thesisService.getAssessmentFile(thesis));
+				.body(thesisService.getAssessmentFile(thesis, calculatedGrade));
 	}
 
 	/**

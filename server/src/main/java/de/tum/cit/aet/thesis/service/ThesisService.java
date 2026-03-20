@@ -43,6 +43,7 @@ import de.tum.cit.aet.thesis.utility.PDFBuilder;
 import de.tum.cit.aet.thesis.utility.RequestValidator;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -80,6 +81,9 @@ public class ThesisService {
 	private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
 	private final ResearchGroupRepository researchGroupRepository;
 	private final ResearchGroupSettingsService researchGroupSettingsService;
+
+	@Value("${thesis-management.client.host}")
+	private String clientHost;
 
 	/**
 	 * Injects all required repositories, services, and providers.
@@ -716,38 +720,51 @@ public class ThesisService {
 	 * Generates and returns a PDF document containing the thesis assessment details.
 	 *
 	 * @param thesis the thesis to generate the assessment PDF for
+	 * @param calculatedGrade an optional pre-calculated grade from gradeComponents
 	 * @return the generated PDF file resource
 	 */
-	public Resource getAssessmentFile(Thesis thesis) {
+	public Resource getAssessmentFile(Thesis thesis, String calculatedGrade) {
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+		User currentUser = currentUserProvider().getUser();
+		String currentUserName = currentUser.getFirstName() + " " + currentUser.getLastName();
+		if (thesis.getAssessments() == null || thesis.getAssessments().isEmpty()) {
+			throw new ResourceNotFoundException("No assessment found for thesis");
+		}
 		ThesisAssessment assessment = thesis.getAssessments().getFirst();
-		ThesisPresentation presentation = thesis.getPresentations().getFirst();
+		ThesisPresentation presentation = (thesis.getPresentations() != null && !thesis.getPresentations().isEmpty())
+				? thesis.getPresentations().getFirst()
+				: null;
 
-		String students = String.join(", ", thesis.getStudents().stream().map(student -> student.getFirstName() + " " + student.getLastName()).toList());
-		String supervisors = String.join(", ", thesis.getSupervisors().stream().map(supervisor -> supervisor.getFirstName() + " " + supervisor.getLastName()).toList());
-		String examiners = String.join(", ", thesis.getExaminers().stream().map(examiner -> examiner.getFirstName() + " " + examiner.getLastName()).toList());
+		String students = String.join(", ", thesis.getStudents().stream()
+				.map(student -> student.getFirstName() + " " + student.getLastName()).toList());
+		String supervisors = String.join(", ", thesis.getSupervisors().stream()
+				.map(supervisor -> supervisor.getFirstName() + " " + supervisor.getLastName()).toList());
+		String examiners = String.join(", ", thesis.getExaminers().stream()
+				.map(examiner -> examiner.getFirstName() + " " + examiner.getLastName()).toList());
 
-		PDFBuilder builder = new PDFBuilder("Assessment of \"" + thesis.getTitle() + "\"");
+		String assessmentTitle = "Assessment of \"" + thesis.getTitle() + "\"";
 
-		builder
-				.addData("Thesis Type", DataFormatter.formatConstantName(thesis.getType()))
-				.addData("Student", students)
-				.addData("Supervisor", supervisors)
-				.addData("Examiner", examiners)
-				.addData("", "");
+		PDFBuilder builder = new PDFBuilder(assessmentTitle, currentUserName, clientHost);
 
+		builder.addHeaderItem(assessmentTitle + " for: " + students);
+		builder.addHeaderItem("Thesis Type: " + DataFormatter.formatConstantName(thesis.getType()));
+
+		builder.addOverviewItem("Thesis Type", DataFormatter.formatConstantName(thesis.getType()))
+				.addOverviewItem("Student", students)
+				.addOverviewItem("Supervisor", supervisors)
+				.addOverviewItem("Examiner", examiners);
 		for (var stateChange : thesis.getStates()) {
 			if (stateChange.getId().getState() == ThesisState.ASSESSED) {
-				builder.addData("Assessment Date", DataFormatter.formatDate(stateChange.getChangedAt()));
+				builder.addOverviewItem("Assessment Date", DataFormatter.formatDate(stateChange.getChangedAt()));
 			}
 
 			if (stateChange.getId().getState() == ThesisState.SUBMITTED) {
-				builder.addData("Submission Date", DataFormatter.formatDate(stateChange.getChangedAt()));
+				builder.addOverviewItem("Submission Date", DataFormatter.formatDate(stateChange.getChangedAt()));
 			}
 		}
 
 		if (presentation != null) {
-			builder.addData("Presentation Date", DataFormatter.formatDate(presentation.getScheduledAt()));
+			builder.addOverviewItem("Presentation Date", DataFormatter.formatDate(presentation.getScheduledAt()));
 		}
 
 		builder.addSection("Summary", assessment.getSummary())
@@ -755,15 +772,31 @@ public class ThesisService {
 				.addSection("Weaknesses", assessment.getNegatives());
 
 		if (assessment.getGradeComponents() != null && !assessment.getGradeComponents().isEmpty()) {
-			StringBuilder gradeTable = new StringBuilder();
-			for (ThesisGradeComponent component : assessment.getGradeComponents()) {
-				if (component.getIsBonus()) {
-					gradeTable.append(String.format("%s (Bonus): %s%n", component.getName(), component.getGrade()));
-				} else {
-					gradeTable.append(String.format("%s (%s%%): %s%n", component.getName(), component.getWeight(), component.getGrade()));
-				}
-			}
-			builder.addSection("Grade Components", gradeTable.toString());
+			List<List<PDFBuilder.TableCell>> rows = assessment.getGradeComponents().stream()
+					.map(c -> {
+						PDFBuilder.TableCell weightCell = c.getIsBonus()
+								? new PDFBuilder.BadgeCell("BONUS")
+								: new PDFBuilder.TextCell(c.getWeight().toBigInteger() + "%");
+						return List.of(
+								new PDFBuilder.TextCell(c.getName()),
+								weightCell,
+								new PDFBuilder.TextCell(c.getGrade().toString()));
+					})
+					.toList();
+
+			// // The HTTP client appends a trailing '?' to the URL, which ends up in the
+			// parameter value
+			String cleanedGrade = calculatedGrade != null
+					? calculatedGrade.replace("?", "").trim()
+					: null;
+
+			builder.addTable(
+					"Grade Components",
+					List.of("Name", "Weight", "Grade"),
+					rows,
+					cleanedGrade != null && !cleanedGrade.isBlank()
+							? "Calculated Grade: " + cleanedGrade
+							: null);
 		}
 
 		builder.addSection("Grade Suggestion", assessment.getGradeSuggestion());
