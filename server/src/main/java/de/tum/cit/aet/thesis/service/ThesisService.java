@@ -43,6 +43,7 @@ import de.tum.cit.aet.thesis.utility.PDFBuilder;
 import de.tum.cit.aet.thesis.utility.RequestValidator;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -80,6 +81,9 @@ public class ThesisService {
 	private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
 	private final ResearchGroupRepository researchGroupRepository;
 	private final ResearchGroupSettingsService researchGroupSettingsService;
+
+	@Value("${thesis-management.client.host}")
+	private String clientHost;
 
 	/**
 	 * Injects all required repositories, services, and providers.
@@ -740,7 +744,7 @@ public class ThesisService {
 
 		String assessmentTitle = "Assessment of \"" + thesis.getTitle() + "\"";
 
-		PDFBuilder builder = new PDFBuilder(assessmentTitle, currentUserName);
+		PDFBuilder builder = new PDFBuilder(assessmentTitle, currentUserName, clientHost);
 
 		builder.addHeaderItem(assessmentTitle + " for: " + students);
 		builder.addHeaderItem("Thesis Type: " + DataFormatter.formatConstantName(thesis.getType()));

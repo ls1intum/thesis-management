@@ -48,6 +48,7 @@ import java.util.List;
 public class PDFBuilder {
 	private final String heading;
 	private final String currentUserName;
+	private final String thesisManagementUrl;
 
 	/**
 	 * Ordered list of all content blocks (HTML sections and tables),
@@ -64,8 +65,6 @@ public class PDFBuilder {
 	// getNormalFont() / getBoldFont()
 	private volatile PdfFont normalFont;
 	private volatile PdfFont boldFont;
-
-	private static final String THESISMANAGEMENT_URL = "https://thesis.aet.cit.tum.de/";
 
 	// ----------------- Colors -----------------
 	private static final DeviceRgb BADGE_BACKGROUND = new DeviceRgb(0x1c, 0x7e, 0xd6);
@@ -154,9 +153,10 @@ public class PDFBuilder {
 	 * @param currentUserName the name of the user generating the PDF, used in
 	 *                        metadata
 	 */
-	public PDFBuilder(String heading, String currentUserName) {
+	public PDFBuilder(String heading, String currentUserName, String thesisManagementUrl) {
 		this.heading = heading;
 		this.currentUserName = currentUserName;
+		this.thesisManagementUrl = thesisManagementUrl;
 	}
 
 	// ----------------- Header -----------------
@@ -485,7 +485,7 @@ public class PDFBuilder {
 			metadataParagraph.add(new Text(metadata.toString()));
 
 			// Add Thesis Management as a clickable Link
-			Link thesisManagementLink = new Link("Thesis Management", PdfAction.createURI(THESISMANAGEMENT_URL));
+			Link thesisManagementLink = new Link("Thesis Management", PdfAction.createURI(thesisManagementUrl));
 			thesisManagementLink.setUnderline().setFont(getNormalFont())
 					.setFontSize(FONT_SIZE_METADATA);
 
