@@ -28,6 +28,7 @@ import de.tum.cit.aet.thesis.repository.ThesisProposalRepository;
 import de.tum.cit.aet.thesis.repository.ThesisRepository;
 import de.tum.cit.aet.thesis.repository.ThesisRoleRepository;
 import de.tum.cit.aet.thesis.repository.ThesisStateChangeRepository;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
