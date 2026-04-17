@@ -200,6 +200,10 @@ public class ApplicationService {
 			throw new ResourceInvalidParametersException("This topic is already closed. You cannot submit new applications for it.");
 		}
 
+		if (topic != null && topic.getApplicationDeadline() != null && Instant.now().isAfter(topic.getApplicationDeadline())) {
+			throw new ResourceInvalidParametersException("The application deadline for this topic has passed. You cannot submit new applications for it.");
+		}
+
 		Application application = new Application();
 		application.setUser(user);
 

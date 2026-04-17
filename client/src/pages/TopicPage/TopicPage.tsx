@@ -46,17 +46,19 @@ const TopicPage = () => {
     <Stack gap={'2rem'}>
       <Stack gap={'1rem'}>
         <Title>{topic.title}</Title>
-        {!managementAccess && !checkIfUserIsExaminerOrSupervisor() && (
-          <Button
-            component={Link}
-            to={`/submit-application/${topic.topicId}`}
-            mr={'auto'}
-            leftSection={<NotePencil size={24} />}
-            size='md'
-          >
-            Apply Now
-          </Button>
-        )}
+        {!managementAccess &&
+          !checkIfUserIsExaminerOrSupervisor() &&
+          !(topic.applicationDeadline && new Date(topic.applicationDeadline) < new Date()) && (
+            <Button
+              component={Link}
+              to={`/submit-application/${topic.topicId}`}
+              mr={'auto'}
+              leftSection={<NotePencil size={24} />}
+              size='md'
+            >
+              Apply Now
+            </Button>
+          )}
       </Stack>
 
       <Grid>

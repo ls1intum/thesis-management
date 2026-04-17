@@ -146,15 +146,21 @@ const CollapsibleTopicElement = ({ topic, onApply }: ICollapsibleTopicElementPro
             ) : (
               <></>
             )}
-            {onApply && isTopicOverview && (
-              <Button
-                onClick={() => onApply(fullTopic || undefined)}
-                fullWidth
-                disabled={!fullTopic}
-              >
-                Apply
-              </Button>
-            )}
+            {onApply &&
+              isTopicOverview &&
+              !(
+                fullTopic &&
+                fullTopic.applicationDeadline &&
+                new Date(fullTopic.applicationDeadline) < new Date()
+              ) && (
+                <Button
+                  onClick={() => onApply(fullTopic || undefined)}
+                  fullWidth
+                  disabled={!fullTopic}
+                >
+                  Apply
+                </Button>
+              )}
           </Stack>
         </Accordion.Panel>
       </Accordion.Item>
