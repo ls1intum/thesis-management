@@ -203,6 +203,7 @@ const MotivationStep = (props: IMotivationStepProps) => {
         />
         <DateInput
           label='Desired Start Date'
+          valueFormat='YYYY-MM-DD'
           required={true}
           {...form.getInputProps('desiredStartDate')}
           onChange={(date) => form.setFieldValue('desiredStartDate', date ? new Date(date) : null)}

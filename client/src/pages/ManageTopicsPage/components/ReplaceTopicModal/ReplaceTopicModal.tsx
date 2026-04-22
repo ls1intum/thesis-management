@@ -262,6 +262,7 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
               clearable
               minDate={new Date()}
               label='Intended Start'
+              valueFormat='YYYY-MM-DD'
               placeholder='Select intended start date'
               value={form.values.intendedStart ?? null}
               onChange={(date) => {
@@ -272,6 +273,7 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
               clearable
               minDate={new Date()}
               label='Application Deadline'
+              valueFormat='YYYY-MM-DD'
               placeholder='Select application deadline'
               value={form.values.applicationDeadline ?? null}
               onChange={(date) => {

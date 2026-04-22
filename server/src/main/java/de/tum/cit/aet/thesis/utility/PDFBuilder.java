@@ -59,7 +59,7 @@ public class PDFBuilder {
 	private final List<String> headerItems = new ArrayList<>();
 	private final List<OverviewItem> overviewItems = new ArrayList<>();
 
-	private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+	private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
 	// Lazily initialized font holders, never accessed directly, use
 	// getNormalFont() / getBoldFont()

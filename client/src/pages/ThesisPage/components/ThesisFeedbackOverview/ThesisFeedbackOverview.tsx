@@ -6,7 +6,7 @@ import { Button, Center, Checkbox, Input, Table, Text } from '@mantine/core'
 import { IThesis } from '../../../../requests/responses/thesis'
 import React from 'react'
 import AvatarUser from '../../../../components/AvatarUser/AvatarUser'
-import { formatDate } from '../../../../utils/format'
+import { formatDateTime } from '../../../../utils/format'
 import { doRequest } from '../../../../requests/request'
 import { ApiError } from '../../../../requests/handler'
 import { Trash } from '@phosphor-icons/react'
@@ -96,7 +96,7 @@ const ThesisFeedbackOverview = (props: IThesisFeedbackOverviewProps) => {
                   <Table.Td width={200}>
                     <AvatarUser user={item.requestedBy} />
                   </Table.Td>
-                  <Table.Td width={170}>{formatDate(item.requestedAt)}</Table.Td>
+                  <Table.Td width={170}>{formatDateTime(item.requestedAt)}</Table.Td>
                   <Table.Td width={80}>
                     {access.supervisor && (
                       <Center>

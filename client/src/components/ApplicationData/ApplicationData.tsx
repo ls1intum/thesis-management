@@ -7,6 +7,7 @@ import {
   formatApplicationFilename,
   formatApplicationState,
   formatDate,
+  formatDateTime,
   formatThesisType,
 } from '../../utils/format'
 import LabeledItem from '../LabeledItem/LabeledItem'
@@ -112,17 +113,14 @@ const ApplicationData = (props: IApplicationDataProps) => {
             <Grid.Col span={{ xs: 4, sm: 3 }}>
               <LabeledItem
                 label='Desired Start Date'
-                value={formatDate(application.desiredStartDate, { withTime: false })}
+                value={formatDate(application.desiredStartDate)}
               />
             </Grid.Col>
             <Grid.Col span={{ xs: 4, sm: 3 }}>
               <LabeledItem label='Thesis Type' value={formatThesisType(application.thesisType)} />
             </Grid.Col>
             <Grid.Col span={{ xs: 4, sm: 3 }}>
-              <LabeledItem
-                label='Submission Date'
-                value={formatDate(application.createdAt, { withTime: true })}
-              />
+              <LabeledItem label='Submission Date' value={formatDateTime(application.createdAt)} />
             </Grid.Col>
             <Grid.Col span={{ xs: 4, sm: 3 }}>
               <LabeledItem
@@ -136,10 +134,7 @@ const ApplicationData = (props: IApplicationDataProps) => {
             </Grid.Col>
             {application.reviewedAt && (
               <Grid.Col span={{ xs: 4, sm: 3 }}>
-                <LabeledItem
-                  label='Reviewed At'
-                  value={formatDate(application.reviewedAt, { withTime: true })}
-                />
+                <LabeledItem label='Reviewed At' value={formatDateTime(application.reviewedAt)} />
               </Grid.Col>
             )}
             {application.user.customData &&

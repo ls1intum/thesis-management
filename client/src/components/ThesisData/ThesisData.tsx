@@ -61,15 +61,12 @@ const ThesisData = (props: IThesisDataProps) => {
         </Grid.Col>
         {thesis.startDate && (
           <Grid.Col span={{ md: 4 }}>
-            <LabeledItem
-              label='Start Date'
-              value={formatDate(thesis.startDate, { withTime: false })}
-            />
+            <LabeledItem label='Start Date' value={formatDate(thesis.startDate)} />
           </Grid.Col>
         )}
         {thesis.endDate && (
           <Grid.Col span={{ md: 4 }}>
-            <LabeledItem label='End Date' value={formatDate(thesis.endDate, { withTime: false })} />
+            <LabeledItem label='End Date' value={formatDate(thesis.endDate)} />
           </Grid.Col>
         )}
         {additionalInformation.includes('keywords') &&

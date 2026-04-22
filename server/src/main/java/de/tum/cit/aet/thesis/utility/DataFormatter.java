@@ -8,13 +8,14 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Provides static helper methods for formatting dates, enums, user names, and other data types into display strings.
  */
 public class DataFormatter {
 	/**
-	 * Formats an Instant value into a date string with the pattern dd.MM.yyyy.
+	 * Formats an Instant value into a date string with the pattern yyyy-MM-dd.
 	 *
 	 * @param time the Instant value to format
 	 * @return the formatted date string
@@ -24,14 +25,14 @@ public class DataFormatter {
 			return "";
 		}
 
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 				.withZone(ZoneId.systemDefault());
 
 		return formatter.format((Instant) time);
 	}
 
 	/**
-	 * Formats an Instant value into a date-time string with the pattern dd.MM.yyyy HH:mm:ss z.
+	 * Formats an Instant value into a date-time string with the pattern yyyy-MM-dd HH:mm (zzz).
 	 *
 	 * @param time the Instant value to format
 	 * @return the formatted date-time string
@@ -41,7 +42,8 @@ public class DataFormatter {
 			return "";
 		}
 
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss z")
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm (zzz)")
+				.withLocale(Locale.ENGLISH)
 				.withZone(ZoneId.systemDefault());
 
 		return formatter.format((Instant) time);

@@ -114,7 +114,7 @@ const ThesesTable = (props: IThesesTableProps) => {
       sortable: true,
       ellipsis: true,
       width: 130,
-      render: (thesis) => formatDate(thesis.startDate, { withTime: false }),
+      render: (thesis) => formatDate(thesis.startDate),
     },
     end_date: {
       accessor: 'endDate',
@@ -122,7 +122,7 @@ const ThesesTable = (props: IThesesTableProps) => {
       sortable: true,
       ellipsis: true,
       width: 130,
-      render: (thesis) => formatDate(thesis.endDate, { withTime: false }),
+      render: (thesis) => formatDate(thesis.endDate),
     },
     ...extraColumns,
   }

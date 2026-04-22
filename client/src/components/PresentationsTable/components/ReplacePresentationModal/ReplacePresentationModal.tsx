@@ -193,6 +193,7 @@ const ReplacePresentationModal = (props: IReplacePresentationModalProps) => {
           <LanguageSelect label='Language' required {...form.getInputProps('language')} />
           <DateTimePicker
             label='Scheduled At'
+            valueFormat='YYYY-MM-DD HH:mm'
             required
             {...form.getInputProps('date')}
             onChange={(date) => form.setFieldValue('date', date ? new Date(date) : null)}

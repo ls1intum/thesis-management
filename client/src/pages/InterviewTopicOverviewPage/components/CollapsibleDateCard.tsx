@@ -296,7 +296,7 @@ const CollapsibleDateCard = ({
               <Text fw={600} c={'dimmed'} size={'xs'}>
                 {date.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase()}
               </Text>
-              <Title order={6}>{dayjs(date).format('MMM D, YYYY')}</Title>
+              <Title order={6}>{dayjs(date).format('YYYY-MM-DD')}</Title>
             </Stack>
             <Group gap={'0.25rem'}>
               <Button

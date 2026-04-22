@@ -16,6 +16,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -46,13 +48,14 @@ class DataFormatterTest {
 	@Test
 	void formatDate_WithValidInstant_ReturnsFormattedDate() {
 		Instant instant = Instant.parse("2024-01-15T10:00:00Z");
-		String expected = DateTimeFormatter.ofPattern("dd.MM.yyyy")
+		String expected = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 				.withZone(ZoneId.systemDefault())
 				.format(instant);
 
 		String result = DataFormatter.formatDate(instant);
 
 		assertEquals(expected, result);
+		assertTrue(result.matches("\\d{4}-\\d{2}-\\d{2}"));
 	}
 
 	@Test
@@ -65,13 +68,15 @@ class DataFormatterTest {
 	@Test
 	void formatDateTime_WithValidInstant_ReturnsFormattedDateTime() {
 		Instant instant = Instant.parse("2024-01-15T10:00:00Z");
-		String expected = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss z")
+		String expected = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm (zzz)")
+				.withLocale(Locale.ENGLISH)
 				.withZone(ZoneId.systemDefault())
 				.format(instant);
 
 		String result = DataFormatter.formatDateTime(instant);
 
 		assertEquals(expected, result);
+		assertTrue(result.matches("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2} \\(.+\\)"));
 	}
 
 	@Test
@@ -79,6 +84,27 @@ class DataFormatterTest {
 		String result = DataFormatter.formatDateTime(null);
 
 		assertEquals("", result);
+	}
+
+	@Test
+	void formatDateTime_IsLocaleIndependent() {
+		Locale originalLocale = Locale.getDefault();
+		TimeZone originalZone = TimeZone.getDefault();
+		try {
+			Locale.setDefault(Locale.GERMAN);
+			TimeZone.setDefault(TimeZone.getTimeZone("Europe/Berlin"));
+
+			Instant winterInstant = Instant.parse("2024-01-15T10:00:00Z");
+			String result = DataFormatter.formatDateTime(winterInstant);
+
+			assertTrue(result.endsWith("(CET)"),
+					"Expected English zone abbreviation 'CET', got: " + result);
+			assertFalse(result.contains("MEZ"),
+					"Output must not contain German-localized zone abbreviation 'MEZ': " + result);
+		} finally {
+			Locale.setDefault(originalLocale);
+			TimeZone.setDefault(originalZone);
+		}
 	}
 
 	@Test

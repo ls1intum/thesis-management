@@ -1,7 +1,7 @@
 import { ILightUser } from '../../../../requests/responses/user'
 import { UploadFileType } from '../../../../config/types'
 import { Button, Center, Group, Input, Table, Text } from '@mantine/core'
-import { formatDate } from '../../../../utils/format'
+import { formatDateTime } from '../../../../utils/format'
 import { AuthenticatedFilePreviewButton } from '../../../../components/AuthenticatedFilePreviewButton/AuthenticatedFilePreviewButton'
 import { DownloadSimple, Eye, Trash } from '@phosphor-icons/react'
 import { AuthenticatedFileDownloadButton } from '../../../../components/AuthenticatedFileDownloadButton/AuthenticatedFileDownloadButton'
@@ -61,7 +61,7 @@ const FileHistoryTable = (props: IFileHistoryTableProps) => {
                   <AvatarUser user={row.uploadedBy} />
                 </Table.Td>
                 <Table.Td width={170}>
-                  <Text>{formatDate(row.uploadedAt)}</Text>
+                  <Text>{formatDateTime(row.uploadedAt)}</Text>
                 </Table.Td>
                 <Table.Td width={220}>
                   <Center>

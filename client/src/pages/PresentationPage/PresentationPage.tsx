@@ -9,7 +9,7 @@ import NotFound from '../../components/NotFound/NotFound'
 import PageLoader from '../../components/PageLoader/PageLoader'
 import { Anchor, Button, Divider, Grid, Stack, Title } from '@mantine/core'
 import LabeledItem from '../../components/LabeledItem/LabeledItem'
-import { formatDate, formatPresentationType } from '../../utils/format'
+import { formatDateTime, formatPresentationType } from '../../utils/format'
 import { GLOBAL_CONFIG } from '../../config/global'
 import { usePageTitle } from '../../hooks/theme'
 import { useUser } from '../../hooks/authentication'
@@ -59,7 +59,7 @@ const PresentationPage = () => {
       <Title>{presentation.thesis.title}</Title>
       <Grid>
         <Grid.Col span={{ md: 4 }}>
-          <LabeledItem label='Presentation Date' value={formatDate(presentation.scheduledAt)} />
+          <LabeledItem label='Presentation Date' value={formatDateTime(presentation.scheduledAt)} />
         </Grid.Col>
         <Grid.Col span={{ md: 4 }}>
           <LabeledItem label='Location' value={presentation.location || 'Not available'} />

@@ -36,7 +36,7 @@ import java.util.UUID;
 @Service
 public class UserDeletionService {
 	private static final Logger log = LoggerFactory.getLogger(UserDeletionService.class);
-	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MMMM d, yyyy");
+	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 	private final UserRepository userRepository;
 	private final ThesisRoleRepository thesisRoleRepository;
