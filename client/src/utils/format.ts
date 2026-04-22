@@ -18,6 +18,23 @@ function toValidDate(date: string | Date | undefined | null): Date | null {
   if (typeof date === 'undefined' || date === null) {
     return null
   }
+
+  if (typeof date === 'string') {
+    const dateOnlyMatch = date.match(/^(\d{4})-(\d{2})-(\d{2})$/)
+    if (dateOnlyMatch) {
+      const year = Number(dateOnlyMatch[1])
+      const month = Number(dateOnlyMatch[2])
+      const day = Number(dateOnlyMatch[3])
+      const item = new Date(0)
+      item.setFullYear(year, month - 1, day)
+      item.setHours(0, 0, 0, 0)
+      if (item.getFullYear() !== year || item.getMonth() !== month - 1 || item.getDate() !== day) {
+        return null
+      }
+      return item
+    }
+  }
+
   const item = new Date(date)
   if (Number.isNaN(item.getTime())) {
     return null

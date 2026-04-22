@@ -1,9 +1,12 @@
 package de.tum.cit.aet.thesis.utility;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 import de.tum.cit.aet.thesis.dto.LightUserDto;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.ResourceLock;
+import org.junit.jupiter.api.parallel.Resources;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -87,6 +90,8 @@ class DataFormatterTest {
 	}
 
 	@Test
+	@ResourceLock(Resources.LOCALE)
+	@ResourceLock(Resources.TIME_ZONE)
 	void formatDateTime_IsLocaleIndependent() {
 		Locale originalLocale = Locale.getDefault();
 		TimeZone originalZone = TimeZone.getDefault();
@@ -97,10 +102,7 @@ class DataFormatterTest {
 			Instant winterInstant = Instant.parse("2024-01-15T10:00:00Z");
 			String result = DataFormatter.formatDateTime(winterInstant);
 
-			assertTrue(result.endsWith("(CET)"),
-					"Expected English zone abbreviation 'CET', got: " + result);
-			assertFalse(result.contains("MEZ"),
-					"Output must not contain German-localized zone abbreviation 'MEZ': " + result);
+			assertThat(result).endsWith("(CET)").doesNotContain("MEZ");
 		} finally {
 			Locale.setDefault(originalLocale);
 			TimeZone.setDefault(originalZone);
