@@ -19,6 +19,7 @@ import { ColorSchemeToggleButton } from '../ColorSchemeToggleButton/ColorSchemeT
 import { useAuthenticationContext, useUser } from '../../hooks/authentication'
 import { CustomAvatar } from '../CustomAvatar/CustomAvatar'
 import { GearSix, NewspaperClipping, SignOut } from '@phosphor-icons/react'
+import { getPasskeyErrorMessage } from '../../utils/passkey'
 import { showSimpleError } from '../../utils/notification'
 import { useState } from 'react'
 
@@ -49,13 +50,7 @@ const Header = ({ opened, toggle, authenticatedArea }: HeaderProps) => {
       setIsLoginModalOpen(false)
       navigate('/dashboard')
     } catch (error) {
-      if (error instanceof DOMException && error.name === 'NotAllowedError') {
-        showSimpleError('Passkey request was cancelled or timed out')
-      } else if (error instanceof Error && error.message.trim().length > 0) {
-        showSimpleError(error.message)
-      } else {
-        showSimpleError('Passkey login failed')
-      }
+      showSimpleError(getPasskeyErrorMessage(error, 'Passkey login failed'))
     } finally {
       setIsPasskeyLoading(false)
     }

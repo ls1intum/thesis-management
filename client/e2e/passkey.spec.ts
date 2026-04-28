@@ -2,6 +2,7 @@ import { expect, Page, test } from '@playwright/test'
 import { authStatePath, navigateTo } from './helpers'
 
 const PASSKEY_PROMPT_TITLE = 'Register a passkey'
+const NEVER_ASK_AGAIN_STORAGE_KEY = 'passkey_prompt_never_ask_again'
 
 const passkeyPromptDialog = (page: Page) => page.getByRole('dialog', { name: PASSKEY_PROMPT_TITLE })
 
@@ -87,7 +88,9 @@ test.describe('Passkey - Login', () => {
         await page.context().clearCookies()
         await page.evaluate(() => {
           localStorage.removeItem('authentication_tokens')
-          localStorage.removeItem('passkey_prompt_never_ask_again')
+          Object.keys(localStorage)
+            .filter((key) => key.startsWith(`${NEVER_ASK_AGAIN_STORAGE_KEY}_`))
+            .forEach((key) => localStorage.removeItem(key))
           sessionStorage.clear()
         })
         await page.goto('/logout', { waitUntil: 'domcontentloaded' }).catch(() => undefined)
@@ -213,12 +216,18 @@ test.describe('Passkey - Authenticated Student', () => {
     await prompt.getByRole('button', { name: 'Maybe later' }).click()
     await expect(prompt).toBeHidden()
     await expect
-      .poll(async () => page.evaluate(() => localStorage.getItem('passkey_prompt_never_ask_again')))
-      .toBe('true')
+      .poll(async () =>
+        page.evaluate((storageKeyPrefix) => {
+          const matchingKeys = Object.keys(localStorage).filter((key) =>
+            key.startsWith(`${storageKeyPrefix}_`),
+          )
+          return matchingKeys.some((key) => localStorage.getItem(key) === 'true')
+        }, NEVER_ASK_AGAIN_STORAGE_KEY),
+      )
+      .toBe(true)
 
     await page.reload({ waitUntil: 'domcontentloaded' })
-    await page.waitForTimeout(1500)
-    await expect(prompt).toBeHidden()
+    await expect(prompt).toBeHidden({ timeout: 5000 })
   })
 
   test('register passkey button immediately starts registration flow', async ({ page }) => {

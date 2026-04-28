@@ -1,27 +1,15 @@
 import { Button, Checkbox, Group, Modal, Stack, Text } from '@mantine/core'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useLocation } from 'react-router'
 import { useAuthenticationContext } from '../../hooks/authentication'
-import { useLocalStorage } from '../../hooks/local-storage'
-import { IKeycloakCredential } from '../../providers/AuthenticationContext/context'
+import type { IKeycloakCredential } from '../../providers/AuthenticationContext/context'
+import { getPasskeyErrorMessage } from '../../utils/passkey'
 import { showSimpleError, showSimpleSuccess } from '../../utils/notification'
 
 const NEVER_ASK_AGAIN_STORAGE_KEY = 'passkey_prompt_never_ask_again'
 
 const isPasskeyCredential = (credential: IKeycloakCredential) =>
   credential.type?.toLowerCase().includes('webauthn') ?? false
-
-const getErrorMessage = (error: unknown) => {
-  if (error instanceof DOMException && error.name === 'NotAllowedError') {
-    return 'Passkey request was cancelled or timed out'
-  }
-
-  if (error instanceof Error && error.message.trim().length > 0) {
-    return error.message
-  }
-
-  return 'Passkey operation failed'
-}
 
 const PasskeyRegistrationPrompt = () => {
   const auth = useAuthenticationContext()
@@ -30,13 +18,18 @@ const PasskeyRegistrationPrompt = () => {
   const [isRegistering, setIsRegistering] = useState(false)
   const [neverAskAgain, setNeverAskAgain] = useState(false)
   const [checkedUserId, setCheckedUserId] = useState<string>()
-  const [neverAskAgainPreference, setNeverAskAgainPreference] = useLocalStorage<boolean>(
-    NEVER_ASK_AGAIN_STORAGE_KEY,
-    { usingJson: true },
-  )
 
   const userId = auth.user?.userId
-  const shouldSkipPrompt = neverAskAgainPreference === true
+  const perUserNeverAskAgainStorageKey = userId
+    ? `${NEVER_ASK_AGAIN_STORAGE_KEY}_${userId}`
+    : undefined
+  const shouldSkipPrompt = useMemo(() => {
+    if (!perUserNeverAskAgainStorageKey || typeof window === 'undefined') {
+      return false
+    }
+
+    return localStorage.getItem(perUserNeverAskAgainStorageKey) === 'true'
+  }, [perUserNeverAskAgainStorageKey])
 
   useEffect(() => {
     if (!auth.isAuthenticated) {
@@ -91,11 +84,11 @@ const PasskeyRegistrationPrompt = () => {
   ])
 
   const persistNeverAskAgain = () => {
-    if (!neverAskAgain) {
+    if (!neverAskAgain || !perUserNeverAskAgainStorageKey) {
       return
     }
 
-    setNeverAskAgainPreference(true)
+    localStorage.setItem(perUserNeverAskAgainStorageKey, 'true')
   }
 
   const closeModal = () => {
@@ -110,7 +103,7 @@ const PasskeyRegistrationPrompt = () => {
       showSimpleSuccess('Passkey registered successfully')
       setIsOpen(false)
     } catch (error) {
-      showSimpleError(getErrorMessage(error))
+      showSimpleError(getPasskeyErrorMessage(error))
     } finally {
       setIsRegistering(false)
     }
