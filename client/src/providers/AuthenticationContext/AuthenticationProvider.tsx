@@ -268,15 +268,6 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
       ? jwtDecode<IDecodedRefreshToken>(refreshToken)
       : undefined
 
-    console.log('decoded keycloak refresh token', decodedRefreshToken)
-    console.log('decoded keycloak access token', decodedAccessToken)
-
-    if (decodedRefreshToken?.exp) {
-      console.log(
-        `refresh token expires in ${Math.floor(decodedRefreshToken.exp - Date.now() / 1000)} seconds`,
-      )
-    }
-
     // refresh if already expired
     if (decodedRefreshToken?.exp && decodedRefreshToken.exp <= Date.now() / 1000) {
       return setAuthenticationTokens(undefined)

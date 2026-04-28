@@ -144,6 +144,9 @@ const Header = ({ opened, toggle, authenticatedArea }: HeaderProps) => {
       <Modal
         opened={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
+        closeOnClickOutside={!isPasskeyLoading}
+        closeOnEscape={!isPasskeyLoading}
+        withCloseButton={!isPasskeyLoading}
         title='Login'
         centered
       >
@@ -164,7 +167,7 @@ const Header = ({ opened, toggle, authenticatedArea }: HeaderProps) => {
             >
               Login with Passkey
             </Button>
-            <Button variant='outline' onClick={onPasswordLogin}>
+            <Button variant='outline' onClick={onPasswordLogin} disabled={isPasskeyLoading}>
               Login with Password
             </Button>
           </Flex>

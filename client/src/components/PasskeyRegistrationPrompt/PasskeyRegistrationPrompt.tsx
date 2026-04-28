@@ -30,13 +30,13 @@ const PasskeyRegistrationPrompt = () => {
   const [isRegistering, setIsRegistering] = useState(false)
   const [neverAskAgain, setNeverAskAgain] = useState(false)
   const [checkedUserId, setCheckedUserId] = useState<string>()
-  const [neverAskAgainByUser, setNeverAskAgainByUser] = useLocalStorage<Record<string, boolean>>(
+  const [neverAskAgainPreference, setNeverAskAgainPreference] = useLocalStorage<boolean>(
     NEVER_ASK_AGAIN_STORAGE_KEY,
     { usingJson: true },
   )
 
   const userId = auth.user?.userId
-  const shouldSkipPrompt = !!userId && !!neverAskAgainByUser?.[userId]
+  const shouldSkipPrompt = neverAskAgainPreference === true
 
   useEffect(() => {
     if (!auth.isAuthenticated) {
@@ -62,16 +62,16 @@ const PasskeyRegistrationPrompt = () => {
         const allCredentials = await auth.listCredentials()
         const hasPasskey = allCredentials.some(isPasskeyCredential)
 
+        if (isMounted) {
+          setCheckedUserId(userId)
+        }
+
         if (!hasPasskey && isMounted) {
           setNeverAskAgain(false)
           setIsOpen(true)
         }
       } catch (error) {
         console.error('Failed to fetch passkey credentials for login prompt', error)
-      } finally {
-        if (isMounted) {
-          setCheckedUserId(userId)
-        }
       }
     }
 
@@ -91,14 +91,11 @@ const PasskeyRegistrationPrompt = () => {
   ])
 
   const persistNeverAskAgain = () => {
-    if (!userId || !neverAskAgain) {
+    if (!neverAskAgain) {
       return
     }
 
-    setNeverAskAgainByUser((previousValue) => ({
-      ...(previousValue || {}),
-      [userId]: true,
-    }))
+    setNeverAskAgainPreference(true)
   }
 
   const closeModal = () => {
