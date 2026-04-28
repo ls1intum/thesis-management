@@ -5,6 +5,13 @@ import { IUpdateUserInformationPayload } from '../../requests/payloads/user'
 import { PartialNull } from '../../utils/validation'
 import { ILightResearchGroup } from '../../requests/responses/researchGroup'
 
+export interface IKeycloakCredential {
+  id: string
+  type?: string
+  userLabel?: string
+  createdDate?: number
+}
+
 export interface IAuthenticationContext {
   isAuthenticated: boolean
   user: IUser | undefined
@@ -18,8 +25,13 @@ export interface IAuthenticationContext {
     degreeReport: File | undefined,
   ) => Promise<unknown>
   login: () => unknown
+  loginWithPasskey: () => Promise<void>
+  registerPasskey: () => Promise<void>
+  listCredentials: () => Promise<IKeycloakCredential[]>
+  deleteCredential: (credentialId: string) => Promise<void>
   logout: (redirectUrl: string) => unknown
   researchGroups: ILightResearchGroup[]
+  isPasskeySupported: boolean
 }
 
 export const AuthenticationContext = createContext<IAuthenticationContext | undefined>(undefined)

@@ -5,6 +5,7 @@ import MyInformation from './components/MyInformation/MyInformation'
 import NotificationSettings from './components/NotificationSettings/NotificationSettings'
 import AccountDeletion from './components/AccountDeletion/AccountDeletion'
 import DataExport from './components/DataExport/DataExport'
+import PasskeySettings from './components/PasskeySettings/PasskeySettings'
 import { useNavigate, useParams } from 'react-router'
 
 const SettingsPage = () => {
@@ -37,6 +38,8 @@ const SettingsPage = () => {
       <Tabs.Panel value='account'>
         {value === 'account' && (
           <>
+            <PasskeySettings />
+            <Divider my='xl' />
             <DataExport />
             <Divider my='xl' />
             <AccountDeletion />

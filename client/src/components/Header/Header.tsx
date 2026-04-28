@@ -1,11 +1,14 @@
 import {
+  Alert,
   Burger,
   Button,
   Divider,
   Flex,
   Group,
   Menu,
+  Modal,
   Skeleton,
+  Stack,
   Text,
   UnstyledButton,
   useMantineColorScheme,
@@ -16,6 +19,8 @@ import { ColorSchemeToggleButton } from '../ColorSchemeToggleButton/ColorSchemeT
 import { useAuthenticationContext, useUser } from '../../hooks/authentication'
 import { CustomAvatar } from '../CustomAvatar/CustomAvatar'
 import { GearSix, NewspaperClipping, SignOut } from '@phosphor-icons/react'
+import { showSimpleError } from '../../utils/notification'
+import { useState } from 'react'
 
 interface HeaderProps {
   authenticatedArea: boolean
@@ -27,8 +32,34 @@ const Header = ({ opened, toggle, authenticatedArea }: HeaderProps) => {
   const { colorScheme } = useMantineColorScheme()
   const user = useUser()
   const context = useAuthenticationContext()
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
+  const [isPasskeyLoading, setIsPasskeyLoading] = useState(false)
 
   const navigate = useNavigate()
+
+  const onPasswordLogin = () => {
+    setIsLoginModalOpen(false)
+    void context.login()
+  }
+
+  const onPasskeyLogin = async () => {
+    setIsPasskeyLoading(true)
+    try {
+      await context.loginWithPasskey()
+      setIsLoginModalOpen(false)
+      navigate('/dashboard')
+    } catch (error) {
+      if (error instanceof DOMException && error.name === 'NotAllowedError') {
+        showSimpleError('Passkey request was cancelled or timed out')
+      } else if (error instanceof Error && error.message.trim().length > 0) {
+        showSimpleError(error.message)
+      } else {
+        showSimpleError('Passkey login failed')
+      }
+    } finally {
+      setIsPasskeyLoading(false)
+    }
+  }
 
   return (
     <Flex justify='space-between' align='center' h='100%' w='100%'>
@@ -107,11 +138,38 @@ const Header = ({ opened, toggle, authenticatedArea }: HeaderProps) => {
             </Menu.Dropdown>
           </Menu>
         ) : (
-          <Button component={Link} to='/dashboard'>
-            Login
-          </Button>
+          <Button onClick={() => setIsLoginModalOpen(true)}>Login</Button>
         )}
       </Flex>
+      <Modal
+        opened={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+        title='Login'
+        centered
+      >
+        <Stack>
+          <Text size='sm' c='dimmed'>
+            Choose your preferred sign-in method.
+          </Text>
+          {!context.isPasskeySupported && (
+            <Alert variant='light' color='yellow' title='Passkeys are unavailable'>
+              Use a compatible browser on HTTPS (or localhost) to sign in with passkeys.
+            </Alert>
+          )}
+          <Flex direction='column' gap='md'>
+            <Button
+              onClick={() => void onPasskeyLogin()}
+              loading={isPasskeyLoading}
+              disabled={!context.isPasskeySupported}
+            >
+              Login with Passkey
+            </Button>
+            <Button variant='outline' onClick={onPasswordLogin}>
+              Login with Password
+            </Button>
+          </Flex>
+        </Stack>
+      </Modal>
       {authenticatedArea && opened !== undefined && (
         <Group h='100%' hiddenFrom='md'>
           <Burger opened={opened} onClick={toggle} size='md' />
