@@ -83,7 +83,7 @@ test.describe('Passkey - Login', () => {
       await waitForVirtualPasskey(cdpSession, authenticatorId)
 
       const header = page.locator('header')
-      const loginButton = header.getByRole('button', { name: 'Login', exact: true })
+      const loginLink = header.getByRole('link', { name: 'Login', exact: true })
 
       await page.context().clearCookies()
       await page.evaluate(
@@ -101,15 +101,18 @@ test.describe('Passkey - Login', () => {
         },
       )
       await page.goto('/', { waitUntil: 'domcontentloaded' })
-      await expect(loginButton).toBeVisible({ timeout: 15_000 })
-      await loginButton.click()
+      await expect(loginLink).toBeVisible({ timeout: 15_000 })
+      await loginLink.click()
 
       const loginModal = page.getByRole('dialog', { name: 'Login' })
       await expect(loginModal).toBeVisible()
       await loginModal.getByRole('button', { name: 'Login with Passkey', exact: true }).click()
 
       await expect(loginModal).toBeHidden()
-      await expect(header.getByRole('link', { name: 'Dashboard' })).toBeVisible()
+      await expect(page).toHaveURL(/\/dashboard/)
+      await expect(page.getByRole('heading', { name: /dashboard/i })).toBeVisible({
+        timeout: 30_000,
+      })
       await expect(header.getByText('Login')).toBeHidden()
     } finally {
       await cdpSession
@@ -163,7 +166,7 @@ test.describe('Passkey - Unauthenticated', () => {
 
   test('login modal offers passkey and password methods', async ({ page }) => {
     await navigateTo(page, '/')
-    await page.getByRole('button', { name: 'Login' }).click()
+    await page.getByRole('link', { name: 'Login' }).click()
 
     await expect(page.getByRole('dialog', { name: 'Login' })).toBeVisible()
     await expect(page.getByRole('button', { name: 'Login with Passkey' })).toBeVisible()

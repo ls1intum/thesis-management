@@ -24,7 +24,7 @@ export interface IAuthenticationContext {
     cv: File | undefined,
     degreeReport: File | undefined,
   ) => Promise<unknown>
-  login: () => unknown
+  login: (redirectUri?: string) => unknown
   loginWithPasskey: () => Promise<void>
   registerPasskey: () => Promise<void>
   listCredentials: () => Promise<IKeycloakCredential[]>

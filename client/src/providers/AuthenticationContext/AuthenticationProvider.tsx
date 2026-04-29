@@ -177,6 +177,18 @@ const getKeycloakInitOptions = (tokens?: IAuthenticationTokens, shouldCheckSso =
   refreshToken: tokens?.refresh_token,
 })
 
+const getLoginRedirectUri = (redirectUri?: string) => {
+  if (!redirectUri) {
+    return undefined
+  }
+
+  if (/^https?:\/\//.test(redirectUri)) {
+    return redirectUri
+  }
+
+  return `${window.location.origin}${redirectUri.startsWith('/') ? redirectUri : `/${redirectUri}`}`
+}
+
 const AuthenticationProvider = (props: PropsWithChildren) => {
   const { children } = props
 
@@ -443,12 +455,16 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
           throw new ApiError(response)
         }
       },
-      login: () =>
+      login: (redirectUri?: string) =>
         readySignal.then(() => {
           const tokens = getAuthenticationTokens()
 
           if (!tokens?.access_token) {
-            return keycloak.login()
+            const keycloakRedirectUri = getLoginRedirectUri(redirectUri)
+
+            return keycloak.login(
+              keycloakRedirectUri ? { redirectUri: keycloakRedirectUri } : undefined,
+            )
           }
         }),
       loginWithPasskey: () =>

@@ -146,18 +146,6 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
   const isSmallerBreakpoint = useIsSmallerBreakpoint('md')
 
   useEffect(() => {
-    if (!auth.isAuthenticated && location.pathname !== '/logout') {
-      auth.login()
-
-      const interval = setInterval(() => {
-        auth.login()
-      }, 1000)
-
-      return () => clearInterval(interval)
-    }
-  }, [auth.isAuthenticated, location.pathname])
-
-  useEffect(() => {
     if (navigationType === 'POP') {
       return
     }
@@ -182,7 +170,12 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
     >
       <AppShell.Header>
         <Container size={size} fluid={!size} h='100%'>
-          <Header opened={opened} toggle={toggle} authenticatedArea={true} />
+          <Header
+            opened={opened}
+            toggle={toggle}
+            authenticatedArea={true}
+            openLoginModal={!auth.isAuthenticated && location.pathname !== '/logout'}
+          />
         </Container>
       </AppShell.Header>
 

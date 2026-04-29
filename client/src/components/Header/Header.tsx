@@ -21,15 +21,16 @@ import { CustomAvatar } from '../CustomAvatar/CustomAvatar'
 import { GearSix, NewspaperClipping, SignOut } from '@phosphor-icons/react'
 import { getPasskeyErrorMessage } from '../../utils/passkey'
 import { showSimpleError } from '../../utils/notification'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 interface HeaderProps {
   authenticatedArea: boolean
   opened?: boolean | undefined
   toggle?: () => void
+  openLoginModal?: boolean
 }
 
-const Header = ({ opened, toggle, authenticatedArea }: HeaderProps) => {
+const Header = ({ opened, toggle, authenticatedArea, openLoginModal = false }: HeaderProps) => {
   const { colorScheme } = useMantineColorScheme()
   const user = useUser()
   const context = useAuthenticationContext()
@@ -38,9 +39,20 @@ const Header = ({ opened, toggle, authenticatedArea }: HeaderProps) => {
 
   const navigate = useNavigate()
 
+  useEffect(() => {
+    if (context.isAuthenticated) {
+      setIsLoginModalOpen(false)
+      return
+    }
+
+    if (openLoginModal && !context.isAuthenticated) {
+      setIsLoginModalOpen(true)
+    }
+  }, [context.isAuthenticated, openLoginModal])
+
   const onPasswordLogin = () => {
     setIsLoginModalOpen(false)
-    void context.login()
+    void context.login('/dashboard')
   }
 
   const onPasskeyLogin = async () => {
@@ -48,6 +60,7 @@ const Header = ({ opened, toggle, authenticatedArea }: HeaderProps) => {
     try {
       await context.loginWithPasskey()
       setIsLoginModalOpen(false)
+      void navigate('/dashboard', { replace: true })
     } catch (error) {
       showSimpleError(await getPasskeyErrorMessage(error, 'Passkey login failed'))
     } finally {
@@ -132,7 +145,9 @@ const Header = ({ opened, toggle, authenticatedArea }: HeaderProps) => {
             </Menu.Dropdown>
           </Menu>
         ) : (
-          <Button onClick={() => setIsLoginModalOpen(true)}>Login</Button>
+          <Button component={Link} to='/dashboard'>
+            Login
+          </Button>
         )}
       </Flex>
       <Modal

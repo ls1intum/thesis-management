@@ -131,10 +131,15 @@ test.describe('Data Export - Route Protection (authenticated)', () => {
 test.describe('Data Export - Route Protection (unauthenticated)', () => {
   test.use({ storageState: { cookies: [], origins: [] } })
 
-  test('unauthenticated users are redirected from data export page', async ({ page }) => {
+  test('unauthenticated users see the login modal on data export page', async ({ page }) => {
     await page.goto('/data-export', { waitUntil: 'domcontentloaded', timeout: 30_000 })
 
-    // Should redirect to login — the Data Export heading should not be visible
+    await expect(page).toHaveURL(/\/data-export/)
+    const loginModal = page.getByRole('dialog', { name: 'Login' })
+    await expect(loginModal).toBeVisible({ timeout: 30_000 })
+    await expect(loginModal.getByRole('button', { name: 'Login with Password' })).toBeVisible()
+
+    // Protected page content should not be visible while unauthenticated.
     await expect(page.getByRole('heading', { name: 'Data Export' })).not.toBeVisible({
       timeout: 15_000,
     })

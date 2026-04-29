@@ -24,8 +24,13 @@ const TEST_USERS = [
 
 for (const user of TEST_USERS) {
   setup(`authenticate as ${user.name}`, async ({ page }) => {
-    // Navigate to a protected route to trigger Keycloak login redirect
+    // Navigate to a protected route to trigger the in-app login modal.
     await page.goto('/dashboard')
+
+    await expect(page).toHaveURL(/\/dashboard/)
+    const loginModal = page.getByRole('dialog', { name: 'Login' })
+    await expect(loginModal).toBeVisible({ timeout: 30_000 })
+    await loginModal.getByRole('button', { name: 'Login with Password' }).click()
 
     // Wait for Keycloak login page to load
     await expect(page.locator('#kc-login')).toBeVisible({ timeout: 30_000 })
