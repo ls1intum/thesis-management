@@ -38,6 +38,7 @@ const Header = ({ opened, toggle, authenticatedArea, openLoginModal = false }: H
   const [isPasskeyLoading, setIsPasskeyLoading] = useState(false)
 
   const navigate = useNavigate()
+  const isLoginModalForcedOpen = openLoginModal && !context.isAuthenticated
 
   useEffect(() => {
     if (context.isAuthenticated) {
@@ -45,10 +46,19 @@ const Header = ({ opened, toggle, authenticatedArea, openLoginModal = false }: H
       return
     }
 
-    if (openLoginModal && !context.isAuthenticated) {
+    if (openLoginModal) {
       setIsLoginModalOpen(true)
     }
   }, [context.isAuthenticated, openLoginModal])
+
+  const onLoginModalClose = () => {
+    if (isLoginModalForcedOpen) {
+      void navigate('/', { replace: true })
+      return
+    }
+
+    setIsLoginModalOpen(false)
+  }
 
   const onPasswordLogin = () => {
     setIsLoginModalOpen(false)
@@ -151,8 +161,8 @@ const Header = ({ opened, toggle, authenticatedArea, openLoginModal = false }: H
         )}
       </Flex>
       <Modal
-        opened={isLoginModalOpen}
-        onClose={() => setIsLoginModalOpen(false)}
+        opened={isLoginModalForcedOpen || isLoginModalOpen}
+        onClose={onLoginModalClose}
         closeOnClickOutside={!isPasskeyLoading}
         closeOnEscape={!isPasskeyLoading}
         withCloseButton={!isPasskeyLoading}

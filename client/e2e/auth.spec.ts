@@ -13,6 +13,10 @@ test.describe('Authentication - Unauthenticated', () => {
     await expect(loginModal.getByRole('button', { name: 'Login with Passkey' })).toBeVisible()
     await expect(loginModal.getByRole('button', { name: 'Login with Password' })).toBeVisible()
     await expect(page.locator('#kc-login')).toBeHidden()
+
+    await page.keyboard.press('Escape')
+    await expect(page).toHaveURL(/\/$/)
+    await expect(loginModal).toBeHidden()
   })
 
   test('public landing page is accessible without login', async ({ page }) => {

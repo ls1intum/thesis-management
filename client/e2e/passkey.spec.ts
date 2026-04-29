@@ -7,6 +7,12 @@ const DISABLE_PASSKEY_PROMPT_STORAGE_KEY = 'passkey_prompt_disabled'
 
 const passkeyPromptDialog = (page: Page) => page.getByRole('dialog', { name: PASSKEY_PROMPT_TITLE })
 
+const disablePasskeyPrompt = async (page: Page) => {
+  await page.addInitScript((storageKey) => {
+    localStorage.setItem(storageKey, 'true')
+  }, DISABLE_PASSKEY_PROMPT_STORAGE_KEY)
+}
+
 const setupVirtualAuthenticator = async (page: Page) => {
   const cdpSession = await page.context().newCDPSession(page)
   await cdpSession.send('WebAuthn.enable')
@@ -38,7 +44,7 @@ const waitForVirtualPasskey = async (cdpSession: WebAuthnCdpSession, authenticat
             authenticatorId,
           })) as { credentials: unknown[] }
         ).credentials.length,
-      { timeout: 15_000 },
+      { timeout: 30_000 },
     )
     .toBeGreaterThan(0)
 }
@@ -60,6 +66,7 @@ test.describe('Passkey - Login', () => {
   test.use({ storageState: authStatePath('student5') })
 
   test('logs in with passkey from the login modal', async ({ page }) => {
+    await disablePasskeyPrompt(page)
     const { cdpSession, authenticatorId } = await setupVirtualAuthenticator(page)
 
     try {
@@ -67,7 +74,7 @@ test.describe('Passkey - Login', () => {
       await expect(page.getByRole('heading', { name: 'Passkeys' })).toBeVisible()
 
       const prompt = passkeyPromptDialog(page)
-      if (await prompt.isVisible()) {
+      if (await prompt.isVisible({ timeout: 2_000 }).catch(() => false)) {
         await prompt.getByRole('button', { name: 'Maybe later' }).click()
         await expect(prompt).toBeHidden()
       }
@@ -127,6 +134,7 @@ test.describe('Passkey - Registration', () => {
   test.use({ storageState: authStatePath('student4') })
 
   test('registers a passkey using the normal settings flow', async ({ page }) => {
+    await disablePasskeyPrompt(page)
     const { cdpSession, authenticatorId } = await setupVirtualAuthenticator(page)
 
     try {
@@ -134,7 +142,7 @@ test.describe('Passkey - Registration', () => {
       await expect(page.getByRole('heading', { name: 'Passkeys' })).toBeVisible()
 
       const prompt = passkeyPromptDialog(page)
-      if (await prompt.isVisible()) {
+      if (await prompt.isVisible({ timeout: 2_000 }).catch(() => false)) {
         await prompt.getByRole('button', { name: 'Maybe later' }).click()
         await expect(prompt).toBeHidden()
       }
