@@ -172,6 +172,7 @@ const getKeycloakInitOptions = (tokens?: IAuthenticationTokens, shouldCheckSso =
   pkceMethod: 'S256' as const,
   silentCheckSsoRedirectUri: `${window.location.origin}/silent-check-sso.html`,
   silentCheckSsoFallback: false,
+  checkLoginIframe: false,
   token: tokens?.access_token,
   refreshToken: tokens?.refresh_token,
 })
@@ -187,25 +188,38 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
   const [researchGroups, setResearchGroups] = useState<ILightResearchGroup[]>([])
   const isPasskeySupported = isPasskeySupportedInBrowser()
 
-  const refreshAccessToken = (activeKeycloak = keycloak) => {
-    void activeKeycloak.updateToken(60 * 5).then((isSuccess) => {
-      if (!isSuccess) {
+  const refreshAccessToken = (activeKeycloak = keycloak) =>
+    activeKeycloak
+      .updateToken(60 * 5)
+      .then((isSuccess) => {
+        if (!isSuccess) {
+          setAuthenticationTokens(undefined)
+        }
+      })
+      .catch(() => {
         setAuthenticationTokens(undefined)
-      }
-    })
-  }
+      })
 
-  const storeTokens = (activeKeycloak = keycloak) => {
+  const storeTokens = async (activeKeycloak = keycloak) => {
     const refreshToken = activeKeycloak.refreshToken
     const accessToken = activeKeycloak.token
 
-    const decodedAccessToken = accessToken ? jwtDecode<IDecodedAccessToken>(accessToken) : undefined
-    const decodedRefreshToken = refreshToken
-      ? jwtDecode<IDecodedRefreshToken>(refreshToken)
-      : undefined
+    let decodedAccessToken: IDecodedAccessToken | undefined
+    let decodedRefreshToken: IDecodedRefreshToken | undefined
+
+    try {
+      decodedAccessToken = accessToken ? jwtDecode<IDecodedAccessToken>(accessToken) : undefined
+      decodedRefreshToken = refreshToken ? jwtDecode<IDecodedRefreshToken>(refreshToken) : undefined
+    } catch (error) {
+      console.log('Failed to decode authentication tokens', error)
+      activeKeycloak.clearToken()
+      setAuthenticationTokens(undefined)
+      return
+    }
 
     // refresh if already expired
     if (decodedRefreshToken?.exp && decodedRefreshToken.exp <= Date.now() / 1000) {
+      activeKeycloak.clearToken()
       return setAuthenticationTokens(undefined)
     } else if (decodedAccessToken?.exp && decodedAccessToken.exp <= Date.now() / 1000) {
       return refreshAccessToken(activeKeycloak)
@@ -228,7 +242,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
   }
 
   const setKeycloakListeners = (activeKeycloak = keycloak) => {
-    activeKeycloak.onAuthRefreshSuccess = () => storeTokens(activeKeycloak)
+    activeKeycloak.onAuthRefreshSuccess = () => void storeTokens(activeKeycloak)
     activeKeycloak.onAuthRefreshError = () => {
       activeKeycloak.clearToken()
       setAuthenticationTokens(undefined)
@@ -251,7 +265,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
     const authenticated = await keycloak.init(
       getKeycloakInitOptions(tokens, options?.passkeyFlow ?? false),
     )
-    storeTokens(keycloak)
+    await storeTokens(keycloak)
 
     return authenticated
   }
@@ -300,9 +314,17 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
     const refreshTokenFrequency = 60 * 1000
     const refreshTokenInterval = setInterval(() => {
       const refreshToken = keycloak.refreshToken
-      const decodedRefreshToken = refreshToken
-        ? jwtDecode<IDecodedRefreshToken>(refreshToken)
-        : undefined
+      let decodedRefreshToken: IDecodedRefreshToken | undefined
+
+      try {
+        decodedRefreshToken = refreshToken
+          ? jwtDecode<IDecodedRefreshToken>(refreshToken)
+          : undefined
+      } catch {
+        keycloak.clearToken()
+        setAuthenticationTokens(undefined)
+        return
+      }
 
       if (decodedRefreshToken?.exp && decodedRefreshToken.exp <= Date.now() / 1000) {
         keycloak.clearToken()
@@ -322,7 +344,16 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
     }
 
     if (authenticationTokens?.access_token) {
-      const decodedAccessToken = jwtDecode<IDecodedAccessToken>(authenticationTokens.access_token)
+      let decodedAccessToken: IDecodedAccessToken
+
+      try {
+        decodedAccessToken = jwtDecode<IDecodedAccessToken>(authenticationTokens.access_token)
+      } catch {
+        keycloak.clearToken()
+        setAuthenticationTokens(undefined)
+        setUniversityId(undefined)
+        return
+      }
 
       setUniversityId(decodedAccessToken['preferred_username'] || undefined)
     } else {

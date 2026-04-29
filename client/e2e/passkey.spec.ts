@@ -4,6 +4,8 @@ import { authStatePath, navigateTo } from './helpers'
 const PASSKEY_PROMPT_TITLE = 'Register a passkey'
 const NEVER_ASK_AGAIN_STORAGE_KEY = 'passkey_prompt_never_ask_again'
 
+test.describe.configure({ mode: 'serial', retries: 0, timeout: 45_000 })
+
 const passkeyPromptDialog = (page: Page) => page.getByRole('dialog', { name: PASSKEY_PROMPT_TITLE })
 
 const setupVirtualAuthenticator = async (page: Page) => {
@@ -43,7 +45,8 @@ const waitForVirtualPasskey = async (cdpSession: WebAuthnCdpSession, authenticat
 }
 
 const deleteExistingPasskeys = async (page: Page) => {
-  const deleteButtons = page.getByRole('button', { name: 'Delete', exact: true })
+  const passkeysContainer = page.getByRole('heading', { name: 'Passkeys' }).locator('..')
+  const deleteButtons = passkeysContainer.getByRole('button', { name: 'Delete', exact: true })
   const existingPasskeysCount = await deleteButtons.count()
 
   for (let index = 0; index < existingPasskeysCount; index += 1) {
@@ -267,7 +270,7 @@ test.describe('Passkey - Authenticated Student', () => {
         await route.fulfill({
           status: 204,
           headers: {
-            'access-control-allow-origin': '*',
+            'access-control-allow-origin': 'http://localhost:3100',
             'access-control-allow-credentials': 'true',
             'access-control-allow-methods': 'GET,POST,OPTIONS',
             'access-control-allow-headers': '*',
