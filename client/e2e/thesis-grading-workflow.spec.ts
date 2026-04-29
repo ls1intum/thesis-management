@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect } from './resource-lock'
 import { authStatePath, fillRichTextEditor, navigateToDetail } from './helpers'
 import {
   snapshotMailbox,

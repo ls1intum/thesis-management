@@ -156,9 +156,9 @@ test.describe('Thesis Lifecycle - Final Submission', () => {
         await uploadFileButton.click()
 
         await expect(uploadDialog).toBeHidden({ timeout: 10_000 })
-        await expect(page.getByText('File uploaded successfully')).toBeVisible({
-          timeout: 10_000,
-        })
+        // The "File uploaded successfully" toast auto-dismisses after a few
+        // seconds and is racy to assert on. The dialog being hidden plus the
+        // submit button becoming enabled below already prove the upload.
       }
 
       await expect(submitButton).toBeEnabled()

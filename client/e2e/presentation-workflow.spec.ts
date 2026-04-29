@@ -1,9 +1,8 @@
-import { test, expect } from '@playwright/test'
+import { test, expect } from './resource-lock'
 import { authStatePath, navigateTo, navigateToDetail, selectOption } from './helpers'
 import {
   snapshotMailbox,
-  waitForNewMessages,
-  getSubject,
+  waitForNewMessageBySubject,
   getBody,
   getToAddresses,
   assertSentFromApp,
@@ -158,19 +157,19 @@ test.describe.serial('Presentation Workflow', () => {
     await expect(page.getByText('Scheduled').first()).toBeVisible({ timeout: 10_000 })
 
     // --- Email verification ---
-    // THESIS_PRESENTATION_SCHEDULED is sent to thesis students when a presentation is scheduled
-    const newEmails = await waitForNewMessages('student3@test.local', beforeIds)
-    expect(newEmails.length).toBeGreaterThanOrEqual(1)
+    // Accepting a PUBLIC presentation draft sends two emails to student3:
+    // the private THESIS_PRESENTATION_SCHEDULED notification and the public
+    // THESIS_PRESENTATION_INVITATION (student is primary recipient). Wait
+    // specifically for the private one rather than the first arrival.
+    const privateEmail = await waitForNewMessageBySubject(
+      'student3@test.local',
+      beforeIds,
+      'New Presentation scheduled',
+    )
+    assertSentFromApp(privateEmail)
+    expect(getToAddresses(privateEmail)).toContain('student3@test.local')
 
-    // Verify private notification to student3 (THESIS_PRESENTATION_SCHEDULED template)
-    const privateEmail = newEmails.find((e) => getSubject(e) === 'New Presentation scheduled')
-    expect(privateEmail, 'Presentation scheduled email should be sent').toBeDefined()
-    assertSentFromApp(privateEmail!)
-    expect(getToAddresses(privateEmail!)).toContain('student3@test.local')
-
-    // Body should contain: greeting, thesis title, presentation location,
-    // language, and a link to the thesis
-    const body = getBody(privateEmail!)
+    const body = getBody(privateEmail)
     expect(body, 'Should greet the student by first name').toContain('Student3')
     expect(body, 'Should contain the thesis title').toContain(THESIS_TITLE)
     expect(body, 'Should contain the presentation location').toContain('Room 01.07.014')

@@ -1,4 +1,5 @@
-import { test, expect, Page, Locator } from '@playwright/test'
+import { Page, Locator } from '@playwright/test'
+import { test, expect } from './resource-lock'
 import {
   authStatePath,
   fillRichTextEditor,
