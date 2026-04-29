@@ -70,7 +70,7 @@ dependencies {
 	implementation "org.mnode.ical4j:ical4j:4.2.5"
 	implementation "com.itextpdf:itext-core:9.6.0"
 	implementation "com.itextpdf:html2pdf:6.3.2"
-	implementation "com.auth0:java-jwt:4.5.1"
+	implementation "com.auth0:java-jwt:4.5.2"
 
 	// Use the latest version of commons-lang3 to avoid security issues
 	implementation "org.apache.commons:commons-lang3:${commons_lang3_version}"
