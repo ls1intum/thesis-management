@@ -48,9 +48,8 @@ const Header = ({ opened, toggle, authenticatedArea }: HeaderProps) => {
     try {
       await context.loginWithPasskey()
       setIsLoginModalOpen(false)
-      navigate('/dashboard')
     } catch (error) {
-      showSimpleError(getPasskeyErrorMessage(error, 'Passkey login failed'))
+      showSimpleError(await getPasskeyErrorMessage(error, 'Passkey login failed'))
     } finally {
       setIsPasskeyLoading(false)
     }

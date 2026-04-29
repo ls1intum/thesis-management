@@ -1,23 +1,9 @@
 import { Alert, Button, Group, Loader, Paper, Stack, Text, Title } from '@mantine/core'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useAuthenticationContext } from '../../../../hooks/authentication'
 import { showSimpleError, showSimpleSuccess } from '../../../../utils/notification'
 import { IKeycloakCredential } from '../../../../providers/AuthenticationContext/context'
-
-const getErrorMessage = (error: unknown) => {
-  if (error instanceof DOMException && error.name === 'NotAllowedError') {
-    return 'Passkey request was cancelled or timed out'
-  }
-
-  if (error instanceof Error && error.message.trim().length > 0) {
-    return error.message
-  }
-
-  return 'Passkey operation failed'
-}
-
-const isPasskeyCredential = (credential: IKeycloakCredential) =>
-  credential.type?.toLowerCase().includes('webauthn') ?? false
+import { getPasskeyErrorMessage, isPasskeyCredential } from '../../../../utils/passkey'
 
 const formatCreatedDate = (createdDate?: number) => {
   if (!createdDate) {
@@ -35,45 +21,38 @@ const PasskeySettings = () => {
   const [isLoadingCredentials, setIsLoadingCredentials] = useState(true)
   const [deletingCredentialId, setDeletingCredentialId] = useState<string>()
 
+  const loadPasskeyCredentials = useCallback(async () => {
+    const allCredentials = await auth.listCredentials()
+    const passkeys = allCredentials
+      .filter(isPasskeyCredential)
+      .sort((a, b) => (b.createdDate ?? 0) - (a.createdDate ?? 0))
+
+    setCredentials(passkeys)
+  }, [auth])
+
   useEffect(() => {
     const fetchCredentials = async () => {
       setIsLoadingCredentials(true)
       try {
-        const allCredentials = await auth.listCredentials()
-        const passkeys = allCredentials
-          .filter(isPasskeyCredential)
-          .sort((a, b) => (b.createdDate ?? 0) - (a.createdDate ?? 0))
-        setCredentials(passkeys)
+        await loadPasskeyCredentials()
       } catch (error) {
-        showSimpleError(getErrorMessage(error))
+        showSimpleError(await getPasskeyErrorMessage(error))
       } finally {
         setIsLoadingCredentials(false)
       }
     }
 
     void fetchCredentials()
-  }, [auth])
-
-  const refreshCredentials = async () => {
-    try {
-      const allCredentials = await auth.listCredentials()
-      const passkeys = allCredentials
-        .filter(isPasskeyCredential)
-        .sort((a, b) => (b.createdDate ?? 0) - (a.createdDate ?? 0))
-      setCredentials(passkeys)
-    } catch (error) {
-      showSimpleError(getErrorMessage(error))
-    }
-  }
+  }, [loadPasskeyCredentials])
 
   const onRegisterPasskey = async () => {
     setIsRegistering(true)
     try {
       await auth.registerPasskey()
       showSimpleSuccess('Passkey registered successfully')
-      await refreshCredentials()
+      await loadPasskeyCredentials()
     } catch (error) {
-      showSimpleError(getErrorMessage(error))
+      showSimpleError(await getPasskeyErrorMessage(error))
     } finally {
       setIsRegistering(false)
     }
@@ -84,9 +63,9 @@ const PasskeySettings = () => {
     try {
       await auth.deleteCredential(credentialId)
       showSimpleSuccess('Passkey deleted successfully')
-      await refreshCredentials()
+      await loadPasskeyCredentials()
     } catch (error) {
-      showSimpleError(getErrorMessage(error))
+      showSimpleError(await getPasskeyErrorMessage(error))
     } finally {
       setDeletingCredentialId(undefined)
     }

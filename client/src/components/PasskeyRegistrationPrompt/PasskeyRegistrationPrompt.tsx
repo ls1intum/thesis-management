@@ -2,14 +2,10 @@ import { Button, Checkbox, Group, Modal, Stack, Text } from '@mantine/core'
 import { useEffect, useMemo, useState } from 'react'
 import { useLocation } from 'react-router'
 import { useAuthenticationContext } from '../../hooks/authentication'
-import type { IKeycloakCredential } from '../../providers/AuthenticationContext/context'
-import { getPasskeyErrorMessage } from '../../utils/passkey'
+import { getPasskeyErrorMessage, isPasskeyCredential } from '../../utils/passkey'
 import { showSimpleError, showSimpleSuccess } from '../../utils/notification'
 
 const NEVER_ASK_AGAIN_STORAGE_KEY = 'passkey_prompt_never_ask_again'
-
-const isPasskeyCredential = (credential: IKeycloakCredential) =>
-  credential.type?.toLowerCase().includes('webauthn') ?? false
 
 const PasskeyRegistrationPrompt = () => {
   const auth = useAuthenticationContext()
@@ -64,6 +60,9 @@ const PasskeyRegistrationPrompt = () => {
           setIsOpen(true)
         }
       } catch (error) {
+        if (isMounted) {
+          setCheckedUserId(userId)
+        }
         console.error('Failed to fetch passkey credentials for login prompt', error)
       }
     }
@@ -103,7 +102,7 @@ const PasskeyRegistrationPrompt = () => {
       showSimpleSuccess('Passkey registered successfully')
       setIsOpen(false)
     } catch (error) {
-      showSimpleError(getPasskeyErrorMessage(error))
+      showSimpleError(await getPasskeyErrorMessage(error))
     } finally {
       setIsRegistering(false)
     }

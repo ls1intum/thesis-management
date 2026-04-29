@@ -19,6 +19,7 @@ import { doRequest } from '../../requests/request'
 import { showSimpleError } from '../../utils/notification'
 import { ApiError, getApiResponseErrorMessage } from '../../requests/handler'
 import { ILightResearchGroup } from '../../requests/responses/researchGroup'
+import { getPasskeyErrorMessage } from '../../utils/passkey'
 
 const createKeycloakClient = () =>
   new Keycloak({
@@ -74,71 +75,6 @@ const fromBase64Url = (value: string) => {
   }
 
   return bytes
-}
-
-const extractMessageFromPasskeyErrorBody = (body: unknown): string | undefined => {
-  if (typeof body === 'string') {
-    const trimmedBody = body.trim()
-    return trimmedBody.length > 0 ? trimmedBody : undefined
-  }
-
-  if (Array.isArray(body)) {
-    for (const entry of body) {
-      const message = extractMessageFromPasskeyErrorBody(entry)
-      if (message) {
-        return message
-      }
-    }
-    return undefined
-  }
-
-  if (!body || typeof body !== 'object') {
-    return undefined
-  }
-
-  const payload = body as Record<string, unknown>
-  const candidateKeys = ['error_description', 'errorMessage', 'error', 'message', 'detail']
-
-  for (const key of candidateKeys) {
-    const message = extractMessageFromPasskeyErrorBody(payload[key])
-    if (message) {
-      return message
-    }
-  }
-
-  return undefined
-}
-
-const getPasskeyErrorMessage = async (response: Response) => {
-  const text = await response.text().catch(() => '')
-
-  if (!text) {
-    return `Request failed with status ${response.status}`
-  }
-
-  try {
-    const parsed = JSON.parse(text) as unknown
-    const extractedMessage = extractMessageFromPasskeyErrorBody(parsed)
-    if (extractedMessage) {
-      return extractedMessage
-    }
-  } catch {
-    // Response body is not JSON, use raw text below.
-  }
-
-  return text
-}
-
-const normalizePasskeyError = (error: unknown, fallback: string) => {
-  if (error instanceof DOMException && error.name === 'NotAllowedError') {
-    return 'Passkey request was cancelled or timed out'
-  }
-
-  if (error instanceof Error && error.message.trim().length > 0) {
-    return error.message
-  }
-
-  return fallback
 }
 
 const isObjectRecord = (value: unknown): value is Record<string, unknown> =>
@@ -231,8 +167,8 @@ const parseAccountCredentialsResponse = (
   return credentials
 }
 
-const getKeycloakInitOptions = (tokens?: IAuthenticationTokens) => ({
-  onLoad: 'check-sso' as const,
+const getKeycloakInitOptions = (tokens?: IAuthenticationTokens, shouldCheckSso = false) => ({
+  ...(shouldCheckSso ? { onLoad: 'check-sso' as const } : {}),
   pkceMethod: 'S256' as const,
   silentCheckSsoRedirectUri: `${window.location.origin}/silent-check-sso.html`,
   silentCheckSsoFallback: false,
@@ -303,13 +239,18 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
     }
   }
 
-  const initializeKeycloakSession = async (tokens?: IAuthenticationTokens) => {
+  const initializeKeycloakSession = async (
+    tokens?: IAuthenticationTokens,
+    options?: { passkeyFlow?: boolean },
+  ) => {
     unsetKeycloakListeners()
 
     keycloak = createKeycloakClient()
     setKeycloakListeners(keycloak)
 
-    const authenticated = await keycloak.init(getKeycloakInitOptions(tokens))
+    const authenticated = await keycloak.init(
+      getKeycloakInitOptions(tokens, options?.passkeyFlow ?? false),
+    )
     storeTokens(keycloak)
 
     return authenticated
@@ -510,7 +451,6 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
             },
             body: JSON.stringify({
               credentialId: toBase64Url(passkeyCredential.rawId),
-              rawId: toBase64Url(passkeyCredential.rawId),
               clientDataJSON: toBase64Url(passkeyCredential.response.clientDataJSON),
               authenticatorData: toBase64Url(passkeyCredential.response.authenticatorData),
               signature: toBase64Url(passkeyCredential.response.signature),
@@ -522,7 +462,9 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
             throw new Error(await getPasskeyErrorMessage(response))
           }
 
-          const authenticated = await initializeKeycloakSession()
+          const authenticated = await initializeKeycloakSession(undefined, {
+            passkeyFlow: true,
+          })
           if (!authenticated) {
             throw new Error('No active Keycloak session detected after passkey authentication')
           }
@@ -543,7 +485,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
               await keycloak.updateToken(5 * 60)
             } catch (error) {
               throw new Error(
-                normalizePasskeyError(
+                await getPasskeyErrorMessage(
                   error,
                   'Failed to refresh the access token for passkey registration',
                 ),
@@ -601,7 +543,6 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
             },
             body: JSON.stringify({
               credentialId: toBase64Url(passkeyCredential.rawId),
-              rawId: toBase64Url(passkeyCredential.rawId),
               clientDataJSON: toBase64Url(passkeyCredential.response.clientDataJSON),
               attestationObject: toBase64Url(passkeyCredential.response.attestationObject),
               challenge,
