@@ -3,8 +3,7 @@ import { authStatePath, navigateTo } from './helpers'
 
 const PASSKEY_PROMPT_TITLE = 'Register a passkey'
 const NEVER_ASK_AGAIN_STORAGE_KEY = 'passkey_prompt_never_ask_again'
-
-test.describe.configure({ mode: 'serial', retries: 0, timeout: 45_000 })
+const DISABLE_PASSKEY_PROMPT_STORAGE_KEY = 'passkey_prompt_disabled'
 
 const passkeyPromptDialog = (page: Page) => page.getByRole('dialog', { name: PASSKEY_PROMPT_TITLE })
 
@@ -85,30 +84,32 @@ test.describe('Passkey - Login', () => {
 
       const header = page.locator('header')
       const loginButton = header.getByRole('button', { name: 'Login', exact: true })
-      let isLoggedOut = false
 
-      for (let attempt = 0; attempt < 3 && !isLoggedOut; attempt += 1) {
-        await page.context().clearCookies()
-        await page.evaluate(() => {
+      await page.context().clearCookies()
+      await page.evaluate(
+        ({ disablePromptStorageKey, neverAskAgainStorageKey }) => {
           localStorage.removeItem('authentication_tokens')
+          localStorage.setItem(disablePromptStorageKey, 'true')
           Object.keys(localStorage)
-            .filter((key) => key.startsWith(`${NEVER_ASK_AGAIN_STORAGE_KEY}_`))
+            .filter((key) => key.startsWith(`${neverAskAgainStorageKey}_`))
             .forEach((key) => localStorage.removeItem(key))
           sessionStorage.clear()
-        })
-        await page.goto('/logout', { waitUntil: 'domcontentloaded' }).catch(() => undefined)
-        await navigateTo(page, '/')
-        isLoggedOut = await loginButton.isVisible().catch(() => false)
-      }
-
-      expect(isLoggedOut).toBe(true)
+        },
+        {
+          disablePromptStorageKey: DISABLE_PASSKEY_PROMPT_STORAGE_KEY,
+          neverAskAgainStorageKey: NEVER_ASK_AGAIN_STORAGE_KEY,
+        },
+      )
+      await page.goto('/', { waitUntil: 'domcontentloaded' })
+      await expect(loginButton).toBeVisible({ timeout: 15_000 })
       await loginButton.click()
 
       const loginModal = page.getByRole('dialog', { name: 'Login' })
       await expect(loginModal).toBeVisible()
       await loginModal.getByRole('button', { name: 'Login with Passkey', exact: true }).click()
 
-      await expect(page).toHaveURL(/\/dashboard/)
+      await expect(loginModal).toBeHidden()
+      await expect(header.getByRole('link', { name: 'Dashboard' })).toBeVisible()
       await expect(header.getByText('Login')).toBeHidden()
     } finally {
       await cdpSession
@@ -176,6 +177,10 @@ test.describe('Passkey - Authenticated Student', () => {
   test('prompts passkey registration after login when no passkey is registered', async ({
     page,
   }) => {
+    await page.addInitScript((storageKey) => {
+      localStorage.setItem(storageKey, 'false')
+    }, DISABLE_PASSKEY_PROMPT_STORAGE_KEY)
+
     await page.route('**/realms/**/account/credentials**', async (route) => {
       if (route.request().method() !== 'GET') {
         await route.continue()
@@ -198,6 +203,10 @@ test.describe('Passkey - Authenticated Student', () => {
   })
 
   test('never ask again suppresses future passkey prompts for the same user', async ({ page }) => {
+    await page.addInitScript((storageKey) => {
+      localStorage.setItem(storageKey, 'false')
+    }, DISABLE_PASSKEY_PROMPT_STORAGE_KEY)
+
     await page.route('**/realms/**/account/credentials**', async (route) => {
       if (route.request().method() !== 'GET') {
         await route.continue()
@@ -233,7 +242,9 @@ test.describe('Passkey - Authenticated Student', () => {
     await expect(prompt).toBeHidden({ timeout: 5000 })
   })
 
-  test('register passkey button immediately starts registration flow', async ({ page }) => {
+  test('settings register passkey button immediately starts registration flow', async ({
+    page,
+  }) => {
     let challengeRequestCount = 0
     let saveRequestCount = 0
     let saveRequestPayload: Record<string, unknown> | undefined
@@ -294,14 +305,18 @@ test.describe('Passkey - Authenticated Student', () => {
     const { cdpSession, authenticatorId } = await setupVirtualAuthenticator(page)
 
     try {
-      await navigateTo(page, '/dashboard')
+      await navigateTo(page, '/settings/account')
+      await expect(page.getByRole('heading', { name: 'Passkeys' })).toBeVisible()
 
-      const prompt = passkeyPromptDialog(page)
-      await expect(prompt).toBeVisible()
-      await prompt.getByRole('button', { name: 'Register passkey' }).click()
+      const registerPasskeyButton = page.getByRole('button', {
+        name: 'Register Passkey',
+        exact: true,
+      })
+      await expect(registerPasskeyButton).toBeEnabled()
+      await registerPasskeyButton.click()
 
       await expect(page.getByText('Passkey registered successfully')).toBeVisible()
-      await expect(prompt).toBeHidden()
+      await expect(passkeyPromptDialog(page)).toBeHidden()
       expect(challengeRequestCount).toBe(1)
       expect(saveRequestCount).toBe(1)
       expect(saveRequestPayload?.challenge).toBe('dGVzdC1jaGFsbGVuZ2U')

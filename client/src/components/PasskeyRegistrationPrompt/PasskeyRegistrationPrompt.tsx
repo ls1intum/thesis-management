@@ -6,6 +6,7 @@ import { getPasskeyErrorMessage, isPasskeyCredential } from '../../utils/passkey
 import { showSimpleError, showSimpleSuccess } from '../../utils/notification'
 
 const NEVER_ASK_AGAIN_STORAGE_KEY = 'passkey_prompt_never_ask_again'
+const DISABLE_PROMPT_STORAGE_KEY = 'passkey_prompt_disabled'
 
 const PasskeyRegistrationPrompt = () => {
   const auth = useAuthenticationContext()
@@ -20,7 +21,15 @@ const PasskeyRegistrationPrompt = () => {
     ? `${NEVER_ASK_AGAIN_STORAGE_KEY}_${userId}`
     : undefined
   const shouldSkipPrompt = useMemo(() => {
-    if (!perUserNeverAskAgainStorageKey || typeof window === 'undefined') {
+    if (typeof window === 'undefined') {
+      return false
+    }
+
+    if (localStorage.getItem(DISABLE_PROMPT_STORAGE_KEY) === 'true') {
+      return true
+    }
+
+    if (!perUserNeverAskAgainStorageKey) {
       return false
     }
 

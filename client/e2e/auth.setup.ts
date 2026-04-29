@@ -1,5 +1,7 @@
 import { test as setup, expect } from '@playwright/test'
 
+const DISABLE_PASSKEY_PROMPT_STORAGE_KEY = 'passkey_prompt_disabled'
+
 const TEST_USERS = [
   { name: 'student', username: 'student', password: 'student' },
   { name: 'student2', username: 'student2', password: 'student2' },
@@ -50,6 +52,10 @@ for (const user of TEST_USERS) {
       },
       { timeout: 15_000 },
     )
+
+    await page.evaluate((storageKey) => {
+      localStorage.setItem(storageKey, 'true')
+    }, DISABLE_PASSKEY_PROMPT_STORAGE_KEY)
 
     // Save the authenticated state (localStorage + cookies including Keycloak session)
     await page.context().storageState({ path: `e2e/.auth/${user.name}.json` })
