@@ -32,18 +32,18 @@ const ApplicationsFilters = (props: IApplicationsFiltersProps) => {
           hidePickedOptions
           label='Topic'
           placeholder='Open Topics'
-          data={[
-            {
-              value: 'NO_TOPIC',
-              label: 'Suggested Topic',
-            },
-            ...(topics
+          // The legacy "Suggested Topic" sentinel option was removed in
+          // favor of the explicit "Include suggested topics" Switch below.
+          // It overlapped with the new toggle and produced an empty list
+          // when both were combined unexpectedly.
+          data={
+            topics
               ? Object.values(topics).map((topic) => ({
                   value: topic.topicId,
                   label: topic.title,
                 }))
-              : []),
-          ]}
+              : []
+          }
           value={filters.topics || []}
           onChange={(value) => {
             setFilters((prev) => ({
@@ -111,7 +111,7 @@ const ApplicationsFilters = (props: IApplicationsFiltersProps) => {
       <Grid.Col span={12}>
         <Switch
           label='Include suggested topics'
-          description='Show applications without a specific supervisor (suggested topics)'
+          description='Show applications without a specific topic (the student proposed their own thesis title)'
           checked={filters.includeSuggestedTopics !== false}
           onChange={(e) =>
             setFilters((prev) => ({
