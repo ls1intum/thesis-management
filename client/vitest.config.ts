@@ -1,10 +1,16 @@
 import { defineConfig } from 'vitest/config'
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const here = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
   test: {
     environment: 'jsdom',
-    globals: true,
+    // Test files import their helpers explicitly (`import { describe, ... }
+    // from 'vitest'`) instead of relying on globals, so we keep this off
+    // and avoid leaking `describe`/`expect`/`vi` into production source.
+    globals: false,
     setupFiles: ['./test/setup.ts'],
     // Component tests live next to the code under src/.
     // The pre-existing pure-Node tests in client/test/*.test.mjs continue
@@ -20,7 +26,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, 'src'),
+      '@': path.resolve(here, 'src'),
     },
   },
 })

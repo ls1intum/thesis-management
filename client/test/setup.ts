@@ -33,9 +33,12 @@ if (!('ResizeObserver' in globalThis)) {
   globalThis.ResizeObserver = ResizeObserverMock as unknown as typeof ResizeObserver
 }
 
-// 3) scrollTo — Mantine occasionally calls window.scrollTo / element.scrollTo.
+// 3) scrollTo — Mantine occasionally calls window.scrollTo and element.scrollTo.
 if (typeof window.scrollTo !== 'function') {
   window.scrollTo = () => {}
+}
+if (typeof Element !== 'undefined' && typeof Element.prototype.scrollTo !== 'function') {
+  Element.prototype.scrollTo = () => {}
 }
 
 // React Testing Library auto-cleanup between tests.
