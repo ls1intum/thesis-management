@@ -128,6 +128,12 @@ const TopicCard = ({ topic, setOpenTopic }: ITopicCardProps) => {
             <DownloadSimple />
           </Button>
         </Group>
+      ) : 'applicationDeadline' in topic &&
+        topic.applicationDeadline &&
+        new Date(topic.applicationDeadline) < new Date() ? (
+        <Button fullWidth mt='md' component={Link} to={`/topics/${topicId}`}>
+          More Information
+        </Button>
       ) : (
         <Button fullWidth mt='md' component={Link} to={`/submit-application/${topicId}`}>
           Apply

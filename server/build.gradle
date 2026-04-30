@@ -16,7 +16,12 @@ version = "4.10.3"
 description = "Thesis Management"
 
 gitProperties {
-    dotGitDirectory = file("../.git")
+    // The plugin walks up from the project dir to auto-detect the .git
+    // directory and natively handles git worktrees (where .git is a file
+    // pointing into <main>/.git/worktrees/<name>). Setting dotGitDirectory
+    // explicitly to file("../.git") breaks this for worktree checkouts
+    // because that path is a file, not a directory, and JGit then fails
+    // with "repository not found".
     failOnNoGitDirectory = false
 }
 
