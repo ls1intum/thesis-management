@@ -42,7 +42,7 @@ describe('ApplicationsSidebar — issue #572 (arrow-key guard)', () => {
     )
   })
 
-  test('keydown handler ignores modifier-key combinations', () => {
+  test('keydown handler ignores all four modifier-key combinations', () => {
     assert.match(
       source,
       /metaKey/,
@@ -52,6 +52,16 @@ describe('ApplicationsSidebar — issue #572 (arrow-key guard)', () => {
       source,
       /ctrlKey/,
       'Expected the keydown handler to skip events with ctrlKey held.',
+    )
+    assert.match(
+      source,
+      /altKey/,
+      'Expected the keydown handler to skip events with altKey held.',
+    )
+    assert.match(
+      source,
+      /shiftKey/,
+      'Expected the keydown handler to skip events with shiftKey held (e.g. Shift+Arrow text selection).',
     )
   })
 
