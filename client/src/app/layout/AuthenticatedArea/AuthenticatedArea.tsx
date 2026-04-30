@@ -41,6 +41,10 @@ import { CustomAvatar } from '../../../components/CustomAvatar/CustomAvatar'
 import { formatUser } from '../../../utils/format'
 import ContentContainer from '../ContentContainer/ContentContainer'
 import Footer from '../../../components/Footer/Footer'
+import EnvironmentBanner, {
+  ENVIRONMENT_BANNER_HEIGHT,
+  isEnvironmentBannerVisible,
+} from '../../../components/EnvironmentBanner/EnvironmentBanner'
 import Header from '../../../components/Header/Header'
 import { useIsSmallerBreakpoint } from '../../../hooks/theme'
 
@@ -140,7 +144,9 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
 
   const auth = useAuthenticationContext()
 
-  const HEADER_HEIGHT = 50
+  const baseHeaderHeight = 50
+  const HEADER_HEIGHT =
+    baseHeaderHeight + (isEnvironmentBannerVisible() ? ENVIRONMENT_BANNER_HEIGHT : 0)
   const FOOTER_HEIGHT = 50
 
   const isSmallerBreakpoint = useIsSmallerBreakpoint('md')
@@ -181,6 +187,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
       padding={0}
     >
       <AppShell.Header>
+        <EnvironmentBanner />
         <Container size={size} fluid={!size} h='100%'>
           <Header opened={opened} toggle={toggle} authenticatedArea={true} />
         </Container>
