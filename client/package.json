@@ -36,7 +36,7 @@
     "prepare": "cd .. && husky client/.husky"
   },
   "overrides": {
-    "ajv": "8.18.0",
+    "ajv": "8.20.0",
     "minimatch": "10.2.5",
     "serialize-javascript": "7.0.5",
     "lodash": "4.18.1",
