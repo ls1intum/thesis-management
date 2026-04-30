@@ -26,7 +26,7 @@ import { formatThesisType } from '../../../../utils/format'
 import { PaginationResponse } from '../../../../requests/responses/pagination'
 import { ILightResearchGroup } from '../../../../requests/responses/researchGroup'
 import { ILightUser } from '../../../../requests/responses/user'
-import { useHasGroupAccess } from '../../../../hooks/authentication'
+import { useHasGroupAccess, useUser } from '../../../../hooks/authentication'
 import { DateInput } from '@mantine/dates'
 
 interface ICreateTopicModalProps {
@@ -47,6 +47,14 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
   const [researchGroups, setResearchGroups] = useState<PaginationResponse<ILightResearchGroup>>()
   const [autoSelectedExaminers, setAutoSelectedExaminers] = useState<ILightUser[]>([])
   const hasAdminAccess = useHasGroupAccess('admin')
+  const currentUser = useUser()
+  const isTopicOwner =
+    !!topic &&
+    !!currentUser &&
+    (topic.createdBy?.userId === currentUser.userId ||
+      (topic.supervisors ?? []).some((s) => s.userId === currentUser.userId) ||
+      (topic.examiners ?? []).some((e) => e.userId === currentUser.userId))
+  const canEditResearchGroup = hasAdminAccess || isTopicOwner
 
   const form = useForm<{
     title: string
@@ -110,7 +118,7 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
   }, [topic, opened])
 
   useEffect(() => {
-    if (!hasAdminAccess && topic?.researchGroup) {
+    if (!canEditResearchGroup && topic?.researchGroup) {
       setResearchGroups({
         content: [topic.researchGroup],
         totalPages: 1,
@@ -254,7 +262,7 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
               label='Research Group'
               required
               nothingFoundMessage={!loading ? 'Nothing found...' : 'Loading...'}
-              disabled={loading || !researchGroups || !hasAdminAccess}
+              disabled={loading || !researchGroups || !canEditResearchGroup}
               data={(researchGroups?.content ?? []).map((researchGroup: ILightResearchGroup) => ({
                 label: researchGroup.name,
                 value: researchGroup.id,
