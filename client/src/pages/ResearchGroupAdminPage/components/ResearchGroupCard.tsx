@@ -1,6 +1,5 @@
 import { Badge, Box, Card, Flex, Group, Stack, Text } from '@mantine/core'
 import { Buildings, Users } from '@phosphor-icons/react'
-import React from 'react'
 import { IResearchGroup } from '../../../requests/responses/researchGroup'
 import { CustomAvatar } from '../../../components/CustomAvatar/CustomAvatar'
 import { formatUser } from '../../../utils/format'

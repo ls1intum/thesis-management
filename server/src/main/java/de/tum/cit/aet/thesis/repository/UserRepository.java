@@ -51,7 +51,11 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 	List<User> getRoleMembers(@Param("roles") Set<String> roles,
 							@Param("researchGroupId") UUID researchGroupId);
 
-	long countByResearchGroupId(UUID researchGroupId);
+	// Explicit JPQL (rather than a derived `countByResearchGroup_Id` method
+	// name) to make the property path unambiguous for Spring Data: User has
+	// a `researchGroup` association, not a `researchGroupId` property.
+	@Query("SELECT COUNT(u) FROM User u WHERE u.researchGroup.id = :researchGroupId")
+	long countByResearchGroupId(@Param("researchGroupId") UUID researchGroupId);
 
 	@Query("SELECT u.researchGroup.id, COUNT(u) FROM User u "
 			+ "WHERE u.researchGroup.id IN :researchGroupIds "
