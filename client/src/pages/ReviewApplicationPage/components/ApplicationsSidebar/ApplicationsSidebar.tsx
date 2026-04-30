@@ -23,7 +23,25 @@ const ApplicationsSidebar = (props: IApplicationsSidebarProps) => {
   const [startAtLastApplication, setStartAtLastApplication] = useState(false)
 
   useEffect(() => {
-    window.onkeydown = (e) => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') {
+        return
+      }
+
+      if (e.metaKey || e.ctrlKey || e.altKey) {
+        return
+      }
+
+      const target = e.target as HTMLElement | null
+      if (
+        target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement ||
+        target instanceof HTMLSelectElement ||
+        (target && target.isContentEditable)
+      ) {
+        return
+      }
+
       let newIndex = selectedIndex
 
       newIndex += e.key === 'ArrowRight' ? 1 : 0
@@ -50,8 +68,10 @@ const ApplicationsSidebar = (props: IApplicationsSidebarProps) => {
       }
     }
 
+    window.addEventListener('keydown', onKeyDown)
+
     return () => {
-      window.onkeydown = null
+      window.removeEventListener('keydown', onKeyDown)
     }
   }, [applications, page, selectedIndex])
 
