@@ -13,6 +13,18 @@ interface IResearchGroupFormProps {
   layout?: 'grid' | 'stack'
 }
 
+const getInitialValues = (initial: Partial<IResearchGroup> | undefined) => ({
+  name: initial?.name || '',
+  abbreviation: initial?.abbreviation || '',
+  campus: initial?.campus || '',
+  description: initial?.description || '',
+  websiteUrl: initial?.websiteUrl || '',
+  headUsername: initial?.head?.universityId || '',
+})
+
+const getInitialHeadLabel = (initial: Partial<IResearchGroup> | undefined): string =>
+  initial?.head ? `${initial.head.firstName} ${initial.head.lastName}` : ''
+
 const ResearchGroupForm = ({
   initialResearchGroup: initialFormValues = {},
   onSubmit,
@@ -20,16 +32,10 @@ const ResearchGroupForm = ({
   layout = 'stack',
 }: IResearchGroupFormProps) => {
   const descriptionMaxLength = 500
+  const initialValues = getInitialValues(initialFormValues)
 
   const form = useForm({
-    initialValues: {
-      name: initialFormValues?.name || '',
-      abbreviation: initialFormValues?.abbreviation || '',
-      campus: initialFormValues?.campus || '',
-      description: initialFormValues?.description || '',
-      websiteUrl: initialFormValues?.websiteUrl || '',
-      headUsername: initialFormValues?.head?.universityId || '',
-    },
+    initialValues,
     validateInputOnChange: true,
     validate: {
       name: (value) => (value.trim().length < 2 ? 'Name must be at least 2 characters' : null),
@@ -56,19 +62,23 @@ const ResearchGroupForm = ({
     },
   })
 
-  const [headDisplayLabel, setHeadDisplayLabel] = useState(
-    initialFormValues?.head
-      ? `${initialFormValues.head.firstName} ${initialFormValues.head.lastName}`
-      : '',
+  const [headDisplayLabel, setHeadDisplayLabel] = useState(getInitialHeadLabel(initialFormValues))
+
+  // Bumping this counter on Discard remounts the KeycloakUserAutocomplete
+  // child so its internal selectedUsername state is cleared along with the
+  // parent's headUsername / headDisplayLabel. Without this, the autocomplete
+  // would still show the previously-selected head as "already selected".
+  const [autocompleteResetKey, setAutocompleteResetKey] = useState(0)
+
+  const hasChanges = (Object.keys(initialValues) as Array<keyof typeof initialValues>).some(
+    (key) => initialValues[key] !== form.values[key],
   )
 
-  const hasChanges =
-    (initialFormValues?.name || '') !== form.values.name ||
-    (initialFormValues?.abbreviation || '') !== form.values.abbreviation ||
-    (initialFormValues?.campus || '') !== form.values.campus ||
-    (initialFormValues?.description || '') !== form.values.description ||
-    (initialFormValues?.websiteUrl || '') !== form.values.websiteUrl ||
-    (initialFormValues?.head?.universityId || '') !== form.values.headUsername
+  const handleDiscard = () => {
+    form.setValues(initialValues)
+    setHeadDisplayLabel(getInitialHeadLabel(initialFormValues))
+    setAutocompleteResetKey((k) => k + 1)
+  }
 
   return (
     <form onSubmit={form.onSubmit(onSubmit)}>
@@ -84,6 +94,7 @@ const ResearchGroupForm = ({
 
         <Grid.Col span={layout === 'grid' ? { base: 12, md: 6 } : 12}>
           <KeycloakUserAutocomplete
+            key={`head-autocomplete-${autocompleteResetKey}`}
             selectedLabel={headDisplayLabel}
             onSelect={(username, label) => {
               form.setFieldValue('headUsername', username)
@@ -138,25 +149,7 @@ const ResearchGroupForm = ({
 
         <Grid.Col span={12}>
           <Group justify='flex-end' mt='md'>
-            <Button
-              variant='default'
-              disabled={!hasChanges}
-              onClick={() => {
-                form.setValues({
-                  name: initialFormValues?.name || '',
-                  abbreviation: initialFormValues?.abbreviation || '',
-                  campus: initialFormValues?.campus || '',
-                  description: initialFormValues?.description || '',
-                  websiteUrl: initialFormValues?.websiteUrl || '',
-                  headUsername: initialFormValues?.head?.universityId || '',
-                })
-                setHeadDisplayLabel(
-                  initialFormValues?.head
-                    ? `${initialFormValues.head.firstName} ${initialFormValues.head.lastName}`
-                    : '',
-                )
-              }}
-            >
+            <Button variant='default' disabled={!hasChanges} onClick={handleDiscard}>
               Discard changes
             </Button>
             <Button type='submit' disabled={!form.isValid() || !hasChanges}>

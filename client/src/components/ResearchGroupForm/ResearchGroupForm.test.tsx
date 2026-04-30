@@ -31,7 +31,12 @@ const initial: Partial<IResearchGroup> = {
     firstName: 'Ada',
     lastName: 'Lovelace',
     email: 'ada@example.com',
-    avatar: false,
+    avatar: null,
+    matriculationNumber: null,
+    studyDegree: null,
+    studyProgram: null,
+    customData: null,
+    joinedAt: '2026-01-01T00:00:00Z',
   },
 }
 
