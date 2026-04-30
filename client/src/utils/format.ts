@@ -6,32 +6,64 @@ import { InterviewState } from '../requests/responses/interview'
 import { useMantineColorScheme } from '@mantine/core'
 import { TopicState } from '../requests/responses/topic'
 
-interface IFormatDateOptions {
-  withTime: boolean
+function pad2(value: number): string {
+  return value.toString().padStart(2, '0')
 }
 
-export function formatDate(
-  date: string | Date | undefined | null,
-  options: Partial<IFormatDateOptions> = {},
-): string {
-  const { withTime }: IFormatDateOptions = {
-    withTime: true,
-    ...options,
+function pad4(value: number): string {
+  return value.toString().padStart(4, '0')
+}
+
+function toValidDate(date: string | Date | undefined | null): Date | null {
+  if (typeof date === 'undefined' || date === null) {
+    return null
   }
 
-  if (typeof date === 'undefined' || date === null) {
-    return ''
+  if (typeof date === 'string') {
+    const dateOnlyMatch = date.match(/^(\d{4})-(\d{2})-(\d{2})$/)
+    if (dateOnlyMatch) {
+      const year = Number(dateOnlyMatch[1])
+      const month = Number(dateOnlyMatch[2])
+      const day = Number(dateOnlyMatch[3])
+      const item = new Date(0)
+      item.setFullYear(year, month - 1, day)
+      item.setHours(0, 0, 0, 0)
+      if (item.getFullYear() !== year || item.getMonth() !== month - 1 || item.getDate() !== day) {
+        return null
+      }
+      return item
+    }
   }
 
   const item = new Date(date)
+  if (Number.isNaN(item.getTime())) {
+    return null
+  }
+  return item
+}
 
-  return item.toLocaleDateString(undefined, {
-    year: '2-digit',
-    month: '2-digit',
-    day: 'numeric',
-    hour: withTime ? 'numeric' : undefined,
-    minute: withTime ? 'numeric' : undefined,
-  })
+export function formatDate(date: string | Date | null | undefined): string {
+  const item = toValidDate(date)
+  if (item === null) {
+    return ''
+  }
+  return `${pad4(item.getFullYear())}-${pad2(item.getMonth() + 1)}-${pad2(item.getDate())}`
+}
+
+export function formatTime(date: string | Date | null | undefined): string {
+  const item = toValidDate(date)
+  if (item === null) {
+    return ''
+  }
+  return `${pad2(item.getHours())}:${pad2(item.getMinutes())}`
+}
+
+export function formatDateTime(date: string | Date | null | undefined): string {
+  const item = toValidDate(date)
+  if (item === null) {
+    return ''
+  }
+  return `${pad4(item.getFullYear())}-${pad2(item.getMonth() + 1)}-${pad2(item.getDate())} ${pad2(item.getHours())}:${pad2(item.getMinutes())}`
 }
 
 interface IFormatUserOptions {

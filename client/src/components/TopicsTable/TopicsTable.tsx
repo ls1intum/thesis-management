@@ -1,5 +1,5 @@
 import { DataTable, DataTableColumn } from 'mantine-datatable'
-import { formatDate } from '../../utils/format'
+import { formatDateTime } from '../../utils/format'
 import { useTopicsContext } from '../../providers/TopicsProvider/hooks'
 import { ITopicOverview, TopicState } from '../../requests/responses/topic'
 import { Link, useNavigate } from 'react-router'
@@ -120,7 +120,7 @@ const TopicsTable = (props: ITopicOverviewsTableProps) => {
       title: 'Created At',
       width: 150,
       ellipsis: true,
-      render: (record) => formatDate(record.createdAt),
+      render: (record) => formatDateTime(record.createdAt),
     },
     ...extraColumns,
   }

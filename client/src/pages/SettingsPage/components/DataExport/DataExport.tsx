@@ -4,6 +4,7 @@ import { doRequest } from '../../../../requests/request'
 import { showSimpleError, showSimpleSuccess } from '../../../../utils/notification'
 import { getApiResponseErrorMessage } from '../../../../requests/handler'
 import { downloadFile } from '../../../../utils/blob'
+import { formatDateTime } from '../../../../utils/format'
 
 interface DataExportStatus {
   id?: string
@@ -83,11 +84,6 @@ const DataExport = () => {
     }
   }
 
-  const formatDate = (dateStr?: string) => {
-    if (!dateStr) return ''
-    return new Date(dateStr).toLocaleString()
-  }
-
   const getStateBadge = () => {
     if (!status?.state) return null
 
@@ -137,13 +133,13 @@ const DataExport = () => {
             {status.createdAt && (
               <Group gap='sm'>
                 <Text fw={500}>Requested:</Text>
-                <Text>{formatDate(status.createdAt)}</Text>
+                <Text>{formatDateTime(status.createdAt)}</Text>
               </Group>
             )}
             {status.downloadedAt && (
               <Group gap='sm'>
                 <Text fw={500}>Downloaded:</Text>
-                <Text>{formatDate(status.downloadedAt)}</Text>
+                <Text>{formatDateTime(status.downloadedAt)}</Text>
               </Group>
             )}
             {isProcessing && (
@@ -178,7 +174,7 @@ const DataExport = () => {
 
       {!status?.canRequest && status?.nextRequestDate && !isProcessing && (
         <Text size='sm' c='dimmed'>
-          Next export can be requested after {formatDate(status.nextRequestDate)}.
+          Next export can be requested after {formatDateTime(status.nextRequestDate)}.
         </Text>
       )}
     </Stack>

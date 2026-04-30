@@ -53,10 +53,7 @@ const TopicData = (props: ITopicDataProps) => {
           />
         </Grid.Col>
         <Grid.Col span={{ md: 3 }}>
-          <LabeledItem
-            label='Published At'
-            value={formatDate(topic.createdAt, { withTime: false })}
-          />
+          <LabeledItem label='Published At' value={formatDate(topic.createdAt)} />
         </Grid.Col>
       </Grid>
       <DocumentEditor label='Problem Statement' value={topic.problemStatement} />

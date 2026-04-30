@@ -257,7 +257,7 @@ const PresentationOverviewPage = () => {
                           w={'100px'}
                           gap={5}
                         >
-                          <Title order={5}>{dayjs(date).format('MMM D')}</Title>
+                          <Title order={5}>{date}</Title>
                           <Text c='dimmed'>{dayjs(date).format('dddd')}</Text>
                         </Stack>
                       </Grid.Col>
@@ -312,7 +312,7 @@ const PresentationOverviewPage = () => {
                   .sort(([dateA], [dateB]) => (dayjs(dateA).isAfter(dayjs(dateB)) ? 1 : -1))
                   .map(([date, list]) => (
                     <Stack key={`datesection-${date}`}>
-                      <Divider label={dayjs(date).format('MMM D')} data-date={date} />
+                      <Divider label={date} data-date={date} />
                       <Grid key={`datesection-${date}`} h={'fit-content'}>
                         <Grid.Col span='auto'>
                           <Stack>

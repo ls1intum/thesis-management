@@ -18,7 +18,7 @@ import { useHover } from '@mantine/hooks'
 import AvatarUserList from '../../../../../components/AvatarUserList/AvatarUserList'
 import DocumentEditor from '../../../../../components/DocumentEditor/DocumentEditor'
 import LabeledItem from '../../../../../components/LabeledItem/LabeledItem'
-import { pluralize } from '../../../../../utils/format'
+import { formatDate, pluralize } from '../../../../../utils/format'
 import { useTopic } from '../../../../../hooks/fetcher'
 import { useState } from 'react'
 
@@ -109,18 +109,14 @@ const CollapsibleTopicElement = ({ topic, onApply }: ICollapsibleTopicElementPro
                     <Grid.Col span={4}>
                       <LabeledItem
                         label={'Published At'}
-                        value={
-                          fullTopic.publishedAt
-                            ? new Date(fullTopic.publishedAt).toLocaleDateString()
-                            : '-'
-                        }
+                        value={fullTopic.publishedAt ? formatDate(fullTopic.publishedAt) : '-'}
                       />
                     </Grid.Col>
                     {fullTopic.applicationDeadline && (
                       <Grid.Col span={4}>
                         <LabeledItem
                           label={'Application Deadline'}
-                          value={new Date(fullTopic.applicationDeadline).toLocaleDateString()}
+                          value={formatDate(fullTopic.applicationDeadline)}
                         />
                       </Grid.Col>
                     )}
@@ -128,7 +124,7 @@ const CollapsibleTopicElement = ({ topic, onApply }: ICollapsibleTopicElementPro
                       <Grid.Col span={4}>
                         <LabeledItem
                           label={'Intended Start'}
-                          value={new Date(fullTopic.intendedStart).toLocaleDateString()}
+                          value={formatDate(fullTopic.intendedStart)}
                         />
                       </Grid.Col>
                     )}

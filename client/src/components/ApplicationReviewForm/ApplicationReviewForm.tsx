@@ -25,7 +25,7 @@ import { getApiResponseErrorMessage } from '../../requests/handler'
 import ApplicationRejectButton from '../ApplicationRejectButton/ApplicationRejectButton'
 import { useLoggedInUser } from '../../hooks/authentication'
 import AvatarUser from '../AvatarUser/AvatarUser'
-import { formatDate, formatThesisType, getDefaultLanguage } from '../../utils/format'
+import { formatDateTime, formatThesisType, getDefaultLanguage } from '../../utils/format'
 import LanguageSelect from '../LanguageSelect/LanguageSelect'
 import { IInterviewProcess } from '../../requests/responses/interview'
 import { showNotification } from '@mantine/notifications'
@@ -275,7 +275,7 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
                   reviewer.user.userId !== user.userId || application.state !== 'NOT_ASSESSED'
                 }
               />
-              <Text truncate>{reviewer.reviewedAt && formatDate(reviewer.reviewedAt)}</Text>
+              <Text truncate>{reviewer.reviewedAt && formatDateTime(reviewer.reviewedAt)}</Text>
             </Group>
           ))}
           <Stack gap='0'>

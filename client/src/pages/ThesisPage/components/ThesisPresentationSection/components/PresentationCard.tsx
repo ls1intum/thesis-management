@@ -20,7 +20,7 @@ import {
   IThesisPresentation,
 } from '../../../../../requests/responses/thesis'
 import {
-  formatDate,
+  formatDateTime,
   formatLanguage,
   formatPresentationState,
   formatPresentationType,
@@ -316,7 +316,7 @@ const PresentationCard = ({
             )}
             {getThesisInfoItem(
               <CalendarBlankIcon color={'gray'} weight='bold' />,
-              formatDate(presentation.scheduledAt, { withTime: true }),
+              formatDateTime(presentation.scheduledAt),
             )}
             {presentation.location &&
               getThesisInfoItem(<MapPinIcon color={'gray'} weight='bold' />, presentation.location)}

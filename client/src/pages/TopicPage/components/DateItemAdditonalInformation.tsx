@@ -15,7 +15,7 @@ const DateItemAdditionalInformation = ({ label, date }: IDateItemAdditionalInfor
       </Title>
       <Group gap={'0.5rem'}>
         <CalendarBlankIcon size={16} />
-        <Text>{formatDate(date, { withTime: false })}</Text>
+        <Text>{formatDate(date)}</Text>
       </Group>
     </Stack>
   )

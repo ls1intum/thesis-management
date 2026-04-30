@@ -15,7 +15,7 @@ import { useHover } from '@mantine/hooks'
 import AvatarUser from '../../../components/AvatarUser/AvatarUser'
 import AssignIntervieweeToSlotModal from './AssignIntervieweeToSlotModal'
 import { useState } from 'react'
-import { normalizeUrl } from '../../../utils/format'
+import { formatDate, formatTime, normalizeUrl } from '../../../utils/format'
 import CancelSlotConfirmationModal from './CancelSlotConfirmationModal'
 import { WarningCircleIcon } from '@phosphor-icons/react/dist/ssr'
 
@@ -98,13 +98,7 @@ const SlotItem = ({
             lineClamp={1}
             flex={1}
           >
-            {`${new Date(slot.startDate).toLocaleTimeString([], {
-              hour: '2-digit',
-              minute: '2-digit',
-            })} - ${new Date(slot.endDate).toLocaleTimeString([], {
-              hour: '2-digit',
-              minute: '2-digit',
-            })}`}
+            {`${formatTime(slot.startDate)} - ${formatTime(slot.endDate)}`}
             {withLocation && (
               <Text component='span' fw={400} c='dimmed' ml={6} size='xs'>
                 · {slot.location && slot.location}
@@ -215,11 +209,7 @@ const SlotItem = ({
                 : 'white'
             }
           >
-            {`${new Date(slot.startDate).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            })}`}
+            {formatDate(slot.startDate)}
           </Text>
         )}
       </Stack>

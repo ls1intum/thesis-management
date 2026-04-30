@@ -11,13 +11,13 @@ import {
   TextInput,
   Title,
 } from '@mantine/core'
-import dayjs from 'dayjs'
 import { IInterviewSlot } from '../../../requests/responses/interview'
 import { useEffect, useState } from 'react'
 import { CardsIcon } from '@phosphor-icons/react'
 import { TimeInput } from '@mantine/dates'
 import SlotItem from './SlotItem'
 import DeleteButton from '../../../components/DeleteButton/DeleteButton'
+import { formatDate } from '../../../utils/format'
 
 interface ICollapsibleDateCardProps {
   date: Date
@@ -296,7 +296,7 @@ const CollapsibleDateCard = ({
               <Text fw={600} c={'dimmed'} size={'xs'}>
                 {date.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase()}
               </Text>
-              <Title order={6}>{dayjs(date).format('MMM D, YYYY')}</Title>
+              <Title order={6}>{formatDate(date)}</Title>
             </Stack>
             <Group gap={'0.25rem'}>
               <Button
