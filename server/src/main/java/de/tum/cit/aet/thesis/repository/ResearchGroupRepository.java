@@ -15,13 +15,31 @@ public interface ResearchGroupRepository extends JpaRepository<ResearchGroup, UU
 
 @Query(value = """
 		SELECT r.* FROM research_groups r
+		LEFT JOIN users h ON h.user_id = r.head_user_id
 		WHERE (:searchQuery IS NULL OR r.name ILIKE CONCAT('%', :searchQuery, '%')
-			OR r.abbreviation ILIKE CONCAT('%', :searchQuery, '%'))
+			OR r.abbreviation ILIKE CONCAT('%', :searchQuery, '%')
+			OR h.first_name ILIKE CONCAT('%', :searchQuery, '%')
+			OR h.last_name ILIKE CONCAT('%', :searchQuery, '%')
+			OR CONCAT(h.first_name, ' ', h.last_name) ILIKE CONCAT('%', :searchQuery, '%'))
 			AND (CAST(:heads AS UUID[]) IS NULL OR r.head_user_id = ANY(CAST(:heads AS UUID[])))
 			AND (CAST(:campuses AS TEXT[]) IS NULL OR r.campus IS NULL
 			OR r.campus = ANY(CAST(:campuses AS TEXT[])))
 			AND (:includeArchived = TRUE OR r.archived = FALSE)
-		""", nativeQuery = true)
+		""",
+	countQuery = """
+		SELECT COUNT(*) FROM research_groups r
+		LEFT JOIN users h ON h.user_id = r.head_user_id
+		WHERE (:searchQuery IS NULL OR r.name ILIKE CONCAT('%', :searchQuery, '%')
+			OR r.abbreviation ILIKE CONCAT('%', :searchQuery, '%')
+			OR h.first_name ILIKE CONCAT('%', :searchQuery, '%')
+			OR h.last_name ILIKE CONCAT('%', :searchQuery, '%')
+			OR CONCAT(h.first_name, ' ', h.last_name) ILIKE CONCAT('%', :searchQuery, '%'))
+			AND (CAST(:heads AS UUID[]) IS NULL OR r.head_user_id = ANY(CAST(:heads AS UUID[])))
+			AND (CAST(:campuses AS TEXT[]) IS NULL OR r.campus IS NULL
+			OR r.campus = ANY(CAST(:campuses AS TEXT[])))
+			AND (:includeArchived = TRUE OR r.archived = FALSE)
+		""",
+	nativeQuery = true)
 Page<ResearchGroup> searchResearchGroup(
 	@Param("heads") String[] heads,
 	@Param("campuses") String[] campuses,
