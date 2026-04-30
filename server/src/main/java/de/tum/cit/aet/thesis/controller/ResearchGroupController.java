@@ -7,6 +7,7 @@ import de.tum.cit.aet.thesis.dto.PaginationDto;
 import de.tum.cit.aet.thesis.dto.ResearchGroupDto;
 import de.tum.cit.aet.thesis.entity.ResearchGroup;
 import de.tum.cit.aet.thesis.entity.User;
+import de.tum.cit.aet.thesis.repository.UserRepository;
 import de.tum.cit.aet.thesis.service.ResearchGroupService;
 import de.tum.cit.aet.thesis.utility.RequestValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +24,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /** REST controller for managing research groups, their members, and roles. */
 @RestController
@@ -32,15 +37,35 @@ import java.util.UUID;
 public class ResearchGroupController {
 
 private final ResearchGroupService researchGroupService;
+private final UserRepository userRepository;
 
 /**
  * Injects the research group service.
  *
  * @param researchGroupService the research group service
+ * @param userRepository the user repository, used for member-count lookups
  */
 @Autowired
-public ResearchGroupController(ResearchGroupService researchGroupService) {
+public ResearchGroupController(ResearchGroupService researchGroupService,
+								UserRepository userRepository) {
 	this.researchGroupService = researchGroupService;
+	this.userRepository = userRepository;
+}
+
+/**
+ * Loads member counts for the given research-group IDs in a single grouped
+ * query and returns them as a map. Groups with zero members are not present
+ * in the resulting map.
+ */
+private Map<UUID, Long> loadMemberCounts(Set<UUID> researchGroupIds) {
+	if (researchGroupIds.isEmpty()) {
+		return Map.of();
+	}
+	Map<UUID, Long> counts = new HashMap<>();
+	for (Object[] row : userRepository.countMembersGroupedByResearchGroup(researchGroupIds)) {
+		counts.put((UUID) row[0], ((Number) row[1]).longValue());
+	}
+	return counts;
 }
 
 /**
@@ -79,8 +104,14 @@ public ResponseEntity<PaginationDto<ResearchGroupDto>> getResearchGroups(
 		sortOrder
 	);
 
+	Set<UUID> ids = researchGroups.getContent().stream()
+			.map(ResearchGroup::getId)
+			.collect(Collectors.toSet());
+	Map<UUID, Long> memberCounts = loadMemberCounts(ids);
+
 	return ResponseEntity.ok(PaginationDto.fromSpringPage(
-		researchGroups.map(ResearchGroupDto::fromResearchGroupEntity)));
+		researchGroups.map(group ->
+			ResearchGroupDto.fromResearchGroupEntity(group, memberCounts.getOrDefault(group.getId(), 0L)))));
 }
 
 /**
@@ -132,8 +163,9 @@ public ResponseEntity<ResearchGroupDto> getResearchGroup(
 	@PathVariable("researchGroupId") UUID researchGroupId
 ) {
 	ResearchGroup researchGroup = researchGroupService.findById(researchGroupId, true);
+	long memberCount = userRepository.countByResearchGroupId(researchGroupId);
 
-	return ResponseEntity.ok(ResearchGroupDto.fromResearchGroupEntity(researchGroup));
+	return ResponseEntity.ok(ResearchGroupDto.fromResearchGroupEntity(researchGroup, memberCount));
 }
 
 	/**

@@ -51,6 +51,13 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 	List<User> getRoleMembers(@Param("roles") Set<String> roles,
 							@Param("researchGroupId") UUID researchGroupId);
 
+	long countByResearchGroupId(UUID researchGroupId);
+
+	@Query("SELECT u.researchGroup.id, COUNT(u) FROM User u "
+			+ "WHERE u.researchGroup.id IN :researchGroupIds "
+			+ "GROUP BY u.researchGroup.id")
+	List<Object[]> countMembersGroupedByResearchGroup(@Param("researchGroupIds") Set<UUID> researchGroupIds);
+
 	@Query("""
 				SELECT DISTINCT u FROM User u
 				WHERE u.id IN (

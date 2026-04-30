@@ -11,10 +11,15 @@ public record ResearchGroupDto(
 	String abbreviation,
 	String description,
 	String websiteUrl,
-	String campus
+	String campus,
+	Long memberCount
 ) {
 
 public static ResearchGroupDto fromResearchGroupEntity(ResearchGroup group) {
+	return fromResearchGroupEntity(group, null);
+}
+
+public static ResearchGroupDto fromResearchGroupEntity(ResearchGroup group, Long memberCount) {
 	if (group == null) {
 	return null;
 	}
@@ -26,7 +31,8 @@ public static ResearchGroupDto fromResearchGroupEntity(ResearchGroup group) {
 		group.getAbbreviation(),
 		group.getDescription(),
 		group.getWebsiteUrl(),
-		group.getCampus()
+		group.getCampus(),
+		memberCount
 	);
 }
 }
