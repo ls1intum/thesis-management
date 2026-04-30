@@ -118,6 +118,16 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
   }, [topic, opened])
 
   useEffect(() => {
+    // Wait for the current user to be loaded before deciding which list of
+    // research groups to show. AuthenticationProvider initializes `user` as
+    // undefined while /v2/user-info is loading, so without this guard the
+    // effect would fire with `canEditResearchGroup === false` (because
+    // isTopicOwner is false until currentUser arrives) and lock the
+    // dropdown to the topic's current group, even for an admin or owner.
+    if (topic && !currentUser) {
+      return
+    }
+
     if (!canEditResearchGroup && topic?.researchGroup) {
       setResearchGroups({
         content: [topic.researchGroup],
@@ -171,7 +181,7 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
         setLoading(false)
       },
     )
-  }, [opened])
+  }, [opened, canEditResearchGroup, currentUser?.userId])
 
   const onSubmit = async (isDraft = false) => {
     setLoading(true)
