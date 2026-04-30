@@ -201,12 +201,14 @@ public class ApplicationService {
 	public Application createApplication(User user, UUID researchGroupId, UUID topicId, String thesisTitle,
 										String thesisType, Instant desiredStartDate, String motivation) {
 		Topic topic = topicId == null ? null : topicService.findById(topicId);
+		Instant now = Instant.now(clock);
 
 		if (topic != null && topic.getClosedAt() != null) {
 			throw new ResourceInvalidParametersException("This topic is already closed. You cannot submit new applications for it.");
 		}
 
-		if (topic != null && topic.getApplicationDeadline() != null && Instant.now(clock).isAfter(topic.getApplicationDeadline())) {
+		// Reject when now >= deadline so the cutoff itself is treated as "closed".
+		if (topic != null && topic.getApplicationDeadline() != null && !now.isBefore(topic.getApplicationDeadline())) {
 			throw new ResourceInvalidParametersException("The application deadline for this topic has passed. You cannot submit new applications for it.");
 		}
 
@@ -220,7 +222,6 @@ public class ApplicationService {
 		application.setComment("");
 		application.setState(ApplicationState.NOT_ASSESSED);
 		application.setDesiredStartDate(desiredStartDate);
-		Instant now = Instant.now();
 		application.setCreatedAt(now);
 
 		// Record the server-side consent timestamp as proof of privacy statement acceptance (GDPR Art. 7(1)).

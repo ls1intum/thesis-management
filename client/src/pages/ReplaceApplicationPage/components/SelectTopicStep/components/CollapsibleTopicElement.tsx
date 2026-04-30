@@ -148,19 +148,28 @@ const CollapsibleTopicElement = ({ topic, onApply }: ICollapsibleTopicElementPro
             )}
             {onApply &&
               isTopicOverview &&
-              !(
-                fullTopic &&
-                fullTopic.applicationDeadline &&
-                new Date(fullTopic.applicationDeadline) < new Date()
-              ) && (
-                <Button
-                  onClick={() => onApply(fullTopic || undefined)}
-                  fullWidth
-                  disabled={!fullTopic}
-                >
-                  Apply
-                </Button>
-              )}
+              (() => {
+                const deadlinePassed =
+                  !!fullTopic &&
+                  !!fullTopic.applicationDeadline &&
+                  new Date(fullTopic.applicationDeadline) < new Date()
+                return (
+                  <Stack gap='xs'>
+                    <Button
+                      onClick={() => onApply(fullTopic || undefined)}
+                      fullWidth
+                      disabled={!fullTopic || deadlinePassed}
+                    >
+                      Apply
+                    </Button>
+                    {deadlinePassed && (
+                      <Text size='xs' c='dimmed' ta='center'>
+                        Application deadline has passed.
+                      </Text>
+                    )}
+                  </Stack>
+                )
+              })()}
           </Stack>
         </Accordion.Panel>
       </Accordion.Item>

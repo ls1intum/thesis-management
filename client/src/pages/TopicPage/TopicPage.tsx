@@ -4,7 +4,7 @@ import { Link, useNavigate, useParams } from 'react-router'
 import { useTopic } from '../../hooks/fetcher'
 import NotFound from '../../components/NotFound/NotFound'
 import PageLoader from '../../components/PageLoader/PageLoader'
-import { Button, Divider, Grid, Stack, Title } from '@mantine/core'
+import { Button, Divider, Grid, Stack, Text, Title } from '@mantine/core'
 import { useManagementAccess, useUser } from '../../hooks/authentication'
 import ApplicationsProvider from '../../providers/ApplicationsProvider/ApplicationsProvider'
 import ApplicationsTable from '../../components/ApplicationsTable/ApplicationsTable'
@@ -42,23 +42,36 @@ const TopicPage = () => {
     return isExaminer || isSupervisor
   }
 
+  const deadlinePassed =
+    !!topic.applicationDeadline && new Date(topic.applicationDeadline) < new Date()
+
   return (
     <Stack gap={'2rem'}>
       <Stack gap={'1rem'}>
         <Title>{topic.title}</Title>
-        {!managementAccess &&
-          !checkIfUserIsExaminerOrSupervisor() &&
-          !(topic.applicationDeadline && new Date(topic.applicationDeadline) < new Date()) && (
-            <Button
-              component={Link}
-              to={`/submit-application/${topic.topicId}`}
-              mr={'auto'}
-              leftSection={<NotePencil size={24} />}
-              size='md'
-            >
-              Apply Now
-            </Button>
-          )}
+        {!managementAccess && !checkIfUserIsExaminerOrSupervisor() && (
+          <Stack gap='xs' mr='auto'>
+            {deadlinePassed ? (
+              <Button leftSection={<NotePencil size={24} />} size='md' disabled>
+                Apply Now
+              </Button>
+            ) : (
+              <Button
+                component={Link}
+                to={`/submit-application/${topic.topicId}`}
+                leftSection={<NotePencil size={24} />}
+                size='md'
+              >
+                Apply Now
+              </Button>
+            )}
+            {deadlinePassed && (
+              <Text size='sm' c='dimmed'>
+                Application deadline has passed.
+              </Text>
+            )}
+          </Stack>
+        )}
       </Stack>
 
       <Grid>

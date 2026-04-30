@@ -10,11 +10,17 @@ import de.tum.cit.aet.thesis.cron.model.ApplicationRejectObject;
 import de.tum.cit.aet.thesis.entity.Application;
 import de.tum.cit.aet.thesis.entity.Topic;
 import de.tum.cit.aet.thesis.mock.BaseIntegrationTest;
+import de.tum.cit.aet.thesis.mock.MutableClock;
 import de.tum.cit.aet.thesis.repository.ApplicationRepository;
 import de.tum.cit.aet.thesis.repository.TopicRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -24,6 +30,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import jakarta.persistence.EntityManager;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -31,11 +38,31 @@ import java.util.Set;
 import java.util.UUID;
 
 @Testcontainers
+@Import(ApplicationServiceIntegrationTest.MutableClockTestConfig.class)
 class ApplicationServiceIntegrationTest extends BaseIntegrationTest {
 
 	@DynamicPropertySource
 	static void configureDynamicProperties(DynamicPropertyRegistry registry) {
 		configureProperties(registry);
+	}
+
+	@TestConfiguration
+	static class MutableClockTestConfig {
+		@Bean
+		@Primary
+		MutableClock testClock() {
+			return new MutableClock();
+		}
+	}
+
+	@Autowired
+	private Clock clock;
+
+	@AfterEach
+	void resetClock() {
+		if (clock instanceof MutableClock mutable) {
+			mutable.unfreeze();
+		}
 	}
 
 	@Autowired
@@ -403,13 +430,17 @@ class ApplicationServiceIntegrationTest extends BaseIntegrationTest {
 			createTestEmailTemplate("APPLICATION_CREATED_CHAIR");
 			createTestEmailTemplate("APPLICATION_CREATED_STUDENT");
 
-			// Boundary: deadline exactly at "now" (well, in the past by 1 ms by the time
-			// the request is processed) must be rejected — the rule is "after deadline".
-			UUID topicId = createTopicWithDeadline(Instant.now().plus(7, ChronoUnit.DAYS));
-			Instant boundary = Instant.now().minus(1, ChronoUnit.MILLIS);
+			// Pin the clock so the deadline-equality boundary is tested deterministically.
+			// Truncate to millis because Postgres' timestamp column rounds nanos away,
+			// which would otherwise make the clock and the persisted deadline differ
+			// by sub-millisecond noise.
+			Instant pinned = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+			((MutableClock) clock).setInstant(pinned);
+
+			UUID topicId = createTopicWithDeadline(pinned.plus(7, ChronoUnit.DAYS));
 			transactionTemplate.executeWithoutResult(status -> {
 				entityManager.createNativeQuery("UPDATE topics SET application_deadline = :deadline WHERE topic_id = :id")
-						.setParameter("deadline", boundary)
+						.setParameter("deadline", pinned)
 						.setParameter("id", topicId)
 						.executeUpdate();
 				entityManager.clear();
@@ -421,6 +452,38 @@ class ApplicationServiceIntegrationTest extends BaseIntegrationTest {
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(objectMapper.writeValueAsString(applyTo(topicId))))
 					.andExpect(status().isBadRequest());
+
+			Topic topic = topicRepository.findById(topicId).orElseThrow();
+			assertThat(applicationRepository.findAllByTopic(topic)).isEmpty();
+		}
+
+		@Test
+		void createApplication_DeadlineJustAfterNow_Succeeds() throws Exception {
+			createTestEmailTemplate("APPLICATION_CREATED_CHAIR");
+			createTestEmailTemplate("APPLICATION_CREATED_STUDENT");
+
+			// Just past the boundary: now < deadline must be accepted.
+			Instant pinned = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+			((MutableClock) clock).setInstant(pinned);
+
+			UUID topicId = createTopicWithDeadline(pinned.plus(7, ChronoUnit.DAYS));
+			transactionTemplate.executeWithoutResult(status -> {
+				entityManager.createNativeQuery("UPDATE topics SET application_deadline = :deadline WHERE topic_id = :id")
+						.setParameter("deadline", pinned.plus(1, ChronoUnit.MILLIS))
+						.setParameter("id", topicId)
+						.executeUpdate();
+				entityManager.clear();
+			});
+
+			String studentAuth = createRandomAuthentication("student");
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
+							.header("Authorization", studentAuth)
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(applyTo(topicId))))
+					.andExpect(status().isOk());
+
+			Topic topic = topicRepository.findById(topicId).orElseThrow();
+			assertThat(applicationRepository.findAllByTopic(topic)).hasSize(1);
 		}
 	}
 
