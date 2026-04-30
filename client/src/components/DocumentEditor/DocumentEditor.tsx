@@ -42,7 +42,9 @@ const DocumentEditor = (props: IDocumentEditorProps) => {
     extensions: [
       StarterKit.configure({ underline: false, link: false }),
       Underline,
-      Link,
+      // defaultProtocol: 'https' prefixes typed-but-schemeless URLs (e.g. "example.com")
+      // so they resolve absolutely instead of as relative paths under the current page.
+      Link.configure({ defaultProtocol: 'https' }),
       Superscript,
       SubScript,
       Highlight,

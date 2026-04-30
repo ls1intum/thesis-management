@@ -25,12 +25,12 @@ export function formatDate(
 
   const item = new Date(date)
 
-  return item.toLocaleDateString(undefined, {
-    year: '2-digit',
-    month: '2-digit',
-    day: 'numeric',
-    hour: withTime ? 'numeric' : undefined,
-    minute: withTime ? 'numeric' : undefined,
+  // Use the locale's medium date style so the format is unambiguous in every locale
+  // (e.g. "Feb 12, 2026" in en-US, "12.02.2026" in de-DE) instead of the previously
+  // produced numeric "MM/D/YY" form, which is ambiguous between US and EU readers.
+  return item.toLocaleString(undefined, {
+    dateStyle: 'medium',
+    ...(withTime ? { timeStyle: 'short' } : {}),
   })
 }
 
