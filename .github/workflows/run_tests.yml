@@ -49,3 +49,27 @@ jobs:
           name: test-results
           path: server/build/reports/tests/test/
           retention-days: 14
+
+      # Set up Node for client tests (Vitest + node:test)
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24.15.0'
+          cache: 'npm'
+          cache-dependency-path: 'client/package-lock.json'
+
+      - name: Install client dependencies
+        working-directory: ./client
+        run: npm ci
+
+      - name: Run client tests (Vitest + node:test)
+        working-directory: ./client
+        run: npm test
+
+      - name: Upload Client Test Results
+        uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: client-test-results
+          path: client/coverage/
+          retention-days: 14
