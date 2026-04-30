@@ -1,4 +1,4 @@
-import { Select, Textarea, TextInput, Text, Button, Grid } from '@mantine/core'
+import { Select, Textarea, TextInput, Text, Button, Grid, Group } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import KeycloakUserAutocomplete from '../KeycloakUserAutocomplete.tsx/KeycloakUserAutocomplete'
 import { GLOBAL_CONFIG } from '../../config/global'
@@ -137,9 +137,32 @@ const ResearchGroupForm = ({
         </Grid.Col>
 
         <Grid.Col span={12}>
-          <Button type='submit' fullWidth mt='md' disabled={!form.isValid() || !hasChanges}>
-            {submitLabel}
-          </Button>
+          <Group justify='flex-end' mt='md'>
+            <Button
+              variant='default'
+              disabled={!hasChanges}
+              onClick={() => {
+                form.setValues({
+                  name: initialFormValues?.name || '',
+                  abbreviation: initialFormValues?.abbreviation || '',
+                  campus: initialFormValues?.campus || '',
+                  description: initialFormValues?.description || '',
+                  websiteUrl: initialFormValues?.websiteUrl || '',
+                  headUsername: initialFormValues?.head?.universityId || '',
+                })
+                setHeadDisplayLabel(
+                  initialFormValues?.head
+                    ? `${initialFormValues.head.firstName} ${initialFormValues.head.lastName}`
+                    : '',
+                )
+              }}
+            >
+              Discard changes
+            </Button>
+            <Button type='submit' disabled={!form.isValid() || !hasChanges}>
+              {submitLabel}
+            </Button>
+          </Group>
         </Grid.Col>
       </Grid>
     </form>
