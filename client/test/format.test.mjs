@@ -51,7 +51,9 @@ describe('formatDate — issue #827 (unambiguous date display)', () => {
 
   test('withTime=false omits the time portion', () => {
     const withTime = formatDateForLocale(Date.UTC(2026, 1, 12, 12, 0, 0), 'en-US')
-    const noTime = formatDateForLocale(Date.UTC(2026, 1, 12, 12, 0, 0), 'en-US', { withTime: false })
+    const noTime = formatDateForLocale(Date.UTC(2026, 1, 12, 12, 0, 0), 'en-US', {
+      withTime: false,
+    })
     assert.match(withTime, /\d:\d{2}/) // contains "12:00" or similar
     assert.doesNotMatch(noTime, /\d:\d{2}/)
     // Both must still contain the unambiguous date portion.
@@ -77,6 +79,23 @@ describe('formatDate — issue #827 (unambiguous date display)', () => {
     assert.match(out, /\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\b/)
     assert.match(out, /\b\d{4}\b/)
   })
+
+  test('production formatDate in src/utils/format.ts uses dateStyle medium + withTime-gated timeStyle', async () => {
+    // The local re-implementation above only catches regressions in the test
+    // copy. Pin the production source so a revert to numeric/2-digit options
+    // (e.g. month: '2-digit') fails this test as well.
+    const { readFileSync } = await import('node:fs')
+    const { join, dirname } = await import('node:path')
+    const { fileURLToPath } = await import('node:url')
+    const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
+    const source = readFileSync(join(ROOT, 'src/utils/format.ts'), 'utf8')
+    assert.match(source, /export function formatDate\(/)
+    assert.match(source, /dateStyle:\s*'medium'/)
+    assert.match(source, /withTime\s*\?\s*\{\s*timeStyle:\s*'short'\s*\}\s*:\s*\{\s*\}/)
+    // Guard against accidental regressions to the previously-ambiguous options.
+    assert.doesNotMatch(source, /year:\s*'2-digit'/)
+    assert.doesNotMatch(source, /month:\s*'2-digit'/)
+  })
 })
 
 describe('ensureAbsoluteLinkHref — issue #802 (rich-text editor link normalization)', () => {
@@ -89,9 +108,11 @@ describe('ensureAbsoluteLinkHref — issue #802 (rich-text editor link normaliza
   // assertions document the exact behavior the production override depends on.
   function ensureAbsoluteLinkHref(href) {
     if (!href) return href
-    if (href.startsWith('#') || href.startsWith('/')) return href
-    if (/^[a-z][a-z0-9+.-]*:/i.test(href)) return href
-    return `https://${href}`
+    const trimmed = href.trim()
+    if (!trimmed) return trimmed
+    if (trimmed.startsWith('#') || trimmed.startsWith('/')) return trimmed
+    if (/^[a-z][a-z0-9+.-]*:/i.test(trimmed)) return trimmed
+    return `https://${trimmed}`
   }
 
   test('schemeless host gets https prefix (regression for #802)', () => {
@@ -123,6 +144,27 @@ describe('ensureAbsoluteLinkHref — issue #802 (rich-text editor link normaliza
     assert.equal(ensureAbsoluteLinkHref(''), '')
     assert.equal(ensureAbsoluteLinkHref(undefined), undefined)
     assert.equal(ensureAbsoluteLinkHref(null), null)
+  })
+
+  test('whitespace-padded input is trimmed before normalization', () => {
+    // A user pasting "  example.com " into the link popover must not produce
+    // "https://  example.com " (which the browser then resolves as a broken URL).
+    assert.equal(ensureAbsoluteLinkHref('  example.com  '), 'https://example.com')
+    assert.equal(ensureAbsoluteLinkHref('\t#anchor\n'), '#anchor')
+    assert.equal(ensureAbsoluteLinkHref(' /relative '), '/relative')
+    assert.equal(ensureAbsoluteLinkHref('  https://example.com  '), 'https://example.com')
+    assert.equal(ensureAbsoluteLinkHref('   '), '')
+  })
+
+  test('production ensureAbsoluteLinkHref in src/utils/format.ts trims input and prefixes https', async () => {
+    const { readFileSync } = await import('node:fs')
+    const { join, dirname } = await import('node:path')
+    const { fileURLToPath } = await import('node:url')
+    const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
+    const source = readFileSync(join(ROOT, 'src/utils/format.ts'), 'utf8')
+    assert.match(source, /export function ensureAbsoluteLinkHref\(/)
+    assert.match(source, /href\.trim\(\)/)
+    assert.match(source, /`https:\/\/\$\{trimmed\}`/)
   })
 
   test('autolink + paste paths still rely on Tiptap defaultProtocol via linkifyjs', async () => {

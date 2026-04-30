@@ -288,10 +288,12 @@ export function formateStudyProgram(program: string) {
  */
 export function ensureAbsoluteLinkHref(href: string): string {
   if (!href) return href
-  if (href.startsWith('#') || href.startsWith('/')) return href
+  const trimmed = href.trim()
+  if (!trimmed) return trimmed
+  if (trimmed.startsWith('#') || trimmed.startsWith('/')) return trimmed
   // Any URI scheme: lowercase letter followed by letters/digits/+/-/'.', then ':'.
-  if (/^[a-z][a-z0-9+.-]*:/i.test(href)) return href
-  return `https://${href}`
+  if (/^[a-z][a-z0-9+.-]*:/i.test(trimmed)) return trimmed
+  return `https://${trimmed}`
 }
 
 export function normalizeUrl(url: string): string {
