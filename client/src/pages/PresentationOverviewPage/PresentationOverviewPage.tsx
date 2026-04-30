@@ -123,6 +123,29 @@ const PresentationOverviewPage = () => {
     }
   }
 
+  // Auto-scroll to today's date heading when presentations load. If today
+  // has no presentation, fall back to the next upcoming day so users always
+  // land on the most relevant section instead of the first available date.
+  useEffect(() => {
+    if (!presentations || presentations.size === 0 || !scrollRef.current) {
+      return
+    }
+
+    const today = dayjs().format('YYYY-MM-DD')
+    const sortedDates = Array.from(presentations.keys()).sort((a, b) =>
+      dayjs(a).isAfter(dayjs(b)) ? 1 : -1,
+    )
+    const target =
+      sortedDates.find((date) => date === today) ??
+      sortedDates.find((date) => !dayjs(date).isBefore(dayjs(today))) ??
+      sortedDates[0]
+
+    if (target) {
+      // defer until DOM is rendered with the new presentations
+      requestAnimationFrame(() => scrollTo(target))
+    }
+  }, [presentations])
+
   const onDelete = (presentationId: string, date: string) => {
     const updatedMap = new Map(presentations)
     const updatedList =
