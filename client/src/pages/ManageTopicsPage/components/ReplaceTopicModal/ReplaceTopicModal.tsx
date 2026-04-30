@@ -25,6 +25,7 @@ import { useTopicsContext } from '../../../../providers/TopicsProvider/hooks'
 import { formatThesisType } from '../../../../utils/format'
 import { PaginationResponse } from '../../../../requests/responses/pagination'
 import { ILightResearchGroup } from '../../../../requests/responses/researchGroup'
+import { ILightUser } from '../../../../requests/responses/user'
 import { useHasGroupAccess } from '../../../../hooks/authentication'
 import { DateInput } from '@mantine/dates'
 
@@ -44,6 +45,7 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
 
   const { addTopic, updateTopic } = useTopicsContext()
   const [researchGroups, setResearchGroups] = useState<PaginationResponse<ILightResearchGroup>>()
+  const [autoSelectedExaminers, setAutoSelectedExaminers] = useState<ILightUser[]>([])
   const hasAdminAccess = useHasGroupAccess('admin')
 
   const form = useForm<{
@@ -144,6 +146,7 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
               researchGroupId: onlyGroup.id,
               examinerIds: onlyGroup.head?.userId ? [onlyGroup.head.userId] : [],
             })
+            setAutoSelectedExaminers(onlyGroup.head ? [onlyGroup.head] : [])
           }
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
@@ -236,7 +239,7 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
               label='Examiner'
               required
               groups={['supervisor']}
-              initialUsers={topic?.examiners ?? []}
+              initialUsers={topic?.examiners ?? autoSelectedExaminers}
               maxValues={1}
               {...form.getInputProps('examinerIds')}
             />

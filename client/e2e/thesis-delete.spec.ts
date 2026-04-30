@@ -14,8 +14,7 @@ test.describe('Thesis Delete (Anonymize) - Admin', () => {
 
   test('admin can anonymize old non-terminal thesis with state warning only', async ({ page }) => {
     const heading = page.getByRole('heading', { name: /Historical Analysis of Compiler/i })
-    const loaded = await navigateToDetail(page, `/theses/${OLD_THESIS_ID}`, heading, 30_000)
-    expect(loaded).toBeTruthy()
+    await navigateToDetail(page, `/theses/${OLD_THESIS_ID}`, heading)
 
     // Open Configuration accordion
     await page.getByText('Configuration').click()
@@ -53,8 +52,7 @@ test.describe('Thesis Delete (Anonymize) - Admin', () => {
 
   test('admin can anonymize recent thesis with retention warning', async ({ page }) => {
     const heading = page.getByRole('heading', { name: /Machine Learning Approaches/i })
-    const loaded = await navigateToDetail(page, `/theses/${RECENT_THESIS_ID}`, heading, 30_000)
-    expect(loaded).toBeTruthy()
+    await navigateToDetail(page, `/theses/${RECENT_THESIS_ID}`, heading)
 
     await page.getByText('Configuration').click()
 
@@ -80,8 +78,7 @@ test.describe('Thesis Delete (Anonymize) - Admin', () => {
 
   test('admin can anonymize active thesis with state and retention warnings', async ({ page }) => {
     const heading = page.getByRole('heading', { name: /Real-Time Anomaly Detection/i })
-    const loaded = await navigateToDetail(page, `/theses/${ACTIVE_THESIS_ID}`, heading, 30_000)
-    expect(loaded).toBeTruthy()
+    await navigateToDetail(page, `/theses/${ACTIVE_THESIS_ID}`, heading)
 
     await page.getByText('Configuration').click()
 
@@ -112,8 +109,7 @@ test.describe('Thesis Delete (Anonymize) - Modal Interactions', () => {
   test('admin can cancel anonymization modal without effect', async ({ page }) => {
     // Use thesis 1 which won't be affected by serial delete tests
     const heading = page.getByRole('heading', { name: /Automated Code Review/i })
-    const loaded = await navigateToDetail(page, `/theses/${EXAMINER_THESIS_ID}`, heading, 30_000)
-    expect(loaded).toBeTruthy()
+    await navigateToDetail(page, `/theses/${EXAMINER_THESIS_ID}`, heading)
 
     await page.getByText('Configuration').click()
 
@@ -140,8 +136,7 @@ test.describe('Thesis Delete (Anonymize) - Modal Interactions', () => {
 
   test('anonymization modal closes via X button', async ({ page }) => {
     const heading = page.getByRole('heading', { name: /Automated Code Review/i })
-    const loaded = await navigateToDetail(page, `/theses/${EXAMINER_THESIS_ID}`, heading, 30_000)
-    expect(loaded).toBeTruthy()
+    await navigateToDetail(page, `/theses/${EXAMINER_THESIS_ID}`, heading)
 
     await page.getByText('Configuration').click()
 
@@ -166,8 +161,7 @@ test.describe('Thesis Delete (Anonymize) - Non-Admin Restrictions', () => {
   test('examiner does not see Anonymize Thesis button', async ({ page }) => {
     // Use thesis 1 where examiner has EXAMINER role — not affected by admin delete tests
     const heading = page.getByRole('heading', { name: /Automated Code Review/i })
-    const loaded = await navigateToDetail(page, `/theses/${EXAMINER_THESIS_ID}`, heading, 30_000)
-    expect(loaded).toBeTruthy()
+    await navigateToDetail(page, `/theses/${EXAMINER_THESIS_ID}`, heading)
 
     // Open Configuration accordion
     await page.getByText('Configuration').click()
@@ -185,8 +179,7 @@ test.describe('Thesis Delete (Anonymize) - Student Restrictions', () => {
 
   test('student does not see Anonymize Thesis button', async ({ page }) => {
     const heading = page.getByRole('heading', { name: /Automated Code Review/i })
-    const loaded = await navigateToDetail(page, `/theses/${EXAMINER_THESIS_ID}`, heading, 30_000)
-    expect(loaded).toBeTruthy()
+    await navigateToDetail(page, `/theses/${EXAMINER_THESIS_ID}`, heading)
 
     // Students should not see the Configuration section's admin controls
     // Check if Configuration accordion is present at all

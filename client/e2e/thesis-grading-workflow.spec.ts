@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect } from './resource-lock'
 import { authStatePath, fillRichTextEditor, navigateToDetail } from './helpers'
 import {
   snapshotMailbox,
@@ -22,11 +22,7 @@ test.describe.serial('Thesis Grading Workflow', () => {
     const page = await context.newPage()
 
     const heading = page.getByRole('heading', { name: THESIS_TITLE })
-    const loaded = await navigateToDetail(page, THESIS_URL, heading)
-    if (!loaded) {
-      await context.close()
-      return
-    }
+    await navigateToDetail(page, THESIS_URL, heading)
 
     // Check if the assessment section is actionable (thesis may already be FINISHED from a prior run)
     const editButton = page.getByRole('button', { name: 'Edit Assessment' })
@@ -129,11 +125,7 @@ test.describe.serial('Thesis Grading Workflow', () => {
     const page = await context.newPage()
 
     const heading = page.getByRole('heading', { name: THESIS_TITLE })
-    const loaded = await navigateToDetail(page, THESIS_URL, heading)
-    if (!loaded) {
-      await context.close()
-      return
-    }
+    await navigateToDetail(page, THESIS_URL, heading)
 
     // Check if "Add Final Grade" button is available
     const addGradeButton = page.getByRole('button', { name: 'Add Final Grade' })
@@ -142,6 +134,8 @@ test.describe.serial('Thesis Grading Workflow', () => {
     const hasEdit = await editGradeButton.isVisible({ timeout: 2_000 }).catch(() => false)
 
     if (!hasAdd && !hasEdit) {
+      // Thesis already past GRADED in a parallel run — verify the read-only final grade is shown.
+      await expect(page.getByText(/Final Grade/i).first()).toBeVisible({ timeout: 5_000 })
       await context.close()
       return
     }
@@ -207,16 +201,13 @@ test.describe.serial('Thesis Grading Workflow', () => {
     const page = await context.newPage()
 
     const heading = page.getByRole('heading', { name: THESIS_TITLE })
-    const loaded = await navigateToDetail(page, THESIS_URL, heading)
-    if (!loaded) {
-      await context.close()
-      return
-    }
+    await navigateToDetail(page, THESIS_URL, heading)
 
     const finishButton = page.getByRole('button', { name: 'Mark thesis as finished' })
     const isGraded = await finishButton.isVisible({ timeout: 5_000 }).catch(() => false)
 
     if (!isGraded) {
+      // Already FINISHED in a parallel run — verify the final grade is rendered read-only.
       await expect(page.getByText('Final Grade').first()).toBeVisible()
       await context.close()
       return
