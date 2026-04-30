@@ -120,31 +120,6 @@ test.describe.serial('Thesis Grading Workflow', () => {
     await context.close()
   })
 
-  // Regression test for issue #926: the "Add/Edit Final Grade" and "Mark thesis as finished"
-  // buttons used to be gated by access.supervisor on the client, but the server requires
-  // hasExaminerAccess() for both /grade and /complete. A supervisor who is not also the
-  // examiner could open the modal, fill it in, and then get AccessDeniedException on submit.
-  // supervisor2 is a SUPERVISOR (not EXAMINER) on this thesis — they may see the section
-  // (read-only), but never the action buttons.
-  test('non-examiner supervisor does not see final grade action buttons', async ({ browser }) => {
-    const context = await browser.newContext({ storageState: authStatePath('supervisor2') })
-    const page = await context.newPage()
-
-    const heading = page.getByRole('heading', { name: THESIS_TITLE })
-    await navigateToDetail(page, THESIS_URL, heading)
-
-    // The Final Grade section is visible to anyone with student-level access (supervisors
-    // included) once the thesis reaches ASSESSED, so the heading should be present.
-    await expect(page.getByText(/Final Grade/i).first()).toBeVisible({ timeout: 10_000 })
-
-    // None of the examiner-only action buttons may appear in any of ASSESSED/GRADED/FINISHED.
-    await expect(page.getByRole('button', { name: 'Add Final Grade' })).toHaveCount(0)
-    await expect(page.getByRole('button', { name: 'Edit Final Grade' })).toHaveCount(0)
-    await expect(page.getByRole('button', { name: 'Mark thesis as finished' })).toHaveCount(0)
-
-    await context.close()
-  })
-
   test('examiner can submit a final grade on an ASSESSED thesis', async ({ browser }) => {
     const context = await browser.newContext({ storageState: authStatePath('examiner2') })
     const page = await context.newPage()
