@@ -123,11 +123,22 @@ const PresentationOverviewPage = () => {
     }
   }
 
-  // Auto-scroll to today's date heading when presentations load. If today
-  // has no presentation, fall back to the next upcoming day so users always
-  // land on the most relevant section instead of the first available date.
+  // Auto-scroll to today's date heading once after presentations load for
+  // a given research group. If today has no presentation, fall back to the
+  // next upcoming day, then to the most recent past date — never the
+  // earliest, which would put the user furthest from where they care to be.
+  //
+  // The ref tracks which groupId has already been scroll-targeted so user
+  // edits via onDelete / onUpdate (which produce new presentations Map
+  // identities) do not yank the viewport back to today while the user is
+  // interacting with a card.
+  const lastScrolledGroupId = useRef<string | undefined | null>(null)
+
   useEffect(() => {
     if (!presentations || presentations.size === 0 || !scrollRef.current) {
+      return
+    }
+    if (lastScrolledGroupId.current === (selectedGroup?.id ?? null)) {
       return
     }
 
@@ -138,13 +149,15 @@ const PresentationOverviewPage = () => {
     const target =
       sortedDates.find((date) => date === today) ??
       sortedDates.find((date) => !dayjs(date).isBefore(dayjs(today))) ??
-      sortedDates[0]
+      sortedDates[sortedDates.length - 1]
+
+    lastScrolledGroupId.current = selectedGroup?.id ?? null
 
     if (target) {
       // defer until DOM is rendered with the new presentations
       requestAnimationFrame(() => scrollTo(target))
     }
-  }, [presentations])
+  }, [presentations, selectedGroup?.id])
 
   const onDelete = (presentationId: string, date: string) => {
     const updatedMap = new Map(presentations)

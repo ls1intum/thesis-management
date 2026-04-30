@@ -9,14 +9,15 @@ import { dirname, resolve } from 'node:path'
 // Today's presentation was easy to miss because the page rendered the
 // calendar starting from whichever date came first in the loaded data,
 // not from "today". The fix adds a useEffect that scrolls to today's
-// date heading after presentations load, falling back to the next
-// upcoming day, then the first available date.
+// date heading after presentations load.
 //
-// We verify two things:
-//   1) The component contains a useEffect that depends on `presentations`
-//      and resolves a target date in the documented priority order
-//      (today → next upcoming → first available).
+// Verified invariants:
+//   1) The component installs a useEffect depending on `presentations`
+//      that resolves a target date in the documented priority order
+//      (today → next upcoming → most recent past).
 //   2) The fallback target-selection logic behaves as documented.
+//   3) An auto-scroll guard keeps the effect from re-targeting the
+//      viewport on every onDelete/onUpdate-driven re-render.
 
 const here = dirname(fileURLToPath(import.meta.url))
 const pagePath = resolve(
@@ -32,7 +33,7 @@ function pickTargetDate(today, dates) {
   return (
     sorted.find((d) => d === today) ??
     sorted.find((d) => d >= today) ??
-    sorted[0]
+    sorted[sorted.length - 1]
   )
 }
 
@@ -54,7 +55,7 @@ describe('PresentationOverviewPage — issue #759 (auto-scroll to today)', () =>
     )
   })
 
-  test('the fallback ladder prefers today, then next upcoming, then earliest', () => {
+  test('the fallback ladder prefers today, then next upcoming, then most-recent past', () => {
     // The find chain should appear in the source - capture key fragments.
     assert.match(
       source,
@@ -66,14 +67,42 @@ describe('PresentationOverviewPage — issue #759 (auto-scroll to today)', () =>
       /sortedDates\.find\(\(date\)\s*=>\s*!dayjs\(date\)\.isBefore\(dayjs\(today\)\)\)/,
       'Expected the second preference to be the next non-past date.',
     )
+    assert.match(
+      source,
+      /sortedDates\[sortedDates\.length\s*-\s*1\]/,
+      'Expected the final fallback to be the most recent date (sortedDates[last]), not the earliest.',
+    )
   })
 
-  test('the useEffect runs when presentations change', () => {
-    // The dep array of the auto-scroll effect must include `presentations`.
+  test('the useEffect re-runs when presentations OR the selected group change', () => {
+    // The dep array of the auto-scroll effect must include both
+    // `presentations` and `selectedGroup?.id` so changing the selected
+    // research group re-targets the scroll.
     const effectDep = source.match(
       /requestAnimationFrame[\s\S]*?\}\s*,\s*\[(presentations[^\]]*)\]\s*\)/,
     )
     assert.ok(effectDep, 'Could not locate the auto-scroll useEffect dep array.')
+    assert.match(
+      effectDep[1],
+      /selectedGroup\?\.id/,
+      'Expected the dep array to also include `selectedGroup?.id`.',
+    )
+  })
+
+  test('an auto-scroll guard prevents re-targeting on user mutations', () => {
+    // The fix must record which groupId we last scrolled for, so onDelete /
+    // onUpdate re-renders (which produce a new presentations Map identity)
+    // do not yank the viewport back to today.
+    assert.match(
+      source,
+      /lastScrolledGroupId\s*=\s*useRef/,
+      'Expected a ref tracking the last group the auto-scroll fired for.',
+    )
+    assert.match(
+      source,
+      /lastScrolledGroupId\.current\s*===\s*\(selectedGroup\?\.id\s*\?\?\s*null\)/,
+      'Expected the effect to bail out when the same group is already scroll-targeted.',
+    )
   })
 
   describe('target-date selection rules', () => {
@@ -93,10 +122,10 @@ describe('PresentationOverviewPage — issue #759 (auto-scroll to today)', () =>
       )
     })
 
-    test('falls back to the earliest date when everything is in the past', () => {
+    test('falls back to the most recent past date when everything is in the past', () => {
       assert.equal(
         pickTargetDate(today, ['2026-04-10', '2026-04-15']),
-        '2026-04-10',
+        '2026-04-15',
       )
     })
 
