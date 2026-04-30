@@ -130,27 +130,34 @@ test.describe.serial('Presentation Workflow', () => {
     // Snapshot mailbox BEFORE accepting (scheduling) the presentation
     const beforeIds = await snapshotMailbox('student3@test.local')
 
+    // Clicking "Accept" always opens the "Schedule Presentation" modal
+    // (PresentationCard.tsx). Wait for it deterministically.
     await acceptButton.click()
+    const scheduleDialog = page.getByRole('dialog', { name: 'Schedule Presentation' })
+    await expect(scheduleDialog).toBeVisible({ timeout: 15_000 })
 
-    // A scheduling modal may open — handle it if present
-    const scheduleDialog = page.getByRole('dialog')
-    const dialogVisible = await scheduleDialog.isVisible({ timeout: 3_000 }).catch(() => false)
-    if (dialogVisible) {
-      // Click the schedule/confirm button in the dialog
-      const scheduleButton = scheduleDialog
-        .getByRole('button', { name: /schedule|accept|confirm/i })
-        .first()
-      const hasScheduleButton = await scheduleButton
-        .isVisible({ timeout: 3_000 })
-        .catch(() => false)
-      if (hasScheduleButton) {
-        await scheduleButton.click()
-        await expect(scheduleDialog).not.toBeVisible({ timeout: 15_000 })
-      }
-    }
+    // Confirm scheduling and wait for the backend POST so we know the
+    // server-side state change (and email send) was triggered.
+    const scheduleButton = scheduleDialog.getByRole('button', { name: 'Schedule Presentation' })
+    await expect(scheduleButton).toBeEnabled({ timeout: 10_000 })
 
-    // Wait for the presentation to become "Scheduled"
-    await expect(page.getByText('Scheduled').first()).toBeVisible({ timeout: 10_000 })
+    // Note: doRequest always appends "?<params>" so we don't anchor with $.
+    const schedulePromise = page.waitForResponse(
+      (resp) =>
+        /\/v2\/theses\/[^/]+\/presentations\/[^/]+\/schedule(\?|$)/.test(resp.url()) &&
+        resp.request().method() === 'POST',
+      { timeout: 30_000 },
+    )
+    await scheduleButton.click()
+    const scheduleResponse = await schedulePromise
+    expect(scheduleResponse.ok(), 'Schedule POST should return 2xx').toBe(true)
+    await expect(scheduleDialog).not.toBeVisible({ timeout: 15_000 })
+
+    // Verify the newly scheduled presentation card (identified by its location,
+    // which is unique compared to the seeded scheduled presentation).
+    await expect(
+      page.getByText('Room 01.07.014, Garching Campus').first(),
+    ).toBeVisible({ timeout: 10_000 })
 
     // --- Email verification ---
     // Accepting a PUBLIC presentation draft sends two emails to student3:
