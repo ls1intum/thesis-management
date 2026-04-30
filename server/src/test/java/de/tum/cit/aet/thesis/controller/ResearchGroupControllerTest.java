@@ -111,6 +111,35 @@ class ResearchGroupControllerTest extends BaseIntegrationTest {
 		}
 
 		@Test
+		void getResearchGroups_SearchByHeadName_FindsGroup() throws Exception {
+			// Issue #523: search must also match the head user's first/last name.
+			// TestUser sets both first and last name to the universityId, so we
+			// can use a unique substring of the head's universityId as the query.
+			TestUser headA = createRandomTestUser(List.of("supervisor"));
+			UUID groupA = createTestResearchGroup("Group With Specific Head", headA.universityId());
+			TestUser headB = createRandomTestUser(List.of("supervisor"));
+			createTestResearchGroup("Other Group", headB.universityId());
+
+			String response = mockMvc.perform(MockMvcRequestBuilders.get("/v2/research-groups")
+							.header("Authorization", createRandomAdminAuthentication())
+							.param("search", headA.universityId()))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			JsonNode json = objectMapper.readTree(response);
+			// At least one result, and groupA must be among them.
+			assertThat(json.get("content").size()).isGreaterThanOrEqualTo(1);
+			boolean found = false;
+			for (JsonNode entry : json.get("content")) {
+				if (groupA.toString().equals(entry.get("id").asText())) {
+					found = true;
+					break;
+				}
+			}
+			assertThat(found).as("expected to find group %s when searching by head name", groupA).isTrue();
+		}
+
+		@Test
 		void getResearchGroups_AsNonAdmin_ReturnsOwnGroup() throws Exception {
 			TestUser advisor = createRandomTestUser(List.of("advisor"));
 			UUID groupId = createTestResearchGroup("Advisor Group", advisor.universityId());
