@@ -108,11 +108,7 @@ test.describe.serial('Presentation Workflow', () => {
     const page = await context.newPage()
 
     const heading = page.getByRole('heading', { name: THESIS_TITLE })
-    const loaded = await navigateToDetail(page, THESIS_URL, heading)
-    if (!loaded) {
-      await context.close()
-      return
-    }
+    await navigateToDetail(page, THESIS_URL, heading)
 
     // Find the Presentation accordion section and expand it
     const presentationControl = page.getByRole('button', { name: 'Presentation', exact: true })
