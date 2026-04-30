@@ -1,5 +1,12 @@
-import { Anchor } from '@mantine/core'
+import { Anchor, Text } from '@mantine/core'
 import { ReactNode } from 'react'
+
+// GitHub username rules (from the GitHub UI):
+//   - 1-39 characters
+//   - alphanumeric and hyphen
+//   - no leading or trailing hyphen
+//   - no consecutive hyphens
+const GITHUB_USERNAME_RE = /^(?=.{1,39}$)[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$/
 
 const linkBuilders: Record<string, (value: string) => string | null> = {
   GITHUB: (value) => {
@@ -7,10 +14,19 @@ const linkBuilders: Record<string, (value: string) => string | null> = {
     if (!trimmed) {
       return null
     }
-    if (/^https?:\/\//i.test(trimmed)) {
-      return trimmed
+    // Only accept full URLs that point at github.com so a student can't
+    // turn this field into an arbitrary external link rendered with the
+    // "Github" label to other users (supervisors viewing applications).
+    try {
+      const url = new URL(trimmed)
+      if ((url.protocol === 'https:' || url.protocol === 'http:') && url.host === 'github.com') {
+        return url.toString()
+      }
+      return null
+    } catch {
+      // Not a URL — try the username rules.
     }
-    if (/^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$/.test(trimmed)) {
+    if (GITHUB_USERNAME_RE.test(trimmed)) {
       return `https://github.com/${trimmed}`
     }
     return null
@@ -28,9 +44,14 @@ export const renderCustomDataValue = (key: string, value: string): ReactNode => 
     return value
   }
 
+  // Wrap in a truncating Text so long URLs/usernames don't break the
+  // surrounding LabeledItem layout (which previously truncated string
+  // values via the Text branch in LabeledItem).
   return (
-    <Anchor href={href} target='_blank' rel='noreferrer'>
-      {value}
-    </Anchor>
+    <Text fz='sm' truncate>
+      <Anchor href={href} target='_blank' rel='noopener noreferrer' inherit>
+        {value}
+      </Anchor>
+    </Text>
   )
 }

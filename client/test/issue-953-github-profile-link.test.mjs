@@ -31,12 +31,24 @@ const thesisStudentSource = readFileSync(thesisStudentPath, 'utf8')
 
 // Re-implementation of the URL-builder rule for GITHUB. Kept in sync with
 // linkBuilders.GITHUB in customDataLink.tsx.
+// Mirrors the rule in customDataLink.tsx. Kept in sync deliberately so a
+// regression to the previous lax form is caught here.
+const GITHUB_USERNAME_RE = /^(?=.{1,39}$)[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$/
+
 function buildGithubUrl(value) {
   if (typeof value !== 'string') return null
   const trimmed = value.trim().replace(/^@/, '')
   if (!trimmed) return null
-  if (/^https?:\/\//i.test(trimmed)) return trimmed
-  if (/^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$/.test(trimmed)) {
+  try {
+    const url = new URL(trimmed)
+    if ((url.protocol === 'https:' || url.protocol === 'http:') && url.host === 'github.com') {
+      return url.toString()
+    }
+    return null
+  } catch {
+    // Not a URL — try the username rules.
+  }
+  if (GITHUB_USERNAME_RE.test(trimmed)) {
     return `https://github.com/${trimmed}`
   }
   return null
@@ -51,7 +63,7 @@ describe('renderCustomDataValue — issue #953 (GitHub profile link)', () => {
     )
   })
 
-  test('helper renders an Anchor with target="_blank" for known link keys', () => {
+  test('helper renders an Anchor with target="_blank" and full reverse-tabnabbing protection', () => {
     assert.match(
       helperSource,
       /<Anchor[^>]*target=['"]_blank['"]/,
@@ -59,8 +71,16 @@ describe('renderCustomDataValue — issue #953 (GitHub profile link)', () => {
     )
     assert.match(
       helperSource,
-      /rel=['"]noreferrer['"]/,
-      'Expected rel="noreferrer" on external links.',
+      /rel=['"]noopener noreferrer['"]/,
+      'Expected rel="noopener noreferrer" on external links to prevent reverse-tabnabbing.',
+    )
+  })
+
+  test('the link is wrapped in a truncating Mantine Text so layout stays stable', () => {
+    assert.match(
+      helperSource,
+      /<Text[^>]*truncate[\s\S]*?<Anchor/,
+      'Expected the Anchor to be wrapped in a truncating <Text> to preserve LabeledItem layout.',
     )
   })
 
@@ -108,15 +128,28 @@ describe('renderCustomDataValue — issue #953 (GitHub profile link)', () => {
       assert.equal(buildGithubUrl('  octocat  '), 'https://github.com/octocat')
     })
 
-    test('full URLs are passed through unchanged', () => {
+    test('full github.com URLs are accepted', () => {
       assert.equal(
         buildGithubUrl('https://github.com/some-user'),
         'https://github.com/some-user',
       )
-      assert.equal(
-        buildGithubUrl('http://example.com/octocat'),
-        'http://example.com/octocat',
-      )
+    })
+
+    test('non-github URLs are rejected (defense against arbitrary external links)', () => {
+      assert.equal(buildGithubUrl('https://example.com/octocat'), null)
+      assert.equal(buildGithubUrl('http://evil.example.com'), null)
+      assert.equal(buildGithubUrl('javascript:alert(1)'), null)
+    })
+
+    test('values that look like usernames but violate GitHub rules are rejected', () => {
+      // trailing hyphen
+      assert.equal(buildGithubUrl('foo-'), null)
+      // leading hyphen
+      assert.equal(buildGithubUrl('-foo'), null)
+      // consecutive hyphens
+      assert.equal(buildGithubUrl('foo--bar'), null)
+      // longer than 39 chars
+      assert.equal(buildGithubUrl('a'.repeat(40)), null)
     })
 
     test('empty / whitespace-only values yield null (no broken link)', () => {
