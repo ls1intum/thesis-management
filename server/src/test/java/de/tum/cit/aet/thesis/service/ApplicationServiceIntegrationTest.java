@@ -310,6 +310,121 @@ class ApplicationServiceIntegrationTest extends BaseIntegrationTest {
 	}
 
 	@Nested
+	class CreateApplicationWithDeadline {
+		private UUID createTopicWithDeadline(Instant applicationDeadline) throws Exception {
+			TestUser advisor = createRandomTestUser(List.of("supervisor", "advisor"));
+			UUID researchGroupId = createTestResearchGroup("Deadline RG " + UUID.randomUUID(), advisor.universityId());
+
+			ReplaceTopicPayload topicPayload = new ReplaceTopicPayload(
+					"Deadline Topic", Set.of("MASTER"),
+					"PS", "Req", "Goals", "Refs",
+					List.of(advisor.userId()), List.of(advisor.userId()),
+					researchGroupId, null, applicationDeadline, false
+			);
+			String topicResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/topics")
+							.header("Authorization", createRandomAdminAuthentication())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(topicPayload)))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+			return UUID.fromString(objectMapper.readTree(topicResponse).get("topicId").asString());
+		}
+
+		private CreateApplicationPayload applyTo(UUID topicId) {
+			return new CreateApplicationPayload(
+					topicId, null, "MASTER", Instant.now(), "Motivation", null, true);
+		}
+
+		@Test
+		void createApplication_PastDeadline_RejectsWith400() throws Exception {
+			createTestEmailTemplate("APPLICATION_CREATED_CHAIR");
+			createTestEmailTemplate("APPLICATION_CREATED_STUDENT");
+
+			// Create the topic with a future deadline (the topic-creation flow itself
+			// does not enforce future deadlines, but we keep this consistent with the
+			// realistic workflow of "deadline becomes past as time advances"), then
+			// backdate it directly in the database to simulate a passed deadline.
+			UUID topicId = createTopicWithDeadline(Instant.now().plus(7, ChronoUnit.DAYS));
+			transactionTemplate.executeWithoutResult(status -> {
+				entityManager.createNativeQuery("UPDATE topics SET application_deadline = :deadline WHERE topic_id = :id")
+						.setParameter("deadline", Instant.now().minus(1, ChronoUnit.DAYS))
+						.setParameter("id", topicId)
+						.executeUpdate();
+				entityManager.clear();
+			});
+
+			String studentAuth = createRandomAuthentication("student");
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
+							.header("Authorization", studentAuth)
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(applyTo(topicId))))
+					.andExpect(status().isBadRequest());
+
+			Topic topic = topicRepository.findById(topicId).orElseThrow();
+			assertThat(applicationRepository.findAllByTopic(topic)).isEmpty();
+		}
+
+		@Test
+		void createApplication_FutureDeadline_Succeeds() throws Exception {
+			createTestEmailTemplate("APPLICATION_CREATED_CHAIR");
+			createTestEmailTemplate("APPLICATION_CREATED_STUDENT");
+
+			UUID topicId = createTopicWithDeadline(Instant.now().plus(7, ChronoUnit.DAYS));
+			String studentAuth = createRandomAuthentication("student");
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
+							.header("Authorization", studentAuth)
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(applyTo(topicId))))
+					.andExpect(status().isOk());
+
+			Topic topic = topicRepository.findById(topicId).orElseThrow();
+			assertThat(applicationRepository.findAllByTopic(topic)).hasSize(1);
+		}
+
+		@Test
+		void createApplication_NoDeadline_Succeeds() throws Exception {
+			createTestEmailTemplate("APPLICATION_CREATED_CHAIR");
+			createTestEmailTemplate("APPLICATION_CREATED_STUDENT");
+
+			UUID topicId = createTopicWithDeadline(null);
+			String studentAuth = createRandomAuthentication("student");
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
+							.header("Authorization", studentAuth)
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(applyTo(topicId))))
+					.andExpect(status().isOk());
+
+			Topic topic = topicRepository.findById(topicId).orElseThrow();
+			assertThat(applicationRepository.findAllByTopic(topic)).hasSize(1);
+		}
+
+		@Test
+		void createApplication_DeadlineExactlyNow_Rejected() throws Exception {
+			createTestEmailTemplate("APPLICATION_CREATED_CHAIR");
+			createTestEmailTemplate("APPLICATION_CREATED_STUDENT");
+
+			// Boundary: deadline exactly at "now" (well, in the past by 1 ms by the time
+			// the request is processed) must be rejected — the rule is "after deadline".
+			UUID topicId = createTopicWithDeadline(Instant.now().plus(7, ChronoUnit.DAYS));
+			Instant boundary = Instant.now().minus(1, ChronoUnit.MILLIS);
+			transactionTemplate.executeWithoutResult(status -> {
+				entityManager.createNativeQuery("UPDATE topics SET application_deadline = :deadline WHERE topic_id = :id")
+						.setParameter("deadline", boundary)
+						.setParameter("id", topicId)
+						.executeUpdate();
+				entityManager.clear();
+			});
+
+			String studentAuth = createRandomAuthentication("student");
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
+							.header("Authorization", studentAuth)
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(applyTo(topicId))))
+					.andExpect(status().isBadRequest());
+		}
+	}
+
+	@Nested
 	class GetNotAssessedSuggestedOfResearchGroup {
 		@Test
 		void getNotAssessed_ReturnsSuggestedApplications() throws Exception {

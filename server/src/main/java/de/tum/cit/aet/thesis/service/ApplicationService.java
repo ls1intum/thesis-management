@@ -31,6 +31,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,6 +56,7 @@ public class ApplicationService {
 	private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
 	private final ResearchGroupRepository researchGroupRepository;
 	private final InterviewProcessRepository interviewProcessRepository;
+	private final Clock clock;
 
 	/**
 	 * Injects all required repositories, services, and the current user provider for application management.
@@ -68,6 +70,8 @@ public class ApplicationService {
 	 * @param currentUserProviderProvider the current user provider
 	 * @param researchGroupRepository the research group repository
 	 * @param interviewProcessRepository the interview process repository
+	 * @param clock the clock used to read the current time; injected so tests can pin
+	 *              it for deterministic deadline math
 	 */
 	@Autowired
 	public ApplicationService(
@@ -79,7 +83,8 @@ public class ApplicationService {
 			ApplicationReviewerRepository applicationReviewerRepository,
 			ObjectProvider<CurrentUserProvider> currentUserProviderProvider,
 			ResearchGroupRepository researchGroupRepository,
-			InterviewProcessRepository interviewProcessRepository
+			InterviewProcessRepository interviewProcessRepository,
+			Clock clock
 	) {
 		this.applicationRepository = applicationRepository;
 		this.mailingService = mailingService;
@@ -90,6 +95,7 @@ public class ApplicationService {
 		this.currentUserProviderProvider = currentUserProviderProvider;
 		this.researchGroupRepository = researchGroupRepository;
 		this.interviewProcessRepository = interviewProcessRepository;
+		this.clock = clock;
 	}
 
 	private CurrentUserProvider currentUserProvider() {
@@ -200,7 +206,7 @@ public class ApplicationService {
 			throw new ResourceInvalidParametersException("This topic is already closed. You cannot submit new applications for it.");
 		}
 
-		if (topic != null && topic.getApplicationDeadline() != null && Instant.now().isAfter(topic.getApplicationDeadline())) {
+		if (topic != null && topic.getApplicationDeadline() != null && Instant.now(clock).isAfter(topic.getApplicationDeadline())) {
 			throw new ResourceInvalidParametersException("The application deadline for this topic has passed. You cannot submit new applications for it.");
 		}
 

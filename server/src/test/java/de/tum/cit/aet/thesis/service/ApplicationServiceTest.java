@@ -79,7 +79,8 @@ class ApplicationServiceTest {
 				applicationReviewerRepository,
 				currentUserProviderProvider,
 				researchGroupRepository,
-				interviewProcessRepository
+				interviewProcessRepository,
+				java.time.Clock.systemUTC()
 		);
 
 		testUser = EntityMockFactory.createUser("Test User");
