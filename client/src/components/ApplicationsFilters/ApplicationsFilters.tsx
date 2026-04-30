@@ -1,4 +1,4 @@
-import { Grid, MultiSelect, Select, TextInput } from '@mantine/core'
+import { Grid, MultiSelect, Select, Switch, TextInput } from '@mantine/core'
 import { MagnifyingGlass } from '@phosphor-icons/react'
 import { ApplicationState } from '../../requests/responses/application'
 import { useApplicationsContext } from '../../providers/ApplicationsProvider/hooks'
@@ -105,6 +105,19 @@ const ApplicationsFilters = (props: IApplicationsFiltersProps) => {
               column: (x?.split(':')[0] || 'createdAt') as any,
               direction: (x?.split(':')[1] || 'asc') as any,
             })
+          }
+        />
+      </Grid.Col>
+      <Grid.Col span={12}>
+        <Switch
+          label='Include suggested topics'
+          description='Show applications without a specific supervisor (suggested topics)'
+          checked={filters.includeSuggestedTopics !== false}
+          onChange={(e) =>
+            setFilters((prev) => ({
+              ...prev,
+              includeSuggestedTopics: e.currentTarget.checked,
+            }))
           }
         />
       </Grid.Col>
