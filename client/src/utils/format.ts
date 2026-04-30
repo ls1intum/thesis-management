@@ -277,6 +277,23 @@ export function formateStudyProgram(program: string) {
   return GLOBAL_CONFIG.study_programs[program] ?? program
 }
 
+/**
+ * Ensures a user-supplied link target has an explicit scheme so it resolves as
+ * an absolute URL rather than as a relative path under the current page.
+ *
+ * Preserves any existing scheme (https:, http:, mailto:, tel:, ftp:, …) and
+ * leaves anchor-only / absolute-path hrefs untouched. Used by the rich-text
+ * editor when the user types a schemeless URL like "example.com" into the
+ * link popover. Regression coverage for #802.
+ */
+export function ensureAbsoluteLinkHref(href: string): string {
+  if (!href) return href
+  if (href.startsWith('#') || href.startsWith('/')) return href
+  // Any URI scheme: lowercase letter followed by letters/digits/+/-/'.', then ':'.
+  if (/^[a-z][a-z0-9+.-]*:/i.test(href)) return href
+  return `https://${href}`
+}
+
 export function normalizeUrl(url: string): string {
   if (!/^https?:\/\//i.test(url)) {
     return `https://${url}`

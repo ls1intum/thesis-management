@@ -8,6 +8,33 @@ import Superscript from '@tiptap/extension-superscript'
 import SubScript from '@tiptap/extension-subscript'
 import { ChangeEvent, ComponentProps, useEffect, useRef } from 'react'
 import { Input, Text, useMantineColorScheme } from '@mantine/core'
+import { ensureAbsoluteLinkHref } from '../../utils/format'
+
+// SmartLink wraps Tiptap's Link extension so every code path that creates a
+// link normalizes the href:
+//
+//  - autolink (typing "example.com " inline) and paste handling are covered by
+//    `defaultProtocol: 'https'` (linkifyjs uses it to format the detected URL).
+//  - the toolbar's "Set link" popover, however, calls
+//    `editor.chain().setLink({ href })` with the user-typed value verbatim
+//    (see Mantine's RichTextEditorLinkControl). Without this override that
+//    schemeless href would be stored as `<a href="example.com">`, which the
+//    browser then resolves as a relative path under the current page — the
+//    bug reported in #802.
+const SmartLink = Link.extend({
+  addCommands() {
+    const parent = this.parent?.()
+    if (!parent?.setLink) return parent ?? {}
+    const parentSetLink = parent.setLink
+    return {
+      ...parent,
+      setLink: (attributes) => (commandProps) =>
+        parentSetLink({ ...attributes, href: ensureAbsoluteLinkHref(attributes.href) })(
+          commandProps,
+        ),
+    }
+  },
+})
 
 type InputWrapperProps = ComponentProps<typeof Input.Wrapper>
 
@@ -42,9 +69,10 @@ const DocumentEditor = (props: IDocumentEditorProps) => {
     extensions: [
       StarterKit.configure({ underline: false, link: false }),
       Underline,
-      // defaultProtocol: 'https' prefixes typed-but-schemeless URLs (e.g. "example.com")
-      // so they resolve absolutely instead of as relative paths under the current page.
-      Link.configure({ defaultProtocol: 'https' }),
+      // defaultProtocol: 'https' covers autolink + paste; the SmartLink
+      // override above covers the toolbar popover. Together they ensure no
+      // schemeless href reaches the rendered <a>.
+      SmartLink.configure({ defaultProtocol: 'https' }),
       Superscript,
       SubScript,
       Highlight,

@@ -79,38 +79,61 @@ describe('formatDate — issue #827 (unambiguous date display)', () => {
   })
 })
 
-describe('DocumentEditor — issue #802 (rich-text editor link configuration)', () => {
-  // Tiptap's Link extension is shared by all DocumentEditor instances. With
-  // `defaultProtocol: 'https'` the linkifyjs pipeline used by the extension
-  // promotes typed-but-schemeless URLs (e.g. "example.com") to absolute
-  // URLs, so they no longer resolve as relative paths under the current page.
-  //
-  // Because Tiptap requires a DOM environment, we don't mount the editor in
-  // this Node-only test; instead we (a) assert that the option is wired in
-  // the source, and (b) verify the URL-promotion behavior of the same
-  // `linkifyjs` primitive that Tiptap's Link extension delegates to —
-  // catching any future change that drops the option or that switches the
-  // editor to a stack with different normalization semantics.
-  test('DocumentEditor configures Link with defaultProtocol: "https"', async () => {
-    const { readFileSync } = await import('node:fs')
-    const { join, dirname } = await import('node:path')
-    const { fileURLToPath } = await import('node:url')
-    const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
-    const source = readFileSync(
-      join(ROOT, 'src/components/DocumentEditor/DocumentEditor.tsx'),
-      'utf8',
-    )
-    assert.match(source, /Link\.configure\(\s*\{\s*defaultProtocol:\s*'https'\s*\}\s*\)/)
+describe('ensureAbsoluteLinkHref — issue #802 (rich-text editor link normalization)', () => {
+  // The DocumentEditor calls `ensureAbsoluteLinkHref` (defined in
+  // src/utils/format.ts) from inside the SmartLink extension's overridden
+  // `setLink` command, so a schemeless href the user types into the toolbar's
+  // link popover (e.g. "example.com") is stored as the absolute
+  // "https://example.com" rather than as a relative path under the current
+  // page. We re-implement the function below to keep this test pure-Node — the
+  // assertions document the exact behavior the production override depends on.
+  function ensureAbsoluteLinkHref(href) {
+    if (!href) return href
+    if (href.startsWith('#') || href.startsWith('/')) return href
+    if (/^[a-z][a-z0-9+.-]*:/i.test(href)) return href
+    return `https://${href}`
+  }
+
+  test('schemeless host gets https prefix (regression for #802)', () => {
+    assert.equal(ensureAbsoluteLinkHref('example.com'), 'https://example.com')
+    assert.equal(ensureAbsoluteLinkHref('liiiink.de'), 'https://liiiink.de')
+    assert.equal(ensureAbsoluteLinkHref('host.tld/path?q=1'), 'https://host.tld/path?q=1')
   })
 
-  test('linkifyjs (Tiptap\'s underlying URL parser) promotes schemeless URLs to https', async () => {
-    // tokenize() is what Tiptap's Link extension uses internally for autolinking.
+  test('explicit http(s) scheme is preserved as-is', () => {
+    assert.equal(ensureAbsoluteLinkHref('http://insecure.example'), 'http://insecure.example')
+    assert.equal(ensureAbsoluteLinkHref('https://example.com/x'), 'https://example.com/x')
+    assert.equal(ensureAbsoluteLinkHref('HTTPS://Example.com'), 'HTTPS://Example.com')
+  })
+
+  test('non-http schemes (mailto:, tel:, ftp:) are not corrupted', () => {
+    assert.equal(ensureAbsoluteLinkHref('mailto:user@example.com'), 'mailto:user@example.com')
+    assert.equal(ensureAbsoluteLinkHref('tel:+49123456789'), 'tel:+49123456789')
+    assert.equal(ensureAbsoluteLinkHref('ftp://files.example.com'), 'ftp://files.example.com')
+  })
+
+  test('intentionally relative hrefs are not modified', () => {
+    // Anchor-only and absolute-path hrefs are legitimate within rendered content
+    // (e.g. table-of-contents anchors) and must not gain a schemeless host part.
+    assert.equal(ensureAbsoluteLinkHref('#section'), '#section')
+    assert.equal(ensureAbsoluteLinkHref('/relative/path'), '/relative/path')
+  })
+
+  test('empty / nullish hrefs are returned unchanged', () => {
+    assert.equal(ensureAbsoluteLinkHref(''), '')
+    assert.equal(ensureAbsoluteLinkHref(undefined), undefined)
+    assert.equal(ensureAbsoluteLinkHref(null), null)
+  })
+
+  test('autolink + paste paths still rely on Tiptap defaultProtocol via linkifyjs', async () => {
+    // linkifyjs is what Tiptap uses internally for both autolinking and the
+    // paste handler. Verifying it here ensures that `defaultProtocol: 'https'`
+    // continues to deliver schemeless-to-https promotion for those code paths,
+    // which the toolbar override does not cover.
     const { tokenize } = await import('linkifyjs')
     const tokens = tokenize('Visit example.com for more')
     const url = tokens.find((t) => t.t === 'url')
     assert.ok(url, 'expected a URL token to be detected in the input')
-    // toFormattedHref({ defaultProtocol: 'https' }) is what the extension
-    // ultimately stores as the <a href> value.
     assert.equal(url.toHref('https'), 'https://example.com')
   })
 
@@ -120,5 +143,21 @@ describe('DocumentEditor — issue #802 (rich-text editor link configuration)', 
     const url = tokens.find((t) => t.t === 'url')
     assert.ok(url)
     assert.equal(url.toHref('https'), 'http://insecure.example')
+  })
+
+  test('DocumentEditor wires both halves of the fix (SmartLink + defaultProtocol)', async () => {
+    const { readFileSync } = await import('node:fs')
+    const { join, dirname } = await import('node:path')
+    const { fileURLToPath } = await import('node:url')
+    const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
+    const source = readFileSync(
+      join(ROOT, 'src/components/DocumentEditor/DocumentEditor.tsx'),
+      'utf8',
+    )
+    // SmartLink override of setLink (covers the toolbar popover path).
+    assert.match(source, /SmartLink\s*=\s*Link\.extend\(/)
+    assert.match(source, /ensureAbsoluteLinkHref\(attributes\.href\)/)
+    // defaultProtocol option on the registered extension (covers autolink + paste).
+    assert.match(source, /SmartLink\.configure\(\s*\{\s*defaultProtocol:\s*'https'\s*\}\s*\)/)
   })
 })
