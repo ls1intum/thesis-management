@@ -19,6 +19,9 @@ const ALLOWED_ENVIRONMENT_VARIABLES = [
   'THESIS_FILES',
   'TOPIC_VIEWS_OPTIONS',
   'RESEARCH_GROUPS_LOCATION',
+  // Optional environment marker shown as a banner above the header and
+  // suffixed onto the footer version (production / staging / test / dev).
+  'ENVIRONMENT',
 ]
 
 async function generateConfig() {

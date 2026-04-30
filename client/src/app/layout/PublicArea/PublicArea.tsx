@@ -26,9 +26,11 @@ const PublicArea = (props: PropsWithChildren<IPublicAreaProps>) => {
     <AppShell header={{ height: HEADER_HEIGHT }}>
       <AppShell.Header>
         <EnvironmentBanner />
-        <Container size={size} fluid={!size} h='100%'>
-          <Header authenticatedArea={false}></Header>
-        </Container>
+        <Box h={baseHeaderHeight}>
+          <Container size={size} fluid={!size} h='100%'>
+            <Header authenticatedArea={false}></Header>
+          </Container>
+        </Box>
       </AppShell.Header>
 
       <AppShell.Main>

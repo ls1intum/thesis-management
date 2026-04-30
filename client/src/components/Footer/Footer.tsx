@@ -43,7 +43,9 @@ const Footer = (props: IFooterProps) => {
             c='dimmed'
           >
             v{version}
-            {GLOBAL_CONFIG.environment ? ` · ${GLOBAL_CONFIG.environment}` : ''}
+            {GLOBAL_CONFIG.environment && GLOBAL_CONFIG.environment !== 'production'
+              ? ` · ${GLOBAL_CONFIG.environment}`
+              : ''}
           </Anchor>
         </Flex>
         <Flex

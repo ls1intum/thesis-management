@@ -38,16 +38,18 @@ const EnvironmentBanner = () => {
       gap='xs'
       justify='center'
       align='center'
+      wrap='nowrap'
       bg={`${color}.1`}
       c={`${color}.9`}
-      h={ENVIRONMENT_BANNER_HEIGHT}
+      mih={ENVIRONMENT_BANNER_HEIGHT}
+      py={4}
       px='md'
       style={{
         borderBottom: `2px solid var(--mantine-color-${color}-5)`,
       }}
     >
-      <Warning size={16} weight='bold' />
-      <Text size='sm' fw={600}>
+      <Warning size={16} weight='bold' style={{ flexShrink: 0 }} />
+      <Text size='sm' fw={600} ta='center'>
         {label} environment — data may be reset at any time and is not for production use.
       </Text>
     </Group>

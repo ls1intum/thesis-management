@@ -188,9 +188,11 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
     >
       <AppShell.Header>
         <EnvironmentBanner />
-        <Container size={size} fluid={!size} h='100%'>
-          <Header opened={opened} toggle={toggle} authenticatedArea={true} />
-        </Container>
+        <Box h={baseHeaderHeight}>
+          <Container size={size} fluid={!size} h='100%'>
+            <Header opened={opened} toggle={toggle} authenticatedArea={true} />
+          </Container>
+        </Box>
       </AppShell.Header>
 
       <AppShell.Navbar p='md'>
