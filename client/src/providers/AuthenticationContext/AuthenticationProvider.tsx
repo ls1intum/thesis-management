@@ -477,6 +477,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
           const passkeyCredential = await navigator.credentials.get({
             publicKey: {
               challenge: fromBase64Url(challenge),
+              rpId: GLOBAL_CONFIG.passkey_rp_id,
               userVerification: 'preferred',
             },
           })
@@ -559,7 +560,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
           const passkeyCredential = await navigator.credentials.create({
             publicKey: {
               challenge: fromBase64Url(challenge),
-              rp: { name: GLOBAL_CONFIG.title, id: window.location.hostname },
+              rp: { name: 'TUM AET', id: GLOBAL_CONFIG.passkey_rp_id },
               user: { id: userIdBytes, name: username, displayName },
               pubKeyCredParams: [
                 { type: 'public-key', alg: -7 },

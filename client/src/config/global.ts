@@ -104,6 +104,7 @@ export const GLOBAL_CONFIG: IGlobalConfig = {
   },
 
   server_host: getEnvironmentVariable('SERVER_HOST') || 'http://localhost:8180',
+  passkey_rp_id: getEnvironmentVariable('PASSKEY_RP_ID')?.trim() || window.location.hostname,
 
   keycloak: {
     host: getEnvironmentVariable('KEYCLOAK_HOST') || 'http://localhost:8181',

@@ -7,6 +7,7 @@ export interface IGlobalConfig {
   allow_suggested_topics: boolean
 
   server_host: string
+  passkey_rp_id: string
 
   genders: Record<string, string>
   study_programs: Record<string, string>

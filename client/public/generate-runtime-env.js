@@ -5,6 +5,7 @@ const ALLOWED_ENVIRONMENT_VARIABLES = [
   'KEYCLOAK_HOST',
   'KEYCLOAK_REALM_NAME',
   'KEYCLOAK_CLIENT_ID',
+  'PASSKEY_RP_ID',
   'CHAIR_NAME',
   'CHAIR_URL',
   // environments with defaults
