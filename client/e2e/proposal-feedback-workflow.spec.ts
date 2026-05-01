@@ -20,8 +20,7 @@ test.describe('Proposal Upload - Student uploads proposal', () => {
 
   test('student can upload a proposal PDF to a thesis in PROPOSAL state', async ({ page }) => {
     const heading = page.getByRole('heading', { name: THESIS_TITLE })
-    const loaded = await navigateToDetail(page, THESIS_URL, heading)
-    if (!loaded) return
+    await navigateToDetail(page, THESIS_URL, heading)
 
     // The Proposal section should be visible and expanded (default for PROPOSAL state)
     await expect(page.getByRole('button', { name: 'Upload Proposal' })).toBeVisible({
@@ -85,8 +84,7 @@ test.describe('Proposal Feedback - Supervisor requests changes', () => {
 
   test('supervisor can request changes on a proposal', async ({ page }) => {
     const heading = page.getByRole('heading', { name: THESIS_TITLE })
-    const loaded = await navigateToDetail(page, THESIS_URL, heading)
-    if (!loaded) return
+    await navigateToDetail(page, THESIS_URL, heading)
 
     // Scroll to and click "Request Changes" button (red outline button in Proposal section)
     const requestChangesButton = page.getByRole('button', { name: 'Request Changes' }).first()

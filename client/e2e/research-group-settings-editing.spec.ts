@@ -118,16 +118,23 @@ test.describe('Research Group Settings Editing - Admin', () => {
     const currentValue = await durationTextbox.inputValue()
     const targetValue = currentValue.includes('45') ? '35' : '45'
 
-    // Use fill() for a reliable atomic input, then wait for the auto-save POST.
-    const savePromise = page.waitForResponse(
-      (resp) =>
-        resp.url().includes('/research-group-settings/') &&
-        resp.request().method() === 'POST' &&
-        resp.request().postData()?.includes(targetValue),
-      { timeout: 30_000 },
-    )
+    // Match the precise field in the POST body so we don't resolve on an
+    // unrelated auto-save from another card on the same settings page.
+    const matchDurationSave = (value: string) => (resp: import('@playwright/test').Response) => {
+      if (!resp.url().includes('/research-group-settings/')) return false
+      if (resp.request().method() !== 'POST') return false
+      const body = resp.request().postData() ?? ''
+      return body.includes(`"presentationSlotDuration":${value}`)
+    }
+
+    const savePromise = page.waitForResponse(matchDurationSave(targetValue), { timeout: 30_000 })
     await durationTextbox.fill(targetValue)
-    await savePromise
+    const saveResponse = await savePromise
+    expect(saveResponse.ok(), 'Save POST should return 2xx').toBe(true)
+
+    // Confirm the controlled input reflects the new value before reloading,
+    // ensuring the response handler has updated React state.
+    await expect(durationTextbox).toHaveValue(`${targetValue} minutes`, { timeout: 10_000 })
 
     // Reload page and verify value persists
     await navigateToSettings(page)
@@ -143,13 +150,7 @@ test.describe('Research Group Settings Editing - Admin', () => {
     await expect(durationTextbox2).toHaveValue(`${targetValue} minutes`, { timeout: 10_000 })
 
     // Restore to 30
-    const restorePromise = page.waitForResponse(
-      (resp) =>
-        resp.url().includes('/research-group-settings/') &&
-        resp.request().method() === 'POST' &&
-        resp.request().postData()?.includes('30'),
-      { timeout: 30_000 },
-    )
+    const restorePromise = page.waitForResponse(matchDurationSave('30'), { timeout: 30_000 })
     await durationTextbox2.fill('30')
     await restorePromise
   })

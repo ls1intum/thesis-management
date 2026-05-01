@@ -45,7 +45,10 @@ export const GLOBAL_CONFIG: IGlobalConfig = {
     OPEN: 'Open Topics',
     PUBLISHED: 'Published Topics',
   },
-  research_groups_location: getEnvironmentVariable('RESEARCH_GROUPS_LOCATION') || {
+  research_groups_location: getEnvironmentVariable<Record<string, string>>(
+    'RESEARCH_GROUPS_LOCATION',
+    true,
+  ) || {
     GARCHING: 'Garching',
     MUNICH: 'Munich',
     HEILBRONN: 'Heilbronn',

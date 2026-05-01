@@ -19,6 +19,7 @@ import de.tum.cit.aet.thesis.entity.jsonb.ThesisMetadata;
 import de.tum.cit.aet.thesis.entity.key.ThesisRoleId;
 import de.tum.cit.aet.thesis.entity.key.ThesisStateChangeId;
 import de.tum.cit.aet.thesis.mock.BaseIntegrationTest;
+import de.tum.cit.aet.thesis.mock.MutableClock;
 import de.tum.cit.aet.thesis.repository.ResearchGroupRepository;
 import de.tum.cit.aet.thesis.repository.ThesisAssessmentRepository;
 import de.tum.cit.aet.thesis.repository.ThesisCommentRepository;
@@ -28,14 +29,19 @@ import de.tum.cit.aet.thesis.repository.ThesisProposalRepository;
 import de.tum.cit.aet.thesis.repository.ThesisRepository;
 import de.tum.cit.aet.thesis.repository.ThesisRoleRepository;
 import de.tum.cit.aet.thesis.repository.ThesisStateChangeRepository;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
@@ -45,6 +51,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Testcontainers
+@Import(ThesisAnonymizationServiceTest.MutableClockTestConfig.class)
 class ThesisAnonymizationServiceTest extends BaseIntegrationTest {
 
 	@DynamicPropertySource
@@ -52,8 +59,27 @@ class ThesisAnonymizationServiceTest extends BaseIntegrationTest {
 		configureProperties(registry);
 	}
 
+	@TestConfiguration
+	static class MutableClockTestConfig {
+		@Bean
+		@Primary
+		MutableClock testClock() {
+			return new MutableClock();
+		}
+	}
+
 	@Autowired
 	private ThesisAnonymizationService thesisAnonymizationService;
+
+	@Autowired
+	private Clock clock;
+
+	@AfterEach
+	void resetClock() {
+		if (clock instanceof MutableClock mutable) {
+			mutable.unfreeze();
+		}
+	}
 
 	@Autowired
 	private ThesisRepository thesisRepository;
@@ -375,21 +401,25 @@ class ThesisAnonymizationServiceTest extends BaseIntegrationTest {
 	class SendAnonymizationNotifications {
 
 		@Test
-		@Disabled("Flaky: date arithmetic is timezone/calendar-sensitive, needs refactor with mocked clock")
 		void notifiesForThesisApproachingExpiry() throws Exception {
 			createTestEmailTemplate("THESIS_ANONYMIZATION_REMINDER");
 
-			// Thesis finished ~6.3 years ago → retention expiry is safely in the past
-			// and thus within the 30-day notification horizon.
-			// This thesis should definitely be notified.
-			Instant createdAt = Instant.now().minus(2300, ChronoUnit.DAYS);
-			Instant endDate = Instant.now().minus(2250, ChronoUnit.DAYS);
+			// Pin the clock to a fixed mid-year instant so retention math doesn't depend on
+			// when the test happens to run. Mid-March keeps "now" comfortably away from the
+			// year boundary, where ZonedDateTime.of(year + 5, 12, 31, ...) flips between years.
+			Instant fixedNow = Instant.parse("2026-03-15T12:00:00Z");
+			((MutableClock) clock).setInstant(fixedNow);
+
+			// endDate in 2019 → retention expiry is 2024-12-31 (year + 5),
+			// well past fixedNow + 30 days, so this thesis must be picked up.
+			Instant createdAt = Instant.parse("2019-05-01T00:00:00Z");
+			Instant endDate = Instant.parse("2019-08-01T00:00:00Z");
 			Thesis thesis = createTestThesisWithChildren(ThesisState.FINISHED, createdAt, endDate);
 
 			thesisAnonymizationService.sendAnonymizationNotifications();
 
 			Thesis notified = thesisRepository.findById(thesis.getId()).orElseThrow();
-			assertThat(notified.getAnonymizationNotifiedAt()).isNotNull();
+			assertThat(notified.getAnonymizationNotifiedAt()).isEqualTo(fixedNow);
 		}
 
 		@Test

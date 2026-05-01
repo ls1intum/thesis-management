@@ -263,12 +263,16 @@ class CronJobIntegrationTest extends BaseIntegrationTest {
 			settings.setRejectDuration(2);
 			researchGroupSettingsRepository.save(settings);
 
-			// Create topic with an application deadline in the past
+			// Create the topic with a future deadline so the student can apply via the API.
+			// The deadline is then backdated to the past below to exercise the cron's
+			// "use applicationDeadline as reference" branch — without this two-step setup,
+			// the createApplication validation would reject the POST because the deadline
+			// would already have passed.
 			ReplaceTopicPayload topicPayload = new ReplaceTopicPayload(
 					"Deadline Cron Topic", Set.of("MASTER"),
 					"PS", "Req", "Goals", "Refs",
 					List.of(advisor.userId()), List.of(advisor.userId()),
-					researchGroupId, null, Instant.now().minus(20, ChronoUnit.DAYS), false
+					researchGroupId, null, Instant.now().plus(30, ChronoUnit.DAYS), false
 			);
 			String topicResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/topics")
 							.header("Authorization", createRandomAdminAuthentication())
@@ -290,8 +294,13 @@ class CronJobIntegrationTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 			UUID applicationId = UUID.fromString(objectMapper.readTree(appResponse).get("applicationId").asString());
 
-			// Backdate the application to satisfy the 14-day minimum age requirement
+			// Now backdate the topic's deadline and the application's createdAt directly in
+			// the database to set up the cron scenario the test is actually exercising.
 			transactionTemplate.executeWithoutResult(status -> {
+				entityManager.createNativeQuery("UPDATE topics SET application_deadline = :deadline WHERE topic_id = :id")
+						.setParameter("deadline", Instant.now().minus(20, ChronoUnit.DAYS))
+						.setParameter("id", topicId)
+						.executeUpdate();
 				entityManager.createNativeQuery("UPDATE applications SET created_at = :date WHERE application_id = :id")
 						.setParameter("date", Instant.now().minus(30, ChronoUnit.DAYS))
 						.setParameter("id", applicationId)

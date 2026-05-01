@@ -31,6 +31,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,6 +56,7 @@ public class ApplicationService {
 	private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
 	private final ResearchGroupRepository researchGroupRepository;
 	private final InterviewProcessRepository interviewProcessRepository;
+	private final Clock clock;
 
 	/**
 	 * Injects all required repositories, services, and the current user provider for application management.
@@ -68,6 +70,8 @@ public class ApplicationService {
 	 * @param currentUserProviderProvider the current user provider
 	 * @param researchGroupRepository the research group repository
 	 * @param interviewProcessRepository the interview process repository
+	 * @param clock the clock used to read the current time; injected so tests can pin
+	 *              it for deterministic deadline math
 	 */
 	@Autowired
 	public ApplicationService(
@@ -79,7 +83,8 @@ public class ApplicationService {
 			ApplicationReviewerRepository applicationReviewerRepository,
 			ObjectProvider<CurrentUserProvider> currentUserProviderProvider,
 			ResearchGroupRepository researchGroupRepository,
-			InterviewProcessRepository interviewProcessRepository
+			InterviewProcessRepository interviewProcessRepository,
+			Clock clock
 	) {
 		this.applicationRepository = applicationRepository;
 		this.mailingService = mailingService;
@@ -90,6 +95,7 @@ public class ApplicationService {
 		this.currentUserProviderProvider = currentUserProviderProvider;
 		this.researchGroupRepository = researchGroupRepository;
 		this.interviewProcessRepository = interviewProcessRepository;
+		this.clock = clock;
 	}
 
 	private CurrentUserProvider currentUserProvider() {
@@ -195,9 +201,15 @@ public class ApplicationService {
 	public Application createApplication(User user, UUID researchGroupId, UUID topicId, String thesisTitle,
 										String thesisType, Instant desiredStartDate, String motivation) {
 		Topic topic = topicId == null ? null : topicService.findById(topicId);
+		Instant now = Instant.now(clock);
 
 		if (topic != null && topic.getClosedAt() != null) {
 			throw new ResourceInvalidParametersException("This topic is already closed. You cannot submit new applications for it.");
+		}
+
+		// Reject when now >= deadline so the cutoff itself is treated as "closed".
+		if (topic != null && topic.getApplicationDeadline() != null && !now.isBefore(topic.getApplicationDeadline())) {
+			throw new ResourceInvalidParametersException("The application deadline for this topic has passed. You cannot submit new applications for it.");
 		}
 
 		Application application = new Application();
@@ -210,7 +222,6 @@ public class ApplicationService {
 		application.setComment("");
 		application.setState(ApplicationState.NOT_ASSESSED);
 		application.setDesiredStartDate(desiredStartDate);
-		Instant now = Instant.now();
 		application.setCreatedAt(now);
 
 		// Record the server-side consent timestamp as proof of privacy statement acceptance (GDPR Art. 7(1)).

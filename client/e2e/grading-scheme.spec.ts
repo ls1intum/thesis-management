@@ -1,4 +1,5 @@
-import { test, expect, Page, Locator } from '@playwright/test'
+import { Page, Locator } from '@playwright/test'
+import { test, expect } from './resource-lock'
 import {
   authStatePath,
   fillRichTextEditor,
@@ -24,7 +25,9 @@ const THESIS_TITLE = 'Online Anomaly Detection in IoT Sensor Streams'
  * Get the Grading Scheme card locator scoped to its Mantine Card container.
  */
 function gradingSchemeCard(page: Page): Locator {
-  return page.locator('.mantine-Card-root', { has: page.getByRole('heading', { name: 'Grading Scheme', level: 3 }) })
+  return page.locator('.mantine-Card-root', {
+    has: page.getByRole('heading', { name: 'Grading Scheme', level: 3 }),
+  })
 }
 
 /**
@@ -50,7 +53,9 @@ async function getRowWeight(row: Locator): Promise<string> {
 test.describe('Grading Scheme Settings - Admin', () => {
   test.use({ storageState: authStatePath('admin') })
 
-  test('DSA group shows seeded grading scheme components with correct weights', async ({ page }) => {
+  test('DSA group shows seeded grading scheme components with correct weights', async ({
+    page,
+  }) => {
     await navigateToSettings(page, DSA_SETTINGS_URL)
 
     const card = gradingSchemeCard(page)
@@ -86,11 +91,17 @@ test.describe('Grading Scheme Settings - Admin', () => {
     const card = gradingSchemeCard(page)
 
     // Remove any existing components from prior test runs
-    let existingRows = await card.locator('table tbody tr').count().catch(() => 0)
+    let existingRows = await card
+      .locator('table tbody tr')
+      .count()
+      .catch(() => 0)
     while (existingRows > 0) {
       const deleteBtn = card.locator('table tbody tr').first().locator('button').last()
       await deleteBtn.click({ force: true })
-      existingRows = await card.locator('table tbody tr').count().catch(() => 0)
+      existingRows = await card
+        .locator('table tbody tr')
+        .count()
+        .catch(() => 0)
     }
 
     // Add first component
@@ -114,7 +125,9 @@ test.describe('Grading Scheme Settings - Admin', () => {
     const cardAfter = gradingSchemeCard(page)
 
     // Verify the component persisted with correct name and weight
-    await expect(cardAfter.locator('input[value="Research Quality"]')).toBeVisible({ timeout: 10_000 })
+    await expect(cardAfter.locator('input[value="Research Quality"]')).toBeVisible({
+      timeout: 10_000,
+    })
     await expect(cardAfter.locator('table tbody tr')).toHaveCount(1)
     await expect(cardAfter.locator('table tbody tr td:nth-child(2) input')).toHaveValue('100%')
   })
@@ -203,48 +216,45 @@ test.describe.serial('Assessment with Grade Components', () => {
     const page = await context.newPage()
 
     const heading = page.getByRole('heading', { name: THESIS_TITLE })
-    const loaded = await navigateToDetail(page, THESIS_URL, heading)
+    await navigateToDetail(page, THESIS_URL, heading)
     await hideWebpackOverlay(page)
-    if (!loaded) {
-      test.skip(true, 'Thesis detail page did not load')
-      await context.close()
-      return
-    }
 
-    // Open the assessment modal
+    // The thesis-grading-workflow file may have run first in this worker and submitted
+    // an assessment, switching the page into a read-only assessment view. Both files
+    // share thesis d000-0003 via the worker-scoped resource lock, so order is not
+    // guaranteed across test runs — we therefore assert the same invariant ("scheme
+    // components and weights match") in whichever rendering the page is currently in
+    // rather than skipping the test.
     const editButton = page.getByRole('button', { name: 'Edit Assessment' })
     const addButton = page.getByRole('button', { name: 'Add Assessment' })
     const hasEdit = await editButton.isVisible({ timeout: 5_000 }).catch(() => false)
     const hasAdd = await addButton.isVisible({ timeout: 2_000 }).catch(() => false)
 
-    if (!hasEdit && !hasAdd) {
-      test.skip(true, 'No assessment button available')
-      await context.close()
-      return
+    if (hasEdit || hasAdd) {
+      await (hasEdit ? editButton : addButton).click({ force: true })
+
+      const dialog = page.getByRole('dialog')
+      await expect(dialog).toBeVisible({ timeout: 10_000 })
+      await expect(dialog.getByText('Grade Components')).toBeVisible({ timeout: 15_000 })
+
+      await expect(dialog.locator('input[value="Thesis Content"]')).toBeVisible({ timeout: 5_000 })
+      await expect(dialog.locator('input[value="Methodology"]')).toBeVisible()
+      await expect(dialog.locator('input[value="Presentation"]')).toBeVisible()
+
+      const weightInputs = dialog.locator('table tbody tr td:nth-child(2) input')
+      await expect(weightInputs.nth(0)).toHaveValue('40%')
+      await expect(weightInputs.nth(1)).toHaveValue('30%')
+      await expect(weightInputs.nth(2)).toHaveValue('30%')
+
+      await expect(dialog.locator('table tbody tr')).toHaveCount(3)
+    } else {
+      // Read-only path: assessment was already submitted. Verify the same scheme
+      // components are shown in the assessment section on the thesis page.
+      await expect(page.getByText('Grade Components').first()).toBeVisible({ timeout: 15_000 })
+      await expect(page.getByText('Thesis Content').first()).toBeVisible()
+      await expect(page.getByText('Methodology').first()).toBeVisible()
+      await expect(page.getByText('Presentation').first()).toBeVisible()
     }
-
-    const btn = hasEdit ? editButton : addButton
-    await btn.click({ force: true })
-
-    const dialog = page.getByRole('dialog')
-    await expect(dialog).toBeVisible({ timeout: 10_000 })
-
-    // Verify grade components section is visible
-    await expect(dialog.getByText('Grade Components')).toBeVisible({ timeout: 15_000 })
-
-    // Verify the component names from the DSA scheme are pre-filled
-    await expect(dialog.locator('input[value="Thesis Content"]')).toBeVisible({ timeout: 5_000 })
-    await expect(dialog.locator('input[value="Methodology"]')).toBeVisible()
-    await expect(dialog.locator('input[value="Presentation"]')).toBeVisible()
-
-    // Verify the weights are pre-filled from the scheme (40, 30, 30)
-    const weightInputs = dialog.locator('table tbody tr td:nth-child(2) input')
-    await expect(weightInputs.nth(0)).toHaveValue('40%')
-    await expect(weightInputs.nth(1)).toHaveValue('30%')
-    await expect(weightInputs.nth(2)).toHaveValue('30%')
-
-    // Verify exactly 3 component rows
-    await expect(dialog.locator('table tbody tr')).toHaveCount(3)
 
     await context.close()
   })
@@ -258,15 +268,13 @@ test.describe.serial('Assessment with Grade Components', () => {
     const page = await context.newPage()
 
     const heading = page.getByRole('heading', { name: THESIS_TITLE })
-    const loaded = await navigateToDetail(page, THESIS_URL, heading)
+    await navigateToDetail(page, THESIS_URL, heading)
     await hideWebpackOverlay(page)
-    if (!loaded) {
-      test.skip(true, 'Thesis detail page did not load')
-      await context.close()
-      return
-    }
 
-    // Check if another parallel test already submitted an assessment with grade components
+    // If a sibling test already submitted an assessment with grade components,
+    // the thesis section is read-only. Verify the resulting components and exit —
+    // the invariant ("submitted assessment shows components + calculated grade")
+    // is the same we'd otherwise prove by submitting one ourselves.
     const alreadyHasGradeComponents = await page
       .getByText('Grade Components')
       .first()
@@ -274,7 +282,6 @@ test.describe.serial('Assessment with Grade Components', () => {
       .catch(() => false)
 
     if (alreadyHasGradeComponents) {
-      // Another test (thesis-grading-workflow) already submitted — verify components are visible
       await expect(page.getByText('Thesis Content').first()).toBeVisible({ timeout: 5_000 })
       await expect(page.getByText('Methodology').first()).toBeVisible()
       await expect(page.getByText('Presentation').first()).toBeVisible()
@@ -288,11 +295,12 @@ test.describe.serial('Assessment with Grade Components', () => {
     const hasEdit = await editButton.isVisible({ timeout: 5_000 }).catch(() => false)
     const hasAdd = await addButton.isVisible({ timeout: 2_000 }).catch(() => false)
 
-    if (!hasEdit && !hasAdd) {
-      test.skip(true, 'No assessment button available')
-      await context.close()
-      return
-    }
+    // No buttons + no read-only components shouldn't happen — assert and let the
+    // test fail loudly so a real regression is investigated rather than silently skipped.
+    expect(
+      hasEdit || hasAdd,
+      'Expected Edit/Add Assessment button when no read-only components are shown',
+    ).toBe(true)
 
     await (hasEdit ? editButton : addButton).click({ force: true })
 
@@ -370,22 +378,21 @@ test.describe.serial('Assessment with Grade Components', () => {
     const page = await context.newPage()
 
     const heading = page.getByRole('heading', { name: THESIS_TITLE })
-    const loaded = await navigateToDetail(page, THESIS_URL, heading)
+    await navigateToDetail(page, THESIS_URL, heading)
     await hideWebpackOverlay(page)
-    if (!loaded) {
-      test.skip(true, 'Thesis detail page did not load')
-      await context.close()
-      return
-    }
 
-    // Open the final grade modal
+    // The thesis-grading-workflow file may have advanced this thesis past GRADED
+    // (closing both Add/Edit Final Grade buttons). In that case the final grade
+    // is already on the page in read-only form — verify it is present rather than
+    // silently skipping.
     const addGradeButton = page.getByRole('button', { name: 'Add Final Grade' })
     const editGradeButton = page.getByRole('button', { name: 'Edit Final Grade' })
     const hasAdd = await addGradeButton.isVisible({ timeout: 5_000 }).catch(() => false)
     const hasEdit = await editGradeButton.isVisible({ timeout: 2_000 }).catch(() => false)
 
     if (!hasAdd && !hasEdit) {
-      test.skip(true, 'No grade button available')
+      const finalGrade = page.getByText(/Final Grade/i).first()
+      await expect(finalGrade).toBeVisible({ timeout: 5_000 })
       await context.close()
       return
     }

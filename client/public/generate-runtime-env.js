@@ -18,6 +18,8 @@ const ALLOWED_ENVIRONMENT_VARIABLES = [
   'THESIS_TYPES',
   'CUSTOM_DATA',
   'THESIS_FILES',
+  'TOPIC_VIEWS_OPTIONS',
+  'RESEARCH_GROUPS_LOCATION',
 ]
 
 async function generateConfig() {

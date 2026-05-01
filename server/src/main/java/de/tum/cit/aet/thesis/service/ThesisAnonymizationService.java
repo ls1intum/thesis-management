@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -48,6 +49,7 @@ public class ThesisAnonymizationService {
 	private final ThesisRoleRepository thesisRoleRepository;
 	private final UploadService uploadService;
 	private final MailingService mailingService;
+	private final Clock clock;
 	private final int notificationLeadDays;
 
 	/**
@@ -65,6 +67,8 @@ public class ThesisAnonymizationService {
 	 * @param thesisRoleRepository the thesis role repository
 	 * @param uploadService the upload service for file operations
 	 * @param mailingService the mailing service for notifications
+	 * @param clock the clock used to read the current time; injected so tests can pin
+	 *              it for deterministic date arithmetic across calendar boundaries
 	 * @param notificationLeadDays the number of days before anonymization to send notifications
 	 */
 	public ThesisAnonymizationService(
@@ -80,6 +84,7 @@ public class ThesisAnonymizationService {
 			ThesisRoleRepository thesisRoleRepository,
 			UploadService uploadService,
 			MailingService mailingService,
+			Clock clock,
 			@Value("${thesis-management.data-retention.thesis-anonymization-notification-days}") int notificationLeadDays) {
 		this.thesisRepository = thesisRepository;
 		this.thesisFileRepository = thesisFileRepository;
@@ -93,6 +98,7 @@ public class ThesisAnonymizationService {
 		this.thesisRoleRepository = thesisRoleRepository;
 		this.uploadService = uploadService;
 		this.mailingService = mailingService;
+		this.clock = clock;
 		this.notificationLeadDays = notificationLeadDays;
 	}
 
@@ -102,7 +108,7 @@ public class ThesisAnonymizationService {
 	 * one email per research group.
 	 */
 	public void sendAnonymizationNotifications() {
-		Instant now = Instant.now();
+		Instant now = Instant.now(clock);
 		Instant notificationHorizon = now.plus(notificationLeadDays, ChronoUnit.DAYS);
 
 		List<Thesis> candidates = thesisRepository.findAnonymizationCandidates();
@@ -171,7 +177,7 @@ public class ThesisAnonymizationService {
 	 * @return the number of anonymized theses
 	 */
 	public int anonymizeExpiredTheses() {
-		Instant now = Instant.now();
+		Instant now = Instant.now(clock);
 		List<Thesis> candidates = thesisRepository.findAnonymizationCandidates();
 
 		int anonymizedCount = 0;
@@ -217,7 +223,7 @@ public class ThesisAnonymizationService {
 		}
 
 		Instant expiry = RetentionUtils.computeRetentionExpiry(thesis);
-		if (!expiry.isBefore(Instant.now())) {
+		if (!expiry.isBefore(Instant.now(clock))) {
 			String expiryDate = expiry.atZone(RetentionUtils.BERLIN).format(DATE_FORMATTER);
 			warnings.add("The retention period for this thesis has not expired yet. It expires on " + expiryDate + ".");
 		}
@@ -243,7 +249,7 @@ public class ThesisAnonymizationService {
 		// 2. Mark thesis as anonymized and clear personal data FIRST.
 		//    findAnonymizationCandidates() filters by anonymizedAt IS NULL, so after this save
 		//    the thesis won't be picked up again even if subsequent child deletion fails.
-		thesis.setAnonymizedAt(Instant.now());
+		thesis.setAnonymizedAt(Instant.now(clock));
 		thesis.setInfo("");
 		thesis.setAbstractField("");
 		thesis.setFinalFeedback(null);

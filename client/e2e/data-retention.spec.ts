@@ -13,18 +13,8 @@ test.describe('Data Retention - Admin Operations', () => {
   test.describe.configure({ mode: 'serial' })
 
   test('admin can delete an individual application', async ({ page }) => {
-    await navigateTo(page, `/applications/${OLD_REJECTED_APPLICATION_ID}`)
-
-    // The application may have been deleted in a prior test run; check if it loaded
     const heading = page.getByRole('heading', { name: /Student2 User/i })
-    const hasApplication = await heading
-      .waitFor({ state: 'visible', timeout: 30_000 })
-      .then(() => true)
-      .catch(() => false)
-    if (!hasApplication) {
-      // Application was already deleted in a prior run — skip gracefully
-      return
-    }
+    await navigateToDetail(page, `/applications/${OLD_REJECTED_APPLICATION_ID}`, heading)
 
     const deleteButton = page.getByRole('button', { name: 'Delete', exact: true })
     await expect(deleteButton).toBeVisible({ timeout: 5_000 })
@@ -90,17 +80,7 @@ test.describe('Data Retention - Admin Operations', () => {
 
     // Now verify the recent rejected application still exists
     const heading = page.getByRole('heading', { name: /Student5 User/i })
-    const loaded = await navigateToDetail(
-      page,
-      `/applications/${RECENT_REJECTED_APPLICATION_ID}`,
-      heading,
-      45_000,
-    )
-    if (!loaded) {
-      // Under heavy parallel load the server may not respond in time; skip gracefully
-      test.skip(true, 'Application detail did not load under heavy parallel load')
-      return
-    }
+    await navigateToDetail(page, `/applications/${RECENT_REJECTED_APPLICATION_ID}`, heading)
 
     // Verify the application is actually rendered with its state badge
     await expect(page.getByText(/REJECTED/i).first()).toBeVisible({ timeout: 5_000 })
@@ -115,13 +95,7 @@ test.describe('Data Retention - Non-Admin Restrictions', () => {
     // Note: app c000-0004 may have been rejected by the application-review-workflow test
     // running in parallel, but it should still be visible (just in REJECTED state).
     const heading = page.getByRole('heading', { name: /Student4 User/i })
-    const loaded = await navigateToDetail(
-      page,
-      `/applications/${SUPERVISOR_VISIBLE_APPLICATION_ID}`,
-      heading,
-      45_000,
-    )
-    if (!loaded) return // Application not accessible under parallel test load
+    await navigateToDetail(page, `/applications/${SUPERVISOR_VISIBLE_APPLICATION_ID}`, heading)
 
     // Delete button should not be visible for non-admin users
     const deleteButton = page.getByRole('button', { name: 'Delete', exact: true })
