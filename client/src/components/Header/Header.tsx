@@ -184,10 +184,10 @@ const Header = ({ opened, toggle, authenticatedArea, openLoginModal = false }: H
               loading={isPasskeyLoading}
               disabled={!context.isPasskeySupported}
             >
-              Login with Passkey
+              Login with AET Passkey
             </Button>
             <Button variant='outline' onClick={onPasswordLogin} disabled={isPasskeyLoading}>
-              Login with Password
+              Login with TUM-Login
             </Button>
           </Flex>
         </Stack>

@@ -1,7 +1,7 @@
 import { expect, Page, test } from '@playwright/test'
 import { authStatePath, navigateTo } from './helpers'
 
-const PASSKEY_PROMPT_TITLE = 'Register a passkey'
+const PASSKEY_PROMPT_TITLE = 'Register a Passkey'
 const NEVER_ASK_AGAIN_STORAGE_KEY = 'passkey_prompt_never_ask_again'
 const DISABLE_PASSKEY_PROMPT_STORAGE_KEY = 'passkey_prompt_disabled'
 
@@ -113,7 +113,7 @@ test.describe('Passkey - Login', () => {
 
       const loginModal = page.getByRole('dialog', { name: 'Login' })
       await expect(loginModal).toBeVisible()
-      await loginModal.getByRole('button', { name: 'Login with Passkey', exact: true }).click()
+      await loginModal.getByRole('button', { name: 'Login with AET Passkey', exact: true }).click()
 
       await expect(loginModal).toBeHidden()
       await expect(page).toHaveURL(/\/dashboard/)
@@ -177,8 +177,8 @@ test.describe('Passkey - Unauthenticated', () => {
     await page.getByRole('link', { name: 'Login' }).click()
 
     await expect(page.getByRole('dialog', { name: 'Login' })).toBeVisible()
-    await expect(page.getByRole('button', { name: 'Login with Passkey' })).toBeVisible()
-    await expect(page.getByRole('button', { name: 'Login with Password' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Login with AET Passkey' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Login with TUM-Login' })).toBeVisible()
   })
 })
 
@@ -210,7 +210,7 @@ test.describe('Passkey - Authenticated Student', () => {
     const prompt = passkeyPromptDialog(page)
     await expect(prompt).toBeVisible()
     await expect(prompt.getByText('Never ask again')).toBeVisible()
-    await expect(prompt.getByRole('button', { name: 'Register passkey' })).toBeVisible()
+    await expect(prompt.getByRole('button', { name: 'Register Passkey' })).toBeVisible()
   })
 
   test('never ask again suppresses future passkey prompts for the same user', async ({ page }) => {

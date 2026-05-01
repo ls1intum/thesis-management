@@ -121,7 +121,7 @@ const PasskeyRegistrationPrompt = () => {
     <Modal
       opened={isOpen}
       onClose={closeModal}
-      title='Register a passkey'
+      title='Register a Passkey'
       centered
       closeOnClickOutside={!isRegistering}
       closeOnEscape={!isRegistering}
@@ -129,7 +129,8 @@ const PasskeyRegistrationPrompt = () => {
     >
       <Stack>
         <Text size='sm' c='dimmed'>
-          You do not have a passkey registered yet. Register one now to sign in faster next time.
+          You do not have a passkey registered yet. Register one now to sign in faster across AET
+          Apps.
         </Text>
         <Checkbox
           label='Never ask again'
@@ -142,7 +143,7 @@ const PasskeyRegistrationPrompt = () => {
             Maybe later
           </Button>
           <Button onClick={() => void onRegisterPasskey()} loading={isRegistering}>
-            Register passkey
+            Register Passkey
           </Button>
         </Group>
       </Stack>

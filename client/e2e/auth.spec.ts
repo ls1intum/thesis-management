@@ -10,8 +10,8 @@ test.describe('Authentication - Unauthenticated', () => {
     await expect(page).toHaveURL(/\/dashboard/)
     const loginModal = page.getByRole('dialog', { name: 'Login' })
     await expect(loginModal).toBeVisible({ timeout: 30_000 })
-    await expect(loginModal.getByRole('button', { name: 'Login with Passkey' })).toBeVisible()
-    await expect(loginModal.getByRole('button', { name: 'Login with Password' })).toBeVisible()
+    await expect(loginModal.getByRole('button', { name: 'Login with AET Passkey' })).toBeVisible()
+    await expect(loginModal.getByRole('button', { name: 'Login with TUM-Login' })).toBeVisible()
     await expect(page.locator('#kc-login')).toBeHidden()
 
     await page.keyboard.press('Escape')

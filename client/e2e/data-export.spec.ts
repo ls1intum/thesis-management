@@ -137,7 +137,7 @@ test.describe('Data Export - Route Protection (unauthenticated)', () => {
     await expect(page).toHaveURL(/\/data-export/)
     const loginModal = page.getByRole('dialog', { name: 'Login' })
     await expect(loginModal).toBeVisible({ timeout: 30_000 })
-    await expect(loginModal.getByRole('button', { name: 'Login with Password' })).toBeVisible()
+    await expect(loginModal.getByRole('button', { name: 'Login with TUM-Login' })).toBeVisible()
 
     // Protected page content should not be visible while unauthenticated.
     await expect(page.getByRole('heading', { name: 'Data Export' })).not.toBeVisible({
