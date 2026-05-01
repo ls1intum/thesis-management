@@ -14,7 +14,7 @@ import {
   useMantineColorScheme,
 } from '@mantine/core'
 import Logo from '../Logo/Logo'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { ColorSchemeToggleButton } from '../ColorSchemeToggleButton/ColorSchemeToggleButton'
 import { useAuthenticationContext, useUser } from '../../hooks/authentication'
 import { CustomAvatar } from '../CustomAvatar/CustomAvatar'
