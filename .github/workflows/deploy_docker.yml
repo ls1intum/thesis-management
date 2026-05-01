@@ -110,6 +110,7 @@ jobs:
           KEYCLOAK_CLIENT_ID: ${{ vars.KEYCLOAK_CLIENT_ID }}
           KEYCLOAK_SERVICE_CLIENT_ID: ${{ vars.KEYCLOAK_SERVICE_CLIENT_ID }}
           KEYCLOAK_SERVICE_CLIENT_SECRET: ${{ secrets.KEYCLOAK_SERVICE_CLIENT_SECRET }}
+          PASSKEY_RP_ID: ${{ vars.PASSKEY_RP_ID }}
         with:
           host: ${{ vars.VM_HOST }}
           username: ${{ vars.VM_USERNAME }}
