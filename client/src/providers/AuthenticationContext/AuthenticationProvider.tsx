@@ -490,6 +490,10 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
             throw new Error('Received an unexpected passkey authentication response')
           }
 
+          if (!passkeyCredential.response.userHandle) {
+            throw new Error('Passkey did not return a user handle')
+          }
+
           const response = await fetch(getPasskeyEndpoint('authenticate'), {
             method: 'POST',
             credentials: 'include',
@@ -499,6 +503,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
             },
             body: JSON.stringify({
               credentialId: toBase64Url(passkeyCredential.rawId),
+              userHandle: toBase64Url(passkeyCredential.response.userHandle),
               clientDataJSON: toBase64Url(passkeyCredential.response.clientDataJSON),
               authenticatorData: toBase64Url(passkeyCredential.response.authenticatorData),
               signature: toBase64Url(passkeyCredential.response.signature),

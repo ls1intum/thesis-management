@@ -1,4 +1,18 @@
-import { Button, Checkbox, Group, Modal, Stack, Text } from '@mantine/core'
+import {
+  Anchor,
+  Badge,
+  Button,
+  Checkbox,
+  Group,
+  Modal,
+  Paper,
+  Stack,
+  Text,
+  ThemeIcon,
+  Title,
+  Tooltip,
+} from '@mantine/core'
+import { FingerprintIcon, LightningIcon, ShieldCheckIcon } from '@phosphor-icons/react'
 import { useEffect, useMemo, useState } from 'react'
 import { useLocation } from 'react-router'
 import { useAuthenticationContext } from '../../hooks/authentication'
@@ -7,6 +21,15 @@ import { showSimpleError, showSimpleSuccess } from '../../utils/notification'
 
 const NEVER_ASK_AGAIN_STORAGE_KEY = 'passkey_prompt_never_ask_again'
 const DISABLE_PROMPT_STORAGE_KEY = 'passkey_prompt_disabled'
+const AET_CHAIR_URL = 'https://aet.cit.tum.de/'
+
+const AETChairLink = () => (
+  <Tooltip label='Applied Education Technologies at TUM' withArrow>
+    <Anchor href={AET_CHAIR_URL} target='_blank' rel='noreferrer' inherit>
+      AET
+    </Anchor>
+  </Tooltip>
+)
 
 const PasskeyRegistrationPrompt = () => {
   const auth = useAuthenticationContext()
@@ -121,17 +144,72 @@ const PasskeyRegistrationPrompt = () => {
     <Modal
       opened={isOpen}
       onClose={closeModal}
-      title='Register a Passkey'
+      title='One click for multiple AET apps'
+      size='lg'
       centered
       closeOnClickOutside={!isRegistering}
       closeOnEscape={!isRegistering}
       withCloseButton={!isRegistering}
     >
-      <Stack>
-        <Text size='sm' c='dimmed'>
-          You do not have a passkey registered yet. Register one now to sign in faster across AET
-          Apps.
-        </Text>
+      <Stack gap='lg'>
+        <Group align='flex-start' wrap='nowrap' gap='md'>
+          <ThemeIcon size={64} radius='md' variant='light' color='blue' style={{ flexShrink: 0 }}>
+            <FingerprintIcon size={36} weight='duotone' />
+          </ThemeIcon>
+          <Stack gap={6} style={{ minWidth: 0 }}>
+            <Title order={3} size='h3' lh={1.2}>
+              Your fast track to <AETChairLink /> apps
+            </Title>
+            <Text size='sm'>One passkey for fast, secure sign-in across multiple apps.</Text>
+            <Group gap='xs'>
+              {['Thesis Management', 'TUM Apply', 'Prompt'].map((appName) => (
+                <Badge key={appName} variant='filled' color='blue' radius='sm'>
+                  {appName}
+                </Badge>
+              ))}
+            </Group>
+          </Stack>
+        </Group>
+
+        <Paper withBorder radius='md' p='md' bg='var(--mantine-color-blue-light)'>
+          <Stack gap='sm'>
+            <Group gap='sm' wrap='nowrap' align='flex-start'>
+              <ThemeIcon
+                variant='light'
+                color='teal'
+                size='sm'
+                radius='xl'
+                style={{ flexShrink: 0 }}
+              >
+                <LightningIcon size={14} weight='bold' />
+              </ThemeIcon>
+              <Text size='sm' style={{ minWidth: 0 }}>
+                <Text span fw={600}>
+                  Faster sign-in:
+                </Text>{' '}
+                skip repeated login screens after your device recognizes you.
+              </Text>
+            </Group>
+            <Group gap='sm' wrap='nowrap' align='flex-start'>
+              <ThemeIcon
+                variant='light'
+                color='green'
+                size='sm'
+                radius='xl'
+                style={{ flexShrink: 0 }}
+              >
+                <ShieldCheckIcon size={14} weight='bold' />
+              </ThemeIcon>
+              <Text size='sm' style={{ minWidth: 0 }}>
+                <Text span fw={600}>
+                  More secure than passwords:
+                </Text>{' '}
+                phishing-resistant and bound to your device.
+              </Text>
+            </Group>
+          </Stack>
+        </Paper>
+
         <Checkbox
           label='Never ask again'
           checked={neverAskAgain}

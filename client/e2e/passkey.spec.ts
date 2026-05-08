@@ -1,7 +1,7 @@
 import { expect, Page, test } from '@playwright/test'
 import { authStatePath, navigateTo } from './helpers'
 
-const PASSKEY_PROMPT_TITLE = 'Register a Passkey'
+const PASSKEY_PROMPT_TITLE = 'One click for multiple AET apps'
 const NEVER_ASK_AGAIN_STORAGE_KEY = 'passkey_prompt_never_ask_again'
 const DISABLE_PASSKEY_PROMPT_STORAGE_KEY = 'passkey_prompt_disabled'
 
@@ -68,6 +68,7 @@ test.describe('Passkey - Login', () => {
   test('logs in with passkey from the login modal', async ({ page }) => {
     await disablePasskeyPrompt(page)
     const { cdpSession, authenticatorId } = await setupVirtualAuthenticator(page)
+    let authenticateRequestPayload: Record<string, unknown> | undefined
 
     try {
       await navigateTo(page, '/settings/account')
@@ -88,6 +89,17 @@ test.describe('Passkey - Login', () => {
       await expect(registerPasskeyButton).toBeEnabled()
       await registerPasskeyButton.click()
       await waitForVirtualPasskey(cdpSession, authenticatorId)
+
+      await page.route('**/realms/**/passkey/**/authenticate', async (route) => {
+        if (route.request().method() === 'POST') {
+          authenticateRequestPayload = JSON.parse(route.request().postData() || '{}') as Record<
+            string,
+            unknown
+          >
+        }
+
+        await route.continue()
+      })
 
       const header = page.locator('header')
       const loginLink = header.getByRole('link', { name: 'Login', exact: true })
@@ -121,6 +133,7 @@ test.describe('Passkey - Login', () => {
         timeout: 30_000,
       })
       await expect(header.getByText('Login')).toBeHidden()
+      expect(typeof authenticateRequestPayload?.userHandle).toBe('string')
     } finally {
       await cdpSession
         .send('WebAuthn.removeVirtualAuthenticator', { authenticatorId })
@@ -209,6 +222,16 @@ test.describe('Passkey - Authenticated Student', () => {
 
     const prompt = passkeyPromptDialog(page)
     await expect(prompt).toBeVisible()
+    await expect(
+      prompt.getByText('One passkey for fast, secure sign-in across multiple apps.'),
+    ).toBeVisible()
+    await expect(prompt.getByRole('link', { name: 'AET' })).toHaveAttribute(
+      'href',
+      'https://aet.cit.tum.de/',
+    )
+    await expect(prompt.getByText('Thesis Management')).toBeVisible()
+    await expect(prompt.getByText('TUM Apply')).toBeVisible()
+    await expect(prompt.getByText('Prompt')).toBeVisible()
     await expect(prompt.getByText('Never ask again')).toBeVisible()
     await expect(prompt.getByRole('button', { name: 'Register Passkey' })).toBeVisible()
   })
