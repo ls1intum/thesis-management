@@ -1,35 +1,13 @@
 import { Badge, Box, Card, Flex, Group, Stack, Text } from '@mantine/core'
 import { Buildings, Users } from '@phosphor-icons/react'
-import React, { useEffect } from 'react'
 import { IResearchGroup } from '../../../requests/responses/researchGroup'
 import { CustomAvatar } from '../../../components/CustomAvatar/CustomAvatar'
 import { formatUser } from '../../../utils/format'
-import { doRequest } from '../../../requests/request'
-import { ILightUser } from '../../../requests/responses/user'
 import { useHover } from '@mantine/hooks'
 import { Link } from 'react-router'
 
 const ResearchGroupCard = (props: IResearchGroup) => {
-  const [researchGroupMemberNumber, setResearchGroupMemberNumber] = React.useState(0)
-
-  const fetchMemberAmount = () => {
-    doRequest<{ content: ILightUser[] }>(
-      `/v2/research-groups/${props.id}/members`,
-      {
-        method: 'GET',
-        requiresAuth: true,
-      },
-      (res) => {
-        if (res.ok) {
-          setResearchGroupMemberNumber((res.data.content ?? []).length)
-        }
-      },
-    )
-  }
-
-  useEffect(() => {
-    fetchMemberAmount()
-  }, [])
+  const researchGroupMemberNumber = props.memberCount ?? 0
 
   const { hovered, ref } = useHover()
 
