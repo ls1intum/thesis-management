@@ -81,9 +81,9 @@
     "jwt-decode": "4.0.0",
     "keycloak-js": "26.2.4",
     "mantine-datatable": "8.3.13",
-    "react": "19.2.5",
+    "react": "19.2.6",
     "react-avatar-editor": "14.0.0",
-    "react-dom": "19.2.5",
+    "react-dom": "19.2.6",
     "react-router": "7.14.2"
   },
   "devDependencies": {
