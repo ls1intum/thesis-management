@@ -8,6 +8,7 @@ export interface IApplicationsFilters {
   states?: ApplicationState[]
   topics?: string[]
   types?: string[]
+  includeSuggestedTopics?: boolean
 }
 
 export interface IApplicationsSort {
