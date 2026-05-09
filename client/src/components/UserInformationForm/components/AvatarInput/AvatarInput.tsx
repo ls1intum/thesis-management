@@ -1,5 +1,5 @@
 import { getAvatar } from '../../../../utils/user'
-import AvatarEditor from 'react-avatar-editor'
+import AvatarEditor, { type AvatarEditorRef } from 'react-avatar-editor'
 import { useAuthenticationContext, useLoggedInUser } from '../../../../hooks/authentication'
 import {
   Avatar,
@@ -34,7 +34,7 @@ interface IAvatarInputProps {
 const AvatarInput = (props: IAvatarInputProps) => {
   const { value, onChange, label, required } = props
 
-  const editorRef = useRef<AvatarEditor | null>(null)
+  const editorRef = useRef<AvatarEditorRef | null>(null)
   const { updateUser } = useAuthenticationContext()
   const user = useLoggedInUser()
 

@@ -85,7 +85,7 @@
     "keycloak-js": "26.2.4",
     "mantine-datatable": "8.3.13",
     "react": "19.2.6",
-    "react-avatar-editor": "14.0.0",
+    "react-avatar-editor": "15.1.0",
     "react-dom": "19.2.6",
     "react-router": "7.15.0"
   },
@@ -98,7 +98,6 @@
     "@testing-library/react": "16.3.2",
     "@testing-library/user-event": "14.6.1",
     "@types/react": "19.2.14",
-    "@types/react-avatar-editor": "13.0.4",
     "@types/react-dom": "19.2.3",
     "@typescript-eslint/eslint-plugin": "8.59.2",
     "@typescript-eslint/parser": "8.59.2",
