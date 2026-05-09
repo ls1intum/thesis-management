@@ -1,6 +1,7 @@
 import { Center, Pagination, Stack, Text } from '@mantine/core'
 import ApplicationsFilters from '../../../../components/ApplicationsFilters/ApplicationsFilters'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
+import { shouldIgnoreArrowKey } from './keyNavigationFilter'
 import { IApplication } from '../../../../requests/responses/application'
 import { useApplicationsContext } from '../../../../providers/ApplicationsProvider/hooks'
 import ApplicationListItem from '../ApplicationListItem/ApplicationListItem'
@@ -22,38 +23,66 @@ const ApplicationsSidebar = (props: IApplicationsSidebarProps) => {
 
   const [startAtLastApplication, setStartAtLastApplication] = useState(false)
 
+  // Stash the latest mutable handlers in refs so the keydown listener
+  // always reads the current value without re-binding on every render
+  // (onSelect is an inline function from the parent, so its identity
+  // changes constantly).
+  const onSelectRef = useRef(onSelect)
+  const setPageRef = useRef(setPage)
+  const stateRef = useRef({ page, selectedIndex, applications })
+
   useEffect(() => {
-    window.onkeydown = (e) => {
-      let newIndex = selectedIndex
+    onSelectRef.current = onSelect
+    setPageRef.current = setPage
+    stateRef.current = { page, selectedIndex, applications }
+  })
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') {
+        return
+      }
+      if (shouldIgnoreArrowKey(e)) {
+        return
+      }
+
+      const {
+        page: currentPage,
+        selectedIndex: currentIndex,
+        applications: apps,
+      } = stateRef.current
+      let newIndex = currentIndex
 
       newIndex += e.key === 'ArrowRight' ? 1 : 0
       newIndex += e.key === 'ArrowLeft' ? -1 : 0
 
-      if (newIndex === selectedIndex) {
+      if (newIndex === currentIndex) {
         return
       }
 
-      if (applications && newIndex < 0) {
+      if (apps && newIndex < 0) {
         // start at last application if user navigates to a previous page with arrow keys
-        setStartAtLastApplication(page > 0)
-        setPage(page > 0 ? page - 1 : 0)
+        setStartAtLastApplication(currentPage > 0)
+        setPageRef.current(currentPage > 0 ? currentPage - 1 : 0)
       }
 
-      if (applications && newIndex >= (applications.content ?? []).length && !applications.last) {
+      if (apps && newIndex >= (apps.content ?? []).length && !apps.last) {
         // make sure that state is reset when navigating to next page with arrow keys
         setStartAtLastApplication(false)
-        setPage(page + 1)
+        setPageRef.current(currentPage + 1)
       }
 
-      if ((applications?.content ?? [])[newIndex]) {
-        onSelect((applications?.content ?? [])[newIndex])
+      if ((apps?.content ?? [])[newIndex]) {
+        onSelectRef.current((apps?.content ?? [])[newIndex])
       }
     }
+
+    window.addEventListener('keydown', onKeyDown)
 
     return () => {
-      window.onkeydown = null
+      window.removeEventListener('keydown', onKeyDown)
     }
-  }, [applications, page, selectedIndex])
+  }, [])
 
   useEffect(() => {
     if (isSmallScreen) {
