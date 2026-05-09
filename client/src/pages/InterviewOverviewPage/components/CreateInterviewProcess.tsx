@@ -215,7 +215,7 @@ const CreateInterviewProcess = ({ opened, onClose }: CreateInterviewProcessProps
               m={'xs'}
             />
           )}
-          <Collapse in={!selectedTopic} m={'xs'}>
+          <Collapse expanded={!selectedTopic} m={'xs'}>
             {topicsLoading ? (
               <Center h={'30vh'} w={'100%'}>
                 <Loader />
@@ -262,7 +262,7 @@ const CreateInterviewProcess = ({ opened, onClose }: CreateInterviewProcessProps
             </Center>
           ) : (
             <Collapse
-              in={selectedTopic !== null}
+              expanded={selectedTopic !== null}
               m={'xs'}
               h={
                 selectedTopic !== null

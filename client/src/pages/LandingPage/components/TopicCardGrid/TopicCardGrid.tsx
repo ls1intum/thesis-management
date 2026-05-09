@@ -67,7 +67,7 @@ const TopicCardGrid = ({
             <ThemeIcon radius='xl' size={50} color='gray' variant='light'>
               <Database size={24} weight='duotone' />
             </ThemeIcon>
-            <Text size='sm' color='dimmed'>
+            <Text size='sm' c='dimmed'>
               No topics found
             </Text>
           </Stack>

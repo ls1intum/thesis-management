@@ -349,7 +349,7 @@ const InterviewBookingPage = () => {
                 flex={1}
               >
                 <Stack p={0} h={'100%'}>
-                  <Collapse in={selectedSlot !== null}>
+                  <Collapse expanded={selectedSlot !== null}>
                     {selectedSlot && SlotInformation(selectedSlot)}
                   </Collapse>
                   {TopicInformation}

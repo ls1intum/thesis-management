@@ -91,7 +91,7 @@ const ResearchGroupForm = ({
 
   return (
     <form onSubmit={form.onSubmit(onSubmit)}>
-      <Grid gutter='md'>
+      <Grid gap='md'>
         <Grid.Col span={layout === 'grid' ? { base: 12, md: 6 } : 12}>
           <TextInput
             label='Name'

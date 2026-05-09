@@ -16,7 +16,7 @@ const ApplicationsFilters = (props: IApplicationsFiltersProps) => {
   const { topics, filters, setFilters, sort, setSort } = useApplicationsContext()
 
   return (
-    <Grid gutter='sm'>
+    <Grid gap='sm'>
       <Grid.Col span={12}>
         <TextInput
           placeholder='Search applications...'
