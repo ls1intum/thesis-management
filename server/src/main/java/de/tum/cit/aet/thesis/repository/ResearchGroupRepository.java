@@ -13,15 +13,37 @@ import java.util.UUID;
 @Repository
 public interface ResearchGroupRepository extends JpaRepository<ResearchGroup, UUID> {
 
+// `:searchQuery` is normalised in ResearchGroupService.normalizeSearchQuery
+// to escape `%`, `_` and `\` with a leading backslash; ESCAPE '\' makes
+// the ILIKE clauses treat that backslash as the literal-pattern escape
+// character so user-supplied wildcards can never act as patterns.
 @Query(value = """
 		SELECT r.* FROM research_groups r
-		WHERE (:searchQuery IS NULL OR r.name ILIKE CONCAT('%', :searchQuery, '%')
-			OR r.abbreviation ILIKE CONCAT('%', :searchQuery, '%'))
+		WHERE (:searchQuery IS NULL OR r.name ILIKE CONCAT('%', :searchQuery, '%') ESCAPE '\\'
+			OR r.abbreviation ILIKE CONCAT('%', :searchQuery, '%') ESCAPE '\\'
+			OR EXISTS (SELECT 1 FROM users h WHERE h.user_id = r.head_user_id
+				AND (h.first_name ILIKE CONCAT('%', :searchQuery, '%') ESCAPE '\\'
+					OR h.last_name ILIKE CONCAT('%', :searchQuery, '%') ESCAPE '\\'
+					OR CONCAT(h.first_name, ' ', h.last_name) ILIKE CONCAT('%', :searchQuery, '%') ESCAPE '\\')))
 			AND (CAST(:heads AS UUID[]) IS NULL OR r.head_user_id = ANY(CAST(:heads AS UUID[])))
 			AND (CAST(:campuses AS TEXT[]) IS NULL OR r.campus IS NULL
 			OR r.campus = ANY(CAST(:campuses AS TEXT[])))
 			AND (:includeArchived = TRUE OR r.archived = FALSE)
-		""", nativeQuery = true)
+		""",
+	countQuery = """
+		SELECT COUNT(*) FROM research_groups r
+		WHERE (:searchQuery IS NULL OR r.name ILIKE CONCAT('%', :searchQuery, '%') ESCAPE '\\'
+			OR r.abbreviation ILIKE CONCAT('%', :searchQuery, '%') ESCAPE '\\'
+			OR EXISTS (SELECT 1 FROM users h WHERE h.user_id = r.head_user_id
+				AND (h.first_name ILIKE CONCAT('%', :searchQuery, '%') ESCAPE '\\'
+					OR h.last_name ILIKE CONCAT('%', :searchQuery, '%') ESCAPE '\\'
+					OR CONCAT(h.first_name, ' ', h.last_name) ILIKE CONCAT('%', :searchQuery, '%') ESCAPE '\\')))
+			AND (CAST(:heads AS UUID[]) IS NULL OR r.head_user_id = ANY(CAST(:heads AS UUID[])))
+			AND (CAST(:campuses AS TEXT[]) IS NULL OR r.campus IS NULL
+			OR r.campus = ANY(CAST(:campuses AS TEXT[])))
+			AND (:includeArchived = TRUE OR r.archived = FALSE)
+		""",
+	nativeQuery = true)
 Page<ResearchGroup> searchResearchGroup(
 	@Param("heads") String[] heads,
 	@Param("campuses") String[] campuses,

@@ -99,8 +99,7 @@ public class ResearchGroupService {
 				HibernateHelper.getColumnName(ResearchGroup.class, sortBy)
 		);
 
-		String searchQueryFilter =
-				searchQuery == null || searchQuery.isEmpty() ? null : searchQuery.toLowerCase();
+		String searchQueryFilter = normalizeSearchQuery(searchQuery);
 		String[] headsFilter = heads == null || heads.length == 0 ? null : heads;
 		String[] campusesFilter = campuses == null || campuses.length == 0 ? null : campuses;
 
@@ -124,8 +123,7 @@ public class ResearchGroupService {
 	 * @return the page of matching research groups
 	 */
 	public Page<ResearchGroup> getAllLight(String searchQuery) {
-		String searchQueryFilter =
-				searchQuery == null || searchQuery.isEmpty() ? null : searchQuery.toLowerCase();
+		String searchQueryFilter = normalizeSearchQuery(searchQuery);
 
 		Sort.Order order = new Sort.Order(Sort.Direction.ASC, HibernateHelper.getColumnName(ResearchGroup.class, "name"));
 
@@ -252,6 +250,24 @@ public class ResearchGroupService {
 		userRepository.save(head);
 
 		return savedResearchGroup;
+	}
+
+	/**
+	 * Normalises a free-text search query before binding it into the repository's
+	 * native ILIKE query. Returns null for blank input so the SQL short-circuits;
+	 * otherwise lower-cases and escapes the LIKE wildcards `\`, `%`, `_` so
+	 * user-supplied characters can never act as patterns. The native query uses
+	 * the default `\` escape so no `ESCAPE` clause is needed.
+	 */
+	static String normalizeSearchQuery(String searchQuery) {
+		if (searchQuery == null || searchQuery.isBlank()) {
+			return null;
+		}
+		return searchQuery
+				.toLowerCase()
+				.replace("\\", "\\\\")
+				.replace("%", "\\%")
+				.replace("_", "\\_");
 	}
 
 	private User getUserByUsernameOrCreate(String username) {
