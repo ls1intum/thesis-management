@@ -116,7 +116,7 @@
     "jsdom": "29.1.1",
     "mini-css-extract-plugin": "2.10.2",
     "patch-package": "8.0.1",
-    "postcss": "8.5.13",
+    "postcss": "8.5.14",
     "postcss-loader": "8.2.1",
     "postcss-preset-mantine": "1.18.0",
     "prettier": "3.8.3",
