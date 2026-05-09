@@ -100,7 +100,7 @@ test.describe.serial('Topic 7 - Edit then Close', () => {
     await expect(dialog.getByText(/reject all applications/i)).toBeVisible()
 
     // Verify Reason select is present (only for non-draft topics)
-    const reasonInput = dialog.getByRole('textbox', { name: 'Reason' })
+    const reasonInput = dialog.getByRole('combobox', { name: 'Reason' })
     await expect(reasonInput).toBeVisible()
 
     // Select a reason (Mantine Select renders options in a portal, so we use keyboard navigation)
@@ -175,7 +175,7 @@ test.describe('Topic 8 - Close Draft', () => {
     await expect(dialog.getByText(/close this draft/i)).toBeVisible()
 
     // Verify that Reason select is NOT present for drafts
-    await expect(dialog.getByRole('textbox', { name: 'Reason' })).toBeHidden()
+    await expect(dialog.getByRole('combobox', { name: 'Reason' })).toBeHidden()
 
     // Verify that "Notify Students" checkbox is NOT present for drafts
     await expect(dialog.getByRole('checkbox', { name: /Notify Students/i })).toBeHidden()
