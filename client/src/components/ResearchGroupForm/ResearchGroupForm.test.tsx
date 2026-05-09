@@ -81,9 +81,22 @@ describe('ResearchGroupForm — issue #521 (discardable form)', () => {
     await user.type(description, 'A different description')
     expect(description).toHaveValue('A different description')
 
+    // Edit the head autocomplete too so we can verify the label restoration.
+    const headInput = screen.getByRole('textbox', {
+      name: /group head/i,
+    }) as HTMLInputElement
+    expect(headInput).toHaveValue('Ada Lovelace')
+    await user.clear(headInput)
+    await user.type(headInput, 'Someone Else')
+    expect(headInput).toHaveValue('Someone Else')
+
     await user.click(screen.getByRole('button', { name: /discard changes/i }))
 
     expect(description).toHaveValue('Original description')
+    // After discard, the head autocomplete remounts with the original label.
+    expect(screen.getByRole('textbox', { name: /group head/i }) as HTMLInputElement).toHaveValue(
+      'Ada Lovelace',
+    )
     expect(screen.getByRole('button', { name: /discard changes/i })).toBeDisabled()
     expect(screen.getByRole('button', { name: /^save$/i })).toBeDisabled()
   })
