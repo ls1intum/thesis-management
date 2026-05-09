@@ -23,3 +23,7 @@ node_modules/
 /docs/files/.$subsystem-decomposition.drawio.bkp
 /test-results
 /server/test-results
+
+# Claude Code scheduled-task lock files (per-session)
+.claude/scheduled_tasks.lock
+

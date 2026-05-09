@@ -249,9 +249,11 @@ public class TopicService {
 		// could edit an arbitrary topic and "move" it to a research group they
 		// belong to. Mirrors the canEditResearchGroup rule on the client.
 		User caller = currentUserProvider().getUser();
+		UUID callerId = caller.getId();
 		boolean callerIsTopicOwner =
-				(topic.getCreatedBy() != null && caller.getId().equals(topic.getCreatedBy().getId()))
-						|| topic.getSupervisors().stream().anyMatch(u -> caller.getId().equals(u.getId()));
+				(topic.getCreatedBy() != null && callerId.equals(topic.getCreatedBy().getId()))
+						|| topic.getSupervisors().stream().anyMatch(u -> callerId.equals(u.getId()))
+						|| topic.getExaminers().stream().anyMatch(u -> callerId.equals(u.getId()));
 		if (!currentUserProvider().isAdmin() && !callerIsTopicOwner) {
 			currentUserProvider().assertCanAccessResearchGroup(topic.getResearchGroup());
 		}
