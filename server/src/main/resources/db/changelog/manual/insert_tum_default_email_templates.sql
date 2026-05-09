@@ -49,7 +49,8 @@ FROM defaults d
   You can view your thesis details and tasks on: <a target="_blank" rel="noopener noreferrer nofollow" th:href="${thesisUrl}">[[${thesisUrl}]]</a>
 </p>
 
-<div th:utext="${emailSignature}"></div>
+<p>Best regards,<br/>
+The Thesis Coordination Team</p>
 ', 'Application was accepted with different advisor and supervisor'), ('APPLICATION_ACCEPTED_NO_ADVISOR', 'Thesis Application Acceptance', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">
@@ -76,7 +77,8 @@ thesis.
 You can view your thesis details and tasks on: <a target="_blank" rel="noopener noreferrer nofollow" th:href="${thesisUrl}">[[${thesisUrl}]]</a>
 </p>
 
-<div th:utext="${emailSignature}"></div>', 'Application was accepted with same advisor and supervisor'), ('APPLICATION_CREATED_CHAIR', 'New Thesis Application', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
+<p>Best regards,<br/>
+The Thesis Coordination Team</p>', 'Application was accepted with same advisor and supervisor'), ('APPLICATION_CREATED_CHAIR', 'New Thesis Application', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">there is a new thesis application by <strong>[[${application.applicantFirstName}]]&nbsp;[[${application.applicantLastName}]]</strong>.</p>
 <p th:inline="text">We received the following thesis application details:</p>
@@ -222,7 +224,8 @@ The volume of applications received this year was exceptionally high, and I have
 I recommend exploring other supervisors or research groups who may align more closely with your qualifications and area of interest.
 </p>
 
-<div th:utext="${emailSignature}"></div>', 'Application was rejected'), ('APPLICATION_REJECTED_TOPIC_REQUIREMENTS', 'Thesis Application Rejection', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
+<p>Best regards,<br/>
+The Thesis Coordination Team</p>', 'Application was rejected'), ('APPLICATION_REJECTED_TOPIC_REQUIREMENTS', 'Thesis Application Rejection', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">
 Thank you for your interest in pursuing your thesis under my supervision.
@@ -233,7 +236,8 @@ After reviewing your application and supporting documents, I regret to inform yo
 I recommend considering other thesis topics or reaching out to other research groups whose research focus may better align with your qualifications.
 </p>
 
-<div th:utext="${emailSignature}"></div>', 'Application was rejected because topic requirements were not met'), ('APPLICATION_REJECTED_STUDENT_REQUIREMENTS', 'Thesis Application Rejection', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
+<p>Best regards,<br/>
+The Thesis Coordination Team</p>', 'Application was rejected because topic requirements were not met'), ('APPLICATION_REJECTED_STUDENT_REQUIREMENTS', 'Thesis Application Rejection', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">
 Thank you for your interest in pursuing your thesis under my supervision.
@@ -245,7 +249,8 @@ Unfortunately, I must inform you that you do not currently meet the necessary re
 I recommend exploring other supervisors or research groups who may align more closely with your qualifications and area of interest.
 </p>
 
-<div th:utext="${emailSignature}"></div>', 'Application was rejected because student does not fulfil chair''s requirements'), ('APPLICATION_REJECTED_TITLE_NOT_INTERESTING', 'Thesis Application Rejection', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
+<p>Best regards,<br/>
+The Thesis Coordination Team</p>', 'Application was rejected because student does not fulfil chair''s requirements'), ('APPLICATION_REJECTED_TITLE_NOT_INTERESTING', 'Thesis Application Rejection', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">
 Thank you for your interest in pursuing your thesis under my supervision.
@@ -257,7 +262,8 @@ However, the suggested topic does not align with the current research interests 
 I encourage you to explore other research groups whose research is more closely related to your proposed area of study.
 </p>
 
-<div th:utext="${emailSignature}"></div>', 'Application was rejected because the suggested thesis title is not interesting'), ('APPLICATION_REJECTED_TOPIC_FILLED', 'Thesis Application Rejection', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
+<p>Best regards,<br/>
+The Thesis Coordination Team</p>', 'Application was rejected because the suggested thesis title is not interesting'), ('APPLICATION_REJECTED_TOPIC_FILLED', 'Thesis Application Rejection', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">
 Thank you for your interest in pursuing your thesis under my supervision.
@@ -272,7 +278,8 @@ We found a student for the specific topic you applied for.
 You can explore other topics or suggest a topic yourself in your area of interest.
 </p>
 
-<div th:utext="${emailSignature}"></div>', 'Application was rejected because topic was closed'), ('APPLICATION_REJECTED_TOPIC_OUTDATED', 'Thesis Application Rejection', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
+<p>Best regards,<br/>
+The Thesis Coordination Team</p>', 'Application was rejected because topic was closed'), ('APPLICATION_REJECTED_TOPIC_OUTDATED', 'Thesis Application Rejection', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">
 Thank you for your interest in pursuing your thesis under my supervision.
@@ -287,7 +294,8 @@ I wanted to inform you that the topic you applied for is no longer available.
 You can explore other topics or suggest a topic yourself in your area of interest.
 </p>
 
-<div th:utext="${emailSignature}"></div>', 'Application was rejected because topic is outdated'), ('APPLICATION_REMINDER', 'Unreviewed Thesis Applications', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
+<p>Best regards,<br/>
+The Thesis Coordination Team</p>', 'Application was rejected because topic is outdated'), ('APPLICATION_REMINDER', 'Unreviewed Thesis Applications', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">
 There are currently <strong>[[${unreviewedApplications}]]</strong> unreviewed thesis applications.

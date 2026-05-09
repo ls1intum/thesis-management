@@ -168,7 +168,11 @@ public class MailingService {
 				+ "</p>"
 				+ "<p>You can view the full application details here: "
 				+ "<a target=\"_blank\" rel=\"noopener noreferrer nofollow\" href=\"" + applicationUrl + "\">"
-				+ applicationUrl + "</a></p>";
+				+ applicationUrl + "</a></p>"
+				// Match the rest of the templates (which all end with the
+				// emailSignature placeholder so the per-research-group
+				// signature gets injected by Thymeleaf).
+				+ "<div th:utext=\"${emailSignature}\"></div>";
 
 		MailBuilder builder = new MailBuilder(config, subject, body);
 		applyGroupSignature(builder, application.getResearchGroup());

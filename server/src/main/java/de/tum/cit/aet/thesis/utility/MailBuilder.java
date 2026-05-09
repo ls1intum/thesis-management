@@ -25,6 +25,7 @@ import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.web.util.HtmlUtils;
 import org.thymeleaf.context.Context;
 
 import jakarta.activation.DataHandler;
@@ -588,9 +589,13 @@ public class MailBuilder {
 
 				BodyPart messageBody = new MimeBodyPart();
 				String renderedHtml = config.getTemplateEngine().process(templateHtml, templateContext);
+				// HTML-escape the client host before interpolating it into an
+				// href so a misconfigured CHAIR_URL can't break the attribute
+				// or open an HTML-injection vector in outgoing mail.
+				String settingsUrl = HtmlUtils.htmlEscape(config.getClientHost() + "/settings/notifications");
 				renderedHtml += "<hr/><div style=\"text-align: center; font-size: 10px;\">"
 						+ "You can (un)subscribe to similar emails in your "
-						+ "<a href=\"" + config.getClientHost() + "/settings/notifications\">"
+						+ "<a href=\"" + settingsUrl + "\" rel=\"noopener noreferrer nofollow\">"
 						+ "notification settings in Thesis Management</a>.</div>";
 				messageBody.setContent(renderedHtml, "text/html; charset=utf-8");
 				messageContent.addBodyPart(messageBody);
