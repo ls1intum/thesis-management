@@ -99,10 +99,14 @@ const EmailTextEditor = ({
     [templateVariables],
   )
 
-  // Update editor content if editingTemplate.bodyHtml changes
+  // Update editor content if editingTemplate.bodyHtml changes.
+  // Guard with isDestroyed: when `templateVariables` changes, useEditor's
+  // own effect destroys the previous editor before this effect's closure runs,
+  // and tiptap >= 3.23 nulls `editor.schema` on destroy (so getHTML throws).
   useEffect(() => {
     if (
       editor &&
+      !editor.isDestroyed &&
       editingTemplate &&
       convertTemplateVariablesToHtml(editingTemplate.bodyHtml ?? '', templateVariables) !==
         editor.getHTML()

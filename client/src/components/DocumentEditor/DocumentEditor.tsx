@@ -111,7 +111,7 @@ const DocumentEditor = (props: IDocumentEditorProps) => {
   })
 
   useEffect(() => {
-    if (editor) {
+    if (editor && !editor.isDestroyed) {
       if (
         typeof value !== 'undefined' &&
         editor.getHTML() !== value &&
