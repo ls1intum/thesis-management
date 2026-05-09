@@ -243,6 +243,18 @@ public class TopicService {
 		ResearchGroup researchGroup = researchGroupRepository.findById(researchGroupId).orElseThrow(
 				() -> new ResourceNotFoundException("Research group not found")
 		);
+		// The caller must be allowed to edit THIS topic — either as an admin, as
+		// the topic's creator/supervisor/examiner, or as a member of the topic's
+		// current research group. Without this guard, any advisor / supervisor
+		// could edit an arbitrary topic and "move" it to a research group they
+		// belong to. Mirrors the canEditResearchGroup rule on the client.
+		User caller = currentUserProvider().getUser();
+		boolean callerIsTopicOwner =
+				(topic.getCreatedBy() != null && caller.getId().equals(topic.getCreatedBy().getId()))
+						|| topic.getSupervisors().stream().anyMatch(u -> caller.getId().equals(u.getId()));
+		if (!currentUserProvider().isAdmin() && !callerIsTopicOwner) {
+			currentUserProvider().assertCanAccessResearchGroup(topic.getResearchGroup());
+		}
 		currentUserProvider().assertCanAccessResearchGroup(researchGroup);
 		topic.setTitle(title);
 		topic.setThesisTypes(thesisTypes);

@@ -27,6 +27,7 @@ import { PaginationResponse } from '../../../../requests/responses/pagination'
 import { ILightResearchGroup } from '../../../../requests/responses/researchGroup'
 import { ILightUser } from '../../../../requests/responses/user'
 import { useHasGroupAccess, useUser } from '../../../../hooks/authentication'
+import { canEditResearchGroup as canEditResearchGroupRule } from './canEditResearchGroup'
 import { DateInput } from '@mantine/dates'
 
 interface ICreateTopicModalProps {
@@ -48,13 +49,10 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
   const [autoSelectedExaminers, setAutoSelectedExaminers] = useState<ILightUser[]>([])
   const hasAdminAccess = useHasGroupAccess('admin')
   const currentUser = useUser()
-  const isTopicOwner =
-    !!topic &&
-    !!currentUser &&
-    (topic.createdBy?.userId === currentUser.userId ||
-      (topic.supervisors ?? []).some((s) => s.userId === currentUser.userId) ||
-      (topic.examiners ?? []).some((e) => e.userId === currentUser.userId))
-  const canEditResearchGroup = hasAdminAccess || isTopicOwner
+  const canEditResearchGroup = canEditResearchGroupRule(
+    topic,
+    currentUser ? { userId: currentUser.userId, isAdmin: hasAdminAccess } : undefined,
+  )
 
   const form = useForm<{
     title: string
@@ -158,7 +156,12 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
             content: res.data.content,
           })
 
-          if ((res.data.content ?? []).length === 1) {
+          // Only auto-select the single available group (and its head as
+          // examiner) on the create flow. When editing an existing topic
+          // (`topic` is set), we must NOT overwrite the topic's existing
+          // examiners — that's a regression for non-admin owners whose RG
+          // returns exactly one entry.
+          if (!topic && (res.data.content ?? []).length === 1) {
             const onlyGroup = (res.data.content ?? [])[0]
             form.setValues({
               researchGroupId: onlyGroup.id,
