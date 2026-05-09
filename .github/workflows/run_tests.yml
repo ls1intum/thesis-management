@@ -62,9 +62,11 @@ jobs:
         working-directory: ./client
         run: npm ci
 
-      - name: Run client tests (Vitest + node:test)
+      - name: Run client tests with coverage (Vitest + node:test)
         working-directory: ./client
-        run: npm test
+        run: |
+          npx vitest run --coverage
+          npm run test:legacy
 
       - name: Upload Client Test Results
         uses: actions/upload-artifact@v7

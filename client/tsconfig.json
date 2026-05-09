@@ -15,7 +15,6 @@
     "noEmit": true,
     "skipLibCheck": true,
     "lib": ["dom", "dom.iterable", "esnext"],
-    "types": ["vitest/globals"],
     "plugins": [
       { "name": "typescript-plugin-css-modules" }
     ]
@@ -26,7 +25,6 @@
     "src/**/*.jsx",
     "src/**/*.js",
     "test/**/*.ts",
-    "test/**/*.tsx",
-    "vitest.config.ts"
+    "test/**/*.tsx"
   ]
 }
