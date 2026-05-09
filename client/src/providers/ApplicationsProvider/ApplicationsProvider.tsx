@@ -47,6 +47,7 @@ const ApplicationsProvider = (props: PropsWithChildren<IApplicationsProviderProp
   const [filters, setFilters] = useState<IApplicationsFilters>({
     states: defaultStates,
     topics: defaultTopics,
+    includeSuggestedTopics: true,
   })
   const [sort, setSort] = useState<IApplicationsSort>({
     column: 'createdAt',
@@ -106,11 +107,8 @@ const ApplicationsProvider = (props: PropsWithChildren<IApplicationsProviderProp
                 topicId === 'NO_TOPIC' ? '00000000-0000-0000-0000-000000000000' : topicId,
               )
               .join(',') ?? '',
-          includeSuggestedTopics: !adjustedFilters.topics?.length
-            ? 'true'
-            : adjustedFilters.topics.includes('NO_TOPIC')
-              ? 'true'
-              : 'false',
+          includeSuggestedTopics:
+            adjustedFilters.includeSuggestedTopics === false ? 'false' : 'true',
           limit,
           page,
           sortBy: sort.column,
@@ -143,6 +141,7 @@ const ApplicationsProvider = (props: PropsWithChildren<IApplicationsProviderProp
     adjustedFilters.states?.join(','),
     adjustedFilters.topics?.join(','),
     adjustedFilters.types?.join(','),
+    adjustedFilters.includeSuggestedTopics,
     debouncedSearch,
     !topics,
   ])

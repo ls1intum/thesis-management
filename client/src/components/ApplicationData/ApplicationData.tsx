@@ -15,6 +15,7 @@ import { ApplicationStateColor } from '../../config/colors'
 import TopicAccordionItem from '../TopicAccordionItem/TopicAccordionItem'
 import { enrollmentDateToSemester } from '../../utils/converter'
 import { AuthenticatedFilePreview } from '../AuthenticatedFilePreview/AuthenticatedFilePreview'
+import { renderCustomDataValue } from '../../utils/customDataLink'
 
 interface IApplicationDataProps {
   application: IApplication
@@ -145,7 +146,10 @@ const ApplicationData = (props: IApplicationDataProps) => {
             {application.user.customData &&
               Object.entries(application.user.customData).map(([key, value]) => (
                 <Grid.Col key={key} span={{ md: 6 }}>
-                  <LabeledItem label={GLOBAL_CONFIG.custom_data[key]?.label ?? key} value={value} />
+                  <LabeledItem
+                    label={GLOBAL_CONFIG.custom_data[key]?.label ?? key}
+                    value={renderCustomDataValue(key, value)}
+                  />
                 </Grid.Col>
               ))}
           </Grid>

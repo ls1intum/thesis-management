@@ -2,6 +2,7 @@ import { Anchor, Container, Flex, MantineSize } from '@mantine/core'
 import { GLOBAL_CONFIG } from '../../config/global'
 import { Link } from 'react-router'
 import packageJson from '../../../package.json'
+import { labelByEnvironment } from '../EnvironmentBanner/EnvironmentBanner'
 
 const links = [
   { link: '/about', label: 'About', visible: true },
@@ -43,6 +44,9 @@ const Footer = (props: IFooterProps) => {
             c='dimmed'
           >
             v{version}
+            {GLOBAL_CONFIG.environment && GLOBAL_CONFIG.environment !== 'production'
+              ? ` · ${labelByEnvironment[GLOBAL_CONFIG.environment]}`
+              : ''}
           </Anchor>
         </Flex>
         <Flex
