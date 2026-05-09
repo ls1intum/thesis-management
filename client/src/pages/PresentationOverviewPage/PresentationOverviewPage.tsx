@@ -32,6 +32,7 @@ import { getApiResponseErrorMessage } from '../../requests/handler'
 import PresentationCard from '../ThesisPage/components/ThesisPresentationSection/components/PresentationCard'
 import { CalendarXIcon } from '@phosphor-icons/react/dist/ssr'
 import { useNavigate } from 'react-router'
+import { pickTargetDate } from './pickTargetDate'
 
 const PresentationOverviewPage = () => {
   usePageTitle('Presentations')
@@ -143,13 +144,7 @@ const PresentationOverviewPage = () => {
     }
 
     const today = dayjs().format('YYYY-MM-DD')
-    const sortedDates = Array.from(presentations.keys()).sort((a, b) =>
-      dayjs(a).isAfter(dayjs(b)) ? 1 : -1,
-    )
-    const target =
-      sortedDates.find((date) => date === today) ??
-      sortedDates.find((date) => !dayjs(date).isBefore(dayjs(today))) ??
-      sortedDates[sortedDates.length - 1]
+    const target = pickTargetDate(today, Array.from(presentations.keys()))
 
     lastScrolledGroupId.current = selectedGroup?.id ?? null
 
