@@ -84,8 +84,18 @@ const PresentationOverviewPage = () => {
   }, [])
 
   const [presentations, setPresentations] = useState<Map<string, IPublishedPresentation[]>>()
+  // Tracks which research group the current `presentations` map belongs to,
+  // so the auto-scroll effect doesn't fire with the *previous* group's data
+  // during the gap between groupId change and fetch resolution.
+  const presentationsGroupId = useRef<string | null>(null)
 
   useEffect(() => {
+    // Clear the stale map immediately on group switch — otherwise the auto
+    // scroll effect would compute its target from the previous group's data
+    // and mark the new group as "scrolled" before its presentations arrive.
+    setPresentations(undefined)
+    presentationsGroupId.current = null
+    const newGroupId = selectedGroup?.id ?? null
     return doRequest<PaginationResponse<IPublishedPresentation>>(
       `/v2/published-presentations`,
       {
@@ -106,6 +116,7 @@ const PresentationOverviewPage = () => {
             }
             presentationsByDate.get(date)!.push(presentation)
           })
+          presentationsGroupId.current = newGroupId
           setPresentations(presentationsByDate)
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
@@ -154,6 +165,13 @@ const PresentationOverviewPage = () => {
       return
     }
     const groupKey = selectedGroup?.id ?? null
+    // Race guard: between a group switch and the new fetch resolving, the
+    // `presentations` map still belongs to the previous group. Comparing
+    // against the ref written by the fetch callback ensures we only scroll
+    // when the rendered data actually matches the currently selected group.
+    if (presentationsGroupId.current !== groupKey) {
+      return
+    }
     if (lastScrolledGroupId.current === groupKey) {
       return
     }
@@ -161,13 +179,19 @@ const PresentationOverviewPage = () => {
     const today = dayjs().format('YYYY-MM-DD')
     const target = pickTargetDate(today, Array.from(presentations.keys()))
 
-    lastScrolledGroupId.current = groupKey
-
     if (target) {
       // Defer to the next frame so layout has had a chance to commit the
-      // newly-rendered presentation cards before we measure scroll offsets.
-      requestAnimationFrame(() => scrollTo(target))
+      // newly-rendered presentation cards before we measure scroll offsets,
+      // and only mark the group as "scrolled" once the scroll actually
+      // fires — otherwise a stale render that bails out mid-effect could
+      // still consume the scroll.
+      const handle = requestAnimationFrame(() => {
+        scrollTo(target)
+        lastScrolledGroupId.current = groupKey
+      })
+      return () => cancelAnimationFrame(handle)
     }
+    lastScrolledGroupId.current = groupKey
   }, [presentations, selectedGroup?.id, researchGroups.length])
 
   const onDelete = (presentationId: string, date: string) => {
