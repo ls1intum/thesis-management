@@ -26,7 +26,14 @@ export default [
     ),
   ),
   {
-    files: ['src/**/*.js', 'src/**/*.jsx', 'src/**/*.ts', 'src/**/*.tsx'],
+    files: [
+      'src/**/*.js',
+      'src/**/*.jsx',
+      'src/**/*.ts',
+      'src/**/*.tsx',
+      'test/**/*.ts',
+      'test/**/*.tsx',
+    ],
 
     plugins: {
       '@typescript-eslint': fixupPluginRules(typescriptEslint),
