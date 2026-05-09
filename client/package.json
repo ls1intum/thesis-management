@@ -63,7 +63,7 @@
     "@mantine/dropzone": "8.3.18",
     "@mantine/form": "8.3.18",
     "@mantine/hooks": "8.3.18",
-    "@mantine/notifications": "8.3.18",
+    "@mantine/notifications": "9.1.1",
     "@mantine/tiptap": "8.3.18",
     "@phosphor-icons/react": "2.1.10",
     "@tiptap/extension-highlight": "3.23.1",
