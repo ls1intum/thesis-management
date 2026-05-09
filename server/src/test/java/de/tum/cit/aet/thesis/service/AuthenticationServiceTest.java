@@ -10,7 +10,6 @@ import de.tum.cit.aet.thesis.entity.User;
 import de.tum.cit.aet.thesis.entity.key.NotificationSettingId;
 import de.tum.cit.aet.thesis.mock.EntityMockFactory;
 import de.tum.cit.aet.thesis.repository.NotificationSettingRepository;
-import de.tum.cit.aet.thesis.repository.UserGroupRepository;
 import de.tum.cit.aet.thesis.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,7 +21,6 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,13 +32,13 @@ class AuthenticationServiceTest {
 	private UserRepository userRepository;
 
 	@Mock
-	private UserGroupRepository userGroupRepository;
-
-	@Mock
 	private UploadService uploadService;
 
 	@Mock
 	private NotificationSettingRepository notificationSettingRepository;
+
+	@Mock
+	private AccessManagementService accessManagementService;
 
 	@Mock
 	private JwtAuthenticationToken jwtToken;
@@ -52,9 +50,9 @@ class AuthenticationServiceTest {
 	void setUp() {
 		authenticationService = new AuthenticationService(
 				userRepository,
-				userGroupRepository,
 				uploadService,
-				notificationSettingRepository
+				notificationSettingRepository,
+				accessManagementService
 		);
 
 		testUser = EntityMockFactory.createUser("Test User");
@@ -155,7 +153,6 @@ class AuthenticationServiceTest {
 	private void setupJwtMock(String universityId, Map<String, Object> attributes) {
 		when(jwtToken.getName()).thenReturn(universityId);
 		when(jwtToken.getTokenAttributes()).thenReturn(attributes);
-		when(jwtToken.getAuthorities()).thenReturn(Collections.emptyList());
 	}
 
 	@Test

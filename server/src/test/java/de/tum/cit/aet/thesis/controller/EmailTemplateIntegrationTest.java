@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import tools.jackson.databind.JsonNode;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -45,6 +46,34 @@ class EmailTemplateIntegrationTest extends BaseIntegrationTest {
 						.header("Authorization", createRandomAdminAuthentication())
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(payload))
+				.andExpect(status().isOk())
+				.andReturn().getResponse().getContentAsString();
+
+		return UUID.fromString(objectMapper.readTree(response).get("id").asString());
+	}
+
+	private record RoleUserContext(String authHeader, UUID researchGroupId) {}
+
+	private RoleUserContext createUserWithResearchGroup(String role) throws Exception {
+		TestUser user = createRandomTestUser(List.of(role));
+		UUID researchGroupId = createTestResearchGroup("Email Test Group", user.universityId());
+		String authHeader = generateTestAuthenticationHeader(user.universityId(), List.of(role));
+		return new RoleUserContext(authHeader, researchGroupId);
+	}
+
+	private UUID createTemplateForGroup(String templateCase, UUID researchGroupId) throws Exception {
+		Map<String, Object> payloadMap = new HashMap<>();
+		payloadMap.put("templateCase", templateCase);
+		payloadMap.put("description", "Test desc for " + templateCase);
+		payloadMap.put("subject", "Subject for " + templateCase);
+		payloadMap.put("bodyHtml", "<p>Body for " + templateCase + "</p>");
+		payloadMap.put("language", "en");
+		payloadMap.put("researchGroupId", researchGroupId.toString());
+
+		String response = mockMvc.perform(MockMvcRequestBuilders.post("/v2/email-templates")
+						.header("Authorization", createRandomAdminAuthentication())
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(payloadMap)))
 				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
 
@@ -109,6 +138,165 @@ class EmailTemplateIntegrationTest extends BaseIntegrationTest {
 		void getEmailTemplates_AsStudent_Forbidden() throws Exception {
 			mockMvc.perform(MockMvcRequestBuilders.get("/v2/email-templates")
 							.header("Authorization", createRandomAuthentication("student")))
+					.andExpect(status().isForbidden());
+		}
+
+		@Test
+		void getEmailTemplates_AsGroupAdmin_Success() throws Exception {
+			RoleUserContext ctx = createUserWithResearchGroup("group-admin");
+			createTemplateForGroup("APPLICATION_CREATED_CHAIR", ctx.researchGroupId());
+
+			mockMvc.perform(MockMvcRequestBuilders.get("/v2/email-templates")
+							.header("Authorization", ctx.authHeader()))
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$.content", hasSize(greaterThanOrEqualTo(1))));
+		}
+
+		@Test
+		void getEmailTemplates_AsSupervisor_Success() throws Exception {
+			RoleUserContext ctx = createUserWithResearchGroup("supervisor");
+			createTemplateForGroup("THESIS_CREATED", ctx.researchGroupId());
+
+			mockMvc.perform(MockMvcRequestBuilders.get("/v2/email-templates")
+							.header("Authorization", ctx.authHeader()))
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$.content", hasSize(greaterThanOrEqualTo(1))));
+		}
+
+		@Test
+		void getEmailTemplates_AsAdvisor_Success() throws Exception {
+			RoleUserContext ctx = createUserWithResearchGroup("advisor");
+			createTemplateForGroup("THESIS_CREATED", ctx.researchGroupId());
+
+			mockMvc.perform(MockMvcRequestBuilders.get("/v2/email-templates")
+							.header("Authorization", ctx.authHeader()))
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$.content", hasSize(greaterThanOrEqualTo(1))));
+		}
+	}
+
+	@Nested
+	class GroupAdminAccess {
+		@Test
+		void createEmailTemplate_AsGroupAdmin_Success() throws Exception {
+			RoleUserContext ctx = createUserWithResearchGroup("group-admin");
+
+			Map<String, Object> payloadMap = new HashMap<>();
+			payloadMap.put("templateCase", "APPLICATION_CREATED_CHAIR");
+			payloadMap.put("description", "Group admin test");
+			payloadMap.put("subject", "GA Subject");
+			payloadMap.put("bodyHtml", "<p>GA Body</p>");
+			payloadMap.put("language", "en");
+			payloadMap.put("researchGroupId", ctx.researchGroupId().toString());
+
+			String response = mockMvc.perform(MockMvcRequestBuilders.post("/v2/email-templates")
+							.header("Authorization", ctx.authHeader())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(payloadMap)))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			JsonNode json = objectMapper.readTree(response);
+			assertThat(json.get("templateCase").asString()).isEqualTo("APPLICATION_CREATED_CHAIR");
+			assertThat(json.get("subject").asString()).isEqualTo("GA Subject");
+			assertThat(json.get("description").asString()).isEqualTo("Group admin test");
+		}
+
+		@Test
+		void updateEmailTemplate_AsGroupAdmin_Success() throws Exception {
+			RoleUserContext ctx = createUserWithResearchGroup("group-admin");
+			UUID templateId = createTemplateForGroup("THESIS_CLOSED", ctx.researchGroupId());
+
+			Map<String, Object> updatePayloadMap = new HashMap<>();
+			updatePayloadMap.put("templateCase", "THESIS_CLOSED");
+			updatePayloadMap.put("description", "Updated by group admin");
+			updatePayloadMap.put("subject", "Updated Subject GA");
+			updatePayloadMap.put("bodyHtml", "<p>Updated GA</p>");
+			updatePayloadMap.put("language", "en");
+			updatePayloadMap.put("researchGroupId", ctx.researchGroupId().toString());
+
+			String response = mockMvc.perform(MockMvcRequestBuilders.put("/v2/email-templates/{id}", templateId)
+							.header("Authorization", ctx.authHeader())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(updatePayloadMap)))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			JsonNode json = objectMapper.readTree(response);
+			assertThat(json.get("subject").asString()).isEqualTo("Updated Subject GA");
+			assertThat(json.get("description").asString()).isEqualTo("Updated by group admin");
+		}
+
+		@Test
+		void deleteEmailTemplate_AsGroupAdmin_Success() throws Exception {
+			RoleUserContext ctx = createUserWithResearchGroup("group-admin");
+			UUID templateId = createTemplateForGroup("THESIS_COMMENT_POSTED", ctx.researchGroupId());
+
+			mockMvc.perform(MockMvcRequestBuilders.delete("/v2/email-templates/{id}", templateId)
+							.header("Authorization", ctx.authHeader()))
+					.andExpect(status().isOk());
+
+			mockMvc.perform(MockMvcRequestBuilders.get("/v2/email-templates/{id}", templateId)
+							.header("Authorization", createRandomAdminAuthentication()))
+					.andExpect(status().isNotFound());
+		}
+
+		@Test
+		void getEmailTemplateVariables_AsGroupAdmin_Success() throws Exception {
+			RoleUserContext ctx = createUserWithResearchGroup("group-admin");
+			UUID templateId = createTemplateForGroup("APPLICATION_CREATED_CHAIR", ctx.researchGroupId());
+
+			mockMvc.perform(MockMvcRequestBuilders.get("/v2/email-templates/{id}/variables", templateId)
+							.header("Authorization", ctx.authHeader()))
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$", isA(List.class)));
+		}
+
+		@Test
+		void createEmailTemplate_AsGroupAdmin_WithoutResearchGroup_Forbidden() throws Exception {
+			RoleUserContext ctx = createUserWithResearchGroup("group-admin");
+
+			String payload = objectMapper.writeValueAsString(Map.of(
+					"templateCase", "APPLICATION_CREATED_CHAIR",
+					"description", "Should fail",
+					"subject", "Subject",
+					"bodyHtml", "<p>Body</p>",
+					"language", "en"
+			));
+
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/email-templates")
+							.header("Authorization", ctx.authHeader())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(payload))
+					.andExpect(status().isForbidden());
+		}
+
+		@Test
+		void updateDefaultTemplate_AsGroupAdmin_Forbidden() throws Exception {
+			RoleUserContext ctx = createUserWithResearchGroup("group-admin");
+			UUID defaultTemplateId = createTemplate("THESIS_CLOSED");
+
+			Map<String, Object> updatePayloadMap = new HashMap<>();
+			updatePayloadMap.put("templateCase", "THESIS_CLOSED");
+			updatePayloadMap.put("description", "Should fail");
+			updatePayloadMap.put("subject", "Subject");
+			updatePayloadMap.put("bodyHtml", "<p>Body</p>");
+			updatePayloadMap.put("language", "en");
+
+			mockMvc.perform(MockMvcRequestBuilders.put("/v2/email-templates/{id}", defaultTemplateId)
+							.header("Authorization", ctx.authHeader())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(updatePayloadMap)))
+					.andExpect(status().isForbidden());
+		}
+
+		@Test
+		void deleteDefaultTemplate_AsGroupAdmin_Forbidden() throws Exception {
+			RoleUserContext ctx = createUserWithResearchGroup("group-admin");
+			UUID defaultTemplateId = createTemplate("THESIS_COMMENT_POSTED");
+
+			mockMvc.perform(MockMvcRequestBuilders.delete("/v2/email-templates/{id}", defaultTemplateId)
+							.header("Authorization", ctx.authHeader()))
 					.andExpect(status().isForbidden());
 		}
 	}

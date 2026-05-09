@@ -461,7 +461,7 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 			String studentAuth = createRandomAuthentication("student");
 
 			CreateAssessmentPayload payload = new CreateAssessmentPayload(
-					"Summary", "Positives", "Negatives", "1.0"
+					"Summary", "Positives", "Negatives", "1.0", null
 			);
 
 			mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses/{thesisId}/assessment", thesisId)
@@ -1001,7 +1001,7 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 
 			// Create assessment
 			CreateAssessmentPayload assessmentPayload = new CreateAssessmentPayload(
-					"Good thesis", "Clear structure", "Minor issues", "1.3"
+					"Good thesis", "Clear structure", "Minor issues", "1.3", null
 			);
 			mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses/{thesisId}/assessment", setup.thesisId)
 							.header("Authorization", setup.supervisorAuth)

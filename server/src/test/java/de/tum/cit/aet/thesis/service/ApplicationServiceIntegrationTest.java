@@ -10,11 +10,17 @@ import de.tum.cit.aet.thesis.cron.model.ApplicationRejectObject;
 import de.tum.cit.aet.thesis.entity.Application;
 import de.tum.cit.aet.thesis.entity.Topic;
 import de.tum.cit.aet.thesis.mock.BaseIntegrationTest;
+import de.tum.cit.aet.thesis.mock.MutableClock;
 import de.tum.cit.aet.thesis.repository.ApplicationRepository;
 import de.tum.cit.aet.thesis.repository.TopicRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -24,6 +30,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import jakarta.persistence.EntityManager;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -31,11 +38,31 @@ import java.util.Set;
 import java.util.UUID;
 
 @Testcontainers
+@Import(ApplicationServiceIntegrationTest.MutableClockTestConfig.class)
 class ApplicationServiceIntegrationTest extends BaseIntegrationTest {
 
 	@DynamicPropertySource
 	static void configureDynamicProperties(DynamicPropertyRegistry registry) {
 		configureProperties(registry);
+	}
+
+	@TestConfiguration
+	static class MutableClockTestConfig {
+		@Bean
+		@Primary
+		MutableClock testClock() {
+			return new MutableClock();
+		}
+	}
+
+	@Autowired
+	private Clock clock;
+
+	@AfterEach
+	void resetClock() {
+		if (clock instanceof MutableClock mutable) {
+			mutable.unfreeze();
+		}
 	}
 
 	@Autowired
@@ -80,8 +107,8 @@ class ApplicationServiceIntegrationTest extends BaseIntegrationTest {
 		// Create application
 		String studentAuth = createRandomAuthentication("student");
 		CreateApplicationPayload appPayload = new CreateApplicationPayload(
-				topicId, null, "MASTER", Instant.now(), "Auto reject test", null
-		);
+				topicId, null, "MASTER", Instant.now(), "Auto reject test", null,
+		true);
 		String appResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 						.header("Authorization", studentAuth)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -159,8 +186,8 @@ class ApplicationServiceIntegrationTest extends BaseIntegrationTest {
 			// Create recent application (not old enough)
 			String studentAuth = createRandomAuthentication("student");
 			CreateApplicationPayload appPayload = new CreateApplicationPayload(
-					topicId, null, "MASTER", Instant.now(), "Recent app", null
-			);
+					topicId, null, "MASTER", Instant.now(), "Recent app", null,
+			true);
 			String appResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 							.header("Authorization", studentAuth)
 							.contentType(MediaType.APPLICATION_JSON)
@@ -231,8 +258,8 @@ class ApplicationServiceIntegrationTest extends BaseIntegrationTest {
 
 			String studentAuth = createRandomAuthentication("student");
 			CreateApplicationPayload appPayload = new CreateApplicationPayload(
-					topicId, null, "MASTER", Instant.now(), "Recent app", null
-			);
+					topicId, null, "MASTER", Instant.now(), "Recent app", null,
+			true);
 			mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 							.header("Authorization", studentAuth)
 							.contentType(MediaType.APPLICATION_JSON)
@@ -288,8 +315,8 @@ class ApplicationServiceIntegrationTest extends BaseIntegrationTest {
 
 			String studentAuth = createRandomAuthentication("student");
 			CreateApplicationPayload appPayload = new CreateApplicationPayload(
-					topicId, null, "MASTER", Instant.now(), "Recent list app", null
-			);
+					topicId, null, "MASTER", Instant.now(), "Recent list app", null,
+			true);
 			String appResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 							.header("Authorization", studentAuth)
 							.contentType(MediaType.APPLICATION_JSON)
@@ -310,6 +337,157 @@ class ApplicationServiceIntegrationTest extends BaseIntegrationTest {
 	}
 
 	@Nested
+	class CreateApplicationWithDeadline {
+		private UUID createTopicWithDeadline(Instant applicationDeadline) throws Exception {
+			TestUser advisor = createRandomTestUser(List.of("supervisor", "advisor"));
+			UUID researchGroupId = createTestResearchGroup("Deadline RG " + UUID.randomUUID(), advisor.universityId());
+
+			ReplaceTopicPayload topicPayload = new ReplaceTopicPayload(
+					"Deadline Topic", Set.of("MASTER"),
+					"PS", "Req", "Goals", "Refs",
+					List.of(advisor.userId()), List.of(advisor.userId()),
+					researchGroupId, null, applicationDeadline, false
+			);
+			String topicResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/topics")
+							.header("Authorization", createRandomAdminAuthentication())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(topicPayload)))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+			return UUID.fromString(objectMapper.readTree(topicResponse).get("topicId").asString());
+		}
+
+		private CreateApplicationPayload applyTo(UUID topicId) {
+			return new CreateApplicationPayload(
+					topicId, null, "MASTER", Instant.now(), "Motivation", null, true);
+		}
+
+		@Test
+		void createApplication_PastDeadline_RejectsWith400() throws Exception {
+			createTestEmailTemplate("APPLICATION_CREATED_CHAIR");
+			createTestEmailTemplate("APPLICATION_CREATED_STUDENT");
+
+			// Create the topic with a future deadline (the topic-creation flow itself
+			// does not enforce future deadlines, but we keep this consistent with the
+			// realistic workflow of "deadline becomes past as time advances"), then
+			// backdate it directly in the database to simulate a passed deadline.
+			UUID topicId = createTopicWithDeadline(Instant.now().plus(7, ChronoUnit.DAYS));
+			transactionTemplate.executeWithoutResult(status -> {
+				entityManager.createNativeQuery("UPDATE topics SET application_deadline = :deadline WHERE topic_id = :id")
+						.setParameter("deadline", Instant.now().minus(1, ChronoUnit.DAYS))
+						.setParameter("id", topicId)
+						.executeUpdate();
+				entityManager.clear();
+			});
+
+			String studentAuth = createRandomAuthentication("student");
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
+							.header("Authorization", studentAuth)
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(applyTo(topicId))))
+					.andExpect(status().isBadRequest());
+
+			Topic topic = topicRepository.findById(topicId).orElseThrow();
+			assertThat(applicationRepository.findAllByTopic(topic)).isEmpty();
+		}
+
+		@Test
+		void createApplication_FutureDeadline_Succeeds() throws Exception {
+			createTestEmailTemplate("APPLICATION_CREATED_CHAIR");
+			createTestEmailTemplate("APPLICATION_CREATED_STUDENT");
+
+			UUID topicId = createTopicWithDeadline(Instant.now().plus(7, ChronoUnit.DAYS));
+			String studentAuth = createRandomAuthentication("student");
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
+							.header("Authorization", studentAuth)
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(applyTo(topicId))))
+					.andExpect(status().isOk());
+
+			Topic topic = topicRepository.findById(topicId).orElseThrow();
+			assertThat(applicationRepository.findAllByTopic(topic)).hasSize(1);
+		}
+
+		@Test
+		void createApplication_NoDeadline_Succeeds() throws Exception {
+			createTestEmailTemplate("APPLICATION_CREATED_CHAIR");
+			createTestEmailTemplate("APPLICATION_CREATED_STUDENT");
+
+			UUID topicId = createTopicWithDeadline(null);
+			String studentAuth = createRandomAuthentication("student");
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
+							.header("Authorization", studentAuth)
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(applyTo(topicId))))
+					.andExpect(status().isOk());
+
+			Topic topic = topicRepository.findById(topicId).orElseThrow();
+			assertThat(applicationRepository.findAllByTopic(topic)).hasSize(1);
+		}
+
+		@Test
+		void createApplication_DeadlineExactlyNow_Rejected() throws Exception {
+			createTestEmailTemplate("APPLICATION_CREATED_CHAIR");
+			createTestEmailTemplate("APPLICATION_CREATED_STUDENT");
+
+			// Pin the clock so the deadline-equality boundary is tested deterministically.
+			// Truncate to millis because Postgres' timestamp column rounds nanos away,
+			// which would otherwise make the clock and the persisted deadline differ
+			// by sub-millisecond noise.
+			Instant pinned = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+			((MutableClock) clock).setInstant(pinned);
+
+			UUID topicId = createTopicWithDeadline(pinned.plus(7, ChronoUnit.DAYS));
+			transactionTemplate.executeWithoutResult(status -> {
+				entityManager.createNativeQuery("UPDATE topics SET application_deadline = :deadline WHERE topic_id = :id")
+						.setParameter("deadline", pinned)
+						.setParameter("id", topicId)
+						.executeUpdate();
+				entityManager.clear();
+			});
+
+			String studentAuth = createRandomAuthentication("student");
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
+							.header("Authorization", studentAuth)
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(applyTo(topicId))))
+					.andExpect(status().isBadRequest());
+
+			Topic topic = topicRepository.findById(topicId).orElseThrow();
+			assertThat(applicationRepository.findAllByTopic(topic)).isEmpty();
+		}
+
+		@Test
+		void createApplication_DeadlineJustAfterNow_Succeeds() throws Exception {
+			createTestEmailTemplate("APPLICATION_CREATED_CHAIR");
+			createTestEmailTemplate("APPLICATION_CREATED_STUDENT");
+
+			// Just past the boundary: now < deadline must be accepted.
+			Instant pinned = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+			((MutableClock) clock).setInstant(pinned);
+
+			UUID topicId = createTopicWithDeadline(pinned.plus(7, ChronoUnit.DAYS));
+			transactionTemplate.executeWithoutResult(status -> {
+				entityManager.createNativeQuery("UPDATE topics SET application_deadline = :deadline WHERE topic_id = :id")
+						.setParameter("deadline", pinned.plus(1, ChronoUnit.MILLIS))
+						.setParameter("id", topicId)
+						.executeUpdate();
+				entityManager.clear();
+			});
+
+			String studentAuth = createRandomAuthentication("student");
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
+							.header("Authorization", studentAuth)
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(applyTo(topicId))))
+					.andExpect(status().isOk());
+
+			Topic topic = topicRepository.findById(topicId).orElseThrow();
+			assertThat(applicationRepository.findAllByTopic(topic)).hasSize(1);
+		}
+	}
+
+	@Nested
 	class GetNotAssessedSuggestedOfResearchGroup {
 		@Test
 		void getNotAssessed_ReturnsSuggestedApplications() throws Exception {
@@ -322,8 +500,8 @@ class ApplicationServiceIntegrationTest extends BaseIntegrationTest {
 			// Create a suggested application (no topic, just a thesis title and research group)
 			String studentAuth = createRandomAuthentication("student");
 			CreateApplicationPayload appPayload = new CreateApplicationPayload(
-					null, "My Suggested Thesis", "MASTER", Instant.now(), "Suggested test", researchGroupId
-			);
+					null, "My Suggested Thesis", "MASTER", Instant.now(), "Suggested test", researchGroupId,
+			true);
 			mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 							.header("Authorization", studentAuth)
 							.contentType(MediaType.APPLICATION_JSON)

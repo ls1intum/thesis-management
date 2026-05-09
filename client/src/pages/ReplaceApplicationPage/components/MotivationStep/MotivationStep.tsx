@@ -19,6 +19,7 @@ interface IMotivationStepProps {
   topic: ITopic | undefined
   application: IApplication | undefined
   onComplete: () => unknown
+  consentToPrivacyPolicy: boolean
 }
 
 interface IMotivationStepForm {
@@ -30,7 +31,7 @@ interface IMotivationStepForm {
 }
 
 const MotivationStep = (props: IMotivationStepProps) => {
-  const { topic, application, onComplete } = props
+  const { topic, application, onComplete, consentToPrivacyPolicy } = props
 
   const [researchGroups, setResearchGroups] = useState<PaginationResponse<ILightResearchGroup>>()
   const [loading, setLoading] = useState(false)
@@ -146,6 +147,10 @@ const MotivationStep = (props: IMotivationStepProps) => {
             thesisType: values.thesisType,
             desiredStartDate: values.desiredStartDate,
             motivation: values.motivation,
+            // Forward the consent state from UserInformationForm (step 1). The server validates
+            // this flag and records a consent timestamp (GDPR Art. 7(1)).
+            // On updates (PUT), the field is omitted because the server ignores it.
+            ...(application ? {} : { consentToPrivacyPolicy }),
           },
         },
       )

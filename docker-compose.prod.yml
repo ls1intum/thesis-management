@@ -64,7 +64,6 @@ services:
       - KEYCLOAK_CLIENT_ID
       - KEYCLOAK_SERVICE_CLIENT_ID
       - KEYCLOAK_SERVICE_CLIENT_SECRET
-      - KEYCLOAK_SERVICE_STUDENT_GROUP_NAME
       - MAIL_SENDER
     networks:
       - thesis-management-network
@@ -105,7 +104,7 @@ services:
       - thesis-management-network
 
   db:
-    image: "postgres:18.2-alpine"
+    image: "postgres:18.3-alpine"
     container_name: thesis-management-db
     environment:
       - POSTGRES_USER=${SPRING_DATASOURCE_USERNAME}

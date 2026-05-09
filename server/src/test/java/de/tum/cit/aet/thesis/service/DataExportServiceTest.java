@@ -96,8 +96,8 @@ class DataExportServiceTest extends BaseIntegrationTest {
 		String studentAuth = generateTestAuthenticationHeader(student.universityId(), List.of("student"));
 
 		CreateApplicationPayload appPayload = new CreateApplicationPayload(
-				topicId, null, "MASTER", Instant.now(), "Test motivation", null
-		);
+				topicId, null, "MASTER", Instant.now(), "Test motivation", null,
+		true);
 		String appResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 						.header("Authorization", studentAuth)
 						.contentType(MediaType.APPLICATION_JSON)

@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect } from './resource-lock'
 import { authStatePath, fillRichTextEditor, navigateToDetail } from './helpers'
 import {
   snapshotMailbox,
@@ -10,24 +10,20 @@ import {
   assertEmailFooter,
 } from './mailpit'
 
-// Thesis d000-0003: SUBMITTED state, student3, supervisor2, examiner2 (DSA group)
-// Note: Seed data inserts an assessment row directly but thesis state remains SUBMITTED.
+// Thesis d000-0003: ASSESSED state, student3, supervisor2, examiner2 (DSA group)
+// Seed data includes an assessment by supervisor2, matching the ASSESSED state.
 // examiner2 has both supervisor and examiner access (as examiner on the thesis).
 const THESIS_ID = '00000000-0000-4000-d000-000000000003'
 const THESIS_URL = `/theses/${THESIS_ID}`
 const THESIS_TITLE = 'Online Anomaly Detection in IoT Sensor Streams'
 
 test.describe.serial('Thesis Grading Workflow', () => {
-  test('examiner can submit an assessment on a SUBMITTED thesis', async ({ browser }) => {
+  test('examiner can submit an assessment on an ASSESSED thesis', async ({ browser }) => {
     const context = await browser.newContext({ storageState: authStatePath('examiner2') })
     const page = await context.newPage()
 
     const heading = page.getByRole('heading', { name: THESIS_TITLE })
-    const loaded = await navigateToDetail(page, THESIS_URL, heading)
-    if (!loaded) {
-      await context.close()
-      return
-    }
+    await navigateToDetail(page, THESIS_URL, heading)
 
     // Check if the assessment section is actionable (thesis may already be FINISHED from a prior run)
     const editButton = page.getByRole('button', { name: 'Edit Assessment' })
@@ -72,14 +68,27 @@ test.describe.serial('Thesis Grading Workflow', () => {
       dialog,
     )
 
+    // Fill in grade component grades if present (DSA group has a grading scheme)
+    const gradeInputs = dialog.locator('table tbody tr td:nth-child(4) input')
+    const gradeCount = await gradeInputs.count()
+    if (gradeCount > 0) {
+      const grades = ['1.3', '1.7', '2.0']
+      for (let i = 0; i < Math.min(gradeCount, grades.length); i++) {
+        await gradeInputs.nth(i).click({ clickCount: 3 })
+        await gradeInputs.nth(i).pressSequentially(grades[i], { delay: 50 })
+        await gradeInputs.nth(i).press('Tab')
+      }
+    }
+
     await dialog.getByLabel('Grade Suggestion').clear()
     await dialog.getByLabel('Grade Suggestion').fill('1.3')
 
     // Snapshot mailbox BEFORE submitting
     const beforeIds = await snapshotMailbox('examiner2@test.local')
 
+    // Wait for all form state to propagate before checking submit button
     const submitButton = dialog.getByRole('button', { name: 'Submit Assessment' })
-    await expect(submitButton).toBeEnabled({ timeout: 5_000 })
+    await expect(submitButton).toBeEnabled({ timeout: 10_000 })
     await submitButton.click()
 
     // Modal should close
@@ -117,11 +126,7 @@ test.describe.serial('Thesis Grading Workflow', () => {
     const page = await context.newPage()
 
     const heading = page.getByRole('heading', { name: THESIS_TITLE })
-    const loaded = await navigateToDetail(page, THESIS_URL, heading)
-    if (!loaded) {
-      await context.close()
-      return
-    }
+    await navigateToDetail(page, THESIS_URL, heading)
 
     // Check if "Add Final Grade" button is available
     const addGradeButton = page.getByRole('button', { name: 'Add Final Grade' })
@@ -130,6 +135,8 @@ test.describe.serial('Thesis Grading Workflow', () => {
     const hasEdit = await editGradeButton.isVisible({ timeout: 2_000 }).catch(() => false)
 
     if (!hasAdd && !hasEdit) {
+      // Thesis already past GRADED in a parallel run — verify the read-only final grade is shown.
+      await expect(page.getByText(/Final Grade/i).first()).toBeVisible({ timeout: 5_000 })
       await context.close()
       return
     }
@@ -196,16 +203,13 @@ test.describe.serial('Thesis Grading Workflow', () => {
     const page = await context.newPage()
 
     const heading = page.getByRole('heading', { name: THESIS_TITLE })
-    const loaded = await navigateToDetail(page, THESIS_URL, heading)
-    if (!loaded) {
-      await context.close()
-      return
-    }
+    await navigateToDetail(page, THESIS_URL, heading)
 
     const finishButton = page.getByRole('button', { name: 'Mark thesis as finished' })
     const isGraded = await finishButton.isVisible({ timeout: 5_000 }).catch(() => false)
 
     if (!isGraded) {
+      // Already FINISHED in a parallel run — verify the final grade is rendered read-only.
       await expect(page.getByText('Final Grade').first()).toBeVisible()
       await context.close()
       return

@@ -15,28 +15,24 @@ export async function navigateTo(page: Page, path: string) {
 }
 
 /**
- * Navigate to an entity detail page (application, thesis) and verify
- * it loaded the detail view. Under heavy parallel test load, the server
- * may respond slowly and the client may redirect to the list view.
- * This helper retries the navigation once if the expected element
- * is not visible after the first attempt.
+ * Navigate to an entity detail page (application, thesis) and assert that the
+ * detail view rendered. Throws via the contained `expect` if the expected
+ * locator never appears within `timeout` — callers that previously branched
+ * on a boolean return value should remove that branching.
+ *
+ * The helper deliberately does not retry: it waits a single bounded interval
+ * and either succeeds or fails the test. Silent skips on slow loads are
+ * unacceptable because they hide real product/server regressions.
  */
 export async function navigateToDetail(
   page: Page,
   path: string,
   expectedLocator: Locator,
-  timeout = 15_000,
-): Promise<boolean> {
-  await navigateTo(page, path)
-  // Scroll to top so heading elements are in the viewport for isVisible check
-  await page.evaluate(() => window.scrollTo(0, 0))
-  const visible = await expectedLocator.isVisible({ timeout }).catch(() => false)
-  if (visible) return true
-
-  // Retry once — transient server slowness may have caused a redirect
+  timeout = 60_000,
+): Promise<void> {
   await navigateTo(page, path)
   await page.evaluate(() => window.scrollTo(0, 0))
-  return await expectedLocator.isVisible({ timeout }).catch(() => false)
+  await expect(expectedLocator).toBeVisible({ timeout })
 }
 
 /**
@@ -47,6 +43,8 @@ export function authStatePath(
     | 'student'
     | 'student2'
     | 'student3'
+    | 'student4'
+    | 'student5'
     | 'supervisor'
     | 'supervisor2'
     | 'examiner'
@@ -114,14 +112,18 @@ export async function searchAndSelectMultiSelect(page: Page, label: string, opti
   )
 
   // Open dropdown and wait for options. Under heavy parallel load the server
-  // may be slow to respond. Each click triggers setFetchVersion++ which ABORTS
-  // any in-flight request and starts a new one, so we must wait long enough for
-  // the server to respond before re-clicking.
+  // may be slow to respond. The fetch is triggered by onDropdownOpen, so we
+  // must close and reopen the dropdown between retries to fire a new fetch.
   // IMPORTANT: Do NOT press Escape or click body — both close Mantine modals.
   let found = false
   for (let attempt = 0; attempt < 3 && !found; attempt++) {
+    if (attempt > 0) {
+      // Close the dropdown before retrying so onDropdownOpen fires again
+      await page.keyboard.press('Tab')
+      await page.waitForTimeout(300)
+    }
     await textbox.click({ force: true })
-    // Give the server ample time to respond before aborting via re-click
+    // Give the server ample time to respond before retrying
     found = await option.isVisible({ timeout: 20_000 }).catch(() => false)
   }
 
@@ -145,6 +147,79 @@ export async function searchAndSelectMultiSelect(page: Page, label: string, opti
   // Close the dropdown by pressing Tab (blurs input). Do NOT use Escape — it closes modals.
   await page.keyboard.press('Tab')
   await page.waitForTimeout(300)
+}
+
+/**
+ * Expand a Mantine Accordion section by clicking its control and waiting
+ * for the panel content to appear.  Under heavy parallel load the first
+ * click sometimes doesn't register, so this helper retries up to
+ * {@link maxAttempts} times.
+ *
+ * @param contentLocator  A locator for an element inside the accordion panel
+ *                        that becomes visible only when the panel is expanded.
+ */
+export async function expandAccordion(
+  page: Page,
+  sectionLabel: string,
+  contentLocator: Locator,
+  maxAttempts = 3,
+) {
+  const item = getAccordionItem(page, sectionLabel)
+  const control = item.locator('.mantine-Accordion-control').first()
+  await control.waitFor({ state: 'visible', timeout: 10_000 })
+
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    // Only click if the accordion is not already expanded (prevent close-reopen toggling)
+    const isExpanded = await item
+      .evaluate((el) => el.hasAttribute('data-active'))
+      .catch(() => false)
+    if (!isExpanded) {
+      await control.click()
+    }
+    // Scroll to the content locator so it enters the viewport
+    await contentLocator.scrollIntoViewIfNeeded().catch(() => {})
+    const visible = await contentLocator.isVisible({ timeout: 8_000 }).catch(() => false)
+    if (visible) return
+    // Small pause before retrying — the click may need the accordion animation to settle
+    await page.waitForTimeout(500)
+  }
+  // Final scroll + assertion so the test fails with a clear message if all attempts failed
+  await contentLocator.scrollIntoViewIfNeeded().catch(() => {})
+  await expect(contentLocator).toBeVisible({ timeout: 5_000 })
+}
+
+export function getAccordionItem(page: Page, sectionLabel: string) {
+  return page
+    .locator('.mantine-Accordion-item')
+    .filter({
+      has: page.locator('.mantine-Accordion-control').filter({
+        has: page.getByText(sectionLabel, { exact: true }),
+      }),
+    })
+    .first()
+}
+
+/**
+ * Permanently suppress the webpack-dev-server error overlay that intercepts pointer events.
+ * The overlay can appear at any time (e.g., ResizeObserver errors during accordion expansion),
+ * so this installs a MutationObserver that auto-hides it whenever it's added to the DOM.
+ * Safe to call multiple times — the observer is only installed once per page.
+ */
+export async function hideWebpackOverlay(page: Page) {
+  await page.evaluate(() => {
+    if ((window as any).__webpackOverlayObserver) return
+
+    const hide = () => {
+      const iframe = document.getElementById('webpack-dev-server-client-overlay')
+      if (iframe) (iframe as HTMLElement).style.display = 'none'
+    }
+
+    hide()
+
+    const observer = new MutationObserver(hide)
+    observer.observe(document.body, { childList: true, subtree: true })
+    ;(window as any).__webpackOverlayObserver = observer
+  })
 }
 
 /**

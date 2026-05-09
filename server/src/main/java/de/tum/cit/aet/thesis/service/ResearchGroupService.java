@@ -2,7 +2,6 @@ package de.tum.cit.aet.thesis.service;
 
 import de.tum.cit.aet.thesis.entity.ResearchGroup;
 import de.tum.cit.aet.thesis.entity.User;
-import de.tum.cit.aet.thesis.entity.UserGroup;
 import de.tum.cit.aet.thesis.exception.request.AccessDeniedException;
 import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.repository.ResearchGroupRepository;
@@ -28,7 +27,7 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * Manages research group lifecycle, membership, and role assignments with Keycloak synchronization.
+ * Manages research group lifecycle, membership, and role assignments.
  */
 @Service
 public class ResearchGroupService {
@@ -231,11 +230,8 @@ public class ResearchGroupService {
 			throw new AccessDeniedException("User is already assigned to a research group.");
 		}
 
-		//Add supervisor role in keycloak
 		accessManagementService.assignSupervisorRole(head);
 		accessManagementService.assignGroupAdminRole(head);
-		Set<UserGroup> updatedGroupsHead = accessManagementService.syncRolesFromKeycloakToDatabase(head);
-		head.setGroups(updatedGroupsHead);
 
 		ResearchGroup researchGroup = new ResearchGroup();
 		researchGroup.setHead(head);
@@ -275,8 +271,7 @@ public class ResearchGroupService {
 			newUser.setEmail(userElement.email());
 			newUser.setMatriculationNumber(userElement.getMatriculationNumber());
 
-			userRepository.save(newUser);
-			return newUser;
+			return userRepository.save(newUser);
 		});
 
 		return user;
@@ -303,7 +298,7 @@ public class ResearchGroupService {
 		User head = getUserByUsernameOrCreate(headUsername);
 
 		//Update head only on change
-		if (oldHead != head) {
+		if (!oldHead.getId().equals(head.getId())) {
 			if (head.getResearchGroup() != null) {
 				throw new AccessDeniedException("User is already assigned to a research group.");
 			}
@@ -313,17 +308,9 @@ public class ResearchGroupService {
 			researchGroup.setHead(head);
 
 			//Give new head supervisor as role and remove the role from the old head
-			try {
-				accessManagementService.assignSupervisorRole(head);
-				accessManagementService.assignGroupAdminRole(head);
-				accessManagementService.removeResearchGroupRoles(oldHead);
-				Set<UserGroup> updatedGroupsHead = accessManagementService.syncRolesFromKeycloakToDatabase(head);
-				head.setGroups(updatedGroupsHead);
-				Set<UserGroup> updatedGroupsOldHead = accessManagementService.syncRolesFromKeycloakToDatabase(oldHead);
-				oldHead.setGroups(updatedGroupsOldHead);
-			} catch (Exception e) {
-				throw new AccessDeniedException("There was an error changing the head of the group, please try again.");
-			}
+			accessManagementService.assignSupervisorRole(head);
+			accessManagementService.assignGroupAdminRole(head);
+			accessManagementService.removeResearchGroupRoles(oldHead);
 		}
 
 		researchGroup.setName(name);
@@ -379,7 +366,7 @@ public class ResearchGroupService {
 	}
 
 	/**
-	 * Assigns a user to a research group and grants them the advisor role in Keycloak.
+	 * Assigns a user to a research group and grants them the advisor role.
 	 *
 	 * @param username        the username of the user to assign
 	 * @param researchGroupId the unique identifier of the research group
@@ -403,17 +390,14 @@ public class ResearchGroupService {
 
 		user.setResearchGroup(researchGroup);
 
-		//Assign member the advisor role in keycloak and update database
 		accessManagementService.assignAdvisorRole(user);
-		Set<UserGroup> updatedGroups = accessManagementService.syncRolesFromKeycloakToDatabase(user);
-		user.setGroups(updatedGroups);
 
 		userRepository.save(user);
 		return user;
 	}
 
 	/**
-	 * Removes a user from a research group and revokes their research group roles in Keycloak.
+	 * Removes a user from a research group and revokes their research group roles.
 	 *
 	 * @param userId          the unique identifier of the user to remove
 	 * @param researchGroupId the unique identifier of the research group
@@ -425,7 +409,7 @@ public class ResearchGroupService {
 		ResearchGroup researchGroup = findById(researchGroupId);
 		currentUserProvider().assertCanAccessResearchGroup(researchGroup);
 
-		if (!user.getResearchGroup().getId().equals(researchGroupId)) {
+		if (user.getResearchGroup() == null || !user.getResearchGroup().getId().equals(researchGroupId)) {
 			throw new AccessDeniedException("User is not assigned to this research group.");
 		}
 		if (user.getResearchGroup().isArchived()) {
@@ -435,24 +419,16 @@ public class ResearchGroupService {
 			throw new AccessDeniedException("Cannot remove the head of the research group.");
 		}
 
+		accessManagementService.removeResearchGroupRoles(user);
+		user.setResearchGroup(null);
 
-		//Remove advisor role in keycloak and update database
-		try {
-			accessManagementService.removeResearchGroupRoles(user);
-			Set<UserGroup> updatedGroups = accessManagementService.syncRolesFromKeycloakToDatabase(user);
-			user.setGroups(updatedGroups);
-			user.setResearchGroup(null);
-
-			userRepository.save(user);
-		} catch (Exception e) {
-			throw new AccessDeniedException("There was an error removing the user from the group, please try again.");
-		}
+		userRepository.save(user);
 
 		return user;
 	}
 
 	/**
-	 * Updates the Keycloak role of a research group member to the specified advisor or supervisor role.
+	 * Updates the role of a research group member to the specified advisor or supervisor role.
 	 *
 	 * @param researchGroupId the unique identifier of the research group
 	 * @param userId          the unique identifier of the member
@@ -484,16 +460,13 @@ public class ResearchGroupService {
 			throw new IllegalArgumentException("Invalid role: " + role);
 		}
 
-		Set<UserGroup> updatedGroups = accessManagementService.syncRolesFromKeycloakToDatabase(user);
-		user.setGroups(updatedGroups);
-
 		userRepository.save(user);
 
 		return user;
 	}
 
 	/**
-	 * Toggles the group-admin Keycloak role for the specified user in the research group.
+	 * Toggles the group-admin role for the specified user in the research group.
 	 *
 	 * @param researchGroupId the unique identifier of the research group
 	 * @param userId          the unique identifier of the user
@@ -506,14 +479,15 @@ public class ResearchGroupService {
 		//If the user has group-admin rights he still needs to be part of the specific research group
 		currentUserProvider().assertCanAccessResearchGroup(researchGroup);
 
+		if (user.getResearchGroup() == null || !user.getResearchGroup().getId().equals(researchGroupId)) {
+			throw new AccessDeniedException("User is not a member of this research group.");
+		}
+
 		if (user.hasAnyGroup("group-admin")) {
 			accessManagementService.removeGroupAdminRole(user);
 		} else {
 			accessManagementService.assignGroupAdminRole(user);
 		}
-
-		Set<UserGroup> newGroups = accessManagementService.syncRolesFromKeycloakToDatabase(user);
-		user.setGroups(newGroups);
 
 		return user;
 	}

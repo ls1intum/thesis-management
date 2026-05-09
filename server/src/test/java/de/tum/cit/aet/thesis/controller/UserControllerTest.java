@@ -2,9 +2,8 @@ package de.tum.cit.aet.thesis.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import de.tum.cit.aet.thesis.mock.BaseIntegrationTest;
@@ -24,7 +23,6 @@ import tools.jackson.databind.JsonNode;
 import jakarta.servlet.ServletException;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -311,10 +309,6 @@ class UserControllerTest extends BaseIntegrationTest {
 		@BeforeEach
 		void resetMocks() {
 			reset(accessManagementService);
-			// Re-establish baseline stubs from TestSecurityConfig
-			doNothing().when(accessManagementService).assignSupervisorRole(any());
-			when(accessManagementService.syncRolesFromKeycloakToDatabase(any()))
-					.thenReturn(Collections.emptySet());
 		}
 
 		@Test
@@ -322,7 +316,7 @@ class UserControllerTest extends BaseIntegrationTest {
 			KeycloakUserInformation keycloakUser = new KeycloakUserInformation(
 					UUID.randomUUID(), "kc-user-1", "John", "Doe", "john@example.com", Map.of()
 			);
-			when(accessManagementService.getAllUsers(any())).thenReturn(List.of(keycloakUser));
+			doReturn(List.of(keycloakUser)).when(accessManagementService).getAllUsers(any());
 
 			String response = mockMvc.perform(MockMvcRequestBuilders.get("/v2/users/keycloak")
 							.header("Authorization", createRandomAdminAuthentication())
@@ -346,7 +340,7 @@ class UserControllerTest extends BaseIntegrationTest {
 			KeycloakUserInformation keycloakUser = new KeycloakUserInformation(
 					UUID.randomUUID(), "kc-existing-user", "Jane", "Doe", "jane@example.com", Map.of()
 			);
-			when(accessManagementService.getAllUsers(any())).thenReturn(List.of(keycloakUser));
+			doReturn(List.of(keycloakUser)).when(accessManagementService).getAllUsers(any());
 
 			String response = mockMvc.perform(MockMvcRequestBuilders.get("/v2/users/keycloak")
 							.header("Authorization", createRandomAdminAuthentication()))
@@ -361,7 +355,7 @@ class UserControllerTest extends BaseIntegrationTest {
 
 		@Test
 		void getKeycloakUsers_EmptyResult() throws Exception {
-			when(accessManagementService.getAllUsers(any())).thenReturn(List.of());
+			doReturn(List.of()).when(accessManagementService).getAllUsers(any());
 
 			String response = mockMvc.perform(MockMvcRequestBuilders.get("/v2/users/keycloak")
 							.header("Authorization", createRandomAdminAuthentication())
@@ -382,7 +376,7 @@ class UserControllerTest extends BaseIntegrationTest {
 			KeycloakUserInformation user2 = new KeycloakUserInformation(
 					UUID.randomUUID(), "user-b", "Bob", "Jones", "bob@example.com", Map.of()
 			);
-			when(accessManagementService.getAllUsers(any())).thenReturn(List.of(user1, user2));
+			doReturn(List.of(user1, user2)).when(accessManagementService).getAllUsers(any());
 
 			String response = mockMvc.perform(MockMvcRequestBuilders.get("/v2/users/keycloak")
 							.header("Authorization", createRandomAdminAuthentication()))
@@ -416,7 +410,7 @@ class UserControllerTest extends BaseIntegrationTest {
 
 		@Test
 		void getKeycloakUsers_Success_AsGroupAdmin() throws Exception {
-			when(accessManagementService.getAllUsers(any())).thenReturn(List.of());
+			doReturn(List.of()).when(accessManagementService).getAllUsers(any());
 
 			mockMvc.perform(MockMvcRequestBuilders.get("/v2/users/keycloak")
 							.header("Authorization", createRandomAuthentication("group-admin")))

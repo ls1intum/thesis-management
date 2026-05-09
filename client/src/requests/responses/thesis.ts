@@ -84,6 +84,14 @@ export interface IThesis extends IThesisOverview {
     gradeSuggestion: string
     createdAt: string
     createdBy: ILightUser
+    gradeComponents?: Array<{
+      gradeComponentId: string
+      name: string
+      weight: number
+      isBonus: boolean
+      grade: number
+      position: number
+    }>
   }
   proposals?: Array<{
     proposalId: string

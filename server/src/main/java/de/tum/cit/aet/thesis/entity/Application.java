@@ -82,6 +82,19 @@ public class Application {
 	@Column(name = "reviewed_at")
 	private Instant reviewedAt;
 
+	/**
+	 * Server-side timestamp recording when the student accepted the privacy statement
+	 * during application submission. This serves as the demonstrable proof of consent
+	 * required by GDPR Art. 7(1).
+	 *
+	 * <p>Note: The client-side localStorage flag ({@code declarationOfConsentAccepted})
+	 * in {@code UserInformationForm.tsx} is purely a UX convenience to pre-fill the
+	 * consent checkbox across sessions. It is NOT used as proof of consent. The actual
+	 * consent is recorded here at the moment the application is created on the server.</p>
+	 */
+	@Column(name = "consent_timestamp")
+	private Instant consentTimestamp;
+
 	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "research_group_id", nullable = false)

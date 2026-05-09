@@ -5,6 +5,7 @@ export interface IResearchGroupSettings {
   emailSettings: IResearchGroupSettingsEmail
   writingGuideSettings: IResearchGroupSettingsWritingGuide
   applicationEmailSettings: IResearchGroupSettingsApplicationEmail
+  gradingSchemeSettings?: IResearchGroupSettingsGradingScheme
 }
 
 export interface IResearchGroupSettingsReject {
@@ -31,4 +32,16 @@ export interface IResearchGroupSettingsWritingGuide {
 
 export interface IResearchGroupSettingsApplicationEmail {
   includeApplicationDataInEmail: boolean
+}
+
+export interface IGradingSchemeComponent {
+  componentId?: string
+  name: string
+  weight: number
+  isBonus: boolean
+  position: number
+}
+
+export interface IResearchGroupSettingsGradingScheme {
+  components: IGradingSchemeComponent[]
 }

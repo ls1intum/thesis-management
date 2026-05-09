@@ -1,5 +1,6 @@
 package de.tum.cit.aet.thesis.security;
 
+import de.tum.cit.aet.thesis.repository.UserGroupRepository;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.convert.converter.Converter;
@@ -12,7 +13,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtGra
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -20,45 +21,34 @@ import java.util.stream.Stream;
 @Component
 public class JwtAuthConverter implements Converter<Jwt, AbstractAuthenticationToken> {
 	private final JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter;
-	private final JwtAuthConfig config;
+	private final UserGroupRepository userGroupRepository;
 
-	public JwtAuthConverter(JwtAuthConfig config) {
-		this.config = config;
+	public JwtAuthConverter(UserGroupRepository userGroupRepository) {
+		this.userGroupRepository = userGroupRepository;
 		this.jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
 	}
 
 	@Override
 	@Nullable
 	public AbstractAuthenticationToken convert(@NonNull Jwt jwt) {
+		String username = jwt.getClaim("preferred_username");
+
 		Collection<GrantedAuthority> authorities = Stream.concat(
 				jwtGrantedAuthoritiesConverter.convert(jwt).stream(),
-				extractResourceRoles(jwt).stream()).collect(Collectors.toSet());
+				extractDatabaseRoles(username).stream()).collect(Collectors.toSet());
 
-		return new JwtAuthenticationToken(jwt, authorities, jwt.getClaim("preferred_username"));
+		return new JwtAuthenticationToken(jwt, authorities, username);
 	}
 
-	private Collection<? extends GrantedAuthority> extractResourceRoles(Jwt jwt) {
-		// Retrieve the resource access claim as a nested map structure
-		Map<String, Map<String, Collection<String>>> resourceAccess = jwt.getClaim("resource_access");
-		if (resourceAccess == null) {
+	private Collection<? extends GrantedAuthority> extractDatabaseRoles(String username) {
+		if (username == null) {
 			return Set.of();
 		}
 
-		// Get the client-specific resource and its roles
-		var resourceObject = resourceAccess.get(config.getClientId());
-		if (resourceObject == null) {
-			return Set.of();
-		}
+		List<String> groupNames = userGroupRepository.findGroupNamesByUniversityId(username);
 
-		// Get the roles from the resource object
-		var resourceRoles = resourceObject.get("roles");
-		if (resourceRoles == null) {
-			return Set.of();
-		}
-
-		// Convert roles into GrantedAuthority objects
-		return resourceRoles.stream()
-				.map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+		return groupNames.stream()
+				.map(group -> new SimpleGrantedAuthority("ROLE_" + group))
 				.collect(Collectors.toSet());
 	}
 }

@@ -51,9 +51,6 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 	List<User> getRoleMembers(@Param("roles") Set<String> roles,
 							@Param("researchGroupId") UUID researchGroupId);
 
-	@Query("SELECT u FROM User u WHERE u.avatar IS NULL OR u.avatar = ''")
-	List<User> findAllByAvatarIsNullOrAvatarIsEmpty();
-
 	@Query("""
 				SELECT DISTINCT u FROM User u
 				WHERE u.id IN (
@@ -104,4 +101,43 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 			)
 			""")
 	List<User> findInactiveStudentCandidates(@Param("cutoff") Instant cutoff);
+
+	/**
+	 * Checks whether a user appears in any publicly visible context: as a supervisor or examiner
+	 * on a non-anonymized thesis, as a student on a finished PUBLIC thesis, as a role holder on an
+	 * open topic, or as a research group head.
+	 * Used to decide whether the avatar endpoint may serve the user's image without authentication.
+	 */
+	@Query("""
+			SELECT CASE WHEN COUNT(*) > 0 THEN TRUE ELSE FALSE END FROM User u
+			WHERE u.id = :userId AND (
+				EXISTS (
+					SELECT 1 FROM ThesisRole tr
+					JOIN tr.thesis t
+					WHERE tr.user.id = :userId
+					AND tr.id.role <> de.tum.cit.aet.thesis.constants.ThesisRoleName.STUDENT
+					AND t.anonymizedAt IS NULL
+				)
+				OR EXISTS (
+					SELECT 1 FROM ThesisRole tr
+					JOIN tr.thesis t
+					WHERE tr.user.id = :userId
+					AND t.visibility = de.tum.cit.aet.thesis.constants.ThesisVisibility.PUBLIC
+					AND t.state = de.tum.cit.aet.thesis.constants.ThesisState.FINISHED
+					AND t.anonymizedAt IS NULL
+				)
+				OR EXISTS (
+					SELECT 1 FROM TopicRole topr
+					JOIN topr.topic top
+					WHERE topr.user.id = :userId
+					AND top.closedAt IS NULL
+					AND top.publishedAt IS NOT NULL
+				)
+				OR EXISTS (
+					SELECT 1 FROM ResearchGroup rg
+					WHERE rg.head.id = :userId
+				)
+			)
+			""")
+	boolean isUserPubliclyVisible(@Param("userId") UUID userId);
 }

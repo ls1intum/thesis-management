@@ -233,4 +233,33 @@ public abstract class BaseKeycloakIntegrationTest {
 	protected String authHeaderFor(String username) {
 		return "Bearer " + obtainAccessToken(username, username);
 	}
+
+	/**
+	 * Creates a local user via /v2/user-info and seeds the given groups in user_groups.
+	 * Since updateAuthenticatedUser no longer syncs groups from JWT, tests must seed groups explicitly.
+	 */
+	protected de.tum.cit.aet.thesis.entity.User createLocalUserWithGroups(String username, String... groups)
+			throws Exception {
+		mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/v2/user-info")
+						.header("Authorization", authHeaderFor(username)))
+				.andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isOk());
+
+		de.tum.cit.aet.thesis.entity.User user = userRepository.findByUniversityId(username).orElseThrow();
+
+		// Clear auto-assigned groups (e.g. student from updateAuthenticatedUser)
+		// so only the explicitly requested groups are present
+		userGroupRepository.deleteByUserId(user.getId());
+
+		for (String group : groups) {
+			de.tum.cit.aet.thesis.entity.UserGroup ug = new de.tum.cit.aet.thesis.entity.UserGroup();
+			de.tum.cit.aet.thesis.entity.key.UserGroupId ugId = new de.tum.cit.aet.thesis.entity.key.UserGroupId();
+			ugId.setUserId(user.getId());
+			ugId.setGroup(group);
+			ug.setId(ugId);
+			ug.setUser(user);
+			userGroupRepository.save(ug);
+		}
+
+		return user;
+	}
 }

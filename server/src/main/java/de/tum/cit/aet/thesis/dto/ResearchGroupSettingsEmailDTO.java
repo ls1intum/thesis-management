@@ -1,7 +1,9 @@
 package de.tum.cit.aet.thesis.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.thesis.entity.ResearchGroupSettings;
 
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record ResearchGroupSettingsEmailDTO(
 		String applicationNotificationEmail,
 		String emailSignature

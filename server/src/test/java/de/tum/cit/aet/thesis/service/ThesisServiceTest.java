@@ -200,7 +200,8 @@ class ThesisServiceTest {
 				"Summary",
 				"Positives",
 				"Negatives",
-				"A"
+				"A",
+				null
 		);
 
 		assertEquals(ThesisState.ASSESSED, result.getState());

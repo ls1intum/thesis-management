@@ -4,8 +4,6 @@ import de.tum.cit.aet.thesis.constants.UploadFileType;
 import de.tum.cit.aet.thesis.exception.UploadException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
@@ -23,12 +21,13 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
 import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /** Handles file uploads and retrieval, including size and type validation and content-based hashing. */
 @Slf4j
 @Service
 public class UploadService {
-	private static final Logger log = LoggerFactory.getLogger(UploadService.class);
 	private final Path rootLocation;
 
 	/**
@@ -83,7 +82,7 @@ public class UploadService {
 
 			if (type == UploadFileType.DOCUMENT) {
 				allowedExtensions = Set.of(
-						"pdf", "docx", "doc", "xlsx", "xls", "pptx", "ppt",
+						"pdf", "docx", "doc", "xlsx", "xls", "pptx", "ppt", "key",
 						"tex", "zip", "tar", "gz", "txt", "csv", "md",
 						"png", "jpg", "jpeg", "gif", "webp"
 				);
@@ -97,7 +96,16 @@ public class UploadService {
 			}
 
 			if (allowedExtensions != null && !allowedExtensions.contains(extension)) {
-				throw new UploadException("File type not allowed");
+				String uploadedExtension = (extension == null || extension.isEmpty())
+						? "no extension"
+						: "." + extension;
+				String allowedList = new TreeSet<>(allowedExtensions).stream()
+						.map(ext -> "." + ext)
+						.collect(Collectors.joining(", "));
+				throw new UploadException(
+						"Unsupported file type " + uploadedExtension
+								+ ". Allowed types for " + type.getValue().toLowerCase(java.util.Locale.ROOT)
+								+ " uploads: " + allowedList);
 			}
 
 			String filename = StringUtils.cleanPath(computeFileHash(file) + "." + extension);

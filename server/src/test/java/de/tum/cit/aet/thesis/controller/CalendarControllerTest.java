@@ -118,8 +118,8 @@ class CalendarControllerTest extends BaseIntegrationTest {
 			TestUser student = createRandomTestUser(List.of("student"));
 			String studentAuth = generateTestAuthenticationHeader(student.universityId(), List.of("student"));
 			CreateApplicationPayload appPayload = new CreateApplicationPayload(
-					topicId, null, "MASTER", Instant.now(), "Calendar test", researchGroupId
-			);
+					topicId, null, "MASTER", Instant.now(), "Calendar test", researchGroupId,
+			true);
 			String appResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/applications")
 							.header("Authorization", studentAuth)
 							.contentType(MediaType.APPLICATION_JSON)

@@ -39,6 +39,7 @@ const ReplaceApplicationPage = () => {
   const topic = useTopic(topicId)
 
   const [step, setStep] = useState(0)
+  const [consentToPrivacyPolicy, setConsentToPrivacyPolicy] = useState(false)
 
   const updateStep = (value: number) => {
     if (value > step) {
@@ -66,13 +67,19 @@ const ReplaceApplicationPage = () => {
           />
         </Stepper.Step>
         <Stepper.Step label='Second step' description='Update Information'>
-          <StudentInformationStep onComplete={() => setStep(2)} />
+          <StudentInformationStep
+            onComplete={() => {
+              setConsentToPrivacyPolicy(true)
+              setStep(2)
+            }}
+          />
         </Stepper.Step>
         <Stepper.Step label='Final step' description='Submit your Application'>
           <MotivationStep
             onComplete={() => setStep(3)}
             topic={topic || undefined}
             application={application}
+            consentToPrivacyPolicy={consentToPrivacyPolicy}
           />
         </Stepper.Step>
         <Stepper.Completed>

@@ -4,6 +4,8 @@ const TEST_USERS = [
   { name: 'student', username: 'student', password: 'student' },
   { name: 'student2', username: 'student2', password: 'student2' },
   { name: 'student3', username: 'student3', password: 'student3' },
+  { name: 'student4', username: 'student4', password: 'student4' },
+  { name: 'student5', username: 'student5', password: 'student5' },
   { name: 'supervisor', username: 'supervisor', password: 'supervisor' },
   { name: 'supervisor2', username: 'supervisor2', password: 'supervisor2' },
   { name: 'examiner', username: 'examiner', password: 'examiner' },

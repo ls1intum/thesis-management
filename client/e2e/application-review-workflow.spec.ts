@@ -19,8 +19,7 @@ test.describe('Application Review Workflow', () => {
 
   test('supervisor can reject a NOT_ASSESSED application', async ({ page }) => {
     const heading = page.getByRole('heading', { name: /Student4 User/i })
-    const loaded = await navigateToDetail(page, `/applications/${APPLICATION_REJECT_ID}`, heading)
-    if (!loaded) return // Application not accessible (may have been modified by a parallel test)
+    await navigateToDetail(page, `/applications/${APPLICATION_REJECT_ID}`, heading)
 
     // Check if application still has the review form (NOT_ASSESSED state)
     const thesisTitle = page.getByLabel('Thesis Title')
@@ -78,8 +77,7 @@ test.describe('Application Review Workflow', () => {
 
   test('supervisor can accept a NOT_ASSESSED application', async ({ page }) => {
     const heading = page.getByRole('heading', { name: /Student5 User/i })
-    const loaded = await navigateToDetail(page, `/applications/${APPLICATION_ACCEPT_ID}`, heading)
-    if (!loaded) return // Application not accessible
+    await navigateToDetail(page, `/applications/${APPLICATION_ACCEPT_ID}`, heading)
 
     // Check if application still has the review form (NOT_ASSESSED state)
     const thesisTitle = page.getByLabel('Thesis Title')

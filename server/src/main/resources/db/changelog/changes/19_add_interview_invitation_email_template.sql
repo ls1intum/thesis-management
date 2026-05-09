@@ -23,7 +23,8 @@ VALUES
   <a target="_blank" rel="noopener noreferrer" th:href="${inviteUrl}">Schedule your interview</a>
 </p>
 
-<div th:utext="${emailSignature}"></div>',
+<p>Best regards,<br/>
+The Thesis Coordination Team</p>',
         'Invitation email sent to interviewees with scheduling link, applicant name and thesis title'
     );
 
@@ -52,7 +53,8 @@ VALUES
   If you already scheduled your interview, please ignore this reminder.
 </p>
 
-<div th:utext="${emailSignature}"></div>',
+<p>Best regards,<br/>
+The Thesis Coordination Team</p>',
         'Reminder email sent when resending the interview scheduling invitation'
     );
 
@@ -100,7 +102,8 @@ VALUES
   <a target="_blank" rel="noopener noreferrer" th:href="${inviteUrl}">View or change your booking</a>
 </p>
 
-<div th:utext="${emailSignature}"></div>',
+<p>Best regards,<br/>
+The Thesis Coordination Team</p>',
         'Confirmation email sent to interviewees when a slot was booked'
     );
 
@@ -130,6 +133,7 @@ You can book a new slot using the link below:
 <a target="_blank" rel="noopener noreferrer" th:href="${inviteUrl}">Book a new Slot</a>
 </p>
 
-<div th:utext="${emailSignature}"></div>',
+<p>Best regards,<br/>
+The Thesis Coordination Team</p>',
         'Confirmation email sent to interviewees when a slot was canceled'
     );

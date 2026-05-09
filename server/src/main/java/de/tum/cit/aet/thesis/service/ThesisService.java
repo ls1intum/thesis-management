@@ -6,6 +6,7 @@ import de.tum.cit.aet.thesis.constants.ThesisRoleName;
 import de.tum.cit.aet.thesis.constants.ThesisState;
 import de.tum.cit.aet.thesis.constants.ThesisVisibility;
 import de.tum.cit.aet.thesis.constants.UploadFileType;
+import de.tum.cit.aet.thesis.controller.payload.GradeComponentPayload;
 import de.tum.cit.aet.thesis.controller.payload.RequestChangesPayload;
 import de.tum.cit.aet.thesis.controller.payload.ThesisStatePayload;
 import de.tum.cit.aet.thesis.entity.Application;
@@ -15,6 +16,7 @@ import de.tum.cit.aet.thesis.entity.Thesis;
 import de.tum.cit.aet.thesis.entity.ThesisAssessment;
 import de.tum.cit.aet.thesis.entity.ThesisFeedback;
 import de.tum.cit.aet.thesis.entity.ThesisFile;
+import de.tum.cit.aet.thesis.entity.ThesisGradeComponent;
 import de.tum.cit.aet.thesis.entity.ThesisPresentation;
 import de.tum.cit.aet.thesis.entity.ThesisProposal;
 import de.tum.cit.aet.thesis.entity.ThesisRole;
@@ -41,6 +43,7 @@ import de.tum.cit.aet.thesis.utility.PDFBuilder;
 import de.tum.cit.aet.thesis.utility.RequestValidator;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -49,6 +52,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -78,8 +82,11 @@ public class ThesisService {
 	private final ResearchGroupRepository researchGroupRepository;
 	private final ResearchGroupSettingsService researchGroupSettingsService;
 
+	@Value("${thesis-management.client.host}")
+	private String clientHost;
+
 	/**
-	 * Injects all required repositories and services for thesis management.
+	 * Injects all required repositories, services, and providers.
 	 *
 	 * @param thesisRoleRepository the thesis role repository
 	 * @param thesisRepository the thesis repository
@@ -87,12 +94,12 @@ public class ThesisService {
 	 * @param userRepository the user repository
 	 * @param thesisProposalRepository the thesis proposal repository
 	 * @param thesisAssessmentRepository the thesis assessment repository
-	 * @param uploadService the upload service for file storage
-	 * @param mailingService the mailing service for sending notifications
+	 * @param uploadService the upload service
+	 * @param mailingService the mailing service
 	 * @param accessManagementService the access management service
 	 * @param thesisFeedbackRepository the thesis feedback repository
 	 * @param thesisFileRepository the thesis file repository
-	 * @param currentUserProviderProvider the provider for the current user context
+	 * @param currentUserProviderProvider the current user provider
 	 * @param researchGroupRepository the research group repository
 	 * @param researchGroupSettingsService the research group settings service
 	 */
@@ -605,7 +612,8 @@ public class ThesisService {
 			String summary,
 			String positives,
 			String negatives,
-			String gradeSuggestion
+			String gradeSuggestion,
+			List<GradeComponentPayload> gradeComponentPayloads
 	) {
 		requireNotAnonymized(thesis);
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
@@ -619,7 +627,29 @@ public class ThesisService {
 		assessment.setNegatives(negatives);
 		assessment.setGradeSuggestion(gradeSuggestion);
 
+		if (gradeComponentPayloads != null && !gradeComponentPayloads.isEmpty()) {
+			validateGradeComponents(gradeComponentPayloads);
+		}
+
 		thesisAssessmentRepository.save(assessment);
+
+		if (gradeComponentPayloads != null && !gradeComponentPayloads.isEmpty()) {
+
+			List<ThesisGradeComponent> gradeComponents = new ArrayList<>();
+			for (int i = 0; i < gradeComponentPayloads.size(); i++) {
+				GradeComponentPayload payload = gradeComponentPayloads.get(i);
+				ThesisGradeComponent component = new ThesisGradeComponent();
+				component.setAssessment(assessment);
+				component.setName(payload.name());
+				component.setWeight(payload.isBonus() ? BigDecimal.ZERO : payload.weight());
+				component.setIsBonus(payload.isBonus());
+				component.setGrade(payload.grade());
+				component.setPosition(i);
+				gradeComponents.add(component);
+			}
+			assessment.setGradeComponents(gradeComponents);
+			thesisAssessmentRepository.save(assessment);
+		}
 
 		List<ThesisAssessment> assessments = Objects.requireNonNullElse(thesis.getAssessments(), new ArrayList<>());
 		assessments.addFirst(assessment);
@@ -634,48 +664,142 @@ public class ThesisService {
 		return thesisRepository.save(thesis);
 	}
 
+	private void validateGradeComponents(List<GradeComponentPayload> components) {
+		BigDecimal minGrade = BigDecimal.ONE;
+		BigDecimal maxGrade = BigDecimal.valueOf(5);
+		BigDecimal hundredPercent = BigDecimal.valueOf(100);
+		BigDecimal minBonusGrade = BigDecimal.ZERO;
+
+		if (components.size() > 50) {
+			throw new ResourceInvalidParametersException("A maximum of 50 grade components is allowed.");
+		}
+
+		BigDecimal regularWeightSum = BigDecimal.ZERO;
+		for (GradeComponentPayload component : components) {
+			if (component == null) {
+				throw new ResourceInvalidParametersException("Grade component must not be null.");
+			}
+			if (component.name() == null || component.name().isBlank()) {
+				throw new ResourceInvalidParametersException("Grade component name must not be empty.");
+			}
+			if (component.name().length() > 255) {
+				throw new ResourceInvalidParametersException("Grade component name must not exceed 255 characters.");
+			}
+			if (component.grade() == null) {
+				throw new ResourceInvalidParametersException("Grade must not be null.");
+			}
+			if (component.grade().scale() > 1) {
+				throw new ResourceInvalidParametersException("Grade must have at most 1 decimal place.");
+			}
+			if (component.isBonus()) {
+				if (component.grade().compareTo(minBonusGrade) < 0 || component.grade().compareTo(maxGrade) > 0) {
+					throw new ResourceInvalidParametersException("Bonus value must be between 0.0 and 5.0.");
+				}
+			} else {
+				if (component.grade().compareTo(minGrade) < 0 || component.grade().compareTo(maxGrade) > 0) {
+					throw new ResourceInvalidParametersException("Grade must be between 1.0 and 5.0.");
+				}
+				if (component.weight() == null) {
+					throw new ResourceInvalidParametersException("Component weight must not be null.");
+				}
+				if (component.weight().scale() > 2) {
+					throw new ResourceInvalidParametersException("Weight must have at most 2 decimal places.");
+				}
+				if (component.weight().compareTo(BigDecimal.ZERO) <= 0) {
+					throw new ResourceInvalidParametersException("Component weight must be positive.");
+				}
+				regularWeightSum = regularWeightSum.add(component.weight());
+			}
+		}
+		if (regularWeightSum.compareTo(hundredPercent) != 0) {
+			throw new ResourceInvalidParametersException("Regular component weights must sum to 100%.");
+		}
+	}
+
 	/**
 	 * Generates and returns a PDF document containing the thesis assessment details.
 	 *
 	 * @param thesis the thesis to generate the assessment PDF for
+	 * @param calculatedGrade an optional pre-calculated grade from gradeComponents
 	 * @return the generated PDF file resource
 	 */
-	public Resource getAssessmentFile(Thesis thesis) {
+	public Resource getAssessmentFile(Thesis thesis, String calculatedGrade) {
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+		User currentUser = currentUserProvider().getUser();
+		String currentUserName = currentUser.getFirstName() + " " + currentUser.getLastName();
+		if (thesis.getAssessments() == null || thesis.getAssessments().isEmpty()) {
+			throw new ResourceNotFoundException("No assessment found for thesis");
+		}
 		ThesisAssessment assessment = thesis.getAssessments().getFirst();
-		ThesisPresentation presentation = thesis.getPresentations().getFirst();
+		ThesisPresentation presentation = (thesis.getPresentations() != null && !thesis.getPresentations().isEmpty())
+				? thesis.getPresentations().getFirst()
+				: null;
 
-		String students = String.join(", ", thesis.getStudents().stream().map(student -> student.getFirstName() + " " + student.getLastName()).toList());
-		String supervisors = String.join(", ", thesis.getSupervisors().stream().map(supervisor -> supervisor.getFirstName() + " " + supervisor.getLastName()).toList());
-		String examiners = String.join(", ", thesis.getExaminers().stream().map(examiner -> examiner.getFirstName() + " " + examiner.getLastName()).toList());
+		String students = String.join(", ", thesis.getStudents().stream()
+				.map(student -> student.getFirstName() + " " + student.getLastName()).toList());
+		String supervisors = String.join(", ", thesis.getSupervisors().stream()
+				.map(supervisor -> supervisor.getFirstName() + " " + supervisor.getLastName()).toList());
+		String examiners = String.join(", ", thesis.getExaminers().stream()
+				.map(examiner -> examiner.getFirstName() + " " + examiner.getLastName()).toList());
 
-		PDFBuilder builder = new PDFBuilder("Assessment of \"" + thesis.getTitle() + "\"");
+		String assessmentTitle = "Assessment of \"" + thesis.getTitle() + "\"";
 
-		builder
-				.addData("Thesis Type", DataFormatter.formatConstantName(thesis.getType()))
-				.addData("Student", students)
-				.addData("Supervisor", supervisors)
-				.addData("Examiner", examiners)
-				.addData("", "");
+		PDFBuilder builder = new PDFBuilder(assessmentTitle, currentUserName, clientHost);
 
+		builder.addHeaderItem(assessmentTitle + " for: " + students);
+		builder.addHeaderItem("Thesis Type: " + DataFormatter.formatConstantName(thesis.getType()));
+
+		builder.addOverviewItem("Thesis Type", DataFormatter.formatConstantName(thesis.getType()))
+				.addOverviewItem("Student", students)
+				.addOverviewItem("Supervisor", supervisors)
+				.addOverviewItem("Examiner", examiners);
 		for (var stateChange : thesis.getStates()) {
 			if (stateChange.getId().getState() == ThesisState.ASSESSED) {
-				builder.addData("Assessment Date", DataFormatter.formatDate(stateChange.getChangedAt()));
+				builder.addOverviewItem("Assessment Date", DataFormatter.formatDate(stateChange.getChangedAt()));
 			}
 
 			if (stateChange.getId().getState() == ThesisState.SUBMITTED) {
-				builder.addData("Submission Date", DataFormatter.formatDate(stateChange.getChangedAt()));
+				builder.addOverviewItem("Submission Date", DataFormatter.formatDate(stateChange.getChangedAt()));
 			}
 		}
 
 		if (presentation != null) {
-			builder.addData("Presentation Date", DataFormatter.formatDate(presentation.getScheduledAt()));
+			builder.addOverviewItem("Presentation Date", DataFormatter.formatDate(presentation.getScheduledAt()));
 		}
 
 		builder.addSection("Summary", assessment.getSummary())
 				.addSection("Strengths", assessment.getPositives())
-				.addSection("Weaknesses", assessment.getNegatives())
-				.addSection("Grade Suggestion", assessment.getGradeSuggestion());
+				.addSection("Weaknesses", assessment.getNegatives());
+
+		if (assessment.getGradeComponents() != null && !assessment.getGradeComponents().isEmpty()) {
+			List<List<PDFBuilder.TableCell>> rows = assessment.getGradeComponents().stream()
+					.map(c -> {
+						PDFBuilder.TableCell weightCell = c.getIsBonus()
+								? new PDFBuilder.BadgeCell("BONUS")
+								: new PDFBuilder.TextCell(c.getWeight().toBigInteger() + "%");
+						return List.of(
+								new PDFBuilder.TextCell(c.getName()),
+								weightCell,
+								new PDFBuilder.TextCell(c.getGrade().toString()));
+					})
+					.toList();
+
+			// // The HTTP client appends a trailing '?' to the URL, which ends up in the
+			// parameter value
+			String cleanedGrade = calculatedGrade != null
+					? calculatedGrade.replace("?", "").trim()
+					: null;
+
+			builder.addTable(
+					"Grade Components",
+					List.of("Name", "Weight", "Grade"),
+					rows,
+					cleanedGrade != null && !cleanedGrade.isBlank()
+							? "Calculated Grade: " + cleanedGrade
+							: null);
+		}
+
+		builder.addSection("Grade Suggestion", assessment.getGradeSuggestion());
 
 		return builder.build();
 	}

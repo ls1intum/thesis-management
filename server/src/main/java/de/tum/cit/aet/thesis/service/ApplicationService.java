@@ -31,6 +31,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,6 +56,7 @@ public class ApplicationService {
 	private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
 	private final ResearchGroupRepository researchGroupRepository;
 	private final InterviewProcessRepository interviewProcessRepository;
+	private final Clock clock;
 
 	/**
 	 * Injects all required repositories, services, and the current user provider for application management.
@@ -68,6 +70,8 @@ public class ApplicationService {
 	 * @param currentUserProviderProvider the current user provider
 	 * @param researchGroupRepository the research group repository
 	 * @param interviewProcessRepository the interview process repository
+	 * @param clock the clock used to read the current time; injected so tests can pin
+	 *              it for deterministic deadline math
 	 */
 	@Autowired
 	public ApplicationService(
@@ -79,7 +83,8 @@ public class ApplicationService {
 			ApplicationReviewerRepository applicationReviewerRepository,
 			ObjectProvider<CurrentUserProvider> currentUserProviderProvider,
 			ResearchGroupRepository researchGroupRepository,
-			InterviewProcessRepository interviewProcessRepository
+			InterviewProcessRepository interviewProcessRepository,
+			Clock clock
 	) {
 		this.applicationRepository = applicationRepository;
 		this.mailingService = mailingService;
@@ -90,6 +95,7 @@ public class ApplicationService {
 		this.currentUserProviderProvider = currentUserProviderProvider;
 		this.researchGroupRepository = researchGroupRepository;
 		this.interviewProcessRepository = interviewProcessRepository;
+		this.clock = clock;
 	}
 
 	private CurrentUserProvider currentUserProvider() {
@@ -173,14 +179,37 @@ public class ApplicationService {
 		return applicationRepository.findNotReviewedSuggestedByResearchGroup(researchGroupId);
 	}
 
-	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
-	@Transactional
+	/**
+	 * Creates a new thesis application and records the privacy consent timestamp.
+	 *
+	 * <p>The consent timestamp ({@link Application#getConsentTimestamp()}) is set to
+	 * {@link Instant#now()} at the moment the application is persisted. This provides
+	 * server-side proof that the student accepted the privacy statement, as required by
+	 * GDPR Art. 7(1). The consent flag is validated in
+	 * {@link de.tum.cit.aet.thesis.controller.ApplicationController#createApplication}
+	 * before this method is called.</p>
+	 *
+	 * @param user             the authenticated user submitting the application
+	 * @param researchGroupId  the target research group ID (used if no topic is provided)
+	 * @param topicId          the topic to apply for (may be null for custom thesis titles)
+	 * @param thesisTitle      the suggested thesis title (may be null if applying for a topic)
+	 * @param thesisType       the type of thesis
+	 * @param desiredStartDate the desired start date
+	 * @param motivation       the applicant's motivation text
+	 * @return the persisted application with consent timestamp set
+	 */
 	public Application createApplication(User user, UUID researchGroupId, UUID topicId, String thesisTitle,
 										String thesisType, Instant desiredStartDate, String motivation) {
 		Topic topic = topicId == null ? null : topicService.findById(topicId);
+		Instant now = Instant.now(clock);
 
 		if (topic != null && topic.getClosedAt() != null) {
 			throw new ResourceInvalidParametersException("This topic is already closed. You cannot submit new applications for it.");
+		}
+
+		// Reject when now >= deadline so the cutoff itself is treated as "closed".
+		if (topic != null && topic.getApplicationDeadline() != null && !now.isBefore(topic.getApplicationDeadline())) {
+			throw new ResourceInvalidParametersException("The application deadline for this topic has passed. You cannot submit new applications for it.");
 		}
 
 		Application application = new Application();
@@ -193,7 +222,11 @@ public class ApplicationService {
 		application.setComment("");
 		application.setState(ApplicationState.NOT_ASSESSED);
 		application.setDesiredStartDate(desiredStartDate);
-		application.setCreatedAt(Instant.now());
+		application.setCreatedAt(now);
+
+		// Record the server-side consent timestamp as proof of privacy statement acceptance (GDPR Art. 7(1)).
+		application.setConsentTimestamp(now);
+
 		ResearchGroup researchGroup = topic != null
 				? topic.getResearchGroup()
 				: researchGroupRepository.findById(researchGroupId).orElseThrow(() -> new ResourceNotFoundException(

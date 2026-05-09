@@ -299,6 +299,7 @@ public class DataExportService {
 			addUserFile(zos, user.getCvFilename(), "files/cv");
 			addUserFile(zos, user.getDegreeFilename(), "files/degree_report");
 			addUserFile(zos, user.getExaminationFilename(), "files/examination_report");
+			addUserFile(zos, user.getAdjustedAvatar(), "files/avatar");
 		}
 	}
 
@@ -492,7 +493,7 @@ public class DataExportService {
 				- user.json: Your profile information (name, email, university ID, study program, etc.)
 				- applications.json: All your thesis applications including review decisions
 				- theses.json: All theses where you are a student, including assessments and state changes
-				- files/: Your uploaded documents (CV, degree report, examination report)
+				- files/: Your uploaded documents (CV, degree report, examination report, avatar)
 
 				Notes:
 				- Free-text management comments are excluded as they may contain third-party personal data
