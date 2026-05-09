@@ -61,7 +61,7 @@
     "@mantine/core": "8.3.18",
     "@mantine/dates": "8.3.18",
     "@mantine/dropzone": "8.3.18",
-    "@mantine/form": "8.3.18",
+    "@mantine/form": "9.1.1",
     "@mantine/hooks": "8.3.18",
     "@mantine/notifications": "8.3.18",
     "@mantine/tiptap": "8.3.18",
