@@ -10,7 +10,7 @@ const ThesesFilters = () => {
   const { filters, setFilters, sort, setSort } = useThesesContext()
 
   return (
-    <Grid gutter='xs'>
+    <Grid gap='xs'>
       <Grid.Col span={6}>
         <TextInput
           label='Search'

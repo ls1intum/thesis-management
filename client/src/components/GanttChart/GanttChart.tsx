@@ -211,7 +211,7 @@ const GanttChart = (props: IGanttChartProps) => {
                   </Button>
                 </div>
                 <div className={classes.groupContent}>
-                  <Collapse in={!collapsedGroups.includes(group.groupId)}>
+                  <Collapse expanded={!collapsedGroups.includes(group.groupId)}>
                     {data
                       .filter((row) => row.groupId === group.groupId)
                       .map((item) => (

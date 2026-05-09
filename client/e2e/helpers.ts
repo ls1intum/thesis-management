@@ -81,10 +81,10 @@ export async function fillRichTextEditor(
 
 /**
  * Select a value from a Mantine Select/ComboBox identified by its label.
- * Uses getByRole('textbox') to avoid matching the listbox element.
+ * Mantine v9 promotes the input to role="combobox" (W3C combobox pattern).
  */
 export async function selectOption(page: Page, label: string, optionText: string | RegExp) {
-  await page.getByRole('textbox', { name: label }).click()
+  await page.getByRole('combobox', { name: label }).click()
   await page.getByRole('option', { name: optionText }).click()
 }
 
@@ -93,7 +93,7 @@ export async function selectOption(page: Page, label: string, optionText: string
  * div that intercepts pointer events.
  */
 export async function clickMultiSelect(page: Page, label: string) {
-  await page.getByRole('textbox', { name: label }).click({ force: true })
+  await page.getByRole('combobox', { name: label }).click({ force: true })
 }
 
 /**
@@ -104,7 +104,7 @@ export async function clickMultiSelect(page: Page, label: string) {
  * in portal-rendered combobox dropdowns.
  */
 export async function searchAndSelectMultiSelect(page: Page, label: string, optionPattern: RegExp) {
-  const textbox = page.getByRole('textbox', { name: label })
+  const textbox = page.getByRole('combobox', { name: label })
   const listbox = page.getByRole('listbox', { name: label })
   const option = listbox.getByRole('option', { name: optionPattern }).first()
   const wrapper = page.locator(
