@@ -1,6 +1,7 @@
 import { Center, Pagination, Stack, Text } from '@mantine/core'
 import ApplicationsFilters from '../../../../components/ApplicationsFilters/ApplicationsFilters'
 import React, { useEffect, useRef, useState } from 'react'
+import { shouldIgnoreArrowKey } from './keyNavigationFilter'
 import { IApplication } from '../../../../requests/responses/application'
 import { useApplicationsContext } from '../../../../providers/ApplicationsProvider/hooks'
 import ApplicationListItem from '../ApplicationListItem/ApplicationListItem'
@@ -41,20 +42,7 @@ const ApplicationsSidebar = (props: IApplicationsSidebarProps) => {
       if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') {
         return
       }
-
-      // Skip when any modifier key is held so OS-level shortcuts
-      // (Cmd/Ctrl/Alt + arrow, Shift + arrow text-selection) still work.
-      if (e.metaKey || e.ctrlKey || e.altKey || e.shiftKey) {
-        return
-      }
-
-      const target = e.target as HTMLElement | null
-      if (
-        target instanceof HTMLInputElement ||
-        target instanceof HTMLTextAreaElement ||
-        target instanceof HTMLSelectElement ||
-        (target && target.isContentEditable)
-      ) {
+      if (shouldIgnoreArrowKey(e)) {
         return
       }
 
