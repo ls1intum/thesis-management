@@ -33,6 +33,9 @@ const ResearchGroupForm = ({
 }: IResearchGroupFormProps) => {
   const descriptionMaxLength = 500
   const initialValues = getInitialValues(initialFormValues)
+  // Discard only makes sense in the edit flow — on create there's nothing
+  // meaningful to revert to.
+  const isEditing = !!initialFormValues?.id || !!initialFormValues?.name
 
   const form = useForm({
     initialValues,
@@ -75,7 +78,13 @@ const ResearchGroupForm = ({
   )
 
   const handleDiscard = () => {
-    form.setValues(initialValues)
+    // setInitialValues + reset re-syncs Mantine's internal dirty/touched
+    // tracking and clearErrors drops any stale messages from
+    // validateInputOnChange — without this the form keeps showing red
+    // errors on fields that were just restored to valid values.
+    form.setInitialValues(initialValues)
+    form.reset()
+    form.clearErrors()
     setHeadDisplayLabel(getInitialHeadLabel(initialFormValues))
     setAutocompleteResetKey((k) => k + 1)
   }
@@ -149,9 +158,11 @@ const ResearchGroupForm = ({
 
         <Grid.Col span={12}>
           <Group justify='flex-end' mt='md'>
-            <Button variant='default' disabled={!hasChanges} onClick={handleDiscard}>
-              Discard changes
-            </Button>
+            {isEditing && (
+              <Button variant='default' disabled={!hasChanges} onClick={handleDiscard}>
+                Discard changes
+              </Button>
+            )}
             <Button type='submit' disabled={!form.isValid() || !hasChanges}>
               {submitLabel}
             </Button>

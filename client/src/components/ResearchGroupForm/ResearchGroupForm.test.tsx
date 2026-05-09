@@ -101,6 +101,29 @@ describe('ResearchGroupForm — issue #521 (discardable form)', () => {
     expect(screen.getByRole('button', { name: /^save$/i })).toBeDisabled()
   })
 
+  test('Discard clears stale validation errors', async () => {
+    const user = userEvent.setup()
+    renderForm()
+
+    // Force a validation failure: name must be at least 2 characters.
+    const name = screen.getByLabelText(/name/i) as HTMLInputElement
+    await user.clear(name)
+    await user.type(name, 'a')
+    expect(await screen.findByText(/name must be at least 2 characters/i)).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /discard changes/i }))
+
+    // Error message must be gone and the original valid value restored.
+    expect(screen.queryByText(/name must be at least 2 characters/i)).not.toBeInTheDocument()
+    expect(name).toHaveValue('Intelligent Systems')
+  })
+
+  test('does not render Discard on the create flow (no initialResearchGroup)', () => {
+    renderWithProviders(<ResearchGroupForm onSubmit={() => undefined} submitLabel='Create' />)
+    expect(screen.queryByRole('button', { name: /discard changes/i })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /^create$/i })).toBeInTheDocument()
+  })
+
   test('Submit invokes onSubmit with the current form values', async () => {
     const user = userEvent.setup()
     const onSubmit = vi.fn()
