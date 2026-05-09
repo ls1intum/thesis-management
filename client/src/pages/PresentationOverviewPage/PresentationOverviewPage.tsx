@@ -34,6 +34,8 @@ import { CalendarXIcon } from '@phosphor-icons/react/dist/ssr'
 import { useNavigate } from 'react-router'
 import { pickTargetDate } from './pickTargetDate'
 
+const NEVER_SCROLLED = Symbol('never-scrolled')
+
 const PresentationOverviewPage = () => {
   usePageTitle('Presentations')
 
@@ -133,26 +135,40 @@ const PresentationOverviewPage = () => {
   // edits via onDelete / onUpdate (which produce new presentations Map
   // identities) do not yank the viewport back to today while the user is
   // interacting with a card.
-  const lastScrolledGroupId = useRef<string | undefined | null>(null)
+  //
+  // Initial value uses a unique sentinel rather than `null` so we can tell
+  // apart "no scroll yet" from "scrolled for a user with no research group"
+  // — otherwise the first effect run can lock the ref to `null` *before*
+  // `selectedGroup` resolves, and the eventual real group never gets a
+  // scroll.
+  const lastScrolledGroupId = useRef<string | typeof NEVER_SCROLLED | null>(NEVER_SCROLLED)
 
   useEffect(() => {
     if (!presentations || presentations.size === 0 || !scrollRef.current) {
       return
     }
-    if (lastScrolledGroupId.current === (selectedGroup?.id ?? null)) {
+    // If we have research groups available but none picked yet, wait —
+    // selectedGroup is about to resolve and we'd otherwise consume the
+    // scroll for a transient `null` group key.
+    if (researchGroups.length > 0 && !selectedGroup) {
+      return
+    }
+    const groupKey = selectedGroup?.id ?? null
+    if (lastScrolledGroupId.current === groupKey) {
       return
     }
 
     const today = dayjs().format('YYYY-MM-DD')
     const target = pickTargetDate(today, Array.from(presentations.keys()))
 
-    lastScrolledGroupId.current = selectedGroup?.id ?? null
+    lastScrolledGroupId.current = groupKey
 
     if (target) {
-      // defer until DOM is rendered with the new presentations
+      // Defer to the next frame so layout has had a chance to commit the
+      // newly-rendered presentation cards before we measure scroll offsets.
       requestAnimationFrame(() => scrollTo(target))
     }
-  }, [presentations, selectedGroup?.id])
+  }, [presentations, selectedGroup?.id, researchGroups.length])
 
   const onDelete = (presentationId: string, date: string) => {
     const updatedMap = new Map(presentations)

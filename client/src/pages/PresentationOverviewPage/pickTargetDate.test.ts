@@ -23,4 +23,12 @@ describe('pickTargetDate (issue #759 auto-scroll target selection)', () => {
   it('does not require dates to be pre-sorted', () => {
     expect(pickTargetDate(today, ['2026-05-10', '2026-04-15', '2026-05-02'])).toBe('2026-05-02')
   })
+
+  it('handles a single-element list when that element is today', () => {
+    expect(pickTargetDate(today, [today])).toBe(today)
+  })
+
+  it('handles duplicate dates in the input', () => {
+    expect(pickTargetDate(today, [today, today, '2026-05-02'])).toBe(today)
+  })
 })
