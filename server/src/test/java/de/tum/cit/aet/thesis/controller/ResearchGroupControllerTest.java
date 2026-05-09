@@ -118,7 +118,7 @@ class ResearchGroupControllerTest extends BaseIntegrationTest {
 			TestUser headA = createRandomTestUser(List.of("supervisor"));
 			UUID groupA = createTestResearchGroup("Group With Specific Head", headA.universityId());
 			TestUser headB = createRandomTestUser(List.of("supervisor"));
-			createTestResearchGroup("Other Group", headB.universityId());
+			UUID groupB = createTestResearchGroup("Other Group", headB.universityId());
 
 			String response = mockMvc.perform(MockMvcRequestBuilders.get("/v2/research-groups")
 							.header("Authorization", createRandomAdminAuthentication())
@@ -127,16 +127,43 @@ class ResearchGroupControllerTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 
 			JsonNode json = objectMapper.readTree(response);
-			// At least one result, and groupA must be among them.
+			// groupA must be present, groupB must NOT be — otherwise the test
+			// passes even if the search filter were silently dropped.
 			assertThat(json.get("content").size()).isGreaterThanOrEqualTo(1);
-			boolean found = false;
+			boolean foundA = false;
+			boolean foundB = false;
 			for (JsonNode entry : json.get("content")) {
-				if (groupA.toString().equals(entry.get("id").asText())) {
-					found = true;
-					break;
-				}
+				String id = entry.get("id").asText();
+				if (groupA.toString().equals(id)) foundA = true;
+				if (groupB.toString().equals(id)) foundB = true;
 			}
-			assertThat(found).as("expected to find group %s when searching by head name", groupA).isTrue();
+			assertThat(foundA).as("expected to find group %s when searching by head name", groupA).isTrue();
+			assertThat(foundB).as("expected to NOT find unrelated group %s", groupB).isFalse();
+		}
+
+		@Test
+		void getResearchGroups_SearchEscapesLikeWildcards() throws Exception {
+			// Issue #523 follow-up: a literal `%` from the user must not act as
+			// a SQL ILIKE wildcard. Two groups exist; searching for `%` must
+			// not return all of them.
+			TestUser head = createRandomTestUser(List.of("supervisor"));
+			createTestResearchGroup("Group With Wildcards Test " + UUID.randomUUID(), head.universityId());
+			createTestResearchGroup("Another Group " + UUID.randomUUID(), head.universityId());
+
+			String response = mockMvc.perform(MockMvcRequestBuilders.get("/v2/research-groups")
+							.header("Authorization", createRandomAdminAuthentication())
+							.param("search", "%"))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			JsonNode json = objectMapper.readTree(response);
+			// Without escaping, `%` would match every row. With escaping, `%`
+			// looks for a literal percent sign in name/abbreviation/head names
+			// — none of our test fixtures contain one.
+			for (JsonNode entry : json.get("content")) {
+				String name = entry.get("name").asText();
+				assertThat(name).as("escaped %% search should not match unrelated rows").contains("%");
+			}
 		}
 
 		@Test
