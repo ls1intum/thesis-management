@@ -11,6 +11,7 @@ import { formatUser } from '../../../../utils/format'
 import { useEffect, useState } from 'react'
 import { doRequest } from '../../../../requests/request'
 import { ApiError } from '../../../../requests/handler'
+import { renderCustomDataValue } from '../../../../utils/customDataLink'
 
 const ThesisStudentInfoSection = () => {
   const { thesis, access } = useLoadedThesisContext()
@@ -118,7 +119,7 @@ const ThesisStudentInfoSection = () => {
                       <Grid.Col key={key} span={{ md: 6 }}>
                         <LabeledItem
                           label={GLOBAL_CONFIG.custom_data[key]?.label ?? key}
-                          value={value}
+                          value={renderCustomDataValue(key, value)}
                         />
                       </Grid.Col>
                     ))}

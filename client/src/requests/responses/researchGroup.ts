@@ -14,4 +14,5 @@ export interface IResearchGroup extends ILightResearchGroup {
   description: string
   websiteUrl: string
   campus: string
+  memberCount?: number
 }

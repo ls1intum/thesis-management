@@ -65,6 +65,12 @@ const PresentationOverviewPage = () => {
   const scrollRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    // On mobile let the page scroll natively; the custom hijack causes the
+    // calendar to slide under the sticky header (#729).
+    if (isSmaller) {
+      return
+    }
+
     const onWheel = (e: WheelEvent) => {
       // Check if body has modal-open class or if any modal backdrop is present
       const hasModalBackdrop = document.querySelector(
@@ -81,7 +87,7 @@ const PresentationOverviewPage = () => {
 
     window.addEventListener('wheel', onWheel, { passive: false })
     return () => window.removeEventListener('wheel', onWheel)
-  }, [])
+  }, [isSmaller])
 
   const [presentations, setPresentations] = useState<Map<string, IPublishedPresentation[]>>()
   // Tracks which research group the current `presentations` map belongs to,
