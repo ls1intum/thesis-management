@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -36,6 +37,9 @@ class ResearchGroupControllerTest extends BaseIntegrationTest {
 
 	@Autowired
 	private UserRepository userRepository;
+
+	@Autowired
+	private JdbcTemplate testJdbcTemplate;
 
 	@Nested
 	class GetResearchGroups {
@@ -194,6 +198,53 @@ class ResearchGroupControllerTest extends BaseIntegrationTest {
 			mockMvc.perform(MockMvcRequestBuilders.get("/v2/research-groups/{id}", UUID.randomUUID())
 							.header("Authorization", createRandomAdminAuthentication()))
 					.andExpect(status().isNotFound());
+		}
+
+		@Test
+		void getResearchGroup_IncludesMemberCount() throws Exception {
+			// Issue #524: ResearchGroupDto must include memberCount, populated
+			// for both the single-group and list endpoints.
+			TestUser head = createRandomTestUser(List.of("supervisor"));
+			UUID groupId = createTestResearchGroup("Group With Members", head.universityId());
+
+			// Assign three users to the group: the head and two additional members.
+			TestUser member1 = createRandomTestUser(List.of("advisor"));
+			TestUser member2 = createRandomTestUser(List.of("advisor"));
+			testJdbcTemplate.update(
+					"UPDATE users SET research_group_id = ?::uuid WHERE user_id IN (?::uuid, ?::uuid, ?::uuid)",
+					groupId.toString(),
+					head.userId().toString(),
+					member1.userId().toString(),
+					member2.userId().toString());
+
+			// Single-group endpoint exposes the count.
+			String single = mockMvc.perform(MockMvcRequestBuilders.get("/v2/research-groups/{id}", groupId)
+							.header("Authorization", createRandomAdminAuthentication()))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+			JsonNode singleJson = objectMapper.readTree(single);
+			assertThat(singleJson.has("memberCount"))
+					.as("expected memberCount field on single-group response")
+					.isTrue();
+			assertThat(singleJson.get("memberCount").asInt()).isEqualTo(3);
+
+			// List endpoint also exposes the count for the same group.
+			String list = mockMvc.perform(MockMvcRequestBuilders.get("/v2/research-groups")
+							.header("Authorization", createRandomAdminAuthentication())
+							.param("search", "Group With Members"))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+			JsonNode listJson = objectMapper.readTree(list);
+			JsonNode found = null;
+			for (JsonNode entry : listJson.get("content")) {
+				if (groupId.toString().equals(entry.get("id").asText())) {
+					found = entry;
+					break;
+				}
+			}
+			assertThat(found).as("expected the test group to be in the list response").isNotNull();
+			assertThat(found.has("memberCount")).isTrue();
+			assertThat(found.get("memberCount").asInt()).isEqualTo(3);
 		}
 	}
 
