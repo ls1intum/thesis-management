@@ -1,4 +1,20 @@
-import { IGlobalConfig } from './types'
+import { Environment, IGlobalConfig } from './types'
+
+const parseEnvironment = (value: string | undefined): Environment | undefined => {
+  if (!value) {
+    return undefined
+  }
+  const normalized = value.toLowerCase()
+  if (
+    normalized === 'production' ||
+    normalized === 'staging' ||
+    normalized === 'test' ||
+    normalized === 'dev'
+  ) {
+    return normalized
+  }
+  return undefined
+}
 
 const getEnvironmentVariable = <T = string>(key: string, useJson = false): T | undefined => {
   const value = process.env[key] || window.RUNTIME_ENVIRONMENT_VARIABLES?.[key]
@@ -19,6 +35,8 @@ export const GLOBAL_CONFIG: IGlobalConfig = {
 
   chair_name: getEnvironmentVariable('CHAIR_NAME') || 'ThesisManagement',
   chair_url: getEnvironmentVariable('CHAIR_URL') || window.origin,
+
+  environment: parseEnvironment(getEnvironmentVariable('ENVIRONMENT')),
 
   allow_suggested_topics: (getEnvironmentVariable('ALLOW_SUGGESTED_TOPICS') || 'true') === 'true',
 
