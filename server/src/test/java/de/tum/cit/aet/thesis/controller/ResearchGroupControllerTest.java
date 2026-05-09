@@ -144,11 +144,14 @@ class ResearchGroupControllerTest extends BaseIntegrationTest {
 		@Test
 		void getResearchGroups_SearchEscapesLikeWildcards() throws Exception {
 			// Issue #523 follow-up: a literal `%` from the user must not act as
-			// a SQL ILIKE wildcard. Two groups exist; searching for `%` must
-			// not return all of them.
-			TestUser head = createRandomTestUser(List.of("supervisor"));
-			createTestResearchGroup("Group With Wildcards Test " + UUID.randomUUID(), head.universityId());
-			createTestResearchGroup("Another Group " + UUID.randomUUID(), head.universityId());
+			// a SQL ILIKE wildcard. Two groups with distinct heads exist
+			// (other tests will also have inserted groups into the same
+			// schema); searching for `%` must only match rows whose name,
+			// abbreviation, or head name actually contains a literal `%`.
+			TestUser headA = createRandomTestUser(List.of("supervisor"));
+			createTestResearchGroup("Wildcards Test " + UUID.randomUUID(), headA.universityId());
+			TestUser headB = createRandomTestUser(List.of("supervisor"));
+			createTestResearchGroup("Another Wildcards Group " + UUID.randomUUID(), headB.universityId());
 
 			String response = mockMvc.perform(MockMvcRequestBuilders.get("/v2/research-groups")
 							.header("Authorization", createRandomAdminAuthentication())
@@ -158,12 +161,13 @@ class ResearchGroupControllerTest extends BaseIntegrationTest {
 
 			JsonNode json = objectMapper.readTree(response);
 			// Without escaping, `%` would match every row. With escaping, `%`
-			// looks for a literal percent sign in name/abbreviation/head names
-			// — none of our test fixtures contain one.
-			for (JsonNode entry : json.get("content")) {
-				String name = entry.get("name").asText();
-				assertThat(name).as("escaped %% search should not match unrelated rows").contains("%");
-			}
+			// looks for a literal percent sign — TestUser fixtures don't
+			// produce names containing `%`, so the result must be empty.
+			// `@JsonInclude(NON_EMPTY)` strips an empty `content` array, so
+			// we read totalElements instead.
+			assertThat(json.get("totalElements").asInt())
+					.as("escaped %% search must not match rows without a literal %%")
+					.isZero();
 		}
 
 		@Test
