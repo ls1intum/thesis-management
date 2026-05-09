@@ -124,7 +124,10 @@ export const GLOBAL_CONFIG: IGlobalConfig = {
     },
   },
 
-  server_host: getEnvironmentVariable('SERVER_HOST') || 'http://localhost:8180',
+  server_host: (getEnvironmentVariable('SERVER_HOST') || 'http://localhost:8180').replace(
+    /\/+$/,
+    '',
+  ),
 
   keycloak: {
     host: getEnvironmentVariable('KEYCLOAK_HOST') || 'http://localhost:8181',
