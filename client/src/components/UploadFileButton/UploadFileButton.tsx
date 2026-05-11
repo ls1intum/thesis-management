@@ -22,6 +22,17 @@ export const UploadFileButton = (props: PropsWithChildren<IUploadFileButtonProps
     setLoading(false)
   }, [modal])
 
+  const handleUpload = async () => {
+    if (!file) return
+    setLoading(true)
+    try {
+      await onUpload(file)
+      setModal(false)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <Button onClick={() => setModal(true)} {...buttonProps}>
       <Modal
@@ -32,24 +43,7 @@ export const UploadFileButton = (props: PropsWithChildren<IUploadFileButtonProps
       >
         <Stack>
           <UploadArea value={file} onChange={setFile} maxSize={maxSize} accept={accept} />
-          <Button
-            fullWidth
-            disabled={!file}
-            loading={loading}
-            onClick={async () => {
-              if (file) {
-                setLoading(true)
-
-                try {
-                  await onUpload(file)
-
-                  setModal(false)
-                } finally {
-                  setLoading(false)
-                }
-              }
-            }}
-          >
+          <Button fullWidth disabled={!file} loading={loading} onClick={() => void handleUpload()}>
             Upload File
           </Button>
         </Stack>

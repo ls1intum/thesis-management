@@ -39,7 +39,13 @@ export const AuthenticatedFileDownloadButton = (
   }
 
   return (
-    <Button onClick={onDownload} loading={loading} {...buttonProps}>
+    <Button
+      onClick={() => {
+        void onDownload()
+      }}
+      loading={loading}
+      {...buttonProps}
+    >
       {children}
     </Button>
   )

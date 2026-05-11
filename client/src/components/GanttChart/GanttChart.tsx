@@ -41,23 +41,18 @@ const GanttChart = (props: IGanttChartProps) => {
   } = props
 
   const storedRangeKey = rangeStorageKey ? `gantt-chart-range-${rangeStorageKey}` : undefined
+  const rawStoredRange = storedRangeKey ? localStorage.getItem(storedRangeKey) : null
   const storedRange = useMemo<DateRange | undefined>(() => {
-    if (!storedRangeKey) {
-      return undefined
-    }
-
-    const rawRange = localStorage.getItem(storedRangeKey)
-
-    if (rawRange === null) {
+    if (!storedRangeKey || rawStoredRange === null) {
       return undefined
     }
 
     try {
-      return JSON.parse(rawRange)
+      return JSON.parse(rawStoredRange)
     } catch {
       return undefined
     }
-  }, [storedRangeKey && localStorage.getItem(storedRangeKey)])
+  }, [storedRangeKey, rawStoredRange])
 
   const [range, setRange] = useState<DateRange | undefined>(storedRange)
   const [collapsedGroups, setCollapsedGroups] = useState<string[]>([])
@@ -81,6 +76,9 @@ const GanttChart = (props: IGanttChartProps) => {
   )
 
   const currentTime = useMemo(() => Date.now(), [])
+
+  const rangeKey = range?.join(',')
+  const minRangeKey = minRange?.join(',')
 
   const contextValue = useMemo<IGanttChartContext>(() => {
     // Calculate total range based on the provided data
@@ -143,7 +141,8 @@ const GanttChart = (props: IGanttChartProps) => {
       getTimelineWidth,
       isVisible,
     }
-  }, [data, currentTime, range?.join(','), minRange?.join(','), initialRangeDuration])
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- range/minRange are arrays; joined keys below capture changes deterministically
+  }, [data, currentTime, rangeKey, minRangeKey, initialRangeDuration])
 
   const { getTimelineLeftPosition, getTimelineWidth, isVisible } = contextValue
 

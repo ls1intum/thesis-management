@@ -186,7 +186,12 @@ const AdminPage = () => {
             that have exceeded the configured retention period.
           </Text>
           <Group>
-            <Button loading={loading} onClick={onRunCleanup}>
+            <Button
+              loading={loading}
+              onClick={() => {
+                void onRunCleanup()
+              }}
+            >
               Run Cleanup
             </Button>
           </Group>
@@ -201,7 +206,12 @@ const AdminPage = () => {
             while preserving the thesis record (title, type, grade, dates) for statistical purposes.
           </Text>
           <Group>
-            <Button loading={anonymizationLoading} onClick={onRunAnonymization}>
+            <Button
+              loading={anonymizationLoading}
+              onClick={() => {
+                void onRunAnonymization()
+              }}
+            >
               Run Anonymization
             </Button>
           </Group>
@@ -216,10 +226,17 @@ const AdminPage = () => {
               placeholder='Search by name, email, or ID...'
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.currentTarget.value)}
-              onKeyDown={(e) => e.key === 'Enter' && onSearchUsers()}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') void onSearchUsers()
+              }}
               style={{ flex: 1 }}
             />
-            <Button loading={searching} onClick={onSearchUsers}>
+            <Button
+              loading={searching}
+              onClick={() => {
+                void onSearchUsers()
+              }}
+            >
               Search
             </Button>
           </Group>
@@ -229,7 +246,9 @@ const AdminPage = () => {
                 <Button
                   key={user.userId}
                   variant={selectedUser?.userId === user.userId ? 'filled' : 'light'}
-                  onClick={() => onSelectUser(user)}
+                  onClick={() => {
+                    void onSelectUser(user)
+                  }}
                   justify='flex-start'
                 >
                   {user.firstName} {user.lastName} ({user.universityId})
@@ -279,7 +298,12 @@ const AdminPage = () => {
             <Button variant='outline' onClick={() => setConfirmOpen(false)}>
               Cancel
             </Button>
-            <Button color='red' onClick={onDeleteUser}>
+            <Button
+              color='red'
+              onClick={() => {
+                void onDeleteUser()
+              }}
+            >
               Confirm Deletion
             </Button>
           </Group>

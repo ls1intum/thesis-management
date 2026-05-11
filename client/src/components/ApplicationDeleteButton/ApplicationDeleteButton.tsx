@@ -81,7 +81,14 @@ const ApplicationDeleteButton = (props: IApplicationDeleteButtonProps) => {
             Are you sure you want to permanently delete this application? This action cannot be
             undone.
           </Text>
-          <Button onClick={handleDelete} loading={loading} color='red' fullWidth>
+          <Button
+            onClick={() => {
+              void handleDelete()
+            }}
+            loading={loading}
+            color='red'
+            fullWidth
+          >
             Delete Application
           </Button>
         </Stack>

@@ -117,7 +117,7 @@ const SchedulePresentationModal = (props: ISchedulePresentationModalProps) => {
         </Input.Wrapper>
         <Button
           fullWidth
-          disabled={emails.some((row) => isEmail('true')(row.value))}
+          disabled={emails.some((row) => Boolean(isEmail('true')(row.value)))}
           loading={scheduling}
           onClick={() => schedulePresentation()}
         >

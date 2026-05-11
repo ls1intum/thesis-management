@@ -40,6 +40,7 @@ const ApplicationRejectButton = (props: IApplicationRejectButtonProps) => {
 
   useEffect(() => {
     form.reset()
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- form is redefined each render; only reset when the modal toggles
   }, [confirmationModal])
 
   if (
@@ -140,7 +141,9 @@ const ApplicationRejectButton = (props: IApplicationRejectButtonProps) => {
               {...form.getInputProps('notifyUser', { type: 'checkbox' })}
             />
             <Button
-              onClick={() => onReject(form.getValues())}
+              onClick={() => {
+                void onReject(form.getValues())
+              }}
               loading={loading}
               disabled={!form.isValid()}
               fullWidth

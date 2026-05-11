@@ -56,6 +56,7 @@ const DropDownMultiSelect = ({
         ? filteredData.filter((item) => !selectedItems.includes(item))
         : filteredData,
     )
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- searchFunction is provided inline by callers and showSelectedOnTop is a config prop; intentionally only re-filter when data/search/selection changes
   }, [data, search, selectedItems])
 
   const content = () => (

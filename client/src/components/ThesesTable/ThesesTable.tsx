@@ -47,7 +47,7 @@ const ThesesTable = (props: IThesesTableProps) => {
   const navigate = useNavigate()
 
   const onThesisClick = (thesis: IThesisOverview) => {
-    navigate(`/theses/${thesis.thesisId}`)
+    void navigate(`/theses/${thesis.thesisId}`)
   }
 
   const columnConfig: Record<ThesisColumn, DataTableColumn<IThesisOverview>> = {

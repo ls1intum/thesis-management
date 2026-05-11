@@ -111,7 +111,9 @@ const AvatarInput = (props: IAvatarInputProps) => {
             <Button
               variant='subtle'
               size='xs'
-              onClick={importProfilePicture}
+              onClick={() => {
+                void importProfilePicture()
+              }}
               loading={importLoading}
             >
               Import from Gravatar
@@ -135,7 +137,12 @@ const AvatarInput = (props: IAvatarInputProps) => {
               />
             </Center>
             <Slider value={scale} onChange={(x) => setScale(x)} min={1} max={3} step={0.1} />
-            <Button onClick={onSave} fullWidth>
+            <Button
+              onClick={() => {
+                void onSave()
+              }}
+              fullWidth
+            >
               Save Avatar
             </Button>
           </Stack>

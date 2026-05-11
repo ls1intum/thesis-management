@@ -144,7 +144,9 @@ const TopicsTable = (props: ITopicOverviewsTableProps) => {
       records={topics?.content}
       idAccessor='topicId'
       columns={columns.map((column) => columnConfig[column])}
-      onRowClick={({ record }) => navigate(`/topics/${record.topicId}`)}
+      onRowClick={({ record }) => {
+        void navigate(`/topics/${record.topicId}`)
+      }}
     />
   )
 }

@@ -163,6 +163,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
 
       return () => clearInterval(interval)
     }
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- auth object is stable from react-oidc-context; only re-run on auth state or path change
   }, [auth.isAuthenticated, location.pathname])
 
   useEffect(() => {
@@ -171,6 +172,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
     }
 
     close()
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- close is a stable disclosure handler; effect intentionally tracks navigation only
   }, [location.pathname, navigationType])
 
   return (

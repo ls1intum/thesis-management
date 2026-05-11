@@ -110,6 +110,7 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
     }
 
     form.reset()
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- intentionally re-initialize form only when switching applications
   }, [application?.applicationId])
 
   const [loading, setLoading] = useState(false)
@@ -142,6 +143,7 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
         },
       )
     }
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- debounced comment auto-save; form and onUpdate are stable for the lifetime of this application
   }, [debouncedComment, application?.applicationId])
 
   const onAccept = async (values: IApplicationReviewForm) => {
@@ -271,7 +273,9 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
                   { value: 'INTERESTED', label: 'Interested' },
                   { value: 'NOT_INTERESTED', label: 'Not interested' },
                 ]}
-                onChange={(reason) => reason && onReviewReasonChange(reason)}
+                onChange={(reason) => {
+                  if (reason) void onReviewReasonChange(reason)
+                }}
                 disabled={
                   reviewer.user.userId !== user.userId || application.state !== 'NOT_ASSESSED'
                 }
@@ -385,7 +389,9 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
               />
             )}
             <Button
-              onClick={() => onAccept(form.getValues())}
+              onClick={() => {
+                void onAccept(form.getValues())
+              }}
               variant='outline'
               color='green'
               loading={loading}

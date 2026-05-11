@@ -71,6 +71,7 @@ const ReplacePresentationModal = (props: IReplacePresentationModalProps) => {
   useEffect(() => {
     form.validateField('location')
     form.validateField('streamUrl')
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- form is redefined each render; intentionally re-validate only on value changes
   }, [form.values.streamUrl, form.values.location])
 
   useEffect(() => {
