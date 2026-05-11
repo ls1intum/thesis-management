@@ -169,19 +169,26 @@ log "Starting server (dev profile)..."
 save_pid "server" $!
 
 # ---------------------------------------------------------------------------
-# 3. Client dev server (Webpack)
+# 3. Client static bundle (production webpack output)
 # ---------------------------------------------------------------------------
-# Always restart the client to ensure a clean webpack build with the latest
-# TypeScript/React changes. While webpack dev server supports hot reload,
-# restarting guarantees a consistent state for E2E tests.
+# E2E tests run against the production build, not webpack-dev-server. The
+# dev server's error overlay iframe occasionally intercepts clicks during
+# tests; serving the prod bundle eliminates that class of flakes entirely.
 
 if is_port_open 3100; then
   warn "Client already running on port 3100 — restarting to pick up latest changes..."
   kill_pid "client"
   wait_for_port_release 3100
 fi
-log "Starting client dev server..."
-(cd "$CLIENT_DIR" && exec npx webpack serve --env NODE_ENV=development \
+log "Building client (production)..."
+(cd "$CLIENT_DIR" && npm run build > "$ROOT_DIR/.e2e-client-build.log" 2>&1) || {
+  err "Client build failed. See $ROOT_DIR/.e2e-client-build.log"
+  exit 1
+}
+log "Generating runtime-env.js..."
+(cd "$CLIENT_DIR/build" && node ../public/generate-runtime-env.js)
+log "Starting static client server (serve)..."
+(cd "$CLIENT_DIR" && exec npx --yes serve@14 -s build -l 3100 --no-clipboard --no-port-switching \
   > "$ROOT_DIR/.e2e-client.log" 2>&1) &
 save_pid "client" $!
 

@@ -128,15 +128,30 @@ jobs:
         working-directory: ./client
         run: npx playwright install --with-deps chromium
 
-      # Start client dev server in background
-      - name: Start client dev server
+      # Build the client and serve it as a static bundle. Running production
+      # output (instead of webpack-dev-server) avoids the dev-mode error
+      # overlay iframe that occasionally intercepts clicks during e2e tests.
+      - name: Build client
         working-directory: ./client
-        run: npx webpack serve --env NODE_ENV=development &
+        run: npm run build
         env:
           SERVER_HOST: http://localhost:8180
           KEYCLOAK_HOST: http://localhost:8181
           KEYCLOAK_REALM_NAME: thesis-management
           KEYCLOAK_CLIENT_ID: thesis-management-app
+
+      - name: Generate runtime-env.js for the static bundle
+        working-directory: ./client/build
+        run: node ../public/generate-runtime-env.js
+        env:
+          SERVER_HOST: http://localhost:8180
+          KEYCLOAK_HOST: http://localhost:8181
+          KEYCLOAK_REALM_NAME: thesis-management
+          KEYCLOAK_CLIENT_ID: thesis-management-app
+
+      - name: Serve client static bundle
+        working-directory: ./client
+        run: npx --yes serve@14 -s build -l 3100 --no-clipboard --no-port-switching &
 
       # Wait for both services to be ready
       - name: Wait for server to be ready
@@ -156,7 +171,7 @@ jobs:
 
       - name: Wait for client to be ready
         run: |
-          echo "Waiting for client dev server..."
+          echo "Waiting for client static server..."
           for i in $(seq 1 60); do
             if curl -sf http://localhost:3100 > /dev/null 2>&1; then
               echo "Client is ready"

@@ -2,14 +2,15 @@ import {
   useLoadedThesisContext,
   useThesisUpdateAction,
 } from '../../../../providers/ThesisProvider/hooks'
-import { Button, Center, Checkbox, Input, Table, Text } from '@mantine/core'
-import { IThesis } from '../../../../requests/responses/thesis'
+import { Center, Checkbox, Input, Table, Text } from '@mantine/core'
+import type { IThesis } from '../../../../requests/responses/thesis'
 import React from 'react'
 import AvatarUser from '../../../../components/AvatarUser/AvatarUser'
 import { formatDate } from '../../../../utils/format'
 import { doRequest } from '../../../../requests/request'
 import { ApiError } from '../../../../requests/handler'
 import { Trash } from '@phosphor-icons/react'
+import ConfirmationButton from '../../../../components/ConfirmationButton/ConfirmationButton'
 
 interface IThesisFeedbackOverviewProps {
   type: string
@@ -85,7 +86,7 @@ const ThesisFeedbackOverview = (props: IThesisFeedbackOverviewProps) => {
                 <Table.Tr key={item.feedbackId}>
                   <Table.Td ta='center' width={50}>
                     <Checkbox
-                      checked={!!item.completedAt}
+                      checked={Boolean(item.completedAt)}
                       disabled={loading || !access.student || !allowEdit}
                       onChange={() => toggleFeedback(item)}
                     />
@@ -100,9 +101,15 @@ const ThesisFeedbackOverview = (props: IThesisFeedbackOverviewProps) => {
                   <Table.Td width={80}>
                     {access.supervisor && (
                       <Center>
-                        <Button size='xs' loading={deleting} onClick={() => deleteFeedback(item)}>
+                        <ConfirmationButton
+                          size='xs'
+                          loading={deleting}
+                          confirmationTitle='Delete feedback?'
+                          confirmationText='This will permanently remove this feedback entry. Continue?'
+                          onClick={() => deleteFeedback(item)}
+                        >
                           <Trash />
-                        </Button>
+                        </ConfirmationButton>
                       </Center>
                     )}
                   </Table.Td>

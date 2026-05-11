@@ -1,8 +1,8 @@
-import { useContext } from 'react'
+import { use } from 'react'
 import { ThesisCommentsContext } from './context'
 
 export function useThesisCommentsContext() {
-  const data = useContext(ThesisCommentsContext)
+  const data = use(ThesisCommentsContext)
 
   if (!data) {
     throw new Error('ThesisCommentsContext not initialized')

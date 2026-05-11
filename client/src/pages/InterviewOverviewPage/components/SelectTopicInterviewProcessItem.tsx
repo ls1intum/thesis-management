@@ -1,5 +1,5 @@
 import { Badge, Divider, Group, Stack, Text, useMantineColorScheme } from '@mantine/core'
-import { ITopicInterviewProcess } from '../../../requests/responses/interview'
+import type { ITopicInterviewProcess } from '../../../requests/responses/interview'
 import { useHover } from '@mantine/hooks'
 
 interface ISelectTopicInterviewProcessItemProps {

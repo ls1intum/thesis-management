@@ -5,7 +5,7 @@ import InterviewProcessProvider from '../../providers/InterviewProcessProvider/I
 import { useParams } from 'react-router'
 import { doRequest } from '../../requests/request'
 import { useEffect, useState } from 'react'
-import { IInterviewProcess } from '../../requests/responses/interview'
+import type { IInterviewProcess } from '../../requests/responses/interview'
 
 const InterviewTopicOverviewPage = () => {
   const { processId } = useParams<{ processId: string }>()
@@ -13,7 +13,7 @@ const InterviewTopicOverviewPage = () => {
   const [processCompleted, setProcessCompleted] = useState<boolean | null>(null)
   const [title, setTitle] = useState<string | null>(null)
 
-  const fetchInterviewProcess = async () => {
+  const fetchInterviewProcess = () => {
     doRequest<IInterviewProcess>(
       `/v2/interview-process/${processId}`,
       {
@@ -33,6 +33,7 @@ const InterviewTopicOverviewPage = () => {
 
   useEffect(() => {
     fetchInterviewProcess()
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- mount-only initial fetch
   }, [])
 
   return processCompleted !== null ? (

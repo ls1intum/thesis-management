@@ -1,7 +1,23 @@
-import { IGlobalConfig } from './types'
+import type { Environment, IGlobalConfig } from './types'
+
+const parseEnvironment = (value: string | undefined): Environment | undefined => {
+  if (!value) {
+    return undefined
+  }
+  const normalized = value.toLowerCase()
+  if (
+    normalized === 'production' ||
+    normalized === 'staging' ||
+    normalized === 'test' ||
+    normalized === 'dev'
+  ) {
+    return normalized
+  }
+  return undefined
+}
 
 const getEnvironmentVariable = <T = string>(key: string, useJson = false): T | undefined => {
-  const value = process.env[key] || window.RUNTIME_ENVIRONMENT_VARIABLES?.[key]
+  const value = process.env[key] ?? window.RUNTIME_ENVIRONMENT_VARIABLES?.[key]
 
   if (!value) {
     return undefined
@@ -15,46 +31,48 @@ const getEnvironmentVariable = <T = string>(key: string, useJson = false): T | u
 }
 
 export const GLOBAL_CONFIG: IGlobalConfig = {
-  title: getEnvironmentVariable('APPLICATION_TITLE') || 'ThesisManagement',
+  title: getEnvironmentVariable('APPLICATION_TITLE') ?? 'ThesisManagement',
 
-  chair_name: getEnvironmentVariable('CHAIR_NAME') || 'ThesisManagement',
-  chair_url: getEnvironmentVariable('CHAIR_URL') || window.origin,
+  chair_name: getEnvironmentVariable('CHAIR_NAME') ?? 'ThesisManagement',
+  chair_url: getEnvironmentVariable('CHAIR_URL') ?? window.origin,
 
-  allow_suggested_topics: (getEnvironmentVariable('ALLOW_SUGGESTED_TOPICS') || 'true') === 'true',
+  environment: parseEnvironment(getEnvironmentVariable('ENVIRONMENT')),
 
-  genders: getEnvironmentVariable<Record<string, string>>('GENDERS', true) || {
+  allow_suggested_topics: (getEnvironmentVariable('ALLOW_SUGGESTED_TOPICS') ?? 'true') === 'true',
+
+  genders: getEnvironmentVariable<Record<string, string>>('GENDERS', true) ?? {
     MALE: 'Male',
     FEMALE: 'Female',
     OTHER: 'Other',
     PREFER_NOT_TO_SAY: 'Prefer not to say',
   },
 
-  study_degrees: getEnvironmentVariable<Record<string, string>>('STUDY_DEGREES', true) || {
+  study_degrees: getEnvironmentVariable<Record<string, string>>('STUDY_DEGREES', true) ?? {
     BACHELOR: 'Bachelor',
     MASTER: 'Master',
   },
 
-  study_programs: getEnvironmentVariable<Record<string, string>>('STUDY_PROGRAMS', true) || {
+  study_programs: getEnvironmentVariable<Record<string, string>>('STUDY_PROGRAMS', true) ?? {
     COMPUTER_SCIENCE: 'Computer Science',
     INFORMATION_SYSTEMS: 'Information Systems',
     GAMES_ENGINEERING: 'Games Engineering',
     MANAGEMENT_AND_TECHNOLOGY: 'Management and Technology',
     OTHER: 'Other',
   },
-  topic_views_options: getEnvironmentVariable('TOPIC_VIEWS_OPTIONS', true) || {
+  topic_views_options: getEnvironmentVariable('TOPIC_VIEWS_OPTIONS', true) ?? {
     OPEN: 'Open Topics',
     PUBLISHED: 'Published Topics',
   },
   research_groups_location: getEnvironmentVariable<Record<string, string>>(
     'RESEARCH_GROUPS_LOCATION',
     true,
-  ) || {
+  ) ?? {
     GARCHING: 'Garching',
     MUNICH: 'Munich',
     HEILBRONN: 'Heilbronn',
     WEIHENSTEPHAN: 'Weihenstephan',
   },
-  thesis_types: getEnvironmentVariable<IGlobalConfig['thesis_types']>('THESIS_TYPES', true) || {
+  thesis_types: getEnvironmentVariable<IGlobalConfig['thesis_types']>('THESIS_TYPES', true) ?? {
     BACHELOR: {
       long: 'Bachelor Thesis',
       short: 'BA',
@@ -73,19 +91,19 @@ export const GLOBAL_CONFIG: IGlobalConfig = {
     },
   },
 
-  languages: getEnvironmentVariable<Record<string, string>>('LANGUAGES', true) || {
+  languages: getEnvironmentVariable<Record<string, string>>('LANGUAGES', true) ?? {
     ENGLISH: 'English',
     GERMAN: 'German',
   },
 
-  custom_data: getEnvironmentVariable<IGlobalConfig['custom_data']>('CUSTOM_DATA', true) || {
+  custom_data: getEnvironmentVariable<IGlobalConfig['custom_data']>('CUSTOM_DATA', true) ?? {
     GITHUB: {
       label: 'Github Username',
       required: false,
     },
   },
 
-  thesis_files: getEnvironmentVariable<IGlobalConfig['thesis_files']>('THESIS_FILES', true) || {
+  thesis_files: getEnvironmentVariable<IGlobalConfig['thesis_files']>('THESIS_FILES', true) ?? {
     PRESENTATION: {
       label: 'Presentation',
       description: 'Presentation (PDF)',
@@ -106,12 +124,15 @@ export const GLOBAL_CONFIG: IGlobalConfig = {
     },
   },
 
-  server_host: getEnvironmentVariable('SERVER_HOST') || 'http://localhost:8180',
+  server_host: (getEnvironmentVariable('SERVER_HOST') ?? 'http://localhost:8180').replace(
+    /\/+$/,
+    '',
+  ),
   passkey_rp_id: getEnvironmentVariable('PASSKEY_RP_ID')?.trim() || window.location.hostname,
 
   keycloak: {
-    host: getEnvironmentVariable('KEYCLOAK_HOST') || 'http://localhost:8181',
-    realm: getEnvironmentVariable('KEYCLOAK_REALM_NAME') || 'thesis-management',
-    client_id: getEnvironmentVariable('KEYCLOAK_CLIENT_ID') || 'thesis-management-app',
+    host: getEnvironmentVariable('KEYCLOAK_HOST') ?? 'http://localhost:8181',
+    realm: getEnvironmentVariable('KEYCLOAK_REALM_NAME') ?? 'thesis-management',
+    client_id: getEnvironmentVariable('KEYCLOAK_CLIENT_ID') ?? 'thesis-management-app',
   },
 }

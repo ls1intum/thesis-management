@@ -11,10 +11,8 @@ import {
   Button,
   Box,
 } from '@mantine/core'
-import {
-  IIntervieweeLightWithNextSlot,
-  InterviewState,
-} from '../../../requests/responses/interview'
+import type { IIntervieweeLightWithNextSlot } from '../../../requests/responses/interview'
+import { InterviewState } from '../../../requests/responses/interview'
 import { CustomAvatar } from '../../../components/CustomAvatar/CustomAvatar'
 import {
   createScoreLabel,
@@ -111,7 +109,11 @@ const IntervieweeCard = ({
           <Divider />
           <Group px={'1.5rem'} py={'0.75rem'} justify='space-between' align='center'>
             <Group gap={'0.5rem'}>
-              <Divider orientation='vertical' size='lg' color={getInterviewStateColor(state)} />
+              <Divider
+                orientation='vertical'
+                size='lg'
+                color={getInterviewStateColor(state, colorScheme.colorScheme === 'dark')}
+              />
               <Stack gap={0}>
                 <Text
                   size='sm'

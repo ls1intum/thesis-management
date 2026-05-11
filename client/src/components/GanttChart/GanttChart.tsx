@@ -1,9 +1,12 @@
 import * as classes from './GanttChart.module.css'
-import { ArrayElement, arrayUnique } from '../../utils/array'
-import { ReactNode, useMemo, useState, useEffect, CSSProperties } from 'react'
+import type { ArrayElement } from '../../utils/array'
+import { arrayUnique } from '../../utils/array'
+import type { ReactNode, CSSProperties } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { Button, Collapse, Popover, Skeleton } from '@mantine/core'
 import { CaretDown, CaretUp } from '@phosphor-icons/react'
-import { DateRange, GanttChartContext, IGanttChartContext, IGanttChartDataElement } from './context'
+import type { DateRange, IGanttChartContext, IGanttChartDataElement } from './context'
+import { GanttChartContext } from './context'
 import GanttChartRangeSlider from './components/GanttChartRangeSlider/GanttChartRangeSlider'
 import GanttChartZoomContainer from './components/GanttChartZoomContainer/GanttChartZoomContainer'
 import GanttChartTicks from './components/GanttChartTicks/GanttChartTicks'
@@ -38,23 +41,18 @@ const GanttChart = (props: IGanttChartProps) => {
   } = props
 
   const storedRangeKey = rangeStorageKey ? `gantt-chart-range-${rangeStorageKey}` : undefined
+  const rawStoredRange = storedRangeKey ? localStorage.getItem(storedRangeKey) : null
   const storedRange = useMemo<DateRange | undefined>(() => {
-    if (!storedRangeKey) {
-      return undefined
-    }
-
-    const rawRange = localStorage.getItem(storedRangeKey)
-
-    if (rawRange === null) {
+    if (!storedRangeKey || rawStoredRange === null) {
       return undefined
     }
 
     try {
-      return JSON.parse(rawRange)
+      return JSON.parse(rawStoredRange)
     } catch {
       return undefined
     }
-  }, [storedRangeKey && localStorage.getItem(storedRangeKey)])
+  }, [storedRangeKey, rawStoredRange])
 
   const [range, setRange] = useState<DateRange | undefined>(storedRange)
   const [collapsedGroups, setCollapsedGroups] = useState<string[]>([])
@@ -73,11 +71,14 @@ const GanttChart = (props: IGanttChartProps) => {
     data?.map((row) => ({
       groupId: row.groupId,
       groupNode: row.groupNode,
-    })) || [],
+    })) ?? [],
     (a, b) => a.groupId === b.groupId,
   )
 
   const currentTime = useMemo(() => Date.now(), [])
+
+  const rangeKey = range?.join(',')
+  const minRangeKey = minRange?.join(',')
 
   const contextValue = useMemo<IGanttChartContext>(() => {
     // Calculate total range based on the provided data
@@ -131,7 +132,7 @@ const GanttChart = (props: IGanttChartProps) => {
     }
 
     return {
-      data: data || [],
+      data: data ?? [],
       currentTime,
       totalRange,
       filteredRange,
@@ -140,7 +141,8 @@ const GanttChart = (props: IGanttChartProps) => {
       getTimelineWidth,
       isVisible,
     }
-  }, [data, currentTime, range?.join(','), minRange?.join(','), initialRangeDuration])
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- range/minRange are arrays; joined keys below capture changes deterministically
+  }, [data, currentTime, rangeKey, minRangeKey, initialRangeDuration])
 
   const { getTimelineLeftPosition, getTimelineWidth, isVisible } = contextValue
 
@@ -153,7 +155,7 @@ const GanttChart = (props: IGanttChartProps) => {
   }
 
   return (
-    <GanttChartContext.Provider value={contextValue}>
+    <GanttChartContext value={contextValue}>
       <div className={classes.chartContainer}>
         <div className={classes.chartBox}>
           <GanttChartRangeSlider />
@@ -211,7 +213,7 @@ const GanttChart = (props: IGanttChartProps) => {
                   </Button>
                 </div>
                 <div className={classes.groupContent}>
-                  <Collapse in={!collapsedGroups.includes(group.groupId)}>
+                  <Collapse expanded={!collapsedGroups.includes(group.groupId)}>
                     {data
                       .filter((row) => row.groupId === group.groupId)
                       .map((item) => (
@@ -248,9 +250,9 @@ const GanttChart = (props: IGanttChartProps) => {
                                       timelineItem.endDate.getTime(),
                                     ]),
                                   )
-                                  .map((timelineItem, index) => (
+                                  .map((timelineItem) => (
                                     <div
-                                      key={index + ' ' + timelineItem.startDate.getTime()}
+                                      key={`${timelineItem.id}-${timelineItem.startDate.getTime()}`}
                                       className={classes.timelinePart}
                                       onMouseEnter={() => setHoveredTimelineItem(timelineItem.id)}
                                       onMouseLeave={() => setHoveredTimelineItem(undefined)}
@@ -305,7 +307,7 @@ const GanttChart = (props: IGanttChartProps) => {
           </GanttChartZoomContainer>
         </div>
       </div>
-    </GanttChartContext.Provider>
+    </GanttChartContext>
   )
 }
 

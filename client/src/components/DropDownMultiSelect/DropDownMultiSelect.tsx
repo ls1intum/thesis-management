@@ -47,18 +47,16 @@ const DropDownMultiSelect = ({
   const computedColorScheme = useComputedColorScheme()
 
   useEffect(() => {
-    let filteredData = data
-    if (searchFunction) {
-      filteredData = searchFunction(search)
-    } else {
-      filteredData = data.filter((item) => item.toLowerCase().includes(search.toLowerCase()))
-    }
+    const filteredData = searchFunction
+      ? searchFunction(search)
+      : data.filter((item) => item.toLowerCase().includes(search.toLowerCase()))
 
     setDisplayData(
       showSelectedOnTop
         ? filteredData.filter((item) => !selectedItems.includes(item))
         : filteredData,
     )
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- searchFunction is provided inline by callers and showSelectedOnTop is a config prop; intentionally only re-filter when data/search/selection changes
   }, [data, search, selectedItems])
 
   const content = () => (

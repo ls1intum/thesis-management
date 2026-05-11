@@ -1,13 +1,15 @@
-import React, { Dispatch, SetStateAction } from 'react'
-import { PaginationResponse } from '../../requests/responses/pagination'
-import { ApplicationState, IApplication } from '../../requests/responses/application'
-import { ITopicOverview } from '../../requests/responses/topic'
+import type { Dispatch, SetStateAction } from 'react'
+import React from 'react'
+import type { PaginationResponse } from '../../requests/responses/pagination'
+import type { ApplicationState, IApplication } from '../../requests/responses/application'
+import type { ITopicOverview } from '../../requests/responses/topic'
 
 export interface IApplicationsFilters {
   search?: string
   states?: ApplicationState[]
   topics?: string[]
   types?: string[]
+  includeSuggestedTopics?: boolean
 }
 
 export interface IApplicationsSort {

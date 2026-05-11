@@ -1,9 +1,9 @@
-import { useContext } from 'react'
+import { use } from 'react'
 import { AuthenticationContext } from '../providers/AuthenticationContext/context'
 import { useLocalStorage } from './local-storage'
 
 export function useAuthenticationContext() {
-  const context = useContext(AuthenticationContext)
+  const context = use(AuthenticationContext)
 
   if (!context) {
     throw new Error('Authentication context not initialized')

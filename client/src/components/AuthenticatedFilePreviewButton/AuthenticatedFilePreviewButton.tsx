@@ -1,7 +1,8 @@
 import { Button, Modal, type ButtonProps } from '@mantine/core'
-import { PropsWithChildren, useState } from 'react'
+import type { PropsWithChildren } from 'react'
+import { useState } from 'react'
 import { AuthenticatedFilePreview } from '../AuthenticatedFilePreview/AuthenticatedFilePreview'
-import { UploadFileType } from '../../config/types'
+import type { UploadFileType } from '../../config/types'
 import { getAdjustedFileType } from '../../utils/file'
 
 interface IAuthenticatedFilePreviewButtonProps extends ButtonProps {

@@ -1,4 +1,5 @@
-import { Select, SelectProps, Text } from '@mantine/core'
+import type { SelectProps } from '@mantine/core'
+import { Select, Text } from '@mantine/core'
 
 const ThesisVisibilitySelect = (props: SelectProps) => {
   const { ...others } = props

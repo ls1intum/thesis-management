@@ -12,7 +12,7 @@ import {
   Title,
 } from '@mantine/core'
 import dayjs from 'dayjs'
-import { IInterviewSlot } from '../../../requests/responses/interview'
+import type { IInterviewSlot } from '../../../requests/responses/interview'
 import { useEffect, useState } from 'react'
 import { CardsIcon } from '@phosphor-icons/react'
 import { TimeInput } from '@mantine/dates'
@@ -58,6 +58,7 @@ const CollapsibleDateCard = ({
     if (addNewSlots) {
       addNewSlots(allSlots)
     }
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- allSlots is derived from slotRanges each render; addNewSlots is recreated by parent — re-running on those would loop
   }, [slotRanges])
 
   const createSlotsForRange = (
@@ -231,7 +232,7 @@ const CollapsibleDateCard = ({
       duration: s.endDate.getTime() - s.startDate.getTime(),
       slots: [s],
       locationType: s.streamUrl ? 'Online' : 'Onsite',
-      location: s.streamUrl ? s.streamUrl : s.location ? s.location : '',
+      location: s.streamUrl ?? s.location ?? '',
     }))
 
     // 2) compute ranges only on unscheduled
@@ -256,6 +257,7 @@ const CollapsibleDateCard = ({
     if (slots && slots.length > 0) {
       setSlotRanges(buildSlotRanges(slots))
     }
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- mount-only seeding from initial slots prop; subsequent edits flow through state
   }, [])
 
   const updateAllLocations = (newLocation: string, locationType: 'Onsite' | 'Online') => {
@@ -368,6 +370,7 @@ const CollapsibleDateCard = ({
             ) : (
               <Stack justify='flex-start' align={'flex-start'}>
                 {slotRanges.map((slotRange, index) => (
+                  // eslint-disable-next-line @eslint-react/no-array-index-key -- slot ranges are in-progress drafts without stable ids; position is the identity
                   <Stack key={`slot-range-${date}-${index}`} w={'100%'} gap={'0.75rem'}>
                     <Group justify='space-between' align='center'>
                       <Text fw={500} size={'xs'} c={'dimmed'}>
@@ -395,7 +398,7 @@ const CollapsibleDateCard = ({
                         tooltipOnlyWhenDisabled={true}
                       ></DeleteButton>
                     </Group>
-                    <Group wrap='nowrap' key={`slot-range-${date}-${index}`} h={'100%'} w={'100%'}>
+                    <Group wrap='nowrap' h={'100%'} w={'100%'}>
                       <Divider
                         orientation='vertical'
                         size={'lg'}
@@ -430,16 +433,13 @@ const CollapsibleDateCard = ({
 
                                     //When it is single also set end time
                                     if (slotRange.type === 'single') {
-                                      newRanges[index].endTime = (() => {
-                                        const newEndTime = new Date(date)
-                                        const [endHours, endMinutes] = newTime.target.value
-                                          .split(':')
-                                          .map(Number)
-                                        newEndTime.setHours(endHours, endMinutes, 0, 0)
-                                        newEndTime.setMinutes(newEndTime.getMinutes() + duration)
-
-                                        return newEndTime
-                                      })()
+                                      const newEndTime = new Date(date)
+                                      const [endHours, endMinutes] = newTime.target.value
+                                        .split(':')
+                                        .map(Number)
+                                      newEndTime.setHours(endHours, endMinutes, 0, 0)
+                                      newEndTime.setMinutes(newEndTime.getMinutes() + duration)
+                                      newRanges[index].endTime = newEndTime
                                     }
 
                                     if (newRanges[index].endTime && newRanges[index].startTime) {
@@ -596,9 +596,9 @@ const CollapsibleDateCard = ({
                         </Group>
                         {slotRange.slots && slotRange.slots.length > 0 ? (
                           <Stack w={'100%'} pt={6} gap={'0.5rem'}>
-                            {slotRange.slots.map((slot, slotIndex) => (
+                            {slotRange.slots.map((slot) => (
                               <SlotItem
-                                key={`${slot.slotId}-${slot.startDate.toISOString()}-${slotIndex}`}
+                                key={`${slot.slotId}-${slot.startDate.toISOString()}`}
                                 slot={slot}
                                 hoverEffect={false}
                                 withInterviewee={

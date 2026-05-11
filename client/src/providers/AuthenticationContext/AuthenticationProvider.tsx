@@ -1,24 +1,18 @@
-import { PropsWithChildren, useEffect, useMemo, useState } from 'react'
-import {
-  AuthenticationContext,
-  IAuthenticationContext,
-  IDecodedAccessToken,
-  IDecodedRefreshToken,
-} from './context'
+import type { PropsWithChildren } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import type { IAuthenticationContext, IDecodedAccessToken, IDecodedRefreshToken } from './context'
+import { AuthenticationContext } from './context'
 import Keycloak from 'keycloak-js'
 import { GLOBAL_CONFIG } from '../../config/global'
 import { jwtDecode } from 'jwt-decode'
-import {
-  getAuthenticationTokens,
-  IAuthenticationTokens,
-  useAuthenticationTokens,
-} from '../../hooks/authentication'
+import type { IAuthenticationTokens } from '../../hooks/authentication'
+import { getAuthenticationTokens, useAuthenticationTokens } from '../../hooks/authentication'
 import { useSignal } from '../../hooks/utility'
-import { IUser } from '../../requests/responses/user'
+import type { IUser } from '../../requests/responses/user'
 import { doRequest } from '../../requests/request'
 import { showSimpleError } from '../../utils/notification'
 import { ApiError, getApiResponseErrorMessage } from '../../requests/handler'
-import { ILightResearchGroup } from '../../requests/responses/researchGroup'
+import type { ILightResearchGroup } from '../../requests/responses/researchGroup'
 import { getPasskeyErrorMessage } from '../../utils/passkey'
 
 const createKeycloakClient = () =>
@@ -101,7 +95,7 @@ const normalizeCredentialFromMetadata = (
 
   return {
     id,
-    type: typeFromCredential || containerType,
+    type: typeFromCredential ?? containerType,
     userLabel,
     createdDate,
   }
@@ -223,7 +217,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
       decodedAccessToken = accessToken ? jwtDecode<IDecodedAccessToken>(accessToken) : undefined
       decodedRefreshToken = refreshToken ? jwtDecode<IDecodedRefreshToken>(refreshToken) : undefined
     } catch (error) {
-      console.log('Failed to decode authentication tokens', error)
+      console.error('Failed to decode authentication tokens', error)
       activeKeycloak.clearToken()
       setAuthenticationTokens(undefined)
       return
@@ -308,14 +302,12 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
 
     const storedTokens = getAuthenticationTokens()
 
-    console.log('Initializing keycloak...')
-
     void initializeKeycloakSession(storedTokens)
       .then(() => {
-        console.log('Keycloak initialized')
+        triggerReadySignal()
       })
       .catch((error) => {
-        console.log('Keycloak init error', error)
+        console.error('Keycloak init error', error)
       })
       .finally(() => {
         if (!readyRef.isTriggerred) {
@@ -348,6 +340,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
       clearInterval(refreshTokenInterval)
       unsetKeycloakListeners()
     }
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- mount-only keycloak setup: setAuthenticationTokens/triggerReadySignal are stable refs intentionally captured once
   }, [])
 
   useEffect(() => {
@@ -371,7 +364,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
     } else {
       setUniversityId(undefined)
     }
-  }, [authenticationTokens?.access_token, isReady])
+  }, [authenticationTokens?.access_token, isReady, setAuthenticationTokens])
 
   useEffect(() => {
     setUser(undefined)
@@ -418,7 +411,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
 
   const contextValue = useMemo<IAuthenticationContext>(() => {
     return {
-      isAuthenticated: !!authenticationTokens?.access_token,
+      isAuthenticated: Boolean(authenticationTokens?.access_token),
       user: authenticationTokens?.access_token ? user : undefined,
       groups: [],
       updateUser: setUser,
@@ -432,7 +425,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
         }
 
         if (examinationReport) {
-          formData.append('examinationReport', examinationReport!)
+          formData.append('examinationReport', examinationReport)
         }
 
         if (cv) {
@@ -542,11 +535,12 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
                   error,
                   'Failed to refresh the access token for passkey registration',
                 ),
+                { cause: error },
               )
             }
           }
 
-          const accessToken = keycloak.token || storedTokens.access_token
+          const accessToken = keycloak.token ?? storedTokens.access_token
           const challenge = await requestPasskeyChallenge()
 
           let decodedToken: IDecodedAccessToken | undefined
@@ -557,9 +551,11 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
           }
 
           const userHandle =
-            decodedToken?.sub || decodedToken?.preferred_username || decodedToken?.email || 'user'
-          const username = decodedToken?.preferred_username || decodedToken?.email || userHandle
-          const displayName = decodedToken?.name || username
+            decodedToken?.sub ?? decodedToken?.preferred_username ?? decodedToken?.email ?? 'user'
+          const username = decodedToken?.preferred_username ?? decodedToken?.email ?? userHandle
+          const tokenDisplayName =
+            typeof decodedToken?.name === 'string' ? decodedToken.name.trim() : ''
+          const displayName = tokenDisplayName.length > 0 ? tokenDisplayName : username
           const userIdBytes = new TextEncoder().encode(userHandle).slice(0, 64)
 
           const passkeyCredential = await navigator.credentials.create({
@@ -621,7 +617,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
             }
           }
 
-          const accessToken = keycloak.token || storedTokens.access_token
+          const accessToken = keycloak.token ?? storedTokens.access_token
           const response = await fetch(getAccountCredentialsEndpoint(), {
             method: 'GET',
             credentials: 'include',
@@ -657,7 +653,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
             }
           }
 
-          const accessToken = keycloak.token || storedTokens.access_token
+          const accessToken = keycloak.token ?? storedTokens.access_token
           const response = await fetch(getAccountCredentialsEndpoint(credentialId), {
             method: 'DELETE',
             credentials: 'include',
@@ -678,7 +674,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
           window.location.href = `${window.location.origin}${redirectUri}`
         }, 2000)
 
-        readySignal.then(() => {
+        void readySignal.then(() => {
           if (keycloak.authenticated) {
             clearTimeout(timeout)
 
@@ -691,11 +687,10 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
       researchGroups: researchGroups,
       isPasskeySupported,
     }
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- researchGroups/setAuthenticationTokens/readySignal/access_token are captured by reference inside callbacks that read the latest value at call time; recomputing the entire context on each token refresh would re-render every consumer
   }, [user, authenticationTokens?.access_token, readySignal, researchGroups, isPasskeySupported])
 
-  return (
-    <AuthenticationContext.Provider value={contextValue}>{children}</AuthenticationContext.Provider>
-  )
+  return <AuthenticationContext value={contextValue}>{children}</AuthenticationContext>
 }
 
 export default AuthenticationProvider

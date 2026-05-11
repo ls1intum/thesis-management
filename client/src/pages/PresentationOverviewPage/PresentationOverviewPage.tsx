@@ -20,18 +20,21 @@ import { useIsSmallerBreakpoint, usePageTitle } from '../../hooks/theme'
 import { GLOBAL_CONFIG } from '../../config/global'
 import { CopyIcon, CheckIcon } from '@phosphor-icons/react'
 import { useEffect, useRef, useState } from 'react'
-import { ILightResearchGroup } from '../../requests/responses/researchGroup'
+import type { ILightResearchGroup } from '../../requests/responses/researchGroup'
 import { useAuthenticationContext, useUser } from '../../hooks/authentication'
 import { Calendar } from '@mantine/dates'
 import dayjs from 'dayjs'
-import { PaginationResponse } from '../../requests/responses/pagination'
-import { IPublishedPresentation, IThesisPresentation } from '../../requests/responses/thesis'
+import type { PaginationResponse } from '../../requests/responses/pagination'
+import type { IPublishedPresentation, IThesisPresentation } from '../../requests/responses/thesis'
 import { doRequest } from '../../requests/request'
 import { showSimpleError } from '../../utils/notification'
 import { getApiResponseErrorMessage } from '../../requests/handler'
 import PresentationCard from '../ThesisPage/components/ThesisPresentationSection/components/PresentationCard'
 import { CalendarXIcon } from '@phosphor-icons/react/dist/ssr'
 import { useNavigate } from 'react-router'
+import { pickTargetDate } from './pickTargetDate'
+
+const NEVER_SCROLLED = Symbol('never-scrolled')
 
 const PresentationOverviewPage = () => {
   usePageTitle('Presentations')
@@ -62,6 +65,12 @@ const PresentationOverviewPage = () => {
   const scrollRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    // On mobile let the page scroll natively; the custom hijack causes the
+    // calendar to slide under the sticky header (#729).
+    if (isSmaller) {
+      return
+    }
+
     const onWheel = (e: WheelEvent) => {
       // Check if body has modal-open class or if any modal backdrop is present
       const hasModalBackdrop = document.querySelector(
@@ -78,11 +87,21 @@ const PresentationOverviewPage = () => {
 
     window.addEventListener('wheel', onWheel, { passive: false })
     return () => window.removeEventListener('wheel', onWheel)
-  }, [])
+  }, [isSmaller])
 
   const [presentations, setPresentations] = useState<Map<string, IPublishedPresentation[]>>()
+  // Tracks which research group the current `presentations` map belongs to,
+  // so the auto-scroll effect doesn't fire with the *previous* group's data
+  // during the gap between groupId change and fetch resolution.
+  const presentationsGroupId = useRef<string | null>(null)
 
   useEffect(() => {
+    // Clear the stale map immediately on group switch — otherwise the auto
+    // scroll effect would compute its target from the previous group's data
+    // and mark the new group as "scrolled" before its presentations arrive.
+    setPresentations(undefined)
+    presentationsGroupId.current = null
+    const newGroupId = selectedGroup?.id ?? null
     return doRequest<PaginationResponse<IPublishedPresentation>>(
       `/v2/published-presentations`,
       {
@@ -98,11 +117,14 @@ const PresentationOverviewPage = () => {
           const presentationsByDate = new Map<string, IPublishedPresentation[]>()
           ;(res.data.content ?? []).forEach((presentation) => {
             const date = dayjs(presentation.scheduledAt).format('YYYY-MM-DD')
-            if (!presentationsByDate.has(date)) {
-              presentationsByDate.set(date, [])
+            const existing = presentationsByDate.get(date)
+            if (existing) {
+              existing.push(presentation)
+            } else {
+              presentationsByDate.set(date, [presentation])
             }
-            presentationsByDate.get(date)!.push(presentation)
           })
+          presentationsGroupId.current = newGroupId
           setPresentations(presentationsByDate)
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
@@ -123,10 +145,68 @@ const PresentationOverviewPage = () => {
     }
   }
 
+  // Auto-scroll to today's date heading once after presentations load for
+  // a given research group. If today has no presentation, fall back to the
+  // next upcoming day, then to the most recent past date — never the
+  // earliest, which would put the user furthest from where they care to be.
+  //
+  // The ref tracks which groupId has already been scroll-targeted so user
+  // edits via onDelete / onUpdate (which produce new presentations Map
+  // identities) do not yank the viewport back to today while the user is
+  // interacting with a card.
+  //
+  // Initial value uses a unique sentinel rather than `null` so we can tell
+  // apart "no scroll yet" from "scrolled for a user with no research group"
+  // — otherwise the first effect run can lock the ref to `null` *before*
+  // `selectedGroup` resolves, and the eventual real group never gets a
+  // scroll.
+  const lastScrolledGroupId = useRef<string | typeof NEVER_SCROLLED | null>(NEVER_SCROLLED)
+
+  useEffect(() => {
+    if (!presentations || presentations.size === 0 || !scrollRef.current) {
+      return
+    }
+    // If we have research groups available but none picked yet, wait —
+    // selectedGroup is about to resolve and we'd otherwise consume the
+    // scroll for a transient `null` group key.
+    if (researchGroups.length > 0 && !selectedGroup) {
+      return
+    }
+    const groupKey = selectedGroup?.id ?? null
+    // Race guard: between a group switch and the new fetch resolving, the
+    // `presentations` map still belongs to the previous group. Comparing
+    // against the ref written by the fetch callback ensures we only scroll
+    // when the rendered data actually matches the currently selected group.
+    if (presentationsGroupId.current !== groupKey) {
+      return
+    }
+    if (lastScrolledGroupId.current === groupKey) {
+      return
+    }
+
+    const today = dayjs().format('YYYY-MM-DD')
+    const target = pickTargetDate(today, Array.from(presentations.keys()))
+
+    if (target) {
+      // Defer to the next frame so layout has had a chance to commit the
+      // newly-rendered presentation cards before we measure scroll offsets,
+      // and only mark the group as "scrolled" once the scroll actually
+      // fires — otherwise a stale render that bails out mid-effect could
+      // still consume the scroll.
+      const handle = requestAnimationFrame(() => {
+        scrollTo(target)
+        lastScrolledGroupId.current = groupKey
+      })
+      return () => cancelAnimationFrame(handle)
+    }
+    lastScrolledGroupId.current = groupKey
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- only the selected group's id matters for scroll-target keying; tracking the whole object would re-scroll on unrelated identity changes
+  }, [presentations, selectedGroup?.id, researchGroups.length])
+
   const onDelete = (presentationId: string, date: string) => {
     const updatedMap = new Map(presentations)
     const updatedList =
-      updatedMap.get(date)?.filter((item) => item.presentationId !== presentationId) || []
+      updatedMap.get(date)?.filter((item) => item.presentationId !== presentationId) ?? []
     if (updatedList.length === 0) {
       updatedMap.delete(date)
     } else {
@@ -227,7 +307,7 @@ const PresentationOverviewPage = () => {
         </div>
       </Group>
       <Flex h={{ md: '85%' }} w={'100%'} direction={{ base: 'column-reverse', md: 'row' }}>
-        {presentations && presentations.size === 0 && (
+        {presentations?.size === 0 && (
           <Flex h={'100%'} w={'100%'} align={'center'} justify={'center'} direction={'column'}>
             <CalendarXIcon size={64} color={'gray'} />
             <Title order={4}>No Presentations Scheduled</Title>
@@ -269,6 +349,7 @@ const PresentationOverviewPage = () => {
                               presentation={p}
                               thesis={p.thesis}
                               hasEditAccess={
+                                // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- `false` must fall through to the next check
                                 user?.groups?.includes('admin') ||
                                 user?.researchGroupId === p.thesis.researchGroup.id ||
                                 (p.thesis.students ?? []).some(
@@ -276,6 +357,7 @@ const PresentationOverviewPage = () => {
                                 )
                               }
                               hasAcceptAccess={
+                                // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- `false` must fall through to the next check
                                 user?.groups?.includes('admin') ||
                                 user?.researchGroupId === p.thesis.researchGroup.id
                               }
@@ -283,7 +365,7 @@ const PresentationOverviewPage = () => {
                               titleOrder={6}
                               includeStudents={true}
                               includeThesisStatus={true}
-                              onClick={() => navigate(`/presentations/${p.presentationId}`)}
+                              onClick={() => void navigate(`/presentations/${p.presentationId}`)}
                               onDelete={() => {
                                 onDelete(p.presentationId, date)
                               }}
@@ -322,6 +404,7 @@ const PresentationOverviewPage = () => {
                                 presentation={p}
                                 thesis={p.thesis}
                                 hasEditAccess={
+                                  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- `false` must fall through to the next check
                                   user?.groups?.includes('admin') ||
                                   user?.researchGroupId === p.thesis.researchGroup.id ||
                                   (p.thesis.students ?? []).some(
@@ -329,6 +412,7 @@ const PresentationOverviewPage = () => {
                                   )
                                 }
                                 hasAcceptAccess={
+                                  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- `false` must fall through to the next check
                                   user?.groups?.includes('admin') ||
                                   user?.researchGroupId === p.thesis.researchGroup.id
                                 }
@@ -336,7 +420,7 @@ const PresentationOverviewPage = () => {
                                 includeThesisStatus={true}
                                 titleOrder={6}
                                 includeStudents={true}
-                                onClick={() => navigate(`/presentations/${p.presentationId}`)}
+                                onClick={() => void navigate(`/presentations/${p.presentationId}`)}
                                 onDelete={() => {
                                   onDelete(p.presentationId, date)
                                 }}

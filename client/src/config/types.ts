@@ -1,8 +1,12 @@
+export type Environment = 'production' | 'staging' | 'test' | 'dev'
+
 export interface IGlobalConfig {
   title: string
 
   chair_name: string
   chair_url: string
+
+  environment?: Environment
 
   allow_suggested_topics: boolean
 

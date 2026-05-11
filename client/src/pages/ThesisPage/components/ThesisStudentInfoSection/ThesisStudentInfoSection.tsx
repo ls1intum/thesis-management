@@ -1,5 +1,5 @@
 import { Accordion, Button, Grid, Group, NumberInput, Paper, Stack } from '@mantine/core'
-import { IThesis } from '../../../../requests/responses/thesis'
+import type { IThesis } from '../../../../requests/responses/thesis'
 import LabeledItem from '../../../../components/LabeledItem/LabeledItem'
 import { GLOBAL_CONFIG } from '../../../../config/global'
 import { useHighlightedBackgroundColor } from '../../../../hooks/theme'
@@ -11,6 +11,7 @@ import { formatUser } from '../../../../utils/format'
 import { useEffect, useState } from 'react'
 import { doRequest } from '../../../../requests/request'
 import { ApiError } from '../../../../requests/handler'
+import { renderCustomDataValue } from '../../../../utils/customDataLink'
 
 const ThesisStudentInfoSection = () => {
   const { thesis, access } = useLoadedThesisContext()
@@ -118,7 +119,7 @@ const ThesisStudentInfoSection = () => {
                       <Grid.Col key={key} span={{ md: 6 }}>
                         <LabeledItem
                           label={GLOBAL_CONFIG.custom_data[key]?.label ?? key}
-                          value={value}
+                          value={renderCustomDataValue(key, value)}
                         />
                       </Grid.Col>
                     ))}
@@ -131,7 +132,7 @@ const ThesisStudentInfoSection = () => {
                         onChange={(value) =>
                           setCredits((prev) => {
                             if (value) {
-                              return { ...prev, [user.data.userId]: +value }
+                              return { ...prev, [user.data.userId]: Number(value) }
                             } else {
                               delete prev[user.data.userId]
 

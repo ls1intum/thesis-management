@@ -17,7 +17,7 @@ services:
       - "5444:5432"
 
   keycloak:
-    image: quay.io/keycloak/keycloak:26.5
+    image: quay.io/keycloak/keycloak:26.6
     container_name: thesis-management-keycloak
     environment:
       KC_BOOTSTRAP_ADMIN_USERNAME: admin

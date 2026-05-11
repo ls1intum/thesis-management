@@ -1,4 +1,5 @@
-import { IThesis, ThesisState } from '../../../../requests/responses/thesis'
+import type { IThesis } from '../../../../requests/responses/thesis'
+import { ThesisState } from '../../../../requests/responses/thesis'
 import { Accordion, Center, Grid, Group, Stack, Text, Table, Alert } from '@mantine/core'
 import ConfirmationButton from '../../../../components/ConfirmationButton/ConfirmationButton'
 import { doRequest } from '../../../../requests/request'
@@ -90,7 +91,7 @@ const ThesisWritingSection = () => {
     ]),
   )
   const requiredFilesUploaded =
-    !!thesisFile &&
+    Boolean(thesisFile) &&
     !Object.entries(GLOBAL_CONFIG.thesis_files)
       .filter(([, value]) => value.required)
       .some(([key]) => !customFiles[key])

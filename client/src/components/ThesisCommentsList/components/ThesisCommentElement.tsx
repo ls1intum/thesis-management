@@ -1,5 +1,5 @@
 import { Group, Stack, Text } from '@mantine/core'
-import { IThesisComment } from '../../../requests/responses/thesis'
+import type { IThesisComment } from '../../../requests/responses/thesis'
 import { CustomAvatar } from '../../CustomAvatar/CustomAvatar'
 import { formatDate } from '../../../utils/format'
 import FileElement from '../../FileElement/FileElement'

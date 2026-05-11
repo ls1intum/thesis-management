@@ -5,7 +5,7 @@ import { useIsSmallerBreakpoint } from '../../../hooks/theme'
 import { useInterviewProcessContext } from '../../../providers/InterviewProcessProvider/hooks'
 import SlotItem from '../../InterviewTopicOverviewPage/components/SlotItem'
 import { useState } from 'react'
-import { IInterviewSlot } from '../../../requests/responses/interview'
+import type { IInterviewSlot } from '../../../requests/responses/interview'
 
 interface ISelectSlotCarouselProps {
   selectedSlot: IInterviewSlot | null

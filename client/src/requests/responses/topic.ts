@@ -1,5 +1,5 @@
-import { ILightResearchGroup, IMinimalResearchGroup } from './researchGroup'
-import { ILightUser, IMinimalUser } from './user'
+import type { ILightResearchGroup, IMinimalResearchGroup } from './researchGroup'
+import type { ILightUser, IMinimalUser } from './user'
 
 export enum TopicState {
   OPEN = 'OPEN',

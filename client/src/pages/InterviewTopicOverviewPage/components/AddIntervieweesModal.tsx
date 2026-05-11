@@ -11,10 +11,10 @@ import {
   Stack,
 } from '@mantine/core'
 import { useEffect, useState } from 'react'
-import { IApplicationInterviewProcess } from '../../../requests/responses/interview'
+import type { IApplicationInterviewProcess } from '../../../requests/responses/interview'
 import SelectApplicantsList from '../../InterviewOverviewPage/components/SelectApplicantsList'
 import { doRequest } from '../../../requests/request'
-import { PaginationResponse } from '../../../requests/responses/pagination'
+import type { PaginationResponse } from '../../../requests/responses/pagination'
 import { showSimpleError } from '../../../utils/notification'
 import { getApiResponseErrorMessage } from '../../../requests/handler'
 import { useParams } from 'react-router'
@@ -37,7 +37,7 @@ const AddIntervieweesModal = ({ opened, closeModal }: IAddIntervieweesModalProps
 
   const { addIntervieweesToProcess } = useInterviewProcessContext()
 
-  const fetchPossibleInterviewApplicantsByTopic = async () => {
+  const fetchPossibleInterviewApplicantsByTopic = () => {
     setApplicantsLoading(true)
     doRequest<PaginationResponse<IApplicationInterviewProcess>>(
       `/v2/interview-process/${processId}/interview-applications`,
@@ -63,6 +63,7 @@ const AddIntervieweesModal = ({ opened, closeModal }: IAddIntervieweesModalProps
     if (opened) {
       fetchPossibleInterviewApplicantsByTopic()
     }
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- fetchPossibleInterviewApplicantsByTopic is recreated each render; only re-run on modal open toggle
   }, [opened])
 
   const onClose = () => {
@@ -102,7 +103,7 @@ const AddIntervieweesModal = ({ opened, closeModal }: IAddIntervieweesModalProps
         </Input.Wrapper>
         <Button
           onClick={() => {
-            addIntervieweesToProcess(selectedApplicants)
+            void addIntervieweesToProcess(selectedApplicants)
             onClose()
           }}
           disabled={selectedApplicants.length === 0}

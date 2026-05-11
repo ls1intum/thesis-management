@@ -11,7 +11,7 @@ import {
   Badge,
   useMantineColorScheme,
 } from '@mantine/core'
-import { IInterviewProcess, InterviewState } from '../../../requests/responses/interview'
+import type { IInterviewProcess, InterviewState } from '../../../requests/responses/interview'
 import { useHover } from '@mantine/hooks'
 import { getInterviewStateColor } from '../../../utils/format'
 
@@ -80,7 +80,10 @@ const InterviewProcessCard = ({ interviewProcess, onClick }: IInterviewProcessCa
                   <Divider
                     orientation='vertical'
                     size='lg'
-                    color={getInterviewStateColor(state as InterviewState)}
+                    color={getInterviewStateColor(
+                      state as InterviewState,
+                      colorScheme.colorScheme === 'dark',
+                    )}
                   />
                   <Stack gap={0}>
                     <Text size='lg' fw={700}>
@@ -105,7 +108,10 @@ const InterviewProcessCard = ({ interviewProcess, onClick }: IInterviewProcessCa
                 <Progress.Section
                   key={`${interviewProcessSorted.interviewProcessId}-${state}-${number}`}
                   value={(number / interviewProcessSorted.totalInterviewees) * 100}
-                  color={getInterviewStateColor(state as InterviewState)}
+                  color={getInterviewStateColor(
+                    state as InterviewState,
+                    colorScheme.colorScheme === 'dark',
+                  )}
                 ></Progress.Section>
               )
             })}

@@ -14,14 +14,13 @@ import {
 } from '@mantine/core'
 import { MagnifyingGlass, Plus, UsersThree } from '@phosphor-icons/react'
 import { doRequest } from '../../requests/request'
-import { PaginationResponse } from '../../requests/responses/pagination'
-import { IResearchGroup } from '../../requests/responses/researchGroup'
+import type { PaginationResponse } from '../../requests/responses/pagination'
+import type { IResearchGroup } from '../../requests/responses/researchGroup'
 import { showSimpleError } from '../../utils/notification'
 import { getApiResponseErrorMessage } from '../../requests/handler'
 import ResearchGroupCard from './components/ResearchGroupCard'
-import CreateResearchGroupModal, {
-  ResearchGroupFormValues,
-} from './components/CreateResearchGroupModal'
+import type { ResearchGroupFormValues } from './components/CreateResearchGroupModal'
+import CreateResearchGroupModal from './components/CreateResearchGroupModal'
 import { useDebouncedValue } from '@mantine/hooks'
 import { showNotification } from '@mantine/notifications'
 import NoContentFoundCard from '../../components/NoContentFoundCard/NoContentFoundCard'
@@ -80,9 +79,10 @@ const ResearchGroupAdminPage = () => {
 
   useEffect(() => {
     fetchResearchGroups(0)
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- fetchResearchGroups is recreated each render; only re-run on debounced search change
   }, [debouncedSearch])
 
-  const handleCreateResearchGroup = async (values: ResearchGroupFormValues) => {
+  const handleCreateResearchGroup = (values: ResearchGroupFormValues) => {
     const body = {
       headUsername: values.headUsername,
       name: values.name,
@@ -163,7 +163,7 @@ const ResearchGroupAdminPage = () => {
             verticalSpacing={{ base: 'xs', sm: 'sm', xl: 'md' }}
           >
             {(researchGroups?.content ?? []).map((group) => (
-              <ResearchGroupCard {...group} key={group.id} />
+              <ResearchGroupCard key={group.id} {...group} />
             ))}
           </SimpleGrid>
         )}

@@ -1,6 +1,7 @@
-import { IApplication } from '../../requests/responses/application'
+import type { IApplication } from '../../requests/responses/application'
 import { Stack, Group, Grid, Title, Badge, Accordion } from '@mantine/core'
-import React, { ReactNode } from 'react'
+import type { ReactNode } from 'react'
+import React from 'react'
 import { GLOBAL_CONFIG } from '../../config/global'
 import { AVAILABLE_COUNTRIES } from '../../config/countries'
 import {
@@ -15,6 +16,7 @@ import { ApplicationStateColor } from '../../config/colors'
 import TopicAccordionItem from '../TopicAccordionItem/TopicAccordionItem'
 import { enrollmentDateToSemester } from '../../utils/converter'
 import { AuthenticatedFilePreview } from '../AuthenticatedFilePreview/AuthenticatedFilePreview'
+import { renderCustomDataValue } from '../../utils/customDataLink'
 
 interface IApplicationDataProps {
   application: IApplication
@@ -43,22 +45,22 @@ const ApplicationData = (props: IApplicationDataProps) => {
             <LabeledItem label='Thesis Title' value={application.thesisTitle} />
           )}
           <DocumentEditor label='Motivation' value={application.motivation} />
-          <DocumentEditor label='Interests' value={application.user.interests || ''} />
-          <DocumentEditor label='Projects' value={application.user.projects || ''} />
-          <DocumentEditor label='Special Skills' value={application.user.specialSkills || ''} />
+          <DocumentEditor label='Interests' value={application.user.interests ?? ''} />
+          <DocumentEditor label='Projects' value={application.user.projects ?? ''} />
+          <DocumentEditor label='Special Skills' value={application.user.specialSkills ?? ''} />
           <Grid>
             <Grid.Col span={{ xs: 4, sm: 3 }}>
               <LabeledItem
                 label='Email'
                 value={application.user.email}
-                copyText={application.user.email || undefined}
+                copyText={application.user.email ?? undefined}
               />
             </Grid.Col>
             <Grid.Col span={{ xs: 4, sm: 3 }}>
               <LabeledItem
                 label='Gender'
                 value={
-                  GLOBAL_CONFIG.genders[application.user.gender || ''] ?? application.user.gender
+                  GLOBAL_CONFIG.genders[application.user.gender ?? ''] ?? application.user.gender
                 }
               />
             </Grid.Col>
@@ -66,7 +68,7 @@ const ApplicationData = (props: IApplicationDataProps) => {
               <LabeledItem
                 label='Nationality'
                 value={
-                  AVAILABLE_COUNTRIES[application.user.nationality || ''] ??
+                  AVAILABLE_COUNTRIES[application.user.nationality ?? ''] ??
                   application.user.nationality
                 }
               />
@@ -82,14 +84,14 @@ const ApplicationData = (props: IApplicationDataProps) => {
               <LabeledItem
                 label='Matriculation Number'
                 value={application.user.matriculationNumber}
-                copyText={application.user.matriculationNumber || undefined}
+                copyText={application.user.matriculationNumber ?? undefined}
               />
             </Grid.Col>
             <Grid.Col span={{ xs: 4, sm: 3 }}>
               <LabeledItem
                 label='Study Degree'
                 value={
-                  GLOBAL_CONFIG.study_degrees[application.user.studyDegree || ''] ??
+                  GLOBAL_CONFIG.study_degrees[application.user.studyDegree ?? ''] ??
                   application.user.studyDegree
                 }
               />
@@ -98,7 +100,7 @@ const ApplicationData = (props: IApplicationDataProps) => {
               <LabeledItem
                 label='Study Program'
                 value={
-                  GLOBAL_CONFIG.study_programs[application.user.studyProgram || ''] ??
+                  GLOBAL_CONFIG.study_programs[application.user.studyProgram ?? ''] ??
                   application.user.studyProgram
                 }
               />
@@ -106,7 +108,7 @@ const ApplicationData = (props: IApplicationDataProps) => {
             <Grid.Col span={{ xs: 4, sm: 3 }}>
               <LabeledItem
                 label='Semester'
-                value={enrollmentDateToSemester(application.user.enrolledAt || '')}
+                value={enrollmentDateToSemester(application.user.enrolledAt ?? '')}
               />
             </Grid.Col>
             <Grid.Col span={{ xs: 4, sm: 3 }}>
@@ -145,7 +147,10 @@ const ApplicationData = (props: IApplicationDataProps) => {
             {application.user.customData &&
               Object.entries(application.user.customData).map(([key, value]) => (
                 <Grid.Col key={key} span={{ md: 6 }}>
-                  <LabeledItem label={GLOBAL_CONFIG.custom_data[key]?.label ?? key} value={value} />
+                  <LabeledItem
+                    label={GLOBAL_CONFIG.custom_data[key]?.label ?? key}
+                    value={renderCustomDataValue(key, value)}
+                  />
                 </Grid.Col>
               ))}
           </Grid>

@@ -1,4 +1,6 @@
-import { PropsWithChildren, Suspense, useEffect } from 'react'
+import type { ComponentType, PropsWithChildren } from 'react'
+import { Suspense, useEffect } from 'react'
+import type { MantineSize } from '@mantine/core'
 import {
   ActionIcon,
   AppShell,
@@ -8,32 +10,30 @@ import {
   Divider,
   Flex,
   Group,
-  MantineSize,
   Stack,
   Text,
   Tooltip,
 } from '@mantine/core'
 import * as classes from './AuthenticatedArea.module.css'
-import { Link, useLocation } from 'react-router'
+import { Link, useLocation, useNavigationType } from 'react-router'
 import { useDebouncedValue, useDisclosure } from '@mantine/hooks'
 import {
-  CaretDoubleLeft,
-  CaretDoubleRight,
-  NewspaperClipping,
-  SignOut,
-  Gear,
-  GearSix,
-  PresentationIcon,
-  PaperPlaneTiltIcon,
-  ScrollIcon,
+  CaretDoubleLeftIcon,
+  CaretDoubleRightIcon,
+  ChatsCircleIcon,
   FolderSimplePlusIcon,
+  GearIcon,
+  GearSixIcon,
   KanbanIcon,
+  NewspaperClippingIcon,
+  PaperPlaneTiltIcon,
+  PresentationIcon,
+  ScrollIcon,
+  SignOutIcon,
   TableIcon,
   UsersThreeIcon,
-  ChatsCircleIcon,
 } from '@phosphor-icons/react'
 import { useAuthenticationContext, useUser } from '../../../hooks/authentication'
-import { useNavigationType } from 'react-router'
 import ScrollToTop from '../ScrollToTop/ScrollToTop'
 import PageLoader from '../../../components/PageLoader/PageLoader'
 import { useLocalStorage } from '../../../hooks/local-storage'
@@ -41,6 +41,10 @@ import { CustomAvatar } from '../../../components/CustomAvatar/CustomAvatar'
 import { formatUser } from '../../../utils/format'
 import ContentContainer from '../ContentContainer/ContentContainer'
 import Footer from '../../../components/Footer/Footer'
+import EnvironmentBanner, {
+  ENVIRONMENT_BANNER_HEIGHT,
+  isEnvironmentBannerVisible,
+} from '../../../components/EnvironmentBanner/EnvironmentBanner'
 import Header from '../../../components/Header/Header'
 import { useIsSmallerBreakpoint } from '../../../hooks/theme'
 
@@ -50,19 +54,18 @@ export interface IAuthenticatedAreaProps {
   requiredGroups?: string[]
   handleScrollInView?: boolean
 }
-
 const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) => {
   const { children, size, collapseNavigation = false, requiredGroups, handleScrollInView } = props
 
   const links: Array<{
     link: string
     label: string
-    icon: any
+    icon: ComponentType<{ size?: number | string; className?: string }>
     groups: string[] | undefined
     hideFromGroups?: string[]
     display?: boolean
   }> = [
-    { link: '/dashboard', label: 'Dashboard', icon: NewspaperClipping, groups: undefined },
+    { link: '/dashboard', label: 'Dashboard', icon: NewspaperClippingIcon, groups: undefined },
     {
       link: '/presentations',
       label: 'Presentations',
@@ -116,7 +119,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
     {
       link: '/admin',
       label: 'Administration',
-      icon: GearSix,
+      icon: GearSixIcon,
       groups: ['admin'],
     },
   ]
@@ -133,14 +136,17 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
     minimizeAnimationDuration,
   )
   // only use debounced State if value is false because otherwise the text is formatted weirdly if you expand the navigation
-  const minimized = opened ? false : minimizedState || !!debouncedMinimized
+  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- intentionally fall through on `false` so the debounced value is used while collapsing
+  const minimized = opened ? false : minimizedState || Boolean(debouncedMinimized)
 
   const location = useLocation()
   const navigationType = useNavigationType()
 
   const auth = useAuthenticationContext()
 
-  const HEADER_HEIGHT = 50
+  const baseHeaderHeight = 50
+  const HEADER_HEIGHT =
+    baseHeaderHeight + (isEnvironmentBannerVisible() ? ENVIRONMENT_BANNER_HEIGHT : 0)
   const FOOTER_HEIGHT = 50
 
   const isSmallerBreakpoint = useIsSmallerBreakpoint('md')
@@ -151,6 +157,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
     }
 
     close()
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- close is a stable disclosure handler; effect intentionally tracks navigation only
   }, [location.pathname, navigationType])
 
   return (
@@ -169,14 +176,17 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
       padding={0}
     >
       <AppShell.Header>
-        <Container size={size} fluid={!size} h='100%'>
-          <Header
-            opened={opened}
-            toggle={toggle}
-            authenticatedArea={true}
-            openLoginModal={!auth.isAuthenticated && location.pathname !== '/logout'}
-          />
-        </Container>
+        <EnvironmentBanner />
+        <Box h={baseHeaderHeight}>
+          <Container size={size} fluid={!size} h='100%'>
+            <Header
+              opened={opened}
+              toggle={toggle}
+              authenticatedArea={true}
+              openLoginModal={!auth.isAuthenticated && location.pathname !== '/logout'}
+            />
+          </Container>
+        </Box>
       </AppShell.Header>
 
       <AppShell.Navbar p='md'>
@@ -186,7 +196,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
               (item) =>
                 !item.groups || item.groups.some((role) => auth.user?.groups?.includes(role)),
             )
-            .filter((item) => item.display == undefined || item.display === true)
+            .filter((item) => item.display === undefined || item.display)
             .filter((item) =>
               item.hideFromGroups
                 ? !item.hideFromGroups.some((role) => auth.user?.groups?.includes(role))
@@ -233,7 +243,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
               <Link to='/logout' className={minimized ? classes.minimizedLink : classes.fullLink}>
                 <Group gap={5} align='center'>
                   <Tooltip label='Logout' disabled={!minimized} position='right' offset={15}>
-                    <SignOut className={classes.linkIcon} size={25} />
+                    <SignOutIcon className={classes.linkIcon} size={25} />
                   </Tooltip>
                   {!minimized && <span>Logout</span>}
                 </Group>
@@ -253,7 +263,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
                     position='right'
                     offset={15}
                   >
-                    <Gear className={classes.linkIcon} size={25} />
+                    <GearIcon className={classes.linkIcon} size={25} />
                   </Tooltip>
                   {!minimized && <span>Group Settings</span>}
                 </Link>
@@ -266,7 +276,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
                   variant='transparent'
                   onClick={() => setMinimized((prev) => !prev)}
                 >
-                  {minimized ? <CaretDoubleRight /> : <CaretDoubleLeft />}
+                  {minimized ? <CaretDoubleRightIcon /> : <CaretDoubleLeftIcon />}
                 </ActionIcon>
               )}
             </Group>

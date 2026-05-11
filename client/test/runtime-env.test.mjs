@@ -45,6 +45,11 @@ describe('generate-runtime-env.js — allowed env vars', () => {
     assert.equal(out.TOPIC_VIEWS_OPTIONS, payload)
   })
 
+  test('ENVIRONMENT is exposed to the client (regression for #594)', () => {
+    const out = runGenerator({ ENVIRONMENT: 'staging' })
+    assert.equal(out.ENVIRONMENT, 'staging')
+  })
+
   test('previously-allowlisted vars still flow through', () => {
     const out = runGenerator({
       SERVER_HOST: 'https://api.example.com',

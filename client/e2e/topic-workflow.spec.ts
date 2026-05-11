@@ -49,7 +49,7 @@ test.describe('Topic Workflow - Examiner creates a topic', () => {
     await searchAndSelectMultiSelect(page, 'Supervisor(s)', /supervisor/i)
 
     // Research Group should be pre-filled for single-group examiners
-    const researchGroupInput = page.getByRole('textbox', { name: 'Research Group' })
+    const researchGroupInput = page.getByRole('combobox', { name: 'Research Group' })
     await expect(researchGroupInput).not.toHaveValue('', { timeout: 5_000 })
 
     // Problem Statement (required rich text editor)
@@ -93,7 +93,7 @@ test.describe('Topic Workflow - Examiner2 creates a topic for DSA group', () => 
     await expect(dialog.getByLabel('Title')).toBeVisible()
 
     // Research Group should be pre-filled with DSA for examiner2
-    const researchGroupInput = dialog.getByRole('textbox', { name: 'Research Group' })
+    const researchGroupInput = dialog.getByRole('combobox', { name: 'Research Group' })
     await expect(researchGroupInput).not.toHaveValue('', { timeout: 5_000 })
 
     // Close without creating

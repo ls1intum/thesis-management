@@ -1,7 +1,7 @@
 import { Node } from '@tiptap/core'
 import { ReactNodeViewRenderer } from '@tiptap/react'
 import VariableComponent from './VariableComponent'
-import { IMailVariableDto } from '../../../../../requests/responses/emailtemplate'
+import type { IMailVariableDto } from '../../../../../requests/responses/emailtemplate'
 
 export default Node.create({
   name: 'react-component',

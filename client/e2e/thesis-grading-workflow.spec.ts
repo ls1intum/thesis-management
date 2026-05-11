@@ -148,7 +148,7 @@ test.describe.serial('Thesis Grading Workflow', () => {
     await expect(gradeDialog).toBeVisible({ timeout: 5_000 })
     await expect(gradeDialog.getByText('Submit Final Grade').first()).toBeVisible()
 
-    await expect(gradeDialog.getByRole('textbox', { name: 'Thesis Visibility' })).toBeVisible()
+    await expect(gradeDialog.getByRole('combobox', { name: 'Thesis Visibility' })).toBeVisible()
     await gradeDialog.getByRole('textbox', { name: 'Final Grade' }).fill('1.3')
 
     await fillRichTextEditor(
