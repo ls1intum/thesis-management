@@ -1,8 +1,8 @@
-import { Alert, Button, Group, Loader, Paper, Stack, Text, Title } from '@mantine/core'
+import { Button, Group, Loader, Paper, Stack, Text, Title } from '@mantine/core'
 import { useCallback, useEffect, useState } from 'react'
 import { useAuthenticationContext } from '../../../../hooks/authentication'
 import { showSimpleError, showSimpleSuccess } from '../../../../utils/notification'
-import { IKeycloakCredential } from '../../../../providers/AuthenticationContext/context'
+import type { IKeycloakCredential } from '../../../../providers/AuthenticationContext/context'
 import { getPasskeyErrorMessage, isPasskeyCredential } from '../../../../utils/passkey'
 
 const formatCreatedDate = (createdDate?: number) => {
@@ -31,6 +31,12 @@ const PasskeySettings = () => {
   }, [auth])
 
   useEffect(() => {
+    if (!auth.isPasskeySupported) {
+      setCredentials([])
+      setIsLoadingCredentials(false)
+      return
+    }
+
     const fetchCredentials = async () => {
       setIsLoadingCredentials(true)
       try {
@@ -43,7 +49,7 @@ const PasskeySettings = () => {
     }
 
     void fetchCredentials()
-  }, [loadPasskeyCredentials])
+  }, [auth.isPasskeySupported, loadPasskeyCredentials])
 
   const onRegisterPasskey = async () => {
     setIsRegistering(true)
@@ -69,6 +75,10 @@ const PasskeySettings = () => {
     } finally {
       setDeletingCredentialId(undefined)
     }
+  }
+
+  if (!auth.isPasskeySupported) {
+    return null
   }
 
   return (
@@ -109,16 +119,7 @@ const PasskeySettings = () => {
         </Stack>
       )}
       <Group>
-        {!auth.isPasskeySupported && (
-          <Alert color='yellow' title='Passkeys are unavailable'>
-            Use a compatible browser on HTTPS (or localhost) and try again.
-          </Alert>
-        )}
-        <Button
-          onClick={() => void onRegisterPasskey()}
-          loading={isRegistering}
-          disabled={!auth.isPasskeySupported}
-        >
+        <Button onClick={() => void onRegisterPasskey()} loading={isRegistering}>
           Register Passkey
         </Button>
       </Group>

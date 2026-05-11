@@ -192,7 +192,9 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
   const { signal: readySignal, triggerSignal: triggerReadySignal, ref: readyRef } = useSignal()
   const isReady = readyRef.isTriggerred
   const [researchGroups, setResearchGroups] = useState<ILightResearchGroup[]>([])
-  const isPasskeySupported = isPasskeySupportedInBrowser()
+  const isPasskeySupportedByBrowser = isPasskeySupportedInBrowser()
+  const [isPasskeyExtensionAvailable, setIsPasskeyExtensionAvailable] = useState(false)
+  const isPasskeySupported = isPasskeySupportedByBrowser && isPasskeyExtensionAvailable
 
   const refreshAccessToken = (activeKeycloak = keycloak) =>
     activeKeycloak
@@ -283,6 +285,9 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
     })
 
     if (!response.ok) {
+      if (response.status === 404 || response.status === 405) {
+        setIsPasskeyExtensionAvailable(false)
+      }
       throw new Error(await getPasskeyErrorMessage(response))
     }
 
@@ -342,6 +347,38 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
     }
     // eslint-disable-next-line @eslint-react/exhaustive-deps -- mount-only keycloak setup: setAuthenticationTokens/triggerReadySignal are stable refs intentionally captured once
   }, [])
+
+  useEffect(() => {
+    if (!isPasskeySupportedByBrowser) {
+      setIsPasskeyExtensionAvailable(false)
+      return
+    }
+
+    let isMounted = true
+
+    const validatePasskeyAvailability = async () => {
+      try {
+        const response = await fetch(getPasskeyEndpoint('challenge'), {
+          method: 'GET',
+          credentials: 'include',
+        })
+
+        if (isMounted) {
+          setIsPasskeyExtensionAvailable(response.ok)
+        }
+      } catch {
+        if (isMounted) {
+          setIsPasskeyExtensionAvailable(false)
+        }
+      }
+    }
+
+    void validatePasskeyAvailability()
+
+    return () => {
+      isMounted = false
+    }
+  }, [isPasskeySupportedByBrowser])
 
   useEffect(() => {
     if (!isReady) {
@@ -463,7 +500,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
       loginWithPasskey: () =>
         readySignal.then(async () => {
           if (!isPasskeySupported) {
-            throw new Error('Passkeys are not supported in this browser or context')
+            throw new Error('Passkeys are not available in this environment')
           }
 
           const challenge = await requestPasskeyChallenge()
@@ -518,7 +555,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
       registerPasskey: () =>
         readySignal.then(async () => {
           if (!isPasskeySupported) {
-            throw new Error('Passkeys are not supported in this browser or context')
+            throw new Error('Passkeys are not available in this environment')
           }
 
           const storedTokens = getAuthenticationTokens()
@@ -554,7 +591,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
             decodedToken?.sub ?? decodedToken?.preferred_username ?? decodedToken?.email ?? 'user'
           const username = decodedToken?.preferred_username ?? decodedToken?.email ?? userHandle
           const tokenDisplayName =
-            typeof decodedToken?.name === 'string' ? decodedToken.name.trim() : ''
+            typeof decodedToken?.name === 'string' ? decodedToken?.name.trim() : ''
           const displayName = tokenDisplayName.length > 0 ? tokenDisplayName : username
           const userIdBytes = new TextEncoder().encode(userHandle).slice(0, 64)
 

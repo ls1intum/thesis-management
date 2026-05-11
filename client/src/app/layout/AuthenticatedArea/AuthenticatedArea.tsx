@@ -1,5 +1,5 @@
 import type { ComponentType, PropsWithChildren } from 'react'
-import { Suspense, useEffect } from 'react'
+import { Suspense, useEffect, useRef } from 'react'
 import type { MantineSize } from '@mantine/core'
 import {
   ActionIcon,
@@ -143,6 +143,10 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
   const navigationType = useNavigationType()
 
   const auth = useAuthenticationContext()
+  const isAuthenticated = auth.isAuthenticated
+  const isPasskeySupported = auth.isPasskeySupported
+  const login = auth.login
+  const hasTriggeredFallbackLogin = useRef(false)
 
   const baseHeaderHeight = 50
   const HEADER_HEIGHT =
@@ -159,6 +163,27 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
     close()
     // eslint-disable-next-line @eslint-react/exhaustive-deps -- close is a stable disclosure handler; effect intentionally tracks navigation only
   }, [location.pathname, navigationType])
+
+  useEffect(() => {
+    if (isAuthenticated || isPasskeySupported) {
+      hasTriggeredFallbackLogin.current = false
+      return
+    }
+
+    if (location.pathname === '/logout' || hasTriggeredFallbackLogin.current) {
+      return
+    }
+
+    hasTriggeredFallbackLogin.current = true
+    void login(`${location.pathname}${location.search}${location.hash}`)
+  }, [
+    isAuthenticated,
+    isPasskeySupported,
+    login,
+    location.hash,
+    location.pathname,
+    location.search,
+  ])
 
   return (
     <AppShell
@@ -183,7 +208,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
               opened={opened}
               toggle={toggle}
               authenticatedArea={true}
-              openLoginModal={!auth.isAuthenticated && location.pathname !== '/logout'}
+              openLoginModal={!isAuthenticated && location.pathname !== '/logout'}
             />
           </Container>
         </Box>

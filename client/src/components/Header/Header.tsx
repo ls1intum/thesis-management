@@ -1,5 +1,4 @@
 import {
-  Alert,
   Burger,
   Button,
   Divider,
@@ -38,10 +37,11 @@ const Header = ({ opened, toggle, authenticatedArea, openLoginModal = false }: H
   const [isPasskeyLoading, setIsPasskeyLoading] = useState(false)
 
   const navigate = useNavigate()
-  const isLoginModalForcedOpen = openLoginModal && !context.isAuthenticated
+  const isLoginModalForcedOpen =
+    openLoginModal && !context.isAuthenticated && context.isPasskeySupported
 
   useEffect(() => {
-    if (context.isAuthenticated) {
+    if (context.isAuthenticated || !context.isPasskeySupported) {
       setIsLoginModalOpen(false)
       return
     }
@@ -49,7 +49,7 @@ const Header = ({ opened, toggle, authenticatedArea, openLoginModal = false }: H
     if (openLoginModal) {
       setIsLoginModalOpen(true)
     }
-  }, [context.isAuthenticated, openLoginModal])
+  }, [context.isAuthenticated, context.isPasskeySupported, openLoginModal])
 
   const onLoginModalClose = () => {
     if (isLoginModalForcedOpen) {
@@ -161,15 +161,18 @@ const Header = ({ opened, toggle, authenticatedArea, openLoginModal = false }: H
           </Menu>
         ) : (
           <Group gap='xs'>
-            <Button
-              variant='outline'
-              leftSection={<KeyIcon size={16} />}
-              onClick={() => void onPasskeyLogin()}
-              loading={isPasskeyLoading}
-              disabled={!context.isPasskeySupported}
-            >
-              AET Passkey
-            </Button>
+            {context.isPasskeySupported && (
+              <Button
+                variant='outline'
+                leftSection={<KeyIcon size={16} />}
+                onClick={() => void onPasskeyLogin()}
+                loading={isPasskeyLoading}
+              >
+                <Text span visibleFrom='sm'>
+                  AET Passkey
+                </Text>
+              </Button>
+            )}
             <Button onClick={() => void context.login('/dashboard')}>Login</Button>
           </Group>
         )}
@@ -187,21 +190,17 @@ const Header = ({ opened, toggle, authenticatedArea, openLoginModal = false }: H
           <Text size='sm' c='dimmed'>
             Choose your preferred sign-in method.
           </Text>
-          {!context.isPasskeySupported && (
-            <Alert variant='light' color='yellow' title='Passkeys are unavailable'>
-              Use a compatible browser on HTTPS (or localhost) to sign in with passkeys.
-            </Alert>
-          )}
           <Flex direction='column' gap='md'>
-            <Button
-              variant='outline'
-              leftSection={<KeyIcon size={16} />}
-              onClick={() => void onPasskeyLogin()}
-              loading={isPasskeyLoading}
-              disabled={!context.isPasskeySupported}
-            >
-              AET Passkey
-            </Button>
+            {context.isPasskeySupported && (
+              <Button
+                variant='outline'
+                leftSection={<KeyIcon size={16} />}
+                onClick={() => void onPasskeyLogin()}
+                loading={isPasskeyLoading}
+              >
+                AET Passkey
+              </Button>
+            )}
             <Button onClick={onPasswordLogin} disabled={isPasskeyLoading}>
               Login
             </Button>

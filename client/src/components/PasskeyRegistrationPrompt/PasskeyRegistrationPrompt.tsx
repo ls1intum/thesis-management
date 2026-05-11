@@ -140,6 +140,10 @@ const PasskeyRegistrationPrompt = () => {
     }
   }
 
+  if (!auth.isPasskeySupported) {
+    return null
+  }
+
   return (
     <Modal
       opened={isOpen}
