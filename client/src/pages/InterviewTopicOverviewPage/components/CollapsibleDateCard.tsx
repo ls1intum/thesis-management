@@ -231,7 +231,7 @@ const CollapsibleDateCard = ({
       duration: s.endDate.getTime() - s.startDate.getTime(),
       slots: [s],
       locationType: s.streamUrl ? 'Online' : 'Onsite',
-      location: s.streamUrl ? s.streamUrl : s.location ? s.location : '',
+      location: s.streamUrl ?? s.location ?? '',
     }))
 
     // 2) compute ranges only on unscheduled

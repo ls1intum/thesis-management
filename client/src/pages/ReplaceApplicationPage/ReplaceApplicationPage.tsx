@@ -61,7 +61,7 @@ const ReplaceApplicationPage = () => {
         <Stepper.Step label='First Step' description='Select Topic'>
           <SelectTopicStep
             onComplete={(x) => {
-              navigate(`/submit-application/${x?.topicId || ''}`, { replace: true })
+              navigate(`/submit-application/${x?.topicId ?? ''}`, { replace: true })
               setStep(1)
             }}
           />
@@ -77,6 +77,7 @@ const ReplaceApplicationPage = () => {
         <Stepper.Step label='Final step' description='Submit your Application'>
           <MotivationStep
             onComplete={() => setStep(3)}
+            // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- useTopic may return `false` (error sentinel) which must also map to undefined
             topic={topic || undefined}
             application={application}
             consentToPrivacyPolicy={consentToPrivacyPolicy}

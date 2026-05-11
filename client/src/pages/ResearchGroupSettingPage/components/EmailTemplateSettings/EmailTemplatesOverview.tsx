@@ -73,10 +73,12 @@ const EmailTemplatesOverview = ({
     const lowerKey = key.toLowerCase()
 
     return (
+      /* eslint-disable @typescript-eslint/prefer-nullish-coalescing -- `false` must fall through to the next check across optional fields */
       template.default?.description.toLowerCase().includes(lowerKey) ||
       template.default?.subject.toLowerCase().includes(lowerKey) ||
       template.default?.templateCase.toLowerCase().includes(lowerKey) ||
       category.toLowerCase().includes(lowerKey)
+      /* eslint-enable @typescript-eslint/prefer-nullish-coalescing */
     )
   }
 

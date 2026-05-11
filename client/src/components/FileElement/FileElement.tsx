@@ -54,7 +54,7 @@ const FileElement = ({
 
   return (
     <Paper
-      bg={bg || (colorScheme.colorScheme === 'dark' ? 'dark.6' : 'gray.1')}
+      bg={bg ?? (colorScheme.colorScheme === 'dark' ? 'dark.6' : 'gray.1')}
       p='xs'
       radius='md'
       w={fullWidth ? '100%' : 'fit-content'}

@@ -159,21 +159,21 @@ const UserInformationForm = (props: IUserInformationFormProps) => {
 
   useEffect(() => {
     form.setValues({
-      email: user?.email || '',
-      matriculationNumber: user?.matriculationNumber || '',
-      firstName: user?.firstName || '',
-      lastName: user?.lastName || '',
-      gender: user?.gender || '',
-      nationality: user?.nationality || '',
-      studyDegree: user?.studyDegree || '',
-      studyProgram: user?.studyProgram || '',
+      email: user?.email ?? '',
+      matriculationNumber: user?.matriculationNumber ?? '',
+      firstName: user?.firstName ?? '',
+      lastName: user?.lastName ?? '',
+      gender: user?.gender ?? '',
+      nationality: user?.nationality ?? '',
+      studyDegree: user?.studyDegree ?? '',
+      studyProgram: user?.studyProgram ?? '',
       semester: user?.enrolledAt ? enrollmentDateToSemester(user.enrolledAt).toString() : '',
-      researchGroupName: user?.researchGroupName || '',
-      specialSkills: user?.specialSkills || '',
-      interests: user?.interests || '',
-      projects: user?.projects || '',
+      researchGroupName: user?.researchGroupName ?? '',
+      specialSkills: user?.specialSkills ?? '',
+      interests: user?.interests ?? '',
+      projects: user?.projects ?? '',
       customData: Object.fromEntries(
-        Object.keys(GLOBAL_CONFIG.custom_data).map((key) => [key, user.customData?.[key] || '']),
+        Object.keys(GLOBAL_CONFIG.custom_data).map((key) => [key, user.customData?.[key] ?? '']),
       ),
     })
   }, [user])

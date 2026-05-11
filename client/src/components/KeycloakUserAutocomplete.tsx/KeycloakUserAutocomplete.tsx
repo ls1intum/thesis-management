@@ -29,7 +29,7 @@ const KeycloakUserAutocomplete = ({
   const [debouncedSearchKey] = useDebouncedValue(searchKey, 300)
   const [userOptions, setUserOptions] = useState<IKeycloakUserElement[]>([])
   const [loadingUsers, setLoadingUsers] = useState(false)
-  const [selectedUsername, setSelectedUsername] = useState<string>(previousUser?.universityId || '')
+  const [selectedUsername, setSelectedUsername] = useState<string>(previousUser?.universityId ?? '')
 
   const getUserOptionValue = (user: {
     firstName: string

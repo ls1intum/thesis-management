@@ -70,7 +70,7 @@ const ApplicationsProvider = (props: PropsWithChildren<IApplicationsProviderProp
     return copiedFilters
   }, [filters, topics, user.userId, showOnlyAssignedTopics])
 
-  const [debouncedSearch] = useDebouncedValue(adjustedFilters.search || '', 500)
+  const [debouncedSearch] = useDebouncedValue(adjustedFilters.search ?? '', 500)
 
   useEffect(() => {
     setPage(0)

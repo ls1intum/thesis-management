@@ -129,7 +129,7 @@ const ApplicationsSidebar = (props: IApplicationsSidebarProps) => {
       <Center>
         <Pagination
           size='sm'
-          total={applications?.totalPages || 0}
+          total={applications?.totalPages ?? 0}
           value={page + 1}
           onChange={(newPage) => setPage(newPage - 1)}
         />

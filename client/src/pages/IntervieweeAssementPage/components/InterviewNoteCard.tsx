@@ -58,7 +58,7 @@ const InterviewNoteCard = ({ interviewNote, onInterviewNoteChange }: IInterviewN
           </Group>
         </Group>
         <DocumentEditor
-          value={interviewNote || ''}
+          value={interviewNote ?? ''}
           editMode
           minHeight={isSmaller ? '30vh' : '50vh'}
           {...form.getInputProps('interviewNote')}

@@ -28,7 +28,7 @@ export function doRequest<T>(
   options: IRequestOptions,
   cb?: (res: ApiResponse<T>) => unknown,
 ): Promise<ApiResponse<T>> | (() => void) {
-  const controller = options.controller || new AbortController()
+  const controller = options.controller ?? new AbortController()
 
   const executeRequest = async (): Promise<ApiResponse<T>> => {
     if (options.requiresAuth && keycloak.isTokenExpired(5)) {

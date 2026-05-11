@@ -14,12 +14,12 @@ interface IResearchGroupFormProps {
 }
 
 const getInitialValues = (initial: Partial<IResearchGroup> | undefined) => ({
-  name: initial?.name || '',
-  abbreviation: initial?.abbreviation || '',
-  campus: initial?.campus || '',
-  description: initial?.description || '',
-  websiteUrl: initial?.websiteUrl || '',
-  headUsername: initial?.head?.universityId || '',
+  name: initial?.name ?? '',
+  abbreviation: initial?.abbreviation ?? '',
+  campus: initial?.campus ?? '',
+  description: initial?.description ?? '',
+  websiteUrl: initial?.websiteUrl ?? '',
+  headUsername: initial?.head?.universityId ?? '',
 })
 
 const getInitialHeadLabel = (initial: Partial<IResearchGroup> | undefined): string =>

@@ -138,6 +138,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
     minimizeAnimationDuration,
   )
   // only use debounced State if value is false because otherwise the text is formatted weirdly if you expand the navigation
+  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- intentionally fall through on `false` so the debounced value is used while collapsing
   const minimized = opened ? false : minimizedState || Boolean(debouncedMinimized)
 
   const location = useLocation()

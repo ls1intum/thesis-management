@@ -36,7 +36,7 @@ const MotivationStep = (props: IMotivationStepProps) => {
   const [researchGroups, setResearchGroups] = useState<PaginationResponse<ILightResearchGroup>>()
   const [loading, setLoading] = useState(false)
 
-  const mergedTopic = application?.topic || topic
+  const mergedTopic = application?.topic ?? topic
 
   const form = useForm<IMotivationStepForm>({
     mode: 'controlled',
@@ -193,7 +193,7 @@ const MotivationStep = (props: IMotivationStepProps) => {
         <Select
           label='Thesis Type'
           required={true}
-          data={(mergedTopic?.thesisTypes || Object.keys(GLOBAL_CONFIG.thesis_types)).map(
+          data={(mergedTopic?.thesisTypes ?? Object.keys(GLOBAL_CONFIG.thesis_types)).map(
             (thesisType) => ({
               label: formatThesisType(thesisType),
               value: thesisType,

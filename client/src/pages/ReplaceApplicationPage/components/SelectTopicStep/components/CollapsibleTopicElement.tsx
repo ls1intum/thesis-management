@@ -154,6 +154,7 @@ const CollapsibleTopicElement = ({ topic, onApply }: ICollapsibleTopicElementPro
             {onApply && isTopicOverview && (
               <Stack gap='xs'>
                 <Button
+                  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- useTopic may return `false` (error sentinel) which must also map to undefined
                   onClick={() => onApply(fullTopic || undefined)}
                   fullWidth
                   disabled={!fullTopic || deadlinePassed}

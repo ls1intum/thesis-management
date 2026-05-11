@@ -78,8 +78,8 @@ const ReplacePresentationModal = (props: IReplacePresentationModalProps) => {
       form.setInitialValues({
         type: presentation.type,
         visibility: presentation.visibility,
-        location: presentation.location || '',
-        streamUrl: presentation.streamUrl || '',
+        location: presentation.location ?? '',
+        streamUrl: presentation.streamUrl ?? '',
         language: presentation.language,
         date: new Date(presentation.scheduledAt),
       })

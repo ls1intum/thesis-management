@@ -101,7 +101,7 @@ const ResearchGroupSettingPage = () => {
           <Tabs
             value={selectedTab}
             onChange={(value) => {
-              setSelectedTab(value || 'general')
+              setSelectedTab(value ?? 'general')
             }}
           >
             <Tabs.List>
@@ -131,10 +131,10 @@ const ResearchGroupSettingPage = () => {
                   <>
                     <ApplicationPhaseSettingsCard
                       automaticRejectionEnabledSettings={
-                        researchGroupSettings?.rejectSettings.automaticRejectEnabled || false
+                        researchGroupSettings?.rejectSettings.automaticRejectEnabled ?? false
                       }
                       rejectDurationSettings={
-                        researchGroupSettings?.rejectSettings.rejectDuration || 8
+                        researchGroupSettings?.rejectSettings.rejectDuration ?? 8
                       }
                       setAutomaticRejectionEnabledSettings={(value: boolean) =>
                         setResearchGroupSettings(
@@ -163,7 +163,7 @@ const ResearchGroupSettingPage = () => {
                     />
                     <ProposalSettingsCard
                       proposalPhaseActive={
-                        researchGroupSettings?.phaseSettings.proposalPhaseActive || false
+                        researchGroupSettings?.phaseSettings.proposalPhaseActive ?? false
                       }
                       setProposalPhaseActive={(value: boolean) =>
                         setResearchGroupSettings(
@@ -180,7 +180,7 @@ const ResearchGroupSettingPage = () => {
                     />
                     <PresentationSettingsCard
                       presentationDurationSettings={
-                        researchGroupSettings?.presentationSettings.presentationSlotDuration || 30
+                        researchGroupSettings?.presentationSettings.presentationSlotDuration ?? 30
                       }
                       setPresentationDurationSettings={(value: number) =>
                         setResearchGroupSettings(

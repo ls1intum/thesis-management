@@ -30,7 +30,7 @@ const ThesesProvider = (props: PropsWithChildren<IThesesProviderProps>) => {
     direction: 'asc',
   })
 
-  const [debouncedSearch] = useDebouncedValue(filters.search || '', 500)
+  const [debouncedSearch] = useDebouncedValue(filters.search ?? '', 500)
 
   useEffect(() => {
     setTheses(undefined)

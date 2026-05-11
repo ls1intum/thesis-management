@@ -44,7 +44,7 @@ const TopicsFilters = (props: ITopicsFiltersProps) => {
                   checked={Boolean(filters.types?.includes(key))}
                   onChange={(e) => {
                     setFilters((prev) => ({
-                      types: [...(prev.types || []), key].filter(
+                      types: [...(prev.types ?? []), key].filter(
                         (row) => e.target.checked || row !== key,
                       ),
                     }))

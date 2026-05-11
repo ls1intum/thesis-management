@@ -90,10 +90,10 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
     if (application) {
       form.setInitialValues({
         applicationId: application.applicationId,
-        title: application.topic?.title || application.thesisTitle || '',
+        title: application.topic?.title ?? application.thesisTitle ?? '',
         comment: application.comment || '',
         type:
-          application.thesisType || GLOBAL_CONFIG.thesis_types[application.user.studyDegree || '']
+          application.thesisType || GLOBAL_CONFIG.thesis_types[application.user.studyDegree ?? '']
             ? application.user.studyDegree
             : null,
         language: getDefaultLanguage(),
@@ -247,7 +247,7 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
     )
   }
 
-  const reviewers = application.reviewers || []
+  const reviewers = application.reviewers ?? []
 
   if (!reviewers.some((row) => row.user.userId === user.userId)) {
     reviewers.unshift({

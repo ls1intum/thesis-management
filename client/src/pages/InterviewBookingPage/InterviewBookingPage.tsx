@@ -42,7 +42,7 @@ interface ISlotInformationProps {
 
 const SlotInformation = ({ slot, title }: ISlotInformationProps) => (
   <SummaryCard
-    title={title || 'Selected Interview'}
+    title={title ?? 'Selected Interview'}
     sections={[
       {
         title: 'Date',
@@ -68,7 +68,7 @@ const SlotInformation = ({ slot, title }: ISlotInformationProps) => (
         title: 'Location',
         content: (
           <Text size='xs' pl={'xs'}>
-            {slot.location || slot.streamUrl || 'Not specified'}
+            {slot.location ?? slot.streamUrl ?? 'Not specified'}
           </Text>
         ),
         icon: <MapPinIcon />,

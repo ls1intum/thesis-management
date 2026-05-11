@@ -26,8 +26,8 @@ const SubmitFinalGradeModal = (props: ISubmitFinalGradeModalProps) => {
   const [visibility, setVisibility] = useState(thesis.visibility)
 
   useEffect(() => {
-    setFinalGrade(thesis.grade?.finalGrade || '')
-    setFeedback(thesis.grade?.feedback || '')
+    setFinalGrade(thesis.grade?.finalGrade ?? '')
+    setFeedback(thesis.grade?.feedback ?? '')
     setVisibility(thesis.visibility)
   }, [thesis])
 

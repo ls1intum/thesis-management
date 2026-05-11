@@ -40,7 +40,7 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
   const { topicId, opened, onClose } = props
 
   const fetchedTopic = useTopic(opened ? topicId : undefined)
-  const topic = fetchedTopic === false ? undefined : fetchedTopic || undefined
+  const topic = fetchedTopic === false ? undefined : (fetchedTopic ?? undefined)
   const fetchError = fetchedTopic === false && Boolean(topicId)
   const isTopicLoading = Boolean(topicId) && opened && fetchedTopic === undefined
 
@@ -92,7 +92,7 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
     if (opened && topic) {
       form.setInitialValues({
         title: topic.title,
-        thesisTypes: topic.thesisTypes || [],
+        thesisTypes: topic.thesisTypes ?? [],
         problemStatement: topic.problemStatement ?? '',
         requirements: topic.requirements ?? '',
         goals: topic.goals ?? '',

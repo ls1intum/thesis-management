@@ -47,11 +47,11 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
         params: {
           page,
           limit,
-          type: filters.types?.join(',') || '',
-          states: filters.states?.join(',') || '',
+          type: filters.types?.join(',') ?? '',
+          states: filters.states?.join(',') ?? '',
           onlyOwnResearchGroup: filters.researchSpecific ? 'true' : 'false',
           search: filters.search ?? '',
-          researchGroupIds: filters.researchGroupIds?.join(',') || '',
+          researchGroupIds: filters.researchGroupIds?.join(',') ?? '',
         },
       },
       (res) => {

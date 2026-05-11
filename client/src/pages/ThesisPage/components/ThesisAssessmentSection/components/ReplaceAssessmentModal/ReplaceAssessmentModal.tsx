@@ -131,10 +131,10 @@ const ReplaceAssessmentModal = (props: IReplaceAssessmentModalProps) => {
   }, 'Assessment submitted successfully')
 
   useEffect(() => {
-    setSummary(thesis.assessment?.summary || '')
-    setPositives(thesis.assessment?.positives || '')
-    setNegatives(thesis.assessment?.negatives || '')
-    setGradeSuggestion(thesis.assessment?.gradeSuggestion || '')
+    setSummary(thesis.assessment?.summary ?? '')
+    setPositives(thesis.assessment?.positives ?? '')
+    setNegatives(thesis.assessment?.negatives ?? '')
+    setGradeSuggestion(thesis.assessment?.gradeSuggestion ?? '')
 
     setGradeSuggestionManuallyEdited(false)
 

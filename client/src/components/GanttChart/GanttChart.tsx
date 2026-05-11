@@ -76,7 +76,7 @@ const GanttChart = (props: IGanttChartProps) => {
     data?.map((row) => ({
       groupId: row.groupId,
       groupNode: row.groupNode,
-    })) || [],
+    })) ?? [],
     (a, b) => a.groupId === b.groupId,
   )
 
@@ -134,7 +134,7 @@ const GanttChart = (props: IGanttChartProps) => {
     }
 
     return {
-      data: data || [],
+      data: data ?? [],
       currentTime,
       totalRange,
       filteredRange,

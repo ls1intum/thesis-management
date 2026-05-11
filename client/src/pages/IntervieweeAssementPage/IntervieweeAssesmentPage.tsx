@@ -59,7 +59,7 @@ const IntervieweeAssesmentPage = () => {
         requiresAuth: true,
         data: {
           intervieweeNote: newNote,
-          score: newScore !== undefined ? newScore : interviewee.score,
+          score: newScore ?? interviewee.score,
         },
       },
       (res) => {

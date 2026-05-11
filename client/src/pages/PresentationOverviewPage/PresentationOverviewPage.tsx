@@ -203,7 +203,7 @@ const PresentationOverviewPage = () => {
   const onDelete = (presentationId: string, date: string) => {
     const updatedMap = new Map(presentations)
     const updatedList =
-      updatedMap.get(date)?.filter((item) => item.presentationId !== presentationId) || []
+      updatedMap.get(date)?.filter((item) => item.presentationId !== presentationId) ?? []
     if (updatedList.length === 0) {
       updatedMap.delete(date)
     } else {
@@ -346,6 +346,7 @@ const PresentationOverviewPage = () => {
                               presentation={p}
                               thesis={p.thesis}
                               hasEditAccess={
+                                // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- `false` must fall through to the next check
                                 user?.groups?.includes('admin') ||
                                 user?.researchGroupId === p.thesis.researchGroup.id ||
                                 (p.thesis.students ?? []).some(
@@ -353,6 +354,7 @@ const PresentationOverviewPage = () => {
                                 )
                               }
                               hasAcceptAccess={
+                                // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- `false` must fall through to the next check
                                 user?.groups?.includes('admin') ||
                                 user?.researchGroupId === p.thesis.researchGroup.id
                               }
@@ -399,6 +401,7 @@ const PresentationOverviewPage = () => {
                                 presentation={p}
                                 thesis={p.thesis}
                                 hasEditAccess={
+                                  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- `false` must fall through to the next check
                                   user?.groups?.includes('admin') ||
                                   user?.researchGroupId === p.thesis.researchGroup.id ||
                                   (p.thesis.students ?? []).some(
@@ -406,6 +409,7 @@ const PresentationOverviewPage = () => {
                                   )
                                 }
                                 hasAcceptAccess={
+                                  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- `false` must fall through to the next check
                                   user?.groups?.includes('admin') ||
                                   user?.researchGroupId === p.thesis.researchGroup.id
                                 }

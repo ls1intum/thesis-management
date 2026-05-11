@@ -12,7 +12,7 @@ const SettingsPage = () => {
 
   const navigate = useNavigate()
 
-  const value = tab || 'my-information'
+  const value = tab ?? 'my-information'
 
   return (
     <Tabs value={value} onChange={(newValue) => navigate(`/settings/${newValue}`)}>

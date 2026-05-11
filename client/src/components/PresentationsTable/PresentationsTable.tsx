@@ -137,7 +137,7 @@ const PresentationsTable = <T extends IThesisPresentation | IPublishedPresentati
     location: {
       accessor: 'location',
       title: 'Location',
-      render: (presentation) => presentation.location || 'Not available',
+      render: (presentation) => presentation.location ?? 'Not available',
     },
     streamUrl: {
       accessor: 'streamUrl',

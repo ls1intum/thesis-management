@@ -45,22 +45,22 @@ const ApplicationData = (props: IApplicationDataProps) => {
             <LabeledItem label='Thesis Title' value={application.thesisTitle} />
           )}
           <DocumentEditor label='Motivation' value={application.motivation} />
-          <DocumentEditor label='Interests' value={application.user.interests || ''} />
-          <DocumentEditor label='Projects' value={application.user.projects || ''} />
-          <DocumentEditor label='Special Skills' value={application.user.specialSkills || ''} />
+          <DocumentEditor label='Interests' value={application.user.interests ?? ''} />
+          <DocumentEditor label='Projects' value={application.user.projects ?? ''} />
+          <DocumentEditor label='Special Skills' value={application.user.specialSkills ?? ''} />
           <Grid>
             <Grid.Col span={{ xs: 4, sm: 3 }}>
               <LabeledItem
                 label='Email'
                 value={application.user.email}
-                copyText={application.user.email || undefined}
+                copyText={application.user.email ?? undefined}
               />
             </Grid.Col>
             <Grid.Col span={{ xs: 4, sm: 3 }}>
               <LabeledItem
                 label='Gender'
                 value={
-                  GLOBAL_CONFIG.genders[application.user.gender || ''] ?? application.user.gender
+                  GLOBAL_CONFIG.genders[application.user.gender ?? ''] ?? application.user.gender
                 }
               />
             </Grid.Col>
@@ -68,7 +68,7 @@ const ApplicationData = (props: IApplicationDataProps) => {
               <LabeledItem
                 label='Nationality'
                 value={
-                  AVAILABLE_COUNTRIES[application.user.nationality || ''] ??
+                  AVAILABLE_COUNTRIES[application.user.nationality ?? ''] ??
                   application.user.nationality
                 }
               />
@@ -84,14 +84,14 @@ const ApplicationData = (props: IApplicationDataProps) => {
               <LabeledItem
                 label='Matriculation Number'
                 value={application.user.matriculationNumber}
-                copyText={application.user.matriculationNumber || undefined}
+                copyText={application.user.matriculationNumber ?? undefined}
               />
             </Grid.Col>
             <Grid.Col span={{ xs: 4, sm: 3 }}>
               <LabeledItem
                 label='Study Degree'
                 value={
-                  GLOBAL_CONFIG.study_degrees[application.user.studyDegree || ''] ??
+                  GLOBAL_CONFIG.study_degrees[application.user.studyDegree ?? ''] ??
                   application.user.studyDegree
                 }
               />
@@ -100,7 +100,7 @@ const ApplicationData = (props: IApplicationDataProps) => {
               <LabeledItem
                 label='Study Program'
                 value={
-                  GLOBAL_CONFIG.study_programs[application.user.studyProgram || ''] ??
+                  GLOBAL_CONFIG.study_programs[application.user.studyProgram ?? ''] ??
                   application.user.studyProgram
                 }
               />
@@ -108,7 +108,7 @@ const ApplicationData = (props: IApplicationDataProps) => {
             <Grid.Col span={{ xs: 4, sm: 3 }}>
               <LabeledItem
                 label='Semester'
-                value={enrollmentDateToSemester(application.user.enrolledAt || '')}
+                value={enrollmentDateToSemester(application.user.enrolledAt ?? '')}
               />
             </Grid.Col>
             <Grid.Col span={{ xs: 4, sm: 3 }}>
