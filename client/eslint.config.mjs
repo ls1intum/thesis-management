@@ -83,6 +83,17 @@ export default [
       // Intentionally disabled: too noisy or stylistic-only.
       '@typescript-eslint/strict-boolean-expressions': 'off',
       '@typescript-eslint/return-await': 'off',
+      // `set-state-in-effect` is overly aggressive: the project legitimately sets
+      // state from async data fetches inside useEffect, which is the canonical
+      // React pattern (see react.dev "You Might Not Need an Effect" — the carve-out
+      // for fetching/subscriptions still applies).
+      '@eslint-react/set-state-in-effect': 'off',
+      // `purity` is a React Compiler hint (flags `new Date()` and `localStorage.getItem()`
+      // during render). The project doesn't use React Compiler; these reads are
+      // intentional and safe in our context.
+      '@eslint-react/purity': 'off',
+      // `naming-convention-ref-name` is purely stylistic (requires refs to end in `Ref`).
+      '@eslint-react/naming-convention-ref-name': 'off',
 
       'max-len': [
         'warn',
