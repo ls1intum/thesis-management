@@ -20,12 +20,12 @@ import { useIsSmallerBreakpoint, usePageTitle } from '../../hooks/theme'
 import { GLOBAL_CONFIG } from '../../config/global'
 import { CopyIcon, CheckIcon } from '@phosphor-icons/react'
 import { useEffect, useRef, useState } from 'react'
-import { ILightResearchGroup } from '../../requests/responses/researchGroup'
+import type { ILightResearchGroup } from '../../requests/responses/researchGroup'
 import { useAuthenticationContext, useUser } from '../../hooks/authentication'
 import { Calendar } from '@mantine/dates'
 import dayjs from 'dayjs'
-import { PaginationResponse } from '../../requests/responses/pagination'
-import { IPublishedPresentation, IThesisPresentation } from '../../requests/responses/thesis'
+import type { PaginationResponse } from '../../requests/responses/pagination'
+import type { IPublishedPresentation, IThesisPresentation } from '../../requests/responses/thesis'
 import { doRequest } from '../../requests/request'
 import { showSimpleError } from '../../utils/notification'
 import { getApiResponseErrorMessage } from '../../requests/handler'
@@ -117,10 +117,12 @@ const PresentationOverviewPage = () => {
           const presentationsByDate = new Map<string, IPublishedPresentation[]>()
           ;(res.data.content ?? []).forEach((presentation) => {
             const date = dayjs(presentation.scheduledAt).format('YYYY-MM-DD')
-            if (!presentationsByDate.has(date)) {
-              presentationsByDate.set(date, [])
+            const existing = presentationsByDate.get(date)
+            if (existing) {
+              existing.push(presentation)
+            } else {
+              presentationsByDate.set(date, [presentation])
             }
-            presentationsByDate.get(date)!.push(presentation)
           })
           presentationsGroupId.current = newGroupId
           setPresentations(presentationsByDate)
@@ -198,12 +200,13 @@ const PresentationOverviewPage = () => {
       return () => cancelAnimationFrame(handle)
     }
     lastScrolledGroupId.current = groupKey
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- only the selected group's id matters for scroll-target keying; tracking the whole object would re-scroll on unrelated identity changes
   }, [presentations, selectedGroup?.id, researchGroups.length])
 
   const onDelete = (presentationId: string, date: string) => {
     const updatedMap = new Map(presentations)
     const updatedList =
-      updatedMap.get(date)?.filter((item) => item.presentationId !== presentationId) || []
+      updatedMap.get(date)?.filter((item) => item.presentationId !== presentationId) ?? []
     if (updatedList.length === 0) {
       updatedMap.delete(date)
     } else {
@@ -304,7 +307,7 @@ const PresentationOverviewPage = () => {
         </div>
       </Group>
       <Flex h={{ md: '85%' }} w={'100%'} direction={{ base: 'column-reverse', md: 'row' }}>
-        {presentations && presentations.size === 0 && (
+        {presentations?.size === 0 && (
           <Flex h={'100%'} w={'100%'} align={'center'} justify={'center'} direction={'column'}>
             <CalendarXIcon size={64} color={'gray'} />
             <Title order={4}>No Presentations Scheduled</Title>
@@ -346,6 +349,7 @@ const PresentationOverviewPage = () => {
                               presentation={p}
                               thesis={p.thesis}
                               hasEditAccess={
+                                // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- `false` must fall through to the next check
                                 user?.groups?.includes('admin') ||
                                 user?.researchGroupId === p.thesis.researchGroup.id ||
                                 (p.thesis.students ?? []).some(
@@ -353,6 +357,7 @@ const PresentationOverviewPage = () => {
                                 )
                               }
                               hasAcceptAccess={
+                                // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- `false` must fall through to the next check
                                 user?.groups?.includes('admin') ||
                                 user?.researchGroupId === p.thesis.researchGroup.id
                               }
@@ -360,7 +365,7 @@ const PresentationOverviewPage = () => {
                               titleOrder={6}
                               includeStudents={true}
                               includeThesisStatus={true}
-                              onClick={() => navigate(`/presentations/${p.presentationId}`)}
+                              onClick={() => void navigate(`/presentations/${p.presentationId}`)}
                               onDelete={() => {
                                 onDelete(p.presentationId, date)
                               }}
@@ -399,6 +404,7 @@ const PresentationOverviewPage = () => {
                                 presentation={p}
                                 thesis={p.thesis}
                                 hasEditAccess={
+                                  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- `false` must fall through to the next check
                                   user?.groups?.includes('admin') ||
                                   user?.researchGroupId === p.thesis.researchGroup.id ||
                                   (p.thesis.students ?? []).some(
@@ -406,6 +412,7 @@ const PresentationOverviewPage = () => {
                                   )
                                 }
                                 hasAcceptAccess={
+                                  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- `false` must fall through to the next check
                                   user?.groups?.includes('admin') ||
                                   user?.researchGroupId === p.thesis.researchGroup.id
                                 }
@@ -413,7 +420,7 @@ const PresentationOverviewPage = () => {
                                 includeThesisStatus={true}
                                 titleOrder={6}
                                 includeStudents={true}
-                                onClick={() => navigate(`/presentations/${p.presentationId}`)}
+                                onClick={() => void navigate(`/presentations/${p.presentationId}`)}
                                 onDelete={() => {
                                   onDelete(p.presentationId, date)
                                 }}

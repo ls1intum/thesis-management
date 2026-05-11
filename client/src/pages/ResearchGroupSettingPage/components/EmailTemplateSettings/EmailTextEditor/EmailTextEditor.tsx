@@ -1,11 +1,15 @@
 import { Link, RichTextEditor, useRichTextEditorContext } from '@mantine/tiptap'
 import TextAlign from '@tiptap/extension-text-align'
 import Underline from '@tiptap/extension-underline'
-import { Editor, useEditor } from '@tiptap/react'
+import type { Editor } from '@tiptap/react'
+import { useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { Combobox, Group, useCombobox } from '@mantine/core'
 import ReactComponent from './Extension'
-import { IEmailTemplate, IMailVariableDto } from '../../../../../requests/responses/emailtemplate'
+import type {
+  IEmailTemplate,
+  IMailVariableDto,
+} from '../../../../../requests/responses/emailtemplate'
 import { useEffect, useMemo, useState } from 'react'
 import { CaretDownIcon, CaretUpIcon, Plus } from '@phosphor-icons/react'
 import { FontSize, TextStyle } from '@tiptap/extension-text-style'
@@ -86,7 +90,7 @@ const EmailTextEditor = ({
       onUpdate: ({ editor: ed }) => {
         if (setEditingTemplate && editingTemplate) {
           setEditingTemplate({
-            ...editingTemplate!,
+            ...editingTemplate,
             bodyHtml: convertHtmlToTemplateVariables(ed.getHTML(), templateVariables),
           })
         }
@@ -115,6 +119,7 @@ const EmailTextEditor = ({
         convertTemplateVariablesToHtml(editingTemplate.bodyHtml ?? '', templateVariables),
       )
     }
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- only re-sync editor content when bodyHtml or its variable mapping changes; full editingTemplate identity would loop
   }, [editingTemplate?.bodyHtml, editor, templateVariables])
 
   const fetchTemplateVariables = async () => {
@@ -138,8 +143,9 @@ const EmailTextEditor = ({
 
   useEffect(() => {
     if (editingTemplate) {
-      fetchTemplateVariables()
+      void fetchTemplateVariables()
     }
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- fetchTemplateVariables is recreated each render; only re-run when the editingTemplate id changes
   }, [editingTemplate?.id])
 
   return (

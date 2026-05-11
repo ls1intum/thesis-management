@@ -37,7 +37,7 @@ const ScoreCard = ({ score, onScoreChange, disabled = false }: IScoreCardProps) 
           )}
         </Group>
         <SegmentedControl
-          value={score?.toString() || ''}
+          value={score?.toString() ?? ''}
           onChange={(value) => {
             onScoreChange?.(parseInt(value, 10))
           }}

@@ -21,7 +21,7 @@ const ApplicationsFilters = (props: IApplicationsFiltersProps) => {
         <TextInput
           placeholder='Search applications...'
           leftSection={<MagnifyingGlass size={16} />}
-          value={filters.search || ''}
+          value={filters.search ?? ''}
           onChange={(e) => {
             setFilters((prev) => ({ ...prev, search: e.currentTarget.value }))
           }}
@@ -44,7 +44,7 @@ const ApplicationsFilters = (props: IApplicationsFiltersProps) => {
                 }))
               : []
           }
-          value={filters.topics || []}
+          value={filters.topics ?? []}
           onChange={(value) => {
             setFilters((prev) => ({
               ...prev,
@@ -63,7 +63,7 @@ const ApplicationsFilters = (props: IApplicationsFiltersProps) => {
             value: key,
             label: formatThesisType(key),
           }))}
-          value={filters.types || []}
+          value={filters.types ?? []}
           onChange={(value) => {
             setFilters((prev) => ({
               ...prev,
@@ -82,11 +82,11 @@ const ApplicationsFilters = (props: IApplicationsFiltersProps) => {
             value: value,
             label: formatApplicationState(value),
           }))}
-          value={filters.states || []}
+          value={filters.states ?? []}
           onChange={(value) => {
             setFilters((prev) => ({
               ...prev,
-              states: value as ApplicationState[],
+              states: value,
             }))
           }}
           searchable
@@ -102,8 +102,8 @@ const ApplicationsFilters = (props: IApplicationsFiltersProps) => {
           value={sort.column + ':' + sort.direction}
           onChange={(x) =>
             setSort({
-              column: (x?.split(':')[0] || 'createdAt') as any,
-              direction: (x?.split(':')[1] || 'asc') as any,
+              column: (x?.split(':')[0] ?? 'createdAt') as 'createdAt' | 'updatedAt',
+              direction: (x?.split(':')[1] ?? 'asc') as 'asc' | 'desc',
             })
           }
         />

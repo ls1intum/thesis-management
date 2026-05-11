@@ -5,8 +5,8 @@ import { showSimpleError } from '../../utils/notification'
 import { doRequest } from '../../requests/request'
 import { getApiResponseErrorMessage } from '../../requests/handler'
 import UserInformationRow from '../UserInformationRow/UserInformationRow'
-import { ILightUser } from '../../requests/responses/user'
-import { IKeycloakUserElement } from '../../requests/responses/keycloakUser'
+import type { ILightUser } from '../../requests/responses/user'
+import type { IKeycloakUserElement } from '../../requests/responses/keycloakUser'
 
 interface KeycloakUserAutocompleteProps {
   selectedLabel: string
@@ -29,7 +29,7 @@ const KeycloakUserAutocomplete = ({
   const [debouncedSearchKey] = useDebouncedValue(searchKey, 300)
   const [userOptions, setUserOptions] = useState<IKeycloakUserElement[]>([])
   const [loadingUsers, setLoadingUsers] = useState(false)
-  const [selectedUsername, setSelectedUsername] = useState<string>(previousUser?.universityId || '')
+  const [selectedUsername, setSelectedUsername] = useState<string>(previousUser?.universityId ?? '')
 
   const getUserOptionValue = (user: {
     firstName: string

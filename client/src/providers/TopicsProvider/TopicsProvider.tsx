@@ -1,9 +1,12 @@
-import React, { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react'
+import type { PropsWithChildren } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { doRequest } from '../../requests/request'
 import { showSimpleError } from '../../utils/notification'
-import { ITopicOverview, TopicState } from '../../requests/responses/topic'
-import { ITopicsContext, ITopicsFilters, TopicsContext } from './context'
-import { PaginationResponse } from '../../requests/responses/pagination'
+import type { ITopicOverview } from '../../requests/responses/topic'
+import { TopicState } from '../../requests/responses/topic'
+import type { ITopicsContext, ITopicsFilters } from './context'
+import { TopicsContext } from './context'
+import type { PaginationResponse } from '../../requests/responses/pagination'
 
 interface ITopicsProviderProps {
   limit: number
@@ -44,11 +47,11 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
         params: {
           page,
           limit,
-          type: filters.types?.join(',') || '',
-          states: filters.states?.join(',') || '',
+          type: filters.types?.join(',') ?? '',
+          states: filters.states?.join(',') ?? '',
           onlyOwnResearchGroup: filters.researchSpecific ? 'true' : 'false',
           search: filters.search ?? '',
-          researchGroupIds: filters.researchGroupIds?.join(',') || '',
+          researchGroupIds: filters.researchGroupIds?.join(',') ?? '',
         },
       },
       (res) => {
@@ -74,6 +77,7 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
 
   useEffect(() => {
     return fetchTopics()
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- fetchTopics is recreated each render; only refetch when filters/pagination change
   }, [filters, page, limit])
 
   const initialFiltersKey = JSON.stringify(initialFilters)
@@ -92,6 +96,7 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
       ...initialFilters,
     }))
     setPage(0)
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- initialFilters/states/researchSpecific are captured at the time initialFiltersKey changes; tracking the raw values would re-run on every render
   }, [initialFiltersKey])
 
   const contextState = useMemo<ITopicsContext>(() => {
@@ -147,13 +152,14 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
         })
       },
     }
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- fetchTopics is recreated each render and is only called from within callbacks at invocation time
   }, [topics, filters, page, limit, isLoading])
 
   if (hideIfEmpty && page === 0 && (!topics || (topics.content?.length ?? 0) === 0)) {
     return <></>
   }
 
-  return <TopicsContext.Provider value={contextState}>{children}</TopicsContext.Provider>
+  return <TopicsContext value={contextState}>{children}</TopicsContext>
 }
 
 export default TopicsProvider

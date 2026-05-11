@@ -16,7 +16,7 @@ const ThesesFilters = () => {
           label='Search'
           placeholder='Search theses...'
           leftSection={<MagnifyingGlass size={16} />}
-          value={filters.search || ''}
+          value={filters.search ?? ''}
           onChange={(x) => setFilters((prev) => ({ ...prev, search: x.target.value || undefined }))}
         />
       </Grid.Col>
@@ -32,8 +32,8 @@ const ThesesFilters = () => {
           value={sort.column + ':' + sort.direction}
           onChange={(x) =>
             setSort({
-              column: (x?.split(':')[0] || 'startDate') as any,
-              direction: (x?.split(':')[1] || 'asc') as any,
+              column: (x?.split(':')[0] ?? 'startDate') as 'startDate' | 'endDate' | 'createdAt',
+              direction: (x?.split(':')[1] ?? 'asc') as 'asc' | 'desc',
             })
           }
         />
@@ -47,7 +47,7 @@ const ThesesFilters = () => {
             value: key,
             label: formatThesisType(key),
           }))}
-          value={filters.types || []}
+          value={filters.types ?? []}
           onChange={(x) =>
             setFilters((prev) => ({
               ...prev,
@@ -65,11 +65,11 @@ const ThesesFilters = () => {
             value: value,
             label: formatThesisState(value),
           }))}
-          value={filters.states || []}
+          value={filters.states ?? []}
           onChange={(x) =>
             setFilters((prev) => ({
               ...prev,
-              states: x as ThesisState[],
+              states: x,
             }))
           }
         />

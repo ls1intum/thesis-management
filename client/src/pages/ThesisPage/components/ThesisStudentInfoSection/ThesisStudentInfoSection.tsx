@@ -1,5 +1,5 @@
 import { Accordion, Button, Grid, Group, NumberInput, Paper, Stack } from '@mantine/core'
-import { IThesis } from '../../../../requests/responses/thesis'
+import type { IThesis } from '../../../../requests/responses/thesis'
 import LabeledItem from '../../../../components/LabeledItem/LabeledItem'
 import { GLOBAL_CONFIG } from '../../../../config/global'
 import { useHighlightedBackgroundColor } from '../../../../hooks/theme'
@@ -132,7 +132,7 @@ const ThesisStudentInfoSection = () => {
                         onChange={(value) =>
                           setCredits((prev) => {
                             if (value) {
-                              return { ...prev, [user.data.userId]: +value }
+                              return { ...prev, [user.data.userId]: Number(value) }
                             } else {
                               delete prev[user.data.userId]
 

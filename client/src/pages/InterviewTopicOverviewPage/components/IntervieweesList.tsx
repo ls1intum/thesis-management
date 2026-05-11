@@ -21,10 +21,8 @@ import {
   XIcon,
 } from '@phosphor-icons/react'
 import { useEffect, useState } from 'react'
-import {
-  IIntervieweeLightWithNextSlot,
-  InterviewState,
-} from '../../../requests/responses/interview'
+import type { IIntervieweeLightWithNextSlot } from '../../../requests/responses/interview'
+import { InterviewState } from '../../../requests/responses/interview'
 import { useIsSmallerBreakpoint } from '../../../hooks/theme'
 import { doRequest } from '../../../requests/request'
 import { useParams } from 'react-router'
@@ -62,7 +60,7 @@ const IntervieweesList = ({ disabled = false }: IIntervieweesListProps) => {
 
   const [addIntervieweesModalOpen, setAddIntervieweesModalOpen] = useState(false)
 
-  const inviteInterviewees = async (intervieweeIds: string[]) => {
+  const inviteInterviewees = (intervieweeIds: string[]) => {
     if (!intervieweeIds.length) return
 
     doRequest<IIntervieweeLightWithNextSlot[]>(
@@ -77,7 +75,7 @@ const IntervieweesList = ({ disabled = false }: IIntervieweesListProps) => {
       (res) => {
         if (res.ok) {
           showSimpleSuccess('Invitations sent successfully')
-          fetchPossibleInterviewees(debouncedSearch, state)
+          void fetchPossibleInterviewees(debouncedSearch, state)
           setInviteModalOpen(false)
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
@@ -92,7 +90,8 @@ const IntervieweesList = ({ disabled = false }: IIntervieweesListProps) => {
   }
 
   useEffect(() => {
-    fetchPossibleInterviewees(debouncedSearch, state)
+    void fetchPossibleInterviewees(debouncedSearch, state)
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- fetchPossibleInterviewees is recreated each render by the provider; only re-run on filter changes
   }, [state, debouncedSearch])
 
   const listEmptyDescription =
@@ -299,7 +298,7 @@ const IntervieweesList = ({ disabled = false }: IIntervieweesListProps) => {
                   disableLink={selectIntervieweeMode}
                   inviteInterviewee={() => inviteInterviewees([interviewee.intervieweeId])}
                   onAcceptedOrRejected={() => {
-                    fetchPossibleInterviewees(debouncedSearch, state)
+                    void fetchPossibleInterviewees(debouncedSearch, state)
                   }}
                 />
               </Group>

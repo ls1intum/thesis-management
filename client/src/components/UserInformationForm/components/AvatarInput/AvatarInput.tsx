@@ -17,7 +17,7 @@ import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone'
 import { useMemo, useRef, useState } from 'react'
 import { doRequest } from '../../../../requests/request'
 import { showSimpleError } from '../../../../utils/notification'
-import { IUser } from '../../../../requests/responses/user'
+import type { IUser } from '../../../../requests/responses/user'
 
 const IMPORT_TOOLTIP =
   'Imports your profile picture from Gravatar (gravatar.com), a US-based service.' +
@@ -111,7 +111,9 @@ const AvatarInput = (props: IAvatarInputProps) => {
             <Button
               variant='subtle'
               size='xs'
-              onClick={importProfilePicture}
+              onClick={() => {
+                void importProfilePicture()
+              }}
               loading={importLoading}
             >
               Import from Gravatar
@@ -119,7 +121,7 @@ const AvatarInput = (props: IAvatarInputProps) => {
           </Tooltip>
         </Group>
       )}
-      <Modal opened={!!file} onClose={() => setFile(undefined)}>
+      <Modal opened={Boolean(file)} onClose={() => setFile(undefined)}>
         {file && (
           <Stack>
             <Center>
@@ -135,7 +137,12 @@ const AvatarInput = (props: IAvatarInputProps) => {
               />
             </Center>
             <Slider value={scale} onChange={(x) => setScale(x)} min={1} max={3} step={0.1} />
-            <Button onClick={onSave} fullWidth>
+            <Button
+              onClick={() => {
+                void onSave()
+              }}
+              fullWidth
+            >
               Save Avatar
             </Button>
           </Stack>

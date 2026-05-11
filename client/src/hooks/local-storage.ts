@@ -1,4 +1,5 @@
-import { Dispatch, useCallback, useEffect, useMemo, useState } from 'react'
+import type { Dispatch } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 interface ILocalStorageOptions {
   usingJson: boolean
@@ -53,6 +54,7 @@ export function useLocalStorage<T = string>(
     }
 
     return undefined
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- `version` is intentional: it bumps via the storage event listener so the memo recomputes when the underlying storage value changes
   }, [key, version, usingJson, storage])
 
   const setStoredValue = useCallback(

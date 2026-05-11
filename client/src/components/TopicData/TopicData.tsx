@@ -1,4 +1,4 @@
-import { ITopic } from '../../requests/responses/topic'
+import type { ITopic } from '../../requests/responses/topic'
 import { Grid, Stack, Text } from '@mantine/core'
 import LabeledItem from '../LabeledItem/LabeledItem'
 import { formatDate, formatThesisType, pluralize } from '../../utils/format'
@@ -36,7 +36,7 @@ const TopicData = (props: ITopicDataProps) => {
         </Grid.Col>
         <Grid.Col span={{ md: 3 }}>
           <LabeledItem
-            label={pluralize('Thesis Type', topic.thesisTypes?.length || 0)}
+            label={pluralize('Thesis Type', topic.thesisTypes?.length ?? 0)}
             value={
               <Stack gap={2}>
                 {topic.thesisTypes ? (

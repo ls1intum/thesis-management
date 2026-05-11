@@ -15,8 +15,8 @@ import {
   useMantineColorScheme,
 } from '@mantine/core'
 import { useEffect, useState } from 'react'
-import { PaginationResponse } from '../../../requests/responses/pagination'
-import {
+import type { PaginationResponse } from '../../../requests/responses/pagination'
+import type {
   IApplicationInterviewProcess,
   IInterviewProcess,
   ITopicInterviewProcess,
@@ -50,7 +50,7 @@ const CreateInterviewProcess = ({ opened, onClose }: CreateInterviewProcessProps
 
   const [selectedApplicants, setSelectedApplicants] = useState<string[]>([])
 
-  const fetchPossibleInterviewTopics = async () => {
+  const fetchPossibleInterviewTopics = () => {
     setTopicsLoading(true)
     doRequest<PaginationResponse<ITopicInterviewProcess>>(
       '/v2/topics/interview-topics',
@@ -72,7 +72,7 @@ const CreateInterviewProcess = ({ opened, onClose }: CreateInterviewProcessProps
     )
   }
 
-  const fetchPossibleInterviewApplicantsByTopic = async () => {
+  const fetchPossibleInterviewApplicantsByTopic = () => {
     if (!selectedTopic) {
       setPossibleInterviewApplicants([])
       return
@@ -153,6 +153,7 @@ const CreateInterviewProcess = ({ opened, onClose }: CreateInterviewProcessProps
 
   useEffect(() => {
     fetchPossibleInterviewApplicantsByTopic()
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- fetchPossibleInterviewApplicantsByTopic is recreated each render by the provider; effect should only re-run when selectedTopic changes
   }, [selectedTopic])
 
   useEffect(() => {

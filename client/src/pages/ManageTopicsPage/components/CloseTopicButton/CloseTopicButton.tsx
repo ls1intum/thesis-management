@@ -1,9 +1,5 @@
-import {
-  ITopic,
-  ITopicOverview,
-  TopicState,
-  toTopicOverview,
-} from '../../../../requests/responses/topic'
+import type { ITopic, ITopicOverview } from '../../../../requests/responses/topic'
+import { TopicState, toTopicOverview } from '../../../../requests/responses/topic'
 import { X } from '@phosphor-icons/react'
 import React, { useEffect, useState } from 'react'
 import { useTopicsContext } from '../../../../providers/TopicsProvider/hooks'
@@ -39,6 +35,7 @@ const CloseTopicButton = (props: ICloseTopicButtonProps) => {
 
   useEffect(() => {
     form.reset()
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- form is stable; including it would loop on every form value change
   }, [confirmationModal])
 
   if (topic.state === TopicState.CLOSED) {

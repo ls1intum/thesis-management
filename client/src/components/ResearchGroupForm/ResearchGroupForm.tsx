@@ -3,8 +3,8 @@ import { useForm } from '@mantine/form'
 import KeycloakUserAutocomplete from '../KeycloakUserAutocomplete.tsx/KeycloakUserAutocomplete'
 import { GLOBAL_CONFIG } from '../../config/global'
 import { useState } from 'react'
-import { ResearchGroupFormValues } from '../../pages/ResearchGroupAdminPage/components/CreateResearchGroupModal'
-import { IResearchGroup } from '../../requests/responses/researchGroup'
+import type { ResearchGroupFormValues } from '../../pages/ResearchGroupAdminPage/components/CreateResearchGroupModal'
+import type { IResearchGroup } from '../../requests/responses/researchGroup'
 
 interface IResearchGroupFormProps {
   initialResearchGroup?: Partial<IResearchGroup>
@@ -14,12 +14,12 @@ interface IResearchGroupFormProps {
 }
 
 const getInitialValues = (initial: Partial<IResearchGroup> | undefined) => ({
-  name: initial?.name || '',
-  abbreviation: initial?.abbreviation || '',
-  campus: initial?.campus || '',
-  description: initial?.description || '',
-  websiteUrl: initial?.websiteUrl || '',
-  headUsername: initial?.head?.universityId || '',
+  name: initial?.name ?? '',
+  abbreviation: initial?.abbreviation ?? '',
+  campus: initial?.campus ?? '',
+  description: initial?.description ?? '',
+  websiteUrl: initial?.websiteUrl ?? '',
+  headUsername: initial?.head?.universityId ?? '',
 })
 
 const getInitialHeadLabel = (initial: Partial<IResearchGroup> | undefined): string =>
@@ -35,7 +35,7 @@ const ResearchGroupForm = ({
   const initialValues = getInitialValues(initialFormValues)
   // Discard only makes sense in the edit flow — on create there's nothing
   // meaningful to revert to.
-  const isEditing = !!initialFormValues?.id || !!initialFormValues?.name
+  const isEditing = Boolean(initialFormValues?.id) || Boolean(initialFormValues?.name)
 
   const form = useForm({
     initialValues,
@@ -65,7 +65,9 @@ const ResearchGroupForm = ({
     },
   })
 
-  const [headDisplayLabel, setHeadDisplayLabel] = useState(getInitialHeadLabel(initialFormValues))
+  const [headDisplayLabel, setHeadDisplayLabel] = useState(() =>
+    getInitialHeadLabel(initialFormValues),
+  )
 
   // Bumping this counter on Discard remounts the KeycloakUserAutocomplete
   // child so its internal selectedUsername state is cleared along with the

@@ -1,8 +1,10 @@
-import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react'
-import { ThesesContext, IThesesContext, IThesesFilters, IThesesSort } from './context'
-import { IThesisOverview, ThesisState } from '../../requests/responses/thesis'
+import type { PropsWithChildren } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
+import type { IThesesContext, IThesesFilters, IThesesSort } from './context'
+import { ThesesContext } from './context'
+import type { IThesisOverview, ThesisState } from '../../requests/responses/thesis'
 import { doRequest } from '../../requests/request'
-import { PaginationResponse } from '../../requests/responses/pagination'
+import type { PaginationResponse } from '../../requests/responses/pagination'
 import { useDebouncedValue } from '@mantine/hooks'
 import { showSimpleError } from '../../utils/notification'
 import { getApiResponseErrorMessage } from '../../requests/handler'
@@ -28,7 +30,10 @@ const ThesesProvider = (props: PropsWithChildren<IThesesProviderProps>) => {
     direction: 'asc',
   })
 
-  const [debouncedSearch] = useDebouncedValue(filters.search || '', 500)
+  const [debouncedSearch] = useDebouncedValue(filters.search ?? '', 500)
+
+  const filterStatesKey = filters.states?.join(',')
+  const filterTypesKey = filters.types?.join(',')
 
   useEffect(() => {
     setTheses(undefined)
@@ -66,15 +71,8 @@ const ThesesProvider = (props: PropsWithChildren<IThesesProviderProps>) => {
         setTheses(res.data)
       },
     )
-  }, [
-    fetchAll,
-    page,
-    limit,
-    sort,
-    filters.states?.join(','),
-    filters.types?.join(','),
-    debouncedSearch,
-  ])
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- filters.states/types are tracked via joined keys below to avoid identity-based reruns
+  }, [fetchAll, page, limit, sort, filterStatesKey, filterTypesKey, debouncedSearch])
 
   const contextState = useMemo<IThesesContext>(() => {
     return {
@@ -117,7 +115,7 @@ const ThesesProvider = (props: PropsWithChildren<IThesesProviderProps>) => {
     return <></>
   }
 
-  return <ThesesContext.Provider value={contextState}>{children}</ThesesContext.Provider>
+  return <ThesesContext value={contextState}>{children}</ThesesContext>
 }
 
 export default ThesesProvider

@@ -10,7 +10,7 @@ import {
 } from '@mantine/core'
 import { CheckCircleIcon, CircleIcon } from '@phosphor-icons/react'
 import { ApplicationState } from '../../../requests/responses/application'
-import { IApplicationInterviewProcess } from '../../../requests/responses/interview'
+import type { IApplicationInterviewProcess } from '../../../requests/responses/interview'
 
 interface ISelectApplicantsListProps {
   possibleInterviewApplicants: IApplicationInterviewProcess[]

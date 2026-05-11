@@ -1,5 +1,5 @@
 import { isEmail, isNotEmpty, useForm } from '@mantine/form'
-import { IUpdateUserInformationPayload } from '../../requests/payloads/user'
+import type { IUpdateUserInformationPayload } from '../../requests/payloads/user'
 import {
   Anchor,
   Button,
@@ -159,23 +159,24 @@ const UserInformationForm = (props: IUserInformationFormProps) => {
 
   useEffect(() => {
     form.setValues({
-      email: user?.email || '',
-      matriculationNumber: user?.matriculationNumber || '',
-      firstName: user?.firstName || '',
-      lastName: user?.lastName || '',
-      gender: user?.gender || '',
-      nationality: user?.nationality || '',
-      studyDegree: user?.studyDegree || '',
-      studyProgram: user?.studyProgram || '',
+      email: user?.email ?? '',
+      matriculationNumber: user?.matriculationNumber ?? '',
+      firstName: user?.firstName ?? '',
+      lastName: user?.lastName ?? '',
+      gender: user?.gender ?? '',
+      nationality: user?.nationality ?? '',
+      studyDegree: user?.studyDegree ?? '',
+      studyProgram: user?.studyProgram ?? '',
       semester: user?.enrolledAt ? enrollmentDateToSemester(user.enrolledAt).toString() : '',
-      researchGroupName: user?.researchGroupName || '',
-      specialSkills: user?.specialSkills || '',
-      interests: user?.interests || '',
-      projects: user?.projects || '',
+      researchGroupName: user?.researchGroupName ?? '',
+      specialSkills: user?.specialSkills ?? '',
+      interests: user?.interests ?? '',
+      projects: user?.projects ?? '',
       customData: Object.fromEntries(
-        Object.keys(GLOBAL_CONFIG.custom_data).map((key) => [key, user.customData?.[key] || '']),
+        Object.keys(GLOBAL_CONFIG.custom_data).map((key) => [key, user.customData?.[key] ?? '']),
       ),
     })
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- form is stable; including it would loop on every form value change
   }, [user])
 
   useApiPdfFile(

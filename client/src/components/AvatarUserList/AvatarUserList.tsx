@@ -1,5 +1,6 @@
-import { IMinimalUser } from '../../requests/responses/user'
-import { MantineSize, Stack } from '@mantine/core'
+import type { IMinimalUser } from '../../requests/responses/user'
+import type { MantineSize } from '@mantine/core'
+import { Stack } from '@mantine/core'
 import AvatarUser from '../AvatarUser/AvatarUser'
 
 interface IAvatarUserListProps {

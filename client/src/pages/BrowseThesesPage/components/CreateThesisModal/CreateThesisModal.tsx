@@ -5,15 +5,15 @@ import React, { useEffect, useState } from 'react'
 import { UserMultiSelect } from '../../../../components/UserMultiSelect/UserMultiSelect'
 import { useNavigate } from 'react-router'
 import { doRequest } from '../../../../requests/request'
-import { IThesis } from '../../../../requests/responses/thesis'
+import type { IThesis } from '../../../../requests/responses/thesis'
 import { isNotEmptyUserList } from '../../../../utils/validation'
 import { showSimpleError } from '../../../../utils/notification'
 import { getApiResponseErrorMessage } from '../../../../requests/handler'
 import { formatThesisType, getDefaultLanguage } from '../../../../utils/format'
 import LanguageSelect from '../../../../components/LanguageSelect/LanguageSelect'
-import { PaginationResponse } from '../../../../requests/responses/pagination'
-import { ILightResearchGroup } from '../../../../requests/responses/researchGroup'
-import { ILightUser } from '../../../../requests/responses/user'
+import type { PaginationResponse } from '../../../../requests/responses/pagination'
+import type { ILightResearchGroup } from '../../../../requests/responses/researchGroup'
+import type { ILightUser } from '../../../../requests/responses/user'
 import { useHasGroupAccess } from '../../../../hooks/authentication'
 
 interface ICreateThesisModalProps {
@@ -104,6 +104,7 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
         setLoading(false)
       },
     )
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- form is stable; including it would loop on every form value change
   }, [opened])
 
   return (
@@ -128,7 +129,7 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
             })
 
             if (response.ok) {
-              navigate(`/theses/${response.data.thesisId}`)
+              void navigate(`/theses/${response.data.thesisId}`)
             } else {
               showSimpleError(getApiResponseErrorMessage(response))
             }

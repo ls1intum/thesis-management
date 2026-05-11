@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, useSearchParams } from 'react-router'
-import { IResearchGroup } from '../../requests/responses/researchGroup'
+import type { IResearchGroup } from '../../requests/responses/researchGroup'
 import { doRequest } from '../../requests/request'
 import { showSimpleError } from '../../utils/notification'
 import { getApiResponseErrorMessage } from '../../requests/handler'
@@ -10,7 +10,7 @@ import ResearchGroupMembers from './components/MemberSettings/ResearchGroupMembe
 import EmailTemplatesOverview from './components/EmailTemplateSettings/EmailTemplatesOverview'
 import { useUser } from '../../hooks/authentication'
 import ApplicationPhaseSettingsCard from './components/ApplicationPhaseSettingsCard'
-import { IResearchGroupSettings } from '../../requests/responses/researchGroupSettings'
+import type { IResearchGroupSettings } from '../../requests/responses/researchGroupSettings'
 import PresentationSettingsCard from './components/PresentationSettingsCard'
 import ProposalSettingsCard from './components/ProposalSettingsCard'
 import EmailSettingsCard from './components/EmailSettingsCard'
@@ -37,13 +37,14 @@ const ResearchGroupSettingPage = () => {
   useEffect(() => {
     const params = new URLSearchParams(searchParams)
 
-    if (selectedTab != 'general') {
+    if (selectedTab !== 'general') {
       params.set('setting', selectedTab)
     } else {
       params.delete('setting')
     }
 
     setSearchParams(params, { replace: true })
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- searchParams/setSearchParams change on every navigation; only sync URL when the selected tab changes
   }, [selectedTab])
 
   useEffect(() => {
@@ -101,7 +102,7 @@ const ResearchGroupSettingPage = () => {
           <Tabs
             value={selectedTab}
             onChange={(value) => {
-              setSelectedTab(value || 'general')
+              setSelectedTab(value ?? 'general')
             }}
           >
             <Tabs.List>
@@ -131,10 +132,10 @@ const ResearchGroupSettingPage = () => {
                   <>
                     <ApplicationPhaseSettingsCard
                       automaticRejectionEnabledSettings={
-                        researchGroupSettings?.rejectSettings.automaticRejectEnabled || false
+                        researchGroupSettings?.rejectSettings.automaticRejectEnabled ?? false
                       }
                       rejectDurationSettings={
-                        researchGroupSettings?.rejectSettings.rejectDuration || 8
+                        researchGroupSettings?.rejectSettings.rejectDuration ?? 8
                       }
                       setAutomaticRejectionEnabledSettings={(value: boolean) =>
                         setResearchGroupSettings(
@@ -163,7 +164,7 @@ const ResearchGroupSettingPage = () => {
                     />
                     <ProposalSettingsCard
                       proposalPhaseActive={
-                        researchGroupSettings?.phaseSettings.proposalPhaseActive || false
+                        researchGroupSettings?.phaseSettings.proposalPhaseActive ?? false
                       }
                       setProposalPhaseActive={(value: boolean) =>
                         setResearchGroupSettings(
@@ -180,7 +181,7 @@ const ResearchGroupSettingPage = () => {
                     />
                     <PresentationSettingsCard
                       presentationDurationSettings={
-                        researchGroupSettings?.presentationSettings.presentationSlotDuration || 30
+                        researchGroupSettings?.presentationSettings.presentationSlotDuration ?? 30
                       }
                       setPresentationDurationSettings={(value: number) =>
                         setResearchGroupSettings(

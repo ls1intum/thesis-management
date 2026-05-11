@@ -20,7 +20,7 @@ import dayjs from 'dayjs'
 import { CalendarBlankIcon } from '@phosphor-icons/react'
 import CollapsibleDateCard from './CollapsibleDateCard'
 import { useIsSmallerBreakpoint } from '../../../hooks/theme'
-import { IInterviewSlot } from '../../../requests/responses/interview'
+import type { IInterviewSlot } from '../../../requests/responses/interview'
 import { doRequest } from '../../../requests/request'
 import { useParams } from 'react-router'
 import { showSimpleError, showSimpleSuccess } from '../../../utils/notification'
@@ -114,8 +114,7 @@ const AddSlotsModal = ({
 
   const { fetchInterviewSlots } = useInterviewProcessContext()
 
-  const saveNewSlots = async () => {
-    console.log('Saving slots:', modalSlots)
+  const saveNewSlots = () => {
     setSaveLoading(true)
     doRequest<IInterviewSlot[]>(
       `/v2/interview-process/interview-slots`,
