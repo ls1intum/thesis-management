@@ -13,8 +13,9 @@ const ImprintPage = () => {
     fetch('/imprint.html', { signal: controller.signal })
       .then((res) => res.text())
       .then((res) => setContent(res))
-      .catch(() => {
-        /* aborted or failed; leave content empty */
+      .catch((err: unknown) => {
+        if (err instanceof Error && err.name === 'AbortError') return
+        console.warn('Failed to load imprint content', err)
       })
     return () => controller.abort()
   }, [])

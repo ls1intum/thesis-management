@@ -126,16 +126,18 @@ const ReplacePresentationModal = (props: IReplacePresentationModalProps) => {
         onClose()
 
         // Find the updated or newly created presentation
+        const targetScheduledAt =
+          form.values.date instanceof Date
+            ? form.values.date.toISOString()
+            : form.values.date
+              ? new Date(form.values.date).toISOString()
+              : undefined
         const updatedPresentation = response.data.presentations?.find((p) =>
           presentation
             ? p.presentationId === presentation.presentationId
-            : // For new presentation, pick the one with the latest scheduledAt
-              p.scheduledAt ===
-              (form.values.date instanceof Date
-                ? form.values.date.toISOString()
-                : form.values.date
-                  ? new Date(form.values.date).toISOString()
-                  : null),
+            : // For new presentation, match by the freshly-submitted scheduledAt.
+              // Guard against picking a record with scheduledAt === null when the form date is missing.
+              targetScheduledAt !== undefined && p.scheduledAt === targetScheduledAt,
         )
 
         onChange?.(updatedPresentation)
