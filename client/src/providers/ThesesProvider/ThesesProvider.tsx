@@ -119,7 +119,7 @@ const ThesesProvider = (props: PropsWithChildren<IThesesProviderProps>) => {
     return <></>
   }
 
-  return <ThesesContext.Provider value={contextState}>{children}</ThesesContext.Provider>
+  return <ThesesContext value={contextState}>{children}</ThesesContext>
 }
 
 export default ThesesProvider

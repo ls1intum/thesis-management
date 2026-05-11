@@ -1,5 +1,5 @@
 import type { Dispatch, ReactNode, SetStateAction } from 'react'
-import React, { useContext } from 'react'
+import React, { use } from 'react'
 
 export type DateRange = [number, number]
 
@@ -35,7 +35,7 @@ export interface IGanttChartContext {
 export const GanttChartContext = React.createContext<IGanttChartContext | undefined>(undefined)
 
 export function useGanttChartContext() {
-  const data = useContext(GanttChartContext)
+  const data = use(GanttChartContext)
 
   if (!data) {
     throw new Error('GanttChartContext not initialized')

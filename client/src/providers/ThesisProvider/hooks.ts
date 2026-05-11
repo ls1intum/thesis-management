@@ -1,11 +1,11 @@
-import { useContext, useMemo, useState } from 'react'
+import { use, useMemo, useState } from 'react'
 import { ThesisContext } from './context'
 import type { IPublishedThesis, IThesis } from '../../requests/responses/thesis'
 import { showSimpleError, showSimpleSuccess } from '../../utils/notification'
 import { useUser } from '../../hooks/authentication'
 
 export function useThesisContext() {
-  const data = useContext(ThesisContext)
+  const data = use(ThesisContext)
 
   if (!data) {
     throw new Error('ThesisContext not initialized')
@@ -25,7 +25,7 @@ export function useLoadedThesisContext() {
 }
 
 export function useThesisContextUpdater() {
-  const data = useContext(ThesisContext)
+  const data = use(ThesisContext)
 
   if (!data) {
     return () => undefined

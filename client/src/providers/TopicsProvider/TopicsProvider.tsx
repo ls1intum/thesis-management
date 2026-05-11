@@ -156,7 +156,7 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
     return <></>
   }
 
-  return <TopicsContext.Provider value={contextState}>{children}</TopicsContext.Provider>
+  return <TopicsContext value={contextState}>{children}</TopicsContext>
 }
 
 export default TopicsProvider

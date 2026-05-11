@@ -51,9 +51,9 @@ const ThesisProvider = (props: PropsWithChildren<IThesisProviderProps>) => {
   }
 
   return (
-    <ThesisContext.Provider value={contextState} key={thesisId}>
+    <ThesisContext value={contextState} key={thesisId}>
       {children}
-    </ThesisContext.Provider>
+    </ThesisContext>
   )
 }
 

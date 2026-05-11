@@ -256,11 +256,7 @@ const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProv
     setState,
   ])
 
-  return (
-    <InterviewProcessContext.Provider value={contextState}>
-      {children}
-    </InterviewProcessContext.Provider>
-  )
+  return <InterviewProcessContext value={contextState}>{children}</InterviewProcessContext>
 }
 
 export default InterviewProcessProvider

@@ -17,7 +17,7 @@ import TopicCard from './TopicCard/TopicCard'
 import { TopicsContext } from '../../../../providers/TopicsProvider/context'
 import { Database } from '@phosphor-icons/react'
 import type { Dispatch } from 'react'
-import { useContext, useEffect, useState } from 'react'
+import { use, useEffect, useState } from 'react'
 import type { ITopic, ITopicOverview } from '../../../../requests/responses/topic'
 import type { IPublishedThesis } from '../../../../requests/responses/thesis'
 import type { PaginationResponse } from '../../../../requests/responses/pagination'
@@ -47,7 +47,7 @@ const TopicCardGrid = ({
   showSuggestedTopic = false,
   onApply,
 }: ITopicCardGridContentProps) => {
-  const contextData = useContext(TopicsContext)
+  const contextData = use(TopicsContext)
   const source = gridContent ?? contextData
   if (!source) {
     throw new Error('TopicCardGrid requires either a gridContent prop or a TopicsProvider ancestor')

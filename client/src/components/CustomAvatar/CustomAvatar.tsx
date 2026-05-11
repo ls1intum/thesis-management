@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from 'react'
+import { use, useEffect, useRef, useState } from 'react'
 import type { IMinimalUser } from '../../requests/responses/user'
 import type { MantineSize } from '@mantine/core'
 import { Avatar, type BoxProps } from '@mantine/core'
@@ -13,7 +13,7 @@ interface ICustomAvatarProps extends BoxProps {
 
 export const CustomAvatar = (props: ICustomAvatarProps) => {
   const { user, size, ...other } = props
-  const auth = useContext(AuthenticationContext)
+  const auth = use(AuthenticationContext)
   const isAuthenticated = auth?.isAuthenticated ?? false
   const [blobUrl, setBlobUrl] = useState<string | undefined>(undefined)
   const blobUrlRef = useRef<string | undefined>(undefined)

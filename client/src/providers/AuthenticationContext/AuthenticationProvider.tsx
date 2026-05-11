@@ -263,9 +263,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
     location.origin,
   ])
 
-  return (
-    <AuthenticationContext.Provider value={contextValue}>{children}</AuthenticationContext.Provider>
-  )
+  return <AuthenticationContext value={contextValue}>{children}</AuthenticationContext>
 }
 
 export default AuthenticationProvider

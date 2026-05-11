@@ -156,7 +156,7 @@ const GanttChart = (props: IGanttChartProps) => {
   }
 
   return (
-    <GanttChartContext.Provider value={contextValue}>
+    <GanttChartContext value={contextValue}>
       <div className={classes.chartContainer}>
         <div className={classes.chartBox}>
           <GanttChartRangeSlider />
@@ -308,7 +308,7 @@ const GanttChart = (props: IGanttChartProps) => {
           </GanttChartZoomContainer>
         </div>
       </div>
-    </GanttChartContext.Provider>
+    </GanttChartContext>
   )
 }
 

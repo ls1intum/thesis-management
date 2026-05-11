@@ -150,9 +150,9 @@ const ThesisCommentsProvider = (props: PropsWithChildren<IThesisCommentsProvider
   }, [thesis, comments, submitting, commentType, limit, page])
 
   return (
-    <ThesisCommentsContext.Provider value={contextState} key={thesis.thesisId}>
+    <ThesisCommentsContext value={contextState} key={thesis.thesisId}>
       {children}
-    </ThesisCommentsContext.Provider>
+    </ThesisCommentsContext>
   )
 }
 

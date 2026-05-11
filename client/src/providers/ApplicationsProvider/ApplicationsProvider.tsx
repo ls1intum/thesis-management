@@ -208,9 +208,7 @@ const ApplicationsProvider = (props: PropsWithChildren<IApplicationsProviderProp
     return <>{emptyComponent}</>
   }
 
-  return (
-    <ApplicationsContext.Provider value={contextState}>{children}</ApplicationsContext.Provider>
-  )
+  return <ApplicationsContext value={contextState}>{children}</ApplicationsContext>
 }
 
 export default ApplicationsProvider
