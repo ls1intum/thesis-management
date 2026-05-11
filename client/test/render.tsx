@@ -1,6 +1,7 @@
-import { ReactElement, ReactNode } from 'react'
+import type { ReactElement, ReactNode } from 'react'
 import { MantineProvider } from '@mantine/core'
-import { render, RenderOptions, RenderResult } from '@testing-library/react'
+import type { RenderOptions, RenderResult } from '@testing-library/react'
+import { render } from '@testing-library/react'
 
 interface ProvidersProps {
   children: ReactNode

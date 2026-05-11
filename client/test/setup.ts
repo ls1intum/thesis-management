@@ -30,7 +30,7 @@ class ResizeObserverMock {
   disconnect(): void {}
 }
 if (!('ResizeObserver' in globalThis)) {
-  globalThis.ResizeObserver = ResizeObserverMock as unknown as typeof ResizeObserver
+  globalThis.ResizeObserver = ResizeObserverMock
 }
 
 // 3) scrollTo — Mantine occasionally calls window.scrollTo and element.scrollTo.
