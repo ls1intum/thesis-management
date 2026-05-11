@@ -18,7 +18,7 @@ import { Link, useNavigate } from 'react-router'
 import { ColorSchemeToggleButton } from '../ColorSchemeToggleButton/ColorSchemeToggleButton'
 import { useAuthenticationContext, useUser } from '../../hooks/authentication'
 import { CustomAvatar } from '../CustomAvatar/CustomAvatar'
-import { GearSix, NewspaperClipping, SignOut } from '@phosphor-icons/react'
+import { GearSixIcon, KeyIcon, NewspaperClippingIcon, SignOutIcon } from '@phosphor-icons/react'
 import { getPasskeyErrorMessage } from '../../utils/passkey'
 import { showSimpleError } from '../../utils/notification'
 import { useEffect, useState } from 'react'
@@ -117,7 +117,7 @@ const Header = ({ opened, toggle, authenticatedArea, openLoginModal = false }: H
             p={'xs'}
           >
             <Group gap='xs' align='center' p={0}>
-              <NewspaperClipping size={16} />
+              <NewspaperClippingIcon size={16} />
               <Text>Dashboard</Text>
             </Group>
           </Button>
@@ -143,34 +143,43 @@ const Header = ({ opened, toggle, authenticatedArea, openLoginModal = false }: H
                 <Menu.Item
                   component={Link}
                   to='/dashboard'
-                  leftSection={<NewspaperClipping size={16} />}
+                  leftSection={<NewspaperClippingIcon size={16} />}
                   hiddenFrom='xs'
                 >
                   Go to Dashboard
                 </Menu.Item>
               )}
 
-              <Menu.Item component={Link} to='/settings' leftSection={<GearSix size={16} />}>
+              <Menu.Item component={Link} to='/settings' leftSection={<GearSixIcon size={16} />}>
                 Settings
               </Menu.Item>
               <Divider />
-              <Menu.Item component={Link} to='/logout' leftSection={<SignOut size={16} />}>
+              <Menu.Item component={Link} to='/logout' leftSection={<SignOutIcon size={16} />}>
                 Logout
               </Menu.Item>
             </Menu.Dropdown>
           </Menu>
         ) : (
-          <Button component={Link} to='/dashboard'>
-            Login
-          </Button>
+          <Group gap='xs'>
+            <Button
+              variant='outline'
+              leftSection={<KeyIcon size={16} />}
+              onClick={() => void onPasskeyLogin()}
+              loading={isPasskeyLoading}
+              disabled={!context.isPasskeySupported}
+            >
+              AET Passkey
+            </Button>
+            <Button onClick={() => void context.login('/dashboard')}>Login</Button>
+          </Group>
         )}
       </Flex>
       <Modal
         opened={isLoginModalForcedOpen || isLoginModalOpen}
         onClose={onLoginModalClose}
-        closeOnClickOutside={!isPasskeyLoading}
         closeOnEscape={!isPasskeyLoading}
         withCloseButton={!isPasskeyLoading}
+        closeOnClickOutside={false}
         title='Login'
         centered
       >
@@ -185,14 +194,16 @@ const Header = ({ opened, toggle, authenticatedArea, openLoginModal = false }: H
           )}
           <Flex direction='column' gap='md'>
             <Button
+              variant='outline'
+              leftSection={<KeyIcon size={16} />}
               onClick={() => void onPasskeyLogin()}
               loading={isPasskeyLoading}
               disabled={!context.isPasskeySupported}
             >
-              Login with AET Passkey
+              AET Passkey
             </Button>
-            <Button variant='outline' onClick={onPasswordLogin} disabled={isPasskeyLoading}>
-              Login with TUM-Login
+            <Button onClick={onPasswordLogin} disabled={isPasskeyLoading}>
+              Login
             </Button>
           </Flex>
         </Stack>
