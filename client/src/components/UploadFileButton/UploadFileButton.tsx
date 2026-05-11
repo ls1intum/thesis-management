@@ -1,5 +1,6 @@
-import { UploadFileType } from '../../config/types'
-import { PropsWithChildren, useEffect, useState } from 'react'
+import type { UploadFileType } from '../../config/types'
+import type { PropsWithChildren } from 'react'
+import { useEffect, useState } from 'react'
 import { Button, Modal, Stack, type ButtonProps } from '@mantine/core'
 import UploadArea from '../UploadArea/UploadArea'
 

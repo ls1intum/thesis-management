@@ -11,12 +11,13 @@ import {
   Text,
 } from '@mantine/core'
 import { FadersHorizontalIcon, MagnifyingGlassIcon } from '@phosphor-icons/react'
-import { JSX, useEffect, useState, Dispatch, SetStateAction } from 'react'
+import type { JSX, Dispatch, SetStateAction } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams } from 'react-router'
 import { useIsSmallerBreakpoint } from '../../hooks/theme'
 import DropDownMultiSelect from '../DropDownMultiSelect/DropDownMultiSelect'
 import { GLOBAL_CONFIG } from '../../config/global'
-import { ILightResearchGroup } from '../../requests/responses/researchGroup'
+import type { ILightResearchGroup } from '../../requests/responses/researchGroup'
 import ThesisTypeBadge from '../../pages/LandingPage/components/ThesisTypBadge/ThesisTypBadge'
 
 interface ITopicSearchFiltersProps {

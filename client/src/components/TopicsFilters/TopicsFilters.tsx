@@ -41,7 +41,7 @@ const TopicsFilters = (props: ITopicsFiltersProps) => {
               <Center>
                 <Checkbox
                   label={formatThesisType(key)}
-                  checked={!!filters.types?.includes(key)}
+                  checked={Boolean(filters.types?.includes(key))}
                   onChange={(e) => {
                     setFilters((prev) => ({
                       types: [...(prev.types || []), key].filter(

@@ -1,12 +1,13 @@
 import React, { useState } from 'react'
-import { DataTable, DataTableColumn } from 'mantine-datatable'
-import {
+import type { DataTableColumn } from 'mantine-datatable'
+import { DataTable } from 'mantine-datatable'
+import type {
   IPublishedPresentation,
   IPublishedThesis,
-  isPublishedPresentation,
   IThesis,
   IThesisPresentation,
 } from '../../requests/responses/thesis'
+import { isPublishedPresentation } from '../../requests/responses/thesis'
 import { formatDate, formatPresentationType } from '../../utils/format'
 import { GLOBAL_CONFIG } from '../../config/global'
 import { Anchor, Badge, Button, Center, Group, Stack, Text, Tooltip } from '@mantine/core'
@@ -227,7 +228,7 @@ const PresentationsTable = <T extends IThesisPresentation | IPublishedPresentati
       <ReplacePresentationModal
         thesis={theses.find((row) => row.thesisId === editPresentationModal?.thesisId)}
         presentation={editPresentationModal}
-        opened={!!editPresentationModal}
+        opened={Boolean(editPresentationModal)}
         onClose={() => setEditPresentationModal(undefined)}
         onChange={onChange}
       />

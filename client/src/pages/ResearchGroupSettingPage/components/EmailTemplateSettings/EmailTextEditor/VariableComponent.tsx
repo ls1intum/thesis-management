@@ -1,8 +1,9 @@
 import { Badge, Combobox, Group, useCombobox } from '@mantine/core'
 import { CaretDownIcon, CaretUpIcon } from '@phosphor-icons/react'
-import { NodeViewWrapper, NodeViewProps } from '@tiptap/react'
+import type { NodeViewProps } from '@tiptap/react'
+import { NodeViewWrapper } from '@tiptap/react'
 import { useEffect, useState } from 'react'
-import { IMailVariableDto } from '../../../../../requests/responses/emailtemplate'
+import type { IMailVariableDto } from '../../../../../requests/responses/emailtemplate'
 import VariableComboboxOptions from './VariableComboboxOptions'
 
 export default function VariableComponent(props: NodeViewProps) {

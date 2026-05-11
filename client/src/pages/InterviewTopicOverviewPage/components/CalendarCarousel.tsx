@@ -17,11 +17,11 @@ import {
   CheckIcon,
 } from '@mantine/core'
 import { CalendarDotsIcon, ClockUserIcon, CopyIcon, PlusIcon } from '@phosphor-icons/react'
-import { IInterviewSlot } from '../../../requests/responses/interview'
+import type { IInterviewSlot } from '../../../requests/responses/interview'
 import { DateHeaderItem } from './DateHeaderItem'
 import SlotItem from './SlotItem'
 import { useIsSmallerBreakpoint } from '../../../hooks/theme'
-import { useEffect, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import AddSlotsModal from './AddSlotsModal'
 import { useInterviewProcessContext } from '../../../providers/InterviewProcessProvider/hooks'
 import { GLOBAL_CONFIG } from '../../../config/global'
@@ -216,7 +216,7 @@ const CalendarCarousel = ({ disabled = false }: ICalendarCarouselProps) => {
               }
 
               return (
-                <>
+                <Fragment key={date}>
                   {chunks.map((chunk, chunkIndex) => (
                     <Carousel.Slide key={`${date}-${chunkIndex}`}>
                       <Stack gap={'0.5rem'}>
@@ -268,7 +268,7 @@ const CalendarCarousel = ({ disabled = false }: ICalendarCarouselProps) => {
                       </Stack>
                     </Carousel.Slide>
                   ))}
-                </>
+                </Fragment>
               )
             })}
         </Carousel>

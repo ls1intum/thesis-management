@@ -1,4 +1,4 @@
-import { IThesis, ThesisState } from '../../../../requests/responses/thesis'
+import type { IThesis, ThesisState } from '../../../../requests/responses/thesis'
 import {
   Accordion,
   Alert,
@@ -31,8 +31,8 @@ import ThesisStateBadge from '../../../../components/ThesisStateBadge/ThesisStat
 import ThesisVisibilitySelect from '../ThesisVisibilitySelect/ThesisVisibilitySelect'
 import { formatThesisType } from '../../../../utils/format'
 import LanguageSelect from '../../../../components/LanguageSelect/LanguageSelect'
-import { PaginationResponse } from '../../../../requests/responses/pagination'
-import { ILightResearchGroup } from '../../../../requests/responses/researchGroup'
+import type { PaginationResponse } from '../../../../requests/responses/pagination'
+import type { ILightResearchGroup } from '../../../../requests/responses/researchGroup'
 import { showSimpleError, showSimpleSuccess } from '../../../../utils/notification'
 import { useHasGroupAccess } from '../../../../hooks/authentication'
 import { Warning } from '@phosphor-icons/react'

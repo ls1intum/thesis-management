@@ -12,7 +12,7 @@ import { arrayUnique } from '../../utils/array'
 import AvatarUserList from '../AvatarUserList/AvatarUserList'
 import AvatarUser from '../AvatarUser/AvatarUser'
 import LabeledItem from '../LabeledItem/LabeledItem'
-import { IGanttChartDataElement } from '../GanttChart/context'
+import type { IGanttChartDataElement } from '../GanttChart/context'
 
 const ThesesGanttChart = () => {
   const { theses, page, setPage } = useThesesContext()
@@ -140,8 +140,8 @@ const ThesesGanttChart = () => {
       ])
     : []
 
-  const hasKeywordsColumn = !!(theses?.content ?? []).some(
-    (thesis) => !!(thesis.keywords ?? []).length,
+  const hasKeywordsColumn = Boolean(
+    (theses?.content ?? []).some((thesis) => Boolean((thesis.keywords ?? []).length)),
   )
 
   return (
@@ -225,7 +225,7 @@ const ThesesGanttChart = () => {
         </Center>
       )}
       <ThesisPreviewModal
-        opened={!!openedThesisId}
+        opened={Boolean(openedThesisId)}
         onClose={() => setOpenedThesisId(undefined)}
         thesisId={openedThesisId}
       />

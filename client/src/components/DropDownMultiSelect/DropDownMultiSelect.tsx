@@ -47,12 +47,9 @@ const DropDownMultiSelect = ({
   const computedColorScheme = useComputedColorScheme()
 
   useEffect(() => {
-    let filteredData = data
-    if (searchFunction) {
-      filteredData = searchFunction(search)
-    } else {
-      filteredData = data.filter((item) => item.toLowerCase().includes(search.toLowerCase()))
-    }
+    const filteredData = searchFunction
+      ? searchFunction(search)
+      : data.filter((item) => item.toLowerCase().includes(search.toLowerCase()))
 
     setDisplayData(
       showSelectedOnTop

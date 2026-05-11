@@ -1,6 +1,6 @@
 import { useContext, useMemo, useState } from 'react'
 import { ThesisContext } from './context'
-import { IPublishedThesis, IThesis } from '../../requests/responses/thesis'
+import type { IPublishedThesis, IThesis } from '../../requests/responses/thesis'
 import { showSimpleError, showSimpleSuccess } from '../../utils/notification'
 import { useUser } from '../../hooks/authentication'
 

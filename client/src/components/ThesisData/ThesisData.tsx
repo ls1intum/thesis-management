@@ -1,4 +1,5 @@
-import { IPublishedThesis, isThesis, IThesis } from '../../requests/responses/thesis'
+import type { IPublishedThesis, IThesis } from '../../requests/responses/thesis'
+import { isThesis } from '../../requests/responses/thesis'
 import { Divider, Grid, Stack, Title } from '@mantine/core'
 import LabeledItem from '../LabeledItem/LabeledItem'
 import { formatDate, formatThesisType, pluralize } from '../../utils/format'

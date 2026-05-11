@@ -1,11 +1,15 @@
 import { Link, RichTextEditor, useRichTextEditorContext } from '@mantine/tiptap'
 import TextAlign from '@tiptap/extension-text-align'
 import Underline from '@tiptap/extension-underline'
-import { Editor, useEditor } from '@tiptap/react'
+import type { Editor } from '@tiptap/react'
+import { useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { Combobox, Group, useCombobox } from '@mantine/core'
 import ReactComponent from './Extension'
-import { IEmailTemplate, IMailVariableDto } from '../../../../../requests/responses/emailtemplate'
+import type {
+  IEmailTemplate,
+  IMailVariableDto,
+} from '../../../../../requests/responses/emailtemplate'
 import { useEffect, useMemo, useState } from 'react'
 import { CaretDownIcon, CaretUpIcon, Plus } from '@phosphor-icons/react'
 import { FontSize, TextStyle } from '@tiptap/extension-text-style'
@@ -86,7 +90,7 @@ const EmailTextEditor = ({
       onUpdate: ({ editor: ed }) => {
         if (setEditingTemplate && editingTemplate) {
           setEditingTemplate({
-            ...editingTemplate!,
+            ...editingTemplate,
             bodyHtml: convertHtmlToTemplateVariables(ed.getHTML(), templateVariables),
           })
         }

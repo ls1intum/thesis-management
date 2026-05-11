@@ -1,9 +1,9 @@
 import { createContext } from 'react'
-import { JwtPayload } from 'jwt-decode'
-import { IUser } from '../../requests/responses/user'
-import { IUpdateUserInformationPayload } from '../../requests/payloads/user'
-import { PartialNull } from '../../utils/validation'
-import { ILightResearchGroup } from '../../requests/responses/researchGroup'
+import type { JwtPayload } from 'jwt-decode'
+import type { IUser } from '../../requests/responses/user'
+import type { IUpdateUserInformationPayload } from '../../requests/payloads/user'
+import type { PartialNull } from '../../utils/validation'
+import type { ILightResearchGroup } from '../../requests/responses/researchGroup'
 
 export interface IAuthenticationContext {
   isAuthenticated: boolean

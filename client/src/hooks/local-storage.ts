@@ -1,4 +1,5 @@
-import { Dispatch, useCallback, useEffect, useMemo, useState } from 'react'
+import type { Dispatch } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 interface ILocalStorageOptions {
   usingJson: boolean

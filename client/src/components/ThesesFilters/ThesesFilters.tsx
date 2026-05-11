@@ -69,7 +69,7 @@ const ThesesFilters = () => {
           onChange={(x) =>
             setFilters((prev) => ({
               ...prev,
-              states: x as ThesisState[],
+              states: x,
             }))
           }
         />

@@ -1,6 +1,7 @@
-import { IApplication } from '../../requests/responses/application'
+import type { IApplication } from '../../requests/responses/application'
 import { Stack, Group, Grid, Title, Badge, Accordion } from '@mantine/core'
-import React, { ReactNode } from 'react'
+import type { ReactNode } from 'react'
+import React from 'react'
 import { GLOBAL_CONFIG } from '../../config/global'
 import { AVAILABLE_COUNTRIES } from '../../config/countries'
 import {

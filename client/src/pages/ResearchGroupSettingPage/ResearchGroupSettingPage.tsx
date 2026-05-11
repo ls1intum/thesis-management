@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, useSearchParams } from 'react-router'
-import { IResearchGroup } from '../../requests/responses/researchGroup'
+import type { IResearchGroup } from '../../requests/responses/researchGroup'
 import { doRequest } from '../../requests/request'
 import { showSimpleError } from '../../utils/notification'
 import { getApiResponseErrorMessage } from '../../requests/handler'
@@ -10,7 +10,7 @@ import ResearchGroupMembers from './components/MemberSettings/ResearchGroupMembe
 import EmailTemplatesOverview from './components/EmailTemplateSettings/EmailTemplatesOverview'
 import { useUser } from '../../hooks/authentication'
 import ApplicationPhaseSettingsCard from './components/ApplicationPhaseSettingsCard'
-import { IResearchGroupSettings } from '../../requests/responses/researchGroupSettings'
+import type { IResearchGroupSettings } from '../../requests/responses/researchGroupSettings'
 import PresentationSettingsCard from './components/PresentationSettingsCard'
 import ProposalSettingsCard from './components/ProposalSettingsCard'
 import EmailSettingsCard from './components/EmailSettingsCard'
@@ -37,7 +37,7 @@ const ResearchGroupSettingPage = () => {
   useEffect(() => {
     const params = new URLSearchParams(searchParams)
 
-    if (selectedTab != 'general') {
+    if (selectedTab !== 'general') {
       params.set('setting', selectedTab)
     } else {
       params.delete('setting')

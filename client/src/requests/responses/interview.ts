@@ -1,5 +1,5 @@
-import { ApplicationState, IApplicationSummary } from './application'
-import { ILightUser } from './user'
+import type { ApplicationState, IApplicationSummary } from './application'
+import type { ILightUser } from './user'
 
 export enum InterviewState {
   UNCONTACTED = 'Uncontacted',

@@ -20,12 +20,12 @@ import { useIsSmallerBreakpoint, usePageTitle } from '../../hooks/theme'
 import { GLOBAL_CONFIG } from '../../config/global'
 import { CopyIcon, CheckIcon } from '@phosphor-icons/react'
 import { useEffect, useRef, useState } from 'react'
-import { ILightResearchGroup } from '../../requests/responses/researchGroup'
+import type { ILightResearchGroup } from '../../requests/responses/researchGroup'
 import { useAuthenticationContext, useUser } from '../../hooks/authentication'
 import { Calendar } from '@mantine/dates'
 import dayjs from 'dayjs'
-import { PaginationResponse } from '../../requests/responses/pagination'
-import { IPublishedPresentation, IThesisPresentation } from '../../requests/responses/thesis'
+import type { PaginationResponse } from '../../requests/responses/pagination'
+import type { IPublishedPresentation, IThesisPresentation } from '../../requests/responses/thesis'
 import { doRequest } from '../../requests/request'
 import { showSimpleError } from '../../utils/notification'
 import { getApiResponseErrorMessage } from '../../requests/handler'
@@ -304,7 +304,7 @@ const PresentationOverviewPage = () => {
         </div>
       </Group>
       <Flex h={{ md: '85%' }} w={'100%'} direction={{ base: 'column-reverse', md: 'row' }}>
-        {presentations && presentations.size === 0 && (
+        {presentations?.size === 0 && (
           <Flex h={'100%'} w={'100%'} align={'center'} justify={'center'} direction={'column'}>
             <CalendarXIcon size={64} color={'gray'} />
             <Title order={4}>No Presentations Scheduled</Title>

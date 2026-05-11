@@ -1,5 +1,5 @@
 import { Accordion, Button, Grid, Group, NumberInput, Paper, Stack } from '@mantine/core'
-import { IThesis } from '../../../../requests/responses/thesis'
+import type { IThesis } from '../../../../requests/responses/thesis'
 import LabeledItem from '../../../../components/LabeledItem/LabeledItem'
 import { GLOBAL_CONFIG } from '../../../../config/global'
 import { useHighlightedBackgroundColor } from '../../../../hooks/theme'

@@ -7,7 +7,7 @@ import { getApiResponseErrorMessage } from '../../../requests/handler'
 import { showSimpleError } from '../../../utils/notification'
 import { showNotification } from '@mantine/notifications'
 import { useParams } from 'react-router'
-import {
+import type {
   IResearchGroupSettings,
   IResearchGroupSettingsWritingGuide,
 } from '../../../requests/responses/researchGroupSettings'

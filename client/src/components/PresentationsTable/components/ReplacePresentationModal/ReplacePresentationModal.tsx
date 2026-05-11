@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { useThesisUpdateAction } from '../../../../providers/ThesisProvider/hooks'
 import { Accordion, Alert, Button, Modal, Select, Stack, TextInput } from '@mantine/core'
 import { doRequest } from '../../../../requests/request'
-import {
+import type {
   IPublishedPresentation,
   IPublishedThesis,
   IThesis,

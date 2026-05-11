@@ -1,5 +1,5 @@
 import { isEmail, isNotEmpty, useForm } from '@mantine/form'
-import { IUpdateUserInformationPayload } from '../../requests/payloads/user'
+import type { IUpdateUserInformationPayload } from '../../requests/payloads/user'
 import {
   Anchor,
   Button,

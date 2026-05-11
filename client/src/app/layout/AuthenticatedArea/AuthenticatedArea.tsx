@@ -1,4 +1,6 @@
-import { PropsWithChildren, Suspense, useEffect } from 'react'
+import type { PropsWithChildren } from 'react'
+import { Suspense, useEffect } from 'react'
+import type { MantineSize } from '@mantine/core'
 import {
   ActionIcon,
   AppShell,
@@ -8,7 +10,6 @@ import {
   Divider,
   Flex,
   Group,
-  MantineSize,
   Stack,
   Text,
   Tooltip,
@@ -137,7 +138,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
     minimizeAnimationDuration,
   )
   // only use debounced State if value is false because otherwise the text is formatted weirdly if you expand the navigation
-  const minimized = opened ? false : minimizedState || !!debouncedMinimized
+  const minimized = opened ? false : minimizedState || Boolean(debouncedMinimized)
 
   const location = useLocation()
   const navigationType = useNavigationType()
@@ -202,7 +203,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
               (item) =>
                 !item.groups || item.groups.some((role) => auth.user?.groups?.includes(role)),
             )
-            .filter((item) => item.display == undefined || item.display === true)
+            .filter((item) => item.display === undefined || item.display === true)
             .filter((item) =>
               item.hideFromGroups
                 ? !item.hideFromGroups.some((role) => auth.user?.groups?.includes(role))

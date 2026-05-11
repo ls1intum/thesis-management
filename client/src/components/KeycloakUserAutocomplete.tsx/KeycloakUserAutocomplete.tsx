@@ -5,8 +5,8 @@ import { showSimpleError } from '../../utils/notification'
 import { doRequest } from '../../requests/request'
 import { getApiResponseErrorMessage } from '../../requests/handler'
 import UserInformationRow from '../UserInformationRow/UserInformationRow'
-import { ILightUser } from '../../requests/responses/user'
-import { IKeycloakUserElement } from '../../requests/responses/keycloakUser'
+import type { ILightUser } from '../../requests/responses/user'
+import type { IKeycloakUserElement } from '../../requests/responses/keycloakUser'
 
 interface KeycloakUserAutocompleteProps {
   selectedLabel: string

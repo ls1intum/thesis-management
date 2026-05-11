@@ -15,8 +15,8 @@ import {
   useMantineColorScheme,
 } from '@mantine/core'
 import { useEffect, useState } from 'react'
-import { PaginationResponse } from '../../../requests/responses/pagination'
-import {
+import type { PaginationResponse } from '../../../requests/responses/pagination'
+import type {
   IApplicationInterviewProcess,
   IInterviewProcess,
   ITopicInterviewProcess,

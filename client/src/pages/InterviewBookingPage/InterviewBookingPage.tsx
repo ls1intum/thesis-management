@@ -12,7 +12,7 @@ import {
   Paper,
 } from '@mantine/core'
 import { useIsSmallerBreakpoint } from '../../hooks/theme'
-import { IInterviewSlot } from '../../requests/responses/interview'
+import type { IInterviewSlot } from '../../requests/responses/interview'
 import { useEffect, useState } from 'react'
 import SummaryCard from './components/SummaryCard'
 import {
@@ -29,11 +29,53 @@ import { useParams } from 'react-router'
 import { showSimpleError } from '../../utils/notification'
 import { getApiResponseErrorMessage } from '../../requests/handler'
 import { useAuthenticationContext, useUser } from '../../hooks/authentication'
-import { ITopic } from '../../requests/responses/topic'
+import type { ITopic } from '../../requests/responses/topic'
 import AvatarUserList from '../../components/AvatarUserList/AvatarUserList'
 import InterviewProcessProvider from '../../providers/InterviewProcessProvider/InterviewProcessProvider'
 import SelectSlotCarousel from './components/SelectSlotCarousel'
 import CancelSlotConfirmationModal from '../InterviewTopicOverviewPage/components/CancelSlotConfirmationModal'
+
+interface ISlotInformationProps {
+  slot: IInterviewSlot
+  title?: string
+}
+
+const SlotInformation = ({ slot, title }: ISlotInformationProps) => (
+  <SummaryCard
+    title={title || 'Selected Interview'}
+    sections={[
+      {
+        title: 'Date',
+        content: (
+          <Text size='xs' pl={'xs'}>
+            {slot.startDate.toLocaleDateString()}
+          </Text>
+        ),
+        icon: <CalendarDotsIcon />,
+      },
+      {
+        title: 'Time',
+        content: (
+          <Text size='xs' pl={'xs'}>
+            {`${slot.startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` +
+              ` - ${slot.endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` +
+              `, ${Math.round((slot.endDate.getTime() - slot.startDate.getTime()) / 60000)} min`}
+          </Text>
+        ),
+        icon: <ClockIcon />,
+      },
+      {
+        title: 'Location',
+        content: (
+          <Text size='xs' pl={'xs'}>
+            {slot.location || slot.streamUrl || 'Not specified'}
+          </Text>
+        ),
+        icon: <MapPinIcon />,
+      },
+    ]}
+  />
+)
 
 const InterviewBookingPage = () => {
   const { processId } = useParams<{ processId: string }>()
@@ -199,43 +241,6 @@ const InterviewBookingPage = () => {
     />
   ) : null
 
-  const SlotInformation = (slot: IInterviewSlot, title?: string) => (
-    <SummaryCard
-      title={title || 'Selected Interview'}
-      sections={[
-        {
-          title: 'Date',
-          content: (
-            <Text size='xs' pl={'xs'}>
-              {slot.startDate.toLocaleDateString()}
-            </Text>
-          ),
-          icon: <CalendarDotsIcon />,
-        },
-        {
-          title: 'Time',
-          content: (
-            <Text size='xs' pl={'xs'}>
-              {`${slot.startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` +
-                ` - ${slot.endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` +
-                `, ${Math.round((slot.endDate.getTime() - slot.startDate.getTime()) / 60000)} min`}
-            </Text>
-          ),
-          icon: <ClockIcon />,
-        },
-        {
-          title: 'Location',
-          content: (
-            <Text size='xs' pl={'xs'}>
-              {slot.location || slot.streamUrl || 'Not specified'}
-            </Text>
-          ),
-          icon: <MapPinIcon />,
-        },
-      ]}
-    ></SummaryCard>
-  )
-
   if (pageLoading) {
     return (
       <Center style={{ height: '100%' }}>
@@ -286,7 +291,7 @@ const InterviewBookingPage = () => {
             </Stack>
             <Stack w={{ xs: '90vw', md: '500px' }} gap={'1rem'}>
               {TopicInformation}
-              {SlotInformation(myBooking)}
+              <SlotInformation slot={myBooking} />
             </Stack>
 
             <Paper withBorder p={'md'} radius='md' w={{ xs: '90vw', md: '500px' }}>
@@ -350,7 +355,7 @@ const InterviewBookingPage = () => {
               >
                 <Stack p={0} h={'100%'}>
                   <Collapse expanded={selectedSlot !== null}>
-                    {selectedSlot && SlotInformation(selectedSlot)}
+                    {selectedSlot && <SlotInformation slot={selectedSlot} />}
                   </Collapse>
                   {TopicInformation}
                 </Stack>

@@ -15,7 +15,7 @@ import { Warning } from '@phosphor-icons/react'
 import { doRequest } from '../../requests/request'
 import { showSimpleError, showSimpleSuccess } from '../../utils/notification'
 import { getApiResponseErrorMessage } from '../../requests/handler'
-import { IUser } from '../../requests/responses/user'
+import type { IUser } from '../../requests/responses/user'
 
 interface IDataRetentionResult {
   deletedApplications: number

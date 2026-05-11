@@ -21,10 +21,8 @@ import {
   XIcon,
 } from '@phosphor-icons/react'
 import { useEffect, useState } from 'react'
-import {
-  IIntervieweeLightWithNextSlot,
-  InterviewState,
-} from '../../../requests/responses/interview'
+import type { IIntervieweeLightWithNextSlot } from '../../../requests/responses/interview'
+import { InterviewState } from '../../../requests/responses/interview'
 import { useIsSmallerBreakpoint } from '../../../hooks/theme'
 import { doRequest } from '../../../requests/request'
 import { useParams } from 'react-router'

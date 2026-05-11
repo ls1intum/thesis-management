@@ -11,7 +11,7 @@ import {
   Title,
   Text,
 } from '@mantine/core'
-import {
+import type {
   IIntervieweeLightWithNextSlot,
   IInterviewSlot,
 } from '../../../requests/responses/interview'

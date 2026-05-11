@@ -1,5 +1,5 @@
 import { Card, Stack, Text, Divider, useMantineColorScheme } from '@mantine/core'
-import { ITopic } from '../../../requests/responses/topic'
+import type { ITopic } from '../../../requests/responses/topic'
 import { Buildings, Clock, GraduationCapIcon, Users } from '@phosphor-icons/react'
 import TopicAdittionalInformationSection from './TopicAdditionalInformationSection'
 import ThesisTypeBadge from '../../LandingPage/components/ThesisTypBadge/ThesisTypBadge'

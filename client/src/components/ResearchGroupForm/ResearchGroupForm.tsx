@@ -3,8 +3,8 @@ import { useForm } from '@mantine/form'
 import KeycloakUserAutocomplete from '../KeycloakUserAutocomplete.tsx/KeycloakUserAutocomplete'
 import { GLOBAL_CONFIG } from '../../config/global'
 import { useState } from 'react'
-import { ResearchGroupFormValues } from '../../pages/ResearchGroupAdminPage/components/CreateResearchGroupModal'
-import { IResearchGroup } from '../../requests/responses/researchGroup'
+import type { ResearchGroupFormValues } from '../../pages/ResearchGroupAdminPage/components/CreateResearchGroupModal'
+import type { IResearchGroup } from '../../requests/responses/researchGroup'
 
 interface IResearchGroupFormProps {
   initialResearchGroup?: Partial<IResearchGroup>
@@ -35,7 +35,7 @@ const ResearchGroupForm = ({
   const initialValues = getInitialValues(initialFormValues)
   // Discard only makes sense in the edit flow — on create there's nothing
   // meaningful to revert to.
-  const isEditing = !!initialFormValues?.id || !!initialFormValues?.name
+  const isEditing = Boolean(initialFormValues?.id) || Boolean(initialFormValues?.name)
 
   const form = useForm({
     initialValues,

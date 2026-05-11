@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 import DOMPurify from 'dompurify'
 import { getApiResponseErrorMessage } from '../../../../requests/handler'
 import { doRequest } from '../../../../requests/request'
-import { IEmailTemplate, IMailVariableDto } from '../../../../requests/responses/emailtemplate'
+import type { IEmailTemplate, IMailVariableDto } from '../../../../requests/responses/emailtemplate'
 import { showSimpleError } from '../../../../utils/notification'
 
 interface IEmailTemplatePreviewModalProps {

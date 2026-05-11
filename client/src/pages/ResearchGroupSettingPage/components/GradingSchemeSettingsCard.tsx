@@ -15,7 +15,7 @@ import { useParams } from 'react-router'
 import { doRequest } from '../../../requests/request'
 import { showSimpleError } from '../../../utils/notification'
 import { getApiResponseErrorMessage } from '../../../requests/handler'
-import {
+import type {
   IGradingSchemeComponent,
   IResearchGroupSettings,
   IResearchGroupSettingsGradingScheme,

@@ -1,10 +1,15 @@
-import React, { PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react'
-import { InterviewProcessContext, IInterviewProcessContext } from './context'
+import type { PropsWithChildren } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import type { IInterviewProcessContext } from './context'
+import { InterviewProcessContext } from './context'
 import { doRequest } from '../../requests/request'
 import { showSimpleError } from '../../utils/notification'
 import { getApiResponseErrorMessage } from '../../requests/handler'
-import { IIntervieweeLightWithNextSlot, IInterviewSlot } from '../../requests/responses/interview'
-import { PaginationResponse } from '../../requests/responses/pagination'
+import type {
+  IIntervieweeLightWithNextSlot,
+  IInterviewSlot,
+} from '../../requests/responses/interview'
+import type { PaginationResponse } from '../../requests/responses/pagination'
 import { useParams } from 'react-router'
 
 interface IInterviewProcessProviderProps {

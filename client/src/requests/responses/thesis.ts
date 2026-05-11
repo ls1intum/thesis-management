@@ -1,5 +1,5 @@
-import { ILightResearchGroup, IMinimalResearchGroup } from './researchGroup'
-import { ILightUser, IMinimalUser } from './user'
+import type { ILightResearchGroup, IMinimalResearchGroup } from './researchGroup'
+import type { ILightUser, IMinimalUser } from './user'
 
 export enum ThesisState {
   PROPOSAL = 'PROPOSAL',
@@ -153,7 +153,7 @@ export interface IPublishedPresentation {
 }
 
 export function isThesis(thesis: any): thesis is IThesis {
-  return thesis.thesisId && !!thesis.states && 'language' in thesis
+  return !!thesis.thesisId && !!thesis.states && 'language' in thesis
 }
 
 export function isThesisPresentation(presentation: any): presentation is IThesisPresentation {

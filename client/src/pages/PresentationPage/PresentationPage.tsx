@@ -1,6 +1,6 @@
 import { Link, useParams } from 'react-router'
 import React, { useEffect, useState } from 'react'
-import { IPublishedPresentation } from '../../requests/responses/thesis'
+import type { IPublishedPresentation } from '../../requests/responses/thesis'
 import { doRequest } from '../../requests/request'
 import ThesisData from '../../components/ThesisData/ThesisData'
 import { showSimpleError } from '../../utils/notification'

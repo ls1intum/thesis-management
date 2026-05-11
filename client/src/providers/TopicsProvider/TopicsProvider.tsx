@@ -1,9 +1,12 @@
-import React, { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react'
+import type { PropsWithChildren } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { doRequest } from '../../requests/request'
 import { showSimpleError } from '../../utils/notification'
-import { ITopicOverview, TopicState } from '../../requests/responses/topic'
-import { ITopicsContext, ITopicsFilters, TopicsContext } from './context'
-import { PaginationResponse } from '../../requests/responses/pagination'
+import type { ITopicOverview } from '../../requests/responses/topic'
+import { TopicState } from '../../requests/responses/topic'
+import type { ITopicsContext, ITopicsFilters } from './context'
+import { TopicsContext } from './context'
+import type { PaginationResponse } from '../../requests/responses/pagination'
 
 interface ITopicsProviderProps {
   limit: number

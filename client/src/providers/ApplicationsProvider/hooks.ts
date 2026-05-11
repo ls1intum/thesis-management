@@ -1,6 +1,6 @@
 import { useContext } from 'react'
 import { ApplicationsContext } from './context'
-import { IApplication } from '../../requests/responses/application'
+import type { IApplication } from '../../requests/responses/application'
 
 export function useApplicationsContext() {
   const data = useContext(ApplicationsContext)

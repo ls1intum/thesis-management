@@ -21,7 +21,7 @@ import {
 } from '@phosphor-icons/react'
 import AddResearchGroupMemberModal from './AddResearchGroupMemberModal'
 import { useEffect, useState } from 'react'
-import { ILightUser } from '../../../../requests/responses/user'
+import type { ILightUser } from '../../../../requests/responses/user'
 import { doRequest } from '../../../../requests/request'
 import { showSimpleError } from '../../../../utils/notification'
 import { getApiResponseErrorMessage } from '../../../../requests/handler'
@@ -29,7 +29,7 @@ import { showNotification } from '@mantine/notifications'
 import UserInformationRow from '../../../../components/UserInformationRow/UserInformationRow'
 import DeleteMemberModal from './DeleteMemberModal'
 import { ResearchGroupSettingsCard } from '../ResearchGroupSettingsCard'
-import { IResearchGroup } from '../../../../requests/responses/researchGroup'
+import type { IResearchGroup } from '../../../../requests/responses/researchGroup'
 
 interface IResearchGroupMembersProps {
   researchGroupData: IResearchGroup | undefined

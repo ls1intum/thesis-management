@@ -8,8 +8,8 @@ import { showSimpleError } from '../../../../../../utils/notification'
 import { getApiResponseErrorMessage } from '../../../../../../requests/handler'
 import JSZip from 'jszip'
 import { downloadFile } from '../../../../../../utils/blob'
-import { IThesisComment } from '../../../../../../requests/responses/thesis'
-import { PaginationResponse } from '../../../../../../requests/responses/pagination'
+import type { IThesisComment } from '../../../../../../requests/responses/thesis'
+import type { PaginationResponse } from '../../../../../../requests/responses/pagination'
 
 const DownloadAllFilesButton = () => {
   const { thesis, access } = useLoadedThesisContext()

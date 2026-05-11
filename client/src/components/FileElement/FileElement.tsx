@@ -1,12 +1,5 @@
-import {
-  Group,
-  MantineColor,
-  MantineFontSize,
-  Paper,
-  Stack,
-  Text,
-  useMantineColorScheme,
-} from '@mantine/core'
+import type { MantineColor, MantineFontSize } from '@mantine/core'
+import { Group, Paper, Stack, Text, useMantineColorScheme } from '@mantine/core'
 import { FileAudioIcon, FileIcon, FileImageIcon, FilePdfIcon } from '@phosphor-icons/react'
 import { FileVideoIcon } from '@phosphor-icons/react/dist/ssr'
 

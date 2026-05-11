@@ -7,7 +7,8 @@ import {
   Text,
   type ButtonProps,
 } from '@mantine/core'
-import { forwardRef, ReactNode, useState } from 'react'
+import type { ReactNode } from 'react'
+import { forwardRef, useState } from 'react'
 
 interface IConfirmationButtonProps extends ButtonProps {
   confirmationTitle: string

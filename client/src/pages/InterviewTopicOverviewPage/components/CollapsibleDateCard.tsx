@@ -12,7 +12,7 @@ import {
   Title,
 } from '@mantine/core'
 import dayjs from 'dayjs'
-import { IInterviewSlot } from '../../../requests/responses/interview'
+import type { IInterviewSlot } from '../../../requests/responses/interview'
 import { useEffect, useState } from 'react'
 import { CardsIcon } from '@phosphor-icons/react'
 import { TimeInput } from '@mantine/dates'
@@ -430,16 +430,13 @@ const CollapsibleDateCard = ({
 
                                     //When it is single also set end time
                                     if (slotRange.type === 'single') {
-                                      newRanges[index].endTime = (() => {
-                                        const newEndTime = new Date(date)
-                                        const [endHours, endMinutes] = newTime.target.value
-                                          .split(':')
-                                          .map(Number)
-                                        newEndTime.setHours(endHours, endMinutes, 0, 0)
-                                        newEndTime.setMinutes(newEndTime.getMinutes() + duration)
-
-                                        return newEndTime
-                                      })()
+                                      const newEndTime = new Date(date)
+                                      const [endHours, endMinutes] = newTime.target.value
+                                        .split(':')
+                                        .map(Number)
+                                      newEndTime.setHours(endHours, endMinutes, 0, 0)
+                                      newEndTime.setMinutes(newEndTime.getMinutes() + duration)
+                                      newRanges[index].endTime = newEndTime
                                     }
 
                                     if (newRanges[index].endTime && newRanges[index].startTime) {

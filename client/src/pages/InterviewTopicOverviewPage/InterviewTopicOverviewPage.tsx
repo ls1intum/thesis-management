@@ -5,7 +5,7 @@ import InterviewProcessProvider from '../../providers/InterviewProcessProvider/I
 import { useParams } from 'react-router'
 import { doRequest } from '../../requests/request'
 import { useEffect, useState } from 'react'
-import { IInterviewProcess } from '../../requests/responses/interview'
+import type { IInterviewProcess } from '../../requests/responses/interview'
 
 const InterviewTopicOverviewPage = () => {
   const { processId } = useParams<{ processId: string }>()

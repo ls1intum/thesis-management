@@ -1,4 +1,5 @@
-import React, { Dispatch, ReactNode, SetStateAction, useContext } from 'react'
+import type { Dispatch, ReactNode, SetStateAction } from 'react'
+import React, { useContext } from 'react'
 
 export type DateRange = [number, number]
 

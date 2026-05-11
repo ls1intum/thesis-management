@@ -12,7 +12,7 @@ import {
   Pagination,
 } from '@mantine/core'
 import { ChatCircleSlashIcon, PlusIcon } from '@phosphor-icons/react'
-import { IInterviewProcess, IUpcomingInterview } from '../../requests/responses/interview'
+import type { IInterviewProcess, IUpcomingInterview } from '../../requests/responses/interview'
 import InterviewProcessCard from './components/InterviewProcessCard'
 import { useIsSmallerBreakpoint } from '../../hooks/theme'
 import UpcomingInterviewCard from './components/UpcomingInterviewCard'
@@ -22,7 +22,7 @@ import { useEffect, useState } from 'react'
 import { showSimpleError } from '../../utils/notification'
 import { getApiResponseErrorMessage } from '../../requests/handler'
 import { doRequest } from '../../requests/request'
-import { PaginationResponse } from '../../requests/responses/pagination'
+import type { PaginationResponse } from '../../requests/responses/pagination'
 
 const InterviewOverviewPage = () => {
   const [upcomingInterviews, setUpcomingInterviews] = useState<IUpcomingInterview[]>([])

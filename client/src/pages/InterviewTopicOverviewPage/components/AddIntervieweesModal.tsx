@@ -11,10 +11,10 @@ import {
   Stack,
 } from '@mantine/core'
 import { useEffect, useState } from 'react'
-import { IApplicationInterviewProcess } from '../../../requests/responses/interview'
+import type { IApplicationInterviewProcess } from '../../../requests/responses/interview'
 import SelectApplicantsList from '../../InterviewOverviewPage/components/SelectApplicantsList'
 import { doRequest } from '../../../requests/request'
-import { PaginationResponse } from '../../../requests/responses/pagination'
+import type { PaginationResponse } from '../../../requests/responses/pagination'
 import { showSimpleError } from '../../../utils/notification'
 import { getApiResponseErrorMessage } from '../../../requests/handler'
 import { useParams } from 'react-router'

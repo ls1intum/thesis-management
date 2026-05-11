@@ -1,5 +1,6 @@
 import { doRequest } from '../../requests/request'
-import { ApplicationState, IApplication } from '../../requests/responses/application'
+import type { IApplication } from '../../requests/responses/application'
+import { ApplicationState } from '../../requests/responses/application'
 import { showSimpleError, showSimpleSuccess } from '../../utils/notification'
 import { Button, Modal, Stack, Text, Tooltip, type ButtonProps } from '@mantine/core'
 import React, { useState } from 'react'

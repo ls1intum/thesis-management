@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import SelectTopicStep from './components/SelectTopicStep/SelectTopicStep'
 import StudentInformationStep from './components/StudentInformationStep/StudentInformationStep'
 import MotivationStep from './components/MotivationStep/MotivationStep'
-import { IApplication } from '../../requests/responses/application'
+import type { IApplication } from '../../requests/responses/application'
 import { doRequest } from '../../requests/request'
 import { usePageTitle } from '../../hooks/theme'
 

@@ -1,4 +1,4 @@
-import { IThesis } from '../../../../../../requests/responses/thesis'
+import type { IThesis } from '../../../../../../requests/responses/thesis'
 import { Alert, Button, Modal, Stack, Text, TextInput } from '@mantine/core'
 import { doRequest } from '../../../../../../requests/request'
 import { useEffect, useState } from 'react'

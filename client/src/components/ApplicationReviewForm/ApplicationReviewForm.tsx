@@ -1,4 +1,5 @@
-import { ApplicationState, IApplication } from '../../requests/responses/application'
+import type { IApplication } from '../../requests/responses/application'
+import { ApplicationState } from '../../requests/responses/application'
 import { useApplicationsContextUpdater } from '../../providers/ApplicationsProvider/hooks'
 import { isNotEmpty, useForm } from '@mantine/form'
 import { GLOBAL_CONFIG } from '../../config/global'
@@ -27,7 +28,7 @@ import { useLoggedInUser } from '../../hooks/authentication'
 import AvatarUser from '../AvatarUser/AvatarUser'
 import { formatDate, formatThesisType, getDefaultLanguage } from '../../utils/format'
 import LanguageSelect from '../LanguageSelect/LanguageSelect'
-import { IInterviewProcess } from '../../requests/responses/interview'
+import type { IInterviewProcess } from '../../requests/responses/interview'
 import { showNotification } from '@mantine/notifications'
 
 interface IApplicationReviewFormProps {

@@ -2,7 +2,7 @@ import ApplicationData from '../../../../components/ApplicationData/ApplicationD
 import ApplicationReviewForm from '../../../../components/ApplicationReviewForm/ApplicationReviewForm'
 import { Divider, Group, Stack } from '@mantine/core'
 import React, { useEffect } from 'react'
-import { IApplication } from '../../../../requests/responses/application'
+import type { IApplication } from '../../../../requests/responses/application'
 import ApplicationRejectButton from '../../../../components/ApplicationRejectButton/ApplicationRejectButton'
 import ApplicationDeleteButton from '../../../../components/ApplicationDeleteButton/ApplicationDeleteButton'
 

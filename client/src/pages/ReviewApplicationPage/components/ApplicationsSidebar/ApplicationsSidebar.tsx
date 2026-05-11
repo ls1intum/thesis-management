@@ -2,7 +2,7 @@ import { Center, Pagination, Stack, Text } from '@mantine/core'
 import ApplicationsFilters from '../../../../components/ApplicationsFilters/ApplicationsFilters'
 import React, { useEffect, useRef, useState } from 'react'
 import { shouldIgnoreArrowKey } from './keyNavigationFilter'
-import { IApplication } from '../../../../requests/responses/application'
+import type { IApplication } from '../../../../requests/responses/application'
 import { useApplicationsContext } from '../../../../providers/ApplicationsProvider/hooks'
 import ApplicationListItem from '../ApplicationListItem/ApplicationListItem'
 

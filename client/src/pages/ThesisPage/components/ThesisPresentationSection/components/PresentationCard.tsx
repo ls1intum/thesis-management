@@ -13,7 +13,7 @@ import {
   Alert,
   Transition,
 } from '@mantine/core'
-import {
+import type {
   IPublishedPresentation,
   IPublishedThesis,
   IThesis,

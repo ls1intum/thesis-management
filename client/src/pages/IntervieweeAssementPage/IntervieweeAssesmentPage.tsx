@@ -1,5 +1,5 @@
 import { Center, Divider, Flex, Group, Loader, ScrollArea, Stack, Title } from '@mantine/core'
-import { IInterviewee } from '../../requests/responses/interview'
+import type { IInterviewee } from '../../requests/responses/interview'
 import { useIsSmallerBreakpoint } from '../../hooks/theme'
 import ScoreCard from './components/ScoreCard'
 import { useEffect, useState } from 'react'

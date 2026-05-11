@@ -1,4 +1,4 @@
-import { ITopic } from '../../requests/responses/topic'
+import type { ITopic } from '../../requests/responses/topic'
 import { Grid, Stack, Text } from '@mantine/core'
 import LabeledItem from '../LabeledItem/LabeledItem'
 import { formatDate, formatThesisType, pluralize } from '../../utils/format'

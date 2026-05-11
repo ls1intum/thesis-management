@@ -86,7 +86,7 @@ const ApplicationsFilters = (props: IApplicationsFiltersProps) => {
           onChange={(value) => {
             setFilters((prev) => ({
               ...prev,
-              states: value as ApplicationState[],
+              states: value,
             }))
           }}
           searchable

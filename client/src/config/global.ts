@@ -1,4 +1,4 @@
-import { Environment, IGlobalConfig } from './types'
+import type { Environment, IGlobalConfig } from './types'
 
 const parseEnvironment = (value: string | undefined): Environment | undefined => {
   if (!value) {

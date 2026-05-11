@@ -10,7 +10,8 @@ import {
   Text,
   TextInput,
 } from '@mantine/core'
-import { ITopic, TopicState, toTopicOverview } from '../../../../requests/responses/topic'
+import type { ITopic } from '../../../../requests/responses/topic'
+import { TopicState, toTopicOverview } from '../../../../requests/responses/topic'
 import { isNotEmpty, useForm } from '@mantine/form'
 import { isNotEmptyUserList } from '../../../../utils/validation'
 import { useEffect, useState } from 'react'
@@ -23,9 +24,9 @@ import { getApiResponseErrorMessage } from '../../../../requests/handler'
 import { UserMultiSelect } from '../../../../components/UserMultiSelect/UserMultiSelect'
 import { useTopicsContext } from '../../../../providers/TopicsProvider/hooks'
 import { formatThesisType } from '../../../../utils/format'
-import { PaginationResponse } from '../../../../requests/responses/pagination'
-import { ILightResearchGroup } from '../../../../requests/responses/researchGroup'
-import { ILightUser } from '../../../../requests/responses/user'
+import type { PaginationResponse } from '../../../../requests/responses/pagination'
+import type { ILightResearchGroup } from '../../../../requests/responses/researchGroup'
+import type { ILightUser } from '../../../../requests/responses/user'
 import { useHasGroupAccess } from '../../../../hooks/authentication'
 import { DateInput } from '@mantine/dates'
 
@@ -40,8 +41,8 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
 
   const fetchedTopic = useTopic(opened ? topicId : undefined)
   const topic = fetchedTopic === false ? undefined : fetchedTopic || undefined
-  const fetchError = fetchedTopic === false && !!topicId
-  const isTopicLoading = !!topicId && opened && fetchedTopic === undefined
+  const fetchError = fetchedTopic === false && Boolean(topicId)
+  const isTopicLoading = Boolean(topicId) && opened && fetchedTopic === undefined
 
   const { addTopic, updateTopic } = useTopicsContext()
   const [researchGroups, setResearchGroups] = useState<PaginationResponse<ILightResearchGroup>>()

@@ -1,9 +1,10 @@
-import { ILightUser, IMinimalUser } from '../requests/responses/user'
-import { IThesis, ThesisState } from '../requests/responses/thesis'
-import { ApplicationState, IApplication } from '../requests/responses/application'
+import type { ILightUser, IMinimalUser } from '../requests/responses/user'
+import type { IThesis } from '../requests/responses/thesis'
+import { ThesisState } from '../requests/responses/thesis'
+import type { IApplication } from '../requests/responses/application'
+import { ApplicationState } from '../requests/responses/application'
 import { GLOBAL_CONFIG } from '../config/global'
 import { InterviewState } from '../requests/responses/interview'
-import { useMantineColorScheme } from '@mantine/core'
 import { TopicState } from '../requests/responses/topic'
 
 interface IFormatDateOptions {
@@ -256,9 +257,7 @@ export function createInterviewStageLabel(score: number): string {
   }
 }
 
-export function getInterviewStateColor(state: InterviewState): string {
-  const colorScheme = useMantineColorScheme()
-
+export function getInterviewStateColor(state: InterviewState, isDark: boolean): string {
   switch (state) {
     case InterviewState.UNCONTACTED:
       return 'primary.1'
@@ -267,7 +266,7 @@ export function getInterviewStateColor(state: InterviewState): string {
     case InterviewState.SCHEDULED:
       return 'primary.5'
     case InterviewState.COMPLETED:
-      return colorScheme.colorScheme === 'dark' ? 'primary.8' : 'primary.10'
+      return isDark ? 'primary.8' : 'primary.10'
     default:
       return 'gray'
   }

@@ -1,20 +1,17 @@
-import { PropsWithChildren, useEffect, useMemo, useState } from 'react'
-import {
-  AuthenticationContext,
-  IAuthenticationContext,
-  IDecodedAccessToken,
-  IDecodedRefreshToken,
-} from './context'
+import type { PropsWithChildren } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import type { IAuthenticationContext, IDecodedAccessToken, IDecodedRefreshToken } from './context'
+import { AuthenticationContext } from './context'
 import Keycloak from 'keycloak-js'
 import { GLOBAL_CONFIG } from '../../config/global'
 import { jwtDecode } from 'jwt-decode'
 import { getAuthenticationTokens, useAuthenticationTokens } from '../../hooks/authentication'
 import { useSignal } from '../../hooks/utility'
-import { IUser } from '../../requests/responses/user'
+import type { IUser } from '../../requests/responses/user'
 import { doRequest } from '../../requests/request'
 import { showSimpleError } from '../../utils/notification'
 import { ApiError, getApiResponseErrorMessage } from '../../requests/handler'
-import { ILightResearchGroup } from '../../requests/responses/researchGroup'
+import type { ILightResearchGroup } from '../../requests/responses/researchGroup'
 
 export const keycloak = new Keycloak({
   realm: GLOBAL_CONFIG.keycloak.realm,
@@ -195,7 +192,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
 
   const contextValue = useMemo<IAuthenticationContext>(() => {
     return {
-      isAuthenticated: !!authenticationTokens?.access_token,
+      isAuthenticated: Boolean(authenticationTokens?.access_token),
       user: authenticationTokens?.access_token ? user : undefined,
       groups: [],
       updateUser: setUser,
@@ -209,7 +206,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
         }
 
         if (examinationReport) {
-          formData.append('examinationReport', examinationReport!)
+          formData.append('examinationReport', examinationReport)
         }
 
         if (cv) {
@@ -261,7 +258,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
     }
   }, [
     user,
-    !!authenticationTokens?.access_token,
+    Boolean(authenticationTokens?.access_token),
     authenticationTokens?.refresh_token,
     location.origin,
   ])
