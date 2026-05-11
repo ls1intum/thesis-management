@@ -132,7 +132,7 @@ const ThesisStudentInfoSection = () => {
                         onChange={(value) =>
                           setCredits((prev) => {
                             if (value) {
-                              return { ...prev, [user.data.userId]: +value }
+                              return { ...prev, [user.data.userId]: Number(value) }
                             } else {
                               delete prev[user.data.userId]
 

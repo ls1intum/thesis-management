@@ -152,14 +152,22 @@ export interface IPublishedPresentation {
   thesis: IPublishedThesis
 }
 
-export function isThesis(thesis: any): thesis is IThesis {
-  return !!thesis.thesisId && !!thesis.states && 'language' in thesis
+export function isThesis(thesis: unknown): thesis is IThesis {
+  if (!thesis || typeof thesis !== 'object') return false
+  const obj = thesis as Record<string, unknown>
+  return !!obj.thesisId && !!obj.states && 'language' in obj
 }
 
-export function isThesisPresentation(presentation: any): presentation is IThesisPresentation {
-  return presentation.presentationId && !presentation.thesis
+export function isThesisPresentation(presentation: unknown): presentation is IThesisPresentation {
+  if (!presentation || typeof presentation !== 'object') return false
+  const obj = presentation as Record<string, unknown>
+  return !!obj.presentationId && !obj.thesis
 }
 
-export function isPublishedPresentation(presentation: any): presentation is IPublishedPresentation {
-  return presentation.presentationId && presentation.thesis
+export function isPublishedPresentation(
+  presentation: unknown,
+): presentation is IPublishedPresentation {
+  if (!presentation || typeof presentation !== 'object') return false
+  const obj = presentation as Record<string, unknown>
+  return !!obj.presentationId && !!obj.thesis
 }

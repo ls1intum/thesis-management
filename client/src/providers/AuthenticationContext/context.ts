@@ -30,9 +30,9 @@ export interface IDecodedAccessToken extends JwtPayload {
   email: string
   preferred_username: string
   resource_access: Partial<Record<string, { roles: string[] }>>
-  [key: string]: any
+  [key: string]: unknown
 }
 
 export interface IDecodedRefreshToken extends JwtPayload {
-  [key: string]: any
+  [key: string]: unknown
 }

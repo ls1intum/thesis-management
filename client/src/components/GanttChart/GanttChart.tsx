@@ -250,9 +250,9 @@ const GanttChart = (props: IGanttChartProps) => {
                                       timelineItem.endDate.getTime(),
                                     ]),
                                   )
-                                  .map((timelineItem, index) => (
+                                  .map((timelineItem) => (
                                     <div
-                                      key={index + ' ' + timelineItem.startDate.getTime()}
+                                      key={`${timelineItem.id}-${timelineItem.startDate.getTime()}`}
                                       className={classes.timelinePart}
                                       onMouseEnter={() => setHoveredTimelineItem(timelineItem.id)}
                                       onMouseLeave={() => setHoveredTimelineItem(undefined)}

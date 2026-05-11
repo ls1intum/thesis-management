@@ -189,6 +189,7 @@ const EmailTemplateEditPage = () => {
           <Paper withBorder radius='sm' flex={1}>
             <div
               style={{ padding: '1rem' }}
+              // eslint-disable-next-line @eslint-react/dom-no-dangerously-set-innerhtml -- content sanitized via DOMPurify on the line below
               dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(exampleText) }}
             />
           </Paper>

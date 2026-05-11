@@ -32,8 +32,8 @@ const ThesesFilters = () => {
           value={sort.column + ':' + sort.direction}
           onChange={(x) =>
             setSort({
-              column: (x?.split(':')[0] ?? 'startDate') as any,
-              direction: (x?.split(':')[1] ?? 'asc') as any,
+              column: (x?.split(':')[0] ?? 'startDate') as 'startDate' | 'endDate' | 'createdAt',
+              direction: (x?.split(':')[1] ?? 'asc') as 'asc' | 'desc',
             })
           }
         />

@@ -180,7 +180,7 @@ const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProv
       setIntervieweesLoading(true)
 
       return new Promise<void>((resolve) => {
-        doRequest<any>(
+        doRequest<unknown>(
           `/v2/interview-process/${processId}/interviewees`,
           {
             method: 'POST',

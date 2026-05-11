@@ -117,10 +117,12 @@ const PresentationOverviewPage = () => {
           const presentationsByDate = new Map<string, IPublishedPresentation[]>()
           ;(res.data.content ?? []).forEach((presentation) => {
             const date = dayjs(presentation.scheduledAt).format('YYYY-MM-DD')
-            if (!presentationsByDate.has(date)) {
-              presentationsByDate.set(date, [])
+            const existing = presentationsByDate.get(date)
+            if (existing) {
+              existing.push(presentation)
+            } else {
+              presentationsByDate.set(date, [presentation])
             }
-            presentationsByDate.get(date)!.push(presentation)
           })
           presentationsGroupId.current = newGroupId
           setPresentations(presentationsByDate)

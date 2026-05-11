@@ -102,8 +102,8 @@ const ApplicationsFilters = (props: IApplicationsFiltersProps) => {
           value={sort.column + ':' + sort.direction}
           onChange={(x) =>
             setSort({
-              column: (x?.split(':')[0] ?? 'createdAt') as any,
-              direction: (x?.split(':')[1] ?? 'asc') as any,
+              column: (x?.split(':')[0] ?? 'createdAt') as 'createdAt' | 'updatedAt',
+              direction: (x?.split(':')[1] ?? 'asc') as 'asc' | 'desc',
             })
           }
         />

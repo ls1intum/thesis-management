@@ -18,7 +18,7 @@ export const shouldIgnoreArrowKey = (event: KeyboardEvent): boolean => {
     target instanceof HTMLInputElement ||
     target instanceof HTMLTextAreaElement ||
     target instanceof HTMLSelectElement ||
-    (target && target.isContentEditable)
+    target?.isContentEditable
   ) {
     return true
   }

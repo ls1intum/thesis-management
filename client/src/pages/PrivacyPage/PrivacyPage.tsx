@@ -1,4 +1,5 @@
 import { Anchor, Text, Title } from '@mantine/core'
+import DOMPurify from 'dompurify'
 import { usePageTitle } from '../../hooks/theme'
 import { useEffect, useState } from 'react'
 import { useAuthenticationContext } from '../../hooks/authentication'
@@ -11,15 +12,21 @@ const PrivacyPage = () => {
   const auth = useAuthenticationContext()
 
   useEffect(() => {
-    void fetch('/privacy.html')
+    const controller = new AbortController()
+    fetch('/privacy.html', { signal: controller.signal })
       .then((res) => res.text())
       .then((res) => setContent(res))
+      .catch(() => {
+        /* aborted or failed; leave content empty */
+      })
+    return () => controller.abort()
   }, [])
 
   return (
     <div>
       <Title mb='md'>Privacy</Title>
-      <div dangerouslySetInnerHTML={{ __html: content }} />
+      {/* eslint-disable-next-line @eslint-react/dom-no-dangerously-set-innerhtml -- content is sanitized via DOMPurify on the line below */}
+      <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content) }} />
       {auth.isAuthenticated && (
         <div style={{ marginTop: '2rem' }}>
           <Title order={3} mb='xs'>

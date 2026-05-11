@@ -218,6 +218,7 @@ const CalendarCarousel = ({ disabled = false }: ICalendarCarouselProps) => {
               return (
                 <Fragment key={date}>
                   {chunks.map((chunk, chunkIndex) => (
+                    // eslint-disable-next-line @eslint-react/no-array-index-key -- chunks are positional slices of a sorted slot array; their position is the identity
                     <Carousel.Slide key={`${date}-${chunkIndex}`}>
                       <Stack gap={'0.5rem'}>
                         {chunkIndex === 0 ? (

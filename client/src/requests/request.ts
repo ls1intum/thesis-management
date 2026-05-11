@@ -11,7 +11,7 @@ export interface IRequestOptions {
   method: HttpMethod
   requiresAuth: boolean
   responseType?: ResponseType
-  data?: any
+  data?: unknown
   formData?: FormData
   params?: Record<string, string | number | boolean>
   controller?: AbortController

@@ -65,7 +65,9 @@ const ResearchGroupForm = ({
     },
   })
 
-  const [headDisplayLabel, setHeadDisplayLabel] = useState(getInitialHeadLabel(initialFormValues))
+  const [headDisplayLabel, setHeadDisplayLabel] = useState(() =>
+    getInitialHeadLabel(initialFormValues),
+  )
 
   // Bumping this counter on Discard remounts the KeycloakUserAutocomplete
   // child so its internal selectedUsername state is cleared along with the

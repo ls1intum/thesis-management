@@ -467,8 +467,8 @@ const ThesisConfigSection = () => {
             {anonymizeWarnings.length > 0 && (
               <Alert color='orange' icon={<Warning />} title='Warnings'>
                 <List size='sm'>
-                  {anonymizeWarnings.map((warning, index) => (
-                    <List.Item key={index}>{warning}</List.Item>
+                  {anonymizeWarnings.map((warning) => (
+                    <List.Item key={warning}>{warning}</List.Item>
                   ))}
                 </List>
               </Alert>

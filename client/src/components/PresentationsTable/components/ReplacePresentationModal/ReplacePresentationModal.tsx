@@ -101,23 +101,26 @@ const ReplacePresentationModal = (props: IReplacePresentationModalProps) => {
 
   const [replacing, onReplacePresentation] = useThesisUpdateAction(
     async () => {
-      const response = await doRequest<IThesis>(
-        presentation
-          ? `/v2/theses/${presentation.thesisId}/presentations/${presentation.presentationId}`
-          : `/v2/theses/${thesis!.thesisId}/presentations`,
-        {
-          method: presentation ? 'PUT' : 'POST',
-          requiresAuth: true,
-          data: {
-            type: form.values.type,
-            visibility: form.values.visibility,
-            location: form.values.location,
-            streamUrl: form.values.streamUrl,
-            language: form.values.language,
-            date: form.values.date,
-          },
+      if (!presentation && !thesis) {
+        throw new Error('Either a thesis or an existing presentation is required')
+      }
+
+      const url = presentation
+        ? `/v2/theses/${presentation.thesisId}/presentations/${presentation.presentationId}`
+        : `/v2/theses/${thesis?.thesisId ?? ''}/presentations`
+
+      const response = await doRequest<IThesis>(url, {
+        method: presentation ? 'PUT' : 'POST',
+        requiresAuth: true,
+        data: {
+          type: form.values.type,
+          visibility: form.values.visibility,
+          location: form.values.location,
+          streamUrl: form.values.streamUrl,
+          language: form.values.language,
+          date: form.values.date,
         },
-      )
+      })
 
       if (response.ok) {
         onClose()
@@ -130,7 +133,9 @@ const ReplacePresentationModal = (props: IReplacePresentationModalProps) => {
               p.scheduledAt ===
               (form.values.date instanceof Date
                 ? form.values.date.toISOString()
-                : new Date(form.values.date as any).toISOString()),
+                : form.values.date
+                  ? new Date(form.values.date).toISOString()
+                  : null),
         )
 
         onChange?.(updatedPresentation)

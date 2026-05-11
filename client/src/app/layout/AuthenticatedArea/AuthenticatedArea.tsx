@@ -1,4 +1,4 @@
-import type { PropsWithChildren } from 'react'
+import type { ComponentType, PropsWithChildren } from 'react'
 import { Suspense, useEffect } from 'react'
 import type { MantineSize } from '@mantine/core'
 import {
@@ -62,7 +62,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
   const links: Array<{
     link: string
     label: string
-    icon: any
+    icon: ComponentType<{ size?: number | string; className?: string }>
     groups: string[] | undefined
     hideFromGroups?: string[]
     display?: boolean

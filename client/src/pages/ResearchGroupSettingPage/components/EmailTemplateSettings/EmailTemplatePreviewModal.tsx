@@ -61,6 +61,7 @@ const EmailTemplatePreviewModal = ({
 
         <Paper withBorder radius='sm'>
           <Box p='md'>
+            {/* eslint-disable-next-line @eslint-react/dom-no-dangerously-set-innerhtml -- content is sanitized via DOMPurify on the line below */}
             <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(previewHtml) }} />
           </Box>
         </Paper>

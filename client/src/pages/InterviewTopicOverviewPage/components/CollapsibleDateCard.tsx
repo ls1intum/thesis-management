@@ -370,6 +370,7 @@ const CollapsibleDateCard = ({
             ) : (
               <Stack justify='flex-start' align={'flex-start'}>
                 {slotRanges.map((slotRange, index) => (
+                  // eslint-disable-next-line @eslint-react/no-array-index-key -- slot ranges are in-progress drafts without stable ids; position is the identity
                   <Stack key={`slot-range-${date}-${index}`} w={'100%'} gap={'0.75rem'}>
                     <Group justify='space-between' align='center'>
                       <Text fw={500} size={'xs'} c={'dimmed'}>
@@ -397,7 +398,7 @@ const CollapsibleDateCard = ({
                         tooltipOnlyWhenDisabled={true}
                       ></DeleteButton>
                     </Group>
-                    <Group wrap='nowrap' key={`slot-range-${date}-${index}`} h={'100%'} w={'100%'}>
+                    <Group wrap='nowrap' h={'100%'} w={'100%'}>
                       <Divider
                         orientation='vertical'
                         size={'lg'}
@@ -595,9 +596,9 @@ const CollapsibleDateCard = ({
                         </Group>
                         {slotRange.slots && slotRange.slots.length > 0 ? (
                           <Stack w={'100%'} pt={6} gap={'0.5rem'}>
-                            {slotRange.slots.map((slot, slotIndex) => (
+                            {slotRange.slots.map((slot) => (
                               <SlotItem
-                                key={`${slot.slotId}-${slot.startDate.toISOString()}-${slotIndex}`}
+                                key={`${slot.slotId}-${slot.startDate.toISOString()}`}
                                 slot={slot}
                                 hoverEffect={false}
                                 withInterviewee={

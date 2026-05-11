@@ -34,6 +34,7 @@ export function useThesisContextUpdater() {
   return data.updateThesis
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- generic constraint must accept any function shape so callers can pass functions with arbitrary parameter types; narrowing to `unknown[]` would reject all real callers
 export function useThesisUpdateAction<T extends (...args: any[]) => any>(
   fn: (...args: Parameters<T>) => PromiseLike<IThesis>,
   successMessage?: string,
