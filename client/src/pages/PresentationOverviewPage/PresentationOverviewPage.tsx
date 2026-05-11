@@ -362,7 +362,7 @@ const PresentationOverviewPage = () => {
                               titleOrder={6}
                               includeStudents={true}
                               includeThesisStatus={true}
-                              onClick={() => navigate(`/presentations/${p.presentationId}`)}
+                              onClick={() => void navigate(`/presentations/${p.presentationId}`)}
                               onDelete={() => {
                                 onDelete(p.presentationId, date)
                               }}
@@ -417,7 +417,7 @@ const PresentationOverviewPage = () => {
                                 includeThesisStatus={true}
                                 titleOrder={6}
                                 includeStudents={true}
-                                onClick={() => navigate(`/presentations/${p.presentationId}`)}
+                                onClick={() => void navigate(`/presentations/${p.presentationId}`)}
                                 onDelete={() => {
                                   onDelete(p.presentationId, date)
                                 }}

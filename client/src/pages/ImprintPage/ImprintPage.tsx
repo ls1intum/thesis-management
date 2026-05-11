@@ -8,7 +8,7 @@ const ImprintPage = () => {
   const [content, setContent] = useState('')
 
   useEffect(() => {
-    fetch('/imprint.html')
+    void fetch('/imprint.html')
       .then((res) => res.text())
       .then((res) => setContent(res))
   }, [])

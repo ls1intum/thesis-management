@@ -128,7 +128,7 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
             })
 
             if (response.ok) {
-              navigate(`/theses/${response.data.thesisId}`)
+              void navigate(`/theses/${response.data.thesisId}`)
             } else {
               showSimpleError(getApiResponseErrorMessage(response))
             }

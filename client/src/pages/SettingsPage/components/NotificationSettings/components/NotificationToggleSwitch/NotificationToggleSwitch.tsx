@@ -20,8 +20,8 @@ export const NotificationToggleSwitch = (props: INotificationToggleSwitchProps) 
 
   const isChecked = currentEmail !== 'none'
 
-  const toggleSetting = async () => {
-    updateSetting(isChecked ? 'none' : 'all')
+  const toggleSetting = () => {
+    void updateSetting(isChecked ? 'none' : 'all')
   }
 
   return <Switch checked={isChecked} onChange={toggleSetting} disabled={loading} {...other} />

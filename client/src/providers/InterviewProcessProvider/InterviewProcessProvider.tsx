@@ -93,7 +93,7 @@ const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProv
           if (res.ok) {
             fetchInterviewSlots()
             if (autoFetchInterviewees) {
-              fetchPossibleInterviewees(searchIntervieweeKey, state)
+              void fetchPossibleInterviewees(searchIntervieweeKey, state)
             }
             setBookingSuccessful(true)
           } else {
@@ -121,7 +121,7 @@ const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProv
           if (res.ok) {
             fetchInterviewSlots()
             if (autoFetchInterviewees) {
-              fetchPossibleInterviewees(searchIntervieweeKey, state)
+              void fetchPossibleInterviewees(searchIntervieweeKey, state)
             }
             if (onCancelSucessfull) onCancelSucessfull()
           } else {
@@ -188,7 +188,7 @@ const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProv
           },
           (res) => {
             if (res.ok) {
-              fetchPossibleInterviewees() // TODO: Missing searchkey and state?
+              void fetchPossibleInterviewees() // TODO: Missing searchkey and state?
             } else {
               showSimpleError(getApiResponseErrorMessage(res))
               resolve()
@@ -209,7 +209,7 @@ const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProv
 
     fetchInterviewSlots()
     if (autoFetchInterviewees) {
-      fetchPossibleInterviewees()
+      void fetchPossibleInterviewees()
     }
   }, [processId, fetchInterviewSlots, fetchPossibleInterviewees])
 

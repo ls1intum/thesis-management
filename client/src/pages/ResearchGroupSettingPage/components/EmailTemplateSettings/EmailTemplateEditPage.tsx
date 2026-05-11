@@ -143,7 +143,7 @@ const EmailTemplateEditPage = () => {
             cursor: 'pointer',
           },
         }}
-        onClick={() => navigate(`/research-groups/${researchGroupId}?setting=email-templates`)}
+        onClick={() => void navigate(`/research-groups/${researchGroupId}?setting=email-templates`)}
       >
         <Group align='center'>
           <ArrowLeftIcon size={32} weight='bold' />

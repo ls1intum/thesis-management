@@ -11,7 +11,7 @@ const PrivacyPage = () => {
   const auth = useAuthenticationContext()
 
   useEffect(() => {
-    fetch('/privacy.html')
+    void fetch('/privacy.html')
       .then((res) => res.text())
       .then((res) => setContent(res))
   }, [])

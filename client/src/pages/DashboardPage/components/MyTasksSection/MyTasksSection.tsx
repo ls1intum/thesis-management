@@ -44,7 +44,7 @@ const MyTasksSection = () => {
     if (task.link.startsWith('http')) {
       window.location.replace(task.link)
     } else {
-      navigate(task.link)
+      void navigate(task.link)
     }
   }
 

@@ -82,7 +82,7 @@ const FileHistoryTable = (props: IFileHistoryTableProps) => {
                         <DownloadSimple />
                       </AuthenticatedFileDownloadButton>
                       {row.onDelete && (
-                        <Button loading={loading} size='xs' onClick={() => onDelete(row)}>
+                        <Button loading={loading} size='xs' onClick={() => void onDelete(row)}>
                           <Trash />
                         </Button>
                       )}

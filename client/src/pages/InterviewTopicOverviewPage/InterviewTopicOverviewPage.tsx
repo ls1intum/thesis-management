@@ -13,7 +13,7 @@ const InterviewTopicOverviewPage = () => {
   const [processCompleted, setProcessCompleted] = useState<boolean | null>(null)
   const [title, setTitle] = useState<string | null>(null)
 
-  const fetchInterviewProcess = async () => {
+  const fetchInterviewProcess = () => {
     doRequest<IInterviewProcess>(
       `/v2/interview-process/${processId}`,
       {

@@ -47,7 +47,7 @@ const ReplaceApplicationPage = () => {
     }
 
     if (value === 0 && topicId) {
-      navigate(`/submit-application`, { replace: true })
+      void navigate(`/submit-application`, { replace: true })
     }
 
     window.scrollTo(0, 0)
@@ -61,7 +61,7 @@ const ReplaceApplicationPage = () => {
         <Stepper.Step label='First Step' description='Select Topic'>
           <SelectTopicStep
             onComplete={(x) => {
-              navigate(`/submit-application/${x?.topicId ?? ''}`, { replace: true })
+              void navigate(`/submit-application/${x?.topicId ?? ''}`, { replace: true })
               setStep(1)
             }}
           />

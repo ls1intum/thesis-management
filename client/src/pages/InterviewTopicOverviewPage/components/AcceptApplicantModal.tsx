@@ -24,7 +24,7 @@ const AcceptApplicantModal = ({ interviewee, onAcceptSuccessfull }: AcceptApplic
       const app = await fetchApplication(interviewee.applicationId)
       setApplication(app)
     }
-    fetchData()
+    void fetchData()
   }, [interviewee.applicationId])
 
   return (

@@ -133,7 +133,7 @@ const DownloadAllFilesButton = () => {
   }
 
   return (
-    <Button variant='outline' onClick={onDownload} loading={loading}>
+    <Button variant='outline' onClick={() => void onDownload()} loading={loading}>
       Download All Files
     </Button>
   )

@@ -26,7 +26,7 @@ const EmailTemplateCard = ({
 
   const navigateToEditPage = () => {
     if (!researchGroupId || !activeTemplate) return
-    navigate(
+    void navigate(
       `/research-groups/${researchGroupId}/email-templates/${activeTemplate.templateCase}/edit`,
     )
   }

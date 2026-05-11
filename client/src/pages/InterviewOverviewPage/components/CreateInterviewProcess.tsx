@@ -50,7 +50,7 @@ const CreateInterviewProcess = ({ opened, onClose }: CreateInterviewProcessProps
 
   const [selectedApplicants, setSelectedApplicants] = useState<string[]>([])
 
-  const fetchPossibleInterviewTopics = async () => {
+  const fetchPossibleInterviewTopics = () => {
     setTopicsLoading(true)
     doRequest<PaginationResponse<ITopicInterviewProcess>>(
       '/v2/topics/interview-topics',
@@ -72,7 +72,7 @@ const CreateInterviewProcess = ({ opened, onClose }: CreateInterviewProcessProps
     )
   }
 
-  const fetchPossibleInterviewApplicantsByTopic = async () => {
+  const fetchPossibleInterviewApplicantsByTopic = () => {
     if (!selectedTopic) {
       setPossibleInterviewApplicants([])
       return

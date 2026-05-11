@@ -48,7 +48,7 @@ const ReviewApplicationPage = () => {
         <ApplicationModal
           application={application}
           onClose={() => {
-            navigate('/applications', { replace: true })
+            void navigate('/applications', { replace: true })
 
             setApplication(undefined)
           }}
@@ -64,7 +64,7 @@ const ReviewApplicationPage = () => {
             selected={application}
             isSmallScreen={isSmallScreen}
             onSelect={(newApplication) => {
-              navigate(`/applications/${newApplication.applicationId}`, {
+              void navigate(`/applications/${newApplication.applicationId}`, {
                 replace: true,
               })
 
@@ -80,7 +80,7 @@ const ReviewApplicationPage = () => {
                 onChange={setApplication}
                 onDelete={() => {
                   setApplication(undefined)
-                  navigate('/applications', { replace: true })
+                  void navigate('/applications', { replace: true })
                 }}
               />
             ) : (

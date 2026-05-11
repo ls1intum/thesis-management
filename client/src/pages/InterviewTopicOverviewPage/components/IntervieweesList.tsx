@@ -60,7 +60,7 @@ const IntervieweesList = ({ disabled = false }: IIntervieweesListProps) => {
 
   const [addIntervieweesModalOpen, setAddIntervieweesModalOpen] = useState(false)
 
-  const inviteInterviewees = async (intervieweeIds: string[]) => {
+  const inviteInterviewees = (intervieweeIds: string[]) => {
     if (!intervieweeIds.length) return
 
     doRequest<IIntervieweeLightWithNextSlot[]>(
@@ -75,7 +75,7 @@ const IntervieweesList = ({ disabled = false }: IIntervieweesListProps) => {
       (res) => {
         if (res.ok) {
           showSimpleSuccess('Invitations sent successfully')
-          fetchPossibleInterviewees(debouncedSearch, state)
+          void fetchPossibleInterviewees(debouncedSearch, state)
           setInviteModalOpen(false)
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
@@ -90,7 +90,7 @@ const IntervieweesList = ({ disabled = false }: IIntervieweesListProps) => {
   }
 
   useEffect(() => {
-    fetchPossibleInterviewees(debouncedSearch, state)
+    void fetchPossibleInterviewees(debouncedSearch, state)
   }, [state, debouncedSearch])
 
   const listEmptyDescription =
@@ -297,7 +297,7 @@ const IntervieweesList = ({ disabled = false }: IIntervieweesListProps) => {
                   disableLink={selectIntervieweeMode}
                   inviteInterviewee={() => inviteInterviewees([interviewee.intervieweeId])}
                   onAcceptedOrRejected={() => {
-                    fetchPossibleInterviewees(debouncedSearch, state)
+                    void fetchPossibleInterviewees(debouncedSearch, state)
                   }}
                 />
               </Group>

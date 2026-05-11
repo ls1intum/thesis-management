@@ -142,7 +142,7 @@ const EmailTextEditor = ({
 
   useEffect(() => {
     if (editingTemplate) {
-      fetchTemplateVariables()
+      void fetchTemplateVariables()
     }
   }, [editingTemplate?.id])
 

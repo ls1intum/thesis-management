@@ -20,7 +20,7 @@ const IntervieweeAssesmentPage = () => {
 
   const [intervieweeLoading, setIntervieweeLoading] = useState(false)
 
-  const fetchInterviewee = async () => {
+  const fetchInterviewee = () => {
     setIntervieweeLoading(true)
     doRequest<IInterviewee>(
       `/v2/interview-process/${processId}/interviewee/${intervieweeId}`,
@@ -45,7 +45,7 @@ const IntervieweeAssesmentPage = () => {
 
   const [saving, setSaving] = useState(false)
 
-  const saveIntervieweeAssesment = async (newScore?: number, newNote?: string) => {
+  const saveIntervieweeAssesment = (newScore?: number, newNote?: string) => {
     if (!interviewee) {
       return
     }
@@ -91,7 +91,7 @@ const IntervieweeAssesmentPage = () => {
           },
         }}
         onClick={() => {
-          navigate(-1)
+          void navigate(-1)
         }}
       >
         <Group align='center'>

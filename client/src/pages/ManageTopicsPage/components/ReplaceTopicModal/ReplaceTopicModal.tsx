@@ -303,7 +303,7 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
               {(!topic || topic.state === TopicState.DRAFT) && (
                 <Button
                   variant='default'
-                  onClick={() => onSubmit(true)}
+                  onClick={() => void onSubmit(true)}
                   disabled={!form.isValid()}
                   loading={loading}
                 >

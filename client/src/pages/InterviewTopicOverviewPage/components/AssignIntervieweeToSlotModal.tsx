@@ -41,7 +41,7 @@ const AssignIntervieweeToSlotModal = ({
 
   useEffect(() => {
     if (assignModalOpen) {
-      fetchPossibleInterviewees(undefined, 'ALL', false).then((fetchedInterviewees) => {
+      void fetchPossibleInterviewees(undefined, 'ALL', false).then((fetchedInterviewees) => {
         setInterviewees(fetchedInterviewees)
       })
     }

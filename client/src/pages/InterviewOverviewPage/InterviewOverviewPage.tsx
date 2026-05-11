@@ -39,7 +39,7 @@ const InterviewOverviewPage = () => {
 
   const [createModalOpened, setCreateModalOpened] = useState(false)
 
-  const fetchUpcomingInterviews = async () => {
+  const fetchUpcomingInterviews = () => {
     doRequest<IUpcomingInterview[]>(
       `/v2/interview-process/upcoming-interviews`,
       {
@@ -59,7 +59,7 @@ const InterviewOverviewPage = () => {
     )
   }
 
-  const fetchMyInterviewProcesses = async () => {
+  const fetchMyInterviewProcesses = () => {
     setInterviewProcessesLoading(true)
     doRequest<PaginationResponse<IInterviewProcess>>(
       '/v2/interview-process',
@@ -142,7 +142,7 @@ const InterviewOverviewPage = () => {
                     key={`card-${process.interviewProcessId}`}
                     interviewProcess={process}
                     onClick={() => {
-                      navigate(`/interviews/${process.interviewProcessId}`)
+                      void navigate(`/interviews/${process.interviewProcessId}`)
                     }}
                   />
                 ))
@@ -197,7 +197,7 @@ const InterviewOverviewPage = () => {
                     key={interview.slot.bookedBy?.intervieweeId}
                     upcomingInterview={interview}
                     onClick={() => {
-                      navigate(
+                      void navigate(
                         `/interviews/${interview.interviewProcessId}/interviewee/${interview.slot.bookedBy?.intervieweeId}`,
                       )
                     }}

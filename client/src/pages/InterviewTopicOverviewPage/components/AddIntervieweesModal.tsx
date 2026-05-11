@@ -37,7 +37,7 @@ const AddIntervieweesModal = ({ opened, closeModal }: IAddIntervieweesModalProps
 
   const { addIntervieweesToProcess } = useInterviewProcessContext()
 
-  const fetchPossibleInterviewApplicantsByTopic = async () => {
+  const fetchPossibleInterviewApplicantsByTopic = () => {
     setApplicantsLoading(true)
     doRequest<PaginationResponse<IApplicationInterviewProcess>>(
       `/v2/interview-process/${processId}/interview-applications`,
@@ -102,7 +102,7 @@ const AddIntervieweesModal = ({ opened, closeModal }: IAddIntervieweesModalProps
         </Input.Wrapper>
         <Button
           onClick={() => {
-            addIntervieweesToProcess(selectedApplicants)
+            void addIntervieweesToProcess(selectedApplicants)
             onClose()
           }}
           disabled={selectedApplicants.length === 0}

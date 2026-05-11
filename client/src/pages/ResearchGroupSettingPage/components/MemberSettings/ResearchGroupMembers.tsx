@@ -74,7 +74,7 @@ const ResearchGroupMembers = ({ researchGroupData }: IResearchGroupMembersProps)
     fetchMembers()
   }, [researchGroupData])
 
-  const handleAddMember = async (username: string) => {
+  const handleAddMember = (username: string) => {
     if (!researchGroupData?.id) return
 
     doRequest<ILightUser>(
@@ -99,7 +99,7 @@ const ResearchGroupMembers = ({ researchGroupData }: IResearchGroupMembersProps)
     )
   }
 
-  const handleRemoveMember = async (userId: string) => {
+  const handleRemoveMember = (userId: string) => {
     if (!researchGroupData?.id) return
 
     doRequest<ILightUser>(
@@ -124,7 +124,7 @@ const ResearchGroupMembers = ({ researchGroupData }: IResearchGroupMembersProps)
     )
   }
 
-  const updateMemberRole = async (userId: string, newRole: string) => {
+  const updateMemberRole = (userId: string, newRole: string) => {
     if (!researchGroupData?.id) return
 
     doRequest<ILightUser>(
@@ -159,7 +159,7 @@ const ResearchGroupMembers = ({ researchGroupData }: IResearchGroupMembersProps)
     )
   }
 
-  const updateGroupAdminForUser = async (userId: string, userName: string) => {
+  const updateGroupAdminForUser = (userId: string, userName: string) => {
     if (!researchGroupData?.id) return
 
     doRequest<ILightUser>(

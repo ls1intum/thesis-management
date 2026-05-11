@@ -255,7 +255,7 @@ const ThesisConfigSection = () => {
       if (response.ok) {
         showSimpleSuccess('Thesis anonymized successfully')
         setAnonymizeModalOpen(false)
-        navigate('/theses')
+        void navigate('/theses')
       } else {
         showSimpleError(getApiResponseErrorMessage(response))
       }
@@ -438,7 +438,7 @@ const ThesisConfigSection = () => {
                         variant='outline'
                         color='red'
                         loading={anonymizeLoading}
-                        onClick={onDeleteThesisClick}
+                        onClick={() => void onDeleteThesisClick()}
                       >
                         Anonymize Thesis
                       </Button>
@@ -479,7 +479,11 @@ const ThesisConfigSection = () => {
               <Button variant='default' onClick={() => setAnonymizeModalOpen(false)}>
                 Cancel
               </Button>
-              <Button color='red' loading={anonymizeLoading} onClick={onConfirmAnonymize}>
+              <Button
+                color='red'
+                loading={anonymizeLoading}
+                onClick={() => void onConfirmAnonymize()}
+              >
                 Anonymize Thesis
               </Button>
             </Group>

@@ -81,7 +81,7 @@ const ResearchGroupAdminPage = () => {
     fetchResearchGroups(0)
   }, [debouncedSearch])
 
-  const handleCreateResearchGroup = async (values: ResearchGroupFormValues) => {
+  const handleCreateResearchGroup = (values: ResearchGroupFormValues) => {
     const body = {
       headUsername: values.headUsername,
       name: values.name,

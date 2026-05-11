@@ -36,7 +36,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
     setUser(undefined)
 
     const refreshAccessToken = () => {
-      keycloak.updateToken(60 * 5).then((isSuccess) => {
+      void keycloak.updateToken(60 * 5).then((isSuccess) => {
         if (!isSuccess) {
           setAuthenticationTokens(undefined)
         }
@@ -244,7 +244,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
           window.location.href = `${window.location.origin}${redirectUri}`
         }, 2000)
 
-        readySignal.then(() => {
+        void readySignal.then(() => {
           if (keycloak.authenticated) {
             clearTimeout(timeout)
 

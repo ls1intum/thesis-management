@@ -102,7 +102,7 @@ const InterviewBookingPage = () => {
 
   const [topicInformation, setTopicInformation] = useState<ITopic | null>(null)
 
-  const fetchTopicInformation = async () => {
+  const fetchTopicInformation = () => {
     doRequest<ITopic>(
       `/v2/interview-process/${processId}/topic`,
       {
@@ -122,10 +122,10 @@ const InterviewBookingPage = () => {
   const [pageLoading, setPageLoading] = useState(true)
   const [myBooking, setMyBooking] = useState<IInterviewSlot | null>(null)
 
-  const fetchMyBooking = async () => {
+  const fetchMyBooking = () => {
     setPageLoading(true)
 
-    new Promise<boolean>((resolve) => {
+    void new Promise<boolean>((resolve) => {
       doRequest<boolean>(
         `/v2/interview-process/${processId}/completed`,
         {
@@ -170,7 +170,7 @@ const InterviewBookingPage = () => {
 
   const [processCompleted, setProcessCompleted] = useState(false)
 
-  const bookSlot = async (slotId: string) => {
+  const bookSlot = (slotId: string) => {
     setPageLoading(true)
     doRequest<IInterviewSlot>(
       `/v2/interview-process/${processId}/slot/${slotId}/book`,

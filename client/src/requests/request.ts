@@ -105,7 +105,7 @@ export function doRequest<T>(
   const blacklistedCodes = [1005]
 
   if (cb) {
-    promise.then((res) => !blacklistedCodes.includes(res.status) && cb(res))
+    void promise.then((res) => !blacklistedCodes.includes(res.status) && cb(res))
 
     return () => {
       controller.abort()
