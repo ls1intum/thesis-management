@@ -91,6 +91,7 @@ const IntervieweesList = ({ disabled = false }: IIntervieweesListProps) => {
 
   useEffect(() => {
     void fetchPossibleInterviewees(debouncedSearch, state)
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- fetchPossibleInterviewees is recreated each render by the provider; only re-run on filter changes
   }, [state, debouncedSearch])
 
   const listEmptyDescription =

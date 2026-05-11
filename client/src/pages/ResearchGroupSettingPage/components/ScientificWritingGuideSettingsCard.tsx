@@ -47,6 +47,7 @@ const ScientificWritingGuideSettingsCard = ({
     form.setValues({
       scientificWritingGuideLink: writingGuideSettings?.scientificWritingGuideLink ?? '',
     })
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- form is stable; only re-sync when the server-provided link value changes
   }, [writingGuideSettings?.scientificWritingGuideLink])
 
   const hasChanges =

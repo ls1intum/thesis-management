@@ -42,6 +42,7 @@ const EmailSettingsCard = ({
     form.setValues({
       applicationNotificationEmail: researchgroupEmailSettings?.applicationNotificationEmail ?? '',
     })
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- form is stable; only re-sync when the server-provided email value changes
   }, [researchgroupEmailSettings?.applicationNotificationEmail])
 
   const hasChanges =

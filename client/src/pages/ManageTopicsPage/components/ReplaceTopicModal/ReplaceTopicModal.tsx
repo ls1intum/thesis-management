@@ -108,6 +108,7 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
     }
 
     form.reset()
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- form is stable; including it would loop on every form value change
   }, [topic, opened])
 
   useEffect(() => {
@@ -164,6 +165,7 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
         setLoading(false)
       },
     )
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- form is stable; hasAdminAccess/topic.researchGroup are gating values for an effect that should only fire when the modal opens
   }, [opened])
 
   const onSubmit = async (isDraft = false) => {

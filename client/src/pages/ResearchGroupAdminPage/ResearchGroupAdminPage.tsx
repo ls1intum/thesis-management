@@ -79,6 +79,7 @@ const ResearchGroupAdminPage = () => {
 
   useEffect(() => {
     fetchResearchGroups(0)
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- fetchResearchGroups is recreated each render; only re-run on debounced search change
   }, [debouncedSearch])
 
   const handleCreateResearchGroup = (values: ResearchGroupFormValues) => {

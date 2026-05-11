@@ -84,11 +84,13 @@ const InterviewOverviewPage = () => {
 
   useEffect(() => {
     fetchMyInterviewProcesses()
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- fetchMyInterviewProcesses is recreated each render; effect should only re-run on page change
   }, [page])
 
   useEffect(() => {
     fetchMyInterviewProcesses()
     fetchUpcomingInterviews()
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- mount-only initial fetch
   }, [])
 
   return (

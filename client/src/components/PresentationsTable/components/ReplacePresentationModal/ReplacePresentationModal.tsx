@@ -96,6 +96,7 @@ const ReplacePresentationModal = (props: IReplacePresentationModalProps) => {
     }
 
     form.reset()
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- form is stable across renders; resetting on form identity change would loop
   }, [opened, presentation])
 
   const [replacing, onReplacePresentation] = useThesisUpdateAction(

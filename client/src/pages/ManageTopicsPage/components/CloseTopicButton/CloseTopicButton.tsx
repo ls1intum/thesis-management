@@ -35,6 +35,7 @@ const CloseTopicButton = (props: ICloseTopicButtonProps) => {
 
   useEffect(() => {
     form.reset()
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- form is stable; including it would loop on every form value change
   }, [confirmationModal])
 
   if (topic.state === TopicState.CLOSED) {

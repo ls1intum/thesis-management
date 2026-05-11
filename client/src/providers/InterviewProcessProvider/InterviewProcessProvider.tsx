@@ -71,6 +71,7 @@ const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProv
         setInterviewSlotsLoading(false)
       },
     )
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- excludeBookedSlots is read at call time; rebinding when it toggles is intentionally avoided so in-flight fetches keep their captured value
   }, [processId])
 
   const bookSlot = useCallback(
@@ -102,6 +103,7 @@ const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProv
         },
       )
     },
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- autoFetchInterviewees/fetchPossibleInterviewees/searchIntervieweeKey/state are read at call time; rebinding bookSlot every keystroke would force consumers to re-render
     [processId, fetchInterviewSlots],
   )
 
@@ -130,6 +132,7 @@ const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProv
         },
       )
     },
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- autoFetchInterviewees/fetchPossibleInterviewees/searchIntervieweeKey/state are read at call time; rebinding cancelSlot every keystroke would force consumers to re-render
     [processId, fetchInterviewSlots],
   )
 
@@ -211,6 +214,7 @@ const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProv
     if (autoFetchInterviewees) {
       void fetchPossibleInterviewees()
     }
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- autoFetchInterviewees is read at call time; only refetch when processId or the fetch callbacks change
   }, [processId, fetchInterviewSlots, fetchPossibleInterviewees])
 
   const contextState = useMemo<IInterviewProcessContext>(() => {
@@ -244,6 +248,7 @@ const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProv
     interviewSlotsLoading,
     fetchInterviewSlots,
     bookingLoading,
+    bookingSuccessful,
     bookSlot,
     interviewees,
     intervieweesLoading,

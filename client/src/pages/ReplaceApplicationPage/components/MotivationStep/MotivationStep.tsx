@@ -77,6 +77,7 @@ const MotivationStep = (props: IMotivationStepProps) => {
         researchGroupId: application.researchGroup.id,
       })
     }
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- form is stable and `application` itself is captured via applicationId; rerunning on full application identity would loop
   }, [application?.applicationId])
 
   useEffect(() => {
@@ -129,6 +130,7 @@ const MotivationStep = (props: IMotivationStepProps) => {
         setLoading(false)
       },
     )
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- form is stable; only re-run when the merged topic changes
   }, [mergedTopic])
 
   const onSubmit = async (values: IMotivationStepForm) => {

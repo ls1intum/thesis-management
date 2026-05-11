@@ -72,6 +72,7 @@ const ResearchGroupMembers = ({ researchGroupData }: IResearchGroupMembersProps)
 
   useEffect(() => {
     fetchMembers()
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- fetchMembers is recreated each render; only re-fetch when the research group changes
   }, [researchGroupData])
 
   const handleAddMember = (username: string) => {

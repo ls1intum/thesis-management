@@ -14,6 +14,21 @@ interface EmailTemplatesOverviewProps {
   includeApplicationDataInEmail?: boolean
 }
 
+const TEMPLATE_CASES_TO_FETCH: string[] = [
+  'APPLICATION_CREATED_CHAIR',
+  'THESIS_PRESENTATION_INVITATION_UPDATED',
+  'THESIS_PRESENTATION_INVITATION',
+  'THESIS_PRESENTATION_INVITATION_CANCELLED',
+  'APPLICATION_REJECTED_TOPIC_REQUIREMENTS',
+  'APPLICATION_REJECTED_TOPIC_OUTDATED',
+  'APPLICATION_REJECTED',
+  'APPLICATION_REJECTED_TITLE_NOT_INTERESTING',
+  'APPLICATION_REJECTED_STUDENT_REQUIREMENTS',
+  'APPLICATION_REJECTED_TOPIC_FILLED',
+  'APPLICATION_ACCEPTED',
+  'APPLICATION_ACCEPTED_NO_SUPERVISOR',
+]
+
 const EmailTemplatesOverview = ({
   includeApplicationDataInEmail = true,
 }: EmailTemplatesOverviewProps) => {
@@ -109,21 +124,6 @@ const EmailTemplatesOverview = ({
     }
   }, [searchKey, emailTemplates])
 
-  const templateCasesToFetch: string[] = [
-    'APPLICATION_CREATED_CHAIR',
-    'THESIS_PRESENTATION_INVITATION_UPDATED',
-    'THESIS_PRESENTATION_INVITATION',
-    'THESIS_PRESENTATION_INVITATION_CANCELLED',
-    'APPLICATION_REJECTED_TOPIC_REQUIREMENTS',
-    'APPLICATION_REJECTED_TOPIC_OUTDATED',
-    'APPLICATION_REJECTED',
-    'APPLICATION_REJECTED_TITLE_NOT_INTERESTING',
-    'APPLICATION_REJECTED_STUDENT_REQUIREMENTS',
-    'APPLICATION_REJECTED_TOPIC_FILLED',
-    'APPLICATION_ACCEPTED',
-    'APPLICATION_ACCEPTED_NO_SUPERVISOR',
-  ]
-
   const { researchGroupId } = useParams<{
     researchGroupId: string
   }>()
@@ -137,7 +137,7 @@ const EmailTemplatesOverview = ({
         method: 'GET',
         requiresAuth: true,
         params: {
-          templateCases: templateCasesToFetch.join(','),
+          templateCases: TEMPLATE_CASES_TO_FETCH.join(','),
           page: 0,
           limit: -1,
           researchGroupId: researchGroupId,
@@ -184,7 +184,7 @@ const EmailTemplatesOverview = ({
         }
       },
     )
-  }, [])
+  }, [researchGroupId])
   return (
     <ResearchGroupSettingsCard
       title={'Email Templates'}

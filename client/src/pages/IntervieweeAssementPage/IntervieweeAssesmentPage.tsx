@@ -41,6 +41,7 @@ const IntervieweeAssesmentPage = () => {
 
   useEffect(() => {
     fetchInterviewee()
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- mount-only initial fetch
   }, [])
 
   const [saving, setSaving] = useState(false)

@@ -98,6 +98,7 @@ const InterviewBookingPage = () => {
 
       return () => clearInterval(interval)
     }
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- auth context is recreated each render; retriggering on identity would loop the login interval
   }, [auth.isAuthenticated])
 
   const [topicInformation, setTopicInformation] = useState<ITopic | null>(null)
@@ -201,6 +202,7 @@ const InterviewBookingPage = () => {
       fetchMyBooking()
       fetchTopicInformation()
     }
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- fetchMyBooking and fetchTopicInformation are recreated each render; effect should only re-run on processId/auth changes
   }, [processId, auth.isAuthenticated])
 
   const [cancelModalOpen, setCancelModalOpen] = useState(false)

@@ -25,6 +25,7 @@ const AcceptApplicantModal = ({ interviewee, onAcceptSuccessfull }: AcceptApplic
       setApplication(app)
     }
     void fetchData()
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- fetchApplication is recreated each render by the provider; effect should only re-run when applicationId changes
   }, [interviewee.applicationId])
 
   return (

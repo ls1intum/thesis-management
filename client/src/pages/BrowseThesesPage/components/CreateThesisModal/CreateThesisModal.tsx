@@ -104,6 +104,7 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
         setLoading(false)
       },
     )
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- form is stable; including it would loop on every form value change
   }, [opened])
 
   return (

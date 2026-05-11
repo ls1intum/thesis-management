@@ -176,6 +176,7 @@ const UserInformationForm = (props: IUserInformationFormProps) => {
         Object.keys(GLOBAL_CONFIG.custom_data).map((key) => [key, user.customData?.[key] ?? '']),
       ),
     })
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- form is stable; including it would loop on every form value change
   }, [user])
 
   useApiPdfFile(

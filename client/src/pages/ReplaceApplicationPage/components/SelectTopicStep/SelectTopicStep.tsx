@@ -62,6 +62,7 @@ const SelectTopicStep = (props: ISelectTopicStepProps) => {
       params.delete('search')
     }
     setSearchParams(params, { replace: true })
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- searchParams/setSearchParams change on every navigation; only sync URL when the debounced search input changes
   }, [debouncedSearch])
 
   return (

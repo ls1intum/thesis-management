@@ -198,6 +198,7 @@ const PresentationOverviewPage = () => {
       return () => cancelAnimationFrame(handle)
     }
     lastScrolledGroupId.current = groupKey
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- only the selected group's id matters for scroll-target keying; tracking the whole object would re-scroll on unrelated identity changes
   }, [presentations, selectedGroup?.id, researchGroups.length])
 
   const onDelete = (presentationId: string, date: string) => {

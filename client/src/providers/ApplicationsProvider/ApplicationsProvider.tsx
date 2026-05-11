@@ -72,6 +72,11 @@ const ApplicationsProvider = (props: PropsWithChildren<IApplicationsProviderProp
 
   const [debouncedSearch] = useDebouncedValue(adjustedFilters.search ?? '', 500)
 
+  const filterStatesKey = adjustedFilters.states?.join(',')
+  const filterTopicsKey = adjustedFilters.topics?.join(',')
+  const filterTypesKey = adjustedFilters.types?.join(',')
+  const topicsLoaded = !!topics
+
   useEffect(() => {
     setPage(0)
   }, [sort, adjustedFilters])
@@ -130,17 +135,18 @@ const ApplicationsProvider = (props: PropsWithChildren<IApplicationsProviderProp
         setApplications(res.data)
       },
     )
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- adjustedFilters.states/topics/types are tracked via the joined key consts above to avoid identity-based reruns
   }, [
     fetchAll,
     page,
     limit,
     sort,
-    adjustedFilters.states?.join(','),
-    adjustedFilters.topics?.join(','),
-    adjustedFilters.types?.join(','),
+    filterStatesKey,
+    filterTopicsKey,
+    filterTypesKey,
     adjustedFilters.includeSuggestedTopics,
     debouncedSearch,
-    !topics,
+    topicsLoaded,
   ])
 
   const fetchApplication = async (applicationId: string): Promise<IApplication | null> => {
@@ -202,7 +208,7 @@ const ApplicationsProvider = (props: PropsWithChildren<IApplicationsProviderProp
       },
       fetchApplication,
     }
-  }, [user.userId, topics, applications, adjustedFilters, sort, page, limit])
+  }, [topics, applications, adjustedFilters, sort, page, limit])
 
   if (hideIfEmpty && page === 0 && (!applications || (applications.content ?? []).length === 0)) {
     return <>{emptyComponent}</>

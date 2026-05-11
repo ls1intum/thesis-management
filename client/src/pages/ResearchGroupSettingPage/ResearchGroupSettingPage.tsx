@@ -44,6 +44,7 @@ const ResearchGroupSettingPage = () => {
     }
 
     setSearchParams(params, { replace: true })
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- searchParams/setSearchParams change on every navigation; only sync URL when the selected tab changes
   }, [selectedTab])
 
   useEffect(() => {

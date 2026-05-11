@@ -77,6 +77,7 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
 
   useEffect(() => {
     return fetchTopics()
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- fetchTopics is recreated each render; only refetch when filters/pagination change
   }, [filters, page, limit])
 
   const initialFiltersKey = JSON.stringify(initialFilters)
@@ -95,6 +96,7 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
       ...initialFilters,
     }))
     setPage(0)
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- initialFilters/states/researchSpecific are captured at the time initialFiltersKey changes; tracking the raw values would re-run on every render
   }, [initialFiltersKey])
 
   const contextState = useMemo<ITopicsContext>(() => {
@@ -150,6 +152,7 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
         })
       },
     }
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- fetchTopics is recreated each render and is only called from within callbacks at invocation time
   }, [topics, filters, page, limit, isLoading])
 
   if (hideIfEmpty && page === 0 && (!topics || (topics.content?.length ?? 0) === 0)) {

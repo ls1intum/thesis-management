@@ -32,6 +32,9 @@ const ThesesProvider = (props: PropsWithChildren<IThesesProviderProps>) => {
 
   const [debouncedSearch] = useDebouncedValue(filters.search ?? '', 500)
 
+  const filterStatesKey = filters.states?.join(',')
+  const filterTypesKey = filters.types?.join(',')
+
   useEffect(() => {
     setTheses(undefined)
 
@@ -68,15 +71,8 @@ const ThesesProvider = (props: PropsWithChildren<IThesesProviderProps>) => {
         setTheses(res.data)
       },
     )
-  }, [
-    fetchAll,
-    page,
-    limit,
-    sort,
-    filters.states?.join(','),
-    filters.types?.join(','),
-    debouncedSearch,
-  ])
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- filters.states/types are tracked via joined keys below to avoid identity-based reruns
+  }, [fetchAll, page, limit, sort, filterStatesKey, filterTypesKey, debouncedSearch])
 
   const contextState = useMemo<IThesesContext>(() => {
     return {

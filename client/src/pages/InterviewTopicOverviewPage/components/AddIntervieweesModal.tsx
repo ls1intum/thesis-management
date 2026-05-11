@@ -63,6 +63,7 @@ const AddIntervieweesModal = ({ opened, closeModal }: IAddIntervieweesModalProps
     if (opened) {
       fetchPossibleInterviewApplicantsByTopic()
     }
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- fetchPossibleInterviewApplicantsByTopic is recreated each render; only re-run on modal open toggle
   }, [opened])
 
   const onClose = () => {

@@ -58,6 +58,7 @@ const CollapsibleDateCard = ({
     if (addNewSlots) {
       addNewSlots(allSlots)
     }
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- allSlots is derived from slotRanges each render; addNewSlots is recreated by parent — re-running on those would loop
   }, [slotRanges])
 
   const createSlotsForRange = (
@@ -256,6 +257,7 @@ const CollapsibleDateCard = ({
     if (slots && slots.length > 0) {
       setSlotRanges(buildSlotRanges(slots))
     }
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- mount-only seeding from initial slots prop; subsequent edits flow through state
   }, [])
 
   const updateAllLocations = (newLocation: string, locationType: 'Onsite' | 'Online') => {

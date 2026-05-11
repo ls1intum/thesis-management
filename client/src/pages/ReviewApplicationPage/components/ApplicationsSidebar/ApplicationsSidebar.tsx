@@ -84,6 +84,8 @@ const ApplicationsSidebar = (props: IApplicationsSidebarProps) => {
     }
   }, [])
 
+  const applicationIdsKey = (applications?.content ?? []).map((x) => x.applicationId).join(',')
+
   useEffect(() => {
     if (isSmallScreen) {
       return
@@ -100,12 +102,8 @@ const ApplicationsSidebar = (props: IApplicationsSidebarProps) => {
           : (applications.content ?? [])[0],
       )
     }
-  }, [
-    page,
-    startAtLastApplication,
-    isSmallScreen,
-    (applications?.content ?? []).map((x) => x.applicationId).join(','),
-  ])
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- onSelect is recreated by the parent each render; applications identity is tracked via applicationIdsKey
+  }, [page, startAtLastApplication, isSmallScreen, applicationIdsKey])
 
   return (
     <Stack gap='sm'>

@@ -33,6 +33,7 @@ const InterviewTopicOverviewPage = () => {
 
   useEffect(() => {
     fetchInterviewProcess()
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- mount-only initial fetch
   }, [])
 
   return processCompleted !== null ? (

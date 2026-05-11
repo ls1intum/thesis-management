@@ -78,6 +78,7 @@ const TopicSearchFilters = ({
     }
 
     setSearchParams(params, { replace: true })
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- searchParams/setSearchParams change on every navigation; effect should only run when selected filters change
   }, [selectedThesisTypes, selectedGroups])
 
   const segmentedControls = () => (

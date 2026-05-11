@@ -85,6 +85,7 @@ export function useApiPdfFile(
         },
       )
     }
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- onLoad is recreated by callers each render; refetching on its identity would loop
   }, [url, filename])
 }
 

@@ -153,6 +153,7 @@ const CreateInterviewProcess = ({ opened, onClose }: CreateInterviewProcessProps
 
   useEffect(() => {
     fetchPossibleInterviewApplicantsByTopic()
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- fetchPossibleInterviewApplicantsByTopic is recreated each render by the provider; effect should only re-run when selectedTopic changes
   }, [selectedTopic])
 
   useEffect(() => {

@@ -131,6 +131,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
       keycloak.onAuthRefreshError = undefined
       keycloak.onAuthLogout = undefined
     }
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- mount-only keycloak setup: setAuthenticationTokens/triggerReadySignal are stable refs intentionally captured once
   }, [])
 
   useEffect(() => {
@@ -189,6 +190,8 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
       },
     )
   }, [isReady, universityId])
+
+  const isAuthenticated = Boolean(authenticationTokens?.access_token)
 
   const contextValue = useMemo<IAuthenticationContext>(() => {
     return {
@@ -256,12 +259,8 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
       },
       researchGroups: researchGroups,
     }
-  }, [
-    user,
-    Boolean(authenticationTokens?.access_token),
-    authenticationTokens?.refresh_token,
-    location.origin,
-  ])
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- researchGroups/setAuthenticationTokens/readySignal/access_token are captured by reference inside callbacks that read the latest value at call time; recomputing the entire context on each token refresh would re-render every consumer
+  }, [user, isAuthenticated, authenticationTokens?.refresh_token, researchGroups])
 
   return <AuthenticationContext value={contextValue}>{children}</AuthenticationContext>
 }

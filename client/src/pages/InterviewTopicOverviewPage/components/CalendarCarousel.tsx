@@ -39,6 +39,14 @@ const CalendarCarousel = ({ disabled = false }: ICalendarCarouselProps) => {
 
   const { interviewSlots, interviewSlotsLoading } = useInterviewProcessContext()
 
+  const isSmaller = useIsSmallerBreakpoint('md')
+
+  const isMobile = useIsSmallerBreakpoint('sm')
+  const isMediumScreen = useIsSmallerBreakpoint('lg')
+  const isLargeScreen = useIsSmallerBreakpoint('3xl')
+
+  const rowAmount = isSmaller ? 2 : 3
+
   useEffect(() => {
     let slideIndex = 0
     const firstSlideIndexForDateTemp: Record<string, number> = {}
@@ -49,7 +57,7 @@ const CalendarCarousel = ({ disabled = false }: ICalendarCarouselProps) => {
     })
     setFirstSlideIndexForDate(firstSlideIndexForDateTemp)
     setTotalSlides(slideIndex)
-  }, [interviewSlots])
+  }, [interviewSlots, rowAmount])
 
   const dateRowDisabled = (rowKey: string, chunkIndex: number) => {
     const index = firstSlideIndexForDate[rowKey] + chunkIndex
@@ -71,15 +79,7 @@ const CalendarCarousel = ({ disabled = false }: ICalendarCarouselProps) => {
     return index < visibleSlidesStart || index >= visibleSlidesEnd
   }
 
-  const isSmaller = useIsSmallerBreakpoint('md')
-
-  const isMobile = useIsSmallerBreakpoint('sm')
-  const isMediumScreen = useIsSmallerBreakpoint('lg')
-  const isLargeScreen = useIsSmallerBreakpoint('3xl')
-
   const [slotModalOpen, setSlotModalOpen] = useState(false)
-
-  const rowAmount = isSmaller ? 2 : 3
 
   const getSlideDisplayAmount = () => {
     const slideAmount = isMobile ? 1 : isMediumScreen ? 2 : isLargeScreen ? 3 : 4

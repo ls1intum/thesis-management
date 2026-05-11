@@ -27,6 +27,7 @@ const InterviewNoteCard = ({ interviewNote, onInterviewNoteChange }: IInterviewN
 
   useEffect(() => {
     form.setValues({ interviewNote: interviewNote ?? '' })
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- form is stable; including it would loop on every form value change
   }, [interviewNote])
 
   const [debouncedInterviewNote] = useDebouncedValue(form.values.interviewNote, 1000)
@@ -35,6 +36,7 @@ const InterviewNoteCard = ({ interviewNote, onInterviewNoteChange }: IInterviewN
     if (onInterviewNoteChange) {
       onInterviewNoteChange(debouncedInterviewNote)
     }
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- onInterviewNoteChange is recreated by parent each render; only re-run on debounced value change
   }, [debouncedInterviewNote])
 
   const changesSaved = debouncedInterviewNote === form.values.interviewNote

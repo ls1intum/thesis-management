@@ -137,6 +137,7 @@ const ThesisConfigSection = () => {
 
   useEffect(() => {
     form.validate()
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- form is stable; only re-validate when the relevant fields change
   }, [form.values.startDate, form.values.endDate, form.values.states])
 
   useEffect(() => {
@@ -159,6 +160,7 @@ const ThesisConfigSection = () => {
     })
 
     form.reset()
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- form is stable; only re-seed when the thesis prop changes
   }, [thesis])
 
   useEffect(() => {
@@ -209,6 +211,7 @@ const ThesisConfigSection = () => {
         }
       },
     )
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- mount-only fetch of research groups; form/admin flag/thesis researchGroup are read but should not retrigger the request
   }, [])
 
   const [closing, onClose] = useThesisUpdateAction(async () => {

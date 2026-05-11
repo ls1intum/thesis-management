@@ -119,6 +119,7 @@ const EmailTextEditor = ({
         convertTemplateVariablesToHtml(editingTemplate.bodyHtml ?? '', templateVariables),
       )
     }
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- only re-sync editor content when bodyHtml or its variable mapping changes; full editingTemplate identity would loop
   }, [editingTemplate?.bodyHtml, editor, templateVariables])
 
   const fetchTemplateVariables = async () => {
@@ -144,6 +145,7 @@ const EmailTextEditor = ({
     if (editingTemplate) {
       void fetchTemplateVariables()
     }
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- fetchTemplateVariables is recreated each render; only re-run when the editingTemplate id changes
   }, [editingTemplate?.id])
 
   return (

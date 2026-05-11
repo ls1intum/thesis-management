@@ -45,6 +45,7 @@ const AssignIntervieweeToSlotModal = ({
         setInterviewees(fetchedInterviewees)
       })
     }
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- fetchPossibleInterviewees is recreated each render by the provider; only re-run on modal open toggle
   }, [assignModalOpen])
 
   return (
