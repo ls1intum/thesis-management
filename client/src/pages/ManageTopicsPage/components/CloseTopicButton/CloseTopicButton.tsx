@@ -38,6 +38,12 @@ const CloseTopicButton = (props: ICloseTopicButtonProps) => {
     // eslint-disable-next-line @eslint-react/exhaustive-deps -- form is stable; including it would loop on every form value change
   }, [confirmationModal])
 
+  const handleOpen = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    form.reset()
+    setConfirmationModal(true)
+  }
+
   if (topic.state === TopicState.CLOSED) {
     return null
   }
@@ -45,7 +51,8 @@ const CloseTopicButton = (props: ICloseTopicButtonProps) => {
   const titleName = topic.state === TopicState.DRAFT ? 'Draft' : 'Topic'
 
   return (
-    <Button onClick={() => setConfirmationModal(true)} size={size}>
+    // <Button onClick={() => setConfirmationModal(true)} size={size}>
+    <Button onClick={handleOpen} size={size}>
       <Modal
         title={`Close ${titleName}`}
         opened={confirmationModal}

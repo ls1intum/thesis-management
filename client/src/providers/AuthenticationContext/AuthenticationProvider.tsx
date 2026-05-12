@@ -455,7 +455,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
     return {
       isAuthenticated: Boolean(authenticationTokens?.access_token),
       user: authenticationTokens?.access_token ? user : undefined,
-      groups: [],
+      groups: user?.groups ?? [],
       updateUser: setUser,
       updateInformation: async (data, avatar, examinationReport, cv, degreeReport) => {
         const formData = new FormData()

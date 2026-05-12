@@ -6,12 +6,23 @@ import { Locator, Page, expect } from '@playwright/test'
  */
 export async function navigateTo(page: Page, path: string) {
   await page.goto(path, { waitUntil: 'domcontentloaded', timeout: 30_000 })
+  await page.addStyleTag({
+    content: `
+      #webpack-dev-server-client-overlay {
+        display: none !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+      }
+    `
+  }).catch(() => {});
+  await hideWebpackOverlay(page).catch(() => {});
   await page
     .locator('.mantine-Loader-root')
     .waitFor({ state: 'hidden', timeout: 30_000 })
     .catch(() => {
       // Loader may never appear if the page loads instantly
     })
+  await page.waitForTimeout(500);
 }
 
 /**
@@ -205,17 +216,33 @@ export function getAccordionItem(page: Page, sectionLabel: string) {
  * so this installs a MutationObserver that auto-hides it whenever it's added to the DOM.
  * Safe to call multiple times — the observer is only installed once per page.
  */
+// export async function hideWebpackOverlay(page: Page) {
+//   await page.evaluate(() => {
+//     if ((window as any).__webpackOverlayObserver) return
+
+//     const hide = () => {
+//       const iframe = document.getElementById('webpack-dev-server-client-overlay')
+//       if (iframe) (iframe as HTMLElement).style.display = 'none'
+//     }
+
+//     hide()
+
+//     const observer = new MutationObserver(hide)
+//     observer.observe(document.body, { childList: true, subtree: true })
+//     ;(window as any).__webpackOverlayObserver = observer
+//   })
+// }
 export async function hideWebpackOverlay(page: Page) {
   await page.evaluate(() => {
-    if ((window as any).__webpackOverlayObserver) return
-
     const hide = () => {
       const iframe = document.getElementById('webpack-dev-server-client-overlay')
-      if (iframe) (iframe as HTMLElement).style.display = 'none'
+      if (iframe) {
+        iframe.style.setProperty('display', 'none', 'important');
+        iframe.style.setProperty('pointer-events', 'none', 'important');
+      }
     }
-
-    hide()
-
+    hide();
+    if ((window as any).__webpackOverlayObserver) return
     const observer = new MutationObserver(hide)
     observer.observe(document.body, { childList: true, subtree: true })
     ;(window as any).__webpackOverlayObserver = observer

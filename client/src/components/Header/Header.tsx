@@ -21,6 +21,7 @@ import { GearSixIcon, KeyIcon, NewspaperClippingIcon, SignOutIcon } from '@phosp
 import { getPasskeyErrorMessage } from '../../utils/passkey'
 import { showSimpleError } from '../../utils/notification'
 import { useEffect, useState } from 'react'
+import { useLocation } from 'react-router'
 
 interface HeaderProps {
   authenticatedArea: boolean
@@ -31,11 +32,12 @@ interface HeaderProps {
 
 const Header = ({ opened, toggle, authenticatedArea, openLoginModal = false }: HeaderProps) => {
   const { colorScheme } = useMantineColorScheme()
+  const { pathname } = useLocation()
   const user = useUser()
   const context = useAuthenticationContext()
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
   const [isPasskeyLoading, setIsPasskeyLoading] = useState(false)
-
+  const isPublicPresentationPage = pathname.startsWith('/presentations/')
   const navigate = useNavigate()
   const isLoginModalForcedOpen =
     openLoginModal && !context.isAuthenticated && context.isPasskeySupported
@@ -160,25 +162,27 @@ const Header = ({ opened, toggle, authenticatedArea, openLoginModal = false }: H
             </Menu.Dropdown>
           </Menu>
         ) : (
-          <Group gap='xs'>
-            {context.isPasskeySupported && (
-              <Button
-                variant='outline'
-                leftSection={<KeyIcon size={16} />}
-                onClick={() => void onPasskeyLogin()}
-                loading={isPasskeyLoading}
-              >
-                <Text span visibleFrom='sm'>
-                  AET Passkey
-                </Text>
-              </Button>
-            )}
-            <Button onClick={() => void context.login('/dashboard')}>Login</Button>
-          </Group>
+          !isPublicPresentationPage && (
+            <Group gap='xs'>
+              {context.isPasskeySupported && (
+                <Button
+                  variant='outline'
+                  leftSection={<KeyIcon size={16} />}
+                  onClick={() => void onPasskeyLogin()}
+                  loading={isPasskeyLoading}
+                >
+                  <Text span visibleFrom='sm'>
+                    AET Passkey
+                  </Text>
+                </Button>
+              )}
+              <Button onClick={() => void context.login('/dashboard')}>Login</Button>
+            </Group>
+          )
         )}
       </Flex>
       <Modal
-        opened={isLoginModalForcedOpen || isLoginModalOpen}
+        opened={isLoginModalForcedOpen ?? isLoginModalOpen}
         onClose={onLoginModalClose}
         closeOnEscape={!isPasskeyLoading}
         withCloseButton={!isPasskeyLoading}
