@@ -12,8 +12,10 @@ import de.tum.cit.aet.thesis.constants.ThesisRoleName;
 import de.tum.cit.aet.thesis.entity.ResearchGroup;
 import de.tum.cit.aet.thesis.entity.Thesis;
 import de.tum.cit.aet.thesis.entity.ThesisPresentation;
+import de.tum.cit.aet.thesis.entity.ThesisPresentationInvite;
 import de.tum.cit.aet.thesis.entity.ThesisRole;
 import de.tum.cit.aet.thesis.entity.User;
+import de.tum.cit.aet.thesis.entity.key.ThesisPresentationInviteId;
 import de.tum.cit.aet.thesis.entity.key.ThesisRoleId;
 import de.tum.cit.aet.thesis.exception.request.AccessDeniedException;
 import de.tum.cit.aet.thesis.exception.request.ResourceInvalidParametersException;
@@ -298,8 +300,11 @@ class ThesisPresentationServiceTest {
 		User student = addThesisRole(testThesis, "alice@example.com", ThesisRoleName.STUDENT);
 		User supervisor = addThesisRole(testThesis, "bob@example.com", ThesisRoleName.SUPERVISOR);
 
-		// Simulate a large BCC invitee list — must NOT appear in the ICS.
-		testPresentation.setInvites(List.of());
+		// Simulate BCC invitees that must NOT leak into the attached ICS file.
+		testPresentation.setInvites(List.of(
+				invite(testPresentation, "invitee1@example.com"),
+				invite(testPresentation, "invitee2@example.com")
+		));
 
 		when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
 		when(calendarService.createVEvent(anyString(), any())).thenReturn(new VEvent());
@@ -321,6 +326,17 @@ class ThesisPresentationServiceTest {
 				"Email invite ICS should expose only thesis role members as attendees");
 		assertTrue(event.optionalAttendees().isEmpty(),
 				"Email invite ICS must never carry the BCC invitee list as optional attendees");
+	}
+
+	private static ThesisPresentationInvite invite(ThesisPresentation presentation, String email) {
+		ThesisPresentationInvite invite = new ThesisPresentationInvite();
+		ThesisPresentationInviteId id = new ThesisPresentationInviteId();
+		id.setPresentationId(presentation.getId());
+		id.setEmail(email);
+		invite.setId(id);
+		invite.setPresentation(presentation);
+		invite.setInvitedAt(Instant.now());
+		return invite;
 	}
 
 	private static User addThesisRole(Thesis thesis, String email, ThesisRoleName roleName) {
