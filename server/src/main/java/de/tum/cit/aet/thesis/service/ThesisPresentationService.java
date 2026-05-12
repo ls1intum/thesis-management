@@ -399,7 +399,12 @@ public class ThesisPresentationService {
 	private CalendarService.CalendarEvent buildInviteCalendarEvent(ThesisPresentation presentation) {
 		Thesis thesis = presentation.getThesis();
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
-		List<InternetAddress> roleAttendees = thesis.getRoles().stream().map(role -> role.getUser().getEmail()).toList();
+		List<InternetAddress> roleAttendees = thesis.getRoles().stream()
+				.filter(role -> switch (role.getId().getRole()) {
+					case STUDENT, SUPERVISOR, EXAMINER -> true;
+				})
+				.map(role -> role.getUser().getEmail())
+				.toList();
 		return buildPresentationCalendarEvent(presentation, roleAttendees);
 	}
 
