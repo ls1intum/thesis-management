@@ -170,7 +170,7 @@ public class ThesisPresentationService {
 		);
 
 		for (ThesisPresentation presentation : presentations) {
-			calendar.add(calendarService.createVEvent(presentation.getId().toString(), createPresentationCalendarEventWithoutAccessCheck(presentation, false)));
+			calendar.add(calendarService.createVEvent(presentation.getId().toString(), buildSubscriptionCalendarEvent(presentation)));
 		}
 
 		return calendar;
@@ -187,7 +187,7 @@ public class ThesisPresentationService {
 
 		calendar.add(ImmutableMethod.REQUEST);
 
-		calendar.add(calendarService.createVEvent(presentation.getId().toString(), createPresentationCalendarEvent(presentation)));
+		calendar.add(calendarService.createVEvent(presentation.getId().toString(), buildInviteCalendarEvent(presentation)));
 
 		return calendar;
 	}
@@ -391,22 +391,33 @@ public class ThesisPresentationService {
 		return presentation;
 	}
 
-	private CalendarService.CalendarEvent createPresentationCalendarEvent(ThesisPresentation presentation) {
+	/**
+	 * Builds the calendar event used for the personal email invite. Verifies the caller can
+	 * access the thesis and includes the thesis role members (student, supervisor, examiner)
+	 * as required attendees so the recipient's mail client can show the named participants.
+	 */
+	private CalendarService.CalendarEvent buildInviteCalendarEvent(ThesisPresentation presentation) {
 		Thesis thesis = presentation.getThesis();
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
-		return createPresentationCalendarEventWithoutAccessCheck(presentation, true);
+		List<InternetAddress> roleAttendees = thesis.getRoles().stream().map(role -> role.getUser().getEmail()).toList();
+		return buildPresentationCalendarEvent(presentation, roleAttendees);
 	}
 
-	private CalendarService.CalendarEvent createPresentationCalendarEventWithoutAccessCheck(ThesisPresentation presentation, boolean includeRoleAttendees) {
+	/**
+	 * Builds the calendar event used for the public subscription feed. Skips the access check
+	 * (the feed is intentionally public) and emits no ATTENDEE entries — subscribers already
+	 * have the event, and exposing attendee emails on an unauthenticated feed would leak addresses.
+	 */
+	private CalendarService.CalendarEvent buildSubscriptionCalendarEvent(ThesisPresentation presentation) {
+		return buildPresentationCalendarEvent(presentation, List.of());
+	}
+
+	private CalendarService.CalendarEvent buildPresentationCalendarEvent(ThesisPresentation presentation, List<InternetAddress> requiredAttendees) {
 		Thesis thesis = presentation.getThesis();
 		String location = presentation.getLocation();
 		String streamUrl = presentation.getStreamUrl();
 
 		int groupSettingsDuration = researchGroupSettingsService.getPresentationDurationInMinutes(thesis.getResearchGroup().getId());
-
-		List<InternetAddress> requiredAttendees = includeRoleAttendees
-				? thesis.getRoles().stream().map(role -> role.getUser().getEmail()).toList()
-				: List.of();
 
 		return new CalendarService.CalendarEvent(
 				buildPresentationTitle(thesis),
@@ -424,7 +435,7 @@ public class ThesisPresentationService {
 		);
 	}
 
-	private String buildPresentationTitle(Thesis thesis) {
+	static String buildPresentationTitle(Thesis thesis) {
 		String prefix = shortThesisType(thesis.getType()) + " Presentation";
 		String students = thesis.getStudents().stream()
 				.map(user -> {
@@ -436,11 +447,13 @@ public class ThesisPresentationService {
 				.reduce((a, b) -> a + " & " + b)
 				.orElse("");
 
-		String header = students.isEmpty() ? prefix : prefix + " " + students;
-		return header + ": " + thesis.getTitle();
+		if (students.isEmpty()) {
+			return prefix + " – " + thesis.getTitle();
+		}
+		return prefix + " " + students + ": " + thesis.getTitle();
 	}
 
-	private static String shortThesisType(String type) {
+	static String shortThesisType(String type) {
 		if (type == null) {
 			return "Thesis";
 		}
