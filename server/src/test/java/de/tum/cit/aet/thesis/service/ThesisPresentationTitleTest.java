@@ -33,6 +33,12 @@ class ThesisPresentationTitleTest {
 	}
 
 	@Test
+	void shortThesisType_blankFallsBackToThesis() {
+		assertEquals("Thesis", ThesisPresentationService.shortThesisType(""));
+		assertEquals("Thesis", ThesisPresentationService.shortThesisType("   "));
+	}
+
+	@Test
 	void buildPresentationTitle_singleStudent() {
 		Thesis thesis = thesis("BACHELOR", "Enhancing Terminal Usability");
 		addStudent(thesis, "John", "Doe");

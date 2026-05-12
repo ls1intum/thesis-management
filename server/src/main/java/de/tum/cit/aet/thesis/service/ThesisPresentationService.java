@@ -454,7 +454,7 @@ public class ThesisPresentationService {
 	}
 
 	static String shortThesisType(String type) {
-		if (type == null) {
+		if (type == null || type.isBlank()) {
 			return "Thesis";
 		}
 		return switch (type) {
