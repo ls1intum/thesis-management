@@ -165,6 +165,10 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
   }, [location.pathname, navigationType])
 
   useEffect(() => {
+    if (isPasskeySupported === undefined) {
+      return
+    }
+
     if (isAuthenticated || isPasskeySupported) {
       hasTriggeredFallbackLogin.current = false
       return

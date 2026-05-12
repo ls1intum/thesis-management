@@ -31,7 +31,7 @@ export interface IAuthenticationContext {
   deleteCredential: (credentialId: string) => Promise<void>
   logout: (redirectUrl: string) => unknown
   researchGroups: ILightResearchGroup[]
-  isPasskeySupported: boolean
+  isPasskeySupported: boolean | undefined
 }
 
 export const AuthenticationContext = createContext<IAuthenticationContext | undefined>(undefined)

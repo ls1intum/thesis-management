@@ -193,8 +193,10 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
   const isReady = readyRef.isTriggerred
   const [researchGroups, setResearchGroups] = useState<ILightResearchGroup[]>([])
   const isPasskeySupportedByBrowser = isPasskeySupportedInBrowser()
-  const [isPasskeyExtensionAvailable, setIsPasskeyExtensionAvailable] = useState(false)
-  const isPasskeySupported = isPasskeySupportedByBrowser && isPasskeyExtensionAvailable
+  const [isPasskeyExtensionAvailable, setIsPasskeyExtensionAvailable] = useState<
+    boolean | undefined
+  >(undefined)
+  const isPasskeySupported = isPasskeySupportedByBrowser ? isPasskeyExtensionAvailable : false
 
   const refreshAccessToken = (activeKeycloak = keycloak) =>
     activeKeycloak
@@ -282,6 +284,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
     const response = await fetch(getPasskeyEndpoint('challenge'), {
       method: 'GET',
       credentials: 'include',
+      cache: 'no-store',
     })
 
     if (!response.ok) {
@@ -354,11 +357,13 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
       return
     }
 
+    setIsPasskeyExtensionAvailable(undefined)
+
     let isMounted = true
 
     const validatePasskeyAvailability = async () => {
       try {
-        const response = await fetch(getPasskeyEndpoint('challenge'), {
+        const response = await fetch(getPasskeyEndpoint('health'), {
           method: 'GET',
           credentials: 'include',
         })
@@ -598,7 +603,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
           const passkeyCredential = await navigator.credentials.create({
             publicKey: {
               challenge: fromBase64Url(challenge),
-              rp: { name: 'TUM AET', id: GLOBAL_CONFIG.passkey_rp_id },
+              rp: { name: GLOBAL_CONFIG.passkey_rp_name, id: GLOBAL_CONFIG.passkey_rp_id },
               user: { id: userIdBytes, name: username, displayName },
               pubKeyCredParams: [
                 { type: 'public-key', alg: -7 },

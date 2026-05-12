@@ -12,6 +12,7 @@ export interface IGlobalConfig {
 
   server_host: string
   passkey_rp_id: string
+  passkey_rp_name: string
 
   genders: Record<string, string>
   study_programs: Record<string, string>

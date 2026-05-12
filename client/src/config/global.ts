@@ -129,6 +129,7 @@ export const GLOBAL_CONFIG: IGlobalConfig = {
     '',
   ),
   passkey_rp_id: getEnvironmentVariable('PASSKEY_RP_ID')?.trim() || window.location.hostname,
+  passkey_rp_name: getEnvironmentVariable('PASSKEY_RP_NAME')?.trim() || 'TUM AET',
 
   keycloak: {
     host: getEnvironmentVariable('KEYCLOAK_HOST') ?? 'http://localhost:8181',

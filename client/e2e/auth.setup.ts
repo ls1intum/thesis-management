@@ -30,7 +30,7 @@ for (const user of TEST_USERS) {
     await expect(page).toHaveURL(/\/dashboard/)
     const loginModal = page.getByRole('dialog', { name: 'Login' })
     await expect(loginModal).toBeVisible({ timeout: 30_000 })
-    await loginModal.getByRole('button', { name: 'Login with TUM-Login' }).click()
+    await loginModal.getByRole('button', { name: 'Login' }).click()
 
     // Wait for Keycloak login page to load
     await expect(page.locator('#kc-login')).toBeVisible({ timeout: 30_000 })
