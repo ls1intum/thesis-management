@@ -8,10 +8,15 @@ import static org.mockito.Mockito.when;
 import de.tum.cit.aet.thesis.constants.ThesisPresentationState;
 import de.tum.cit.aet.thesis.constants.ThesisPresentationType;
 import de.tum.cit.aet.thesis.constants.ThesisPresentationVisibility;
+import de.tum.cit.aet.thesis.constants.ThesisRoleName;
 import de.tum.cit.aet.thesis.entity.ResearchGroup;
 import de.tum.cit.aet.thesis.entity.Thesis;
 import de.tum.cit.aet.thesis.entity.ThesisPresentation;
+import de.tum.cit.aet.thesis.entity.ThesisPresentationInvite;
+import de.tum.cit.aet.thesis.entity.ThesisRole;
 import de.tum.cit.aet.thesis.entity.User;
+import de.tum.cit.aet.thesis.entity.key.ThesisPresentationInviteId;
+import de.tum.cit.aet.thesis.entity.key.ThesisRoleId;
 import de.tum.cit.aet.thesis.exception.request.AccessDeniedException;
 import de.tum.cit.aet.thesis.exception.request.ResourceInvalidParametersException;
 import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
@@ -26,6 +31,7 @@ import net.fortuna.ical4j.model.component.VEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.ObjectProvider;
@@ -264,5 +270,94 @@ class ThesisPresentationServiceTest {
 		assertEquals(1, result.getComponents().size());
 		verify(calendarService).createVEvent(anyString(), any());
 		verify(thesisPresentationRepository).findAllPresentations(isNull(), anySet());
+	}
+
+	@Test
+	void getPresentationCalendar_EmitsEventsWithoutAttendees() {
+		addThesisRole(testThesis, "alice@example.com", ThesisRoleName.STUDENT);
+		testPresentation.setInvites(List.of());
+
+		when(thesisPresentationRepository.findAllPresentations(isNull(), anySet()))
+				.thenReturn(List.of(testPresentation));
+		when(calendarService.createVEvent(anyString(), any())).thenReturn(new VEvent());
+		when(calendarService.createEmptyCalendar(anyString())).thenReturn(new Calendar());
+
+		presentationService.getPresentationCalendar(null);
+
+		ArgumentCaptor<CalendarService.CalendarEvent> captor =
+				ArgumentCaptor.forClass(CalendarService.CalendarEvent.class);
+		verify(calendarService).createVEvent(anyString(), captor.capture());
+
+		CalendarService.CalendarEvent event = captor.getValue();
+		assertTrue(event.requiredAttendees().isEmpty(),
+				"Public subscription feed must not include required attendees");
+		assertTrue(event.optionalAttendees().isEmpty(),
+				"Public subscription feed must not include optional attendees");
+	}
+
+	@Test
+	void getPresentationInvite_IncludesRoleAttendeesAndOmitsInviteeBccList() {
+		User student = addThesisRole(testThesis, "alice@example.com", ThesisRoleName.STUDENT);
+		User supervisor = addThesisRole(testThesis, "bob@example.com", ThesisRoleName.SUPERVISOR);
+
+		// Simulate BCC invitees that must NOT leak into the attached ICS file.
+		testPresentation.setInvites(List.of(
+				invite(testPresentation, "invitee1@example.com"),
+				invite(testPresentation, "invitee2@example.com")
+		));
+
+		when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
+		when(calendarService.createVEvent(anyString(), any())).thenReturn(new VEvent());
+		when(calendarService.createEmptyCalendar(anyString())).thenReturn(new Calendar());
+
+		presentationService.getPresentationInvite(testPresentation);
+
+		ArgumentCaptor<CalendarService.CalendarEvent> captor =
+				ArgumentCaptor.forClass(CalendarService.CalendarEvent.class);
+		verify(calendarService).createVEvent(anyString(), captor.capture());
+
+		CalendarService.CalendarEvent event = captor.getValue();
+		List<String> requiredEmails = event.requiredAttendees().stream()
+				.map(InternetAddress::getAddress)
+				.toList();
+		assertEquals(
+				List.of(student.getEmail().getAddress(), supervisor.getEmail().getAddress()),
+				requiredEmails,
+				"Email invite ICS should expose only thesis role members as attendees");
+		assertTrue(event.optionalAttendees().isEmpty(),
+				"Email invite ICS must never carry the BCC invitee list as optional attendees");
+	}
+
+	private static ThesisPresentationInvite invite(ThesisPresentation presentation, String email) {
+		ThesisPresentationInvite invite = new ThesisPresentationInvite();
+		ThesisPresentationInviteId id = new ThesisPresentationInviteId();
+		id.setPresentationId(presentation.getId());
+		id.setEmail(email);
+		invite.setId(id);
+		invite.setPresentation(presentation);
+		invite.setInvitedAt(Instant.now());
+		return invite;
+	}
+
+	private static User addThesisRole(Thesis thesis, String email, ThesisRoleName roleName) {
+		User user = new User();
+		user.setId(UUID.randomUUID());
+		user.setFirstName("First");
+		user.setLastName("Last");
+		user.setEmail(email);
+
+		ThesisRole role = new ThesisRole();
+		ThesisRoleId roleId = new ThesisRoleId();
+		roleId.setRole(roleName);
+		role.setId(roleId);
+		role.setThesis(thesis);
+		role.setUser(user);
+
+		List<ThesisRole> roles = new ArrayList<>(
+				thesis.getRoles() == null ? List.of() : thesis.getRoles());
+		roles.add(role);
+		thesis.setRoles(roles);
+
+		return user;
 	}
 }
