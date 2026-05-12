@@ -170,7 +170,7 @@ public class ThesisPresentationService {
 		);
 
 		for (ThesisPresentation presentation : presentations) {
-			calendar.add(calendarService.createVEvent(presentation.getId().toString(), createPresentationCalendarEventWithoutAccessCheck(presentation)));
+			calendar.add(calendarService.createVEvent(presentation.getId().toString(), createPresentationCalendarEventWithoutAccessCheck(presentation, false)));
 		}
 
 		return calendar;
@@ -394,18 +394,22 @@ public class ThesisPresentationService {
 	private CalendarService.CalendarEvent createPresentationCalendarEvent(ThesisPresentation presentation) {
 		Thesis thesis = presentation.getThesis();
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
-		return createPresentationCalendarEventWithoutAccessCheck(presentation);
+		return createPresentationCalendarEventWithoutAccessCheck(presentation, true);
 	}
 
-	private CalendarService.CalendarEvent createPresentationCalendarEventWithoutAccessCheck(ThesisPresentation presentation) {
+	private CalendarService.CalendarEvent createPresentationCalendarEventWithoutAccessCheck(ThesisPresentation presentation, boolean includeRoleAttendees) {
 		Thesis thesis = presentation.getThesis();
 		String location = presentation.getLocation();
 		String streamUrl = presentation.getStreamUrl();
 
 		int groupSettingsDuration = researchGroupSettingsService.getPresentationDurationInMinutes(thesis.getResearchGroup().getId());
 
+		List<InternetAddress> requiredAttendees = includeRoleAttendees
+				? thesis.getRoles().stream().map(role -> role.getUser().getEmail()).toList()
+				: List.of();
+
 		return new CalendarService.CalendarEvent(
-				"Thesis Presentation \"" + thesis.getTitle() + "\"",
+				buildPresentationTitle(thesis),
 				location == null || location.isBlank() ? streamUrl : location,
 				"Title: " + thesis.getTitle() + "\n" +
 						(streamUrl != null && !streamUrl.isBlank() ? "Stream URL: " + streamUrl + "\n" : "") + "\n" +
@@ -415,8 +419,37 @@ public class ThesisPresentationService {
 				presentation.getScheduledAt(),
 				presentation.getScheduledAt().plus(groupSettingsDuration, ChronoUnit.MINUTES),
 				this.applicationMail,
-				thesis.getRoles().stream().map(role -> role.getUser().getEmail()).toList(),
-				presentation.getInvites().stream().map(ThesisPresentationInvite::getEmail).toList()
+				requiredAttendees,
+				List.of()
 		);
+	}
+
+	private String buildPresentationTitle(Thesis thesis) {
+		String prefix = shortThesisType(thesis.getType()) + " Presentation";
+		String students = thesis.getStudents().stream()
+				.map(user -> {
+					String first = user.getFirstName() == null ? "" : user.getFirstName().trim();
+					String last = user.getLastName() == null ? "" : user.getLastName().trim();
+					return (first + " " + last).trim();
+				})
+				.filter(name -> !name.isEmpty())
+				.reduce((a, b) -> a + " & " + b)
+				.orElse("");
+
+		String header = students.isEmpty() ? prefix : prefix + " " + students;
+		return header + ": " + thesis.getTitle();
+	}
+
+	private static String shortThesisType(String type) {
+		if (type == null) {
+			return "Thesis";
+		}
+		return switch (type) {
+			case "BACHELOR" -> "BA";
+			case "MASTER" -> "MA";
+			case "INTERDISCIPLINARY_PROJECT" -> "IDP";
+			case "GUIDED_RESEARCH" -> "GR";
+			default -> type;
+		};
 	}
 }

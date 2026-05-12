@@ -669,8 +669,8 @@ public class InterviewProcessService {
 				slot.getStartDate(),
 				slot.getEndDate(),
 				this.applicationMail,
-				slot.getInterviewProcess().getTopic().getRoles().stream().map(role -> role.getUser().getEmail()).toList(),
-				new ArrayList<>()
+				List.of(),
+				List.of()
 		);
 	}
 
