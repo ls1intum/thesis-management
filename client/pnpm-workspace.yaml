@@ -1,0 +1,9 @@
+# pnpm v11 reads settings from this file rather than package.json's "pnpm"
+# section. We don't actually use pnpm workspaces — this file exists to
+# explicitly approve dependency build scripts.
+
+# Allow @parcel/watcher's install script to run; it downloads a prebuilt
+# native binary used by sass/vitest for file watching. Without this entry,
+# pnpm fails the install on fresh machines (strictDepBuilds default).
+allowBuilds:
+  '@parcel/watcher': true
