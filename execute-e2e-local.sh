@@ -9,7 +9,7 @@ set -euo pipefail
 # the latest code changes are picked up.
 #
 # Services are left running after tests complete so you can re-run tests
-# quickly with "cd client && npm run e2e". Use --stop to shut everything down.
+# quickly with "cd client && pnpm e2e". Use --stop to shut everything down.
 #
 # Usage:
 #   ./execute-e2e-local.sh          Run E2E tests (starts/restarts services)
@@ -38,6 +38,15 @@ log()  { echo -e "${CYAN}[e2e]${NC} $*"; }
 ok()   { echo -e "${GREEN}[e2e]${NC} $*"; }
 warn() { echo -e "${YELLOW}[e2e]${NC} $*"; }
 err()  { echo -e "${RED}[e2e]${NC} $*"; }
+
+# Ensure pnpm is available (via corepack, shipped with Node >=16.10).
+if ! command -v pnpm >/dev/null 2>&1; then
+  log "pnpm not on PATH — enabling Corepack..."
+  corepack enable >/dev/null 2>&1 || {
+    err "Failed to enable Corepack. Install pnpm manually: npm install -g pnpm"
+    exit 1
+  }
+fi
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -181,14 +190,14 @@ if is_port_open 3100; then
   wait_for_port_release 3100
 fi
 log "Building client (production)..."
-(cd "$CLIENT_DIR" && npm run build > "$ROOT_DIR/.e2e-client-build.log" 2>&1) || {
+(cd "$CLIENT_DIR" && pnpm build > "$ROOT_DIR/.e2e-client-build.log" 2>&1) || {
   err "Client build failed. See $ROOT_DIR/.e2e-client-build.log"
   exit 1
 }
 log "Generating runtime-env.js..."
 (cd "$CLIENT_DIR/build" && node ../public/generate-runtime-env.js)
 log "Starting static client server (serve)..."
-(cd "$CLIENT_DIR" && exec npx --yes serve@14 -s build -l 3100 --no-clipboard --no-port-switching \
+(cd "$CLIENT_DIR" && exec pnpm dlx serve@14 -s build -l 3100 --no-clipboard --no-port-switching \
   > "$ROOT_DIR/.e2e-client.log" 2>&1) &
 save_pid "client" $!
 
@@ -202,7 +211,21 @@ wait_for_url "http://localhost:8180/api/actuator/health" "Server" 180
 wait_for_url "http://localhost:3100" "Client" 60
 
 # ---------------------------------------------------------------------------
-# 5. Run Playwright E2E tests
+# 5. Playwright browsers
+# ---------------------------------------------------------------------------
+# Playwright stores browser binaries outside node_modules (in the user's
+# OS cache dir), so `pnpm install` does not provide them. `playwright
+# install` is idempotent and fast when binaries are already present, so
+# run it unconditionally — keeps fresh-checkout setups one command shorter.
+
+log "Ensuring Playwright chromium browser is installed..."
+(cd "$CLIENT_DIR" && pnpm exec playwright install chromium) || {
+  err "Playwright browser install failed."
+  exit 1
+}
+
+# ---------------------------------------------------------------------------
+# 6. Run Playwright E2E tests
 # ---------------------------------------------------------------------------
 
 echo ""
@@ -210,18 +233,21 @@ log "Running Playwright E2E tests..."
 echo ""
 
 cd "$CLIENT_DIR"
-npx playwright test "${PLAYWRIGHT_ARGS[@]+"${PLAYWRIGHT_ARGS[@]}"}"
-EXIT_CODE=$?
+# Disable `set -e` so a non-zero playwright exit doesn't bypass the result
+# summary, "view report" hint, and the "services still running" message
+# below. We capture the exit code and re-raise it at the end of the script.
+EXIT_CODE=0
+pnpm exec playwright test "${PLAYWRIGHT_ARGS[@]+"${PLAYWRIGHT_ARGS[@]}"}" || EXIT_CODE=$?
 
 echo ""
 if [[ $EXIT_CODE -eq 0 ]]; then
   ok "All E2E tests passed!"
 else
   err "Some E2E tests failed (exit code $EXIT_CODE)"
-  warn "View report: cd client && npx playwright show-report"
+  warn "View report: cd client && pnpm exec playwright show-report"
 fi
 
 # Services are intentionally left running so you can quickly re-run tests
-# with "cd client && npm run e2e" without waiting for services to start again.
+# with "cd client && pnpm e2e" without waiting for services to start again.
 warn "Services are still running. Use './execute-e2e-local.sh --stop' to stop them."
 exit $EXIT_CODE

@@ -9,6 +9,17 @@ import globals from 'globals'
 export default [
   js.configs.recommended,
   {
+    // Build / tooling scripts that run under Node directly (no bundler).
+    files: ['scripts/**/*.js', 'scripts/**/*.mjs', 'scripts/**/*.cjs'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      globals: {
+        ...globals.node,
+      },
+    },
+  },
+  {
     files: [
       'src/**/*.js',
       'src/**/*.jsx',
