@@ -34,7 +34,7 @@ import LanguageSelect from '../../../../components/LanguageSelect/LanguageSelect
 import type { PaginationResponse } from '../../../../requests/responses/pagination'
 import type { ILightResearchGroup } from '../../../../requests/responses/researchGroup'
 import { showSimpleError, showSimpleSuccess } from '../../../../utils/notification'
-import { useHasGroupAccess } from '../../../../hooks/authentication'
+import { useHasGroupAccess, useAuthenticationContext } from '../../../../hooks/authentication'
 import { Warning } from '@phosphor-icons/react'
 
 interface IThesisConfigSectionFormValues {
@@ -74,12 +74,15 @@ const thesisDatesValidator = (
 
 const ThesisConfigSection = () => {
   const { thesis, access } = useLoadedThesisContext()
-  const hasAdminAccess = useHasGroupAccess('admin')
+  const { user } = useAuthenticationContext()
+  // const hasAdminAccess = useHasGroupAccess('admin') 
+  const hasAdminAccess = user?.groups?.map(g => g.toLowerCase()).includes('admin') ?? false
   const navigate = useNavigate()
   const [researchGroups, setResearchGroups] = useState<PaginationResponse<ILightResearchGroup>>()
   const [anonymizeModalOpen, setAnonymizeModalOpen] = useState(false)
   const [anonymizeWarnings, setAnonymizeWarnings] = useState<string[]>([])
   const [anonymizeLoading, setAnonymizeLoading] = useState(false)
+
 
   const form = useForm<IThesisConfigSectionFormValues>({
     mode: 'controlled',
@@ -442,6 +445,7 @@ const ThesisConfigSection = () => {
                         color='red'
                         loading={anonymizeLoading}
                         onClick={() => void onDeleteThesisClick()}
+                        name="Anonymize Thesis"
                       >
                         Anonymize Thesis
                       </Button>

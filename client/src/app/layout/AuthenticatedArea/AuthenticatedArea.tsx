@@ -221,10 +221,25 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
       <AppShell.Navbar p='md'>
         <AppShell.Section grow mb='md'>
           {links
-            .filter(
-              (item) =>
-                !item.groups || item.groups.some((role) => auth.user?.groups?.includes(role)),
-            )
+            // .filter(
+            //   (item) =>
+            //     !item.groups || item.groups.some((role) => auth.user?.groups?.includes(role)),
+            // )
+            .filter((item) => {
+              if (!item.groups) return true
+              const userGroups = auth.user?.groups?.map((g) => g.toLowerCase()) ?? []
+              const visibleLinks = links
+              .filter((item) => {
+                if (!item.groups) return true
+                return item.groups.some((role) => userGroups.includes(role.toLowerCase()))
+              })
+              .filter((item) => item.display === undefined || item.display)
+              .filter((item) => {
+                if (!item.hideFromGroups) return true
+                return !item.hideFromGroups.some((role) => userGroups.includes(role.toLowerCase()))
+              })
+              return item.groups.some((role) => userGroups.includes(role.toLowerCase()))
+            })
             .filter((item) => item.display === undefined || item.display)
             .filter((item) =>
               item.hideFromGroups
@@ -327,11 +342,17 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
                 {auth.user ? (
                   <Suspense fallback={<PageLoader />}>
                     {!requiredGroups ||
-                    requiredGroups.some((role) => auth.user?.groups?.includes(role)) ? (
+                    // requiredGroups.some((role) => auth.user?.groups?.includes(role)) ? (
+                    requiredGroups.some((role) => 
+                      auth.user?.groups?.map(g => g.toLowerCase()).includes(role.toLowerCase())
+                    ) ? (
                       <ContentContainer size={size}>{children}</ContentContainer>
                     ) : (
-                      <Center className={classes.fullHeight}>
+                      <Center className={classes.fullHeight} data-testid="access-denied">
+                        <Stack align="center">
                         <h1>403 - Unauthorized</h1>
+                        <Text>Your roles: {user?.groups?.join(', ')}</Text>
+                        </Stack>
                       </Center>
                     )}
                   </Suspense>

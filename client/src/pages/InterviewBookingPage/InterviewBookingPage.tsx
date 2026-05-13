@@ -92,11 +92,12 @@ const InterviewBookingPage = () => {
     if (!auth.isAuthenticated) {
       auth.login()
 
-      const interval = setInterval(() => {
-        auth.login()
-      }, 1000)
+      // const interval = setInterval(() => {
+      //   auth.login()
+      // }, 1000)
 
-      return () => clearInterval(interval)
+      // return () => clearInterval(interval)
+      return
     }
     // eslint-disable-next-line @eslint-react/exhaustive-deps -- auth context is recreated each render; retriggering on identity would loop the login interval
   }, [auth.isAuthenticated])
@@ -243,14 +244,14 @@ const InterviewBookingPage = () => {
     />
   ) : null
 
-  if (pageLoading) {
+  if (pageLoading && !myBooking && !topicInformation && !processCompleted) {
     return (
       <Center style={{ height: '100%' }}>
         <Loader />
       </Center>
     )
   }
-  if (!user) {
+  if (!user) { 
     return (
       <Center style={{ height: '100%' }}>
         <Text>Please log in to book an interview slot.</Text>

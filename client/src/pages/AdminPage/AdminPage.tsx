@@ -113,6 +113,7 @@ const AdminPage = () => {
     setSearching(true)
     setSelectedUser(null)
     setDeletionPreview(null)
+    setSearchResults([])
     try {
       const response = await doRequest<IPageResponse<IUser>>('/v2/users', {
         method: 'GET',
