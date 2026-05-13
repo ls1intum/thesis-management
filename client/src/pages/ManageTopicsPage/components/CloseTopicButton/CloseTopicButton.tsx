@@ -1,7 +1,7 @@
 import type { ITopic, ITopicOverview } from '../../../../requests/responses/topic'
 import { TopicState, toTopicOverview } from '../../../../requests/responses/topic'
 import { X } from '@phosphor-icons/react'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useTopicsContext } from '../../../../providers/TopicsProvider/hooks'
 import { doRequest } from '../../../../requests/request'
 import { showSimpleError, showSimpleSuccess } from '../../../../utils/notification'
@@ -33,10 +33,10 @@ const CloseTopicButton = (props: ICloseTopicButtonProps) => {
     },
   })
 
-  useEffect(() => {
-    form.reset()
-    // eslint-disable-next-line @eslint-react/exhaustive-deps -- form is stable; including it would loop on every form value change
-  }, [confirmationModal])
+  // useEffect(() => {
+  //   form.reset()
+  //   // eslint-disable-next-line @eslint-react/exhaustive-deps -- form is stable; including it would loop on every form value change
+  // }, [confirmationModal])
 
   const handleOpen = (e: React.MouseEvent) => {
     e.stopPropagation()

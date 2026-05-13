@@ -57,6 +57,10 @@ for (const user of TEST_USERS) {
       },
       { timeout: 15_000 },
     )
+    await page.waitForResponse(
+  (resp) => resp.url().includes('/api/v2/user-info') && resp.status() === 200,
+  { timeout: 20_000 }
+);
 
     await page.evaluate((storageKey) => {
       localStorage.setItem(storageKey, 'true')
