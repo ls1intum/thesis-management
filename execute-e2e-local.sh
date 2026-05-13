@@ -211,7 +211,21 @@ wait_for_url "http://localhost:8180/api/actuator/health" "Server" 180
 wait_for_url "http://localhost:3100" "Client" 60
 
 # ---------------------------------------------------------------------------
-# 5. Run Playwright E2E tests
+# 5. Playwright browsers
+# ---------------------------------------------------------------------------
+# Playwright stores browser binaries outside node_modules (in the user's
+# OS cache dir), so `pnpm install` does not provide them. `playwright
+# install` is idempotent and fast when binaries are already present, so
+# run it unconditionally — keeps fresh-checkout setups one command shorter.
+
+log "Ensuring Playwright chromium browser is installed..."
+(cd "$CLIENT_DIR" && pnpm exec playwright install chromium) || {
+  err "Playwright browser install failed."
+  exit 1
+}
+
+# ---------------------------------------------------------------------------
+# 6. Run Playwright E2E tests
 # ---------------------------------------------------------------------------
 
 echo ""
