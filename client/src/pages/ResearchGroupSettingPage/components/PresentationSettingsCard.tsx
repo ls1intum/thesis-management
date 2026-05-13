@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Group, NumberInput, Stack, Text } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { ResearchGroupSettingsCard } from './ResearchGroupSettingsCard'
@@ -15,6 +15,11 @@ interface PresentaionSettingsProps {
 
 const MIN_DURATION_MINUTES = 2
 
+// Mantine's NumberInput emits `''` when the field is cleared. We hold the
+// raw value (number or '') in local state so the input visually stays empty
+// during editing instead of snapping to "0 minutes" via Number('') === 0.
+type DurationInputValue = number | ''
+
 const PresentationSettingsCard = ({
   presentationDurationSettings,
   setPresentationDurationSettings,
@@ -25,19 +30,31 @@ const PresentationSettingsCard = ({
   // POST. Without this, Mantine's NumberInput fires onChange for every parse
   // event (e.g. '', 4, 45 when filling "45"), causing overlapping saves that
   // race on the server and can land in any order.
-  const [localDuration, setLocalDuration] = useState(presentationDurationSettings)
+  const [localDuration, setLocalDuration] = useState<DurationInputValue>(
+    presentationDurationSettings,
+  )
   const [debouncedDuration] = useDebouncedValue(localDuration, 500)
 
-  // Re-sync local state when the prop changes (initial load, save response,
-  // navigation). Skip while the user has unsaved edits in flight.
+  // Track whether a save is currently in flight so the prop-sync effect below
+  // doesn't clobber a user keystroke that lands while the server is still
+  // processing the previous save.
+  const savePendingRef = useRef(false)
+
+  // Re-sync local state when the prop changes (initial load, navigation,
+  // successful save response). Skip while a save is in flight — otherwise
+  // the prop update from a slightly-stale save response would overwrite
+  // characters the user has typed since.
   useEffect(() => {
+    if (savePendingRef.current) return
     setLocalDuration(presentationDurationSettings)
   }, [presentationDurationSettings])
 
   useEffect(() => {
+    if (typeof debouncedDuration !== 'number') return
     if (debouncedDuration === presentationDurationSettings) return
     if (!Number.isFinite(debouncedDuration) || debouncedDuration < MIN_DURATION_MINUTES) return
 
+    savePendingRef.current = true
     doRequest<IResearchGroupSettings>(
       `/v2/research-group-settings/${researchGroupId}`,
       {
@@ -50,6 +67,7 @@ const PresentationSettingsCard = ({
         },
       },
       (res) => {
+        savePendingRef.current = false
         if (res.ok) {
           setPresentationDurationSettings(res.data.presentationSettings.presentationSlotDuration)
         } else {
@@ -57,8 +75,12 @@ const PresentationSettingsCard = ({
         }
       },
     )
-    // eslint-disable-next-line @eslint-react/exhaustive-deps -- debounced auto-save; researchGroupId and setter are stable for the lifetime of this card
-  }, [debouncedDuration])
+    // `researchGroupId` is stable for the lifetime of this card (route param;
+    // a different group would unmount/remount this tree) and
+    // `setPresentationDurationSettings` is a stable setter from the parent —
+    // both are intentionally omitted from the dependency list.
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- see comment above
+  }, [debouncedDuration, presentationDurationSettings])
 
   return (
     <ResearchGroupSettingsCard
@@ -81,7 +103,12 @@ const PresentationSettingsCard = ({
               value={localDuration}
               pt={6}
               onChange={(value) => {
-                setLocalDuration(typeof value === 'number' ? value : Number(value))
+                if (value === '' || value === null || value === undefined) {
+                  setLocalDuration('')
+                  return
+                }
+                const parsed = typeof value === 'number' ? value : Number(value)
+                setLocalDuration(Number.isFinite(parsed) ? parsed : '')
               }}
               w={'100%'}
             />

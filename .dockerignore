@@ -29,6 +29,8 @@ client/blob-report
 .vscode
 .DS_Store
 
-# VCS / CI metadata that the runtime image doesn't need
-.git
+# CI metadata that the runtime image doesn't need.
+# NOTE: do NOT add `.git` here — server.Dockerfile copies it into the
+# build stage so the `gradle-git-properties` plugin can stamp the built
+# JAR with the current commit.
 .github
