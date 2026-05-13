@@ -233,8 +233,11 @@ log "Running Playwright E2E tests..."
 echo ""
 
 cd "$CLIENT_DIR"
-pnpm exec playwright test "${PLAYWRIGHT_ARGS[@]+"${PLAYWRIGHT_ARGS[@]}"}"
-EXIT_CODE=$?
+# Disable `set -e` so a non-zero playwright exit doesn't bypass the result
+# summary, "view report" hint, and the "services still running" message
+# below. We capture the exit code and re-raise it at the end of the script.
+EXIT_CODE=0
+pnpm exec playwright test "${PLAYWRIGHT_ARGS[@]+"${PLAYWRIGHT_ARGS[@]}"}" || EXIT_CODE=$?
 
 echo ""
 if [[ $EXIT_CODE -eq 0 ]]; then
