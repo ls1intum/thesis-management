@@ -24,7 +24,7 @@
     "check-bundle-size": "webpack --env NODE_ENV=production --env BUNDLE_SIZE=true",
     "check-build-speed": "BUILD_SPEED=true webpack --env NODE_ENV=production",
     "dev": "webpack serve --open --env NODE_ENV=development",
-    "preinstall": "npx only-allow pnpm",
+    "preinstall": "node scripts/check-pnpm.js",
     "postinstall": "patch-package",
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\" \"test/**/*.{ts,tsx}\"",
     "lint:fix": "eslint \"src/**/*.{js,jsx,ts,tsx}\" \"test/**/*.{ts,tsx}\" --fix",
