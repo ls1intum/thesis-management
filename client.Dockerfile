@@ -4,10 +4,12 @@ ENV CI=1
 ENV HUSKY=0
 RUN corepack enable
 
-# Copy dependency files (plus patches so patch-package can run in postinstall)
-# first for layer caching
+# Copy dependency files first for layer caching:
+#   - patches/ so patch-package can apply patches during postinstall
+#   - scripts/ so the preinstall pnpm-only guard can find check-pnpm.js
 COPY client/package.json client/pnpm-lock.yaml client/pnpm-workspace.yaml ./
 COPY client/patches/ ./patches/
+COPY client/scripts/ ./scripts/
 RUN pnpm install --frozen-lockfile
 
 # Copy source and build
