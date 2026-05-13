@@ -482,7 +482,8 @@ An alternative approach is to run the server and client in Docker containers dur
 | Aspect | E2E (current) | Production |
 |--------|---------------|------------|
 | Server | `gradlew bootRun` (dev profile, full JDK) | Packaged JAR in `zulu-openjdk:25-jre` |
-| Client | Webpack dev server (HMR, unminified JS) | Static build served by nginx |
+| Client | `pnpm build` output served by `pnpm dlx serve@14 -s` (static, minified, SPA-fallback) | Same static build served by nginx |
+| Runtime env injection | `node generate-runtime-env.js` runs against the build output before serving | Same script runs in the nginx image's entrypoint |
 | Reverse proxy | None | Traefik (TLS, rate limiting, compression) |
 | Ports | 8180 / 3100 | 8080 / 80 behind Traefik on 443 |
 
@@ -497,9 +498,9 @@ An alternative approach is to run the server and client in Docker containers dur
 | **Maintenance effort** | + | - |
 | **Catches application-level bugs** | = | = |
 
-- **Speed (major advantage of native):** Docker image builds add significant time. The server Dockerfile runs a full Gradle build inside a multi-stage image (JDK build stage → JRE runtime stage), and the client Dockerfile runs `pnpm install` + `pnpm build` and copies the output into an nginx image. Without layer caching, this adds 5-10 minutes. Additionally, the Docker build workflow (`build_docker.yml`) currently runs in **parallel** with E2E tests. If E2E tests depended on those images, they would become **sequential** — E2E couldn't start until both images were built and loaded. With native processes, `gradlew bootRun` compiles and starts in one step, and the Webpack dev server starts without needing a production build at all.
+- **Speed (major advantage of native):** Docker image builds add significant time. The server Dockerfile runs a full Gradle build inside a multi-stage image (JDK build stage → JRE runtime stage), and the client Dockerfile runs `pnpm install` + `pnpm build` and copies the output into an nginx image. Without layer caching, this adds 5-10 minutes. Additionally, the Docker build workflow (`build_docker.yml`) currently runs in **parallel** with E2E tests. If E2E tests depended on those images, they would become **sequential** — E2E couldn't start until both images were built and loaded. With native processes, `gradlew bootRun` compiles and starts in one step, and the client uses the same `pnpm build` output that production ships — just served by `serve@14` instead of nginx, with no Docker image load step in between.
 
-- **Production fidelity (main advantage of Docker):** The Webpack dev server handles client-side routing natively, but in production nginx needs an explicit `try_files` configuration — a broken `nginx.conf` would not be caught by native E2E tests. Similarly, the runtime environment injection (`generate-runtime-env.js`) only runs inside the Docker client image. The server also differs: `bootRun` uses the full JDK with dev tooling, while production runs a packaged JAR on a minimal JRE.
+- **Production fidelity (main advantage of Docker):** The native E2E flow already exercises the production-mode bundle (minified JS, no HMR) and runs `generate-runtime-env.js` against it, so it catches most webpack/runtime-env regressions. What it does **not** exercise is the nginx layer: `try_files` SPA fallback, gzip/cache headers, and any custom `nginx.conf` directives. `serve@14 -s` does its own SPA fallback for client-side routing, but the configurations are not identical. The server also differs: `bootRun` uses the full JDK with dev tooling, while production runs a packaged JAR on a minimal JRE.
 
 - **Why the fidelity gap is acceptable here:** The nginx config is a simple SPA setup that rarely changes. Spring Boot JAR vs `bootRun` differences are negligible for functional testing. E2E tests exercise application logic (UI flows, API interactions, authentication), not infrastructure routing. Any Docker-specific issues (broken Dockerfile, bad nginx config) are still caught by the parallel `build_docker.yml` job — just not by the E2E tests themselves.
 
