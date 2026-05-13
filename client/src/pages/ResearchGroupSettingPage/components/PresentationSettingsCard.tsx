@@ -1,4 +1,6 @@
+import { useEffect, useState } from 'react'
 import { Group, NumberInput, Stack, Text } from '@mantine/core'
+import { useDebouncedValue } from '@mantine/hooks'
 import { ResearchGroupSettingsCard } from './ResearchGroupSettingsCard'
 import { doRequest } from '../../../requests/request'
 import { useParams } from 'react-router'
@@ -11,15 +13,31 @@ interface PresentaionSettingsProps {
   setPresentationDurationSettings: (value: number) => void
 }
 
+const MIN_DURATION_MINUTES = 2
+
 const PresentationSettingsCard = ({
   presentationDurationSettings,
   setPresentationDurationSettings,
 }: PresentaionSettingsProps) => {
   const { researchGroupId } = useParams<{ researchGroupId: string }>()
 
-  const handleDurationChange = (value: number | string) => {
-    const duration = typeof value === 'number' ? value : Number(value)
-    setPresentationDurationSettings(duration)
+  // Local state for the input so intermediate keystrokes don't each trigger a
+  // POST. Without this, Mantine's NumberInput fires onChange for every parse
+  // event (e.g. '', 4, 45 when filling "45"), causing overlapping saves that
+  // race on the server and can land in any order.
+  const [localDuration, setLocalDuration] = useState(presentationDurationSettings)
+  const [debouncedDuration] = useDebouncedValue(localDuration, 500)
+
+  // Re-sync local state when the prop changes (initial load, save response,
+  // navigation). Skip while the user has unsaved edits in flight.
+  useEffect(() => {
+    setLocalDuration(presentationDurationSettings)
+  }, [presentationDurationSettings])
+
+  useEffect(() => {
+    if (debouncedDuration === presentationDurationSettings) return
+    if (!Number.isFinite(debouncedDuration) || debouncedDuration < MIN_DURATION_MINUTES) return
+
     doRequest<IResearchGroupSettings>(
       `/v2/research-group-settings/${researchGroupId}`,
       {
@@ -27,7 +45,7 @@ const PresentationSettingsCard = ({
         requiresAuth: true,
         data: {
           presentationSettings: {
-            presentationSlotDuration: duration,
+            presentationSlotDuration: debouncedDuration,
           },
         },
       },
@@ -39,7 +57,8 @@ const PresentationSettingsCard = ({
         }
       },
     )
-  }
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- debounced auto-save; researchGroupId and setter are stable for the lifetime of this card
+  }, [debouncedDuration])
 
   return (
     <ResearchGroupSettingsCard
@@ -57,13 +76,12 @@ const PresentationSettingsCard = ({
             </Text>
             <NumberInput
               placeholder="Don't enter less than 2 minutes"
-              min={2}
+              min={MIN_DURATION_MINUTES}
               suffix=' minutes'
-              value={presentationDurationSettings}
+              value={localDuration}
               pt={6}
               onChange={(value) => {
-                setPresentationDurationSettings(typeof value === 'number' ? value : Number(value))
-                handleDurationChange(value)
+                setLocalDuration(typeof value === 'number' ? value : Number(value))
               }}
               w={'100%'}
             />
