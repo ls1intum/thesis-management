@@ -7,6 +7,7 @@ const LogoutPage = () => {
 
   useEffect(() => {
     auth.logout('/')
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- mount-only: logout fires exactly once when the page renders
   }, [])
 
   return <PageLoader />

@@ -10,15 +10,16 @@ This file provides guidance for Claude Code when working with this repository.
 - **Format code**: `cd server && ./gradlew spotlessApply`
 
 ### Client (React + Webpack)
-- **Install dependencies**: `cd client && npm install`
-- **Run dev server**: `cd client && npm run dev`
-- **Build**: `cd client && npm run build`
-- **Lint**: `cd client && npx eslint src/`
-- **Type check**: `cd client && npx tsc --noEmit` (ignore mantine-datatable type errors)
+The client uses **pnpm** (pinned via `packageManager` in `client/package.json`). Run `corepack enable` once to make pnpm available.
+- **Install dependencies**: `cd client && pnpm install`
+- **Run dev server**: `cd client && pnpm dev`
+- **Build**: `cd client && pnpm build`
+- **Lint**: `cd client && pnpm exec eslint src/`
+- **Type check**: `cd client && pnpm exec tsc --noEmit` (ignore mantine-datatable type errors)
 
 ### E2E Tests (Playwright)
 - **Run locally**: `./execute-e2e-local.sh` (starts all services automatically)
-- **Run only tests**: `cd client && npm run e2e` (when services already running)
+- **Run only tests**: `cd client && pnpm e2e` (when services already running)
 - **Interactive UI**: `./execute-e2e-local.sh --ui`
 
 ## Architecture

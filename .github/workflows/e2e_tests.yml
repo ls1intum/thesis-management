@@ -27,7 +27,7 @@ jobs:
           --health-retries 10
 
       mailpit:
-        image: axllent/mailpit:v1.29
+        image: axllent/mailpit:v1.30
         ports:
           - 1125:1025
           - 8125:8025
@@ -112,30 +112,48 @@ jobs:
           CLIENT_HOST: http://localhost:3100
 
       # Set up Node.js for client
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Set up Node.js
         uses: actions/setup-node@v6
         with:
           node-version: '24.15.0'
-          cache: 'npm'
-          cache-dependency-path: client/package-lock.json
+          cache: 'pnpm'
+          cache-dependency-path: client/pnpm-lock.yaml
 
       - name: Install client dependencies
         working-directory: ./client
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Install Playwright browsers
         working-directory: ./client
-        run: npx playwright install --with-deps chromium
+        run: pnpm exec playwright install --with-deps chromium
 
-      # Start client dev server in background
-      - name: Start client dev server
+      # Build the client and serve it as a static bundle. Running production
+      # output (instead of webpack-dev-server) avoids the dev-mode error
+      # overlay iframe that occasionally intercepts clicks during e2e tests.
+      - name: Build client
         working-directory: ./client
-        run: npx webpack serve --env NODE_ENV=development &
+        run: pnpm build
         env:
           SERVER_HOST: http://localhost:8180
           KEYCLOAK_HOST: http://localhost:8181
           KEYCLOAK_REALM_NAME: thesis-management
           KEYCLOAK_CLIENT_ID: thesis-management-app
+
+      - name: Generate runtime-env.js for the static bundle
+        working-directory: ./client/build
+        run: node ../public/generate-runtime-env.js
+        env:
+          SERVER_HOST: http://localhost:8180
+          KEYCLOAK_HOST: http://localhost:8181
+          KEYCLOAK_REALM_NAME: thesis-management
+          KEYCLOAK_CLIENT_ID: thesis-management-app
+
+      - name: Serve client static bundle
+        working-directory: ./client
+        run: pnpm dlx serve@14 -s build -l 3100 --no-clipboard --no-port-switching &
 
       # Wait for both services to be ready
       - name: Wait for server to be ready
@@ -155,7 +173,7 @@ jobs:
 
       - name: Wait for client to be ready
         run: |
-          echo "Waiting for client dev server..."
+          echo "Waiting for client static server..."
           for i in $(seq 1 60); do
             if curl -sf http://localhost:3100 > /dev/null 2>&1; then
               echo "Client is ready"
@@ -171,7 +189,7 @@ jobs:
       # Run E2E tests
       - name: Run Playwright tests
         working-directory: ./client
-        run: npx playwright test
+        run: pnpm exec playwright test
         env:
           CI: "1"
           CLIENT_URL: http://localhost:3100

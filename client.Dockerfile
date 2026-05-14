@@ -1,14 +1,20 @@
 FROM node:24.15.0-alpine AS build
 WORKDIR /app
 ENV CI=1
+ENV HUSKY=0
+RUN corepack enable
 
-# Copy dependency files first for layer caching
-COPY client/package.json client/package-lock.json ./
-RUN npm ci
+# Copy dependency files first for layer caching:
+#   - patches/ so patch-package can apply patches during postinstall
+#   - scripts/ so the preinstall pnpm-only guard can find check-pnpm.js
+COPY client/package.json client/pnpm-lock.yaml client/pnpm-workspace.yaml ./
+COPY client/patches/ ./patches/
+COPY client/scripts/ ./scripts/
+RUN pnpm install --frozen-lockfile
 
 # Copy source and build
 COPY client/ ./
-RUN npm run build
+RUN pnpm build
 
 FROM nginx:stable-alpine
 

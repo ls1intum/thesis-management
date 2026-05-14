@@ -1,4 +1,5 @@
-import { IThesis, ThesisState } from '../../../../requests/responses/thesis'
+import type { IThesis } from '../../../../requests/responses/thesis'
+import { ThesisState } from '../../../../requests/responses/thesis'
 import { Accordion, Center, Group, Stack, Text } from '@mantine/core'
 import { doRequest } from '../../../../requests/request'
 import { showSimpleError, showSimpleSuccess } from '../../../../utils/notification'

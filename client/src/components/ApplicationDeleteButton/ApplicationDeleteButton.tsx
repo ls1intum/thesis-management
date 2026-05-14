@@ -1,5 +1,6 @@
 import { doRequest } from '../../requests/request'
-import { ApplicationState, IApplication } from '../../requests/responses/application'
+import type { IApplication } from '../../requests/responses/application'
+import { ApplicationState } from '../../requests/responses/application'
 import { showSimpleError, showSimpleSuccess } from '../../utils/notification'
 import { Button, Modal, Stack, Text, Tooltip, type ButtonProps } from '@mantine/core'
 import React, { useState } from 'react'
@@ -80,7 +81,14 @@ const ApplicationDeleteButton = (props: IApplicationDeleteButtonProps) => {
             Are you sure you want to permanently delete this application? This action cannot be
             undone.
           </Text>
-          <Button onClick={handleDelete} loading={loading} color='red' fullWidth>
+          <Button
+            onClick={() => {
+              void handleDelete()
+            }}
+            loading={loading}
+            color='red'
+            fullWidth
+          >
             Delete Application
           </Button>
         </Stack>

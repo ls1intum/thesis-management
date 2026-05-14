@@ -1,4 +1,4 @@
-import { IThesis, ThesisState } from '../../../../requests/responses/thesis'
+import type { IThesis, ThesisState } from '../../../../requests/responses/thesis'
 import {
   Accordion,
   Alert,
@@ -29,10 +29,10 @@ import { GLOBAL_CONFIG } from '../../../../config/global'
 import { ApiError, getApiResponseErrorMessage } from '../../../../requests/handler'
 import ThesisStateBadge from '../../../../components/ThesisStateBadge/ThesisStateBadge'
 import ThesisVisibilitySelect from '../ThesisVisibilitySelect/ThesisVisibilitySelect'
-import { formatThesisType } from '../../../../utils/format'
+import { formatThesisState, formatThesisType } from '../../../../utils/format'
 import LanguageSelect from '../../../../components/LanguageSelect/LanguageSelect'
-import { PaginationResponse } from '../../../../requests/responses/pagination'
-import { ILightResearchGroup } from '../../../../requests/responses/researchGroup'
+import type { PaginationResponse } from '../../../../requests/responses/pagination'
+import type { ILightResearchGroup } from '../../../../requests/responses/researchGroup'
 import { showSimpleError, showSimpleSuccess } from '../../../../utils/notification'
 import { useHasGroupAccess } from '../../../../hooks/authentication'
 import { Warning } from '@phosphor-icons/react'
@@ -137,6 +137,7 @@ const ThesisConfigSection = () => {
 
   useEffect(() => {
     form.validate()
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- form is stable; only re-validate when the relevant fields change
   }, [form.values.startDate, form.values.endDate, form.values.states])
 
   useEffect(() => {
@@ -159,6 +160,7 @@ const ThesisConfigSection = () => {
     })
 
     form.reset()
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- form is stable; only re-seed when the thesis prop changes
   }, [thesis])
 
   useEffect(() => {
@@ -209,6 +211,7 @@ const ThesisConfigSection = () => {
         }
       },
     )
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- mount-only fetch of research groups; form/admin flag/thesis researchGroup are read but should not retrigger the request
   }, [])
 
   const [closing, onClose] = useThesisUpdateAction(async () => {
@@ -223,6 +226,25 @@ const ThesisConfigSection = () => {
       throw new Error(`Failed to close thesis ${response.status}`)
     }
   }, 'Thesis closed successfully')
+
+  const orderedStates = [...(thesis.states ?? [])].sort(
+    (a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime(),
+  )
+  const previousState = orderedStates[1]?.state
+  const canRevert = access.supervisor && orderedStates.length >= 2 && !thesis.anonymizedAt
+
+  const [reverting, onRevert] = useThesisUpdateAction(async () => {
+    const response = await doRequest<IThesis>(`/v2/theses/${thesis.thesisId}/revert-state`, {
+      method: 'POST',
+      requiresAuth: true,
+    })
+
+    if (response.ok) {
+      return response.data
+    } else {
+      throw new ApiError(response)
+    }
+  }, 'Thesis state reverted successfully')
 
   const onDeleteThesisClick = async () => {
     setAnonymizeLoading(true)
@@ -255,7 +277,7 @@ const ThesisConfigSection = () => {
       if (response.ok) {
         showSimpleSuccess('Thesis anonymized successfully')
         setAnonymizeModalOpen(false)
-        navigate('/theses')
+        void navigate('/theses')
       } else {
         showSimpleError(getApiResponseErrorMessage(response))
       }
@@ -433,12 +455,24 @@ const ThesisConfigSection = () => {
                         Close Thesis
                       </ConfirmationButton>
                     )}
+                    {canRevert && previousState && (
+                      <ConfirmationButton
+                        confirmationTitle='Revert Thesis State'
+                        confirmationText={`Revert from ${formatThesisState(thesis.state)} back to ${formatThesisState(previousState)}? Data captured in ${formatThesisState(thesis.state)} (assessment, final grade, proposal approval, etc.) will be preserved.`}
+                        variant='outline'
+                        color='yellow'
+                        loading={reverting}
+                        onClick={onRevert}
+                      >
+                        Revert to Previous State
+                      </ConfirmationButton>
+                    )}
                     {hasAdminAccess && !thesis.anonymizedAt && (
                       <Button
                         variant='outline'
                         color='red'
                         loading={anonymizeLoading}
-                        onClick={onDeleteThesisClick}
+                        onClick={() => void onDeleteThesisClick()}
                       >
                         Anonymize Thesis
                       </Button>
@@ -464,8 +498,8 @@ const ThesisConfigSection = () => {
             {anonymizeWarnings.length > 0 && (
               <Alert color='orange' icon={<Warning />} title='Warnings'>
                 <List size='sm'>
-                  {anonymizeWarnings.map((warning, index) => (
-                    <List.Item key={index}>{warning}</List.Item>
+                  {anonymizeWarnings.map((warning) => (
+                    <List.Item key={warning}>{warning}</List.Item>
                   ))}
                 </List>
               </Alert>
@@ -479,7 +513,11 @@ const ThesisConfigSection = () => {
               <Button variant='default' onClick={() => setAnonymizeModalOpen(false)}>
                 Cancel
               </Button>
-              <Button color='red' loading={anonymizeLoading} onClick={onConfirmAnonymize}>
+              <Button
+                color='red'
+                loading={anonymizeLoading}
+                onClick={() => void onConfirmAnonymize()}
+              >
                 Anonymize Thesis
               </Button>
             </Group>

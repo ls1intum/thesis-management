@@ -26,7 +26,7 @@ const ManageTopicsPage = () => {
         </Group>
         <ReplaceTopicModal opened={createTopicModal} onClose={() => setCreateTopicModal(false)} />
         <ReplaceTopicModal
-          opened={!!editingTopicId}
+          opened={Boolean(editingTopicId)}
           onClose={() => setEditingTopicId(undefined)}
           topicId={editingTopicId}
         />

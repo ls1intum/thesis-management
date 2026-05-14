@@ -1,6 +1,7 @@
-import { Group, Text, MantineColor } from '@mantine/core'
+import type { MantineColor } from '@mantine/core'
+import { Group, Text } from '@mantine/core'
 import { Warning } from '@phosphor-icons/react'
-import { Environment } from '../../config/types'
+import type { Environment } from '../../config/types'
 import { GLOBAL_CONFIG } from '../../config/global'
 
 export const ENVIRONMENT_BANNER_HEIGHT = 28
@@ -21,7 +22,7 @@ export const labelByEnvironment: Record<NonProdEnvironment, string> = {
 
 export const isEnvironmentBannerVisible = (): boolean => {
   const environment = GLOBAL_CONFIG.environment
-  return !!environment && environment !== 'production'
+  return Boolean(environment) && environment !== 'production'
 }
 
 const EnvironmentBanner = () => {

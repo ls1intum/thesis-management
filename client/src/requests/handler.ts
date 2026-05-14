@@ -1,4 +1,4 @@
-import { ApiResponse } from './request'
+import type { ApiResponse } from './request'
 
 export function getApiResponseErrorMessage(response: ApiResponse<unknown>) {
   if (response.status === 1005) {
@@ -17,8 +17,6 @@ export function getApiResponseErrorMessage(response: ApiResponse<unknown>) {
     message = 'You are not authenticated. Please try refreshing the page'
   } else if (response.status === 403) {
     message = 'You are not authorized to access this resource'
-  } else if (response.status === 404) {
-    message = 'Requested resource not found'
   } else if (response.status === 404) {
     message = 'Requested resource not found'
   } else if (response.status === 409) {

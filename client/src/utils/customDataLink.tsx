@@ -1,5 +1,5 @@
 import { Anchor, Text } from '@mantine/core'
-import { ReactNode } from 'react'
+import type { ReactNode } from 'react'
 
 // GitHub username rules (from the GitHub UI):
 //   - 1-39 characters

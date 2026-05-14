@@ -1,6 +1,6 @@
-import { ILightUser, IUser } from './user'
-import { ITopic } from './topic'
-import { ILightResearchGroup } from './researchGroup'
+import type { ILightUser, IUser } from './user'
+import type { ITopic } from './topic'
+import type { ILightResearchGroup } from './researchGroup'
 
 export enum ApplicationState {
   NOT_ASSESSED = 'NOT_ASSESSED',

@@ -1,4 +1,5 @@
-import { Anchor, Container, Flex, MantineSize } from '@mantine/core'
+import type { MantineSize } from '@mantine/core'
+import { Anchor, Container, Flex } from '@mantine/core'
 import { GLOBAL_CONFIG } from '../../config/global'
 import { Link } from 'react-router'
 import packageJson from '../../../package.json'

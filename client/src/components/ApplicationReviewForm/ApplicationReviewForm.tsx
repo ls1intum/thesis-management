@@ -1,4 +1,5 @@
-import { ApplicationState, IApplication } from '../../requests/responses/application'
+import type { IApplication } from '../../requests/responses/application'
+import { ApplicationState } from '../../requests/responses/application'
 import { useApplicationsContextUpdater } from '../../providers/ApplicationsProvider/hooks'
 import { isNotEmpty, useForm } from '@mantine/form'
 import { GLOBAL_CONFIG } from '../../config/global'
@@ -27,7 +28,7 @@ import { useLoggedInUser } from '../../hooks/authentication'
 import AvatarUser from '../AvatarUser/AvatarUser'
 import { formatDate, formatThesisType, getDefaultLanguage } from '../../utils/format'
 import LanguageSelect from '../LanguageSelect/LanguageSelect'
-import { IInterviewProcess } from '../../requests/responses/interview'
+import type { IInterviewProcess } from '../../requests/responses/interview'
 import { showNotification } from '@mantine/notifications'
 
 interface IApplicationReviewFormProps {
@@ -89,10 +90,10 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
     if (application) {
       form.setInitialValues({
         applicationId: application.applicationId,
-        title: application.topic?.title || application.thesisTitle || '',
+        title: application.topic?.title ?? application.thesisTitle ?? '',
         comment: application.comment || '',
         type:
-          application.thesisType || GLOBAL_CONFIG.thesis_types[application.user.studyDegree || '']
+          application.thesisType || GLOBAL_CONFIG.thesis_types[application.user.studyDegree ?? '']
             ? application.user.studyDegree
             : null,
         language: getDefaultLanguage(),
@@ -109,6 +110,7 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
     }
 
     form.reset()
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- intentionally re-initialize form only when switching applications
   }, [application?.applicationId])
 
   const [loading, setLoading] = useState(false)
@@ -141,6 +143,7 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
         },
       )
     }
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- debounced comment auto-save; form and onUpdate are stable for the lifetime of this application
   }, [debouncedComment, application?.applicationId])
 
   const onAccept = async (values: IApplicationReviewForm) => {
@@ -246,7 +249,7 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
     )
   }
 
-  const reviewers = application.reviewers || []
+  const reviewers = application.reviewers ?? []
 
   if (!reviewers.some((row) => row.user.userId === user.userId)) {
     reviewers.unshift({
@@ -270,7 +273,9 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
                   { value: 'INTERESTED', label: 'Interested' },
                   { value: 'NOT_INTERESTED', label: 'Not interested' },
                 ]}
-                onChange={(reason) => reason && onReviewReasonChange(reason)}
+                onChange={(reason) => {
+                  if (reason) void onReviewReasonChange(reason)
+                }}
                 disabled={
                   reviewer.user.userId !== user.userId || application.state !== 'NOT_ASSESSED'
                 }
@@ -384,7 +389,9 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
               />
             )}
             <Button
-              onClick={() => onAccept(form.getValues())}
+              onClick={() => {
+                void onAccept(form.getValues())
+              }}
               variant='outline'
               color='green'
               loading={loading}

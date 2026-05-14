@@ -11,9 +11,9 @@ import {
   Center,
   Loader,
 } from '@mantine/core'
-import { ITopicOverview, ITopic } from '../../../../../requests/responses/topic'
+import type { ITopicOverview, ITopic } from '../../../../../requests/responses/topic'
 import ThesisTypeBadge from '../../../../LandingPage/components/ThesisTypBadge/ThesisTypBadge'
-import { IPublishedThesis } from '../../../../../requests/responses/thesis'
+import type { IPublishedThesis } from '../../../../../requests/responses/thesis'
 import { useHover } from '@mantine/hooks'
 import AvatarUserList from '../../../../../components/AvatarUserList/AvatarUserList'
 import DocumentEditor from '../../../../../components/DocumentEditor/DocumentEditor'
@@ -33,6 +33,11 @@ const CollapsibleTopicElement = ({ topic, onApply }: ICollapsibleTopicElementPro
 
   const isTopicOverview = 'topicId' in topic
   const fullTopic = useTopic(isTopicOverview && expanded ? topic.topicId : undefined)
+
+  const deadlinePassed =
+    !!fullTopic &&
+    !!fullTopic.applicationDeadline &&
+    new Date(fullTopic.applicationDeadline) < new Date()
 
   return (
     <Card
@@ -146,30 +151,23 @@ const CollapsibleTopicElement = ({ topic, onApply }: ICollapsibleTopicElementPro
             ) : (
               <></>
             )}
-            {onApply &&
-              isTopicOverview &&
-              (() => {
-                const deadlinePassed =
-                  !!fullTopic &&
-                  !!fullTopic.applicationDeadline &&
-                  new Date(fullTopic.applicationDeadline) < new Date()
-                return (
-                  <Stack gap='xs'>
-                    <Button
-                      onClick={() => onApply(fullTopic || undefined)}
-                      fullWidth
-                      disabled={!fullTopic || deadlinePassed}
-                    >
-                      Apply
-                    </Button>
-                    {deadlinePassed && (
-                      <Text size='xs' c='dimmed' ta='center'>
-                        Application deadline has passed.
-                      </Text>
-                    )}
-                  </Stack>
-                )
-              })()}
+            {onApply && isTopicOverview && (
+              <Stack gap='xs'>
+                <Button
+                  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- useTopic may return `false` (error sentinel) which must also map to undefined
+                  onClick={() => onApply(fullTopic || undefined)}
+                  fullWidth
+                  disabled={!fullTopic || deadlinePassed}
+                >
+                  Apply
+                </Button>
+                {deadlinePassed && (
+                  <Text size='xs' c='dimmed' ta='center'>
+                    Application deadline has passed.
+                  </Text>
+                )}
+              </Stack>
+            )}
           </Stack>
         </Accordion.Panel>
       </Accordion.Item>

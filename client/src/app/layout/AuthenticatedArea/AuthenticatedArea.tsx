@@ -1,4 +1,6 @@
-import { PropsWithChildren, Suspense, useEffect } from 'react'
+import type { ComponentType, PropsWithChildren } from 'react'
+import { Suspense, useEffect } from 'react'
+import type { MantineSize } from '@mantine/core'
 import {
   ActionIcon,
   AppShell,
@@ -8,7 +10,6 @@ import {
   Divider,
   Flex,
   Group,
-  MantineSize,
   Stack,
   Text,
   Tooltip,
@@ -61,7 +62,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
   const links: Array<{
     link: string
     label: string
-    icon: any
+    icon: ComponentType<{ size?: number | string; className?: string }>
     groups: string[] | undefined
     hideFromGroups?: string[]
     display?: boolean
@@ -137,7 +138,8 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
     minimizeAnimationDuration,
   )
   // only use debounced State if value is false because otherwise the text is formatted weirdly if you expand the navigation
-  const minimized = opened ? false : minimizedState || !!debouncedMinimized
+  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- intentionally fall through on `false` so the debounced value is used while collapsing
+  const minimized = opened ? false : minimizedState || Boolean(debouncedMinimized)
 
   const location = useLocation()
   const navigationType = useNavigationType()
@@ -161,6 +163,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
 
       return () => clearInterval(interval)
     }
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- auth object is stable from react-oidc-context; only re-run on auth state or path change
   }, [auth.isAuthenticated, location.pathname])
 
   useEffect(() => {
@@ -169,6 +172,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
     }
 
     close()
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- close is a stable disclosure handler; effect intentionally tracks navigation only
   }, [location.pathname, navigationType])
 
   return (
@@ -202,7 +206,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
               (item) =>
                 !item.groups || item.groups.some((role) => auth.user?.groups?.includes(role)),
             )
-            .filter((item) => item.display == undefined || item.display === true)
+            .filter((item) => item.display === undefined || item.display === true)
             .filter((item) =>
               item.hideFromGroups
                 ? !item.hideFromGroups.some((role) => auth.user?.groups?.includes(role))

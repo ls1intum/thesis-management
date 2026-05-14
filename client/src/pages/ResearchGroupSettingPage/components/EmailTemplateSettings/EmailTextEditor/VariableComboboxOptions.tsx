@@ -1,6 +1,6 @@
 import { Combobox } from '@mantine/core'
 import { useMemo } from 'react'
-import { IMailVariableDto } from '../../../../../requests/responses/emailtemplate'
+import type { IMailVariableDto } from '../../../../../requests/responses/emailtemplate'
 import { MagnifyingGlassIcon } from '@phosphor-icons/react'
 
 interface IVariableComboboxOptionsProps {

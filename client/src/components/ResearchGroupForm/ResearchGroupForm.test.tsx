@@ -1,7 +1,7 @@
 import { describe, expect, test, vi, beforeEach } from 'vitest'
 import { renderWithProviders, screen, userEvent } from '../../../test/render'
 import ResearchGroupForm from './ResearchGroupForm'
-import { IResearchGroup } from '../../requests/responses/researchGroup'
+import type { IResearchGroup } from '../../requests/responses/researchGroup'
 
 // Behavioral test for issue #521.
 //
@@ -76,15 +76,15 @@ describe('ResearchGroupForm — issue #521 (discardable form)', () => {
     const user = userEvent.setup()
     renderForm()
 
-    const description = screen.getByLabelText(/description/i) as HTMLTextAreaElement
+    const description = screen.getByLabelText(/description/i)
     await user.clear(description)
     await user.type(description, 'A different description')
     expect(description).toHaveValue('A different description')
 
     // Edit the head autocomplete too so we can verify the label restoration.
-    const headInput = screen.getByRole('textbox', {
+    const headInput = screen.getByRole('combobox', {
       name: /group head/i,
-    }) as HTMLInputElement
+    })
     expect(headInput).toHaveValue('Ada Lovelace')
     await user.clear(headInput)
     await user.type(headInput, 'Someone Else')
@@ -94,9 +94,7 @@ describe('ResearchGroupForm — issue #521 (discardable form)', () => {
 
     expect(description).toHaveValue('Original description')
     // After discard, the head autocomplete remounts with the original label.
-    expect(screen.getByRole('textbox', { name: /group head/i }) as HTMLInputElement).toHaveValue(
-      'Ada Lovelace',
-    )
+    expect(screen.getByRole('combobox', { name: /group head/i })).toHaveValue('Ada Lovelace')
     expect(screen.getByRole('button', { name: /discard changes/i })).toBeDisabled()
     expect(screen.getByRole('button', { name: /^save$/i })).toBeDisabled()
   })
@@ -106,7 +104,7 @@ describe('ResearchGroupForm — issue #521 (discardable form)', () => {
     renderForm()
 
     // Force a validation failure: name must be at least 2 characters.
-    const name = screen.getByLabelText(/name/i) as HTMLInputElement
+    const name = screen.getByLabelText(/name/i)
     await user.clear(name)
     await user.type(name, 'a')
     expect(await screen.findByText(/name must be at least 2 characters/i)).toBeInTheDocument()

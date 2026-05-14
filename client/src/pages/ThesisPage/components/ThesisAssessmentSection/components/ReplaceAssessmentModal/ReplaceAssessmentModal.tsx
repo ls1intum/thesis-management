@@ -15,13 +15,13 @@ import { Plus, Trash } from '@phosphor-icons/react'
 import { useEffect, useState } from 'react'
 import DocumentEditor from '../../../../../../components/DocumentEditor/DocumentEditor'
 import { doRequest } from '../../../../../../requests/request'
-import { IThesis } from '../../../../../../requests/responses/thesis'
+import type { IThesis } from '../../../../../../requests/responses/thesis'
 import {
   useLoadedThesisContext,
   useThesisUpdateAction,
 } from '../../../../../../providers/ThesisProvider/hooks'
 import { ApiError } from '../../../../../../requests/handler'
-import { IResearchGroupSettingsGradingScheme } from '../../../../../../requests/responses/researchGroupSettings'
+import type { IResearchGroupSettingsGradingScheme } from '../../../../../../requests/responses/researchGroupSettings'
 import { calculateGradeFromComponents } from '../../../../../../utils/grade'
 
 interface IGradeComponent {
@@ -131,10 +131,10 @@ const ReplaceAssessmentModal = (props: IReplaceAssessmentModalProps) => {
   }, 'Assessment submitted successfully')
 
   useEffect(() => {
-    setSummary(thesis.assessment?.summary || '')
-    setPositives(thesis.assessment?.positives || '')
-    setNegatives(thesis.assessment?.negatives || '')
-    setGradeSuggestion(thesis.assessment?.gradeSuggestion || '')
+    setSummary(thesis.assessment?.summary ?? '')
+    setPositives(thesis.assessment?.positives ?? '')
+    setNegatives(thesis.assessment?.negatives ?? '')
+    setGradeSuggestion(thesis.assessment?.gradeSuggestion ?? '')
 
     setGradeSuggestionManuallyEdited(false)
 

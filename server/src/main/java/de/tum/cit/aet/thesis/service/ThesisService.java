@@ -842,6 +842,60 @@ public class ThesisService {
 		return thesis;
 	}
 
+	/* REVERT */
+
+	/**
+	 * Reverts the thesis one state backwards by deleting the latest state change record and
+	 * setting the thesis state to the previous one in the history.
+	 *
+	 * <p>Side data (proposal approval, assessment entities, final grade) is intentionally
+	 * preserved so the supervisor can re-advance without re-entering it. If the thesis was
+	 * in {@code FINISHED} or {@code DROPPED_OUT}, the student group is restored for each
+	 * student, mirroring the inverse of {@link #completeThesis(Thesis)} / {@link #closeThesis(Thesis)}.
+	 *
+	 * <p>Operations are ordered so a partial failure leaves the system in a recoverable state:
+	 * the thesis state row is updated first (user-visible), then the historical state change
+	 * is removed, and finally the student group is restored. If the row deletion fails, a
+	 * retry will re-derive the same {@code currentChange} and complete the cleanup idempotently.
+	 *
+	 * @param thesis the thesis to revert
+	 * @return the updated thesis
+	 * @throws ResourceInvalidParametersException if the thesis is anonymized or has no previous state
+	 */
+	public Thesis revertToPreviousState(Thesis thesis) {
+		requireNotAnonymized(thesis);
+		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+
+		List<ThesisStateChange> orderedStates = thesis.getStates().stream()
+				.sorted(Comparator.comparing(ThesisStateChange::getChangedAt).reversed())
+				.toList();
+
+		if (orderedStates.size() < 2) {
+			throw new ResourceInvalidParametersException("Thesis has no previous state to revert to");
+		}
+
+		ThesisStateChange currentChange = orderedStates.get(0);
+		ThesisStateChangeId currentChangeId = currentChange.getId();
+		ThesisState previousState = orderedStates.get(1).getId().getState();
+		ThesisState revertedFrom = currentChangeId.getState();
+
+		thesis.setState(previousState);
+		Thesis savedThesis = thesisRepository.save(thesis);
+
+		thesisStateChangeRepository.deleteById(currentChangeId);
+		Set<ThesisStateChange> remaining = new HashSet<>(savedThesis.getStates());
+		remaining.removeIf(sc -> sc.getId().equals(currentChangeId));
+		savedThesis.setStates(remaining);
+
+		if (revertedFrom == ThesisState.FINISHED || revertedFrom == ThesisState.DROPPED_OUT) {
+			for (User student : savedThesis.getStudents()) {
+				accessManagementService.addStudentGroup(student);
+			}
+		}
+
+		return savedThesis;
+	}
+
 	/* UTILITY */
 
 	private boolean existsPendingThesis(User user) {

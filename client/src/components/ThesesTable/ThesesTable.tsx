@@ -1,10 +1,11 @@
-import { DataTable, DataTableColumn } from 'mantine-datatable'
+import type { DataTableColumn } from 'mantine-datatable'
+import { DataTable } from 'mantine-datatable'
 import { formatDate, formatThesisType } from '../../utils/format'
 import React from 'react'
 import { useThesesContext } from '../../providers/ThesesProvider/hooks'
-import { IThesesSort } from '../../providers/ThesesProvider/context'
+import type { IThesesSort } from '../../providers/ThesesProvider/context'
 import { useNavigate } from 'react-router'
-import { IThesisOverview } from '../../requests/responses/thesis'
+import type { IThesisOverview } from '../../requests/responses/thesis'
 import ThesisStateBadge from '../ThesisStateBadge/ThesisStateBadge'
 import { Center, Text, Tooltip } from '@mantine/core'
 import AvatarUserList from '../AvatarUserList/AvatarUserList'
@@ -46,7 +47,7 @@ const ThesesTable = (props: IThesesTableProps) => {
   const navigate = useNavigate()
 
   const onThesisClick = (thesis: IThesisOverview) => {
-    navigate(`/theses/${thesis.thesisId}`)
+    void navigate(`/theses/${thesis.thesisId}`)
   }
 
   const columnConfig: Record<ThesisColumn, DataTableColumn<IThesisOverview>> = {

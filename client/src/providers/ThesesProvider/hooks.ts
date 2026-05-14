@@ -1,8 +1,8 @@
-import { useContext } from 'react'
+import { use } from 'react'
 import { ThesesContext } from './context'
 
 export function useThesesContext() {
-  const data = useContext(ThesesContext)
+  const data = use(ThesesContext)
 
   if (!data) {
     throw new Error('ThesesContext not initialized')

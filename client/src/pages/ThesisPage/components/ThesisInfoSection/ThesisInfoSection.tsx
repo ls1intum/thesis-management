@@ -1,4 +1,4 @@
-import { IThesis } from '../../../../requests/responses/thesis'
+import type { IThesis } from '../../../../requests/responses/thesis'
 import React, { useEffect, useState } from 'react'
 import { Accordion, Button, Flex, Grid, Group, Stack, TextInput } from '@mantine/core'
 import DocumentEditor from '../../../../components/DocumentEditor/DocumentEditor'

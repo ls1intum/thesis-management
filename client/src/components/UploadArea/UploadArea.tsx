@@ -12,7 +12,7 @@ import {
 import { ImageSquare, UploadSimple, X } from '@phosphor-icons/react'
 import { Dropzone, IMAGE_MIME_TYPE, PDF_MIME_TYPE } from '@mantine/dropzone'
 import { showSimpleError } from '../../utils/notification'
-import { UploadFileType } from '../../config/types'
+import type { UploadFileType } from '../../config/types'
 import FilePreview from '../FilePreview/FilePreview'
 
 interface IUploadAreaProps {

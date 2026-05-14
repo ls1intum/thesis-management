@@ -1,7 +1,9 @@
-import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react'
-import { IThesis, IThesisComment } from '../../requests/responses/thesis'
-import { IThesisCommentsContext, ThesisCommentsContext } from './context'
-import { PaginationResponse } from '../../requests/responses/pagination'
+import type { PropsWithChildren } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
+import type { IThesis, IThesisComment } from '../../requests/responses/thesis'
+import type { IThesisCommentsContext } from './context'
+import { ThesisCommentsContext } from './context'
+import type { PaginationResponse } from '../../requests/responses/pagination'
 import { doRequest } from '../../requests/request'
 import { showSimpleError } from '../../utils/notification'
 import { getApiResponseErrorMessage } from '../../requests/handler'
@@ -148,9 +150,9 @@ const ThesisCommentsProvider = (props: PropsWithChildren<IThesisCommentsProvider
   }, [thesis, comments, submitting, commentType, limit, page])
 
   return (
-    <ThesisCommentsContext.Provider value={contextState} key={thesis.thesisId}>
+    <ThesisCommentsContext value={contextState} key={thesis.thesisId}>
       {children}
-    </ThesisCommentsContext.Provider>
+    </ThesisCommentsContext>
   )
 }
 

@@ -1,13 +1,10 @@
-import React, { PropsWithChildren, ReactNode, useEffect, useMemo, useRef, useState } from 'react'
+import type { PropsWithChildren, ReactNode } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { doRequest } from '../../requests/request'
-import { PaginationResponse } from '../../requests/responses/pagination'
-import {
-  ApplicationsContext,
-  IApplicationsContext,
-  IApplicationsFilters,
-  IApplicationsSort,
-} from './context'
-import { ApplicationState, IApplication } from '../../requests/responses/application'
+import type { PaginationResponse } from '../../requests/responses/pagination'
+import type { IApplicationsContext, IApplicationsFilters, IApplicationsSort } from './context'
+import { ApplicationsContext } from './context'
+import type { ApplicationState, IApplication } from '../../requests/responses/application'
 import { useDebouncedValue } from '@mantine/hooks'
 import { showSimpleError } from '../../utils/notification'
 import { getApiResponseErrorMessage } from '../../requests/handler'
@@ -73,7 +70,12 @@ const ApplicationsProvider = (props: PropsWithChildren<IApplicationsProviderProp
     return copiedFilters
   }, [filters, topics, user.userId, showOnlyAssignedTopics])
 
-  const [debouncedSearch] = useDebouncedValue(adjustedFilters.search || '', 500)
+  const [debouncedSearch] = useDebouncedValue(adjustedFilters.search ?? '', 500)
+
+  const filterStatesKey = adjustedFilters.states?.join(',')
+  const filterTopicsKey = adjustedFilters.topics?.join(',')
+  const filterTypesKey = adjustedFilters.types?.join(',')
+  const topicsLoaded = !!topics
 
   useEffect(() => {
     setPage(0)
@@ -133,17 +135,18 @@ const ApplicationsProvider = (props: PropsWithChildren<IApplicationsProviderProp
         setApplications(res.data)
       },
     )
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- adjustedFilters.states/topics/types are tracked via the joined key consts above to avoid identity-based reruns
   }, [
     fetchAll,
     page,
     limit,
     sort,
-    adjustedFilters.states?.join(','),
-    adjustedFilters.topics?.join(','),
-    adjustedFilters.types?.join(','),
+    filterStatesKey,
+    filterTopicsKey,
+    filterTypesKey,
     adjustedFilters.includeSuggestedTopics,
     debouncedSearch,
-    !topics,
+    topicsLoaded,
   ])
 
   const fetchApplication = async (applicationId: string): Promise<IApplication | null> => {
@@ -205,15 +208,13 @@ const ApplicationsProvider = (props: PropsWithChildren<IApplicationsProviderProp
       },
       fetchApplication,
     }
-  }, [user.userId, topics, applications, adjustedFilters, sort, page, limit])
+  }, [topics, applications, adjustedFilters, sort, page, limit])
 
   if (hideIfEmpty && page === 0 && (!applications || (applications.content ?? []).length === 0)) {
     return <>{emptyComponent}</>
   }
 
-  return (
-    <ApplicationsContext.Provider value={contextState}>{children}</ApplicationsContext.Provider>
-  )
+  return <ApplicationsContext value={contextState}>{children}</ApplicationsContext>
 }
 
 export default ApplicationsProvider

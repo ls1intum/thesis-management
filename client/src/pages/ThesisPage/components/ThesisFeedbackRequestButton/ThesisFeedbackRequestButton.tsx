@@ -5,7 +5,7 @@ import {
 } from '../../../../providers/ThesisProvider/hooks'
 import { Button, Checkbox, Modal, Stack, Textarea, Text, Title, Group } from '@mantine/core'
 import { doRequest } from '../../../../requests/request'
-import { IThesis } from '../../../../requests/responses/thesis'
+import type { IThesis } from '../../../../requests/responses/thesis'
 import { ApiError } from '../../../../requests/handler'
 
 interface IThesisFeedbackRequestButtonProps {
@@ -132,10 +132,10 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
                   label={change.feedback}
                   checked={
                     editChanges.find((item) => item.feedbackId === change.feedbackId)?.completed ??
-                    !!change.completedAt
+                    Boolean(change.completedAt)
                   }
                   onChange={(e) => {
-                    if (e.target.checked === !!change.completedAt) {
+                    if (e.target.checked === Boolean(change.completedAt)) {
                       setEditChanges((prev) =>
                         prev.filter((item) => item.feedbackId !== change.feedbackId),
                       )

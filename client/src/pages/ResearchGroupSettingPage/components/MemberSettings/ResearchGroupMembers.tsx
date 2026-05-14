@@ -21,7 +21,7 @@ import {
 } from '@phosphor-icons/react'
 import AddResearchGroupMemberModal from './AddResearchGroupMemberModal'
 import { useEffect, useState } from 'react'
-import { ILightUser } from '../../../../requests/responses/user'
+import type { ILightUser } from '../../../../requests/responses/user'
 import { doRequest } from '../../../../requests/request'
 import { showSimpleError } from '../../../../utils/notification'
 import { getApiResponseErrorMessage } from '../../../../requests/handler'
@@ -29,7 +29,7 @@ import { showNotification } from '@mantine/notifications'
 import UserInformationRow from '../../../../components/UserInformationRow/UserInformationRow'
 import DeleteMemberModal from './DeleteMemberModal'
 import { ResearchGroupSettingsCard } from '../ResearchGroupSettingsCard'
-import { IResearchGroup } from '../../../../requests/responses/researchGroup'
+import type { IResearchGroup } from '../../../../requests/responses/researchGroup'
 
 interface IResearchGroupMembersProps {
   researchGroupData: IResearchGroup | undefined
@@ -72,9 +72,10 @@ const ResearchGroupMembers = ({ researchGroupData }: IResearchGroupMembersProps)
 
   useEffect(() => {
     fetchMembers()
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- fetchMembers is recreated each render; only re-fetch when the research group changes
   }, [researchGroupData])
 
-  const handleAddMember = async (username: string) => {
+  const handleAddMember = (username: string) => {
     if (!researchGroupData?.id) return
 
     doRequest<ILightUser>(
@@ -99,7 +100,7 @@ const ResearchGroupMembers = ({ researchGroupData }: IResearchGroupMembersProps)
     )
   }
 
-  const handleRemoveMember = async (userId: string) => {
+  const handleRemoveMember = (userId: string) => {
     if (!researchGroupData?.id) return
 
     doRequest<ILightUser>(
@@ -124,7 +125,7 @@ const ResearchGroupMembers = ({ researchGroupData }: IResearchGroupMembersProps)
     )
   }
 
-  const updateMemberRole = async (userId: string, newRole: string) => {
+  const updateMemberRole = (userId: string, newRole: string) => {
     if (!researchGroupData?.id) return
 
     doRequest<ILightUser>(
@@ -159,7 +160,7 @@ const ResearchGroupMembers = ({ researchGroupData }: IResearchGroupMembersProps)
     )
   }
 
-  const updateGroupAdminForUser = async (userId: string, userName: string) => {
+  const updateGroupAdminForUser = (userId: string, userName: string) => {
     if (!researchGroupData?.id) return
 
     doRequest<ILightUser>(

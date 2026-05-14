@@ -1,5 +1,9 @@
-import React, { Dispatch, SetStateAction } from 'react'
-import { IIntervieweeLightWithNextSlot, IInterviewSlot } from '../../requests/responses/interview' // adjust path if needed
+import type { Dispatch, SetStateAction } from 'react'
+import React from 'react'
+import type {
+  IIntervieweeLightWithNextSlot,
+  IInterviewSlot,
+} from '../../requests/responses/interview' // adjust path if needed
 
 export interface IInterviewProcessContext {
   processId: string | undefined
