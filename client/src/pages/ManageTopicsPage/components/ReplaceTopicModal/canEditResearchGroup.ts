@@ -1,4 +1,4 @@
-import { ITopic } from '../../../../requests/responses/topic'
+import type { ITopic } from '../../../../requests/responses/topic'
 
 interface CallerContext {
   userId: string
