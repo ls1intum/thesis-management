@@ -1,4 +1,4 @@
-import { Card, Stack, Text, Divider, useMantineColorScheme } from '@mantine/core'
+import { Card, Stack, Text, Divider, useComputedColorScheme } from '@mantine/core'
 import type { ITopic } from '../../../requests/responses/topic'
 import { Buildings, Clock, GraduationCapIcon, Users } from '@phosphor-icons/react'
 import TopicAdittionalInformationSection from './TopicAdditionalInformationSection'
@@ -13,7 +13,7 @@ interface ITopicAdittionalInformationCardProps {
 const TopicAdittionalInformationCard = ({ topic }: ITopicAdittionalInformationCardProps) => {
   const iconSize = 20
 
-  const { colorScheme } = useMantineColorScheme()
+  const colorScheme = useComputedColorScheme('light')
 
   return (
     <Card

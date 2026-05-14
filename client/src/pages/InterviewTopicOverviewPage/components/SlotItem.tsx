@@ -4,7 +4,7 @@ import {
   Stack,
   Title,
   Text,
-  useMantineColorScheme,
+  useComputedColorScheme,
   Button,
   Badge,
   Anchor,
@@ -49,7 +49,7 @@ const SlotItem = ({
   warning = undefined,
 }: ISlotItemProps) => {
   const { ref, hovered } = useHover()
-  const { colorScheme } = useMantineColorScheme()
+  const colorScheme = useComputedColorScheme('light')
 
   const showHover = hoverEffect ? hovered : false
 

@@ -30,7 +30,7 @@ services:
       - "8181:8080"
 
   mailpit:
-    image: axllent/mailpit:v1.29
+    image: axllent/mailpit:v1.30
     container_name: thesis-management-mailpit
     ports:
       - "1125:1025"

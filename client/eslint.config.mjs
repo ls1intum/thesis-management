@@ -120,6 +120,37 @@ export default [
           endOfLine: 'auto',
         },
       ],
+
+      // Forbid `useMantineColorScheme` outside of the dedicated toggle component.
+      // The hook returns the *stored preference* — which can be 'auto' — so code
+      // like `colorScheme === 'dark' ? darkColor : lightColor` silently picks the
+      // light branch when the user is on 'auto' with a dark system theme. See #1016.
+      // For reading the resolved scheme, use `useComputedColorScheme` instead; it
+      // returns the actually rendered 'light' or 'dark'. The only legitimate uses
+      // of `useMantineColorScheme` are `setColorScheme` / `toggleColorScheme` /
+      // `clearColorScheme`, which the override below permits in the toggle UI.
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: '@mantine/core',
+              importNames: ['useMantineColorScheme'],
+              message:
+                "Use `useComputedColorScheme` instead — it resolves 'auto' to the actually rendered 'light' or 'dark'. `useMantineColorScheme` returns the stored preference ('light' | 'dark' | 'auto') and silently breaks branching in auto mode (see #1016). If you need to set/toggle the scheme, add an override for your file in eslint.config.mjs.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    // ColorSchemeToggleButton is the only legitimate consumer of `useMantineColorScheme`:
+    // it needs `toggleColorScheme` / `clearColorScheme`, and it handles the 'auto' value
+    // explicitly via the `prefers-color-scheme` media query.
+    files: ['src/components/ColorSchemeToggleButton/ColorSchemeToggleButton.tsx'],
+    rules: {
+      'no-restricted-imports': 'off',
     },
   },
 ]

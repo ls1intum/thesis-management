@@ -14,7 +14,7 @@
   ],
   "main": "src/index.tsx",
   "sideEffects": false,
-  "packageManager": "pnpm@11.1.1",
+  "packageManager": "pnpm@11.1.2",
   "engines": {
     "node": ">=24.7.0",
     "pnpm": ">=11"
@@ -68,14 +68,14 @@
     "jszip": "3.10.1",
     "jwt-decode": "4.0.0",
     "keycloak-js": "26.2.4",
-    "mantine-datatable": "8.3.13",
+    "mantine-datatable": "9.2.0",
     "react": "19.2.6",
     "react-avatar-editor": "15.1.0",
     "react-dom": "19.2.6",
-    "react-router": "7.15.0"
+    "react-router": "7.15.1"
   },
   "devDependencies": {
-    "@eslint-react/eslint-plugin": "5.7.7",
+    "@eslint-react/eslint-plugin": "5.7.8",
     "@eslint/js": "10.0.1",
     "@playwright/test": "1.60.0",
     "@testing-library/jest-dom": "6.9.1",

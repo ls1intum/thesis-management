@@ -10,7 +10,7 @@ import {
   Stack,
   Text,
   UnstyledButton,
-  useMantineColorScheme,
+  useComputedColorScheme,
 } from '@mantine/core'
 import Logo from '../Logo/Logo'
 import { Link, useNavigate } from 'react-router'
@@ -37,7 +37,7 @@ const Header = ({
   openLoginModal = false,
   hideUnauthenticatedActions = false,
 }: HeaderProps) => {
-  const { colorScheme } = useMantineColorScheme()
+  const colorScheme = useComputedColorScheme('light')
   const user = useUser()
   const context = useAuthenticationContext()
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
