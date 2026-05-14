@@ -34,7 +34,7 @@ const config = (env) => {
       port: 3100,
       client: {
         progress: false,
-        overlay:false
+        overlay: false,
       },
       open: false,
     },

@@ -181,8 +181,9 @@ const Header = ({ opened, toggle, authenticatedArea, openLoginModal = false }: H
           )
         )}
       </Flex>
+      {}
       <Modal
-        opened={isLoginModalForcedOpen ?? isLoginModalOpen}
+        opened={isLoginModalForcedOpen || isLoginModalOpen}
         onClose={onLoginModalClose}
         closeOnEscape={!isPasskeyLoading}
         withCloseButton={!isPasskeyLoading}
