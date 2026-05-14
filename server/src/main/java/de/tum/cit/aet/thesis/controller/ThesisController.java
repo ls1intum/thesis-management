@@ -988,6 +988,30 @@ public class ThesisController {
 		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasSupervisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
 
+	/* REVERT ENDPOINTS */
+
+	/**
+	 * Reverts the thesis one state backwards in case of an accidental forward transition.
+	 *
+	 * @param thesisId the unique identifier of the thesis to revert
+	 * @return the updated thesis after reverting
+	 */
+	@PostMapping("/{thesisId}/revert-state")
+	public ResponseEntity<ThesisDto> revertThesisState(
+			@PathVariable UUID thesisId
+	) {
+		User currentUser = currentUserProvider().getUser();
+		Thesis thesis = thesisService.findById(thesisId);
+
+		if (!thesis.hasSupervisorAccess(currentUser)) {
+			throw new AccessDeniedException("You need to be a supervisor or examiner of this thesis to revert its state");
+		}
+
+		thesis = thesisService.revertToPreviousState(thesis);
+
+		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasSupervisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
+	}
+
 	/* ANONYMIZATION ENDPOINTS */
 
 	/**

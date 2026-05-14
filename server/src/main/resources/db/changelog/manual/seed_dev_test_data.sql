@@ -1522,6 +1522,99 @@ VALUES
     ('00000000-0000-4000-d000-000000000012'::UUID, 'WRITING', NOW() - INTERVAL '20 days')
 ON CONFLICT DO NOTHING;
 
+-- Retry slots for the admin anonymize tests in client/e2e/thesis-delete.spec.ts.
+-- Anonymization is irreversible: once a test attempt anonymizes thesis 10/11/12,
+-- a Playwright retry against the same row fails at the "Anonymize Thesis" button
+-- visibility check (the button is gated on !anonymizedAt) and reports a misleading
+-- "element not found" instead of the real first-attempt failure. Each test attempt
+-- picks a different thesis ID via `testInfo.retry`, so every attempt gets a fresh,
+-- non-anonymized row. CI runs initial + 2 retries → 2 retry slots per scenario.
+-- Warnings depend only on `state` and `end_date`, so roles/state_changes/comments
+-- are intentionally omitted; the test does not assert on them.
+INSERT INTO theses (thesis_id, title, type, language, metadata, info, abstract, state,
+                    visibility, keywords, application_id, start_date, end_date, created_at,
+                    research_group_id)
+VALUES
+    -- OLD retry 1 (mirrors thesis 10: GRADED, retention expired)
+    ('00000000-0000-4000-d000-0000000000a0'::UUID,
+     'Historical Analysis of Compiler Optimization Techniques',
+     'MASTER', 'ENGLISH',
+     '{"titles":{},"credits":{}}',
+     'Comprehensive analysis of compiler optimization strategies across different architectures.',
+     'This thesis examines historical compiler optimization techniques and their evolution.',
+     'GRADED', 'PRIVATE',
+     ARRAY['compilers', 'optimization'],
+     NULL,
+     NOW() - INTERVAL '2800 days', NOW() - INTERVAL '2600 days',
+     NOW() - INTERVAL '2800 days',
+     '00000000-0000-4000-a000-000000000001'::UUID),
+    -- OLD retry 2
+    ('00000000-0000-4000-d000-0000000000b0'::UUID,
+     'Historical Analysis of Compiler Optimization Techniques',
+     'MASTER', 'ENGLISH',
+     '{"titles":{},"credits":{}}',
+     'Comprehensive analysis of compiler optimization strategies across different architectures.',
+     'This thesis examines historical compiler optimization techniques and their evolution.',
+     'GRADED', 'PRIVATE',
+     ARRAY['compilers', 'optimization'],
+     NULL,
+     NOW() - INTERVAL '2800 days', NOW() - INTERVAL '2600 days',
+     NOW() - INTERVAL '2800 days',
+     '00000000-0000-4000-a000-000000000001'::UUID),
+    -- RECENT retry 1 (mirrors thesis 11: FINISHED, retention not expired)
+    ('00000000-0000-4000-d000-0000000000a1'::UUID,
+     'Machine Learning Approaches to Code Review Automation',
+     'MASTER', 'ENGLISH',
+     '{"titles":{},"credits":{}}',
+     'An evaluation of ML-based approaches for automating code review processes.',
+     'This thesis proposes a machine learning framework for automated code review.',
+     'FINISHED', 'PRIVATE',
+     ARRAY['machine learning', 'code review'],
+     NULL,
+     NOW() - INTERVAL '800 days', NOW() - INTERVAL '620 days',
+     NOW() - INTERVAL '800 days',
+     '00000000-0000-4000-a000-000000000001'::UUID),
+    -- RECENT retry 2
+    ('00000000-0000-4000-d000-0000000000b1'::UUID,
+     'Machine Learning Approaches to Code Review Automation',
+     'MASTER', 'ENGLISH',
+     '{"titles":{},"credits":{}}',
+     'An evaluation of ML-based approaches for automating code review processes.',
+     'This thesis proposes a machine learning framework for automated code review.',
+     'FINISHED', 'PRIVATE',
+     ARRAY['machine learning', 'code review'],
+     NULL,
+     NOW() - INTERVAL '800 days', NOW() - INTERVAL '620 days',
+     NOW() - INTERVAL '800 days',
+     '00000000-0000-4000-a000-000000000001'::UUID),
+    -- ACTIVE retry 1 (mirrors thesis 12: WRITING, retention not expired)
+    ('00000000-0000-4000-d000-0000000000a2'::UUID,
+     'Real-Time Anomaly Detection in Distributed Systems',
+     'BACHELOR', 'ENGLISH',
+     '{"titles":{},"credits":{}}',
+     'Exploring anomaly detection techniques for distributed microservice architectures.',
+     'This thesis designs a real-time anomaly detection system for distributed environments.',
+     'WRITING', 'PRIVATE',
+     ARRAY['anomaly detection', 'distributed systems'],
+     NULL,
+     NOW() - INTERVAL '30 days', NOW() + INTERVAL '150 days',
+     NOW() - INTERVAL '30 days',
+     '00000000-0000-4000-a000-000000000001'::UUID),
+    -- ACTIVE retry 2
+    ('00000000-0000-4000-d000-0000000000b2'::UUID,
+     'Real-Time Anomaly Detection in Distributed Systems',
+     'BACHELOR', 'ENGLISH',
+     '{"titles":{},"credits":{}}',
+     'Exploring anomaly detection techniques for distributed microservice architectures.',
+     'This thesis designs a real-time anomaly detection system for distributed environments.',
+     'WRITING', 'PRIVATE',
+     ARRAY['anomaly detection', 'distributed systems'],
+     NULL,
+     NOW() - INTERVAL '30 days', NOW() + INTERVAL '150 days',
+     NOW() - INTERVAL '30 days',
+     '00000000-0000-4000-a000-000000000001'::UUID)
+ON CONFLICT DO NOTHING;
+
 -- Thesis 10-12 comments
 INSERT INTO thesis_comments (comment_id, thesis_id, type, message, filename, upload_name,
                              created_at, created_by)
