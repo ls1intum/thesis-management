@@ -13,7 +13,7 @@ import {
   Indicator,
   Divider,
   Grid,
-  useMantineColorScheme,
+  useComputedColorScheme,
   Select,
 } from '@mantine/core'
 import { useIsSmallerBreakpoint, usePageTitle } from '../../hooks/theme'
@@ -51,7 +51,7 @@ const PresentationOverviewPage = () => {
 
   const user = useUser()
 
-  const { colorScheme } = useMantineColorScheme()
+  const colorScheme = useComputedColorScheme('light')
 
   useEffect(() => {
     if (context.researchGroups.length > 0) {

@@ -1,4 +1,4 @@
-import { Badge, Divider, Group, Stack, Text, useMantineColorScheme } from '@mantine/core'
+import { Badge, Divider, Group, Stack, Text, useComputedColorScheme } from '@mantine/core'
 import type { ITopicInterviewProcess } from '../../../requests/responses/interview'
 import { useHover } from '@mantine/hooks'
 
@@ -14,7 +14,7 @@ const SelectTopicInterviewProcessItem = ({
   isLastItem,
 }: ISelectTopicInterviewProcessItemProps) => {
   const { hovered, ref } = useHover()
-  const colorScheme = useMantineColorScheme()
+  const colorScheme = useComputedColorScheme('light')
 
   return (
     <Stack
@@ -24,7 +24,7 @@ const SelectTopicInterviewProcessItem = ({
       style={{ cursor: topic.interviewProcessExists ? 'not-allowed' : 'pointer' }}
       bg={
         hovered && !topic.interviewProcessExists
-          ? colorScheme.colorScheme === 'dark'
+          ? colorScheme === 'dark'
             ? 'dark.6'
             : 'gray.2'
           : undefined

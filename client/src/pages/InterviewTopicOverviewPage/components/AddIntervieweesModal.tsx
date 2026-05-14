@@ -6,7 +6,7 @@ import {
   Paper,
   Title,
   Text,
-  useMantineColorScheme,
+  useComputedColorScheme,
   Button,
   Stack,
 } from '@mantine/core'
@@ -33,7 +33,7 @@ const AddIntervieweesModal = ({ opened, closeModal }: IAddIntervieweesModalProps
     IApplicationInterviewProcess[]
   >([])
   const [selectedApplicants, setSelectedApplicants] = useState<string[]>([])
-  const { colorScheme } = useMantineColorScheme()
+  const colorScheme = useComputedColorScheme('light')
 
   const { addIntervieweesToProcess } = useInterviewProcessContext()
 

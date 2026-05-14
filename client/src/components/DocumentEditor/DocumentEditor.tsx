@@ -8,7 +8,7 @@ import Superscript from '@tiptap/extension-superscript'
 import SubScript from '@tiptap/extension-subscript'
 import type { ChangeEvent, ComponentProps } from 'react'
 import { useEffect, useRef } from 'react'
-import { Input, Text, useMantineColorScheme } from '@mantine/core'
+import { Input, Text, useComputedColorScheme } from '@mantine/core'
 import { ensureAbsoluteLinkHref } from '../../utils/format'
 
 // SmartLink wraps Tiptap's Link extension so every code path that creates a
@@ -125,7 +125,7 @@ const DocumentEditor = (props: IDocumentEditorProps) => {
     }
   }, [value, editMode, editor])
 
-  const colorScheme = useMantineColorScheme()
+  const colorScheme = useComputedColorScheme('light')
 
   return (
     <Input.Wrapper
@@ -153,8 +153,7 @@ const DocumentEditor = (props: IDocumentEditorProps) => {
         onFocus={onFocus}
         styles={{
           root: {
-            backgroundColor:
-              colorScheme.colorScheme === 'dark' ? 'var(--mantine-color-dark-7)' : 'white',
+            backgroundColor: colorScheme === 'dark' ? 'var(--mantine-color-dark-7)' : 'white',
             borderColor: wrapperProps.error ? 'var(--mantine-color-error)' : undefined,
             borderStyle: editMode ? 'solid' : 'dashed',
             borderWidth: noBorder ? 0 : 1,
