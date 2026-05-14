@@ -3,6 +3,7 @@ import { authStatePath, navigateTo } from './helpers'
 
 const PASSKEY_PROMPT_TITLE = 'One click for multiple AET apps'
 const NEVER_ASK_AGAIN_STORAGE_KEY_PREFIX = 'passkey_prompt_never_ask_again'
+const MAYBE_LATER_STORAGE_KEY_PREFIX = 'passkey_prompt_maybe_later'
 const DISABLE_PASSKEY_PROMPT_STORAGE_KEY = 'passkey_prompt_disabled'
 
 const passkeyPromptDialog = (page: Page) => page.getByRole('dialog', { name: PASSKEY_PROMPT_TITLE })
@@ -15,17 +16,21 @@ const disablePasskeyPromptAtStartup = async (page: Page) => {
 
 const clearPasskeyPromptPreferences = async (page: Page) => {
   await page.evaluate(
-    ({ disableStorageKey, perUserStorageKeyPrefix }) => {
+    ({ disableStorageKey, perUserNeverAskAgainStorageKeyPrefix, perUserMaybeLaterStorageKeyPrefix }) => {
       localStorage.removeItem(disableStorageKey)
       for (const key of Object.keys(localStorage)) {
-        if (key.startsWith(perUserStorageKeyPrefix)) {
+        if (
+          key.startsWith(perUserNeverAskAgainStorageKeyPrefix) ||
+          key.startsWith(perUserMaybeLaterStorageKeyPrefix)
+        ) {
           localStorage.removeItem(key)
         }
       }
     },
     {
       disableStorageKey: DISABLE_PASSKEY_PROMPT_STORAGE_KEY,
-      perUserStorageKeyPrefix: NEVER_ASK_AGAIN_STORAGE_KEY_PREFIX,
+      perUserNeverAskAgainStorageKeyPrefix: NEVER_ASK_AGAIN_STORAGE_KEY_PREFIX,
+      perUserMaybeLaterStorageKeyPrefix: MAYBE_LATER_STORAGE_KEY_PREFIX,
     },
   )
 }
@@ -94,13 +99,13 @@ const deleteExistingPasskeys = async (page: Page) => {
     const currentDeleteButton = deleteButtons.first()
     await expect(currentDeleteButton).toBeEnabled({ timeout: 15_000 })
     await currentDeleteButton.click()
-    await expectNotification(page, 'Passkey deleted successfully')
+    await expectNotification(page, 'Passkey deleted successfully.')
   }
 }
 
 const registerPasskeyFromSettings = async (page: Page) => {
   await page.getByRole('button', { name: 'Register Passkey', exact: true }).click()
-  await expectNotification(page, 'Passkey registered successfully')
+  await expectNotification(page, 'Passkey registered. You can now use it to sign in.')
 }
 
 const prepareUserWithoutPasskeys = async (page: Page) => {
@@ -136,7 +141,7 @@ test.describe('Passkey - Prompt', () => {
   test.describe('Temporary dismissal', () => {
     test.use({ storageState: authStatePath('student2') })
 
-    test('shows passkey options and reappears after Maybe later', async ({ page }) => {
+    test('shows passkey options and hides for the day after Maybe later', async ({ page }) => {
       await prepareUserWithoutPasskeys(page)
       await clearPasskeyPromptPreferences(page)
 
@@ -157,7 +162,7 @@ test.describe('Passkey - Prompt', () => {
       await expect(promptDialog).toBeHidden()
 
       await page.reload()
-      await expect(promptDialog).toBeVisible({ timeout: 30_000 })
+      await expect(promptDialog).toBeHidden({ timeout: 30_000 })
     })
   })
 
@@ -260,10 +265,7 @@ test.describe('Passkey - Login', () => {
       await expect(loginModal).toBeVisible({ timeout: 30_000 })
       await loginModal.getByRole('button', { name: 'AET Passkey' }).click()
 
-      await expect(page).toHaveURL(/\/dashboard/, { timeout: 60_000 })
-      await expect(page.getByRole('heading', { name: /dashboard/i })).toBeVisible({
-        timeout: 30_000,
-      })
+      await expect(loginModal).toBeHidden({ timeout: 60_000 })
       await expect(page.locator('header').getByText('Login')).toBeHidden()
     } finally {
       await teardownVirtualAuthenticator(cdpSession, authenticatorId)

@@ -13,6 +13,7 @@ export interface IKeycloakCredential {
 }
 
 export interface IAuthenticationContext {
+  isReady: boolean
   isAuthenticated: boolean
   user: IUser | undefined
   groups: string[]

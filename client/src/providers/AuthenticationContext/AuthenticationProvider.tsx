@@ -13,7 +13,7 @@ import { doRequest } from '../../requests/request'
 import { showSimpleError } from '../../utils/notification'
 import { ApiError, getApiResponseErrorMessage } from '../../requests/handler'
 import type { ILightResearchGroup } from '../../requests/responses/researchGroup'
-import { getPasskeyErrorMessage } from '../../utils/passkey'
+import { getDeviceName, getPasskeyErrorMessage } from '../../utils/passkey'
 
 const createKeycloakClient = () =>
   new Keycloak({
@@ -164,7 +164,7 @@ const parseAccountCredentialsResponse = (
 const getKeycloakInitOptions = (tokens?: IAuthenticationTokens, shouldCheckSso = false) => ({
   ...(shouldCheckSso ? { onLoad: 'check-sso' as const } : {}),
   pkceMethod: 'S256' as const,
-  silentCheckSsoRedirectUri: `${window.location.origin}/silent-check-sso/`,
+  silentCheckSsoRedirectUri: `${window.location.origin}/silent-check-sso.html`,
   silentCheckSsoFallback: false,
   checkLoginIframe: false,
   token: tokens?.access_token,
@@ -453,6 +453,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
 
   const contextValue = useMemo<IAuthenticationContext>(() => {
     return {
+      isReady,
       isAuthenticated: Boolean(authenticationTokens?.access_token),
       user: authenticationTokens?.access_token ? user : undefined,
       groups: [],
@@ -547,7 +548,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
           })
 
           if (response.status !== 204) {
-            throw new Error(await getPasskeyErrorMessage(response))
+            throw new Error(await getPasskeyErrorMessage(response, undefined, 'login'))
           }
 
           const authenticated = await initializeKeycloakSession(undefined, {
@@ -633,6 +634,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
+              deviceName: getDeviceName(),
               credentialId: toBase64Url(passkeyCredential.rawId),
               clientDataJSON: toBase64Url(passkeyCredential.response.clientDataJSON),
               attestationObject: toBase64Url(passkeyCredential.response.attestationObject),
@@ -641,7 +643,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
           })
 
           if (!response.ok) {
-            throw new Error(await getPasskeyErrorMessage(response))
+            throw new Error(await getPasskeyErrorMessage(response, undefined, 'register'))
           }
         }),
       listCredentials: () =>
@@ -730,7 +732,14 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
       isPasskeySupported,
     }
     // eslint-disable-next-line @eslint-react/exhaustive-deps -- researchGroups/setAuthenticationTokens/readySignal/access_token are captured by reference inside callbacks that read the latest value at call time; recomputing the entire context on each token refresh would re-render every consumer
-  }, [user, authenticationTokens?.access_token, readySignal, researchGroups, isPasskeySupported])
+  }, [
+    isReady,
+    user,
+    authenticationTokens?.access_token,
+    readySignal,
+    researchGroups,
+    isPasskeySupported,
+  ])
 
   return <AuthenticationContext value={contextValue}>{children}</AuthenticationContext>
 }

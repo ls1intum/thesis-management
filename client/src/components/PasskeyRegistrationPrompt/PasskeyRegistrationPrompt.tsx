@@ -20,6 +20,7 @@ import { getPasskeyErrorMessage, isPasskeyCredential } from '../../utils/passkey
 import { showSimpleError, showSimpleSuccess } from '../../utils/notification'
 
 const NEVER_ASK_AGAIN_STORAGE_KEY = 'passkey_prompt_never_ask_again'
+const MAYBE_LATER_STORAGE_KEY = 'passkey_prompt_maybe_later'
 const DISABLE_PROMPT_STORAGE_KEY = 'passkey_prompt_disabled'
 const AET_CHAIR_URL = 'https://aet.cit.tum.de/'
 
@@ -30,6 +31,14 @@ const AETChairLink = () => (
     </Anchor>
   </Tooltip>
 )
+
+const getTodayStorageValue = () => {
+  const now = new Date()
+  const month = String(now.getMonth() + 1).padStart(2, '0')
+  const day = String(now.getDate()).padStart(2, '0')
+
+  return `${now.getFullYear()}-${month}-${day}`
+}
 
 const PasskeyRegistrationPrompt = () => {
   const auth = useAuthenticationContext()
@@ -43,6 +52,7 @@ const PasskeyRegistrationPrompt = () => {
   const perUserNeverAskAgainStorageKey = userId
     ? `${NEVER_ASK_AGAIN_STORAGE_KEY}_${userId}`
     : undefined
+  const perUserMaybeLaterStorageKey = userId ? `${MAYBE_LATER_STORAGE_KEY}_${userId}` : undefined
   const shouldSkipPrompt = useMemo(() => {
     if (typeof window === 'undefined') {
       return false
@@ -56,8 +66,16 @@ const PasskeyRegistrationPrompt = () => {
       return false
     }
 
-    return localStorage.getItem(perUserNeverAskAgainStorageKey) === 'true'
-  }, [perUserNeverAskAgainStorageKey])
+    if (localStorage.getItem(perUserNeverAskAgainStorageKey) === 'true') {
+      return true
+    }
+
+    if (!perUserMaybeLaterStorageKey) {
+      return false
+    }
+
+    return localStorage.getItem(perUserMaybeLaterStorageKey) === getTodayStorageValue()
+  }, [perUserMaybeLaterStorageKey, perUserNeverAskAgainStorageKey])
 
   useEffect(() => {
     if (!auth.isAuthenticated) {
@@ -114,16 +132,19 @@ const PasskeyRegistrationPrompt = () => {
     userId,
   ])
 
-  const persistNeverAskAgain = () => {
-    if (!neverAskAgain || !perUserNeverAskAgainStorageKey) {
+  const persistPromptDismissal = () => {
+    if (neverAskAgain && perUserNeverAskAgainStorageKey) {
+      localStorage.setItem(perUserNeverAskAgainStorageKey, 'true')
       return
     }
 
-    localStorage.setItem(perUserNeverAskAgainStorageKey, 'true')
+    if (perUserMaybeLaterStorageKey) {
+      localStorage.setItem(perUserMaybeLaterStorageKey, getTodayStorageValue())
+    }
   }
 
   const closeModal = () => {
-    persistNeverAskAgain()
+    persistPromptDismissal()
     setIsOpen(false)
   }
 
@@ -134,7 +155,7 @@ const PasskeyRegistrationPrompt = () => {
       showSimpleSuccess('Passkey registered successfully')
       setIsOpen(false)
     } catch (error) {
-      showSimpleError(await getPasskeyErrorMessage(error))
+      showSimpleError(await getPasskeyErrorMessage(error, undefined, 'register'))
     } finally {
       setIsRegistering(false)
     }

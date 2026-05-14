@@ -42,7 +42,7 @@ const PasskeySettings = () => {
       try {
         await loadPasskeyCredentials()
       } catch (error) {
-        showSimpleError(await getPasskeyErrorMessage(error))
+        showSimpleError(await getPasskeyErrorMessage(error, undefined, 'list'))
       } finally {
         setIsLoadingCredentials(false)
       }
@@ -55,10 +55,10 @@ const PasskeySettings = () => {
     setIsRegistering(true)
     try {
       await auth.registerPasskey()
-      showSimpleSuccess('Passkey registered successfully')
+      showSimpleSuccess('Passkey registered. You can now use it to sign in.')
       await loadPasskeyCredentials()
     } catch (error) {
-      showSimpleError(await getPasskeyErrorMessage(error))
+      showSimpleError(await getPasskeyErrorMessage(error, undefined, 'register'))
     } finally {
       setIsRegistering(false)
     }
@@ -68,10 +68,10 @@ const PasskeySettings = () => {
     setDeletingCredentialId(credentialId)
     try {
       await auth.deleteCredential(credentialId)
-      showSimpleSuccess('Passkey deleted successfully')
+      showSimpleSuccess('Passkey deleted successfully.')
       await loadPasskeyCredentials()
     } catch (error) {
-      showSimpleError(await getPasskeyErrorMessage(error))
+      showSimpleError(await getPasskeyErrorMessage(error, undefined, 'delete'))
     } finally {
       setDeletingCredentialId(undefined)
     }

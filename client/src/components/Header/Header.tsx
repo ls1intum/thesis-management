@@ -45,16 +45,21 @@ const Header = ({
 
   const navigate = useNavigate()
   const isLoginModalForcedOpen =
-    openLoginModal && !context.isAuthenticated && context.isPasskeySupported
+    context.isReady && openLoginModal && !context.isAuthenticated && context.isPasskeySupported
 
   useEffect(() => {
-    if (!openLoginModal || context.isAuthenticated || !context.isPasskeySupported) {
+    if (
+      !context.isReady ||
+      !openLoginModal ||
+      context.isAuthenticated ||
+      !context.isPasskeySupported
+    ) {
       setIsLoginModalOpen(false)
       return
     }
 
     setIsLoginModalOpen(true)
-  }, [context.isAuthenticated, context.isPasskeySupported, openLoginModal])
+  }, [context.isAuthenticated, context.isPasskeySupported, context.isReady, openLoginModal])
 
   const onLoginModalClose = () => {
     if (isLoginModalForcedOpen) {
@@ -77,7 +82,7 @@ const Header = ({
       setIsLoginModalOpen(false)
       void navigate('/dashboard', { replace: true })
     } catch (error) {
-      showSimpleError(await getPasskeyErrorMessage(error, 'Passkey login failed'))
+      showSimpleError(await getPasskeyErrorMessage(error, undefined, 'login'))
     } finally {
       setIsPasskeyLoading(false)
     }
