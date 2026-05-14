@@ -10,7 +10,11 @@ const EXAMINER_THESIS_ID = '00000000-0000-4000-d000-000000000001'
 test.describe('Thesis Delete (Anonymize) - Admin', () => {
   test.use({ storageState: authStatePath('admin') })
 
-  test.describe.configure({ mode: 'serial' })
+  // Anonymization is irreversible, so the seed rows mutated by these tests cannot
+  // be restored mid-run. Retrying after a partial success would fail on the
+  // already-anonymized state and mask the real cause; disable retries so any flake
+  // surfaces as a first-attempt failure with the actual error.
+  test.describe.configure({ mode: 'serial', retries: 0 })
 
   test('admin can anonymize old non-terminal thesis with state warning only', async ({ page }) => {
     const heading = page.getByRole('heading', { name: /Historical Analysis of Compiler/i })
@@ -21,17 +25,17 @@ test.describe('Thesis Delete (Anonymize) - Admin', () => {
 
     // Anonymize Thesis button should be visible for admin on non-anonymized thesis
     const deleteButton = page.getByRole('button', { name: 'Anonymize Thesis' })
-    await expect(deleteButton).toBeVisible({ timeout: 5_000 })
+    await expect(deleteButton).toBeVisible()
     await deleteButton.click()
 
     // Modal should open with correct title
     const dialog = page.getByRole('dialog')
-    await expect(dialog).toBeVisible({ timeout: 5_000 })
+    await expect(dialog).toBeVisible()
     await expect(dialog.getByRole('heading', { name: 'Anonymize Thesis' })).toBeVisible()
 
     // Old GRADED thesis: state warning (not terminal) but NO retention warning (expired)
     const alert = dialog.locator('.mantine-Alert-root')
-    await expect(alert).toBeVisible({ timeout: 5_000 })
+    await expect(alert).toBeVisible()
     await expect(alert.getByText(/GRADED/i)).toBeVisible()
     await expect(alert.getByText(/retention period/i)).not.toBeVisible({ timeout: 2_000 })
 
@@ -57,15 +61,15 @@ test.describe('Thesis Delete (Anonymize) - Admin', () => {
     await page.getByText('Configuration').click()
 
     const deleteButton = page.getByRole('button', { name: 'Anonymize Thesis' })
-    await expect(deleteButton).toBeVisible({ timeout: 5_000 })
+    await expect(deleteButton).toBeVisible()
     await deleteButton.click()
 
     const dialog = page.getByRole('dialog')
-    await expect(dialog).toBeVisible({ timeout: 5_000 })
+    await expect(dialog).toBeVisible()
 
     // Recent finished thesis should show retention warning but NOT state warning
     const alert = dialog.locator('.mantine-Alert-root')
-    await expect(alert).toBeVisible({ timeout: 5_000 })
+    await expect(alert).toBeVisible()
     await expect(alert.getByText(/retention period/i)).toBeVisible()
     await expect(alert.getByText(/expires on/i)).toBeVisible()
     await expect(alert.getByText(/WRITING|GRADED|SUBMITTED/i)).not.toBeVisible({ timeout: 2_000 })
@@ -83,15 +87,15 @@ test.describe('Thesis Delete (Anonymize) - Admin', () => {
     await page.getByText('Configuration').click()
 
     const deleteButton = page.getByRole('button', { name: 'Anonymize Thesis' })
-    await expect(deleteButton).toBeVisible({ timeout: 5_000 })
+    await expect(deleteButton).toBeVisible()
     await deleteButton.click()
 
     const dialog = page.getByRole('dialog')
-    await expect(dialog).toBeVisible({ timeout: 5_000 })
+    await expect(dialog).toBeVisible()
 
     // Active (WRITING) thesis should show state warning
     const alert = dialog.locator('.mantine-Alert-root')
-    await expect(alert).toBeVisible({ timeout: 5_000 })
+    await expect(alert).toBeVisible()
     await expect(alert.getByText(/WRITING/i)).toBeVisible()
     // Should also show retention warning since thesis is only 30 days old
     await expect(alert.getByText(/retention period/i)).toBeVisible()
