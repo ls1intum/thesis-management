@@ -1,0 +1,36 @@
+# Files / directories never needed inside Docker build contexts.
+# Keeps the build context small and prevents host-only artifacts from
+# leaking into the image (e.g. pnpm's symlinked node_modules pointing at
+# host paths, or darwin-arm64 native binaries inside a linux-alpine image).
+
+# Dependency trees — recreated inside the image by `pnpm install` / Gradle
+**/node_modules
+client/build
+server/build
+server/.gradle
+
+# Lockfile artifacts we don't ship
+client/.pnpm-store
+
+# Local e2e runner state
+.e2e-pids
+.e2e-server.log
+.e2e-client.log
+.e2e-client-build.log
+
+# Test output
+client/coverage
+client/playwright-report
+client/test-results
+client/blob-report
+
+# IDE / OS
+.idea
+.vscode
+.DS_Store
+
+# CI metadata that the runtime image doesn't need.
+# NOTE: do NOT add `.git` here — server.Dockerfile copies it into the
+# build stage so the `gradle-git-properties` plugin can stamp the built
+# JAR with the current commit.
+.github

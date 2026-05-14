@@ -113,27 +113,30 @@ jobs:
           CLIENT_HOST: http://localhost:3100
 
       # Set up Node.js for client
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Set up Node.js
         uses: actions/setup-node@v6
         with:
           node-version: '24.15.0'
-          cache: 'npm'
-          cache-dependency-path: client/package-lock.json
+          cache: 'pnpm'
+          cache-dependency-path: client/pnpm-lock.yaml
 
       - name: Install client dependencies
         working-directory: ./client
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Install Playwright browsers
         working-directory: ./client
-        run: npx playwright install --with-deps chromium
+        run: pnpm exec playwright install --with-deps chromium
 
       # Build the client and serve it as a static bundle. Running production
       # output (instead of webpack-dev-server) avoids the dev-mode error
       # overlay iframe that occasionally intercepts clicks during e2e tests.
       - name: Build client
         working-directory: ./client
-        run: npm run build
+        run: pnpm build
         env:
           SERVER_HOST: http://localhost:8180
           KEYCLOAK_HOST: http://localhost:8181
@@ -151,7 +154,7 @@ jobs:
 
       - name: Serve client static bundle
         working-directory: ./client
-        run: npx --yes serve@14 -s build -l 3100 --no-clipboard --no-port-switching &
+        run: pnpm dlx serve@14 -s build -l 3100 --no-clipboard --no-port-switching &
 
       # Wait for both services to be ready
       - name: Wait for server to be ready
@@ -187,7 +190,7 @@ jobs:
       # Run E2E tests
       - name: Run Playwright tests
         working-directory: ./client
-        run: npx playwright test
+        run: pnpm exec playwright test
         env:
           CI: "1"
           CLIENT_URL: http://localhost:3100

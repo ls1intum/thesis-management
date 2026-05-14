@@ -51,22 +51,25 @@ jobs:
           retention-days: 14
 
       # Set up Node for client tests (Vitest + node:test)
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Set up Node.js
         uses: actions/setup-node@v6
         with:
           node-version: '24.15.0'
-          cache: 'npm'
-          cache-dependency-path: 'client/package-lock.json'
+          cache: 'pnpm'
+          cache-dependency-path: 'client/pnpm-lock.yaml'
 
       - name: Install client dependencies
         working-directory: ./client
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Run client tests with coverage (Vitest + node:test)
         working-directory: ./client
         run: |
-          npx vitest run --coverage
-          npm run test:legacy
+          pnpm exec vitest run --coverage
+          pnpm test:legacy
 
       - name: Upload Client Test Results
         uses: actions/upload-artifact@v7
