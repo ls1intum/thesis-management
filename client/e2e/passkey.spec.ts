@@ -4,6 +4,7 @@ import { authStatePath, navigateTo } from './helpers'
 const PASSKEY_PROMPT_TITLE = 'One click for multiple AET apps'
 const NEVER_ASK_AGAIN_STORAGE_KEY_PREFIX = 'passkey_prompt_never_ask_again'
 const DISABLE_PASSKEY_PROMPT_STORAGE_KEY = 'passkey_prompt_disabled'
+const AUTHENTICATION_TOKENS_STORAGE_KEY = 'authentication_tokens'
 
 const passkeyPromptDialog = (page: Page) => page.getByRole('dialog', { name: PASSKEY_PROMPT_TITLE })
 
@@ -107,6 +108,13 @@ const prepareUserWithoutPasskeys = async (page: Page) => {
   await navigateToPasskeySettings(page)
   await deleteExistingPasskeys(page)
   await expect(page.getByText('No passkeys registered yet.')).toBeVisible({ timeout: 15_000 })
+}
+
+const clearBrowserAuthenticationState = async (page: Page) => {
+  await page.evaluate((storageKey) => {
+    localStorage.removeItem(storageKey)
+  }, AUTHENTICATION_TOKENS_STORAGE_KEY)
+  await page.context().clearCookies()
 }
 
 test.describe('Passkey - Prompt', () => {
@@ -228,8 +236,7 @@ test.describe('Passkey - Login', () => {
       await registerPasskeyFromSettings(page)
       await waitForVirtualPasskey(cdpSession, authenticatorId)
 
-      await page.goto('/logout')
-      await expect(page.locator('header').getByText('Login')).toBeVisible({ timeout: 60_000 })
+      await clearBrowserAuthenticationState(page)
 
       await page.goto('/dashboard')
       const loginModal = page.getByRole('dialog', { name: 'Login' })
