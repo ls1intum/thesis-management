@@ -547,6 +547,57 @@ class ThesisControllerTest extends BaseIntegrationTest {
 		}
 
 		@Test
+		void revertThesisState_Success() throws Exception {
+			String authorization = createRandomAdminAuthentication();
+			UUID thesisId = createTestThesis("Test Thesis");
+			createTestEmailTemplate("THESIS_PROPOSAL_UPLOADED");
+			createTestEmailTemplate("THESIS_PROPOSAL_ACCEPTED");
+
+			MockMultipartFile proposalFile = new MockMultipartFile(
+					"proposal", "test.pdf", MediaType.APPLICATION_PDF_VALUE, "test content".getBytes()
+			);
+
+			mockMvc.perform(MockMvcRequestBuilders.multipart("/v2/theses/{thesisId}/proposal", thesisId)
+							.file(proposalFile)
+							.header("Authorization", authorization))
+					.andExpect(status().isOk());
+
+			mockMvc.perform(MockMvcRequestBuilders.put("/v2/theses/{thesisId}/proposal/accept", thesisId)
+							.header("Authorization", authorization))
+					.andExpect(status().isOk());
+
+			assertThat(thesisRepository.findById(thesisId).orElseThrow().getState())
+					.isEqualTo(ThesisState.WRITING);
+
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses/{thesisId}/revert-state", thesisId)
+							.header("Authorization", authorization))
+					.andExpect(status().isOk());
+
+			Thesis thesis = thesisRepository.findById(thesisId).orElseThrow();
+			assertThat(thesis.getState()).isEqualTo(ThesisState.PROPOSAL);
+			assertThat(thesis.getStates()).hasSize(1);
+		}
+
+		@Test
+		void revertThesisState_OnlyInitialState_BadRequest() throws Exception {
+			String authorization = createRandomAdminAuthentication();
+			UUID thesisId = createTestThesis("Test Thesis");
+
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses/{thesisId}/revert-state", thesisId)
+							.header("Authorization", authorization))
+					.andExpect(status().isBadRequest());
+		}
+
+		@Test
+		void revertThesisState_AccessDenied_AsStudent() throws Exception {
+			UUID thesisId = createTestThesis("Test Thesis");
+
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses/{thesisId}/revert-state", thesisId)
+							.header("Authorization", createRandomAuthentication("student")))
+					.andExpect(status().isForbidden());
+		}
+
+		@Test
 		void getProposalFile_Success() throws Exception {
 			UUID thesisId = createTestThesis("Test Thesis");
 			createTestEmailTemplate("THESIS_PROPOSAL_UPLOADED");
