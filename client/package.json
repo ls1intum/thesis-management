@@ -68,7 +68,7 @@
     "jszip": "3.10.1",
     "jwt-decode": "4.0.0",
     "keycloak-js": "26.2.4",
-    "mantine-datatable": "8.3.13",
+    "mantine-datatable": "9.2.0",
     "react": "19.2.6",
     "react-avatar-editor": "15.1.0",
     "react-dom": "19.2.6",
