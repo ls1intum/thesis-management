@@ -6,7 +6,7 @@ import {
   Stack,
   Title,
   Text,
-  useMantineColorScheme,
+  useComputedColorScheme,
   Badge,
   Button,
   Box,
@@ -59,7 +59,7 @@ const IntervieweeCard = ({
 
   const state: InterviewState = checkState()
 
-  const colorScheme = useMantineColorScheme()
+  const colorScheme = useComputedColorScheme('light')
 
   const [inviteModalOpen, setInviteModalOpen] = useState(false)
   const [cancelModalOpen, setCancelModalOpen] = useState(false)
@@ -112,14 +112,10 @@ const IntervieweeCard = ({
               <Divider
                 orientation='vertical'
                 size='lg'
-                color={getInterviewStateColor(state, colorScheme.colorScheme === 'dark')}
+                color={getInterviewStateColor(state, colorScheme === 'dark')}
               />
               <Stack gap={0}>
-                <Text
-                  size='sm'
-                  fw={500}
-                  c={colorScheme.colorScheme === 'dark' ? 'gray.3' : 'gray.7'}
-                >
+                <Text size='sm' fw={500} c={colorScheme === 'dark' ? 'gray.3' : 'gray.7'}>
                   {state}
                 </Text>
               </Stack>

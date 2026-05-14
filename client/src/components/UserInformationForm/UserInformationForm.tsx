@@ -10,7 +10,7 @@ import {
   Stack,
   TextInput,
   Tooltip,
-  useMantineColorScheme,
+  useComputedColorScheme,
   useMantineTheme,
 } from '@mantine/core'
 import { useAuthenticationContext, useLoggedInUser } from '../../hooks/authentication'
@@ -155,7 +155,7 @@ const UserInformationForm = (props: IUserInformationFormProps) => {
   const [loading, setLoading] = useState(false)
 
   const theme = useMantineTheme()
-  const colorScheme = useMantineColorScheme().colorScheme
+  const colorScheme = useComputedColorScheme('light')
 
   useEffect(() => {
     form.setValues({
