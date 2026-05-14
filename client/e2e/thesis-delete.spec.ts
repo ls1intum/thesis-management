@@ -1,24 +1,45 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, TestInfo } from '@playwright/test'
 import { authStatePath, navigateToDetail } from './helpers'
 
-const OLD_THESIS_ID = '00000000-0000-4000-d000-000000000010'
-const RECENT_THESIS_ID = '00000000-0000-4000-d000-000000000011'
-const ACTIVE_THESIS_ID = '00000000-0000-4000-d000-000000000012'
+// Anonymization is irreversible. Once a test attempt anonymizes a thesis, a
+// Playwright retry against the same row would fail at the "Anonymize Thesis"
+// button visibility check (the button is gated on !anonymizedAt). Each test
+// attempt therefore uses a different seed thesis, indexed by `testInfo.retry`.
+// The retry-slot rows (suffixes a0/b0/a1/b1/a2/b2) are seeded with identical
+// state and dates to their base counterparts in seed_dev_test_data.sql.
+const OLD_THESIS_IDS = [
+  '00000000-0000-4000-d000-000000000010',
+  '00000000-0000-4000-d000-0000000000a0',
+  '00000000-0000-4000-d000-0000000000b0',
+]
+const RECENT_THESIS_IDS = [
+  '00000000-0000-4000-d000-000000000011',
+  '00000000-0000-4000-d000-0000000000a1',
+  '00000000-0000-4000-d000-0000000000b1',
+]
+const ACTIVE_THESIS_IDS = [
+  '00000000-0000-4000-d000-000000000012',
+  '00000000-0000-4000-d000-0000000000a2',
+  '00000000-0000-4000-d000-0000000000b2',
+]
 // Thesis 1 — always available, examiner has EXAMINER role on it
 const EXAMINER_THESIS_ID = '00000000-0000-4000-d000-000000000001'
+
+function thesisIdForAttempt(ids: string[], info: TestInfo): string {
+  // Fall through to the last id if a developer raises `retries` beyond the
+  // configured slots — better to reuse than crash with an out-of-range lookup.
+  return ids[Math.min(info.retry, ids.length - 1)]
+}
 
 test.describe('Thesis Delete (Anonymize) - Admin', () => {
   test.use({ storageState: authStatePath('admin') })
 
-  // Anonymization is irreversible, so the seed rows mutated by these tests cannot
-  // be restored mid-run. Retrying after a partial success would fail on the
-  // already-anonymized state and mask the real cause; disable retries so any flake
-  // surfaces as a first-attempt failure with the actual error.
-  test.describe.configure({ mode: 'serial', retries: 0 })
+  test.describe.configure({ mode: 'serial' })
 
-  test('admin can anonymize old non-terminal thesis with state warning only', async ({ page }) => {
+  test('admin can anonymize old non-terminal thesis with state warning only', async ({ page }, testInfo) => {
+    const thesisId = thesisIdForAttempt(OLD_THESIS_IDS, testInfo)
     const heading = page.getByRole('heading', { name: /Historical Analysis of Compiler/i })
-    await navigateToDetail(page, `/theses/${OLD_THESIS_ID}`, heading)
+    await navigateToDetail(page, `/theses/${thesisId}`, heading)
 
     // Open Configuration accordion
     await page.getByText('Configuration').click()
@@ -54,9 +75,10 @@ test.describe('Thesis Delete (Anonymize) - Admin', () => {
     await expect(page).toHaveURL(/\/theses(?:\?|$)/, { timeout: 15_000 })
   })
 
-  test('admin can anonymize recent thesis with retention warning', async ({ page }) => {
+  test('admin can anonymize recent thesis with retention warning', async ({ page }, testInfo) => {
+    const thesisId = thesisIdForAttempt(RECENT_THESIS_IDS, testInfo)
     const heading = page.getByRole('heading', { name: /Machine Learning Approaches/i })
-    await navigateToDetail(page, `/theses/${RECENT_THESIS_ID}`, heading)
+    await navigateToDetail(page, `/theses/${thesisId}`, heading)
 
     await page.getByText('Configuration').click()
 
@@ -80,9 +102,10 @@ test.describe('Thesis Delete (Anonymize) - Admin', () => {
     await expect(page).toHaveURL(/\/theses(?:\?|$)/, { timeout: 15_000 })
   })
 
-  test('admin can anonymize active thesis with state and retention warnings', async ({ page }) => {
+  test('admin can anonymize active thesis with state and retention warnings', async ({ page }, testInfo) => {
+    const thesisId = thesisIdForAttempt(ACTIVE_THESIS_IDS, testInfo)
     const heading = page.getByRole('heading', { name: /Real-Time Anomaly Detection/i })
-    await navigateToDetail(page, `/theses/${ACTIVE_THESIS_ID}`, heading)
+    await navigateToDetail(page, `/theses/${thesisId}`, heading)
 
     await page.getByText('Configuration').click()
 
