@@ -1,5 +1,5 @@
 import { useMediaQuery } from '@mantine/hooks'
-import { useMantineColorScheme, useMantineTheme } from '@mantine/core'
+import { useComputedColorScheme, useMantineTheme } from '@mantine/core'
 import { GLOBAL_CONFIG } from '../config/global'
 import { useEffect } from 'react'
 
@@ -29,7 +29,7 @@ export function usePageTitle(title: string) {
 
 export function useHighlightedBackgroundColor(selected: boolean) {
   const theme = useMantineTheme()
-  const { colorScheme } = useMantineColorScheme()
+  const colorScheme = useComputedColorScheme('light')
 
   return selected
     ? colorScheme === 'dark'
