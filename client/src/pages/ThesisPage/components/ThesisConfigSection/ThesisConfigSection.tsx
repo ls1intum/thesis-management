@@ -29,7 +29,7 @@ import { GLOBAL_CONFIG } from '../../../../config/global'
 import { ApiError, getApiResponseErrorMessage } from '../../../../requests/handler'
 import ThesisStateBadge from '../../../../components/ThesisStateBadge/ThesisStateBadge'
 import ThesisVisibilitySelect from '../ThesisVisibilitySelect/ThesisVisibilitySelect'
-import { formatThesisType } from '../../../../utils/format'
+import { formatThesisState, formatThesisType } from '../../../../utils/format'
 import LanguageSelect from '../../../../components/LanguageSelect/LanguageSelect'
 import type { PaginationResponse } from '../../../../requests/responses/pagination'
 import type { ILightResearchGroup } from '../../../../requests/responses/researchGroup'
@@ -226,6 +226,25 @@ const ThesisConfigSection = () => {
       throw new Error(`Failed to close thesis ${response.status}`)
     }
   }, 'Thesis closed successfully')
+
+  const orderedStates = [...(thesis.states ?? [])].sort(
+    (a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime(),
+  )
+  const previousState = orderedStates[1]?.state
+  const canRevert = access.supervisor && orderedStates.length >= 2 && !thesis.anonymizedAt
+
+  const [reverting, onRevert] = useThesisUpdateAction(async () => {
+    const response = await doRequest<IThesis>(`/v2/theses/${thesis.thesisId}/revert-state`, {
+      method: 'POST',
+      requiresAuth: true,
+    })
+
+    if (response.ok) {
+      return response.data
+    } else {
+      throw new ApiError(response)
+    }
+  }, 'Thesis state reverted successfully')
 
   const onDeleteThesisClick = async () => {
     setAnonymizeLoading(true)
@@ -434,6 +453,18 @@ const ThesisConfigSection = () => {
                         onClick={onClose}
                       >
                         Close Thesis
+                      </ConfirmationButton>
+                    )}
+                    {canRevert && previousState && (
+                      <ConfirmationButton
+                        confirmationTitle='Revert Thesis State'
+                        confirmationText={`Revert from ${formatThesisState(thesis.state)} back to ${formatThesisState(previousState)}? Data captured in ${formatThesisState(thesis.state)} (assessment, final grade, proposal approval, etc.) will be preserved.`}
+                        variant='outline'
+                        color='yellow'
+                        loading={reverting}
+                        onClick={onRevert}
+                      >
+                        Revert to Previous State
                       </ConfirmationButton>
                     )}
                     {hasAdminAccess && !thesis.anonymizedAt && (

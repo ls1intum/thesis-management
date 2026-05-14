@@ -842,6 +842,56 @@ public class ThesisService {
 		return thesis;
 	}
 
+	/* REVERT */
+
+	/**
+	 * Reverts the thesis one state backwards by deleting the latest state change record and
+	 * setting the thesis state to the previous one in the history.
+	 *
+	 * <p>Side data (proposal approval, assessment entities, final grade) is intentionally
+	 * preserved so the supervisor can re-advance without re-entering it. If the thesis was
+	 * in {@code FINISHED} or {@code DROPPED_OUT}, the student group is restored for each
+	 * student, mirroring the inverse of {@link #completeThesis(Thesis)} / {@link #closeThesis(Thesis)}.
+	 *
+	 * @param thesis the thesis to revert
+	 * @return the updated thesis
+	 * @throws ResourceInvalidParametersException if the thesis is anonymized or has no previous state
+	 */
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
+	@Transactional
+	public Thesis revertToPreviousState(Thesis thesis) {
+		requireNotAnonymized(thesis);
+		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+
+		List<ThesisStateChange> orderedStates = thesis.getStates().stream()
+				.sorted(Comparator.comparing(ThesisStateChange::getChangedAt).reversed())
+				.toList();
+
+		if (orderedStates.size() < 2) {
+			throw new ResourceInvalidParametersException("Thesis has no previous state to revert to");
+		}
+
+		ThesisStateChange currentChange = orderedStates.get(0);
+		ThesisState previousState = orderedStates.get(1).getId().getState();
+		ThesisState revertedFrom = currentChange.getId().getState();
+
+		thesisStateChangeRepository.deleteById(currentChange.getId());
+		Set<ThesisStateChange> remaining = new HashSet<>(thesis.getStates());
+		remaining.remove(currentChange);
+		thesis.setStates(remaining);
+
+		thesis.setState(previousState);
+		thesis = thesisRepository.save(thesis);
+
+		if (revertedFrom == ThesisState.FINISHED || revertedFrom == ThesisState.DROPPED_OUT) {
+			for (User student : thesis.getStudents()) {
+				accessManagementService.addStudentGroup(student);
+			}
+		}
+
+		return thesis;
+	}
+
 	/* UTILITY */
 
 	private boolean existsPendingThesis(User user) {
