@@ -123,7 +123,7 @@ const AppRoutes = () => {
                   <PresentationPage />
                 </AuthenticatedArea>
               ) : (
-                <PublicArea size={publicBreakpointSize}>
+                <PublicArea size={publicBreakpointSize} hideUnauthenticatedActions={true}>
                   <PresentationPage />
                 </PublicArea>
               )

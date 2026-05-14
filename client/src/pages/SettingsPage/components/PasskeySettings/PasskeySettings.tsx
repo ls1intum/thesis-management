@@ -100,7 +100,7 @@ const PasskeySettings = () => {
             <Paper withBorder p='sm' key={credential.id}>
               <Group justify='space-between' align='center'>
                 <Stack gap={0}>
-                  <Text fw={500}>{credential.userLabel?.trim() || 'Unnamed passkey'}</Text>
+                  <Text fw={500}>{credential.userLabel?.trim() ?? 'Unnamed passkey'}</Text>
                   <Text size='sm' c='dimmed'>
                     {formatCreatedDate(credential.createdDate)}
                   </Text>

@@ -27,9 +27,16 @@ interface HeaderProps {
   opened?: boolean | undefined
   toggle?: () => void
   openLoginModal?: boolean
+  hideUnauthenticatedActions?: boolean
 }
 
-const Header = ({ opened, toggle, authenticatedArea, openLoginModal = false }: HeaderProps) => {
+const Header = ({
+  opened,
+  toggle,
+  authenticatedArea,
+  openLoginModal = false,
+  hideUnauthenticatedActions = false,
+}: HeaderProps) => {
   const { colorScheme } = useMantineColorScheme()
   const user = useUser()
   const context = useAuthenticationContext()
@@ -41,14 +48,12 @@ const Header = ({ opened, toggle, authenticatedArea, openLoginModal = false }: H
     openLoginModal && !context.isAuthenticated && context.isPasskeySupported
 
   useEffect(() => {
-    if (context.isAuthenticated || !context.isPasskeySupported) {
+    if (!openLoginModal || context.isAuthenticated || !context.isPasskeySupported) {
       setIsLoginModalOpen(false)
       return
     }
 
-    if (openLoginModal) {
-      setIsLoginModalOpen(true)
-    }
+    setIsLoginModalOpen(true)
   }, [context.isAuthenticated, context.isPasskeySupported, openLoginModal])
 
   const onLoginModalClose = () => {
@@ -160,25 +165,27 @@ const Header = ({ opened, toggle, authenticatedArea, openLoginModal = false }: H
             </Menu.Dropdown>
           </Menu>
         ) : (
-          <Group gap='xs'>
-            {context.isPasskeySupported && (
-              <Button
-                variant='outline'
-                leftSection={<KeyIcon size={16} />}
-                onClick={() => void onPasskeyLogin()}
-                loading={isPasskeyLoading}
-              >
-                <Text span visibleFrom='sm'>
-                  AET Passkey
-                </Text>
-              </Button>
-            )}
-            <Button onClick={() => void context.login('/dashboard')}>Login</Button>
-          </Group>
+          !hideUnauthenticatedActions && (
+            <Group gap='xs'>
+              {context.isPasskeySupported && (
+                <Button
+                  variant='outline'
+                  leftSection={<KeyIcon size={16} />}
+                  onClick={() => void onPasskeyLogin()}
+                  loading={isPasskeyLoading}
+                >
+                  <Text span visibleFrom='sm'>
+                    AET Passkey
+                  </Text>
+                </Button>
+              )}
+              <Button onClick={() => void context.login('/dashboard')}>Login</Button>
+            </Group>
+          )
         )}
       </Flex>
       <Modal
-        opened={isLoginModalForcedOpen || isLoginModalOpen}
+        opened={isLoginModalForcedOpen ?? isLoginModalOpen}
         onClose={onLoginModalClose}
         closeOnEscape={!isPasskeyLoading}
         withCloseButton={!isPasskeyLoading}
