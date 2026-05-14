@@ -4,7 +4,6 @@ import { authStatePath, navigateTo } from './helpers'
 const PASSKEY_PROMPT_TITLE = 'One click for multiple AET apps'
 const NEVER_ASK_AGAIN_STORAGE_KEY_PREFIX = 'passkey_prompt_never_ask_again'
 const DISABLE_PASSKEY_PROMPT_STORAGE_KEY = 'passkey_prompt_disabled'
-const AUTHENTICATION_TOKENS_STORAGE_KEY = 'authentication_tokens'
 
 const passkeyPromptDialog = (page: Page) => page.getByRole('dialog', { name: PASSKEY_PROMPT_TITLE })
 
@@ -110,11 +109,27 @@ const prepareUserWithoutPasskeys = async (page: Page) => {
   await expect(page.getByText('No passkeys registered yet.')).toBeVisible({ timeout: 15_000 })
 }
 
-const clearBrowserAuthenticationState = async (page: Page) => {
-  await page.evaluate((storageKey) => {
-    localStorage.removeItem(storageKey)
-  }, AUTHENTICATION_TOKENS_STORAGE_KEY)
-  await page.context().clearCookies()
+const loginWithPassword = async (page: Page, username: string, password: string) => {
+  await page.goto('/')
+  await page.locator('header').getByRole('button', { name: 'Login' }).click()
+  await expect(page.locator('#kc-login')).toBeVisible({ timeout: 30_000 })
+  await page.locator('#username').fill(username)
+  await page.locator('#password').fill(password)
+  await page.locator('#kc-login').click()
+  await expect(page).toHaveURL(/localhost:\d+/, { timeout: 30_000 })
+  await page.waitForFunction(
+    () => {
+      try {
+        const tokens = localStorage.getItem('authentication_tokens')
+        if (!tokens) return false
+        const parsed = JSON.parse(tokens)
+        return !!parsed.access_token && !!parsed.refresh_token
+      } catch {
+        return false
+      }
+    },
+    { timeout: 15_000 },
+  )
 }
 
 test.describe('Passkey - Prompt', () => {
@@ -225,18 +240,20 @@ test.describe('Passkey - Settings', () => {
 })
 
 test.describe('Passkey - Login', () => {
-  test.use({ storageState: authStatePath('passkey_user') })
+  test.use({ storageState: { cookies: [], origins: [] } })
 
   test('signs in with a registered passkey from the login modal', async ({ page }) => {
     await disablePasskeyPromptAtStartup(page)
 
     const { cdpSession, authenticatorId } = await setupVirtualAuthenticator(page)
     try {
+      await loginWithPassword(page, 'passkey_user', 'passkey_user')
       await prepareUserWithoutPasskeys(page)
       await registerPasskeyFromSettings(page)
       await waitForVirtualPasskey(cdpSession, authenticatorId)
 
-      await clearBrowserAuthenticationState(page)
+      await page.goto('/logout')
+      await expect(page.locator('header').getByText('Login')).toBeVisible({ timeout: 60_000 })
 
       await page.goto('/dashboard')
       const loginModal = page.getByRole('dialog', { name: 'Login' })
