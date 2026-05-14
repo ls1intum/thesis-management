@@ -8,6 +8,7 @@ const TEST_USERS = [
   { name: 'student3', username: 'student3', password: 'student3' },
   { name: 'student4', username: 'student4', password: 'student4' },
   { name: 'student5', username: 'student5', password: 'student5' },
+  { name: 'passkey_user', username: 'passkey_user', password: 'passkey_user' },
   { name: 'supervisor', username: 'supervisor', password: 'supervisor' },
   { name: 'supervisor2', username: 'supervisor2', password: 'supervisor2' },
   { name: 'examiner', username: 'examiner', password: 'examiner' },
@@ -24,13 +25,11 @@ const TEST_USERS = [
 
 for (const user of TEST_USERS) {
   setup(`authenticate as ${user.name}`, async ({ page }) => {
-    // Navigate to a protected route to trigger the in-app login modal.
-    await page.goto('/dashboard')
+    // Start from a public route and use the regular header login button to log in
+    await page.goto('/')
 
-    await expect(page).toHaveURL(/\/dashboard/)
-    const loginModal = page.getByRole('dialog', { name: 'Login' })
-    await expect(loginModal).toBeVisible({ timeout: 30_000 })
-    await loginModal.getByRole('button', { name: 'Login' }).click()
+    await expect(page).toHaveURL(/\/$/)
+    await page.locator('header').getByRole('button', { name: 'Login' }).click()
 
     // Wait for Keycloak login page to load
     await expect(page.locator('#kc-login')).toBeVisible({ timeout: 30_000 })

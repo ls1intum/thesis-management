@@ -121,8 +121,12 @@ test.describe('Passkey - Prompt', () => {
 
       const promptDialog = passkeyPromptDialog(page)
       await expect(promptDialog).toBeVisible({ timeout: 30_000 })
-      await expect(promptDialog.getByText('One passkey for fast, secure sign-in across multiple apps.')).toBeVisible()
-      await expect(promptDialog.getByRole('checkbox', { name: 'Never ask again' })).not.toBeChecked()
+      await expect(
+        promptDialog.getByText('One passkey for fast, secure sign-in across multiple apps.'),
+      ).toBeVisible()
+      await expect(
+        promptDialog.getByRole('checkbox', { name: 'Never ask again' }),
+      ).not.toBeChecked()
       await expect(promptDialog.getByRole('button', { name: 'Maybe later' })).toBeVisible()
       await expect(promptDialog.getByRole('button', { name: 'Register Passkey' })).toBeVisible()
 
@@ -213,7 +217,7 @@ test.describe('Passkey - Settings', () => {
 })
 
 test.describe('Passkey - Login', () => {
-  test.use({ storageState: authStatePath('examiner2') })
+  test.use({ storageState: authStatePath('passkey_user') })
 
   test('signs in with a registered passkey from the login modal', async ({ page }) => {
     await disablePasskeyPromptAtStartup(page)

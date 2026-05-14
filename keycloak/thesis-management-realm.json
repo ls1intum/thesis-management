@@ -871,6 +871,37 @@
       ]
     },
     {
+      "username": "passkey_user",
+      "email": "passkey_user@test.local",
+      "firstName": "Passkey",
+      "lastName": "User",
+      "emailVerified": true,
+      "enabled": true,
+      "attributes": {
+        "matrikelnr": [
+          "03700011"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "passkey_user",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "default-roles-thesis-management"
+      ],
+      "clientRoles": {
+        "thesis-management-app": [
+          "student"
+        ]
+      },
+      "groups": [
+        "/thesis-students"
+      ]
+    },
+    {
       "username": "delete_old_thesis",
       "email": "delete_old_thesis@test.local",
       "firstName": "OldThesis",
