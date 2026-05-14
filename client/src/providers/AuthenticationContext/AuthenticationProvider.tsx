@@ -164,7 +164,7 @@ const parseAccountCredentialsResponse = (
 const getKeycloakInitOptions = (tokens?: IAuthenticationTokens, shouldCheckSso = false) => ({
   ...(shouldCheckSso ? { onLoad: 'check-sso' as const } : {}),
   pkceMethod: 'S256' as const,
-  silentCheckSsoRedirectUri: `${window.location.origin}/silent-check-sso.html`,
+  silentCheckSsoRedirectUri: `${window.location.origin}/silent-check-sso/`,
   silentCheckSsoFallback: false,
   checkLoginIframe: false,
   token: tokens?.access_token,
