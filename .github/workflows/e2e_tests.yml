@@ -27,7 +27,7 @@ jobs:
           --health-retries 10
 
       mailpit:
-        image: axllent/mailpit:v1.29
+        image: axllent/mailpit:v1.30
         ports:
           - 1125:1025
           - 8125:8025
