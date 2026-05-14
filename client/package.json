@@ -14,7 +14,7 @@
   ],
   "main": "src/index.tsx",
   "sideEffects": false,
-  "packageManager": "pnpm@11.1.1",
+  "packageManager": "pnpm@11.1.2",
   "engines": {
     "node": ">=24.7.0",
     "pnpm": ">=11"
