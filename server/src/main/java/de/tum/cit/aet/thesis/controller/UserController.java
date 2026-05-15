@@ -1,9 +1,11 @@
 package de.tum.cit.aet.thesis.controller;
 
+import de.tum.cit.aet.thesis.dto.KeycloakStudentDto;
 import de.tum.cit.aet.thesis.dto.KeycloakUserDto;
 import de.tum.cit.aet.thesis.dto.LightUserDto;
 import de.tum.cit.aet.thesis.dto.PaginationDto;
 import de.tum.cit.aet.thesis.entity.User;
+import de.tum.cit.aet.thesis.exception.request.ResourceInvalidParametersException;
 import de.tum.cit.aet.thesis.security.CurrentUserProvider;
 import de.tum.cit.aet.thesis.service.AccessManagementService;
 import de.tum.cit.aet.thesis.service.AccessManagementService.KeycloakUserInformation;
@@ -27,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -115,6 +118,49 @@ public class UserController {
 
 		return ResponseEntity.ok(users);
 	}
+
+	/**
+	 * Searches Keycloak for potential thesis students that supervisors can pick from the
+	 * Create Thesis dialog when the local DB does not yet have the student.
+	 *
+	 * <p>Returns at most {@value #KEYCLOAK_STUDENT_SEARCH_LIMIT} entries to avoid leaking the
+	 * full realm directory and requires a search key of at least
+	 * {@value #KEYCLOAK_STUDENT_SEARCH_MIN_LENGTH} characters for the same reason.
+	 *
+	 * @param searchKey the search key (name or username fragment); minimum 2 characters
+	 * @return a capped list of Keycloak entries, each annotated with whether a local user already exists
+	 */
+	@GetMapping("/keycloak/students")
+	@PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
+	public ResponseEntity<List<KeycloakStudentDto>> getKeycloakStudents(
+			@RequestParam String searchKey
+	) {
+		String trimmed = searchKey == null ? "" : searchKey.trim();
+		if (trimmed.length() < KEYCLOAK_STUDENT_SEARCH_MIN_LENGTH) {
+			throw new ResourceInvalidParametersException(
+					"searchKey must be at least " + KEYCLOAK_STUDENT_SEARCH_MIN_LENGTH + " characters");
+		}
+
+		List<KeycloakUserInformation> keycloakUsers = accessManagementService.getAllUsers(trimmed);
+
+		List<String> usernames = keycloakUsers.stream()
+				.map(KeycloakUserInformation::username)
+				.toList();
+
+		Set<String> localUsernames = userService.findAllByUniversityIdIn(usernames).stream()
+				.map(User::getUniversityId)
+				.collect(Collectors.toSet());
+
+		List<KeycloakStudentDto> result = keycloakUsers.stream()
+				.limit(KEYCLOAK_STUDENT_SEARCH_LIMIT)
+				.map(user -> KeycloakStudentDto.from(user, localUsernames))
+				.toList();
+
+		return ResponseEntity.ok(result);
+	}
+
+	private static final int KEYCLOAK_STUDENT_SEARCH_LIMIT = 20;
+	private static final int KEYCLOAK_STUDENT_SEARCH_MIN_LENGTH = 2;
 
 	/**
 	 * Downloads the examination report PDF for a user.

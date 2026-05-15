@@ -283,6 +283,7 @@ public class ApplicationService {
 				examinerIds,
 				supervisorIds,
 				List.of(application.getUser().getId()),
+				List.of(),
 				application,
 				notifyUser,
 				application.getResearchGroup().getId()

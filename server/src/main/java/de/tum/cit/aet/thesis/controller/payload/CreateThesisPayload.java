@@ -8,8 +8,20 @@ public record CreateThesisPayload(
 		String thesisType,
 		String language,
 		List<UUID> studentIds,
+		List<String> additionalStudentUsernames,
 		List<UUID> supervisorIds,
 		List<UUID> examinerIds,
 		UUID researchGroupId
 ) {
+	public CreateThesisPayload(
+			String thesisTitle,
+			String thesisType,
+			String language,
+			List<UUID> studentIds,
+			List<UUID> supervisorIds,
+			List<UUID> examinerIds,
+			UUID researchGroupId
+	) {
+		this(thesisTitle, thesisType, language, studentIds, List.of(), supervisorIds, examinerIds, researchGroupId);
+	}
 }

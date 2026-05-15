@@ -419,6 +419,115 @@ class UserControllerTest extends BaseIntegrationTest {
 	}
 
 	@Nested
+	class GetKeycloakStudents {
+		@BeforeEach
+		void resetMocks() {
+			reset(accessManagementService);
+		}
+
+		@Test
+		void getKeycloakStudents_Success_AsSupervisor() throws Exception {
+			KeycloakUserInformation keycloakUser = new KeycloakUserInformation(
+					UUID.randomUUID(), "kc-stu-1", "Ada", "Lovelace", "ada@example.com",
+					Map.of("matrikelnr", List.of("01234567"))
+			);
+			doReturn(List.of(keycloakUser)).when(accessManagementService).getAllUsers(any());
+
+			String response = mockMvc.perform(MockMvcRequestBuilders.get("/v2/users/keycloak/students")
+							.header("Authorization", createRandomAuthentication("supervisor"))
+							.param("searchKey", "ada"))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			JsonNode json = objectMapper.readTree(response);
+			assertThat(json.isArray()).isTrue();
+			assertThat(json.size()).isEqualTo(1);
+			assertThat(json.get(0).get("username").asString()).isEqualTo("kc-stu-1");
+			assertThat(json.get(0).get("firstName").asString()).isEqualTo("Ada");
+			assertThat(json.get(0).get("matriculationNumber").asString()).isEqualTo("01234567");
+			assertThat(json.get(0).get("existsLocally").asBoolean()).isFalse();
+		}
+
+		@Test
+		void getKeycloakStudents_Success_AsAdvisor() throws Exception {
+			doReturn(List.of()).when(accessManagementService).getAllUsers(any());
+
+			mockMvc.perform(MockMvcRequestBuilders.get("/v2/users/keycloak/students")
+							.header("Authorization", createRandomAuthentication("advisor"))
+							.param("searchKey", "anyone"))
+					.andExpect(status().isOk());
+		}
+
+		@Test
+		void getKeycloakStudents_FlagsExistingLocalUsers() throws Exception {
+			TestUser localUser = createTestUser("kc-local-stu", List.of("student"));
+			KeycloakUserInformation keycloakUser = new KeycloakUserInformation(
+					UUID.randomUUID(), "kc-local-stu", "Ada", "Lovelace", "ada@example.com", Map.of()
+			);
+			doReturn(List.of(keycloakUser)).when(accessManagementService).getAllUsers(any());
+
+			String response = mockMvc.perform(MockMvcRequestBuilders.get("/v2/users/keycloak/students")
+							.header("Authorization", createRandomAuthentication("supervisor"))
+							.param("searchKey", "ada"))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			JsonNode json = objectMapper.readTree(response);
+			assertThat(json.get(0).get("existsLocally").asBoolean()).isTrue();
+		}
+
+		@Test
+		void getKeycloakStudents_TooShortSearchKey_BadRequest() throws Exception {
+			mockMvc.perform(MockMvcRequestBuilders.get("/v2/users/keycloak/students")
+							.header("Authorization", createRandomAuthentication("supervisor"))
+							.param("searchKey", "a"))
+					.andExpect(status().isBadRequest());
+		}
+
+		@Test
+		void getKeycloakStudents_MissingSearchKey_BadRequest() throws Exception {
+			mockMvc.perform(MockMvcRequestBuilders.get("/v2/users/keycloak/students")
+							.header("Authorization", createRandomAuthentication("supervisor")))
+					.andExpect(status().isBadRequest());
+		}
+
+		@Test
+		void getKeycloakStudents_AsStudent_Forbidden() throws Exception {
+			mockMvc.perform(MockMvcRequestBuilders.get("/v2/users/keycloak/students")
+							.header("Authorization", createRandomAuthentication("student"))
+							.param("searchKey", "ada"))
+					.andExpect(status().isForbidden());
+		}
+
+		@Test
+		void getKeycloakStudents_Unauthenticated_ReturnsUnauthorized() throws Exception {
+			mockMvc.perform(MockMvcRequestBuilders.get("/v2/users/keycloak/students")
+							.param("searchKey", "ada"))
+					.andExpect(status().isUnauthorized());
+		}
+
+		@Test
+		void getKeycloakStudents_CapsResultsAtTwenty() throws Exception {
+			List<KeycloakUserInformation> many = new ArrayList<>();
+			for (int i = 0; i < 30; i++) {
+				many.add(new KeycloakUserInformation(
+						UUID.randomUUID(), "kc-bulk-" + i, "F" + i, "L" + i, "u" + i + "@example.com", Map.of()
+				));
+			}
+			doReturn(many).when(accessManagementService).getAllUsers(any());
+
+			String response = mockMvc.perform(MockMvcRequestBuilders.get("/v2/users/keycloak/students")
+							.header("Authorization", createRandomAuthentication("supervisor"))
+							.param("searchKey", "kc"))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			JsonNode json = objectMapper.readTree(response);
+			assertThat(json.size()).isEqualTo(20);
+		}
+	}
+
+	@Nested
 	class DocumentDownloads {
 		@Test
 		void getExaminationReport_AccessDenied_AsDifferentStudent() throws Exception {

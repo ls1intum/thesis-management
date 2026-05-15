@@ -3,6 +3,7 @@ import { isNotEmpty, useForm } from '@mantine/form'
 import { GLOBAL_CONFIG } from '../../../../config/global'
 import React, { useEffect, useState } from 'react'
 import { UserMultiSelect } from '../../../../components/UserMultiSelect/UserMultiSelect'
+import { StudentMultiSelect } from '../../../../components/StudentMultiSelect/StudentMultiSelect'
 import { useNavigate } from 'react-router'
 import { doRequest } from '../../../../requests/request'
 import type { IThesis } from '../../../../requests/responses/thesis'
@@ -35,7 +36,8 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
     title: string
     type: string | null
     language: string | null
-    students: string[]
+    studentDbUserIds: string[]
+    additionalStudentUsernames: string[]
     supervisorIds: string[]
     examinerIds: string[]
     researchGroupId: string
@@ -45,7 +47,8 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
       title: '',
       type: null,
       language: getDefaultLanguage(),
-      students: [],
+      studentDbUserIds: [],
+      additionalStudentUsernames: [],
       supervisorIds: [],
       examinerIds: [],
       researchGroupId: '',
@@ -55,7 +58,11 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
       title: isNotEmpty('Thesis title must not be empty'),
       type: isNotEmpty('Thesis type must not be empty'),
       language: isNotEmpty('Thesis language must not be empty'),
-      students: isNotEmptyUserList('student'),
+      studentDbUserIds: (value, values) => {
+        if (value.length === 0 && values.additionalStudentUsernames.length === 0) {
+          return 'You must select at least one student'
+        }
+      },
       supervisorIds: isNotEmptyUserList('supervisor'),
       examinerIds: isNotEmptyUserList('examiner'),
       researchGroupId: isNotEmpty('Research group must not be empty'),
@@ -121,7 +128,8 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
                 thesisTitle: values.title,
                 thesisType: values.type,
                 language: values.language,
-                studentIds: values.students,
+                studentIds: values.studentDbUserIds,
+                additionalStudentUsernames: values.additionalStudentUsernames,
                 supervisorIds: values.supervisorIds,
                 examinerIds: values.examinerIds,
                 researchGroupId: values.researchGroupId,
@@ -160,11 +168,18 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
             required={true}
             {...form.getInputProps('language')}
           />
-          <UserMultiSelect
+          <StudentMultiSelect
             label='Student(s)'
             required={true}
-            groups={['student']}
-            {...form.getInputProps('students')}
+            value={{
+              dbUserIds: form.values.studentDbUserIds,
+              keycloakUsernames: form.values.additionalStudentUsernames,
+            }}
+            onChange={(next) => {
+              form.setFieldValue('studentDbUserIds', next.dbUserIds)
+              form.setFieldValue('additionalStudentUsernames', next.keycloakUsernames)
+            }}
+            error={form.errors.studentDbUserIds}
           />
           <UserMultiSelect
             label='Supervisor(s)'

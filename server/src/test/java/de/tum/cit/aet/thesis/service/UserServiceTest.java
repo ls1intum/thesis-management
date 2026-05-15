@@ -11,6 +11,7 @@ import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.mock.EntityMockFactory;
 import de.tum.cit.aet.thesis.repository.UserRepository;
 import de.tum.cit.aet.thesis.security.CurrentUserProvider;
+import de.tum.cit.aet.thesis.service.AccessManagementService.KeycloakUserInformation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,12 +26,20 @@ import org.springframework.data.domain.Sort;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
 	@Mock
 	private UserRepository userRepository;
+
+	@Mock
+	private UploadService uploadService;
+
+	@Mock
+	private AccessManagementService accessManagementService;
 
 	@Mock
 	private ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
@@ -103,5 +112,45 @@ class UserServiceTest {
 				userService.findById(testUser.getId())
 		);
 		verify(userRepository).findById(testUser.getId());
+	}
+
+	@Test
+	void findOrCreateByUniversityId_WithExistingUser_ReturnsLocalUser() {
+		testUser.setUniversityId("ab12cde");
+		when(userRepository.findByUniversityId("ab12cde")).thenReturn(Optional.of(testUser));
+
+		User result = userService.findOrCreateByUniversityId("ab12cde");
+
+		assertSame(testUser, result);
+		verify(userRepository).findByUniversityId("ab12cde");
+		org.mockito.Mockito.verifyNoInteractions(accessManagementService);
+		org.mockito.Mockito.verify(userRepository, org.mockito.Mockito.never()).save(any());
+	}
+
+	@Test
+	void findOrCreateByUniversityId_WithMissingUser_FetchesFromKeycloakAndPersists() {
+		when(userRepository.findByUniversityId("ab12cde")).thenReturn(Optional.empty());
+		KeycloakUserInformation keycloakUser = new KeycloakUserInformation(
+				UUID.randomUUID(),
+				"ab12cde",
+				"Ada",
+				"Lovelace",
+				"ada@example.com",
+				Map.of("matrikelnr", List.of("01234567"))
+		);
+		when(accessManagementService.getUserByUsername("ab12cde")).thenReturn(keycloakUser);
+		when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+		User result = userService.findOrCreateByUniversityId("ab12cde");
+
+		assertNotNull(result);
+		assertEquals("ab12cde", result.getUniversityId());
+		assertEquals("Ada", result.getFirstName());
+		assertEquals("Lovelace", result.getLastName());
+		assertEquals("ada@example.com", result.getEmail().getAddress());
+		assertEquals("01234567", result.getMatriculationNumber());
+		assertNotNull(result.getJoinedAt());
+		assertNotNull(result.getUpdatedAt());
+		verify(userRepository).save(any(User.class));
 	}
 }

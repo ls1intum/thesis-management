@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -25,20 +26,24 @@ import java.util.UUID;
 public class UserService {
 	private final UserRepository userRepository;
 	private final UploadService uploadService;
+	private final AccessManagementService accessManagementService;
 	private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
 
 	/**
-	 * Injects the user repository, upload service, and current user provider.
+	 * Injects the user repository, upload service, access management service, and current user provider.
 	 *
 	 * @param userRepository the user repository
 	 * @param uploadService the upload service
+	 * @param accessManagementService the access management service used to look up users in Keycloak
 	 * @param currentUserProviderProvider the current user provider
 	 */
 	@Autowired
 	public UserService(UserRepository userRepository, UploadService uploadService,
+		AccessManagementService accessManagementService,
 		ObjectProvider<CurrentUserProvider> currentUserProviderProvider) {
 		this.userRepository = userRepository;
 		this.uploadService = uploadService;
+		this.accessManagementService = accessManagementService;
 		this.currentUserProviderProvider = currentUserProviderProvider;
 	}
 
@@ -129,5 +134,33 @@ public class UserService {
 	 */
 	public List<User> findAllByUniversityIdIn(List<String> universityIds) {
 		return userRepository.findAllByUniversityIdIn(universityIds);
+	}
+
+	/**
+	 * Returns the local user matching the given university ID, or materialises a new one from Keycloak.
+	 * Used when an operator picks a directory entry that has never logged in to the portal: we fetch
+	 * the canonical name/email/matriculation number from Keycloak and persist a row so the rest of the
+	 * app can keep referring to users by their internal UUID.
+	 *
+	 * @param universityId the Keycloak username (== {@link User#getUniversityId()}) to look up or create
+	 * @return the existing or newly created user
+	 */
+	public User findOrCreateByUniversityId(String universityId) {
+		return userRepository.findByUniversityId(universityId).orElseGet(() -> {
+			AccessManagementService.KeycloakUserInformation keycloakUser =
+					accessManagementService.getUserByUsername(universityId);
+
+			Instant now = Instant.now();
+			User newUser = new User();
+			newUser.setJoinedAt(now);
+			newUser.setUpdatedAt(now);
+			newUser.setUniversityId(keycloakUser.username());
+			newUser.setFirstName(keycloakUser.firstName());
+			newUser.setLastName(keycloakUser.lastName());
+			newUser.setEmail(keycloakUser.email());
+			newUser.setMatriculationNumber(keycloakUser.getMatriculationNumber());
+
+			return userRepository.save(newUser);
+		});
 	}
 }

@@ -16,6 +16,15 @@ export interface ILightUser extends IMinimalUser {
   groups?: string[]
 }
 
+export interface IKeycloakStudent {
+  username: string
+  firstName: string | null
+  lastName: string | null
+  email: string | null
+  matriculationNumber: string | null
+  existsLocally: boolean
+}
+
 export interface IUser extends ILightUser {
   researchGroupName: string | null
   researchGroupId: string | null

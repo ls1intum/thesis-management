@@ -57,6 +57,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -178,6 +179,7 @@ public class ThesisController {
 				RequestValidator.validateNotNull(payload.examinerIds()),
 				RequestValidator.validateNotNull(payload.supervisorIds()),
 				RequestValidator.validateNotNull(payload.studentIds()),
+				payload.additionalStudentUsernames() == null ? List.of() : payload.additionalStudentUsernames(),
 				null,
 				true,
 				RequestValidator.validateNotNull(payload.researchGroupId())

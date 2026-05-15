@@ -223,7 +223,7 @@ public class ResearchGroupService {
 			String campus
 	) {
 		//Get the User by universityId else create the user
-		User head = getUserByUsernameOrCreate(headUsername);
+		User head = userService.findOrCreateByUniversityId(headUsername);
 		if (head.getResearchGroup() != null) {
 			throw new AccessDeniedException("User is already assigned to a research group.");
 		}
@@ -270,29 +270,6 @@ public class ResearchGroupService {
 				.replace("_", "\\_");
 	}
 
-	private User getUserByUsernameOrCreate(String username) {
-		User user = userRepository.findByUniversityId(username).orElseGet(() -> {
-			User newUser = new User();
-			Instant currentTime = Instant.now();
-
-			newUser.setJoinedAt(currentTime);
-			newUser.setUpdatedAt(currentTime);
-
-			// Load user data from Keycloak
-			AccessManagementService.KeycloakUserInformation userElement = accessManagementService.getUserByUsername(username);
-
-			newUser.setUniversityId(userElement.username());
-			newUser.setFirstName(userElement.firstName());
-			newUser.setLastName(userElement.lastName());
-			newUser.setEmail(userElement.email());
-			newUser.setMatriculationNumber(userElement.getMatriculationNumber());
-
-			return userRepository.save(newUser);
-		});
-
-		return user;
-	}
-
 	@Transactional
 	public ResearchGroup updateResearchGroup(
 			ResearchGroup researchGroup,
@@ -311,7 +288,7 @@ public class ResearchGroupService {
 
 		User oldHead = researchGroup.getHead();
 		//Get the User by universityId else create the user
-		User head = getUserByUsernameOrCreate(headUsername);
+		User head = userService.findOrCreateByUniversityId(headUsername);
 
 		//Update head only on change
 		if (!oldHead.getId().equals(head.getId())) {
@@ -394,7 +371,7 @@ public class ResearchGroupService {
 		//If user has group-admin rights he still needs to be part of the specific research group
 		currentUserProvider().assertCanAccessResearchGroup(researchGroup);
 
-		User user = getUserByUsernameOrCreate(username);
+		User user = userService.findOrCreateByUniversityId(username);
 
 		if (user.getResearchGroup() != null) {
 			throw new AccessDeniedException("User is already assigned to a research group.");
