@@ -55,6 +55,8 @@ docker compose up keycloak -d
 
 The Keycloak admin console is available at http://localhost:8181 (`admin` / `admin`). See the [Test Users and Roles](#test-users-and-roles) table below for the pre-configured users (password = username).
 
+> **All Keycloak users must have an email address.** Every notification, application confirmation, proposal feedback, presentation invitation, and final-grade email is sent to the email claim from the JWT (synced into the `users.email` column on first login). A user without an email can sign in and use the UI, but they will silently miss every transactional email — including being added as a BCC recipient when they are a research group head. When provisioning users in a production Keycloak realm, make the email attribute mandatory and verified.
+
 ## PostgreSQL Database
 
 For local development start a database container by executing the following command from the project root:
@@ -100,6 +102,8 @@ The seed data script (`server/src/main/resources/db/changelog/manual/seed_dev_te
 To activate the dev profile, either:
 - Set the environment variable `SPRING_PROFILES_ACTIVE=dev`
 - Or pass `--spring.profiles.active=dev` when starting the server
+
+> **Production safety:** The dev seed changelog is annotated with `context="dev"`. The Liquibase runtime context is controlled by the `LIQUIBASE_CONTEXTS` environment variable, which defaults to `prod` in `application.yml`. As long as you do **not** set `LIQUIBASE_CONTEXTS=dev` and do **not** run the server with `SPRING_PROFILES_ACTIVE=dev` (which overrides the context to `dev` via `application-dev.yml`), the dev seed data will never run on a production deployment. See [`CONFIGURATION.md`](CONFIGURATION.md) for the variable reference.
 
 #### Test Users and Roles
 
