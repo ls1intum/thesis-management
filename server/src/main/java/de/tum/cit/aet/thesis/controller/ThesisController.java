@@ -178,6 +178,7 @@ public class ThesisController {
 				RequestValidator.validateNotNull(payload.examinerIds()),
 				RequestValidator.validateNotNull(payload.supervisorIds()),
 				RequestValidator.validateNotNull(payload.studentIds()),
+				payload.additionalStudentUsernames(),
 				null,
 				true,
 				RequestValidator.validateNotNull(payload.researchGroupId())

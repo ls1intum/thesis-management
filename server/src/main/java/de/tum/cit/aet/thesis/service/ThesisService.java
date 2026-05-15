@@ -58,6 +58,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -81,6 +82,7 @@ public class ThesisService {
 	private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
 	private final ResearchGroupRepository researchGroupRepository;
 	private final ResearchGroupSettingsService researchGroupSettingsService;
+	private final UserService userService;
 
 	@Value("${thesis-management.client.host}")
 	private String clientHost;
@@ -115,7 +117,8 @@ public class ThesisService {
 			MailingService mailingService,
 			AccessManagementService accessManagementService,
 			ThesisFeedbackRepository thesisFeedbackRepository, ThesisFileRepository thesisFileRepository,
-			ObjectProvider<CurrentUserProvider> currentUserProviderProvider, ResearchGroupRepository researchGroupRepository, ResearchGroupSettingsService researchGroupSettingsService
+			ObjectProvider<CurrentUserProvider> currentUserProviderProvider, ResearchGroupRepository researchGroupRepository, ResearchGroupSettingsService researchGroupSettingsService,
+			UserService userService
 	) {
 		this.thesisRoleRepository = thesisRoleRepository;
 		this.thesisRepository = thesisRepository;
@@ -131,6 +134,7 @@ public class ThesisService {
 		this.currentUserProviderProvider = currentUserProviderProvider;
 		this.researchGroupRepository = researchGroupRepository;
 		this.researchGroupSettingsService = researchGroupSettingsService;
+		this.userService = userService;
 	}
 
 	private CurrentUserProvider currentUserProvider() {
@@ -208,8 +212,6 @@ public class ThesisService {
 		);
 	}
 
-	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
-	@Transactional
 	public Thesis createThesis(
 			String thesisTitle,
 			String thesisType,
@@ -217,6 +219,7 @@ public class ThesisService {
 			List<UUID> examinerIds,
 			List<UUID> supervisorIds,
 			List<UUID> studentIds,
+			List<String> additionalStudentUsernames,
 			Application application,
 			boolean notifyUser,
 			UUID researchGroupId
@@ -244,7 +247,9 @@ public class ThesisService {
 
 		thesis = thesisRepository.save(thesis);
 
-		assignThesisRoles(thesis, examinerIds, supervisorIds, studentIds);
+		List<UUID> effectiveStudentIds = mergeAdditionalStudents(studentIds, additionalStudentUsernames);
+
+		assignThesisRoles(thesis, examinerIds, supervisorIds, effectiveStudentIds);
 		saveStateChange(thesis, nextState);
 
 		if (notifyUser) {
@@ -256,6 +261,27 @@ public class ThesisService {
 		}
 
 		return thesis;
+	}
+
+	/**
+	 * Materialises Keycloak-only students into local user rows and merges them into the existing
+	 * student-ID list, preserving order and removing duplicates. Returns a new list; the inputs are
+	 * not modified.
+	 */
+	private List<UUID> mergeAdditionalStudents(List<UUID> studentIds, List<String> additionalStudentUsernames) {
+		if (additionalStudentUsernames == null || additionalStudentUsernames.isEmpty()) {
+			return studentIds;
+		}
+
+		LinkedHashSet<UUID> merged = new LinkedHashSet<>(studentIds);
+		for (String username : additionalStudentUsernames) {
+			if (username == null || username.isBlank()) {
+				continue;
+			}
+			User student = userService.findOrCreateByUniversityId(username.trim());
+			merged.add(student.getId());
+		}
+		return new ArrayList<>(merged);
 	}
 
 	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems

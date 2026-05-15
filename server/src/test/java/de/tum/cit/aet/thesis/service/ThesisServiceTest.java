@@ -70,6 +70,8 @@ class ThesisServiceTest {
 	private CurrentUserProvider currentUserProvider;
 	@Mock
 	private ResearchGroupSettingsService researchGroupSettingsService;
+	@Mock
+	private UserService userService;
 
 	private ThesisService thesisService;
 	private Thesis testThesis;
@@ -83,7 +85,8 @@ class ThesisServiceTest {
 				userRepository, thesisProposalRepository, thesisAssessmentRepository,
 				uploadService, mailingService, accessManagementService,
 				thesisFeedbackRepository, thesisFileRepository,
-				currentUserProviderProvider, researchGroupRepository, researchGroupSettingsService
+				currentUserProviderProvider, researchGroupRepository, researchGroupSettingsService,
+				userService
 		);
 		when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
 
@@ -119,6 +122,7 @@ class ThesisServiceTest {
 				examinerIds,
 				supervisorIds,
 				studentIds,
+				List.of(),
 				null,
 				true,
 				researchGroupId
@@ -130,6 +134,82 @@ class ThesisServiceTest {
 		verify(thesisRepository).save(any(Thesis.class));
 		verify(mailingService).sendThesisCreatedEmail(any(), eq(result));
 		verify(accessManagementService).addStudentGroup(eq(student));
+	}
+
+	@Test
+	void createThesis_WithAdditionalStudentUsernames_MaterialisesAndAssignsStudentGroup() {
+		User examiner = EntityMockFactory.createUserWithGroup("Examiner", "supervisor");
+		User supervisor = EntityMockFactory.createUserWithGroup("Supervisor", "advisor");
+		User keycloakStudent = EntityMockFactory.createUserWithGroup("Keycloak", "student");
+
+		List<UUID> examinerIds = new ArrayList<>(List.of(examiner.getId()));
+		List<UUID> supervisorIds = new ArrayList<>(List.of(supervisor.getId()));
+		List<UUID> studentIds = new ArrayList<>();
+		List<String> additionalUsernames = List.of("ab12cde");
+		UUID researchGroupId = testResearchGroup.getId();
+
+		when(userService.findOrCreateByUniversityId("ab12cde")).thenReturn(keycloakStudent);
+		when(userRepository.findAllById(examinerIds)).thenReturn(new ArrayList<>(List.of(examiner)));
+		when(userRepository.findAllById(supervisorIds)).thenReturn(new ArrayList<>(List.of(supervisor)));
+		when(userRepository.findAllById(List.of(keycloakStudent.getId())))
+				.thenReturn(new ArrayList<>(List.of(keycloakStudent)));
+		when(thesisRepository.save(any(Thesis.class))).thenAnswer(invocation -> invocation.getArgument(0));
+		when(currentUserProvider.getUser()).thenReturn(testUser);
+		when(researchGroupRepository.findById(researchGroupId)).thenReturn(Optional.ofNullable(testResearchGroup));
+
+		Thesis result = thesisService.createThesis(
+				"Test Thesis",
+				"Bachelor",
+				"ENGLISH",
+				examinerIds,
+				supervisorIds,
+				studentIds,
+				additionalUsernames,
+				null,
+				true,
+				researchGroupId
+		);
+
+		assertNotNull(result);
+		verify(userService).findOrCreateByUniversityId("ab12cde");
+		verify(accessManagementService).addStudentGroup(eq(keycloakStudent));
+	}
+
+	@Test
+	void createThesis_WithUsernameDuplicatingExistingStudentId_DeduplicatesAndAssignsOnce() {
+		User examiner = EntityMockFactory.createUserWithGroup("Examiner", "supervisor");
+		User supervisor = EntityMockFactory.createUserWithGroup("Supervisor", "advisor");
+		User student = EntityMockFactory.createUserWithGroup("Student", "student");
+
+		List<UUID> examinerIds = new ArrayList<>(List.of(examiner.getId()));
+		List<UUID> supervisorIds = new ArrayList<>(List.of(supervisor.getId()));
+		List<UUID> studentIds = new ArrayList<>(List.of(student.getId()));
+		List<String> additionalUsernames = List.of("dup1");
+		UUID researchGroupId = testResearchGroup.getId();
+
+		when(userService.findOrCreateByUniversityId("dup1")).thenReturn(student);
+		when(userRepository.findAllById(examinerIds)).thenReturn(new ArrayList<>(List.of(examiner)));
+		when(userRepository.findAllById(supervisorIds)).thenReturn(new ArrayList<>(List.of(supervisor)));
+		when(userRepository.findAllById(studentIds)).thenReturn(new ArrayList<>(List.of(student)));
+		when(thesisRepository.save(any(Thesis.class))).thenAnswer(invocation -> invocation.getArgument(0));
+		when(currentUserProvider.getUser()).thenReturn(testUser);
+		when(researchGroupRepository.findById(researchGroupId)).thenReturn(Optional.ofNullable(testResearchGroup));
+
+		thesisService.createThesis(
+				"Test Thesis",
+				"Bachelor",
+				"ENGLISH",
+				examinerIds,
+				supervisorIds,
+				studentIds,
+				additionalUsernames,
+				null,
+				true,
+				researchGroupId
+		);
+
+		verify(userRepository).findAllById(studentIds);
+		verify(accessManagementService, org.mockito.Mockito.times(1)).addStudentGroup(eq(student));
 	}
 
 	@Test
