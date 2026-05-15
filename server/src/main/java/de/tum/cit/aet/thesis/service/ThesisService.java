@@ -212,8 +212,6 @@ public class ThesisService {
 		);
 	}
 
-	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
-	@Transactional
 	public Thesis createThesis(
 			String thesisTitle,
 			String thesisType,

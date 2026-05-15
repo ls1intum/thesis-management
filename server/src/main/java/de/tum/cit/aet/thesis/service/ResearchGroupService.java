@@ -270,7 +270,6 @@ public class ResearchGroupService {
 				.replace("_", "\\_");
 	}
 
-	@Transactional
 	public ResearchGroup updateResearchGroup(
 			ResearchGroup researchGroup,
 			String headUsername,
