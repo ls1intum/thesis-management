@@ -431,7 +431,7 @@ class UserControllerTest extends BaseIntegrationTest {
 					UUID.randomUUID(), "kc-stu-1", "Ada", "Lovelace", "ada@example.com",
 					Map.of("matrikelnr", List.of("01234567"))
 			);
-			doReturn(List.of(keycloakUser)).when(accessManagementService).getAllUsers(any());
+			doReturn(List.of(keycloakUser)).when(accessManagementService).getAllUsers(any(), any());
 
 			String response = mockMvc.perform(MockMvcRequestBuilders.get("/v2/users/keycloak/students")
 							.header("Authorization", createRandomAuthentication("supervisor"))
@@ -450,7 +450,7 @@ class UserControllerTest extends BaseIntegrationTest {
 
 		@Test
 		void getKeycloakStudents_Success_AsAdvisor() throws Exception {
-			doReturn(List.of()).when(accessManagementService).getAllUsers(any());
+			doReturn(List.of()).when(accessManagementService).getAllUsers(any(), any());
 
 			mockMvc.perform(MockMvcRequestBuilders.get("/v2/users/keycloak/students")
 							.header("Authorization", createRandomAuthentication("advisor"))
@@ -464,7 +464,7 @@ class UserControllerTest extends BaseIntegrationTest {
 			KeycloakUserInformation keycloakUser = new KeycloakUserInformation(
 					UUID.randomUUID(), "kc-local-stu", "Ada", "Lovelace", "ada@example.com", Map.of()
 			);
-			doReturn(List.of(keycloakUser)).when(accessManagementService).getAllUsers(any());
+			doReturn(List.of(keycloakUser)).when(accessManagementService).getAllUsers(any(), any());
 
 			String response = mockMvc.perform(MockMvcRequestBuilders.get("/v2/users/keycloak/students")
 							.header("Authorization", createRandomAuthentication("supervisor"))
@@ -514,7 +514,7 @@ class UserControllerTest extends BaseIntegrationTest {
 						UUID.randomUUID(), "kc-bulk-" + i, "F" + i, "L" + i, "u" + i + "@example.com", Map.of()
 				));
 			}
-			doReturn(many).when(accessManagementService).getAllUsers(any());
+			doReturn(many).when(accessManagementService).getAllUsers(any(), any());
 
 			String response = mockMvc.perform(MockMvcRequestBuilders.get("/v2/users/keycloak/students")
 							.header("Authorization", createRandomAuthentication("supervisor"))
