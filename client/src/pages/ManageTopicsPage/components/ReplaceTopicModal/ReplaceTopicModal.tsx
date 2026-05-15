@@ -286,7 +286,7 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
               <TextInput
                 label='Research Group'
                 description="Only administrators can change a topic's research group."
-                readOnly
+                disabled
                 value={lockedResearchGroupName}
               />
             )}
