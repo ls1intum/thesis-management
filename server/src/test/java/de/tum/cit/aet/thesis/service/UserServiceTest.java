@@ -19,6 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -152,5 +153,26 @@ class UserServiceTest {
 		assertNotNull(result.getJoinedAt());
 		assertNotNull(result.getUpdatedAt());
 		verify(userRepository).save(any(User.class));
+	}
+
+	@Test
+	void findOrCreateByUniversityId_OnConcurrentCreate_RecoversByReFetching() {
+		KeycloakUserInformation keycloakUser = new KeycloakUserInformation(
+				UUID.randomUUID(), "ab12cde", "Ada", "Lovelace", "ada@example.com", Map.of()
+		);
+		User concurrentlyCreated = EntityMockFactory.createUser("Concurrent");
+		concurrentlyCreated.setUniversityId("ab12cde");
+
+		when(userRepository.findByUniversityId("ab12cde"))
+				.thenReturn(Optional.empty())
+				.thenReturn(Optional.of(concurrentlyCreated));
+		when(accessManagementService.getUserByUsername("ab12cde")).thenReturn(keycloakUser);
+		when(userRepository.save(any(User.class)))
+				.thenThrow(new DataIntegrityViolationException("duplicate universityId"));
+
+		User result = userService.findOrCreateByUniversityId("ab12cde");
+
+		assertSame(concurrentlyCreated, result);
+		verify(userRepository, org.mockito.Mockito.times(2)).findByUniversityId("ab12cde");
 	}
 }

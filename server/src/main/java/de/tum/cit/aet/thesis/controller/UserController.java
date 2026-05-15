@@ -141,7 +141,10 @@ public class UserController {
 					"searchKey must be at least " + KEYCLOAK_STUDENT_SEARCH_MIN_LENGTH + " characters");
 		}
 
-		List<KeycloakUserInformation> keycloakUsers = accessManagementService.getAllUsers(trimmed);
+		List<KeycloakUserInformation> keycloakUsers = accessManagementService.getAllUsers(trimmed, KEYCLOAK_STUDENT_SEARCH_LIMIT)
+				.stream()
+				.limit(KEYCLOAK_STUDENT_SEARCH_LIMIT)
+				.toList();
 
 		List<String> usernames = keycloakUsers.stream()
 				.map(KeycloakUserInformation::username)
@@ -152,7 +155,6 @@ public class UserController {
 				.collect(Collectors.toSet());
 
 		List<KeycloakStudentDto> result = keycloakUsers.stream()
-				.limit(KEYCLOAK_STUDENT_SEARCH_LIMIT)
 				.map(user -> KeycloakStudentDto.from(user, localUsernames))
 				.toList();
 

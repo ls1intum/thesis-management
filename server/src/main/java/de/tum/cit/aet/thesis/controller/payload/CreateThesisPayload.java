@@ -13,6 +13,12 @@ public record CreateThesisPayload(
 		List<UUID> examinerIds,
 		UUID researchGroupId
 ) {
+	public CreateThesisPayload {
+		additionalStudentUsernames = additionalStudentUsernames == null
+				? List.of()
+				: List.copyOf(additionalStudentUsernames);
+	}
+
 	public CreateThesisPayload(
 			String thesisTitle,
 			String thesisType,

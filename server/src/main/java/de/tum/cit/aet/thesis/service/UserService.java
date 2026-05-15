@@ -9,6 +9,7 @@ import de.tum.cit.aet.thesis.utility.HibernateHelper;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -160,7 +161,12 @@ public class UserService {
 			newUser.setEmail(keycloakUser.email());
 			newUser.setMatriculationNumber(keycloakUser.getMatriculationNumber());
 
-			return userRepository.save(newUser);
+			try {
+				return userRepository.save(newUser);
+			} catch (DataIntegrityViolationException ex) {
+				// Another request created the same user concurrently. Return the now-persisted row.
+				return userRepository.findByUniversityId(universityId).orElseThrow(() -> ex);
+			}
 		});
 	}
 }

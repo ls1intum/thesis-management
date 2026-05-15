@@ -1,6 +1,7 @@
 import { Badge, Group, MultiSelect, Text } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { useEffect, useState } from 'react'
+import type { ReactNode } from 'react'
 import { doRequest } from '../../requests/request'
 import { getApiResponseErrorMessage } from '../../requests/handler'
 import { showSimpleError } from '../../utils/notification'
@@ -27,7 +28,7 @@ interface IStudentMultiSelectProps {
   initialUsers?: ILightUser[]
   value: IStudentMultiSelectValue
   onChange: (next: IStudentMultiSelectValue) => void
-  error?: React.ReactNode
+  error?: ReactNode
 }
 
 interface IDbOption {
@@ -63,10 +64,19 @@ const joinSelection = (value: IStudentMultiSelectValue): string[] => [
   ...value.keycloakUsernames.map(kcValue),
 ]
 
+const keycloakDisplayName = (user: IKeycloakStudent): string => {
+  const composed = [user.firstName, user.lastName].filter(Boolean).join(' ').trim()
+  if (composed.length > 0) {
+    return composed
+  }
+  const email = user.email?.trim() ?? ''
+  return email.length > 0 ? email : user.username
+}
+
 const keycloakToMinimalUser = (user: IKeycloakStudent): IMinimalUser => ({
   userId: kcValue(user.username),
-  firstName: user.firstName,
-  lastName: user.lastName,
+  firstName: user.firstName ?? '',
+  lastName: user.lastName ?? '',
   avatar: null,
 })
 
@@ -113,7 +123,7 @@ export const StudentMultiSelect = ({
         requiresAuth: true,
         params: {
           groups: 'student',
-          searchQuery: debouncedSearch,
+          searchQuery: trimmed,
           page: '0',
           limit: '100',
         },
@@ -176,7 +186,7 @@ export const StudentMultiSelect = ({
               .filter((user) => !user.existsLocally)
               .map((user) => ({
                 value: kcValue(user.username),
-                label: [user.firstName, user.lastName].filter(Boolean).join(' '),
+                label: keycloakDisplayName(user),
                 source: 'keycloak' as const,
                 user,
               }))
