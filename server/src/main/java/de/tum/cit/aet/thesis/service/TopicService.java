@@ -247,7 +247,7 @@ public class TopicService {
 		// the topic's creator/supervisor/examiner, or as a member of the topic's
 		// current research group. Without this guard, any advisor / supervisor
 		// could edit an arbitrary topic and "move" it to a research group they
-		// belong to. Mirrors the canEditResearchGroup rule on the client.
+		// belong to.
 		User caller = currentUserProvider().getUser();
 		UUID callerId = caller.getId();
 		boolean callerIsTopicOwner =
