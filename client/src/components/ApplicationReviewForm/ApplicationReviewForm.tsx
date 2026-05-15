@@ -87,17 +87,15 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
   })
 
   // Refs so the application-switch cleanup can read the latest typed comment
-  // and the saved baseline without retriggering the effect.
+  // and the saved baseline without retriggering the effect. Assigned during
+  // render (not in a passive useEffect) so the values are guaranteed fresh
+  // before the useLayoutEffect cleanup below reads them — a passive useEffect
+  // can run *after* a sibling useLayoutEffect cleanup, which would let the
+  // cleanup see a stale comment and persist an older value than the user typed.
   const commentRef = useRef(form.values.comment)
   const savedCommentRef = useRef(application?.comment ?? '')
-
-  useEffect(() => {
-    commentRef.current = form.values.comment
-  }, [form.values.comment])
-
-  useEffect(() => {
-    savedCommentRef.current = application?.comment ?? ''
-  }, [application?.comment])
+  commentRef.current = form.values.comment
+  savedCommentRef.current = application?.comment ?? ''
 
   useLayoutEffect(() => {
     if (application) {
