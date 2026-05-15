@@ -134,7 +134,7 @@ The columns represent the four ways a user can reach a thesis page:
   | `PUBLIC` (any state)    | Any authenticated user                                                 |
   | `INTERNAL`              | Any authenticated user in the `advisor` or `supervisor` Keycloak group |
   | `STUDENT`               | Any authenticated user in the `student`, `advisor`, or `supervisor` group |
-  | `PRIVATE`               | Nobody (only directly assigned Examiner/Supervisor/Student/Admin)      |
+  | `PRIVATE`               | Nobody — only directly assigned Examiner / Supervisor / Student        |
 
   An authenticated user who does not match any of the rows above for a given thesis has **no permissions on it at all** (not even the Viewer column) — every action and read in the table below is denied.
 
@@ -194,9 +194,11 @@ Group heads have the Group Admin role for their group by default (this cannot be
 1. [Production Setup](docs/PRODUCTION.md)
 2. [Configuration](docs/CONFIGURATION.md)
 3. [Customizing E-Mails](docs/MAILS.md)
-4. [Development Setup](docs/DEVELOPMENT.md) (includes [E2E Tests](docs/DEVELOPMENT.md#e2e-tests-playwright))
+4. [Development Setup](docs/DEVELOPMENT.md) (includes [Showcase / demo deployment](docs/DEVELOPMENT.md#showcase--one-command-demo) and [E2E Tests](docs/DEVELOPMENT.md#e2e-tests-playwright))
 5. [Database Changes](docs/DATABASE.md)
 6. [Data Retention Policy](docs/DATA_RETENTION.md)
+
+> **Just want a demo?** Run `docker compose -f docker-compose.showcase.yml up -d` and open <http://localhost:3100>. See [Showcase / one-command demo](docs/DEVELOPMENT.md#showcase--one-command-demo) for details.
 
 ## Features
 

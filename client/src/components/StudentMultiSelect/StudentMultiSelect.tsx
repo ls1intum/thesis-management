@@ -87,7 +87,7 @@ const keycloakToMinimalUser = (user: IKeycloakStudent): IMinimalUser => ({
  *
  * Selected entries are tracked separately as DB user IDs (UUIDs) vs. Keycloak usernames so the
  * caller can submit them through the corresponding {@code CreateThesisPayload} fields; the
- * backend materialises the Keycloak entries as part of thesis creation.
+ * application server materialises the Keycloak entries as part of thesis creation.
  */
 export const StudentMultiSelect = ({
   label,
