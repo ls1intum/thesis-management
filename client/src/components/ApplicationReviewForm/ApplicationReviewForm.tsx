@@ -3,7 +3,7 @@ import { ApplicationState } from '../../requests/responses/application'
 import { useApplicationsContextUpdater } from '../../providers/ApplicationsProvider/hooks'
 import { isNotEmpty, useForm } from '@mantine/form'
 import { GLOBAL_CONFIG } from '../../config/global'
-import React, { useEffect, useLayoutEffect, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useDebouncedValue } from '@mantine/hooks'
 import { doRequest } from '../../requests/request'
 import {
@@ -86,6 +86,19 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
     },
   })
 
+  // Refs so the application-switch cleanup can read the latest typed comment
+  // and the saved baseline without retriggering the effect.
+  const commentRef = useRef(form.values.comment)
+  const savedCommentRef = useRef(application?.comment ?? '')
+
+  useEffect(() => {
+    commentRef.current = form.values.comment
+  }, [form.values.comment])
+
+  useEffect(() => {
+    savedCommentRef.current = application?.comment ?? ''
+  }, [application?.comment])
+
   useLayoutEffect(() => {
     if (application) {
       form.setInitialValues({
@@ -110,12 +123,37 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
     }
 
     form.reset()
+
+    // When the application changes (or the component unmounts), flush any
+    // pending comment edits for the application we are leaving — otherwise a
+    // fast switch before the debounce fires would silently drop the text.
+    const leavingApplicationId = application?.applicationId
+    const leavingBaseline = application?.comment ?? ''
+    return () => {
+      if (!leavingApplicationId) return
+      const pendingComment = commentRef.current
+      if (pendingComment === leavingBaseline) return
+      if (pendingComment === savedCommentRef.current) return
+      doRequest<IApplication>(
+        `/v2/applications/${leavingApplicationId}/comment`,
+        {
+          method: 'PUT',
+          requiresAuth: true,
+          data: { comment: pendingComment },
+        },
+        (res) => {
+          if (!res.ok) {
+            showSimpleError(getApiResponseErrorMessage(res))
+          }
+        },
+      )
+    }
     // eslint-disable-next-line @eslint-react/exhaustive-deps -- intentionally re-initialize form only when switching applications
   }, [application?.applicationId])
 
   const [loading, setLoading] = useState(false)
 
-  const [debouncedComment] = useDebouncedValue(form.values.comment, 1000)
+  const [debouncedComment] = useDebouncedValue(form.values.comment, 500)
 
   useEffect(() => {
     if (form.values.applicationId !== application.applicationId) {
