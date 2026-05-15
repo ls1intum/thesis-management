@@ -1,5 +1,6 @@
 package de.tum.cit.aet.thesis.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.thesis.service.AccessManagementService.KeycloakUserInformation;
 
 import java.util.Set;
@@ -10,6 +11,7 @@ import java.util.Set;
  * logged in to the portal yet. The {@code existsLocally} flag lets the client tag entries that already
  * have a local user row (so it can deduplicate against the DB result set).
  */
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record KeycloakStudentDto(
 		String username,
 		String firstName,

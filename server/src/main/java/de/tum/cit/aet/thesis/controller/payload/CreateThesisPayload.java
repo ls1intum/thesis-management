@@ -1,6 +1,7 @@
 package de.tum.cit.aet.thesis.controller.payload;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public record CreateThesisPayload(
@@ -16,7 +17,7 @@ public record CreateThesisPayload(
 	public CreateThesisPayload {
 		additionalStudentUsernames = additionalStudentUsernames == null
 				? List.of()
-				: List.copyOf(additionalStudentUsernames);
+				: additionalStudentUsernames.stream().filter(Objects::nonNull).toList();
 	}
 
 	public CreateThesisPayload(

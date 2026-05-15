@@ -3,6 +3,7 @@ package de.tum.cit.aet.thesis.service;
 import de.tum.cit.aet.thesis.entity.User;
 import de.tum.cit.aet.thesis.entity.UserGroup;
 import de.tum.cit.aet.thesis.entity.key.UserGroupId;
+import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.repository.UserGroupRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -224,7 +225,7 @@ public class AccessManagementService {
 
 		return users.stream()
 				.findFirst()
-				.orElseThrow(() -> new RuntimeException("User not found: " + username));
+				.orElseThrow(() -> new ResourceNotFoundException("Keycloak user not found: " + username));
 	}
 
 	/**

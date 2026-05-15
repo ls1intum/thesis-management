@@ -1,6 +1,6 @@
 import { Badge, Group, MultiSelect, Text } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { doRequest } from '../../requests/request'
 import { getApiResponseErrorMessage } from '../../requests/handler'
@@ -107,6 +107,15 @@ export const StudentMultiSelect = ({
   const [dbOptions, setDbOptions] = useState<IDbOption[]>([])
   const [keycloakOptions, setKeycloakOptions] = useState<IKeycloakOption[]>([])
 
+  // Read inside async callbacks so they see the latest selection even when
+  // the effect itself doesn't re-run on `value` changes (otherwise a pick
+  // that happens between a fetch start and its response can get dropped
+  // from the options list and render as the raw `db:<uuid>` / `kc:<id>`).
+  const valueRef = useRef(value)
+  useEffect(() => {
+    valueRef.current = value
+  }, [value])
+
   useEffect(() => {
     if (disabled || fetchVersion === 0) {
       setLoading(false)
@@ -145,7 +154,7 @@ export const StudentMultiSelect = ({
           user,
         }))
 
-        const selectedDbValues = new Set(value.dbUserIds.map(dbValue))
+        const selectedDbValues = new Set(valueRef.current.dbUserIds.map(dbValue))
         setDbOptions((prev) =>
           arrayUnique(
             [...prev.filter((option) => selectedDbValues.has(option.value)), ...fetchedDbOptions],
@@ -159,7 +168,9 @@ export const StudentMultiSelect = ({
         if (!shouldQueryKeycloak) {
           setKeycloakOptions((prev) =>
             prev.filter((option) =>
-              value.keycloakUsernames.some((username) => kcValue(username) === option.value),
+              valueRef.current.keycloakUsernames.some(
+                (username) => kcValue(username) === option.value,
+              ),
             ),
           )
           setLoading(false)
@@ -190,7 +201,7 @@ export const StudentMultiSelect = ({
                 source: 'keycloak' as const,
                 user,
               }))
-            const selectedKcValues = new Set(value.keycloakUsernames.map(kcValue))
+            const selectedKcValues = new Set(valueRef.current.keycloakUsernames.map(kcValue))
             setKeycloakOptions((prev) =>
               arrayUnique(
                 [
@@ -210,7 +221,6 @@ export const StudentMultiSelect = ({
       cancelled = true
       cancel?.()
     }
-    // eslint-disable-next-line @eslint-react/exhaustive-deps -- `value` is read inside callbacks to preserve picks; refetching when it changes would loop
   }, [debouncedSearch, fetchVersion, disabled])
 
   const initialDbOptions: IDbOption[] = initialUsers
