@@ -223,7 +223,7 @@ export const StudentMultiSelect = ({
   const data: Array<{ group: string; items: Array<{ value: string; label: string }> }> = []
   if (dbGroupItems.length > 0) {
     data.push({
-      group: 'On this platform',
+      group: 'Existing users',
       items: dbGroupItems.map((option) => ({
         value: option.value,
         label: option.label,
@@ -232,7 +232,7 @@ export const StudentMultiSelect = ({
   }
   if (keycloakGroupItems.length > 0) {
     data.push({
-      group: 'From identity provider — will be added on save',
+      group: 'New users — will be added on save',
       items: keycloakGroupItems.map((option) => ({
         value: option.value,
         label: option.label,
