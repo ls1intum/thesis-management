@@ -40,11 +40,10 @@ const Header = ({
   const colorScheme = useComputedColorScheme('light')
   const user = useUser()
   const context = useAuthenticationContext()
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
   const [isPasskeyLoading, setIsPasskeyLoading] = useState(false)
 
   const navigate = useNavigate()
-  const isLoginModalForcedOpen =
+  const isLoginModalOpen =
     context.isReady && openLoginModal && !context.isAuthenticated && context.isPasskeySupported
 
   useEffect(() => {
@@ -54,24 +53,18 @@ const Header = ({
       context.isAuthenticated ||
       !context.isPasskeySupported
     ) {
-      setIsLoginModalOpen(false)
       return
     }
-
-    setIsLoginModalOpen(true)
   }, [context.isAuthenticated, context.isPasskeySupported, context.isReady, openLoginModal])
 
   const onLoginModalClose = () => {
-    if (isLoginModalForcedOpen) {
+    if (isLoginModalOpen) {
       void navigate('/', { replace: true })
       return
     }
-
-    setIsLoginModalOpen(false)
   }
 
   const onPasswordLogin = () => {
-    setIsLoginModalOpen(false)
     void context.login('/dashboard')
   }
 
@@ -79,7 +72,6 @@ const Header = ({
     setIsPasskeyLoading(true)
     try {
       await context.loginWithPasskey()
-      setIsLoginModalOpen(false)
       void navigate('/dashboard', { replace: true })
     } catch (error) {
       showSimpleError(await getPasskeyErrorMessage(error, undefined, 'login'))
@@ -179,9 +171,7 @@ const Header = ({
                   onClick={() => void onPasskeyLogin()}
                   loading={isPasskeyLoading}
                 >
-                  <Text span visibleFrom='sm'>
-                    AET Passkey
-                  </Text>
+                  AET Passkey
                 </Button>
               )}
               <Button onClick={() => void context.login('/dashboard')}>Login</Button>
@@ -190,7 +180,7 @@ const Header = ({
         )}
       </Flex>
       <Modal
-        opened={isLoginModalForcedOpen ?? isLoginModalOpen}
+        opened={isLoginModalOpen ?? false}
         onClose={onLoginModalClose}
         closeOnEscape={!isPasskeyLoading}
         withCloseButton={!isPasskeyLoading}

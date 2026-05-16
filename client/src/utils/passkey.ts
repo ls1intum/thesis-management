@@ -55,9 +55,7 @@ export const getDeviceName = () => {
   }
   // Prefer Client Hints platform, then legacy navigator.platform, then a stable fallback.
   const userAgentDataPlatform = navigatorWithUaData.userAgentData?.platform?.trim() ?? ''
-  const navigatorPlatformRaw = (navigator as unknown as Record<string, unknown>).platform
-  const navigatorPlatform =
-    typeof navigatorPlatformRaw === 'string' ? navigatorPlatformRaw.trim() : ''
+  const navigatorPlatform = navigator.platform.trim()
   const rawPlatform =
     userAgentDataPlatform !== ''
       ? userAgentDataPlatform
@@ -87,8 +85,7 @@ export const getDeviceName = () => {
       )
       ?.brand?.trim() ?? ''
 
-  const userAgentRaw = (navigator as unknown as Record<string, unknown>).userAgent
-  const userAgent = typeof userAgentRaw === 'string' ? userAgentRaw : ''
+  const userAgent = navigator.userAgent
   let browser = browserFromBrands
   if (browser === '') {
     if (userAgent.includes('Firefox')) {

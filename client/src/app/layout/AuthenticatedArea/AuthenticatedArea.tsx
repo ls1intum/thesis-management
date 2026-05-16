@@ -154,6 +154,8 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
   const FOOTER_HEIGHT = 50
 
   const isSmallerBreakpoint = useIsSmallerBreakpoint('md')
+  const isWaitingForPasskeyProbe =
+    !isAuthenticated && isPasskeySupported === undefined && location.pathname !== '/logout'
 
   useEffect(() => {
     if (navigationType === 'POP') {
@@ -212,7 +214,9 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
               opened={opened}
               toggle={toggle}
               authenticatedArea={true}
-              openLoginModal={!isAuthenticated && location.pathname !== '/logout'}
+              openLoginModal={
+                !isAuthenticated && isPasskeySupported === true && location.pathname !== '/logout'
+              }
             />
           </Container>
         </Box>
@@ -324,7 +328,9 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
                 py={{ base: 10, sm: 20 }}
                 h='100%'
               >
-                {auth.user ? (
+                {isWaitingForPasskeyProbe ? (
+                  <PageLoader />
+                ) : auth.user ? (
                   <Suspense fallback={<PageLoader />}>
                     {!requiredGroups ||
                     requiredGroups.some((role) => auth.user?.groups?.includes(role)) ? (

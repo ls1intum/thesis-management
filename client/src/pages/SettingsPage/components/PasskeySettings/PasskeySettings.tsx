@@ -10,8 +10,7 @@ const formatCreatedDate = (createdDate?: number) => {
     return 'Creation time unknown'
   }
 
-  const milliseconds = createdDate > 10_000_000_000 ? createdDate : createdDate * 1000
-  return `Created ${new Date(milliseconds).toLocaleString()}`
+  return `Created ${new Date(createdDate).toLocaleString()}`
 }
 
 const PasskeySettings = () => {

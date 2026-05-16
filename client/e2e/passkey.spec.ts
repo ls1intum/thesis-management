@@ -1,7 +1,7 @@
 import { expect, Page, test } from '@playwright/test'
 import { authStatePath, navigateTo } from './helpers'
 
-const PASSKEY_PROMPT_TITLE = 'One click for multiple AET apps'
+const PASSKEY_PROMPT_TITLE = 'Register a passkey'
 const NEVER_ASK_AGAIN_STORAGE_KEY_PREFIX = 'passkey_prompt_never_ask_again'
 const MAYBE_LATER_STORAGE_KEY_PREFIX = 'passkey_prompt_maybe_later'
 const DISABLE_PASSKEY_PROMPT_STORAGE_KEY = 'passkey_prompt_disabled'
@@ -16,7 +16,11 @@ const disablePasskeyPromptAtStartup = async (page: Page) => {
 
 const clearPasskeyPromptPreferences = async (page: Page) => {
   await page.evaluate(
-    ({ disableStorageKey, perUserNeverAskAgainStorageKeyPrefix, perUserMaybeLaterStorageKeyPrefix }) => {
+    ({
+      disableStorageKey,
+      perUserNeverAskAgainStorageKeyPrefix,
+      perUserMaybeLaterStorageKeyPrefix,
+    }) => {
       localStorage.removeItem(disableStorageKey)
       for (const key of Object.keys(localStorage)) {
         if (
@@ -150,7 +154,9 @@ test.describe('Passkey - Prompt', () => {
       const promptDialog = passkeyPromptDialog(page)
       await expect(promptDialog).toBeVisible({ timeout: 30_000 })
       await expect(
-        promptDialog.getByText('One passkey for fast, secure sign-in across multiple apps.'),
+        promptDialog.getByText(
+          /(?:One passkey for fast, secure sign-in across multiple apps\.|Use a passkey for fast, secure sign-in\.)/,
+        ),
       ).toBeVisible()
       await expect(
         promptDialog.getByRole('checkbox', { name: 'Never ask again' }),

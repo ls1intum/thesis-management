@@ -593,13 +593,15 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
             decodedToken = undefined
           }
 
-          const userHandle =
-            decodedToken?.sub ?? decodedToken?.preferred_username ?? decodedToken?.email ?? 'user'
+          const userHandle = decodedToken?.sub
+          if (!userHandle) {
+            throw new Error('Cannot register a passkey: access token has no subject')
+          }
+          const userIdBytes = new TextEncoder().encode(userHandle)
           const username = decodedToken?.preferred_username ?? decodedToken?.email ?? userHandle
           const tokenDisplayName =
             typeof decodedToken?.name === 'string' ? decodedToken?.name.trim() : ''
           const displayName = tokenDisplayName.length > 0 ? tokenDisplayName : username
-          const userIdBytes = new TextEncoder().encode(userHandle).slice(0, 64)
 
           const passkeyCredential = await navigator.credentials.create({
             publicKey: {
