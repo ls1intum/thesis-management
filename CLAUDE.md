@@ -67,7 +67,7 @@ Do **not** use `@Transactional` on service methods. It causes performance issues
 
 ### Role Terminology
 
-The backend uses `EXAMINER` and `SUPERVISOR` as thesis role names (`ThesisRoleName` enum), matching the UI labels "Examiner" and "Supervisor". Keycloak groups remain `supervisor` and `advisor` for backward compatibility — do not rename them.
+The Spring Boot server uses `EXAMINER` and `SUPERVISOR` as thesis role names (`ThesisRoleName` enum), matching the UI labels "Examiner" and "Supervisor". Keycloak groups remain `supervisor` and `advisor` for backward compatibility — do not rename them.
 
 ### Keycloak Configuration (Dev Only)
 

@@ -3,6 +3,7 @@ package de.tum.cit.aet.thesis.service;
 import de.tum.cit.aet.thesis.entity.User;
 import de.tum.cit.aet.thesis.entity.UserGroup;
 import de.tum.cit.aet.thesis.entity.key.UserGroupId;
+import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.repository.UserGroupRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -224,7 +225,7 @@ public class AccessManagementService {
 
 		return users.stream()
 				.findFirst()
-				.orElseThrow(() -> new RuntimeException("User not found: " + username));
+				.orElseThrow(() -> new ResourceNotFoundException("Keycloak user not found: " + username));
 	}
 
 	/**
@@ -262,13 +263,28 @@ public class AccessManagementService {
 	 * @return the list of matching Keycloak users
 	 */
 	public List<KeycloakUserInformation> getAllUsers(String searchKey) {
+		return getAllUsers(searchKey, null);
+	}
+
+	/**
+	 * Searches for users in Keycloak matching the given search key, capped at {@code maxResults}.
+	 *
+	 * @param searchKey the search key to match users against
+	 * @param maxResults the maximum number of users to return, or {@code null} for the Keycloak default
+	 * @return the list of matching Keycloak users
+	 */
+	public List<KeycloakUserInformation> getAllUsers(String searchKey, Integer maxResults) {
 		try {
 			return webClient.get()
-					.uri(uriBuilder -> uriBuilder
-							.path("/admin/realms/" + keycloakRealmName + "/users")
-							.queryParam("search", searchKey)
-							.build()
-					)
+					.uri(uriBuilder -> {
+						uriBuilder
+								.path("/admin/realms/" + keycloakRealmName + "/users")
+								.queryParam("search", searchKey);
+						if (maxResults != null) {
+							uriBuilder.queryParam("max", maxResults);
+						}
+						return uriBuilder.build();
+					})
 					.headers(headers -> headers.addAll(getAuthenticationHeaders()))
 					.retrieve()
 					.bodyToFlux(KeycloakUserInformation.class)

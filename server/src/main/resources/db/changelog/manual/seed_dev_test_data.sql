@@ -2200,3 +2200,42 @@ VALUES
      NULL, 'Room 01.07.023, Boltzmannstr. 3', NULL)
 ON CONFLICT DO NOTHING;
 
+-- ============================================================================
+-- 42. E2E COVERAGE GAP TEST DATA — ISSUE #754 COMMENT AUTO-SAVE
+-- ----------------------------------------------------------------------------
+-- Two NOT_ASSESSED applications dedicated to the application-review-comment
+-- regression test. Using students 2 and 3 (which only have older REJECTED /
+-- ACCEPTED apps in this seed) gives us deterministically unique sidebar rows
+-- for the supervisor on topic 1.
+-- ============================================================================
+INSERT INTO applications (application_id, user_id, topic_id, thesis_title, thesis_type, motivation,
+                          state, reject_reason, desired_start_date, comment, created_at, reviewed_at,
+                          research_group_id)
+VALUES
+    ('00000000-0000-4000-c000-000000000040'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'student2'),
+     '00000000-0000-4000-b000-000000000001'::UUID,
+     NULL, 'MASTER',
+     'Issue #754 regression: applicant A for comment auto-save test.',
+     'NOT_ASSESSED', NULL,
+     NOW() + INTERVAL '30 days', '',
+     NOW() - INTERVAL '2 days', NULL,
+     '00000000-0000-4000-a000-000000000001'::UUID),
+
+    ('00000000-0000-4000-c000-000000000041'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'student3'),
+     '00000000-0000-4000-b000-000000000001'::UUID,
+     NULL, 'MASTER',
+     'Issue #754 regression: applicant B for comment auto-save test.',
+     'NOT_ASSESSED', NULL,
+     NOW() + INTERVAL '30 days', '',
+     NOW() - INTERVAL '1 day', NULL,
+     '00000000-0000-4000-a000-000000000001'::UUID)
+ON CONFLICT DO NOTHING;
+
+UPDATE applications SET consent_timestamp = created_at
+WHERE application_id IN (
+    '00000000-0000-4000-c000-000000000040'::UUID,
+    '00000000-0000-4000-c000-000000000041'::UUID
+) AND consent_timestamp IS NULL;
+

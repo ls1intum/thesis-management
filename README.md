@@ -122,7 +122,21 @@ The videos are grouped by the roles student, supervisor, examiner, and research 
 
 Admins can view and edit all theses on the platform.
 For the other roles, please view this access table.
-Examiner, Supervisor and Student means that the user is directly assigned to the thesis with that role.
+
+The columns represent the four ways a user can reach a thesis page:
+
+- **Examiner / Supervisor / Student** — the user is directly assigned to the thesis with that thesis role (see `thesis_roles` table). These are *per-thesis* roles, not global Keycloak groups.
+- **Viewer** — anyone else who can read the thesis based on its `visibility` setting. This is the **default permission set for any logged-in user (and, for finished public theses, even unauthenticated visitors) who is not assigned to the thesis**:
+
+  | Thesis visibility       | Who qualifies as Viewer                                                |
+  |-------------------------|------------------------------------------------------------------------|
+  | `PUBLIC` + `FINISHED`   | Everyone, including unauthenticated visitors                           |
+  | `PUBLIC` (any state)    | Any authenticated user                                                 |
+  | `INTERNAL`              | Any authenticated user in the `advisor` or `supervisor` Keycloak group |
+  | `STUDENT`               | Any authenticated user in the `student`, `advisor`, or `supervisor` group |
+  | `PRIVATE`               | Nobody — only directly assigned Examiner / Supervisor / Student        |
+
+  An authenticated user who does not match any of the rows above for a given thesis has **no permissions on it at all** (not even the Viewer column) — every action and read in the table below is denied.
 
 | Permission                     | Examiner | Supervisor | Student | Viewer |
 | ------------------------------ | -------- | ---------- | ------- | ------ |
@@ -180,9 +194,11 @@ Group heads have the Group Admin role for their group by default (this cannot be
 1. [Production Setup](docs/PRODUCTION.md)
 2. [Configuration](docs/CONFIGURATION.md)
 3. [Customizing E-Mails](docs/MAILS.md)
-4. [Development Setup](docs/DEVELOPMENT.md) (includes [E2E Tests](docs/DEVELOPMENT.md#e2e-tests-playwright))
+4. [Development Setup](docs/DEVELOPMENT.md) (includes [Showcase / demo deployment](docs/DEVELOPMENT.md#showcase--one-command-demo) and [E2E Tests](docs/DEVELOPMENT.md#e2e-tests-playwright))
 5. [Database Changes](docs/DATABASE.md)
 6. [Data Retention Policy](docs/DATA_RETENTION.md)
+
+> **Just want a demo?** Run `docker compose -f docker-compose.showcase.yml up -d` and open <http://localhost:3100>. See [Showcase / one-command demo](docs/DEVELOPMENT.md#showcase--one-command-demo) for details.
 
 ## Features
 

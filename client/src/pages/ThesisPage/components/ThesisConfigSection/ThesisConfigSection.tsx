@@ -402,19 +402,27 @@ const ThesisConfigSection = () => {
                   maxValues={1}
                   {...form.getInputProps('examinerIds')}
                 />
-                <Select
-                  label='Research Group'
-                  required
-                  nothingFoundMessage={'Nothing found...'}
-                  disabled={!hasAdminAccess}
-                  data={(researchGroups?.content ?? []).map(
-                    (researchGroup: ILightResearchGroup) => ({
-                      label: researchGroup.name,
-                      value: researchGroup.id,
-                    }),
-                  )}
-                  {...form.getInputProps('researchGroupId')}
-                />
+                {hasAdminAccess ? (
+                  <Select
+                    label='Research Group'
+                    required
+                    nothingFoundMessage={'Nothing found...'}
+                    data={(researchGroups?.content ?? []).map(
+                      (researchGroup: ILightResearchGroup) => ({
+                        label: researchGroup.name,
+                        value: researchGroup.id,
+                      }),
+                    )}
+                    {...form.getInputProps('researchGroupId')}
+                  />
+                ) : (
+                  <TextInput
+                    label='Research Group'
+                    description="Only administrators can change a thesis's research group."
+                    disabled
+                    value={thesis.researchGroup?.name ?? ''}
+                  />
+                )}
                 {form.values.states.map((item, index) => (
                   <Group key={item.state} grow>
                     <Group justify='center'>
@@ -458,7 +466,11 @@ const ThesisConfigSection = () => {
                     {canRevert && previousState && (
                       <ConfirmationButton
                         confirmationTitle='Revert Thesis State'
-                        confirmationText={`Revert from ${formatThesisState(thesis.state)} back to ${formatThesisState(previousState)}? Data captured in ${formatThesisState(thesis.state)} (assessment, final grade, proposal approval, etc.) will be preserved.`}
+                        confirmationText={
+                          `Revert from ${formatThesisState(thesis.state)} back to ${formatThesisState(previousState)}? ` +
+                          `Data captured in ${formatThesisState(thesis.state)} ` +
+                          `(assessment, final grade, proposal approval, etc.) will be preserved.`
+                        }
                         variant='outline'
                         color='yellow'
                         loading={reverting}
