@@ -107,6 +107,7 @@ public class MailingService {
 				"en");
 		MailBuilder studentMailBuilder = new MailBuilder(config,
 				studentEmailTemplate.getSubject(), studentEmailTemplate.getBodyHtml());
+		applyGroupSignature(studentMailBuilder, application.getResearchGroup());
 		studentMailBuilder
 				.addPrimaryRecipient(application.getUser())
 				.addStoredAttachment(application.getUser().getCvFilename(),
@@ -123,7 +124,7 @@ public class MailingService {
 	}
 
 	private MailBuilder prepareApplicationCreatedMailBuilder(Application application, EmailTemplate template) {
-		return new MailBuilder(config, template.getSubject(), template.getBodyHtml())
+		MailBuilder builder = new MailBuilder(config, template.getSubject(), template.getBodyHtml())
 				.addStoredAttachment(application.getUser().getCvFilename(),
 						getUserFilename(application.getUser(), "CV",
 								application.getUser().getCvFilename()))
@@ -134,6 +135,8 @@ public class MailingService {
 						getUserFilename(application.getUser(), "Degree Report",
 								application.getUser().getDegreeFilename()))
 				.fillApplicationPlaceholders(application);
+		applyGroupSignature(builder, application.getResearchGroup());
+		return builder;
 	}
 
 	private MailBuilder prepareMinimalApplicationMailBuilder(Application application) {
@@ -165,9 +168,15 @@ public class MailingService {
 				+ "</p>"
 				+ "<p>You can view the full application details here: "
 				+ "<a target=\"_blank\" rel=\"noopener noreferrer nofollow\" href=\"" + applicationUrl + "\">"
-				+ applicationUrl + "</a></p>";
+				+ applicationUrl + "</a></p>"
+				// Match the rest of the templates (which all end with the
+				// emailSignature placeholder so the per-research-group
+				// signature gets injected by Thymeleaf).
+				+ "<div th:utext=\"${emailSignature}\"></div>";
 
-		return new MailBuilder(config, subject, body);
+		MailBuilder builder = new MailBuilder(config, subject, body);
+		applyGroupSignature(builder, application.getResearchGroup());
+		return builder;
 	}
 
 	/**
@@ -228,6 +237,7 @@ public class MailingService {
 				templateCase,
 				"en");
 		MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(), emailTemplate.getBodyHtml());
+		applyGroupSignature(mailBuilder, application.getResearchGroup());
 		mailBuilder
 				.addPrimaryRecipient(application.getUser())
 				.addSecondaryRecipient(advisor)
@@ -250,6 +260,7 @@ public class MailingService {
 				reason.getTemplateCase(),
 				"en");
 		MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(), emailTemplate.getBodyHtml());
+		applyGroupSignature(mailBuilder, application.getResearchGroup());
 		mailBuilder
 				.addPrimaryRecipient(application.getUser())
 				.addDefaultBccRecipients(application.getResearchGroup().getHead().getEmail())
@@ -269,6 +280,7 @@ public class MailingService {
 				"APPLICATION_REMINDER",
 				"en");
 		MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(), emailTemplate.getBodyHtml());
+		applyGroupSignature(mailBuilder, user.getResearchGroup());
 		mailBuilder
 				.addPrimaryRecipient(user)
 				.addNotificationName("unreviewed-application-reminder")
@@ -294,6 +306,7 @@ public class MailingService {
 		model.put("clientHost", config.getClientHost());
 
 		MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(), emailTemplate.getBodyHtml());
+		applyGroupSignature(mailBuilder, user.getResearchGroup());
 		mailBuilder
 				.addPrimaryRecipient(user)
 				.addNotificationName(emailTemplate.getSubject())
@@ -314,6 +327,7 @@ public class MailingService {
 				"en");
 
 		MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(), emailTemplate.getBodyHtml());
+		applyGroupSignature(mailBuilder, interviewee.getApplication().getResearchGroup());
 		mailBuilder
 				.addPrimaryRecipient(interviewee.getApplication().getUser())
 				.addNotificationName(emailTemplate.getSubject())
@@ -342,6 +356,7 @@ public class MailingService {
 		User supervisor = slot.getInterviewProcess().getTopic().getSupervisors().getFirst();
 
 		MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(), emailTemplate.getBodyHtml());
+		applyGroupSignature(mailBuilder, slot.getInterviewee().getApplication().getResearchGroup());
 		mailBuilder
 				.addPrimaryRecipient(slot.getInterviewee().getApplication().getUser())
 				.addSecondaryRecipient(supervisor)
@@ -364,6 +379,7 @@ public class MailingService {
 				"THESIS_CREATED",
 				"en");
 		MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(), emailTemplate.getBodyHtml());
+		applyGroupSignature(mailBuilder, thesis.getResearchGroup());
 		mailBuilder
 				.sendToThesisStudents(thesis)
 				.addDefaultBccRecipients(thesis.getResearchGroup().getHead().getEmail())
@@ -385,6 +401,7 @@ public class MailingService {
 				"THESIS_CLOSED",
 				"en");
 		MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(), emailTemplate.getBodyHtml());
+		applyGroupSignature(mailBuilder, thesis.getResearchGroup());
 		mailBuilder
 				.sendToThesisStudents(thesis)
 				.addDefaultBccRecipients(thesis.getResearchGroup().getHead().getEmail())
@@ -405,6 +422,7 @@ public class MailingService {
 			"THESIS_PROPOSAL_UPLOADED",
 			"en");
 		MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(), emailTemplate.getBodyHtml());
+		applyGroupSignature(mailBuilder, proposal.getResearchGroup());
 		mailBuilder
 				.addPrimarySender(proposal.getCreatedBy())
 				.sendToThesisSupervisors(proposal.getThesis())
@@ -425,6 +443,7 @@ public class MailingService {
 				"THESIS_PROPOSAL_ACCEPTED",
 				"en");
 		MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(), emailTemplate.getBodyHtml());
+		applyGroupSignature(mailBuilder, proposal.getResearchGroup());
 		mailBuilder
 				.addPrimarySender(proposal.getApprovedBy())
 				.sendToThesisStudents(proposal.getThesis())
@@ -446,6 +465,7 @@ public class MailingService {
 				"THESIS_PROPOSAL_REJECTED",
 				"en");
 		MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(), emailTemplate.getBodyHtml());
+		applyGroupSignature(mailBuilder, thesis.getResearchGroup());
 		mailBuilder
 				.sendToThesisStudents(thesis)
 				.addNotificationName(NOTIFICATION_NAME_START + thesis.getId())
@@ -473,6 +493,7 @@ public class MailingService {
 				"THESIS_COMMENT_POSTED",
 				"en");
 		MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(), emailTemplate.getBodyHtml());
+		applyGroupSignature(mailBuilder, comment.getResearchGroup());
 
 		if (comment.getType() == ThesisCommentType.SUPERVISOR) {
 			mailBuilder.sendToThesisSupervisors(comment.getThesis());
@@ -509,6 +530,7 @@ public class MailingService {
 				"en");
 		MailBuilder privateMailBuilder = new MailBuilder(config, privateEmailTemplate.getSubject(),
 				privateEmailTemplate.getBodyHtml());
+		applyGroupSignature(privateMailBuilder, presentation.getResearchGroup());
 		privateMailBuilder
 				.addPrimarySender(presentation.getCreatedBy())
 				.sendToThesisStudents(presentation.getThesis())
@@ -523,6 +545,7 @@ public class MailingService {
 					"en");
 			MailBuilder publicMailBuilder = new MailBuilder(config, publicEmailTemplate.getSubject(),
 					publicEmailTemplate.getBodyHtml());
+			applyGroupSignature(publicMailBuilder, presentation.getResearchGroup());
 			publicMailBuilder
 					.addPrimaryRecipient(presentation.getThesis().getStudents().getFirst())
 					.fillThesisPresentationPlaceholders(presentation);
@@ -559,6 +582,7 @@ public class MailingService {
 				"en");
 		MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(),
 				emailTemplate.getBodyHtml());
+		applyGroupSignature(mailBuilder, presentation.getResearchGroup());
 		mailBuilder
 				.sendToThesisStudents(presentation.getThesis())
 				.addNotificationName(NOTIFICATION_NAME_START + presentation.getThesis().getId())
@@ -573,6 +597,7 @@ public class MailingService {
 					"en");
 			MailBuilder publicMailBuilder = new MailBuilder(config, publicEmailTemplate.getSubject(),
 					publicEmailTemplate.getBodyHtml());
+			applyGroupSignature(publicMailBuilder, presentation.getResearchGroup());
 			publicMailBuilder
 					.addPrimaryRecipient(presentation.getThesis().getStudents().getFirst())
 					.fillThesisPresentationPlaceholders(presentation);
@@ -597,6 +622,7 @@ public class MailingService {
 				"en");
 		MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(),
 				emailTemplate.getBodyHtml());
+		applyGroupSignature(mailBuilder, thesis.getResearchGroup());
 		mailBuilder
 				.sendToThesisSupervisors(thesis)
 				.addNotificationName(NOTIFICATION_NAME_START + thesis.getId())
@@ -618,6 +644,7 @@ public class MailingService {
 				"en");
 		MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(),
 				emailTemplate.getBodyHtml());
+		applyGroupSignature(mailBuilder, assessment.getThesis().getResearchGroup());
 		mailBuilder
 				.addPrimarySender(assessment.getCreatedBy())
 				.sendToThesisExaminers(assessment.getThesis())
@@ -638,6 +665,7 @@ public class MailingService {
 				"en");
 		MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(),
 				emailTemplate.getBodyHtml());
+		applyGroupSignature(mailBuilder, thesis.getResearchGroup());
 		mailBuilder
 				.sendToThesisStudents(thesis)
 				.addNotificationName(NOTIFICATION_NAME_START + thesis.getId())
@@ -721,10 +749,19 @@ public class MailingService {
 		model.put("theses", thesisTitles);
 
 		MailBuilder mailBuilder = new MailBuilder(config, emailTemplate.getSubject(), emailTemplate.getBodyHtml());
+		applyGroupSignature(mailBuilder, researchGroup);
 		mailBuilder
 				.addPrimaryRecipient(researchGroup.getHead())
 				.fillPlaceholders(model)
 				.send(javaMailSender, uploadService);
+	}
+
+	private void applyGroupSignature(MailBuilder builder, ResearchGroup group) {
+		if (group != null && group.getResearchGroupSettings() != null
+				&& group.getResearchGroupSettings().getEmailSignature() != null
+				&& !group.getResearchGroupSettings().getEmailSignature().isBlank()) {
+			builder.withSignature(group.getResearchGroupSettings().getEmailSignature());
+		}
 	}
 
 	private String getThesisFilename(Thesis thesis, String name, String originalFilename) {
