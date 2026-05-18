@@ -75,7 +75,7 @@
     "react-router": "7.15.1"
   },
   "devDependencies": {
-    "@eslint-react/eslint-plugin": "5.8.0",
+    "@eslint-react/eslint-plugin": "5.8.1",
     "@eslint/js": "10.0.1",
     "@playwright/test": "1.60.0",
     "@testing-library/jest-dom": "6.9.1",
