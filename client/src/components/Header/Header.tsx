@@ -5,28 +5,80 @@ import {
   Flex,
   Group,
   Menu,
+  Modal,
   Skeleton,
+  Stack,
   Text,
   UnstyledButton,
   useComputedColorScheme,
 } from '@mantine/core'
 import Logo from '../Logo/Logo'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { ColorSchemeToggleButton } from '../ColorSchemeToggleButton/ColorSchemeToggleButton'
 import { useAuthenticationContext, useUser } from '../../hooks/authentication'
 import { CustomAvatar } from '../CustomAvatar/CustomAvatar'
-import { GearSix, NewspaperClipping, SignOut } from '@phosphor-icons/react'
+import { GearSixIcon, KeyIcon, NewspaperClippingIcon, SignOutIcon } from '@phosphor-icons/react'
+import { getPasskeyErrorMessage } from '../../utils/passkey'
+import { showSimpleError } from '../../utils/notification'
+import { useEffect, useState } from 'react'
 
 interface HeaderProps {
   authenticatedArea: boolean
   opened?: boolean | undefined
   toggle?: () => void
+  openLoginModal?: boolean
+  hideUnauthenticatedActions?: boolean
 }
 
-const Header = ({ opened, toggle, authenticatedArea }: HeaderProps) => {
+const Header = ({
+  opened,
+  toggle,
+  authenticatedArea,
+  openLoginModal = false,
+  hideUnauthenticatedActions = false,
+}: HeaderProps) => {
   const colorScheme = useComputedColorScheme('light')
   const user = useUser()
   const context = useAuthenticationContext()
+  const [isPasskeyLoading, setIsPasskeyLoading] = useState(false)
+
+  const navigate = useNavigate()
+  const isLoginModalOpen =
+    context.isReady && openLoginModal && !context.isAuthenticated && context.isPasskeySupported
+
+  useEffect(() => {
+    if (
+      !context.isReady ||
+      !openLoginModal ||
+      context.isAuthenticated ||
+      !context.isPasskeySupported
+    ) {
+      return
+    }
+  }, [context.isAuthenticated, context.isPasskeySupported, context.isReady, openLoginModal])
+
+  const onLoginModalClose = () => {
+    if (isLoginModalOpen) {
+      void navigate('/', { replace: true })
+      return
+    }
+  }
+
+  const onPasswordLogin = () => {
+    void context.login('/dashboard')
+  }
+
+  const onPasskeyLogin = async () => {
+    setIsPasskeyLoading(true)
+    try {
+      await context.loginWithPasskey()
+      void navigate('/dashboard', { replace: true })
+    } catch (error) {
+      showSimpleError(await getPasskeyErrorMessage(error, undefined, 'login'))
+    } finally {
+      setIsPasskeyLoading(false)
+    }
+  }
 
   // Render the brand (logo + title) as a real <a> via react-router's Link so the
   // browser's native right-click menu ("Open in new tab", "Copy link") works.
@@ -67,7 +119,7 @@ const Header = ({ opened, toggle, authenticatedArea }: HeaderProps) => {
             p={'xs'}
           >
             <Group gap='xs' align='center' p={0}>
-              <NewspaperClipping size={16} />
+              <NewspaperClippingIcon size={16} />
               <Text>Dashboard</Text>
             </Group>
           </Button>
@@ -93,28 +145,70 @@ const Header = ({ opened, toggle, authenticatedArea }: HeaderProps) => {
                 <Menu.Item
                   component={Link}
                   to='/dashboard'
-                  leftSection={<NewspaperClipping size={16} />}
+                  leftSection={<NewspaperClippingIcon size={16} />}
                   hiddenFrom='xs'
                 >
                   Go to Dashboard
                 </Menu.Item>
               )}
 
-              <Menu.Item component={Link} to='/settings' leftSection={<GearSix size={16} />}>
+              <Menu.Item component={Link} to='/settings' leftSection={<GearSixIcon size={16} />}>
                 Settings
               </Menu.Item>
               <Divider />
-              <Menu.Item component={Link} to='/logout' leftSection={<SignOut size={16} />}>
+              <Menu.Item component={Link} to='/logout' leftSection={<SignOutIcon size={16} />}>
                 Logout
               </Menu.Item>
             </Menu.Dropdown>
           </Menu>
         ) : (
-          <Button component={Link} to='/dashboard'>
-            Login
-          </Button>
+          !hideUnauthenticatedActions && (
+            <Group gap='xs'>
+              {context.isPasskeySupported && (
+                <Button
+                  variant='outline'
+                  leftSection={<KeyIcon size={16} />}
+                  onClick={() => void onPasskeyLogin()}
+                  loading={isPasskeyLoading}
+                >
+                  AET Passkey
+                </Button>
+              )}
+              <Button onClick={() => void context.login('/dashboard')}>Login</Button>
+            </Group>
+          )
         )}
       </Flex>
+      <Modal
+        opened={isLoginModalOpen ?? false}
+        onClose={onLoginModalClose}
+        closeOnEscape={!isPasskeyLoading}
+        withCloseButton={!isPasskeyLoading}
+        closeOnClickOutside={false}
+        title='Login'
+        centered
+      >
+        <Stack>
+          <Text size='sm' c='dimmed'>
+            Choose your preferred sign-in method.
+          </Text>
+          <Flex direction='column' gap='md'>
+            {context.isPasskeySupported && (
+              <Button
+                variant='outline'
+                leftSection={<KeyIcon size={16} />}
+                onClick={() => void onPasskeyLogin()}
+                loading={isPasskeyLoading}
+              >
+                AET Passkey
+              </Button>
+            )}
+            <Button onClick={onPasswordLogin} disabled={isPasskeyLoading}>
+              Login
+            </Button>
+          </Flex>
+        </Stack>
+      </Modal>
       {authenticatedArea && opened !== undefined && (
         <Group h='100%' hiddenFrom='md'>
           <Burger opened={opened} onClick={toggle} size='md' />

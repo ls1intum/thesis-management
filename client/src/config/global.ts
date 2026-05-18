@@ -30,6 +30,17 @@ const getEnvironmentVariable = <T = string>(key: string, useJson = false): T | u
   }
 }
 
+const getCommaSeparatedEnvironmentVariable = (key: string) => {
+  const value = getEnvironmentVariable(key)
+
+  return value
+    ? value
+        .split(',')
+        .map((item) => item.trim())
+        .filter((item) => item.length > 0)
+    : []
+}
+
 export const GLOBAL_CONFIG: IGlobalConfig = {
   title: getEnvironmentVariable('APPLICATION_TITLE') ?? 'ThesisManagement',
 
@@ -128,6 +139,9 @@ export const GLOBAL_CONFIG: IGlobalConfig = {
     /\/+$/,
     '',
   ),
+  passkey_rp_id: getEnvironmentVariable('PASSKEY_RP_ID')?.trim() ?? window.location.hostname,
+  passkey_rp_name: getEnvironmentVariable('PASSKEY_RP_NAME')?.trim() ?? 'Thesis Management',
+  passkey_prompt_apps: getCommaSeparatedEnvironmentVariable('PASSKEY_PROMPT_APPS'),
 
   keycloak: {
     host: getEnvironmentVariable('KEYCLOAK_HOST') ?? 'http://localhost:8181',

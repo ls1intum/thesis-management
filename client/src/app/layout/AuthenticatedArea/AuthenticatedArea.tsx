@@ -1,5 +1,5 @@
 import type { ComponentType, PropsWithChildren } from 'react'
-import { Suspense, useEffect } from 'react'
+import { Suspense, useEffect, useRef } from 'react'
 import type { MantineSize } from '@mantine/core'
 import {
   ActionIcon,
@@ -15,26 +15,25 @@ import {
   Tooltip,
 } from '@mantine/core'
 import * as classes from './AuthenticatedArea.module.css'
-import { Link, useLocation } from 'react-router'
+import { Link, useLocation, useNavigationType } from 'react-router'
 import { useDebouncedValue, useDisclosure } from '@mantine/hooks'
 import {
-  CaretDoubleLeft,
-  CaretDoubleRight,
-  NewspaperClipping,
-  SignOut,
-  Gear,
-  GearSix,
-  PresentationIcon,
-  PaperPlaneTiltIcon,
-  ScrollIcon,
+  CaretDoubleLeftIcon,
+  CaretDoubleRightIcon,
+  ChatsCircleIcon,
   FolderSimplePlusIcon,
+  GearIcon,
+  GearSixIcon,
   KanbanIcon,
+  NewspaperClippingIcon,
+  PaperPlaneTiltIcon,
+  PresentationIcon,
+  ScrollIcon,
+  SignOutIcon,
   TableIcon,
   UsersThreeIcon,
-  ChatsCircleIcon,
 } from '@phosphor-icons/react'
 import { useAuthenticationContext, useUser } from '../../../hooks/authentication'
-import { useNavigationType } from 'react-router'
 import ScrollToTop from '../ScrollToTop/ScrollToTop'
 import PageLoader from '../../../components/PageLoader/PageLoader'
 import { useLocalStorage } from '../../../hooks/local-storage'
@@ -55,7 +54,6 @@ export interface IAuthenticatedAreaProps {
   requiredGroups?: string[]
   handleScrollInView?: boolean
 }
-
 const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) => {
   const { children, size, collapseNavigation = false, requiredGroups, handleScrollInView } = props
 
@@ -67,7 +65,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
     hideFromGroups?: string[]
     display?: boolean
   }> = [
-    { link: '/dashboard', label: 'Dashboard', icon: NewspaperClipping, groups: undefined },
+    { link: '/dashboard', label: 'Dashboard', icon: NewspaperClippingIcon, groups: undefined },
     {
       link: '/presentations',
       label: 'Presentations',
@@ -121,7 +119,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
     {
       link: '/admin',
       label: 'Administration',
-      icon: GearSix,
+      icon: GearSixIcon,
       groups: ['admin'],
     },
   ]
@@ -145,6 +143,10 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
   const navigationType = useNavigationType()
 
   const auth = useAuthenticationContext()
+  const isAuthenticated = auth.isAuthenticated
+  const isPasskeySupported = auth.isPasskeySupported
+  const login = auth.login
+  const hasTriggeredFallbackLogin = useRef(false)
 
   const baseHeaderHeight = 50
   const HEADER_HEIGHT =
@@ -152,19 +154,8 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
   const FOOTER_HEIGHT = 50
 
   const isSmallerBreakpoint = useIsSmallerBreakpoint('md')
-
-  useEffect(() => {
-    if (!auth.isAuthenticated && location.pathname !== '/logout') {
-      auth.login()
-
-      const interval = setInterval(() => {
-        auth.login()
-      }, 1000)
-
-      return () => clearInterval(interval)
-    }
-    // eslint-disable-next-line @eslint-react/exhaustive-deps -- auth object is stable from react-oidc-context; only re-run on auth state or path change
-  }, [auth.isAuthenticated, location.pathname])
+  const isWaitingForPasskeyProbe =
+    !isAuthenticated && isPasskeySupported === undefined && location.pathname !== '/logout'
 
   useEffect(() => {
     if (navigationType === 'POP') {
@@ -174,6 +165,31 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
     close()
     // eslint-disable-next-line @eslint-react/exhaustive-deps -- close is a stable disclosure handler; effect intentionally tracks navigation only
   }, [location.pathname, navigationType])
+
+  useEffect(() => {
+    if (isPasskeySupported === undefined) {
+      return
+    }
+
+    if (isAuthenticated || isPasskeySupported) {
+      hasTriggeredFallbackLogin.current = false
+      return
+    }
+
+    if (location.pathname === '/logout' || hasTriggeredFallbackLogin.current) {
+      return
+    }
+
+    hasTriggeredFallbackLogin.current = true
+    void login(`${location.pathname}${location.search}${location.hash}`)
+  }, [
+    isAuthenticated,
+    isPasskeySupported,
+    login,
+    location.hash,
+    location.pathname,
+    location.search,
+  ])
 
   return (
     <AppShell
@@ -194,7 +210,14 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
         <EnvironmentBanner />
         <Box h={baseHeaderHeight}>
           <Container size={size} fluid={!size} h='100%'>
-            <Header opened={opened} toggle={toggle} authenticatedArea={true} />
+            <Header
+              opened={opened}
+              toggle={toggle}
+              authenticatedArea={true}
+              openLoginModal={
+                !isAuthenticated && isPasskeySupported === true && location.pathname !== '/logout'
+              }
+            />
           </Container>
         </Box>
       </AppShell.Header>
@@ -206,7 +229,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
               (item) =>
                 !item.groups || item.groups.some((role) => auth.user?.groups?.includes(role)),
             )
-            .filter((item) => item.display === undefined || item.display === true)
+            .filter((item) => item.display === undefined || item.display)
             .filter((item) =>
               item.hideFromGroups
                 ? !item.hideFromGroups.some((role) => auth.user?.groups?.includes(role))
@@ -253,7 +276,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
               <Link to='/logout' className={minimized ? classes.minimizedLink : classes.fullLink}>
                 <Group gap={5} align='center'>
                   <Tooltip label='Logout' disabled={!minimized} position='right' offset={15}>
-                    <SignOut className={classes.linkIcon} size={25} />
+                    <SignOutIcon className={classes.linkIcon} size={25} />
                   </Tooltip>
                   {!minimized && <span>Logout</span>}
                 </Group>
@@ -273,7 +296,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
                     position='right'
                     offset={15}
                   >
-                    <Gear className={classes.linkIcon} size={25} />
+                    <GearIcon className={classes.linkIcon} size={25} />
                   </Tooltip>
                   {!minimized && <span>Group Settings</span>}
                 </Link>
@@ -286,7 +309,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
                   variant='transparent'
                   onClick={() => setMinimized((prev) => !prev)}
                 >
-                  {minimized ? <CaretDoubleRight /> : <CaretDoubleLeft />}
+                  {minimized ? <CaretDoubleRightIcon /> : <CaretDoubleLeftIcon />}
                 </ActionIcon>
               )}
             </Group>
@@ -305,7 +328,9 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
                 py={{ base: 10, sm: 20 }}
                 h='100%'
               >
-                {auth.user ? (
+                {isWaitingForPasskeyProbe ? (
+                  <PageLoader />
+                ) : auth.user ? (
                   <Suspense fallback={<PageLoader />}>
                     {!requiredGroups ||
                     requiredGroups.some((role) => auth.user?.groups?.includes(role)) ? (

@@ -24,6 +24,7 @@ services:
       KC_BOOTSTRAP_ADMIN_PASSWORD: admin
     volumes:
       - ./keycloak/thesis-management-realm.json:/opt/keycloak/data/import/thesis-management-realm.json:ro
+      - ./keycloak/providers:/opt/keycloak/providers:ro
     entrypoint: /opt/keycloak/bin/kc.sh start-dev --import-realm
     ports:
       - "8181:8080"

@@ -13,10 +13,11 @@ import EnvironmentBanner, {
 interface IPublicAreaProps {
   size?: number | MantineSize | (string & {}) | undefined
   handleScrollInView?: boolean
+  hideUnauthenticatedActions?: boolean
 }
 
 const PublicArea = (props: PropsWithChildren<IPublicAreaProps>) => {
-  const { size = 'md', children } = props
+  const { size = 'md', children, hideUnauthenticatedActions = false } = props
 
   const baseHeaderHeight = 50
   const HEADER_HEIGHT =
@@ -29,7 +30,10 @@ const PublicArea = (props: PropsWithChildren<IPublicAreaProps>) => {
         <EnvironmentBanner />
         <Box h={baseHeaderHeight}>
           <Container size={size} fluid={!size} h='100%'>
-            <Header authenticatedArea={false}></Header>
+            <Header
+              authenticatedArea={false}
+              hideUnauthenticatedActions={hideUnauthenticatedActions}
+            ></Header>
           </Container>
         </Box>
       </AppShell.Header>
