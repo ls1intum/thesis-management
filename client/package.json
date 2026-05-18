@@ -46,7 +46,7 @@
     "@mantine/dates": "9.2.0",
     "@mantine/dropzone": "9.2.0",
     "@mantine/form": "9.2.0",
-    "@mantine/hooks": "9.2.0",
+    "@mantine/hooks": "9.2.1",
     "@mantine/notifications": "9.2.0",
     "@mantine/tiptap": "9.2.0",
     "@phosphor-icons/react": "2.1.10",
