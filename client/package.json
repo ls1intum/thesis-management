@@ -41,7 +41,7 @@
     "prepare": "cd .. && husky client/.husky"
   },
   "dependencies": {
-    "@mantine/carousel": "9.2.0",
+    "@mantine/carousel": "9.2.1",
     "@mantine/core": "9.2.0",
     "@mantine/dates": "9.2.0",
     "@mantine/dropzone": "9.2.0",
