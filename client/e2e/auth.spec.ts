@@ -10,7 +10,7 @@ test.describe('Authentication - Unauthenticated', () => {
     await expect(page).toHaveURL(/\/dashboard/)
     const loginModal = page.getByRole('dialog', { name: 'Login' })
     await expect(loginModal).toBeVisible({ timeout: 30_000 })
-    await expect(loginModal.getByRole('button', { name: 'AET Passkey' })).toBeVisible()
+    await expect(loginModal.getByRole('button', { name: 'Passkey' })).toBeVisible()
     await expect(loginModal.getByRole('button', { name: 'Login' })).toBeVisible()
     await expect(page.locator('#kc-login')).toBeHidden()
 

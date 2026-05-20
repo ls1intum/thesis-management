@@ -171,7 +171,7 @@ const Header = ({
                   onClick={() => void onPasskeyLogin()}
                   loading={isPasskeyLoading}
                 >
-                  AET Passkey
+                  Passkey
                 </Button>
               )}
               <Button onClick={() => void context.login('/dashboard')}>Login</Button>
@@ -200,7 +200,7 @@ const Header = ({
                 onClick={() => void onPasskeyLogin()}
                 loading={isPasskeyLoading}
               >
-                AET Passkey
+                Passkey
               </Button>
             )}
             <Button onClick={onPasswordLogin} disabled={isPasskeyLoading}>

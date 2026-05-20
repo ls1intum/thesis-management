@@ -269,7 +269,7 @@ test.describe('Passkey - Login', () => {
       await page.goto('/dashboard')
       const loginModal = page.getByRole('dialog', { name: 'Login' })
       await expect(loginModal).toBeVisible({ timeout: 30_000 })
-      await loginModal.getByRole('button', { name: 'AET Passkey' }).click()
+      await loginModal.getByRole('button', { name: 'Passkey' }).click()
 
       await expect(loginModal).toBeHidden({ timeout: 60_000 })
       await expect(page.locator('header').getByText('Login')).toBeHidden()
