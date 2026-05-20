@@ -44,22 +44,24 @@ jobs:
           ref: ${{ github.head_ref || github.ref }}
           fetch-depth: 1
 
-      # Start Keycloak manually (service containers don't support custom commands)
+      # Build + start Keycloak from the repo Dockerfile used in local compose.
       - name: Start Keycloak
         run: |
+          docker build -t thesis-management-keycloak-ci -f keycloak/Dockerfile .
+
           docker run -d --name keycloak \
             -e KC_BOOTSTRAP_ADMIN_USERNAME=admin \
             -e KC_BOOTSTRAP_ADMIN_PASSWORD=admin \
             -p 8181:8080 \
-            -v "$PWD/keycloak/providers:/opt/keycloak/providers:ro" \
-            quay.io/keycloak/keycloak:26.5 \
-            start-dev
+            -v "$PWD/keycloak/thesis-management-realm.json:/opt/keycloak/data/import/thesis-management-realm.json:ro" \
+            thesis-management-keycloak-ci \
+            start-dev --import-realm
 
       - name: Wait for Keycloak to be ready
         run: |
           echo "Waiting for Keycloak..."
           for i in $(seq 1 60); do
-            if curl -sf http://localhost:8181/realms/master > /dev/null 2>&1; then
+            if curl -sf http://localhost:8181/realms/thesis-management > /dev/null 2>&1; then
               echo "Keycloak is ready"
               break
             fi
@@ -70,21 +72,6 @@ jobs:
             fi
             sleep 2
           done
-
-      - name: Import Keycloak realm
-        run: |
-          # Get admin token
-          TOKEN=$(curl -sf -X POST "http://localhost:8181/realms/master/protocol/openid-connect/token" \
-            -H "Content-Type: application/x-www-form-urlencoded" \
-            -d "username=admin&password=admin&grant_type=password&client_id=admin-cli" | jq -r '.access_token')
-
-          # Import realm
-          curl -sf -X POST "http://localhost:8181/admin/realms" \
-            -H "Authorization: Bearer $TOKEN" \
-            -H "Content-Type: application/json" \
-            -d @keycloak/thesis-management-realm.json
-
-          echo "Realm imported successfully"
 
       # Set up Java for server
       - name: Set up JDK 25
