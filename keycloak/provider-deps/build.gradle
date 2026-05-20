@@ -1,0 +1,24 @@
+plugins {
+    id "base"
+}
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    keycloakProvider {
+        canBeConsumed = false
+        canBeResolved = true
+        visible = false
+    }
+}
+
+dependencies {
+    keycloakProvider "de.tum.cit.aet:keycloak-redirectless-passkey:1.3.2"
+}
+
+tasks.register("copyProviders", Copy) {
+    from(configurations.keycloakProvider)
+    into(layout.buildDirectory.dir("providers"))
+}

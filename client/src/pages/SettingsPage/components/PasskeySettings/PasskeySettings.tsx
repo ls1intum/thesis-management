@@ -84,9 +84,6 @@ const PasskeySettings = () => {
     <Stack>
       <Title order={3}>Passkeys</Title>
       <Text>Register a passkey on this device to sign in across AET apps.</Text>
-      <Text size='sm' c='dimmed'>
-        These passkeys are linked to your AET account.
-      </Text>
       {isLoadingCredentials && <Loader size='sm' />}
       {!isLoadingCredentials && credentials.length === 0 && (
         <Text size='sm' c='dimmed'>
