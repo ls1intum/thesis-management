@@ -78,3 +78,28 @@ jobs:
           name: client-test-results
           path: client/coverage/
           retention-days: 14
+
+      # SBOM staleness check — pure hash comparison, no regeneration. The
+      # generator writes a SHA-256 of the dependency-defining files next to
+      # each SBOM; if the working tree's hash matches, the committed SBOM
+      # is current. Costs milliseconds and keeps the cache cache-shaped:
+      # we only spend CPU on SBOMs when dependencies actually change.
+      - name: Verify server SBOM is up-to-date
+        working-directory: ./server
+        run: |
+          current=$(cat build.gradle gradle.properties settings.gradle | shasum -a 256 | cut -d' ' -f1)
+          cached=$(cat sbom/.input-hash 2>/dev/null | tr -d '\n')
+          if [ "$current" != "$cached" ]; then
+            echo "::error::server/sbom/ is stale (build.gradle, gradle.properties, or settings.gradle changed). Run './gradlew cyclonedxBom' and commit the result."
+            exit 1
+          fi
+
+      - name: Verify client SBOM is up-to-date
+        working-directory: ./client
+        run: |
+          current=$(shasum -a 256 pnpm-lock.yaml | cut -d' ' -f1)
+          cached=$(cat sbom/.lock-hash 2>/dev/null | tr -d '\n')
+          if [ "$current" != "$cached" ]; then
+            echo "::error::client/sbom/ is stale (pnpm-lock.yaml changed). Run 'pnpm run sbom:force' and commit the result."
+            exit 1
+          fi
