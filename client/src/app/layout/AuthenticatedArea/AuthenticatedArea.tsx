@@ -181,7 +181,10 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
     }
 
     hasTriggeredFallbackLogin.current = true
-    void login(`${location.pathname}${location.search}${location.hash}`)
+    void login(`${location.pathname}${location.search}${location.hash}`).catch((error) => {
+      console.error('Fallback login failed', error)
+      hasTriggeredFallbackLogin.current = false
+    })
   }, [
     isAuthenticated,
     isPasskeySupported,

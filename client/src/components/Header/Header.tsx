@@ -20,7 +20,7 @@ import { CustomAvatar } from '../CustomAvatar/CustomAvatar'
 import { GearSixIcon, KeyIcon, NewspaperClippingIcon, SignOutIcon } from '@phosphor-icons/react'
 import { getPasskeyErrorMessage } from '../../utils/passkey'
 import { showSimpleError } from '../../utils/notification'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 interface HeaderProps {
   authenticatedArea: boolean
@@ -46,22 +46,8 @@ const Header = ({
   const isLoginModalOpen =
     context.isReady && openLoginModal && !context.isAuthenticated && context.isPasskeySupported
 
-  useEffect(() => {
-    if (
-      !context.isReady ||
-      !openLoginModal ||
-      context.isAuthenticated ||
-      !context.isPasskeySupported
-    ) {
-      return
-    }
-  }, [context.isAuthenticated, context.isPasskeySupported, context.isReady, openLoginModal])
-
   const onLoginModalClose = () => {
-    if (isLoginModalOpen) {
-      void navigate('/', { replace: true })
-      return
-    }
+    if (isLoginModalOpen) void navigate('/', { replace: true })
   }
 
   const onPasswordLogin = () => {

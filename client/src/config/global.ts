@@ -139,8 +139,8 @@ export const GLOBAL_CONFIG: IGlobalConfig = {
     /\/+$/,
     '',
   ),
-  passkey_rp_id: getEnvironmentVariable('PASSKEY_RP_ID')?.trim() ?? window.location.hostname,
-  passkey_rp_name: getEnvironmentVariable('PASSKEY_RP_NAME')?.trim() ?? 'Thesis Management',
+  passkey_rp_id: getEnvironmentVariable('PASSKEY_RP_ID')?.trim() || window.location.hostname,
+  passkey_rp_name: getEnvironmentVariable('PASSKEY_RP_NAME')?.trim() || 'Thesis Management',
   passkey_prompt_apps: getCommaSeparatedEnvironmentVariable('PASSKEY_PROMPT_APPS'),
 
   keycloak: {
