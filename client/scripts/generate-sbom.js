@@ -94,14 +94,19 @@ parsed.metadata.component = parsed.metadata.component || {}
 parsed.metadata.component.name = pkg.name
 parsed.metadata.component.version = pkg.version
 
-const sortByRef = (a, b) => (a.ref || a['bom-ref'] || '').localeCompare(b.ref || b['bom-ref'] || '')
+// Byte-wise string comparison — `localeCompare` is locale-dependent and
+// can reorder entries between machines (e.g. de_DE dev vs en_US CI),
+// which would dirty the committed SBOM and break the hash invariant.
+const byString = (a, b) => (a < b ? -1 : a > b ? 1 : 0)
+const refOf = (x) => x.ref || x['bom-ref'] || ''
+const sortByRef = (a, b) => byString(refOf(a), refOf(b))
 if (Array.isArray(parsed.components)) {
   parsed.components.sort(sortByRef)
 }
 if (Array.isArray(parsed.dependencies)) {
   parsed.dependencies.sort(sortByRef)
   for (const dep of parsed.dependencies) {
-    if (Array.isArray(dep.dependsOn)) dep.dependsOn.sort()
+    if (Array.isArray(dep.dependsOn)) dep.dependsOn.sort(byString)
   }
 }
 
