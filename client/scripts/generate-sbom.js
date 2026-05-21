@@ -11,29 +11,38 @@ const crypto = require('node:crypto')
 const { spawnSync } = require('node:child_process')
 
 const ROOT = path.resolve(__dirname, '..')
-const LOCKFILE = path.join(ROOT, 'pnpm-lock.yaml')
+// Hash inputs: the lockfile defines the dep graph, and package.json
+// supplies `name`/`version` which the generator embeds into the SBOM's
+// metadata.component (bumping just the version would otherwise leave a
+// stale SBOM with the old version + a still-matching lockfile hash).
+// Order matches the shell `cat ... | shasum` in the CI verification step.
+const HASH_INPUTS = [
+  path.join(ROOT, 'pnpm-lock.yaml'),
+  path.join(ROOT, 'package.json'),
+]
 const SBOM_DIR = path.join(ROOT, 'sbom')
 const BOM_FILE = path.join(SBOM_DIR, 'bom.json')
 const HASH_FILE = path.join(SBOM_DIR, '.lock-hash')
 
 const force = process.argv.includes('--force')
 
-if (!fs.existsSync(LOCKFILE)) {
-  console.error('pnpm-lock.yaml not found; run `pnpm install` first.')
-  process.exit(1)
+for (const f of HASH_INPUTS) {
+  if (!fs.existsSync(f)) {
+    console.error(`${path.relative(ROOT, f)} not found; run \`pnpm install\` first.`)
+    process.exit(1)
+  }
 }
 
-const currentHash = crypto
-  .createHash('sha256')
-  .update(fs.readFileSync(LOCKFILE))
-  .digest('hex')
+const hasher = crypto.createHash('sha256')
+for (const f of HASH_INPUTS) hasher.update(fs.readFileSync(f))
+const currentHash = hasher.digest('hex')
 
 const cachedHash = fs.existsSync(HASH_FILE)
   ? fs.readFileSync(HASH_FILE, 'utf8').trim()
   : null
 
 if (!force && currentHash === cachedHash && fs.existsSync(BOM_FILE)) {
-  console.log('SBOM up-to-date (pnpm-lock.yaml unchanged).')
+  console.log('SBOM up-to-date (pnpm-lock.yaml + package.json unchanged).')
   process.exit(0)
 }
 
