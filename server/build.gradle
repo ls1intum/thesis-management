@@ -9,6 +9,7 @@ plugins {
 	id "io.spring.dependency-management" version "1.1.7"
 	id "com.github.ben-manes.versions" version "0.54.0"
 	id "com.diffplug.spotless" version "8.5.1"
+	id "org.cyclonedx.bom" version "3.2.4"
 }
 
 group = "de.tum.cit.aet.thesis"
@@ -258,6 +259,68 @@ tasks.named("dependencyUpdates").configure {
 	rejectVersionIf {
 		isNonStable(it.candidate.version) && !isNonStable(it.currentVersion)
 	}
+}
+
+// CycloneDX SBOM
+//
+// Writes the SBOM to a tracked location (`sbom/`) so it can be committed and
+// reused without being regenerated on every build. Not hooked into `build` —
+// run `./gradlew cyclonedxBom` explicitly (or via CI) to refresh after
+// dependency changes. Gradle's UP-TO-DATE check makes this a no-op when the
+// runtime classpath hasn't changed.
+//
+// Files captured at configuration time so closures stay safe for the
+// configuration cache (calling `file()` inside a closure would tie it to
+// the live project instance).
+def bomJsonFile = file("sbom/bom.json")
+def sbomInputHashFile = file("sbom/.input-hash")
+// build.gradle + gradle.properties + settings.gradle is the complete set
+// of dep-defining inputs: pinned plugin versions, version vars, the root
+// project name (used as the SBOM component name), and the project group.
+// Order matches the shell `cat ... | shasum` in the CI verification step.
+def sbomInputs = [file("build.gradle"), file("gradle.properties"), file("settings.gradle")]
+
+cyclonedxBom {
+	projectType = "application"
+	schemaVersion = org.cyclonedx.Version.VERSION_16
+	includeBomSerialNumber = false
+	includeLicenseText = false
+	componentGroup = project.group.toString()
+	componentName = project.name
+	componentVersion = project.version.toString()
+	// Only emit JSON — Dependency-Track, Trivy, and Grype all read JSON
+	// natively and an XML twin would need its own timestamp-stripping.
+	jsonOutput = bomJsonFile
+
+	// Strip the generation timestamp so the committed bom.json is
+	// byte-stable when dependencies haven't changed.
+	doLast {
+		if (bomJsonFile.exists()) {
+			def json = new groovy.json.JsonSlurper().parse(bomJsonFile)
+			if (json.metadata instanceof Map) {
+				json.metadata.remove("timestamp")
+			}
+			bomJsonFile.text = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(json)) + "\n"
+		}
+	}
+}
+
+// Always-running side task that refreshes the input hash next to the SBOM.
+// Kept separate from `cyclonedxBom` because that task is UP-TO-DATE when
+// the runtime classpath hasn't changed — and we want the hash to also
+// catch cosmetic edits to the dep-defining files, so CI's pure shell hash
+// comparison doesn't false-alarm. Cost: read 3 small files + SHA-256.
+tasks.register("writeSbomInputHash") {
+	outputs.upToDateWhen { false }
+	doLast {
+		def md = java.security.MessageDigest.getInstance("SHA-256")
+		sbomInputs.each { md.update(it.bytes) }
+		sbomInputHashFile.text = md.digest().encodeHex().toString() + "\n"
+	}
+}
+
+tasks.named("cyclonedxBom").configure {
+	finalizedBy("writeSbomInputHash")
 }
 
 // Available commands:
