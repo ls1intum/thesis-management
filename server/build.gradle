@@ -16,6 +16,9 @@ group = "de.tum.cit.aet.thesis"
 version = "4.11.0"
 description = "Thesis Management"
 
+// Override Spring Boot-managed Tomcat to pull in security fixes ahead of the next BOM release.
+ext["tomcat.version"] = "11.0.22"
+
 gitProperties {
     // The plugin walks up from the project dir to auto-detect the .git
     // directory and natively handles git worktrees (where .git is a file
