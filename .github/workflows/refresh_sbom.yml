@@ -8,27 +8,38 @@ name: Refresh SBOM for Dependency PRs
 # `settings.gradle`) — they don't run `pnpm run sbom:force` or
 # `./gradlew cyclonedxBom`.
 #
+# Event choice: pull_request_target
+# ---------------------------------
+# We use `pull_request_target` (not `pull_request`) so this workflow can
+# access repo secrets when triggered by Dependabot — `pull_request` events
+# from Dependabot don't expose Actions secrets by default. The workflow
+# definition is read from the BASE branch (safe from PR tampering), but the
+# checked-out code is the PR head, so we add a same-repo guard
+# (`head.repo.full_name == github.repository`) to ensure we only run on
+# branches Renovate/Dependabot pushed into THIS repo (they never use forks).
+#
 # Token requirement
 # -----------------
 # We deliberately do NOT push with the default `GITHUB_TOKEN`: pushes signed
 # by `GITHUB_TOKEN` are excluded from triggering further workflow runs, so
 # the failed test workflow on the PR would stay red even after the SBOM
 # commit lands. Instead we either:
-#   1. Mint an installation token from a GitHub App (preferred — matches the
-#      org's existing bot conventions), via the `SBOM_BOT_APP_ID` repo/org
-#      variable and the `SBOM_BOT_PRIVATE_KEY` secret.
-#   2. Fall back to a fine-grained PAT in `SBOM_BOT_PAT` if the App secrets
-#      are not configured.
-# Either token must have `contents: write` on this repo.
+#   1. Mint a least-privilege installation token from a GitHub App
+#      (preferred), via the `SBOM_BOT_APP_ID` repo/org variable and the
+#      `SBOM_BOT_PRIVATE_KEY` secret. Scoped to `contents: write` on the
+#      single PR head repo.
+#   2. Fall back to a fine-grained PAT in `SBOM_BOT_PAT`.
 #
-# Injection safety
-# ----------------
-# User-controllable inputs (`head.ref`, `head.repo.full_name`) are only
-# consumed via `with:` inputs to trusted actions or via `env:` indirection,
-# never spliced into `run:` shell scripts directly.
+# Credential hygiene
+# ------------------
+# Checkout runs with the default (read-only) `GITHUB_TOKEN` and
+# `persist-credentials: false`, so the write-capable App/PAT token is
+# never written into the runner's git config. The push step authenticates
+# explicitly via a one-shot URL so the token can't be picked up by
+# subsequent steps or build-script lifecycle hooks.
 
 on:
-  pull_request:
+  pull_request_target:
     branches: [develop, main]
     types: [opened, synchronize, reopened]
     paths:
@@ -47,22 +58,26 @@ concurrency:
 
 jobs:
   refresh:
-    # Only run on bot-opened PRs; humans are expected to refresh the SBOM
-    # locally as part of their dep change. The bot identity check is on the
-    # PR opener (`pull_request.user.login`), matching the convention used in
-    # `dev.yml` for the deploy gate.
+    # Only run on bot-opened PRs that target THIS repo (no forks). The
+    # same-repo check is defense-in-depth: Renovate and Dependabot always
+    # push into the base repo on their own branches.
     if: >
-      github.event.pull_request.user.login == 'renovate[bot]' ||
-      github.event.pull_request.user.login == 'dependabot[bot]'
+      (github.event.pull_request.user.login == 'renovate[bot]' ||
+       github.event.pull_request.user.login == 'dependabot[bot]') &&
+      github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
       - name: Mint GitHub App token (preferred)
         id: app-token
-        if: ${{ vars.SBOM_BOT_APP_ID != '' }}
+        if: ${{ vars.SBOM_BOT_APP_ID != '' && secrets.SBOM_BOT_PRIVATE_KEY != '' }}
         uses: actions/create-github-app-token@v2
         with:
           app-id: ${{ vars.SBOM_BOT_APP_ID }}
           private-key: ${{ secrets.SBOM_BOT_PRIVATE_KEY }}
+          # Scope to least privilege: only `contents: write` on the PR head repo.
+          owner: ${{ github.event.pull_request.head.repo.owner.login }}
+          repositories: ${{ github.event.pull_request.head.repo.name }}
+          permission-contents: write
 
       - name: Pick push token (App token > PAT fallback)
         id: token
@@ -83,13 +98,20 @@ jobs:
             exit 1
           fi
 
-      - name: Checkout PR branch
+      - name: Checkout PR branch (read-only, no token persisted)
         uses: actions/checkout@v6
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-          token: ${{ steps.token.outputs.value }}
-          fetch-depth: 2
+          # pull_request_target defaults to the base ref; we want the PR head.
+          ref: ${{ github.event.pull_request.head.sha }}
+          # No `token:` here — default GITHUB_TOKEN is sufficient for reading
+          # this same repo, and `persist-credentials: false` ensures nothing
+          # writable is left in the git config for later steps (e.g. Gradle
+          # build scripts or pnpm lifecycle hooks) to pick up.
+          persist-credentials: false
+          # Full history so `git diff "$BASE_SHA"...HEAD` always resolves the
+          # PR base, even on long-lived branches where a shallow clone might
+          # not include it.
+          fetch-depth: 0
 
       - name: Detect which SBOM(s) need refreshing
         id: scopes
@@ -127,6 +149,9 @@ jobs:
           ./gradlew cyclonedxBom
 
       # ---------- Client SBOM ----------
+      # `pnpm sbom` reads the lockfile directly, so we deliberately do NOT run
+      # `pnpm install` — skipping it both saves time and avoids running
+      # dependency lifecycle scripts. Corepack provides pnpm itself.
       - name: Enable Corepack
         if: steps.scopes.outputs.client == 'true'
         run: corepack enable
@@ -135,14 +160,7 @@ jobs:
         if: steps.scopes.outputs.client == 'true'
         uses: actions/setup-node@v6
         with:
-          node-version: '24.15.0'
-          cache: 'pnpm'
-          cache-dependency-path: 'client/pnpm-lock.yaml'
-
-      - name: Install client dependencies
-        if: steps.scopes.outputs.client == 'true'
-        working-directory: ./client
-        run: pnpm install --frozen-lockfile
+          node-version: '24.16.0'
 
       - name: Regenerate client SBOM
         if: steps.scopes.outputs.client == 'true'
@@ -151,18 +169,18 @@ jobs:
 
       - name: Commit and push if SBOM changed
         env:
+          PUSH_TOKEN: ${{ steps.token.outputs.value }}
           PR_BRANCH: ${{ github.event.pull_request.head.ref }}
+          PR_REPO: ${{ github.event.pull_request.head.repo.full_name }}
         run: |
           if git diff --quiet -- client/sbom server/sbom; then
             echo "SBOM already current — nothing to commit. This typically means the workflow re-ran on its own commit; safe to skip."
             exit 0
           fi
-          # Use a bot identity so a future filter could exclude these commits
-          # from re-triggering this workflow if needed. With a PAT, commits
-          # are attributed to the PAT owner; with an App token they're
-          # attributed to the App's bot user.
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add client/sbom server/sbom
           git commit -m "chore: refresh SBOM after dependency update"
-          git push origin "HEAD:$PR_BRANCH"
+          # Authenticate the push via a one-shot URL rather than persisting
+          # the write token into git config. The token is masked in logs.
+          git push "https://x-access-token:${PUSH_TOKEN}@github.com/${PR_REPO}.git" "HEAD:${PR_BRANCH}"
