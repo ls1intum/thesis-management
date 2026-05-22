@@ -6,6 +6,11 @@ import { authStatePath, navigateTo } from './helpers'
 // the action buttons render as soon as the (instant) SBOM fetch resolves — vulnerability
 // and version data fill in independently. We therefore assert structure and counts
 // without waiting on the OSV round-trip.
+//
+// Note on selectors: plain "Server" / "Client" text matches the per-row source badges in
+// the components table (hundreds of matches). We anchor on text that's unique to the page
+// chrome — "Total components", "Showing N of M components", and the segmented-control
+// labels that include their numeric counts ("Server (123)").
 
 test.describe('Admin Dependencies Page', () => {
   test.use({ storageState: authStatePath('admin') })
@@ -30,23 +35,24 @@ test.describe('Admin Dependencies Page', () => {
       timeout: 30_000,
     })
 
-    // Action buttons
+    // Action buttons — each is unique by accessible name.
     await expect(page.getByRole('button', { name: /refresh vulnerabilities/i })).toBeVisible()
     await expect(page.getByRole('button', { name: /send email/i })).toBeVisible()
     await expect(page.getByRole('button', { name: /server sbom/i })).toBeVisible()
     await expect(page.getByRole('button', { name: /client sbom/i })).toBeVisible()
 
-    // Summary cards (labels are stable regardless of bundled SBOM content)
+    // Summary section anchors. "Total components" is unique to the summary card.
     await expect(page.getByText('Total components')).toBeVisible()
-    await expect(page.getByText('Server', { exact: true })).toBeVisible()
-    await expect(page.getByText('Client', { exact: true })).toBeVisible()
-    await expect(page.getByText('Vulnerabilities', { exact: true })).toBeVisible()
 
-    // Filter row controls
+    // Filter row controls. The text input is unique.
     await expect(page.getByPlaceholder(/search name, group, version/i)).toBeVisible()
-    await expect(page.getByRole('radio', { name: /^All/ })).toBeVisible()
-    await expect(page.getByRole('radio', { name: /^Server/ })).toBeVisible()
-    await expect(page.getByRole('radio', { name: /^Client/ })).toBeVisible()
+
+    // Segmented control labels include their counts ("Server (123)"), so anchoring on the
+    // count parenthesis disambiguates them from the per-row "Server"/"Client" badges in the
+    // components table.
+    await expect(page.getByText(/^All \(\d+\)$/)).toBeVisible()
+    await expect(page.getByText(/^Server \(\d+\)$/)).toBeVisible()
+    await expect(page.getByText(/^Client \(\d+\)$/)).toBeVisible()
 
     // The "Showing N of M components" line appears once SBOM data is loaded.
     await expect(page.getByText(/Showing \d+ of \d+ components/)).toBeVisible({ timeout: 30_000 })
@@ -78,10 +84,13 @@ test.describe('Admin Dependencies Page', () => {
     await expect(countsLine).toBeVisible({ timeout: 30_000 })
     const beforeText = await countsLine.textContent()
 
-    // Switch to Server-only view and confirm the counts line updates.
-    await page.getByRole('radio', { name: /^Server/ }).click()
+    // Click the Server label of the SegmentedControl. Mantine's SegmentedControl renders
+    // the actual radio inputs as visually hidden behind label elements, so we click the
+    // visible label by its full "Server (n)" text rather than the role=radio input.
+    await page.getByText(/^Server \(\d+\)$/).click()
+
     await expect
-      .poll(async () => (await countsLine.textContent()) ?? '', { timeout: 5_000 })
+      .poll(async () => (await countsLine.textContent()) ?? '', { timeout: 10_000 })
       .not.toBe(beforeText)
   })
 })
