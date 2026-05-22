@@ -70,7 +70,7 @@ jobs:
       - name: Mint GitHub App token (preferred)
         id: app-token
         if: ${{ vars.SBOM_BOT_APP_ID != '' && secrets.SBOM_BOT_PRIVATE_KEY != '' }}
-        uses: actions/create-github-app-token@v2
+        uses: actions/create-github-app-token@v3
         with:
           app-id: ${{ vars.SBOM_BOT_APP_ID }}
           private-key: ${{ secrets.SBOM_BOT_PRIVATE_KEY }}
