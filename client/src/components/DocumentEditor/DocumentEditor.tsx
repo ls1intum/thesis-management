@@ -1,4 +1,5 @@
-import { RichTextEditor, Link } from '@mantine/tiptap'
+import { Link, RichTextEditor, useRichTextEditorContext } from '@mantine/tiptap'
+import type { Editor } from '@tiptap/react'
 import { useEditor } from '@tiptap/react'
 import Highlight from '@tiptap/extension-highlight'
 import StarterKit from '@tiptap/starter-kit'
@@ -46,6 +47,17 @@ interface IDocumentEditorProps extends InputWrapperProps {
   maxLength?: number
   noBorder?: boolean
   minHeight?: string | number
+}
+
+const isEditorReady = (editor: Editor | null) => {
+  if (!editor) {
+    return false
+  }
+
+  return (
+    !editor.isDestroyed &&
+    Boolean((editor as unknown as { commandManager?: unknown }).commandManager)
+  )
 }
 
 const DocumentEditor = (props: IDocumentEditorProps) => {
@@ -126,6 +138,7 @@ const DocumentEditor = (props: IDocumentEditorProps) => {
   }, [value, editMode, editor])
 
   const colorScheme = useComputedColorScheme('light')
+  const hasReadyEditor = isEditorReady(editor)
 
   return (
     <Input.Wrapper
@@ -148,7 +161,7 @@ const DocumentEditor = (props: IDocumentEditorProps) => {
       }
     >
       <RichTextEditor
-        editor={editor}
+        editor={hasReadyEditor ? editor : null}
         onBlur={onBlur}
         onFocus={onFocus}
         styles={{
@@ -170,7 +183,7 @@ const DocumentEditor = (props: IDocumentEditorProps) => {
           }
         }}
       >
-        {editMode && (
+        {editMode && hasReadyEditor && (
           <RichTextEditor.Toolbar>
             <RichTextEditor.ControlsGroup>
               <RichTextEditor.Bold />
@@ -204,12 +217,11 @@ const DocumentEditor = (props: IDocumentEditorProps) => {
             </RichTextEditor.ControlsGroup>
 
             <RichTextEditor.ControlsGroup>
-              <RichTextEditor.Undo />
-              <RichTextEditor.Redo />
+              <SafeHistoryControls />
             </RichTextEditor.ControlsGroup>
           </RichTextEditor.Toolbar>
         )}
-        <RichTextEditor.Content />
+        {hasReadyEditor && <RichTextEditor.Content />}
       </RichTextEditor>
       <input
         type='text'
@@ -219,6 +231,21 @@ const DocumentEditor = (props: IDocumentEditorProps) => {
         style={{ display: 'none' }}
       />
     </Input.Wrapper>
+  )
+}
+
+function SafeHistoryControls() {
+  const { editor } = useRichTextEditorContext()
+
+  if (!isEditorReady(editor)) {
+    return null
+  }
+
+  return (
+    <>
+      <RichTextEditor.Undo />
+      <RichTextEditor.Redo />
+    </>
   )
 }
 
