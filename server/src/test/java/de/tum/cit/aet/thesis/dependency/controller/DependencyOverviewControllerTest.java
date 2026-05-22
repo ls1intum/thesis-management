@@ -35,7 +35,9 @@ class DependencyOverviewControllerTest extends BaseIntegrationTest {
 				() -> "sbom-fixtures/sample-server-sbom.json");
 		registry.add("thesis-management.dependency-scan.client-sbom-path",
 				() -> "sbom-fixtures/sample-client-sbom.json");
-		registry.add("thesis-management.dependency-scan.admin-email", () -> "admin@example.com");
+		// The schedule service uses the configured MAIL_SENDER as the scan-report recipient.
+		// BaseIntegrationTest already sets a non-blank default via the test application
+		// configuration, so no further override is needed here.
 	}
 
 	@BeforeEach

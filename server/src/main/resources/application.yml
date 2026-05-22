@@ -100,14 +100,10 @@ thesis-management:
     upload-location: ${UPLOAD_FOLDER:uploads}
   dependency-scan:
     cron: ${VULNERABILITY_SCAN_CRON:0 0 8 * * MON}
-    # Defaults to the TUM/AET support address used on the About page so the primary
-    # ls1intum/thesis-management deployment receives the weekly scan without any extra
-    # config.
-    # IMPORTANT for forks / other chairs: this default means the report will be emailed
-    # to the TUM support mailbox unless you override VULNERABILITY_SCAN_ADMIN_EMAIL in
-    # your deployment environment. Set it to your own admin address — or to an empty
-    # string, in which case the cron logs a warning and skips.
-    admin-email: ${VULNERABILITY_SCAN_ADMIN_EMAIL:thesis-management-support.aet@xcit.tum.de}
+    # Recipient of the weekly scan email is the configured mail sender
+    # (thesis-management.mail.sender / MAIL_SENDER). The TUM deployment sets MAIL_SENDER
+    # to the support address; forks/other chairs setting MAIL_SENDER for their own mail
+    # flow automatically get the scan to their own mailbox without any extra config.
     github-repo: ${VULNERABILITY_SCAN_GITHUB_REPO:ls1intum/thesis-management}
     osv-url: ${VULNERABILITY_SCAN_OSV_URL:https://api.osv.dev}
     github-api-url: ${VULNERABILITY_SCAN_GITHUB_API_URL:https://api.github.com}
