@@ -14980,17 +14980,17 @@
     {
       "type": "library",
       "name": "qs",
-      "version": "6.15.1",
-      "purl": "pkg:npm/qs@6.15.1",
-      "bom-ref": "pkg:npm/qs@6.15.1",
+      "version": "6.15.2",
+      "purl": "pkg:npm/qs@6.15.2",
+      "bom-ref": "pkg:npm/qs@6.15.2",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/qs/-/qs-6.15.1.tgz",
+          "url": "https://registry.npmjs.org/qs/-/qs-6.15.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "e981c41512fd99f81c02faa5fd78704ef7f98ca70e8a2ba9b761622711e4897d73e23ed62fc27f8d11d82e5b8e46f7355f1079ad5db42a878ad3481525a9aca6"
+              "content": "473ab4284c97ff0fed1326e770381d919ac981552c50c937c63877b796efdd2d474c0b60fae398b7bdbe65fc2243029dcac4e191305d2ffad38ba1c3997f4377"
             }
           ]
         }
@@ -18172,17 +18172,17 @@
     {
       "type": "library",
       "name": "ws",
-      "version": "8.20.0",
-      "purl": "pkg:npm/ws@8.20.0",
-      "bom-ref": "pkg:npm/ws@8.20.0",
+      "version": "8.20.1",
+      "purl": "pkg:npm/ws@8.20.1",
+      "bom-ref": "pkg:npm/ws@8.20.1",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/ws/-/ws-8.20.0.tgz",
+          "url": "https://registry.npmjs.org/ws/-/ws-8.20.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "b00b7c06180d6f30ad8066edd8ec66a6eaf23badd9a0393fb2a681ff39d09bde13e1f084b32ff257eec2742d64261394f656e800453b47792abaec9c0e889b54"
+              "content": "22de1d3b42b9bfffc9b535ee3e47c439a237b9437cee260f9eaa3f673a82a06de0f2e840eba41432cfd2accd182bbfcd02efabe0b321ffd76ad80ee4fab1ecfb"
             }
           ]
         }
@@ -20696,7 +20696,7 @@
         "pkg:npm/parseurl@1.3.3",
         "pkg:npm/path-to-regexp@0.1.13",
         "pkg:npm/proxy-addr@2.0.7",
-        "pkg:npm/qs@6.15.1",
+        "pkg:npm/qs@6.15.2",
         "pkg:npm/range-parser@1.2.1",
         "pkg:npm/send@0.19.2",
         "pkg:npm/serve-static@1.16.3",
@@ -22298,7 +22298,7 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/qs@6.15.1",
+      "ref": "pkg:npm/qs@6.15.2",
       "dependsOn": [
         "pkg:npm/side-channel@1.1.0"
       ]
@@ -23193,7 +23193,7 @@
         "pkg:npm/html-escaper@3.0.3",
         "pkg:npm/opener@1.5.2",
         "pkg:npm/sirv@3.0.2",
-        "pkg:npm/ws@8.20.0"
+        "pkg:npm/ws@8.20.1"
       ]
     },
     {
@@ -23332,7 +23332,7 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/ws@8.20.0",
+      "ref": "pkg:npm/ws@8.20.1",
       "dependsOn": []
     },
     {

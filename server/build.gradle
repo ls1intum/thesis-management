@@ -18,6 +18,10 @@ description = "Thesis Management"
 
 // Override Spring Boot-managed Tomcat to pull in security fixes ahead of the next BOM release.
 ext["tomcat.version"] = "11.0.22"
+// Override Spring Boot-managed Netty to pick up fixes for GHSA-mj4r-2hfc-f8p6,
+// GHSA-cm33-6792-r9fm, GHSA-2c5c-chwr-9hqw, GHSA-45q3-82m4-75jr, GHSA-rwm7-x88c-3g2p,
+// and the netty-codec-http advisories (GHSA-38f8-5428-x5cv, GHSA-57rv-r2g8-2cj3, GHSA-f6hv-jmp6-3vwv, ...).
+ext["netty.version"] = "4.2.13.Final"
 
 gitProperties {
     // The plugin walks up from the project dir to auto-detect the .git
@@ -126,6 +130,17 @@ dependencies {
 	testImplementation "org.junit.platform:junit-platform-commons:${junit_version}"
 	testImplementation "org.junit.platform:junit-platform-engine:${junit_version}"
 	testRuntimeOnly "org.junit.platform:junit-platform-launcher:${junit_version}"
+}
+
+// Force a non-vulnerable plexus-utils across all configurations (Checkstyle's Doxia pulls in 3.3.0,
+// which is affected by GHSA-6fmv-xxpf-w3cw).
+configurations.configureEach {
+	resolutionStrategy.eachDependency { details ->
+		if (details.requested.group == "org.codehaus.plexus" && details.requested.name == "plexus-utils") {
+			details.useVersion("3.6.1")
+			details.because("GHSA-6fmv-xxpf-w3cw")
+		}
+	}
 }
 
 springBoot {
