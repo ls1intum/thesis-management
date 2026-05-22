@@ -103,6 +103,16 @@ class SbomServiceTest {
 	}
 
 	@Test
+	void isSbomAvailableFalseWhenFilePresentButUnparseable() {
+		// A file at the configured path that isn't valid JSON should be treated as unavailable —
+		// not just "present" — so downstream flows skip rather than operating on null data.
+		SbomService corrupt = new SbomService(objectMapper, "sbom-fixtures/corrupt-sbom.json", MISSING_FIXTURE);
+
+		assertThat(corrupt.getServerSbom()).isNull();
+		assertThat(corrupt.isSbomAvailable()).isFalse();
+	}
+
+	@Test
 	void parsedSbomsAreCachedAcrossCalls() {
 		SbomService service = new SbomService(objectMapper, SERVER_FIXTURE, CLIENT_FIXTURE);
 

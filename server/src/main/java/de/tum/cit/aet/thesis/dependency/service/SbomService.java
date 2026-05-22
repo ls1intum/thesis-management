@@ -94,14 +94,13 @@ public class SbomService {
 	}
 
 	/**
-	 * @return true if at least one SBOM file is bundled in the executable
+	 * @return true if at least one SBOM file is bundled in the executable <strong>and</strong>
+	 *         it parses successfully. A present-but-corrupt SBOM is treated as unavailable so
+	 *         downstream flows (vulnerability scan, controller endpoints) skip rather than
+	 *         operating on empty data.
 	 */
 	public boolean isSbomAvailable() {
-		return isResourceAvailable(serverSbomPath) || isResourceAvailable(clientSbomPath);
-	}
-
-	private boolean isResourceAvailable(String path) {
-		return new ClassPathResource(path).exists();
+		return getServerSbom() != null || getClientSbom() != null;
 	}
 
 	private SbomDTO loadSbomCached(String path) {
