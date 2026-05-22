@@ -98,3 +98,8 @@ thesis-management:
     days-between-exports: ${DATA_EXPORT_COOLDOWN_DAYS:7}
   storage:
     upload-location: ${UPLOAD_FOLDER:uploads}
+  dependency-scan:
+    cron: ${VULNERABILITY_SCAN_CRON:0 0 8 * * MON}
+    admin-email: ${VULNERABILITY_SCAN_ADMIN_EMAIL:}
+    github-repo: ${VULNERABILITY_SCAN_GITHUB_REPO:ls1intum/thesis-management}
+    test-server: ${TEST_SERVER:false}

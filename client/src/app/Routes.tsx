@@ -43,6 +43,9 @@ const ThesisPage = lazy(() => import('../pages/ThesisPage/ThesisPage'))
 const LandingPage = lazy(() => import('../pages/LandingPage/LandingPage'))
 
 const AdminPage = lazy(() => import('../pages/AdminPage/AdminPage'))
+const DependencyOverviewPage = lazy(
+  () => import('../pages/DependencyOverviewPage/DependencyOverviewPage'),
+)
 
 const InterviewOverviewPage = lazy(
   () => import('../pages/InterviewOverviewPage/InterviewOverviewPage'),
@@ -213,6 +216,14 @@ const AppRoutes = () => {
             element={
               <AuthenticatedArea requiredGroups={['admin']}>
                 <AdminPage />
+              </AuthenticatedArea>
+            }
+          />
+          <Route
+            path='/admin/dependencies'
+            element={
+              <AuthenticatedArea requiredGroups={['admin']}>
+                <DependencyOverviewPage />
               </AuthenticatedArea>
             }
           />

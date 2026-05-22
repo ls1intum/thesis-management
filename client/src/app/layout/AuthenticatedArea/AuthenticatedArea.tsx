@@ -32,6 +32,7 @@ import {
   TableIcon,
   UsersThreeIcon,
   ChatsCircleIcon,
+  ShieldCheckIcon,
 } from '@phosphor-icons/react'
 import { useAuthenticationContext, useUser } from '../../../hooks/authentication'
 import { useNavigationType } from 'react-router'
@@ -122,6 +123,12 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
       link: '/admin',
       label: 'Administration',
       icon: GearSix,
+      groups: ['admin'],
+    },
+    {
+      link: '/admin/dependencies',
+      label: 'Dependencies',
+      icon: ShieldCheckIcon,
       groups: ['admin'],
     },
   ]

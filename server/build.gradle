@@ -90,6 +90,9 @@ dependencies {
 	// use newest version of commons-compress to avoid security issues through outdated dependencies
 	implementation "org.apache.commons:commons-compress:1.28.0"
 
+	// Semantic version comparison for SBOM vulnerability range matching
+	implementation "com.vdurmont:semver4j:3.1.0"
+
 	compileOnly "org.projectlombok:lombok:1.18.46"
 	annotationProcessor "org.projectlombok:lombok:1.18.46"
 
@@ -261,6 +264,24 @@ tasks.named("dependencyUpdates").configure {
 
 	rejectVersionIf {
 		isNonStable(it.candidate.version) && !isNonStable(it.currentVersion)
+	}
+}
+
+// Bundle the committed server + client SBOMs into the jar so the admin
+// dependency overview and weekly vulnerability scan have data to read at
+// runtime. Both files are kept in sync with their respective lockfiles
+// by the refresh_sbom workflow, so no build-time regeneration is needed.
+def serverSbomFile = file("sbom/bom.json")
+def clientSbomFile = file("../client/sbom/bom.json")
+
+processResources {
+	from(serverSbomFile) {
+		into "sbom"
+		rename { "server-sbom.json" }
+	}
+	from(clientSbomFile) {
+		into "sbom"
+		rename { "client-sbom.json" }
 	}
 }
 
