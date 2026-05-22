@@ -61,7 +61,7 @@ class ThesisManagementVersionServiceTest {
 								"body": "Notes for 5.0.0"
 								}""")));
 
-		ThesisManagementVersionDTO version = newService("4.11.0").refreshVersionInfo();
+		ThesisManagementVersionDTO version = newService("4.11.0").getVersionInfo();
 
 		assertThat(version.currentVersion()).isEqualTo("4.11.0");
 		assertThat(version.latestVersion()).isEqualTo("5.0.0");
@@ -77,7 +77,7 @@ class ThesisManagementVersionServiceTest {
 				.willReturn(jsonOk("""
 						{ "tag_name": "v4.11.0", "html_url": "https://example.com/release/4.11.0" }""")));
 
-		ThesisManagementVersionDTO version = newService("4.11.0").refreshVersionInfo();
+		ThesisManagementVersionDTO version = newService("4.11.0").getVersionInfo();
 
 		assertThat(version.updateAvailable()).isFalse();
 		assertThat(version.latestVersion()).isEqualTo("4.11.0");
@@ -89,7 +89,7 @@ class ThesisManagementVersionServiceTest {
 				.willReturn(jsonOk("""
 						{ "tag_name": "v3.0.0", "html_url": "https://example.com/release/3.0.0" }""")));
 
-		ThesisManagementVersionDTO version = newService("4.11.0").refreshVersionInfo();
+		ThesisManagementVersionDTO version = newService("4.11.0").getVersionInfo();
 
 		assertThat(version.updateAvailable()).isFalse();
 	}
@@ -100,7 +100,7 @@ class ThesisManagementVersionServiceTest {
 				.willReturn(jsonOk("""
 						{ "tag_name": "V5.0.0" }""")));
 
-		ThesisManagementVersionDTO version = newService("4.11.0").refreshVersionInfo();
+		ThesisManagementVersionDTO version = newService("4.11.0").getVersionInfo();
 
 		assertThat(version.latestVersion()).isEqualTo("5.0.0");
 		assertThat(version.updateAvailable()).isTrue();
@@ -121,25 +121,11 @@ class ThesisManagementVersionServiceTest {
 	}
 
 	@Test
-	void refreshBypassesCache() {
-		gitHubMock.stubFor(get(urlPathEqualTo(GITHUB_PATH))
-				.willReturn(jsonOk("""
-						{ "tag_name": "v4.11.0" }""")));
-
-		ThesisManagementVersionService service = newService("4.11.0");
-		service.getVersionInfo();
-		service.refreshVersionInfo();
-		service.refreshVersionInfo();
-
-		gitHubMock.verify(3, getRequestedFor(urlPathEqualTo(GITHUB_PATH)));
-	}
-
-	@Test
 	void gitHubErrorYieldsNoUpdateWithCurrentVersionOnly() {
 		gitHubMock.stubFor(get(urlPathEqualTo(GITHUB_PATH))
 				.willReturn(aResponse().withStatus(503)));
 
-		ThesisManagementVersionDTO version = newService("4.11.0").refreshVersionInfo();
+		ThesisManagementVersionDTO version = newService("4.11.0").getVersionInfo();
 
 		assertThat(version.currentVersion()).isEqualTo("4.11.0");
 		assertThat(version.latestVersion()).isNull();
@@ -152,7 +138,7 @@ class ThesisManagementVersionServiceTest {
 				.willReturn(jsonOk("""
 						{ "html_url": "https://example.com/r" }""")));
 
-		ThesisManagementVersionDTO version = newService("4.11.0").refreshVersionInfo();
+		ThesisManagementVersionDTO version = newService("4.11.0").getVersionInfo();
 
 		assertThat(version.latestVersion()).isNull();
 		assertThat(version.updateAvailable()).isFalse();
@@ -165,7 +151,7 @@ class ThesisManagementVersionServiceTest {
 						{ "tag_name": "v5.0" }""")));
 
 		// "9.2" → padded to "9.2.0" internally
-		ThesisManagementVersionDTO version = newService("4.11").refreshVersionInfo();
+		ThesisManagementVersionDTO version = newService("4.11").getVersionInfo();
 
 		assertThat(version.latestVersion()).isEqualTo("5.0");
 		assertThat(version.updateAvailable()).isTrue();

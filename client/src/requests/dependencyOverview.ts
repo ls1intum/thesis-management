@@ -30,7 +30,7 @@ export function fetchVulnerabilities(): Promise<ApiResponse<IComponentVulnerabil
 
 export function refreshVulnerabilities(): Promise<ApiResponse<IComponentVulnerabilities>> {
   return doRequest<IComponentVulnerabilities>(`${BASE}/vulnerabilities/refresh`, {
-    method: 'GET',
+    method: 'POST',
     requiresAuth: true,
   })
 }

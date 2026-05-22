@@ -112,11 +112,13 @@ public class DependencyOverviewController {
 	}
 
 	/**
-	 * GET /v2/admin/dependencies/vulnerabilities/refresh — bypasses cache, fetches fresh data from OSV.
+	 * POST /v2/admin/dependencies/vulnerabilities/refresh — bypasses cache, fetches fresh data
+	 * from OSV. Modeled as POST because it mutates the in-memory cache and should not be
+	 * subject to GET caching/prefetching semantics.
 	 *
 	 * @return 200 with the freshly fetched vulnerability data, or 404 if no SBOM is bundled
 	 */
-	@GetMapping("/vulnerabilities/refresh")
+	@PostMapping("/vulnerabilities/refresh")
 	public ResponseEntity<ComponentVulnerabilitiesDTO> refreshVulnerabilities() {
 		log.info("REST request to refresh SBOM vulnerabilities");
 		if (!sbomService.isSbomAvailable()) {

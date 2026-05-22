@@ -38,6 +38,8 @@ public class ThesisManagementVersionService {
 
 	private final AtomicReference<CachedVersion> cache = new AtomicReference<>();
 
+	private final Object cacheLock = new Object();
+
 	/**
 	 * Creates the version service.
 	 *
@@ -67,22 +69,19 @@ public class ThesisManagementVersionService {
 		if (cached != null && !cached.isExpired()) {
 			return cached.value();
 		}
-		log.info("Fetching latest Thesis Management version from GitHub");
-		ThesisManagementVersionDTO result = fetchVersionFromGitHub();
-		cache.set(new CachedVersion(result, Instant.now()));
-		return result;
-	}
-
-	/**
-	 * Forces a refresh of version info from GitHub, bypassing the cache.
-	 *
-	 * @return the freshly fetched version info
-	 */
-	public ThesisManagementVersionDTO refreshVersionInfo() {
-		log.info("Force refreshing version info from GitHub");
-		ThesisManagementVersionDTO result = fetchVersionFromGitHub();
-		cache.set(new CachedVersion(result, Instant.now()));
-		return result;
+		// Double-checked synchronization: prevents a thundering herd of concurrent admins
+		// (or scheduled jobs running at the same minute) from all calling GitHub when the
+		// cache expires.
+		synchronized (cacheLock) {
+			cached = cache.get();
+			if (cached != null && !cached.isExpired()) {
+				return cached.value();
+			}
+			log.info("Fetching latest Thesis Management version from GitHub");
+			ThesisManagementVersionDTO result = fetchVersionFromGitHub();
+			cache.set(new CachedVersion(result, Instant.now()));
+			return result;
+		}
 	}
 
 	private ThesisManagementVersionDTO fetchVersionFromGitHub() {

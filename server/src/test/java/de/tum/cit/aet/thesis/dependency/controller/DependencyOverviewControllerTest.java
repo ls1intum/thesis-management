@@ -122,13 +122,22 @@ class DependencyOverviewControllerTest extends BaseIntegrationTest {
 		}
 
 		@Test
-		void refreshAlsoReturnsCounts() throws Exception {
+		void refreshIsPostAndReturnsCounts() throws Exception {
+			String adminAuth = createRandomAdminAuthentication();
+
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/admin/dependencies/vulnerabilities/refresh")
+							.header("Authorization", adminAuth))
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$.totalVulnerabilities").value(0));
+		}
+
+		@Test
+		void refreshRejectsGetMethod() throws Exception {
 			String adminAuth = createRandomAdminAuthentication();
 
 			mockMvc.perform(MockMvcRequestBuilders.get("/v2/admin/dependencies/vulnerabilities/refresh")
 							.header("Authorization", adminAuth))
-					.andExpect(status().isOk())
-					.andExpect(jsonPath("$.totalVulnerabilities").value(0));
+					.andExpect(status().isMethodNotAllowed());
 		}
 
 		@Test
