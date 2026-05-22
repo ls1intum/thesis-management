@@ -1,0 +1,2 @@
+{ "bomFormat": "CycloneDX",
+this is not valid json — intentional fixture for SbomServiceTest.isSbomAvailableFalseWhenFilePresentButUnparseable

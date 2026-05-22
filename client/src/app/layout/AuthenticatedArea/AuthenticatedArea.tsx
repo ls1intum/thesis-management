@@ -29,6 +29,7 @@ import {
   PaperPlaneTiltIcon,
   PresentationIcon,
   ScrollIcon,
+  ShieldCheckIcon,
   SignOutIcon,
   TableIcon,
   UsersThreeIcon,
@@ -122,6 +123,12 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
       icon: GearSixIcon,
       groups: ['admin'],
     },
+    {
+      link: '/admin/dependencies',
+      label: 'Dependencies',
+      icon: ShieldCheckIcon,
+      groups: ['admin'],
+    },
   ]
 
   const user = useUser()
@@ -194,6 +201,32 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
     location.search,
   ])
 
+  const visibleLinks = links
+    .filter((item) => !item.groups || item.groups.some((role) => auth.user?.groups?.includes(role)))
+    .filter((item) => item.display === undefined || item.display === true)
+    .filter((item) =>
+      item.hideFromGroups
+        ? !item.hideFromGroups.some((role) => auth.user?.groups?.includes(role))
+        : true,
+    )
+
+  // Score each link against the current path and remember the best match so only the most
+  // specific entry highlights. Without this, /admin/dependencies would light up both the
+  // /admin and /admin/dependencies entries (the original startsWith check).
+  const matchScore = (link: string): number => {
+    if (location.pathname === link) {
+      return link.length + 1
+    }
+    if (location.pathname.startsWith(link + '/')) {
+      return link.length
+    }
+    return 0
+  }
+  const bestMatchScore = visibleLinks.reduce(
+    (best, item) => Math.max(best, matchScore(item.link)),
+    0,
+  )
+
   return (
     <AppShell
       header={{ height: HEADER_HEIGHT }}
@@ -227,30 +260,21 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
 
       <AppShell.Navbar p='md'>
         <AppShell.Section grow mb='md'>
-          {links
-            .filter(
-              (item) =>
-                !item.groups || item.groups.some((role) => auth.user?.groups?.includes(role)),
-            )
-            .filter((item) => item.display === undefined || item.display)
-            .filter((item) =>
-              item.hideFromGroups
-                ? !item.hideFromGroups.some((role) => auth.user?.groups?.includes(role))
-                : true,
-            )
-            .map((item) => (
-              <Link
-                className={minimized ? classes.minimizedLink : classes.fullLink}
-                data-active={location.pathname.startsWith(item.link) || undefined}
-                key={item.label}
-                to={item.link}
-              >
-                <Tooltip label={item.label} disabled={!minimized} position='right' offset={15}>
-                  <item.icon className={classes.linkIcon} size={25} />
-                </Tooltip>
-                {!minimized && <span>{item.label}</span>}
-              </Link>
-            ))}
+          {visibleLinks.map((item) => (
+            <Link
+              className={minimized ? classes.minimizedLink : classes.fullLink}
+              data-active={
+                (bestMatchScore > 0 && matchScore(item.link) === bestMatchScore) || undefined
+              }
+              key={item.label}
+              to={item.link}
+            >
+              <Tooltip label={item.label} disabled={!minimized} position='right' offset={15}>
+                <item.icon className={classes.linkIcon} size={25} />
+              </Tooltip>
+              {!minimized && <span>{item.label}</span>}
+            </Link>
+          ))}
         </AppShell.Section>
         {user && (
           <AppShell.Section>

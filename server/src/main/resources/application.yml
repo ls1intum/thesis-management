@@ -98,3 +98,13 @@ thesis-management:
     days-between-exports: ${DATA_EXPORT_COOLDOWN_DAYS:7}
   storage:
     upload-location: ${UPLOAD_FOLDER:uploads}
+  dependency-scan:
+    cron: ${VULNERABILITY_SCAN_CRON:0 0 8 * * MON}
+    # Recipient of the weekly scan email is the configured mail sender
+    # (thesis-management.mail.sender / MAIL_SENDER). The TUM deployment sets MAIL_SENDER
+    # to the support address; forks/other chairs setting MAIL_SENDER for their own mail
+    # flow automatically get the scan to their own mailbox without any extra config.
+    github-repo: ${VULNERABILITY_SCAN_GITHUB_REPO:ls1intum/thesis-management}
+    osv-url: ${VULNERABILITY_SCAN_OSV_URL:https://api.osv.dev}
+    github-api-url: ${VULNERABILITY_SCAN_GITHUB_API_URL:https://api.github.com}
+    test-server: ${TEST_SERVER:false}
