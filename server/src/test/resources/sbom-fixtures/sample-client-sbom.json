@@ -1,0 +1,34 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "serialNumber": "urn:uuid:22222222-2222-2222-2222-222222222222",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-01-15T10:00:00Z",
+    "component": {
+      "type": "application",
+      "name": "Thesis Management Client",
+      "version": "4.11.0"
+    }
+  },
+  "components": [
+    {
+      "type": "library",
+      "bom-ref": "pkg:npm/react@19.0.0",
+      "name": "react",
+      "version": "19.0.0",
+      "purl": "pkg:npm/react@19.0.0",
+      "licenses": [
+        { "license": { "id": "MIT" } }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:npm/%40angular/core@17.0.0",
+      "group": "@angular",
+      "name": "core",
+      "version": "17.0.0",
+      "purl": "pkg:npm/%40angular/core@17.0.0"
+    }
+  ]
+}

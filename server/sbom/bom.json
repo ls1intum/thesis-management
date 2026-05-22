@@ -3806,6 +3806,69 @@
         },
         {
             "type": "library",
+            "bom-ref": "pkg:maven/com.vdurmont/semver4j@3.1.0?type=jar",
+            "group": "com.vdurmont",
+            "name": "semver4j",
+            "version": "3.1.0",
+            "description": "Semantic versioning for Java apps.",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "b39112afda0af7dba1f160f7284d402f"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "0de1248f09dfe8df3b021c84e0642ee222cceb13"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "0f33724dd012099f0737e3d9203e28f4a804435526998d4f5841993058651cb8"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "4b7cc68857eb7633d0ef8a6bd8101243d0300537e51fac1380ebb944a8708f0f75ec3fa10186845b7e3a2d7988ae0bf22369909a52b6d95b5faaa9bc96dbbe64"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "5e193b3ae6a6f34fb38abca0a2f9124daa0401238bb18015f8dfe4431da87525afa82921dd57754a1095d30451dfc363"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "62d09d2c1151a5108b55f04c8cf520c1b1b9e96ff045973e7aa729ff79522cf6772af7808c7435e6679620bdd0b722bc"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "fa98f695faa97464ce8b90f8c93b0179843ab2cc8a9e09d09586523e1cf4f401"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "6b24821607cb2040dd649c569e01cb87af0b5b92488111655ef15eb675a1e9f33029616c154253b4a865c42906b699a44dacf36411f42d062f57ccc60a0b5d42"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "MIT"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/com.vdurmont/semver4j@3.1.0?type=jar",
+            "modified": false,
+            "externalReferences": [
+                {
+                    "type": "distribution",
+                    "url": "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+                }
+            ],
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
             "bom-ref": "pkg:maven/com.zaxxer/HikariCP@7.0.2?type=jar",
             "publisher": "Zaxxer.com",
             "group": "com.zaxxer",
@@ -21490,6 +21553,12 @@
             ]
         },
         {
+            "ref": "pkg:maven/com.vdurmont/semver4j@3.1.0?type=jar",
+            "dependsOn": [
+                
+            ]
+        },
+        {
             "ref": "pkg:maven/com.zaxxer/HikariCP@7.0.2?type=jar",
             "dependsOn": [
                 "pkg:maven/org.slf4j/slf4j-api@2.0.17?type=jar"
@@ -21536,6 +21605,7 @@
                 "pkg:maven/com.itextpdf/html2pdf@6.3.2?type=jar",
                 "pkg:maven/com.itextpdf/itext-core@9.6.0?type=pom",
                 "pkg:maven/com.puppycrawl.tools/checkstyle@13.4.2?type=jar",
+                "pkg:maven/com.vdurmont/semver4j@3.1.0?type=jar",
                 "pkg:maven/commons-io/commons-io@2.22.0?type=jar",
                 "pkg:maven/net.minidev/json-smart@2.6.0?type=jar",
                 "pkg:maven/org.apache.commons/commons-compress@1.28.0?type=jar",
