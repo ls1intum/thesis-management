@@ -1,0 +1,168 @@
+name: Refresh SBOM for Dependency PRs
+
+# Auto-refreshes the cached CycloneDX SBOMs (`client/sbom/`, `server/sbom/`)
+# on dependency-update PRs opened by Renovate or Dependabot. Without this,
+# every bot PR fails the `Verify ... SBOM is up-to-date` checks in
+# `run_tests.yml` because the bots only update `package.json` /
+# `pnpm-lock.yaml` (or `build.gradle` / `gradle.properties` /
+# `settings.gradle`) — they don't run `pnpm run sbom:force` or
+# `./gradlew cyclonedxBom`.
+#
+# Token requirement
+# -----------------
+# We deliberately do NOT push with the default `GITHUB_TOKEN`: pushes signed
+# by `GITHUB_TOKEN` are excluded from triggering further workflow runs, so
+# the failed test workflow on the PR would stay red even after the SBOM
+# commit lands. Instead we either:
+#   1. Mint an installation token from a GitHub App (preferred — matches the
+#      org's existing bot conventions), via the `SBOM_BOT_APP_ID` repo/org
+#      variable and the `SBOM_BOT_PRIVATE_KEY` secret.
+#   2. Fall back to a fine-grained PAT in `SBOM_BOT_PAT` if the App secrets
+#      are not configured.
+# Either token must have `contents: write` on this repo.
+#
+# Injection safety
+# ----------------
+# User-controllable inputs (`head.ref`, `head.repo.full_name`) are only
+# consumed via `with:` inputs to trusted actions or via `env:` indirection,
+# never spliced into `run:` shell scripts directly.
+
+on:
+  pull_request:
+    branches: [develop, main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'client/package.json'
+      - 'client/pnpm-lock.yaml'
+      - 'server/build.gradle'
+      - 'server/gradle.properties'
+      - 'server/settings.gradle'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: refresh-sbom-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  refresh:
+    # Only run on bot-opened PRs; humans are expected to refresh the SBOM
+    # locally as part of their dep change. The bot identity check is on the
+    # PR opener (`pull_request.user.login`), matching the convention used in
+    # `dev.yml` for the deploy gate.
+    if: >
+      github.event.pull_request.user.login == 'renovate[bot]' ||
+      github.event.pull_request.user.login == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mint GitHub App token (preferred)
+        id: app-token
+        if: ${{ vars.SBOM_BOT_APP_ID != '' }}
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.SBOM_BOT_APP_ID }}
+          private-key: ${{ secrets.SBOM_BOT_PRIVATE_KEY }}
+
+      - name: Pick push token (App token > PAT fallback)
+        id: token
+        env:
+          APP_TOKEN: ${{ steps.app-token.outputs.token }}
+          PAT_TOKEN: ${{ secrets.SBOM_BOT_PAT }}
+        run: |
+          if [ -n "${APP_TOKEN:-}" ]; then
+            echo "source=app" >> "$GITHUB_OUTPUT"
+            echo "::add-mask::$APP_TOKEN"
+            echo "value=$APP_TOKEN" >> "$GITHUB_OUTPUT"
+          elif [ -n "${PAT_TOKEN:-}" ]; then
+            echo "source=pat" >> "$GITHUB_OUTPUT"
+            echo "::add-mask::$PAT_TOKEN"
+            echo "value=$PAT_TOKEN" >> "$GITHUB_OUTPUT"
+          else
+            echo "::error::Neither SBOM_BOT_APP_ID/SBOM_BOT_PRIVATE_KEY nor SBOM_BOT_PAT is configured. See .github/workflows/refresh_sbom.yml header for setup details."
+            exit 1
+          fi
+
+      - name: Checkout PR branch
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          token: ${{ steps.token.outputs.value }}
+          fetch-depth: 2
+
+      - name: Detect which SBOM(s) need refreshing
+        id: scopes
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          changed=$(git diff --name-only "$BASE_SHA"...HEAD)
+          client=false
+          server=false
+          if echo "$changed" | grep -qE '^client/(package\.json|pnpm-lock\.yaml)$'; then
+            client=true
+          fi
+          if echo "$changed" | grep -qE '^server/(build\.gradle|gradle\.properties|settings\.gradle)$'; then
+            server=true
+          fi
+          echo "client=$client" >> "$GITHUB_OUTPUT"
+          echo "server=$server" >> "$GITHUB_OUTPUT"
+          echo "Client SBOM refresh needed: $client"
+          echo "Server SBOM refresh needed: $server"
+
+      # ---------- Server SBOM ----------
+      - name: Set up JDK 25
+        if: steps.scopes.outputs.server == 'true'
+        uses: actions/setup-java@v5
+        with:
+          java-version: '25'
+          distribution: 'zulu'
+          cache: 'gradle'
+
+      - name: Regenerate server SBOM
+        if: steps.scopes.outputs.server == 'true'
+        working-directory: ./server
+        run: |
+          chmod +x ./gradlew
+          ./gradlew cyclonedxBom
+
+      # ---------- Client SBOM ----------
+      - name: Enable Corepack
+        if: steps.scopes.outputs.client == 'true'
+        run: corepack enable
+
+      - name: Set up Node.js
+        if: steps.scopes.outputs.client == 'true'
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24.15.0'
+          cache: 'pnpm'
+          cache-dependency-path: 'client/pnpm-lock.yaml'
+
+      - name: Install client dependencies
+        if: steps.scopes.outputs.client == 'true'
+        working-directory: ./client
+        run: pnpm install --frozen-lockfile
+
+      - name: Regenerate client SBOM
+        if: steps.scopes.outputs.client == 'true'
+        working-directory: ./client
+        run: pnpm run sbom:force
+
+      - name: Commit and push if SBOM changed
+        env:
+          PR_BRANCH: ${{ github.event.pull_request.head.ref }}
+        run: |
+          if git diff --quiet -- client/sbom server/sbom; then
+            echo "SBOM already current — nothing to commit. This typically means the workflow re-ran on its own commit; safe to skip."
+            exit 0
+          fi
+          # Use a bot identity so a future filter could exclude these commits
+          # from re-triggering this workflow if needed. With a PAT, commits
+          # are attributed to the PAT owner; with an App token they're
+          # attributed to the App's bot user.
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add client/sbom server/sbom
+          git commit -m "chore: refresh SBOM after dependency update"
+          git push origin "HEAD:$PR_BRANCH"
