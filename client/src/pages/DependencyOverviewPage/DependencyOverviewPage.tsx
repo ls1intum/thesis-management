@@ -42,13 +42,18 @@ import type {
   ISbomComponent,
   IThesisManagementVersion,
   IVulnerability,
-  VulnerabilitySeverity,
 } from '../../requests/responses/dependencyOverview'
 import { getApiResponseErrorMessage } from '../../requests/handler'
 import { showSimpleError, showSimpleSuccess } from '../../utils/notification'
-
-type ComponentSource = 'server' | 'client'
-type SourceFilter = 'all' | ComponentSource
+import {
+  buildComponentKey,
+  downloadJson,
+  highestSeverity,
+  SEVERITY_RANK,
+  severityColor,
+  type ComponentSource,
+  type SourceFilter,
+} from './helpers'
 
 interface IComponentRow {
   source: ComponentSource
@@ -61,59 +66,6 @@ interface IComponentRow {
   description: string
   componentKey: string
   vulnerabilities: IVulnerability[]
-}
-
-const SEVERITY_RANK: Record<VulnerabilitySeverity, number> = {
-  CRITICAL: 4,
-  HIGH: 3,
-  MEDIUM: 2,
-  LOW: 1,
-  UNKNOWN: 0,
-}
-
-function buildComponentKey(component: ISbomComponent, source: ComponentSource): string {
-  if (component.purl) {
-    return component.purl
-  }
-  const ecosystem = source === 'server' ? 'Maven' : 'npm'
-  return `${ecosystem}:${component.group ?? ''}/${component.name ?? ''}@${component.version ?? ''}`
-}
-
-function severityColor(severity: VulnerabilitySeverity): string {
-  switch (severity) {
-    case 'CRITICAL':
-      return 'red'
-    case 'HIGH':
-      return 'orange'
-    case 'MEDIUM':
-      return 'yellow'
-    case 'LOW':
-      return 'green'
-    default:
-      return 'gray'
-  }
-}
-
-function highestSeverity(vulns: IVulnerability[]): VulnerabilitySeverity | null {
-  if (vulns.length === 0) {
-    return null
-  }
-  return vulns.reduce<VulnerabilitySeverity>(
-    (acc, v) => (SEVERITY_RANK[v.severity] > SEVERITY_RANK[acc] ? v.severity : acc),
-    'UNKNOWN',
-  )
-}
-
-function downloadJson(filename: string, data: unknown) {
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const link = document.createElement('a')
-  link.href = url
-  link.download = filename
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
-  URL.revokeObjectURL(url)
 }
 
 const DependencyOverviewPage = () => {
@@ -133,18 +85,16 @@ const DependencyOverviewPage = () => {
   })
 
   useEffect(() => {
+    // Fetch each resource independently so the table renders as soon as the
+    // SBOM lands; vulnerability + version data fill in when they arrive.
+    // Initial vulnerability/version fetches can take several seconds on a
+    // cold cache (OSV.dev batch + GitHub release lookup) and should never
+    // block the dependency table.
     let cancelled = false
 
     void (async () => {
-      const [sbomRes, vulnRes, versionRes] = await Promise.all([
-        fetchCombinedSbom(),
-        fetchVulnerabilities(),
-        fetchVersionInfo(),
-      ])
-      if (cancelled) {
-        return
-      }
-
+      const sbomRes = await fetchCombinedSbom()
+      if (cancelled) return
       if (sbomRes.ok) {
         setSbom(sbomRes.data)
         setSbomUnavailable(false)
@@ -154,13 +104,21 @@ const DependencyOverviewPage = () => {
         showSimpleError(getApiResponseErrorMessage(sbomRes))
       }
       setLoadingSbom(false)
+    })()
 
+    void (async () => {
+      const vulnRes = await fetchVulnerabilities()
+      if (cancelled) return
       if (vulnRes.ok) {
         setVulnerabilities(vulnRes.data)
       } else if (vulnRes.status !== 404) {
         showSimpleError(getApiResponseErrorMessage(vulnRes))
       }
+    })()
 
+    void (async () => {
+      const versionRes = await fetchVersionInfo()
+      if (cancelled) return
       if (versionRes.ok) {
         setVersionInfo(versionRes.data)
       }

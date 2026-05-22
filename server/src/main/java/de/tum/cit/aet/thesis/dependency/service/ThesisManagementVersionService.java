@@ -34,20 +34,25 @@ public class ThesisManagementVersionService {
 
 	private final String gitHubRepo;
 
+	private final String gitHubApiBaseUrl;
+
 	private final AtomicReference<CachedVersion> cache = new AtomicReference<>();
 
 	/**
 	 * Creates the version service.
 	 *
-	 * @param buildProperties the build properties used to read the currently running version
-	 * @param gitHubRepo      the {@code owner/repo} slug used to look up the latest release on GitHub
+	 * @param buildProperties  the build properties used to read the currently running version
+	 * @param gitHubRepo       the {@code owner/repo} slug used to look up the latest release on GitHub
+	 * @param gitHubApiBaseUrl the GitHub API base URL (overridable for tests)
 	 */
 	public ThesisManagementVersionService(
 			BuildProperties buildProperties,
-			@Value("${thesis-management.dependency-scan.github-repo:ls1intum/thesis-management}") String gitHubRepo
+			@Value("${thesis-management.dependency-scan.github-repo:ls1intum/thesis-management}") String gitHubRepo,
+			@Value("${thesis-management.dependency-scan.github-api-url:https://api.github.com}") String gitHubApiBaseUrl
 	) {
 		this.buildProperties = buildProperties;
 		this.gitHubRepo = gitHubRepo;
+		this.gitHubApiBaseUrl = gitHubApiBaseUrl.replaceAll("/+$", "");
 		this.gitHubWebClient = WebClient.builder()
 				.defaultHeader("Accept", "application/vnd.github+json")
 				.defaultHeader("User-Agent", "ThesisManagement-Version-Check")
@@ -82,7 +87,7 @@ public class ThesisManagementVersionService {
 
 	private ThesisManagementVersionDTO fetchVersionFromGitHub() {
 		String currentVersion = buildProperties.getVersion();
-		String url = "https://api.github.com/repos/" + gitHubRepo + "/releases/latest";
+		String url = gitHubApiBaseUrl + "/repos/" + gitHubRepo + "/releases/latest";
 		try {
 			GitHubReleaseResponse release = gitHubWebClient.get()
 					.uri(url)

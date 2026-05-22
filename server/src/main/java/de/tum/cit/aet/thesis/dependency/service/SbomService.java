@@ -6,6 +6,7 @@ import de.tum.cit.aet.thesis.dependency.dto.SbomDTO;
 import de.tum.cit.aet.thesis.dependency.dto.SbomMetadataDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -31,9 +32,9 @@ public class SbomService {
 
 	private static final Logger log = LoggerFactory.getLogger(SbomService.class);
 
-	private static final String SERVER_SBOM_PATH = "sbom/server-sbom.json";
+	private final String serverSbomPath;
 
-	private static final String CLIENT_SBOM_PATH = "sbom/client-sbom.json";
+	private final String clientSbomPath;
 
 	private final ObjectMapper objectMapper;
 
@@ -51,10 +52,18 @@ public class SbomService {
 	/**
 	 * Creates the SBOM service.
 	 *
-	 * @param objectMapper the Spring-managed Jackson object mapper used for SBOM parsing
+	 * @param objectMapper   the Spring-managed Jackson object mapper used for SBOM parsing
+	 * @param serverSbomPath classpath location of the server SBOM (overridable for tests)
+	 * @param clientSbomPath classpath location of the client SBOM (overridable for tests)
 	 */
-	public SbomService(ObjectMapper objectMapper) {
+	public SbomService(
+			ObjectMapper objectMapper,
+			@Value("${thesis-management.dependency-scan.server-sbom-path:sbom/server-sbom.json}") String serverSbomPath,
+			@Value("${thesis-management.dependency-scan.client-sbom-path:sbom/client-sbom.json}") String clientSbomPath
+	) {
 		this.objectMapper = objectMapper;
+		this.serverSbomPath = serverSbomPath;
+		this.clientSbomPath = clientSbomPath;
 	}
 
 	/**
@@ -72,7 +81,7 @@ public class SbomService {
 	 * @return the server SBOM DTO, or null if not available
 	 */
 	public SbomDTO getServerSbom() {
-		return loadSbomCached(SERVER_SBOM_PATH);
+		return loadSbomCached(serverSbomPath);
 	}
 
 	/**
@@ -81,14 +90,14 @@ public class SbomService {
 	 * @return the client SBOM DTO, or null if not available
 	 */
 	public SbomDTO getClientSbom() {
-		return loadSbomCached(CLIENT_SBOM_PATH);
+		return loadSbomCached(clientSbomPath);
 	}
 
 	/**
 	 * @return true if at least one SBOM file is bundled in the executable
 	 */
 	public boolean isSbomAvailable() {
-		return isResourceAvailable(SERVER_SBOM_PATH) || isResourceAvailable(CLIENT_SBOM_PATH);
+		return isResourceAvailable(serverSbomPath) || isResourceAvailable(clientSbomPath);
 	}
 
 	private boolean isResourceAvailable(String path) {

@@ -100,6 +100,11 @@ thesis-management:
     upload-location: ${UPLOAD_FOLDER:uploads}
   dependency-scan:
     cron: ${VULNERABILITY_SCAN_CRON:0 0 8 * * MON}
-    admin-email: ${VULNERABILITY_SCAN_ADMIN_EMAIL:}
+    # Defaults to the support address used in the About page so the weekly scan
+    # works without any deployment-level config. Override via env var if a different
+    # mailbox should receive the report.
+    admin-email: ${VULNERABILITY_SCAN_ADMIN_EMAIL:thesis-management-support.aet@xcit.tum.de}
     github-repo: ${VULNERABILITY_SCAN_GITHUB_REPO:ls1intum/thesis-management}
+    osv-url: ${VULNERABILITY_SCAN_OSV_URL:https://api.osv.dev}
+    github-api-url: ${VULNERABILITY_SCAN_GITHUB_API_URL:https://api.github.com}
     test-server: ${TEST_SERVER:false}
