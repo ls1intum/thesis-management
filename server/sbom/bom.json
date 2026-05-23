@@ -15,11 +15,11 @@
         },
         "component": {
             "type": "application",
-            "bom-ref": "pkg:maven/de.tum.cit.aet.thesis/thesis-management@4.11.0?project_path=%3A",
+            "bom-ref": "pkg:maven/de.tum.cit.aet.thesis/thesis-management@4.11.1?project_path=%3A",
             "group": "de.tum.cit.aet.thesis",
             "name": "thesis-management",
-            "version": "4.11.0",
-            "purl": "pkg:maven/de.tum.cit.aet.thesis/thesis-management@4.11.0?project_path=%3A",
+            "version": "4.11.1",
+            "purl": "pkg:maven/de.tum.cit.aet.thesis/thesis-management@4.11.1?project_path=%3A",
             "modified": false,
             "externalReferences": [
                 {
@@ -21592,7 +21592,7 @@
             ]
         },
         {
-            "ref": "pkg:maven/de.tum.cit.aet.thesis/thesis-management@4.11.0?project_path=%3A",
+            "ref": "pkg:maven/de.tum.cit.aet.thesis/thesis-management@4.11.1?project_path=%3A",
             "dependsOn": [
                 "pkg:maven/ch.qos.logback/logback-classic@1.5.32?type=jar",
                 "pkg:maven/ch.qos.logback/logback-core@1.5.32?type=jar",
