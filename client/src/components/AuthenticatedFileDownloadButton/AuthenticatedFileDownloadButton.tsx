@@ -1,5 +1,6 @@
 import { Button, type ButtonProps } from '@mantine/core'
-import { PropsWithChildren, useState } from 'react'
+import type { PropsWithChildren } from 'react'
+import { useState } from 'react'
 import { doRequest } from '../../requests/request'
 import { showSimpleError } from '../../utils/notification'
 import { getApiResponseErrorMessage } from '../../requests/handler'
@@ -38,7 +39,13 @@ export const AuthenticatedFileDownloadButton = (
   }
 
   return (
-    <Button onClick={onDownload} loading={loading} {...buttonProps}>
+    <Button
+      onClick={() => {
+        void onDownload()
+      }}
+      loading={loading}
+      {...buttonProps}
+    >
       {children}
     </Button>
   )

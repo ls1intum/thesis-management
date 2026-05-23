@@ -10,7 +10,8 @@ import {
   Text,
   TextInput,
 } from '@mantine/core'
-import { ITopic, TopicState, toTopicOverview } from '../../../../requests/responses/topic'
+import type { ITopic } from '../../../../requests/responses/topic'
+import { TopicState, toTopicOverview } from '../../../../requests/responses/topic'
 import { isNotEmpty, useForm } from '@mantine/form'
 import { isNotEmptyUserList } from '../../../../utils/validation'
 import { useEffect, useState } from 'react'
@@ -23,10 +24,10 @@ import { getApiResponseErrorMessage } from '../../../../requests/handler'
 import { UserMultiSelect } from '../../../../components/UserMultiSelect/UserMultiSelect'
 import { useTopicsContext } from '../../../../providers/TopicsProvider/hooks'
 import { formatThesisType } from '../../../../utils/format'
-import { PaginationResponse } from '../../../../requests/responses/pagination'
-import { ILightResearchGroup } from '../../../../requests/responses/researchGroup'
-import { ILightUser } from '../../../../requests/responses/user'
-import { useHasGroupAccess } from '../../../../hooks/authentication'
+import type { PaginationResponse } from '../../../../requests/responses/pagination'
+import type { ILightResearchGroup } from '../../../../requests/responses/researchGroup'
+import type { ILightUser } from '../../../../requests/responses/user'
+import { useHasGroupAccess, useUser } from '../../../../hooks/authentication'
 import { DateInput } from '@mantine/dates'
 
 interface ICreateTopicModalProps {
@@ -39,14 +40,21 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
   const { topicId, opened, onClose } = props
 
   const fetchedTopic = useTopic(opened ? topicId : undefined)
-  const topic = fetchedTopic === false ? undefined : fetchedTopic || undefined
-  const fetchError = fetchedTopic === false && !!topicId
-  const isTopicLoading = !!topicId && opened && fetchedTopic === undefined
+  const topic = fetchedTopic === false ? undefined : (fetchedTopic ?? undefined)
+  const fetchError = fetchedTopic === false && Boolean(topicId)
+  const isTopicLoading = Boolean(topicId) && opened && fetchedTopic === undefined
 
   const { addTopic, updateTopic } = useTopicsContext()
   const [researchGroups, setResearchGroups] = useState<PaginationResponse<ILightResearchGroup>>()
   const [autoSelectedExaminers, setAutoSelectedExaminers] = useState<ILightUser[]>([])
   const hasAdminAccess = useHasGroupAccess('admin')
+  const currentUser = useUser()
+  // Only admins can actually move a topic between research groups: the server
+  // ties every non-admin to a single research group and rejects target groups
+  // outside that one (see CurrentUserProvider.assertCanAccessResearchGroup).
+  // For everyone else we render the field as read-only.
+  const lockedResearchGroupName = topic?.researchGroup?.name ?? currentUser?.researchGroupName ?? ''
+  const lockedResearchGroupId = topic?.researchGroup?.id ?? currentUser?.researchGroupId ?? ''
 
   const form = useForm<{
     title: string
@@ -91,7 +99,7 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
     if (opened && topic) {
       form.setInitialValues({
         title: topic.title,
-        thesisTypes: topic.thesisTypes || [],
+        thesisTypes: topic.thesisTypes ?? [],
         problemStatement: topic.problemStatement ?? '',
         requirements: topic.requirements ?? '',
         goals: topic.goals ?? '',
@@ -107,21 +115,28 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
     }
 
     form.reset()
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- form is stable; including it would loop on every form value change
   }, [topic, opened])
 
   useEffect(() => {
-    if (!hasAdminAccess && topic?.researchGroup) {
-      setResearchGroups({
-        content: [topic.researchGroup],
-        totalPages: 1,
-        totalElements: 1,
-        last: true,
-        pageNumber: 0,
-        pageSize: -1,
-      })
-      form.setValues({ researchGroupId: topic?.researchGroup.id })
+    if (!opened) {
       return
     }
+    // AuthenticationProvider initializes `user` as undefined while
+    // /v2/user-info is loading; without this guard we would briefly treat
+    // an admin as a non-admin and pin the field.
+    if (!currentUser) {
+      return
+    }
+
+    if (!hasAdminAccess) {
+      setResearchGroups(undefined)
+      if (lockedResearchGroupId) {
+        form.setValues({ researchGroupId: lockedResearchGroupId })
+      }
+      return
+    }
+
     setLoading(true)
     return doRequest<PaginationResponse<ILightResearchGroup>>(
       '/v2/research-groups',
@@ -140,7 +155,11 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
             content: res.data.content,
           })
 
-          if ((res.data.content ?? []).length === 1) {
+          // Only auto-select the single available group (and its head as
+          // examiner) on the create flow. When editing an existing topic
+          // (`topic` is set), we must NOT overwrite the topic's existing
+          // examiners.
+          if (!topic && (res.data.content ?? []).length === 1) {
             const onlyGroup = (res.data.content ?? [])[0]
             form.setValues({
               researchGroupId: onlyGroup.id,
@@ -163,7 +182,8 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
         setLoading(false)
       },
     )
-  }, [opened])
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- form is stable; we re-run when admin status, the current user, or the locked RG id changes
+  }, [opened, hasAdminAccess, currentUser?.userId, lockedResearchGroupId])
 
   const onSubmit = async (isDraft = false) => {
     setLoading(true)
@@ -250,17 +270,26 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
               initialUsers={topic?.supervisors ?? []}
               {...form.getInputProps('supervisorIds')}
             />
-            <Select
-              label='Research Group'
-              required
-              nothingFoundMessage={!loading ? 'Nothing found...' : 'Loading...'}
-              disabled={loading || !researchGroups || !hasAdminAccess}
-              data={(researchGroups?.content ?? []).map((researchGroup: ILightResearchGroup) => ({
-                label: researchGroup.name,
-                value: researchGroup.id,
-              }))}
-              {...form.getInputProps('researchGroupId')}
-            />
+            {hasAdminAccess ? (
+              <Select
+                label='Research Group'
+                required
+                nothingFoundMessage={!loading ? 'Nothing found...' : 'Loading...'}
+                disabled={loading || !researchGroups}
+                data={(researchGroups?.content ?? []).map((researchGroup: ILightResearchGroup) => ({
+                  label: researchGroup.name,
+                  value: researchGroup.id,
+                }))}
+                {...form.getInputProps('researchGroupId')}
+              />
+            ) : (
+              <TextInput
+                label='Research Group'
+                description="Only administrators can change a topic's research group."
+                disabled
+                value={lockedResearchGroupName}
+              />
+            )}
             <DateInput
               clearable
               minDate={new Date()}
@@ -302,7 +331,7 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
               {(!topic || topic.state === TopicState.DRAFT) && (
                 <Button
                   variant='default'
-                  onClick={() => onSubmit(true)}
+                  onClick={() => void onSubmit(true)}
                   disabled={!form.isValid()}
                   loading={loading}
                 >

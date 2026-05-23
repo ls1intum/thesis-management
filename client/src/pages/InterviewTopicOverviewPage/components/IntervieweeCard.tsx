@@ -6,15 +6,13 @@ import {
   Stack,
   Title,
   Text,
-  useMantineColorScheme,
+  useComputedColorScheme,
   Badge,
   Button,
   Box,
 } from '@mantine/core'
-import {
-  IIntervieweeLightWithNextSlot,
-  InterviewState,
-} from '../../../requests/responses/interview'
+import type { IIntervieweeLightWithNextSlot } from '../../../requests/responses/interview'
+import { InterviewState } from '../../../requests/responses/interview'
 import { CustomAvatar } from '../../../components/CustomAvatar/CustomAvatar'
 import {
   createScoreLabel,
@@ -61,7 +59,7 @@ const IntervieweeCard = ({
 
   const state: InterviewState = checkState()
 
-  const colorScheme = useMantineColorScheme()
+  const colorScheme = useComputedColorScheme('light')
 
   const [inviteModalOpen, setInviteModalOpen] = useState(false)
   const [cancelModalOpen, setCancelModalOpen] = useState(false)
@@ -111,13 +109,13 @@ const IntervieweeCard = ({
           <Divider />
           <Group px={'1.5rem'} py={'0.75rem'} justify='space-between' align='center'>
             <Group gap={'0.5rem'}>
-              <Divider orientation='vertical' size='lg' color={getInterviewStateColor(state)} />
+              <Divider
+                orientation='vertical'
+                size='lg'
+                color={getInterviewStateColor(state, colorScheme === 'dark')}
+              />
               <Stack gap={0}>
-                <Text
-                  size='sm'
-                  fw={500}
-                  c={colorScheme.colorScheme === 'dark' ? 'gray.3' : 'gray.7'}
-                >
+                <Text size='sm' fw={500} c={colorScheme === 'dark' ? 'gray.3' : 'gray.7'}>
                   {state}
                 </Text>
               </Stack>

@@ -121,10 +121,10 @@ const AboutPage = () => {
       <Title order={3}>Git Information</Title>
       <List>
         <List.Item>
-          Branch: <b>{info?.git.branch || 'unknown'}</b>
+          Branch: <b>{info?.git.branch ?? 'unknown'}</b>
         </List.Item>
         <List.Item>
-          Commit: <b>{info?.git.commit.id || 'unknown'}</b>
+          Commit: <b>{info?.git.commit.id ?? 'unknown'}</b>
         </List.Item>
       </List>
 

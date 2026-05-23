@@ -1,5 +1,5 @@
 import { Badge, Group, Stack, Text, Paper } from '@mantine/core'
-import { IApplication } from '../../../../requests/responses/application'
+import type { IApplication } from '../../../../requests/responses/application'
 import { ApplicationStateColor } from '../../../../config/colors'
 import { formatApplicationState, formatDate } from '../../../../utils/format'
 import React from 'react'

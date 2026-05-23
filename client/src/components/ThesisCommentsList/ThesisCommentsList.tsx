@@ -1,3 +1,4 @@
+import { Fragment } from 'react'
 import { useThesisCommentsContext } from '../../providers/ThesisCommentsProvider/hooks'
 import { Center, Divider, Pagination, Skeleton, Stack, Text, Title } from '@mantine/core'
 import { NoteIcon } from '@phosphor-icons/react/dist/ssr'
@@ -24,15 +25,14 @@ const ThesisCommentsList = () => {
       <Stack gap={'1rem'}>
         {comments &&
           (comments.content ?? []).map((comment, idx) => (
-            <>
+            <Fragment key={comment.commentId}>
               <ThesisCommentElement
-                key={comment.commentId}
                 comment={comment}
                 thesisId={thesis.thesisId}
                 deleteComment={deleteComment}
               />
               {idx < (comments.content ?? []).length - 1 && <Divider />}
-            </>
+            </Fragment>
           ))}
       </Stack>
       {comments && comments.totalPages > 1 && (

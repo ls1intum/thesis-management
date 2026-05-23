@@ -58,6 +58,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -81,6 +82,7 @@ public class ThesisService {
 	private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
 	private final ResearchGroupRepository researchGroupRepository;
 	private final ResearchGroupSettingsService researchGroupSettingsService;
+	private final UserService userService;
 
 	@Value("${thesis-management.client.host}")
 	private String clientHost;
@@ -115,7 +117,8 @@ public class ThesisService {
 			MailingService mailingService,
 			AccessManagementService accessManagementService,
 			ThesisFeedbackRepository thesisFeedbackRepository, ThesisFileRepository thesisFileRepository,
-			ObjectProvider<CurrentUserProvider> currentUserProviderProvider, ResearchGroupRepository researchGroupRepository, ResearchGroupSettingsService researchGroupSettingsService
+			ObjectProvider<CurrentUserProvider> currentUserProviderProvider, ResearchGroupRepository researchGroupRepository, ResearchGroupSettingsService researchGroupSettingsService,
+			UserService userService
 	) {
 		this.thesisRoleRepository = thesisRoleRepository;
 		this.thesisRepository = thesisRepository;
@@ -131,6 +134,7 @@ public class ThesisService {
 		this.currentUserProviderProvider = currentUserProviderProvider;
 		this.researchGroupRepository = researchGroupRepository;
 		this.researchGroupSettingsService = researchGroupSettingsService;
+		this.userService = userService;
 	}
 
 	private CurrentUserProvider currentUserProvider() {
@@ -208,8 +212,6 @@ public class ThesisService {
 		);
 	}
 
-	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
-	@Transactional
 	public Thesis createThesis(
 			String thesisTitle,
 			String thesisType,
@@ -217,6 +219,7 @@ public class ThesisService {
 			List<UUID> examinerIds,
 			List<UUID> supervisorIds,
 			List<UUID> studentIds,
+			List<String> additionalStudentUsernames,
 			Application application,
 			boolean notifyUser,
 			UUID researchGroupId
@@ -244,7 +247,9 @@ public class ThesisService {
 
 		thesis = thesisRepository.save(thesis);
 
-		assignThesisRoles(thesis, examinerIds, supervisorIds, studentIds);
+		List<UUID> effectiveStudentIds = mergeAdditionalStudents(studentIds, additionalStudentUsernames);
+
+		assignThesisRoles(thesis, examinerIds, supervisorIds, effectiveStudentIds);
 		saveStateChange(thesis, nextState);
 
 		if (notifyUser) {
@@ -256,6 +261,27 @@ public class ThesisService {
 		}
 
 		return thesis;
+	}
+
+	/**
+	 * Materialises Keycloak-only students into local user rows and merges them into the existing
+	 * student-ID list, preserving order and removing duplicates. Returns a new list; the inputs are
+	 * not modified.
+	 */
+	private List<UUID> mergeAdditionalStudents(List<UUID> studentIds, List<String> additionalStudentUsernames) {
+		if (additionalStudentUsernames == null || additionalStudentUsernames.isEmpty()) {
+			return studentIds;
+		}
+
+		LinkedHashSet<UUID> merged = new LinkedHashSet<>(studentIds);
+		for (String username : additionalStudentUsernames) {
+			if (username == null || username.isBlank()) {
+				continue;
+			}
+			User student = userService.findOrCreateByUniversityId(username.trim());
+			merged.add(student.getId());
+		}
+		return new ArrayList<>(merged);
 	}
 
 	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
@@ -840,6 +866,60 @@ public class ThesisService {
 		}
 
 		return thesis;
+	}
+
+	/* REVERT */
+
+	/**
+	 * Reverts the thesis one state backwards by deleting the latest state change record and
+	 * setting the thesis state to the previous one in the history.
+	 *
+	 * <p>Side data (proposal approval, assessment entities, final grade) is intentionally
+	 * preserved so the supervisor can re-advance without re-entering it. If the thesis was
+	 * in {@code FINISHED} or {@code DROPPED_OUT}, the student group is restored for each
+	 * student, mirroring the inverse of {@link #completeThesis(Thesis)} / {@link #closeThesis(Thesis)}.
+	 *
+	 * <p>Operations are ordered so a partial failure leaves the system in a recoverable state:
+	 * the thesis state row is updated first (user-visible), then the historical state change
+	 * is removed, and finally the student group is restored. If the row deletion fails, a
+	 * retry will re-derive the same {@code currentChange} and complete the cleanup idempotently.
+	 *
+	 * @param thesis the thesis to revert
+	 * @return the updated thesis
+	 * @throws ResourceInvalidParametersException if the thesis is anonymized or has no previous state
+	 */
+	public Thesis revertToPreviousState(Thesis thesis) {
+		requireNotAnonymized(thesis);
+		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+
+		List<ThesisStateChange> orderedStates = thesis.getStates().stream()
+				.sorted(Comparator.comparing(ThesisStateChange::getChangedAt).reversed())
+				.toList();
+
+		if (orderedStates.size() < 2) {
+			throw new ResourceInvalidParametersException("Thesis has no previous state to revert to");
+		}
+
+		ThesisStateChange currentChange = orderedStates.get(0);
+		ThesisStateChangeId currentChangeId = currentChange.getId();
+		ThesisState previousState = orderedStates.get(1).getId().getState();
+		ThesisState revertedFrom = currentChangeId.getState();
+
+		thesis.setState(previousState);
+		Thesis savedThesis = thesisRepository.save(thesis);
+
+		thesisStateChangeRepository.deleteById(currentChangeId);
+		Set<ThesisStateChange> remaining = new HashSet<>(savedThesis.getStates());
+		remaining.removeIf(sc -> sc.getId().equals(currentChangeId));
+		savedThesis.setStates(remaining);
+
+		if (revertedFrom == ThesisState.FINISHED || revertedFrom == ThesisState.DROPPED_OUT) {
+			for (User student : savedThesis.getStudents()) {
+				accessManagementService.addStudentGroup(student);
+			}
+		}
+
+		return savedThesis;
 	}
 
 	/* UTILITY */

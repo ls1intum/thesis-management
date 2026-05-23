@@ -1,6 +1,8 @@
-import { TouchEvent, Touch, WheelEvent, useEffect, useRef, PropsWithChildren } from 'react'
+import type { TouchEvent, Touch, WheelEvent, PropsWithChildren } from 'react'
+import { useEffect, useRef } from 'react'
 import * as classes from '../../GanttChart.module.css'
-import { DateRange, useGanttChartContext } from '../../context'
+import type { DateRange } from '../../context'
+import { useGanttChartContext } from '../../context'
 
 const GanttChartZoomContainer = (props: PropsWithChildren) => {
   const { children } = props

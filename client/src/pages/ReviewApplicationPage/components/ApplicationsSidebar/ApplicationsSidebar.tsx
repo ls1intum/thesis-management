@@ -2,7 +2,7 @@ import { Center, Pagination, Stack, Text } from '@mantine/core'
 import ApplicationsFilters from '../../../../components/ApplicationsFilters/ApplicationsFilters'
 import React, { useEffect, useRef, useState } from 'react'
 import { shouldIgnoreArrowKey } from './keyNavigationFilter'
-import { IApplication } from '../../../../requests/responses/application'
+import type { IApplication } from '../../../../requests/responses/application'
 import { useApplicationsContext } from '../../../../providers/ApplicationsProvider/hooks'
 import ApplicationListItem from '../ApplicationListItem/ApplicationListItem'
 
@@ -84,6 +84,8 @@ const ApplicationsSidebar = (props: IApplicationsSidebarProps) => {
     }
   }, [])
 
+  const applicationIdsKey = (applications?.content ?? []).map((x) => x.applicationId).join(',')
+
   useEffect(() => {
     if (isSmallScreen) {
       return
@@ -100,12 +102,8 @@ const ApplicationsSidebar = (props: IApplicationsSidebarProps) => {
           : (applications.content ?? [])[0],
       )
     }
-  }, [
-    page,
-    startAtLastApplication,
-    isSmallScreen,
-    (applications?.content ?? []).map((x) => x.applicationId).join(','),
-  ])
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- onSelect is recreated by the parent each render; applications identity is tracked via applicationIdsKey
+  }, [page, startAtLastApplication, isSmallScreen, applicationIdsKey])
 
   return (
     <Stack gap='sm'>
@@ -129,7 +127,7 @@ const ApplicationsSidebar = (props: IApplicationsSidebarProps) => {
       <Center>
         <Pagination
           size='sm'
-          total={applications?.totalPages || 0}
+          total={applications?.totalPages ?? 0}
           value={page + 1}
           onChange={(newPage) => setPage(newPage - 1)}
         />

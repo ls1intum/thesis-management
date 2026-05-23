@@ -8,8 +8,8 @@ import { showSimpleError } from '../../../../../../utils/notification'
 import { getApiResponseErrorMessage } from '../../../../../../requests/handler'
 import JSZip from 'jszip'
 import { downloadFile } from '../../../../../../utils/blob'
-import { IThesisComment } from '../../../../../../requests/responses/thesis'
-import { PaginationResponse } from '../../../../../../requests/responses/pagination'
+import type { IThesisComment } from '../../../../../../requests/responses/thesis'
+import type { PaginationResponse } from '../../../../../../requests/responses/pagination'
 
 const DownloadAllFilesButton = () => {
   const { thesis, access } = useLoadedThesisContext()
@@ -133,7 +133,7 @@ const DownloadAllFilesButton = () => {
   }
 
   return (
-    <Button variant='outline' onClick={onDownload} loading={loading}>
+    <Button variant='outline' onClick={() => void onDownload()} loading={loading}>
       Download All Files
     </Button>
   )

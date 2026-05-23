@@ -1,11 +1,12 @@
-import { ReactNode, useEffect, useState } from 'react'
+import type { ReactNode } from 'react'
+import { useEffect, useState } from 'react'
 import { Button, Center, Group, Stack, type BoxProps } from '@mantine/core'
 import { downloadFile } from '../../utils/blob'
 import FilePreview from '../FilePreview/FilePreview'
 import { doRequest } from '../../requests/request'
 import { showSimpleError } from '../../utils/notification'
 import { getApiResponseErrorMessage } from '../../requests/handler'
-import { UploadFileType } from '../../config/types'
+import type { UploadFileType } from '../../config/types'
 import { getAdjustedFileType } from '../../utils/file'
 
 interface IAuthenticatedFilePreviewProps extends BoxProps {

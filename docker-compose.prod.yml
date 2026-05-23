@@ -1,6 +1,6 @@
 services:
   reverse-proxy:
-    image: traefik:v3.6
+    image: traefik:v3.7
     command:
       - "--providers.docker=true"
       - "--providers.docker.exposedByDefault=false"
@@ -104,7 +104,7 @@ services:
       - thesis-management-network
 
   db:
-    image: "postgres:18.3-alpine"
+    image: "postgres:18.4-alpine"
     container_name: thesis-management-db
     environment:
       - POSTGRES_USER=${SPRING_DATASOURCE_USERNAME}

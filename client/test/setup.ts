@@ -30,7 +30,7 @@ class ResizeObserverMock {
   disconnect(): void {}
 }
 if (!('ResizeObserver' in globalThis)) {
-  globalThis.ResizeObserver = ResizeObserverMock as unknown as typeof ResizeObserver
+  globalThis.ResizeObserver = ResizeObserverMock
 }
 
 // 3) scrollTo — Mantine occasionally calls window.scrollTo and element.scrollTo.
@@ -39,6 +39,20 @@ if (typeof window.scrollTo !== 'function') {
 }
 if (typeof Element !== 'undefined' && typeof Element.prototype.scrollTo !== 'function') {
   Element.prototype.scrollTo = () => {}
+}
+
+// 4) document.fonts (FontFaceSet) — Mantine v9 Textarea autosize subscribes
+// to font loading events; jsdom does not implement the CSS Font Loading API.
+if (typeof document !== 'undefined' && !('fonts' in document)) {
+  Object.defineProperty(document, 'fonts', {
+    configurable: true,
+    value: {
+      ready: Promise.resolve(),
+      addEventListener: () => {},
+      removeEventListener: () => {},
+      dispatchEvent: () => false,
+    },
+  })
 }
 
 // React Testing Library auto-cleanup between tests.

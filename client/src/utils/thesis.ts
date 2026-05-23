@@ -1,5 +1,6 @@
-import { IPublishedThesis, IThesis, ThesisState } from '../requests/responses/thesis'
-import { ILightUser } from '../requests/responses/user'
+import type { IPublishedThesis, IThesis } from '../requests/responses/thesis'
+import { ThesisState } from '../requests/responses/thesis'
+import type { ILightUser } from '../requests/responses/user'
 
 export function isThesisClosed(thesis: IThesis | IPublishedThesis) {
   return thesis.state === ThesisState.FINISHED || thesis.state === ThesisState.DROPPED_OUT
@@ -23,9 +24,9 @@ export function hasStudentAccess(
     ...(thesis.examiners ?? []),
   ]
 
-  return !!(
+  return Boolean(
     users.some((row) => row.userId === user?.userId) ||
-    user?.groups?.some((name) => name === 'admin')
+    user?.groups?.some((name) => name === 'admin'),
   )
 }
 
@@ -39,9 +40,9 @@ export function hasSupervisorAccess(
 
   const users = [...(thesis.supervisors ?? []), ...(thesis.examiners ?? [])]
 
-  return !!(
+  return Boolean(
     users.some((row) => row.userId === user?.userId) ||
-    user?.groups?.some((name) => name === 'admin')
+    user?.groups?.some((name) => name === 'admin'),
   )
 }
 
@@ -49,8 +50,8 @@ export function hasExaminerAccess(
   thesis: IPublishedThesis | undefined,
   user: ILightUser | undefined,
 ) {
-  return !!(
+  return Boolean(
     (thesis?.examiners ?? []).some((row) => row.userId === user?.userId) ||
-    user?.groups?.some((name) => name === 'admin')
+    user?.groups?.some((name) => name === 'admin'),
   )
 }

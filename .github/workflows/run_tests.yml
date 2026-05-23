@@ -51,22 +51,25 @@ jobs:
           retention-days: 14
 
       # Set up Node for client tests (Vitest + node:test)
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Set up Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: '24.15.0'
-          cache: 'npm'
-          cache-dependency-path: 'client/package-lock.json'
+          node-version: '24.16.0'
+          cache: 'pnpm'
+          cache-dependency-path: 'client/pnpm-lock.yaml'
 
       - name: Install client dependencies
         working-directory: ./client
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Run client tests with coverage (Vitest + node:test)
         working-directory: ./client
         run: |
-          npx vitest run --coverage
-          npm run test:legacy
+          pnpm exec vitest run --coverage
+          pnpm test:legacy
 
       - name: Upload Client Test Results
         uses: actions/upload-artifact@v7
@@ -75,3 +78,36 @@ jobs:
           name: client-test-results
           path: client/coverage/
           retention-days: 14
+
+      # SBOM staleness check — pure hash comparison, no regeneration. The
+      # generator writes a SHA-256 of the dependency-defining files next to
+      # each SBOM; if the working tree's hash matches, the committed SBOM
+      # is current. Costs milliseconds and keeps the cache cache-shaped:
+      # we only spend CPU on SBOMs when dependencies actually change.
+      - name: Verify server SBOM is up-to-date
+        working-directory: ./server
+        run: |
+          if [ ! -f sbom/bom.json ] || [ ! -f sbom/.input-hash ]; then
+            echo "::error::server/sbom/bom.json or server/sbom/.input-hash is missing. Run './gradlew cyclonedxBom' and commit the result."
+            exit 1
+          fi
+          current=$(cat build.gradle gradle.properties settings.gradle | shasum -a 256 | cut -d' ' -f1)
+          cached=$(cat sbom/.input-hash | tr -d '\n')
+          if [ "$current" != "$cached" ]; then
+            echo "::error::server/sbom/ is stale (build.gradle, gradle.properties, or settings.gradle changed). Run './gradlew cyclonedxBom' and commit the result."
+            exit 1
+          fi
+
+      - name: Verify client SBOM is up-to-date
+        working-directory: ./client
+        run: |
+          if [ ! -f sbom/bom.json ] || [ ! -f sbom/.lock-hash ]; then
+            echo "::error::client/sbom/bom.json or client/sbom/.lock-hash is missing. Run 'pnpm run sbom:force' and commit the result."
+            exit 1
+          fi
+          current=$(cat pnpm-lock.yaml package.json | shasum -a 256 | cut -d' ' -f1)
+          cached=$(cat sbom/.lock-hash | tr -d '\n')
+          if [ "$current" != "$cached" ]; then
+            echo "::error::client/sbom/ is stale (pnpm-lock.yaml or package.json changed). Run 'pnpm run sbom:force' and commit the result."
+            exit 1
+          fi

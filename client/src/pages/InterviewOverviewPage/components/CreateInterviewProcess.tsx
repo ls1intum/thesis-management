@@ -12,11 +12,11 @@ import {
   Title,
   Text,
   Input,
-  useMantineColorScheme,
+  useComputedColorScheme,
 } from '@mantine/core'
 import { useEffect, useState } from 'react'
-import { PaginationResponse } from '../../../requests/responses/pagination'
-import {
+import type { PaginationResponse } from '../../../requests/responses/pagination'
+import type {
   IApplicationInterviewProcess,
   IInterviewProcess,
   ITopicInterviewProcess,
@@ -50,7 +50,7 @@ const CreateInterviewProcess = ({ opened, onClose }: CreateInterviewProcessProps
 
   const [selectedApplicants, setSelectedApplicants] = useState<string[]>([])
 
-  const fetchPossibleInterviewTopics = async () => {
+  const fetchPossibleInterviewTopics = () => {
     setTopicsLoading(true)
     doRequest<PaginationResponse<ITopicInterviewProcess>>(
       '/v2/topics/interview-topics',
@@ -72,7 +72,7 @@ const CreateInterviewProcess = ({ opened, onClose }: CreateInterviewProcessProps
     )
   }
 
-  const fetchPossibleInterviewApplicantsByTopic = async () => {
+  const fetchPossibleInterviewApplicantsByTopic = () => {
     if (!selectedTopic) {
       setPossibleInterviewApplicants([])
       return
@@ -153,6 +153,7 @@ const CreateInterviewProcess = ({ opened, onClose }: CreateInterviewProcessProps
 
   useEffect(() => {
     fetchPossibleInterviewApplicantsByTopic()
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- fetchPossibleInterviewApplicantsByTopic is recreated each render by the provider; effect should only re-run when selectedTopic changes
   }, [selectedTopic])
 
   useEffect(() => {
@@ -166,7 +167,7 @@ const CreateInterviewProcess = ({ opened, onClose }: CreateInterviewProcessProps
     }
   }, [searchKey, possibleInterviewTopics])
 
-  const colorScheme = useMantineColorScheme()
+  const colorScheme = useComputedColorScheme('light')
 
   return (
     <Modal
@@ -181,8 +182,8 @@ const CreateInterviewProcess = ({ opened, onClose }: CreateInterviewProcessProps
           {selectedTopic ? (
             <Paper
               withBorder
-              bg={colorScheme.colorScheme === 'dark' ? 'primary.3' : 'primary.0'}
-              c={colorScheme.colorScheme === 'dark' ? 'primary.10' : 'primary'}
+              bg={colorScheme === 'dark' ? 'primary.3' : 'primary.0'}
+              c={colorScheme === 'dark' ? 'primary.10' : 'primary'}
               m={'xs'}
             >
               <Group p={'xs'} justify='space-between' align='center' wrap='nowrap'>
@@ -200,7 +201,7 @@ const CreateInterviewProcess = ({ opened, onClose }: CreateInterviewProcessProps
                     setSelectedApplicants([])
                   }}
                   style={{ flexShrink: 0 }}
-                  c={colorScheme.colorScheme === 'dark' ? 'primary.10' : 'primary'}
+                  c={colorScheme === 'dark' ? 'primary.10' : 'primary'}
                 >
                   Change
                 </Button>
@@ -215,7 +216,7 @@ const CreateInterviewProcess = ({ opened, onClose }: CreateInterviewProcessProps
               m={'xs'}
             />
           )}
-          <Collapse in={!selectedTopic} m={'xs'}>
+          <Collapse expanded={!selectedTopic} m={'xs'}>
             {topicsLoading ? (
               <Center h={'30vh'} w={'100%'}>
                 <Loader />
@@ -227,10 +228,10 @@ const CreateInterviewProcess = ({ opened, onClose }: CreateInterviewProcessProps
                 w={'100%'}
                 type='hover'
                 bdrs={'md'}
-                bg={colorScheme.colorScheme === 'dark' ? 'dark.8' : 'gray.0'}
+                bg={colorScheme === 'dark' ? 'dark.8' : 'gray.0'}
               >
                 {filteredTopics.length === 0 ? (
-                  <Paper bg={colorScheme.colorScheme === 'dark' ? 'dark.8' : 'gray.0'} h={'50px'}>
+                  <Paper bg={colorScheme === 'dark' ? 'dark.8' : 'gray.0'} h={'50px'}>
                     <Center>
                       <Text c='dimmed' m={'xs'}>
                         No topics found.
@@ -262,7 +263,7 @@ const CreateInterviewProcess = ({ opened, onClose }: CreateInterviewProcessProps
             </Center>
           ) : (
             <Collapse
-              in={selectedTopic !== null}
+              expanded={selectedTopic !== null}
               m={'xs'}
               h={
                 selectedTopic !== null
@@ -273,7 +274,7 @@ const CreateInterviewProcess = ({ opened, onClose }: CreateInterviewProcessProps
               }
             >
               {possibleInterviewApplicants.length === 0 ? (
-                <Paper bg={colorScheme.colorScheme === 'dark' ? 'dark.8' : 'gray.0'} h={'50px'}>
+                <Paper bg={colorScheme === 'dark' ? 'dark.8' : 'gray.0'} h={'50px'}>
                   <Center>
                     <Text c='dimmed' m={'xs'}>
                       No applicants found for the selected topic.

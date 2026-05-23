@@ -1,7 +1,7 @@
 -- liquibase formatted sql
 
 -- changeset thesis-management:33-rename-thesis-roles
--- Rename backend roles to match UI labels:
+-- Rename server-side roles to match UI labels:
 --   old SUPERVISOR (UI "Examiner") → new EXAMINER
 --   old ADVISOR    (UI "Supervisor") → new SUPERVISOR
 --

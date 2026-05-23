@@ -1,5 +1,5 @@
 import { GLOBAL_CONFIG } from '../config/global'
-import { IMinimalUser } from '../requests/responses/user'
+import type { IMinimalUser } from '../requests/responses/user'
 
 export function getAvatar(user: IMinimalUser) {
   return user.avatar

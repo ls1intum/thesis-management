@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
-import { ApplicationState, IApplication } from '../../requests/responses/application'
+import type { IApplication } from '../../requests/responses/application'
+import { ApplicationState } from '../../requests/responses/application'
 import { doRequest } from '../../requests/request'
 import ApplicationsProvider from '../../providers/ApplicationsProvider/ApplicationsProvider'
 import { Grid, Text, Center } from '@mantine/core'
@@ -47,7 +48,7 @@ const ReviewApplicationPage = () => {
         <ApplicationModal
           application={application}
           onClose={() => {
-            navigate('/applications', { replace: true })
+            void navigate('/applications', { replace: true })
 
             setApplication(undefined)
           }}
@@ -63,7 +64,7 @@ const ReviewApplicationPage = () => {
             selected={application}
             isSmallScreen={isSmallScreen}
             onSelect={(newApplication) => {
-              navigate(`/applications/${newApplication.applicationId}`, {
+              void navigate(`/applications/${newApplication.applicationId}`, {
                 replace: true,
               })
 
@@ -79,7 +80,7 @@ const ReviewApplicationPage = () => {
                 onChange={setApplication}
                 onDelete={() => {
                   setApplication(undefined)
-                  navigate('/applications', { replace: true })
+                  void navigate('/applications', { replace: true })
                 }}
               />
             ) : (

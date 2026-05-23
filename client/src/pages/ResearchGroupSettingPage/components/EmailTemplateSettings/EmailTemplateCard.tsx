@@ -1,5 +1,5 @@
 import { Badge, Card, Text, Stack, Title, Group, Button, Flex, Tooltip } from '@mantine/core'
-import { IEmailTemplate } from '../../../../requests/responses/emailtemplate'
+import type { IEmailTemplate } from '../../../../requests/responses/emailtemplate'
 import { useState } from 'react'
 import EmailTemplatePreviewModal from './EmailTemplatePreviewModal'
 import { EyeIcon, NotePencilIcon } from '@phosphor-icons/react'
@@ -26,7 +26,7 @@ const EmailTemplateCard = ({
 
   const navigateToEditPage = () => {
     if (!researchGroupId || !activeTemplate) return
-    navigate(
+    void navigate(
       `/research-groups/${researchGroupId}/email-templates/${activeTemplate.templateCase}/edit`,
     )
   }

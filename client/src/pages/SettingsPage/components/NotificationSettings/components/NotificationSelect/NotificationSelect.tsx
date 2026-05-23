@@ -28,7 +28,7 @@ export function NotificationSelect({
 
   const handleChange = (value: string | null) => {
     if (value) {
-      updateSetting(value)
+      void updateSetting(value)
     }
   }
 

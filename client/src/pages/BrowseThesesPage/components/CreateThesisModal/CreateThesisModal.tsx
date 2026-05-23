@@ -3,16 +3,18 @@ import { isNotEmpty, useForm } from '@mantine/form'
 import { GLOBAL_CONFIG } from '../../../../config/global'
 import React, { useEffect, useState } from 'react'
 import { UserMultiSelect } from '../../../../components/UserMultiSelect/UserMultiSelect'
+import { StudentMultiSelect } from '../../../../components/StudentMultiSelect/StudentMultiSelect'
 import { useNavigate } from 'react-router'
 import { doRequest } from '../../../../requests/request'
-import { IThesis } from '../../../../requests/responses/thesis'
+import type { IThesis } from '../../../../requests/responses/thesis'
 import { isNotEmptyUserList } from '../../../../utils/validation'
 import { showSimpleError } from '../../../../utils/notification'
 import { getApiResponseErrorMessage } from '../../../../requests/handler'
 import { formatThesisType, getDefaultLanguage } from '../../../../utils/format'
 import LanguageSelect from '../../../../components/LanguageSelect/LanguageSelect'
-import { PaginationResponse } from '../../../../requests/responses/pagination'
-import { ILightResearchGroup } from '../../../../requests/responses/researchGroup'
+import type { PaginationResponse } from '../../../../requests/responses/pagination'
+import type { ILightResearchGroup } from '../../../../requests/responses/researchGroup'
+import type { ILightUser } from '../../../../requests/responses/user'
 import { useHasGroupAccess } from '../../../../hooks/authentication'
 
 interface ICreateThesisModalProps {
@@ -27,13 +29,15 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
 
   const [loading, setLoading] = useState(false)
   const [researchGroups, setResearchGroups] = useState<PaginationResponse<ILightResearchGroup>>()
+  const [autoSelectedExaminers, setAutoSelectedExaminers] = useState<ILightUser[]>([])
   const hasAdminAccess = useHasGroupAccess('admin')
 
   const form = useForm<{
     title: string
     type: string | null
     language: string | null
-    students: string[]
+    studentDbUserIds: string[]
+    additionalStudentUsernames: string[]
     supervisorIds: string[]
     examinerIds: string[]
     researchGroupId: string
@@ -43,7 +47,8 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
       title: '',
       type: null,
       language: getDefaultLanguage(),
-      students: [],
+      studentDbUserIds: [],
+      additionalStudentUsernames: [],
       supervisorIds: [],
       examinerIds: [],
       researchGroupId: '',
@@ -53,7 +58,11 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
       title: isNotEmpty('Thesis title must not be empty'),
       type: isNotEmpty('Thesis type must not be empty'),
       language: isNotEmpty('Thesis language must not be empty'),
-      students: isNotEmptyUserList('student'),
+      studentDbUserIds: (value, values) => {
+        if (value.length === 0 && values.additionalStudentUsernames.length === 0) {
+          return 'You must select at least one student'
+        }
+      },
       supervisorIds: isNotEmptyUserList('supervisor'),
       examinerIds: isNotEmptyUserList('examiner'),
       researchGroupId: isNotEmpty('Research group must not be empty'),
@@ -85,6 +94,7 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
               researchGroupId: onlyGroup.id,
               examinerIds: onlyGroup.head?.userId ? [onlyGroup.head.userId] : [],
             })
+            setAutoSelectedExaminers(onlyGroup.head ? [onlyGroup.head] : [])
           }
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
@@ -101,6 +111,7 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
         setLoading(false)
       },
     )
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- form is stable; including it would loop on every form value change
   }, [opened])
 
   return (
@@ -117,7 +128,8 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
                 thesisTitle: values.title,
                 thesisType: values.type,
                 language: values.language,
-                studentIds: values.students,
+                studentIds: values.studentDbUserIds,
+                additionalStudentUsernames: values.additionalStudentUsernames,
                 supervisorIds: values.supervisorIds,
                 examinerIds: values.examinerIds,
                 researchGroupId: values.researchGroupId,
@@ -125,7 +137,7 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
             })
 
             if (response.ok) {
-              navigate(`/theses/${response.data.thesisId}`)
+              void navigate(`/theses/${response.data.thesisId}`)
             } else {
               showSimpleError(getApiResponseErrorMessage(response))
             }
@@ -156,11 +168,18 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
             required={true}
             {...form.getInputProps('language')}
           />
-          <UserMultiSelect
+          <StudentMultiSelect
             label='Student(s)'
             required={true}
-            groups={['student']}
-            {...form.getInputProps('students')}
+            value={{
+              dbUserIds: form.values.studentDbUserIds,
+              keycloakUsernames: form.values.additionalStudentUsernames,
+            }}
+            onChange={(next) => {
+              form.setFieldValue('studentDbUserIds', next.dbUserIds)
+              form.setFieldValue('additionalStudentUsernames', next.keycloakUsernames)
+            }}
+            error={form.errors.studentDbUserIds}
           />
           <UserMultiSelect
             label='Supervisor(s)'
@@ -172,6 +191,7 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
             label='Examiner'
             required={true}
             groups={['supervisor']}
+            initialUsers={autoSelectedExaminers}
             maxValues={1}
             {...form.getInputProps('examinerIds')}
           />

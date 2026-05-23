@@ -11,7 +11,7 @@ export interface IRequestOptions {
   method: HttpMethod
   requiresAuth: boolean
   responseType?: ResponseType
-  data?: any
+  data?: unknown
   formData?: FormData
   params?: Record<string, string | number | boolean>
   controller?: AbortController
@@ -28,7 +28,7 @@ export function doRequest<T>(
   options: IRequestOptions,
   cb?: (res: ApiResponse<T>) => unknown,
 ): Promise<ApiResponse<T>> | (() => void) {
-  const controller = options.controller || new AbortController()
+  const controller = options.controller ?? new AbortController()
 
   const executeRequest = async (): Promise<ApiResponse<T>> => {
     if (options.requiresAuth && keycloak.isTokenExpired(5)) {
@@ -105,7 +105,7 @@ export function doRequest<T>(
   const blacklistedCodes = [1005]
 
   if (cb) {
-    promise.then((res) => !blacklistedCodes.includes(res.status) && cb(res))
+    void promise.then((res) => !blacklistedCodes.includes(res.status) && cb(res))
 
     return () => {
       controller.abort()

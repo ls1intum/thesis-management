@@ -26,7 +26,7 @@ if [ -n "$STAGED_CLIENT_FILES" ]; then
     # Strip the client/ prefix since ESLint runs from the client directory
     CLIENT_RELATIVE_FILES=$(echo "$STAGED_CLIENT_FILES" | sed 's|^client/||')
 
-    if ! (cd client && npx eslint --fix $CLIENT_RELATIVE_FILES); then
+    if ! (cd client && pnpm exec eslint --fix $CLIENT_RELATIVE_FILES); then
         echo "ESLint failed. Please fix the issues and try again."
         exit 1
     fi

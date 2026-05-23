@@ -15,7 +15,9 @@ import de.tum.cit.aet.thesis.entity.Thesis;
 import de.tum.cit.aet.thesis.entity.ThesisAssessment;
 import de.tum.cit.aet.thesis.entity.ThesisFile;
 import de.tum.cit.aet.thesis.entity.ThesisProposal;
+import de.tum.cit.aet.thesis.entity.ThesisStateChange;
 import de.tum.cit.aet.thesis.entity.User;
+import de.tum.cit.aet.thesis.entity.key.ThesisStateChangeId;
 import de.tum.cit.aet.thesis.exception.request.ResourceInvalidParametersException;
 import de.tum.cit.aet.thesis.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.mock.EntityMockFactory;
@@ -39,10 +41,13 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
@@ -65,6 +70,8 @@ class ThesisServiceTest {
 	private CurrentUserProvider currentUserProvider;
 	@Mock
 	private ResearchGroupSettingsService researchGroupSettingsService;
+	@Mock
+	private UserService userService;
 
 	private ThesisService thesisService;
 	private Thesis testThesis;
@@ -78,7 +85,8 @@ class ThesisServiceTest {
 				userRepository, thesisProposalRepository, thesisAssessmentRepository,
 				uploadService, mailingService, accessManagementService,
 				thesisFeedbackRepository, thesisFileRepository,
-				currentUserProviderProvider, researchGroupRepository, researchGroupSettingsService
+				currentUserProviderProvider, researchGroupRepository, researchGroupSettingsService,
+				userService
 		);
 		when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
 
@@ -114,6 +122,7 @@ class ThesisServiceTest {
 				examinerIds,
 				supervisorIds,
 				studentIds,
+				List.of(),
 				null,
 				true,
 				researchGroupId
@@ -125,6 +134,82 @@ class ThesisServiceTest {
 		verify(thesisRepository).save(any(Thesis.class));
 		verify(mailingService).sendThesisCreatedEmail(any(), eq(result));
 		verify(accessManagementService).addStudentGroup(eq(student));
+	}
+
+	@Test
+	void createThesis_WithAdditionalStudentUsernames_MaterialisesAndAssignsStudentGroup() {
+		User examiner = EntityMockFactory.createUserWithGroup("Examiner", "supervisor");
+		User supervisor = EntityMockFactory.createUserWithGroup("Supervisor", "advisor");
+		User keycloakStudent = EntityMockFactory.createUserWithGroup("Keycloak", "student");
+
+		List<UUID> examinerIds = new ArrayList<>(List.of(examiner.getId()));
+		List<UUID> supervisorIds = new ArrayList<>(List.of(supervisor.getId()));
+		List<UUID> studentIds = new ArrayList<>();
+		List<String> additionalUsernames = List.of("ab12cde");
+		UUID researchGroupId = testResearchGroup.getId();
+
+		when(userService.findOrCreateByUniversityId("ab12cde")).thenReturn(keycloakStudent);
+		when(userRepository.findAllById(examinerIds)).thenReturn(new ArrayList<>(List.of(examiner)));
+		when(userRepository.findAllById(supervisorIds)).thenReturn(new ArrayList<>(List.of(supervisor)));
+		when(userRepository.findAllById(List.of(keycloakStudent.getId())))
+				.thenReturn(new ArrayList<>(List.of(keycloakStudent)));
+		when(thesisRepository.save(any(Thesis.class))).thenAnswer(invocation -> invocation.getArgument(0));
+		when(currentUserProvider.getUser()).thenReturn(testUser);
+		when(researchGroupRepository.findById(researchGroupId)).thenReturn(Optional.ofNullable(testResearchGroup));
+
+		Thesis result = thesisService.createThesis(
+				"Test Thesis",
+				"Bachelor",
+				"ENGLISH",
+				examinerIds,
+				supervisorIds,
+				studentIds,
+				additionalUsernames,
+				null,
+				true,
+				researchGroupId
+		);
+
+		assertNotNull(result);
+		verify(userService).findOrCreateByUniversityId("ab12cde");
+		verify(accessManagementService).addStudentGroup(eq(keycloakStudent));
+	}
+
+	@Test
+	void createThesis_WithUsernameDuplicatingExistingStudentId_DeduplicatesAndAssignsOnce() {
+		User examiner = EntityMockFactory.createUserWithGroup("Examiner", "supervisor");
+		User supervisor = EntityMockFactory.createUserWithGroup("Supervisor", "advisor");
+		User student = EntityMockFactory.createUserWithGroup("Student", "student");
+
+		List<UUID> examinerIds = new ArrayList<>(List.of(examiner.getId()));
+		List<UUID> supervisorIds = new ArrayList<>(List.of(supervisor.getId()));
+		List<UUID> studentIds = new ArrayList<>(List.of(student.getId()));
+		List<String> additionalUsernames = List.of("dup1");
+		UUID researchGroupId = testResearchGroup.getId();
+
+		when(userService.findOrCreateByUniversityId("dup1")).thenReturn(student);
+		when(userRepository.findAllById(examinerIds)).thenReturn(new ArrayList<>(List.of(examiner)));
+		when(userRepository.findAllById(supervisorIds)).thenReturn(new ArrayList<>(List.of(supervisor)));
+		when(userRepository.findAllById(studentIds)).thenReturn(new ArrayList<>(List.of(student)));
+		when(thesisRepository.save(any(Thesis.class))).thenAnswer(invocation -> invocation.getArgument(0));
+		when(currentUserProvider.getUser()).thenReturn(testUser);
+		when(researchGroupRepository.findById(researchGroupId)).thenReturn(Optional.ofNullable(testResearchGroup));
+
+		thesisService.createThesis(
+				"Test Thesis",
+				"Bachelor",
+				"ENGLISH",
+				examinerIds,
+				supervisorIds,
+				studentIds,
+				additionalUsernames,
+				null,
+				true,
+				researchGroupId
+		);
+
+		verify(userRepository).findAllById(studentIds);
+		verify(accessManagementService, org.mockito.Mockito.times(1)).addStudentGroup(eq(student));
 	}
 
 	@Test
@@ -226,6 +311,75 @@ class ThesisServiceTest {
 		assertEquals(ThesisVisibility.INTERNAL, result.getVisibility());
 		verify(thesisRepository).save(testThesis);
 		verify(mailingService).sendFinalGradeEmail(testThesis);
+	}
+
+	@Test
+	void revertToPreviousState_WithSingleState_ThrowsException() {
+		testThesis.setStates(new HashSet<>(Set.of(
+				stateChange(testThesis.getId(), ThesisState.PROPOSAL, Instant.parse("2026-01-01T10:00:00Z"))
+		)));
+
+		assertThrows(ResourceInvalidParametersException.class, () ->
+				thesisService.revertToPreviousState(testThesis)
+		);
+	}
+
+	@Test
+	void revertToPreviousState_WithMultipleStates_RevertsAndDeletesLatest() {
+		ThesisStateChange proposal = stateChange(testThesis.getId(), ThesisState.PROPOSAL, Instant.parse("2026-01-01T10:00:00Z"));
+		ThesisStateChange writing = stateChange(testThesis.getId(), ThesisState.WRITING, Instant.parse("2026-02-01T10:00:00Z"));
+		testThesis.setState(ThesisState.WRITING);
+		testThesis.setStates(new HashSet<>(Set.of(proposal, writing)));
+		when(thesisRepository.save(any(Thesis.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+		Thesis result = thesisService.revertToPreviousState(testThesis);
+
+		assertEquals(ThesisState.PROPOSAL, result.getState());
+		verify(thesisStateChangeRepository).deleteById(writing.getId());
+		verify(thesisRepository).save(testThesis);
+	}
+
+	@Test
+	void revertToPreviousState_FromFinished_RestoresStudentGroup() {
+		User student = EntityMockFactory.createUserWithGroup("Student", "student");
+		EntityMockFactory.setupThesisRole(testThesis, student, ThesisRoleName.STUDENT);
+		ThesisStateChange graded = stateChange(testThesis.getId(), ThesisState.GRADED, Instant.parse("2026-03-01T10:00:00Z"));
+		ThesisStateChange finished = stateChange(testThesis.getId(), ThesisState.FINISHED, Instant.parse("2026-04-01T10:00:00Z"));
+		testThesis.setState(ThesisState.FINISHED);
+		testThesis.setStates(new HashSet<>(Set.of(graded, finished)));
+		when(thesisRepository.save(any(Thesis.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+		Thesis result = thesisService.revertToPreviousState(testThesis);
+
+		assertEquals(ThesisState.GRADED, result.getState());
+		verify(accessManagementService).addStudentGroup(student);
+	}
+
+	@Test
+	void revertToPreviousState_FromDroppedOut_RestoresStudentGroup() {
+		User student = EntityMockFactory.createUserWithGroup("Student", "student");
+		EntityMockFactory.setupThesisRole(testThesis, student, ThesisRoleName.STUDENT);
+		ThesisStateChange writing = stateChange(testThesis.getId(), ThesisState.WRITING, Instant.parse("2026-02-01T10:00:00Z"));
+		ThesisStateChange dropped = stateChange(testThesis.getId(), ThesisState.DROPPED_OUT, Instant.parse("2026-03-01T10:00:00Z"));
+		testThesis.setState(ThesisState.DROPPED_OUT);
+		testThesis.setStates(new HashSet<>(Set.of(writing, dropped)));
+		when(thesisRepository.save(any(Thesis.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+		Thesis result = thesisService.revertToPreviousState(testThesis);
+
+		assertEquals(ThesisState.WRITING, result.getState());
+		verify(accessManagementService).addStudentGroup(student);
+	}
+
+	private ThesisStateChange stateChange(UUID thesisId, ThesisState state, Instant changedAt) {
+		ThesisStateChangeId id = new ThesisStateChangeId();
+		id.setThesisId(thesisId);
+		id.setState(state);
+		ThesisStateChange change = new ThesisStateChange();
+		change.setId(id);
+		change.setThesis(testThesis);
+		change.setChangedAt(changedAt);
+		return change;
 	}
 
 	@Test

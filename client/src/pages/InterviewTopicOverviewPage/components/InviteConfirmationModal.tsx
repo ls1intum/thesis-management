@@ -1,6 +1,6 @@
 import { Alert, Button, Group, Modal, Paper, ScrollArea, Stack, Text, Title } from '@mantine/core'
 import AvatarUser from '../../../components/AvatarUser/AvatarUser'
-import { ILightUser } from '../../../requests/responses/user'
+import type { ILightUser } from '../../../requests/responses/user'
 import { useInterviewProcessContext } from '../../../providers/InterviewProcessProvider/hooks'
 import { WarningCircleIcon } from '@phosphor-icons/react'
 

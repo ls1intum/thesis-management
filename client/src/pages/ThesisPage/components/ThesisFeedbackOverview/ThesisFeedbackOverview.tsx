@@ -3,7 +3,7 @@ import {
   useThesisUpdateAction,
 } from '../../../../providers/ThesisProvider/hooks'
 import { Center, Checkbox, Input, Table, Text } from '@mantine/core'
-import { IThesis } from '../../../../requests/responses/thesis'
+import type { IThesis } from '../../../../requests/responses/thesis'
 import React from 'react'
 import AvatarUser from '../../../../components/AvatarUser/AvatarUser'
 import { formatDate } from '../../../../utils/format'
@@ -86,7 +86,7 @@ const ThesisFeedbackOverview = (props: IThesisFeedbackOverviewProps) => {
                 <Table.Tr key={item.feedbackId}>
                   <Table.Td ta='center' width={50}>
                     <Checkbox
-                      checked={!!item.completedAt}
+                      checked={Boolean(item.completedAt)}
                       disabled={loading || !access.student || !allowEdit}
                       onChange={() => toggleFeedback(item)}
                     />

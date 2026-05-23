@@ -9,9 +9,9 @@ import {
   Progress,
   Overlay,
   Badge,
-  useMantineColorScheme,
+  useComputedColorScheme,
 } from '@mantine/core'
-import { IInterviewProcess, InterviewState } from '../../../requests/responses/interview'
+import type { IInterviewProcess, InterviewState } from '../../../requests/responses/interview'
 import { useHover } from '@mantine/hooks'
 import { getInterviewStateColor } from '../../../utils/format'
 
@@ -23,7 +23,7 @@ interface IInterviewProcessCardProps {
 const InterviewProcessCard = ({ interviewProcess, onClick }: IInterviewProcessCardProps) => {
   const { hovered, ref } = useHover()
 
-  const colorScheme = useMantineColorScheme()
+  const colorScheme = useComputedColorScheme('light')
 
   const interviewProcessSorted = {
     ...interviewProcess,
@@ -57,8 +57,8 @@ const InterviewProcessCard = ({ interviewProcess, onClick }: IInterviewProcessCa
     >
       {interviewProcessSorted.completed && (
         <Overlay
-          color={colorScheme.colorScheme === 'dark' ? 'black' : 'gray.0'}
-          backgroundOpacity={colorScheme.colorScheme === 'dark' ? 0.3 : 0.1}
+          color={colorScheme === 'dark' ? 'black' : 'gray.0'}
+          backgroundOpacity={colorScheme === 'dark' ? 0.3 : 0.1}
         />
       )}
       <Stack pb={'1rem'} gap={'1.5rem'}>
@@ -80,17 +80,13 @@ const InterviewProcessCard = ({ interviewProcess, onClick }: IInterviewProcessCa
                   <Divider
                     orientation='vertical'
                     size='lg'
-                    color={getInterviewStateColor(state as InterviewState)}
+                    color={getInterviewStateColor(state as InterviewState, colorScheme === 'dark')}
                   />
                   <Stack gap={0}>
                     <Text size='lg' fw={700}>
                       {number}
                     </Text>
-                    <Text
-                      size='sm'
-                      fw={500}
-                      c={colorScheme.colorScheme === 'dark' ? 'gray.3' : 'gray.7'}
-                    >
+                    <Text size='sm' fw={500} c={colorScheme === 'dark' ? 'gray.3' : 'gray.7'}>
                       {state}
                     </Text>
                   </Stack>
@@ -105,7 +101,7 @@ const InterviewProcessCard = ({ interviewProcess, onClick }: IInterviewProcessCa
                 <Progress.Section
                   key={`${interviewProcessSorted.interviewProcessId}-${state}-${number}`}
                   value={(number / interviewProcessSorted.totalInterviewees) * 100}
-                  color={getInterviewStateColor(state as InterviewState)}
+                  color={getInterviewStateColor(state as InterviewState, colorScheme === 'dark')}
                 ></Progress.Section>
               )
             })}

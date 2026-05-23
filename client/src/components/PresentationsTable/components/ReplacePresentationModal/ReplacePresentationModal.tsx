@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { useThesisUpdateAction } from '../../../../providers/ThesisProvider/hooks'
 import { Accordion, Alert, Button, Modal, Select, Stack, TextInput } from '@mantine/core'
 import { doRequest } from '../../../../requests/request'
-import {
+import type {
   IPublishedPresentation,
   IPublishedThesis,
   IThesis,
@@ -71,6 +71,7 @@ const ReplacePresentationModal = (props: IReplacePresentationModalProps) => {
   useEffect(() => {
     form.validateField('location')
     form.validateField('streamUrl')
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- form is redefined each render; intentionally re-validate only on value changes
   }, [form.values.streamUrl, form.values.location])
 
   useEffect(() => {
@@ -78,8 +79,8 @@ const ReplacePresentationModal = (props: IReplacePresentationModalProps) => {
       form.setInitialValues({
         type: presentation.type,
         visibility: presentation.visibility,
-        location: presentation.location || '',
-        streamUrl: presentation.streamUrl || '',
+        location: presentation.location ?? '',
+        streamUrl: presentation.streamUrl ?? '',
         language: presentation.language,
         date: new Date(presentation.scheduledAt),
       })
@@ -95,40 +96,48 @@ const ReplacePresentationModal = (props: IReplacePresentationModalProps) => {
     }
 
     form.reset()
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- form is stable across renders; resetting on form identity change would loop
   }, [opened, presentation])
 
   const [replacing, onReplacePresentation] = useThesisUpdateAction(
     async () => {
-      const response = await doRequest<IThesis>(
-        presentation
-          ? `/v2/theses/${presentation.thesisId}/presentations/${presentation.presentationId}`
-          : `/v2/theses/${thesis!.thesisId}/presentations`,
-        {
-          method: presentation ? 'PUT' : 'POST',
-          requiresAuth: true,
-          data: {
-            type: form.values.type,
-            visibility: form.values.visibility,
-            location: form.values.location,
-            streamUrl: form.values.streamUrl,
-            language: form.values.language,
-            date: form.values.date,
-          },
+      if (!presentation && !thesis) {
+        throw new Error('Either a thesis or an existing presentation is required')
+      }
+
+      const url = presentation
+        ? `/v2/theses/${presentation.thesisId}/presentations/${presentation.presentationId}`
+        : `/v2/theses/${thesis?.thesisId ?? ''}/presentations`
+
+      const response = await doRequest<IThesis>(url, {
+        method: presentation ? 'PUT' : 'POST',
+        requiresAuth: true,
+        data: {
+          type: form.values.type,
+          visibility: form.values.visibility,
+          location: form.values.location,
+          streamUrl: form.values.streamUrl,
+          language: form.values.language,
+          date: form.values.date,
         },
-      )
+      })
 
       if (response.ok) {
         onClose()
 
         // Find the updated or newly created presentation
+        const targetScheduledAt =
+          form.values.date instanceof Date
+            ? form.values.date.toISOString()
+            : form.values.date
+              ? new Date(form.values.date).toISOString()
+              : undefined
         const updatedPresentation = response.data.presentations?.find((p) =>
           presentation
             ? p.presentationId === presentation.presentationId
-            : // For new presentation, pick the one with the latest scheduledAt
-              p.scheduledAt ===
-              (form.values.date instanceof Date
-                ? form.values.date.toISOString()
-                : new Date(form.values.date as any).toISOString()),
+            : // For new presentation, match by the freshly-submitted scheduledAt.
+              // Guard against picking a record with scheduledAt === null when the form date is missing.
+              targetScheduledAt !== undefined && p.scheduledAt === targetScheduledAt,
         )
 
         onChange?.(updatedPresentation)

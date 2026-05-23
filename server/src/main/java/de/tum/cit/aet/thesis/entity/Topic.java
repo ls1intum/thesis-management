@@ -112,6 +112,18 @@ public class Topic {
 		return result;
 	}
 
+	public List<User> getExaminers() {
+		List<User> result = new ArrayList<>();
+
+		for (TopicRole role : getRoles()) {
+			if (role.getId().getRole() == ThesisRoleName.EXAMINER) {
+				result.add(role.getUser());
+			}
+		}
+
+		return result;
+	}
+
 	public TopicState getTopicState() {
 		if (this.closedAt != null) {
 			return TopicState.CLOSED;

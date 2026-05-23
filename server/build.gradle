@@ -4,16 +4,24 @@ plugins {
 	id "checkstyle"
 	id "jacoco"
 	id "com.github.andygoossens.modernizer" version "1.13.0"
-	id "com.gorylenko.gradle-git-properties" version "2.5.7"
+	id "com.gorylenko.gradle-git-properties" version "3.0.0"
 	id "org.springframework.boot" version "4.0.6"
 	id "io.spring.dependency-management" version "1.1.7"
 	id "com.github.ben-manes.versions" version "0.54.0"
-	id "com.diffplug.spotless" version "8.4.0"
+	id "com.diffplug.spotless" version "8.5.1"
+	id "org.cyclonedx.bom" version "3.2.4"
 }
 
 group = "de.tum.cit.aet.thesis"
-version = "4.10.4"
+version = "4.11.1"
 description = "Thesis Management"
+
+// Override Spring Boot-managed Tomcat to pull in security fixes ahead of the next BOM release.
+ext["tomcat.version"] = "11.0.22"
+// Override Spring Boot-managed Netty to pick up fixes for GHSA-mj4r-2hfc-f8p6,
+// GHSA-cm33-6792-r9fm, GHSA-2c5c-chwr-9hqw, GHSA-45q3-82m4-75jr, GHSA-rwm7-x88c-3g2p,
+// and the netty-codec-http advisories (GHSA-38f8-5428-x5cv, GHSA-57rv-r2g8-2cj3, GHSA-f6hv-jmp6-3vwv, ...).
+ext["netty.version"] = "4.2.13.Final"
 
 gitProperties {
     // The plugin walks up from the project dir to auto-detect the .git
@@ -86,6 +94,9 @@ dependencies {
 	// use newest version of commons-compress to avoid security issues through outdated dependencies
 	implementation "org.apache.commons:commons-compress:1.28.0"
 
+	// Semantic version comparison for SBOM vulnerability range matching
+	implementation "com.vdurmont:semver4j:3.1.0"
+
 	compileOnly "org.projectlombok:lombok:1.18.46"
 	annotationProcessor "org.projectlombok:lombok:1.18.46"
 
@@ -119,6 +130,17 @@ dependencies {
 	testImplementation "org.junit.platform:junit-platform-commons:${junit_version}"
 	testImplementation "org.junit.platform:junit-platform-engine:${junit_version}"
 	testRuntimeOnly "org.junit.platform:junit-platform-launcher:${junit_version}"
+}
+
+// Force a non-vulnerable plexus-utils across all configurations (Checkstyle's Doxia pulls in 3.3.0,
+// which is affected by GHSA-6fmv-xxpf-w3cw).
+configurations.configureEach {
+	resolutionStrategy.eachDependency { details ->
+		if (details.requested.group == "org.codehaus.plexus" && details.requested.name == "plexus-utils") {
+			details.useVersion("3.6.1")
+			details.because("GHSA-6fmv-xxpf-w3cw")
+		}
+	}
 }
 
 springBoot {
@@ -258,6 +280,86 @@ tasks.named("dependencyUpdates").configure {
 	rejectVersionIf {
 		isNonStable(it.candidate.version) && !isNonStable(it.currentVersion)
 	}
+}
+
+// Bundle the committed server + client SBOMs into the jar so the admin
+// dependency overview and weekly vulnerability scan have data to read at
+// runtime. Both files are kept in sync with their respective lockfiles
+// by the refresh_sbom workflow, so no build-time regeneration is needed.
+def serverSbomFile = file("sbom/bom.json")
+def clientSbomFile = file("../client/sbom/bom.json")
+
+processResources {
+	from(serverSbomFile) {
+		into "sbom"
+		rename { "server-sbom.json" }
+	}
+	from(clientSbomFile) {
+		into "sbom"
+		rename { "client-sbom.json" }
+	}
+}
+
+// CycloneDX SBOM
+//
+// Writes the SBOM to a tracked location (`sbom/`) so it can be committed and
+// reused without being regenerated on every build. Not hooked into `build` —
+// run `./gradlew cyclonedxBom` explicitly (or via CI) to refresh after
+// dependency changes. Gradle's UP-TO-DATE check makes this a no-op when the
+// runtime classpath hasn't changed.
+//
+// Files captured at configuration time so closures stay safe for the
+// configuration cache (calling `file()` inside a closure would tie it to
+// the live project instance).
+def bomJsonFile = file("sbom/bom.json")
+def sbomInputHashFile = file("sbom/.input-hash")
+// build.gradle + gradle.properties + settings.gradle is the complete set
+// of dep-defining inputs: pinned plugin versions, version vars, the root
+// project name (used as the SBOM component name), and the project group.
+// Order matches the shell `cat ... | shasum` in the CI verification step.
+def sbomInputs = [file("build.gradle"), file("gradle.properties"), file("settings.gradle")]
+
+cyclonedxBom {
+	projectType = "application"
+	schemaVersion = org.cyclonedx.Version.VERSION_16
+	includeBomSerialNumber = false
+	includeLicenseText = false
+	componentGroup = project.group.toString()
+	componentName = project.name
+	componentVersion = project.version.toString()
+	// Only emit JSON — Dependency-Track, Trivy, and Grype all read JSON
+	// natively and an XML twin would need its own timestamp-stripping.
+	jsonOutput = bomJsonFile
+
+	// Strip the generation timestamp so the committed bom.json is
+	// byte-stable when dependencies haven't changed.
+	doLast {
+		if (bomJsonFile.exists()) {
+			def json = new groovy.json.JsonSlurper().parse(bomJsonFile)
+			if (json.metadata instanceof Map) {
+				json.metadata.remove("timestamp")
+			}
+			bomJsonFile.text = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(json)) + "\n"
+		}
+	}
+}
+
+// Always-running side task that refreshes the input hash next to the SBOM.
+// Kept separate from `cyclonedxBom` because that task is UP-TO-DATE when
+// the runtime classpath hasn't changed — and we want the hash to also
+// catch cosmetic edits to the dep-defining files, so CI's pure shell hash
+// comparison doesn't false-alarm. Cost: read 3 small files + SHA-256.
+tasks.register("writeSbomInputHash") {
+	outputs.upToDateWhen { false }
+	doLast {
+		def md = java.security.MessageDigest.getInstance("SHA-256")
+		sbomInputs.each { md.update(it.bytes) }
+		sbomInputHashFile.text = md.digest().encodeHex().toString() + "\n"
+	}
+}
+
+tasks.named("cyclonedxBom").configure {
+	finalizedBy("writeSbomInputHash")
 }
 
 // Available commands:

@@ -4,12 +4,12 @@ import {
   Stack,
   Title,
   Text,
-  useMantineColorScheme,
+  useComputedColorScheme,
   Button,
   Badge,
   Anchor,
 } from '@mantine/core'
-import { IInterviewSlot } from '../../../requests/responses/interview'
+import type { IInterviewSlot } from '../../../requests/responses/interview'
 import { ClockIcon } from '@phosphor-icons/react'
 import { useHover } from '@mantine/hooks'
 import AvatarUser from '../../../components/AvatarUser/AvatarUser'
@@ -49,7 +49,7 @@ const SlotItem = ({
   warning = undefined,
 }: ISlotItemProps) => {
   const { ref, hovered } = useHover()
-  const { colorScheme } = useMantineColorScheme()
+  const colorScheme = useComputedColorScheme('light')
 
   const showHover = hoverEffect ? hovered : false
 
@@ -195,12 +195,7 @@ const SlotItem = ({
                   : 'white'
               }
             >
-              {(() => {
-                const minutes = Math.round(
-                  (slot.endDate.getTime() - slot.startDate.getTime()) / 60000,
-                )
-                return `${minutes} min`
-              })()}
+              {`${Math.round((slot.endDate.getTime() - slot.startDate.getTime()) / 60000)} min`}
             </Text>
           </Group>
         )}

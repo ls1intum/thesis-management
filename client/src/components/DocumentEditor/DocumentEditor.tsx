@@ -1,4 +1,5 @@
-import { RichTextEditor, Link } from '@mantine/tiptap'
+import { Link, RichTextEditor, useRichTextEditorContext } from '@mantine/tiptap'
+import type { Editor } from '@tiptap/react'
 import { useEditor } from '@tiptap/react'
 import Highlight from '@tiptap/extension-highlight'
 import StarterKit from '@tiptap/starter-kit'
@@ -6,8 +7,9 @@ import Underline from '@tiptap/extension-underline'
 import TextAlign from '@tiptap/extension-text-align'
 import Superscript from '@tiptap/extension-superscript'
 import SubScript from '@tiptap/extension-subscript'
-import { ChangeEvent, ComponentProps, useEffect, useRef } from 'react'
-import { Input, Text, useMantineColorScheme } from '@mantine/core'
+import type { ChangeEvent, ComponentProps } from 'react'
+import { useEffect, useRef } from 'react'
+import { Input, Text, useComputedColorScheme } from '@mantine/core'
 import { ensureAbsoluteLinkHref } from '../../utils/format'
 
 // SmartLink wraps Tiptap's Link extension so every code path that creates a
@@ -45,6 +47,17 @@ interface IDocumentEditorProps extends InputWrapperProps {
   maxLength?: number
   noBorder?: boolean
   minHeight?: string | number
+}
+
+const isEditorReady = (editor: Editor | null) => {
+  if (!editor) {
+    return false
+  }
+
+  return (
+    !editor.isDestroyed &&
+    Boolean((editor as unknown as { commandManager?: unknown }).commandManager)
+  )
 }
 
 const DocumentEditor = (props: IDocumentEditorProps) => {
@@ -111,7 +124,7 @@ const DocumentEditor = (props: IDocumentEditorProps) => {
   })
 
   useEffect(() => {
-    if (editor) {
+    if (editor && !editor.isDestroyed) {
       if (
         typeof value !== 'undefined' &&
         editor.getHTML() !== value &&
@@ -124,7 +137,8 @@ const DocumentEditor = (props: IDocumentEditorProps) => {
     }
   }, [value, editMode, editor])
 
-  const colorScheme = useMantineColorScheme()
+  const colorScheme = useComputedColorScheme('light')
+  const hasReadyEditor = isEditorReady(editor)
 
   return (
     <Input.Wrapper
@@ -147,13 +161,12 @@ const DocumentEditor = (props: IDocumentEditorProps) => {
       }
     >
       <RichTextEditor
-        editor={editor}
+        editor={hasReadyEditor ? editor : null}
         onBlur={onBlur}
         onFocus={onFocus}
         styles={{
           root: {
-            backgroundColor:
-              colorScheme.colorScheme === 'dark' ? 'var(--mantine-color-dark-7)' : 'white',
+            backgroundColor: colorScheme === 'dark' ? 'var(--mantine-color-dark-7)' : 'white',
             borderColor: wrapperProps.error ? 'var(--mantine-color-error)' : undefined,
             borderStyle: editMode ? 'solid' : 'dashed',
             borderWidth: noBorder ? 0 : 1,
@@ -170,7 +183,7 @@ const DocumentEditor = (props: IDocumentEditorProps) => {
           }
         }}
       >
-        {editMode && (
+        {editMode && hasReadyEditor && (
           <RichTextEditor.Toolbar>
             <RichTextEditor.ControlsGroup>
               <RichTextEditor.Bold />
@@ -204,12 +217,11 @@ const DocumentEditor = (props: IDocumentEditorProps) => {
             </RichTextEditor.ControlsGroup>
 
             <RichTextEditor.ControlsGroup>
-              <RichTextEditor.Undo />
-              <RichTextEditor.Redo />
+              <SafeHistoryControls />
             </RichTextEditor.ControlsGroup>
           </RichTextEditor.Toolbar>
         )}
-        <RichTextEditor.Content />
+        {hasReadyEditor && <RichTextEditor.Content />}
       </RichTextEditor>
       <input
         type='text'
@@ -219,6 +231,21 @@ const DocumentEditor = (props: IDocumentEditorProps) => {
         style={{ display: 'none' }}
       />
     </Input.Wrapper>
+  )
+}
+
+function SafeHistoryControls() {
+  const { editor } = useRichTextEditorContext()
+
+  if (!isEditorReady(editor)) {
+    return null
+  }
+
+  return (
+    <>
+      <RichTextEditor.Undo />
+      <RichTextEditor.Redo />
+    </>
   )
 }
 

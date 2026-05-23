@@ -3,8 +3,8 @@ import { doRequest } from '../../../requests/request'
 import { showNotification } from '@mantine/notifications'
 import { showSimpleError } from '../../../utils/notification'
 import { getApiResponseErrorMessage } from '../../../requests/handler'
-import { IResearchGroup } from '../../../requests/responses/researchGroup'
-import { ResearchGroupFormValues } from '../../ResearchGroupAdminPage/components/CreateResearchGroupModal'
+import type { IResearchGroup } from '../../../requests/responses/researchGroup'
+import type { ResearchGroupFormValues } from '../../ResearchGroupAdminPage/components/CreateResearchGroupModal'
 import ResearchGroupForm from '../../../components/ResearchGroupForm/ResearchGroupForm'
 
 interface IGeneralResearchGroupSettingsProps {

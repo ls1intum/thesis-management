@@ -1,6 +1,6 @@
 services:
   db:
-    image: 'postgres:18.3-alpine'
+    image: 'postgres:18.4-alpine'
     container_name: thesis-management-db
     volumes:
       - ./db_backups:/db_backups
@@ -29,7 +29,7 @@ services:
       - "8181:8080"
 
   mailpit:
-    image: axllent/mailpit:v1.29
+    image: axllent/mailpit:v1.30
     container_name: thesis-management-mailpit
     ports:
       - "1125:1025"

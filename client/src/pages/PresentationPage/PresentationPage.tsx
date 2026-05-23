@@ -1,6 +1,6 @@
 import { Link, useParams } from 'react-router'
 import React, { useEffect, useState } from 'react'
-import { IPublishedPresentation } from '../../requests/responses/thesis'
+import type { IPublishedPresentation } from '../../requests/responses/thesis'
 import { doRequest } from '../../requests/request'
 import ThesisData from '../../components/ThesisData/ThesisData'
 import { showSimpleError } from '../../utils/notification'
@@ -62,7 +62,7 @@ const PresentationPage = () => {
           <LabeledItem label='Presentation Date' value={formatDate(presentation.scheduledAt)} />
         </Grid.Col>
         <Grid.Col span={{ md: 4 }}>
-          <LabeledItem label='Location' value={presentation.location || 'Not available'} />
+          <LabeledItem label='Location' value={presentation.location ?? 'Not available'} />
         </Grid.Col>
         <Grid.Col span={{ md: 4 }}>
           <LabeledItem
@@ -90,15 +90,18 @@ const PresentationPage = () => {
       </Grid>
       <Divider />
       <ThesisData thesis={presentation.thesis} additionalInformation={['abstract']} />
-      {(user?.groups?.includes('admin') ||
-        user?.researchGroupId === presentation.thesis.researchGroup.id ||
-        (presentation.thesis.students ?? []).some(
-          (student) => student.userId === user?.userId,
-        )) && (
-        <Button component={Link} to={`/theses/${presentation.thesis.thesisId}`}>
-          View Thesis Page
-        </Button>
-      )}
+      {
+        // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- `false` must fall through to the next check
+        (user?.groups?.includes('admin') ||
+          user?.researchGroupId === presentation.thesis.researchGroup.id ||
+          (presentation.thesis.students ?? []).some(
+            (student) => student.userId === user?.userId,
+          )) && (
+          <Button component={Link} to={`/theses/${presentation.thesis.thesisId}`}>
+            View Thesis Page
+          </Button>
+        )
+      }
     </Stack>
   )
 }

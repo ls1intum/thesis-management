@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useReducer } from 'react'
 
 interface IUseSignalReturnType {
   signal: Promise<unknown>
@@ -7,7 +7,10 @@ interface IUseSignalReturnType {
 }
 
 export function useSignal(): IUseSignalReturnType {
-  const [, setVersion] = useState(0)
+  // forceRender bumps a counter to force a re-render of the consuming
+  // component when the signal is triggered; the counter value itself is not
+  // exposed.
+  const [, forceRender] = useReducer((x: number) => x + 1, 0)
 
   return useMemo(() => {
     let externalResolve: (x: boolean) => unknown
@@ -26,7 +29,7 @@ export function useSignal(): IUseSignalReturnType {
         externalResolve(true)
         ref.isTriggerred = true
 
-        setVersion((prev) => prev + 1)
+        forceRender()
       },
     }
   }, [])

@@ -8,7 +8,7 @@ import {
   Skeleton,
   Text,
   UnstyledButton,
-  useMantineColorScheme,
+  useComputedColorScheme,
 } from '@mantine/core'
 import Logo from '../Logo/Logo'
 import { Link } from 'react-router'
@@ -24,7 +24,7 @@ interface HeaderProps {
 }
 
 const Header = ({ opened, toggle, authenticatedArea }: HeaderProps) => {
-  const { colorScheme } = useMantineColorScheme()
+  const colorScheme = useComputedColorScheme('light')
   const user = useUser()
   const context = useAuthenticationContext()
 

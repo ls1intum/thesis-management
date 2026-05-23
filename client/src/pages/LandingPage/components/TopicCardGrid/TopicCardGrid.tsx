@@ -14,12 +14,13 @@ import {
   Title,
 } from '@mantine/core'
 import TopicCard from './TopicCard/TopicCard'
-import { useTopicsContext } from '../../../../providers/TopicsProvider/hooks'
+import { TopicsContext } from '../../../../providers/TopicsProvider/context'
 import { Database } from '@phosphor-icons/react'
-import { Dispatch, useEffect, useState } from 'react'
-import { ITopic, ITopicOverview } from '../../../../requests/responses/topic'
-import { IPublishedThesis } from '../../../../requests/responses/thesis'
-import { PaginationResponse } from '../../../../requests/responses/pagination'
+import type { Dispatch } from 'react'
+import { use, useEffect, useState } from 'react'
+import type { ITopic, ITopicOverview } from '../../../../requests/responses/topic'
+import type { IPublishedThesis } from '../../../../requests/responses/thesis'
+import type { PaginationResponse } from '../../../../requests/responses/pagination'
 import CollapsibleTopicElement from '../../../ReplaceApplicationPage/components/SelectTopicStep/components/CollapsibleTopicElement'
 import { GLOBAL_CONFIG } from '../../../../config/global'
 
@@ -46,7 +47,12 @@ const TopicCardGrid = ({
   showSuggestedTopic = false,
   onApply,
 }: ITopicCardGridContentProps) => {
-  const { topics, page, setPage, limit, isLoading } = gridContent ?? useTopicsContext()
+  const contextData = use(TopicsContext)
+  const source = gridContent ?? contextData
+  if (!source) {
+    throw new Error('TopicCardGrid requires either a gridContent prop or a TopicsProvider ancestor')
+  }
+  const { topics, page, setPage, limit, isLoading } = source
 
   //Prevent flickering spinner for short loading times
   const [showSpinner, setShowSpinner] = useState(false)
@@ -67,7 +73,7 @@ const TopicCardGrid = ({
             <ThemeIcon radius='xl' size={50} color='gray' variant='light'>
               <Database size={24} weight='duotone' />
             </ThemeIcon>
-            <Text size='sm' color='dimmed'>
+            <Text size='sm' c='dimmed'>
               No topics found
             </Text>
           </Stack>

@@ -1,5 +1,6 @@
-import { PropsWithChildren } from 'react'
-import { Container, MantineSize } from '@mantine/core'
+import type { PropsWithChildren } from 'react'
+import type { MantineSize } from '@mantine/core'
+import { Container } from '@mantine/core'
 
 interface IContentContainerProps {
   size?: number | MantineSize | (string & {}) | undefined

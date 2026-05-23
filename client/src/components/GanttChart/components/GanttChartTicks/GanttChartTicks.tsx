@@ -7,6 +7,8 @@ const GanttChartTicks = () => {
 
   const { filteredRange, currentTime, getTimelineLeftPosition } = useGanttChartContext()
 
+  const filteredRangeKey = filteredRange.join(',')
+
   useEffect(() => {
     if (!ticksRef.current) {
       return
@@ -121,12 +123,14 @@ const GanttChartTicks = () => {
       }
     }
 
+    const ticksElement = ticksRef.current
     return () => {
-      if (ticksRef.current) {
-        ticksRef.current.innerHTML = ''
+      if (ticksElement) {
+        ticksElement.replaceChildren()
       }
     }
-  }, [filteredRange.join(','), currentTime])
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- filteredRange/getTimelineLeftPosition come from context and change together; filteredRangeKey captures the relevant value change
+  }, [filteredRangeKey, currentTime])
 
   return <div className={classes.timelineHeader} ref={ticksRef}></div>
 }

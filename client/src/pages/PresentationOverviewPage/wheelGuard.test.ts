@@ -18,6 +18,9 @@ describe('PresentationOverviewPage — issue #729 (mobile scroll guard)', () => 
       /addEventListener\(['"]wheel['"][\s\S]*?removeEventListener\(['"]wheel['"][\s\S]*?\}\s*,\s*\[([^\]]*)\]\s*\)/
     const match = source.match(depRegex)
     expect(match).not.toBeNull()
-    expect(match![1]).toMatch(/isSmaller/)
+    if (!match) {
+      throw new Error('expected wheel useEffect to match dep regex')
+    }
+    expect(match[1]).toMatch(/isSmaller/)
   })
 })

@@ -41,7 +41,7 @@ test.describe('Research Group Management - Admin', () => {
 
     // Select a Group Head — uses KeycloakUserAutocomplete with 300ms debounce + API call.
     // Retry typing if no options appear (Keycloak may be slow under parallel load).
-    const groupHeadInput = modal.getByRole('textbox', { name: 'Group Head' })
+    const groupHeadInput = modal.getByRole('combobox', { name: 'Group Head' })
     const option = page.getByRole('option').first()
     let optionFound = false
     for (let attempt = 0; attempt < 3 && !optionFound; attempt++) {

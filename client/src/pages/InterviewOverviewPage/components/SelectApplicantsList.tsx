@@ -6,11 +6,11 @@ import {
   ScrollArea,
   Stack,
   Text,
-  useMantineColorScheme,
+  useComputedColorScheme,
 } from '@mantine/core'
 import { CheckCircleIcon, CircleIcon } from '@phosphor-icons/react'
 import { ApplicationState } from '../../../requests/responses/application'
-import { IApplicationInterviewProcess } from '../../../requests/responses/interview'
+import type { IApplicationInterviewProcess } from '../../../requests/responses/interview'
 
 interface ISelectApplicantsListProps {
   possibleInterviewApplicants: IApplicationInterviewProcess[]
@@ -23,10 +23,10 @@ const SelectApplicantsList = ({
   selectedApplicants,
   setSelectedApplicants,
 }: ISelectApplicantsListProps) => {
-  const colorScheme = useMantineColorScheme()
+  const colorScheme = useComputedColorScheme('light')
   return (
     <Stack
-      bg={colorScheme.colorScheme === 'dark' ? 'dark.8' : 'gray.0'}
+      bg={colorScheme === 'dark' ? 'dark.8' : 'gray.0'}
       bdrs={'md'}
       gap={0}
       style={{ overflow: 'hidden' }}
@@ -38,10 +38,10 @@ const SelectApplicantsList = ({
         py={'0.5rem'}
         bg={
           selectedApplicants.length > 0
-            ? colorScheme.colorScheme === 'dark'
+            ? colorScheme === 'dark'
               ? 'primary.11'
               : 'primary.2'
-            : colorScheme.colorScheme === 'dark'
+            : colorScheme === 'dark'
               ? 'dark.9'
               : 'gray.2'
         }
@@ -59,7 +59,7 @@ const SelectApplicantsList = ({
             }
           }}
           style={{ flexShrink: 0 }}
-          c={colorScheme.colorScheme === 'dark' ? 'primary.3' : 'primary.8'}
+          c={colorScheme === 'dark' ? 'primary.3' : 'primary.8'}
           size='xs'
         >
           {selectedApplicants.length === possibleInterviewApplicants.length
@@ -84,14 +84,14 @@ const SelectApplicantsList = ({
             }}
             bg={
               selectedApplicants.includes(applicant.applicationId)
-                ? colorScheme.colorScheme === 'dark'
+                ? colorScheme === 'dark'
                   ? 'primary.3'
                   : 'primary.0'
                 : undefined
             }
             c={
               selectedApplicants.includes(applicant.applicationId)
-                ? colorScheme.colorScheme === 'dark'
+                ? colorScheme === 'dark'
                   ? 'primary.10'
                   : 'primary'
                 : undefined

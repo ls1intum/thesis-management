@@ -1,5 +1,6 @@
-import { UploadFileType } from '../../config/types'
-import { PropsWithChildren, useEffect, useState } from 'react'
+import type { UploadFileType } from '../../config/types'
+import type { PropsWithChildren } from 'react'
+import { useEffect, useState } from 'react'
 import { Button, Modal, Stack, type ButtonProps } from '@mantine/core'
 import UploadArea from '../UploadArea/UploadArea'
 
@@ -21,6 +22,17 @@ export const UploadFileButton = (props: PropsWithChildren<IUploadFileButtonProps
     setLoading(false)
   }, [modal])
 
+  const handleUpload = async () => {
+    if (!file) return
+    setLoading(true)
+    try {
+      await onUpload(file)
+      setModal(false)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <Button onClick={() => setModal(true)} {...buttonProps}>
       <Modal
@@ -31,24 +43,7 @@ export const UploadFileButton = (props: PropsWithChildren<IUploadFileButtonProps
       >
         <Stack>
           <UploadArea value={file} onChange={setFile} maxSize={maxSize} accept={accept} />
-          <Button
-            fullWidth
-            disabled={!file}
-            loading={loading}
-            onClick={async () => {
-              if (file) {
-                setLoading(true)
-
-                try {
-                  await onUpload(file)
-
-                  setModal(false)
-                } finally {
-                  setLoading(false)
-                }
-              }
-            }}
-          >
+          <Button fullWidth disabled={!file} loading={loading} onClick={() => void handleUpload()}>
             Upload File
           </Button>
         </Stack>

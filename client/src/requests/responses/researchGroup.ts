@@ -1,4 +1,4 @@
-import { ILightUser } from './user'
+import type { ILightUser } from './user'
 
 export interface IMinimalResearchGroup {
   id: string

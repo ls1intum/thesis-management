@@ -2,7 +2,7 @@ import { ThesisStateColor } from '../../config/colors'
 import { formatThesisState } from '../../utils/format'
 import { Badge } from '@mantine/core'
 import React from 'react'
-import { ThesisState } from '../../requests/responses/thesis'
+import type { ThesisState } from '../../requests/responses/thesis'
 
 interface IThesisStateBadgeProps {
   state: ThesisState

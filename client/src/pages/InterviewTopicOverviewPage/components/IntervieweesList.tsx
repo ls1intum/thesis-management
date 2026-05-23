@@ -10,7 +10,7 @@ import {
   Text,
   Checkbox,
   Tooltip,
-  useMantineColorScheme,
+  useComputedColorScheme,
   useMantineTheme,
 } from '@mantine/core'
 import {
@@ -21,10 +21,8 @@ import {
   XIcon,
 } from '@phosphor-icons/react'
 import { useEffect, useState } from 'react'
-import {
-  IIntervieweeLightWithNextSlot,
-  InterviewState,
-} from '../../../requests/responses/interview'
+import type { IIntervieweeLightWithNextSlot } from '../../../requests/responses/interview'
+import { InterviewState } from '../../../requests/responses/interview'
 import { useIsSmallerBreakpoint } from '../../../hooks/theme'
 import { doRequest } from '../../../requests/request'
 import { useParams } from 'react-router'
@@ -62,7 +60,7 @@ const IntervieweesList = ({ disabled = false }: IIntervieweesListProps) => {
 
   const [addIntervieweesModalOpen, setAddIntervieweesModalOpen] = useState(false)
 
-  const inviteInterviewees = async (intervieweeIds: string[]) => {
+  const inviteInterviewees = (intervieweeIds: string[]) => {
     if (!intervieweeIds.length) return
 
     doRequest<IIntervieweeLightWithNextSlot[]>(
@@ -77,7 +75,7 @@ const IntervieweesList = ({ disabled = false }: IIntervieweesListProps) => {
       (res) => {
         if (res.ok) {
           showSimpleSuccess('Invitations sent successfully')
-          fetchPossibleInterviewees(debouncedSearch, state)
+          void fetchPossibleInterviewees(debouncedSearch, state)
           setInviteModalOpen(false)
         } else {
           showSimpleError(getApiResponseErrorMessage(res))
@@ -92,7 +90,8 @@ const IntervieweesList = ({ disabled = false }: IIntervieweesListProps) => {
   }
 
   useEffect(() => {
-    fetchPossibleInterviewees(debouncedSearch, state)
+    void fetchPossibleInterviewees(debouncedSearch, state)
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- fetchPossibleInterviewees is recreated each render by the provider; only re-run on filter changes
   }, [state, debouncedSearch])
 
   const listEmptyDescription =
@@ -103,7 +102,7 @@ const IntervieweesList = ({ disabled = false }: IIntervieweesListProps) => {
   const [selectedIntervieweeIds, setSelectedIntervieweeIds] = useState<string[]>([])
   const [selectIntervieweeMode, setSelectIntervieweeMode] = useState(false)
 
-  const colorScheme = useMantineColorScheme()
+  const colorScheme = useComputedColorScheme('light')
   const theme = useMantineTheme()
 
   const numberOfSelectableInterviewees = interviewees.filter((interviewee) =>
@@ -194,10 +193,7 @@ const IntervieweesList = ({ disabled = false }: IIntervieweesListProps) => {
               ? {
                   overflow: 'hidden',
                   border: '1px solid',
-                  borderColor:
-                    colorScheme.colorScheme === 'dark'
-                      ? theme.colors.dark[4]
-                      : theme.colors.gray[3],
+                  borderColor: colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[3],
                 }
               : undefined
           }
@@ -210,10 +206,10 @@ const IntervieweesList = ({ disabled = false }: IIntervieweesListProps) => {
               py={'0.5rem'}
               bg={
                 selectedIntervieweeIds.length > 0
-                  ? colorScheme.colorScheme === 'dark'
+                  ? colorScheme === 'dark'
                     ? 'primary.11'
                     : 'primary.2'
-                  : colorScheme.colorScheme === 'dark'
+                  : colorScheme === 'dark'
                     ? 'dark.9'
                     : 'gray.2'
               }
@@ -222,7 +218,7 @@ const IntervieweesList = ({ disabled = false }: IIntervieweesListProps) => {
               <Button
                 variant={'subtle'}
                 style={{ flexShrink: 0 }}
-                c={colorScheme.colorScheme === 'dark' ? 'primary.3' : 'primary.8'}
+                c={colorScheme === 'dark' ? 'primary.3' : 'primary.8'}
                 size='xs'
                 onClick={() => {
                   if (selectedIntervieweeIds.length === numberOfSelectableInterviewees) {
@@ -299,7 +295,7 @@ const IntervieweesList = ({ disabled = false }: IIntervieweesListProps) => {
                   disableLink={selectIntervieweeMode}
                   inviteInterviewee={() => inviteInterviewees([interviewee.intervieweeId])}
                   onAcceptedOrRejected={() => {
-                    fetchPossibleInterviewees(debouncedSearch, state)
+                    void fetchPossibleInterviewees(debouncedSearch, state)
                   }}
                 />
               </Group>

@@ -1,4 +1,5 @@
-import { IThesis, ThesisState } from '../../../../requests/responses/thesis'
+import type { IThesis } from '../../../../requests/responses/thesis'
+import { ThesisState } from '../../../../requests/responses/thesis'
 import { useState } from 'react'
 import { Accordion, Button, Group, Stack, Text } from '@mantine/core'
 import SubmitFinalGradeModal from './components/SubmitFinalGradeModal/SubmitFinalGradeModal'

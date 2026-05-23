@@ -1,5 +1,5 @@
-import { ILightUser } from '../../../../requests/responses/user'
-import { UploadFileType } from '../../../../config/types'
+import type { ILightUser } from '../../../../requests/responses/user'
+import type { UploadFileType } from '../../../../config/types'
 import { Button, Center, Group, Input, Table, Text } from '@mantine/core'
 import { formatDate } from '../../../../utils/format'
 import { AuthenticatedFilePreviewButton } from '../../../../components/AuthenticatedFilePreviewButton/AuthenticatedFilePreviewButton'
@@ -82,7 +82,7 @@ const FileHistoryTable = (props: IFileHistoryTableProps) => {
                         <DownloadSimple />
                       </AuthenticatedFileDownloadButton>
                       {row.onDelete && (
-                        <Button loading={loading} size='xs' onClick={() => onDelete(row)}>
+                        <Button loading={loading} size='xs' onClick={() => void onDelete(row)}>
                           <Trash />
                         </Button>
                       )}

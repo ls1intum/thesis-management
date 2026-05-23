@@ -1,10 +1,15 @@
-import React, { PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react'
-import { InterviewProcessContext, IInterviewProcessContext } from './context'
+import type { PropsWithChildren } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import type { IInterviewProcessContext } from './context'
+import { InterviewProcessContext } from './context'
 import { doRequest } from '../../requests/request'
 import { showSimpleError } from '../../utils/notification'
 import { getApiResponseErrorMessage } from '../../requests/handler'
-import { IIntervieweeLightWithNextSlot, IInterviewSlot } from '../../requests/responses/interview'
-import { PaginationResponse } from '../../requests/responses/pagination'
+import type {
+  IIntervieweeLightWithNextSlot,
+  IInterviewSlot,
+} from '../../requests/responses/interview'
+import type { PaginationResponse } from '../../requests/responses/pagination'
 import { useParams } from 'react-router'
 
 interface IInterviewProcessProviderProps {
@@ -66,6 +71,7 @@ const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProv
         setInterviewSlotsLoading(false)
       },
     )
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- excludeBookedSlots is read at call time; rebinding when it toggles is intentionally avoided so in-flight fetches keep their captured value
   }, [processId])
 
   const bookSlot = useCallback(
@@ -88,7 +94,7 @@ const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProv
           if (res.ok) {
             fetchInterviewSlots()
             if (autoFetchInterviewees) {
-              fetchPossibleInterviewees(searchIntervieweeKey, state)
+              void fetchPossibleInterviewees(searchIntervieweeKey, state)
             }
             setBookingSuccessful(true)
           } else {
@@ -97,6 +103,7 @@ const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProv
         },
       )
     },
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- autoFetchInterviewees/fetchPossibleInterviewees/searchIntervieweeKey/state are read at call time; rebinding bookSlot every keystroke would force consumers to re-render
     [processId, fetchInterviewSlots],
   )
 
@@ -116,7 +123,7 @@ const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProv
           if (res.ok) {
             fetchInterviewSlots()
             if (autoFetchInterviewees) {
-              fetchPossibleInterviewees(searchIntervieweeKey, state)
+              void fetchPossibleInterviewees(searchIntervieweeKey, state)
             }
             if (onCancelSucessfull) onCancelSucessfull()
           } else {
@@ -125,6 +132,7 @@ const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProv
         },
       )
     },
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- autoFetchInterviewees/fetchPossibleInterviewees/searchIntervieweeKey/state are read at call time; rebinding cancelSlot every keystroke would force consumers to re-render
     [processId, fetchInterviewSlots],
   )
 
@@ -172,7 +180,7 @@ const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProv
       setIntervieweesLoading(true)
 
       return new Promise<void>((resolve) => {
-        doRequest<any>(
+        doRequest<unknown>(
           `/v2/interview-process/${processId}/interviewees`,
           {
             method: 'POST',
@@ -183,7 +191,7 @@ const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProv
           },
           (res) => {
             if (res.ok) {
-              fetchPossibleInterviewees() // TODO: Missing searchkey and state?
+              void fetchPossibleInterviewees() // TODO: Missing searchkey and state?
             } else {
               showSimpleError(getApiResponseErrorMessage(res))
               resolve()
@@ -204,8 +212,9 @@ const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProv
 
     fetchInterviewSlots()
     if (autoFetchInterviewees) {
-      fetchPossibleInterviewees()
+      void fetchPossibleInterviewees()
     }
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- autoFetchInterviewees is read at call time; only refetch when processId or the fetch callbacks change
   }, [processId, fetchInterviewSlots, fetchPossibleInterviewees])
 
   const contextState = useMemo<IInterviewProcessContext>(() => {
@@ -239,6 +248,7 @@ const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProv
     interviewSlotsLoading,
     fetchInterviewSlots,
     bookingLoading,
+    bookingSuccessful,
     bookSlot,
     interviewees,
     intervieweesLoading,
@@ -251,11 +261,7 @@ const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProv
     setState,
   ])
 
-  return (
-    <InterviewProcessContext.Provider value={contextState}>
-      {children}
-    </InterviewProcessContext.Provider>
-  )
+  return <InterviewProcessContext value={contextState}>{children}</InterviewProcessContext>
 }
 
 export default InterviewProcessProvider

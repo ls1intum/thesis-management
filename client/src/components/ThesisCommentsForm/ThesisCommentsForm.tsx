@@ -59,7 +59,7 @@ const ThesisCommentsForm = () => {
             variant='subtle'
             color='gray'
             p={5}
-            disabled={!!file}
+            disabled={Boolean(file)}
           >
             <Tooltip
               label='Only one file per comment'

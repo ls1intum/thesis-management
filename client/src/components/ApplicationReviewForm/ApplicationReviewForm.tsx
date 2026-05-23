@@ -1,8 +1,9 @@
-import { ApplicationState, IApplication } from '../../requests/responses/application'
+import type { IApplication } from '../../requests/responses/application'
+import { ApplicationState } from '../../requests/responses/application'
 import { useApplicationsContextUpdater } from '../../providers/ApplicationsProvider/hooks'
 import { isNotEmpty, useForm } from '@mantine/form'
 import { GLOBAL_CONFIG } from '../../config/global'
-import React, { useEffect, useLayoutEffect, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useDebouncedValue } from '@mantine/hooks'
 import { doRequest } from '../../requests/request'
 import {
@@ -27,7 +28,7 @@ import { useLoggedInUser } from '../../hooks/authentication'
 import AvatarUser from '../AvatarUser/AvatarUser'
 import { formatDate, formatThesisType, getDefaultLanguage } from '../../utils/format'
 import LanguageSelect from '../LanguageSelect/LanguageSelect'
-import { IInterviewProcess } from '../../requests/responses/interview'
+import type { IInterviewProcess } from '../../requests/responses/interview'
 import { showNotification } from '@mantine/notifications'
 
 interface IApplicationReviewFormProps {
@@ -85,14 +86,25 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
     },
   })
 
+  // Refs so the application-switch cleanup can read the latest typed comment
+  // and the saved baseline without retriggering the effect. Assigned during
+  // render (not in a passive useEffect) so the values are guaranteed fresh
+  // before the useLayoutEffect cleanup below reads them — a passive useEffect
+  // can run *after* a sibling useLayoutEffect cleanup, which would let the
+  // cleanup see a stale comment and persist an older value than the user typed.
+  const commentRef = useRef(form.values.comment)
+  const savedCommentRef = useRef(application?.comment ?? '')
+  commentRef.current = form.values.comment
+  savedCommentRef.current = application?.comment ?? ''
+
   useLayoutEffect(() => {
     if (application) {
       form.setInitialValues({
         applicationId: application.applicationId,
-        title: application.topic?.title || application.thesisTitle || '',
+        title: application.topic?.title ?? application.thesisTitle ?? '',
         comment: application.comment || '',
         type:
-          application.thesisType || GLOBAL_CONFIG.thesis_types[application.user.studyDegree || '']
+          application.thesisType || GLOBAL_CONFIG.thesis_types[application.user.studyDegree ?? '']
             ? application.user.studyDegree
             : null,
         language: getDefaultLanguage(),
@@ -109,11 +121,37 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
     }
 
     form.reset()
+
+    // When the application changes (or the component unmounts), flush any
+    // pending comment edits for the application we are leaving — otherwise a
+    // fast switch before the debounce fires would silently drop the text.
+    const leavingApplicationId = application?.applicationId
+    const leavingBaseline = application?.comment ?? ''
+    return () => {
+      if (!leavingApplicationId) return
+      const pendingComment = commentRef.current
+      if (pendingComment === leavingBaseline) return
+      if (pendingComment === savedCommentRef.current) return
+      doRequest<IApplication>(
+        `/v2/applications/${leavingApplicationId}/comment`,
+        {
+          method: 'PUT',
+          requiresAuth: true,
+          data: { comment: pendingComment },
+        },
+        (res) => {
+          if (!res.ok) {
+            showSimpleError(getApiResponseErrorMessage(res))
+          }
+        },
+      )
+    }
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- intentionally re-initialize form only when switching applications
   }, [application?.applicationId])
 
   const [loading, setLoading] = useState(false)
 
-  const [debouncedComment] = useDebouncedValue(form.values.comment, 1000)
+  const [debouncedComment] = useDebouncedValue(form.values.comment, 500)
 
   useEffect(() => {
     if (form.values.applicationId !== application.applicationId) {
@@ -141,6 +179,7 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
         },
       )
     }
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- debounced comment auto-save; form and onUpdate are stable for the lifetime of this application
   }, [debouncedComment, application?.applicationId])
 
   const onAccept = async (values: IApplicationReviewForm) => {
@@ -246,7 +285,7 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
     )
   }
 
-  const reviewers = application.reviewers || []
+  const reviewers = application.reviewers ?? []
 
   if (!reviewers.some((row) => row.user.userId === user.userId)) {
     reviewers.unshift({
@@ -270,7 +309,9 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
                   { value: 'INTERESTED', label: 'Interested' },
                   { value: 'NOT_INTERESTED', label: 'Not interested' },
                 ]}
-                onChange={(reason) => reason && onReviewReasonChange(reason)}
+                onChange={(reason) => {
+                  if (reason) void onReviewReasonChange(reason)
+                }}
                 disabled={
                   reviewer.user.userId !== user.userId || application.state !== 'NOT_ASSESSED'
                 }
@@ -384,7 +425,9 @@ const ApplicationReviewForm = (props: IApplicationReviewFormProps) => {
               />
             )}
             <Button
-              onClick={() => onAccept(form.getValues())}
+              onClick={() => {
+                void onAccept(form.getValues())
+              }}
               variant='outline'
               color='green'
               loading={loading}

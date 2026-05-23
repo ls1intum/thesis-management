@@ -11,7 +11,7 @@ import {
   Title,
   Text,
 } from '@mantine/core'
-import {
+import type {
   IIntervieweeLightWithNextSlot,
   IInterviewSlot,
 } from '../../../requests/responses/interview'
@@ -41,10 +41,11 @@ const AssignIntervieweeToSlotModal = ({
 
   useEffect(() => {
     if (assignModalOpen) {
-      fetchPossibleInterviewees(undefined, 'ALL', false).then((fetchedInterviewees) => {
+      void fetchPossibleInterviewees(undefined, 'ALL', false).then((fetchedInterviewees) => {
         setInterviewees(fetchedInterviewees)
       })
     }
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- fetchPossibleInterviewees is recreated each render by the provider; only re-run on modal open toggle
   }, [assignModalOpen])
 
   return (

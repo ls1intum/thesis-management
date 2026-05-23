@@ -1,4 +1,5 @@
-import { Dispatch, SetStateAction, useState } from 'react'
+import type { Dispatch, SetStateAction } from 'react'
+import { useState } from 'react'
 import { doRequest } from '../requests/request'
 import { showSimpleError } from '../utils/notification'
 import { getApiResponseErrorMessage } from '../requests/handler'

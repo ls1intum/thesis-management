@@ -1,7 +1,7 @@
 import { Card, Title, Flex, useComputedColorScheme } from '@mantine/core'
 import LogoCircle from './LogoCircle'
 import { useEffect, useState } from 'react'
-import { IResearchGroup } from '../../../../requests/responses/researchGroup'
+import type { IResearchGroup } from '../../../../requests/responses/researchGroup'
 import { doRequest } from '../../../../requests/request'
 import { showSimpleError } from '../../../../utils/notification'
 import { getApiResponseErrorMessage } from '../../../../requests/handler'

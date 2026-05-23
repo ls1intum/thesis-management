@@ -1,4 +1,4 @@
-import { ILightResearchGroup } from './researchGroup'
+import type { ILightResearchGroup } from './researchGroup'
 
 export interface IEmailTemplate {
   id: string

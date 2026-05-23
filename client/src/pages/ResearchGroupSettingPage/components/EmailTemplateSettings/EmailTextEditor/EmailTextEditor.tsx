@@ -1,11 +1,15 @@
 import { Link, RichTextEditor, useRichTextEditorContext } from '@mantine/tiptap'
 import TextAlign from '@tiptap/extension-text-align'
 import Underline from '@tiptap/extension-underline'
-import { Editor, useEditor } from '@tiptap/react'
+import type { Editor } from '@tiptap/react'
+import { useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { Combobox, Group, useCombobox } from '@mantine/core'
 import ReactComponent from './Extension'
-import { IEmailTemplate, IMailVariableDto } from '../../../../../requests/responses/emailtemplate'
+import type {
+  IEmailTemplate,
+  IMailVariableDto,
+} from '../../../../../requests/responses/emailtemplate'
 import { useEffect, useMemo, useState } from 'react'
 import { CaretDownIcon, CaretUpIcon, Plus } from '@phosphor-icons/react'
 import { FontSize, TextStyle } from '@tiptap/extension-text-style'
@@ -50,6 +54,17 @@ const convertExample = (text: string, templateVariables: IMailVariableDto[]): st
   return text
 }
 
+const isEditorReady = (editor: Editor | null) => {
+  if (!editor) {
+    return false
+  }
+
+  return (
+    !editor.isDestroyed &&
+    Boolean((editor as unknown as { commandManager?: unknown }).commandManager)
+  )
+}
+
 interface IEmailTextEditorProps {
   editingTemplate?: IEmailTemplate | null
   setEditingTemplate?: (template: IEmailTemplate | null) => void
@@ -86,7 +101,7 @@ const EmailTextEditor = ({
       onUpdate: ({ editor: ed }) => {
         if (setEditingTemplate && editingTemplate) {
           setEditingTemplate({
-            ...editingTemplate!,
+            ...editingTemplate,
             bodyHtml: convertHtmlToTemplateVariables(ed.getHTML(), templateVariables),
           })
         }
@@ -99,10 +114,14 @@ const EmailTextEditor = ({
     [templateVariables],
   )
 
-  // Update editor content if editingTemplate.bodyHtml changes
+  // Update editor content if editingTemplate.bodyHtml changes.
+  // Guard with isDestroyed: when `templateVariables` changes, useEditor's
+  // own effect destroys the previous editor before this effect's closure runs,
+  // and tiptap >= 3.23 nulls `editor.schema` on destroy (so getHTML throws).
   useEffect(() => {
     if (
       editor &&
+      !editor.isDestroyed &&
       editingTemplate &&
       convertTemplateVariablesToHtml(editingTemplate.bodyHtml ?? '', templateVariables) !==
         editor.getHTML()
@@ -111,6 +130,7 @@ const EmailTextEditor = ({
         convertTemplateVariablesToHtml(editingTemplate.bodyHtml ?? '', templateVariables),
       )
     }
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- only re-sync editor content when bodyHtml or its variable mapping changes; full editingTemplate identity would loop
   }, [editingTemplate?.bodyHtml, editor, templateVariables])
 
   const fetchTemplateVariables = async () => {
@@ -134,50 +154,56 @@ const EmailTextEditor = ({
 
   useEffect(() => {
     if (editingTemplate) {
-      fetchTemplateVariables()
+      void fetchTemplateVariables()
     }
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- fetchTemplateVariables is recreated each render; only re-run when the editingTemplate id changes
   }, [editingTemplate?.id])
 
+  const hasReadyEditor = isEditorReady(editor)
+
   return (
-    <RichTextEditor editor={editor}>
-      <RichTextEditor.Toolbar sticky stickyOffset={stickyOffset}>
-        <RichTextEditor.ControlsGroup>
-          <RichTextEditor.Bold />
-          <RichTextEditor.Italic />
-          <RichTextEditor.Underline />
-          <RichTextEditor.Strikethrough />
-        </RichTextEditor.ControlsGroup>
+    <RichTextEditor editor={hasReadyEditor ? editor : null}>
+      {hasReadyEditor && (
+        <>
+          <RichTextEditor.Toolbar sticky stickyOffset={stickyOffset}>
+            <RichTextEditor.ControlsGroup>
+              <RichTextEditor.Bold />
+              <RichTextEditor.Italic />
+              <RichTextEditor.Underline />
+              <RichTextEditor.Strikethrough />
+            </RichTextEditor.ControlsGroup>
 
-        <RichTextEditor.ControlsGroup>
-          <RichTextEditor.AlignLeft />
-          <RichTextEditor.AlignCenter />
-          <RichTextEditor.AlignJustify />
-          <RichTextEditor.AlignRight />
-        </RichTextEditor.ControlsGroup>
+            <RichTextEditor.ControlsGroup>
+              <RichTextEditor.AlignLeft />
+              <RichTextEditor.AlignCenter />
+              <RichTextEditor.AlignJustify />
+              <RichTextEditor.AlignRight />
+            </RichTextEditor.ControlsGroup>
 
-        <RichTextEditor.ControlsGroup>
-          <RichTextEditor.BulletList />
-          <RichTextEditor.OrderedList />
-        </RichTextEditor.ControlsGroup>
+            <RichTextEditor.ControlsGroup>
+              <RichTextEditor.BulletList />
+              <RichTextEditor.OrderedList />
+            </RichTextEditor.ControlsGroup>
 
-        <RichTextEditor.ControlsGroup>
-          <RichTextEditor.Undo />
-          <RichTextEditor.Redo />
-        </RichTextEditor.ControlsGroup>
+            <RichTextEditor.ControlsGroup>
+              <SafeHistoryControls />
+            </RichTextEditor.ControlsGroup>
 
-        <RichTextEditor.ControlsGroup>
-          <RichTextEditor.Link />
-          <RichTextEditor.Unlink />
-        </RichTextEditor.ControlsGroup>
+            <RichTextEditor.ControlsGroup>
+              <RichTextEditor.Link />
+              <RichTextEditor.Unlink />
+            </RichTextEditor.ControlsGroup>
 
-        <RichTextEditor.ControlsGroup>
-          <FontSizeControl />
-        </RichTextEditor.ControlsGroup>
+            <RichTextEditor.ControlsGroup>
+              <FontSizeControl />
+            </RichTextEditor.ControlsGroup>
 
-        <InsertVariableButton selectableVariables={templateVariables} />
-      </RichTextEditor.Toolbar>
+            <InsertVariableButton selectableVariables={templateVariables} />
+          </RichTextEditor.Toolbar>
 
-      <RichTextEditor.Content />
+          <RichTextEditor.Content />
+        </>
+      )}
     </RichTextEditor>
   )
 }
@@ -243,6 +269,21 @@ function InsertVariableButton({ selectableVariables = [] }: IInsertVariableButto
         />
       </Combobox.Dropdown>
     </Combobox>
+  )
+}
+
+function SafeHistoryControls() {
+  const { editor } = useRichTextEditorContext()
+
+  if (!isEditorReady(editor)) {
+    return null
+  }
+
+  return (
+    <>
+      <RichTextEditor.Undo />
+      <RichTextEditor.Redo />
+    </>
   )
 }
 

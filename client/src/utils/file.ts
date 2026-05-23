@@ -1,4 +1,4 @@
-import { UploadFileType } from '../config/types'
+import type { UploadFileType } from '../config/types'
 
 export function getAdjustedFileType(filename: string, type: UploadFileType) {
   let adjustedType: UploadFileType = type

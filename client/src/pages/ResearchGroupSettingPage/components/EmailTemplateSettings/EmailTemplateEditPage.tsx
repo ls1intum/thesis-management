@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import { getApiResponseErrorMessage } from '../../../../requests/handler'
 import { doRequest } from '../../../../requests/request'
-import { IEmailTemplate } from '../../../../requests/responses/emailtemplate'
-import { PaginationResponse } from '../../../../requests/responses/pagination'
+import type { IEmailTemplate } from '../../../../requests/responses/emailtemplate'
+import type { PaginationResponse } from '../../../../requests/responses/pagination'
 import { showSimpleError, showSimpleSuccess } from '../../../../utils/notification'
 import EmailTextEditor from './EmailTextEditor/EmailTextEditor'
 import DOMPurify from 'dompurify'
@@ -59,11 +59,11 @@ const EmailTemplateEditPage = () => {
     )
   }, [templateCase, researchGroupId])
 
-  const deleteTemplate = async () => {
+  const deleteTemplate = () => {
     if (!researchGroupTemplate) return
 
     setLoading(true)
-    await doRequest(
+    doRequest(
       `/v2/email-templates/${researchGroupTemplate.id}`,
       {
         method: 'DELETE',
@@ -82,7 +82,7 @@ const EmailTemplateEditPage = () => {
     )
   }
 
-  const saveChanges = async () => {
+  const saveChanges = () => {
     if (!editingTemplate) return
 
     if (editingTemplate === defaultTemplate) {
@@ -99,7 +99,7 @@ const EmailTemplateEditPage = () => {
       ? editingTemplate.researchGroup.id
       : researchGroupId
 
-    await doRequest<IEmailTemplate>(
+    doRequest<IEmailTemplate>(
       url,
       {
         method,
@@ -143,7 +143,7 @@ const EmailTemplateEditPage = () => {
             cursor: 'pointer',
           },
         }}
-        onClick={() => navigate(`/research-groups/${researchGroupId}?setting=email-templates`)}
+        onClick={() => void navigate(`/research-groups/${researchGroupId}?setting=email-templates`)}
       >
         <Group align='center'>
           <ArrowLeftIcon size={32} weight='bold' />
@@ -189,6 +189,7 @@ const EmailTemplateEditPage = () => {
           <Paper withBorder radius='sm' flex={1}>
             <div
               style={{ padding: '1rem' }}
+              // eslint-disable-next-line @eslint-react/dom-no-dangerously-set-innerhtml -- content sanitized via DOMPurify on the line below
               dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(exampleText) }}
             />
           </Paper>
