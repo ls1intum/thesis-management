@@ -40,7 +40,7 @@ const DataExport = () => {
   }
 
   useEffect(() => {
-    fetchStatus()
+    void fetchStatus()
   }, [])
 
   const onRequest = async () => {
@@ -158,12 +158,12 @@ const DataExport = () => {
 
       <Group>
         {isDownloadable && (
-          <Button onClick={onDownload} loading={downloading}>
+          <Button onClick={() => void onDownload()} loading={downloading}>
             Download Export
           </Button>
         )}
         <Button
-          onClick={onRequest}
+          onClick={() => void onRequest()}
           loading={requesting}
           disabled={loading || !status?.canRequest || isProcessing}
           variant={isDownloadable ? 'light' : 'filled'}

@@ -7,7 +7,7 @@ import { getApiResponseErrorMessage } from '../../../requests/handler'
 import { showSimpleError } from '../../../utils/notification'
 import { showNotification } from '@mantine/notifications'
 import { useParams } from 'react-router'
-import {
+import type {
   IResearchGroupSettings,
   IResearchGroupSettingsEmail,
 } from '../../../requests/responses/researchGroupSettings'
@@ -42,6 +42,7 @@ const EmailSettingsCard = ({
     form.setValues({
       applicationNotificationEmail: researchgroupEmailSettings?.applicationNotificationEmail ?? '',
     })
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- form is stable; only re-sync when the server-provided email value changes
   }, [researchgroupEmailSettings?.applicationNotificationEmail])
 
   const hasChanges =

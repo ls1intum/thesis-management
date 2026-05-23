@@ -12,7 +12,7 @@ import {
   Pagination,
 } from '@mantine/core'
 import { ChatCircleSlashIcon, PlusIcon } from '@phosphor-icons/react'
-import { IInterviewProcess, IUpcomingInterview } from '../../requests/responses/interview'
+import type { IInterviewProcess, IUpcomingInterview } from '../../requests/responses/interview'
 import InterviewProcessCard from './components/InterviewProcessCard'
 import { useIsSmallerBreakpoint } from '../../hooks/theme'
 import UpcomingInterviewCard from './components/UpcomingInterviewCard'
@@ -22,7 +22,7 @@ import { useEffect, useState } from 'react'
 import { showSimpleError } from '../../utils/notification'
 import { getApiResponseErrorMessage } from '../../requests/handler'
 import { doRequest } from '../../requests/request'
-import { PaginationResponse } from '../../requests/responses/pagination'
+import type { PaginationResponse } from '../../requests/responses/pagination'
 
 const InterviewOverviewPage = () => {
   const [upcomingInterviews, setUpcomingInterviews] = useState<IUpcomingInterview[]>([])
@@ -39,7 +39,7 @@ const InterviewOverviewPage = () => {
 
   const [createModalOpened, setCreateModalOpened] = useState(false)
 
-  const fetchUpcomingInterviews = async () => {
+  const fetchUpcomingInterviews = () => {
     doRequest<IUpcomingInterview[]>(
       `/v2/interview-process/upcoming-interviews`,
       {
@@ -59,7 +59,7 @@ const InterviewOverviewPage = () => {
     )
   }
 
-  const fetchMyInterviewProcesses = async () => {
+  const fetchMyInterviewProcesses = () => {
     setInterviewProcessesLoading(true)
     doRequest<PaginationResponse<IInterviewProcess>>(
       '/v2/interview-process',
@@ -84,11 +84,13 @@ const InterviewOverviewPage = () => {
 
   useEffect(() => {
     fetchMyInterviewProcesses()
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- fetchMyInterviewProcesses is recreated each render; effect should only re-run on page change
   }, [page])
 
   useEffect(() => {
     fetchMyInterviewProcesses()
     fetchUpcomingInterviews()
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- mount-only initial fetch
   }, [])
 
   return (
@@ -142,7 +144,7 @@ const InterviewOverviewPage = () => {
                     key={`card-${process.interviewProcessId}`}
                     interviewProcess={process}
                     onClick={() => {
-                      navigate(`/interviews/${process.interviewProcessId}`)
+                      void navigate(`/interviews/${process.interviewProcessId}`)
                     }}
                   />
                 ))
@@ -197,7 +199,7 @@ const InterviewOverviewPage = () => {
                     key={interview.slot.bookedBy?.intervieweeId}
                     upcomingInterview={interview}
                     onClick={() => {
-                      navigate(
+                      void navigate(
                         `/interviews/${interview.interviewProcessId}/interviewee/${interview.slot.bookedBy?.intervieweeId}`,
                       )
                     }}

@@ -50,7 +50,9 @@ public class MailConfig {
 	) {
 		this.enabled = enabled;
 		this.sender = sender;
-		this.clientHost = clientHost;
+		// Strip trailing slashes so callers can safely concatenate paths starting with '/'
+		// without producing double-slash URLs (e.g. ".../interview_booking/...").
+		this.clientHost = clientHost == null ? null : clientHost.replaceAll("/+$", "");
 
 		this.templateEngine = templateEngine;
 		this.userRepository = userRepository;

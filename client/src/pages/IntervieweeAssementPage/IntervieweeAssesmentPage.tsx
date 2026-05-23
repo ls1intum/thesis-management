@@ -1,5 +1,5 @@
 import { Center, Divider, Flex, Group, Loader, ScrollArea, Stack, Title } from '@mantine/core'
-import { IInterviewee } from '../../requests/responses/interview'
+import type { IInterviewee } from '../../requests/responses/interview'
 import { useIsSmallerBreakpoint } from '../../hooks/theme'
 import ScoreCard from './components/ScoreCard'
 import { useEffect, useState } from 'react'
@@ -20,7 +20,7 @@ const IntervieweeAssesmentPage = () => {
 
   const [intervieweeLoading, setIntervieweeLoading] = useState(false)
 
-  const fetchInterviewee = async () => {
+  const fetchInterviewee = () => {
     setIntervieweeLoading(true)
     doRequest<IInterviewee>(
       `/v2/interview-process/${processId}/interviewee/${intervieweeId}`,
@@ -41,11 +41,12 @@ const IntervieweeAssesmentPage = () => {
 
   useEffect(() => {
     fetchInterviewee()
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- mount-only initial fetch
   }, [])
 
   const [saving, setSaving] = useState(false)
 
-  const saveIntervieweeAssesment = async (newScore?: number, newNote?: string) => {
+  const saveIntervieweeAssesment = (newScore?: number, newNote?: string) => {
     if (!interviewee) {
       return
     }
@@ -59,7 +60,7 @@ const IntervieweeAssesmentPage = () => {
         requiresAuth: true,
         data: {
           intervieweeNote: newNote,
-          score: newScore !== undefined ? newScore : interviewee.score,
+          score: newScore ?? interviewee.score,
         },
       },
       (res) => {
@@ -91,7 +92,7 @@ const IntervieweeAssesmentPage = () => {
           },
         }}
         onClick={() => {
-          navigate(-1)
+          void navigate(-1)
         }}
       >
         <Group align='center'>

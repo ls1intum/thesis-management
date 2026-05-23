@@ -32,7 +32,7 @@ export const DateHeaderItem = ({
   }
 
   return (
-    <Stack gap={0} p={0} opacity={disabled ? 0.35 : 1} h={h ? h : undefined}>
+    <Stack gap={0} p={0} opacity={disabled ? 0.35 : 1} h={h ?? undefined}>
       <Text fw={600} c={'dimmed'} size={getTextSize()}>
         {new Date(date).toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase()}
       </Text>

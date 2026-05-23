@@ -7,7 +7,7 @@ import { getApiResponseErrorMessage } from '../../../requests/handler'
 import { showSimpleError } from '../../../utils/notification'
 import { showNotification } from '@mantine/notifications'
 import { useParams } from 'react-router'
-import {
+import type {
   IResearchGroupSettings,
   IResearchGroupSettingsWritingGuide,
 } from '../../../requests/responses/researchGroupSettings'
@@ -47,6 +47,7 @@ const ScientificWritingGuideSettingsCard = ({
     form.setValues({
       scientificWritingGuideLink: writingGuideSettings?.scientificWritingGuideLink ?? '',
     })
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- form is stable; only re-sync when the server-provided link value changes
   }, [writingGuideSettings?.scientificWritingGuideLink])
 
   const hasChanges =

@@ -1,4 +1,6 @@
-import { PropsWithChildren, Suspense, useEffect } from 'react'
+import type { ComponentType, PropsWithChildren } from 'react'
+import { Suspense, useEffect } from 'react'
+import type { MantineSize } from '@mantine/core'
 import {
   ActionIcon,
   AppShell,
@@ -8,7 +10,6 @@ import {
   Divider,
   Flex,
   Group,
-  MantineSize,
   Stack,
   Text,
   Tooltip,
@@ -31,6 +32,7 @@ import {
   TableIcon,
   UsersThreeIcon,
   ChatsCircleIcon,
+  ShieldCheckIcon,
 } from '@phosphor-icons/react'
 import { useAuthenticationContext, useUser } from '../../../hooks/authentication'
 import { useNavigationType } from 'react-router'
@@ -41,6 +43,10 @@ import { CustomAvatar } from '../../../components/CustomAvatar/CustomAvatar'
 import { formatUser } from '../../../utils/format'
 import ContentContainer from '../ContentContainer/ContentContainer'
 import Footer from '../../../components/Footer/Footer'
+import EnvironmentBanner, {
+  ENVIRONMENT_BANNER_HEIGHT,
+  isEnvironmentBannerVisible,
+} from '../../../components/EnvironmentBanner/EnvironmentBanner'
 import Header from '../../../components/Header/Header'
 import { useIsSmallerBreakpoint } from '../../../hooks/theme'
 
@@ -57,7 +63,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
   const links: Array<{
     link: string
     label: string
-    icon: any
+    icon: ComponentType<{ size?: number | string; className?: string }>
     groups: string[] | undefined
     hideFromGroups?: string[]
     display?: boolean
@@ -119,6 +125,12 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
       icon: GearSix,
       groups: ['admin'],
     },
+    {
+      link: '/admin/dependencies',
+      label: 'Dependencies',
+      icon: ShieldCheckIcon,
+      groups: ['admin'],
+    },
   ]
 
   const user = useUser()
@@ -133,14 +145,17 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
     minimizeAnimationDuration,
   )
   // only use debounced State if value is false because otherwise the text is formatted weirdly if you expand the navigation
-  const minimized = opened ? false : minimizedState || !!debouncedMinimized
+  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- intentionally fall through on `false` so the debounced value is used while collapsing
+  const minimized = opened ? false : minimizedState || Boolean(debouncedMinimized)
 
   const location = useLocation()
   const navigationType = useNavigationType()
 
   const auth = useAuthenticationContext()
 
-  const HEADER_HEIGHT = 50
+  const baseHeaderHeight = 50
+  const HEADER_HEIGHT =
+    baseHeaderHeight + (isEnvironmentBannerVisible() ? ENVIRONMENT_BANNER_HEIGHT : 0)
   const FOOTER_HEIGHT = 50
 
   const isSmallerBreakpoint = useIsSmallerBreakpoint('md')
@@ -155,6 +170,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
 
       return () => clearInterval(interval)
     }
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- auth object is stable from react-oidc-context; only re-run on auth state or path change
   }, [auth.isAuthenticated, location.pathname])
 
   useEffect(() => {
@@ -163,7 +179,35 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
     }
 
     close()
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- close is a stable disclosure handler; effect intentionally tracks navigation only
   }, [location.pathname, navigationType])
+
+  // Filtered navigation entries — extracted out of JSX so it isn't an IIFE.
+  const visibleLinks = links
+    .filter((item) => !item.groups || item.groups.some((role) => auth.user?.groups?.includes(role)))
+    .filter((item) => item.display === undefined || item.display === true)
+    .filter((item) =>
+      item.hideFromGroups
+        ? !item.hideFromGroups.some((role) => auth.user?.groups?.includes(role))
+        : true,
+    )
+
+  // Score each link against the current path and remember the best match so only the most
+  // specific entry highlights. Without this, /admin/dependencies would light up both the
+  // /admin and /admin/dependencies entries (the original startsWith check).
+  const matchScore = (link: string): number => {
+    if (location.pathname === link) {
+      return link.length + 1
+    }
+    if (location.pathname.startsWith(link + '/')) {
+      return link.length
+    }
+    return 0
+  }
+  const bestMatchScore = visibleLinks.reduce(
+    (best, item) => Math.max(best, matchScore(item.link)),
+    0,
+  )
 
   return (
     <AppShell
@@ -181,37 +225,31 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
       padding={0}
     >
       <AppShell.Header>
-        <Container size={size} fluid={!size} h='100%'>
-          <Header opened={opened} toggle={toggle} authenticatedArea={true} />
-        </Container>
+        <EnvironmentBanner />
+        <Box h={baseHeaderHeight}>
+          <Container size={size} fluid={!size} h='100%'>
+            <Header opened={opened} toggle={toggle} authenticatedArea={true} />
+          </Container>
+        </Box>
       </AppShell.Header>
 
       <AppShell.Navbar p='md'>
         <AppShell.Section grow mb='md'>
-          {links
-            .filter(
-              (item) =>
-                !item.groups || item.groups.some((role) => auth.user?.groups?.includes(role)),
-            )
-            .filter((item) => item.display == undefined || item.display === true)
-            .filter((item) =>
-              item.hideFromGroups
-                ? !item.hideFromGroups.some((role) => auth.user?.groups?.includes(role))
-                : true,
-            )
-            .map((item) => (
-              <Link
-                className={minimized ? classes.minimizedLink : classes.fullLink}
-                data-active={location.pathname.startsWith(item.link) || undefined}
-                key={item.label}
-                to={item.link}
-              >
-                <Tooltip label={item.label} disabled={!minimized} position='right' offset={15}>
-                  <item.icon className={classes.linkIcon} size={25} />
-                </Tooltip>
-                {!minimized && <span>{item.label}</span>}
-              </Link>
-            ))}
+          {visibleLinks.map((item) => (
+            <Link
+              className={minimized ? classes.minimizedLink : classes.fullLink}
+              data-active={
+                (bestMatchScore > 0 && matchScore(item.link) === bestMatchScore) || undefined
+              }
+              key={item.label}
+              to={item.link}
+            >
+              <Tooltip label={item.label} disabled={!minimized} position='right' offset={15}>
+                <item.icon className={classes.linkIcon} size={25} />
+              </Tooltip>
+              {!minimized && <span>{item.label}</span>}
+            </Link>
+          ))}
         </AppShell.Section>
         {user && (
           <AppShell.Section>

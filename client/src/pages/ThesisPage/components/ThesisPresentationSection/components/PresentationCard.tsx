@@ -13,7 +13,7 @@ import {
   Alert,
   Transition,
 } from '@mantine/core'
-import {
+import type {
   IPublishedPresentation,
   IPublishedThesis,
   IThesis,
@@ -226,7 +226,7 @@ const PresentationCard = ({
           <Group justify='space-between' align={'flex-start'} gap={'0.5rem'} wrap='nowrap'>
             <Stack gap={'0.5rem'}>
               <Title order={titleOrder ?? 5}>
-                {thesisName ? thesisName : `${formatThesisType(thesisType)} Presentation`}
+                {thesisName ?? `${formatThesisType(thesisType)} Presentation`}
               </Title>
               <Group gap={'0.5rem'}>
                 <Badge

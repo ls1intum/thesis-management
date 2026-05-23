@@ -15,27 +15,24 @@ export async function navigateTo(page: Page, path: string) {
 }
 
 /**
- * Navigate to an entity detail page (application, thesis) and verify
- * it loaded the detail view. Under heavy parallel test load, the server
- * may respond slowly and the client may redirect to the list view.
- * This helper retries navigation up to {@link maxRetries} times if the
- * expected element is not visible after each attempt.
+ * Navigate to an entity detail page (application, thesis) and assert that the
+ * detail view rendered. Throws via the contained `expect` if the expected
+ * locator never appears within `timeout` — callers that previously branched
+ * on a boolean return value should remove that branching.
+ *
+ * The helper deliberately does not retry: it waits a single bounded interval
+ * and either succeeds or fails the test. Silent skips on slow loads are
+ * unacceptable because they hide real product/server regressions.
  */
 export async function navigateToDetail(
   page: Page,
   path: string,
   expectedLocator: Locator,
-  timeout = 15_000,
-  maxRetries = 3,
-): Promise<boolean> {
-  for (let attempt = 0; attempt < maxRetries; attempt++) {
-    await navigateTo(page, path)
-    // Scroll to top so heading elements are in the viewport for isVisible check
-    await page.evaluate(() => window.scrollTo(0, 0))
-    const visible = await expectedLocator.isVisible({ timeout }).catch(() => false)
-    if (visible) return true
-  }
-  return false
+  timeout = 60_000,
+): Promise<void> {
+  await navigateTo(page, path)
+  await page.evaluate(() => window.scrollTo(0, 0))
+  await expect(expectedLocator).toBeVisible({ timeout })
 }
 
 /**
@@ -84,10 +81,10 @@ export async function fillRichTextEditor(
 
 /**
  * Select a value from a Mantine Select/ComboBox identified by its label.
- * Uses getByRole('textbox') to avoid matching the listbox element.
+ * Mantine v9 promotes the input to role="combobox" (W3C combobox pattern).
  */
 export async function selectOption(page: Page, label: string, optionText: string | RegExp) {
-  await page.getByRole('textbox', { name: label }).click()
+  await page.getByRole('combobox', { name: label }).click()
   await page.getByRole('option', { name: optionText }).click()
 }
 
@@ -96,7 +93,7 @@ export async function selectOption(page: Page, label: string, optionText: string
  * div that intercepts pointer events.
  */
 export async function clickMultiSelect(page: Page, label: string) {
-  await page.getByRole('textbox', { name: label }).click({ force: true })
+  await page.getByRole('combobox', { name: label }).click({ force: true })
 }
 
 /**
@@ -107,7 +104,7 @@ export async function clickMultiSelect(page: Page, label: string) {
  * in portal-rendered combobox dropdowns.
  */
 export async function searchAndSelectMultiSelect(page: Page, label: string, optionPattern: RegExp) {
-  const textbox = page.getByRole('textbox', { name: label })
+  const textbox = page.getByRole('combobox', { name: label })
   const listbox = page.getByRole('listbox', { name: label })
   const option = listbox.getByRole('option', { name: optionPattern }).first()
   const wrapper = page.locator(

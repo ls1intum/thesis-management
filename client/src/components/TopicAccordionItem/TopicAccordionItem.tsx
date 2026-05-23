@@ -1,7 +1,8 @@
 import { Accordion, Badge, Group, Text } from '@mantine/core'
 import TopicData from '../TopicData/TopicData'
-import React, { PropsWithChildren } from 'react'
-import { ITopic } from '../../requests/responses/topic'
+import type { PropsWithChildren } from 'react'
+import React from 'react'
+import type { ITopic } from '../../requests/responses/topic'
 
 interface ITopicAccordionItemProps {
   topic: ITopic

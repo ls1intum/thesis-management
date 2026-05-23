@@ -90,13 +90,7 @@ test.describe('Applications - Examiner review', () => {
     test.setTimeout(120_000)
     // Navigate to ACCEPTED application: student on topic 1 (stable across re-runs)
     const heading = page.getByRole('heading', { name: 'Student User' })
-    const loaded = await navigateToDetail(
-      page,
-      '/applications/00000000-0000-4000-c000-000000000001',
-      heading,
-      45_000,
-    )
-    expect(loaded, 'Application detail page should load').toBeTruthy()
+    await navigateToDetail(page, '/applications/00000000-0000-4000-c000-000000000001', heading)
 
     // Topic accordion button with topic title
     await expect(
@@ -119,16 +113,7 @@ test.describe('Applications - Examiner review', () => {
     test.setTimeout(90_000)
     // App 4: student4 on topic 1, NOT_ASSESSED
     const heading = page.getByRole('heading', { name: 'Student4 User' })
-    const loaded = await navigateToDetail(
-      page,
-      '/applications/00000000-0000-4000-c000-000000000004',
-      heading,
-      30_000,
-    )
-    if (!loaded) {
-      test.skip(true, 'Application detail did not load under heavy parallel load')
-      return
-    }
+    await navigateToDetail(page, '/applications/00000000-0000-4000-c000-000000000004', heading)
 
     // Should show student4's email
     await expect(page.getByText('student4@test.local')).toBeVisible()

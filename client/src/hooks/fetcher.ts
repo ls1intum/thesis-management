@@ -1,10 +1,10 @@
-import { IThesis } from '../requests/responses/thesis'
+import type { IThesis } from '../requests/responses/thesis'
 import { useEffect, useState } from 'react'
 import { doRequest } from '../requests/request'
 import { showSimpleError } from '../utils/notification'
 import { getApiResponseErrorMessage } from '../requests/handler'
-import { ITopic, ITopicOverview } from '../requests/responses/topic'
-import { PaginationResponse } from '../requests/responses/pagination'
+import type { ITopic, ITopicOverview } from '../requests/responses/topic'
+import type { PaginationResponse } from '../requests/responses/pagination'
 
 export function useThesis(thesisId: string | undefined) {
   const [thesis, setThesis] = useState<IThesis | false>()
@@ -85,6 +85,7 @@ export function useApiPdfFile(
         },
       )
     }
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- onLoad is recreated by callers each render; refetching on its identity would loop
   }, [url, filename])
 }
 

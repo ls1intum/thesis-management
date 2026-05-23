@@ -1,6 +1,7 @@
-import React, { Dispatch, SetStateAction } from 'react'
-import { IThesisOverview, ThesisState } from '../../requests/responses/thesis'
-import { PaginationResponse } from '../../requests/responses/pagination'
+import type { Dispatch, SetStateAction } from 'react'
+import React from 'react'
+import type { IThesisOverview, ThesisState } from '../../requests/responses/thesis'
+import type { PaginationResponse } from '../../requests/responses/pagination'
 
 export interface IThesesFilters {
   search?: string

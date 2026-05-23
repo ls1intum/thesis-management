@@ -1,4 +1,5 @@
-import React, { ReactNode } from 'react'
+import type { ReactNode } from 'react'
+import React from 'react'
 import { ActionIcon, CopyButton, Group, Input, Text, Tooltip } from '@mantine/core'
 import { Check, Copy } from '@phosphor-icons/react'
 

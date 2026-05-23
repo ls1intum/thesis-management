@@ -29,7 +29,7 @@ test.describe('Thesis Content Editing - Supervisor', () => {
     // Verify Close Thesis button is visible for supervisor
     await expect(page.getByRole('button', { name: 'Close Thesis' })).toBeVisible()
 
-    const visibilityInput = page.getByRole('textbox', { name: 'Visibility' })
+    const visibilityInput = page.getByRole('combobox', { name: 'Visibility' })
     const currentVisibility = await visibilityInput.inputValue()
     const targetVisibility = currentVisibility === 'Internal' ? 'Private' : 'Internal'
 
@@ -56,7 +56,7 @@ test.describe('Thesis Content Editing - Supervisor', () => {
     // Re-expand Configuration and verify field values persisted
     await expandAccordion(page, 'Configuration', page.getByRole('button', { name: 'Update' }))
     await expect(page.getByRole('textbox', { name: 'Thesis Title' })).toHaveValue(THESIS_TITLE)
-    await expect(page.getByRole('textbox', { name: 'Visibility' })).toHaveValue(targetVisibility)
+    await expect(page.getByRole('combobox', { name: 'Visibility' })).toHaveValue(targetVisibility)
   })
 })
 
@@ -136,7 +136,7 @@ test.describe('Thesis Content Editing - Student', () => {
       await expect(page.getByRole('textbox', { name: 'Thesis Title' })).toBeDisabled()
 
       // Verify Visibility select is also disabled for students
-      await expect(page.getByRole('textbox', { name: 'Visibility' })).toBeDisabled()
+      await expect(page.getByRole('combobox', { name: 'Visibility' })).toBeDisabled()
     } finally {
       await context.close()
     }

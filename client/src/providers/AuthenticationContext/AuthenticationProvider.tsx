@@ -1,20 +1,17 @@
-import { PropsWithChildren, useEffect, useMemo, useState } from 'react'
-import {
-  AuthenticationContext,
-  IAuthenticationContext,
-  IDecodedAccessToken,
-  IDecodedRefreshToken,
-} from './context'
+import type { PropsWithChildren } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import type { IAuthenticationContext, IDecodedAccessToken, IDecodedRefreshToken } from './context'
+import { AuthenticationContext } from './context'
 import Keycloak from 'keycloak-js'
 import { GLOBAL_CONFIG } from '../../config/global'
 import { jwtDecode } from 'jwt-decode'
 import { getAuthenticationTokens, useAuthenticationTokens } from '../../hooks/authentication'
 import { useSignal } from '../../hooks/utility'
-import { IUser } from '../../requests/responses/user'
+import type { IUser } from '../../requests/responses/user'
 import { doRequest } from '../../requests/request'
 import { showSimpleError } from '../../utils/notification'
 import { ApiError, getApiResponseErrorMessage } from '../../requests/handler'
-import { ILightResearchGroup } from '../../requests/responses/researchGroup'
+import type { ILightResearchGroup } from '../../requests/responses/researchGroup'
 
 export const keycloak = new Keycloak({
   realm: GLOBAL_CONFIG.keycloak.realm,
@@ -39,7 +36,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
     setUser(undefined)
 
     const refreshAccessToken = () => {
-      keycloak.updateToken(60 * 5).then((isSuccess) => {
+      void keycloak.updateToken(60 * 5).then((isSuccess) => {
         if (!isSuccess) {
           setAuthenticationTokens(undefined)
         }
@@ -56,15 +53,6 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
       const decodedRefreshToken = refreshToken
         ? jwtDecode<IDecodedRefreshToken>(refreshToken)
         : undefined
-
-      console.log('decoded keycloak refresh token', decodedRefreshToken)
-      console.log('decoded keycloak access token', decodedAccessToken)
-
-      if (decodedRefreshToken?.exp) {
-        console.log(
-          `refresh token expires in ${Math.floor(decodedRefreshToken.exp - Date.now() / 1000)} seconds`,
-        )
-      }
 
       // refresh if already expired
       if (decodedRefreshToken?.exp && decodedRefreshToken.exp <= Date.now() / 1000) {
@@ -95,21 +83,17 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
       setAuthenticationTokens(undefined)
     }
 
-    console.log('Initializing keycloak...')
-
     void keycloak
       .init({
         refreshToken: storedTokens?.refresh_token,
         token: storedTokens?.access_token,
       })
       .then(() => {
-        console.log('Keycloak initialized')
-
         storeTokens()
         triggerReadySignal()
       })
       .catch((error) => {
-        console.log('Keycloak init error', error)
+        console.error('Keycloak init error', error)
       })
 
     const refreshTokenFrequency = 60 * 1000
@@ -134,6 +118,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
       keycloak.onAuthRefreshError = undefined
       keycloak.onAuthLogout = undefined
     }
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- mount-only keycloak setup: setAuthenticationTokens/triggerReadySignal are stable refs intentionally captured once
   }, [])
 
   useEffect(() => {
@@ -193,9 +178,11 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
     )
   }, [isReady, universityId])
 
+  const isAuthenticated = Boolean(authenticationTokens?.access_token)
+
   const contextValue = useMemo<IAuthenticationContext>(() => {
     return {
-      isAuthenticated: !!authenticationTokens?.access_token,
+      isAuthenticated: Boolean(authenticationTokens?.access_token),
       user: authenticationTokens?.access_token ? user : undefined,
       groups: [],
       updateUser: setUser,
@@ -209,7 +196,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
         }
 
         if (examinationReport) {
-          formData.append('examinationReport', examinationReport!)
+          formData.append('examinationReport', examinationReport)
         }
 
         if (cv) {
@@ -247,7 +234,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
           window.location.href = `${window.location.origin}${redirectUri}`
         }, 2000)
 
-        readySignal.then(() => {
+        void readySignal.then(() => {
           if (keycloak.authenticated) {
             clearTimeout(timeout)
 
@@ -259,16 +246,10 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
       },
       researchGroups: researchGroups,
     }
-  }, [
-    user,
-    !!authenticationTokens?.access_token,
-    authenticationTokens?.refresh_token,
-    location.origin,
-  ])
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- researchGroups/setAuthenticationTokens/readySignal/access_token are captured by reference inside callbacks that read the latest value at call time; recomputing the entire context on each token refresh would re-render every consumer
+  }, [user, isAuthenticated, authenticationTokens?.refresh_token, researchGroups])
 
-  return (
-    <AuthenticationContext.Provider value={contextValue}>{children}</AuthenticationContext.Provider>
-  )
+  return <AuthenticationContext value={contextValue}>{children}</AuthenticationContext>
 }
 
 export default AuthenticationProvider

@@ -1,9 +1,14 @@
-import { PropsWithChildren } from 'react'
+import type { PropsWithChildren } from 'react'
 import Footer from '../../../components/Footer/Footer'
-import { AppShell, Box, Container, Divider, Flex, MantineSize, Stack } from '@mantine/core'
+import type { MantineSize } from '@mantine/core'
+import { AppShell, Box, Container, Divider, Flex, Stack } from '@mantine/core'
 import ScrollToTop from '../ScrollToTop/ScrollToTop'
 import Header from '../../../components/Header/Header'
 import ContentContainer from '../ContentContainer/ContentContainer'
+import EnvironmentBanner, {
+  ENVIRONMENT_BANNER_HEIGHT,
+  isEnvironmentBannerVisible,
+} from '../../../components/EnvironmentBanner/EnvironmentBanner'
 
 interface IPublicAreaProps {
   size?: number | MantineSize | (string & {}) | undefined
@@ -13,15 +18,20 @@ interface IPublicAreaProps {
 const PublicArea = (props: PropsWithChildren<IPublicAreaProps>) => {
   const { size = 'md', children } = props
 
-  const HEADER_HEIGHT = 50
+  const baseHeaderHeight = 50
+  const HEADER_HEIGHT =
+    baseHeaderHeight + (isEnvironmentBannerVisible() ? ENVIRONMENT_BANNER_HEIGHT : 0)
   const FOOTER_HEIGHT = 50
 
   return (
     <AppShell header={{ height: HEADER_HEIGHT }}>
       <AppShell.Header>
-        <Container size={size} fluid={!size} h='100%'>
-          <Header authenticatedArea={false}></Header>
-        </Container>
+        <EnvironmentBanner />
+        <Box h={baseHeaderHeight}>
+          <Container size={size} fluid={!size} h='100%'>
+            <Header authenticatedArea={false}></Header>
+          </Container>
+        </Box>
       </AppShell.Header>
 
       <AppShell.Main>

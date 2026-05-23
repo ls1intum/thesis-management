@@ -1,12 +1,5 @@
-import {
-  Group,
-  MantineColor,
-  MantineFontSize,
-  Paper,
-  Stack,
-  Text,
-  useMantineColorScheme,
-} from '@mantine/core'
+import type { MantineColor, MantineFontSize } from '@mantine/core'
+import { Group, Paper, Stack, Text, useComputedColorScheme } from '@mantine/core'
 import { FileAudioIcon, FileIcon, FileImageIcon, FilePdfIcon } from '@phosphor-icons/react'
 import { FileVideoIcon } from '@phosphor-icons/react/dist/ssr'
 
@@ -57,11 +50,11 @@ const FileElement = ({
     return <FileIcon size={size} />
   }
 
-  const colorScheme = useMantineColorScheme()
+  const colorScheme = useComputedColorScheme('light')
 
   return (
     <Paper
-      bg={bg || (colorScheme.colorScheme === 'dark' ? 'dark.6' : 'gray.1')}
+      bg={bg ?? (colorScheme === 'dark' ? 'dark.6' : 'gray.1')}
       p='xs'
       radius='md'
       w={fullWidth ? '100%' : 'fit-content'}

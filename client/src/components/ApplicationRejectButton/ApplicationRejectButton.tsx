@@ -1,5 +1,6 @@
 import { doRequest } from '../../requests/request'
-import { ApplicationState, IApplication } from '../../requests/responses/application'
+import type { IApplication } from '../../requests/responses/application'
+import { ApplicationState } from '../../requests/responses/application'
 import { showSimpleError, showSimpleSuccess } from '../../utils/notification'
 import { Button, Checkbox, Modal, Radio, Stack, Text, type ButtonProps } from '@mantine/core'
 import React, { useEffect, useState } from 'react'
@@ -39,6 +40,7 @@ const ApplicationRejectButton = (props: IApplicationRejectButtonProps) => {
 
   useEffect(() => {
     form.reset()
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- form is redefined each render; only reset when the modal toggles
   }, [confirmationModal])
 
   if (
@@ -139,7 +141,9 @@ const ApplicationRejectButton = (props: IApplicationRejectButtonProps) => {
               {...form.getInputProps('notifyUser', { type: 'checkbox' })}
             />
             <Button
-              onClick={() => onReject(form.getValues())}
+              onClick={() => {
+                void onReject(form.getValues())
+              }}
               loading={loading}
               disabled={!form.isValid()}
               fullWidth

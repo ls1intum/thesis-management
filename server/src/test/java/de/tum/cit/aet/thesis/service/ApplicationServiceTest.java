@@ -79,7 +79,8 @@ class ApplicationServiceTest {
 				applicationReviewerRepository,
 				currentUserProviderProvider,
 				researchGroupRepository,
-				interviewProcessRepository
+				interviewProcessRepository,
+				java.time.Clock.systemUTC()
 		);
 
 		testUser = EntityMockFactory.createUser("Test User");
@@ -162,7 +163,7 @@ class ApplicationServiceTest {
 		User reviewer = new User();
 		reviewer.setId(UUID.randomUUID());
 		when(applicationRepository.save(any(Application.class))).thenAnswer(invocation -> invocation.getArgument(0));
-		when(thesisService.createThesis(any(), any(), any(), any(), any(), any(), any(), eq(true), any()))
+		when(thesisService.createThesis(any(), any(), any(), any(), any(), any(), any(), any(), eq(true), any()))
 				.thenReturn(EntityMockFactory.createThesis("Test Thesis", testResearchGroup));
 		when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
 
@@ -180,7 +181,7 @@ class ApplicationServiceTest {
 
 		assertFalse(results.isEmpty());
 		assertEquals(ApplicationState.ACCEPTED, results.getFirst().getState());
-		verify(thesisService).createThesis(any(), any(), any(), any(), any(), any(), any(), eq(true), any());
+		verify(thesisService).createThesis(any(), any(), any(), any(), any(), any(), any(), any(), eq(true), any());
 		verify(mailingService).sendApplicationAcceptanceEmail(any(), any());
 	}
 
@@ -189,7 +190,7 @@ class ApplicationServiceTest {
 		User reviewer = new User();
 		reviewer.setId(UUID.randomUUID());
 		when(applicationRepository.save(any(Application.class))).thenAnswer(invocation -> invocation.getArgument(0));
-		when(thesisService.createThesis(any(), any(), any(), any(), any(), any(), any(), eq(false), any()))
+		when(thesisService.createThesis(any(), any(), any(), any(), any(), any(), any(), any(), eq(false), any()))
 				.thenReturn(EntityMockFactory.createThesis("Test Thesis", testResearchGroup));
 		when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
 
@@ -207,7 +208,7 @@ class ApplicationServiceTest {
 
 		assertFalse(results.isEmpty());
 		assertEquals(ApplicationState.ACCEPTED, results.getFirst().getState());
-		verify(thesisService).createThesis(any(), any(), any(), any(), any(), any(), any(), eq(false), any());
+		verify(thesisService).createThesis(any(), any(), any(), any(), any(), any(), any(), any(), eq(false), any());
 		verify(mailingService, never()).sendApplicationAcceptanceEmail(any(), any());
 	}
 

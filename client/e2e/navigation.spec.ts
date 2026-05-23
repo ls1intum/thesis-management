@@ -114,6 +114,19 @@ test.describe('Navigation - Student routes', () => {
     await expect(page).toHaveURL(/\/dashboard/)
   })
 
+  test('header brand is rendered as a real link so right-click / middle-click work', async ({
+    page,
+  }) => {
+    // Regression test for issue #925: the brand used to be a <div onClick={navigate}>,
+    // which prevented the browser's native context menu ("Open in new tab", "Copy link")
+    // and middle-click-opens-in-new-tab. It must be an <a href="..."> element.
+    await navigateTo(page, '/theses')
+
+    const brand = page.getByText('Thesis Management').first()
+    const anchor = brand.locator('xpath=ancestor::a').first()
+    await expect(anchor).toHaveAttribute('href', /\/dashboard$/)
+  })
+
   test('student can navigate to settings page', async ({ page }) => {
     await navigateTo(page, '/settings')
 

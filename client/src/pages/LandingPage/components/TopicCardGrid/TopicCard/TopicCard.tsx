@@ -1,11 +1,12 @@
 import { Card, Flex, Text, Group, Stack, Button, Tooltip, Anchor, Box } from '@mantine/core'
-import { ITopicOverview } from '../../../../../requests/responses/topic'
+import type { ITopicOverview } from '../../../../../requests/responses/topic'
 import { useHover, useMediaQuery } from '@mantine/hooks'
 import { DownloadSimple, Users } from '@phosphor-icons/react'
 import AvatarUserList from '../../../../../components/AvatarUserList/AvatarUserList'
-import { IPublishedThesis } from '../../../../../requests/responses/thesis'
-import { Dispatch, useEffect, useState } from 'react'
-import { IMinimalUser } from '../../../../../requests/responses/user'
+import type { IPublishedThesis } from '../../../../../requests/responses/thesis'
+import type { Dispatch } from 'react'
+import { useEffect, useState } from 'react'
+import type { IMinimalUser } from '../../../../../requests/responses/user'
 import { Link } from 'react-router'
 import { GLOBAL_CONFIG } from '../../../../../config/global'
 import ThesisTypeBadge from '../../ThesisTypBadge/ThesisTypBadge'
@@ -128,6 +129,12 @@ const TopicCard = ({ topic, setOpenTopic }: ITopicCardProps) => {
             <DownloadSimple />
           </Button>
         </Group>
+      ) : 'applicationDeadline' in topic &&
+        topic.applicationDeadline &&
+        new Date(topic.applicationDeadline) < new Date() ? (
+        <Button fullWidth mt='md' component={Link} to={`/topics/${topicId}`}>
+          More Information
+        </Button>
       ) : (
         <Button fullWidth mt='md' component={Link} to={`/submit-application/${topicId}`}>
           Apply

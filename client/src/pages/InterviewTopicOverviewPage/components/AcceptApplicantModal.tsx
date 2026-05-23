@@ -1,7 +1,7 @@
 import { Loader, Modal, Title, Group, Button } from '@mantine/core'
-import { IIntervieweeLightWithNextSlot } from '../../../requests/responses/interview'
+import type { IIntervieweeLightWithNextSlot } from '../../../requests/responses/interview'
 import ApplicationReviewForm from '../../../components/ApplicationReviewForm/ApplicationReviewForm'
-import { IApplication } from '../../../requests/responses/application'
+import type { IApplication } from '../../../requests/responses/application'
 import { useEffect, useState } from 'react'
 import { useApplicationsContext } from '../../../providers/ApplicationsProvider/hooks'
 import ApplicationRejectButton from '../../../components/ApplicationRejectButton/ApplicationRejectButton'
@@ -24,7 +24,8 @@ const AcceptApplicantModal = ({ interviewee, onAcceptSuccessfull }: AcceptApplic
       const app = await fetchApplication(interviewee.applicationId)
       setApplication(app)
     }
-    fetchData()
+    void fetchData()
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- fetchApplication is recreated each render by the provider; effect should only re-run when applicationId changes
   }, [interviewee.applicationId])
 
   return (

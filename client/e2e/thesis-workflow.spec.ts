@@ -80,3 +80,45 @@ test.describe('Thesis Workflow - Examiner creates a thesis', () => {
     expect(body, 'Should reference proposal as next step').toContain('proposal')
   })
 })
+
+test.describe('Create Thesis Modal - Examiner prefill displays head name (regression)', () => {
+  // examiner2 is the head of the DSA group and is the only listed user in DSA,
+  // so opening the Create Thesis modal triggers the single-group prefill path
+  // that the bug originally affected.
+  test.use({ storageState: authStatePath('examiner2') })
+
+  test('auto-prefilled examiner shows head name, not the raw user ID', async ({ page }) => {
+    test.setTimeout(60_000)
+
+    await navigateTo(page, '/theses')
+    await expect(page.getByRole('heading', { name: 'Browse Theses', exact: true })).toBeVisible({
+      timeout: 30_000,
+    })
+
+    await page.getByRole('button', { name: 'Create Thesis' }).click()
+    const dialog = page.getByRole('dialog')
+    await expect(dialog).toBeVisible({ timeout: 5_000 })
+
+    // Research group must be auto-prefilled — that's the trigger for the
+    // examiner prefill we're verifying here.
+    const researchGroupInput = dialog.getByRole('combobox', { name: 'Research Group' })
+    await expect(researchGroupInput).not.toHaveValue('', { timeout: 10_000 })
+
+    // The Examiner field should have exactly one pill rendered with the head's
+    // human-readable label, not the raw UUID. Without `initialUsers` the pill
+    // falls back to the bare user ID (the bug from #952).
+    const examinerWrapper = dialog.locator(
+      '.mantine-InputWrapper-root:has(.mantine-InputWrapper-label:text("Examiner"))',
+    )
+    const pill = examinerWrapper.locator('.mantine-Pill-root').first()
+    await expect(pill).toBeVisible({ timeout: 10_000 })
+
+    const pillText = (await pill.innerText()).trim()
+    expect(pillText, `Examiner pill should not display a raw UUID, got: ${pillText}`).not.toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+    )
+    expect(pillText, `Examiner pill should contain the head's name, got: ${pillText}`).toMatch(
+      /Examiner2/i,
+    )
+  })
+})

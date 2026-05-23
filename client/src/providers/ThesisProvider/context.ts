@@ -1,4 +1,4 @@
-import { IThesis } from '../../requests/responses/thesis'
+import type { IThesis } from '../../requests/responses/thesis'
 import React from 'react'
 
 export interface IThesisContext {

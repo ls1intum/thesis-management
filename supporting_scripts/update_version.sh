@@ -69,20 +69,9 @@ awk -v old_version="$CURRENT_VERSION" -v new_version="$NEW_VERSION" '
     {print}
 ' client/package.json > client/package.json.tmp && mv client/package.json.tmp client/package.json
 
-# Update client/package-lock.json to only update the version when the previous line is `"name": "thesis-management"`
-awk -v old_version="$CURRENT_VERSION" -v new_version="$NEW_VERSION" '
-    BEGIN {found_name = 0}
-    /"name": "thesis-management"/ {found_name = 1}
-    found_name && /"version": ".*"/ {
-        sub("\"version\": \"" old_version "\"", "\"version\": \"" new_version "\"")
-        found_name = 0
-    }
-    {print}
-' client/package-lock.json > client/package-lock.json.tmp && mv client/package-lock.json.tmp client/package-lock.json
-
 # Add changes to git and commit
 echo "Staging changes for git..."
-git add server/build.gradle client/package.json client/package-lock.json
+git add server/build.gradle client/package.json
 
 echo "Creating git commit..."
 git commit -m "Development: Bump version to $NEW_VERSION ($INCREMENT_TYPE update)"

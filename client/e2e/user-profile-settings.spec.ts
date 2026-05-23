@@ -32,9 +32,9 @@ test.describe('User Profile Settings - Read Only Fields', () => {
     await expect(matriculationInput).toHaveAttribute('readonly', '')
 
     // Verify editable fields are visible and interactive
-    await expect(page.getByRole('textbox', { name: 'Gender', exact: true })).toBeVisible()
-    await expect(page.getByRole('textbox', { name: 'Current Study Degree', exact: true })).toBeVisible()
-    await expect(page.getByRole('textbox', { name: 'Study Program', exact: true })).toBeVisible()
+    await expect(page.getByRole('combobox', { name: 'Gender', exact: true })).toBeVisible()
+    await expect(page.getByRole('combobox', { name: 'Current Study Degree', exact: true })).toBeVisible()
+    await expect(page.getByRole('combobox', { name: 'Study Program', exact: true })).toBeVisible()
     await expect(page.getByLabel('Semester in Current Study Program', { exact: true })).toBeVisible()
 
     // Verify the privacy consent checkbox exists
@@ -67,7 +67,7 @@ test.describe('User Profile Settings - Update Profile', () => {
       await expect(page.getByLabel('First Name')).toHaveAttribute('readonly', '')
 
       // Change Gender to Male
-      await page.getByRole('textbox', { name: 'Gender', exact: true }).click()
+      await page.getByRole('combobox', { name: 'Gender', exact: true }).click()
       await page.getByRole('option', { name: 'Male', exact: true }).click()
 
       // Change Semester

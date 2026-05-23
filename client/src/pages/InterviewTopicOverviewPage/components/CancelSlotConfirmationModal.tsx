@@ -1,6 +1,6 @@
 import { Modal, Stack, Title, Text, Paper, Group, Button, Input } from '@mantine/core'
 import { useIsSmallerBreakpoint } from '../../../hooks/theme'
-import { IInterviewSlot } from '../../../requests/responses/interview'
+import type { IInterviewSlot } from '../../../requests/responses/interview'
 import { useInterviewProcessContext } from '../../../providers/InterviewProcessProvider/hooks'
 import SlotItem from './SlotItem'
 import AvatarUser from '../../../components/AvatarUser/AvatarUser'

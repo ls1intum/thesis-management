@@ -12,7 +12,7 @@ import {
   Paper,
 } from '@mantine/core'
 import { useIsSmallerBreakpoint } from '../../hooks/theme'
-import { IInterviewSlot } from '../../requests/responses/interview'
+import type { IInterviewSlot } from '../../requests/responses/interview'
 import { useEffect, useState } from 'react'
 import SummaryCard from './components/SummaryCard'
 import {
@@ -29,12 +29,54 @@ import { useParams } from 'react-router'
 import { showSimpleError } from '../../utils/notification'
 import { getApiResponseErrorMessage } from '../../requests/handler'
 import { useAuthenticationContext, useUser } from '../../hooks/authentication'
-import { ITopic } from '../../requests/responses/topic'
+import type { ITopic } from '../../requests/responses/topic'
 import AvatarUserList from '../../components/AvatarUserList/AvatarUserList'
 import InterviewProcessProvider from '../../providers/InterviewProcessProvider/InterviewProcessProvider'
 import SelectSlotCarousel from './components/SelectSlotCarousel'
 import CancelSlotConfirmationModal from '../InterviewTopicOverviewPage/components/CancelSlotConfirmationModal'
 import { formatDate, formatTime } from '../../utils/format'
+
+interface ISlotInformationProps {
+  slot: IInterviewSlot
+  title?: string
+}
+
+const SlotInformation = ({ slot, title }: ISlotInformationProps) => (
+  <SummaryCard
+    title={title ?? 'Selected Interview'}
+    sections={[
+      {
+        title: 'Date',
+        content: (
+          <Text size='xs' pl={'xs'}>
+            {formatDate(slot.startDate)}
+          </Text>
+        ),
+        icon: <CalendarDotsIcon />,
+      },
+      {
+        title: 'Time',
+        content: (
+          <Text size='xs' pl={'xs'}>
+            {`${formatTime(slot.startDate)}` +
+              ` - ${formatTime(slot.endDate)}` +
+              `, ${Math.round((slot.endDate.getTime() - slot.startDate.getTime()) / 60000)} min`}
+          </Text>
+        ),
+        icon: <ClockIcon />,
+      },
+      {
+        title: 'Location',
+        content: (
+          <Text size='xs' pl={'xs'}>
+            {slot.location ?? slot.streamUrl ?? 'Not specified'}
+          </Text>
+        ),
+        icon: <MapPinIcon />,
+      },
+    ]}
+  />
+)
 
 const InterviewBookingPage = () => {
   const { processId } = useParams<{ processId: string }>()
@@ -57,11 +99,12 @@ const InterviewBookingPage = () => {
 
       return () => clearInterval(interval)
     }
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- auth context is recreated each render; retriggering on identity would loop the login interval
   }, [auth.isAuthenticated])
 
   const [topicInformation, setTopicInformation] = useState<ITopic | null>(null)
 
-  const fetchTopicInformation = async () => {
+  const fetchTopicInformation = () => {
     doRequest<ITopic>(
       `/v2/interview-process/${processId}/topic`,
       {
@@ -81,10 +124,10 @@ const InterviewBookingPage = () => {
   const [pageLoading, setPageLoading] = useState(true)
   const [myBooking, setMyBooking] = useState<IInterviewSlot | null>(null)
 
-  const fetchMyBooking = async () => {
+  const fetchMyBooking = () => {
     setPageLoading(true)
 
-    new Promise<boolean>((resolve) => {
+    void new Promise<boolean>((resolve) => {
       doRequest<boolean>(
         `/v2/interview-process/${processId}/completed`,
         {
@@ -129,7 +172,7 @@ const InterviewBookingPage = () => {
 
   const [processCompleted, setProcessCompleted] = useState(false)
 
-  const bookSlot = async (slotId: string) => {
+  const bookSlot = (slotId: string) => {
     setPageLoading(true)
     doRequest<IInterviewSlot>(
       `/v2/interview-process/${processId}/slot/${slotId}/book`,
@@ -160,6 +203,7 @@ const InterviewBookingPage = () => {
       fetchMyBooking()
       fetchTopicInformation()
     }
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- fetchMyBooking and fetchTopicInformation are recreated each render; effect should only re-run on processId/auth changes
   }, [processId, auth.isAuthenticated])
 
   const [cancelModalOpen, setCancelModalOpen] = useState(false)
@@ -199,43 +243,6 @@ const InterviewBookingPage = () => {
       ]}
     />
   ) : null
-
-  const SlotInformation = (slot: IInterviewSlot, title?: string) => (
-    <SummaryCard
-      title={title || 'Selected Interview'}
-      sections={[
-        {
-          title: 'Date',
-          content: (
-            <Text size='xs' pl={'xs'}>
-              {formatDate(slot.startDate)}
-            </Text>
-          ),
-          icon: <CalendarDotsIcon />,
-        },
-        {
-          title: 'Time',
-          content: (
-            <Text size='xs' pl={'xs'}>
-              {`${formatTime(slot.startDate)}` +
-                ` - ${formatTime(slot.endDate)}` +
-                `, ${Math.round((slot.endDate.getTime() - slot.startDate.getTime()) / 60000)} min`}
-            </Text>
-          ),
-          icon: <ClockIcon />,
-        },
-        {
-          title: 'Location',
-          content: (
-            <Text size='xs' pl={'xs'}>
-              {slot.location || slot.streamUrl || 'Not specified'}
-            </Text>
-          ),
-          icon: <MapPinIcon />,
-        },
-      ]}
-    ></SummaryCard>
-  )
 
   if (pageLoading) {
     return (
@@ -287,7 +294,7 @@ const InterviewBookingPage = () => {
             </Stack>
             <Stack w={{ xs: '90vw', md: '500px' }} gap={'1rem'}>
               {TopicInformation}
-              {SlotInformation(myBooking)}
+              <SlotInformation slot={myBooking} />
             </Stack>
 
             <Paper withBorder p={'md'} radius='md' w={{ xs: '90vw', md: '500px' }}>
@@ -350,8 +357,8 @@ const InterviewBookingPage = () => {
                 flex={1}
               >
                 <Stack p={0} h={'100%'}>
-                  <Collapse in={selectedSlot !== null}>
-                    {selectedSlot && SlotInformation(selectedSlot)}
+                  <Collapse expanded={selectedSlot !== null}>
+                    {selectedSlot && <SlotInformation slot={selectedSlot} />}
                   </Collapse>
                   {TopicInformation}
                 </Stack>

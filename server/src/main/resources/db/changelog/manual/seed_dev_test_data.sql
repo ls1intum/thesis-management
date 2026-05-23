@@ -1522,6 +1522,99 @@ VALUES
     ('00000000-0000-4000-d000-000000000012'::UUID, 'WRITING', NOW() - INTERVAL '20 days')
 ON CONFLICT DO NOTHING;
 
+-- Retry slots for the admin anonymize tests in client/e2e/thesis-delete.spec.ts.
+-- Anonymization is irreversible: once a test attempt anonymizes thesis 10/11/12,
+-- a Playwright retry against the same row fails at the "Anonymize Thesis" button
+-- visibility check (the button is gated on !anonymizedAt) and reports a misleading
+-- "element not found" instead of the real first-attempt failure. Each test attempt
+-- picks a different thesis ID via `testInfo.retry`, so every attempt gets a fresh,
+-- non-anonymized row. CI runs initial + 2 retries → 2 retry slots per scenario.
+-- Warnings depend only on `state` and `end_date`, so roles/state_changes/comments
+-- are intentionally omitted; the test does not assert on them.
+INSERT INTO theses (thesis_id, title, type, language, metadata, info, abstract, state,
+                    visibility, keywords, application_id, start_date, end_date, created_at,
+                    research_group_id)
+VALUES
+    -- OLD retry 1 (mirrors thesis 10: GRADED, retention expired)
+    ('00000000-0000-4000-d000-0000000000a0'::UUID,
+     'Historical Analysis of Compiler Optimization Techniques',
+     'MASTER', 'ENGLISH',
+     '{"titles":{},"credits":{}}',
+     'Comprehensive analysis of compiler optimization strategies across different architectures.',
+     'This thesis examines historical compiler optimization techniques and their evolution.',
+     'GRADED', 'PRIVATE',
+     ARRAY['compilers', 'optimization'],
+     NULL,
+     NOW() - INTERVAL '2800 days', NOW() - INTERVAL '2600 days',
+     NOW() - INTERVAL '2800 days',
+     '00000000-0000-4000-a000-000000000001'::UUID),
+    -- OLD retry 2
+    ('00000000-0000-4000-d000-0000000000b0'::UUID,
+     'Historical Analysis of Compiler Optimization Techniques',
+     'MASTER', 'ENGLISH',
+     '{"titles":{},"credits":{}}',
+     'Comprehensive analysis of compiler optimization strategies across different architectures.',
+     'This thesis examines historical compiler optimization techniques and their evolution.',
+     'GRADED', 'PRIVATE',
+     ARRAY['compilers', 'optimization'],
+     NULL,
+     NOW() - INTERVAL '2800 days', NOW() - INTERVAL '2600 days',
+     NOW() - INTERVAL '2800 days',
+     '00000000-0000-4000-a000-000000000001'::UUID),
+    -- RECENT retry 1 (mirrors thesis 11: FINISHED, retention not expired)
+    ('00000000-0000-4000-d000-0000000000a1'::UUID,
+     'Machine Learning Approaches to Code Review Automation',
+     'MASTER', 'ENGLISH',
+     '{"titles":{},"credits":{}}',
+     'An evaluation of ML-based approaches for automating code review processes.',
+     'This thesis proposes a machine learning framework for automated code review.',
+     'FINISHED', 'PRIVATE',
+     ARRAY['machine learning', 'code review'],
+     NULL,
+     NOW() - INTERVAL '800 days', NOW() - INTERVAL '620 days',
+     NOW() - INTERVAL '800 days',
+     '00000000-0000-4000-a000-000000000001'::UUID),
+    -- RECENT retry 2
+    ('00000000-0000-4000-d000-0000000000b1'::UUID,
+     'Machine Learning Approaches to Code Review Automation',
+     'MASTER', 'ENGLISH',
+     '{"titles":{},"credits":{}}',
+     'An evaluation of ML-based approaches for automating code review processes.',
+     'This thesis proposes a machine learning framework for automated code review.',
+     'FINISHED', 'PRIVATE',
+     ARRAY['machine learning', 'code review'],
+     NULL,
+     NOW() - INTERVAL '800 days', NOW() - INTERVAL '620 days',
+     NOW() - INTERVAL '800 days',
+     '00000000-0000-4000-a000-000000000001'::UUID),
+    -- ACTIVE retry 1 (mirrors thesis 12: WRITING, retention not expired)
+    ('00000000-0000-4000-d000-0000000000a2'::UUID,
+     'Real-Time Anomaly Detection in Distributed Systems',
+     'BACHELOR', 'ENGLISH',
+     '{"titles":{},"credits":{}}',
+     'Exploring anomaly detection techniques for distributed microservice architectures.',
+     'This thesis designs a real-time anomaly detection system for distributed environments.',
+     'WRITING', 'PRIVATE',
+     ARRAY['anomaly detection', 'distributed systems'],
+     NULL,
+     NOW() - INTERVAL '30 days', NOW() + INTERVAL '150 days',
+     NOW() - INTERVAL '30 days',
+     '00000000-0000-4000-a000-000000000001'::UUID),
+    -- ACTIVE retry 2
+    ('00000000-0000-4000-d000-0000000000b2'::UUID,
+     'Real-Time Anomaly Detection in Distributed Systems',
+     'BACHELOR', 'ENGLISH',
+     '{"titles":{},"credits":{}}',
+     'Exploring anomaly detection techniques for distributed microservice architectures.',
+     'This thesis designs a real-time anomaly detection system for distributed environments.',
+     'WRITING', 'PRIVATE',
+     ARRAY['anomaly detection', 'distributed systems'],
+     NULL,
+     NOW() - INTERVAL '30 days', NOW() + INTERVAL '150 days',
+     NOW() - INTERVAL '30 days',
+     '00000000-0000-4000-a000-000000000001'::UUID)
+ON CONFLICT DO NOTHING;
+
 -- Thesis 10-12 comments
 INSERT INTO thesis_comments (comment_id, thesis_id, type, message, filename, upload_name,
                              created_at, created_by)
@@ -2100,4 +2193,43 @@ VALUES
      NOW() + INTERVAL '4 days', NOW() + INTERVAL '4 days' + INTERVAL '45 minutes',
      NULL, 'Room 01.07.023, Boltzmannstr. 3', NULL)
 ON CONFLICT DO NOTHING;
+
+-- ============================================================================
+-- 42. E2E COVERAGE GAP TEST DATA — ISSUE #754 COMMENT AUTO-SAVE
+-- ----------------------------------------------------------------------------
+-- Two NOT_ASSESSED applications dedicated to the application-review-comment
+-- regression test. Using students 2 and 3 (which only have older REJECTED /
+-- ACCEPTED apps in this seed) gives us deterministically unique sidebar rows
+-- for the supervisor on topic 1.
+-- ============================================================================
+INSERT INTO applications (application_id, user_id, topic_id, thesis_title, thesis_type, motivation,
+                          state, reject_reason, desired_start_date, comment, created_at, reviewed_at,
+                          research_group_id)
+VALUES
+    ('00000000-0000-4000-c000-000000000040'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'student2'),
+     '00000000-0000-4000-b000-000000000001'::UUID,
+     NULL, 'MASTER',
+     'Issue #754 regression: applicant A for comment auto-save test.',
+     'NOT_ASSESSED', NULL,
+     NOW() + INTERVAL '30 days', '',
+     NOW() - INTERVAL '2 days', NULL,
+     '00000000-0000-4000-a000-000000000001'::UUID),
+
+    ('00000000-0000-4000-c000-000000000041'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'student3'),
+     '00000000-0000-4000-b000-000000000001'::UUID,
+     NULL, 'MASTER',
+     'Issue #754 regression: applicant B for comment auto-save test.',
+     'NOT_ASSESSED', NULL,
+     NOW() + INTERVAL '30 days', '',
+     NOW() - INTERVAL '1 day', NULL,
+     '00000000-0000-4000-a000-000000000001'::UUID)
+ON CONFLICT DO NOTHING;
+
+UPDATE applications SET consent_timestamp = created_at
+WHERE application_id IN (
+    '00000000-0000-4000-c000-000000000040'::UUID,
+    '00000000-0000-4000-c000-000000000041'::UUID
+) AND consent_timestamp IS NULL;
 

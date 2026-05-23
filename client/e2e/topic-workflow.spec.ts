@@ -48,7 +48,8 @@ test.describe('Topic Workflow - Examiner creates a topic', () => {
     // Supervisor(s) - click to open, then select from results
     await searchAndSelectMultiSelect(page, 'Supervisor(s)', /supervisor/i)
 
-    // Research Group should be pre-filled for single-group examiners
+    // Research Group is rendered as a read-only field for non-admins and should
+    // be pre-filled with the examiner's own group.
     const researchGroupInput = page.getByRole('textbox', { name: 'Research Group' })
     await expect(researchGroupInput).not.toHaveValue('', { timeout: 5_000 })
 
@@ -92,7 +93,8 @@ test.describe('Topic Workflow - Examiner2 creates a topic for DSA group', () => 
     // Verify essential fields exist in the form
     await expect(dialog.getByLabel('Title')).toBeVisible()
 
-    // Research Group should be pre-filled with DSA for examiner2
+    // Research Group is rendered as a read-only field for non-admins and should
+    // be pre-filled with DSA for examiner2.
     const researchGroupInput = dialog.getByRole('textbox', { name: 'Research Group' })
     await expect(researchGroupInput).not.toHaveValue('', { timeout: 5_000 })
 

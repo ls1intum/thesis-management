@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { getApiResponseErrorMessage } from '../../../../requests/handler'
 import { doRequest } from '../../../../requests/request'
-import { IEmailTemplate } from '../../../../requests/responses/emailtemplate'
-import { PaginationResponse } from '../../../../requests/responses/pagination'
+import type { IEmailTemplate } from '../../../../requests/responses/emailtemplate'
+import type { PaginationResponse } from '../../../../requests/responses/pagination'
 import { showSimpleError } from '../../../../utils/notification'
 import { Box, Divider, Flex, Loader, Stack, TextInput, Title } from '@mantine/core'
 import { ResearchGroupSettingsCard } from '../ResearchGroupSettingsCard'
@@ -13,6 +13,21 @@ import { MagnifyingGlass } from '@phosphor-icons/react'
 interface EmailTemplatesOverviewProps {
   includeApplicationDataInEmail?: boolean
 }
+
+const TEMPLATE_CASES_TO_FETCH: string[] = [
+  'APPLICATION_CREATED_CHAIR',
+  'THESIS_PRESENTATION_INVITATION_UPDATED',
+  'THESIS_PRESENTATION_INVITATION',
+  'THESIS_PRESENTATION_INVITATION_CANCELLED',
+  'APPLICATION_REJECTED_TOPIC_REQUIREMENTS',
+  'APPLICATION_REJECTED_TOPIC_OUTDATED',
+  'APPLICATION_REJECTED',
+  'APPLICATION_REJECTED_TITLE_NOT_INTERESTING',
+  'APPLICATION_REJECTED_STUDENT_REQUIREMENTS',
+  'APPLICATION_REJECTED_TOPIC_FILLED',
+  'APPLICATION_ACCEPTED',
+  'APPLICATION_ACCEPTED_NO_SUPERVISOR',
+]
 
 const EmailTemplatesOverview = ({
   includeApplicationDataInEmail = true,
@@ -73,10 +88,12 @@ const EmailTemplatesOverview = ({
     const lowerKey = key.toLowerCase()
 
     return (
+      /* eslint-disable @typescript-eslint/prefer-nullish-coalescing -- `false` must fall through to the next check across optional fields */
       template.default?.description.toLowerCase().includes(lowerKey) ||
       template.default?.subject.toLowerCase().includes(lowerKey) ||
       template.default?.templateCase.toLowerCase().includes(lowerKey) ||
       category.toLowerCase().includes(lowerKey)
+      /* eslint-enable @typescript-eslint/prefer-nullish-coalescing */
     )
   }
 
@@ -107,21 +124,6 @@ const EmailTemplatesOverview = ({
     }
   }, [searchKey, emailTemplates])
 
-  const templateCasesToFetch: string[] = [
-    'APPLICATION_CREATED_CHAIR',
-    'THESIS_PRESENTATION_INVITATION_UPDATED',
-    'THESIS_PRESENTATION_INVITATION',
-    'THESIS_PRESENTATION_INVITATION_CANCELLED',
-    'APPLICATION_REJECTED_TOPIC_REQUIREMENTS',
-    'APPLICATION_REJECTED_TOPIC_OUTDATED',
-    'APPLICATION_REJECTED',
-    'APPLICATION_REJECTED_TITLE_NOT_INTERESTING',
-    'APPLICATION_REJECTED_STUDENT_REQUIREMENTS',
-    'APPLICATION_REJECTED_TOPIC_FILLED',
-    'APPLICATION_ACCEPTED',
-    'APPLICATION_ACCEPTED_NO_SUPERVISOR',
-  ]
-
   const { researchGroupId } = useParams<{
     researchGroupId: string
   }>()
@@ -135,7 +137,7 @@ const EmailTemplatesOverview = ({
         method: 'GET',
         requiresAuth: true,
         params: {
-          templateCases: templateCasesToFetch.join(','),
+          templateCases: TEMPLATE_CASES_TO_FETCH.join(','),
           page: 0,
           limit: -1,
           researchGroupId: researchGroupId,
@@ -182,7 +184,7 @@ const EmailTemplatesOverview = ({
         }
       },
     )
-  }, [])
+  }, [researchGroupId])
   return (
     <ResearchGroupSettingsCard
       title={'Email Templates'}

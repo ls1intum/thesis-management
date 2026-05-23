@@ -1,6 +1,6 @@
 import { Card, Group, Stack, Title, Text, Divider } from '@mantine/core'
 import { useHover } from '@mantine/hooks'
-import { IUpcomingInterview } from '../../../requests/responses/interview'
+import type { IUpcomingInterview } from '../../../requests/responses/interview'
 import { CustomAvatar } from '../../../components/CustomAvatar/CustomAvatar'
 import InterviewSlotInformation from '../../../components/InterviewSlotInformation/InterviewSlotInformation'
 

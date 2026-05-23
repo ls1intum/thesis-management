@@ -1,4 +1,5 @@
-import { ApplicationState, IApplication } from '../../requests/responses/application'
+import type { IApplication } from '../../requests/responses/application'
+import { ApplicationState } from '../../requests/responses/application'
 import { Button, Divider, Modal, Stack } from '@mantine/core'
 import React from 'react'
 import ApplicationReviewForm from '../ApplicationReviewForm/ApplicationReviewForm'
@@ -23,7 +24,7 @@ const ApplicationModal = (props: IApplicationModalProps) => {
   } = props
 
   return (
-    <Modal centered size='100vw' opened={!!application} onClose={onClose}>
+    <Modal centered size='100vw' opened={Boolean(application)} onClose={onClose}>
       <Stack>
         {application && (
           <ApplicationData

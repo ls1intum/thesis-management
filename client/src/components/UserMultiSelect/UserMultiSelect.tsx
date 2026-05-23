@@ -1,8 +1,8 @@
 import { MultiSelect } from '@mantine/core'
 import { useEffect, useState } from 'react'
 import { doRequest } from '../../requests/request'
-import { PaginationResponse } from '../../requests/responses/pagination'
-import { ILightUser } from '../../requests/responses/user'
+import type { PaginationResponse } from '../../requests/responses/pagination'
+import type { ILightUser } from '../../requests/responses/user'
 import { useDebouncedValue } from '@mantine/hooks'
 import type { GetInputPropsReturnType } from '@mantine/form'
 import { formatUser } from '../../utils/format'
@@ -56,6 +56,8 @@ export const UserMultiSelect = (props: IUserMultiSelectProps) => {
 
   const [debouncedSearchValue] = useDebouncedValue(searchValue, 500)
 
+  const groupsKey = groups.join(',')
+
   useEffect(() => {
     // Skip fetching when disabled or until the user interacts with the dropdown
     if (disabled || fetchVersion === 0) {
@@ -71,7 +73,7 @@ export const UserMultiSelect = (props: IUserMultiSelectProps) => {
         method: 'GET',
         requiresAuth: true,
         params: {
-          groups: groups.join(','),
+          groups: groupsKey,
           searchQuery: debouncedSearchValue,
           page: '0',
           limit: '100',
@@ -100,7 +102,8 @@ export const UserMultiSelect = (props: IUserMultiSelectProps) => {
         }
       },
     )
-  }, [groups.join(','), debouncedSearchValue, fetchVersion, disabled])
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- `selected` is read inside setData updater to preserve picks; refetching when selection changes would loop
+  }, [groupsKey, debouncedSearchValue, fetchVersion, disabled])
 
   // Combine fetched data with initialUsers so selected options are always visible,
   // even before the first API call

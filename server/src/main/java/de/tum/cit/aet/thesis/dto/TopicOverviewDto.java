@@ -19,6 +19,7 @@ public record TopicOverviewDto(
 	TopicState state,
 	Set<String> thesisTypes,
 	Instant createdAt,
+	Instant applicationDeadline,
 	List<MinimalUserDto> supervisors,
 	List<MinimalUserDto> examiners,
 	MinimalResearchGroupDto researchGroup
@@ -46,6 +47,7 @@ public record TopicOverviewDto(
 			topic.getTopicState(),
 			topic.getThesisTypes(),
 			topic.getCreatedAt(),
+			topic.getApplicationDeadline(),
 			supervisors,
 			examiners,
 			MinimalResearchGroupDto.fromResearchGroupEntity(topic.getResearchGroup())

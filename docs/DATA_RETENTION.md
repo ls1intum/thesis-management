@@ -30,8 +30,8 @@ When a user requests deletion of their data, the response depends on the legal b
 | Data Category | Deletion on Request? | Reason |
 |---|---|---|
 | **Voluntarily provided profile data** (gender, nationality, interests, skills, CV, examination report) | **Yes** — delete promptly | Based on consent (Art. 6(1)(a)). User can withdraw consent at any time (Art. 7(3)). |
-| **Rejected application data** | **Yes** — delete promptly | Based on legitimate interest (Art. 6(1)(f)). No overriding grounds to refuse once the user objects (Art. 17(1)(c)). The 1-year period is the maximum retention, not a mandatory minimum. |
-| **Thesis data, grades, assessments, accepted applications** | **No** — retain until 5-year period expires | Based on public task (Art. 6(1)(e)) and required by examination regulations. Exempt from right to erasure under Art. 17(3)(b) (legal obligation) and Art. 17(3)(d) (archiving in public interest). Inform the user of the reason and the expected deletion date. |
+| **Rejected application data** | **Yes** — delete promptly | Based on public task (Art. 6(1)(e) GDPR in conjunction with Art. 4(1) BayDSG). No overriding grounds to refuse once the user objects (Art. 17(1)(c)). The 1-year period is the maximum retention, not a mandatory minimum. |
+| **Thesis data, grades, assessments, accepted applications** | **No** — retain until 5-year period expires | Based on public task (Art. 6(1)(e) GDPR in conjunction with Art. 4(1) BayDSG) and required by examination regulations. Exempt from right to erasure under Art. 17(3)(b) (legal obligation) and Art. 17(3)(d) (archiving in public interest). Inform the user of the reason and the expected deletion date. |
 | **SSO-synced data** (name, email, university ID, matriculation number) | **Not meaningful** — re-synced on every login | This data is retrieved from Keycloak on each authentication. Deleting it would have no lasting effect. The practical approach is account deactivation, which prevents further logins and data syncing. |
 
 ### Process for Handling Deletion Requests

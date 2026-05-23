@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import SelectTopicStep from './components/SelectTopicStep/SelectTopicStep'
 import StudentInformationStep from './components/StudentInformationStep/StudentInformationStep'
 import MotivationStep from './components/MotivationStep/MotivationStep'
-import { IApplication } from '../../requests/responses/application'
+import type { IApplication } from '../../requests/responses/application'
 import { doRequest } from '../../requests/request'
 import { usePageTitle } from '../../hooks/theme'
 
@@ -47,7 +47,7 @@ const ReplaceApplicationPage = () => {
     }
 
     if (value === 0 && topicId) {
-      navigate(`/submit-application`, { replace: true })
+      void navigate(`/submit-application`, { replace: true })
     }
 
     window.scrollTo(0, 0)
@@ -61,7 +61,7 @@ const ReplaceApplicationPage = () => {
         <Stepper.Step label='First Step' description='Select Topic'>
           <SelectTopicStep
             onComplete={(x) => {
-              navigate(`/submit-application/${x?.topicId || ''}`, { replace: true })
+              void navigate(`/submit-application/${x?.topicId ?? ''}`, { replace: true })
               setStep(1)
             }}
           />
@@ -77,6 +77,7 @@ const ReplaceApplicationPage = () => {
         <Stepper.Step label='Final step' description='Submit your Application'>
           <MotivationStep
             onComplete={() => setStep(3)}
+            // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- useTopic may return `false` (error sentinel) which must also map to undefined
             topic={topic || undefined}
             application={application}
             consentToPrivacyPolicy={consentToPrivacyPolicy}

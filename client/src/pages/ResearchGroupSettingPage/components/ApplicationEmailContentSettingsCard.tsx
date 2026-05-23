@@ -4,7 +4,7 @@ import { doRequest } from '../../../requests/request'
 import { useParams } from 'react-router'
 import { showSimpleError } from '../../../utils/notification'
 import { getApiResponseErrorMessage } from '../../../requests/handler'
-import { IResearchGroupSettings } from '../../../requests/responses/researchGroupSettings'
+import type { IResearchGroupSettings } from '../../../requests/responses/researchGroupSettings'
 import { Info } from '@phosphor-icons/react'
 
 interface ApplicationEmailContentSettingsCardProps {

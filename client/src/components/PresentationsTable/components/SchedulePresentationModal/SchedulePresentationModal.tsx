@@ -1,4 +1,4 @@
-import {
+import type {
   IPublishedPresentation,
   IThesis,
   IThesisPresentation,
@@ -65,7 +65,12 @@ const SchedulePresentationModal = (props: ISchedulePresentationModalProps) => {
   }, [presentation?.presentationId])
 
   return (
-    <Modal title='Schedule Presentation' opened={!!presentation} onClose={() => onClose()} centered>
+    <Modal
+      title='Schedule Presentation'
+      opened={Boolean(presentation)}
+      onClose={() => onClose()}
+      centered
+    >
       <Stack>
         <Checkbox
           checked={inviteChairMembers}
@@ -112,7 +117,7 @@ const SchedulePresentationModal = (props: ISchedulePresentationModalProps) => {
         </Input.Wrapper>
         <Button
           fullWidth
-          disabled={emails.some((row) => isEmail('true')(row.value))}
+          disabled={emails.some((row) => Boolean(isEmail('true')(row.value)))}
           loading={scheduling}
           onClick={() => schedulePresentation()}
         >

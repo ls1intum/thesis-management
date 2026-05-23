@@ -7,63 +7,61 @@ import {
   Text,
   type ButtonProps,
 } from '@mantine/core'
-import { forwardRef, ReactNode, useState } from 'react'
+import type { ReactNode, Ref } from 'react'
+import { useState } from 'react'
 
 interface IConfirmationButtonProps extends ButtonProps {
   confirmationTitle: string
   confirmationText: string
   confirmationAdditionalInformation?: ReactNode
   onClick?: () => unknown
+  ref?: Ref<HTMLButtonElement>
 }
 
 const ConfirmationButton = createPolymorphicComponent<'button', IConfirmationButtonProps>(
-  forwardRef<HTMLButtonElement, IConfirmationButtonProps>(
-    (
-      {
-        confirmationTitle,
-        confirmationText,
-        confirmationAdditionalInformation: confirmationAdditionalInformation,
-        children,
-        onClick,
-        ...others
-      },
-      ref,
-    ) => {
-      const [opened, setOpened] = useState(false)
+  ({
+    confirmationTitle,
+    confirmationText,
+    confirmationAdditionalInformation: confirmationAdditionalInformation,
+    children,
+    onClick,
+    ref,
+    ...others
+  }: IConfirmationButtonProps) => {
+    const [opened, setOpened] = useState(false)
 
-      return (
-        <Button {...others} onClick={() => setOpened(true)} ref={ref}>
-          <Modal
-            opened={opened}
-            onClose={() => setOpened(false)}
-            title={confirmationTitle}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <Stack>
-              <Text>{confirmationText}</Text>
-              {confirmationAdditionalInformation && confirmationAdditionalInformation}
-              <Group grow>
-                <Button variant='outline' color='red' onClick={() => setOpened(false)}>
-                  Cancel
-                </Button>
-                <Button
-                  variant='outline'
-                  color='green'
-                  onClick={() => {
-                    setOpened(false)
-                    onClick?.()
-                  }}
-                >
-                  Confirm
-                </Button>
-              </Group>
-            </Stack>
-          </Modal>
-          {children}
-        </Button>
-      )
-    },
-  ),
+    return (
+      <Button {...others} onClick={() => setOpened(true)} ref={ref}>
+        <Modal
+          opened={opened}
+          onClose={() => setOpened(false)}
+          title={confirmationTitle}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <Stack>
+            <Text>{confirmationText}</Text>
+            {confirmationAdditionalInformation && confirmationAdditionalInformation}
+            <Group grow>
+              <Button variant='outline' color='red' onClick={() => setOpened(false)}>
+                Cancel
+              </Button>
+              <Button
+                variant='outline'
+                color='green'
+                onClick={() => {
+                  setOpened(false)
+                  onClick?.()
+                }}
+              >
+                Confirm
+              </Button>
+            </Group>
+          </Stack>
+        </Modal>
+        {children}
+      </Button>
+    )
+  },
 )
 
 ConfirmationButton.displayName = 'ConfirmationButton'

@@ -1,6 +1,6 @@
 services:
   db:
-    image: 'postgres:18.3-alpine'
+    image: 'postgres:18.4-alpine'
     container_name: thesis-management-db
     volumes:
       - ./db_backups:/db_backups
@@ -17,7 +17,7 @@ services:
       - "5444:5432"
 
   keycloak:
-    image: quay.io/keycloak/keycloak:26.5
+    image: quay.io/keycloak/keycloak:26.6
     container_name: thesis-management-keycloak
     environment:
       KC_BOOTSTRAP_ADMIN_USERNAME: admin
@@ -29,7 +29,7 @@ services:
       - "8181:8080"
 
   mailpit:
-    image: axllent/mailpit:v1.29
+    image: axllent/mailpit:v1.30
     container_name: thesis-management-mailpit
     ports:
       - "1125:1025"

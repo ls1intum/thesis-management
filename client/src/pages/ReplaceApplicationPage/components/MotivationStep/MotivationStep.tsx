@@ -1,4 +1,4 @@
-import { ITopic } from '../../../../requests/responses/topic'
+import type { ITopic } from '../../../../requests/responses/topic'
 import { isNotEmpty, useForm } from '@mantine/form'
 import { Accordion, Button, Select, Stack, TextInput } from '@mantine/core'
 import DocumentEditor from '../../../../components/DocumentEditor/DocumentEditor'
@@ -9,11 +9,11 @@ import { getApiResponseErrorMessage } from '../../../../requests/handler'
 import { DateInput } from '@mantine/dates'
 import { getHtmlTextLength } from '../../../../utils/validation'
 import { GLOBAL_CONFIG } from '../../../../config/global'
-import { IApplication } from '../../../../requests/responses/application'
+import type { IApplication } from '../../../../requests/responses/application'
 import TopicAccordionItem from '../../../../components/TopicAccordionItem/TopicAccordionItem'
 import { formatThesisType } from '../../../../utils/format'
-import { PaginationResponse } from '../../../../requests/responses/pagination'
-import { ILightResearchGroup } from '../../../../requests/responses/researchGroup'
+import type { PaginationResponse } from '../../../../requests/responses/pagination'
+import type { ILightResearchGroup } from '../../../../requests/responses/researchGroup'
 
 interface IMotivationStepProps {
   topic: ITopic | undefined
@@ -36,7 +36,7 @@ const MotivationStep = (props: IMotivationStepProps) => {
   const [researchGroups, setResearchGroups] = useState<PaginationResponse<ILightResearchGroup>>()
   const [loading, setLoading] = useState(false)
 
-  const mergedTopic = application?.topic || topic
+  const mergedTopic = application?.topic ?? topic
 
   const form = useForm<IMotivationStepForm>({
     mode: 'controlled',
@@ -77,6 +77,7 @@ const MotivationStep = (props: IMotivationStepProps) => {
         researchGroupId: application.researchGroup.id,
       })
     }
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- form is stable and `application` itself is captured via applicationId; rerunning on full application identity would loop
   }, [application?.applicationId])
 
   useEffect(() => {
@@ -129,6 +130,7 @@ const MotivationStep = (props: IMotivationStepProps) => {
         setLoading(false)
       },
     )
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- form is stable; only re-run when the merged topic changes
   }, [mergedTopic])
 
   const onSubmit = async (values: IMotivationStepForm) => {
@@ -183,7 +185,7 @@ const MotivationStep = (props: IMotivationStepProps) => {
           label='Research Group'
           required
           nothingFoundMessage={!loading ? 'Nothing found...' : 'Loading...'}
-          disabled={!!mergedTopic}
+          disabled={Boolean(mergedTopic)}
           data={(researchGroups?.content ?? []).map((researchGroup: ILightResearchGroup) => ({
             label: researchGroup.name,
             value: researchGroup.id,
@@ -193,7 +195,7 @@ const MotivationStep = (props: IMotivationStepProps) => {
         <Select
           label='Thesis Type'
           required={true}
-          data={(mergedTopic?.thesisTypes || Object.keys(GLOBAL_CONFIG.thesis_types)).map(
+          data={(mergedTopic?.thesisTypes ?? Object.keys(GLOBAL_CONFIG.thesis_types)).map(
             (thesisType) => ({
               label: formatThesisType(thesisType),
               value: thesisType,

@@ -1,4 +1,5 @@
-import { IThesis, ThesisState } from '../../../../requests/responses/thesis'
+import type { IThesis } from '../../../../requests/responses/thesis'
+import { ThesisState } from '../../../../requests/responses/thesis'
 import { useState } from 'react'
 import { Accordion, Button, Group, Stack, Text } from '@mantine/core'
 import SubmitFinalGradeModal from './components/SubmitFinalGradeModal/SubmitFinalGradeModal'
@@ -55,12 +56,12 @@ const ThesisFinalGradeSection = () => {
               <Text ta='center'>No grade added yet</Text>
             )}
             <Group ml='auto'>
-              {access.supervisor && !isThesisClosed(thesis) && (
+              {access.examiner && !isThesisClosed(thesis) && (
                 <Button ml='auto' onClick={() => setFinalGradeModal(true)}>
                   {thesis.grade ? 'Edit Final Grade' : 'Add Final Grade'}
                 </Button>
               )}
-              {access.supervisor && thesis.state === ThesisState.GRADED && (
+              {access.examiner && thesis.state === ThesisState.GRADED && (
                 <Button ml='auto' onClick={onThesisComplete} loading={submitting}>
                   Mark thesis as finished
                 </Button>

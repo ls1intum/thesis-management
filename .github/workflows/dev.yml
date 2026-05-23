@@ -28,6 +28,11 @@ jobs:
       - run-tests
       - run-e2e-tests
       - build-dev-container
+    # Skip the Dev deploy for renovate/dependabot PRs: the Dev environment
+    # requires reviewer approval, and these PRs sit in "waiting" until GitHub's
+    # 30-day approval window expires and auto-fails the job — adding red checks
+    # to every dependency PR. Human PRs still trigger the deploy as usual.
+    if: github.event_name == 'push' || (github.event.pull_request.user.login != 'renovate[bot]' && github.event.pull_request.user.login != 'dependabot[bot]')
     uses: ./.github/workflows/deploy_docker.yml
     secrets: inherit
     with:

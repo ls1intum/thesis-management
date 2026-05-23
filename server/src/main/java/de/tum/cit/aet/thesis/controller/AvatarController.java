@@ -81,9 +81,19 @@ public class AvatarController {
 			return ResponseEntity.notFound().build();
 		}
 
+		Resource resource;
+		try {
+			resource = uploadService.load(avatar);
+		} catch (RuntimeException e) {
+			// Avatar filename is set in the DB but the file is missing on disk
+			// (e.g. dev/test environments, restored DB without uploads). Treat as 404.
+			log.warn("Avatar file '{}' missing for user {}: {}", avatar, userId, e.getMessage());
+			return ResponseEntity.notFound().build();
+		}
+
 		return ResponseEntity.ok()
 				.contentType(MediaType.IMAGE_PNG)
 				.cacheControl(CacheControl.maxAge(1, TimeUnit.DAYS).cachePublic())
-				.body(uploadService.load(avatar));
+				.body(resource);
 	}
 }

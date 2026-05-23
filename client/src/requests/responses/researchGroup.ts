@@ -1,4 +1,4 @@
-import { ILightUser } from './user'
+import type { ILightUser } from './user'
 
 export interface IMinimalResearchGroup {
   id: string
@@ -14,4 +14,5 @@ export interface IResearchGroup extends ILightResearchGroup {
   description: string
   websiteUrl: string
   campus: string
+  memberCount?: number
 }

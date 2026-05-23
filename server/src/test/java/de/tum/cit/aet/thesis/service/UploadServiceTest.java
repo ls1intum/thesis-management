@@ -116,6 +116,30 @@ class UploadServiceTest {
 			String filename = uploadService.store(file, 1024 * 1024, UploadFileType.DOCUMENT);
 			assertThat(filename).endsWith(".docx");
 		}
+
+		@Test
+		void store_KeynoteAsDocument_Success() {
+			MockMultipartFile file = new MockMultipartFile(
+					"file", "presentation.key", "application/vnd.apple.keynote", new byte[]{1, 2, 3}
+			);
+
+			String filename = uploadService.store(file, 1024 * 1024, UploadFileType.DOCUMENT);
+			assertThat(filename).endsWith(".key");
+		}
+
+		@Test
+		void store_UnsupportedExtension_ErrorMessageListsAllowedExtensions() {
+			MockMultipartFile file = new MockMultipartFile(
+					"file", "archive.rar", "application/x-rar-compressed", new byte[]{1, 2, 3}
+			);
+
+			assertThatThrownBy(() -> uploadService.store(file, 1024 * 1024, UploadFileType.DOCUMENT))
+					.isInstanceOf(UploadException.class)
+					.hasMessageContaining("Unsupported file type .rar")
+					.hasMessageContaining(".pdf")
+					.hasMessageContaining(".pptx")
+					.hasMessageContaining(".key");
+		}
 	}
 
 	@Nested

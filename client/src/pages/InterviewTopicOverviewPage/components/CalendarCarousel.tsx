@@ -17,11 +17,11 @@ import {
   CheckIcon,
 } from '@mantine/core'
 import { CalendarDotsIcon, ClockUserIcon, CopyIcon, PlusIcon } from '@phosphor-icons/react'
-import { IInterviewSlot } from '../../../requests/responses/interview'
+import type { IInterviewSlot } from '../../../requests/responses/interview'
 import { DateHeaderItem } from './DateHeaderItem'
 import SlotItem from './SlotItem'
 import { useIsSmallerBreakpoint } from '../../../hooks/theme'
-import { useEffect, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import AddSlotsModal from './AddSlotsModal'
 import { useInterviewProcessContext } from '../../../providers/InterviewProcessProvider/hooks'
 import { GLOBAL_CONFIG } from '../../../config/global'
@@ -39,6 +39,14 @@ const CalendarCarousel = ({ disabled = false }: ICalendarCarouselProps) => {
 
   const { interviewSlots, interviewSlotsLoading } = useInterviewProcessContext()
 
+  const isSmaller = useIsSmallerBreakpoint('md')
+
+  const isMobile = useIsSmallerBreakpoint('sm')
+  const isMediumScreen = useIsSmallerBreakpoint('lg')
+  const isLargeScreen = useIsSmallerBreakpoint('3xl')
+
+  const rowAmount = isSmaller ? 2 : 3
+
   useEffect(() => {
     let slideIndex = 0
     const firstSlideIndexForDateTemp: Record<string, number> = {}
@@ -49,7 +57,7 @@ const CalendarCarousel = ({ disabled = false }: ICalendarCarouselProps) => {
     })
     setFirstSlideIndexForDate(firstSlideIndexForDateTemp)
     setTotalSlides(slideIndex)
-  }, [interviewSlots])
+  }, [interviewSlots, rowAmount])
 
   const dateRowDisabled = (rowKey: string, chunkIndex: number) => {
     const index = firstSlideIndexForDate[rowKey] + chunkIndex
@@ -71,15 +79,7 @@ const CalendarCarousel = ({ disabled = false }: ICalendarCarouselProps) => {
     return index < visibleSlidesStart || index >= visibleSlidesEnd
   }
 
-  const isSmaller = useIsSmallerBreakpoint('md')
-
-  const isMobile = useIsSmallerBreakpoint('sm')
-  const isMediumScreen = useIsSmallerBreakpoint('lg')
-  const isLargeScreen = useIsSmallerBreakpoint('3xl')
-
   const [slotModalOpen, setSlotModalOpen] = useState(false)
-
-  const rowAmount = isSmaller ? 2 : 3
 
   const getSlideDisplayAmount = () => {
     const slideAmount = isMobile ? 1 : isMediumScreen ? 2 : isLargeScreen ? 3 : 4
@@ -216,8 +216,9 @@ const CalendarCarousel = ({ disabled = false }: ICalendarCarouselProps) => {
               }
 
               return (
-                <>
+                <Fragment key={date}>
                   {chunks.map((chunk, chunkIndex) => (
+                    // eslint-disable-next-line @eslint-react/no-array-index-key -- chunks are positional slices of a sorted slot array; their position is the identity
                     <Carousel.Slide key={`${date}-${chunkIndex}`}>
                       <Stack gap={'0.5rem'}>
                         {chunkIndex === 0 ? (
@@ -268,7 +269,7 @@ const CalendarCarousel = ({ disabled = false }: ICalendarCarouselProps) => {
                       </Stack>
                     </Carousel.Slide>
                   ))}
-                </>
+                </Fragment>
               )
             })}
         </Carousel>

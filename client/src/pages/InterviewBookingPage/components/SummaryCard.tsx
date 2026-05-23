@@ -1,4 +1,4 @@
-import { Card, Group, Stack, Title, useMantineColorScheme, Text } from '@mantine/core'
+import { Card, Group, Stack, Title, useComputedColorScheme, Text } from '@mantine/core'
 
 interface ISummaryCardProps {
   title: string
@@ -10,12 +10,12 @@ interface ISummaryCardProps {
 }
 
 const SummaryCard = ({ title, sections }: ISummaryCardProps) => {
-  const colorScheme = useMantineColorScheme()
+  const colorScheme = useComputedColorScheme('light')
 
   return (
     <Card withBorder radius='md' p={'0.75rem'}>
       <Stack>
-        <Title order={6} c={colorScheme.colorScheme === 'dark' ? 'dark.2' : 'gray.8'}>
+        <Title order={6} c={colorScheme === 'dark' ? 'dark.2' : 'gray.8'}>
           {title}
         </Title>
         {sections?.map((section) => (

@@ -1,9 +1,10 @@
-import { ILightUser, IMinimalUser } from '../requests/responses/user'
-import { IThesis, ThesisState } from '../requests/responses/thesis'
-import { ApplicationState, IApplication } from '../requests/responses/application'
+import type { ILightUser, IMinimalUser } from '../requests/responses/user'
+import type { IThesis } from '../requests/responses/thesis'
+import { ThesisState } from '../requests/responses/thesis'
+import type { IApplication } from '../requests/responses/application'
+import { ApplicationState } from '../requests/responses/application'
 import { GLOBAL_CONFIG } from '../config/global'
 import { InterviewState } from '../requests/responses/interview'
-import { useMantineColorScheme } from '@mantine/core'
 import { TopicState } from '../requests/responses/topic'
 
 function pad2(value: number): string {
@@ -288,9 +289,7 @@ export function createInterviewStageLabel(score: number): string {
   }
 }
 
-export function getInterviewStateColor(state: InterviewState): string {
-  const colorScheme = useMantineColorScheme()
-
+export function getInterviewStateColor(state: InterviewState, isDark: boolean): string {
   switch (state) {
     case InterviewState.UNCONTACTED:
       return 'primary.1'
@@ -299,7 +298,7 @@ export function getInterviewStateColor(state: InterviewState): string {
     case InterviewState.SCHEDULED:
       return 'primary.5'
     case InterviewState.COMPLETED:
-      return colorScheme.colorScheme === 'dark' ? 'primary.8' : 'primary.10'
+      return isDark ? 'primary.8' : 'primary.10'
     default:
       return 'gray'
   }
@@ -307,6 +306,25 @@ export function getInterviewStateColor(state: InterviewState): string {
 
 export function formateStudyProgram(program: string) {
   return GLOBAL_CONFIG.study_programs[program] ?? program
+}
+
+/**
+ * Ensures a user-supplied link target has an explicit scheme so it resolves as
+ * an absolute URL rather than as a relative path under the current page.
+ *
+ * Preserves any existing scheme (https:, http:, mailto:, tel:, ftp:, …) and
+ * leaves anchor-only / absolute-path hrefs untouched. Used by the rich-text
+ * editor when the user types a schemeless URL like "example.com" into the
+ * link popover. Regression coverage for #802.
+ */
+export function ensureAbsoluteLinkHref(href: string): string {
+  if (!href) return href
+  const trimmed = href.trim()
+  if (!trimmed) return trimmed
+  if (trimmed.startsWith('#') || trimmed.startsWith('/')) return trimmed
+  // Any URI scheme: lowercase letter followed by letters/digits/+/-/'.', then ':'.
+  if (/^[a-z][a-z0-9+.-]*:/i.test(trimmed)) return trimmed
+  return `https://${trimmed}`
 }
 
 export function normalizeUrl(url: string): string {

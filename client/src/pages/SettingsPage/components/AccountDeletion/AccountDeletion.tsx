@@ -47,7 +47,7 @@ const AccountDeletion = () => {
         setLoading(false)
       }
     }
-    fetchPreview()
+    void fetchPreview()
   }, [])
 
   const onDelete = async () => {
@@ -60,7 +60,7 @@ const AccountDeletion = () => {
       })
       if (response.ok) {
         showSimpleSuccess(response.data.message)
-        navigate('/logout')
+        void navigate('/logout')
       } else {
         showSimpleError(getApiResponseErrorMessage(response))
       }
@@ -151,7 +151,7 @@ const AccountDeletion = () => {
             >
               Cancel
             </Button>
-            <Button color='red' disabled={confirmName !== fullName} onClick={onDelete}>
+            <Button color='red' disabled={confirmName !== fullName} onClick={() => void onDelete()}>
               Yes, Delete My Account
             </Button>
           </Group>

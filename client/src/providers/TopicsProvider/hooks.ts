@@ -1,8 +1,8 @@
-import { useContext } from 'react'
+import { use } from 'react'
 import { TopicsContext } from './context'
 
 export function useTopicsContext() {
-  const data = useContext(TopicsContext)
+  const data = use(TopicsContext)
 
   if (!data) {
     throw new Error('TopicsContext not initialized')

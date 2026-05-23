@@ -15,7 +15,7 @@ test.describe('Thesis Configuration - User search filters by role', () => {
     })
 
     // Open the Configuration accordion (retry under heavy parallel load)
-    const studentTextbox = page.getByRole('textbox', { name: 'Student(s)' })
+    const studentTextbox = page.getByRole('combobox', { name: 'Student(s)' })
     await expandAccordion(page, 'Configuration', studentTextbox)
 
     const studentListbox = page.getByRole('listbox', { name: 'Student(s)' })
@@ -114,14 +114,14 @@ test.describe('Thesis Configuration - Lazy user fetching', () => {
       await expandAccordion(
         page,
         'Configuration',
-        page.getByRole('textbox', { name: 'Student(s)' }),
+        page.getByRole('combobox', { name: 'Student(s)' }),
       )
 
       // No /v2/users requests should have been made yet (lazy fetching)
       expect(userRequests).toHaveLength(0)
 
       // Now open the Student(s) dropdown — this should trigger exactly one fetch
-      const studentTextbox = page.getByRole('textbox', { name: 'Student(s)' })
+      const studentTextbox = page.getByRole('combobox', { name: 'Student(s)' })
       const studentListbox = page.getByRole('listbox', { name: 'Student(s)' })
 
       await studentTextbox.click({ force: true })

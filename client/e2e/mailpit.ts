@@ -204,6 +204,42 @@ export async function waitForNewMessages(
 }
 
 /**
+ * Wait for a new message to a specific recipient with the given subject.
+ * Use this when an action triggers multiple emails to the same recipient
+ * and you need to wait for a specific one (otherwise waitForNewMessages
+ * may return early after the first email arrives).
+ */
+export async function waitForNewMessageBySubject(
+  recipient: string,
+  beforeIds: Set<string>,
+  subject: string,
+  timeoutMs: number = 30_000,
+): Promise<MailpitMessage> {
+  const deadline = Date.now() + timeoutMs
+  while (Date.now() < deadline) {
+    const result = await searchByRecipient(recipient)
+    const match = result.messages.find((m) => !beforeIds.has(m.ID) && m.Subject === subject)
+    if (match) {
+      return getFullMessage(match.ID)
+    }
+    await new Promise((resolve) => setTimeout(resolve, 1_000))
+  }
+  const result = await searchByRecipient(recipient)
+  const newMatches = result.messages.filter((m) => !beforeIds.has(m.ID))
+  const match = newMatches.find((m) => m.Subject === subject)
+  if (match) {
+    return getFullMessage(match.ID)
+  }
+  expect(
+    newMatches.map((m) => m.Subject),
+    `Expected new email to ${recipient} with subject "${subject}"`,
+  ).toContain(subject)
+  // Unreachable: the toContain assertion above always throws when the subject
+  // is missing, and we returned early above when it was present.
+  throw new Error('unreachable')
+}
+
+/**
  * Wait for new messages (any recipient) that were not in the snapshot.
  * Returns the full messages (with decoded body and attachments).
  */

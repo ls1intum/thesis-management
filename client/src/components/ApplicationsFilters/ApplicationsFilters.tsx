@@ -1,4 +1,4 @@
-import { Grid, MultiSelect, Select, TextInput } from '@mantine/core'
+import { Grid, MultiSelect, Select, Switch, TextInput } from '@mantine/core'
 import { MagnifyingGlass } from '@phosphor-icons/react'
 import { ApplicationState } from '../../requests/responses/application'
 import { useApplicationsContext } from '../../providers/ApplicationsProvider/hooks'
@@ -16,12 +16,12 @@ const ApplicationsFilters = (props: IApplicationsFiltersProps) => {
   const { topics, filters, setFilters, sort, setSort } = useApplicationsContext()
 
   return (
-    <Grid gutter='sm'>
+    <Grid gap='sm'>
       <Grid.Col span={12}>
         <TextInput
           placeholder='Search applications...'
           leftSection={<MagnifyingGlass size={16} />}
-          value={filters.search || ''}
+          value={filters.search ?? ''}
           onChange={(e) => {
             setFilters((prev) => ({ ...prev, search: e.currentTarget.value }))
           }}
@@ -32,19 +32,19 @@ const ApplicationsFilters = (props: IApplicationsFiltersProps) => {
           hidePickedOptions
           label='Topic'
           placeholder='Open Topics'
-          data={[
-            {
-              value: 'NO_TOPIC',
-              label: 'Suggested Topic',
-            },
-            ...(topics
+          // The legacy "Suggested Topic" sentinel option was removed in
+          // favor of the explicit "Include suggested topics" Switch below.
+          // It overlapped with the new toggle and produced an empty list
+          // when both were combined unexpectedly.
+          data={
+            topics
               ? Object.values(topics).map((topic) => ({
                   value: topic.topicId,
                   label: topic.title,
                 }))
-              : []),
-          ]}
-          value={filters.topics || []}
+              : []
+          }
+          value={filters.topics ?? []}
           onChange={(value) => {
             setFilters((prev) => ({
               ...prev,
@@ -63,7 +63,7 @@ const ApplicationsFilters = (props: IApplicationsFiltersProps) => {
             value: key,
             label: formatThesisType(key),
           }))}
-          value={filters.types || []}
+          value={filters.types ?? []}
           onChange={(value) => {
             setFilters((prev) => ({
               ...prev,
@@ -82,11 +82,11 @@ const ApplicationsFilters = (props: IApplicationsFiltersProps) => {
             value: value,
             label: formatApplicationState(value),
           }))}
-          value={filters.states || []}
+          value={filters.states ?? []}
           onChange={(value) => {
             setFilters((prev) => ({
               ...prev,
-              states: value as ApplicationState[],
+              states: value,
             }))
           }}
           searchable
@@ -102,9 +102,22 @@ const ApplicationsFilters = (props: IApplicationsFiltersProps) => {
           value={sort.column + ':' + sort.direction}
           onChange={(x) =>
             setSort({
-              column: (x?.split(':')[0] || 'createdAt') as any,
-              direction: (x?.split(':')[1] || 'asc') as any,
+              column: (x?.split(':')[0] ?? 'createdAt') as 'createdAt' | 'updatedAt',
+              direction: (x?.split(':')[1] ?? 'asc') as 'asc' | 'desc',
             })
+          }
+        />
+      </Grid.Col>
+      <Grid.Col span={12}>
+        <Switch
+          label='Include suggested topics'
+          description='Show applications without a specific topic (the student proposed their own thesis title)'
+          checked={filters.includeSuggestedTopics !== false}
+          onChange={(e) =>
+            setFilters((prev) => ({
+              ...prev,
+              includeSuggestedTopics: e.currentTarget.checked,
+            }))
           }
         />
       </Grid.Col>

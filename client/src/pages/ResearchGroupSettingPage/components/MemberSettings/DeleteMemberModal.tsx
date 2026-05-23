@@ -1,5 +1,5 @@
 import { Modal, Text, Button, Group, Alert, Stack } from '@mantine/core'
-import { ILightUser } from '../../../../requests/responses/user'
+import type { ILightUser } from '../../../../requests/responses/user'
 import { WarningCircleIcon } from '@phosphor-icons/react'
 
 type IDeleteMemberModalProps = {

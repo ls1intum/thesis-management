@@ -1,4 +1,4 @@
-import { IThesis } from '../../../../../../requests/responses/thesis'
+import type { IThesis } from '../../../../../../requests/responses/thesis'
 import { Alert, Button, Modal, Stack, Text, TextInput } from '@mantine/core'
 import { doRequest } from '../../../../../../requests/request'
 import { useEffect, useState } from 'react'
@@ -26,8 +26,8 @@ const SubmitFinalGradeModal = (props: ISubmitFinalGradeModalProps) => {
   const [visibility, setVisibility] = useState(thesis.visibility)
 
   useEffect(() => {
-    setFinalGrade(thesis.grade?.finalGrade || '')
-    setFeedback(thesis.grade?.feedback || '')
+    setFinalGrade(thesis.grade?.finalGrade ?? '')
+    setFeedback(thesis.grade?.feedback ?? '')
     setVisibility(thesis.visibility)
   }, [thesis])
 

@@ -1,9 +1,9 @@
-import { useContext } from 'react'
+import { use } from 'react'
 import { ApplicationsContext } from './context'
-import { IApplication } from '../../requests/responses/application'
+import type { IApplication } from '../../requests/responses/application'
 
 export function useApplicationsContext() {
-  const data = useContext(ApplicationsContext)
+  const data = use(ApplicationsContext)
 
   if (!data) {
     throw new Error('ApplicationsContext not initialized')
@@ -13,7 +13,7 @@ export function useApplicationsContext() {
 }
 
 export function useApplicationsContextUpdater(): (application: IApplication) => unknown {
-  const data = useContext(ApplicationsContext)
+  const data = use(ApplicationsContext)
 
   if (!data) {
     return () => undefined

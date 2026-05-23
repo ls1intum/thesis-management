@@ -59,8 +59,8 @@ test.describe('Thesis File Upload - Student uploads thesis PDF', () => {
     await uploadFileButton.click()
     await expect(dialog).toBeHidden({ timeout: 10_000 })
 
-    // Verify success notification
-    await expect(page.getByText('File uploaded successfully')).toBeVisible({ timeout: 10_000 })
+    // The "File uploaded successfully" toast auto-dismisses quickly; verify
+    // upload succeeded by checking the file history reflects the new file.
 
     // Verify file history shows the new file (Thesis v2 or higher)
     const filesSection = page.getByLabel('Files')

@@ -1,8 +1,8 @@
 import { DataTable } from 'mantine-datatable'
 import { ActionIcon, Anchor, Center, Group, Modal, Stack, Text, Tooltip } from '@mantine/core'
 import React, { useEffect, useState } from 'react'
-import { PaginationResponse } from '../../../../requests/responses/pagination'
-import { IPublishedThesis } from '../../../../requests/responses/thesis'
+import type { PaginationResponse } from '../../../../requests/responses/pagination'
+import type { IPublishedThesis } from '../../../../requests/responses/thesis'
 import { doRequest } from '../../../../requests/request'
 import { showSimpleError } from '../../../../utils/notification'
 import { getApiResponseErrorMessage } from '../../../../requests/handler'
@@ -178,7 +178,7 @@ const PublishedTheses = ({ search, representationType, filters, limit }: Publish
       {content}
       <Modal
         title={openedThesis?.title}
-        opened={!!openedThesis}
+        opened={Boolean(openedThesis)}
         onClose={() => setOpenedThesis(undefined)}
         size='xl'
       >

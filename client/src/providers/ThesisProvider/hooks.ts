@@ -1,11 +1,11 @@
-import { useContext, useMemo, useState } from 'react'
+import { use, useMemo, useState } from 'react'
 import { ThesisContext } from './context'
-import { IPublishedThesis, IThesis } from '../../requests/responses/thesis'
+import type { IPublishedThesis, IThesis } from '../../requests/responses/thesis'
 import { showSimpleError, showSimpleSuccess } from '../../utils/notification'
 import { useUser } from '../../hooks/authentication'
 
 export function useThesisContext() {
-  const data = useContext(ThesisContext)
+  const data = use(ThesisContext)
 
   if (!data) {
     throw new Error('ThesisContext not initialized')
@@ -25,7 +25,7 @@ export function useLoadedThesisContext() {
 }
 
 export function useThesisContextUpdater() {
-  const data = useContext(ThesisContext)
+  const data = use(ThesisContext)
 
   if (!data) {
     return () => undefined
@@ -34,6 +34,7 @@ export function useThesisContextUpdater() {
   return data.updateThesis
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- generic constraint must accept any function shape so callers can pass functions with arbitrary parameter types; narrowing to `unknown[]` would reject all real callers
 export function useThesisUpdateAction<T extends (...args: any[]) => any>(
   fn: (...args: Parameters<T>) => PromiseLike<IThesis>,
   successMessage?: string,

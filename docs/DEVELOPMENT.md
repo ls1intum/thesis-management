@@ -1,5 +1,16 @@
 # Development Setup
 
+## Showcase / one-command demo
+
+If you only want to **try** the app — no local toolchain, no Gradle, no pnpm — there is a separate compose file that pulls the published container images and starts everything (data service, Keycloak, Mailpit, application server, web app) with seeded test data:
+
+```bash
+docker compose -f docker-compose.showcase.yml up -d
+# open http://localhost:3100 and log in as admin / admin
+```
+
+Mailpit is at <http://localhost:8125>. The showcase uses default secrets and the unhardened local-dev Keycloak realm — fine for demos, not for anything internet-facing. Use the standard flow below if you intend to make code changes.
+
 ## Quick Start
 
 Run these commands from the project root to get the full app running locally:
@@ -18,11 +29,13 @@ cd server
 
 # 4. Start the client (in a separate terminal)
 cd client
-npm install
-npm run dev
+pnpm install
+pnpm dev
 ```
 
 The application is now available at http://localhost:3100. Log in with any [test user](#test-users-and-roles) (password = username).
+
+> The client uses **pnpm** (pinned via the `packageManager` field in `client/package.json`). Run `corepack enable` once after installing Node.js to make `pnpm` available — Corepack ships with Node ≥16.10 and will activate the pinned version automatically.
 
 ### Local Dev Ports
 
@@ -52,6 +65,65 @@ docker compose up keycloak -d
 ```
 
 The Keycloak admin console is available at http://localhost:8181 (`admin` / `admin`). See the [Test Users and Roles](#test-users-and-roles) table below for the pre-configured users (password = username).
+
+### Two-Client Architecture
+
+The realm defines **two** OIDC clients with very different roles. Understanding the split is essential when troubleshooting auth issues or provisioning a new realm by hand.
+
+| Client ID                           | Type                                        | Used by                                                                                       | Why it exists                                                                                                                                                                                                                                  |
+|-------------------------------------|---------------------------------------------|-----------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `thesis-management-app`             | **Public** client (no secret), PKCE         | • React SPA → user login (Authorization Code + PKCE)<br>• Spring Boot server → JWT validation | Issues the access tokens that end users carry. The SPA cannot keep a secret, so it must be a public client. The Spring Boot resource server validates these tokens against the realm's JWK set — it does not own the client itself.            |
+| `thesis-management-service-client`  | **Confidential** client (secret), service account | Spring Boot server → Keycloak Admin API calls                                            | Lets the Spring Boot server authenticate **as itself** (Client Credentials grant) to call the Keycloak Admin API — currently only `AccessManagementService.getUserByUsername` / `getAllUsers`, used to search identity-provider users in admin UI flows. |
+
+Concretely:
+
+1. A user signs in via the SPA. The SPA performs OIDC Authorization Code + PKCE against `thesis-management-app` and receives a user JWT.
+2. The SPA attaches that JWT to every server call. The Spring Boot server's Spring Security resource server validates it via the realm's `jwk-set-uri` (configured in `application.yml`).
+3. When the Spring Boot server needs to query Keycloak as an admin (e.g. "search users by name to add to a research group"), it does **not** reuse the user's token. Instead, `AccessManagementService.getAuthenticationHeaders` performs a Client Credentials grant against `thesis-management-service-client` using its secret (`KEYCLOAK_SERVICE_CLIENT_SECRET`), caches the resulting access token, and uses it as a Bearer credential against `/admin/realms/{realm}/...`.
+4. The service client must have the `view-users` / `query-users` role on the `realm-management` client to perform these lookups (already configured in the imported realm).
+
+> **Authorization, not authentication.** Neither client is the source of truth for application roles. Spring Security authorities are loaded from the `user_groups` database table on every request (`JwtAuthConverter`). The Keycloak realm roles (`admin`, `advisor`, `group-admin`, `supervisor`, `student`) are only meaningful for the local dev seed and the imported realm JSON — production deployments may use a completely different role schema in Keycloak. See the [Authorization Architecture](#authorization-architecture-db-as-single-source-of-truth) section below.
+
+### Setting up the realm manually (without importing the JSON)
+
+The realm JSON is the simplest path. If you need to bootstrap a production realm by hand (e.g. on a managed Keycloak you cannot import to), perform these steps in the Keycloak admin console:
+
+1. **Create the realm**
+   - *Realms → Create realm* → name `thesis-management` (or any value — match `KEYCLOAK_REALM_NAME`).
+
+2. **Create the user-facing client** (`thesis-management-app`)
+   - *Clients → Create client*:
+     - Client type: **OpenID Connect**
+     - Client ID: `thesis-management-app` (match `KEYCLOAK_CLIENT_ID`)
+   - Capability config: **Standard flow** ✓, **Direct access grants** ✗ (off — the realm JSON has this on for historical reasons; the SPA and the E2E tests both use the Authorization Code flow via the Keycloak login page, not ROPC), **Service accounts** ✗, **Client authentication** **off** (= public client).
+   - Login settings:
+     - Valid redirect URIs: `https://<client-host>/*` (and `http://localhost:3100/*` for local dev).
+     - Web origins: `https://<client-host>` (or `+` to mirror redirect URIs).
+     - Post-logout redirect URIs: same as redirect URIs.
+   - Advanced → PKCE Code Challenge Method: `S256`.
+
+3. **Create the service-account client** (`thesis-management-service-client`)
+   - *Clients → Create client*:
+     - Client ID: `thesis-management-service-client` (match `KEYCLOAK_SERVICE_CLIENT_ID`)
+   - Capability config: **Client authentication** **on** (= confidential), **Service accounts** ✓, **Standard flow** ✗ (not needed; the realm JSON has it on for historical reasons but the Spring Boot server only uses Client Credentials).
+   - Credentials tab → copy the generated **Client secret** into `KEYCLOAK_SERVICE_CLIENT_SECRET`.
+   - Service accounts roles → assign these roles from the `realm-management` client: `view-users`, `query-users`. (Optional: `view-clients` for richer error messages.)
+
+4. **Create realm-level / client-level roles**
+   The application reads roles only from the database, but the dev seed and any "promote a user" flow against a fresh Keycloak still expect these roles to exist on `thesis-management-app`:
+   - On `thesis-management-app` → *Roles → Create role*: `admin`, `advisor`, `supervisor`, `student`, `group-admin`. None of them need composite roles.
+
+5. **Create the default group** (optional but recommended)
+   - *Groups → Create group*: `thesis-students` is referenced in the imported realm to bulk-assign the `student` realm role to new sign-ups. Not required if your identity provider assigns the role another way.
+
+6. **(Optional) Add a `matrikelnr` user attribute mapper**
+   The Spring Boot server reads `matrikelnr` from the JWT to populate matriculation numbers (`AuthenticationService.updateAuthenticatedUser`). On the `thesis-management-app` client → *Client scopes → thesis-management-app-dedicated → Add mapper → User Attribute*: attribute `matrikelnr`, token claim name `matrikelnr`, claim JSON type `String`, add to ID + access + userinfo tokens. Without this mapper, the field stays empty until the user fills it in.
+
+7. **Verify**
+   - The realm's discovery document should be reachable: `curl https://<keycloak-host>/realms/thesis-management/.well-known/openid-configuration`.
+   - Client Credentials grant should work: `curl -d "grant_type=client_credentials&client_id=thesis-management-service-client&client_secret=<secret>" https://<keycloak-host>/realms/thesis-management/protocol/openid-connect/token`.
+
+> **All Keycloak users must have an email address.** Every notification, application confirmation, proposal feedback, presentation invitation, and final-grade email is sent to the email claim from the JWT (synced into the `users.email` column on first login). A user without an email can sign in and use the UI, but they will silently miss every transactional email — including being added as a BCC recipient when they are a research group head. When provisioning users in a production Keycloak realm, make the email attribute mandatory and verified.
 
 ## PostgreSQL Database
 
@@ -98,6 +170,8 @@ The seed data script (`server/src/main/resources/db/changelog/manual/seed_dev_te
 To activate the dev profile, either:
 - Set the environment variable `SPRING_PROFILES_ACTIVE=dev`
 - Or pass `--spring.profiles.active=dev` when starting the server
+
+> **Production safety:** The dev seed changelog is annotated with `context="dev"`. The Liquibase runtime context is controlled by the `LIQUIBASE_CONTEXTS` environment variable, which defaults to `prod` in `application.yml`. As long as you do **not** set `LIQUIBASE_CONTEXTS=dev` and do **not** run the server with `SPRING_PROFILES_ACTIVE=dev` (which overrides the context to `dev` via `application-dev.yml`), the dev seed data will never run on a production deployment. See [`CONFIGURATION.md`](CONFIGURATION.md) for the variable reference.
 
 #### Test Users and Roles
 
@@ -292,8 +366,8 @@ const types = topic.thesisTypes  // may be undefined
 
 To start the client application for local development, navigate to the `client/` folder and execute the following commands from the terminal:
 ```
-npm install
-npm run dev
+pnpm install
+pnpm dev
 ```
 
 Client is served at http://localhost:3100.
@@ -308,8 +382,8 @@ The E2E tests require all dev services to be running:
 
 1. **PostgreSQL + Keycloak + Mailpit**: `docker compose up -d`
 2. **Server** (dev profile with seed data): `cd server && ./gradlew bootRun --args='--spring.profiles.active=dev'`
-3. **Client** (dev server): `cd client && npm run dev`
-4. **Install Playwright browsers** (first time only): `cd client && npx playwright install chromium`
+3. **Client** (dev server): `cd client && pnpm dev`
+4. **Install Playwright browsers** (first time only): `cd client && pnpm exec playwright install chromium`
 
 ### Running E2E Tests
 
@@ -337,20 +411,20 @@ The `execute-e2e-local.sh` script in the project root starts all required servic
 cd client
 
 # Headless
-npm run e2e
+pnpm e2e
 
 # Interactive Playwright UI
-npm run e2e:ui
+pnpm e2e:ui
 
 # Headed browser
-npm run e2e:headed
+pnpm e2e:headed
 ```
 
 #### Run a single test file
 
 ```bash
 cd client
-npx playwright test e2e/auth.spec.ts
+pnpm exec playwright test e2e/auth.spec.ts
 ```
 
 ### Test Structure
@@ -467,7 +541,7 @@ The CI environment mirrors the local setup: only infrastructure runs in containe
 | Mailpit | GitHub Actions service container |
 | Keycloak | `docker run` (service containers don't support custom entrypoint commands like `start-dev`), realm imported via REST API |
 | Server | `./gradlew bootRun` as a background process on the runner |
-| Client | `npx webpack serve` as a background process on the runner |
+| Client | `pnpm build` produces a static bundle, served by `pnpm dlx serve@14` as a background process on the runner |
 
 CI-specific Playwright settings (controlled by `CI=1`): 2 workers (vs 8 locally), 2 retries (vs 1), no automatic `webServer` startup, and the `github` reporter is added alongside the HTML report.
 
@@ -480,7 +554,8 @@ An alternative approach is to run the server and client in Docker containers dur
 | Aspect | E2E (current) | Production |
 |--------|---------------|------------|
 | Server | `gradlew bootRun` (dev profile, full JDK) | Packaged JAR in `zulu-openjdk:25-jre` |
-| Client | Webpack dev server (HMR, unminified JS) | Static build served by nginx |
+| Client | `pnpm build` output served by `pnpm dlx serve@14 -s` (static, minified, SPA-fallback) | Same static build served by nginx |
+| Runtime env injection | `node generate-runtime-env.js` runs against the build output before serving | Same script runs in the nginx image's entrypoint |
 | Reverse proxy | None | Traefik (TLS, rate limiting, compression) |
 | Ports | 8180 / 3100 | 8080 / 80 behind Traefik on 443 |
 
@@ -495,15 +570,15 @@ An alternative approach is to run the server and client in Docker containers dur
 | **Maintenance effort** | + | - |
 | **Catches application-level bugs** | = | = |
 
-- **Speed (major advantage of native):** Docker image builds add significant time. The server Dockerfile runs a full Gradle build inside a multi-stage image (JDK build stage → JRE runtime stage), and the client Dockerfile runs `npm install` + `npm run build` and copies the output into an nginx image. Without layer caching, this adds 5-10 minutes. Additionally, the Docker build workflow (`build_docker.yml`) currently runs in **parallel** with E2E tests. If E2E tests depended on those images, they would become **sequential** — E2E couldn't start until both images were built and loaded. With native processes, `gradlew bootRun` compiles and starts in one step, and the Webpack dev server starts without needing a production build at all.
+- **Speed (major advantage of native):** Docker image builds add significant time. The server Dockerfile runs a full Gradle build inside a multi-stage image (JDK build stage → JRE runtime stage), and the client Dockerfile runs `pnpm install` + `pnpm build` and copies the output into an nginx image. Without layer caching, this adds 5-10 minutes. Additionally, the Docker build workflow (`build_docker.yml`) currently runs in **parallel** with E2E tests. If E2E tests depended on those images, they would become **sequential** — E2E couldn't start until both images were built and loaded. With native processes, `gradlew bootRun` compiles and starts in one step, and the client uses the same `pnpm build` output that production ships — just served by `serve@14` instead of nginx, with no Docker image load step in between.
 
-- **Production fidelity (main advantage of Docker):** The Webpack dev server handles client-side routing natively, but in production nginx needs an explicit `try_files` configuration — a broken `nginx.conf` would not be caught by native E2E tests. Similarly, the runtime environment injection (`generate-runtime-env.js`) only runs inside the Docker client image. The server also differs: `bootRun` uses the full JDK with dev tooling, while production runs a packaged JAR on a minimal JRE.
+- **Production fidelity (main advantage of Docker):** The native E2E flow already exercises the production-mode bundle (minified JS, no HMR) and runs `generate-runtime-env.js` against it, so it catches most webpack/runtime-env regressions. What it does **not** exercise is the nginx layer: `try_files` SPA fallback, gzip/cache headers, and any custom `nginx.conf` directives. `serve@14 -s` does its own SPA fallback for client-side routing, but the configurations are not identical. The server also differs: `bootRun` uses the full JDK with dev tooling, while production runs a packaged JAR on a minimal JRE.
 
 - **Why the fidelity gap is acceptable here:** The nginx config is a simple SPA setup that rarely changes. Spring Boot JAR vs `bootRun` differences are negligible for functional testing. E2E tests exercise application logic (UI flows, API interactions, authentication), not infrastructure routing. Any Docker-specific issues (broken Dockerfile, bad nginx config) are still caught by the parallel `build_docker.yml` job — just not by the E2E tests themselves.
 
 - **Debugging:** Native processes write logs directly to files (`.e2e-server.log`, `.e2e-client.log`) that are easy to inspect. With Docker, logs require `docker logs` and may be lost when containers are removed. Stack traces from `gradlew bootRun` are straightforward; in a container, you may need additional log driver configuration.
 
-**Conclusion:** For this project, the speed advantage of native processes outweighs the marginal fidelity improvement of Docker. The application is a straightforward Spring Boot + React SPA with a simple infrastructure layer. Projects with more complex infrastructure (multiple backend services, custom proxy logic, SSR) would benefit more from the Docker-based approach.
+**Conclusion:** For this project, the speed advantage of native processes outweighs the marginal fidelity improvement of Docker. The application is a straightforward Spring Boot + React SPA with a simple infrastructure layer. Projects with more complex infrastructure (multiple application services, custom proxy logic, SSR) would benefit more from the Docker-based approach.
 
 ## Postman Collection
 

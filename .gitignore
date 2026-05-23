@@ -20,6 +20,11 @@ node_modules/
 .e2e-pids/
 .e2e-server.log
 .e2e-client.log
+.e2e-client-build.log
 /docs/files/.$subsystem-decomposition.drawio.bkp
 /test-results
 /server/test-results
+
+# Claude Code scheduled-task lock files (per-session)
+.claude/scheduled_tasks.lock
+

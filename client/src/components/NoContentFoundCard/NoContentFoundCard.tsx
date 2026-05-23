@@ -1,5 +1,5 @@
 import { Card, Stack, Text, Title, Center } from '@mantine/core'
-import { ReactNode } from 'react'
+import type { ReactNode } from 'react'
 
 interface NoContentFoundCardProps {
   icon: ReactNode

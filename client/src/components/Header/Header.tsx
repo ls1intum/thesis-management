@@ -8,10 +8,10 @@ import {
   Skeleton,
   Text,
   UnstyledButton,
-  useMantineColorScheme,
+  useComputedColorScheme,
 } from '@mantine/core'
 import Logo from '../Logo/Logo'
-import { Link, useNavigate } from 'react-router'
+import { Link } from 'react-router'
 import { ColorSchemeToggleButton } from '../ColorSchemeToggleButton/ColorSchemeToggleButton'
 import { useAuthenticationContext, useUser } from '../../hooks/authentication'
 import { CustomAvatar } from '../CustomAvatar/CustomAvatar'
@@ -24,21 +24,24 @@ interface HeaderProps {
 }
 
 const Header = ({ opened, toggle, authenticatedArea }: HeaderProps) => {
-  const { colorScheme } = useMantineColorScheme()
+  const colorScheme = useComputedColorScheme('light')
   const user = useUser()
   const context = useAuthenticationContext()
 
-  const navigate = useNavigate()
-
+  // Render the brand (logo + title) as a real <a> via react-router's Link so the
+  // browser's native right-click menu ("Open in new tab", "Copy link") works.
+  // A <div onClick={navigate}> would only handle left-click and would offer the
+  // image context menu when right-clicking the logo.
   return (
     <Flex justify='space-between' align='center' h='100%' w='100%'>
       <Flex
+        component={Link}
+        to={authenticatedArea ? '/dashboard' : '/'}
         gap={'xs'}
         justify='flex-start'
         align='center'
         h='100%'
-        style={{ cursor: 'pointer' }}
-        onClick={() => (authenticatedArea ? navigate('/dashboard') : navigate('/'))}
+        style={{ textDecoration: 'none', color: 'inherit' }}
       >
         <Logo size={40} />
         <Text fw='bold' visibleFrom='sm' pt='2px'>

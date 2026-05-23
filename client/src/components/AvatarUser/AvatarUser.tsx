@@ -1,5 +1,6 @@
-import { IMinimalUser } from '../../requests/responses/user'
-import { Group, MantineSize, Text } from '@mantine/core'
+import type { IMinimalUser } from '../../requests/responses/user'
+import type { MantineSize } from '@mantine/core'
+import { Group, Text } from '@mantine/core'
 import { formatUser } from '../../utils/format'
 import { CustomAvatar } from '../CustomAvatar/CustomAvatar'
 

@@ -1,4 +1,5 @@
 import { Title } from '@mantine/core'
+import DOMPurify from 'dompurify'
 import { usePageTitle } from '../../hooks/theme'
 import { useEffect, useState } from 'react'
 
@@ -8,15 +9,22 @@ const ImprintPage = () => {
   const [content, setContent] = useState('')
 
   useEffect(() => {
-    fetch('/imprint.html')
+    const controller = new AbortController()
+    fetch('/imprint.html', { signal: controller.signal })
       .then((res) => res.text())
       .then((res) => setContent(res))
+      .catch((err: unknown) => {
+        if (err instanceof Error && err.name === 'AbortError') return
+        console.warn('Failed to load imprint content', err)
+      })
+    return () => controller.abort()
   }, [])
 
   return (
     <div>
       <Title mb='md'>Imprint</Title>
-      <div dangerouslySetInnerHTML={{ __html: content }} />
+      {/* eslint-disable-next-line @eslint-react/dom-no-dangerously-set-innerhtml -- content is sanitized via DOMPurify on the line below */}
+      <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content) }} />
     </div>
   )
 }

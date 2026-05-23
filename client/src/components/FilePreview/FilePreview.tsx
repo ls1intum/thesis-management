@@ -1,6 +1,6 @@
 import { AspectRatio, Group, Text } from '@mantine/core'
 import { useMemo } from 'react'
-import { UploadFileType } from '../../config/types'
+import type { UploadFileType } from '../../config/types'
 import { File } from '@phosphor-icons/react'
 import { getAdjustedFileType } from '../../utils/file'
 

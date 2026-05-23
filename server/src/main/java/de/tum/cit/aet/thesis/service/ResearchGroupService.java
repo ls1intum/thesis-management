@@ -99,8 +99,7 @@ public class ResearchGroupService {
 				HibernateHelper.getColumnName(ResearchGroup.class, sortBy)
 		);
 
-		String searchQueryFilter =
-				searchQuery == null || searchQuery.isEmpty() ? null : searchQuery.toLowerCase();
+		String searchQueryFilter = normalizeSearchQuery(searchQuery);
 		String[] headsFilter = heads == null || heads.length == 0 ? null : heads;
 		String[] campusesFilter = campuses == null || campuses.length == 0 ? null : campuses;
 
@@ -124,8 +123,7 @@ public class ResearchGroupService {
 	 * @return the page of matching research groups
 	 */
 	public Page<ResearchGroup> getAllLight(String searchQuery) {
-		String searchQueryFilter =
-				searchQuery == null || searchQuery.isEmpty() ? null : searchQuery.toLowerCase();
+		String searchQueryFilter = normalizeSearchQuery(searchQuery);
 
 		Sort.Order order = new Sort.Order(Sort.Direction.ASC, HibernateHelper.getColumnName(ResearchGroup.class, "name"));
 
@@ -225,7 +223,7 @@ public class ResearchGroupService {
 			String campus
 	) {
 		//Get the User by universityId else create the user
-		User head = getUserByUsernameOrCreate(headUsername);
+		User head = userService.findOrCreateByUniversityId(headUsername);
 		if (head.getResearchGroup() != null) {
 			throw new AccessDeniedException("User is already assigned to a research group.");
 		}
@@ -254,30 +252,24 @@ public class ResearchGroupService {
 		return savedResearchGroup;
 	}
 
-	private User getUserByUsernameOrCreate(String username) {
-		User user = userRepository.findByUniversityId(username).orElseGet(() -> {
-			User newUser = new User();
-			Instant currentTime = Instant.now();
-
-			newUser.setJoinedAt(currentTime);
-			newUser.setUpdatedAt(currentTime);
-
-			// Load user data from Keycloak
-			AccessManagementService.KeycloakUserInformation userElement = accessManagementService.getUserByUsername(username);
-
-			newUser.setUniversityId(userElement.username());
-			newUser.setFirstName(userElement.firstName());
-			newUser.setLastName(userElement.lastName());
-			newUser.setEmail(userElement.email());
-			newUser.setMatriculationNumber(userElement.getMatriculationNumber());
-
-			return userRepository.save(newUser);
-		});
-
-		return user;
+	/**
+	 * Normalises a free-text search query before binding it into the repository's
+	 * native ILIKE query. Returns null for blank input so the SQL short-circuits;
+	 * otherwise lower-cases and escapes the LIKE wildcards `\`, `%`, `_` so
+	 * user-supplied characters can never act as patterns. The native query uses
+	 * the default `\` escape so no `ESCAPE` clause is needed.
+	 */
+	static String normalizeSearchQuery(String searchQuery) {
+		if (searchQuery == null || searchQuery.isBlank()) {
+			return null;
+		}
+		return searchQuery
+				.toLowerCase()
+				.replace("\\", "\\\\")
+				.replace("%", "\\%")
+				.replace("_", "\\_");
 	}
 
-	@Transactional
 	public ResearchGroup updateResearchGroup(
 			ResearchGroup researchGroup,
 			String headUsername,
@@ -295,7 +287,7 @@ public class ResearchGroupService {
 
 		User oldHead = researchGroup.getHead();
 		//Get the User by universityId else create the user
-		User head = getUserByUsernameOrCreate(headUsername);
+		User head = userService.findOrCreateByUniversityId(headUsername);
 
 		//Update head only on change
 		if (!oldHead.getId().equals(head.getId())) {
@@ -378,7 +370,7 @@ public class ResearchGroupService {
 		//If user has group-admin rights he still needs to be part of the specific research group
 		currentUserProvider().assertCanAccessResearchGroup(researchGroup);
 
-		User user = getUserByUsernameOrCreate(username);
+		User user = userService.findOrCreateByUniversityId(username);
 
 		if (user.getResearchGroup() != null) {
 			throw new AccessDeniedException("User is already assigned to a research group.");

@@ -61,8 +61,7 @@ test.describe('Thesis Anonymization - Admin Batch Operations', () => {
   test('batch-anonymized thesis preserves structural data', async ({ page }) => {
     // Thesis 8 was batch-anonymized — structural fields should remain
     const heading = page.getByRole('heading', { name: /Legacy Data Processing Pipeline/i })
-    const loaded = await navigateToDetail(page, `/theses/${EXPIRED_THESIS_ID}`, heading, 30_000)
-    expect(loaded).toBeTruthy()
+    await navigateToDetail(page, `/theses/${EXPIRED_THESIS_ID}`, heading)
 
     // Title should still be visible
     await expect(heading).toBeVisible()
@@ -87,13 +86,7 @@ test.describe('Thesis Anonymization - Pre-Anonymized Thesis Banner', () => {
 
   test('anonymize button is hidden on already-anonymized thesis', async ({ page }) => {
     const heading = page.getByRole('heading', { name: /Archived Research on Software/i })
-    const loaded = await navigateToDetail(
-      page,
-      `/theses/${ALREADY_ANONYMIZED_THESIS_ID}`,
-      heading,
-      30_000,
-    )
-    expect(loaded).toBeTruthy()
+    await navigateToDetail(page, `/theses/${ALREADY_ANONYMIZED_THESIS_ID}`, heading)
 
     // Open Configuration accordion
     await page.getByText('Configuration').click()
@@ -112,13 +105,7 @@ test.describe('Thesis Anonymization - Non-Anonymized Thesis', () => {
   test('recently finished thesis is not affected by anonymization', async ({ page }) => {
     // Thesis 4 finished 60 days ago — well within the 5-year retention period
     const heading = page.getByRole('heading', { name: /Systematic Monolith/i })
-    const loaded = await navigateToDetail(
-      page,
-      `/theses/${RECENT_FINISHED_THESIS_ID}`,
-      heading,
-      30_000,
-    )
-    expect(loaded).toBeTruthy()
+    await navigateToDetail(page, `/theses/${RECENT_FINISHED_THESIS_ID}`, heading)
 
     // Should NOT show anonymization banner
     await expect(page.getByText(/This thesis was anonymized on/i)).not.toBeVisible({
@@ -131,13 +118,7 @@ test.describe('Thesis Anonymization - Non-Anonymized Thesis', () => {
 
   test('non-anonymized thesis shows anonymize button for admin', async ({ page }) => {
     const heading = page.getByRole('heading', { name: /Automated Code Review/i })
-    const loaded = await navigateToDetail(
-      page,
-      `/theses/${NON_ANONYMIZED_THESIS_ID}`,
-      heading,
-      30_000,
-    )
-    expect(loaded).toBeTruthy()
+    await navigateToDetail(page, `/theses/${NON_ANONYMIZED_THESIS_ID}`, heading)
 
     // Open Configuration accordion
     await page.getByText('Configuration').click()
@@ -174,13 +155,7 @@ test.describe('Thesis Anonymization - Supervisor Restrictions', () => {
 
   test('supervisor does not see anonymize button on thesis detail', async ({ page }) => {
     const heading = page.getByRole('heading', { name: /Automated Code Review/i })
-    const loaded = await navigateToDetail(
-      page,
-      `/theses/${NON_ANONYMIZED_THESIS_ID}`,
-      heading,
-      30_000,
-    )
-    expect(loaded).toBeTruthy()
+    await navigateToDetail(page, `/theses/${NON_ANONYMIZED_THESIS_ID}`, heading)
 
     // Open Configuration accordion
     await page.getByText('Configuration').click()

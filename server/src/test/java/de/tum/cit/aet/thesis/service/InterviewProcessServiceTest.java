@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
@@ -750,5 +751,40 @@ class InterviewProcessServiceTest {
 		slot.setStartDate(start);
 		slot.setEndDate(end);
 		return slot;
+	}
+
+	@Test
+	void getInterviewCalendarForUser_EmitsEventsWithoutAttendees() {
+		UUID userId = UUID.randomUUID();
+
+		Topic topic = new Topic();
+		topic.setTitle("Interview Topic");
+		topic.setRoles(new ArrayList<>());
+
+		InterviewProcess process = new InterviewProcess();
+		process.setTopic(topic);
+
+		InterviewSlot slot = createSlot(process,
+				Instant.now().plusSeconds(3600),
+				Instant.now().plusSeconds(7200));
+
+		when(interviewProcessRepository.findAllMyInterviewSlots(userId))
+				.thenReturn(List.of(slot));
+		when(calendarService.createEmptyCalendar(anyString()))
+				.thenReturn(new net.fortuna.ical4j.model.Calendar());
+		when(calendarService.createVEvent(anyString(), any()))
+				.thenReturn(new net.fortuna.ical4j.model.component.VEvent());
+
+		interviewProcessService.getInterviewCalendarForUser(userId);
+
+		ArgumentCaptor<CalendarService.CalendarEvent> captor =
+				ArgumentCaptor.forClass(CalendarService.CalendarEvent.class);
+		verify(calendarService).createVEvent(anyString(), captor.capture());
+
+		CalendarService.CalendarEvent event = captor.getValue();
+		assertTrue(event.requiredAttendees().isEmpty(),
+				"Interview subscription feed must not leak role emails as required attendees");
+		assertTrue(event.optionalAttendees().isEmpty(),
+				"Interview subscription feed must not include optional attendees");
 	}
 }

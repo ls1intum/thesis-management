@@ -97,7 +97,7 @@ test.describe('Application Workflow - Student submits application', () => {
     const submittedAfterUpdate = await successText.isVisible({ timeout: 2_000 }).catch(() => false)
     if (submittedAfterUpdate) return
 
-    await expect(page.getByRole('textbox', { name: 'Thesis Type' })).toBeVisible({
+    await expect(page.getByRole('combobox', { name: 'Thesis Type' })).toBeVisible({
       timeout: 15_000,
     })
     await selectOption(page, 'Thesis Type', /master/i)
