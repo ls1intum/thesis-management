@@ -13,7 +13,7 @@ plugins {
 }
 
 group = "de.tum.cit.aet.thesis"
-version = "4.11.0"
+version = "4.11.1"
 description = "Thesis Management"
 
 // Override Spring Boot-managed Tomcat to pull in security fixes ahead of the next BOM release.
