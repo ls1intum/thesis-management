@@ -53,7 +53,7 @@
     "@mantine/tiptap": "9.2.0",
     "@phosphor-icons/react": "2.1.10",
     "@tiptap/core": "3.23.5",
-    "@tiptap/extension-highlight": "3.23.5",
+    "@tiptap/extension-highlight": "3.23.6",
     "@tiptap/extension-link": "3.23.5",
     "@tiptap/extension-subscript": "3.23.5",
     "@tiptap/extension-superscript": "3.23.5",
