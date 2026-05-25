@@ -58,7 +58,7 @@
     "@tiptap/extension-subscript": "3.23.5",
     "@tiptap/extension-superscript": "3.23.5",
     "@tiptap/extension-text-align": "3.23.5",
-    "@tiptap/extension-text-style": "3.23.5",
+    "@tiptap/extension-text-style": "3.23.6",
     "@tiptap/extension-underline": "3.23.5",
     "@tiptap/react": "3.23.5",
     "@tiptap/starter-kit": "3.23.5",
