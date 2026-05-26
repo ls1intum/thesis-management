@@ -16,7 +16,11 @@ import { FingerprintIcon, LightningIcon, ShieldCheckIcon } from '@phosphor-icons
 import { useEffect, useRef, useState } from 'react'
 import { useLocation } from 'react-router'
 import { useAuthenticationContext } from '../../hooks/authentication'
-import { getPasskeyErrorMessage, isPasskeyCredential } from '../../utils/passkey'
+import {
+  getPasskeyErrorMessage,
+  isPasskeyCancellationError,
+  isPasskeyCredential,
+} from '../../utils/passkey'
 import { showSimpleError, showSimpleSuccess } from '../../utils/notification'
 import { GLOBAL_CONFIG } from '../../config/global'
 
@@ -178,6 +182,9 @@ const PasskeyRegistrationPrompt = () => {
       showSimpleSuccess('Passkey registered successfully')
       setIsOpen(false)
     } catch (error) {
+      if (isPasskeyCancellationError(error)) {
+        return
+      }
       showSimpleError(await getPasskeyErrorMessage(error, undefined, 'register'))
     } finally {
       setIsRegistering(false)

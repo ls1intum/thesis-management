@@ -13,12 +13,12 @@ import {
   useComputedColorScheme,
 } from '@mantine/core'
 import Logo from '../Logo/Logo'
-import { Link, useNavigate } from 'react-router'
+import { Link, useLocation, useNavigate } from 'react-router'
 import { ColorSchemeToggleButton } from '../ColorSchemeToggleButton/ColorSchemeToggleButton'
 import { useAuthenticationContext, useUser } from '../../hooks/authentication'
 import { CustomAvatar } from '../CustomAvatar/CustomAvatar'
 import { GearSixIcon, KeyIcon, NewspaperClippingIcon, SignOutIcon } from '@phosphor-icons/react'
-import { getPasskeyErrorMessage } from '../../utils/passkey'
+import { getPasskeyErrorMessage, isPasskeyCancellationError } from '../../utils/passkey'
 import { showSimpleError } from '../../utils/notification'
 import { useState } from 'react'
 
@@ -41,6 +41,10 @@ const Header = ({
   const user = useUser()
   const context = useAuthenticationContext()
   const [isPasskeyLoading, setIsPasskeyLoading] = useState(false)
+  const location = useLocation()
+  const loginRedirectTarget = authenticatedArea
+    ? `${location.pathname}${location.search}${location.hash}`
+    : '/dashboard'
 
   const navigate = useNavigate()
   const isLoginModalOpen =
@@ -51,7 +55,7 @@ const Header = ({
   }
 
   const onPasswordLogin = () => {
-    void context.login('/dashboard')
+    void context.login(loginRedirectTarget)
   }
 
   const onPasskeyLogin = async () => {
@@ -60,6 +64,9 @@ const Header = ({
       await context.loginWithPasskey()
       void navigate('/dashboard', { replace: true })
     } catch (error) {
+      if (isPasskeyCancellationError(error)) {
+        return
+      }
       showSimpleError(await getPasskeyErrorMessage(error, undefined, 'login'))
     } finally {
       setIsPasskeyLoading(false)
@@ -160,7 +167,7 @@ const Header = ({
                   Passkey
                 </Button>
               )}
-              <Button onClick={() => void context.login('/dashboard')}>Login</Button>
+              <Button onClick={onPasswordLogin}>Login</Button>
             </Group>
           )
         )}

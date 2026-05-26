@@ -3,7 +3,11 @@ import { useCallback, useEffect, useState } from 'react'
 import { useAuthenticationContext } from '../../../../hooks/authentication'
 import { showSimpleError, showSimpleSuccess } from '../../../../utils/notification'
 import type { IKeycloakCredential } from '../../../../providers/AuthenticationContext/context'
-import { getPasskeyErrorMessage, isPasskeyCredential } from '../../../../utils/passkey'
+import {
+  getPasskeyErrorMessage,
+  isPasskeyCancellationError,
+  isPasskeyCredential,
+} from '../../../../utils/passkey'
 
 const formatCreatedDate = (createdDate?: number) => {
   if (!createdDate) {
@@ -57,6 +61,9 @@ const PasskeySettings = () => {
       showSimpleSuccess('Passkey registered. You can now use it to sign in.')
       await loadPasskeyCredentials()
     } catch (error) {
+      if (isPasskeyCancellationError(error)) {
+        return
+      }
       showSimpleError(await getPasskeyErrorMessage(error, undefined, 'register'))
     } finally {
       setIsRegistering(false)
@@ -96,7 +103,7 @@ const PasskeySettings = () => {
             <Paper withBorder p='sm' key={credential.id}>
               <Group justify='space-between' align='center'>
                 <Stack gap={0}>
-                  <Text fw={500}>{credential.userLabel?.trim() ?? 'Unnamed passkey'}</Text>
+                  <Text fw={500}>{credential.userLabel?.trim() || 'Unnamed passkey'}</Text>
                   <Text size='sm' c='dimmed'>
                     {formatCreatedDate(credential.createdDate)}
                   </Text>

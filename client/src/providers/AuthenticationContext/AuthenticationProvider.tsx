@@ -206,7 +206,8 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
           setAuthenticationTokens(undefined)
         }
       })
-      .catch(() => {
+      .catch((error) => {
+        console.error('Failed to refresh access token', error)
         setAuthenticationTokens(undefined)
       })
 
@@ -305,6 +306,9 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
     return responseData.challenge
   }
 
+  const passkeySavedLocallyButRejectedByServerMessage =
+    'Your device saved the passkey, but the server rejected it. Please contact support to clean it up.'
+
   useEffect(() => {
     setUser(undefined)
 
@@ -316,6 +320,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
       })
       .catch((error) => {
         console.error('Keycloak init error', error)
+        showSimpleError('Authentication service is unavailable. Please try again.')
       })
       .finally(() => {
         if (!readyRef.isTriggerred) {
@@ -332,7 +337,8 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
         decodedRefreshToken = refreshToken
           ? jwtDecode<IDecodedRefreshToken>(refreshToken)
           : undefined
-      } catch {
+      } catch (error) {
+        console.error('Failed to decode refresh token in expiry check', error)
         keycloak.clearToken()
         setAuthenticationTokens(undefined)
         return
@@ -645,7 +651,14 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
           })
 
           if (!response.ok) {
-            throw new Error(await getPasskeyErrorMessage(response, undefined, 'register'))
+            throw new Error(
+              await getPasskeyErrorMessage(
+                response,
+                passkeySavedLocallyButRejectedByServerMessage,
+                'register',
+                { preferFallback: true },
+              ),
+            )
           }
         }),
       listCredentials: () =>
@@ -733,7 +746,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
       researchGroups: researchGroups,
       isPasskeySupported,
     }
-    // eslint-disable-next-line @eslint-react/exhaustive-deps -- researchGroups/setAuthenticationTokens/readySignal/access_token are captured by reference inside callbacks that read the latest value at call time; recomputing the entire context on each token refresh would re-render every consumer
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- `setAuthenticationTokens` is intentionally omitted because React guarantees state setters are stable; keeping the dependency list scoped avoids unnecessary context value churn and consumer re-renders
   }, [
     isReady,
     user,

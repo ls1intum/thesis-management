@@ -6,6 +6,9 @@ const defaultPasskeyErrorMessage = 'Something went wrong. Please try again later
 const invalidPasskeyMessage = 'This passkey is not valid for your account.'
 const duplicatePasskeyMessage = 'This passkey is already registered for your account.'
 
+export const isPasskeyCancellationError = (error: unknown) =>
+  error instanceof DOMException && (error.name === 'NotAllowedError' || error.name === 'AbortError')
+
 const getResponseMessage = (text: string) => {
   try {
     const body = JSON.parse(text) as Record<string, unknown>
@@ -21,9 +24,23 @@ export const getPasskeyErrorMessage = async (
   error: unknown,
   fallback = defaultPasskeyErrorMessage,
   operation?: PasskeyOperation,
+  options?: { preferFallback?: boolean },
 ) => {
+  const preferFallback = options?.preferFallback ?? false
   let message = ''
   let status: number | undefined
+
+  if (error instanceof DOMException) {
+    if (isPasskeyCancellationError(error)) {
+      return 'Passkey sign-in was cancelled.'
+    }
+    if (error.name === 'InvalidStateError') {
+      return duplicatePasskeyMessage
+    }
+    if (error.name === 'SecurityError') {
+      return 'Passkey is not allowed on this site.'
+    }
+  }
 
   if (error instanceof Response) {
     status = error.status
@@ -41,6 +58,14 @@ export const getPasskeyErrorMessage = async (
     message === invalidPasskeyMessage
   ) {
     return invalidPasskeyMessage
+  }
+
+  if (preferFallback) {
+    return fallback
+  }
+
+  if (message.trim() !== '') {
+    return message
   }
 
   return fallback
