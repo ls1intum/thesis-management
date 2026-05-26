@@ -67,9 +67,26 @@ jobs:
       github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
+      # GitHub disallows the `secrets` context inside step-level `if:`
+      # expressions (only env/github/inputs/job/matrix/needs/runner/steps/
+      # strategy/vars are permitted there) — referencing it directly causes
+      # the entire workflow to fail to load. Bounce the secret presence
+      # check through an env var so the gate is expressible.
+      - name: Detect App token availability
+        id: app-token-config
+        env:
+          APP_PRIVATE_KEY: ${{ secrets.SBOM_BOT_PRIVATE_KEY }}
+          APP_ID: ${{ vars.SBOM_BOT_APP_ID }}
+        run: |
+          if [ -n "${APP_ID:-}" ] && [ -n "${APP_PRIVATE_KEY:-}" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Mint GitHub App token (preferred)
         id: app-token
-        if: ${{ vars.SBOM_BOT_APP_ID != '' && secrets.SBOM_BOT_PRIVATE_KEY != '' }}
+        if: steps.app-token-config.outputs.available == 'true'
         uses: actions/create-github-app-token@v3
         with:
           app-id: ${{ vars.SBOM_BOT_APP_ID }}
