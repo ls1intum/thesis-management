@@ -62,8 +62,8 @@ public class AutomaticRejects {
 		for (ResearchGroupSettings settings : enabledResearchGroups) {
 			Map<User, List<ApplicationRejectObject>> reminderApplicationsByUser = new HashMap<>();
 
-			List<Topic> openTopics = topicService.getPublishedFromResearchGroup(settings.getResearchGroupId());
-			for (Topic topic : openTopics) {
+			List<Topic> publishedTopics = topicService.getPublishedFromResearchGroup(settings.getResearchGroupId());
+			for (Topic topic : publishedTopics) {
 				Instant referenceDate;
 
 				if (topic.getApplicationDeadline() != null) {

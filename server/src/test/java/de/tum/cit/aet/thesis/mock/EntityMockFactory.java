@@ -13,6 +13,7 @@ import de.tum.cit.aet.thesis.entity.UserGroup;
 import de.tum.cit.aet.thesis.entity.key.ThesisRoleId;
 import de.tum.cit.aet.thesis.entity.key.UserGroupId;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -92,6 +93,9 @@ public class EntityMockFactory {
 		topic.setTitle(title);
 		topic.setRoles(new ArrayList<>());
 		topic.setResearchGroup(researchGroup);
+		topic.setCreatedAt(Instant.now());
+		topic.setUpdatedAt(Instant.now());
+		topic.setPublishedAt(Instant.now());
 
 		return topic;
 	}

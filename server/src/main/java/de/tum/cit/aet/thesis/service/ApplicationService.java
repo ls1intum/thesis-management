@@ -203,6 +203,10 @@ public class ApplicationService {
 		Topic topic = topicId == null ? null : topicService.findById(topicId);
 		Instant now = Instant.now(clock);
 
+		if (topic != null && topic.getPublishedAt() == null) {
+			throw new ResourceInvalidParametersException("This topic is not open for applications.");
+		}
+
 		if (topic != null && topic.getClosedAt() != null) {
 			throw new ResourceInvalidParametersException("This topic is already closed. You cannot submit new applications for it.");
 		}

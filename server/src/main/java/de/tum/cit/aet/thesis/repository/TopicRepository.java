@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -38,6 +39,7 @@ public interface TopicRepository extends JpaRepository<Topic, UUID> {
 	@Query("SELECT DISTINCT t FROM Topic t " +
 			"WHERE (:searchQuery IS NULL OR LOWER(t.title) LIKE :searchQuery) " +
 			"AND t.closedAt IS NULL " +
+			"AND t.publishedAt IS NOT NULL " +
 			"AND (t.applicationDeadline IS NULL OR t.applicationDeadline >= CURRENT_TIMESTAMP) " +
 			"AND ( :userId IS NULL " +
 			"      OR ( :excludeSupervised = true " +
@@ -59,18 +61,18 @@ public interface TopicRepository extends JpaRepository<Topic, UUID> {
 				SELECT COUNT(*)
 				FROM Topic t
 				WHERE t.closedAt IS NULL
+				AND t.publishedAt IS NOT NULL
 				AND (t.applicationDeadline IS NULL OR t.applicationDeadline >= CURRENT_TIMESTAMP)
 				AND (:researchGroupId IS NULL OR t.researchGroup.id = :researchGroupId)
 			""")
 	long countOpenTopics(@Param("researchGroupId") UUID researchGroupId);
 
-	@Query(value = """
-			SELECT t.* FROM topics t
-			WHERE t.closed_at IS NULL AND t.published_at IS NOT NULL
-			AND (:researchGroupId IS NULL OR t.research_group_id = :researchGroupId)
-			""", nativeQuery = true)
-	Page<Topic> findPublishedTopics(
-			@Param("researchGroupId") UUID researchGroupId,
-			Pageable page
+	@Query("""
+			SELECT t FROM Topic t
+			WHERE t.closedAt IS NULL AND t.publishedAt IS NOT NULL
+			AND (:researchGroupId IS NULL OR t.researchGroup.id = :researchGroupId)
+			""")
+	List<Topic> findPublishedTopics(
+			@Param("researchGroupId") UUID researchGroupId
 	);
 }

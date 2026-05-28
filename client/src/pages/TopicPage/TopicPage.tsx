@@ -43,7 +43,7 @@ const TopicPage = () => {
     return isExaminer || isSupervisor
   }
 
-  const deadlinePassed = topic.state === TopicState.EXPIRED || topic.state === TopicState.CLOSED
+  const canApply = topic.state === TopicState.OPEN
 
   return (
     <Stack gap={'2rem'}>
@@ -51,11 +51,7 @@ const TopicPage = () => {
         <Title>{topic.title}</Title>
         {!managementAccess && !checkIfUserIsExaminerOrSupervisor() && (
           <Stack gap='xs' mr='auto'>
-            {deadlinePassed ? (
-              <Button leftSection={<NotePencil size={24} />} size='md' disabled>
-                Apply Now
-              </Button>
-            ) : (
+            {canApply ? (
               <Button
                 component={Link}
                 to={`/submit-application/${topic.topicId}`}
@@ -64,10 +60,14 @@ const TopicPage = () => {
               >
                 Apply Now
               </Button>
+            ) : (
+              <Button leftSection={<NotePencil size={24} />} size='md' disabled>
+                Apply Now
+              </Button>
             )}
-            {deadlinePassed && (
+            {!canApply && (
               <Text size='sm' c='dimmed'>
-                Application deadline has passed.
+                Applications are not open for this topic.
               </Text>
             )}
           </Stack>

@@ -130,13 +130,13 @@ const TopicCard = ({ topic, setOpenTopic }: ITopicCardProps) => {
             <DownloadSimple />
           </Button>
         </Group>
-      ) : 'state' in topic && topic.state === TopicState.EXPIRED ? (
-        <Button fullWidth mt='md' component={Link} to={`/topics/${topicId}`}>
-          More Information
-        </Button>
-      ) : (
+      ) : 'state' in topic && topic.state === TopicState.OPEN ? (
         <Button fullWidth mt='md' component={Link} to={`/submit-application/${topicId}`}>
           Apply
+        </Button>
+      ) : (
+        <Button fullWidth mt='md' component={Link} to={`/topics/${topicId}`}>
+          More Information
         </Button>
       )}
     </Card>

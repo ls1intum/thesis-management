@@ -35,7 +35,7 @@ const CollapsibleTopicElement = ({ topic, onApply }: ICollapsibleTopicElementPro
   const isTopicOverview = 'topicId' in topic
   const fullTopic = useTopic(isTopicOverview && expanded ? topic.topicId : undefined)
 
-  const deadlinePassed = !!fullTopic && fullTopic.state === TopicState.EXPIRED
+  const canApply = !fullTopic || fullTopic.state === TopicState.OPEN
 
   return (
     <Card
@@ -155,13 +155,13 @@ const CollapsibleTopicElement = ({ topic, onApply }: ICollapsibleTopicElementPro
                   // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- useTopic may return `false` (error sentinel) which must also map to undefined
                   onClick={() => onApply(fullTopic || undefined)}
                   fullWidth
-                  disabled={!fullTopic || deadlinePassed}
+                  disabled={!canApply}
                 >
                   Apply
                 </Button>
-                {deadlinePassed && (
+                {!canApply && !!fullTopic && (
                   <Text size='xs' c='dimmed' ta='center'>
-                    Application deadline has passed.
+                    Applications are not open for this topic.
                   </Text>
                 )}
               </Stack>
