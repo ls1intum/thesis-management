@@ -12,6 +12,7 @@ import {
   Loader,
 } from '@mantine/core'
 import type { ITopicOverview, ITopic } from '../../../../../requests/responses/topic'
+import { TopicState } from '../../../../../requests/responses/topic'
 import ThesisTypeBadge from '../../../../LandingPage/components/ThesisTypBadge/ThesisTypBadge'
 import type { IPublishedThesis } from '../../../../../requests/responses/thesis'
 import { useHover } from '@mantine/hooks'
@@ -34,10 +35,7 @@ const CollapsibleTopicElement = ({ topic, onApply }: ICollapsibleTopicElementPro
   const isTopicOverview = 'topicId' in topic
   const fullTopic = useTopic(isTopicOverview && expanded ? topic.topicId : undefined)
 
-  const deadlinePassed =
-    !!fullTopic &&
-    !!fullTopic.applicationDeadline &&
-    new Date(fullTopic.applicationDeadline) < new Date()
+  const deadlinePassed = !!fullTopic && fullTopic.state === TopicState.EXPIRED
 
   return (
     <Card

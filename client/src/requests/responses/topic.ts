@@ -5,6 +5,7 @@ export enum TopicState {
   OPEN = 'OPEN',
   DRAFT = 'DRAFT',
   CLOSED = 'CLOSED',
+  EXPIRED = 'EXPIRED',
 }
 
 export interface ITopicOverview {

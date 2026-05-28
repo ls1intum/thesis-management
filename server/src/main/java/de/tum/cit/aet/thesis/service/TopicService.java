@@ -111,7 +111,7 @@ public class TopicService {
 		String[] typesFilter = types == null || types.length == 0 ? null : types;
 
 
-		if (states != null && Arrays.stream(states).anyMatch(s -> s.equals(TopicState.CLOSED.name()) || s.equals(TopicState.DRAFT.name()))) {
+		if (states != null && Arrays.stream(states).anyMatch(s -> s.equals(TopicState.CLOSED.name()) || s.equals(TopicState.DRAFT.name()) || s.equals(TopicState.EXPIRED.name()))) {
 			currentUserProvider().assertCanAccessResearchGroup(researchGroup);
 		}
 		String[] statesFilter = (states != null && states.length > 0) ? states : new String[] { TopicState.OPEN.name() };
@@ -174,6 +174,13 @@ public class TopicService {
 				null,
 				new String[] { TopicState.OPEN.name() },
 				null,
+				PageRequest.of(0, Integer.MAX_VALUE, Sort.unsorted())
+		).toList();
+	}
+
+	public List<Topic> getPublishedFromResearchGroup(UUID researchGroupId) {
+		return topicRepository.findPublishedTopics(
+				researchGroupId,
 				PageRequest.of(0, Integer.MAX_VALUE, Sort.unsorted())
 		).toList();
 	}

@@ -20,9 +20,10 @@ public interface TopicRepository extends JpaRepository<Topic, UUID> {
 					(
 						CAST(:states AS TEXT[]) IS NULL
 						OR (
-							('CLOSED' = ANY(CAST(:states AS TEXT[])) AND t.closed_at IS NOT NULL)
-						OR ('DRAFT'  = ANY(CAST(:states AS TEXT[])) AND t.closed_at IS NULL AND t.published_at IS NULL)
-						OR ('OPEN'   = ANY(CAST(:states AS TEXT[])) AND t.closed_at IS NULL AND t.published_at IS NOT NULL)
+							('CLOSED'  = ANY(CAST(:states AS TEXT[])) AND t.closed_at IS NOT NULL)
+						OR ('DRAFT'   = ANY(CAST(:states AS TEXT[])) AND t.closed_at IS NULL AND t.published_at IS NULL)
+						OR ('OPEN'    = ANY(CAST(:states AS TEXT[])) AND t.closed_at IS NULL AND t.published_at IS NOT NULL AND (t.application_deadline IS NULL OR t.application_deadline >= NOW()))
+						OR ('EXPIRED' = ANY(CAST(:states AS TEXT[])) AND t.closed_at IS NULL AND t.published_at IS NOT NULL AND t.application_deadline IS NOT NULL AND t.application_deadline < NOW())
 						)
 					)
 			""", nativeQuery = true)
@@ -37,6 +38,7 @@ public interface TopicRepository extends JpaRepository<Topic, UUID> {
 	@Query("SELECT DISTINCT t FROM Topic t " +
 			"WHERE (:searchQuery IS NULL OR LOWER(t.title) LIKE :searchQuery) " +
 			"AND t.closedAt IS NULL " +
+			"AND (t.applicationDeadline IS NULL OR t.applicationDeadline >= CURRENT_TIMESTAMP) " +
 			"AND ( :userId IS NULL " +
 			"      OR ( :excludeSupervised = true " +
 			"           AND EXISTS (SELECT 1 FROM TopicRole r " +
@@ -57,7 +59,18 @@ public interface TopicRepository extends JpaRepository<Topic, UUID> {
 				SELECT COUNT(*)
 				FROM Topic t
 				WHERE t.closedAt IS NULL
+				AND (t.applicationDeadline IS NULL OR t.applicationDeadline >= CURRENT_TIMESTAMP)
 				AND (:researchGroupId IS NULL OR t.researchGroup.id = :researchGroupId)
 			""")
 	long countOpenTopics(@Param("researchGroupId") UUID researchGroupId);
+
+	@Query(value = """
+			SELECT t.* FROM topics t
+			WHERE t.closed_at IS NULL AND t.published_at IS NOT NULL
+			AND (:researchGroupId IS NULL OR t.research_group_id = :researchGroupId)
+			""", nativeQuery = true)
+	Page<Topic> findPublishedTopics(
+			@Param("researchGroupId") UUID researchGroupId,
+			Pageable page
+	);
 }

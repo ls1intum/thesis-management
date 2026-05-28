@@ -11,6 +11,7 @@ import ApplicationsTable from '../../components/ApplicationsTable/ApplicationsTa
 import { NotePencil } from '@phosphor-icons/react'
 import TopicAdittionalInformationCard from './components/TopicAdittionalInformationCard'
 import TopicInformationCard from './components/TopicInformationCard'
+import { TopicState } from '../../requests/responses/topic'
 
 const TopicPage = () => {
   const { topicId } = useParams<{ topicId: string }>()
@@ -42,8 +43,7 @@ const TopicPage = () => {
     return isExaminer || isSupervisor
   }
 
-  const deadlinePassed =
-    !!topic.applicationDeadline && new Date(topic.applicationDeadline) < new Date()
+  const deadlinePassed = topic.state === TopicState.EXPIRED || topic.state === TopicState.CLOSED
 
   return (
     <Stack gap={'2rem'}>

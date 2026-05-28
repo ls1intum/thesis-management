@@ -1,5 +1,6 @@
 import { Card, Flex, Text, Group, Stack, Button, Tooltip, Anchor, Box } from '@mantine/core'
 import type { ITopicOverview } from '../../../../../requests/responses/topic'
+import { TopicState } from '../../../../../requests/responses/topic'
 import { useHover, useMediaQuery } from '@mantine/hooks'
 import { DownloadSimple, Users } from '@phosphor-icons/react'
 import AvatarUserList from '../../../../../components/AvatarUserList/AvatarUserList'
@@ -129,9 +130,7 @@ const TopicCard = ({ topic, setOpenTopic }: ITopicCardProps) => {
             <DownloadSimple />
           </Button>
         </Group>
-      ) : 'applicationDeadline' in topic &&
-        topic.applicationDeadline &&
-        new Date(topic.applicationDeadline) < new Date() ? (
+      ) : 'state' in topic && topic.state === TopicState.EXPIRED ? (
         <Button fullWidth mt='md' component={Link} to={`/topics/${topicId}`}>
           More Information
         </Button>
