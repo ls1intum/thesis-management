@@ -6,10 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import de.tum.cit.aet.thesis.entity.User;
-import de.tum.cit.aet.thesis.repository.UserRepository;
-import de.tum.cit.aet.thesis.service.AccessManagementService;
-import de.tum.cit.aet.thesis.service.AccessManagementService.KeycloakUserInformation;
+import de.tum.cit.aet.thesis.core.user.entity.User;
+import de.tum.cit.aet.thesis.core.user.repository.UserRepository;
+import de.tum.cit.aet.thesis.core.user.service.AccessManagementService;
+import de.tum.cit.aet.thesis.core.user.service.AccessManagementService.KeycloakUserInformation;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;

@@ -3,8 +3,9 @@ package de.tum.cit.aet.thesis.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import de.tum.cit.aet.thesis.constants.UploadFileType;
-import de.tum.cit.aet.thesis.exception.UploadException;
+import de.tum.cit.aet.thesis.core.exception.UploadException;
+import de.tum.cit.aet.thesis.core.upload.constants.UploadFileType;
+import de.tum.cit.aet.thesis.core.upload.service.UploadService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

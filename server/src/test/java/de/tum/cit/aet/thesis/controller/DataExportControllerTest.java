@@ -3,11 +3,11 @@ package de.tum.cit.aet.thesis.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import de.tum.cit.aet.thesis.constants.DataExportState;
-import de.tum.cit.aet.thesis.entity.DataExport;
+import de.tum.cit.aet.thesis.core.admin.constants.DataExportState;
+import de.tum.cit.aet.thesis.core.admin.entity.DataExport;
+import de.tum.cit.aet.thesis.core.admin.repository.DataExportRepository;
+import de.tum.cit.aet.thesis.core.user.repository.UserRepository;
 import de.tum.cit.aet.thesis.mock.BaseIntegrationTest;
-import de.tum.cit.aet.thesis.repository.DataExportRepository;
-import de.tum.cit.aet.thesis.repository.UserRepository;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -3,8 +3,9 @@ package de.tum.cit.aet.thesis.utility;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import de.tum.cit.aet.thesis.entity.User;
-import de.tum.cit.aet.thesis.exception.request.ResourceInvalidParametersException;
+import de.tum.cit.aet.thesis.core.exception.request.ResourceInvalidParametersException;
+import de.tum.cit.aet.thesis.core.user.entity.User;
+import de.tum.cit.aet.thesis.core.utility.HibernateHelper;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 

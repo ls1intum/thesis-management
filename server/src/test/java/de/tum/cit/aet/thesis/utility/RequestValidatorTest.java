@@ -2,7 +2,8 @@ package de.tum.cit.aet.thesis.utility;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import de.tum.cit.aet.thesis.exception.request.ResourceInvalidParametersException;
+import de.tum.cit.aet.thesis.core.exception.request.ResourceInvalidParametersException;
+import de.tum.cit.aet.thesis.core.utility.RequestValidator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

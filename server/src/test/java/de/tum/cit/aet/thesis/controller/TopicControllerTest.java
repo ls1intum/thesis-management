@@ -5,10 +5,10 @@ import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import de.tum.cit.aet.thesis.constants.ApplicationRejectReason;
-import de.tum.cit.aet.thesis.controller.payload.CloseTopicPayload;
-import de.tum.cit.aet.thesis.controller.payload.CreateApplicationPayload;
-import de.tum.cit.aet.thesis.controller.payload.ReplaceTopicPayload;
+import de.tum.cit.aet.thesis.core.application.constants.ApplicationRejectReason;
+import de.tum.cit.aet.thesis.core.application.controller.payload.CreateApplicationPayload;
+import de.tum.cit.aet.thesis.core.topic.controller.payload.CloseTopicPayload;
+import de.tum.cit.aet.thesis.core.topic.controller.payload.ReplaceTopicPayload;
 import de.tum.cit.aet.thesis.mock.BaseIntegrationTest;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

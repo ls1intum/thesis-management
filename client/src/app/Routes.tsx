@@ -1,65 +1,69 @@
 import React, { lazy, Suspense } from 'react'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
-import AuthenticatedArea from './layout/AuthenticatedArea/AuthenticatedArea'
-import PageLoader from '../components/PageLoader/PageLoader'
-import PublicArea from './layout/PublicArea/PublicArea'
-import { useAuthenticationContext } from '../hooks/authentication'
-import { useIsSmallerBreakpoint } from '../hooks/theme'
+import AuthenticatedArea from '@/app/layout/AuthenticatedArea/AuthenticatedArea'
+import PageLoader from '@/core/components/PageLoader/PageLoader'
+import PublicArea from '@/app/layout/PublicArea/PublicArea'
+import { useAuthenticationContext } from '@/core/hooks/authentication'
+import { useIsSmallerBreakpoint } from '@/core/hooks/theme'
 
-const NotFoundPage = lazy(() => import('../pages/NotFoundPage/NotFoundPage'))
-const PrivacyPage = lazy(() => import('../pages/PrivacyPage/PrivacyPage'))
-const ImprintPage = lazy(() => import('../pages/ImprintPage/ImprintPage'))
-const AboutPage = lazy(() => import('../pages/AboutPage/AboutPage'))
-const ThesisOverviewPage = lazy(() => import('../pages/ThesisOverviewPage/ThesisOverviewPage'))
+const NotFoundPage = lazy(() => import('@/app/pages/NotFoundPage/NotFoundPage'))
+const PrivacyPage = lazy(() => import('@/app/pages/PrivacyPage/PrivacyPage'))
+const ImprintPage = lazy(() => import('@/app/pages/ImprintPage/ImprintPage'))
+const AboutPage = lazy(() => import('@/app/pages/AboutPage/AboutPage'))
+const ThesisOverviewPage = lazy(
+  () => import('@/thesis/pages/ThesisOverviewPage/ThesisOverviewPage'),
+)
 const ResearchGroupAdminPage = lazy(
-  () => import('../pages/ResearchGroupAdminPage/ResearchGroupAdminPage'),
+  () => import('@/core/group/pages/ResearchGroupAdminPage/ResearchGroupAdminPage'),
 )
 
 const PresentationOverviewPage = lazy(
-  () => import('../pages/PresentationOverviewPage/PresentationOverviewPage'),
+  () => import('@/presentation/pages/PresentationOverviewPage/PresentationOverviewPage'),
 )
 
 const ResearchGroupSettingPage = lazy(
-  () => import('../pages/ResearchGroupSettingPage/ResearchGroupSettingPage'),
+  () => import('@/core/group/pages/ResearchGroupSettingPage/ResearchGroupSettingPage'),
 )
 const EmailTemplateEditPage = lazy(
   () =>
-    import('../pages/ResearchGroupSettingPage/components/EmailTemplateSettings/EmailTemplateEditPage'),
+    import('@/core/group/pages/ResearchGroupSettingPage/components/EmailTemplateSettings/EmailTemplateEditPage'),
 )
-const BrowseThesesPage = lazy(() => import('../pages/BrowseThesesPage/BrowseThesesPage'))
-const DashboardPage = lazy(() => import('../pages/DashboardPage/DashboardPage'))
-const LogoutPage = lazy(() => import('../pages/LogoutPage/LogoutPage'))
-const SettingsPage = lazy(() => import('../pages/SettingsPage/SettingsPage'))
+const BrowseThesesPage = lazy(() => import('@/thesis/pages/BrowseThesesPage/BrowseThesesPage'))
+const DashboardPage = lazy(() => import('@/core/admin/pages/DashboardPage/DashboardPage'))
+const LogoutPage = lazy(() => import('@/app/pages/LogoutPage/LogoutPage'))
+const SettingsPage = lazy(() => import('@/core/admin/pages/SettingsPage/SettingsPage'))
 const ReplaceApplicationPage = lazy(
-  () => import('../pages/ReplaceApplicationPage/ReplaceApplicationPage'),
+  () => import('@/core/application/pages/ReplaceApplicationPage/ReplaceApplicationPage'),
 )
-const ManageTopicsPage = lazy(() => import('../pages/ManageTopicsPage/ManageTopicsPage'))
-const TopicPage = lazy(() => import('../pages/TopicPage/TopicPage'))
-const PresentationPage = lazy(() => import('../pages/PresentationPage/PresentationPage'))
+const ManageTopicsPage = lazy(() => import('@/core/topic/pages/ManageTopicsPage/ManageTopicsPage'))
+const TopicPage = lazy(() => import('@/core/topic/pages/TopicPage/TopicPage'))
+const PresentationPage = lazy(
+  () => import('@/presentation/pages/PresentationPage/PresentationPage'),
+)
 const ReviewApplicationPage = lazy(
-  () => import('../pages/ReviewApplicationPage/ReviewApplicationPage'),
+  () => import('@/core/application/pages/ReviewApplicationPage/ReviewApplicationPage'),
 )
-const ThesisPage = lazy(() => import('../pages/ThesisPage/ThesisPage'))
-const LandingPage = lazy(() => import('../pages/LandingPage/LandingPage'))
+const ThesisPage = lazy(() => import('@/thesis/pages/ThesisPage/ThesisPage'))
+const LandingPage = lazy(() => import('@/app/pages/LandingPage/LandingPage'))
 
-const AdminPage = lazy(() => import('../pages/AdminPage/AdminPage'))
+const AdminPage = lazy(() => import('@/core/admin/pages/AdminPage/AdminPage'))
 const DependencyOverviewPage = lazy(
-  () => import('../pages/DependencyOverviewPage/DependencyOverviewPage'),
+  () => import('@/core/admin/pages/DependencyOverviewPage/DependencyOverviewPage'),
 )
 
 const InterviewOverviewPage = lazy(
-  () => import('../pages/InterviewOverviewPage/InterviewOverviewPage'),
+  () => import('@/interview/pages/InterviewOverviewPage/InterviewOverviewPage'),
 )
 const InterviewTopicOverviewPage = lazy(
-  () => import('../pages/InterviewTopicOverviewPage/InterviewTopicOverviewPage'),
+  () => import('@/interview/pages/InterviewTopicOverviewPage/InterviewTopicOverviewPage'),
 )
 const IntervieweeAssesmentPage = lazy(
-  () => import('../pages/IntervieweeAssementPage/IntervieweeAssesmentPage'),
+  () => import('@/interview/pages/IntervieweeAssementPage/IntervieweeAssesmentPage'),
 )
 const InterviewBookingPage = lazy(
-  () => import('../pages/InterviewBookingPage/InterviewBookingPage'),
+  () => import('@/interview/pages/InterviewBookingPage/InterviewBookingPage'),
 )
-const DataExportPage = lazy(() => import('../pages/DataExportPage/DataExportPage'))
+const DataExportPage = lazy(() => import('@/core/admin/pages/DataExportPage/DataExportPage'))
 
 const AppRoutes = () => {
   const auth = useAuthenticationContext()

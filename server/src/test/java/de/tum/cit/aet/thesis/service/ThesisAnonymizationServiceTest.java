@@ -2,33 +2,34 @@ package de.tum.cit.aet.thesis.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import de.tum.cit.aet.thesis.constants.ThesisCommentType;
-import de.tum.cit.aet.thesis.constants.ThesisFeedbackType;
-import de.tum.cit.aet.thesis.constants.ThesisRoleName;
-import de.tum.cit.aet.thesis.constants.ThesisState;
-import de.tum.cit.aet.thesis.constants.ThesisVisibility;
-import de.tum.cit.aet.thesis.entity.Thesis;
-import de.tum.cit.aet.thesis.entity.ThesisAssessment;
-import de.tum.cit.aet.thesis.entity.ThesisComment;
-import de.tum.cit.aet.thesis.entity.ThesisFeedback;
-import de.tum.cit.aet.thesis.entity.ThesisProposal;
-import de.tum.cit.aet.thesis.entity.ThesisRole;
-import de.tum.cit.aet.thesis.entity.ThesisStateChange;
-import de.tum.cit.aet.thesis.entity.User;
-import de.tum.cit.aet.thesis.entity.jsonb.ThesisMetadata;
-import de.tum.cit.aet.thesis.entity.key.ThesisRoleId;
-import de.tum.cit.aet.thesis.entity.key.ThesisStateChangeId;
+import de.tum.cit.aet.thesis.core.group.repository.ResearchGroupRepository;
+import de.tum.cit.aet.thesis.core.user.entity.User;
 import de.tum.cit.aet.thesis.mock.BaseIntegrationTest;
 import de.tum.cit.aet.thesis.mock.MutableClock;
-import de.tum.cit.aet.thesis.repository.ResearchGroupRepository;
-import de.tum.cit.aet.thesis.repository.ThesisAssessmentRepository;
-import de.tum.cit.aet.thesis.repository.ThesisCommentRepository;
-import de.tum.cit.aet.thesis.repository.ThesisFeedbackRepository;
-import de.tum.cit.aet.thesis.repository.ThesisFileRepository;
-import de.tum.cit.aet.thesis.repository.ThesisProposalRepository;
-import de.tum.cit.aet.thesis.repository.ThesisRepository;
-import de.tum.cit.aet.thesis.repository.ThesisRoleRepository;
-import de.tum.cit.aet.thesis.repository.ThesisStateChangeRepository;
+import de.tum.cit.aet.thesis.proposal.entity.ThesisProposal;
+import de.tum.cit.aet.thesis.proposal.repository.ThesisProposalRepository;
+import de.tum.cit.aet.thesis.thesis.constants.ThesisCommentType;
+import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackType;
+import de.tum.cit.aet.thesis.thesis.constants.ThesisRoleName;
+import de.tum.cit.aet.thesis.thesis.constants.ThesisState;
+import de.tum.cit.aet.thesis.thesis.constants.ThesisVisibility;
+import de.tum.cit.aet.thesis.thesis.entity.Thesis;
+import de.tum.cit.aet.thesis.thesis.entity.ThesisAssessment;
+import de.tum.cit.aet.thesis.thesis.entity.ThesisComment;
+import de.tum.cit.aet.thesis.thesis.entity.ThesisFeedback;
+import de.tum.cit.aet.thesis.thesis.entity.ThesisRole;
+import de.tum.cit.aet.thesis.thesis.entity.ThesisStateChange;
+import de.tum.cit.aet.thesis.thesis.entity.jsonb.ThesisMetadata;
+import de.tum.cit.aet.thesis.thesis.entity.key.ThesisRoleId;
+import de.tum.cit.aet.thesis.thesis.entity.key.ThesisStateChangeId;
+import de.tum.cit.aet.thesis.thesis.repository.ThesisAssessmentRepository;
+import de.tum.cit.aet.thesis.thesis.repository.ThesisCommentRepository;
+import de.tum.cit.aet.thesis.thesis.repository.ThesisFeedbackRepository;
+import de.tum.cit.aet.thesis.thesis.repository.ThesisFileRepository;
+import de.tum.cit.aet.thesis.thesis.repository.ThesisRepository;
+import de.tum.cit.aet.thesis.thesis.repository.ThesisRoleRepository;
+import de.tum.cit.aet.thesis.thesis.repository.ThesisStateChangeRepository;
+import de.tum.cit.aet.thesis.thesis.service.ThesisAnonymizationService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -184,9 +185,9 @@ class ThesisAnonymizationServiceTest extends BaseIntegrationTest {
 	}
 
 	@Autowired
-	private de.tum.cit.aet.thesis.repository.UserRepository userRepo;
+	private de.tum.cit.aet.thesis.core.user.repository.UserRepository userRepo;
 
-	private de.tum.cit.aet.thesis.repository.UserRepository userRepository() {
+	private de.tum.cit.aet.thesis.core.user.repository.UserRepository userRepository() {
 		return userRepo;
 	}
 

@@ -3,10 +3,11 @@ package de.tum.cit.aet.thesis.utility;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import de.tum.cit.aet.thesis.constants.ThesisState;
-import de.tum.cit.aet.thesis.entity.Thesis;
-import de.tum.cit.aet.thesis.entity.ThesisStateChange;
-import de.tum.cit.aet.thesis.entity.key.ThesisStateChangeId;
+import de.tum.cit.aet.thesis.core.utility.RetentionUtils;
+import de.tum.cit.aet.thesis.thesis.constants.ThesisState;
+import de.tum.cit.aet.thesis.thesis.entity.Thesis;
+import de.tum.cit.aet.thesis.thesis.entity.ThesisStateChange;
+import de.tum.cit.aet.thesis.thesis.entity.key.ThesisStateChangeId;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 

@@ -5,11 +5,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import de.tum.cit.aet.thesis.controller.payload.CreateEmailTemplatePayload;
-import de.tum.cit.aet.thesis.dto.MailVariableDto;
-import de.tum.cit.aet.thesis.dto.PaginationDto;
-import de.tum.cit.aet.thesis.entity.EmailTemplate;
-import de.tum.cit.aet.thesis.service.EmailTemplateService;
+import de.tum.cit.aet.thesis.core.dto.MailVariableDto;
+import de.tum.cit.aet.thesis.core.dto.PaginationDto;
+import de.tum.cit.aet.thesis.core.group.controller.EmailTemplateController;
+import de.tum.cit.aet.thesis.core.group.controller.payload.CreateEmailTemplatePayload;
+import de.tum.cit.aet.thesis.core.group.entity.EmailTemplate;
+import de.tum.cit.aet.thesis.core.group.service.EmailTemplateService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -51,7 +52,7 @@ class EmailTemplateControllerTest {
 				null
 		)).thenReturn(page);
 
-		ResponseEntity<PaginationDto<de.tum.cit.aet.thesis.dto.EmailTemplateDto>> response =
+		ResponseEntity<PaginationDto<de.tum.cit.aet.thesis.core.group.dto.EmailTemplateDto>> response =
 				emailTemplateController.getEmailTemplates(
 					"interview",
 					new String[]{"INTERVIEW_INVITATION"},

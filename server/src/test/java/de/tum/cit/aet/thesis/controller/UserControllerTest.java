@@ -6,10 +6,10 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.reset;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import de.tum.cit.aet.thesis.core.user.repository.UserRepository;
+import de.tum.cit.aet.thesis.core.user.service.AccessManagementService;
+import de.tum.cit.aet.thesis.core.user.service.AccessManagementService.KeycloakUserInformation;
 import de.tum.cit.aet.thesis.mock.BaseIntegrationTest;
-import de.tum.cit.aet.thesis.repository.UserRepository;
-import de.tum.cit.aet.thesis.service.AccessManagementService;
-import de.tum.cit.aet.thesis.service.AccessManagementService.KeycloakUserInformation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

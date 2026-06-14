@@ -1,0 +1,113 @@
+package de.tum.cit.aet.thesis.core.application.cron;
+
+import static java.util.stream.Collectors.toCollection;
+
+import de.tum.cit.aet.thesis.core.admin.service.MailingService;
+import de.tum.cit.aet.thesis.core.application.cron.model.ApplicationRejectObject;
+import de.tum.cit.aet.thesis.core.application.service.ApplicationService;
+import de.tum.cit.aet.thesis.core.group.entity.ResearchGroupSettings;
+import de.tum.cit.aet.thesis.core.group.repository.ResearchGroupSettingsRepository;
+import de.tum.cit.aet.thesis.core.topic.entity.Topic;
+import de.tum.cit.aet.thesis.core.topic.service.TopicService;
+import de.tum.cit.aet.thesis.core.user.entity.User;
+import de.tum.cit.aet.thesis.core.user.service.UserService;
+import de.tum.cit.aet.thesis.thesis.constants.ThesisRoleName;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/** Scheduled task that automatically rejects old applications based on research group settings. */
+@Component
+public class AutomaticRejects {
+	private static final Logger log = LoggerFactory.getLogger(ApplicationReminder.class);
+	private final ResearchGroupSettingsRepository researchGroupSettingsRepository;
+	private final TopicService topicService;
+	private final ApplicationService applicationService;
+	private final MailingService mailingService;
+	private final UserService userService;
+
+	/**
+	 * Injects the research group settings repository, topic, application, mailing, and user services.
+	 *
+	 * @param researchGroupSettingsRepository the research group settings repository
+	 * @param topicService the topic service
+	 * @param applicationService the application service
+	 * @param mailingService the mailing service
+	 * @param userService the user service
+	 */
+	public AutomaticRejects(ResearchGroupSettingsRepository researchGroupSettingsRepository,
+			TopicService topicService, ApplicationService applicationService,
+			MailingService mailingService, UserService userService) {
+		this.researchGroupSettingsRepository = researchGroupSettingsRepository;
+		this.topicService = topicService;
+		this.applicationService = applicationService;
+		this.mailingService = mailingService;
+		this.userService = userService;
+	}
+
+	@Scheduled(cron = "0 00 09 * * *")
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
+	@Transactional
+	public void rejectOldApplications() {
+		List<ResearchGroupSettings> enabledResearchGroups = researchGroupSettingsRepository.findAllByAutomaticRejectEnabled();
+		//Reject old applications for each research group that has enabled the feature
+		for (ResearchGroupSettings settings : enabledResearchGroups) {
+			Map<User, List<ApplicationRejectObject>> reminderApplicationsByUser = new HashMap<>();
+
+			List<Topic> publishedTopics = topicService.getPublishedFromResearchGroup(settings.getResearchGroupId());
+			for (Topic topic : publishedTopics) {
+				Instant referenceDate;
+
+				if (topic.getApplicationDeadline() != null) {
+					referenceDate = topic.getApplicationDeadline();
+				} else if (topic.getIntendedStart() != null) {
+					referenceDate = topic.getIntendedStart();
+				} else {
+					referenceDate = null;
+				}
+
+				applicationService.rejectAllApplicationsAutomatically(topic, settings.getRejectDuration(), referenceDate, settings.getResearchGroupId());
+
+				// Add the applications that will be rejected in the next 7 days to the map for sending reminders
+				List<ApplicationRejectObject> topicRejectsInNextSevenDays =
+					applicationService.getListOfApplicationsThatWillBeRejected(topic, settings.getRejectDuration(), referenceDate);
+				if (!topicRejectsInNextSevenDays.isEmpty()) {
+					topic.getRoles().forEach(role -> {
+						if (role.getId().getRole() == ThesisRoleName.SUPERVISOR || role.getId().getRole() == ThesisRoleName.EXAMINER) {
+							User loadEntireUser = userService.findById(role.getUser().getId());
+
+							if (!reminderApplicationsByUser.containsKey(role.getUser())) {
+								reminderApplicationsByUser.put(loadEntireUser, topicRejectsInNextSevenDays);
+							} else {
+								List<ApplicationRejectObject> existingApplications = reminderApplicationsByUser.get(role.getUser());
+								existingApplications.addAll(topicRejectsInNextSevenDays);
+								existingApplications =  existingApplications.stream().distinct().collect(toCollection(ArrayList::new));
+								reminderApplicationsByUser.put(loadEntireUser, existingApplications);
+							}
+						}
+					});
+				}
+			}
+
+
+			// Check All Unreviewed Suggested Topics and reject them if older than the duration
+			applicationService.rejectListOfApplicationsIfOlderThan(
+				applicationService.getNotAssesedSuggestedOfResearchGroup(settings.getResearchGroupId()),
+				settings.getRejectDuration() * 7, settings.getResearchGroupId());
+
+			for (User user : reminderApplicationsByUser.keySet()) {
+				mailingService.sendApplicationAutomaticRejectReminderEmail(user, reminderApplicationsByUser.get(user));
+			}
+		}
+
+		log.info("Scheduled Task to automatically reject application ran at {}", Instant.now());
+	}
+}

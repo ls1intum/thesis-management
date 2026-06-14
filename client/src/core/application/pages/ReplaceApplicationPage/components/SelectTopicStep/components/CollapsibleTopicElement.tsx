@@ -1,0 +1,175 @@
+import {
+  Accordion,
+  Card,
+  Group,
+  Stack,
+  Title,
+  Text,
+  Button,
+  Divider,
+  Grid,
+  Center,
+  Loader,
+} from '@mantine/core'
+import type { ITopicOverview, ITopic } from '@/core/topic/requests/responses/topic'
+import { TopicState } from '@/core/topic/requests/responses/topic'
+import ThesisTypeBadge from '@/app/pages/LandingPage/components/ThesisTypBadge/ThesisTypBadge'
+import type { IPublishedThesis } from '@/thesis/requests/responses/thesis'
+import { useHover } from '@mantine/hooks'
+import AvatarUserList from '@/core/components/AvatarUserList/AvatarUserList'
+import DocumentEditor from '@/core/components/DocumentEditor/DocumentEditor'
+import LabeledItem from '@/core/components/LabeledItem/LabeledItem'
+import { pluralize } from '@/core/utils/format'
+import { useTopic } from '@/core/hooks/fetcher'
+import { useState } from 'react'
+
+interface ICollapsibleTopicElementProps {
+  topic: IPublishedThesis | ITopicOverview
+  onApply?: (topic: ITopic | undefined) => unknown
+}
+
+const CollapsibleTopicElement = ({ topic, onApply }: ICollapsibleTopicElementProps) => {
+  const { hovered, ref } = useHover()
+  const [expanded, setExpanded] = useState(false)
+
+  const isTopicOverview = 'topicId' in topic
+  const fullTopic = useTopic(isTopicOverview && expanded ? topic.topicId : undefined)
+
+  const canApply = !fullTopic || fullTopic.state === TopicState.OPEN
+
+  return (
+    <Card
+      withBorder
+      shadow={hovered ? 'md' : 'xs'}
+      radius='md'
+      my='sm'
+      p={0}
+      style={{ cursor: 'pointer' }}
+      ref={ref}
+    >
+      <Accordion.Item value={`topic-card-${isTopicOverview ? topic.topicId : topic.thesisId}`}>
+        <Accordion.Control onClick={() => setExpanded(true)}>
+          <Stack gap={'0.5rem'}>
+            <Group gap={'0.75rem'}>
+              {isTopicOverview ? (
+                topic.thesisTypes?.length ? (
+                  topic.thesisTypes.map((type) => (
+                    <ThesisTypeBadge
+                      type={type}
+                      textColor='gray'
+                      textSize='xs'
+                      key={`${topic.topicId}-${type}`}
+                    />
+                  ))
+                ) : (
+                  <ThesisTypeBadge type='Any' key={'any'} textSize='xs' />
+                )
+              ) : (
+                <ThesisTypeBadge type={topic.type} textColor='gray' textSize='xs' />
+              )}
+            </Group>
+            <Stack gap={'0.25rem'}>
+              <Title order={5}>{topic.title}</Title>
+              <Title c={'dimmed'} order={6}>
+                {topic.researchGroup?.name ?? ''}
+              </Title>
+            </Stack>
+          </Stack>
+        </Accordion.Control>
+        <Accordion.Panel>
+          <Stack>
+            <Divider />
+            {isTopicOverview ? (
+              !expanded || fullTopic === undefined ? (
+                <Center py='md'>
+                  <Loader size='sm' />
+                </Center>
+              ) : fullTopic === false ? (
+                <Center py='md'>
+                  <Text c='dimmed' size='sm'>
+                    Failed to load topic details.
+                  </Text>
+                </Center>
+              ) : (
+                <>
+                  <Grid>
+                    <Grid.Col span={4}>
+                      {(fullTopic.examiners ?? []).length > 0 && (
+                        <LabeledItem
+                          label={pluralize('Examiner', fullTopic.examiners.length)}
+                          value={<AvatarUserList users={fullTopic.examiners} size='xs' />}
+                        />
+                      )}
+                    </Grid.Col>
+                    <Grid.Col span={8}>
+                      {(fullTopic.supervisors ?? []).length > 0 && (
+                        <LabeledItem
+                          label={pluralize('Supervisor', fullTopic.supervisors.length)}
+                          value={<AvatarUserList users={fullTopic.supervisors} size='xs' />}
+                        />
+                      )}
+                    </Grid.Col>
+                    <Grid.Col span={4}>
+                      <LabeledItem
+                        label={'Published At'}
+                        value={
+                          fullTopic.publishedAt
+                            ? new Date(fullTopic.publishedAt).toLocaleDateString()
+                            : '-'
+                        }
+                      />
+                    </Grid.Col>
+                    {fullTopic.applicationDeadline && (
+                      <Grid.Col span={4}>
+                        <LabeledItem
+                          label={'Application Deadline'}
+                          value={new Date(fullTopic.applicationDeadline).toLocaleDateString()}
+                        />
+                      </Grid.Col>
+                    )}
+                    {fullTopic.intendedStart && (
+                      <Grid.Col span={4}>
+                        <LabeledItem
+                          label={'Intended Start'}
+                          value={new Date(fullTopic.intendedStart).toLocaleDateString()}
+                        />
+                      </Grid.Col>
+                    )}
+                  </Grid>
+                  <DocumentEditor label='Problem Statement' value={fullTopic.problemStatement} />
+                  {fullTopic.requirements && (
+                    <DocumentEditor label='Requirements' value={fullTopic.requirements} />
+                  )}
+                  {fullTopic.goals && <DocumentEditor label='Goals' value={fullTopic.goals} />}
+                  {fullTopic.references && (
+                    <DocumentEditor label='References' value={fullTopic.references} />
+                  )}
+                </>
+              )
+            ) : (
+              <></>
+            )}
+            {onApply && isTopicOverview && (
+              <Stack gap='xs'>
+                <Button
+                  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- useTopic may return `false` (error sentinel) which must also map to undefined
+                  onClick={() => onApply(fullTopic || undefined)}
+                  fullWidth
+                  disabled={!canApply}
+                >
+                  Apply
+                </Button>
+                {!canApply && !!fullTopic && (
+                  <Text size='xs' c='dimmed' ta='center'>
+                    Applications are not open for this topic.
+                  </Text>
+                )}
+              </Stack>
+            )}
+          </Stack>
+        </Accordion.Panel>
+      </Accordion.Item>
+    </Card>
+  )
+}
+export default CollapsibleTopicElement

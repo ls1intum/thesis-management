@@ -2,7 +2,8 @@ package de.tum.cit.aet.thesis.mailvariables;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import de.tum.cit.aet.thesis.dto.MailVariableDto;
+import de.tum.cit.aet.thesis.core.dto.MailVariableDto;
+import de.tum.cit.aet.thesis.core.mailvariables.MailVariablesBuilder;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

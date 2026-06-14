@@ -1,23 +1,23 @@
 package de.tum.cit.aet.thesis.keycloak;
 
 import dasniko.testcontainers.keycloak.KeycloakContainer;
-import de.tum.cit.aet.thesis.repository.ApplicationRepository;
-import de.tum.cit.aet.thesis.repository.ApplicationReviewerRepository;
-import de.tum.cit.aet.thesis.repository.NotificationSettingRepository;
-import de.tum.cit.aet.thesis.repository.ThesisAssessmentRepository;
-import de.tum.cit.aet.thesis.repository.ThesisCommentRepository;
-import de.tum.cit.aet.thesis.repository.ThesisFeedbackRepository;
-import de.tum.cit.aet.thesis.repository.ThesisFileRepository;
-import de.tum.cit.aet.thesis.repository.ThesisPresentationInviteRepository;
-import de.tum.cit.aet.thesis.repository.ThesisPresentationRepository;
-import de.tum.cit.aet.thesis.repository.ThesisProposalRepository;
-import de.tum.cit.aet.thesis.repository.ThesisRepository;
-import de.tum.cit.aet.thesis.repository.ThesisRoleRepository;
-import de.tum.cit.aet.thesis.repository.ThesisStateChangeRepository;
-import de.tum.cit.aet.thesis.repository.TopicRepository;
-import de.tum.cit.aet.thesis.repository.TopicRoleRepository;
-import de.tum.cit.aet.thesis.repository.UserGroupRepository;
-import de.tum.cit.aet.thesis.repository.UserRepository;
+import de.tum.cit.aet.thesis.core.application.repository.ApplicationRepository;
+import de.tum.cit.aet.thesis.core.application.repository.ApplicationReviewerRepository;
+import de.tum.cit.aet.thesis.core.notification.repository.NotificationSettingRepository;
+import de.tum.cit.aet.thesis.core.topic.repository.TopicRepository;
+import de.tum.cit.aet.thesis.core.topic.repository.TopicRoleRepository;
+import de.tum.cit.aet.thesis.core.user.repository.UserGroupRepository;
+import de.tum.cit.aet.thesis.core.user.repository.UserRepository;
+import de.tum.cit.aet.thesis.presentation.repository.ThesisPresentationInviteRepository;
+import de.tum.cit.aet.thesis.presentation.repository.ThesisPresentationRepository;
+import de.tum.cit.aet.thesis.proposal.repository.ThesisProposalRepository;
+import de.tum.cit.aet.thesis.thesis.repository.ThesisAssessmentRepository;
+import de.tum.cit.aet.thesis.thesis.repository.ThesisCommentRepository;
+import de.tum.cit.aet.thesis.thesis.repository.ThesisFeedbackRepository;
+import de.tum.cit.aet.thesis.thesis.repository.ThesisFileRepository;
+import de.tum.cit.aet.thesis.thesis.repository.ThesisRepository;
+import de.tum.cit.aet.thesis.thesis.repository.ThesisRoleRepository;
+import de.tum.cit.aet.thesis.thesis.repository.ThesisStateChangeRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
 import org.keycloak.admin.client.Keycloak;
@@ -238,21 +238,21 @@ public abstract class BaseKeycloakIntegrationTest {
 	 * Creates a local user via /v2/user-info and seeds the given groups in user_groups.
 	 * Since updateAuthenticatedUser no longer syncs groups from JWT, tests must seed groups explicitly.
 	 */
-	protected de.tum.cit.aet.thesis.entity.User createLocalUserWithGroups(String username, String... groups)
+	protected de.tum.cit.aet.thesis.core.user.entity.User createLocalUserWithGroups(String username, String... groups)
 			throws Exception {
 		mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/v2/user-info")
 						.header("Authorization", authHeaderFor(username)))
 				.andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isOk());
 
-		de.tum.cit.aet.thesis.entity.User user = userRepository.findByUniversityId(username).orElseThrow();
+		de.tum.cit.aet.thesis.core.user.entity.User user = userRepository.findByUniversityId(username).orElseThrow();
 
 		// Clear auto-assigned groups (e.g. student from updateAuthenticatedUser)
 		// so only the explicitly requested groups are present
 		userGroupRepository.deleteByUserId(user.getId());
 
 		for (String group : groups) {
-			de.tum.cit.aet.thesis.entity.UserGroup ug = new de.tum.cit.aet.thesis.entity.UserGroup();
-			de.tum.cit.aet.thesis.entity.key.UserGroupId ugId = new de.tum.cit.aet.thesis.entity.key.UserGroupId();
+			de.tum.cit.aet.thesis.core.user.entity.UserGroup ug = new de.tum.cit.aet.thesis.core.user.entity.UserGroup();
+			de.tum.cit.aet.thesis.core.user.entity.key.UserGroupId ugId = new de.tum.cit.aet.thesis.core.user.entity.key.UserGroupId();
 			ugId.setUserId(user.getId());
 			ugId.setGroup(group);
 			ug.setId(ugId);

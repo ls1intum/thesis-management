@@ -3,15 +3,16 @@ package de.tum.cit.aet.thesis.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import de.tum.cit.aet.thesis.controller.payload.CreateThesisPayload;
-import de.tum.cit.aet.thesis.entity.User;
+import de.tum.cit.aet.thesis.core.application.repository.ApplicationRepository;
+import de.tum.cit.aet.thesis.core.notification.repository.NotificationSettingRepository;
+import de.tum.cit.aet.thesis.core.topic.repository.TopicRoleRepository;
+import de.tum.cit.aet.thesis.core.user.entity.User;
+import de.tum.cit.aet.thesis.core.user.repository.UserGroupRepository;
+import de.tum.cit.aet.thesis.core.user.repository.UserRepository;
+import de.tum.cit.aet.thesis.core.user.service.UserDeletionService;
 import de.tum.cit.aet.thesis.mock.BaseIntegrationTest;
-import de.tum.cit.aet.thesis.repository.ApplicationRepository;
-import de.tum.cit.aet.thesis.repository.NotificationSettingRepository;
-import de.tum.cit.aet.thesis.repository.ThesisRoleRepository;
-import de.tum.cit.aet.thesis.repository.TopicRoleRepository;
-import de.tum.cit.aet.thesis.repository.UserGroupRepository;
-import de.tum.cit.aet.thesis.repository.UserRepository;
+import de.tum.cit.aet.thesis.thesis.controller.payload.CreateThesisPayload;
+import de.tum.cit.aet.thesis.thesis.repository.ThesisRoleRepository;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -453,7 +454,7 @@ class UserDeletionServiceTest extends BaseIntegrationTest {
 			createTestResearchGroup("Block RG", supervisor.universityId());
 
 			org.junit.jupiter.api.Assertions.assertThrows(
-					de.tum.cit.aet.thesis.exception.request.AccessDeniedException.class,
+					de.tum.cit.aet.thesis.core.exception.request.AccessDeniedException.class,
 					() -> userDeletionService.deleteOrAnonymizeUser(supervisor.userId())
 			);
 
@@ -509,7 +510,7 @@ class UserDeletionServiceTest extends BaseIntegrationTest {
 			userDeletionService.deleteOrAnonymizeUser(student.userId());
 
 			org.junit.jupiter.api.Assertions.assertThrows(
-					de.tum.cit.aet.thesis.exception.request.AccessDeniedException.class,
+					de.tum.cit.aet.thesis.core.exception.request.AccessDeniedException.class,
 					() -> userDeletionService.deleteOrAnonymizeUser(student.userId())
 			);
 		}
@@ -520,7 +521,7 @@ class UserDeletionServiceTest extends BaseIntegrationTest {
 			userDeletionService.deleteOrAnonymizeUser(swt.student().userId());
 
 			org.junit.jupiter.api.Assertions.assertThrows(
-					de.tum.cit.aet.thesis.exception.request.AccessDeniedException.class,
+					de.tum.cit.aet.thesis.core.exception.request.AccessDeniedException.class,
 					() -> userDeletionService.deleteOrAnonymizeUser(swt.student().userId())
 			);
 		}

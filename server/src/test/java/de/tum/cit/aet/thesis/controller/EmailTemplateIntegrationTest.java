@@ -5,8 +5,8 @@ import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import de.tum.cit.aet.thesis.core.group.repository.EmailTemplateRepository;
 import de.tum.cit.aet.thesis.mock.BaseIntegrationTest;
-import de.tum.cit.aet.thesis.repository.EmailTemplateRepository;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

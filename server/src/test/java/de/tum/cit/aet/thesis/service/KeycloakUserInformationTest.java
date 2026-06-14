@@ -3,7 +3,7 @@ package de.tum.cit.aet.thesis.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import de.tum.cit.aet.thesis.service.AccessManagementService.KeycloakUserInformation;
+import de.tum.cit.aet.thesis.core.user.service.AccessManagementService.KeycloakUserInformation;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

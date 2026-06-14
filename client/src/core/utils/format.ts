@@ -1,0 +1,304 @@
+import type { ILightUser, IMinimalUser } from '@/core/user/requests/responses/user'
+import type { IThesis } from '@/thesis/requests/responses/thesis'
+import { ThesisState } from '@/thesis/requests/responses/thesis'
+import type { IApplication } from '@/core/application/requests/responses/application'
+import { ApplicationState } from '@/core/application/requests/responses/application'
+import { GLOBAL_CONFIG } from '@/core/config/global'
+import { InterviewState } from '@/interview/requests/responses/interview'
+import { TopicState } from '@/core/topic/requests/responses/topic'
+
+interface IFormatDateOptions {
+  withTime: boolean
+}
+
+export function formatDate(
+  date: string | Date | undefined | null,
+  options: Partial<IFormatDateOptions> = {},
+): string {
+  const { withTime }: IFormatDateOptions = {
+    withTime: true,
+    ...options,
+  }
+
+  if (typeof date === 'undefined' || date === null) {
+    return ''
+  }
+
+  const item = new Date(date)
+
+  // Use the locale's medium date style so the format is unambiguous in every locale
+  // (e.g. "Feb 12, 2026" in en-US, "12.02.2026" in de-DE) instead of the previously
+  // produced numeric "MM/D/YY" form, which is ambiguous between US and EU readers.
+  return item.toLocaleString(undefined, {
+    dateStyle: 'medium',
+    ...(withTime ? { timeStyle: 'short' } : {}),
+  })
+}
+
+interface IFormatUserOptions {
+  withUniversityId: boolean
+}
+
+export function formatUser(user: IMinimalUser, options: Partial<IFormatUserOptions> = {}) {
+  const { withUniversityId } = {
+    withUniversityId: false,
+    ...options,
+  }
+
+  let text = `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim()
+
+  if (withUniversityId && 'universityId' in user) {
+    text += ` (${(user as ILightUser).universityId})`
+  }
+
+  return text
+}
+
+export function wordsToFilename(words: string) {
+  return words.replace(/ /g, '_')
+}
+
+export function formatUserFilename(user: ILightUser): string {
+  return wordsToFilename(`${user.firstName ?? ''} ${user.lastName ?? ''}`.trim())
+}
+
+export function formatUsersFilename(users: ILightUser[]) {
+  return users.map((user) => formatUserFilename(user)).join(' ')
+}
+
+export function formatThesisFilename(
+  thesis: IThesis,
+  name: string,
+  originalFilename: string,
+  version: number,
+) {
+  let text = `${wordsToFilename(formatThesisType(thesis.type, true))}`
+
+  if (name) {
+    text += ` ${name}`
+  }
+
+  text += ` ${formatUsersFilename(thesis.students ?? [])}`
+
+  if (version > 0) {
+    text += ` v${version}`
+  }
+
+  const fileParts = originalFilename.split('.')
+
+  text += `.${fileParts[fileParts.length - 1]}`
+
+  return text
+}
+
+export function formatApplicationFilename(
+  application: IApplication,
+  name: string,
+  originalFilename: string,
+) {
+  let text = `Application`
+
+  if (name) {
+    text += ` ${name}`
+  }
+
+  text += ` ${formatUserFilename(application.user)}`
+
+  const fileParts = originalFilename.split('.')
+
+  text += `.${fileParts[fileParts.length - 1]}`
+
+  return text
+}
+
+export function formatThesisState(state: ThesisState) {
+  const stateMap: Record<ThesisState, string> = {
+    [ThesisState.PROPOSAL]: 'Proposal',
+    [ThesisState.WRITING]: 'Writing',
+    [ThesisState.SUBMITTED]: 'Submitted',
+    [ThesisState.ASSESSED]: 'Assessed',
+    [ThesisState.GRADED]: 'Graded',
+    [ThesisState.FINISHED]: 'Finished',
+    [ThesisState.DROPPED_OUT]: 'Dropped out',
+  }
+
+  return stateMap[state]
+}
+
+export function formatTopicState(state: TopicState) {
+  const stateMap: Record<TopicState, string> = {
+    [TopicState.OPEN]: 'Open',
+    [TopicState.DRAFT]: 'Draft',
+    [TopicState.CLOSED]: 'Closed',
+    [TopicState.EXPIRED]: 'Expired',
+  }
+
+  return stateMap[state]
+}
+
+export function formatApplicationState(state: ApplicationState) {
+  const stateMap: Record<ApplicationState, string> = {
+    [ApplicationState.ACCEPTED]: 'Accepted',
+    [ApplicationState.REJECTED]: 'Rejected',
+    [ApplicationState.NOT_ASSESSED]: 'Not assessed',
+    [ApplicationState.INTERVIEWING]: 'Interviewing',
+  }
+
+  return stateMap[state]
+}
+
+export function formatLanguage(language: string) {
+  return GLOBAL_CONFIG.languages[language] ?? language
+}
+
+export function getDefaultLanguage() {
+  const languages = Object.keys(GLOBAL_CONFIG.languages)
+
+  if (languages.length === 1) {
+    return languages[0]
+  }
+
+  return null
+}
+
+export function formatPresentationType(type: string) {
+  if (type === 'INTERMEDIATE') {
+    return 'Intermediate'
+  }
+
+  if (type === 'FINAL') {
+    return 'Final'
+  }
+
+  return type
+}
+
+export function formatThesisType(type: string | null | undefined, short = false) {
+  if (!type) {
+    return ''
+  }
+
+  if (short) {
+    return GLOBAL_CONFIG.thesis_types[type]?.short ?? type
+  }
+
+  return GLOBAL_CONFIG.thesis_types[type]?.long ?? type
+}
+
+export function pluralize(word: string, count: number) {
+  if (count === 1) {
+    return word
+  }
+
+  return `${word}s`
+}
+
+export function formatPresentationState(state: string) {
+  if (state === 'DRAFTED') {
+    return 'Draft'
+  }
+
+  if (state === 'SCHEDULED') {
+    return 'Scheduled'
+  }
+
+  return state
+}
+
+export function scoreColorTranslate(score: number | null, light: boolean = true): string {
+  switch (score) {
+    case 1:
+      return light ? 'red.2' : 'red.9'
+    case 2:
+      return light ? 'orange.2' : 'orange.9'
+    case 3:
+      return light ? 'yellow.2' : 'yellow.9'
+    case 4:
+      return light ? 'lime.2' : 'lime.9'
+    case 5:
+      return light ? 'green.2' : 'green.9'
+    default:
+      return light ? 'gray.2' : 'gray.9'
+  }
+}
+
+export function createScoreLabel(score: number): string {
+  switch (score) {
+    case 0:
+      return 'No Show'
+    case 1:
+      return 'Not a Fit'
+    case 2:
+      return 'Some Concerns'
+    case 3:
+      return 'Meets expectations'
+    case 4:
+      return 'Great Candidate'
+    case 5:
+      return 'Excellent'
+    default:
+      return 'No Score'
+  }
+}
+
+export function createInterviewStageLabel(score: number): string {
+  switch (score) {
+    case 1:
+      return 'Uncontacted'
+    case 2:
+      return 'Invited'
+    case 3:
+      return 'Scheduled'
+    case 4:
+      return 'Great Candidate'
+    case 5:
+      return 'Completed'
+    default:
+      return 'All'
+  }
+}
+
+export function getInterviewStateColor(state: InterviewState, isDark: boolean): string {
+  switch (state) {
+    case InterviewState.UNCONTACTED:
+      return 'primary.1'
+    case InterviewState.INVITED:
+      return 'primary.3'
+    case InterviewState.SCHEDULED:
+      return 'primary.5'
+    case InterviewState.COMPLETED:
+      return isDark ? 'primary.8' : 'primary.10'
+    default:
+      return 'gray'
+  }
+}
+
+export function formateStudyProgram(program: string) {
+  return GLOBAL_CONFIG.study_programs[program] ?? program
+}
+
+/**
+ * Ensures a user-supplied link target has an explicit scheme so it resolves as
+ * an absolute URL rather than as a relative path under the current page.
+ *
+ * Preserves any existing scheme (https:, http:, mailto:, tel:, ftp:, …) and
+ * leaves anchor-only / absolute-path hrefs untouched. Used by the rich-text
+ * editor when the user types a schemeless URL like "example.com" into the
+ * link popover. Regression coverage for #802.
+ */
+export function ensureAbsoluteLinkHref(href: string): string {
+  if (!href) return href
+  const trimmed = href.trim()
+  if (!trimmed) return trimmed
+  if (trimmed.startsWith('#') || trimmed.startsWith('/')) return trimmed
+  // Any URI scheme: lowercase letter followed by letters/digits/+/-/'.', then ':'.
+  if (/^[a-z][a-z0-9+.-]*:/i.test(trimmed)) return trimmed
+  return `https://${trimmed}`
+}
+
+export function normalizeUrl(url: string): string {
+  if (!/^https?:\/\//i.test(url)) {
+    return `https://${url}`
+  }
+  return url
+}

@@ -3,14 +3,14 @@ package de.tum.cit.aet.thesis.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import de.tum.cit.aet.thesis.constants.ThesisState;
-import de.tum.cit.aet.thesis.constants.ThesisVisibility;
-import de.tum.cit.aet.thesis.entity.Thesis;
-import de.tum.cit.aet.thesis.entity.ThesisRole;
+import de.tum.cit.aet.thesis.core.user.repository.UserRepository;
 import de.tum.cit.aet.thesis.mock.BaseIntegrationTest;
-import de.tum.cit.aet.thesis.repository.ThesisRepository;
-import de.tum.cit.aet.thesis.repository.ThesisRoleRepository;
-import de.tum.cit.aet.thesis.repository.UserRepository;
+import de.tum.cit.aet.thesis.thesis.constants.ThesisState;
+import de.tum.cit.aet.thesis.thesis.constants.ThesisVisibility;
+import de.tum.cit.aet.thesis.thesis.entity.Thesis;
+import de.tum.cit.aet.thesis.thesis.entity.ThesisRole;
+import de.tum.cit.aet.thesis.thesis.repository.ThesisRepository;
+import de.tum.cit.aet.thesis.thesis.repository.ThesisRoleRepository;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -174,7 +174,7 @@ class AvatarControllerTest extends BaseIntegrationTest {
 			// Find the supervisor on this thesis
 			ThesisRole role = thesisRoleRepository.findAll().stream()
 					.filter(r -> r.getId().getThesisId().equals(thesisId)
-							&& r.getId().getRole() != de.tum.cit.aet.thesis.constants.ThesisRoleName.STUDENT)
+							&& r.getId().getRole() != de.tum.cit.aet.thesis.thesis.constants.ThesisRoleName.STUDENT)
 					.findFirst().orElseThrow();
 			UUID supervisorUserId = role.getId().getUserId();
 

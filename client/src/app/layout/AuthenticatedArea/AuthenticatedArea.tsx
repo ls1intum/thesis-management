@@ -14,7 +14,7 @@ import {
   Text,
   Tooltip,
 } from '@mantine/core'
-import * as classes from './AuthenticatedArea.module.css'
+import * as classes from '@/app/layout/AuthenticatedArea/AuthenticatedArea.module.css'
 import { Link, useLocation } from 'react-router'
 import { useDebouncedValue, useDisclosure } from '@mantine/hooks'
 import {
@@ -34,21 +34,21 @@ import {
   ChatsCircleIcon,
   ShieldCheckIcon,
 } from '@phosphor-icons/react'
-import { useAuthenticationContext, useUser } from '../../../hooks/authentication'
+import { useAuthenticationContext, useUser } from '@/core/hooks/authentication'
 import { useNavigationType } from 'react-router'
-import ScrollToTop from '../ScrollToTop/ScrollToTop'
-import PageLoader from '../../../components/PageLoader/PageLoader'
-import { useLocalStorage } from '../../../hooks/local-storage'
-import { CustomAvatar } from '../../../components/CustomAvatar/CustomAvatar'
-import { formatUser } from '../../../utils/format'
-import ContentContainer from '../ContentContainer/ContentContainer'
-import Footer from '../../../components/Footer/Footer'
+import ScrollToTop from '@/app/layout/ScrollToTop/ScrollToTop'
+import PageLoader from '@/core/components/PageLoader/PageLoader'
+import { useLocalStorage } from '@/core/hooks/local-storage'
+import { CustomAvatar } from '@/core/components/CustomAvatar/CustomAvatar'
+import { formatUser } from '@/core/utils/format'
+import ContentContainer from '@/app/layout/ContentContainer/ContentContainer'
+import Footer from '@/core/components/Footer/Footer'
 import EnvironmentBanner, {
   ENVIRONMENT_BANNER_HEIGHT,
   isEnvironmentBannerVisible,
-} from '../../../components/EnvironmentBanner/EnvironmentBanner'
-import Header from '../../../components/Header/Header'
-import { useIsSmallerBreakpoint } from '../../../hooks/theme'
+} from '@/core/components/EnvironmentBanner/EnvironmentBanner'
+import Header from '@/core/components/Header/Header'
+import { useIsSmallerBreakpoint } from '@/core/hooks/theme'
 
 export interface IAuthenticatedAreaProps {
   size?: MantineSize

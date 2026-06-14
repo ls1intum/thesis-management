@@ -1,0 +1,227 @@
+import type { PropsWithChildren, ReactNode } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { doRequest } from '@/core/requests/request'
+import type { PaginationResponse } from '@/core/requests/responses/pagination'
+import type {
+  IApplicationsContext,
+  IApplicationsFilters,
+  IApplicationsSort,
+} from '@/core/application/providers/ApplicationsProvider/context'
+import { ApplicationsContext } from '@/core/application/providers/ApplicationsProvider/context'
+import type {
+  ApplicationState,
+  IApplication,
+} from '@/core/application/requests/responses/application'
+import { useDebouncedValue } from '@mantine/hooks'
+import { showSimpleError } from '@/core/utils/notification'
+import { getApiResponseErrorMessage } from '@/core/requests/handler'
+import { useAllTopics } from '@/core/hooks/fetcher'
+import { useLoggedInUser } from '@/core/hooks/authentication'
+
+interface IApplicationsProviderProps {
+  fetchAll?: boolean
+  limit: number
+  defaultStates?: ApplicationState[]
+  defaultTopics?: string[]
+  showOnlyAssignedTopics?: boolean
+  hideIfEmpty?: boolean
+  emptyComponent?: ReactNode
+}
+
+const ApplicationsProvider = (props: PropsWithChildren<IApplicationsProviderProps>) => {
+  const {
+    children,
+    limit,
+    defaultStates,
+    defaultTopics,
+    showOnlyAssignedTopics,
+    fetchAll = false,
+    hideIfEmpty = false,
+    emptyComponent,
+  } = props
+
+  const user = useLoggedInUser()
+  const topics = useAllTopics()
+
+  const [applications, setApplications] = useState<PaginationResponse<IApplication>>()
+  const [page, setPage] = useState(0)
+
+  const previousContent = useRef<string[]>([])
+
+  const [filters, setFilters] = useState<IApplicationsFilters>({
+    states: defaultStates,
+    topics: defaultTopics,
+    includeSuggestedTopics: true,
+  })
+  const [sort, setSort] = useState<IApplicationsSort>({
+    column: 'createdAt',
+    direction: 'desc',
+  })
+
+  const adjustedFilters = useMemo(() => {
+    const copiedFilters = { ...filters }
+
+    if (showOnlyAssignedTopics && typeof copiedFilters.topics === 'undefined') {
+      copiedFilters.topics = [
+        'NO_TOPIC',
+        ...(topics ?? [])
+          .filter(
+            (topic) =>
+              (topic.examiners ?? []).some((examiner) => examiner.userId === user.userId) ||
+              (topic.supervisors ?? []).some((supervisor) => supervisor.userId === user.userId),
+          )
+          .map((topic) => topic.topicId),
+      ]
+    }
+
+    return copiedFilters
+  }, [filters, topics, user.userId, showOnlyAssignedTopics])
+
+  const [debouncedSearch] = useDebouncedValue(adjustedFilters.search ?? '', 500)
+
+  const filterStatesKey = adjustedFilters.states?.join(',')
+  const filterTopicsKey = adjustedFilters.topics?.join(',')
+  const filterTypesKey = adjustedFilters.types?.join(',')
+  const topicsLoaded = !!topics
+
+  useEffect(() => {
+    setPage(0)
+  }, [sort, adjustedFilters])
+
+  useEffect(() => {
+    setApplications(undefined)
+
+    if (!topics) {
+      return
+    }
+
+    if (page === 0) {
+      previousContent.current = []
+    }
+
+    return doRequest<PaginationResponse<IApplication>>(
+      `/v2/applications`,
+      {
+        method: 'GET',
+        requiresAuth: true,
+        params: {
+          fetchAll: fetchAll ? 'true' : 'false',
+          previous: previousContent.current.join(','),
+          search: debouncedSearch,
+          state: adjustedFilters.states?.join(',') ?? '',
+          type: adjustedFilters.types?.join(',') ?? '',
+          topic:
+            adjustedFilters.topics
+              ?.map((topicId) =>
+                topicId === 'NO_TOPIC' ? '00000000-0000-0000-0000-000000000000' : topicId,
+              )
+              .join(',') ?? '',
+          includeSuggestedTopics:
+            adjustedFilters.includeSuggestedTopics === false ? 'false' : 'true',
+          limit,
+          page,
+          sortBy: sort.column,
+          sortOrder: sort.direction,
+        },
+      },
+      (res) => {
+        if (!res.ok) {
+          showSimpleError(getApiResponseErrorMessage(res))
+
+          return setApplications({
+            content: [],
+            totalPages: 0,
+            totalElements: 0,
+            last: true,
+            pageNumber: 0,
+            pageSize: limit,
+          })
+        }
+
+        previousContent.current.push(...(res.data.content ?? []).map((item) => item.applicationId))
+        setApplications(res.data)
+      },
+    )
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- adjustedFilters.states/topics/types are tracked via the joined key consts above to avoid identity-based reruns
+  }, [
+    fetchAll,
+    page,
+    limit,
+    sort,
+    filterStatesKey,
+    filterTopicsKey,
+    filterTypesKey,
+    adjustedFilters.includeSuggestedTopics,
+    debouncedSearch,
+    topicsLoaded,
+  ])
+
+  const fetchApplication = async (applicationId: string): Promise<IApplication | null> => {
+    return new Promise((resolve) => {
+      doRequest<IApplication>(
+        `/v2/applications/${applicationId}`,
+        {
+          method: 'GET',
+          requiresAuth: true,
+        },
+        (res) => {
+          if (res.ok) {
+            resolve(res.data)
+          } else {
+            showSimpleError(getApiResponseErrorMessage(res))
+            resolve(null)
+          }
+        },
+      )
+    })
+  }
+
+  const contextState = useMemo<IApplicationsContext>(() => {
+    return {
+      topics,
+      applications,
+      filters: adjustedFilters,
+      setFilters: (value) => {
+        setPage(0)
+        setFilters(value)
+      },
+      sort,
+      setSort: (value) => {
+        setPage(0)
+        setSort(value)
+      },
+      page,
+      setPage,
+      limit,
+      updateApplication: (newApplication) => {
+        setApplications((prev) => {
+          if (!prev) {
+            return undefined
+          }
+
+          const index = (prev.content ?? []).findIndex(
+            (x) => x.applicationId === newApplication.applicationId,
+          )
+
+          if (index >= 0) {
+            const content = prev.content ?? []
+            content[index] = newApplication
+
+            return { ...prev, content }
+          }
+
+          return { ...prev }
+        })
+      },
+      fetchApplication,
+    }
+  }, [topics, applications, adjustedFilters, sort, page, limit])
+
+  if (hideIfEmpty && page === 0 && (!applications || (applications.content ?? []).length === 0)) {
+    return <>{emptyComponent}</>
+  }
+
+  return <ApplicationsContext value={contextState}>{children}</ApplicationsContext>
+}
+
+export default ApplicationsProvider

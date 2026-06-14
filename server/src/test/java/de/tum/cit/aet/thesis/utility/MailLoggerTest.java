@@ -2,6 +2,7 @@ package de.tum.cit.aet.thesis.utility;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import de.tum.cit.aet.thesis.core.utility.MailLogger;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 

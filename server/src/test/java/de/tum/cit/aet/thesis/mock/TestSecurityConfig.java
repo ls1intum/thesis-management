@@ -1,8 +1,8 @@
 package de.tum.cit.aet.thesis.mock;
 
 import com.auth0.jwt.JWT;
-import de.tum.cit.aet.thesis.repository.UserGroupRepository;
-import de.tum.cit.aet.thesis.service.AccessManagementService;
+import de.tum.cit.aet.thesis.core.user.repository.UserGroupRepository;
+import de.tum.cit.aet.thesis.core.user.service.AccessManagementService;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;

@@ -1,6 +1,6 @@
 package de.tum.cit.aet.thesis;
 
-import de.tum.cit.aet.thesis.utility.TimeLogUtil;
+import de.tum.cit.aet.thesis.core.utility.TimeLogUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

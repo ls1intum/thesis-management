@@ -3,10 +3,10 @@ package de.tum.cit.aet.thesis.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import de.tum.cit.aet.thesis.constants.ApplicationRejectReason;
-import de.tum.cit.aet.thesis.controller.payload.AcceptApplicationPayload;
-import de.tum.cit.aet.thesis.controller.payload.CreateApplicationPayload;
-import de.tum.cit.aet.thesis.controller.payload.RejectApplicationPayload;
+import de.tum.cit.aet.thesis.core.application.constants.ApplicationRejectReason;
+import de.tum.cit.aet.thesis.core.application.controller.payload.AcceptApplicationPayload;
+import de.tum.cit.aet.thesis.core.application.controller.payload.CreateApplicationPayload;
+import de.tum.cit.aet.thesis.core.application.controller.payload.RejectApplicationPayload;
 import de.tum.cit.aet.thesis.mock.BaseIntegrationTest;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

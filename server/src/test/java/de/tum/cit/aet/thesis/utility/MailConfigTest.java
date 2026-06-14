@@ -3,7 +3,8 @@ package de.tum.cit.aet.thesis.utility;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-import de.tum.cit.aet.thesis.repository.UserRepository;
+import de.tum.cit.aet.thesis.core.user.repository.UserRepository;
+import de.tum.cit.aet.thesis.core.utility.MailConfig;
 import org.junit.jupiter.api.Test;
 import org.thymeleaf.TemplateEngine;
 
