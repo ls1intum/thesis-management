@@ -141,7 +141,7 @@ jobs:
 
       - name: Serve client static bundle
         working-directory: ./client
-        run: pnpm dlx serve@14 -s build -l 3100 -c serve.e2e.json --no-clipboard --no-port-switching &
+        run: pnpm dlx serve@14 -s build -l 3100 -c ../serve.e2e.json --no-clipboard --no-port-switching &
 
       # Wait for both services to be ready
       - name: Wait for server to be ready
