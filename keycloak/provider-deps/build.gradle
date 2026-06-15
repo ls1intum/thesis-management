@@ -15,7 +15,7 @@ configurations {
 }
 
 dependencies {
-    keycloakProvider "de.tum.cit.aet:keycloak-redirectless-passkey:1.3.2"
+    keycloakProvider "de.tum.cit.aet:keycloak-redirectless-passkey:1.4.0"
 }
 
 tasks.register("copyProviders", Copy) {
