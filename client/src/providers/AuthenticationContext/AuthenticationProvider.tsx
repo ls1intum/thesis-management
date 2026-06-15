@@ -266,7 +266,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
 
   const initializeKeycloakSession = async (
     tokens?: IAuthenticationTokens,
-    options?: { passkeyFlow?: boolean },
+    options?: { checkSso?: boolean },
   ) => {
     unsetKeycloakListeners()
 
@@ -274,7 +274,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
     setKeycloakListeners(keycloak)
 
     const authenticated = await keycloak.init(
-      getKeycloakInitOptions(tokens, options?.passkeyFlow ?? false),
+      getKeycloakInitOptions(tokens, options?.checkSso ?? false),
     )
     await storeTokens(keycloak)
 
@@ -314,7 +314,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
 
     const storedTokens = getAuthenticationTokens()
 
-    void initializeKeycloakSession(storedTokens)
+    void initializeKeycloakSession(storedTokens, { checkSso: true })
       .then(() => {
         triggerReadySignal()
       })
@@ -558,7 +558,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
           }
 
           const authenticated = await initializeKeycloakSession(undefined, {
-            passkeyFlow: true,
+            checkSso: true,
           })
           if (!authenticated) {
             throw new Error('No active Keycloak session detected after passkey authentication')
