@@ -8,3 +8,4 @@ RUN ./gradlew --no-daemon build copyProviders
 
 FROM quay.io/keycloak/keycloak:26.6
 COPY --from=provider-build /workspace/build/providers/ /opt/keycloak/providers/
+RUN /opt/keycloak/bin/kc.sh build
