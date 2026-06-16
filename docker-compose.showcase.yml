@@ -48,7 +48,9 @@ services:
       - "5444:5432"
 
   keycloak:
-    image: quay.io/keycloak/keycloak:26.6
+    build:
+      context: .
+      dockerfile: keycloak/Dockerfile
     container_name: thesis-management-showcase-keycloak
     environment:
       KC_BOOTSTRAP_ADMIN_USERNAME: admin

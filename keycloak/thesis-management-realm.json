@@ -517,6 +517,7 @@
   "webAuthnPolicyPasswordlessAvoidSameAuthenticatorRegister": false,
   "webAuthnPolicyPasswordlessAcceptableAaguids": [],
   "webAuthnPolicyPasswordlessExtraOrigins": [],
+  "webAuthnPolicyPasswordlessPasskeysEnabled": true,
   "users": [
     {
       "id": "7751d41a-a788-4f6b-9af9-b0b10ec91e98",
@@ -854,6 +855,37 @@
         {
           "type": "password",
           "value": "student5",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "default-roles-thesis-management"
+      ],
+      "clientRoles": {
+        "thesis-management-app": [
+          "student"
+        ]
+      },
+      "groups": [
+        "/thesis-students"
+      ]
+    },
+    {
+      "username": "passkey_user",
+      "email": "passkey_user@test.local",
+      "firstName": "Passkey",
+      "lastName": "User",
+      "emailVerified": true,
+      "enabled": true,
+      "attributes": {
+        "matrikelnr": [
+          "03700011"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "passkey_user",
           "temporary": false
         }
       ],
