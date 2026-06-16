@@ -270,6 +270,18 @@ public class ResearchGroupService {
 				.replace("_", "\\_");
 	}
 
+	/**
+	 * Updates the mutable attributes of a research group and re-assigns its head.
+	 *
+	 * @param researchGroup the research group to update
+	 * @param headUsername the university ID of the new head
+	 * @param name the new name
+	 * @param abbreviation the new abbreviation
+	 * @param description the new description
+	 * @param websiteUrl the new website URL
+	 * @param campus the new campus
+	 * @return the updated research group
+	 */
 	public ResearchGroup updateResearchGroup(
 			ResearchGroup researchGroup,
 			String headUsername,

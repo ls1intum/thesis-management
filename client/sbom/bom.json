@@ -14,7 +14,7 @@
         {
           "type": "application",
           "name": "pnpm",
-          "version": "11.2.2"
+          "version": "11.7.0"
         }
       ]
     },
@@ -623,18 +623,18 @@
     {
       "type": "library",
       "name": "ast",
-      "version": "5.8.3",
-      "purl": "pkg:npm/%40eslint-react/ast@5.8.3",
-      "bom-ref": "pkg:npm/%40eslint-react/ast@5.8.3",
+      "version": "5.9.0",
+      "purl": "pkg:npm/%40eslint-react/ast@5.9.0",
+      "bom-ref": "pkg:npm/%40eslint-react/ast@5.9.0",
       "group": "@eslint-react",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@eslint-react/ast/-/ast-5.8.3.tgz",
+          "url": "https://registry.npmjs.org/@eslint-react/ast/-/ast-5.9.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "8f00af9c453fbb37680103059df909aefc4caca3009c8a1a176571b6c6af9def077036b7bf8216cb2df94aa4dc8a29abad24e64e8c8ee16979cc0f2eade6288a"
+              "content": "0f90e66ec106618987382d89ebc0510b6889858b03e0ad31f26965801d3c49e490d13fe73f6051a2083fa219f965e44c6fced90ea37a36d191ec6eea4f080e4b"
             }
           ]
         }
@@ -643,18 +643,18 @@
     {
       "type": "library",
       "name": "core",
-      "version": "5.8.3",
-      "purl": "pkg:npm/%40eslint-react/core@5.8.3",
-      "bom-ref": "pkg:npm/%40eslint-react/core@5.8.3",
+      "version": "5.9.0",
+      "purl": "pkg:npm/%40eslint-react/core@5.9.0",
+      "bom-ref": "pkg:npm/%40eslint-react/core@5.9.0",
       "group": "@eslint-react",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@eslint-react/core/-/core-5.8.3.tgz",
+          "url": "https://registry.npmjs.org/@eslint-react/core/-/core-5.9.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "993c30eb89e246c5283caed6bb97b00b91b1a48d707380c0d9f4c82d8b61d65aaea3905b46d04b16369a34db66856ffcb39fc88e5abe0a7345bc0a38777e0dcd"
+              "content": "1b30114a52d3253dc563db143bd6d82e816d822b94a0d2b356febca099230087a66e2bbfeacd6fca3b3f23fd4f12dfa9114e9ebb984f8ca1c95f37786e848399"
             }
           ]
         }
@@ -663,18 +663,18 @@
     {
       "type": "library",
       "name": "eslint-plugin",
-      "version": "5.8.3",
-      "purl": "pkg:npm/%40eslint-react/eslint-plugin@5.8.3",
-      "bom-ref": "pkg:npm/%40eslint-react/eslint-plugin@5.8.3",
+      "version": "5.9.0",
+      "purl": "pkg:npm/%40eslint-react/eslint-plugin@5.9.0",
+      "bom-ref": "pkg:npm/%40eslint-react/eslint-plugin@5.9.0",
       "group": "@eslint-react",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@eslint-react/eslint-plugin/-/eslint-plugin-5.8.3.tgz",
+          "url": "https://registry.npmjs.org/@eslint-react/eslint-plugin/-/eslint-plugin-5.9.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "f6969cb0664246aa818ccb1211eb6bf3234e7dbf46a8195b63de9c384560e0131f318be232b61adf1f4e0a1a0dfba603b9848ed91dd669f68939f585169acbe1"
+              "content": "0501622e1c606271a5762c9d79c8e34574888b11d4b186fc60d49d96b1a4a1053764589d5ba77947423545ea28cfc0c083f9bab23c19d7b311551366dd9e0fc8"
             }
           ]
         }
@@ -683,18 +683,18 @@
     {
       "type": "library",
       "name": "eslint",
-      "version": "5.8.3",
-      "purl": "pkg:npm/%40eslint-react/eslint@5.8.3",
-      "bom-ref": "pkg:npm/%40eslint-react/eslint@5.8.3",
+      "version": "5.9.0",
+      "purl": "pkg:npm/%40eslint-react/eslint@5.9.0",
+      "bom-ref": "pkg:npm/%40eslint-react/eslint@5.9.0",
       "group": "@eslint-react",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@eslint-react/eslint/-/eslint-5.8.3.tgz",
+          "url": "https://registry.npmjs.org/@eslint-react/eslint/-/eslint-5.9.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "41c9d01839fdecd968e98a5564c3cc06ad9ce197e134fdcd40e3118d14acd90165f148aed336f1ccaa300dfbd8e6eeb2dbcfa38a6fc85d00a7995c59b73a56b0"
+              "content": "3c424f3572e3ce5a5dab6038fbd5e555d6338993c6abbc0cf8f07c8ed994ceead0b99f1da9f0a806240dbaefbc4d830f19eb759548c78628c23bc30cf6611fae"
             }
           ]
         }
@@ -703,18 +703,18 @@
     {
       "type": "library",
       "name": "jsx",
-      "version": "5.8.3",
-      "purl": "pkg:npm/%40eslint-react/jsx@5.8.3",
-      "bom-ref": "pkg:npm/%40eslint-react/jsx@5.8.3",
+      "version": "5.9.0",
+      "purl": "pkg:npm/%40eslint-react/jsx@5.9.0",
+      "bom-ref": "pkg:npm/%40eslint-react/jsx@5.9.0",
       "group": "@eslint-react",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@eslint-react/jsx/-/jsx-5.8.3.tgz",
+          "url": "https://registry.npmjs.org/@eslint-react/jsx/-/jsx-5.9.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "d500098ccec1b8721e5e7bb8efb1535585260b01f913da2dc37a3377957cee5460e334601dd6544254b06aeb4d165fdeeedd2748ee00e0613c43f02f625ab6f8"
+              "content": "75cea105a80b802b7e0929164898dbc8f0c619cb3f27da874ddca6310af0e756cef83233b50a6ecb8d84e3612339dc5671ac37534794b6edf7d2764470aa8633"
             }
           ]
         }
@@ -723,18 +723,18 @@
     {
       "type": "library",
       "name": "shared",
-      "version": "5.8.3",
-      "purl": "pkg:npm/%40eslint-react/shared@5.8.3",
-      "bom-ref": "pkg:npm/%40eslint-react/shared@5.8.3",
+      "version": "5.9.0",
+      "purl": "pkg:npm/%40eslint-react/shared@5.9.0",
+      "bom-ref": "pkg:npm/%40eslint-react/shared@5.9.0",
       "group": "@eslint-react",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@eslint-react/shared/-/shared-5.8.3.tgz",
+          "url": "https://registry.npmjs.org/@eslint-react/shared/-/shared-5.9.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "1a617eff4dbcf6a1d00d47f2356476097e52e8a94ec96f02d59c5f98755e246d8e1d111a2e3123bcb6ec9e1f44813a650cbfa409c2f6f215509f6218c80effe3"
+              "content": "2e7db9e584d351294e36bf9ed0bbb5c22d97f5f4ee3a534d24d5d3cfa3d868d64503008d59d96193314bf077480603e258f50aaedf8e32e6a1f28d315681ecc0"
             }
           ]
         }
@@ -743,18 +743,18 @@
     {
       "type": "library",
       "name": "var",
-      "version": "5.8.3",
-      "purl": "pkg:npm/%40eslint-react/var@5.8.3",
-      "bom-ref": "pkg:npm/%40eslint-react/var@5.8.3",
+      "version": "5.9.0",
+      "purl": "pkg:npm/%40eslint-react/var@5.9.0",
+      "bom-ref": "pkg:npm/%40eslint-react/var@5.9.0",
       "group": "@eslint-react",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@eslint-react/var/-/var-5.8.3.tgz",
+          "url": "https://registry.npmjs.org/@eslint-react/var/-/var-5.9.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "cfacdfd179fccdb94ab9c9c463dbd35f779503dd4dbf3236905342833e5826eace53f2585807582b480a0b35082819e57ce1644bb36ef78aa89b7a1273672e24"
+              "content": "bcdcf8cb878529161eb628578a266e78680296cc93161477925b4c0cfc2867225a111764c9ea14ca5634f4e9d66a42458ad6a8d7eb3678191256e16a03c76aac"
             }
           ]
         }
@@ -863,18 +863,18 @@
     {
       "type": "library",
       "name": "plugin-kit",
-      "version": "0.7.1",
-      "purl": "pkg:npm/%40eslint/plugin-kit@0.7.1",
-      "bom-ref": "pkg:npm/%40eslint/plugin-kit@0.7.1",
+      "version": "0.7.2",
+      "purl": "pkg:npm/%40eslint/plugin-kit@0.7.2",
+      "bom-ref": "pkg:npm/%40eslint/plugin-kit@0.7.2",
       "group": "@eslint",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@eslint/plugin-kit/-/plugin-kit-0.7.1.tgz",
+          "url": "https://registry.npmjs.org/@eslint/plugin-kit/-/plugin-kit-0.7.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "ad900fdda56007d76cf4a39e5122fecd9db584f9a8f1d87a7e7205c11423e4401997d83347bc3161b617632b0033c093a869941b2a764b8914755d7b3271ae59"
+              "content": "f82340cf182592ba4d7ff90acb0a907e4ef8423b5c7ae384ed09be005f26891bcf17fc2698ae7e3893a0561dc05534f744fda61f7f8539ac65139bfbda8c24d0"
             }
           ]
         }
@@ -1703,18 +1703,18 @@
     {
       "type": "library",
       "name": "carousel",
-      "version": "9.2.0",
-      "purl": "pkg:npm/%40mantine/carousel@9.2.0",
-      "bom-ref": "pkg:npm/%40mantine/carousel@9.2.0",
+      "version": "9.3.1",
+      "purl": "pkg:npm/%40mantine/carousel@9.3.1",
+      "bom-ref": "pkg:npm/%40mantine/carousel@9.3.1",
       "group": "@mantine",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@mantine/carousel/-/carousel-9.2.0.tgz",
+          "url": "https://registry.npmjs.org/@mantine/carousel/-/carousel-9.3.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "57f30667e19d192ea0628021fa3385ffcce66c2d383310a76e3067aea88dc48519121141181a7d56b019741f6b2bbb9740d266ec913e7ff4b7eab9fcc66d5bd9"
+              "content": "bb6a79be85512d410c6ad491c5ec46669967dd0c7078ab615202f77022edd6492ab6fb607608632096dbbf7aa6379d8da179f60270b393413f384693d2ebcf88"
             }
           ]
         }
@@ -1723,18 +1723,18 @@
     {
       "type": "library",
       "name": "core",
-      "version": "9.2.0",
-      "purl": "pkg:npm/%40mantine/core@9.2.0",
-      "bom-ref": "pkg:npm/%40mantine/core@9.2.0",
+      "version": "9.3.1",
+      "purl": "pkg:npm/%40mantine/core@9.3.1",
+      "bom-ref": "pkg:npm/%40mantine/core@9.3.1",
       "group": "@mantine",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@mantine/core/-/core-9.2.0.tgz",
+          "url": "https://registry.npmjs.org/@mantine/core/-/core-9.3.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "af582d2b31e7658761b243dffcc0721a34a8d859ada5596d4a6136e99b0f338e611f1a94afe2f7f4fdfbe34a216bd6fa9da7f0cd0d1d27e1cb9bf978dc4e930f"
+              "content": "e2b0681e98204a885ac84f8eb3b94a75bb074f0ee6fee6512988e4f4337a70a0614088dd8942dd706f9be1be42315652a990c73e04fbd2e58623bcaa927f147f"
             }
           ]
         }
@@ -1743,18 +1743,18 @@
     {
       "type": "library",
       "name": "dates",
-      "version": "9.2.0",
-      "purl": "pkg:npm/%40mantine/dates@9.2.0",
-      "bom-ref": "pkg:npm/%40mantine/dates@9.2.0",
+      "version": "9.3.1",
+      "purl": "pkg:npm/%40mantine/dates@9.3.1",
+      "bom-ref": "pkg:npm/%40mantine/dates@9.3.1",
       "group": "@mantine",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@mantine/dates/-/dates-9.2.0.tgz",
+          "url": "https://registry.npmjs.org/@mantine/dates/-/dates-9.3.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "a5e8891330ed5534a3ad7cb388a976d970c488ecbace70a380d88ea6d4bc2d5267c4da68e8fe9fc88f911ba9248d6d54e1d972e5b701f9eba0baf23bdf0723e7"
+              "content": "361e17432c95d403345d19d426e81bd6435f0a6fbe9e4b6272c3bc6aba0a9853d9edca4657b72374bfb830934fbb56ad4b511478f5e5d952cba4a9eb725a6a39"
             }
           ]
         }
@@ -1763,18 +1763,18 @@
     {
       "type": "library",
       "name": "dropzone",
-      "version": "9.2.0",
-      "purl": "pkg:npm/%40mantine/dropzone@9.2.0",
-      "bom-ref": "pkg:npm/%40mantine/dropzone@9.2.0",
+      "version": "9.3.1",
+      "purl": "pkg:npm/%40mantine/dropzone@9.3.1",
+      "bom-ref": "pkg:npm/%40mantine/dropzone@9.3.1",
       "group": "@mantine",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@mantine/dropzone/-/dropzone-9.2.0.tgz",
+          "url": "https://registry.npmjs.org/@mantine/dropzone/-/dropzone-9.3.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "6302b3582691d0c901062973094bdc175d488618c3e141f21d4095a7beea828a329fbc4404266a9399f4f6668639aa77455acbf9f4d949be9135a4575d414525"
+              "content": "5ac8ec307f4d533e72f57011fef3946f26fecb45f42ae77a295d4aff1511c2b6f17a76b66f5b65f96be33ceffabd1889793a4594cba8585ffc9f0aa7c681947a"
             }
           ]
         }
@@ -1783,18 +1783,18 @@
     {
       "type": "library",
       "name": "form",
-      "version": "9.2.0",
-      "purl": "pkg:npm/%40mantine/form@9.2.0",
-      "bom-ref": "pkg:npm/%40mantine/form@9.2.0",
+      "version": "9.3.1",
+      "purl": "pkg:npm/%40mantine/form@9.3.1",
+      "bom-ref": "pkg:npm/%40mantine/form@9.3.1",
       "group": "@mantine",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@mantine/form/-/form-9.2.0.tgz",
+          "url": "https://registry.npmjs.org/@mantine/form/-/form-9.3.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "d1a39dbe7197c53215f9cf8bb593be2465b7a29ceb6c274ee61ff760483e78e5a3725fde5ba5a79a94c937be6bb9776b4123fd645ba8fa6ec2541b2ba7471730"
+              "content": "74624f7181a47c39c03ca1dc9f381fda64a59e3c3299a3b244e89310935b6e3137395a166cf6b0f07c0429abf5c004ddc4d611f41c35187b5b7db193b26d49c3"
             }
           ]
         }
@@ -1803,18 +1803,18 @@
     {
       "type": "library",
       "name": "hooks",
-      "version": "9.2.0",
-      "purl": "pkg:npm/%40mantine/hooks@9.2.0",
-      "bom-ref": "pkg:npm/%40mantine/hooks@9.2.0",
+      "version": "9.3.1",
+      "purl": "pkg:npm/%40mantine/hooks@9.3.1",
+      "bom-ref": "pkg:npm/%40mantine/hooks@9.3.1",
       "group": "@mantine",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@mantine/hooks/-/hooks-9.2.0.tgz",
+          "url": "https://registry.npmjs.org/@mantine/hooks/-/hooks-9.3.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "c52b77dc5f38fb3804487ab284942f553bc218dd46c9052e1c8be1d5c0196af5caed4c32d05a9c927a3fe4e3f6f59349520bbe1ff8d8b9296ebb5d34b4c51e01"
+              "content": "cc03a5c55e7d8f90838009c4c4dfb2a5a47a7555b5bf030a0ef294c4895455dfdee76ab16273f26110feb21266c8e2da651b9099517447fee62408edda3c3d70"
             }
           ]
         }
@@ -1823,18 +1823,18 @@
     {
       "type": "library",
       "name": "notifications",
-      "version": "9.2.0",
-      "purl": "pkg:npm/%40mantine/notifications@9.2.0",
-      "bom-ref": "pkg:npm/%40mantine/notifications@9.2.0",
+      "version": "9.3.1",
+      "purl": "pkg:npm/%40mantine/notifications@9.3.1",
+      "bom-ref": "pkg:npm/%40mantine/notifications@9.3.1",
       "group": "@mantine",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@mantine/notifications/-/notifications-9.2.0.tgz",
+          "url": "https://registry.npmjs.org/@mantine/notifications/-/notifications-9.3.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "368d89992e78908e1d5cfcc198c9e72dedc0d218f6da4dbb527607a84b52a17aef2e1671a6970ffd80fb6b79b76e17a6a9fbd0c52e61bae5b3da037ed6f9e017"
+              "content": "8ab903f6eb338157edb616c22ddfb8952eccd639212f8b15ad9012bfcfb8dda2249dc5bea1090216906e68e01feae45c323990ed79cab363bc6d763397f0ea81"
             }
           ]
         }
@@ -1843,18 +1843,18 @@
     {
       "type": "library",
       "name": "store",
-      "version": "9.2.0",
-      "purl": "pkg:npm/%40mantine/store@9.2.0",
-      "bom-ref": "pkg:npm/%40mantine/store@9.2.0",
+      "version": "9.3.1",
+      "purl": "pkg:npm/%40mantine/store@9.3.1",
+      "bom-ref": "pkg:npm/%40mantine/store@9.3.1",
       "group": "@mantine",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@mantine/store/-/store-9.2.0.tgz",
+          "url": "https://registry.npmjs.org/@mantine/store/-/store-9.3.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "9dd7baeb913d475ffd4f1b130ce8a98e58647e8412fbc6014ec7ee1e285cbc6159ac1934c436359acc40871f32a92dcbedfba06052831a9489aedd372264729e"
+              "content": "519f3018a7c5fcd14c1c20e5d5177433c5ed1ddb785b5c37578a2136915268fde74a327e0aed454fe8885ad5f00b43a085af179ee550eef9bf770d8151fa70fa"
             }
           ]
         }
@@ -1863,18 +1863,18 @@
     {
       "type": "library",
       "name": "tiptap",
-      "version": "9.2.0",
-      "purl": "pkg:npm/%40mantine/tiptap@9.2.0",
-      "bom-ref": "pkg:npm/%40mantine/tiptap@9.2.0",
+      "version": "9.3.1",
+      "purl": "pkg:npm/%40mantine/tiptap@9.3.1",
+      "bom-ref": "pkg:npm/%40mantine/tiptap@9.3.1",
       "group": "@mantine",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@mantine/tiptap/-/tiptap-9.2.0.tgz",
+          "url": "https://registry.npmjs.org/@mantine/tiptap/-/tiptap-9.3.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "d9adc59465fdd3bb63a4fc446ecdac12fb764db9d887247c92822c3372a921312be7d748aa6eee9940d020f77cc43e92494e865422c705b7db24df1d994a4f04"
+              "content": "b6b5d9ea637aa77ba4c6e74eb82f2bf8f6a903b51543f6b3e1c48e9a21379bc9f5b3721ca326a2c0007997688cfc37fd941ca1b3507a91af121b517a59d6b635"
             }
           ]
         }
@@ -1923,18 +1923,18 @@
     {
       "type": "library",
       "name": "types",
-      "version": "0.129.0",
-      "purl": "pkg:npm/%40oxc-project/types@0.129.0",
-      "bom-ref": "pkg:npm/%40oxc-project/types@0.129.0",
+      "version": "0.133.0",
+      "purl": "pkg:npm/%40oxc-project/types@0.133.0",
+      "bom-ref": "pkg:npm/%40oxc-project/types@0.133.0",
       "group": "@oxc-project",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@oxc-project/types/-/types-0.129.0.tgz",
+          "url": "https://registry.npmjs.org/@oxc-project/types/-/types-0.133.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "de8cfc9b714676bda70d756a985530ee3a252a5882e0ca325d8206d9cee0a63067cd4590a5418861c5d82b14dd4e2f8dda3bacbedeb5d1c913324c5dc0791812"
+              "content": "2b391d09de94c6a9dfea5dc73b0d717dab40954511034835e1cbc1605c89e5268d3906ce52f06bf4f280adc3dcacd21e46c05d81c533386ae12af795a6f38818"
             }
           ]
         }
@@ -2483,18 +2483,18 @@
     {
       "type": "library",
       "name": "core",
-      "version": "0.2.9",
-      "purl": "pkg:npm/%40pkgr/core@0.2.9",
-      "bom-ref": "pkg:npm/%40pkgr/core@0.2.9",
+      "version": "0.3.6",
+      "purl": "pkg:npm/%40pkgr/core@0.3.6",
+      "bom-ref": "pkg:npm/%40pkgr/core@0.3.6",
       "group": "@pkgr",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@pkgr/core/-/core-0.2.9.tgz",
+          "url": "https://registry.npmjs.org/@pkgr/core/-/core-0.3.6.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "40da97c9f552db09bd870792603d8eec5d06d3abaeae3f6467de9345013963d854efeb60759c0891b00a73939ccb51f1118da4b8341ae9c435591b3f3b92c528"
+              "content": "48479a24b6f7a81345fce6979da4753669816c5624d730b4647ff9d9f0137113cb160fe9efdd58adcc85172e38068f6c2da1ae4ae2e9e50e9ac5b6ff3bebff44"
             }
           ]
         }
@@ -2503,18 +2503,18 @@
     {
       "type": "library",
       "name": "test",
-      "version": "1.60.0",
-      "purl": "pkg:npm/%40playwright/test@1.60.0",
-      "bom-ref": "pkg:npm/%40playwright/test@1.60.0",
+      "version": "1.61.0",
+      "purl": "pkg:npm/%40playwright/test@1.61.0",
+      "bom-ref": "pkg:npm/%40playwright/test@1.61.0",
       "group": "@playwright",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@playwright/test/-/test-1.60.0.tgz",
+          "url": "https://registry.npmjs.org/@playwright/test/-/test-1.61.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "3bbd726486c087f3f10cc3469ecdfb1870487eb564115ca7f805f221ae5d3937dbe3fc4dbd1595f95bff34c6cd0ad38307fa4eeef2e517639398c54b866afb02"
+              "content": "70a03907a9691443323068f1179e108a17d8a41e05904187faa661b40ac3106fb07b3400258f0faba0bb4f54a35b3f85173b774dbca85c141893fd36f764dd24"
             }
           ]
         }
@@ -2543,18 +2543,18 @@
     {
       "type": "library",
       "name": "binding-android-arm64",
-      "version": "1.0.0",
-      "purl": "pkg:npm/%40rolldown/binding-android-arm64@1.0.0",
-      "bom-ref": "pkg:npm/%40rolldown/binding-android-arm64@1.0.0",
+      "version": "1.0.3",
+      "purl": "pkg:npm/%40rolldown/binding-android-arm64@1.0.3",
+      "bom-ref": "pkg:npm/%40rolldown/binding-android-arm64@1.0.3",
       "group": "@rolldown",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@rolldown/binding-android-arm64/-/binding-android-arm64-1.0.0.tgz",
+          "url": "https://registry.npmjs.org/@rolldown/binding-android-arm64/-/binding-android-arm64-1.0.3.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "4d63199d12cc7badc2d8b87289cbe2bbb647694e24c5ae8f4b7ae87ef73d1a672fa6dccd375d4171f4384a5eccc133ac8ac4286b691e07f10174d0809d4a3cbc"
+              "content": "e39e2bb3b8c79e08b1a7f34cc5de6cad80f9ece9f34a567f7854c44e33914072f0246d6546d98d3897017ab6657eee068caa9eabc68208842b31d1f2848e751f"
             }
           ]
         }
@@ -2563,18 +2563,18 @@
     {
       "type": "library",
       "name": "binding-darwin-arm64",
-      "version": "1.0.0",
-      "purl": "pkg:npm/%40rolldown/binding-darwin-arm64@1.0.0",
-      "bom-ref": "pkg:npm/%40rolldown/binding-darwin-arm64@1.0.0",
+      "version": "1.0.3",
+      "purl": "pkg:npm/%40rolldown/binding-darwin-arm64@1.0.3",
+      "bom-ref": "pkg:npm/%40rolldown/binding-darwin-arm64@1.0.3",
       "group": "@rolldown",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@rolldown/binding-darwin-arm64/-/binding-darwin-arm64-1.0.0.tgz",
+          "url": "https://registry.npmjs.org/@rolldown/binding-darwin-arm64/-/binding-darwin-arm64-1.0.3.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "e97703fbc93480f548b4d6a0130efcfeaa9c043c0a7300d84bc576851995b1f51222b77c7167bf081bd10c8e6da2a1723df8fe149afab7c53a5e3d8fda9ac47b"
+              "content": "3dc0213feca78d444dcb2f122869790d03fde1a1ae07fec9ad725bfedecffa16a75ef415316cd4bd1461040720fe535169d061a143ea4a83f8c70e6d47f28110"
             }
           ]
         }
@@ -2583,18 +2583,18 @@
     {
       "type": "library",
       "name": "binding-darwin-x64",
-      "version": "1.0.0",
-      "purl": "pkg:npm/%40rolldown/binding-darwin-x64@1.0.0",
-      "bom-ref": "pkg:npm/%40rolldown/binding-darwin-x64@1.0.0",
+      "version": "1.0.3",
+      "purl": "pkg:npm/%40rolldown/binding-darwin-x64@1.0.3",
+      "bom-ref": "pkg:npm/%40rolldown/binding-darwin-x64@1.0.3",
       "group": "@rolldown",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@rolldown/binding-darwin-x64/-/binding-darwin-x64-1.0.0.tgz",
+          "url": "https://registry.npmjs.org/@rolldown/binding-darwin-x64/-/binding-darwin-x64-1.0.3.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "88dfed5955d14035af99994a75c78fd43c2e83d183a44ca685bf69e319c47bacef0a0e65166cd596397ed6a475355c77c9f1a9af635af82b8b9afe4853cbb37d"
+              "content": "f58a5f794bd2136452ef0cac27cd6e399917273edfed0e791f61afa77544c3f12c6a1a83b6ba61ad9d04c032cae6fbca3b3682ac1b2317c2669cc2dc52defc1a"
             }
           ]
         }
@@ -2603,18 +2603,18 @@
     {
       "type": "library",
       "name": "binding-freebsd-x64",
-      "version": "1.0.0",
-      "purl": "pkg:npm/%40rolldown/binding-freebsd-x64@1.0.0",
-      "bom-ref": "pkg:npm/%40rolldown/binding-freebsd-x64@1.0.0",
+      "version": "1.0.3",
+      "purl": "pkg:npm/%40rolldown/binding-freebsd-x64@1.0.3",
+      "bom-ref": "pkg:npm/%40rolldown/binding-freebsd-x64@1.0.3",
       "group": "@rolldown",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@rolldown/binding-freebsd-x64/-/binding-freebsd-x64-1.0.0.tgz",
+          "url": "https://registry.npmjs.org/@rolldown/binding-freebsd-x64/-/binding-freebsd-x64-1.0.3.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "8e340c0efbf048eba13b032ccc3fe49523a3c9630cdf323ae215938fd293e71e0cc516d901ffbbbcb43aaa8b9186db0b5451ebddfd082da2407e010d3e241d01"
+              "content": "c81d48940b123479dc57a4824cbdbbfcc54647986dbd0b281b122fe4a3065c02e9f8b975c18b27fb1f7c33d316eea6be35d49bbebad8ec0348e302c9d27d5eea"
             }
           ]
         }
@@ -2623,18 +2623,18 @@
     {
       "type": "library",
       "name": "binding-linux-arm-gnueabihf",
-      "version": "1.0.0",
-      "purl": "pkg:npm/%40rolldown/binding-linux-arm-gnueabihf@1.0.0",
-      "bom-ref": "pkg:npm/%40rolldown/binding-linux-arm-gnueabihf@1.0.0",
+      "version": "1.0.3",
+      "purl": "pkg:npm/%40rolldown/binding-linux-arm-gnueabihf@1.0.3",
+      "bom-ref": "pkg:npm/%40rolldown/binding-linux-arm-gnueabihf@1.0.3",
       "group": "@rolldown",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@rolldown/binding-linux-arm-gnueabihf/-/binding-linux-arm-gnueabihf-1.0.0.tgz",
+          "url": "https://registry.npmjs.org/@rolldown/binding-linux-arm-gnueabihf/-/binding-linux-arm-gnueabihf-1.0.3.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "77ffc3b60db1ebf9b799b57ae325063670c6359683191a432cb3467ab1d051539bb8d68841a683a76e72522a865ed1c45d7f8d3f6774c009662a0a58808009d8"
+              "content": "622df42150007cb502cb632c7858db0758c030397554c0806ace52b67629f1d6bdf822af31dd87d9c6c48d6730e4d3da3eacef624548685d673541be6fbbbfb3"
             }
           ]
         }
@@ -2643,18 +2643,18 @@
     {
       "type": "library",
       "name": "binding-linux-arm64-gnu",
-      "version": "1.0.0",
-      "purl": "pkg:npm/%40rolldown/binding-linux-arm64-gnu@1.0.0",
-      "bom-ref": "pkg:npm/%40rolldown/binding-linux-arm64-gnu@1.0.0",
+      "version": "1.0.3",
+      "purl": "pkg:npm/%40rolldown/binding-linux-arm64-gnu@1.0.3",
+      "bom-ref": "pkg:npm/%40rolldown/binding-linux-arm64-gnu@1.0.3",
       "group": "@rolldown",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@rolldown/binding-linux-arm64-gnu/-/binding-linux-arm64-gnu-1.0.0.tgz",
+          "url": "https://registry.npmjs.org/@rolldown/binding-linux-arm64-gnu/-/binding-linux-arm64-gnu-1.0.3.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "9fb39fa749b1f9a076702f92772e58b4c9d7b58f657219c76d8fb762dd2eabd26c5901317f87f95a1bb4b4ad11f0975cf52e917214c78c8158eee73dda9b8e55"
+              "content": "8ec3bb47c4e8f80765620526379b0748265b7e1b4c0643b4594c7c88e4509cf70c31d82beea3360d098cc2069bb371a1373b5d9a82a430a4051c3e834cc08843"
             }
           ]
         }
@@ -2663,18 +2663,18 @@
     {
       "type": "library",
       "name": "binding-linux-arm64-musl",
-      "version": "1.0.0",
-      "purl": "pkg:npm/%40rolldown/binding-linux-arm64-musl@1.0.0",
-      "bom-ref": "pkg:npm/%40rolldown/binding-linux-arm64-musl@1.0.0",
+      "version": "1.0.3",
+      "purl": "pkg:npm/%40rolldown/binding-linux-arm64-musl@1.0.3",
+      "bom-ref": "pkg:npm/%40rolldown/binding-linux-arm64-musl@1.0.3",
       "group": "@rolldown",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@rolldown/binding-linux-arm64-musl/-/binding-linux-arm64-musl-1.0.0.tgz",
+          "url": "https://registry.npmjs.org/@rolldown/binding-linux-arm64-musl/-/binding-linux-arm64-musl-1.0.3.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "108563cb672077bbae30ca3de05564069ec5e8385c640530354464486dd1c149af01747ab34212c4cf3553e23275c641c8f1b4a59207b1fd5bea44f1a050e024"
+              "content": "5569141f05ab8837228adf34c25798c0a20ba11fca32fc61fc87704bfa5a5fe660a6e4690ab28b51d69d25b7343690448b286961ac2c27bde3f5a0af387f9fed"
             }
           ]
         }
@@ -2683,18 +2683,18 @@
     {
       "type": "library",
       "name": "binding-linux-ppc64-gnu",
-      "version": "1.0.0",
-      "purl": "pkg:npm/%40rolldown/binding-linux-ppc64-gnu@1.0.0",
-      "bom-ref": "pkg:npm/%40rolldown/binding-linux-ppc64-gnu@1.0.0",
+      "version": "1.0.3",
+      "purl": "pkg:npm/%40rolldown/binding-linux-ppc64-gnu@1.0.3",
+      "bom-ref": "pkg:npm/%40rolldown/binding-linux-ppc64-gnu@1.0.3",
       "group": "@rolldown",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@rolldown/binding-linux-ppc64-gnu/-/binding-linux-ppc64-gnu-1.0.0.tgz",
+          "url": "https://registry.npmjs.org/@rolldown/binding-linux-ppc64-gnu/-/binding-linux-ppc64-gnu-1.0.3.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "244c3038f7304cb01ca43425a929a31267eceb7c499d28943481af2dc0cb5070962b85e8c294bfedceed52c507eae4ff72de9b3144dd5ca7c8f3debb1588fa9a"
+              "content": "e5fd65682d12948474c836c509df1a71486f2486a0e8ddf30b93fba143cdeb05f468e99afae289d300431f96aaec8d4f548dadb53961270cf04480672e248612"
             }
           ]
         }
@@ -2703,18 +2703,18 @@
     {
       "type": "library",
       "name": "binding-linux-s390x-gnu",
-      "version": "1.0.0",
-      "purl": "pkg:npm/%40rolldown/binding-linux-s390x-gnu@1.0.0",
-      "bom-ref": "pkg:npm/%40rolldown/binding-linux-s390x-gnu@1.0.0",
+      "version": "1.0.3",
+      "purl": "pkg:npm/%40rolldown/binding-linux-s390x-gnu@1.0.3",
+      "bom-ref": "pkg:npm/%40rolldown/binding-linux-s390x-gnu@1.0.3",
       "group": "@rolldown",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@rolldown/binding-linux-s390x-gnu/-/binding-linux-s390x-gnu-1.0.0.tgz",
+          "url": "https://registry.npmjs.org/@rolldown/binding-linux-s390x-gnu/-/binding-linux-s390x-gnu-1.0.3.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "d308c21612eb8a1b40b9b9d3f6203437efb4a52574cf91e0eed34674d27844568835c78769da05fa48851b2635a9248d548019b4ba2d1bc26ed5b8033e48e714"
+              "content": "22ae24a34af85ec81bac5fcbba73601ed0062d1455136917a2701743f315d260ba8d0a4c3a15b54afb598dad84842fe4774e7ef9b3fbf1db2a05e210c9827a62"
             }
           ]
         }
@@ -2723,18 +2723,18 @@
     {
       "type": "library",
       "name": "binding-linux-x64-gnu",
-      "version": "1.0.0",
-      "purl": "pkg:npm/%40rolldown/binding-linux-x64-gnu@1.0.0",
-      "bom-ref": "pkg:npm/%40rolldown/binding-linux-x64-gnu@1.0.0",
+      "version": "1.0.3",
+      "purl": "pkg:npm/%40rolldown/binding-linux-x64-gnu@1.0.3",
+      "bom-ref": "pkg:npm/%40rolldown/binding-linux-x64-gnu@1.0.3",
       "group": "@rolldown",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@rolldown/binding-linux-x64-gnu/-/binding-linux-x64-gnu-1.0.0.tgz",
+          "url": "https://registry.npmjs.org/@rolldown/binding-linux-x64-gnu/-/binding-linux-x64-gnu-1.0.3.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "0df9fb89a93d05c30c78fc5ca097e949b5aa9c4caba7f75117adfff2a5bf78705d399a2feb1e5a4a12cb11819874879227abcc2cafd709507e9462319b8d5b40"
+              "content": "07c9bab43e7efcde4578d4056ca94b03fdb256af727103f549e79dc8461829604d4776506e4bc851c3670cd334de53b5979176ae88a21491a0be82cbc995ed4a"
             }
           ]
         }
@@ -2743,18 +2743,18 @@
     {
       "type": "library",
       "name": "binding-linux-x64-musl",
-      "version": "1.0.0",
-      "purl": "pkg:npm/%40rolldown/binding-linux-x64-musl@1.0.0",
-      "bom-ref": "pkg:npm/%40rolldown/binding-linux-x64-musl@1.0.0",
+      "version": "1.0.3",
+      "purl": "pkg:npm/%40rolldown/binding-linux-x64-musl@1.0.3",
+      "bom-ref": "pkg:npm/%40rolldown/binding-linux-x64-musl@1.0.3",
       "group": "@rolldown",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@rolldown/binding-linux-x64-musl/-/binding-linux-x64-musl-1.0.0.tgz",
+          "url": "https://registry.npmjs.org/@rolldown/binding-linux-x64-musl/-/binding-linux-x64-musl-1.0.3.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "e7fbadcf30e60ffa43fdb9ae69471b4dffec658cb46b3b7021595fa685b57d38c267405a3ce31558664bd73be0c728bb6485585a5c4a38d1e649b1ee88e87c27"
+              "content": "a5276975424792e0b1ba7f4b13b8ef81407daac4606a2c8d3425fb9bf02f1d372aebb0224ff621a31bf0e733df86b33c93f05f3fc71efe130ea6d84a0e9114a3"
             }
           ]
         }
@@ -2763,18 +2763,18 @@
     {
       "type": "library",
       "name": "binding-openharmony-arm64",
-      "version": "1.0.0",
-      "purl": "pkg:npm/%40rolldown/binding-openharmony-arm64@1.0.0",
-      "bom-ref": "pkg:npm/%40rolldown/binding-openharmony-arm64@1.0.0",
+      "version": "1.0.3",
+      "purl": "pkg:npm/%40rolldown/binding-openharmony-arm64@1.0.3",
+      "bom-ref": "pkg:npm/%40rolldown/binding-openharmony-arm64@1.0.3",
       "group": "@rolldown",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@rolldown/binding-openharmony-arm64/-/binding-openharmony-arm64-1.0.0.tgz",
+          "url": "https://registry.npmjs.org/@rolldown/binding-openharmony-arm64/-/binding-openharmony-arm64-1.0.3.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "a2e26cf15714a267cb7e96d4102a85311a9d578c7a69e00adcc0389babd3ac92632b25935792a7c59c7b25df46f86943690431b9b71b6b4d31d7a3b227599e8a"
+              "content": "3975d2dd1289817dae2f033e818cae1f9a26707f1f2f52c9b3dea964682d7ad5426a138de7bf9de12247cd381988e8f18069129e95e93ac5ae3c31802808a012"
             }
           ]
         }
@@ -2783,18 +2783,18 @@
     {
       "type": "library",
       "name": "binding-wasm32-wasi",
-      "version": "1.0.0",
-      "purl": "pkg:npm/%40rolldown/binding-wasm32-wasi@1.0.0",
-      "bom-ref": "pkg:npm/%40rolldown/binding-wasm32-wasi@1.0.0",
+      "version": "1.0.3",
+      "purl": "pkg:npm/%40rolldown/binding-wasm32-wasi@1.0.3",
+      "bom-ref": "pkg:npm/%40rolldown/binding-wasm32-wasi@1.0.3",
       "group": "@rolldown",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@rolldown/binding-wasm32-wasi/-/binding-wasm32-wasi-1.0.0.tgz",
+          "url": "https://registry.npmjs.org/@rolldown/binding-wasm32-wasi/-/binding-wasm32-wasi-1.0.3.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "13ea0728688303e96c28c985b5f7c30f0f7512bc834fbb89a1cac8b821ea866e9b09333ac452bede06829183877cfc10af470235aad2336c5a10ba100f3f6326"
+              "content": "253b5bf01585ca789c352a0fade86c0b306d38a8d9ea384c88f14498e8ae5e0d4597c767d8a1d0a1bf86b8f48647476bc906b53d025bce317776a3bfc218632e"
             }
           ]
         }
@@ -2803,18 +2803,18 @@
     {
       "type": "library",
       "name": "binding-win32-arm64-msvc",
-      "version": "1.0.0",
-      "purl": "pkg:npm/%40rolldown/binding-win32-arm64-msvc@1.0.0",
-      "bom-ref": "pkg:npm/%40rolldown/binding-win32-arm64-msvc@1.0.0",
+      "version": "1.0.3",
+      "purl": "pkg:npm/%40rolldown/binding-win32-arm64-msvc@1.0.3",
+      "bom-ref": "pkg:npm/%40rolldown/binding-win32-arm64-msvc@1.0.3",
       "group": "@rolldown",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@rolldown/binding-win32-arm64-msvc/-/binding-win32-arm64-msvc-1.0.0.tgz",
+          "url": "https://registry.npmjs.org/@rolldown/binding-win32-arm64-msvc/-/binding-win32-arm64-msvc-1.0.3.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "c982b4da7f119e0a3e81b9b5cba1b4fbb8e4d6c27fd96b7b2b499ed18ee4fc4ac1a727fe2c9da0169a96553711575ad47a90654119a98169134028a2c2b2b43b"
+              "content": "80474514437bd00fe3c5bdacbeb5ac3776832fb394b66be53b2fba7dada3c46f0ad3043565b75e2c69e2768bfa62ee7fef7ddd239c927f316543f71bd1b4b3d6"
             }
           ]
         }
@@ -2823,18 +2823,18 @@
     {
       "type": "library",
       "name": "binding-win32-x64-msvc",
-      "version": "1.0.0",
-      "purl": "pkg:npm/%40rolldown/binding-win32-x64-msvc@1.0.0",
-      "bom-ref": "pkg:npm/%40rolldown/binding-win32-x64-msvc@1.0.0",
+      "version": "1.0.3",
+      "purl": "pkg:npm/%40rolldown/binding-win32-x64-msvc@1.0.3",
+      "bom-ref": "pkg:npm/%40rolldown/binding-win32-x64-msvc@1.0.3",
       "group": "@rolldown",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@rolldown/binding-win32-x64-msvc/-/binding-win32-x64-msvc-1.0.0.tgz",
+          "url": "https://registry.npmjs.org/@rolldown/binding-win32-x64-msvc/-/binding-win32-x64-msvc-1.0.3.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "d786e90a131a8574515e24f06a14a5fb3cc73d6eaa4135ed90cb8904595ba3ea6a4807b0b3677805d0921dfac9fcc06c099b6999369fb18fb54210738ad72676"
+              "content": "79707b087b9a41daa625c73792808db4d3e64ff6e3da073df7d9141600711bc01cd0d7605dce2b9021e1aab82b84ddf375dbefbeb8338f57bdd12b927e6c885c"
             }
           ]
         }
@@ -2983,18 +2983,18 @@
     {
       "type": "library",
       "name": "core",
-      "version": "3.23.5",
-      "purl": "pkg:npm/%40tiptap/core@3.23.5",
-      "bom-ref": "pkg:npm/%40tiptap/core@3.23.5",
+      "version": "3.26.1",
+      "purl": "pkg:npm/%40tiptap/core@3.26.1",
+      "bom-ref": "pkg:npm/%40tiptap/core@3.26.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/core/-/core-3.23.5.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/core/-/core-3.26.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "eb9ed7a9c81fd486162e402644324a35219da12d401c91202bacc758714911140622a1e7c02ec5cfb9ef5acfcd42141506472541dd04451753099dd7c11735fa"
+              "content": "4d7f4fc8fa81a22c74a832e3b6893f6dd76d752cb9e108732d585ae34e42d3b57e5b248ea47decfe9598932c1e859418d1242d72b718e0c35209e42309b036f0"
             }
           ]
         }
@@ -3003,18 +3003,18 @@
     {
       "type": "library",
       "name": "extension-blockquote",
-      "version": "3.23.5",
-      "purl": "pkg:npm/%40tiptap/extension-blockquote@3.23.5",
-      "bom-ref": "pkg:npm/%40tiptap/extension-blockquote@3.23.5",
+      "version": "3.26.1",
+      "purl": "pkg:npm/%40tiptap/extension-blockquote@3.26.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-blockquote@3.26.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-blockquote/-/extension-blockquote-3.23.5.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-blockquote/-/extension-blockquote-3.26.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "3c1411a067d259f218ec79866d2e4f4c7101425e6729b8a5779279a613cb145f8edda381434778f400bd7316daa2effa1510adaba83852ab1ef6b45328944cd3"
+              "content": "59a2a32a651a69d82f6430c193d24e9ffa22765385afa6e8a2a24858718be52d1a5144ca1d2d7da067ca42afe5f59d72d6789a45e3e4d18e1fcbf8f10a77ca3c"
             }
           ]
         }
@@ -3023,18 +3023,18 @@
     {
       "type": "library",
       "name": "extension-bold",
-      "version": "3.23.5",
-      "purl": "pkg:npm/%40tiptap/extension-bold@3.23.5",
-      "bom-ref": "pkg:npm/%40tiptap/extension-bold@3.23.5",
+      "version": "3.26.1",
+      "purl": "pkg:npm/%40tiptap/extension-bold@3.26.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-bold@3.26.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-bold/-/extension-bold-3.23.5.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-bold/-/extension-bold-3.26.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "0d9b030827f9ddf03d1e6b05cdf5079798cb3b00d87fe5f37cff9026327870adb74acc438ab6a67938e09f08b897512010f2d6ba731942353ec079a1eefbd7e9"
+              "content": "548945dac02257a2b4d3da5c203a2d7d8f26bec3daabdd1dc5e1bd434648a9f303f79f13502aa31f0e0c19865fd3f1603f5db192c05f99c47b5b7d76c6051ff5"
             }
           ]
         }
@@ -3043,18 +3043,18 @@
     {
       "type": "library",
       "name": "extension-bubble-menu",
-      "version": "3.23.5",
-      "purl": "pkg:npm/%40tiptap/extension-bubble-menu@3.23.5",
-      "bom-ref": "pkg:npm/%40tiptap/extension-bubble-menu@3.23.5",
+      "version": "3.26.1",
+      "purl": "pkg:npm/%40tiptap/extension-bubble-menu@3.26.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-bubble-menu@3.26.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-bubble-menu/-/extension-bubble-menu-3.23.5.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-bubble-menu/-/extension-bubble-menu-3.26.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "a2d706c3254ee8e7f17433e76e8a19c581ab6feeaae566264be83657e5c618d467e68260c98e695b476a10b21427ae9da2c2085d73f2c365ea043a4c318da4c9"
+              "content": "63747dc0528ffd4f4cd38246fb43ccff25b7395f8c49b529e9804a41666652ef31eb2ed36dc36f0ec689e9010566de5a44c4baa87d64b183d33b3e3b25d8dc7c"
             }
           ]
         }
@@ -3063,18 +3063,18 @@
     {
       "type": "library",
       "name": "extension-bullet-list",
-      "version": "3.23.5",
-      "purl": "pkg:npm/%40tiptap/extension-bullet-list@3.23.5",
-      "bom-ref": "pkg:npm/%40tiptap/extension-bullet-list@3.23.5",
+      "version": "3.26.1",
+      "purl": "pkg:npm/%40tiptap/extension-bullet-list@3.26.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-bullet-list@3.26.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-bullet-list/-/extension-bullet-list-3.23.5.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-bullet-list/-/extension-bullet-list-3.26.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "a346f365b16f38f84f5faf910212053ca3083778c87a763a21bdc527a66ac53755723b95da6217526254d2e5760702adcfbdc698a4912912a26ba289d2697ca8"
+              "content": "241e9b109247c573405c45d3200377fe3ef4a750111dd78c7e1cec84666cc162945ad0e26d30abb29229ee9d5535e8ae56d27f1c1e8fa459068bbc96b50dd14e"
             }
           ]
         }
@@ -3083,18 +3083,18 @@
     {
       "type": "library",
       "name": "extension-code-block",
-      "version": "3.23.5",
-      "purl": "pkg:npm/%40tiptap/extension-code-block@3.23.5",
-      "bom-ref": "pkg:npm/%40tiptap/extension-code-block@3.23.5",
+      "version": "3.26.1",
+      "purl": "pkg:npm/%40tiptap/extension-code-block@3.26.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-code-block@3.26.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-code-block/-/extension-code-block-3.23.5.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-code-block/-/extension-code-block-3.26.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "3f65c7f163cce146a16af716a10800c0d00a4026c5fc95a2e99aa0b1099505f02a43799ff2033107b1e772232ad4397223d11f8d7a091f5d7252a95d17fe8069"
+              "content": "358ed262a72ba835584d25b268d19d49f0a29acea9387a11436461e031056ffadbf202d592a6cb661707cd00957e29e53ea815df1585e9c60c391c269e50645d"
             }
           ]
         }
@@ -3103,18 +3103,18 @@
     {
       "type": "library",
       "name": "extension-code",
-      "version": "3.23.5",
-      "purl": "pkg:npm/%40tiptap/extension-code@3.23.5",
-      "bom-ref": "pkg:npm/%40tiptap/extension-code@3.23.5",
+      "version": "3.26.1",
+      "purl": "pkg:npm/%40tiptap/extension-code@3.26.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-code@3.26.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-code/-/extension-code-3.23.5.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-code/-/extension-code-3.26.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "34e2540f667486bb415a7a2f5e2887d57b4e8c441e3ce7c81b76cd2605d2b356d6c4f561aa9e8a8d577c99424dadaf7be21c5b9a5ded0bdeec2fd42a8e901616"
+              "content": "b7dfd5479937ac63f285c19abbd62f56068043e9cff51f56cd2f7de9b410ec622b30e4d25dbd055b0a1014189897cdd5e95035e93963fe849c0bb485940f25bc"
             }
           ]
         }
@@ -3123,18 +3123,18 @@
     {
       "type": "library",
       "name": "extension-document",
-      "version": "3.23.5",
-      "purl": "pkg:npm/%40tiptap/extension-document@3.23.5",
-      "bom-ref": "pkg:npm/%40tiptap/extension-document@3.23.5",
+      "version": "3.26.1",
+      "purl": "pkg:npm/%40tiptap/extension-document@3.26.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-document@3.26.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-document/-/extension-document-3.23.5.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-document/-/extension-document-3.26.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "63bb8f8c4335c482b84a971d93f929fef67f033ddc11a8254c293ab87ad6bcd15582512819e84d6fa2106d01595b4c23135f58a0c2222c12ed1ba57d76aae907"
+              "content": "e96daf663be2d0cbfee3112dc0c0c6856c28ec5a2d591e9e29f9a7b6676ebde8567af16933138a713b72a2d8cb8a07d9bfbdfccb9d185a6bdb68fb803c91b704"
             }
           ]
         }
@@ -3143,18 +3143,18 @@
     {
       "type": "library",
       "name": "extension-dropcursor",
-      "version": "3.23.5",
-      "purl": "pkg:npm/%40tiptap/extension-dropcursor@3.23.5",
-      "bom-ref": "pkg:npm/%40tiptap/extension-dropcursor@3.23.5",
+      "version": "3.26.1",
+      "purl": "pkg:npm/%40tiptap/extension-dropcursor@3.26.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-dropcursor@3.26.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-dropcursor/-/extension-dropcursor-3.23.5.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-dropcursor/-/extension-dropcursor-3.26.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "97bd91efdf10ebd0fa7fcf55a7dc6b7a84673dca4ad0b1cf28b64873aa6fa810b688e8f1e702cab56d2e3f5baa556750b6f17901460144d206010e467a5f5712"
+              "content": "795ab706f1486b7603fa9048963d62ef6bd8122c657a01952879d2622545da8be440e4801fdb1c6bba64aba5a0575b0c4c2c96094f1ef96ce74eab7276f1d458"
             }
           ]
         }
@@ -3163,18 +3163,18 @@
     {
       "type": "library",
       "name": "extension-floating-menu",
-      "version": "3.23.5",
-      "purl": "pkg:npm/%40tiptap/extension-floating-menu@3.23.5",
-      "bom-ref": "pkg:npm/%40tiptap/extension-floating-menu@3.23.5",
+      "version": "3.26.1",
+      "purl": "pkg:npm/%40tiptap/extension-floating-menu@3.26.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-floating-menu@3.26.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-floating-menu/-/extension-floating-menu-3.23.5.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-floating-menu/-/extension-floating-menu-3.26.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "90fd1b64a1ff97136881fbe8232fd8259e6092dcb43b0a8556d414c2873ce6f5d851fbf2e4987555d3b4e77b42135883ce6bce21352971bf8c756af23fc741c4"
+              "content": "c67d20e26fead9b8c6fa150b3f0a7a02a6ffeb0a7352d73ae633a1809b06fd2dc4cb790b24652f641ba1a33c0d16ef0572e8313357cc52936190992874208617"
             }
           ]
         }
@@ -3183,18 +3183,18 @@
     {
       "type": "library",
       "name": "extension-gapcursor",
-      "version": "3.23.5",
-      "purl": "pkg:npm/%40tiptap/extension-gapcursor@3.23.5",
-      "bom-ref": "pkg:npm/%40tiptap/extension-gapcursor@3.23.5",
+      "version": "3.26.1",
+      "purl": "pkg:npm/%40tiptap/extension-gapcursor@3.26.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-gapcursor@3.26.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-gapcursor/-/extension-gapcursor-3.23.5.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-gapcursor/-/extension-gapcursor-3.26.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "c7d5e5606dba4e8c17d0bcb5c34655d83f2a962c90cbd7d398c638b2e23a07fea8ea6fec5c719300932626ac0febab19285e9c30b5371c40ae9a1b724313d3da"
+              "content": "0565b5c8c4100384db114d0b2cafb871df5e6cb4ee646e4a8c7c05301443fdb1a2456f55d604d616c0aa4e105b73370036842264af699f9ff801dfeb18cdc752"
             }
           ]
         }
@@ -3203,18 +3203,18 @@
     {
       "type": "library",
       "name": "extension-hard-break",
-      "version": "3.23.5",
-      "purl": "pkg:npm/%40tiptap/extension-hard-break@3.23.5",
-      "bom-ref": "pkg:npm/%40tiptap/extension-hard-break@3.23.5",
+      "version": "3.26.1",
+      "purl": "pkg:npm/%40tiptap/extension-hard-break@3.26.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-hard-break@3.26.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-hard-break/-/extension-hard-break-3.23.5.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-hard-break/-/extension-hard-break-3.26.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "8ff04304c380d6603e4610b1eb6d9244f061a69d9758d158cfd6ac6e0f13df293cbfd588dd58e8e880e57d3a7a7f0b11d8b184ecf7a4dd1d310c08d6eb2546de"
+              "content": "83335bd5efdf2ba1cdfa4a356b1b2b6ac8caec5d6ad019e6d06e1963fd1eabba55eecd7066ec280a219bbd4c7ff4b08529157afbde054ea95bd00dcd6d8377ea"
             }
           ]
         }
@@ -3223,18 +3223,18 @@
     {
       "type": "library",
       "name": "extension-heading",
-      "version": "3.23.5",
-      "purl": "pkg:npm/%40tiptap/extension-heading@3.23.5",
-      "bom-ref": "pkg:npm/%40tiptap/extension-heading@3.23.5",
+      "version": "3.26.1",
+      "purl": "pkg:npm/%40tiptap/extension-heading@3.26.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-heading@3.26.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-heading/-/extension-heading-3.23.5.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-heading/-/extension-heading-3.26.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "b4523e898937e2079a715386a98832a02f2c8908dd1a7eb4e5769849970644517c358f87ac694b9108b641144278b694871a1cb4e36659cf144a7dc7e54ef02d"
+              "content": "79196ff57c7350bf05a1b280885d568cfdf9093d90a5b731c5ec98145ec198610e36f288eebe60ec91b0c86962e02bdc961ef487cc3a26ea174a619454453ae4"
             }
           ]
         }
@@ -3243,18 +3243,18 @@
     {
       "type": "library",
       "name": "extension-highlight",
-      "version": "3.23.5",
-      "purl": "pkg:npm/%40tiptap/extension-highlight@3.23.5",
-      "bom-ref": "pkg:npm/%40tiptap/extension-highlight@3.23.5",
+      "version": "3.26.1",
+      "purl": "pkg:npm/%40tiptap/extension-highlight@3.26.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-highlight@3.26.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-highlight/-/extension-highlight-3.23.5.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-highlight/-/extension-highlight-3.26.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "4422e58972eda66259053616607d1f25b48102c3cd88f846b9df73787a9a7f527c42f74d0217b45532a6b636cb381c470d2c7f09f4a09f1285ecf51e71d440da"
+              "content": "aa0c7811eb6a928821dceca89993b4c883101878636ad08302d10b902ecd4319e63eca7673d8ba724fe187b98fe567b971c070528611b8d182f6591f942c7be6"
             }
           ]
         }
@@ -3263,18 +3263,18 @@
     {
       "type": "library",
       "name": "extension-horizontal-rule",
-      "version": "3.23.5",
-      "purl": "pkg:npm/%40tiptap/extension-horizontal-rule@3.23.5",
-      "bom-ref": "pkg:npm/%40tiptap/extension-horizontal-rule@3.23.5",
+      "version": "3.26.1",
+      "purl": "pkg:npm/%40tiptap/extension-horizontal-rule@3.26.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-horizontal-rule@3.26.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-horizontal-rule/-/extension-horizontal-rule-3.23.5.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-horizontal-rule/-/extension-horizontal-rule-3.26.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "f5791161ce17134b2d111641df2f1bb09777d89c3d5197ccc195e8d462cd6111c5afb7668521948f42338287ea39598b0dc38c5ba5dc0a4e784c1630e810ab58"
+              "content": "97d94f658792998f74cbfd8691070a6880850f902dafcb31d92cc91a4433a4d0bdb51c595f20079df244dce8c192ca6e1b38d620dd038a6c418f889bcf9f2c2b"
             }
           ]
         }
@@ -3283,18 +3283,18 @@
     {
       "type": "library",
       "name": "extension-italic",
-      "version": "3.23.5",
-      "purl": "pkg:npm/%40tiptap/extension-italic@3.23.5",
-      "bom-ref": "pkg:npm/%40tiptap/extension-italic@3.23.5",
+      "version": "3.26.1",
+      "purl": "pkg:npm/%40tiptap/extension-italic@3.26.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-italic@3.26.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-italic/-/extension-italic-3.23.5.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-italic/-/extension-italic-3.26.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "5e34523ebea3e26cfef0ee63e4a35fc556fed5f18db74c2bfa3b3a30bc7119d53b33e3e80cf75563a7c045b9816b3bf8111959e4f352f66df9568e710e30dfae"
+              "content": "70b298bce2d3a1612426400fb2980867f3d80f303169c2e6d5559c02ad6d3b54034020ded8ac3ecbfcec1a5c9812afda2ac020a69e09368a41c005d15f1b76fc"
             }
           ]
         }
@@ -3303,18 +3303,18 @@
     {
       "type": "library",
       "name": "extension-link",
-      "version": "3.23.5",
-      "purl": "pkg:npm/%40tiptap/extension-link@3.23.5",
-      "bom-ref": "pkg:npm/%40tiptap/extension-link@3.23.5",
+      "version": "3.26.1",
+      "purl": "pkg:npm/%40tiptap/extension-link@3.26.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-link@3.26.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-link/-/extension-link-3.23.5.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-link/-/extension-link-3.26.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "144239f0d00f9dab816ece27c35764811c8485c5a7bab7b4bc8952b5f4284065f18f7c5246fc4a1f694e933e787c6ceecd1240a2e7722d4eb91d6e83ee473ef1"
+              "content": "68b2c62e08a4ba12c51d16e37d40ba0f881183e354b72e2e856ed8932565f00c713cc138edd3db08e5f81fab8b0a3119727dd69df36e093afa1c24e5d0a12618"
             }
           ]
         }
@@ -3323,18 +3323,18 @@
     {
       "type": "library",
       "name": "extension-list-item",
-      "version": "3.23.5",
-      "purl": "pkg:npm/%40tiptap/extension-list-item@3.23.5",
-      "bom-ref": "pkg:npm/%40tiptap/extension-list-item@3.23.5",
+      "version": "3.26.1",
+      "purl": "pkg:npm/%40tiptap/extension-list-item@3.26.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-list-item@3.26.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-list-item/-/extension-list-item-3.23.5.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-list-item/-/extension-list-item-3.26.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "97b1dbe2b7cd2243ba26b3496247576a9e906170b3e1779e1662356df420122c0f1acf91027ffed1c39d83babee8c9ad64569ce6e4975743dfb4f93a0341ac10"
+              "content": "e602d725488fefadcd03a8b81e0aed7305035cf3fcf36d21b1a050c85d58d55b17362d36b96f4554b7b74592bc8c5d0d654361f42a83d20a2060909b28e514f0"
             }
           ]
         }
@@ -3343,18 +3343,18 @@
     {
       "type": "library",
       "name": "extension-list-keymap",
-      "version": "3.23.5",
-      "purl": "pkg:npm/%40tiptap/extension-list-keymap@3.23.5",
-      "bom-ref": "pkg:npm/%40tiptap/extension-list-keymap@3.23.5",
+      "version": "3.26.1",
+      "purl": "pkg:npm/%40tiptap/extension-list-keymap@3.26.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-list-keymap@3.26.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-list-keymap/-/extension-list-keymap-3.23.5.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-list-keymap/-/extension-list-keymap-3.26.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "1f3f23440e755528877b3124c2ac1a3186d3118711ff902add480280394d3e513a935399aef46d57fe2cdc038ed11460cf254b2afef2bfb2ae38937f38b184af"
+              "content": "1117926b278f3ba488c6d45bc71fbb29f050ade587be866631bdcefd17a67d3f16e89d21086e4dfd187c675dbe6193a708345727847316902291891adc4e788d"
             }
           ]
         }
@@ -3363,18 +3363,18 @@
     {
       "type": "library",
       "name": "extension-list",
-      "version": "3.23.5",
-      "purl": "pkg:npm/%40tiptap/extension-list@3.23.5",
-      "bom-ref": "pkg:npm/%40tiptap/extension-list@3.23.5",
+      "version": "3.26.1",
+      "purl": "pkg:npm/%40tiptap/extension-list@3.26.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-list@3.26.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-list/-/extension-list-3.23.5.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-list/-/extension-list-3.26.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "9f3657a55c27c8ac138f84d5c8fcaed5b094163242b1a5e7840b619af2439d7dd106d7a6346f4a6b4ef1191d8d22ca73ba649b412305b43c639b1bf75b9744b6"
+              "content": "d3a9ce8e7c97a7330ef18b3993721b62c0ec2a26f59afd8eb5ac41617d7fd6ebd1c8e2b0517e6da832dbfea8a089cd0b20034d2fbde590d0bc67c5cf786e1392"
             }
           ]
         }
@@ -3383,18 +3383,18 @@
     {
       "type": "library",
       "name": "extension-ordered-list",
-      "version": "3.23.5",
-      "purl": "pkg:npm/%40tiptap/extension-ordered-list@3.23.5",
-      "bom-ref": "pkg:npm/%40tiptap/extension-ordered-list@3.23.5",
+      "version": "3.26.1",
+      "purl": "pkg:npm/%40tiptap/extension-ordered-list@3.26.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-ordered-list@3.26.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-ordered-list/-/extension-ordered-list-3.23.5.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-ordered-list/-/extension-ordered-list-3.26.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "a90794ef58a3d1c0000fd6db1aaa2de53e5ba51dddcac810f96ebbaae46ce950f2bac53cf4461a2472a7fea594e9ad57384438b0bfb918dc39d856105475316c"
+              "content": "2de14f785c1bef2964415bae6878fe9e2bbb5a1587a630ce8b518a64913fa2139ada582decfdb6d4732a854ccf883957384c4def6a164cd9975254f4ca609393"
             }
           ]
         }
@@ -3403,18 +3403,18 @@
     {
       "type": "library",
       "name": "extension-paragraph",
-      "version": "3.23.5",
-      "purl": "pkg:npm/%40tiptap/extension-paragraph@3.23.5",
-      "bom-ref": "pkg:npm/%40tiptap/extension-paragraph@3.23.5",
+      "version": "3.26.1",
+      "purl": "pkg:npm/%40tiptap/extension-paragraph@3.26.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-paragraph@3.26.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-paragraph/-/extension-paragraph-3.23.5.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-paragraph/-/extension-paragraph-3.26.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "2ed80c711d6bbd69d90eda61149fcb065b650b4fba1c6034ee4eef872f94ecfff3220fd5dc56f8443e980ee028d1c3df06c2e6f29d5660957dd96a40b0682d96"
+              "content": "3a405e61434cdde4f38e6df3e88702dcd1ebc8e5fc837786348f3a3ff07eb45a0541246eccbb0a654e7401109f2222cb83cd7636372aba3789d5e5f704a0d9af"
             }
           ]
         }
@@ -3423,18 +3423,18 @@
     {
       "type": "library",
       "name": "extension-strike",
-      "version": "3.23.5",
-      "purl": "pkg:npm/%40tiptap/extension-strike@3.23.5",
-      "bom-ref": "pkg:npm/%40tiptap/extension-strike@3.23.5",
+      "version": "3.26.1",
+      "purl": "pkg:npm/%40tiptap/extension-strike@3.26.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-strike@3.26.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-strike/-/extension-strike-3.23.5.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-strike/-/extension-strike-3.26.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "3cc07d9694063891ae453212f6b070f1466d1d0c26b2225b58a8dc06be73db4325b9a250dd90871610d81ba9dc203473fb49f2e19be827b70a1a923e353bd730"
+              "content": "ee1990da606c03eef9191ac920a6316fed741f6de66e51104861acbfd3ed97b24b6869a3fbcb2fd87190192513f50062055a6bc5a613ab25855d00bd6a47cb5a"
             }
           ]
         }
@@ -3443,18 +3443,18 @@
     {
       "type": "library",
       "name": "extension-subscript",
-      "version": "3.23.5",
-      "purl": "pkg:npm/%40tiptap/extension-subscript@3.23.5",
-      "bom-ref": "pkg:npm/%40tiptap/extension-subscript@3.23.5",
+      "version": "3.26.1",
+      "purl": "pkg:npm/%40tiptap/extension-subscript@3.26.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-subscript@3.26.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-subscript/-/extension-subscript-3.23.5.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-subscript/-/extension-subscript-3.26.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "ab83baaa6ae1e9a0f636dfafa0b278b880847b18c5e8b06fc5fee9b18308e1b60823bbc325a159fbc5d1ea90ce979242242c25d5661ba311766b85365eb300c5"
+              "content": "e9fe0b3b098806909c769c2146d2be7ae052d726add5943b3a4f002d3bfd07a2d23e7119140475e42c5e80b1c5a4fd24d9817df50a3ea140027645230c9c4e2d"
             }
           ]
         }
@@ -3463,18 +3463,18 @@
     {
       "type": "library",
       "name": "extension-superscript",
-      "version": "3.23.5",
-      "purl": "pkg:npm/%40tiptap/extension-superscript@3.23.5",
-      "bom-ref": "pkg:npm/%40tiptap/extension-superscript@3.23.5",
+      "version": "3.26.1",
+      "purl": "pkg:npm/%40tiptap/extension-superscript@3.26.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-superscript@3.26.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-superscript/-/extension-superscript-3.23.5.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-superscript/-/extension-superscript-3.26.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "4cb0af67fdfc964c748dc54f326e8bda9d305a7f2ece224a40f429feb811dc27e49f88f32f563f566ab92693763685faf5776eb1db46961e2d979f78053d052d"
+              "content": "809d9fc5740de838aa092cda1e902c5b314773debb62abe8e79fac623d71c643d8aad25f383762da656003574db8deeff20e2a7b14e96ef9ded5ce26e7b709d9"
             }
           ]
         }
@@ -3483,18 +3483,18 @@
     {
       "type": "library",
       "name": "extension-text-align",
-      "version": "3.23.5",
-      "purl": "pkg:npm/%40tiptap/extension-text-align@3.23.5",
-      "bom-ref": "pkg:npm/%40tiptap/extension-text-align@3.23.5",
+      "version": "3.26.1",
+      "purl": "pkg:npm/%40tiptap/extension-text-align@3.26.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-text-align@3.26.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-text-align/-/extension-text-align-3.23.5.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-text-align/-/extension-text-align-3.26.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "78e797adba4f59cea07d7962d9a5d883db7ad47864bc491dc5082912964f161ad3e293d0708a9396286cc01c82f9c3dbf01e729eb73f89a9a263d711494d6abf"
+              "content": "3ed6eed45c80485a88adbc3fa7d0faccbb7c1bbb1e0e1e17e34f2a53d148aee9fb3c4efda3e6a60792d623f4b31c5b9593738c23e83b8c4fe630384d518b2a54"
             }
           ]
         }
@@ -3503,18 +3503,18 @@
     {
       "type": "library",
       "name": "extension-text-style",
-      "version": "3.23.5",
-      "purl": "pkg:npm/%40tiptap/extension-text-style@3.23.5",
-      "bom-ref": "pkg:npm/%40tiptap/extension-text-style@3.23.5",
+      "version": "3.26.1",
+      "purl": "pkg:npm/%40tiptap/extension-text-style@3.26.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-text-style@3.26.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-text-style/-/extension-text-style-3.23.5.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-text-style/-/extension-text-style-3.26.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "04b7ffd603f11c67cb65b2d3fe79e70f319d99ca99ba438794c7deb9f7608da90663dd02a591d236ad155e0c0ef712dd6b9223af96948a5534fc72d7d15ade12"
+              "content": "57cb7ba8ec8b1fb2014761e38c9559f6b5074e7b854e8271d3b2fd3cdf4fa6040b873f6af096a1e200309a32c15c3446d9869722618ad11c0a28253fc878703a"
             }
           ]
         }
@@ -3523,18 +3523,18 @@
     {
       "type": "library",
       "name": "extension-text",
-      "version": "3.23.5",
-      "purl": "pkg:npm/%40tiptap/extension-text@3.23.5",
-      "bom-ref": "pkg:npm/%40tiptap/extension-text@3.23.5",
+      "version": "3.26.1",
+      "purl": "pkg:npm/%40tiptap/extension-text@3.26.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-text@3.26.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-text/-/extension-text-3.23.5.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-text/-/extension-text-3.26.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "18b6be01a036342e5761165a77f42afe81f93daf79b3eb80d7b27bf910a417c8f544d444501918439083e4c4fc913f83dc31e053c311c98753776f08e3a1c10d"
+              "content": "1a872e8b95af7020892485f5ee074e54249d622e47e1f0f0691d2a90c01464fab990909dadf97ebcda6df014ede77064fbf42e9a2516db57e1435f38c3b46879"
             }
           ]
         }
@@ -3543,18 +3543,18 @@
     {
       "type": "library",
       "name": "extension-underline",
-      "version": "3.23.5",
-      "purl": "pkg:npm/%40tiptap/extension-underline@3.23.5",
-      "bom-ref": "pkg:npm/%40tiptap/extension-underline@3.23.5",
+      "version": "3.26.1",
+      "purl": "pkg:npm/%40tiptap/extension-underline@3.26.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-underline@3.26.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-underline/-/extension-underline-3.23.5.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-underline/-/extension-underline-3.26.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "7f2c6d87313a08d0a2f5af4e540c17b35b12c89ee396bcd3dda3f62a160b402b090011da3c980903b939dbf091b8aa825b759bc54d542c7f4b1ae1ad05b844cb"
+              "content": "1d41ed43e0d1583334a295bb364dd8430acbcf0f3bea1314edcaf55ff6531bef01a7e00a1e2865c14f9baab3e01b94add26a804b250484743fbcae4f96751839"
             }
           ]
         }
@@ -3563,18 +3563,18 @@
     {
       "type": "library",
       "name": "extensions",
-      "version": "3.23.5",
-      "purl": "pkg:npm/%40tiptap/extensions@3.23.5",
-      "bom-ref": "pkg:npm/%40tiptap/extensions@3.23.5",
+      "version": "3.26.1",
+      "purl": "pkg:npm/%40tiptap/extensions@3.26.1",
+      "bom-ref": "pkg:npm/%40tiptap/extensions@3.26.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extensions/-/extensions-3.23.5.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extensions/-/extensions-3.26.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "44e71d34f57e6eece574414abc3de8dbd3fb1fbce901fda59cb7e774ed8b1d24e85b21f0e2197354f09e014f2e02f865fe3c9f794a052eb070c6984c5ff286e8"
+              "content": "3e645aa1ee9b79b4e0cff650ae39b3c193124f577d8ecf594e22a7517797977166f95e54fdcdd36db2837ea98beb7a8f41d8ed4a10cc1e2f6d62ebfe73bece15"
             }
           ]
         }
@@ -3583,18 +3583,18 @@
     {
       "type": "library",
       "name": "pm",
-      "version": "3.23.5",
-      "purl": "pkg:npm/%40tiptap/pm@3.23.5",
-      "bom-ref": "pkg:npm/%40tiptap/pm@3.23.5",
+      "version": "3.26.1",
+      "purl": "pkg:npm/%40tiptap/pm@3.26.1",
+      "bom-ref": "pkg:npm/%40tiptap/pm@3.26.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/pm/-/pm-3.23.5.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/pm/-/pm-3.26.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "f6d80b7694ef34dd3f7cb3f845c3736f2434aa383d2766a16856d0ce0579baf77e40ccbc5e483622a28a9cea09254015dc50e31aadd8c745ab576046ae8f697f"
+              "content": "e3c7094116efafd531d3e220335051e6f38b5398640be9feb9eadd432d898eb2112a9604fe1b94f1f4059ba3e8469a682987e29649736f6f5e96c43e9f64c0fa"
             }
           ]
         }
@@ -3603,18 +3603,18 @@
     {
       "type": "library",
       "name": "react",
-      "version": "3.23.5",
-      "purl": "pkg:npm/%40tiptap/react@3.23.5",
-      "bom-ref": "pkg:npm/%40tiptap/react@3.23.5",
+      "version": "3.26.1",
+      "purl": "pkg:npm/%40tiptap/react@3.26.1",
+      "bom-ref": "pkg:npm/%40tiptap/react@3.26.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/react/-/react-3.23.5.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/react/-/react-3.26.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "68474a7c9c686bab42115e05ae706a310a143f019c4d62da0f398fe1f2f5811ec4e34ad80d389834aa05d4e6fe522994a60b803fa126bf55a525ae68c88f054b"
+              "content": "1a5ec085324cee98d0d96170748c03ef7ea841ea94730dc655a5d89822adc1348edc5f4fb332e078a129e83bccf8299cb5335886efdaa517f3907def534874b8"
             }
           ]
         }
@@ -3623,18 +3623,18 @@
     {
       "type": "library",
       "name": "starter-kit",
-      "version": "3.23.5",
-      "purl": "pkg:npm/%40tiptap/starter-kit@3.23.5",
-      "bom-ref": "pkg:npm/%40tiptap/starter-kit@3.23.5",
+      "version": "3.26.1",
+      "purl": "pkg:npm/%40tiptap/starter-kit@3.26.1",
+      "bom-ref": "pkg:npm/%40tiptap/starter-kit@3.26.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/starter-kit/-/starter-kit-3.23.5.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/starter-kit/-/starter-kit-3.26.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "69cd1e750d5ad67624340cce81da8804a19dace94d4293cff701801b743d1204eae3e0b8fc47ed2596499949f72b3692394bf870b103a34cf48eeac9bd93e46b"
+              "content": "034cecbf0194f5ec4b343df817c7bc2aa5171527ecf37e6d34df950be653df235e68efd65e7961fc281a97517aa471db731cbb455d82470254e52ddc58b3f1ac"
             }
           ]
         }
@@ -4283,18 +4283,18 @@
     {
       "type": "library",
       "name": "react",
-      "version": "19.2.15",
-      "purl": "pkg:npm/%40types/react@19.2.15",
-      "bom-ref": "pkg:npm/%40types/react@19.2.15",
+      "version": "19.2.17",
+      "purl": "pkg:npm/%40types/react@19.2.17",
+      "bom-ref": "pkg:npm/%40types/react@19.2.17",
       "group": "@types",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@types/react/-/react-19.2.15.tgz",
+          "url": "https://registry.npmjs.org/@types/react/-/react-19.2.17.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "791c1c18d1ef7be13caad110492465eaeae1fab168a78bfc826e8ef2b1afdb90a875bbc574b8c0d6f550d4a922144d30d143ce9dbf2d0e214a2f9969d2bb58e5"
+              "content": "3177e6a9a54f115824053fda6346860a44565ad072898417a37c5d43caf9473b85acf8919fc19aaf6b5075749443618a5776e45dc91e93cf55f3040163643f03"
             }
           ]
         }
@@ -4523,18 +4523,18 @@
     {
       "type": "library",
       "name": "eslint-plugin",
-      "version": "8.59.4",
-      "purl": "pkg:npm/%40typescript-eslint/eslint-plugin@8.59.4",
-      "bom-ref": "pkg:npm/%40typescript-eslint/eslint-plugin@8.59.4",
+      "version": "8.61.0",
+      "purl": "pkg:npm/%40typescript-eslint/eslint-plugin@8.61.0",
+      "bom-ref": "pkg:npm/%40typescript-eslint/eslint-plugin@8.61.0",
       "group": "@typescript-eslint",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@typescript-eslint/eslint-plugin/-/eslint-plugin-8.59.4.tgz",
+          "url": "https://registry.npmjs.org/@typescript-eslint/eslint-plugin/-/eslint-plugin-8.61.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "3de82c53e5dfc8924d8dde3ebbf93a7fdc93ca9d251175e23e8a543686d97080142451880852cdfac3f445bdc97a15668a28f53e1d1d14662a383a11a3fdbee8"
+              "content": "6c536f97d65cce555bfb0476024b337f78077ca563ffc59a9d768627752cb5303b6eb34a83470d764e97d4fb2ee55ecc676a10b7364a384cc851e85aa316c31b"
             }
           ]
         }
@@ -4543,18 +4543,18 @@
     {
       "type": "library",
       "name": "parser",
-      "version": "8.59.4",
-      "purl": "pkg:npm/%40typescript-eslint/parser@8.59.4",
-      "bom-ref": "pkg:npm/%40typescript-eslint/parser@8.59.4",
+      "version": "8.61.0",
+      "purl": "pkg:npm/%40typescript-eslint/parser@8.61.0",
+      "bom-ref": "pkg:npm/%40typescript-eslint/parser@8.61.0",
       "group": "@typescript-eslint",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@typescript-eslint/parser/-/parser-8.59.4.tgz",
+          "url": "https://registry.npmjs.org/@typescript-eslint/parser/-/parser-8.61.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "cce447a8efedba1c58d735ae4ef314a9d751c6988527bdb155f70da16a6a74b8ecea57cf6ee40126e5b8a64fb8f7fb81332ed2b2be1bce08e22a698307551b65"
+              "content": "e41ecf7c0d9ed4d4060a70c777fd255bb5b782fa77779f51cb0e781583bc52cc31a3d7fa8a4c3701957e5e3fd3be92269a9b2263252a01f842ea42480f58c5eb"
             }
           ]
         }
@@ -4563,38 +4563,18 @@
     {
       "type": "library",
       "name": "project-service",
-      "version": "8.59.3",
-      "purl": "pkg:npm/%40typescript-eslint/project-service@8.59.3",
-      "bom-ref": "pkg:npm/%40typescript-eslint/project-service@8.59.3",
+      "version": "8.61.0",
+      "purl": "pkg:npm/%40typescript-eslint/project-service@8.61.0",
+      "bom-ref": "pkg:npm/%40typescript-eslint/project-service@8.61.0",
       "group": "@typescript-eslint",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@typescript-eslint/project-service/-/project-service-8.59.3.tgz",
+          "url": "https://registry.npmjs.org/@typescript-eslint/project-service/-/project-service-8.61.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "10289459afca611183154a9335e85a460cc3b219c97e44c0049c557a61e4e24a36da072bd2e925a0a8d6bf243ae20f18095fd4238ee437575b9a37ff19a4189e"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "name": "project-service",
-      "version": "8.59.4",
-      "purl": "pkg:npm/%40typescript-eslint/project-service@8.59.4",
-      "bom-ref": "pkg:npm/%40typescript-eslint/project-service@8.59.4",
-      "group": "@typescript-eslint",
-      "externalReferences": [
-        {
-          "type": "distribution",
-          "url": "https://registry.npmjs.org/@typescript-eslint/project-service/-/project-service-8.59.4.tgz",
-          "hashes": [
-            {
-              "alg": "SHA-512",
-              "content": "2f2d3456ee2801a71f0de1e9d9983ce62a0d1ba97c1c6fad3750fb27ec531d2c6ef72d1ac18289db31f5ac5067f1949fb862beec5c4adc2825dee033d1a6592e"
+              "content": "0d5e3617b30b24ee916b1ed22b5ca0e37b5c9c47c652bbab4a94b12ae557f9add1093cc1947ddfbb1a6bace25728224601ac3cdb15e8722909d2e41aab05e018"
             }
           ]
         }
@@ -4603,38 +4583,18 @@
     {
       "type": "library",
       "name": "scope-manager",
-      "version": "8.59.3",
-      "purl": "pkg:npm/%40typescript-eslint/scope-manager@8.59.3",
-      "bom-ref": "pkg:npm/%40typescript-eslint/scope-manager@8.59.3",
+      "version": "8.61.0",
+      "purl": "pkg:npm/%40typescript-eslint/scope-manager@8.61.0",
+      "bom-ref": "pkg:npm/%40typescript-eslint/scope-manager@8.61.0",
       "group": "@typescript-eslint",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@typescript-eslint/scope-manager/-/scope-manager-8.59.3.tgz",
+          "url": "https://registry.npmjs.org/@typescript-eslint/scope-manager/-/scope-manager-8.61.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "b762ef667a047f32ad9cf8e0784bb8d71c39831abd99055f632e0ea19e1596dd2c937270c6684271afc047b0f03a21eb8d6823023e9ab3802144b2920dfbd920"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "name": "scope-manager",
-      "version": "8.59.4",
-      "purl": "pkg:npm/%40typescript-eslint/scope-manager@8.59.4",
-      "bom-ref": "pkg:npm/%40typescript-eslint/scope-manager@8.59.4",
-      "group": "@typescript-eslint",
-      "externalReferences": [
-        {
-          "type": "distribution",
-          "url": "https://registry.npmjs.org/@typescript-eslint/scope-manager/-/scope-manager-8.59.4.tgz",
-          "hashes": [
-            {
-              "alg": "SHA-512",
-              "content": "994791ff71f55ab4c075d26bc2eb7c3a83e37dab9aced310991c15e5f4135323552422e25175dee25184c9820bda8143a4fed4b606c62570adef6c13d33d92dd"
+              "content": "2167571471526fa9a50b71cf73b42c2c39b9cd811b5256bab6b0c41dfdf60f7fdd9ee5325ddf3ba6549c48d5d26e6d3f47132f39ba48d7bb2ffc40d31ab19990"
             }
           ]
         }
@@ -4643,38 +4603,18 @@
     {
       "type": "library",
       "name": "tsconfig-utils",
-      "version": "8.59.3",
-      "purl": "pkg:npm/%40typescript-eslint/tsconfig-utils@8.59.3",
-      "bom-ref": "pkg:npm/%40typescript-eslint/tsconfig-utils@8.59.3",
+      "version": "8.61.0",
+      "purl": "pkg:npm/%40typescript-eslint/tsconfig-utils@8.61.0",
+      "bom-ref": "pkg:npm/%40typescript-eslint/tsconfig-utils@8.61.0",
       "group": "@typescript-eslint",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@typescript-eslint/tsconfig-utils/-/tsconfig-utils-8.59.3.tgz",
+          "url": "https://registry.npmjs.org/@typescript-eslint/tsconfig-utils/-/tsconfig-utils-8.61.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "3dc2091e399a4445cb808008ccb9d263d56e704cf3f05297b118056b50e674608aff9b49a56d374ca245d3543a55977594b773dac20a3d668351937d769fff77"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "name": "tsconfig-utils",
-      "version": "8.59.4",
-      "purl": "pkg:npm/%40typescript-eslint/tsconfig-utils@8.59.4",
-      "bom-ref": "pkg:npm/%40typescript-eslint/tsconfig-utils@8.59.4",
-      "group": "@typescript-eslint",
-      "externalReferences": [
-        {
-          "type": "distribution",
-          "url": "https://registry.npmjs.org/@typescript-eslint/tsconfig-utils/-/tsconfig-utils-8.59.4.tgz",
-          "hashes": [
-            {
-              "alg": "SHA-512",
-              "content": "0cb0a99ca803e1a955c530522ae94afa0535282a8e8145df0d10d7876999833a2440a6bfef46b1f77236b953b79bf2cbbc802d599205a2289fb9d988a80c6930"
+              "content": "3b9026bddbfdced329c697febe61542c61bbf0813a43076bddb086beac06e27c1cf47daa5e43982499d16d11f23244138efd5dd37a25ab0c30cc72ccaa915e3d"
             }
           ]
         }
@@ -4683,38 +4623,18 @@
     {
       "type": "library",
       "name": "type-utils",
-      "version": "8.59.3",
-      "purl": "pkg:npm/%40typescript-eslint/type-utils@8.59.3",
-      "bom-ref": "pkg:npm/%40typescript-eslint/type-utils@8.59.3",
+      "version": "8.61.0",
+      "purl": "pkg:npm/%40typescript-eslint/type-utils@8.61.0",
+      "bom-ref": "pkg:npm/%40typescript-eslint/type-utils@8.61.0",
       "group": "@typescript-eslint",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@typescript-eslint/type-utils/-/type-utils-8.59.3.tgz",
+          "url": "https://registry.npmjs.org/@typescript-eslint/type-utils/-/type-utils-8.61.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "83bd5df100fc51a8871afac9c32212d61097e6beb7c3a26597ee151188440075d30c8a97d4983185301b107b4a9ed2fd92e7388d1a3bfc65b0e717c27a949c71"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "name": "type-utils",
-      "version": "8.59.4",
-      "purl": "pkg:npm/%40typescript-eslint/type-utils@8.59.4",
-      "bom-ref": "pkg:npm/%40typescript-eslint/type-utils@8.59.4",
-      "group": "@typescript-eslint",
-      "externalReferences": [
-        {
-          "type": "distribution",
-          "url": "https://registry.npmjs.org/@typescript-eslint/type-utils/-/type-utils-8.59.4.tgz",
-          "hashes": [
-            {
-              "alg": "SHA-512",
-              "content": "ba89d3b8f0002abf576811aa2772e361387bdb3cb90f219eb258cef60b6693f7855b45b57d11e39f0558281df92e6f1de50e4296e116de03c78d3bd94e682b7c"
+              "content": "4ee06241822477def205f2271c24ca55831b5f892f126a4e12e8b122ecc253da7c0464f549fcb23b477421f0cc6cf2077239ff8569eeb145f97bcbf95e0f97f0"
             }
           ]
         }
@@ -4723,38 +4643,18 @@
     {
       "type": "library",
       "name": "types",
-      "version": "8.59.3",
-      "purl": "pkg:npm/%40typescript-eslint/types@8.59.3",
-      "bom-ref": "pkg:npm/%40typescript-eslint/types@8.59.3",
+      "version": "8.61.0",
+      "purl": "pkg:npm/%40typescript-eslint/types@8.61.0",
+      "bom-ref": "pkg:npm/%40typescript-eslint/types@8.61.0",
       "group": "@typescript-eslint",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@typescript-eslint/types/-/types-8.59.3.tgz",
+          "url": "https://registry.npmjs.org/@typescript-eslint/types/-/types-8.61.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "78f1681f483896e76cb1d445aaa0f141e3c2c54e1643245af7e5d5c239bbc8b9f414a84c7a87ad0bea811042351326f5a46483bde4c84f4f41bf0d9686519aca"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "name": "types",
-      "version": "8.59.4",
-      "purl": "pkg:npm/%40typescript-eslint/types@8.59.4",
-      "bom-ref": "pkg:npm/%40typescript-eslint/types@8.59.4",
-      "group": "@typescript-eslint",
-      "externalReferences": [
-        {
-          "type": "distribution",
-          "url": "https://registry.npmjs.org/@typescript-eslint/types/-/types-8.59.4.tgz",
-          "hashes": [
-            {
-              "alg": "SHA-512",
-              "content": "175a3b589702abe6dcf1dc1c3bf62c4843ae7401fc443b5a3a133ac1c01085c52c1619d6425f3524acb8f2ad61a31014d2aaf333cf7edf5198875e75e5975edd"
+              "content": "f504d0a59e488a7e02748a1d7db0d01527a24892a276060962e8353fd082db15a0513be59a2c558aa0d935c88c8f02c16722671b8b4698f97deeb54015bd4026"
             }
           ]
         }
@@ -4763,38 +4663,18 @@
     {
       "type": "library",
       "name": "typescript-estree",
-      "version": "8.59.3",
-      "purl": "pkg:npm/%40typescript-eslint/typescript-estree@8.59.3",
-      "bom-ref": "pkg:npm/%40typescript-eslint/typescript-estree@8.59.3",
+      "version": "8.61.0",
+      "purl": "pkg:npm/%40typescript-eslint/typescript-estree@8.61.0",
+      "bom-ref": "pkg:npm/%40typescript-eslint/typescript-estree@8.61.0",
       "group": "@typescript-eslint",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@typescript-eslint/typescript-estree/-/typescript-estree-8.59.3.tgz",
+          "url": "https://registry.npmjs.org/@typescript-eslint/typescript-estree/-/typescript-estree-8.61.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "09b46355101fecbafd2abf11a2929c6d8e39a7655f9a61eb9b4ca03826058bba14f2ad7d9b416cffa8874bb90d3a6c29a7ea1bd3b655700aa5c54a1df6561d9a"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "name": "typescript-estree",
-      "version": "8.59.4",
-      "purl": "pkg:npm/%40typescript-eslint/typescript-estree@8.59.4",
-      "bom-ref": "pkg:npm/%40typescript-eslint/typescript-estree@8.59.4",
-      "group": "@typescript-eslint",
-      "externalReferences": [
-        {
-          "type": "distribution",
-          "url": "https://registry.npmjs.org/@typescript-eslint/typescript-estree/-/typescript-estree-8.59.4.tgz",
-          "hashes": [
-            {
-              "alg": "SHA-512",
-              "content": "17e46e3a67035e8e3e4cf75f77f4c22d2de6da7c3c804f575f264bac0dc905f680e6dcfd4ed764c83dd824598fc6e97273670a6c4a24fc2bc513732048b5a76a"
+              "content": "e36cdab5de6a4afbdc57525d0c108bc584739ef3f87881e93e86577643c59c099a9c0e05b99e5d89b4a708182063c8509ea6a33e9a068d715d67b7c824a42794"
             }
           ]
         }
@@ -4803,38 +4683,18 @@
     {
       "type": "library",
       "name": "utils",
-      "version": "8.59.3",
-      "purl": "pkg:npm/%40typescript-eslint/utils@8.59.3",
-      "bom-ref": "pkg:npm/%40typescript-eslint/utils@8.59.3",
+      "version": "8.61.0",
+      "purl": "pkg:npm/%40typescript-eslint/utils@8.61.0",
+      "bom-ref": "pkg:npm/%40typescript-eslint/utils@8.61.0",
       "group": "@typescript-eslint",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@typescript-eslint/utils/-/utils-8.59.3.tgz",
+          "url": "https://registry.npmjs.org/@typescript-eslint/utils/-/utils-8.61.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "240bd3d78828073473cf3672aaadcff412c0ac8c53b5051152d16043f57b14ef9e53e1a0e844bee7298e3cfd704715dcc4061e8af0a4e2e4b78c22962352bc66"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "name": "utils",
-      "version": "8.59.4",
-      "purl": "pkg:npm/%40typescript-eslint/utils@8.59.4",
-      "bom-ref": "pkg:npm/%40typescript-eslint/utils@8.59.4",
-      "group": "@typescript-eslint",
-      "externalReferences": [
-        {
-          "type": "distribution",
-          "url": "https://registry.npmjs.org/@typescript-eslint/utils/-/utils-8.59.4.tgz",
-          "hashes": [
-            {
-              "alg": "SHA-512",
-              "content": "7185de34052c1b8949a3975b73515c2a6f89c085ab8f5fd4a53391b02ead18c8c467cd4361cbc8afdfee7a292131afd8fe00d0606a7e617f7fc50ad78dee4127"
+              "content": "ddbcc5b7b22614c5bf8d563025a983a1efdd30e7452d20baa689baad18dd87849924462ea723337a6f1eeef2992dc94b7e91e39704805ce531b4ac465d488ba8"
             }
           ]
         }
@@ -4843,38 +4703,18 @@
     {
       "type": "library",
       "name": "visitor-keys",
-      "version": "8.59.3",
-      "purl": "pkg:npm/%40typescript-eslint/visitor-keys@8.59.3",
-      "bom-ref": "pkg:npm/%40typescript-eslint/visitor-keys@8.59.3",
+      "version": "8.61.0",
+      "purl": "pkg:npm/%40typescript-eslint/visitor-keys@8.61.0",
+      "bom-ref": "pkg:npm/%40typescript-eslint/visitor-keys@8.61.0",
       "group": "@typescript-eslint",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@typescript-eslint/visitor-keys/-/visitor-keys-8.59.3.tgz",
+          "url": "https://registry.npmjs.org/@typescript-eslint/visitor-keys/-/visitor-keys-8.61.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "7f551017b820778d988b0239c06ad168fb1af8fd0220d065ae42cf9867e9abfbbf23fa15b5e7281087c547d6a0fe86b5b0b3ac44d67ac5e85feaa3198501810e"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "name": "visitor-keys",
-      "version": "8.59.4",
-      "purl": "pkg:npm/%40typescript-eslint/visitor-keys@8.59.4",
-      "bom-ref": "pkg:npm/%40typescript-eslint/visitor-keys@8.59.4",
-      "group": "@typescript-eslint",
-      "externalReferences": [
-        {
-          "type": "distribution",
-          "url": "https://registry.npmjs.org/@typescript-eslint/visitor-keys/-/visitor-keys-8.59.4.tgz",
-          "hashes": [
-            {
-              "alg": "SHA-512",
-              "content": "53783155a0d59ee64a852b295bf33333113592aef339d734ef615c48da2a03523da7c1f229b0457c41e859c90100c80d32987831a9b04b9893573166ae7b7c4d"
+              "content": "4152d9bb764f40413e1c8090c80319db22d08717f499e63fc31e87c75e18713363d77241dea1e55f7949d362f77cb1878044511fbd64bd80f0897220b93dc08d"
             }
           ]
         }
@@ -4903,18 +4743,18 @@
     {
       "type": "library",
       "name": "coverage-v8",
-      "version": "4.1.7",
-      "purl": "pkg:npm/%40vitest/coverage-v8@4.1.7",
-      "bom-ref": "pkg:npm/%40vitest/coverage-v8@4.1.7",
+      "version": "4.1.9",
+      "purl": "pkg:npm/%40vitest/coverage-v8@4.1.9",
+      "bom-ref": "pkg:npm/%40vitest/coverage-v8@4.1.9",
       "group": "@vitest",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-4.1.7.tgz",
+          "url": "https://registry.npmjs.org/@vitest/coverage-v8/-/coverage-v8-4.1.9.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "aac60f79773943d7452ddd62f00a7e071f2c420729fab155428e11d1d0ec58d073976ea5755175a8e3be44bdb82bb143ad1ea903ee745de7512d2a121b6e1b55"
+              "content": "1bdfe582a89b85e2d504346ec9ae3911bb045d361c5a8486f932e0ee2d9ac6ecf1d04abad9e5e7f9a597c9a55d579bcabc549677acb0717f2103b95af4fbeef2"
             }
           ]
         }
@@ -4923,18 +4763,18 @@
     {
       "type": "library",
       "name": "expect",
-      "version": "4.1.7",
-      "purl": "pkg:npm/%40vitest/expect@4.1.7",
-      "bom-ref": "pkg:npm/%40vitest/expect@4.1.7",
+      "version": "4.1.9",
+      "purl": "pkg:npm/%40vitest/expect@4.1.9",
+      "bom-ref": "pkg:npm/%40vitest/expect@4.1.9",
       "group": "@vitest",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@vitest/expect/-/expect-4.1.7.tgz",
+          "url": "https://registry.npmjs.org/@vitest/expect/-/expect-4.1.9.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "d51fadc34a2bb4711b64318cca69bea4deff00543f46414576d77b10df95069ca72a62db3fc037ae911776c84127bfbc850f7304987f8b5b34c8a36dc409d4ef"
+              "content": "be5feb62c50a701af74a7427d7aebe5d1e5941c80cc770d084559d7e58bf716a4b9cb5266f166fcab259a2d2c552bca26fe2ed02b60c49327945b439ed9aab94"
             }
           ]
         }
@@ -4943,18 +4783,18 @@
     {
       "type": "library",
       "name": "mocker",
-      "version": "4.1.7",
-      "purl": "pkg:npm/%40vitest/mocker@4.1.7",
-      "bom-ref": "pkg:npm/%40vitest/mocker@4.1.7",
+      "version": "4.1.9",
+      "purl": "pkg:npm/%40vitest/mocker@4.1.9",
+      "bom-ref": "pkg:npm/%40vitest/mocker@4.1.9",
       "group": "@vitest",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@vitest/mocker/-/mocker-4.1.7.tgz",
+          "url": "https://registry.npmjs.org/@vitest/mocker/-/mocker-4.1.9.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "bd8ee7b9a98a81fbe90352a86b7a18230fe4ec3ea4667a46c8d3195bc968a30d9bb016256b54c576a4da5e77167519f8a60c0db3ef744619d784949c0f041e24"
+              "content": "115917cc18eb3c633e70af3f00d5a006b91409f25f6f7f3f11f4d23bc87ba56bca9323e4a56c6f47b0640f633222d305eb60bdef3004a2a769522c7047f7be47"
             }
           ]
         }
@@ -4963,18 +4803,18 @@
     {
       "type": "library",
       "name": "pretty-format",
-      "version": "4.1.7",
-      "purl": "pkg:npm/%40vitest/pretty-format@4.1.7",
-      "bom-ref": "pkg:npm/%40vitest/pretty-format@4.1.7",
+      "version": "4.1.9",
+      "purl": "pkg:npm/%40vitest/pretty-format@4.1.9",
+      "bom-ref": "pkg:npm/%40vitest/pretty-format@4.1.9",
       "group": "@vitest",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@vitest/pretty-format/-/pretty-format-4.1.7.tgz",
+          "url": "https://registry.npmjs.org/@vitest/pretty-format/-/pretty-format-4.1.9.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "ba68026ab4ce61058868332f1834598a3fba6fda1578b2322737cdf804bcf1ed19394dd04e034d493b6340ea5cbd6af79e9d4dd23e168198feb1bde86010ec73"
+              "content": "b348ae7e7b37888162b5d826f9847b835c21080686b57cf8e7d552f7f3eac8a0c4105818221b07390997808803b980adec37909a2653d107b6380da9e193eee4"
             }
           ]
         }
@@ -4983,18 +4823,18 @@
     {
       "type": "library",
       "name": "runner",
-      "version": "4.1.7",
-      "purl": "pkg:npm/%40vitest/runner@4.1.7",
-      "bom-ref": "pkg:npm/%40vitest/runner@4.1.7",
+      "version": "4.1.9",
+      "purl": "pkg:npm/%40vitest/runner@4.1.9",
+      "bom-ref": "pkg:npm/%40vitest/runner@4.1.9",
       "group": "@vitest",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@vitest/runner/-/runner-4.1.7.tgz",
+          "url": "https://registry.npmjs.org/@vitest/runner/-/runner-4.1.9.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "05aa63980436688efc59d3047de5168af9df57307e54f1b059141c244d0e52aeea11e11c06c0927fed13e6244404d1399c16f8c00e586b45ba200fac82174417"
+              "content": "2972cc0ed73ba1eef4fb79897c6acf5163deb2cc07fb7b13c40300325f031bb23c214413e175bbd7c758e480f7bcf51c9a5bb6ec270a7d8e0fde1dc8dbd48b26"
             }
           ]
         }
@@ -5003,18 +4843,18 @@
     {
       "type": "library",
       "name": "snapshot",
-      "version": "4.1.7",
-      "purl": "pkg:npm/%40vitest/snapshot@4.1.7",
-      "bom-ref": "pkg:npm/%40vitest/snapshot@4.1.7",
+      "version": "4.1.9",
+      "purl": "pkg:npm/%40vitest/snapshot@4.1.9",
+      "bom-ref": "pkg:npm/%40vitest/snapshot@4.1.9",
       "group": "@vitest",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@vitest/snapshot/-/snapshot-4.1.7.tgz",
+          "url": "https://registry.npmjs.org/@vitest/snapshot/-/snapshot-4.1.9.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "65a70bce36be4e625e675875e315b6141fd6a5e8a6503de16815d03f226ac6fa3c8d04e67de03ccefe7c9ad8cdd82ec41d764361571561d6260318e4595bca0b"
+              "content": "25ced1286341a3c676f166089b43627a3e317523c1c917fa994e7c5691d091de99874e6b96703eb708db2b91f2788187c6bcec737989812e37b8cd0264acda20"
             }
           ]
         }
@@ -5023,18 +4863,18 @@
     {
       "type": "library",
       "name": "spy",
-      "version": "4.1.7",
-      "purl": "pkg:npm/%40vitest/spy@4.1.7",
-      "bom-ref": "pkg:npm/%40vitest/spy@4.1.7",
+      "version": "4.1.9",
+      "purl": "pkg:npm/%40vitest/spy@4.1.9",
+      "bom-ref": "pkg:npm/%40vitest/spy@4.1.9",
       "group": "@vitest",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@vitest/spy/-/spy-4.1.7.tgz",
+          "url": "https://registry.npmjs.org/@vitest/spy/-/spy-4.1.9.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "91b908e4b3166a4cae4c8bece9f509e6a74855bd5754ab182404f8389f77f1c1cc44e60c49f9a841d672d1a6809e36db73c17ad6f9284eacff033fbf1e222ee5"
+              "content": "7c7a6c4ba9888be3e2116faf71154e3245f5a1268f2a77b754e7254852023dc18e99f2a05cf5398806a1fb070d723db13eb08299fabdf480c67fe1288e186f84"
             }
           ]
         }
@@ -5043,18 +4883,18 @@
     {
       "type": "library",
       "name": "utils",
-      "version": "4.1.7",
-      "purl": "pkg:npm/%40vitest/utils@4.1.7",
-      "bom-ref": "pkg:npm/%40vitest/utils@4.1.7",
+      "version": "4.1.9",
+      "purl": "pkg:npm/%40vitest/utils@4.1.9",
+      "bom-ref": "pkg:npm/%40vitest/utils@4.1.9",
       "group": "@vitest",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@vitest/utils/-/utils-4.1.7.tgz",
+          "url": "https://registry.npmjs.org/@vitest/utils/-/utils-4.1.9.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "4f9df6581bbbf75701c4994297a48ef89d7897cd43431eae4079b56d06e608363b9ea9442209336bf5059d204d694b527f8d6e9e574316374e0581100b86f91f"
+              "content": "039d68f3298ee4fa6a95636704ff591cf5c3229b8cb532e51928cdee56b8512f8b273a143328708c0e505e59b7f497b18301ca5b85e3b3c67677774b09739eb8"
             }
           ]
         }
@@ -7361,17 +7201,17 @@
     {
       "type": "library",
       "name": "dayjs",
-      "version": "1.11.20",
-      "purl": "pkg:npm/dayjs@1.11.20",
-      "bom-ref": "pkg:npm/dayjs@1.11.20",
+      "version": "1.11.21",
+      "purl": "pkg:npm/dayjs@1.11.21",
+      "bom-ref": "pkg:npm/dayjs@1.11.21",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/dayjs/-/dayjs-1.11.20.tgz",
+          "url": "https://registry.npmjs.org/dayjs/-/dayjs-1.11.21.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "61bc30a91fee6297a83f8a6ed38deaf8b4c32c504b02950fe95c518a175f353aaee2e6ea3251832dde84ad784482ccaf6342ba9c2b3b9e0818ba600dfbdb84b9"
+              "content": "f7c213f8739a8408ac89bcffca329bcee381c1872327b0422cfcc04721e2c84066473e1f6ad17e28f26ccc41d7b06623506db7e1a1ff70e8d6d70c136ca51994"
             }
           ]
         }
@@ -7931,17 +7771,17 @@
     {
       "type": "library",
       "name": "dompurify",
-      "version": "3.4.5",
-      "purl": "pkg:npm/dompurify@3.4.5",
-      "bom-ref": "pkg:npm/dompurify@3.4.5",
+      "version": "3.4.10",
+      "purl": "pkg:npm/dompurify@3.4.10",
+      "bom-ref": "pkg:npm/dompurify@3.4.10",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/dompurify/-/dompurify-3.4.5.tgz",
+          "url": "https://registry.npmjs.org/dompurify/-/dompurify-3.4.10.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "3abc0804ab1d3525447ae6dd2751c1bffc0d10d44cf72b40542bfb617b7ffc0def3dd54c36e00246a2bd9970860815b6967ec14ff0385f48d71e8d86bbcf6688"
+              "content": "d31ccdbf47bba180bacb2b8e19920004f338aad8374312c59e20cd3cfe193fdd3047c62adf3830a516eb3624f837720aa836db6051092d5f89584b35f5a67fff"
             }
           ]
         }
@@ -8159,25 +7999,6 @@
     {
       "type": "library",
       "name": "enhanced-resolve",
-      "version": "5.21.3",
-      "purl": "pkg:npm/enhanced-resolve@5.21.3",
-      "bom-ref": "pkg:npm/enhanced-resolve@5.21.3",
-      "externalReferences": [
-        {
-          "type": "distribution",
-          "url": "https://registry.npmjs.org/enhanced-resolve/-/enhanced-resolve-5.21.3.tgz",
-          "hashes": [
-            {
-              "alg": "SHA-512",
-              "content": "4322f5d7d22703e5d712434b3533c25cfba04af39f870bf424e946373bf1b348596a21cb36f5d2a6e7545ac3a5b17196261f06e9c90249c1245477d7de4c3fd9"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "name": "enhanced-resolve",
       "version": "5.21.5",
       "purl": "pkg:npm/enhanced-resolve@5.21.5",
       "bom-ref": "pkg:npm/enhanced-resolve@5.21.5",
@@ -8189,6 +8010,25 @@
             {
               "alg": "SHA-512",
               "content": "98b08d6eb4258b5d4ad724949ae36de19501dcea46203ab8ab6bd30537f970bda5a6c46323d40aa920f49dd8d6f05caf716fc98f8ea031ef6ccb21c0b2f31afc"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "enhanced-resolve",
+      "version": "5.24.0",
+      "purl": "pkg:npm/enhanced-resolve@5.24.0",
+      "bom-ref": "pkg:npm/enhanced-resolve@5.24.0",
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/enhanced-resolve/-/enhanced-resolve-5.24.0.tgz",
+          "hashes": [
+            {
+              "alg": "SHA-512",
+              "content": "4a4136b7cd8a96493141154c54b0062b12df3911907eb931e5d923faf9605d154d11d3dce1e65c47e27f16f8fc0bec8a4851f92f4ab7345972b9f39542709c61"
             }
           ]
         }
@@ -8501,17 +8341,17 @@
     {
       "type": "library",
       "name": "eslint-plugin-prettier",
-      "version": "5.5.5",
-      "purl": "pkg:npm/eslint-plugin-prettier@5.5.5",
-      "bom-ref": "pkg:npm/eslint-plugin-prettier@5.5.5",
+      "version": "5.5.6",
+      "purl": "pkg:npm/eslint-plugin-prettier@5.5.6",
+      "bom-ref": "pkg:npm/eslint-plugin-prettier@5.5.6",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/eslint-plugin-prettier/-/eslint-plugin-prettier-5.5.5.tgz",
+          "url": "https://registry.npmjs.org/eslint-plugin-prettier/-/eslint-plugin-prettier-5.5.6.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "86c71791ba94676b0f8ad840b8b9b93172fe5a987e53bc079e03c1bfd38c5b094ff2269f972c698d3619926760078fef3c885e9919411282eb1fb502d67eda53"
+              "content": "89f7ad99373159fcfee2a456de91ffba3753ab68d0223e7d03124c20ddba2b96af62053c771c9c5044d0a275a25bec0fad85c0d23dd3af2d25d429f0550b43a9"
             }
           ]
         }
@@ -8520,17 +8360,17 @@
     {
       "type": "library",
       "name": "eslint-plugin-react-dom",
-      "version": "5.8.3",
-      "purl": "pkg:npm/eslint-plugin-react-dom@5.8.3",
-      "bom-ref": "pkg:npm/eslint-plugin-react-dom@5.8.3",
+      "version": "5.9.0",
+      "purl": "pkg:npm/eslint-plugin-react-dom@5.9.0",
+      "bom-ref": "pkg:npm/eslint-plugin-react-dom@5.9.0",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/eslint-plugin-react-dom/-/eslint-plugin-react-dom-5.8.3.tgz",
+          "url": "https://registry.npmjs.org/eslint-plugin-react-dom/-/eslint-plugin-react-dom-5.9.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "768a2e51a514d1a6ca8b3077ce6d7ebff64e026dca05b24cd43eb1a8951f24d2fcae2442d489b767442eaf0d9058488789903b83f8bfae6413869f73cd226a41"
+              "content": "801955df4e2cc1a5b64b432a5459108628b40be280cb65a6c45b55b61a37f61e46cd67632a3348c5d51d38f42f2c015dec1d7f9646c97e5a8640a7fab235864e"
             }
           ]
         }
@@ -8539,17 +8379,17 @@
     {
       "type": "library",
       "name": "eslint-plugin-react-jsx",
-      "version": "5.8.3",
-      "purl": "pkg:npm/eslint-plugin-react-jsx@5.8.3",
-      "bom-ref": "pkg:npm/eslint-plugin-react-jsx@5.8.3",
+      "version": "5.9.0",
+      "purl": "pkg:npm/eslint-plugin-react-jsx@5.9.0",
+      "bom-ref": "pkg:npm/eslint-plugin-react-jsx@5.9.0",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/eslint-plugin-react-jsx/-/eslint-plugin-react-jsx-5.8.3.tgz",
+          "url": "https://registry.npmjs.org/eslint-plugin-react-jsx/-/eslint-plugin-react-jsx-5.9.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "bca2d3a36bbd8aff05750ab2276f2776182458658ea4bcacea253c2d404a2fba49b5cfb37ede2e93e8ab1b8155156f04ea3f0169cb972255376ba44cfd3141f2"
+              "content": "2bff11b406fc183ba1a08b11f857a8e42af9ed3b353768ee7a4a1cc64f53b85ddacf1d9b08eb878ae53faea312b4c5a2e682d33eb8365eaaae0f62de4bbc7a89"
             }
           ]
         }
@@ -8558,17 +8398,17 @@
     {
       "type": "library",
       "name": "eslint-plugin-react-naming-convention",
-      "version": "5.8.3",
-      "purl": "pkg:npm/eslint-plugin-react-naming-convention@5.8.3",
-      "bom-ref": "pkg:npm/eslint-plugin-react-naming-convention@5.8.3",
+      "version": "5.9.0",
+      "purl": "pkg:npm/eslint-plugin-react-naming-convention@5.9.0",
+      "bom-ref": "pkg:npm/eslint-plugin-react-naming-convention@5.9.0",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/eslint-plugin-react-naming-convention/-/eslint-plugin-react-naming-convention-5.8.3.tgz",
+          "url": "https://registry.npmjs.org/eslint-plugin-react-naming-convention/-/eslint-plugin-react-naming-convention-5.9.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "c919047c5539bc107a4414f4a57cda5181f42bcf06a6ef3f39818560f95e21bd54e1bb71b79f9acd9ca2d6b8a05afd27539190234ec02db844e74c3d99ba894c"
+              "content": "d1561d7cf5d964b0e2373be9f039a0605c19faf3bca658d4d0f72bf37fc78fc3d28a517890bdab6568787e487e21542ff2222922fec72d16c10ff9d4fd04a1fb"
             }
           ]
         }
@@ -8577,17 +8417,17 @@
     {
       "type": "library",
       "name": "eslint-plugin-react-rsc",
-      "version": "5.8.3",
-      "purl": "pkg:npm/eslint-plugin-react-rsc@5.8.3",
-      "bom-ref": "pkg:npm/eslint-plugin-react-rsc@5.8.3",
+      "version": "5.9.0",
+      "purl": "pkg:npm/eslint-plugin-react-rsc@5.9.0",
+      "bom-ref": "pkg:npm/eslint-plugin-react-rsc@5.9.0",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/eslint-plugin-react-rsc/-/eslint-plugin-react-rsc-5.8.3.tgz",
+          "url": "https://registry.npmjs.org/eslint-plugin-react-rsc/-/eslint-plugin-react-rsc-5.9.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "b12c55daecb69e537a07002df86109567fae91e9c3d96b273b41b12bd9de5f81f586d7e6d366936382bc1ca78d8cafda1ef70c4b4f8f19631836807d45b1c96c"
+              "content": "85c3fb953a95e49371f10a6630aae2739d08044b85c23e6694cedcc9a601ff651625a690bd2732c077a0fc2459ac36ae171908571f495dc39106a5be87b54675"
             }
           ]
         }
@@ -8596,17 +8436,17 @@
     {
       "type": "library",
       "name": "eslint-plugin-react-web-api",
-      "version": "5.8.3",
-      "purl": "pkg:npm/eslint-plugin-react-web-api@5.8.3",
-      "bom-ref": "pkg:npm/eslint-plugin-react-web-api@5.8.3",
+      "version": "5.9.0",
+      "purl": "pkg:npm/eslint-plugin-react-web-api@5.9.0",
+      "bom-ref": "pkg:npm/eslint-plugin-react-web-api@5.9.0",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/eslint-plugin-react-web-api/-/eslint-plugin-react-web-api-5.8.3.tgz",
+          "url": "https://registry.npmjs.org/eslint-plugin-react-web-api/-/eslint-plugin-react-web-api-5.9.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "32392966e6a2074899ecf9893a81ba83a3a46cc7895a6802d4aebb49fcebc75b7d44aa1014e464f166248645ad5c523361bccb3788ee3b09540b7bc9e949d099"
+              "content": "02528ca401476e0275d21713230f34357cc43cac41d73ba003df23a0f9cc2834ae7ffc12728586c25e57e929a28159f828284f06e75872174dd0eac152a3b4da"
             }
           ]
         }
@@ -8615,17 +8455,17 @@
     {
       "type": "library",
       "name": "eslint-plugin-react-x",
-      "version": "5.8.3",
-      "purl": "pkg:npm/eslint-plugin-react-x@5.8.3",
-      "bom-ref": "pkg:npm/eslint-plugin-react-x@5.8.3",
+      "version": "5.9.0",
+      "purl": "pkg:npm/eslint-plugin-react-x@5.9.0",
+      "bom-ref": "pkg:npm/eslint-plugin-react-x@5.9.0",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/eslint-plugin-react-x/-/eslint-plugin-react-x-5.8.3.tgz",
+          "url": "https://registry.npmjs.org/eslint-plugin-react-x/-/eslint-plugin-react-x-5.9.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "f4a1f62edc91731a30948bbcfaf1183714360e16a265291944fd2532b62f31feb9d5d87639618ec2275e5ce0b03e3086e8f3e0f60bd2c214fe25fcebb7ab4a07"
+              "content": "bab823313b59a54ce190505b42aa78faf74585099292078b9e9ab587fda07a69f32a388ca436bd7026e8d6f8631e76102f353a6116f1275861a95bfef675db8f"
             }
           ]
         }
@@ -8710,17 +8550,17 @@
     {
       "type": "library",
       "name": "eslint",
-      "version": "10.4.0",
-      "purl": "pkg:npm/eslint@10.4.0",
-      "bom-ref": "pkg:npm/eslint@10.4.0",
+      "version": "10.5.0",
+      "purl": "pkg:npm/eslint@10.5.0",
+      "bom-ref": "pkg:npm/eslint@10.5.0",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/eslint/-/eslint-10.4.0.tgz",
+          "url": "https://registry.npmjs.org/eslint/-/eslint-10.5.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "9685f2e9b58ea0fdc43fa240ee3a3aa798cca412661e6b0d64ce521511cb761d4c18e3eeacc9cd063e199406daa9401a4166c2afb8c75783fb833032af265691"
+              "content": "d72fbb0bebe2d766d42b522965e695de0b07f5f1cb0663ef6263f1e36a6f4ff13dc86d080bc8373d4659829d3e24b265ed90cad1f95cda073e030f5da42bc8b1"
             }
           ]
         }
@@ -9044,25 +8884,6 @@
             {
               "alg": "SHA-512",
               "content": "ad58dfec0ac6dcb4e4f854ba630f355750cbb999756d16cdadebfa4e677ff516aba1e791449840b7b8e0ffa605c5bbc04175026af4a86613cf8faa0ec7ee4a8d"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "name": "fastest-levenshtein",
-      "version": "1.0.16",
-      "purl": "pkg:npm/fastest-levenshtein@1.0.16",
-      "bom-ref": "pkg:npm/fastest-levenshtein@1.0.16",
-      "externalReferences": [
-        {
-          "type": "distribution",
-          "url": "https://registry.npmjs.org/fastest-levenshtein/-/fastest-levenshtein-1.0.16.tgz",
-          "hashes": [
-            {
-              "alg": "SHA-512",
-              "content": "7919c2b534ed199169402c2126250ebb13d05915d52980e7d1bd8f7877d72fafd98b9dd22c0cc01df5615562b602bc82fd61f4e6419fc611483ef4c5d125d0ce"
             }
           ]
         }
@@ -11085,17 +10906,17 @@
     {
       "type": "library",
       "name": "js-yaml",
-      "version": "4.1.1",
-      "purl": "pkg:npm/js-yaml@4.1.1",
-      "bom-ref": "pkg:npm/js-yaml@4.1.1",
+      "version": "4.2.0",
+      "purl": "pkg:npm/js-yaml@4.2.0",
+      "bom-ref": "pkg:npm/js-yaml@4.2.0",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/js-yaml/-/js-yaml-4.1.1.tgz",
+          "url": "https://registry.npmjs.org/js-yaml/-/js-yaml-4.2.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "a90293e334315e5f252f006d1cc5b06937067c5399be23897addcecbfc661a4da0647ebbec224cf44bed7dd4a48167004d9863ff9e49674ae6cb79b2093e65b0"
+              "content": "78f5acbda9efd035ae0d1b16f1d9edf91e23437d52091090ee184d70f5d93eca016627a6b9935819feda75976a5f60fcea3eabbcaa774690b155349bf164253b"
             }
           ]
         }
@@ -11408,17 +11229,17 @@
     {
       "type": "library",
       "name": "launch-editor",
-      "version": "2.13.2",
-      "purl": "pkg:npm/launch-editor@2.13.2",
-      "bom-ref": "pkg:npm/launch-editor@2.13.2",
+      "version": "2.14.1",
+      "purl": "pkg:npm/launch-editor@2.14.1",
+      "bom-ref": "pkg:npm/launch-editor@2.14.1",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/launch-editor/-/launch-editor-2.13.2.tgz",
+          "url": "https://registry.npmjs.org/launch-editor/-/launch-editor-2.14.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "e155439db3a92d7cbfb3cadd4424976fecdf31e151d169495a9113d6203d0907656437f0c8b8d4b864335d4e1578ea1ecba022712025b966a7ec4b606ba29c9a"
+              "content": "41606b42c3291fb80fafdeb976c283ff770a5a23684e3a404d07fef97abadcdeac29118cc25557cf8d4ed4865331f65080172d0ff2b966dd3afbf23aa4febe1c"
             }
           ]
         }
@@ -12092,17 +11913,17 @@
     {
       "type": "library",
       "name": "mantine-datatable",
-      "version": "9.2.2",
-      "purl": "pkg:npm/mantine-datatable@9.2.2",
-      "bom-ref": "pkg:npm/mantine-datatable@9.2.2",
+      "version": "9.3.0",
+      "purl": "pkg:npm/mantine-datatable@9.3.0",
+      "bom-ref": "pkg:npm/mantine-datatable@9.3.0",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/mantine-datatable/-/mantine-datatable-9.2.2.tgz",
+          "url": "https://registry.npmjs.org/mantine-datatable/-/mantine-datatable-9.3.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "a52588020814402d48e25354cf0568366f39088931f23b2dd2ccb3468f0df42ad31dd73e676fbc6852df0678921db1789c9c8b13a9e478071bf2ebc57476d57f"
+              "content": "6022c2e550913d41c3a0352f5a0558f356f1d7b3039371b3dfc89c38835efd03b664a0121b13737ffc22a95dc3bf537f0513bad351b254c1d11fa2f3156542ee"
             }
           ]
         }
@@ -13669,17 +13490,17 @@
     {
       "type": "library",
       "name": "playwright-core",
-      "version": "1.60.0",
-      "purl": "pkg:npm/playwright-core@1.60.0",
-      "bom-ref": "pkg:npm/playwright-core@1.60.0",
+      "version": "1.61.0",
+      "purl": "pkg:npm/playwright-core@1.61.0",
+      "bom-ref": "pkg:npm/playwright-core@1.61.0",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/playwright-core/-/playwright-core-1.60.0.tgz",
+          "url": "https://registry.npmjs.org/playwright-core/-/playwright-core-1.61.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "f5b5bacef5ff9b49446e04ca27a629a4e2b1f07dd538f04c382161da2ad714e4f805b1e0af1e613e3c0960b4f8d0bbbee2ab43dfaa8a73f1e7e7a4ad516e7b20"
+              "content": "71a5fb4eb637325e9e8320d7d1651c4c70f1a1d97f6f9d72e7024e742100dfa42f88afecda0d3cd61be61acf1e684dc359be8d61943a0633bf4243513de9e83c"
             }
           ]
         }
@@ -13688,17 +13509,17 @@
     {
       "type": "library",
       "name": "playwright",
-      "version": "1.60.0",
-      "purl": "pkg:npm/playwright@1.60.0",
-      "bom-ref": "pkg:npm/playwright@1.60.0",
+      "version": "1.61.0",
+      "purl": "pkg:npm/playwright@1.61.0",
+      "bom-ref": "pkg:npm/playwright@1.61.0",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/playwright/-/playwright-1.60.0.tgz",
+          "url": "https://registry.npmjs.org/playwright/-/playwright-1.61.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "86178776890cf1c76a09bd25704decfb34f8b785bebef8e91b1b199439e291aaf3c7cb52ccc79b87752216d82ac05c274e78d841cb32305f1e8b69823bfb6978"
+              "content": "67eec179ea903d14739251ec5453f8293188c8cc4a5267de440e168ac33a1b7fd75ba9f019e5fa7d7f6a61a0daf82894aa93a46f67fa5f79daaf4e51de44ae25"
             }
           ]
         }
@@ -14543,17 +14364,17 @@
     {
       "type": "library",
       "name": "prettier",
-      "version": "3.8.3",
-      "purl": "pkg:npm/prettier@3.8.3",
-      "bom-ref": "pkg:npm/prettier@3.8.3",
+      "version": "3.8.4",
+      "purl": "pkg:npm/prettier@3.8.4",
+      "bom-ref": "pkg:npm/prettier@3.8.4",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/prettier/-/prettier-3.8.3.tgz",
+          "url": "https://registry.npmjs.org/prettier/-/prettier-3.8.4.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "ee280f4cce777061cc5bcc56b954f2762d8a3b6df754589337217984b26aa629477e69fc0bc80f7fe3d2edd513eb861c5c56e23066714bda424b12ff0f19bf27"
+              "content": "376332952762e3cfb937fe92e63fa669e1db512233cd9e6e39c5f91e6e10a55f0391bd471637c0293297eb234f2500fd021713de27c7341ebab564d32438b5d5"
             }
           ]
         }
@@ -14751,6 +14572,25 @@
     },
     {
       "type": "library",
+      "name": "prosemirror-inputrules",
+      "version": "1.5.1",
+      "purl": "pkg:npm/prosemirror-inputrules@1.5.1",
+      "bom-ref": "pkg:npm/prosemirror-inputrules@1.5.1",
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/prosemirror-inputrules/-/prosemirror-inputrules-1.5.1.tgz",
+          "hashes": [
+            {
+              "alg": "SHA-512",
+              "content": "ef08f8b8c8ca69758043508383137336d47d025b2ec331df7451f5ca01070362871760ce11a5e5d4225f34f00a0a0f6a344878aee9bdef940b6828903f263a17"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "library",
       "name": "prosemirror-keymap",
       "version": "1.2.3",
       "purl": "pkg:npm/prosemirror-keymap@1.2.3",
@@ -14771,17 +14611,17 @@
     {
       "type": "library",
       "name": "prosemirror-model",
-      "version": "1.25.4",
-      "purl": "pkg:npm/prosemirror-model@1.25.4",
-      "bom-ref": "pkg:npm/prosemirror-model@1.25.4",
+      "version": "1.25.8",
+      "purl": "pkg:npm/prosemirror-model@1.25.8",
+      "bom-ref": "pkg:npm/prosemirror-model@1.25.8",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/prosemirror-model/-/prosemirror-model-1.25.4.tgz",
+          "url": "https://registry.npmjs.org/prosemirror-model/-/prosemirror-model-1.25.8.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "3c833b138dcf07129c7bc39079ecc0b3d8f84cffb9c83a5955bbaeaddd61e69854c44288bbe1b66be114673202e674b598992d0c95b36ea4b6de7d6db007f940"
+              "content": "06cc00e012d214488e455e958e3ff26415c36e8b35cd31278727924a04fca6c18586cb504bb509f3f58e2e20e8b3d07269e7b6efeb66974fc3b8c371611f38ce"
             }
           ]
         }
@@ -15056,17 +14896,17 @@
     {
       "type": "library",
       "name": "react-dom",
-      "version": "19.2.6",
-      "purl": "pkg:npm/react-dom@19.2.6",
-      "bom-ref": "pkg:npm/react-dom@19.2.6",
+      "version": "19.2.7",
+      "purl": "pkg:npm/react-dom@19.2.7",
+      "bom-ref": "pkg:npm/react-dom@19.2.7",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/react-dom/-/react-dom-19.2.6.tgz",
+          "url": "https://registry.npmjs.org/react-dom/-/react-dom-19.2.7.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "d29acc23e86f05b3e3b169f10cbc65086c8cf0f37a52e5a311409899984eebbc4857d5dab1afebfef0e7abe5f2ab82e8dbb83c4126cee58cc046ed03d52a6cde"
+              "content": "b74051557bdb884fe8db41dfc3aebdacb6cc0835ad6192ef9898a0cb67f4331b1717eef5a71851df13a4b299ac3bc877665373ca26c09ad09ade5e2560a93a81"
             }
           ]
         }
@@ -15189,17 +15029,17 @@
     {
       "type": "library",
       "name": "react-router",
-      "version": "7.15.1",
-      "purl": "pkg:npm/react-router@7.15.1",
-      "bom-ref": "pkg:npm/react-router@7.15.1",
+      "version": "7.17.0",
+      "purl": "pkg:npm/react-router@7.17.0",
+      "bom-ref": "pkg:npm/react-router@7.17.0",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/react-router/-/react-router-7.15.1.tgz",
+          "url": "https://registry.npmjs.org/react-router/-/react-router-7.17.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "47cae5f478608a4158a0f2729a752d3d759b9c36f7a207adea54277c8a2ea5bb7ad5a4fd68e851903b18d97461651c97d59ffc6b9b0bef87d7985366dcd44ae4"
+              "content": "14310b2bbad33250873b9fab7b25ec3e599fafb37517dd653c7b1661f3041909bf290f85e0914cf231a87900e60ef753b3ddc5c3d6928a51feb8a45be3f8d7bd"
             }
           ]
         }
@@ -15246,17 +15086,17 @@
     {
       "type": "library",
       "name": "react",
-      "version": "19.2.6",
-      "purl": "pkg:npm/react@19.2.6",
-      "bom-ref": "pkg:npm/react@19.2.6",
+      "version": "19.2.7",
+      "purl": "pkg:npm/react@19.2.7",
+      "bom-ref": "pkg:npm/react@19.2.7",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/react/-/react-19.2.6.tgz",
+          "url": "https://registry.npmjs.org/react/-/react-19.2.7.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "b1f58619f6af8b4c6bf0f834b15b321cc00ece25582a03cb36b4bb8a0fa2bcc35bdf06c2070dcac6d7e5b06040c03de0610944fc0119b132e04e846b4828dbd1"
+              "content": "1cd7bd5ac9536d79852bca3c726c2001e245481bedd5b3dd1c254ab5a695f96940377ea6a53e21711a706dfddf639e9aaf6a085f3b01a4e0222111c0758d0e95"
             }
           ]
         }
@@ -15607,17 +15447,17 @@
     {
       "type": "library",
       "name": "rolldown",
-      "version": "1.0.0",
-      "purl": "pkg:npm/rolldown@1.0.0",
-      "bom-ref": "pkg:npm/rolldown@1.0.0",
+      "version": "1.0.3",
+      "purl": "pkg:npm/rolldown@1.0.3",
+      "bom-ref": "pkg:npm/rolldown@1.0.3",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/rolldown/-/rolldown-1.0.0.tgz",
+          "url": "https://registry.npmjs.org/rolldown/-/rolldown-1.0.3.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "c83f7ce9a5c31121464bde6ca53d4b02fd23b2ccb03f89e93048e6307c8ddbfe7e784f2a409532a5ed8068a91188b8018320f42c596e6f0021b7b56663cac6a0"
+              "content": "8b4d25009da4b35058afbae3363282ec172a012ee755f893dd05f5488e5a63e0051db94299a51ff4e13d75b7730ef5ba749c5b8b6642662cbdbf709cc0e897de"
             }
           ]
         }
@@ -16120,17 +15960,17 @@
     {
       "type": "library",
       "name": "shell-quote",
-      "version": "1.8.3",
-      "purl": "pkg:npm/shell-quote@1.8.3",
-      "bom-ref": "pkg:npm/shell-quote@1.8.3",
+      "version": "1.8.4",
+      "purl": "pkg:npm/shell-quote@1.8.4",
+      "bom-ref": "pkg:npm/shell-quote@1.8.4",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/shell-quote/-/shell-quote-1.8.3.tgz",
+          "url": "https://registry.npmjs.org/shell-quote/-/shell-quote-1.8.4.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "39b9a7205e215cd83506a8671e681b0c44c5f1d2cf0a08195818e441f859a5bb3366762eaf90d49634dc0878a2e4b0b7279134c9e3bfd4b20cc87f94bc7420cb"
+              "content": "56c0ba9fabf3d62858632659c17ed8652179979c77e9c6b5ece0be6baf61f7862a07b5fa5cbc1ffb930e8329d88abd922c551b97c80862f068f0af11a0d43a6d"
             }
           ]
         }
@@ -16804,17 +16644,17 @@
     {
       "type": "library",
       "name": "synckit",
-      "version": "0.11.12",
-      "purl": "pkg:npm/synckit@0.11.12",
-      "bom-ref": "pkg:npm/synckit@0.11.12",
+      "version": "0.11.13",
+      "purl": "pkg:npm/synckit@0.11.13",
+      "bom-ref": "pkg:npm/synckit@0.11.13",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/synckit/-/synckit-0.11.12.tgz",
+          "url": "https://registry.npmjs.org/synckit/-/synckit-0.11.13.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "061ed08d3f3f4ae29421f39b4973473522ba587a3a275b470aa26cb9a1433fb80fd1f93349f4f123ccbce49ae9a59d21f25d2668881cdad7ee650ebfb771ad9d"
+              "content": "78d44a81bdf3eba629dc3d828b156e8ce52f5cb1544e28ffcd59d5f0a472bc5750c29cfb2390d2f147d191378bcdbeb8bbe764cc349d7a5136e22ceefb349252"
             }
           ]
         }
@@ -16891,6 +16731,25 @@
             {
               "alg": "SHA-512",
               "content": "12e9bee5a8e468e85fe4a6ccdbaa2cbefdb590b0fb05a1aa435500e009a2e1aad8c329661944138071691c3766268775ab84176baea9d2da3f1412880fe275bc"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "terser-webpack-plugin",
+      "version": "5.6.1",
+      "purl": "pkg:npm/terser-webpack-plugin@5.6.1",
+      "bom-ref": "pkg:npm/terser-webpack-plugin@5.6.1",
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/terser-webpack-plugin/-/terser-webpack-plugin-5.6.1.tgz",
+          "hashes": [
+            {
+              "alg": "SHA-512",
+              "content": "db4d51e63fac2692bc9c55b0295c8d7d9a2df056896cb643ab97afae25736d5d700ed4970e34540d17c9cc7a406b114330486c64bd5091ea8ceb5c20b12dca69"
             }
           ]
         }
@@ -17012,6 +16871,25 @@
     },
     {
       "type": "library",
+      "name": "tinyglobby",
+      "version": "0.2.17",
+      "purl": "pkg:npm/tinyglobby@0.2.17",
+      "bom-ref": "pkg:npm/tinyglobby@0.2.17",
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/tinyglobby/-/tinyglobby-0.2.17.tgz",
+          "hashes": [
+            {
+              "alg": "SHA-512",
+              "content": "c1747f758a5ca8a99f5a911d66388a24ec023459dd0f40cc9eb5bf7188d51adb449017d581c2c51e836b963e3b9a339589cf72c8dbbae5a96c805e0d4324dada"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "library",
       "name": "tinyrainbow",
       "version": "3.1.0",
       "purl": "pkg:npm/tinyrainbow@3.1.0",
@@ -17070,17 +16948,17 @@
     {
       "type": "library",
       "name": "tmp",
-      "version": "0.2.5",
-      "purl": "pkg:npm/tmp@0.2.5",
-      "bom-ref": "pkg:npm/tmp@0.2.5",
+      "version": "0.2.7",
+      "purl": "pkg:npm/tmp@0.2.7",
+      "bom-ref": "pkg:npm/tmp@0.2.7",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/tmp/-/tmp-0.2.5.tgz",
+          "url": "https://registry.npmjs.org/tmp/-/tmp-0.2.7.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "be8cb3e8c0296b5ad0194c53dc4f812bbfd139ef22b44c7bbc3f3f1c4bede31c17b9cbd0e46e687848879261d926e04edb546939ff98626f4c3a2be3ef4f63a3"
+              "content": "7b4be8b48a69e14a36009612cd51d5eb109c6b0ba27b3dc3cea0c06eb4dcdd8c4192994de9ef9d335dd97887199c383f4294ae536cdf677af3c18f2e9049da5f"
             }
           ]
         }
@@ -17222,17 +17100,17 @@
     {
       "type": "library",
       "name": "ts-loader",
-      "version": "9.5.7",
-      "purl": "pkg:npm/ts-loader@9.5.7",
-      "bom-ref": "pkg:npm/ts-loader@9.5.7",
+      "version": "9.6.0",
+      "purl": "pkg:npm/ts-loader@9.6.0",
+      "bom-ref": "pkg:npm/ts-loader@9.6.0",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/ts-loader/-/ts-loader-9.5.7.tgz",
+          "url": "https://registry.npmjs.org/ts-loader/-/ts-loader-9.6.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "fd936b2a00372b73eda4c60e0bbd4478c5889681b0dc86046b9fedd5ccb3dabe7f3f25304d71b3609bdc0f791f52f9a195fa73d6b855f01d8ee885534346afb2"
+              "content": "76c24ed12f93ee0ad30d64dce1ad274f28171a32a7715529c7c63e69ff04bc8fc3e5681325bcb95049397a830207d11c2d09a7be2b6a87df4caad8ed1e003015"
             }
           ]
         }
@@ -17716,17 +17594,17 @@
     {
       "type": "library",
       "name": "vite",
-      "version": "8.0.12",
-      "purl": "pkg:npm/vite@8.0.12",
-      "bom-ref": "pkg:npm/vite@8.0.12",
+      "version": "8.0.16",
+      "purl": "pkg:npm/vite@8.0.16",
+      "bom-ref": "pkg:npm/vite@8.0.16",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/vite/-/vite-8.0.12.tgz",
+          "url": "https://registry.npmjs.org/vite/-/vite-8.0.16.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "c36743a1f396bf6401d3d6484d906cbca4d502562f3d1e08026ad8fefd22afd2af2ecd31c9b47b8b8f30c61335fe8c8158edf8c0f9ecf9b3c6c3966b66a0e966"
+              "content": "87d6d73e62627213f97cb995428dcfc9a1920c4da7dda3eea26780955466d092e6b78ad8eb398f29de7d1d82382cd5bca132bbb654ecb82ee5fe6edac31f4973"
             }
           ]
         }
@@ -17735,17 +17613,17 @@
     {
       "type": "library",
       "name": "vitest",
-      "version": "4.1.7",
-      "purl": "pkg:npm/vitest@4.1.7",
-      "bom-ref": "pkg:npm/vitest@4.1.7",
+      "version": "4.1.9",
+      "purl": "pkg:npm/vitest@4.1.9",
+      "bom-ref": "pkg:npm/vitest@4.1.9",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/vitest/-/vitest-4.1.7.tgz",
+          "url": "https://registry.npmjs.org/vitest/-/vitest-4.1.9.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "7e56326857760a0a02a14fb450ab77a7192c802f92d368930cdd27dcbb6a68c797b08f5205c74dba37369340de14bcd49ffd24e77f32363392770802a9caf024"
+              "content": "9c4dff2c4c9cd33f3bb8760b65e6ea09439a26bda176db8fa7b050e01a2c5459df96dc6002f306d3c372ad21a53e93945af476edce5f95299815336befc2fd19"
             }
           ]
         }
@@ -17868,17 +17746,17 @@
     {
       "type": "library",
       "name": "webpack-cli",
-      "version": "7.0.2",
-      "purl": "pkg:npm/webpack-cli@7.0.2",
-      "bom-ref": "pkg:npm/webpack-cli@7.0.2",
+      "version": "7.0.3",
+      "purl": "pkg:npm/webpack-cli@7.0.3",
+      "bom-ref": "pkg:npm/webpack-cli@7.0.3",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/webpack-cli/-/webpack-cli-7.0.2.tgz",
+          "url": "https://registry.npmjs.org/webpack-cli/-/webpack-cli-7.0.3.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "741d11e13f82ffc62ebccf9f69b76f8a5e90138e3f0a10d78a457994e3a4ad4782916e614c9bf6a462c4de47a1f83e618d8c3c89c05a264673a45a1a1d5e13fa"
+              "content": "d84d82e80d5ed8497befdd734204c7ecb3c8bb02e34658a8c3d3874bfaa525cf69c216650a82ffba2c2a77fd564a55d3f37c097e67c36e472a1d7b97a0f259de"
             }
           ]
         }
@@ -17906,17 +17784,17 @@
     {
       "type": "library",
       "name": "webpack-dev-server",
-      "version": "5.2.4",
-      "purl": "pkg:npm/webpack-dev-server@5.2.4",
-      "bom-ref": "pkg:npm/webpack-dev-server@5.2.4",
+      "version": "5.2.5",
+      "purl": "pkg:npm/webpack-dev-server@5.2.5",
+      "bom-ref": "pkg:npm/webpack-dev-server@5.2.5",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/webpack-dev-server/-/webpack-dev-server-5.2.4.tgz",
+          "url": "https://registry.npmjs.org/webpack-dev-server/-/webpack-dev-server-5.2.5.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "1aa0cf19937d6d1a8a053929e1a5a4a1b0c31ccb2b5caa0649d387e7ab2622b8bca91d091bc81f2fcfeffdffce651dff38a5e31bcbb025b15584a9bf14d53f50"
+              "content": "e3066d0aab92baff42297f28c9ba3e9aac6dc59a96cf8eee3350a1f78971a30073b4e85609b86abd16df0bf98e0cec31815d9bad8f89199a47ab9f3f4ae54562"
             }
           ]
         }
@@ -17944,17 +17822,17 @@
     {
       "type": "library",
       "name": "webpack-sources",
-      "version": "3.4.1",
-      "purl": "pkg:npm/webpack-sources@3.4.1",
-      "bom-ref": "pkg:npm/webpack-sources@3.4.1",
+      "version": "3.5.0",
+      "purl": "pkg:npm/webpack-sources@3.5.0",
+      "bom-ref": "pkg:npm/webpack-sources@3.5.0",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/webpack-sources/-/webpack-sources-3.4.1.tgz",
+          "url": "https://registry.npmjs.org/webpack-sources/-/webpack-sources-3.5.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "7800a9c51374db269ac27b7eb9434817b4237ba03dcc0af105b7002632b53cadd2f58720e6322e27ca56e2af04327c0d64210696d723911c754333b13a4283f0"
+              "content": "1cfbb2faeba84c269aa04a08d4b43724df7ebeb3c1bc47ac9e75f58c00c7cbbdbc70748c96ae3051ce1a7d8a9a86ad81d66850559c425ce90d4e75e5b6bfb6bd"
             }
           ]
         }
@@ -17963,17 +17841,17 @@
     {
       "type": "library",
       "name": "webpack",
-      "version": "5.107.0",
-      "purl": "pkg:npm/webpack@5.107.0",
-      "bom-ref": "pkg:npm/webpack@5.107.0",
+      "version": "5.107.2",
+      "purl": "pkg:npm/webpack@5.107.2",
+      "bom-ref": "pkg:npm/webpack@5.107.2",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/webpack/-/webpack-5.107.0.tgz",
+          "url": "https://registry.npmjs.org/webpack/-/webpack-5.107.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "3d2c5e1e4fdd98b6199674d4faf2f519e8fa12f83944db65ddf961c41adeb1fce7167cf18a71cccc72a5a079f2c0cff7a2e42feff025642b3058322435282050"
+              "content": "bfb4615da25ba4c955d03ee10bb95bd846e7c64a1e52a7fdaa12abea5a33c77438f29985aeaa8d4666455041a68bba52c26e9f090d87d488ef0a41ea76955d8d"
             }
           ]
         }
@@ -18462,48 +18340,48 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40eslint-react/ast@5.8.3",
+      "ref": "pkg:npm/%40eslint-react/ast@5.9.0",
       "dependsOn": [
         "pkg:npm/string-ts@2.3.1"
       ]
     },
     {
-      "ref": "pkg:npm/%40eslint-react/core@5.8.3",
+      "ref": "pkg:npm/%40eslint-react/core@5.9.0",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40eslint-react/eslint-plugin@5.8.3",
+      "ref": "pkg:npm/%40eslint-react/eslint-plugin@5.9.0",
       "dependsOn": [
-        "pkg:npm/%40eslint-react/shared@5.8.3",
-        "pkg:npm/eslint-plugin-react-dom@5.8.3",
-        "pkg:npm/eslint-plugin-react-jsx@5.8.3",
-        "pkg:npm/eslint-plugin-react-naming-convention@5.8.3",
-        "pkg:npm/eslint-plugin-react-rsc@5.8.3",
-        "pkg:npm/eslint-plugin-react-web-api@5.8.3",
-        "pkg:npm/eslint-plugin-react-x@5.8.3"
+        "pkg:npm/%40eslint-react/shared@5.9.0",
+        "pkg:npm/eslint-plugin-react-dom@5.9.0",
+        "pkg:npm/eslint-plugin-react-jsx@5.9.0",
+        "pkg:npm/eslint-plugin-react-naming-convention@5.9.0",
+        "pkg:npm/eslint-plugin-react-rsc@5.9.0",
+        "pkg:npm/eslint-plugin-react-web-api@5.9.0",
+        "pkg:npm/eslint-plugin-react-x@5.9.0"
       ]
     },
     {
-      "ref": "pkg:npm/%40eslint-react/eslint@5.8.3",
+      "ref": "pkg:npm/%40eslint-react/eslint@5.9.0",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40eslint-react/jsx@5.8.3",
+      "ref": "pkg:npm/%40eslint-react/jsx@5.9.0",
       "dependsOn": [
-        "pkg:npm/%40eslint-react/var@5.8.3"
+        "pkg:npm/%40eslint-react/var@5.9.0"
       ]
     },
     {
-      "ref": "pkg:npm/%40eslint-react/shared@5.8.3",
+      "ref": "pkg:npm/%40eslint-react/shared@5.9.0",
       "dependsOn": [
-        "pkg:npm/%40eslint-react/eslint@5.8.3",
-        "pkg:npm/%40typescript-eslint/utils@8.59.3",
+        "pkg:npm/%40eslint-react/eslint@5.9.0",
+        "pkg:npm/%40typescript-eslint/utils@8.61.0",
         "pkg:npm/ts-pattern@5.9.0",
         "pkg:npm/zod@4.4.3"
       ]
     },
     {
-      "ref": "pkg:npm/%40eslint-react/var@5.8.3",
+      "ref": "pkg:npm/%40eslint-react/var@5.9.0",
       "dependsOn": []
     },
     {
@@ -18529,7 +18407,7 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40eslint/plugin-kit@0.7.1",
+      "ref": "pkg:npm/%40eslint/plugin-kit@0.7.2",
       "dependsOn": [
         "pkg:npm/levn@0.4.1"
       ]
@@ -18739,11 +18617,11 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40mantine/carousel@9.2.0",
+      "ref": "pkg:npm/%40mantine/carousel@9.3.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40mantine/core@9.2.0",
+      "ref": "pkg:npm/%40mantine/core@9.3.1",
       "dependsOn": [
         "pkg:npm/%40floating-ui/react@0.27.19",
         "pkg:npm/clsx@2.1.1",
@@ -18753,38 +18631,38 @@
       ]
     },
     {
-      "ref": "pkg:npm/%40mantine/dates@9.2.0",
+      "ref": "pkg:npm/%40mantine/dates@9.3.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40mantine/dropzone@9.2.0",
+      "ref": "pkg:npm/%40mantine/dropzone@9.3.1",
       "dependsOn": [
         "pkg:npm/react-dropzone@15.0.0"
       ]
     },
     {
-      "ref": "pkg:npm/%40mantine/form@9.2.0",
+      "ref": "pkg:npm/%40mantine/form@9.3.1",
       "dependsOn": [
         "pkg:npm/klona@2.0.6"
       ]
     },
     {
-      "ref": "pkg:npm/%40mantine/hooks@9.2.0",
+      "ref": "pkg:npm/%40mantine/hooks@9.3.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40mantine/notifications@9.2.0",
+      "ref": "pkg:npm/%40mantine/notifications@9.3.1",
       "dependsOn": [
-        "pkg:npm/%40mantine/store@9.2.0",
+        "pkg:npm/%40mantine/store@9.3.1",
         "pkg:npm/react-transition-group@4.4.5"
       ]
     },
     {
-      "ref": "pkg:npm/%40mantine/store@9.2.0",
+      "ref": "pkg:npm/%40mantine/store@9.3.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40mantine/tiptap@9.2.0",
+      "ref": "pkg:npm/%40mantine/tiptap@9.3.1",
       "dependsOn": []
     },
     {
@@ -18798,7 +18676,7 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40oxc-project/types@0.129.0",
+      "ref": "pkg:npm/%40oxc-project/types@0.133.0",
       "dependsOn": []
     },
     {
@@ -18945,13 +18823,13 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40pkgr/core@0.2.9",
+      "ref": "pkg:npm/%40pkgr/core@0.3.6",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40playwright/test@1.60.0",
+      "ref": "pkg:npm/%40playwright/test@1.61.0",
       "dependsOn": [
-        "pkg:npm/playwright@1.60.0"
+        "pkg:npm/playwright@1.61.0"
       ]
     },
     {
@@ -18959,55 +18837,55 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40rolldown/binding-android-arm64@1.0.0",
+      "ref": "pkg:npm/%40rolldown/binding-android-arm64@1.0.3",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40rolldown/binding-darwin-arm64@1.0.0",
+      "ref": "pkg:npm/%40rolldown/binding-darwin-arm64@1.0.3",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40rolldown/binding-darwin-x64@1.0.0",
+      "ref": "pkg:npm/%40rolldown/binding-darwin-x64@1.0.3",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40rolldown/binding-freebsd-x64@1.0.0",
+      "ref": "pkg:npm/%40rolldown/binding-freebsd-x64@1.0.3",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40rolldown/binding-linux-arm-gnueabihf@1.0.0",
+      "ref": "pkg:npm/%40rolldown/binding-linux-arm-gnueabihf@1.0.3",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40rolldown/binding-linux-arm64-gnu@1.0.0",
+      "ref": "pkg:npm/%40rolldown/binding-linux-arm64-gnu@1.0.3",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40rolldown/binding-linux-arm64-musl@1.0.0",
+      "ref": "pkg:npm/%40rolldown/binding-linux-arm64-musl@1.0.3",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40rolldown/binding-linux-ppc64-gnu@1.0.0",
+      "ref": "pkg:npm/%40rolldown/binding-linux-ppc64-gnu@1.0.3",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40rolldown/binding-linux-s390x-gnu@1.0.0",
+      "ref": "pkg:npm/%40rolldown/binding-linux-s390x-gnu@1.0.3",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40rolldown/binding-linux-x64-gnu@1.0.0",
+      "ref": "pkg:npm/%40rolldown/binding-linux-x64-gnu@1.0.3",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40rolldown/binding-linux-x64-musl@1.0.0",
+      "ref": "pkg:npm/%40rolldown/binding-linux-x64-musl@1.0.3",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40rolldown/binding-openharmony-arm64@1.0.0",
+      "ref": "pkg:npm/%40rolldown/binding-openharmony-arm64@1.0.3",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40rolldown/binding-wasm32-wasi@1.0.0",
+      "ref": "pkg:npm/%40rolldown/binding-wasm32-wasi@1.0.3",
       "dependsOn": [
         "pkg:npm/%40emnapi/core@1.10.0",
         "pkg:npm/%40emnapi/runtime@1.10.0",
@@ -19015,11 +18893,11 @@
       ]
     },
     {
-      "ref": "pkg:npm/%40rolldown/binding-win32-arm64-msvc@1.0.0",
+      "ref": "pkg:npm/%40rolldown/binding-win32-arm64-msvc@1.0.3",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40rolldown/binding-win32-x64-msvc@1.0.0",
+      "ref": "pkg:npm/%40rolldown/binding-win32-x64-msvc@1.0.3",
       "dependsOn": []
     },
     {
@@ -19068,137 +18946,138 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/core@3.23.5",
+      "ref": "pkg:npm/%40tiptap/core@3.26.1",
       "dependsOn": [
-        "pkg:npm/%40tiptap/pm@3.23.5"
+        "pkg:npm/%40tiptap/pm@3.26.1"
       ]
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-blockquote@3.23.5",
+      "ref": "pkg:npm/%40tiptap/extension-blockquote@3.26.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-bold@3.23.5",
+      "ref": "pkg:npm/%40tiptap/extension-bold@3.26.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-bubble-menu@3.23.5",
+      "ref": "pkg:npm/%40tiptap/extension-bubble-menu@3.26.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-bullet-list@3.23.5",
+      "ref": "pkg:npm/%40tiptap/extension-bullet-list@3.26.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-code-block@3.23.5",
+      "ref": "pkg:npm/%40tiptap/extension-code-block@3.26.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-code@3.23.5",
+      "ref": "pkg:npm/%40tiptap/extension-code@3.26.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-document@3.23.5",
+      "ref": "pkg:npm/%40tiptap/extension-document@3.26.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-dropcursor@3.23.5",
+      "ref": "pkg:npm/%40tiptap/extension-dropcursor@3.26.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-floating-menu@3.23.5",
+      "ref": "pkg:npm/%40tiptap/extension-floating-menu@3.26.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-gapcursor@3.23.5",
+      "ref": "pkg:npm/%40tiptap/extension-gapcursor@3.26.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-hard-break@3.23.5",
+      "ref": "pkg:npm/%40tiptap/extension-hard-break@3.26.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-heading@3.23.5",
+      "ref": "pkg:npm/%40tiptap/extension-heading@3.26.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-highlight@3.23.5",
+      "ref": "pkg:npm/%40tiptap/extension-highlight@3.26.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-horizontal-rule@3.23.5",
+      "ref": "pkg:npm/%40tiptap/extension-horizontal-rule@3.26.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-italic@3.23.5",
+      "ref": "pkg:npm/%40tiptap/extension-italic@3.26.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-link@3.23.5",
+      "ref": "pkg:npm/%40tiptap/extension-link@3.26.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-list-item@3.23.5",
+      "ref": "pkg:npm/%40tiptap/extension-list-item@3.26.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-list-keymap@3.23.5",
+      "ref": "pkg:npm/%40tiptap/extension-list-keymap@3.26.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-list@3.23.5",
+      "ref": "pkg:npm/%40tiptap/extension-list@3.26.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-ordered-list@3.23.5",
+      "ref": "pkg:npm/%40tiptap/extension-ordered-list@3.26.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-paragraph@3.23.5",
+      "ref": "pkg:npm/%40tiptap/extension-paragraph@3.26.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-strike@3.23.5",
+      "ref": "pkg:npm/%40tiptap/extension-strike@3.26.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-subscript@3.23.5",
+      "ref": "pkg:npm/%40tiptap/extension-subscript@3.26.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-superscript@3.23.5",
+      "ref": "pkg:npm/%40tiptap/extension-superscript@3.26.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-text-align@3.23.5",
+      "ref": "pkg:npm/%40tiptap/extension-text-align@3.26.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-text-style@3.23.5",
+      "ref": "pkg:npm/%40tiptap/extension-text-style@3.26.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-text@3.23.5",
+      "ref": "pkg:npm/%40tiptap/extension-text@3.26.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-underline@3.23.5",
+      "ref": "pkg:npm/%40tiptap/extension-underline@3.26.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extensions@3.23.5",
+      "ref": "pkg:npm/%40tiptap/extensions@3.26.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/pm@3.23.5",
+      "ref": "pkg:npm/%40tiptap/pm@3.26.1",
       "dependsOn": [
         "pkg:npm/prosemirror-changeset@2.4.1",
         "pkg:npm/prosemirror-commands@1.7.1",
         "pkg:npm/prosemirror-dropcursor@1.8.2",
         "pkg:npm/prosemirror-gapcursor@1.4.1",
         "pkg:npm/prosemirror-history@1.5.0",
+        "pkg:npm/prosemirror-inputrules@1.5.1",
         "pkg:npm/prosemirror-keymap@1.2.3",
-        "pkg:npm/prosemirror-model@1.25.4",
+        "pkg:npm/prosemirror-model@1.25.8",
         "pkg:npm/prosemirror-schema-list@1.5.1",
         "pkg:npm/prosemirror-state@1.4.4",
         "pkg:npm/prosemirror-tables@1.8.5",
@@ -19207,38 +19086,38 @@
       ]
     },
     {
-      "ref": "pkg:npm/%40tiptap/react@3.23.5",
+      "ref": "pkg:npm/%40tiptap/react@3.26.1",
       "dependsOn": [
-        "pkg:npm/%40tiptap/extension-bubble-menu@3.23.5",
-        "pkg:npm/%40tiptap/extension-floating-menu@3.23.5",
+        "pkg:npm/%40tiptap/extension-bubble-menu@3.26.1",
+        "pkg:npm/%40tiptap/extension-floating-menu@3.26.1",
         "pkg:npm/%40types/use-sync-external-store@0.0.6",
         "pkg:npm/fast-equals@5.4.0",
         "pkg:npm/use-sync-external-store@1.6.0"
       ]
     },
     {
-      "ref": "pkg:npm/%40tiptap/starter-kit@3.23.5",
+      "ref": "pkg:npm/%40tiptap/starter-kit@3.26.1",
       "dependsOn": [
-        "pkg:npm/%40tiptap/extension-blockquote@3.23.5",
-        "pkg:npm/%40tiptap/extension-bold@3.23.5",
-        "pkg:npm/%40tiptap/extension-bullet-list@3.23.5",
-        "pkg:npm/%40tiptap/extension-code-block@3.23.5",
-        "pkg:npm/%40tiptap/extension-code@3.23.5",
-        "pkg:npm/%40tiptap/extension-document@3.23.5",
-        "pkg:npm/%40tiptap/extension-dropcursor@3.23.5",
-        "pkg:npm/%40tiptap/extension-gapcursor@3.23.5",
-        "pkg:npm/%40tiptap/extension-hard-break@3.23.5",
-        "pkg:npm/%40tiptap/extension-heading@3.23.5",
-        "pkg:npm/%40tiptap/extension-horizontal-rule@3.23.5",
-        "pkg:npm/%40tiptap/extension-italic@3.23.5",
-        "pkg:npm/%40tiptap/extension-list-item@3.23.5",
-        "pkg:npm/%40tiptap/extension-list-keymap@3.23.5",
-        "pkg:npm/%40tiptap/extension-list@3.23.5",
-        "pkg:npm/%40tiptap/extension-ordered-list@3.23.5",
-        "pkg:npm/%40tiptap/extension-paragraph@3.23.5",
-        "pkg:npm/%40tiptap/extension-strike@3.23.5",
-        "pkg:npm/%40tiptap/extension-text@3.23.5",
-        "pkg:npm/%40tiptap/extensions@3.23.5"
+        "pkg:npm/%40tiptap/extension-blockquote@3.26.1",
+        "pkg:npm/%40tiptap/extension-bold@3.26.1",
+        "pkg:npm/%40tiptap/extension-bullet-list@3.26.1",
+        "pkg:npm/%40tiptap/extension-code-block@3.26.1",
+        "pkg:npm/%40tiptap/extension-code@3.26.1",
+        "pkg:npm/%40tiptap/extension-document@3.26.1",
+        "pkg:npm/%40tiptap/extension-dropcursor@3.26.1",
+        "pkg:npm/%40tiptap/extension-gapcursor@3.26.1",
+        "pkg:npm/%40tiptap/extension-hard-break@3.26.1",
+        "pkg:npm/%40tiptap/extension-heading@3.26.1",
+        "pkg:npm/%40tiptap/extension-horizontal-rule@3.26.1",
+        "pkg:npm/%40tiptap/extension-italic@3.26.1",
+        "pkg:npm/%40tiptap/extension-list-item@3.26.1",
+        "pkg:npm/%40tiptap/extension-list-keymap@3.26.1",
+        "pkg:npm/%40tiptap/extension-list@3.26.1",
+        "pkg:npm/%40tiptap/extension-ordered-list@3.26.1",
+        "pkg:npm/%40tiptap/extension-paragraph@3.26.1",
+        "pkg:npm/%40tiptap/extension-strike@3.26.1",
+        "pkg:npm/%40tiptap/extension-text@3.26.1",
+        "pkg:npm/%40tiptap/extensions@3.26.1"
       ]
     },
     {
@@ -19388,7 +19267,7 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40types/react@19.2.15",
+      "ref": "pkg:npm/%40types/react@19.2.17",
       "dependsOn": [
         "pkg:npm/csstype@3.2.3"
       ]
@@ -19445,72 +19324,44 @@
       ]
     },
     {
-      "ref": "pkg:npm/%40typescript-eslint/eslint-plugin@8.59.4",
+      "ref": "pkg:npm/%40typescript-eslint/eslint-plugin@8.61.0",
       "dependsOn": [
         "pkg:npm/%40eslint-community/regexpp@4.12.2",
-        "pkg:npm/%40typescript-eslint/scope-manager@8.59.4",
-        "pkg:npm/%40typescript-eslint/type-utils@8.59.4",
-        "pkg:npm/%40typescript-eslint/utils@8.59.4",
-        "pkg:npm/%40typescript-eslint/visitor-keys@8.59.4",
         "pkg:npm/ignore@7.0.5",
         "pkg:npm/natural-compare@1.4.0"
       ]
     },
     {
-      "ref": "pkg:npm/%40typescript-eslint/parser@8.59.4",
+      "ref": "pkg:npm/%40typescript-eslint/parser@8.61.0",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40typescript-eslint/project-service@8.59.3",
+      "ref": "pkg:npm/%40typescript-eslint/project-service@8.61.0",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40typescript-eslint/project-service@8.59.4",
-      "dependsOn": []
-    },
-    {
-      "ref": "pkg:npm/%40typescript-eslint/scope-manager@8.59.3",
+      "ref": "pkg:npm/%40typescript-eslint/scope-manager@8.61.0",
       "dependsOn": [
-        "pkg:npm/%40typescript-eslint/visitor-keys@8.59.3"
+        "pkg:npm/%40typescript-eslint/visitor-keys@8.61.0"
       ]
     },
     {
-      "ref": "pkg:npm/%40typescript-eslint/scope-manager@8.59.4",
+      "ref": "pkg:npm/%40typescript-eslint/tsconfig-utils@8.61.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:npm/%40typescript-eslint/type-utils@8.61.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:npm/%40typescript-eslint/types@8.61.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:npm/%40typescript-eslint/typescript-estree@8.61.0",
       "dependsOn": [
-        "pkg:npm/%40typescript-eslint/types@8.59.4"
-      ]
-    },
-    {
-      "ref": "pkg:npm/%40typescript-eslint/tsconfig-utils@8.59.3",
-      "dependsOn": []
-    },
-    {
-      "ref": "pkg:npm/%40typescript-eslint/tsconfig-utils@8.59.4",
-      "dependsOn": []
-    },
-    {
-      "ref": "pkg:npm/%40typescript-eslint/type-utils@8.59.3",
-      "dependsOn": []
-    },
-    {
-      "ref": "pkg:npm/%40typescript-eslint/type-utils@8.59.4",
-      "dependsOn": [
-        "pkg:npm/%40typescript-eslint/typescript-estree@8.59.4"
-      ]
-    },
-    {
-      "ref": "pkg:npm/%40typescript-eslint/types@8.59.3",
-      "dependsOn": []
-    },
-    {
-      "ref": "pkg:npm/%40typescript-eslint/types@8.59.4",
-      "dependsOn": []
-    },
-    {
-      "ref": "pkg:npm/%40typescript-eslint/typescript-estree@8.59.3",
-      "dependsOn": [
-        "pkg:npm/%40typescript-eslint/project-service@8.59.3",
-        "pkg:npm/%40typescript-eslint/tsconfig-utils@8.59.3",
+        "pkg:npm/%40typescript-eslint/project-service@8.61.0",
+        "pkg:npm/%40typescript-eslint/tsconfig-utils@8.61.0",
         "pkg:npm/debug@4.4.3",
         "pkg:npm/minimatch@10.2.5",
         "pkg:npm/semver@7.8.0",
@@ -19519,44 +19370,29 @@
       ]
     },
     {
-      "ref": "pkg:npm/%40typescript-eslint/typescript-estree@8.59.4",
-      "dependsOn": [
-        "pkg:npm/%40typescript-eslint/project-service@8.59.4",
-        "pkg:npm/%40typescript-eslint/tsconfig-utils@8.59.4"
-      ]
-    },
-    {
-      "ref": "pkg:npm/%40typescript-eslint/utils@8.59.3",
+      "ref": "pkg:npm/%40typescript-eslint/utils@8.61.0",
       "dependsOn": [
         "pkg:npm/%40eslint-community/eslint-utils@4.9.1",
-        "pkg:npm/%40typescript-eslint/scope-manager@8.59.3",
-        "pkg:npm/%40typescript-eslint/types@8.59.3",
-        "pkg:npm/%40typescript-eslint/typescript-estree@8.59.3"
+        "pkg:npm/%40typescript-eslint/scope-manager@8.61.0",
+        "pkg:npm/%40typescript-eslint/types@8.61.0",
+        "pkg:npm/%40typescript-eslint/typescript-estree@8.61.0"
       ]
     },
     {
-      "ref": "pkg:npm/%40typescript-eslint/utils@8.59.4",
-      "dependsOn": []
-    },
-    {
-      "ref": "pkg:npm/%40typescript-eslint/visitor-keys@8.59.3",
+      "ref": "pkg:npm/%40typescript-eslint/visitor-keys@8.61.0",
       "dependsOn": [
         "pkg:npm/eslint-visitor-keys@5.0.1"
       ]
-    },
-    {
-      "ref": "pkg:npm/%40typescript-eslint/visitor-keys@8.59.4",
-      "dependsOn": []
     },
     {
       "ref": "pkg:npm/%40ungap/structured-clone@1.3.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40vitest/coverage-v8@4.1.7",
+      "ref": "pkg:npm/%40vitest/coverage-v8@4.1.9",
       "dependsOn": [
         "pkg:npm/%40bcoe/v8-coverage@1.0.2",
-        "pkg:npm/%40vitest/utils@4.1.7",
+        "pkg:npm/%40vitest/utils@4.1.9",
         "pkg:npm/ast-v8-to-istanbul@1.0.0",
         "pkg:npm/istanbul-lib-coverage@3.2.2",
         "pkg:npm/istanbul-lib-report@3.0.1",
@@ -19568,7 +19404,7 @@
       ]
     },
     {
-      "ref": "pkg:npm/%40vitest/expect@4.1.7",
+      "ref": "pkg:npm/%40vitest/expect@4.1.9",
       "dependsOn": [
         "pkg:npm/%40standard-schema/spec@1.1.0",
         "pkg:npm/%40types/chai@5.2.3",
@@ -19576,29 +19412,29 @@
       ]
     },
     {
-      "ref": "pkg:npm/%40vitest/mocker@4.1.7",
+      "ref": "pkg:npm/%40vitest/mocker@4.1.9",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40vitest/pretty-format@4.1.7",
+      "ref": "pkg:npm/%40vitest/pretty-format@4.1.9",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40vitest/runner@4.1.7",
+      "ref": "pkg:npm/%40vitest/runner@4.1.9",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40vitest/snapshot@4.1.7",
+      "ref": "pkg:npm/%40vitest/snapshot@4.1.9",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40vitest/spy@4.1.7",
+      "ref": "pkg:npm/%40vitest/spy@4.1.9",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40vitest/utils@4.1.7",
+      "ref": "pkg:npm/%40vitest/utils@4.1.9",
       "dependsOn": [
-        "pkg:npm/%40vitest/pretty-format@4.1.7",
+        "pkg:npm/%40vitest/pretty-format@4.1.9",
         "pkg:npm/convert-source-map@2.0.0"
       ]
     },
@@ -20113,7 +19949,7 @@
       "ref": "pkg:npm/cosmiconfig@8.3.6",
       "dependsOn": [
         "pkg:npm/import-fresh@3.3.1",
-        "pkg:npm/js-yaml@4.1.1",
+        "pkg:npm/js-yaml@4.2.0",
         "pkg:npm/parse-json@5.2.0",
         "pkg:npm/path-type@4.0.0"
       ]
@@ -20260,7 +20096,7 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/dayjs@1.11.20",
+      "ref": "pkg:npm/dayjs@1.11.21",
       "dependsOn": []
     },
     {
@@ -20405,7 +20241,7 @@
       ]
     },
     {
-      "ref": "pkg:npm/dompurify@3.4.5",
+      "ref": "pkg:npm/dompurify@3.4.10",
       "dependsOn": [
         "pkg:npm/%40types/trusted-types@2.0.7"
       ]
@@ -20461,11 +20297,11 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/enhanced-resolve@5.21.3",
+      "ref": "pkg:npm/enhanced-resolve@5.21.5",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/enhanced-resolve@5.21.5",
+      "ref": "pkg:npm/enhanced-resolve@5.24.0",
       "dependsOn": []
     },
     {
@@ -20537,44 +20373,44 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/eslint-plugin-prettier@5.5.5",
+      "ref": "pkg:npm/eslint-plugin-prettier@5.5.6",
       "dependsOn": [
         "pkg:npm/prettier-linter-helpers@1.0.1",
-        "pkg:npm/synckit@0.11.12"
+        "pkg:npm/synckit@0.11.13"
       ]
     },
     {
-      "ref": "pkg:npm/eslint-plugin-react-dom@5.8.3",
+      "ref": "pkg:npm/eslint-plugin-react-dom@5.9.0",
       "dependsOn": [
-        "pkg:npm/%40eslint-react/ast@5.8.3",
-        "pkg:npm/%40eslint-react/jsx@5.8.3",
+        "pkg:npm/%40eslint-react/ast@5.9.0",
+        "pkg:npm/%40eslint-react/jsx@5.9.0",
         "pkg:npm/compare-versions@6.1.1"
       ]
     },
     {
-      "ref": "pkg:npm/eslint-plugin-react-jsx@5.8.3",
+      "ref": "pkg:npm/eslint-plugin-react-jsx@5.9.0",
       "dependsOn": [
-        "pkg:npm/%40eslint-react/core@5.8.3"
+        "pkg:npm/%40eslint-react/core@5.9.0"
       ]
     },
     {
-      "ref": "pkg:npm/eslint-plugin-react-naming-convention@5.8.3",
+      "ref": "pkg:npm/eslint-plugin-react-naming-convention@5.9.0",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/eslint-plugin-react-rsc@5.8.3",
+      "ref": "pkg:npm/eslint-plugin-react-rsc@5.9.0",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/eslint-plugin-react-web-api@5.8.3",
+      "ref": "pkg:npm/eslint-plugin-react-web-api@5.9.0",
       "dependsOn": [
         "pkg:npm/birecord@0.1.1"
       ]
     },
     {
-      "ref": "pkg:npm/eslint-plugin-react-x@5.8.3",
+      "ref": "pkg:npm/eslint-plugin-react-x@5.9.0",
       "dependsOn": [
-        "pkg:npm/%40typescript-eslint/type-utils@8.59.3"
+        "pkg:npm/%40typescript-eslint/type-utils@8.61.0"
       ]
     },
     {
@@ -20600,12 +20436,12 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/eslint@10.4.0",
+      "ref": "pkg:npm/eslint@10.5.0",
       "dependsOn": [
         "pkg:npm/%40eslint/config-array@0.23.5",
         "pkg:npm/%40eslint/config-helpers@0.6.0",
         "pkg:npm/%40eslint/core@1.2.1",
-        "pkg:npm/%40eslint/plugin-kit@0.7.1",
+        "pkg:npm/%40eslint/plugin-kit@0.7.2",
         "pkg:npm/%40humanfs/node@0.16.8",
         "pkg:npm/%40humanwhocodes/module-importer@1.0.1",
         "pkg:npm/%40humanwhocodes/retry@0.4.3",
@@ -20724,10 +20560,6 @@
     },
     {
       "ref": "pkg:npm/fast-uri@3.1.2",
-      "dependsOn": []
-    },
-    {
-      "ref": "pkg:npm/fastest-levenshtein@1.0.16",
       "dependsOn": []
     },
     {
@@ -21270,7 +21102,7 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/js-yaml@4.1.1",
+      "ref": "pkg:npm/js-yaml@4.2.0",
       "dependsOn": [
         "pkg:npm/argparse@2.0.1"
       ]
@@ -21373,9 +21205,9 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/launch-editor@2.13.2",
+      "ref": "pkg:npm/launch-editor@2.14.1",
       "dependsOn": [
-        "pkg:npm/shell-quote@1.8.3"
+        "pkg:npm/shell-quote@1.8.4"
       ]
     },
     {
@@ -21554,7 +21386,7 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/mantine-datatable@9.2.2",
+      "ref": "pkg:npm/mantine-datatable@9.3.0",
       "dependsOn": []
     },
     {
@@ -21892,7 +21724,7 @@
         "pkg:npm/minimist@1.2.8",
         "pkg:npm/open@7.4.2",
         "pkg:npm/slash@2.0.0",
-        "pkg:npm/tmp@0.2.5",
+        "pkg:npm/tmp@0.2.7",
         "pkg:npm/yaml@2.9.0"
       ]
     },
@@ -21972,14 +21804,14 @@
       ]
     },
     {
-      "ref": "pkg:npm/playwright-core@1.60.0",
+      "ref": "pkg:npm/playwright-core@1.61.0",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/playwright@1.60.0",
+      "ref": "pkg:npm/playwright@1.61.0",
       "dependsOn": [
         "pkg:npm/fsevents@2.3.2",
-        "pkg:npm/playwright-core@1.60.0"
+        "pkg:npm/playwright-core@1.61.0"
       ]
     },
     {
@@ -22188,7 +22020,7 @@
       ]
     },
     {
-      "ref": "pkg:npm/prettier@3.8.3",
+      "ref": "pkg:npm/prettier@3.8.4",
       "dependsOn": []
     },
     {
@@ -22243,13 +22075,17 @@
       ]
     },
     {
+      "ref": "pkg:npm/prosemirror-inputrules@1.5.1",
+      "dependsOn": []
+    },
+    {
       "ref": "pkg:npm/prosemirror-keymap@1.2.3",
       "dependsOn": [
         "pkg:npm/w3c-keyname@2.2.8"
       ]
     },
     {
-      "ref": "pkg:npm/prosemirror-model@1.25.4",
+      "ref": "pkg:npm/prosemirror-model@1.25.8",
       "dependsOn": [
         "pkg:npm/orderedmap@2.1.1"
       ]
@@ -22316,7 +22152,7 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/react-dom@19.2.6",
+      "ref": "pkg:npm/react-dom@19.2.7",
       "dependsOn": [
         "pkg:npm/scheduler@0.27.0"
       ]
@@ -22355,7 +22191,7 @@
       ]
     },
     {
-      "ref": "pkg:npm/react-router@7.15.1",
+      "ref": "pkg:npm/react-router@7.17.0",
       "dependsOn": [
         "pkg:npm/cookie@1.1.1",
         "pkg:npm/set-cookie-parser@2.7.2"
@@ -22374,7 +22210,7 @@
       ]
     },
     {
-      "ref": "pkg:npm/react@19.2.6",
+      "ref": "pkg:npm/react@19.2.7",
       "dependsOn": []
     },
     {
@@ -22474,24 +22310,24 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/rolldown@1.0.0",
+      "ref": "pkg:npm/rolldown@1.0.3",
       "dependsOn": [
-        "pkg:npm/%40oxc-project/types@0.129.0",
-        "pkg:npm/%40rolldown/binding-android-arm64@1.0.0",
-        "pkg:npm/%40rolldown/binding-darwin-arm64@1.0.0",
-        "pkg:npm/%40rolldown/binding-darwin-x64@1.0.0",
-        "pkg:npm/%40rolldown/binding-freebsd-x64@1.0.0",
-        "pkg:npm/%40rolldown/binding-linux-arm-gnueabihf@1.0.0",
-        "pkg:npm/%40rolldown/binding-linux-arm64-gnu@1.0.0",
-        "pkg:npm/%40rolldown/binding-linux-arm64-musl@1.0.0",
-        "pkg:npm/%40rolldown/binding-linux-ppc64-gnu@1.0.0",
-        "pkg:npm/%40rolldown/binding-linux-s390x-gnu@1.0.0",
-        "pkg:npm/%40rolldown/binding-linux-x64-gnu@1.0.0",
-        "pkg:npm/%40rolldown/binding-linux-x64-musl@1.0.0",
-        "pkg:npm/%40rolldown/binding-openharmony-arm64@1.0.0",
-        "pkg:npm/%40rolldown/binding-wasm32-wasi@1.0.0",
-        "pkg:npm/%40rolldown/binding-win32-arm64-msvc@1.0.0",
-        "pkg:npm/%40rolldown/binding-win32-x64-msvc@1.0.0",
+        "pkg:npm/%40oxc-project/types@0.133.0",
+        "pkg:npm/%40rolldown/binding-android-arm64@1.0.3",
+        "pkg:npm/%40rolldown/binding-darwin-arm64@1.0.3",
+        "pkg:npm/%40rolldown/binding-darwin-x64@1.0.3",
+        "pkg:npm/%40rolldown/binding-freebsd-x64@1.0.3",
+        "pkg:npm/%40rolldown/binding-linux-arm-gnueabihf@1.0.3",
+        "pkg:npm/%40rolldown/binding-linux-arm64-gnu@1.0.3",
+        "pkg:npm/%40rolldown/binding-linux-arm64-musl@1.0.3",
+        "pkg:npm/%40rolldown/binding-linux-ppc64-gnu@1.0.3",
+        "pkg:npm/%40rolldown/binding-linux-s390x-gnu@1.0.3",
+        "pkg:npm/%40rolldown/binding-linux-x64-gnu@1.0.3",
+        "pkg:npm/%40rolldown/binding-linux-x64-musl@1.0.3",
+        "pkg:npm/%40rolldown/binding-openharmony-arm64@1.0.3",
+        "pkg:npm/%40rolldown/binding-wasm32-wasi@1.0.3",
+        "pkg:npm/%40rolldown/binding-win32-arm64-msvc@1.0.3",
+        "pkg:npm/%40rolldown/binding-win32-x64-msvc@1.0.3",
         "pkg:npm/%40rolldown/pluginutils@1.0.0"
       ]
     },
@@ -22621,7 +22457,7 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/shell-quote@1.8.3",
+      "ref": "pkg:npm/shell-quote@1.8.4",
       "dependsOn": []
     },
     {
@@ -22805,9 +22641,9 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/synckit@0.11.12",
+      "ref": "pkg:npm/synckit@0.11.13",
       "dependsOn": [
-        "pkg:npm/%40pkgr/core@0.2.9"
+        "pkg:npm/%40pkgr/core@0.3.6"
       ]
     },
     {
@@ -22824,6 +22660,10 @@
     },
     {
       "ref": "pkg:npm/terser-webpack-plugin@5.6.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:npm/terser-webpack-plugin@5.6.1",
       "dependsOn": [
         "pkg:npm/jest-worker@27.5.1"
       ]
@@ -22839,48 +22679,48 @@
     {
       "ref": "pkg:npm/thesis-management@4.11.1",
       "dependsOn": [
-        "pkg:npm/%40eslint-react/eslint-plugin@5.8.3",
+        "pkg:npm/%40eslint-react/eslint-plugin@5.9.0",
         "pkg:npm/%40eslint/js@10.0.1",
-        "pkg:npm/%40mantine/carousel@9.2.0",
-        "pkg:npm/%40mantine/core@9.2.0",
-        "pkg:npm/%40mantine/dates@9.2.0",
-        "pkg:npm/%40mantine/dropzone@9.2.0",
-        "pkg:npm/%40mantine/form@9.2.0",
-        "pkg:npm/%40mantine/hooks@9.2.0",
-        "pkg:npm/%40mantine/notifications@9.2.0",
-        "pkg:npm/%40mantine/tiptap@9.2.0",
+        "pkg:npm/%40mantine/carousel@9.3.1",
+        "pkg:npm/%40mantine/core@9.3.1",
+        "pkg:npm/%40mantine/dates@9.3.1",
+        "pkg:npm/%40mantine/dropzone@9.3.1",
+        "pkg:npm/%40mantine/form@9.3.1",
+        "pkg:npm/%40mantine/hooks@9.3.1",
+        "pkg:npm/%40mantine/notifications@9.3.1",
+        "pkg:npm/%40mantine/tiptap@9.3.1",
         "pkg:npm/%40phosphor-icons/react@2.1.10",
-        "pkg:npm/%40playwright/test@1.60.0",
+        "pkg:npm/%40playwright/test@1.61.0",
         "pkg:npm/%40testing-library/jest-dom@6.9.1",
         "pkg:npm/%40testing-library/react@16.3.2",
         "pkg:npm/%40testing-library/user-event@14.6.1",
-        "pkg:npm/%40tiptap/core@3.23.5",
-        "pkg:npm/%40tiptap/extension-highlight@3.23.5",
-        "pkg:npm/%40tiptap/extension-link@3.23.5",
-        "pkg:npm/%40tiptap/extension-subscript@3.23.5",
-        "pkg:npm/%40tiptap/extension-superscript@3.23.5",
-        "pkg:npm/%40tiptap/extension-text-align@3.23.5",
-        "pkg:npm/%40tiptap/extension-text-style@3.23.5",
-        "pkg:npm/%40tiptap/extension-underline@3.23.5",
-        "pkg:npm/%40tiptap/react@3.23.5",
-        "pkg:npm/%40tiptap/starter-kit@3.23.5",
+        "pkg:npm/%40tiptap/core@3.26.1",
+        "pkg:npm/%40tiptap/extension-highlight@3.26.1",
+        "pkg:npm/%40tiptap/extension-link@3.26.1",
+        "pkg:npm/%40tiptap/extension-subscript@3.26.1",
+        "pkg:npm/%40tiptap/extension-superscript@3.26.1",
+        "pkg:npm/%40tiptap/extension-text-align@3.26.1",
+        "pkg:npm/%40tiptap/extension-text-style@3.26.1",
+        "pkg:npm/%40tiptap/extension-underline@3.26.1",
+        "pkg:npm/%40tiptap/react@3.26.1",
+        "pkg:npm/%40tiptap/starter-kit@3.26.1",
         "pkg:npm/%40types/react-dom@19.2.3",
-        "pkg:npm/%40types/react@19.2.15",
-        "pkg:npm/%40typescript-eslint/eslint-plugin@8.59.4",
-        "pkg:npm/%40typescript-eslint/parser@8.59.4",
-        "pkg:npm/%40vitest/coverage-v8@4.1.7",
+        "pkg:npm/%40types/react@19.2.17",
+        "pkg:npm/%40typescript-eslint/eslint-plugin@8.61.0",
+        "pkg:npm/%40typescript-eslint/parser@8.61.0",
+        "pkg:npm/%40vitest/coverage-v8@4.1.9",
         "pkg:npm/clean-webpack-plugin@4.0.0",
         "pkg:npm/compression-webpack-plugin@12.0.0",
         "pkg:npm/copy-webpack-plugin@14.0.0",
         "pkg:npm/css-loader@7.1.4",
         "pkg:npm/css-minimizer-webpack-plugin@8.0.0",
-        "pkg:npm/dayjs@1.11.20",
-        "pkg:npm/dompurify@3.4.5",
+        "pkg:npm/dayjs@1.11.21",
+        "pkg:npm/dompurify@3.4.10",
         "pkg:npm/embla-carousel-react@8.6.0",
         "pkg:npm/embla-carousel@8.6.0",
         "pkg:npm/eslint-config-prettier@10.1.8",
-        "pkg:npm/eslint-plugin-prettier@5.5.5",
-        "pkg:npm/eslint@10.4.0",
+        "pkg:npm/eslint-plugin-prettier@5.5.6",
+        "pkg:npm/eslint@10.5.0",
         "pkg:npm/fork-ts-checker-webpack-plugin@9.1.0",
         "pkg:npm/globals@17.6.0",
         "pkg:npm/html-webpack-plugin@5.6.7",
@@ -22891,29 +22731,29 @@
         "pkg:npm/jwt-decode@4.0.0",
         "pkg:npm/keycloak-js@26.2.4",
         "pkg:npm/linkifyjs@4.3.3",
-        "pkg:npm/mantine-datatable@9.2.2",
+        "pkg:npm/mantine-datatable@9.3.0",
         "pkg:npm/mini-css-extract-plugin@2.10.2",
         "pkg:npm/patch-package@8.0.1",
         "pkg:npm/postcss-loader@8.2.1",
         "pkg:npm/postcss-preset-mantine@1.18.0",
         "pkg:npm/postcss@8.5.15",
-        "pkg:npm/prettier@3.8.3",
+        "pkg:npm/prettier@3.8.4",
         "pkg:npm/react-avatar-editor@15.1.0",
-        "pkg:npm/react-dom@19.2.6",
-        "pkg:npm/react-router@7.15.1",
-        "pkg:npm/react@19.2.6",
+        "pkg:npm/react-dom@19.2.7",
+        "pkg:npm/react-router@7.17.0",
+        "pkg:npm/react@19.2.7",
         "pkg:npm/speed-measure-webpack-plugin@1.6.0",
         "pkg:npm/style-loader@4.0.0",
-        "pkg:npm/terser-webpack-plugin@5.6.0",
-        "pkg:npm/ts-loader@9.5.7",
+        "pkg:npm/terser-webpack-plugin@5.6.1",
+        "pkg:npm/ts-loader@9.6.0",
         "pkg:npm/ts-node@10.9.2",
         "pkg:npm/typescript-plugin-css-modules@5.2.0",
         "pkg:npm/typescript@5.9.3",
-        "pkg:npm/vitest@4.1.7",
+        "pkg:npm/vitest@4.1.9",
         "pkg:npm/webpack-bundle-analyzer@5.3.0",
-        "pkg:npm/webpack-cli@7.0.2",
-        "pkg:npm/webpack-dev-server@5.2.4",
-        "pkg:npm/webpack@5.107.0",
+        "pkg:npm/webpack-cli@7.0.3",
+        "pkg:npm/webpack-dev-server@5.2.5",
+        "pkg:npm/webpack@5.107.2",
         "pkg:npm/webpackbar@7.0.0"
       ]
     },
@@ -22941,6 +22781,10 @@
       ]
     },
     {
+      "ref": "pkg:npm/tinyglobby@0.2.17",
+      "dependsOn": []
+    },
+    {
       "ref": "pkg:npm/tinyrainbow@3.1.0",
       "dependsOn": []
     },
@@ -22955,7 +22799,7 @@
       ]
     },
     {
-      "ref": "pkg:npm/tmp@0.2.5",
+      "ref": "pkg:npm/tmp@0.2.7",
       "dependsOn": []
     },
     {
@@ -22993,9 +22837,9 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/ts-loader@9.5.7",
+      "ref": "pkg:npm/ts-loader@9.6.0",
       "dependsOn": [
-        "pkg:npm/enhanced-resolve@5.21.3",
+        "pkg:npm/enhanced-resolve@5.21.5",
         "pkg:npm/source-map@0.7.6"
       ]
     },
@@ -23137,28 +22981,29 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/vite@8.0.12",
+      "ref": "pkg:npm/vite@8.0.16",
       "dependsOn": [
         "pkg:npm/fsevents@2.3.3",
         "pkg:npm/lightningcss@1.32.0",
-        "pkg:npm/rolldown@1.0.0"
+        "pkg:npm/rolldown@1.0.3",
+        "pkg:npm/tinyglobby@0.2.17"
       ]
     },
     {
-      "ref": "pkg:npm/vitest@4.1.7",
+      "ref": "pkg:npm/vitest@4.1.9",
       "dependsOn": [
-        "pkg:npm/%40vitest/expect@4.1.7",
-        "pkg:npm/%40vitest/mocker@4.1.7",
-        "pkg:npm/%40vitest/runner@4.1.7",
-        "pkg:npm/%40vitest/snapshot@4.1.7",
-        "pkg:npm/%40vitest/spy@4.1.7",
+        "pkg:npm/%40vitest/expect@4.1.9",
+        "pkg:npm/%40vitest/mocker@4.1.9",
+        "pkg:npm/%40vitest/runner@4.1.9",
+        "pkg:npm/%40vitest/snapshot@4.1.9",
+        "pkg:npm/%40vitest/spy@4.1.9",
         "pkg:npm/es-module-lexer@2.1.0",
         "pkg:npm/expect-type@1.3.0",
         "pkg:npm/magic-string@0.30.21",
         "pkg:npm/pathe@2.0.3",
         "pkg:npm/tinybench@2.9.0",
         "pkg:npm/tinyexec@1.1.2",
-        "pkg:npm/vite@8.0.12",
+        "pkg:npm/vite@8.0.16",
         "pkg:npm/why-is-node-running@2.3.0"
       ]
     },
@@ -23197,11 +23042,10 @@
       ]
     },
     {
-      "ref": "pkg:npm/webpack-cli@7.0.2",
+      "ref": "pkg:npm/webpack-cli@7.0.3",
       "dependsOn": [
         "pkg:npm/%40discoveryjs/json-ext@1.1.0",
         "pkg:npm/envinfo@7.21.0",
-        "pkg:npm/fastest-levenshtein@1.0.16",
         "pkg:npm/import-local@3.2.0",
         "pkg:npm/interpret@3.1.1",
         "pkg:npm/rechoir@0.8.0",
@@ -23216,7 +23060,7 @@
       ]
     },
     {
-      "ref": "pkg:npm/webpack-dev-server@5.2.4",
+      "ref": "pkg:npm/webpack-dev-server@5.2.5",
       "dependsOn": [
         "pkg:npm/%40types/bonjour@3.5.13",
         "pkg:npm/%40types/connect-history-api-fallback@1.5.4",
@@ -23235,7 +23079,7 @@
         "pkg:npm/express@4.22.2",
         "pkg:npm/http-proxy-middleware@2.0.9",
         "pkg:npm/ipaddr.js@2.4.0",
-        "pkg:npm/launch-editor@2.13.2",
+        "pkg:npm/launch-editor@2.14.1",
         "pkg:npm/open@10.2.0",
         "pkg:npm/p-retry@6.2.1",
         "pkg:npm/selfsigned@5.5.0",
@@ -23254,26 +23098,27 @@
       ]
     },
     {
-      "ref": "pkg:npm/webpack-sources@3.4.1",
+      "ref": "pkg:npm/webpack-sources@3.5.0",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/webpack@5.107.0",
+      "ref": "pkg:npm/webpack@5.107.2",
       "dependsOn": [
         "pkg:npm/%40webassemblyjs/ast@1.14.1",
         "pkg:npm/%40webassemblyjs/wasm-edit@1.14.1",
         "pkg:npm/%40webassemblyjs/wasm-parser@1.14.1",
         "pkg:npm/acorn-import-phases@1.0.4",
         "pkg:npm/chrome-trace-event@1.0.4",
-        "pkg:npm/enhanced-resolve@5.21.5",
+        "pkg:npm/enhanced-resolve@5.24.0",
         "pkg:npm/eslint-scope@5.1.1",
         "pkg:npm/events@3.3.0",
         "pkg:npm/glob-to-regexp@0.4.1",
         "pkg:npm/loader-runner@4.3.2",
         "pkg:npm/mime-db@1.54.0",
         "pkg:npm/neo-async@2.6.2",
+        "pkg:npm/terser-webpack-plugin@5.6.0",
         "pkg:npm/watchpack@2.5.1",
-        "pkg:npm/webpack-sources@3.4.1"
+        "pkg:npm/webpack-sources@3.5.0"
       ]
     },
     {
