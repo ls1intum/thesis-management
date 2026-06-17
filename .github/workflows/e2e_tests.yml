@@ -13,7 +13,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:18.4-alpine
+        image: postgres:${{ vars.POSTGRES_IMAGE_TAG || '18.4-alpine' }}
         env:
           POSTGRES_USER: thesis-management-postgres
           POSTGRES_PASSWORD: thesis-management-postgres
