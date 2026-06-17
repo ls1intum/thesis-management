@@ -59,6 +59,28 @@ Starting with PostgreSQL 18, the official Docker image changed the default `PGDA
 Our production compose file explicitly sets `PGDATA=/var/lib/postgresql/data` to keep existing
 volume mounts working.
 
+### Canonical PostgreSQL Version
+
+The PostgreSQL image tag is **`18.4-alpine`**. The committed [`.env`](../.env) (`POSTGRES_IMAGE_TAG`)
+is the single source of truth: Docker Compose loads it automatically and the Gradle build parses it
+for the integration-test Testcontainers. Every consumer falls back to the same hard-coded default if
+the variable is unset, so the workspace builds even without `.env`:
+
+| Consumer | Reads the version from | Fallback default |
+|----------|------------------------|------------------|
+| `docker-compose.yml`, `docker-compose.prod.yml`, `docker-compose.showcase.yml` | committed [`.env`](../.env) (auto-loaded); `.env.prod` for production | the `${POSTGRES_IMAGE_TAG:-18.4-alpine}` inline fallback in each compose file |
+| Integration-test Testcontainers (`BaseIntegrationTest`, `BaseKeycloakIntegrationTest` via `TestContainerImages`) | committed [`.env`](../.env), parsed in [`server/build.gradle`](../server/build.gradle) (or a `POSTGRES_IMAGE_TAG` env var) | the `System.getProperty(…, "18.4-alpine")` fallback in `TestContainerImages` |
+| `.github/workflows/e2e_tests.yml` (CI service container) | `POSTGRES_IMAGE_TAG` repository variable (*Settings → Secrets and variables → Actions → Variables*) — the workflow `services.image` field cannot read `.env` | the `${{ vars.POSTGRES_IMAGE_TAG || '18.4-alpine' }}` fallback in the workflow |
+
+`POSTGRES_IMAGE_TAG` is **not a secret** — the committed `.env` must hold non-secret config only.
+
+**To bump the version**, edit `POSTGRES_IMAGE_TAG` in the committed [`.env`](../.env) — that updates
+both Docker Compose and the Gradle tests at once. For full reproducibility also update the matching
+hard-coded fallbacks (the `${POSTGRES_IMAGE_TAG:-…}` in the three compose files, the workflow's
+`|| '18.4-alpine'`, and the default in `TestContainerImages`), then run the major-upgrade procedure
+below for production. The GitHub repository variable is optional and only needed to override CI
+without a code change.
+
 ### Upgrade Procedure
 
 > **Always test the upgrade on the dev environment first before applying to production.**
@@ -88,9 +110,11 @@ docker compose -f docker-compose.prod.yml --env-file=.env.prod down db
 # 4. Back up the old data directory (do NOT delete it yet)
 mv ./postgres_data ./postgres_data_backup
 
-# 5. Update the postgres image tag in docker-compose.prod.yml
-#    (or deploy the new version that already contains the change)
-sed -i 's|postgres:17.*-alpine|postgres:18.2-alpine|' docker-compose.prod.yml
+# 5. Point the deployment at the new PostgreSQL image tag. All compose files read
+#    ${POSTGRES_IMAGE_TAG} (see "Canonical PostgreSQL Version" above), so set it once in .env.prod
+#    instead of editing the compose file. Replace 18.4-alpine with the target tag.
+echo 'POSTGRES_IMAGE_TAG=18.4-alpine' >> .env.prod
+#    (or edit the existing POSTGRES_IMAGE_TAG line if it is already present)
 
 # 6. Start only the database service
 docker compose -f docker-compose.prod.yml --env-file=.env.prod up -d db
