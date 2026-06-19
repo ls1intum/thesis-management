@@ -104,6 +104,7 @@ public class ThesisService {
 	 * @param currentUserProviderProvider the current user provider
 	 * @param researchGroupRepository the research group repository
 	 * @param researchGroupSettingsService the research group settings service
+	 * @param userService the user service
 	 */
 	@Autowired
 	public ThesisService(
@@ -212,6 +213,22 @@ public class ThesisService {
 		);
 	}
 
+	/**
+	 * Creates a new thesis within the given research group and notifies the
+	 * involved users when requested.
+	 *
+	 * @param thesisTitle the title of the thesis
+	 * @param thesisType the type of the thesis
+	 * @param language the language of the thesis
+	 * @param examinerIds the IDs of the examiners
+	 * @param supervisorIds the IDs of the supervisors
+	 * @param studentIds the IDs of the students
+	 * @param additionalStudentUsernames the usernames of additional students
+	 * @param application the application the thesis originates from, may be {@code null}
+	 * @param notifyUser whether to notify the involved users
+	 * @param researchGroupId the ID of the research group the thesis belongs to
+	 * @return the created thesis
+	 */
 	public Thesis createThesis(
 			String thesisTitle,
 			String thesisType,

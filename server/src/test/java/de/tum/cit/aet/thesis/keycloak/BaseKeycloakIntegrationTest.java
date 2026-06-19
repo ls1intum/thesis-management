@@ -1,6 +1,7 @@
 package de.tum.cit.aet.thesis.keycloak;
 
 import dasniko.testcontainers.keycloak.KeycloakContainer;
+import de.tum.cit.aet.thesis.mock.TestContainerImages;
 import de.tum.cit.aet.thesis.repository.ApplicationRepository;
 import de.tum.cit.aet.thesis.repository.ApplicationReviewerRepository;
 import de.tum.cit.aet.thesis.repository.NotificationSettingRepository;
@@ -48,7 +49,7 @@ import java.time.Duration;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class BaseKeycloakIntegrationTest {
 
-	static final PostgreSQLContainer DB_CONTAINER = new PostgreSQLContainer("postgres:18.2-alpine");
+	static final PostgreSQLContainer DB_CONTAINER = new PostgreSQLContainer(TestContainerImages.POSTGRES);
 
 	static final KeycloakContainer KEYCLOAK_CONTAINER = new KeycloakContainer("quay.io/keycloak/keycloak:26.5")
 			.withRealmImportFile("thesis-management-realm.json");
