@@ -1703,18 +1703,18 @@
     {
       "type": "library",
       "name": "carousel",
-      "version": "9.3.1",
-      "purl": "pkg:npm/%40mantine/carousel@9.3.1",
-      "bom-ref": "pkg:npm/%40mantine/carousel@9.3.1",
+      "version": "9.3.2",
+      "purl": "pkg:npm/%40mantine/carousel@9.3.2",
+      "bom-ref": "pkg:npm/%40mantine/carousel@9.3.2",
       "group": "@mantine",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@mantine/carousel/-/carousel-9.3.1.tgz",
+          "url": "https://registry.npmjs.org/@mantine/carousel/-/carousel-9.3.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "bb6a79be85512d410c6ad491c5ec46669967dd0c7078ab615202f77022edd6492ab6fb607608632096dbbf7aa6379d8da179f60270b393413f384693d2ebcf88"
+              "content": "79002669e076c4760484d9c6c0aaadaa52279c681cad00137b7d7419d0f5c0bec95ee028609b30745aa53175e018f35faf1eb0c5fd49b086b2fe62251efb3879"
             }
           ]
         }
@@ -1723,18 +1723,18 @@
     {
       "type": "library",
       "name": "core",
-      "version": "9.3.1",
-      "purl": "pkg:npm/%40mantine/core@9.3.1",
-      "bom-ref": "pkg:npm/%40mantine/core@9.3.1",
+      "version": "9.3.2",
+      "purl": "pkg:npm/%40mantine/core@9.3.2",
+      "bom-ref": "pkg:npm/%40mantine/core@9.3.2",
       "group": "@mantine",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@mantine/core/-/core-9.3.1.tgz",
+          "url": "https://registry.npmjs.org/@mantine/core/-/core-9.3.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "e2b0681e98204a885ac84f8eb3b94a75bb074f0ee6fee6512988e4f4337a70a0614088dd8942dd706f9be1be42315652a990c73e04fbd2e58623bcaa927f147f"
+              "content": "529cbf67d4a3d9e5b6746ac5814cbfda421256cc4c4c16130df3f64c576c200dcf74f48191da9f48e3d7fee8377771776b86e7c104aa70eebe68f12904887c76"
             }
           ]
         }
@@ -1743,18 +1743,18 @@
     {
       "type": "library",
       "name": "dates",
-      "version": "9.3.1",
-      "purl": "pkg:npm/%40mantine/dates@9.3.1",
-      "bom-ref": "pkg:npm/%40mantine/dates@9.3.1",
+      "version": "9.3.2",
+      "purl": "pkg:npm/%40mantine/dates@9.3.2",
+      "bom-ref": "pkg:npm/%40mantine/dates@9.3.2",
       "group": "@mantine",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@mantine/dates/-/dates-9.3.1.tgz",
+          "url": "https://registry.npmjs.org/@mantine/dates/-/dates-9.3.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "361e17432c95d403345d19d426e81bd6435f0a6fbe9e4b6272c3bc6aba0a9853d9edca4657b72374bfb830934fbb56ad4b511478f5e5d952cba4a9eb725a6a39"
+              "content": "3331eb5c6a0e6f7ac29c7065b08fc13c08c2f0ae6d6787fca7383aeadb13b2ea5509005a0691d255ab50c0d449e8ad890bda720b24daf412fcd370bc0225b270"
             }
           ]
         }
@@ -1763,18 +1763,18 @@
     {
       "type": "library",
       "name": "dropzone",
-      "version": "9.3.1",
-      "purl": "pkg:npm/%40mantine/dropzone@9.3.1",
-      "bom-ref": "pkg:npm/%40mantine/dropzone@9.3.1",
+      "version": "9.3.2",
+      "purl": "pkg:npm/%40mantine/dropzone@9.3.2",
+      "bom-ref": "pkg:npm/%40mantine/dropzone@9.3.2",
       "group": "@mantine",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@mantine/dropzone/-/dropzone-9.3.1.tgz",
+          "url": "https://registry.npmjs.org/@mantine/dropzone/-/dropzone-9.3.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "5ac8ec307f4d533e72f57011fef3946f26fecb45f42ae77a295d4aff1511c2b6f17a76b66f5b65f96be33ceffabd1889793a4594cba8585ffc9f0aa7c681947a"
+              "content": "c31ffac1254b556f8e7cf53d16090c91f9da51deeba0f646d733a5cc4e84211608aac1dc898dce025ae1403a589d3928c2cb1e2695c3838246efcf25e6434351"
             }
           ]
         }
@@ -1783,18 +1783,18 @@
     {
       "type": "library",
       "name": "form",
-      "version": "9.3.1",
-      "purl": "pkg:npm/%40mantine/form@9.3.1",
-      "bom-ref": "pkg:npm/%40mantine/form@9.3.1",
+      "version": "9.3.2",
+      "purl": "pkg:npm/%40mantine/form@9.3.2",
+      "bom-ref": "pkg:npm/%40mantine/form@9.3.2",
       "group": "@mantine",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@mantine/form/-/form-9.3.1.tgz",
+          "url": "https://registry.npmjs.org/@mantine/form/-/form-9.3.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "74624f7181a47c39c03ca1dc9f381fda64a59e3c3299a3b244e89310935b6e3137395a166cf6b0f07c0429abf5c004ddc4d611f41c35187b5b7db193b26d49c3"
+              "content": "8d6117731f2185d74eb27cbeabf945b554e8352dd50496080ab91f14c589b0df960196a69cf22d5933cbaae953615a754fcba66bd32c119d4b5f892a59414034"
             }
           ]
         }
@@ -1803,18 +1803,18 @@
     {
       "type": "library",
       "name": "hooks",
-      "version": "9.3.1",
-      "purl": "pkg:npm/%40mantine/hooks@9.3.1",
-      "bom-ref": "pkg:npm/%40mantine/hooks@9.3.1",
+      "version": "9.3.2",
+      "purl": "pkg:npm/%40mantine/hooks@9.3.2",
+      "bom-ref": "pkg:npm/%40mantine/hooks@9.3.2",
       "group": "@mantine",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@mantine/hooks/-/hooks-9.3.1.tgz",
+          "url": "https://registry.npmjs.org/@mantine/hooks/-/hooks-9.3.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "cc03a5c55e7d8f90838009c4c4dfb2a5a47a7555b5bf030a0ef294c4895455dfdee76ab16273f26110feb21266c8e2da651b9099517447fee62408edda3c3d70"
+              "content": "8ce8e951ed31d40fe4dd7522bb6fda69209ab17448e592993ae726df2a70b2f9bd176bbc0b5c73c01bda82bce56cd670251179bcd60826d09a4fb36e9cfc9cd0"
             }
           ]
         }
@@ -1823,18 +1823,18 @@
     {
       "type": "library",
       "name": "notifications",
-      "version": "9.3.1",
-      "purl": "pkg:npm/%40mantine/notifications@9.3.1",
-      "bom-ref": "pkg:npm/%40mantine/notifications@9.3.1",
+      "version": "9.3.2",
+      "purl": "pkg:npm/%40mantine/notifications@9.3.2",
+      "bom-ref": "pkg:npm/%40mantine/notifications@9.3.2",
       "group": "@mantine",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@mantine/notifications/-/notifications-9.3.1.tgz",
+          "url": "https://registry.npmjs.org/@mantine/notifications/-/notifications-9.3.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "8ab903f6eb338157edb616c22ddfb8952eccd639212f8b15ad9012bfcfb8dda2249dc5bea1090216906e68e01feae45c323990ed79cab363bc6d763397f0ea81"
+              "content": "9a775af2113f0e2ccf8b905b8b07763368d7c5f49949479acaf9cb60c6c5c1e19029733e411997d68a2dc83455a967b0f296a5b5ec13369f387162e38ffe9f2b"
             }
           ]
         }
@@ -1843,18 +1843,18 @@
     {
       "type": "library",
       "name": "store",
-      "version": "9.3.1",
-      "purl": "pkg:npm/%40mantine/store@9.3.1",
-      "bom-ref": "pkg:npm/%40mantine/store@9.3.1",
+      "version": "9.3.2",
+      "purl": "pkg:npm/%40mantine/store@9.3.2",
+      "bom-ref": "pkg:npm/%40mantine/store@9.3.2",
       "group": "@mantine",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@mantine/store/-/store-9.3.1.tgz",
+          "url": "https://registry.npmjs.org/@mantine/store/-/store-9.3.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "519f3018a7c5fcd14c1c20e5d5177433c5ed1ddb785b5c37578a2136915268fde74a327e0aed454fe8885ad5f00b43a085af179ee550eef9bf770d8151fa70fa"
+              "content": "b8d9af8e4c1f507649e5bbf342ba0b16fb9bb940078c1334ae1ebd44146c5021b9151e4ae1ff32e125fcfa5721d304ba509baebe876c4882bc1f98ef66e15281"
             }
           ]
         }
@@ -1863,18 +1863,18 @@
     {
       "type": "library",
       "name": "tiptap",
-      "version": "9.3.1",
-      "purl": "pkg:npm/%40mantine/tiptap@9.3.1",
-      "bom-ref": "pkg:npm/%40mantine/tiptap@9.3.1",
+      "version": "9.3.2",
+      "purl": "pkg:npm/%40mantine/tiptap@9.3.2",
+      "bom-ref": "pkg:npm/%40mantine/tiptap@9.3.2",
       "group": "@mantine",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@mantine/tiptap/-/tiptap-9.3.1.tgz",
+          "url": "https://registry.npmjs.org/@mantine/tiptap/-/tiptap-9.3.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "b6b5d9ea637aa77ba4c6e74eb82f2bf8f6a903b51543f6b3e1c48e9a21379bc9f5b3721ca326a2c0007997688cfc37fd941ca1b3507a91af121b517a59d6b635"
+              "content": "5f7e38c2ab777aeb0c2cf00d5ae3529caa058d30e5084394a58aba84f594eae06fc441c9187b891578ed9bf8e0fc3e9a344bd6afe3fe9b5f84944ede2d3fc6d0"
             }
           ]
         }
@@ -18777,11 +18777,11 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40mantine/carousel@9.3.1",
+      "ref": "pkg:npm/%40mantine/carousel@9.3.2",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40mantine/core@9.3.1",
+      "ref": "pkg:npm/%40mantine/core@9.3.2",
       "dependsOn": [
         "pkg:npm/%40floating-ui/react@0.27.19",
         "pkg:npm/clsx@2.1.1",
@@ -18791,38 +18791,38 @@
       ]
     },
     {
-      "ref": "pkg:npm/%40mantine/dates@9.3.1",
+      "ref": "pkg:npm/%40mantine/dates@9.3.2",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40mantine/dropzone@9.3.1",
+      "ref": "pkg:npm/%40mantine/dropzone@9.3.2",
       "dependsOn": [
         "pkg:npm/react-dropzone@15.0.0"
       ]
     },
     {
-      "ref": "pkg:npm/%40mantine/form@9.3.1",
+      "ref": "pkg:npm/%40mantine/form@9.3.2",
       "dependsOn": [
         "pkg:npm/klona@2.0.6"
       ]
     },
     {
-      "ref": "pkg:npm/%40mantine/hooks@9.3.1",
+      "ref": "pkg:npm/%40mantine/hooks@9.3.2",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40mantine/notifications@9.3.1",
+      "ref": "pkg:npm/%40mantine/notifications@9.3.2",
       "dependsOn": [
-        "pkg:npm/%40mantine/store@9.3.1",
+        "pkg:npm/%40mantine/store@9.3.2",
         "pkg:npm/react-transition-group@4.4.5"
       ]
     },
     {
-      "ref": "pkg:npm/%40mantine/store@9.3.1",
+      "ref": "pkg:npm/%40mantine/store@9.3.2",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40mantine/tiptap@9.3.1",
+      "ref": "pkg:npm/%40mantine/tiptap@9.3.2",
       "dependsOn": []
     },
     {
@@ -22885,14 +22885,14 @@
       "dependsOn": [
         "pkg:npm/%40eslint-react/eslint-plugin@5.9.0",
         "pkg:npm/%40eslint/js@10.0.1",
-        "pkg:npm/%40mantine/carousel@9.3.1",
-        "pkg:npm/%40mantine/core@9.3.1",
-        "pkg:npm/%40mantine/dates@9.3.1",
-        "pkg:npm/%40mantine/dropzone@9.3.1",
-        "pkg:npm/%40mantine/form@9.3.1",
-        "pkg:npm/%40mantine/hooks@9.3.1",
-        "pkg:npm/%40mantine/notifications@9.3.1",
-        "pkg:npm/%40mantine/tiptap@9.3.1",
+        "pkg:npm/%40mantine/carousel@9.3.2",
+        "pkg:npm/%40mantine/core@9.3.2",
+        "pkg:npm/%40mantine/dates@9.3.2",
+        "pkg:npm/%40mantine/dropzone@9.3.2",
+        "pkg:npm/%40mantine/form@9.3.2",
+        "pkg:npm/%40mantine/hooks@9.3.2",
+        "pkg:npm/%40mantine/notifications@9.3.2",
+        "pkg:npm/%40mantine/tiptap@9.3.2",
         "pkg:npm/%40phosphor-icons/react@2.1.10",
         "pkg:npm/%40playwright/test@1.61.0",
         "pkg:npm/%40testing-library/jest-dom@6.9.1",
