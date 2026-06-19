@@ -182,6 +182,26 @@
     },
     {
       "type": "library",
+      "name": "code-frame",
+      "version": "7.29.7",
+      "purl": "pkg:npm/%40babel/code-frame@7.29.7",
+      "bom-ref": "pkg:npm/%40babel/code-frame@7.29.7",
+      "group": "@babel",
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@babel/code-frame/-/code-frame-7.29.7.tgz",
+          "hashes": [
+            {
+              "alg": "SHA-512",
+              "content": "02ea7b69439fa5b01483644e38937a230e5ff43301973bb4988926fe66a52d014dfd84203b8f300a3d0ac5adec10726f3d5160eec891faa4489f05dddaa8502b"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "library",
       "name": "helper-string-parser",
       "version": "7.27.1",
       "purl": "pkg:npm/%40babel/helper-string-parser@7.27.1",
@@ -222,6 +242,26 @@
     },
     {
       "type": "library",
+      "name": "helper-validator-identifier",
+      "version": "7.29.7",
+      "purl": "pkg:npm/%40babel/helper-validator-identifier@7.29.7",
+      "bom-ref": "pkg:npm/%40babel/helper-validator-identifier@7.29.7",
+      "group": "@babel",
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@babel/helper-validator-identifier/-/helper-validator-identifier-7.29.7.tgz",
+          "hashes": [
+            {
+              "alg": "SHA-512",
+              "content": "a9e8711a4463e7987f7dff0431a27e71887268a947231a980e7ebcdb0403ed1369f54ba3390b07a20dae4b4af6bf3af8a56fac5dff7435e79aca370d697ddf16"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "library",
       "name": "parser",
       "version": "7.29.3",
       "purl": "pkg:npm/%40babel/parser@7.29.3",
@@ -255,6 +295,26 @@
             {
               "alg": "SHA-512",
               "content": "2620d2847e39cca1d6c867b864d551ac28c1cfc361f53326646d648784132bc8420535818bc0dafa2eecd5f270eff958a4ce1c71ea5235fab367f42f001062e6"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "runtime",
+      "version": "7.29.7",
+      "purl": "pkg:npm/%40babel/runtime@7.29.7",
+      "bom-ref": "pkg:npm/%40babel/runtime@7.29.7",
+      "group": "@babel",
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@babel/runtime/-/runtime-7.29.7.tgz",
+          "hashes": [
+            {
+              "alg": "SHA-512",
+              "content": "36af0e8465a264864657a84b1e8c8028b2dc26284fff115e04c189a14af14d7da9b08f1d0a27f32e16484856fe5564b7c053110e6086c3947e74ec920aa3cb87"
             }
           ]
         }
@@ -1883,18 +1943,18 @@
     {
       "type": "library",
       "name": "wasm-runtime",
-      "version": "1.1.4",
-      "purl": "pkg:npm/%40napi-rs/wasm-runtime@1.1.4",
-      "bom-ref": "pkg:npm/%40napi-rs/wasm-runtime@1.1.4",
+      "version": "1.1.5",
+      "purl": "pkg:npm/%40napi-rs/wasm-runtime@1.1.5",
+      "bom-ref": "pkg:npm/%40napi-rs/wasm-runtime@1.1.5",
       "group": "@napi-rs",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@napi-rs/wasm-runtime/-/wasm-runtime-1.1.4.tgz",
+          "url": "https://registry.npmjs.org/@napi-rs/wasm-runtime/-/wasm-runtime-1.1.5.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "dcd40d3600356129496ff90c1f58a574048ff475bbffb9189d1236b335896a87da4b585699b188e07f9ddfedb6686cd75cdf4827e9fe1a21557068a924fd7ca3"
+              "content": "0163e805127db6c9d5868af8b233bbae49e2fbba7ed88004163e9cc74e9480fd748e4407a9acbfdfab9157f6c5920ae1d7c0fdbdbe1cafc4343ed86c920cf2f9"
             }
           ]
         }
@@ -2843,18 +2903,18 @@
     {
       "type": "library",
       "name": "pluginutils",
-      "version": "1.0.0",
-      "purl": "pkg:npm/%40rolldown/pluginutils@1.0.0",
-      "bom-ref": "pkg:npm/%40rolldown/pluginutils@1.0.0",
+      "version": "1.0.1",
+      "purl": "pkg:npm/%40rolldown/pluginutils@1.0.1",
+      "bom-ref": "pkg:npm/%40rolldown/pluginutils@1.0.1",
       "group": "@rolldown",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@rolldown/pluginutils/-/pluginutils-1.0.0.tgz",
+          "url": "https://registry.npmjs.org/@rolldown/pluginutils/-/pluginutils-1.0.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "68ab3fdc6496c95d26ae1366b7ff7afd9df27330b7cafaf36004c28825d079b06c1b26338cd754a614552de250ebbc922955d17ccc6dda59b5da9997bdb3c541"
+              "content": "da3f5b1ade4987c863faf3ed8333ed97bda3d324711c0cae9a8a3a4cd7c08ec2c1d3852da52bcf6cf703701331cfb9fef42601d1cd46c501716118368e29aa1b"
             }
           ]
         }
@@ -5517,6 +5577,25 @@
     },
     {
       "type": "library",
+      "name": "acorn",
+      "version": "8.17.0",
+      "purl": "pkg:npm/acorn@8.17.0",
+      "bom-ref": "pkg:npm/acorn@8.17.0",
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/acorn/-/acorn-8.17.0.tgz",
+          "hashes": [
+            {
+              "alg": "SHA-512",
+              "content": "c5141b0dbf419f00da7d8367e95c25f37f436158ea5d86f55d51ad58067591c0dcea2c002f8860dc1d5d665462b8434578ed87e778051b78a7eb6d4074445502"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "library",
       "name": "ajv-formats",
       "version": "2.1.1",
       "purl": "pkg:npm/ajv-formats@2.1.1",
@@ -7931,17 +8010,17 @@
     {
       "type": "library",
       "name": "dompurify",
-      "version": "3.4.10",
-      "purl": "pkg:npm/dompurify@3.4.10",
-      "bom-ref": "pkg:npm/dompurify@3.4.10",
+      "version": "3.4.11",
+      "purl": "pkg:npm/dompurify@3.4.11",
+      "bom-ref": "pkg:npm/dompurify@3.4.11",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/dompurify/-/dompurify-3.4.10.tgz",
+          "url": "https://registry.npmjs.org/dompurify/-/dompurify-3.4.11.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "d31ccdbf47bba180bacb2b8e19920004f338aad8374312c59e20cd3cfe193fdd3047c62adf3830a516eb3624f837720aa836db6051092d5f89584b35f5a67fff"
+              "content": "ce1954575d86b1a47332c7fdab9336e78621038f95b85d1f1be405aaee9a629a0694ab73fb0f3ffe305c195601810911e461e352899e8d8f38015fbfb8f6d677"
             }
           ]
         }
@@ -10230,17 +10309,17 @@
     {
       "type": "library",
       "name": "immutable",
-      "version": "5.1.5",
-      "purl": "pkg:npm/immutable@5.1.5",
-      "bom-ref": "pkg:npm/immutable@5.1.5",
+      "version": "5.1.6",
+      "purl": "pkg:npm/immutable@5.1.6",
+      "bom-ref": "pkg:npm/immutable@5.1.6",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/immutable/-/immutable-5.1.5.tgz",
+          "url": "https://registry.npmjs.org/immutable/-/immutable-5.1.6.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "b7bc5c9b6b22c3e86550cebc23e50438afb3f3847398de7d6acf4367b3f5974f7de03294595ed45c1310655c5aa0c49143e3c165b1c23a806dedadb0c4e32df8"
+              "content": "ab5b30b12f0aecbf2eb121ee3aa1764c0a020a4a27633d121b7f302c082069ae169a5ef4ce2c48beddaa9787284360b60778538e5b49af2e2be9b50bc200172d"
             }
           ]
         }
@@ -14752,17 +14831,17 @@
     {
       "type": "library",
       "name": "prosemirror-model",
-      "version": "1.25.8",
-      "purl": "pkg:npm/prosemirror-model@1.25.8",
-      "bom-ref": "pkg:npm/prosemirror-model@1.25.8",
+      "version": "1.25.9",
+      "purl": "pkg:npm/prosemirror-model@1.25.9",
+      "bom-ref": "pkg:npm/prosemirror-model@1.25.9",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/prosemirror-model/-/prosemirror-model-1.25.8.tgz",
+          "url": "https://registry.npmjs.org/prosemirror-model/-/prosemirror-model-1.25.9.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "06cc00e012d214488e455e958e3ff26415c36e8b35cd31278727924a04fca6c18586cb504bb509f3f58e2e20e8b3d07269e7b6efeb66974fc3b8c371611f38ce"
+              "content": "a514e49640c330c468a72a0072bafdc15ffc83f45882b2c706e2406f986512e61945d9b9caa98f8d621df377e90703e9485a847636b41fb0df77bcf55ff9e970"
             }
           ]
         }
@@ -14847,17 +14926,17 @@
     {
       "type": "library",
       "name": "prosemirror-view",
-      "version": "1.41.8",
-      "purl": "pkg:npm/prosemirror-view@1.41.8",
-      "bom-ref": "pkg:npm/prosemirror-view@1.41.8",
+      "version": "1.41.9",
+      "purl": "pkg:npm/prosemirror-view@1.41.9",
+      "bom-ref": "pkg:npm/prosemirror-view@1.41.9",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/prosemirror-view/-/prosemirror-view-1.41.8.tgz",
+          "url": "https://registry.npmjs.org/prosemirror-view/-/prosemirror-view-1.41.9.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "4e72837688446ad83264d1820d621d71c3875e1625a09c1bc14fa9870fdadb7281bc9211f65590596ed61c72b7bc174e2c336e17b4da5fdf0639b51939690e9c"
+              "content": "7254ee9d35fe79a2dbafcecbd55d503e1791944409c9394bde05def71de3408937acbd11556c6f8831b3f2d15ac9dc08566fa12a1602cabf91ff306d5abf6ce8"
             }
           ]
         }
@@ -18377,8 +18456,12 @@
     },
     {
       "ref": "pkg:npm/%40babel/code-frame@7.29.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:npm/%40babel/code-frame@7.29.7",
       "dependsOn": [
-        "pkg:npm/%40babel/helper-validator-identifier@7.28.5",
+        "pkg:npm/%40babel/helper-validator-identifier@7.29.7",
         "pkg:npm/js-tokens@4.0.0"
       ]
     },
@@ -18391,6 +18474,10 @@
       "dependsOn": []
     },
     {
+      "ref": "pkg:npm/%40babel/helper-validator-identifier@7.29.7",
+      "dependsOn": []
+    },
+    {
       "ref": "pkg:npm/%40babel/parser@7.29.3",
       "dependsOn": []
     },
@@ -18399,9 +18486,14 @@
       "dependsOn": []
     },
     {
+      "ref": "pkg:npm/%40babel/runtime@7.29.7",
+      "dependsOn": []
+    },
+    {
       "ref": "pkg:npm/%40babel/types@7.29.0",
       "dependsOn": [
-        "pkg:npm/%40babel/helper-string-parser@7.27.1"
+        "pkg:npm/%40babel/helper-string-parser@7.27.1",
+        "pkg:npm/%40babel/helper-validator-identifier@7.28.5"
       ]
     },
     {
@@ -18807,7 +18899,7 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40napi-rs/wasm-runtime@1.1.4",
+      "ref": "pkg:npm/%40napi-rs/wasm-runtime@1.1.5",
       "dependsOn": [
         "pkg:npm/%40tybys/wasm-util@0.10.2"
       ]
@@ -19030,7 +19122,7 @@
       "dependsOn": [
         "pkg:npm/%40emnapi/core@1.10.0",
         "pkg:npm/%40emnapi/runtime@1.10.0",
-        "pkg:npm/%40napi-rs/wasm-runtime@1.1.4"
+        "pkg:npm/%40napi-rs/wasm-runtime@1.1.5"
       ]
     },
     {
@@ -19042,7 +19134,7 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40rolldown/pluginutils@1.0.0",
+      "ref": "pkg:npm/%40rolldown/pluginutils@1.0.1",
       "dependsOn": []
     },
     {
@@ -19056,7 +19148,8 @@
     {
       "ref": "pkg:npm/%40testing-library/dom@10.4.1",
       "dependsOn": [
-        "pkg:npm/%40babel/code-frame@7.29.0",
+        "pkg:npm/%40babel/code-frame@7.29.7",
+        "pkg:npm/%40babel/runtime@7.29.7",
         "pkg:npm/%40types/aria-query@5.0.4",
         "pkg:npm/aria-query@5.3.0",
         "pkg:npm/dom-accessibility-api@0.5.16",
@@ -19218,12 +19311,12 @@
         "pkg:npm/prosemirror-history@1.5.0",
         "pkg:npm/prosemirror-inputrules@1.5.1",
         "pkg:npm/prosemirror-keymap@1.2.3",
-        "pkg:npm/prosemirror-model@1.25.8",
+        "pkg:npm/prosemirror-model@1.25.9",
         "pkg:npm/prosemirror-schema-list@1.5.1",
         "pkg:npm/prosemirror-state@1.4.4",
         "pkg:npm/prosemirror-tables@1.8.5",
         "pkg:npm/prosemirror-transform@1.12.0",
-        "pkg:npm/prosemirror-view@1.41.8"
+        "pkg:npm/prosemirror-view@1.41.9"
       ]
     },
     {
@@ -19734,6 +19827,10 @@
     },
     {
       "ref": "pkg:npm/acorn@8.16.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:npm/acorn@8.17.0",
       "dependsOn": []
     },
     {
@@ -20426,7 +20523,7 @@
       ]
     },
     {
-      "ref": "pkg:npm/dompurify@3.4.10",
+      "ref": "pkg:npm/dompurify@3.4.11",
       "dependsOn": [
         "pkg:npm/%40types/trusted-types@2.0.7"
       ]
@@ -20812,6 +20909,7 @@
     {
       "ref": "pkg:npm/fork-ts-checker-webpack-plugin@9.1.0",
       "dependsOn": [
+        "pkg:npm/%40babel/code-frame@7.29.0",
         "pkg:npm/chokidar@4.0.3",
         "pkg:npm/cosmiconfig@8.3.6",
         "pkg:npm/deepmerge@4.3.1",
@@ -21076,7 +21174,7 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/immutable@5.1.5",
+      "ref": "pkg:npm/immutable@5.1.6",
       "dependsOn": []
     },
     {
@@ -22266,7 +22364,7 @@
       ]
     },
     {
-      "ref": "pkg:npm/prosemirror-model@1.25.8",
+      "ref": "pkg:npm/prosemirror-model@1.25.9",
       "dependsOn": [
         "pkg:npm/orderedmap@2.1.1"
       ]
@@ -22288,7 +22386,7 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/prosemirror-view@1.41.8",
+      "ref": "pkg:npm/prosemirror-view@1.41.9",
       "dependsOn": []
     },
     {
@@ -22509,7 +22607,7 @@
         "pkg:npm/%40rolldown/binding-wasm32-wasi@1.0.3",
         "pkg:npm/%40rolldown/binding-win32-arm64-msvc@1.0.3",
         "pkg:npm/%40rolldown/binding-win32-x64-msvc@1.0.3",
-        "pkg:npm/%40rolldown/pluginutils@1.0.0"
+        "pkg:npm/%40rolldown/pluginutils@1.0.1"
       ]
     },
     {
@@ -22536,7 +22634,7 @@
       "ref": "pkg:npm/sass@1.99.0",
       "dependsOn": [
         "pkg:npm/%40parcel/watcher@2.5.6",
-        "pkg:npm/immutable@5.1.5"
+        "pkg:npm/immutable@5.1.6"
       ]
     },
     {
@@ -22853,6 +22951,7 @@
       "ref": "pkg:npm/terser@5.47.1",
       "dependsOn": [
         "pkg:npm/%40jridgewell/source-map@0.3.11",
+        "pkg:npm/acorn@8.17.0",
         "pkg:npm/commander@2.20.3",
         "pkg:npm/source-map-support@0.5.21"
       ]
@@ -22896,7 +22995,7 @@
         "pkg:npm/css-loader@7.1.4",
         "pkg:npm/css-minimizer-webpack-plugin@8.0.0",
         "pkg:npm/dayjs@1.11.21",
-        "pkg:npm/dompurify@3.4.10",
+        "pkg:npm/dompurify@3.4.11",
         "pkg:npm/embla-carousel-react@8.6.0",
         "pkg:npm/embla-carousel@8.6.0",
         "pkg:npm/eslint-config-prettier@10.1.8",
