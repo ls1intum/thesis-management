@@ -8159,25 +8159,6 @@
     {
       "type": "library",
       "name": "enhanced-resolve",
-      "version": "5.21.5",
-      "purl": "pkg:npm/enhanced-resolve@5.21.5",
-      "bom-ref": "pkg:npm/enhanced-resolve@5.21.5",
-      "externalReferences": [
-        {
-          "type": "distribution",
-          "url": "https://registry.npmjs.org/enhanced-resolve/-/enhanced-resolve-5.21.5.tgz",
-          "hashes": [
-            {
-              "alg": "SHA-512",
-              "content": "98b08d6eb4258b5d4ad724949ae36de19501dcea46203ab8ab6bd30537f970bda5a6c46323d40aa920f49dd8d6f05caf716fc98f8ea031ef6ccb21c0b2f31afc"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "name": "enhanced-resolve",
       "version": "5.24.0",
       "purl": "pkg:npm/enhanced-resolve@5.24.0",
       "bom-ref": "pkg:npm/enhanced-resolve@5.24.0",
@@ -17260,17 +17241,17 @@
     {
       "type": "library",
       "name": "ts-loader",
-      "version": "9.6.0",
-      "purl": "pkg:npm/ts-loader@9.6.0",
-      "bom-ref": "pkg:npm/ts-loader@9.6.0",
+      "version": "9.6.1",
+      "purl": "pkg:npm/ts-loader@9.6.1",
+      "bom-ref": "pkg:npm/ts-loader@9.6.1",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/ts-loader/-/ts-loader-9.6.0.tgz",
+          "url": "https://registry.npmjs.org/ts-loader/-/ts-loader-9.6.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "76c24ed12f93ee0ad30d64dce1ad274f28171a32a7715529c7c63e69ff04bc8fc3e5681325bcb95049397a830207d11c2d09a7be2b6a87df4caad8ed1e003015"
+              "content": "f053079e6c6da6771402ed198e4aa95e739397073d798f797ac1fc59537de20b933cf764836a1f55d8953398fc2f69668e219ead7779eb35dbfc3d89c9540f2e"
             }
           ]
         }
@@ -20501,10 +20482,6 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/enhanced-resolve@5.21.5",
-      "dependsOn": []
-    },
-    {
       "ref": "pkg:npm/enhanced-resolve@5.24.0",
       "dependsOn": []
     },
@@ -22949,7 +22926,7 @@
         "pkg:npm/speed-measure-webpack-plugin@1.6.0",
         "pkg:npm/style-loader@4.0.0",
         "pkg:npm/terser-webpack-plugin@5.6.1",
-        "pkg:npm/ts-loader@9.6.0",
+        "pkg:npm/ts-loader@9.6.1",
         "pkg:npm/ts-node@10.9.2",
         "pkg:npm/typescript-plugin-css-modules@5.2.0",
         "pkg:npm/typescript@5.9.3",
@@ -23041,9 +23018,9 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/ts-loader@9.6.0",
+      "ref": "pkg:npm/ts-loader@9.6.1",
       "dependsOn": [
-        "pkg:npm/enhanced-resolve@5.21.5",
+        "pkg:npm/enhanced-resolve@5.24.0",
         "pkg:npm/source-map@0.7.6"
       ]
     },
@@ -23312,7 +23289,6 @@
         "pkg:npm/%40webassemblyjs/wasm-parser@1.14.1",
         "pkg:npm/acorn-import-phases@1.0.4",
         "pkg:npm/chrome-trace-event@1.0.4",
-        "pkg:npm/enhanced-resolve@5.24.0",
         "pkg:npm/eslint-scope@5.1.1",
         "pkg:npm/events@3.3.0",
         "pkg:npm/glob-to-regexp@0.4.1",
