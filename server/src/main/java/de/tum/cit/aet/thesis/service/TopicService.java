@@ -111,8 +111,12 @@ public class TopicService {
 		String[] typesFilter = types == null || types.length == 0 ? null : types;
 
 
-		if (states != null && Arrays.stream(states).anyMatch(s -> s.equals(TopicState.CLOSED.name()) || s.equals(TopicState.DRAFT.name()))) {
-			currentUserProvider().assertCanAccessResearchGroup(researchGroup);
+		if (states != null && Arrays.stream(states).anyMatch(s -> s.equals(TopicState.CLOSED.name()) || s.equals(TopicState.DRAFT.name()) || s.equals(TopicState.EXPIRED.name()))) {
+			CurrentUserProvider cup = currentUserProvider();
+			if (!cup.isAdmin() && !cup.getUser().hasAnyGroup("supervisor", "advisor")) {
+				throw new org.springframework.security.access.AccessDeniedException("Only privileged users can query non-OPEN topic states.");
+			}
+			cup.assertCanAccessResearchGroup(researchGroup);
 		}
 		String[] statesFilter = (states != null && states.length > 0) ? states : new String[] { TopicState.OPEN.name() };
 
@@ -176,6 +180,10 @@ public class TopicService {
 				null,
 				PageRequest.of(0, Integer.MAX_VALUE, Sort.unsorted())
 		).toList();
+	}
+
+	public List<Topic> getPublishedFromResearchGroup(UUID researchGroupId) {
+		return topicRepository.findPublishedTopics(researchGroupId);
 	}
 
 	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems

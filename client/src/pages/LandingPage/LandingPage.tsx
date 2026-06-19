@@ -182,7 +182,7 @@ const LandingPage = () => {
                         justify='center'
                         onClick={(e) => e.stopPropagation()}
                       >
-                        {topic.state !== TopicState.CLOSED && (
+                        {topic.state === TopicState.OPEN && (
                           <Button
                             component={Link}
                             to={`/submit-application/${topic.topicId}`}

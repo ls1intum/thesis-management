@@ -12,6 +12,7 @@ import {
   Loader,
 } from '@mantine/core'
 import type { ITopicOverview, ITopic } from '../../../../../requests/responses/topic'
+import { TopicState } from '../../../../../requests/responses/topic'
 import ThesisTypeBadge from '../../../../LandingPage/components/ThesisTypBadge/ThesisTypBadge'
 import type { IPublishedThesis } from '../../../../../requests/responses/thesis'
 import { useHover } from '@mantine/hooks'
@@ -34,10 +35,7 @@ const CollapsibleTopicElement = ({ topic, onApply }: ICollapsibleTopicElementPro
   const isTopicOverview = 'topicId' in topic
   const fullTopic = useTopic(isTopicOverview && expanded ? topic.topicId : undefined)
 
-  const deadlinePassed =
-    !!fullTopic &&
-    !!fullTopic.applicationDeadline &&
-    new Date(fullTopic.applicationDeadline) < new Date()
+  const canApply = !!fullTopic && fullTopic.state === TopicState.OPEN
 
   return (
     <Card
@@ -157,13 +155,13 @@ const CollapsibleTopicElement = ({ topic, onApply }: ICollapsibleTopicElementPro
                   // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- useTopic may return `false` (error sentinel) which must also map to undefined
                   onClick={() => onApply(fullTopic || undefined)}
                   fullWidth
-                  disabled={!fullTopic || deadlinePassed}
+                  disabled={!canApply}
                 >
                   Apply
                 </Button>
-                {deadlinePassed && (
+                {!canApply && !!fullTopic && (
                   <Text size='xs' c='dimmed' ta='center'>
-                    Application deadline has passed.
+                    Applications are not open for this topic.
                   </Text>
                 )}
               </Stack>

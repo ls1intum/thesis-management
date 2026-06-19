@@ -8,7 +8,8 @@ import lombok.Getter;
 public enum TopicState {
 	OPEN("OPEN"),
 	CLOSED("WRITING"),
-	DRAFT("DRAFT");
+	DRAFT("DRAFT"),
+	EXPIRED("EXPIRED");
 
 	private final String value;
 }

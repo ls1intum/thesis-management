@@ -44,6 +44,8 @@ const TopicsTable = (props: ITopicOverviewsTableProps) => {
         return 'red'
       case TopicState.DRAFT:
         return 'yellow'
+      case TopicState.EXPIRED:
+        return 'orange'
       default:
         return 'gray'
     }
