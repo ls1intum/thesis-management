@@ -15930,17 +15930,17 @@
     {
       "type": "library",
       "name": "serialize-javascript",
-      "version": "7.0.5",
-      "purl": "pkg:npm/serialize-javascript@7.0.5",
-      "bom-ref": "pkg:npm/serialize-javascript@7.0.5",
+      "version": "7.0.6",
+      "purl": "pkg:npm/serialize-javascript@7.0.6",
+      "bom-ref": "pkg:npm/serialize-javascript@7.0.6",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/serialize-javascript/-/serialize-javascript-7.0.5.tgz",
+          "url": "https://registry.npmjs.org/serialize-javascript/-/serialize-javascript-7.0.6.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "1782dc07452a525d7312babed676041334872672306f7005d97581f786fe69f86b7a43948a3c28a0062a17245b8d8926d8f00a05a6f1ea862fff10f1362f0807"
+              "content": "0134cae50e20155834603a759b2dafab2832be1724943fd45791889581e8a064e7fcda2026a233a5eb640fa139926b9550bab3fd2f629d42f6e5770080344942"
             }
           ]
         }
@@ -20084,7 +20084,7 @@
       "ref": "pkg:npm/compression-webpack-plugin@12.0.0",
       "dependsOn": [
         "pkg:npm/schema-utils@4.3.3",
-        "pkg:npm/serialize-javascript@7.0.5"
+        "pkg:npm/serialize-javascript@7.0.6"
       ]
     },
     {
@@ -22613,7 +22613,7 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/serialize-javascript@7.0.5",
+      "ref": "pkg:npm/serialize-javascript@7.0.6",
       "dependsOn": []
     },
     {
