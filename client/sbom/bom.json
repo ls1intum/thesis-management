@@ -7931,17 +7931,17 @@
     {
       "type": "library",
       "name": "dompurify",
-      "version": "3.4.10",
-      "purl": "pkg:npm/dompurify@3.4.10",
-      "bom-ref": "pkg:npm/dompurify@3.4.10",
+      "version": "3.4.11",
+      "purl": "pkg:npm/dompurify@3.4.11",
+      "bom-ref": "pkg:npm/dompurify@3.4.11",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/dompurify/-/dompurify-3.4.10.tgz",
+          "url": "https://registry.npmjs.org/dompurify/-/dompurify-3.4.11.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "d31ccdbf47bba180bacb2b8e19920004f338aad8374312c59e20cd3cfe193fdd3047c62adf3830a516eb3624f837720aa836db6051092d5f89584b35f5a67fff"
+              "content": "ce1954575d86b1a47332c7fdab9336e78621038f95b85d1f1be405aaee9a629a0694ab73fb0f3ffe305c195601810911e461e352899e8d8f38015fbfb8f6d677"
             }
           ]
         }
@@ -20445,7 +20445,7 @@
       ]
     },
     {
-      "ref": "pkg:npm/dompurify@3.4.10",
+      "ref": "pkg:npm/dompurify@3.4.11",
       "dependsOn": [
         "pkg:npm/%40types/trusted-types@2.0.7"
       ]
@@ -22919,7 +22919,7 @@
         "pkg:npm/css-loader@7.1.4",
         "pkg:npm/css-minimizer-webpack-plugin@8.0.0",
         "pkg:npm/dayjs@1.11.21",
-        "pkg:npm/dompurify@3.4.10",
+        "pkg:npm/dompurify@3.4.11",
         "pkg:npm/embla-carousel-react@8.6.0",
         "pkg:npm/embla-carousel@8.6.0",
         "pkg:npm/eslint-config-prettier@10.1.8",
