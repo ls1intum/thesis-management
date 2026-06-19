@@ -6866,6 +6866,25 @@
     },
     {
       "type": "library",
+      "name": "cookie-es",
+      "version": "3.1.1",
+      "purl": "pkg:npm/cookie-es@3.1.1",
+      "bom-ref": "pkg:npm/cookie-es@3.1.1",
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/cookie-es/-/cookie-es-3.1.1.tgz",
+          "hashes": [
+            {
+              "alg": "SHA-512",
+              "content": "51a5f1c0849824f4ebf61c10c4c15867b90d8525dba0c5cff99dd3457e9fd7f3726863dfb8d5193963f5a5411bef90761e37e494860b5517d6885649c82e8da6"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "library",
       "name": "cookie-signature",
       "version": "1.0.7",
       "purl": "pkg:npm/cookie-signature@1.0.7",
@@ -6897,25 +6916,6 @@
             {
               "alg": "SHA-512",
               "content": "ca48b95e72ae7fbe74979d2e193965b7a90a20b6389d0d5e34841ab685c40726797568272aa6e7aa64eb044e41e0dee5acc24a436cad58c8933b6a34bfa130ff"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "name": "cookie",
-      "version": "1.1.1",
-      "purl": "pkg:npm/cookie@1.1.1",
-      "bom-ref": "pkg:npm/cookie@1.1.1",
-      "externalReferences": [
-        {
-          "type": "distribution",
-          "url": "https://registry.npmjs.org/cookie/-/cookie-1.1.1.tgz",
-          "hashes": [
-            {
-              "alg": "SHA-512",
-              "content": "7a2f00a2cee36b4c1e469173267100f541c9ffb5d09aa8256d1c277f60138dc07d5aaf3be15287f647e38e2acce94854dbf1397c561a77297284595d72a4a275"
             }
           ]
         }
@@ -15189,17 +15189,17 @@
     {
       "type": "library",
       "name": "react-router",
-      "version": "7.17.0",
-      "purl": "pkg:npm/react-router@7.17.0",
-      "bom-ref": "pkg:npm/react-router@7.17.0",
+      "version": "8.0.0",
+      "purl": "pkg:npm/react-router@8.0.0",
+      "bom-ref": "pkg:npm/react-router@8.0.0",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/react-router/-/react-router-7.17.0.tgz",
+          "url": "https://registry.npmjs.org/react-router/-/react-router-8.0.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "14310b2bbad33250873b9fab7b25ec3e599fafb37517dd653c7b1661f3041909bf290f85e0914cf231a87900e60ef753b3ddc5c3d6928a51feb8a45be3f8d7bd"
+              "content": "0324bb2d49fd337836fc80490c93695aa1256908cf5411c680cb1d2c679ee81d892f03fd4934a947037c37849ab8e7854dbd17e59374c316b521e93bf2317c23"
             }
           ]
         }
@@ -15979,25 +15979,6 @@
             {
               "alg": "SHA-512",
               "content": "c74453a907a5ea0e5263b2e0e99ade326b0ece7707154ee786745690a816b8c4eee4d3740d1e68aee72432a46f69c00df5de70e804674415e5f718430a07cc78"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "name": "set-cookie-parser",
-      "version": "2.7.2",
-      "purl": "pkg:npm/set-cookie-parser@2.7.2",
-      "bom-ref": "pkg:npm/set-cookie-parser@2.7.2",
-      "externalReferences": [
-        {
-          "type": "distribution",
-          "url": "https://registry.npmjs.org/set-cookie-parser/-/set-cookie-parser-2.7.2.tgz",
-          "hashes": [
-            {
-              "alg": "SHA-512",
-              "content": "a1e33596953f52f853c70fa0ddc21fc571f225173fba275ddf22b53f6e368331ddb34b9d401633b37cbc8f8802096f9927b69dd3272d95df1160ef9b76eae5bf"
             }
           ]
         }
@@ -20120,15 +20101,15 @@
       "dependsOn": []
     },
     {
+      "ref": "pkg:npm/cookie-es@3.1.1",
+      "dependsOn": []
+    },
+    {
       "ref": "pkg:npm/cookie-signature@1.0.7",
       "dependsOn": []
     },
     {
       "ref": "pkg:npm/cookie@0.7.2",
-      "dependsOn": []
-    },
-    {
-      "ref": "pkg:npm/cookie@1.1.1",
       "dependsOn": []
     },
     {
@@ -22395,10 +22376,9 @@
       ]
     },
     {
-      "ref": "pkg:npm/react-router@7.17.0",
+      "ref": "pkg:npm/react-router@8.0.0",
       "dependsOn": [
-        "pkg:npm/cookie@1.1.1",
-        "pkg:npm/set-cookie-parser@2.7.2"
+        "pkg:npm/cookie-es@3.1.1"
       ]
     },
     {
@@ -22625,10 +22605,6 @@
     },
     {
       "ref": "pkg:npm/serve-static@1.16.3",
-      "dependsOn": []
-    },
-    {
-      "ref": "pkg:npm/set-cookie-parser@2.7.2",
       "dependsOn": []
     },
     {
@@ -22944,7 +22920,7 @@
         "pkg:npm/prettier@3.8.4",
         "pkg:npm/react-avatar-editor@15.1.0",
         "pkg:npm/react-dom@19.2.7",
-        "pkg:npm/react-router@7.17.0",
+        "pkg:npm/react-router@8.0.0",
         "pkg:npm/react@19.2.7",
         "pkg:npm/speed-measure-webpack-plugin@1.6.0",
         "pkg:npm/style-loader@4.0.0",
