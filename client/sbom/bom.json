@@ -15189,17 +15189,17 @@
     {
       "type": "library",
       "name": "react-router",
-      "version": "7.17.0",
-      "purl": "pkg:npm/react-router@7.17.0",
-      "bom-ref": "pkg:npm/react-router@7.17.0",
+      "version": "7.18.0",
+      "purl": "pkg:npm/react-router@7.18.0",
+      "bom-ref": "pkg:npm/react-router@7.18.0",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/react-router/-/react-router-7.17.0.tgz",
+          "url": "https://registry.npmjs.org/react-router/-/react-router-7.18.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "14310b2bbad33250873b9fab7b25ec3e599fafb37517dd653c7b1661f3041909bf290f85e0914cf231a87900e60ef753b3ddc5c3d6928a51feb8a45be3f8d7bd"
+              "content": "a534c6b7c27e8e2d4d3a66278f34fe6c0272ff5cc3f89a78ce23ba70bed3dd92ef5cab6eb0eec1a45aa54578adaa970f56a965b085c51d132dfb6fe4dd79fa1d"
             }
           ]
         }
@@ -22395,7 +22395,7 @@
       ]
     },
     {
-      "ref": "pkg:npm/react-router@7.17.0",
+      "ref": "pkg:npm/react-router@7.18.0",
       "dependsOn": [
         "pkg:npm/cookie@1.1.1",
         "pkg:npm/set-cookie-parser@2.7.2"
@@ -22944,7 +22944,7 @@
         "pkg:npm/prettier@3.8.4",
         "pkg:npm/react-avatar-editor@15.1.0",
         "pkg:npm/react-dom@19.2.7",
-        "pkg:npm/react-router@7.17.0",
+        "pkg:npm/react-router@7.18.0",
         "pkg:npm/react@19.2.7",
         "pkg:npm/speed-measure-webpack-plugin@1.6.0",
         "pkg:npm/style-loader@4.0.0",
