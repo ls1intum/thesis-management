@@ -23,6 +23,10 @@
             "modified": false,
             "externalReferences": [
                 {
+                    "type": "build-system",
+                    "url": "https://github.com/ls1intum/thesis-management/actions/runs/27842539367"
+                },
+                {
                     "type": "vcs",
                     "url": "https://github.com/ls1intum/thesis-management"
                 }
@@ -3442,43 +3446,43 @@
         },
         {
             "type": "library",
-            "bom-ref": "pkg:maven/com.puppycrawl.tools/checkstyle@13.4.2?type=jar",
+            "bom-ref": "pkg:maven/com.puppycrawl.tools/checkstyle@13.6.0?type=jar",
             "group": "com.puppycrawl.tools",
             "name": "checkstyle",
-            "version": "13.4.2",
+            "version": "13.6.0",
             "description": "Checkstyle is a development tool to help programmers write Java code that adheres to a coding standard",
             "hashes": [
                 {
                     "alg": "MD5",
-                    "content": "f1c6ae79de1446c5f3ff92d249547b5d"
+                    "content": "5f8540822bbeb124a001246b37e65a5b"
                 },
                 {
                     "alg": "SHA-1",
-                    "content": "b94d149d8652c4b59769b43610c08fec431e08b7"
+                    "content": "23cb19ce1b37f6c7f6ceb73d50b707b36bbe1a33"
                 },
                 {
                     "alg": "SHA-256",
-                    "content": "6c40a0e07b15b4bda1b0d5ec5af1246c990d1d2f3b232b67e945d6334d028eec"
+                    "content": "2bb38a900e88727a20117471d6985762cf3c5d6767d56644ebf19327cbe6a886"
                 },
                 {
                     "alg": "SHA-512",
-                    "content": "15de3518d9aef9035205bd887d301c65db549c0222d8c6ab72d860981dfdaec18fa0e9a32112f95c2c06c438fc3eb1010c98d27d88b24c5b9227c5ef4f88a9f2"
+                    "content": "7b5a141978f18856948a88425b3273685ba9e6aab9e418f4615f2d8405e4da8a51504632b4b0c02e2a3ad293312e0369f1845a3733c5b5168afc226288e7156a"
                 },
                 {
                     "alg": "SHA-384",
-                    "content": "bd79e4b1cab6981f4b81499b3b68ec3ae6623aecd4ebf05c591ec011fa49c3da9400d07227e36b8ed3760df24f2b6482"
+                    "content": "1f6b25f1a7f0139fc1915963104c87ad1f9429263dbc8624dd7581d393a77026fcf1e4c920501fbf45803e9de2d8158b"
                 },
                 {
                     "alg": "SHA3-384",
-                    "content": "e73924f0158e071b0cccf6c9b0d3415c6b23ffda9237d9974138258c34c927bc1ee41a00c2c54adcb8c39b92c9070594"
+                    "content": "70f0c26ba31687e1ca2967a7361102679ec8b2f3d8f9f435b2e7b7a188cb10ec6c4b2840dbd49280fa08a88d7e81d1d5"
                 },
                 {
                     "alg": "SHA3-256",
-                    "content": "1c0a87b4fa13ca394ab0618b4075a0ce5d19248f81537529819ba2f5644a880a"
+                    "content": "cf8865cd3c015032efd4039eb2301c418db65383ae4ac240a75094a81689f854"
                 },
                 {
                     "alg": "SHA3-512",
-                    "content": "05fe56b7d9f1b969cb9179cc0abce6a3f1953fbd49c3b0096dc7163fe1b6ee212dcae809c464cc650f32c3482ab533e2b89b7468d0c588567102ddeb829d6faa"
+                    "content": "99462472255a898b41f2c4d28922bb522ef9c4dacde9583eaf936e18663008c0ade679cacdc4e14ab25df2d783c60484bc30648b8ce2f2006440be3762e063f6"
                 }
             ],
             "licenses": [
@@ -3489,7 +3493,7 @@
                     }
                 }
             ],
-            "purl": "pkg:maven/com.puppycrawl.tools/checkstyle@13.4.2?type=jar",
+            "purl": "pkg:maven/com.puppycrawl.tools/checkstyle@13.6.0?type=jar",
             "modified": false,
             "externalReferences": [
                 {
@@ -21407,7 +21411,7 @@
             ]
         },
         {
-            "ref": "pkg:maven/com.puppycrawl.tools/checkstyle@13.4.2?type=jar",
+            "ref": "pkg:maven/com.puppycrawl.tools/checkstyle@13.6.0?type=jar",
             "dependsOn": [
                 "pkg:maven/com.google.guava/guava@33.6.0-jre?type=jar",
                 "pkg:maven/commons-beanutils/commons-beanutils@1.11.0?type=jar",
@@ -21502,7 +21506,7 @@
                 "pkg:maven/com.icegreen/greenmail-junit5@2.1.9?type=jar",
                 "pkg:maven/com.itextpdf/html2pdf@6.3.2?type=jar",
                 "pkg:maven/com.itextpdf/itext-core@9.6.0?type=pom",
-                "pkg:maven/com.puppycrawl.tools/checkstyle@13.4.2?type=jar",
+                "pkg:maven/com.puppycrawl.tools/checkstyle@13.6.0?type=jar",
                 "pkg:maven/com.vdurmont/semver4j@3.1.0?type=jar",
                 "pkg:maven/commons-io/commons-io@2.22.0?type=jar",
                 "pkg:maven/net.minidev/json-smart@2.6.0?type=jar",
