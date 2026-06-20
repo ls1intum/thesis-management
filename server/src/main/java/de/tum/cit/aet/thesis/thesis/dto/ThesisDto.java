@@ -8,6 +8,7 @@ import de.tum.cit.aet.thesis.presentation.constants.ThesisPresentationType;
 import de.tum.cit.aet.thesis.presentation.constants.ThesisPresentationVisibility;
 import de.tum.cit.aet.thesis.presentation.entity.ThesisPresentation;
 import de.tum.cit.aet.thesis.proposal.entity.ThesisProposal;
+import de.tum.cit.aet.thesis.thesis.constants.ThesisAbstractSource;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackType;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisState;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisVisibility;
@@ -36,6 +37,8 @@ public record ThesisDto(
 	Set<String> keywords,
 	String infoText,
 	String abstractText,
+	ThesisAbstractSource abstractSource,
+	String abstractSuggestion,
 	ThesisState state,
 	UUID applicationId,
 	Instant startDate,
@@ -110,6 +113,8 @@ public static ThesisDto fromThesisEntity(Thesis thesis, boolean supervisorAccess
 		thesis.getKeywords(),
 		thesis.getInfo(),
 		thesis.getAbstractField(),
+		thesis.getAbstractSource(),
+		thesis.getAbstractSuggestion(),
 		thesis.getState(),
 		thesis.getApplication() == null ? null : thesis.getApplication().getId(),
 		thesis.getStartDate(),

@@ -10,6 +10,7 @@ import {
 import { Link } from 'react-router'
 import { ApiError } from '@/core/requests/handler'
 import DownloadAllFilesButton from '@/thesis/pages/ThesisPage/components/ThesisInfoSection/components/DownloadAllFilesButton/DownloadAllFilesButton'
+import AbstractSuggestionBanner from '@/thesis/pages/ThesisPage/components/ThesisInfoSection/components/AbstractSuggestionBanner/AbstractSuggestionBanner'
 import { isThesisClosed } from '@/thesis/utils/thesis'
 import { GLOBAL_CONFIG } from '@/core/config/global'
 import { formatLanguage } from '@/core/utils/format'
@@ -54,6 +55,40 @@ const ThesisInfoSection = () => {
     }
   }, 'Thesis info updated successfully')
 
+  const [accepting, onUseSuggestion] = useThesisUpdateAction(async () => {
+    const response = await doRequest<IThesis>(
+      `/v2/theses/${thesis.thesisId}/abstract-suggestion/accept`,
+      { method: 'POST', requiresAuth: true },
+    )
+
+    if (response.ok) {
+      return response.data
+    } else {
+      throw new ApiError(response)
+    }
+  }, 'Abstract updated from the suggestion')
+
+  const [dismissing, onDismissSuggestion] = useThesisUpdateAction(async () => {
+    const response = await doRequest<IThesis>(
+      `/v2/theses/${thesis.thesisId}/abstract-suggestion/dismiss`,
+      { method: 'POST', requiresAuth: true },
+    )
+
+    if (response.ok) {
+      return response.data
+    } else {
+      throw new ApiError(response)
+    }
+  }, 'Abstract suggestion dismissed')
+
+  const onEditSuggestion = () => {
+    setAbstractText(thesis.abstractSuggestion)
+    setEditMode(true)
+  }
+
+  const showSuggestion =
+    access.student && !editMode && !isThesisClosed(thesis) && !!thesis.abstractSuggestion
+
   return (
     <Accordion variant='separated' defaultValue='open'>
       <Accordion.Item value='open'>
@@ -82,6 +117,15 @@ const ThesisInfoSection = () => {
                   />
                 ))}
               </Stack>
+            )}
+            {showSuggestion && thesis.abstractSuggestion && (
+              <AbstractSuggestionBanner
+                suggestion={thesis.abstractSuggestion}
+                loading={accepting || dismissing}
+                onUse={onUseSuggestion}
+                onEdit={onEditSuggestion}
+                onDismiss={onDismissSuggestion}
+              />
             )}
             <DocumentEditor
               label='Abstract'

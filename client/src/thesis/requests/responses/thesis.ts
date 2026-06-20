@@ -65,6 +65,8 @@ export interface IThesis extends IThesisOverview {
   visibility: string
   infoText?: string
   abstractText?: string
+  abstractSource?: 'MANUAL' | 'EXTRACTED'
+  abstractSuggestion?: string
   applicationId: string | null
   anonymized?: boolean
   anonymizedAt?: string

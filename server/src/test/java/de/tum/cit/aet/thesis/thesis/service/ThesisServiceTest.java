@@ -77,6 +77,8 @@ class ThesisServiceTest {
 	private ResearchGroupSettingsService researchGroupSettingsService;
 	@Mock
 	private UserService userService;
+	@Mock
+	private AbstractAutoFillService abstractAutoFillService;
 
 	private ThesisService thesisService;
 	private Thesis testThesis;
@@ -91,7 +93,7 @@ class ThesisServiceTest {
 				uploadService, mailingService, accessManagementService,
 				thesisFeedbackRepository, thesisFileRepository,
 				currentUserProviderProvider, researchGroupRepository, researchGroupSettingsService,
-				userService
+				userService, abstractAutoFillService
 		);
 		when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
 

@@ -5,6 +5,7 @@ import de.tum.cit.aet.thesis.core.group.entity.ResearchGroup;
 import de.tum.cit.aet.thesis.core.user.entity.User;
 import de.tum.cit.aet.thesis.presentation.entity.ThesisPresentation;
 import de.tum.cit.aet.thesis.proposal.entity.ThesisProposal;
+import de.tum.cit.aet.thesis.thesis.constants.ThesisAbstractSource;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisRoleName;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisState;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisVisibility;
@@ -74,6 +75,14 @@ public class Thesis {
 	@NotNull
 	@Column(name = "abstract", nullable = false)
 	private String abstractField;
+
+	@NotNull
+	@Enumerated(EnumType.STRING)
+	@Column(name = "abstract_source", nullable = false)
+	private ThesisAbstractSource abstractSource = ThesisAbstractSource.MANUAL;
+
+	@Column(name = "abstract_suggestion")
+	private String abstractSuggestion;
 
 	@NotNull
 	@Enumerated(EnumType.STRING)
