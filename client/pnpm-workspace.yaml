@@ -1,10 +1,3 @@
-# pnpm v11 reads settings from this file rather than package.json's "pnpm"
-# section. We don't actually use pnpm workspaces — this file exists so
-# pnpm picks up project-wide settings (overrides, allowBuilds).
-
-# Allow @parcel/watcher's install script to run; it downloads a prebuilt
-# native binary used by sass/vitest for file watching. Without this entry,
-# pnpm fails the install on fresh machines (strictDepBuilds default).
 allowBuilds:
   '@parcel/watcher': true
 
@@ -42,4 +35,4 @@ overrides:
   # GHSA-vmh5-mc38-953g / GHSA-hm92-r4w5-c3mj (+4) (undici Set-Cookie / cache / SOCKS5 issues, via jsdom)
   undici@<7.28.0: 7.28.0
   # GHSA-64mm-vxmg-q3vj (http-proxy-middleware host+path routing bypass, via webpack-dev-server)
-  http-proxy-middleware@<3.0.6: 3.0.6
+  http-proxy-middleware@<3.0.6: 3.0.7
