@@ -6,6 +6,7 @@ import { doRequest } from '../../../../requests/request'
 import { showSimpleError, showSimpleSuccess } from '../../../../utils/notification'
 import { getApiResponseErrorMessage } from '../../../../requests/handler'
 import { useAuthenticationContext } from '../../../../hooks/authentication'
+import { formatDate } from '../../../../utils/format'
 
 interface IDeletionPreview {
   canBeFullyDeleted: boolean
@@ -96,7 +97,7 @@ const AccountDeletion = () => {
           Due to legal retention requirements, {preview.retentionBlockedThesisCount} thesis
           record(s) and your profile data will be retained until{' '}
           {preview.earliestFullDeletionDate
-            ? new Date(preview.earliestFullDeletionDate).toLocaleDateString()
+            ? formatDate(preview.earliestFullDeletionDate)
             : 'the retention period expires'}
           . Your account will be deactivated and non-essential data deleted immediately.
         </Alert>

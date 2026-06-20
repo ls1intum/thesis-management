@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
@@ -35,7 +34,7 @@ import java.util.UUID;
 @Service
 public class ThesisAnonymizationService {
 	private static final Logger log = LoggerFactory.getLogger(ThesisAnonymizationService.class);
-	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MMMM d, yyyy", Locale.ENGLISH);
+	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 	private final ThesisRepository thesisRepository;
 	private final ThesisFileRepository thesisFileRepository;

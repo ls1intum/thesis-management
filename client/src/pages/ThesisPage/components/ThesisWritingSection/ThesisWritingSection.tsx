@@ -13,7 +13,7 @@ import ThesisCommentsForm from '../../../../components/ThesisCommentsForm/Thesis
 import ThesisCommentsProvider from '../../../../providers/ThesisCommentsProvider/ThesisCommentsProvider'
 import ThesisCommentsList from '../../../../components/ThesisCommentsList/ThesisCommentsList'
 import { ApiError, getApiResponseErrorMessage } from '../../../../requests/handler'
-import { formatDate, formatThesisFilename } from '../../../../utils/format'
+import { formatDateTime, formatThesisFilename } from '../../../../utils/format'
 import { GLOBAL_CONFIG } from '../../../../config/global'
 import { UploadFileButton } from '../../../../components/UploadFileButton/UploadFileButton'
 import { AuthenticatedFilePreview } from '../../../../components/AuthenticatedFilePreview/AuthenticatedFilePreview'
@@ -184,7 +184,7 @@ const ThesisWritingSection = () => {
                                 </Text>
                               </Table.Td>
                               <Table.Td>
-                                <Text>{formatDate(customFiles[key]?.uploadedAt)}</Text>
+                                <Text>{formatDateTime(customFiles[key]?.uploadedAt)}</Text>
                               </Table.Td>
                               <Table.Td>
                                 <Center>

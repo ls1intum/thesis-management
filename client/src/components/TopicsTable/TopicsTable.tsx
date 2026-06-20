@@ -1,6 +1,6 @@
 import type { DataTableColumn } from 'mantine-datatable'
 import { DataTable } from 'mantine-datatable'
-import { formatDate } from '../../utils/format'
+import { formatDateTime } from '../../utils/format'
 import { useTopicsContext } from '../../providers/TopicsProvider/hooks'
 import type { ITopicOverview } from '../../requests/responses/topic'
 import { TopicState } from '../../requests/responses/topic'
@@ -124,7 +124,7 @@ const TopicsTable = (props: ITopicOverviewsTableProps) => {
       title: 'Created At',
       width: 150,
       ellipsis: true,
-      render: (record) => formatDate(record.createdAt),
+      render: (record) => formatDateTime(record.createdAt),
     },
     ...extraColumns,
   }

@@ -362,6 +362,7 @@ const ThesisConfigSection = () => {
                 <Group grow>
                   <DateInput
                     label='Start Date'
+                    valueFormat='YYYY-MM-DD'
                     disabled={!access.supervisor}
                     {...form.getInputProps('startDate')}
                     onChange={(date) =>
@@ -370,6 +371,7 @@ const ThesisConfigSection = () => {
                   />
                   <DateInput
                     label='End Date'
+                    valueFormat='YYYY-MM-DD'
                     disabled={!access.supervisor}
                     {...form.getInputProps('endDate')}
                     onChange={(date) =>
@@ -436,6 +438,7 @@ const ThesisConfigSection = () => {
                     </Group>
                     <DateTimePicker
                       required={true}
+                      valueFormat='YYYY-MM-DD HH:mm'
                       disabled={!access.supervisor}
                       value={item.changedAt}
                       error={form.errors.states}

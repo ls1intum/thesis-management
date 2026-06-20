@@ -71,7 +71,7 @@ public record MailApplication(
 				new MailVariableDto("Applicant Study Program", "[[${application.studyProgram}]]", "Informatics", "Application"),
 				new MailVariableDto("Applicant Study Degree", "[[${application.studyDegree}]]", "Bachelor", "Application"),
 				new MailVariableDto("Applicant Semester", "[[${application.semester}]]", "3", "Application"),
-				new MailVariableDto("Desired Start Date", "[[${application.desiredStartDate}]]", "01.10.2024", "Application"),
+				new MailVariableDto("Desired Start Date", "[[${application.desiredStartDate}]]", "2024-10-01", "Application"),
 				new MailVariableDto("Application Motivation", "<span th:utext=\"${application.motivation}\"></span>", "Strong motivation", "Application"),
 				new MailVariableDto("Applicant Special Skills", "<span th:utext=\"${application.specialSkills}\"></span>", "Python, Java", "Application"),
 				new MailVariableDto("Applicant Interests",  "<span th:utext=\"${application.interests}\"></span>", "AI", "Application"),
