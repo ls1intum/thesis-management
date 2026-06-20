@@ -2242,18 +2242,18 @@
     {
       "type": "library",
       "name": "carousel",
-      "version": "9.3.1",
-      "purl": "pkg:npm/%40mantine/carousel@9.3.1",
-      "bom-ref": "pkg:npm/%40mantine/carousel@9.3.1",
+      "version": "9.3.2",
+      "purl": "pkg:npm/%40mantine/carousel@9.3.2",
+      "bom-ref": "pkg:npm/%40mantine/carousel@9.3.2",
       "group": "@mantine",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@mantine/carousel/-/carousel-9.3.1.tgz",
+          "url": "https://registry.npmjs.org/@mantine/carousel/-/carousel-9.3.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "bb6a79be85512d410c6ad491c5ec46669967dd0c7078ab615202f77022edd6492ab6fb607608632096dbbf7aa6379d8da179f60270b393413f384693d2ebcf88"
+              "content": "79002669e076c4760484d9c6c0aaadaa52279c681cad00137b7d7419d0f5c0bec95ee028609b30745aa53175e018f35faf1eb0c5fd49b086b2fe62251efb3879"
             }
           ]
         }
@@ -2262,18 +2262,18 @@
     {
       "type": "library",
       "name": "core",
-      "version": "9.3.1",
-      "purl": "pkg:npm/%40mantine/core@9.3.1",
-      "bom-ref": "pkg:npm/%40mantine/core@9.3.1",
+      "version": "9.3.2",
+      "purl": "pkg:npm/%40mantine/core@9.3.2",
+      "bom-ref": "pkg:npm/%40mantine/core@9.3.2",
       "group": "@mantine",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@mantine/core/-/core-9.3.1.tgz",
+          "url": "https://registry.npmjs.org/@mantine/core/-/core-9.3.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "e2b0681e98204a885ac84f8eb3b94a75bb074f0ee6fee6512988e4f4337a70a0614088dd8942dd706f9be1be42315652a990c73e04fbd2e58623bcaa927f147f"
+              "content": "529cbf67d4a3d9e5b6746ac5814cbfda421256cc4c4c16130df3f64c576c200dcf74f48191da9f48e3d7fee8377771776b86e7c104aa70eebe68f12904887c76"
             }
           ]
         }
@@ -2282,18 +2282,18 @@
     {
       "type": "library",
       "name": "dates",
-      "version": "9.3.1",
-      "purl": "pkg:npm/%40mantine/dates@9.3.1",
-      "bom-ref": "pkg:npm/%40mantine/dates@9.3.1",
+      "version": "9.3.2",
+      "purl": "pkg:npm/%40mantine/dates@9.3.2",
+      "bom-ref": "pkg:npm/%40mantine/dates@9.3.2",
       "group": "@mantine",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@mantine/dates/-/dates-9.3.1.tgz",
+          "url": "https://registry.npmjs.org/@mantine/dates/-/dates-9.3.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "361e17432c95d403345d19d426e81bd6435f0a6fbe9e4b6272c3bc6aba0a9853d9edca4657b72374bfb830934fbb56ad4b511478f5e5d952cba4a9eb725a6a39"
+              "content": "3331eb5c6a0e6f7ac29c7065b08fc13c08c2f0ae6d6787fca7383aeadb13b2ea5509005a0691d255ab50c0d449e8ad890bda720b24daf412fcd370bc0225b270"
             }
           ]
         }
@@ -2302,18 +2302,18 @@
     {
       "type": "library",
       "name": "dropzone",
-      "version": "9.3.1",
-      "purl": "pkg:npm/%40mantine/dropzone@9.3.1",
-      "bom-ref": "pkg:npm/%40mantine/dropzone@9.3.1",
+      "version": "9.3.2",
+      "purl": "pkg:npm/%40mantine/dropzone@9.3.2",
+      "bom-ref": "pkg:npm/%40mantine/dropzone@9.3.2",
       "group": "@mantine",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@mantine/dropzone/-/dropzone-9.3.1.tgz",
+          "url": "https://registry.npmjs.org/@mantine/dropzone/-/dropzone-9.3.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "5ac8ec307f4d533e72f57011fef3946f26fecb45f42ae77a295d4aff1511c2b6f17a76b66f5b65f96be33ceffabd1889793a4594cba8585ffc9f0aa7c681947a"
+              "content": "c31ffac1254b556f8e7cf53d16090c91f9da51deeba0f646d733a5cc4e84211608aac1dc898dce025ae1403a589d3928c2cb1e2695c3838246efcf25e6434351"
             }
           ]
         }
@@ -2322,18 +2322,18 @@
     {
       "type": "library",
       "name": "form",
-      "version": "9.3.1",
-      "purl": "pkg:npm/%40mantine/form@9.3.1",
-      "bom-ref": "pkg:npm/%40mantine/form@9.3.1",
+      "version": "9.3.2",
+      "purl": "pkg:npm/%40mantine/form@9.3.2",
+      "bom-ref": "pkg:npm/%40mantine/form@9.3.2",
       "group": "@mantine",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@mantine/form/-/form-9.3.1.tgz",
+          "url": "https://registry.npmjs.org/@mantine/form/-/form-9.3.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "74624f7181a47c39c03ca1dc9f381fda64a59e3c3299a3b244e89310935b6e3137395a166cf6b0f07c0429abf5c004ddc4d611f41c35187b5b7db193b26d49c3"
+              "content": "8d6117731f2185d74eb27cbeabf945b554e8352dd50496080ab91f14c589b0df960196a69cf22d5933cbaae953615a754fcba66bd32c119d4b5f892a59414034"
             }
           ]
         }
@@ -2342,18 +2342,18 @@
     {
       "type": "library",
       "name": "hooks",
-      "version": "9.3.1",
-      "purl": "pkg:npm/%40mantine/hooks@9.3.1",
-      "bom-ref": "pkg:npm/%40mantine/hooks@9.3.1",
+      "version": "9.3.2",
+      "purl": "pkg:npm/%40mantine/hooks@9.3.2",
+      "bom-ref": "pkg:npm/%40mantine/hooks@9.3.2",
       "group": "@mantine",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@mantine/hooks/-/hooks-9.3.1.tgz",
+          "url": "https://registry.npmjs.org/@mantine/hooks/-/hooks-9.3.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "cc03a5c55e7d8f90838009c4c4dfb2a5a47a7555b5bf030a0ef294c4895455dfdee76ab16273f26110feb21266c8e2da651b9099517447fee62408edda3c3d70"
+              "content": "8ce8e951ed31d40fe4dd7522bb6fda69209ab17448e592993ae726df2a70b2f9bd176bbc0b5c73c01bda82bce56cd670251179bcd60826d09a4fb36e9cfc9cd0"
             }
           ]
         }
@@ -2362,18 +2362,18 @@
     {
       "type": "library",
       "name": "notifications",
-      "version": "9.3.1",
-      "purl": "pkg:npm/%40mantine/notifications@9.3.1",
-      "bom-ref": "pkg:npm/%40mantine/notifications@9.3.1",
+      "version": "9.3.2",
+      "purl": "pkg:npm/%40mantine/notifications@9.3.2",
+      "bom-ref": "pkg:npm/%40mantine/notifications@9.3.2",
       "group": "@mantine",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@mantine/notifications/-/notifications-9.3.1.tgz",
+          "url": "https://registry.npmjs.org/@mantine/notifications/-/notifications-9.3.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "8ab903f6eb338157edb616c22ddfb8952eccd639212f8b15ad9012bfcfb8dda2249dc5bea1090216906e68e01feae45c323990ed79cab363bc6d763397f0ea81"
+              "content": "9a775af2113f0e2ccf8b905b8b07763368d7c5f49949479acaf9cb60c6c5c1e19029733e411997d68a2dc83455a967b0f296a5b5ec13369f387162e38ffe9f2b"
             }
           ]
         }
@@ -2382,18 +2382,18 @@
     {
       "type": "library",
       "name": "store",
-      "version": "9.3.1",
-      "purl": "pkg:npm/%40mantine/store@9.3.1",
-      "bom-ref": "pkg:npm/%40mantine/store@9.3.1",
+      "version": "9.3.2",
+      "purl": "pkg:npm/%40mantine/store@9.3.2",
+      "bom-ref": "pkg:npm/%40mantine/store@9.3.2",
       "group": "@mantine",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@mantine/store/-/store-9.3.1.tgz",
+          "url": "https://registry.npmjs.org/@mantine/store/-/store-9.3.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "519f3018a7c5fcd14c1c20e5d5177433c5ed1ddb785b5c37578a2136915268fde74a327e0aed454fe8885ad5f00b43a085af179ee550eef9bf770d8151fa70fa"
+              "content": "b8d9af8e4c1f507649e5bbf342ba0b16fb9bb940078c1334ae1ebd44146c5021b9151e4ae1ff32e125fcfa5721d304ba509baebe876c4882bc1f98ef66e15281"
             }
           ]
         }
@@ -2402,18 +2402,18 @@
     {
       "type": "library",
       "name": "tiptap",
-      "version": "9.3.1",
-      "purl": "pkg:npm/%40mantine/tiptap@9.3.1",
-      "bom-ref": "pkg:npm/%40mantine/tiptap@9.3.1",
+      "version": "9.3.2",
+      "purl": "pkg:npm/%40mantine/tiptap@9.3.2",
+      "bom-ref": "pkg:npm/%40mantine/tiptap@9.3.2",
       "group": "@mantine",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@mantine/tiptap/-/tiptap-9.3.1.tgz",
+          "url": "https://registry.npmjs.org/@mantine/tiptap/-/tiptap-9.3.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "b6b5d9ea637aa77ba4c6e74eb82f2bf8f6a903b51543f6b3e1c48e9a21379bc9f5b3721ca326a2c0007997688cfc37fd941ca1b3507a91af121b517a59d6b635"
+              "content": "5f7e38c2ab777aeb0c2cf00d5ae3529caa058d30e5084394a58aba84f594eae06fc441c9187b891578ed9bf8e0fc3e9a344bd6afe3fe9b5f84944ede2d3fc6d0"
             }
           ]
         }
@@ -3893,18 +3893,18 @@
     {
       "type": "library",
       "name": "core",
-      "version": "3.26.1",
-      "purl": "pkg:npm/%40tiptap/core@3.26.1",
-      "bom-ref": "pkg:npm/%40tiptap/core@3.26.1",
+      "version": "3.27.1",
+      "purl": "pkg:npm/%40tiptap/core@3.27.1",
+      "bom-ref": "pkg:npm/%40tiptap/core@3.27.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/core/-/core-3.26.1.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/core/-/core-3.27.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "4d7f4fc8fa81a22c74a832e3b6893f6dd76d752cb9e108732d585ae34e42d3b57e5b248ea47decfe9598932c1e859418d1242d72b718e0c35209e42309b036f0"
+              "content": "ad5e909f8c260ba0717c5fb89aee9ba865a3f6f038a175e1b2ba576892f6ba18f1787006a1f8f0707a1fd97f38558cdec9781d96c1a6a8a89ee13029a555d951"
             }
           ]
         }
@@ -3913,18 +3913,18 @@
     {
       "type": "library",
       "name": "extension-blockquote",
-      "version": "3.26.1",
-      "purl": "pkg:npm/%40tiptap/extension-blockquote@3.26.1",
-      "bom-ref": "pkg:npm/%40tiptap/extension-blockquote@3.26.1",
+      "version": "3.27.1",
+      "purl": "pkg:npm/%40tiptap/extension-blockquote@3.27.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-blockquote@3.27.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-blockquote/-/extension-blockquote-3.26.1.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-blockquote/-/extension-blockquote-3.27.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "59a2a32a651a69d82f6430c193d24e9ffa22765385afa6e8a2a24858718be52d1a5144ca1d2d7da067ca42afe5f59d72d6789a45e3e4d18e1fcbf8f10a77ca3c"
+              "content": "54c17bc49c7aa841a25fa0d328d88bdf534bab2a4e71dff8b0d8c549ef2b6f8d4fc1e8c1261fe73aa5486c1bd69224fa34c1852f13218fbcc9f3fccfa358577a"
             }
           ]
         }
@@ -3933,18 +3933,18 @@
     {
       "type": "library",
       "name": "extension-bold",
-      "version": "3.26.1",
-      "purl": "pkg:npm/%40tiptap/extension-bold@3.26.1",
-      "bom-ref": "pkg:npm/%40tiptap/extension-bold@3.26.1",
+      "version": "3.27.1",
+      "purl": "pkg:npm/%40tiptap/extension-bold@3.27.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-bold@3.27.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-bold/-/extension-bold-3.26.1.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-bold/-/extension-bold-3.27.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "548945dac02257a2b4d3da5c203a2d7d8f26bec3daabdd1dc5e1bd434648a9f303f79f13502aa31f0e0c19865fd3f1603f5db192c05f99c47b5b7d76c6051ff5"
+              "content": "4e50b96ec4bea6a1134eb973e02673f513bf70a058b442c6231c2d29e8af527dde35f9cec506dbbb8583b22c087f3445c9dd0e3272a5e813ccd8a9d811e86811"
             }
           ]
         }
@@ -3953,18 +3953,18 @@
     {
       "type": "library",
       "name": "extension-bubble-menu",
-      "version": "3.26.1",
-      "purl": "pkg:npm/%40tiptap/extension-bubble-menu@3.26.1",
-      "bom-ref": "pkg:npm/%40tiptap/extension-bubble-menu@3.26.1",
+      "version": "3.27.1",
+      "purl": "pkg:npm/%40tiptap/extension-bubble-menu@3.27.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-bubble-menu@3.27.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-bubble-menu/-/extension-bubble-menu-3.26.1.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-bubble-menu/-/extension-bubble-menu-3.27.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "63747dc0528ffd4f4cd38246fb43ccff25b7395f8c49b529e9804a41666652ef31eb2ed36dc36f0ec689e9010566de5a44c4baa87d64b183d33b3e3b25d8dc7c"
+              "content": "8ff8fc429f59e6756269d7b69bbce3acefc2607fc26bcd108fb6aaa3479469e8ba1594398b3945f68e17414e4414c02eb55ea6c329ec3d4a7c155a39b02b987f"
             }
           ]
         }
@@ -3973,18 +3973,18 @@
     {
       "type": "library",
       "name": "extension-bullet-list",
-      "version": "3.26.1",
-      "purl": "pkg:npm/%40tiptap/extension-bullet-list@3.26.1",
-      "bom-ref": "pkg:npm/%40tiptap/extension-bullet-list@3.26.1",
+      "version": "3.27.1",
+      "purl": "pkg:npm/%40tiptap/extension-bullet-list@3.27.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-bullet-list@3.27.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-bullet-list/-/extension-bullet-list-3.26.1.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-bullet-list/-/extension-bullet-list-3.27.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "241e9b109247c573405c45d3200377fe3ef4a750111dd78c7e1cec84666cc162945ad0e26d30abb29229ee9d5535e8ae56d27f1c1e8fa459068bbc96b50dd14e"
+              "content": "7da0941e744fe3ba3d661f556595fa117ff9ebdb9dc3d568a66d8f80428f5ae28b136a9a4b9581b94554d2222d74998a52a69688e664a685b88ef9c39a3d1d7e"
             }
           ]
         }
@@ -3993,18 +3993,18 @@
     {
       "type": "library",
       "name": "extension-code-block",
-      "version": "3.26.1",
-      "purl": "pkg:npm/%40tiptap/extension-code-block@3.26.1",
-      "bom-ref": "pkg:npm/%40tiptap/extension-code-block@3.26.1",
+      "version": "3.27.1",
+      "purl": "pkg:npm/%40tiptap/extension-code-block@3.27.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-code-block@3.27.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-code-block/-/extension-code-block-3.26.1.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-code-block/-/extension-code-block-3.27.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "358ed262a72ba835584d25b268d19d49f0a29acea9387a11436461e031056ffadbf202d592a6cb661707cd00957e29e53ea815df1585e9c60c391c269e50645d"
+              "content": "a47973999c763a51dfc90d324654f950be261a8933f78ec3b6166e61e7cdd4e95e56a3a41e95811bed89430aa836ae9b9b33277bddb36c7df6ae17095046128c"
             }
           ]
         }
@@ -4013,18 +4013,18 @@
     {
       "type": "library",
       "name": "extension-code",
-      "version": "3.26.1",
-      "purl": "pkg:npm/%40tiptap/extension-code@3.26.1",
-      "bom-ref": "pkg:npm/%40tiptap/extension-code@3.26.1",
+      "version": "3.27.1",
+      "purl": "pkg:npm/%40tiptap/extension-code@3.27.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-code@3.27.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-code/-/extension-code-3.26.1.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-code/-/extension-code-3.27.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "b7dfd5479937ac63f285c19abbd62f56068043e9cff51f56cd2f7de9b410ec622b30e4d25dbd055b0a1014189897cdd5e95035e93963fe849c0bb485940f25bc"
+              "content": "7a9394a457c4981ce3be7aaf8efdaa1d7ecd02e2e8e5d94e195ebdd255aefac01832389bb8905e56f02228fc8509f44209353175b0c1de36da380d7211c109ef"
             }
           ]
         }
@@ -4033,18 +4033,18 @@
     {
       "type": "library",
       "name": "extension-document",
-      "version": "3.26.1",
-      "purl": "pkg:npm/%40tiptap/extension-document@3.26.1",
-      "bom-ref": "pkg:npm/%40tiptap/extension-document@3.26.1",
+      "version": "3.27.1",
+      "purl": "pkg:npm/%40tiptap/extension-document@3.27.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-document@3.27.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-document/-/extension-document-3.26.1.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-document/-/extension-document-3.27.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "e96daf663be2d0cbfee3112dc0c0c6856c28ec5a2d591e9e29f9a7b6676ebde8567af16933138a713b72a2d8cb8a07d9bfbdfccb9d185a6bdb68fb803c91b704"
+              "content": "f056c14e47e744fe2255aa23fb68778966be1f47860c3df24f2542c2b9ae7bfb104e4a94354a12b8065adc60c6e12778d7174fc1327197d9d458680cd6a0c29f"
             }
           ]
         }
@@ -4053,18 +4053,18 @@
     {
       "type": "library",
       "name": "extension-dropcursor",
-      "version": "3.26.1",
-      "purl": "pkg:npm/%40tiptap/extension-dropcursor@3.26.1",
-      "bom-ref": "pkg:npm/%40tiptap/extension-dropcursor@3.26.1",
+      "version": "3.27.1",
+      "purl": "pkg:npm/%40tiptap/extension-dropcursor@3.27.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-dropcursor@3.27.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-dropcursor/-/extension-dropcursor-3.26.1.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-dropcursor/-/extension-dropcursor-3.27.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "795ab706f1486b7603fa9048963d62ef6bd8122c657a01952879d2622545da8be440e4801fdb1c6bba64aba5a0575b0c4c2c96094f1ef96ce74eab7276f1d458"
+              "content": "6e515ff71f511b442becfdc5a001ffd37ddf7dafa630b667df8b6b56cf158b43e993a1662408391e96053ad998a1e44474d0c9e6b1c9295ed2a0009b38782c91"
             }
           ]
         }
@@ -4073,18 +4073,18 @@
     {
       "type": "library",
       "name": "extension-floating-menu",
-      "version": "3.26.1",
-      "purl": "pkg:npm/%40tiptap/extension-floating-menu@3.26.1",
-      "bom-ref": "pkg:npm/%40tiptap/extension-floating-menu@3.26.1",
+      "version": "3.27.1",
+      "purl": "pkg:npm/%40tiptap/extension-floating-menu@3.27.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-floating-menu@3.27.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-floating-menu/-/extension-floating-menu-3.26.1.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-floating-menu/-/extension-floating-menu-3.27.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "c67d20e26fead9b8c6fa150b3f0a7a02a6ffeb0a7352d73ae633a1809b06fd2dc4cb790b24652f641ba1a33c0d16ef0572e8313357cc52936190992874208617"
+              "content": "066245d55a81edd48992001a96ba55163f3c58b8712a37163ee5873aa7f6213ad4536f37d8184a2d72a6c63594cb582a57c3df34d556b467c8111cbb234cb4f9"
             }
           ]
         }
@@ -4093,18 +4093,18 @@
     {
       "type": "library",
       "name": "extension-gapcursor",
-      "version": "3.26.1",
-      "purl": "pkg:npm/%40tiptap/extension-gapcursor@3.26.1",
-      "bom-ref": "pkg:npm/%40tiptap/extension-gapcursor@3.26.1",
+      "version": "3.27.1",
+      "purl": "pkg:npm/%40tiptap/extension-gapcursor@3.27.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-gapcursor@3.27.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-gapcursor/-/extension-gapcursor-3.26.1.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-gapcursor/-/extension-gapcursor-3.27.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "0565b5c8c4100384db114d0b2cafb871df5e6cb4ee646e4a8c7c05301443fdb1a2456f55d604d616c0aa4e105b73370036842264af699f9ff801dfeb18cdc752"
+              "content": "4287b3374c1dbd72302d0e1e7b671c583697dd11b4973810a48329333e79a0f0e1a5455ac75fb5f40a6c4b9dcb91c92da52e046e73cbe313b80da264d15a7b3d"
             }
           ]
         }
@@ -4113,18 +4113,18 @@
     {
       "type": "library",
       "name": "extension-hard-break",
-      "version": "3.26.1",
-      "purl": "pkg:npm/%40tiptap/extension-hard-break@3.26.1",
-      "bom-ref": "pkg:npm/%40tiptap/extension-hard-break@3.26.1",
+      "version": "3.27.1",
+      "purl": "pkg:npm/%40tiptap/extension-hard-break@3.27.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-hard-break@3.27.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-hard-break/-/extension-hard-break-3.26.1.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-hard-break/-/extension-hard-break-3.27.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "83335bd5efdf2ba1cdfa4a356b1b2b6ac8caec5d6ad019e6d06e1963fd1eabba55eecd7066ec280a219bbd4c7ff4b08529157afbde054ea95bd00dcd6d8377ea"
+              "content": "8affe6f61ce5ea37d28fd43c5048c0c4e36f0a850368feccf524423f1dcf68b371036df44d30fa444d187b8cc527ccdeed9568249300aa0f50a6ad62620d8939"
             }
           ]
         }
@@ -4133,18 +4133,18 @@
     {
       "type": "library",
       "name": "extension-heading",
-      "version": "3.26.1",
-      "purl": "pkg:npm/%40tiptap/extension-heading@3.26.1",
-      "bom-ref": "pkg:npm/%40tiptap/extension-heading@3.26.1",
+      "version": "3.27.1",
+      "purl": "pkg:npm/%40tiptap/extension-heading@3.27.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-heading@3.27.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-heading/-/extension-heading-3.26.1.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-heading/-/extension-heading-3.27.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "79196ff57c7350bf05a1b280885d568cfdf9093d90a5b731c5ec98145ec198610e36f288eebe60ec91b0c86962e02bdc961ef487cc3a26ea174a619454453ae4"
+              "content": "4ab0b8975904232bfd65715a23ff0b42a5363323268dccf0ed75ec59440e4cde185efd09c9580c351ddc23fc33d1ddb1b137c1759d4df394dd9e0f866b5b744a"
             }
           ]
         }
@@ -4153,18 +4153,18 @@
     {
       "type": "library",
       "name": "extension-highlight",
-      "version": "3.26.1",
-      "purl": "pkg:npm/%40tiptap/extension-highlight@3.26.1",
-      "bom-ref": "pkg:npm/%40tiptap/extension-highlight@3.26.1",
+      "version": "3.27.1",
+      "purl": "pkg:npm/%40tiptap/extension-highlight@3.27.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-highlight@3.27.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-highlight/-/extension-highlight-3.26.1.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-highlight/-/extension-highlight-3.27.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "aa0c7811eb6a928821dceca89993b4c883101878636ad08302d10b902ecd4319e63eca7673d8ba724fe187b98fe567b971c070528611b8d182f6591f942c7be6"
+              "content": "21e30850a6d6e28c919209fdd813d84347e27e46d3c158a02b06b5d3b9c60c7328933fa91d03c51f2f311b753b82d50eadaffc394a39edb160346b8fd13687e0"
             }
           ]
         }
@@ -4173,18 +4173,18 @@
     {
       "type": "library",
       "name": "extension-horizontal-rule",
-      "version": "3.26.1",
-      "purl": "pkg:npm/%40tiptap/extension-horizontal-rule@3.26.1",
-      "bom-ref": "pkg:npm/%40tiptap/extension-horizontal-rule@3.26.1",
+      "version": "3.27.1",
+      "purl": "pkg:npm/%40tiptap/extension-horizontal-rule@3.27.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-horizontal-rule@3.27.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-horizontal-rule/-/extension-horizontal-rule-3.26.1.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-horizontal-rule/-/extension-horizontal-rule-3.27.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "97d94f658792998f74cbfd8691070a6880850f902dafcb31d92cc91a4433a4d0bdb51c595f20079df244dce8c192ca6e1b38d620dd038a6c418f889bcf9f2c2b"
+              "content": "425284eea9f9a8c9c81951a15d096f61e76f2ed349f73d1d9a2b79c3cbcf6fcb4acd6e12a64e8cecdda4aeea6bac303c181c077de479c2617e9e37d49b7e2ac6"
             }
           ]
         }
@@ -4193,18 +4193,18 @@
     {
       "type": "library",
       "name": "extension-italic",
-      "version": "3.26.1",
-      "purl": "pkg:npm/%40tiptap/extension-italic@3.26.1",
-      "bom-ref": "pkg:npm/%40tiptap/extension-italic@3.26.1",
+      "version": "3.27.1",
+      "purl": "pkg:npm/%40tiptap/extension-italic@3.27.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-italic@3.27.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-italic/-/extension-italic-3.26.1.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-italic/-/extension-italic-3.27.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "70b298bce2d3a1612426400fb2980867f3d80f303169c2e6d5559c02ad6d3b54034020ded8ac3ecbfcec1a5c9812afda2ac020a69e09368a41c005d15f1b76fc"
+              "content": "8c619eca7f6e4549cd8d24c7a5baa1886b29e8a6984d26d5d3d8c35cf248f5c0f07d5f61a6e80bbe968265dd013016e15350755ba90e7d7d01135e6a5ff1d07c"
             }
           ]
         }
@@ -4213,18 +4213,18 @@
     {
       "type": "library",
       "name": "extension-link",
-      "version": "3.26.1",
-      "purl": "pkg:npm/%40tiptap/extension-link@3.26.1",
-      "bom-ref": "pkg:npm/%40tiptap/extension-link@3.26.1",
+      "version": "3.27.1",
+      "purl": "pkg:npm/%40tiptap/extension-link@3.27.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-link@3.27.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-link/-/extension-link-3.26.1.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-link/-/extension-link-3.27.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "68b2c62e08a4ba12c51d16e37d40ba0f881183e354b72e2e856ed8932565f00c713cc138edd3db08e5f81fab8b0a3119727dd69df36e093afa1c24e5d0a12618"
+              "content": "ff68c17ecc416540c6266a5989fa9140fcfb7f5139aa94b505c913677f53003cd4257f9f78acbb449dc3b50d36fbccba492333bcff65a06563ae4eb310c4e4e2"
             }
           ]
         }
@@ -4233,18 +4233,18 @@
     {
       "type": "library",
       "name": "extension-list-item",
-      "version": "3.26.1",
-      "purl": "pkg:npm/%40tiptap/extension-list-item@3.26.1",
-      "bom-ref": "pkg:npm/%40tiptap/extension-list-item@3.26.1",
+      "version": "3.27.1",
+      "purl": "pkg:npm/%40tiptap/extension-list-item@3.27.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-list-item@3.27.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-list-item/-/extension-list-item-3.26.1.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-list-item/-/extension-list-item-3.27.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "e602d725488fefadcd03a8b81e0aed7305035cf3fcf36d21b1a050c85d58d55b17362d36b96f4554b7b74592bc8c5d0d654361f42a83d20a2060909b28e514f0"
+              "content": "cf0465d351137c291652fb6f2b97f0f5b5ed01a8cc3e4be5904dc2aba26f1f72c5ed75c9c03b4d8f94e3edec5a70ca4269266694d738def15bdab0189eb9f030"
             }
           ]
         }
@@ -4253,18 +4253,18 @@
     {
       "type": "library",
       "name": "extension-list-keymap",
-      "version": "3.26.1",
-      "purl": "pkg:npm/%40tiptap/extension-list-keymap@3.26.1",
-      "bom-ref": "pkg:npm/%40tiptap/extension-list-keymap@3.26.1",
+      "version": "3.27.1",
+      "purl": "pkg:npm/%40tiptap/extension-list-keymap@3.27.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-list-keymap@3.27.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-list-keymap/-/extension-list-keymap-3.26.1.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-list-keymap/-/extension-list-keymap-3.27.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "1117926b278f3ba488c6d45bc71fbb29f050ade587be866631bdcefd17a67d3f16e89d21086e4dfd187c675dbe6193a708345727847316902291891adc4e788d"
+              "content": "388319365ccf48ef1645de2273bdc5c5c933978375b5eb238cb2f65c0a5a340fee3293b42e817a59244f016bfe676e16a7dd804512409d13fb899a08e7e2718a"
             }
           ]
         }
@@ -4273,18 +4273,18 @@
     {
       "type": "library",
       "name": "extension-list",
-      "version": "3.26.1",
-      "purl": "pkg:npm/%40tiptap/extension-list@3.26.1",
-      "bom-ref": "pkg:npm/%40tiptap/extension-list@3.26.1",
+      "version": "3.27.1",
+      "purl": "pkg:npm/%40tiptap/extension-list@3.27.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-list@3.27.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-list/-/extension-list-3.26.1.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-list/-/extension-list-3.27.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "d3a9ce8e7c97a7330ef18b3993721b62c0ec2a26f59afd8eb5ac41617d7fd6ebd1c8e2b0517e6da832dbfea8a089cd0b20034d2fbde590d0bc67c5cf786e1392"
+              "content": "736529aeeee58f4fd957f21bc30e9c373eac512f26e83a7ff6eca016161c64e7775fc334c41204938d9cea6e9241e8643f389503c40e80d273eec32ab1bcf539"
             }
           ]
         }
@@ -4293,18 +4293,18 @@
     {
       "type": "library",
       "name": "extension-ordered-list",
-      "version": "3.26.1",
-      "purl": "pkg:npm/%40tiptap/extension-ordered-list@3.26.1",
-      "bom-ref": "pkg:npm/%40tiptap/extension-ordered-list@3.26.1",
+      "version": "3.27.1",
+      "purl": "pkg:npm/%40tiptap/extension-ordered-list@3.27.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-ordered-list@3.27.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-ordered-list/-/extension-ordered-list-3.26.1.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-ordered-list/-/extension-ordered-list-3.27.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "2de14f785c1bef2964415bae6878fe9e2bbb5a1587a630ce8b518a64913fa2139ada582decfdb6d4732a854ccf883957384c4def6a164cd9975254f4ca609393"
+              "content": "198acaa83ffff671c9dabf34b97a9b0cccd19c5a46cdb6844114d219a3bf487ec3bd7585328c3c7af90e76343b3c240ed3b8cd8c9a3be7e03ce49c2edcebf700"
             }
           ]
         }
@@ -4313,18 +4313,18 @@
     {
       "type": "library",
       "name": "extension-paragraph",
-      "version": "3.26.1",
-      "purl": "pkg:npm/%40tiptap/extension-paragraph@3.26.1",
-      "bom-ref": "pkg:npm/%40tiptap/extension-paragraph@3.26.1",
+      "version": "3.27.1",
+      "purl": "pkg:npm/%40tiptap/extension-paragraph@3.27.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-paragraph@3.27.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-paragraph/-/extension-paragraph-3.26.1.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-paragraph/-/extension-paragraph-3.27.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "3a405e61434cdde4f38e6df3e88702dcd1ebc8e5fc837786348f3a3ff07eb45a0541246eccbb0a654e7401109f2222cb83cd7636372aba3789d5e5f704a0d9af"
+              "content": "ecaedea3582bb8e800b276caf86095db701455423470bd5b4e283c1da3e77a814c55b8a0eef75d93c8cd2ca0563bc4d755b1bb4ee1dd9c337817df2f76dc21e5"
             }
           ]
         }
@@ -4333,18 +4333,18 @@
     {
       "type": "library",
       "name": "extension-strike",
-      "version": "3.26.1",
-      "purl": "pkg:npm/%40tiptap/extension-strike@3.26.1",
-      "bom-ref": "pkg:npm/%40tiptap/extension-strike@3.26.1",
+      "version": "3.27.1",
+      "purl": "pkg:npm/%40tiptap/extension-strike@3.27.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-strike@3.27.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-strike/-/extension-strike-3.26.1.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-strike/-/extension-strike-3.27.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "ee1990da606c03eef9191ac920a6316fed741f6de66e51104861acbfd3ed97b24b6869a3fbcb2fd87190192513f50062055a6bc5a613ab25855d00bd6a47cb5a"
+              "content": "6370d6d63952942342c8c1873f7fb7a8134d3d2f37c2e173e114d81a366dbd145309187b6a96667bd5d158cab5acde662760abedf2a8700dbfe41b35dca80de9"
             }
           ]
         }
@@ -4353,18 +4353,18 @@
     {
       "type": "library",
       "name": "extension-subscript",
-      "version": "3.26.1",
-      "purl": "pkg:npm/%40tiptap/extension-subscript@3.26.1",
-      "bom-ref": "pkg:npm/%40tiptap/extension-subscript@3.26.1",
+      "version": "3.27.1",
+      "purl": "pkg:npm/%40tiptap/extension-subscript@3.27.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-subscript@3.27.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-subscript/-/extension-subscript-3.26.1.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-subscript/-/extension-subscript-3.27.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "e9fe0b3b098806909c769c2146d2be7ae052d726add5943b3a4f002d3bfd07a2d23e7119140475e42c5e80b1c5a4fd24d9817df50a3ea140027645230c9c4e2d"
+              "content": "03c6e892bedced006775970c5f417800ad72e3111877932f39cce88c5bac6a24dfbc09c7dc3f0fc056ce3d0b3764b07c5bd2b76e7e20fd71f9e4fd4800f146ca"
             }
           ]
         }
@@ -4373,18 +4373,18 @@
     {
       "type": "library",
       "name": "extension-superscript",
-      "version": "3.26.1",
-      "purl": "pkg:npm/%40tiptap/extension-superscript@3.26.1",
-      "bom-ref": "pkg:npm/%40tiptap/extension-superscript@3.26.1",
+      "version": "3.27.1",
+      "purl": "pkg:npm/%40tiptap/extension-superscript@3.27.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-superscript@3.27.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-superscript/-/extension-superscript-3.26.1.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-superscript/-/extension-superscript-3.27.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "809d9fc5740de838aa092cda1e902c5b314773debb62abe8e79fac623d71c643d8aad25f383762da656003574db8deeff20e2a7b14e96ef9ded5ce26e7b709d9"
+              "content": "f34db5ba5776e3a76a86dcd97738ef9d671f889c0494f439d3365eec57374061623510d5590d804d71891665c4a298025391ae65acad3ccb40ab85150d773ac7"
             }
           ]
         }
@@ -4393,18 +4393,18 @@
     {
       "type": "library",
       "name": "extension-text-align",
-      "version": "3.26.1",
-      "purl": "pkg:npm/%40tiptap/extension-text-align@3.26.1",
-      "bom-ref": "pkg:npm/%40tiptap/extension-text-align@3.26.1",
+      "version": "3.27.1",
+      "purl": "pkg:npm/%40tiptap/extension-text-align@3.27.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-text-align@3.27.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-text-align/-/extension-text-align-3.26.1.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-text-align/-/extension-text-align-3.27.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "3ed6eed45c80485a88adbc3fa7d0faccbb7c1bbb1e0e1e17e34f2a53d148aee9fb3c4efda3e6a60792d623f4b31c5b9593738c23e83b8c4fe630384d518b2a54"
+              "content": "1176b0b8904ee79c1df167136c74cca0f86fd02190c736b8c8208f0791eacf864f4306a122bdde8fef32a7f922988974c6891a6f0674fc5bbc49343802466fe6"
             }
           ]
         }
@@ -4413,18 +4413,18 @@
     {
       "type": "library",
       "name": "extension-text-style",
-      "version": "3.26.1",
-      "purl": "pkg:npm/%40tiptap/extension-text-style@3.26.1",
-      "bom-ref": "pkg:npm/%40tiptap/extension-text-style@3.26.1",
+      "version": "3.27.1",
+      "purl": "pkg:npm/%40tiptap/extension-text-style@3.27.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-text-style@3.27.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-text-style/-/extension-text-style-3.26.1.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-text-style/-/extension-text-style-3.27.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "57cb7ba8ec8b1fb2014761e38c9559f6b5074e7b854e8271d3b2fd3cdf4fa6040b873f6af096a1e200309a32c15c3446d9869722618ad11c0a28253fc878703a"
+              "content": "278f16225fba60361314f8565d405093ebbbf8029552a4ddbeb64e4323d8086b903201eb633816ac8e7e1de1227d4817279acc21658fdeacada7b2a1555aa90d"
             }
           ]
         }
@@ -4433,18 +4433,18 @@
     {
       "type": "library",
       "name": "extension-text",
-      "version": "3.26.1",
-      "purl": "pkg:npm/%40tiptap/extension-text@3.26.1",
-      "bom-ref": "pkg:npm/%40tiptap/extension-text@3.26.1",
+      "version": "3.27.1",
+      "purl": "pkg:npm/%40tiptap/extension-text@3.27.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-text@3.27.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-text/-/extension-text-3.26.1.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-text/-/extension-text-3.27.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "1a872e8b95af7020892485f5ee074e54249d622e47e1f0f0691d2a90c01464fab990909dadf97ebcda6df014ede77064fbf42e9a2516db57e1435f38c3b46879"
+              "content": "e99c1a6704ab0e1f8a145bfa57527bf683b7ef23ecef2d5b171be4d7ff48876ae7dd7af9016cfe78c4be9fc4691f776305554042974801e61081c9fe5424ac4e"
             }
           ]
         }
@@ -4453,18 +4453,18 @@
     {
       "type": "library",
       "name": "extension-underline",
-      "version": "3.26.1",
-      "purl": "pkg:npm/%40tiptap/extension-underline@3.26.1",
-      "bom-ref": "pkg:npm/%40tiptap/extension-underline@3.26.1",
+      "version": "3.27.1",
+      "purl": "pkg:npm/%40tiptap/extension-underline@3.27.1",
+      "bom-ref": "pkg:npm/%40tiptap/extension-underline@3.27.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extension-underline/-/extension-underline-3.26.1.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extension-underline/-/extension-underline-3.27.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "1d41ed43e0d1583334a295bb364dd8430acbcf0f3bea1314edcaf55ff6531bef01a7e00a1e2865c14f9baab3e01b94add26a804b250484743fbcae4f96751839"
+              "content": "37cf3d2789d737f4cf7d5b7cb85f4dd40d1263cd84f74cf0735cb6ea5a8e730e8a58d2e642b961321ffd383e2290b0db7a4985a4e06afd489ca477ffe92f216d"
             }
           ]
         }
@@ -4473,18 +4473,18 @@
     {
       "type": "library",
       "name": "extensions",
-      "version": "3.26.1",
-      "purl": "pkg:npm/%40tiptap/extensions@3.26.1",
-      "bom-ref": "pkg:npm/%40tiptap/extensions@3.26.1",
+      "version": "3.27.1",
+      "purl": "pkg:npm/%40tiptap/extensions@3.27.1",
+      "bom-ref": "pkg:npm/%40tiptap/extensions@3.27.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/extensions/-/extensions-3.26.1.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/extensions/-/extensions-3.27.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "3e645aa1ee9b79b4e0cff650ae39b3c193124f577d8ecf594e22a7517797977166f95e54fdcdd36db2837ea98beb7a8f41d8ed4a10cc1e2f6d62ebfe73bece15"
+              "content": "d53771f5f6b0f24d3ff3757a5fec420d5855f321251adf79271796dd8324290248e7a41d94fcf4c4e7493e532248624a8a73f25627abfb1f4b243fd86546486b"
             }
           ]
         }
@@ -4493,18 +4493,18 @@
     {
       "type": "library",
       "name": "pm",
-      "version": "3.26.1",
-      "purl": "pkg:npm/%40tiptap/pm@3.26.1",
-      "bom-ref": "pkg:npm/%40tiptap/pm@3.26.1",
+      "version": "3.27.1",
+      "purl": "pkg:npm/%40tiptap/pm@3.27.1",
+      "bom-ref": "pkg:npm/%40tiptap/pm@3.27.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/pm/-/pm-3.26.1.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/pm/-/pm-3.27.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "e3c7094116efafd531d3e220335051e6f38b5398640be9feb9eadd432d898eb2112a9604fe1b94f1f4059ba3e8469a682987e29649736f6f5e96c43e9f64c0fa"
+              "content": "15f8f1faf8a698153bcc7fcaae95f3262777fa9ce209efd52f669ec524cfeb7732430290eb92e416408a688b12a4575042e6a45590465a3080e51a0157ce76a7"
             }
           ]
         }
@@ -4513,18 +4513,18 @@
     {
       "type": "library",
       "name": "react",
-      "version": "3.26.1",
-      "purl": "pkg:npm/%40tiptap/react@3.26.1",
-      "bom-ref": "pkg:npm/%40tiptap/react@3.26.1",
+      "version": "3.27.1",
+      "purl": "pkg:npm/%40tiptap/react@3.27.1",
+      "bom-ref": "pkg:npm/%40tiptap/react@3.27.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/react/-/react-3.26.1.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/react/-/react-3.27.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "1a5ec085324cee98d0d96170748c03ef7ea841ea94730dc655a5d89822adc1348edc5f4fb332e078a129e83bccf8299cb5335886efdaa517f3907def534874b8"
+              "content": "fd69f67dcf7332d5f4f0c5d849c0c5b26e3027c9737e17cf11d6ed96ced608395bb6ba29e3c3d69641c304126bcb00117c0413076985b3d2a2172f72ad09b92e"
             }
           ]
         }
@@ -4533,18 +4533,18 @@
     {
       "type": "library",
       "name": "starter-kit",
-      "version": "3.26.1",
-      "purl": "pkg:npm/%40tiptap/starter-kit@3.26.1",
-      "bom-ref": "pkg:npm/%40tiptap/starter-kit@3.26.1",
+      "version": "3.27.1",
+      "purl": "pkg:npm/%40tiptap/starter-kit@3.27.1",
+      "bom-ref": "pkg:npm/%40tiptap/starter-kit@3.27.1",
       "group": "@tiptap",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@tiptap/starter-kit/-/starter-kit-3.26.1.tgz",
+          "url": "https://registry.npmjs.org/@tiptap/starter-kit/-/starter-kit-3.27.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "034cecbf0194f5ec4b343df817c7bc2aa5171527ecf37e6d34df950be653df235e68efd65e7961fc281a97517aa471db731cbb455d82470254e52ddc58b3f1ac"
+              "content": "bdfc51b2a5bcac2734938a73a348a5537c286d58b6c2a563f3c5592364a581994d9d4024ac3183200a61ec24daf64f5fb2157e3b58afa4480f0b9c82d38ea3a3"
             }
           ]
         }
@@ -5767,33 +5767,6 @@
     {
       "type": "library",
       "name": "project-service",
-      "version": "8.61.0",
-      "purl": "pkg:npm/%40typescript-eslint/project-service@8.61.0",
-      "bom-ref": "pkg:npm/%40typescript-eslint/project-service@8.61.0",
-      "scope": "excluded",
-      "properties": [
-        {
-          "name": "cdx:npm:package:development",
-          "value": "true"
-        }
-      ],
-      "group": "@typescript-eslint",
-      "externalReferences": [
-        {
-          "type": "distribution",
-          "url": "https://registry.npmjs.org/@typescript-eslint/project-service/-/project-service-8.61.0.tgz",
-          "hashes": [
-            {
-              "alg": "SHA-512",
-              "content": "0d5e3617b30b24ee916b1ed22b5ca0e37b5c9c47c652bbab4a94b12ae557f9add1093cc1947ddfbb1a6bace25728224601ac3cdb15e8722909d2e41aab05e018"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "name": "project-service",
       "version": "8.61.1",
       "purl": "pkg:npm/%40typescript-eslint/project-service@8.61.1",
       "bom-ref": "pkg:npm/%40typescript-eslint/project-service@8.61.1",
@@ -5813,33 +5786,6 @@
             {
               "alg": "SHA-512",
               "content": "3eb0b82581a6476e359589df8662864d7905aaff3eca66d31604806347d55e963cdbf424330e5364f97ebc6cee0c3536418264f5f2033814e7b45fb20eff4b10"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "name": "scope-manager",
-      "version": "8.61.0",
-      "purl": "pkg:npm/%40typescript-eslint/scope-manager@8.61.0",
-      "bom-ref": "pkg:npm/%40typescript-eslint/scope-manager@8.61.0",
-      "scope": "excluded",
-      "properties": [
-        {
-          "name": "cdx:npm:package:development",
-          "value": "true"
-        }
-      ],
-      "group": "@typescript-eslint",
-      "externalReferences": [
-        {
-          "type": "distribution",
-          "url": "https://registry.npmjs.org/@typescript-eslint/scope-manager/-/scope-manager-8.61.0.tgz",
-          "hashes": [
-            {
-              "alg": "SHA-512",
-              "content": "2167571471526fa9a50b71cf73b42c2c39b9cd811b5256bab6b0c41dfdf60f7fdd9ee5325ddf3ba6549c48d5d26e6d3f47132f39ba48d7bb2ffc40d31ab19990"
             }
           ]
         }
@@ -5875,33 +5821,6 @@
     {
       "type": "library",
       "name": "tsconfig-utils",
-      "version": "8.61.0",
-      "purl": "pkg:npm/%40typescript-eslint/tsconfig-utils@8.61.0",
-      "bom-ref": "pkg:npm/%40typescript-eslint/tsconfig-utils@8.61.0",
-      "scope": "excluded",
-      "properties": [
-        {
-          "name": "cdx:npm:package:development",
-          "value": "true"
-        }
-      ],
-      "group": "@typescript-eslint",
-      "externalReferences": [
-        {
-          "type": "distribution",
-          "url": "https://registry.npmjs.org/@typescript-eslint/tsconfig-utils/-/tsconfig-utils-8.61.0.tgz",
-          "hashes": [
-            {
-              "alg": "SHA-512",
-              "content": "3b9026bddbfdced329c697febe61542c61bbf0813a43076bddb086beac06e27c1cf47daa5e43982499d16d11f23244138efd5dd37a25ab0c30cc72ccaa915e3d"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "name": "tsconfig-utils",
       "version": "8.61.1",
       "purl": "pkg:npm/%40typescript-eslint/tsconfig-utils@8.61.1",
       "bom-ref": "pkg:npm/%40typescript-eslint/tsconfig-utils@8.61.1",
@@ -5921,33 +5840,6 @@
             {
               "alg": "SHA-512",
               "content": "50dfc7e1d8be38eec45b1da8bcc13ef2ddf560ef8a5672b44512841d1de43addb5fc0cbc04eab733538cbd6b39bcd8aa705098198a312b73173d9ce631413eca"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "name": "type-utils",
-      "version": "8.61.0",
-      "purl": "pkg:npm/%40typescript-eslint/type-utils@8.61.0",
-      "bom-ref": "pkg:npm/%40typescript-eslint/type-utils@8.61.0",
-      "scope": "excluded",
-      "properties": [
-        {
-          "name": "cdx:npm:package:development",
-          "value": "true"
-        }
-      ],
-      "group": "@typescript-eslint",
-      "externalReferences": [
-        {
-          "type": "distribution",
-          "url": "https://registry.npmjs.org/@typescript-eslint/type-utils/-/type-utils-8.61.0.tgz",
-          "hashes": [
-            {
-              "alg": "SHA-512",
-              "content": "4ee06241822477def205f2271c24ca55831b5f892f126a4e12e8b122ecc253da7c0464f549fcb23b477421f0cc6cf2077239ff8569eeb145f97bcbf95e0f97f0"
             }
           ]
         }
@@ -5983,33 +5875,6 @@
     {
       "type": "library",
       "name": "types",
-      "version": "8.61.0",
-      "purl": "pkg:npm/%40typescript-eslint/types@8.61.0",
-      "bom-ref": "pkg:npm/%40typescript-eslint/types@8.61.0",
-      "scope": "excluded",
-      "properties": [
-        {
-          "name": "cdx:npm:package:development",
-          "value": "true"
-        }
-      ],
-      "group": "@typescript-eslint",
-      "externalReferences": [
-        {
-          "type": "distribution",
-          "url": "https://registry.npmjs.org/@typescript-eslint/types/-/types-8.61.0.tgz",
-          "hashes": [
-            {
-              "alg": "SHA-512",
-              "content": "f504d0a59e488a7e02748a1d7db0d01527a24892a276060962e8353fd082db15a0513be59a2c558aa0d935c88c8f02c16722671b8b4698f97deeb54015bd4026"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "name": "types",
       "version": "8.61.1",
       "purl": "pkg:npm/%40typescript-eslint/types@8.61.1",
       "bom-ref": "pkg:npm/%40typescript-eslint/types@8.61.1",
@@ -6029,33 +5894,6 @@
             {
               "alg": "SHA-512",
               "content": "1be09194fa8bbfb073d48655b34df1e4ae7d175bdea8bd0425444e01d1a12ac12af2a3a246265b23e1d4a233eae65d1f10638a328743f5bafa94e6e107cce4a0"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "name": "typescript-estree",
-      "version": "8.61.0",
-      "purl": "pkg:npm/%40typescript-eslint/typescript-estree@8.61.0",
-      "bom-ref": "pkg:npm/%40typescript-eslint/typescript-estree@8.61.0",
-      "scope": "excluded",
-      "properties": [
-        {
-          "name": "cdx:npm:package:development",
-          "value": "true"
-        }
-      ],
-      "group": "@typescript-eslint",
-      "externalReferences": [
-        {
-          "type": "distribution",
-          "url": "https://registry.npmjs.org/@typescript-eslint/typescript-estree/-/typescript-estree-8.61.0.tgz",
-          "hashes": [
-            {
-              "alg": "SHA-512",
-              "content": "e36cdab5de6a4afbdc57525d0c108bc584739ef3f87881e93e86577643c59c099a9c0e05b99e5d89b4a708182063c8509ea6a33e9a068d715d67b7c824a42794"
             }
           ]
         }
@@ -6091,33 +5929,6 @@
     {
       "type": "library",
       "name": "utils",
-      "version": "8.61.0",
-      "purl": "pkg:npm/%40typescript-eslint/utils@8.61.0",
-      "bom-ref": "pkg:npm/%40typescript-eslint/utils@8.61.0",
-      "scope": "excluded",
-      "properties": [
-        {
-          "name": "cdx:npm:package:development",
-          "value": "true"
-        }
-      ],
-      "group": "@typescript-eslint",
-      "externalReferences": [
-        {
-          "type": "distribution",
-          "url": "https://registry.npmjs.org/@typescript-eslint/utils/-/utils-8.61.0.tgz",
-          "hashes": [
-            {
-              "alg": "SHA-512",
-              "content": "ddbcc5b7b22614c5bf8d563025a983a1efdd30e7452d20baa689baad18dd87849924462ea723337a6f1eeef2992dc94b7e91e39704805ce531b4ac465d488ba8"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "name": "utils",
       "version": "8.61.1",
       "purl": "pkg:npm/%40typescript-eslint/utils@8.61.1",
       "bom-ref": "pkg:npm/%40typescript-eslint/utils@8.61.1",
@@ -6137,33 +5948,6 @@
             {
               "alg": "SHA-512",
               "content": "d7e3ffdc38fa8efb726c4d6ad0743ac81b7f82afa8289c8b744bf81dd9ea6ac6845d1498080b03e7d99711542733f50b35d4316d7efbb5d1b88cf463212ea49c"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "name": "visitor-keys",
-      "version": "8.61.0",
-      "purl": "pkg:npm/%40typescript-eslint/visitor-keys@8.61.0",
-      "bom-ref": "pkg:npm/%40typescript-eslint/visitor-keys@8.61.0",
-      "scope": "excluded",
-      "properties": [
-        {
-          "name": "cdx:npm:package:development",
-          "value": "true"
-        }
-      ],
-      "group": "@typescript-eslint",
-      "externalReferences": [
-        {
-          "type": "distribution",
-          "url": "https://registry.npmjs.org/@typescript-eslint/visitor-keys/-/visitor-keys-8.61.0.tgz",
-          "hashes": [
-            {
-              "alg": "SHA-512",
-              "content": "4152d9bb764f40413e1c8090c80319db22d08717f499e63fc31e87c75e18713363d77241dea1e55f7949d362f77cb1878044511fbd64bd80f0897220b93dc08d"
             }
           ]
         }
@@ -10297,17 +10081,17 @@
     {
       "type": "library",
       "name": "dompurify",
-      "version": "3.4.10",
-      "purl": "pkg:npm/dompurify@3.4.10",
-      "bom-ref": "pkg:npm/dompurify@3.4.10",
+      "version": "3.4.11",
+      "purl": "pkg:npm/dompurify@3.4.11",
+      "bom-ref": "pkg:npm/dompurify@3.4.11",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/dompurify/-/dompurify-3.4.10.tgz",
+          "url": "https://registry.npmjs.org/dompurify/-/dompurify-3.4.11.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "d31ccdbf47bba180bacb2b8e19920004f338aad8374312c59e20cd3cfe193fdd3047c62adf3830a516eb3624f837720aa836db6051092d5f89584b35f5a67fff"
+              "content": "ce1954575d86b1a47332c7fdab9336e78621038f95b85d1f1be405aaee9a629a0694ab73fb0f3ffe305c195601810911e461e352899e8d8f38015fbfb8f6d677"
             }
           ]
         }
@@ -13075,9 +12859,9 @@
     {
       "type": "library",
       "name": "http-proxy-middleware",
-      "version": "2.0.9",
-      "purl": "pkg:npm/http-proxy-middleware@2.0.9",
-      "bom-ref": "pkg:npm/http-proxy-middleware@2.0.9",
+      "version": "3.0.6",
+      "purl": "pkg:npm/http-proxy-middleware@3.0.6",
+      "bom-ref": "pkg:npm/http-proxy-middleware@3.0.6",
       "scope": "excluded",
       "properties": [
         {
@@ -13088,11 +12872,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/http-proxy-middleware/-/http-proxy-middleware-2.0.9.tgz",
+          "url": "https://registry.npmjs.org/http-proxy-middleware/-/http-proxy-middleware-3.0.6.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "7352322582d8a69539ef8f9823b4784325f6cacb4cb555d9c087736b35083c826c1ee58d77e9a1a368fe6caa077ed9dd89c1a3f7287ec6377e974ca3ed5793d5"
+              "content": "8e13b741f6a168759f423127c865b4be960861a5dc9c0e8511f7a1ac1b613a8906a69be623acdc57ed726fa4d69f7bf27a1f32414a04a87e750cd1ce0a38afc6"
             }
           ]
         }
@@ -13963,32 +13747,6 @@
     },
     {
       "type": "library",
-      "name": "is-plain-obj",
-      "version": "3.0.0",
-      "purl": "pkg:npm/is-plain-obj@3.0.0",
-      "bom-ref": "pkg:npm/is-plain-obj@3.0.0",
-      "scope": "excluded",
-      "properties": [
-        {
-          "name": "cdx:npm:package:development",
-          "value": "true"
-        }
-      ],
-      "externalReferences": [
-        {
-          "type": "distribution",
-          "url": "https://registry.npmjs.org/is-plain-obj/-/is-plain-obj-3.0.0.tgz",
-          "hashes": [
-            {
-              "alg": "SHA-512",
-              "content": "830b0e136f24fb6dc63f507abc5975a1587f58ece66b006b2b0a3912feb030accf91a5da0832102b32e7bec038d834656d54d6a2b9204ca22f8802825a47d4c0"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "library",
       "name": "is-plain-object",
       "version": "2.0.4",
       "purl": "pkg:npm/is-plain-object@2.0.4",
@@ -14008,6 +13766,32 @@
             {
               "alg": "SHA-512",
               "content": "8793e98179168ad737f0104c61ac1360c5891c564956706ab85139ef11698c1f29245885ea067e6d4f96c88ff2a9788547999d2ec81835a3def2e6a8e94bfd3a"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "is-plain-object",
+      "version": "5.0.0",
+      "purl": "pkg:npm/is-plain-object@5.0.0",
+      "bom-ref": "pkg:npm/is-plain-object@5.0.0",
+      "scope": "excluded",
+      "properties": [
+        {
+          "name": "cdx:npm:package:development",
+          "value": "true"
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/is-plain-object/-/is-plain-object-5.0.0.tgz",
+          "hashes": [
+            {
+              "alg": "SHA-512",
+              "content": "5514b32a46cc9b98cc0e828b6e5b4090543942bed50e24c5197c581575e8c158f7f3b19e18d382b0e1fa32ccb4d12199dc5a7ce1bd4d69ad69b2a81c08810fe5"
             }
           ]
         }
@@ -20839,9 +20623,9 @@
     {
       "type": "library",
       "name": "serialize-javascript",
-      "version": "7.0.5",
-      "purl": "pkg:npm/serialize-javascript@7.0.5",
-      "bom-ref": "pkg:npm/serialize-javascript@7.0.5",
+      "version": "7.0.6",
+      "purl": "pkg:npm/serialize-javascript@7.0.6",
+      "bom-ref": "pkg:npm/serialize-javascript@7.0.6",
       "scope": "excluded",
       "properties": [
         {
@@ -20852,11 +20636,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/serialize-javascript/-/serialize-javascript-7.0.5.tgz",
+          "url": "https://registry.npmjs.org/serialize-javascript/-/serialize-javascript-7.0.6.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "1782dc07452a525d7312babed676041334872672306f7005d97581f786fe69f86b7a43948a3c28a0062a17245b8d8926d8f00a05a6f1ea862fff10f1362f0807"
+              "content": "0134cae50e20155834603a759b2dafab2832be1724943fd45791889581e8a064e7fcda2026a233a5eb640fa139926b9550bab3fd2f629d42f6e5770080344942"
             }
           ]
         }
@@ -22929,9 +22713,9 @@
     {
       "type": "library",
       "name": "undici",
-      "version": "7.25.0",
-      "purl": "pkg:npm/undici@7.25.0",
-      "bom-ref": "pkg:npm/undici@7.25.0",
+      "version": "7.28.0",
+      "purl": "pkg:npm/undici@7.28.0",
+      "bom-ref": "pkg:npm/undici@7.28.0",
       "scope": "excluded",
       "properties": [
         {
@@ -22942,11 +22726,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/undici/-/undici-7.25.0.tgz",
+          "url": "https://registry.npmjs.org/undici/-/undici-7.28.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "c579e9e244f2a2bd99abe27515f3c8e84ab77b0e61e9597417ff1df57539cd941fd6d5fdb364aed7fdcf88c99400d1542e99a4b3190295a98865c694aabc87b1"
+              "content": "711658ad30f05b39e59d188f8e08001b16576a7b72e8cf115757dff169b82d65c1a7bfc81bcbf90e73a6ef80ed501a7d38e3692bbe5894f9c88d0a97d1d043b4"
             }
           ]
         }
@@ -24237,7 +24021,7 @@
       "ref": "pkg:npm/%40eslint-react/shared@5.9.0",
       "dependsOn": [
         "pkg:npm/%40eslint-react/eslint@5.9.0",
-        "pkg:npm/%40typescript-eslint/utils@8.61.0",
+        "pkg:npm/%40typescript-eslint/utils@8.61.1",
         "pkg:npm/ts-pattern@5.9.0",
         "pkg:npm/zod@4.4.3"
       ]
@@ -24479,11 +24263,11 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40mantine/carousel@9.3.1",
+      "ref": "pkg:npm/%40mantine/carousel@9.3.2",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40mantine/core@9.3.1",
+      "ref": "pkg:npm/%40mantine/core@9.3.2",
       "dependsOn": [
         "pkg:npm/%40floating-ui/react@0.27.19",
         "pkg:npm/clsx@2.1.1",
@@ -24493,38 +24277,38 @@
       ]
     },
     {
-      "ref": "pkg:npm/%40mantine/dates@9.3.1",
+      "ref": "pkg:npm/%40mantine/dates@9.3.2",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40mantine/dropzone@9.3.1",
+      "ref": "pkg:npm/%40mantine/dropzone@9.3.2",
       "dependsOn": [
         "pkg:npm/react-dropzone@15.0.0"
       ]
     },
     {
-      "ref": "pkg:npm/%40mantine/form@9.3.1",
+      "ref": "pkg:npm/%40mantine/form@9.3.2",
       "dependsOn": [
         "pkg:npm/klona@2.0.6"
       ]
     },
     {
-      "ref": "pkg:npm/%40mantine/hooks@9.3.1",
+      "ref": "pkg:npm/%40mantine/hooks@9.3.2",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40mantine/notifications@9.3.1",
+      "ref": "pkg:npm/%40mantine/notifications@9.3.2",
       "dependsOn": [
-        "pkg:npm/%40mantine/store@9.3.1",
+        "pkg:npm/%40mantine/store@9.3.2",
         "pkg:npm/react-transition-group@4.4.5"
       ]
     },
     {
-      "ref": "pkg:npm/%40mantine/store@9.3.1",
+      "ref": "pkg:npm/%40mantine/store@9.3.2",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40mantine/tiptap@9.3.1",
+      "ref": "pkg:npm/%40mantine/tiptap@9.3.2",
       "dependsOn": []
     },
     {
@@ -24808,129 +24592,129 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/core@3.26.1",
+      "ref": "pkg:npm/%40tiptap/core@3.27.1",
       "dependsOn": [
-        "pkg:npm/%40tiptap/pm@3.26.1"
+        "pkg:npm/%40tiptap/pm@3.27.1"
       ]
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-blockquote@3.26.1",
+      "ref": "pkg:npm/%40tiptap/extension-blockquote@3.27.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-bold@3.26.1",
+      "ref": "pkg:npm/%40tiptap/extension-bold@3.27.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-bubble-menu@3.26.1",
+      "ref": "pkg:npm/%40tiptap/extension-bubble-menu@3.27.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-bullet-list@3.26.1",
+      "ref": "pkg:npm/%40tiptap/extension-bullet-list@3.27.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-code-block@3.26.1",
+      "ref": "pkg:npm/%40tiptap/extension-code-block@3.27.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-code@3.26.1",
+      "ref": "pkg:npm/%40tiptap/extension-code@3.27.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-document@3.26.1",
+      "ref": "pkg:npm/%40tiptap/extension-document@3.27.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-dropcursor@3.26.1",
+      "ref": "pkg:npm/%40tiptap/extension-dropcursor@3.27.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-floating-menu@3.26.1",
+      "ref": "pkg:npm/%40tiptap/extension-floating-menu@3.27.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-gapcursor@3.26.1",
+      "ref": "pkg:npm/%40tiptap/extension-gapcursor@3.27.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-hard-break@3.26.1",
+      "ref": "pkg:npm/%40tiptap/extension-hard-break@3.27.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-heading@3.26.1",
+      "ref": "pkg:npm/%40tiptap/extension-heading@3.27.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-highlight@3.26.1",
+      "ref": "pkg:npm/%40tiptap/extension-highlight@3.27.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-horizontal-rule@3.26.1",
+      "ref": "pkg:npm/%40tiptap/extension-horizontal-rule@3.27.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-italic@3.26.1",
+      "ref": "pkg:npm/%40tiptap/extension-italic@3.27.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-link@3.26.1",
+      "ref": "pkg:npm/%40tiptap/extension-link@3.27.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-list-item@3.26.1",
+      "ref": "pkg:npm/%40tiptap/extension-list-item@3.27.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-list-keymap@3.26.1",
+      "ref": "pkg:npm/%40tiptap/extension-list-keymap@3.27.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-list@3.26.1",
+      "ref": "pkg:npm/%40tiptap/extension-list@3.27.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-ordered-list@3.26.1",
+      "ref": "pkg:npm/%40tiptap/extension-ordered-list@3.27.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-paragraph@3.26.1",
+      "ref": "pkg:npm/%40tiptap/extension-paragraph@3.27.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-strike@3.26.1",
+      "ref": "pkg:npm/%40tiptap/extension-strike@3.27.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-subscript@3.26.1",
+      "ref": "pkg:npm/%40tiptap/extension-subscript@3.27.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-superscript@3.26.1",
+      "ref": "pkg:npm/%40tiptap/extension-superscript@3.27.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-text-align@3.26.1",
+      "ref": "pkg:npm/%40tiptap/extension-text-align@3.27.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-text-style@3.26.1",
+      "ref": "pkg:npm/%40tiptap/extension-text-style@3.27.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-text@3.26.1",
+      "ref": "pkg:npm/%40tiptap/extension-text@3.27.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extension-underline@3.26.1",
+      "ref": "pkg:npm/%40tiptap/extension-underline@3.27.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/extensions@3.26.1",
+      "ref": "pkg:npm/%40tiptap/extensions@3.27.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40tiptap/pm@3.26.1",
+      "ref": "pkg:npm/%40tiptap/pm@3.27.1",
       "dependsOn": [
         "pkg:npm/prosemirror-changeset@2.4.1",
         "pkg:npm/prosemirror-commands@1.7.1",
@@ -24948,38 +24732,38 @@
       ]
     },
     {
-      "ref": "pkg:npm/%40tiptap/react@3.26.1",
+      "ref": "pkg:npm/%40tiptap/react@3.27.1",
       "dependsOn": [
-        "pkg:npm/%40tiptap/extension-bubble-menu@3.26.1",
-        "pkg:npm/%40tiptap/extension-floating-menu@3.26.1",
+        "pkg:npm/%40tiptap/extension-bubble-menu@3.27.1",
+        "pkg:npm/%40tiptap/extension-floating-menu@3.27.1",
         "pkg:npm/%40types/use-sync-external-store@0.0.6",
         "pkg:npm/fast-equals@5.4.0",
         "pkg:npm/use-sync-external-store@1.6.0"
       ]
     },
     {
-      "ref": "pkg:npm/%40tiptap/starter-kit@3.26.1",
+      "ref": "pkg:npm/%40tiptap/starter-kit@3.27.1",
       "dependsOn": [
-        "pkg:npm/%40tiptap/extension-blockquote@3.26.1",
-        "pkg:npm/%40tiptap/extension-bold@3.26.1",
-        "pkg:npm/%40tiptap/extension-bullet-list@3.26.1",
-        "pkg:npm/%40tiptap/extension-code-block@3.26.1",
-        "pkg:npm/%40tiptap/extension-code@3.26.1",
-        "pkg:npm/%40tiptap/extension-document@3.26.1",
-        "pkg:npm/%40tiptap/extension-dropcursor@3.26.1",
-        "pkg:npm/%40tiptap/extension-gapcursor@3.26.1",
-        "pkg:npm/%40tiptap/extension-hard-break@3.26.1",
-        "pkg:npm/%40tiptap/extension-heading@3.26.1",
-        "pkg:npm/%40tiptap/extension-horizontal-rule@3.26.1",
-        "pkg:npm/%40tiptap/extension-italic@3.26.1",
-        "pkg:npm/%40tiptap/extension-list-item@3.26.1",
-        "pkg:npm/%40tiptap/extension-list-keymap@3.26.1",
-        "pkg:npm/%40tiptap/extension-list@3.26.1",
-        "pkg:npm/%40tiptap/extension-ordered-list@3.26.1",
-        "pkg:npm/%40tiptap/extension-paragraph@3.26.1",
-        "pkg:npm/%40tiptap/extension-strike@3.26.1",
-        "pkg:npm/%40tiptap/extension-text@3.26.1",
-        "pkg:npm/%40tiptap/extensions@3.26.1"
+        "pkg:npm/%40tiptap/extension-blockquote@3.27.1",
+        "pkg:npm/%40tiptap/extension-bold@3.27.1",
+        "pkg:npm/%40tiptap/extension-bullet-list@3.27.1",
+        "pkg:npm/%40tiptap/extension-code-block@3.27.1",
+        "pkg:npm/%40tiptap/extension-code@3.27.1",
+        "pkg:npm/%40tiptap/extension-document@3.27.1",
+        "pkg:npm/%40tiptap/extension-dropcursor@3.27.1",
+        "pkg:npm/%40tiptap/extension-gapcursor@3.27.1",
+        "pkg:npm/%40tiptap/extension-hard-break@3.27.1",
+        "pkg:npm/%40tiptap/extension-heading@3.27.1",
+        "pkg:npm/%40tiptap/extension-horizontal-rule@3.27.1",
+        "pkg:npm/%40tiptap/extension-italic@3.27.1",
+        "pkg:npm/%40tiptap/extension-list-item@3.27.1",
+        "pkg:npm/%40tiptap/extension-list-keymap@3.27.1",
+        "pkg:npm/%40tiptap/extension-list@3.27.1",
+        "pkg:npm/%40tiptap/extension-ordered-list@3.27.1",
+        "pkg:npm/%40tiptap/extension-paragraph@3.27.1",
+        "pkg:npm/%40tiptap/extension-strike@3.27.1",
+        "pkg:npm/%40tiptap/extension-text@3.27.1",
+        "pkg:npm/%40tiptap/extensions@3.27.1"
       ]
     },
     {
@@ -25189,10 +24973,6 @@
       "ref": "pkg:npm/%40typescript-eslint/eslint-plugin@8.61.1",
       "dependsOn": [
         "pkg:npm/%40eslint-community/regexpp@4.12.2",
-        "pkg:npm/%40typescript-eslint/scope-manager@8.61.1",
-        "pkg:npm/%40typescript-eslint/type-utils@8.61.1",
-        "pkg:npm/%40typescript-eslint/utils@8.61.1",
-        "pkg:npm/%40typescript-eslint/visitor-keys@8.61.1",
         "pkg:npm/ignore@7.0.5",
         "pkg:npm/natural-compare@1.4.0"
       ]
@@ -25202,45 +24982,21 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40typescript-eslint/project-service@8.61.0",
-      "dependsOn": []
-    },
-    {
       "ref": "pkg:npm/%40typescript-eslint/project-service@8.61.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40typescript-eslint/scope-manager@8.61.0",
-      "dependsOn": [
-        "pkg:npm/%40typescript-eslint/visitor-keys@8.61.0"
-      ]
-    },
-    {
       "ref": "pkg:npm/%40typescript-eslint/scope-manager@8.61.1",
       "dependsOn": [
-        "pkg:npm/%40typescript-eslint/types@8.61.1"
+        "pkg:npm/%40typescript-eslint/visitor-keys@8.61.1"
       ]
-    },
-    {
-      "ref": "pkg:npm/%40typescript-eslint/tsconfig-utils@8.61.0",
-      "dependsOn": []
     },
     {
       "ref": "pkg:npm/%40typescript-eslint/tsconfig-utils@8.61.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40typescript-eslint/type-utils@8.61.0",
-      "dependsOn": []
-    },
-    {
       "ref": "pkg:npm/%40typescript-eslint/type-utils@8.61.1",
-      "dependsOn": [
-        "pkg:npm/%40typescript-eslint/typescript-estree@8.61.1"
-      ]
-    },
-    {
-      "ref": "pkg:npm/%40typescript-eslint/types@8.61.0",
       "dependsOn": []
     },
     {
@@ -25248,10 +25004,10 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40typescript-eslint/typescript-estree@8.61.0",
+      "ref": "pkg:npm/%40typescript-eslint/typescript-estree@8.61.1",
       "dependsOn": [
-        "pkg:npm/%40typescript-eslint/project-service@8.61.0",
-        "pkg:npm/%40typescript-eslint/tsconfig-utils@8.61.0",
+        "pkg:npm/%40typescript-eslint/project-service@8.61.1",
+        "pkg:npm/%40typescript-eslint/tsconfig-utils@8.61.1",
         "pkg:npm/debug@4.4.3",
         "pkg:npm/minimatch@10.2.5",
         "pkg:npm/semver@7.8.0",
@@ -25260,34 +25016,19 @@
       ]
     },
     {
-      "ref": "pkg:npm/%40typescript-eslint/typescript-estree@8.61.1",
-      "dependsOn": [
-        "pkg:npm/%40typescript-eslint/project-service@8.61.1",
-        "pkg:npm/%40typescript-eslint/tsconfig-utils@8.61.1"
-      ]
-    },
-    {
-      "ref": "pkg:npm/%40typescript-eslint/utils@8.61.0",
+      "ref": "pkg:npm/%40typescript-eslint/utils@8.61.1",
       "dependsOn": [
         "pkg:npm/%40eslint-community/eslint-utils@4.9.1",
-        "pkg:npm/%40typescript-eslint/scope-manager@8.61.0",
-        "pkg:npm/%40typescript-eslint/types@8.61.0",
-        "pkg:npm/%40typescript-eslint/typescript-estree@8.61.0"
-      ]
-    },
-    {
-      "ref": "pkg:npm/%40typescript-eslint/utils@8.61.1",
-      "dependsOn": []
-    },
-    {
-      "ref": "pkg:npm/%40typescript-eslint/visitor-keys@8.61.0",
-      "dependsOn": [
-        "pkg:npm/eslint-visitor-keys@5.0.1"
+        "pkg:npm/%40typescript-eslint/scope-manager@8.61.1",
+        "pkg:npm/%40typescript-eslint/types@8.61.1",
+        "pkg:npm/%40typescript-eslint/typescript-estree@8.61.1"
       ]
     },
     {
       "ref": "pkg:npm/%40typescript-eslint/visitor-keys@8.61.1",
-      "dependsOn": []
+      "dependsOn": [
+        "pkg:npm/eslint-visitor-keys@5.0.1"
+      ]
     },
     {
       "ref": "pkg:npm/%40ungap/structured-clone@1.3.1",
@@ -25786,7 +25527,7 @@
       "ref": "pkg:npm/compression-webpack-plugin@12.0.0",
       "dependsOn": [
         "pkg:npm/schema-utils@4.3.3",
-        "pkg:npm/serialize-javascript@7.0.5"
+        "pkg:npm/serialize-javascript@7.0.6"
       ]
     },
     {
@@ -26147,7 +25888,7 @@
       ]
     },
     {
-      "ref": "pkg:npm/dompurify@3.4.10",
+      "ref": "pkg:npm/dompurify@3.4.11",
       "dependsOn": [
         "pkg:npm/%40types/trusted-types@2.0.7"
       ]
@@ -26312,7 +26053,7 @@
     {
       "ref": "pkg:npm/eslint-plugin-react-x@5.9.0",
       "dependsOn": [
-        "pkg:npm/%40typescript-eslint/type-utils@8.61.0"
+        "pkg:npm/%40typescript-eslint/type-utils@8.61.1"
       ]
     },
     {
@@ -26737,11 +26478,11 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/http-proxy-middleware@2.0.9",
+      "ref": "pkg:npm/http-proxy-middleware@3.0.6",
       "dependsOn": [
         "pkg:npm/%40types/http-proxy@1.17.17",
         "pkg:npm/http-proxy@1.18.1",
-        "pkg:npm/is-plain-obj@3.0.0"
+        "pkg:npm/is-plain-object@5.0.0"
       ]
     },
     {
@@ -26907,14 +26648,14 @@
       ]
     },
     {
-      "ref": "pkg:npm/is-plain-obj@3.0.0",
-      "dependsOn": []
-    },
-    {
       "ref": "pkg:npm/is-plain-object@2.0.4",
       "dependsOn": [
         "pkg:npm/isobject@3.0.1"
       ]
+    },
+    {
+      "ref": "pkg:npm/is-plain-object@5.0.0",
+      "dependsOn": []
     },
     {
       "ref": "pkg:npm/is-potential-custom-element-name@1.0.1",
@@ -27026,7 +26767,7 @@
         "pkg:npm/saxes@6.0.0",
         "pkg:npm/symbol-tree@3.2.4",
         "pkg:npm/tough-cookie@6.0.1",
-        "pkg:npm/undici@7.25.0",
+        "pkg:npm/undici@7.28.0",
         "pkg:npm/w3c-xmlserializer@5.0.0",
         "pkg:npm/webidl-conversions@8.0.1",
         "pkg:npm/whatwg-mimetype@5.0.0",
@@ -28310,7 +28051,7 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/serialize-javascript@7.0.5",
+      "ref": "pkg:npm/serialize-javascript@7.0.6",
       "dependsOn": []
     },
     {
@@ -28578,29 +28319,29 @@
       "dependsOn": [
         "pkg:npm/%40eslint-react/eslint-plugin@5.9.0",
         "pkg:npm/%40eslint/js@10.0.1",
-        "pkg:npm/%40mantine/carousel@9.3.1",
-        "pkg:npm/%40mantine/core@9.3.1",
-        "pkg:npm/%40mantine/dates@9.3.1",
-        "pkg:npm/%40mantine/dropzone@9.3.1",
-        "pkg:npm/%40mantine/form@9.3.1",
-        "pkg:npm/%40mantine/hooks@9.3.1",
-        "pkg:npm/%40mantine/notifications@9.3.1",
-        "pkg:npm/%40mantine/tiptap@9.3.1",
+        "pkg:npm/%40mantine/carousel@9.3.2",
+        "pkg:npm/%40mantine/core@9.3.2",
+        "pkg:npm/%40mantine/dates@9.3.2",
+        "pkg:npm/%40mantine/dropzone@9.3.2",
+        "pkg:npm/%40mantine/form@9.3.2",
+        "pkg:npm/%40mantine/hooks@9.3.2",
+        "pkg:npm/%40mantine/notifications@9.3.2",
+        "pkg:npm/%40mantine/tiptap@9.3.2",
         "pkg:npm/%40phosphor-icons/react@2.1.10",
         "pkg:npm/%40playwright/test@1.61.0",
         "pkg:npm/%40testing-library/jest-dom@6.9.1",
         "pkg:npm/%40testing-library/react@16.3.2",
         "pkg:npm/%40testing-library/user-event@14.6.1",
-        "pkg:npm/%40tiptap/core@3.26.1",
-        "pkg:npm/%40tiptap/extension-highlight@3.26.1",
-        "pkg:npm/%40tiptap/extension-link@3.26.1",
-        "pkg:npm/%40tiptap/extension-subscript@3.26.1",
-        "pkg:npm/%40tiptap/extension-superscript@3.26.1",
-        "pkg:npm/%40tiptap/extension-text-align@3.26.1",
-        "pkg:npm/%40tiptap/extension-text-style@3.26.1",
-        "pkg:npm/%40tiptap/extension-underline@3.26.1",
-        "pkg:npm/%40tiptap/react@3.26.1",
-        "pkg:npm/%40tiptap/starter-kit@3.26.1",
+        "pkg:npm/%40tiptap/core@3.27.1",
+        "pkg:npm/%40tiptap/extension-highlight@3.27.1",
+        "pkg:npm/%40tiptap/extension-link@3.27.1",
+        "pkg:npm/%40tiptap/extension-subscript@3.27.1",
+        "pkg:npm/%40tiptap/extension-superscript@3.27.1",
+        "pkg:npm/%40tiptap/extension-text-align@3.27.1",
+        "pkg:npm/%40tiptap/extension-text-style@3.27.1",
+        "pkg:npm/%40tiptap/extension-underline@3.27.1",
+        "pkg:npm/%40tiptap/react@3.27.1",
+        "pkg:npm/%40tiptap/starter-kit@3.27.1",
         "pkg:npm/%40types/react-dom@19.2.3",
         "pkg:npm/%40types/react@19.2.17",
         "pkg:npm/%40typescript-eslint/eslint-plugin@8.61.1",
@@ -28612,7 +28353,7 @@
         "pkg:npm/css-loader@7.1.4",
         "pkg:npm/css-minimizer-webpack-plugin@8.0.0",
         "pkg:npm/dayjs@1.11.21",
-        "pkg:npm/dompurify@3.4.10",
+        "pkg:npm/dompurify@3.4.11",
         "pkg:npm/embla-carousel-react@8.6.0",
         "pkg:npm/embla-carousel@8.6.0",
         "pkg:npm/eslint-config-prettier@10.1.8",
@@ -28822,7 +28563,7 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/undici@7.25.0",
+      "ref": "pkg:npm/undici@7.28.0",
       "dependsOn": []
     },
     {
@@ -28973,7 +28714,7 @@
         "pkg:npm/compression@1.8.1",
         "pkg:npm/connect-history-api-fallback@2.0.0",
         "pkg:npm/express@4.22.2",
-        "pkg:npm/http-proxy-middleware@2.0.9",
+        "pkg:npm/http-proxy-middleware@3.0.6",
         "pkg:npm/ipaddr.js@2.4.0",
         "pkg:npm/launch-editor@2.14.1",
         "pkg:npm/open@10.2.0",
