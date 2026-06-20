@@ -26,7 +26,7 @@ overrides:
   tmp@<0.2.6: 0.2.7
   js-yaml@>=4.0.0 <4.2.0: 4.2.0
   undici@<7.28.0: 7.28.0
-  http-proxy-middleware@<3.0.6: 3.0.6
+  http-proxy-middleware@<3.0.6: 3.0.7
 
 importers:
 
@@ -2523,8 +2523,8 @@ packages:
   http-parser-js@0.5.10:
     resolution: {integrity: sha512-Pysuw9XpUq5dVc/2SMHpuTY01RFl8fttgcyunjL7eEMhGM3cI4eOmiCycJDVCo/7O7ClfQD3SaI6ftDzqOXYMA==}
 
-  http-proxy-middleware@3.0.6:
-    resolution: {integrity: sha512-jhO3QfahaHWfQjEnyGW0vpYIYaXcnA6FEfehrBthOokGppvmI6zcV+1yb6TWn3vyeh8yQUoEqH51DNHOCjivxg==}
+  http-proxy-middleware@3.0.7:
+    resolution: {integrity: sha512-iwbQltVlx8bCrqePUM8C+hllHvdawVhQJaLrj1X7qllkvFQdXFsr16pW/mo9+JDVjN+QO2XUx9jd8SmoFkE5qw==}
     engines: {node: ^14.18.0 || ^16.10.0 || >=18.0.0}
 
   http-proxy@1.18.1:
@@ -7051,7 +7051,7 @@ snapshots:
 
   http-parser-js@0.5.10: {}
 
-  http-proxy-middleware@3.0.6:
+  http-proxy-middleware@3.0.7:
     dependencies:
       '@types/http-proxy': 1.17.17
       debug: 4.4.3
@@ -8896,7 +8896,7 @@ snapshots:
       connect-history-api-fallback: 2.0.0
       express: 4.22.2
       graceful-fs: 4.2.11
-      http-proxy-middleware: 3.0.6
+      http-proxy-middleware: 3.0.7
       ipaddr.js: 2.4.0
       launch-editor: 2.14.1
       open: 10.2.0

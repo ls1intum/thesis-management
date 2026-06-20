@@ -12859,9 +12859,9 @@
     {
       "type": "library",
       "name": "http-proxy-middleware",
-      "version": "3.0.6",
-      "purl": "pkg:npm/http-proxy-middleware@3.0.6",
-      "bom-ref": "pkg:npm/http-proxy-middleware@3.0.6",
+      "version": "3.0.7",
+      "purl": "pkg:npm/http-proxy-middleware@3.0.7",
+      "bom-ref": "pkg:npm/http-proxy-middleware@3.0.7",
       "scope": "excluded",
       "properties": [
         {
@@ -12872,11 +12872,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/http-proxy-middleware/-/http-proxy-middleware-3.0.6.tgz",
+          "url": "https://registry.npmjs.org/http-proxy-middleware/-/http-proxy-middleware-3.0.7.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "8e13b741f6a168759f423127c865b4be960861a5dc9c0e8511f7a1ac1b613a8906a69be623acdc57ed726fa4d69f7bf27a1f32414a04a87e750cd1ce0a38afc6"
+              "content": "8b06d096d565c7c6c2aea78f50cf02fa19651ef75ac1585025a2eb8f55fbaa5964bc541d5c5b2bd7aa56fe6a3df890d58cdf903b65d4c7d8ddf129a8164139ab"
             }
           ]
         }
@@ -26478,7 +26478,7 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/http-proxy-middleware@3.0.6",
+      "ref": "pkg:npm/http-proxy-middleware@3.0.7",
       "dependsOn": [
         "pkg:npm/%40types/http-proxy@1.17.17",
         "pkg:npm/http-proxy@1.18.1",
@@ -28714,7 +28714,7 @@
         "pkg:npm/compression@1.8.1",
         "pkg:npm/connect-history-api-fallback@2.0.0",
         "pkg:npm/express@4.22.2",
-        "pkg:npm/http-proxy-middleware@3.0.6",
+        "pkg:npm/http-proxy-middleware@3.0.7",
         "pkg:npm/ipaddr.js@2.4.0",
         "pkg:npm/launch-editor@2.14.1",
         "pkg:npm/open@10.2.0",
