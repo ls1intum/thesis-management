@@ -182,6 +182,12 @@ public class TopicService {
 		).toList();
 	}
 
+	/**
+	 * Returns all published topics that belong to the given research group.
+	 *
+	 * @param researchGroupId the identifier of the research group
+	 * @return the published topics of the research group
+	 */
 	public List<Topic> getPublishedFromResearchGroup(UUID researchGroupId) {
 		return topicRepository.findPublishedTopics(researchGroupId);
 	}
