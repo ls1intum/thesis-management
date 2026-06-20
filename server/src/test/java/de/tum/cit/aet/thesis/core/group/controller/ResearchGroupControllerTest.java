@@ -138,8 +138,12 @@ class ResearchGroupControllerTest extends BaseIntegrationTest {
 			boolean foundB = false;
 			for (JsonNode entry : json.get("content")) {
 				String id = entry.get("id").asText();
-				if (groupA.toString().equals(id)) foundA = true;
-				if (groupB.toString().equals(id)) foundB = true;
+				if (groupA.toString().equals(id)) {
+					foundA = true;
+				}
+				if (groupB.toString().equals(id)) {
+					foundB = true;
+				}
 			}
 			assertThat(foundA).as("expected to find group %s when searching by head name", groupA).isTrue();
 			assertThat(foundB).as("expected to NOT find unrelated group %s", groupB).isFalse();

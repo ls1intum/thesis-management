@@ -59,6 +59,12 @@ VALUES
      NOW(), NOW(), NOW()),
     (gen_random_uuid(), 'group-admin', '03700010', 'group-admin@test.local', 'GroupAdmin', 'User',
      NULL, 'DE', NULL, NULL, NULL, NULL, NULL, NULL, NOW(), NOW()),
+    (gen_random_uuid(), 'passkey_user', '03700011', 'passkey_user@test.local', 'Passkey', 'User',
+     'OTHER', 'DE', 'MASTER', 'COMPUTER_SCIENCE',
+     NULL,
+     'Passkey authentication',
+     'WebAuthn',
+     NOW(), NOW(), NOW()),
     -- DB-only user (no Keycloak account) for avatar visibility e2e test.
     -- Has a SUPERVISOR thesis role but no open topics, no public theses, and is not a research group head.
     ('00000000-0000-4000-aaaa-000000000001'::UUID, 'avatar_test_supervisor', '03700099',

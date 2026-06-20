@@ -5,10 +5,13 @@ import MyInformation from '@/core/admin/pages/SettingsPage/components/MyInformat
 import NotificationSettings from '@/core/admin/pages/SettingsPage/components/NotificationSettings/NotificationSettings'
 import AccountDeletion from '@/core/admin/pages/SettingsPage/components/AccountDeletion/AccountDeletion'
 import DataExport from '@/core/admin/pages/SettingsPage/components/DataExport/DataExport'
+import PasskeySettings from '@/core/admin/pages/SettingsPage/components/PasskeySettings/PasskeySettings'
 import { useNavigate, useParams } from 'react-router'
+import { useAuthenticationContext } from '@/core/hooks/authentication'
 
 const SettingsPage = () => {
   const { tab } = useParams<{ tab: string }>()
+  const auth = useAuthenticationContext()
 
   const navigate = useNavigate()
 
@@ -37,6 +40,12 @@ const SettingsPage = () => {
       <Tabs.Panel value='account'>
         {value === 'account' && (
           <>
+            {auth.isPasskeySupported && (
+              <>
+                <PasskeySettings />
+                <Divider my='xl' />
+              </>
+            )}
             <DataExport />
             <Divider my='xl' />
             <AccountDeletion />

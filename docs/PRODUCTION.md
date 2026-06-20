@@ -8,6 +8,7 @@ You can follow the steps in [deploy_docker.yml](../.github/workflows/deploy_dock
 1. Setup a production PostgreSQL database
 2. Setup a production Postfix instance for sending mails. Sending mails can be disabled
 3. Setup a production keycloak instance. Guide for first time setup can be found in [Development Setup](DEVELOPMENT.md)
+   - If you use passkeys in production, enable `webAuthnPolicyPasswordlessPasskeysEnabled` on the production realm and align the other `webAuthnPolicyPasswordless*` realm settings with your intended passkey policy.
 
 ## Running Server
 Minimal docker configuration to start a server
@@ -70,6 +71,9 @@ environment:
   - KEYCLOAK_HOST=
   - KEYCLOAK_REALM_NAME=
   - KEYCLOAK_CLIENT_ID=
+  - PASSKEY_RP_ID=
+  - PASSKEY_RP_NAME=
+  - PASSKEY_PROMPT_APPS=
   - CHAIR_NAME=
   - CHAIR_URL=
 ```

@@ -45,6 +45,7 @@ export function authStatePath(
     | 'student3'
     | 'student4'
     | 'student5'
+    | 'passkey_user'
     | 'supervisor'
     | 'supervisor2'
     | 'examiner'

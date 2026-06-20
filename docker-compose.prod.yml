@@ -87,6 +87,9 @@ services:
       - KEYCLOAK_HOST
       - KEYCLOAK_REALM_NAME
       - KEYCLOAK_CLIENT_ID
+      - PASSKEY_RP_ID
+      - PASSKEY_RP_NAME
+      - PASSKEY_PROMPT_APPS
       - ALLOW_SUGGESTED_TOPICS
       - THESIS_TYPES
       - STUDY_PROGRAMS
@@ -104,7 +107,7 @@ services:
       - thesis-management-network
 
   db:
-    image: "postgres:18.4-alpine"
+    image: "postgres:${POSTGRES_IMAGE_TAG:-18.4-alpine}"
     container_name: thesis-management-db
     environment:
       - POSTGRES_USER=${SPRING_DATASOURCE_USERNAME}

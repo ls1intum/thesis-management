@@ -5,6 +5,7 @@ import PageLoader from '@/core/components/PageLoader/PageLoader'
 import PublicArea from '@/app/layout/PublicArea/PublicArea'
 import { useAuthenticationContext } from '@/core/hooks/authentication'
 import { useIsSmallerBreakpoint } from '@/core/hooks/theme'
+import PasskeyRegistrationPrompt from '@/core/components/PasskeyRegistrationPrompt/PasskeyRegistrationPrompt'
 
 const NotFoundPage = lazy(() => import('@/app/pages/NotFoundPage/NotFoundPage'))
 const PrivacyPage = lazy(() => import('@/app/pages/PrivacyPage/PrivacyPage'))
@@ -74,6 +75,7 @@ const AppRoutes = () => {
   return (
     <Suspense fallback={<PageLoader />}>
       <BrowserRouter>
+        <PasskeyRegistrationPrompt />
         <Routes>
           <Route
             path='/management/thesis-applications/:applicationId?'
@@ -128,7 +130,7 @@ const AppRoutes = () => {
                   <PresentationPage />
                 </AuthenticatedArea>
               ) : (
-                <PublicArea size={publicBreakpointSize}>
+                <PublicArea size={publicBreakpointSize} hideUnauthenticatedActions={true}>
                   <PresentationPage />
                 </PublicArea>
               )

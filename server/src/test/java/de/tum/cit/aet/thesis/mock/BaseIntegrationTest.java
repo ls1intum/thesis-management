@@ -147,7 +147,7 @@ public abstract class BaseIntegrationTest {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
-	protected static PostgreSQLContainer dbContainer = new PostgreSQLContainer("postgres:18.2-alpine")
+	protected static PostgreSQLContainer dbContainer = new PostgreSQLContainer(TestContainerImages.POSTGRES)
 			.withCommand("postgres", "-c", "max_connections=200");
 
 	protected static GreenMail greenMail;

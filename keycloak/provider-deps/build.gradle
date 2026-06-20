@@ -1,0 +1,29 @@
+plugins {
+    id "base"
+}
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    keycloakProvider {
+        canBeConsumed = false
+        canBeResolved = true
+        visible = false
+    }
+}
+
+dependencies {
+    keycloakProvider "de.tum.cit.aet:keycloak-redirectless-passkey:1.4.0"
+}
+
+tasks.register("copyProviders", Copy) {
+    from(configurations.keycloakProvider)
+    into(layout.buildDirectory.dir("providers"))
+    // Gradle 9.6.0 copies files with 0600 by default; the Keycloak image then
+    // runs `kc.sh build` as a different user that cannot read the provider jar
+    // ("Failed to create a new filesystem"). Force world-readable permissions
+    // so the copied providers stay readable regardless of the Gradle version.
+    filePermissions { unix("rw-r--r--") }
+}

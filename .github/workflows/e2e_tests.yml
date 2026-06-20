@@ -13,7 +13,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:18.4-alpine
+        image: postgres:${{ vars.POSTGRES_IMAGE_TAG || '18.4-alpine' }}
         env:
           POSTGRES_USER: thesis-management-postgres
           POSTGRES_PASSWORD: thesis-management-postgres
@@ -27,7 +27,7 @@ jobs:
           --health-retries 10
 
       mailpit:
-        image: axllent/mailpit:v1.30
+        image: axllent/mailpit:v1.30.2
         ports:
           - 1125:1025
           - 8125:8025
@@ -39,26 +39,29 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.head_ref || github.ref }}
           fetch-depth: 1
 
-      # Start Keycloak manually (service containers don't support custom commands)
+      # Build + start Keycloak from the repo Dockerfile used in local compose.
       - name: Start Keycloak
         run: |
+          docker build -t thesis-management-keycloak-ci -f keycloak/Dockerfile .
+
           docker run -d --name keycloak \
             -e KC_BOOTSTRAP_ADMIN_USERNAME=admin \
             -e KC_BOOTSTRAP_ADMIN_PASSWORD=admin \
             -p 8181:8080 \
-            quay.io/keycloak/keycloak:26.5 \
-            start-dev
+            -v "$PWD/keycloak/thesis-management-realm.json:/opt/keycloak/data/import/thesis-management-realm.json:ro" \
+            thesis-management-keycloak-ci \
+            start-dev --import-realm
 
       - name: Wait for Keycloak to be ready
         run: |
           echo "Waiting for Keycloak..."
           for i in $(seq 1 60); do
-            if curl -sf http://localhost:8181/realms/master > /dev/null 2>&1; then
+            if curl -sf http://localhost:8181/realms/thesis-management > /dev/null 2>&1; then
               echo "Keycloak is ready"
               break
             fi
@@ -70,20 +73,38 @@ jobs:
             sleep 2
           done
 
-      - name: Import Keycloak realm
+      - name: Verify Keycloak passkey provider
         run: |
-          # Get admin token
-          TOKEN=$(curl -sf -X POST "http://localhost:8181/realms/master/protocol/openid-connect/token" \
-            -H "Content-Type: application/x-www-form-urlencoded" \
-            -d "username=admin&password=admin&grant_type=password&client_id=admin-cli" | jq -r '.access_token')
-
-          # Import realm
-          curl -sf -X POST "http://localhost:8181/admin/realms" \
-            -H "Authorization: Bearer $TOKEN" \
-            -H "Content-Type: application/json" \
-            -d @keycloak/thesis-management-realm.json
-
-          echo "Realm imported successfully"
+          echo "Waiting for Keycloak passkey provider..."
+          headers_file="$(mktemp)"
+          body_file="$(mktemp)"
+          for i in $(seq 1 60); do
+            status="$(
+              curl -sS \
+                -D "$headers_file" \
+                -o "$body_file" \
+                -w "%{http_code}" \
+                -H "Origin: http://localhost:3100" \
+                http://localhost:8181/realms/thesis-management/passkey/thesis-management-app/health || true
+            )"
+            if [[ "$status" =~ ^2[0-9][0-9]$ ]] \
+              && grep -qi '^access-control-allow-origin: http://localhost:3100' "$headers_file" \
+              && grep -qi '^access-control-allow-credentials: true' "$headers_file"; then
+              echo "Keycloak passkey provider is ready"
+              break
+            fi
+            if [ "$i" -eq 60 ]; then
+              echo "::error::Keycloak passkey provider did not become available with credentialed CORS for http://localhost:3100"
+              echo "Last HTTP status: ${status:-none}"
+              echo "Last response headers:"
+              cat "$headers_file"
+              echo "Last response body:"
+              cat "$body_file"
+              docker logs keycloak
+              exit 1
+            fi
+            sleep 2
+          done
 
       # Set up Java for server
       - name: Set up JDK 25
@@ -118,7 +139,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: '24.16.0'
+          node-version: '24.17.0'
           cache: 'pnpm'
           cache-dependency-path: client/pnpm-lock.yaml
 
@@ -153,7 +174,7 @@ jobs:
 
       - name: Serve client static bundle
         working-directory: ./client
-        run: pnpm dlx serve@14 -s build -l 3100 --no-clipboard --no-port-switching &
+        run: pnpm dlx serve@14 -s build -l 3100 -c ../serve.e2e.json --no-clipboard --no-port-switching &
 
       # Wait for both services to be ready
       - name: Wait for server to be ready

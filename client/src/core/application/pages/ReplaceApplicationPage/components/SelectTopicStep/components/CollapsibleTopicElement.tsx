@@ -35,7 +35,7 @@ const CollapsibleTopicElement = ({ topic, onApply }: ICollapsibleTopicElementPro
   const isTopicOverview = 'topicId' in topic
   const fullTopic = useTopic(isTopicOverview && expanded ? topic.topicId : undefined)
 
-  const canApply = !fullTopic || fullTopic.state === TopicState.OPEN
+  const canApply = !!fullTopic && fullTopic.state === TopicState.OPEN
 
   return (
     <Card
