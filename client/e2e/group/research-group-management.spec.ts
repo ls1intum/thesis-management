@@ -41,6 +41,13 @@ test.describe('Research Group Management - Admin', () => {
 
     // Select a Group Head — uses KeycloakUserAutocomplete with 300ms debounce + API call.
     // Retry typing if no options appear (Keycloak may be slow under parallel load).
+    //
+    // Use the dedicated `e2e_grouphead` user (not a shared user like `admin`) as the
+    // head. The group head cannot be removed (server blocks it) and groups cannot be
+    // deleted, so whoever is chosen stays assigned to this group for the rest of the
+    // run. Picking `admin` here would scope the admin's user-search (`/v2/users` is
+    // research-group-scoped) and break the order-independent admin tests in
+    // account-deletion.spec.ts, which require the admin to remain group-less.
     const groupHeadInput = modal.getByRole('combobox', { name: 'Group Head' })
     const option = page.getByRole('option').first()
     let optionFound = false
@@ -51,7 +58,7 @@ test.describe('Research Group Management - Admin', () => {
         const modifier = process.platform === 'darwin' ? 'Meta' : 'Control'
         await page.keyboard.press(`${modifier}+a`)
       }
-      await groupHeadInput.pressSequentially('admin', { delay: 50 })
+      await groupHeadInput.pressSequentially('e2e_grouphead', { delay: 50 })
       optionFound = await option.isVisible({ timeout: 15_000 }).catch(() => false)
     }
     await expect(option).toBeVisible({ timeout: 5_000 })
