@@ -5065,33 +5065,6 @@
     },
     {
       "type": "library",
-      "name": "http-proxy",
-      "version": "1.17.17",
-      "purl": "pkg:npm/%40types/http-proxy@1.17.17",
-      "bom-ref": "pkg:npm/%40types/http-proxy@1.17.17",
-      "scope": "excluded",
-      "properties": [
-        {
-          "name": "cdx:npm:package:development",
-          "value": "true"
-        }
-      ],
-      "group": "@types",
-      "externalReferences": [
-        {
-          "type": "distribution",
-          "url": "https://registry.npmjs.org/@types/http-proxy/-/http-proxy-1.17.17.tgz",
-          "hashes": [
-            {
-              "alg": "SHA-512",
-              "content": "103e8b07e675015ca5353bbb85dcee06a3a0327bc6fe577ac06086f30167033297e6ec96d8add60f9dafd209cb0932bf54ba57b4a724816bb249c60ae9c48f6b"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "library",
       "name": "istanbul-lib-coverage",
       "version": "2.0.6",
       "purl": "pkg:npm/%40types/istanbul-lib-coverage@2.0.6",
@@ -11326,32 +11299,6 @@
     },
     {
       "type": "library",
-      "name": "eventemitter3",
-      "version": "4.0.7",
-      "purl": "pkg:npm/eventemitter3@4.0.7",
-      "bom-ref": "pkg:npm/eventemitter3@4.0.7",
-      "scope": "excluded",
-      "properties": [
-        {
-          "name": "cdx:npm:package:development",
-          "value": "true"
-        }
-      ],
-      "externalReferences": [
-        {
-          "type": "distribution",
-          "url": "https://registry.npmjs.org/eventemitter3/-/eventemitter3-4.0.7.tgz",
-          "hashes": [
-            {
-              "alg": "SHA-512",
-              "content": "f20b870590b02a716161d1ebdb2b2e45612b4f08683765fc5c42d196b470a667de6368e3b94378b5a40cb142ca515a352b80ef665fb4a607f2a32b07c6f9af13"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "library",
       "name": "events",
       "version": "3.3.0",
       "purl": "pkg:npm/events@3.3.0",
@@ -11844,32 +11791,6 @@
             {
               "alg": "SHA-512",
               "content": "3e30ec7bb47385c3e4209c32e6deca3d641267d7006f341771a7ec7ad4280fbb0e2514251a290d6f1ef2669d8ea2d0e7272ac371bc91ab74ed6f5f2260eaa4c4"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "name": "follow-redirects",
-      "version": "1.16.0",
-      "purl": "pkg:npm/follow-redirects@1.16.0",
-      "bom-ref": "pkg:npm/follow-redirects@1.16.0",
-      "scope": "excluded",
-      "properties": [
-        {
-          "name": "cdx:npm:package:development",
-          "value": "true"
-        }
-      ],
-      "externalReferences": [
-        {
-          "type": "distribution",
-          "url": "https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.16.0.tgz",
-          "hashes": [
-            {
-              "alg": "SHA-512",
-              "content": "cb9acdfee3ac69d153fc97d8c21c514b947b41c7be837cc6f7bf89aed159942f64957fd6e610fb8a22f349c2389d9a944bb0cd51d84f830e3123c5b62ee5e553"
             }
           ]
         }
@@ -12859,9 +12780,9 @@
     {
       "type": "library",
       "name": "http-proxy-middleware",
-      "version": "3.0.7",
-      "purl": "pkg:npm/http-proxy-middleware@3.0.7",
-      "bom-ref": "pkg:npm/http-proxy-middleware@3.0.7",
+      "version": "4.1.1",
+      "purl": "pkg:npm/http-proxy-middleware@4.1.1",
+      "bom-ref": "pkg:npm/http-proxy-middleware@4.1.1",
       "scope": "excluded",
       "properties": [
         {
@@ -12872,11 +12793,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/http-proxy-middleware/-/http-proxy-middleware-3.0.7.tgz",
+          "url": "https://registry.npmjs.org/http-proxy-middleware/-/http-proxy-middleware-4.1.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "8b06d096d565c7c6c2aea78f50cf02fa19651ef75ac1585025a2eb8f55fbaa5964bc541d5c5b2bd7aa56fe6a3df890d58cdf903b65d4c7d8ddf129a8164139ab"
+              "content": "297e59a1f1972c55ea140910a0e599fab4ed68b4eeb7b9b48322fe43326b75e8ed219f85e1b3cf0e87bbade212836fafd02033e4e7d5c0424486dcbb5fe7b9ee"
             }
           ]
         }
@@ -12884,10 +12805,10 @@
     },
     {
       "type": "library",
-      "name": "http-proxy",
-      "version": "1.18.1",
-      "purl": "pkg:npm/http-proxy@1.18.1",
-      "bom-ref": "pkg:npm/http-proxy@1.18.1",
+      "name": "httpxy",
+      "version": "0.5.3",
+      "purl": "pkg:npm/httpxy@0.5.3",
+      "bom-ref": "pkg:npm/httpxy@0.5.3",
       "scope": "excluded",
       "properties": [
         {
@@ -12898,11 +12819,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/http-proxy/-/http-proxy-1.18.1.tgz",
+          "url": "https://registry.npmjs.org/httpxy/-/httpxy-0.5.3.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "ee6cffef6d406e72702156e7692bf50b3dc09b464b4ff501c240bdd95971857bff93f04141f3367d712540d0b6ec1546af4bb0529a6560f40cf4b9da04c47935"
+              "content": "48c4bd57a4a7ed559a4b5d65621a00af471ea1a8a895359fe2361d267d0d26109d28cbbd4761fd161d0b0435811d017a1d12c8d4f99a78f62c8da9d2a44e4f13"
             }
           ]
         }
@@ -13747,6 +13668,32 @@
     },
     {
       "type": "library",
+      "name": "is-plain-obj",
+      "version": "4.1.0",
+      "purl": "pkg:npm/is-plain-obj@4.1.0",
+      "bom-ref": "pkg:npm/is-plain-obj@4.1.0",
+      "scope": "excluded",
+      "properties": [
+        {
+          "name": "cdx:npm:package:development",
+          "value": "true"
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/is-plain-obj/-/is-plain-obj-4.1.0.tgz",
+          "hashes": [
+            {
+              "alg": "SHA-512",
+              "content": "f8f822faf32e50d909c84c62301b792251683322a7af9ce127852ca73e7c58e841179428219905c8d1c86c102d1f0cd502093946d9dd54db0344deb5fe6983aa"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "library",
       "name": "is-plain-object",
       "version": "2.0.4",
       "purl": "pkg:npm/is-plain-object@2.0.4",
@@ -13766,32 +13713,6 @@
             {
               "alg": "SHA-512",
               "content": "8793e98179168ad737f0104c61ac1360c5891c564956706ab85139ef11698c1f29245885ea067e6d4f96c88ff2a9788547999d2ec81835a3def2e6a8e94bfd3a"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "name": "is-plain-object",
-      "version": "5.0.0",
-      "purl": "pkg:npm/is-plain-object@5.0.0",
-      "bom-ref": "pkg:npm/is-plain-object@5.0.0",
-      "scope": "excluded",
-      "properties": [
-        {
-          "name": "cdx:npm:package:development",
-          "value": "true"
-        }
-      ],
-      "externalReferences": [
-        {
-          "type": "distribution",
-          "url": "https://registry.npmjs.org/is-plain-object/-/is-plain-object-5.0.0.tgz",
-          "hashes": [
-            {
-              "alg": "SHA-512",
-              "content": "5514b32a46cc9b98cc0e828b6e5b4090543942bed50e24c5197c581575e8c158f7f3b19e18d382b0e1fa32ccb4d12199dc5a7ce1bd4d69ad69b2a81c08810fe5"
             }
           ]
         }
@@ -19993,32 +19914,6 @@
     },
     {
       "type": "library",
-      "name": "requires-port",
-      "version": "1.0.0",
-      "purl": "pkg:npm/requires-port@1.0.0",
-      "bom-ref": "pkg:npm/requires-port@1.0.0",
-      "scope": "excluded",
-      "properties": [
-        {
-          "name": "cdx:npm:package:development",
-          "value": "true"
-        }
-      ],
-      "externalReferences": [
-        {
-          "type": "distribution",
-          "url": "https://registry.npmjs.org/requires-port/-/requires-port-1.0.0.tgz",
-          "hashes": [
-            {
-              "alg": "SHA-512",
-              "content": "2a280e087728714dd7383271b2ef22fe3f13f6dcd3e1a74789e730391450d19645729eda8705ee454d66fb2b8ef740b9654c867867e87070c8d783372f7c8301"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "library",
       "name": "reserved-words",
       "version": "0.1.2",
       "purl": "pkg:npm/reserved-words@0.1.2",
@@ -24857,10 +24752,6 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40types/http-proxy@1.17.17",
-      "dependsOn": []
-    },
-    {
       "ref": "pkg:npm/%40types/istanbul-lib-coverage@2.0.6",
       "dependsOn": []
     },
@@ -26141,10 +26032,6 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/eventemitter3@4.0.7",
-      "dependsOn": []
-    },
-    {
       "ref": "pkg:npm/events@3.3.0",
       "dependsOn": []
     },
@@ -26265,10 +26152,6 @@
     },
     {
       "ref": "pkg:npm/flatted@3.4.2",
-      "dependsOn": []
-    },
-    {
-      "ref": "pkg:npm/follow-redirects@1.16.0",
       "dependsOn": []
     },
     {
@@ -26478,20 +26361,15 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/http-proxy-middleware@3.0.7",
+      "ref": "pkg:npm/http-proxy-middleware@4.1.1",
       "dependsOn": [
-        "pkg:npm/%40types/http-proxy@1.17.17",
-        "pkg:npm/http-proxy@1.18.1",
-        "pkg:npm/is-plain-object@5.0.0"
+        "pkg:npm/httpxy@0.5.3",
+        "pkg:npm/is-plain-obj@4.1.0"
       ]
     },
     {
-      "ref": "pkg:npm/http-proxy@1.18.1",
-      "dependsOn": [
-        "pkg:npm/eventemitter3@4.0.7",
-        "pkg:npm/follow-redirects@1.16.0",
-        "pkg:npm/requires-port@1.0.0"
-      ]
+      "ref": "pkg:npm/httpxy@0.5.3",
+      "dependsOn": []
     },
     {
       "ref": "pkg:npm/husky@9.1.7",
@@ -26648,14 +26526,14 @@
       ]
     },
     {
+      "ref": "pkg:npm/is-plain-obj@4.1.0",
+      "dependsOn": []
+    },
+    {
       "ref": "pkg:npm/is-plain-object@2.0.4",
       "dependsOn": [
         "pkg:npm/isobject@3.0.1"
       ]
-    },
-    {
-      "ref": "pkg:npm/is-plain-object@5.0.0",
-      "dependsOn": []
     },
     {
       "ref": "pkg:npm/is-potential-custom-element-name@1.0.1",
@@ -27914,10 +27792,6 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/requires-port@1.0.0",
-      "dependsOn": []
-    },
-    {
       "ref": "pkg:npm/reserved-words@0.1.2",
       "dependsOn": []
     },
@@ -28714,7 +28588,7 @@
         "pkg:npm/compression@1.8.1",
         "pkg:npm/connect-history-api-fallback@2.0.0",
         "pkg:npm/express@4.22.2",
-        "pkg:npm/http-proxy-middleware@3.0.7",
+        "pkg:npm/http-proxy-middleware@4.1.1",
         "pkg:npm/ipaddr.js@2.4.0",
         "pkg:npm/launch-editor@2.14.1",
         "pkg:npm/open@10.2.0",
