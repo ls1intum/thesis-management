@@ -23,8 +23,10 @@ public interface TopicRepository extends JpaRepository<Topic, UUID> {
 						OR (
 							('CLOSED'  = ANY(CAST(:states AS TEXT[])) AND t.closed_at IS NOT NULL)
 						OR ('DRAFT'   = ANY(CAST(:states AS TEXT[])) AND t.closed_at IS NULL AND t.published_at IS NULL)
-						OR ('OPEN'    = ANY(CAST(:states AS TEXT[])) AND t.closed_at IS NULL AND t.published_at IS NOT NULL AND (t.application_deadline IS NULL OR t.application_deadline >= NOW()))
-						OR ('EXPIRED' = ANY(CAST(:states AS TEXT[])) AND t.closed_at IS NULL AND t.published_at IS NOT NULL AND t.application_deadline IS NOT NULL AND t.application_deadline < NOW())
+						OR ('OPEN'    = ANY(CAST(:states AS TEXT[])) AND t.closed_at IS NULL AND t.published_at IS NOT NULL
+							AND (t.application_deadline IS NULL OR t.application_deadline >= NOW()))
+						OR ('EXPIRED' = ANY(CAST(:states AS TEXT[])) AND t.closed_at IS NULL AND t.published_at IS NOT NULL
+							AND t.application_deadline IS NOT NULL AND t.application_deadline < NOW())
 						)
 					)
 			""", nativeQuery = true)

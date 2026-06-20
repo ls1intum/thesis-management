@@ -28,6 +28,12 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x ./server/gradlew
 
+      # Enforce code style before the (slower) test run so violations fail fast
+      - name: Run server checkstyle
+        working-directory: ./server
+        run: |
+          ./gradlew checkstyleMain checkstyleTest
+
       # Run tests with coverage for server
       - name: Run server tests with coverage
         working-directory: ./server
