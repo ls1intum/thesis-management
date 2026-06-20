@@ -130,6 +130,7 @@ export function formatTopicState(state: TopicState) {
     [TopicState.OPEN]: 'Open',
     [TopicState.DRAFT]: 'Draft',
     [TopicState.CLOSED]: 'Closed',
+    [TopicState.EXPIRED]: 'Expired',
   }
 
   return stateMap[state]

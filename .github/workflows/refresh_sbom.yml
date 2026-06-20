@@ -116,7 +116,7 @@ jobs:
           fi
 
       - name: Checkout PR branch (read-only, no token persisted)
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           # pull_request_target defaults to the base ref; we want the PR head.
           ref: ${{ github.event.pull_request.head.sha }}

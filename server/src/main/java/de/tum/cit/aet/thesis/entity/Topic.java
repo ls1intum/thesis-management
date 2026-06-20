@@ -129,6 +129,8 @@ public class Topic {
 			return TopicState.CLOSED;
 		} else if (this.publishedAt == null) {
 			return TopicState.DRAFT;
+		} else if (this.applicationDeadline != null && this.applicationDeadline.isBefore(Instant.now())) {
+			return TopicState.EXPIRED;
 		} else {
 			return TopicState.OPEN;
 		}

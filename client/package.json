@@ -14,7 +14,7 @@
   ],
   "main": "src/index.tsx",
   "sideEffects": false,
-  "packageManager": "pnpm@11.7.0",
+  "packageManager": "pnpm@11.8.0",
   "engines": {
     "node": ">=24.7.0",
     "pnpm": ">=11"
@@ -111,7 +111,7 @@
     "speed-measure-webpack-plugin": "1.6.0",
     "style-loader": "4.0.0",
     "terser-webpack-plugin": "5.6.1",
-    "ts-loader": "9.6.0",
+    "ts-loader": "9.6.1",
     "ts-node": "10.9.2",
     "typescript": "5.9.3",
     "typescript-plugin-css-modules": "5.2.0",
