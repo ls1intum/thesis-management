@@ -1,11 +1,14 @@
 package de.tum.cit.aet.thesis.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.thesis.entity.ResearchGroupSettings;
 
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record ResearchGroupSettingsEmailDTO(
-		String applicationNotificationEmail
+		String applicationNotificationEmail,
+		String emailSignature
 ) {
 	public static ResearchGroupSettingsEmailDTO fromEntity(ResearchGroupSettings settings) {
-		return new ResearchGroupSettingsEmailDTO(settings.getApplicationNotificationEmail());
+		return new ResearchGroupSettingsEmailDTO(settings.getApplicationNotificationEmail(), settings.getEmailSignature());
 	}
 }

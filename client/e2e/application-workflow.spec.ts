@@ -12,6 +12,7 @@ import {
   getBody,
   getToAddresses,
   assertSentFromApp,
+  assertEmailFooter,
   findBySubject,
 } from './mailpit'
 
@@ -131,6 +132,7 @@ test.describe('Application Workflow - Student submits application', () => {
     const studentEmail = findBySubject(newStudentEmails, 'Thesis Application Confirmation')
     expect(studentEmail, 'Student confirmation email should be sent').toBeDefined()
     assertSentFromApp(studentEmail!)
+    assertEmailFooter(studentEmail!)
     expect(getToAddresses(studentEmail!)).toContain('student@test.local')
 
     const studentBody = getBody(studentEmail!)
@@ -151,6 +153,7 @@ test.describe('Application Workflow - Student submits application', () => {
       'Examiner (examiner@test.local) should receive "New Thesis Application" email',
     ).toBeDefined()
     assertSentFromApp(examinerChairEmail!)
+    assertEmailFooter(examinerChairEmail!)
 
     const examinerBody = getBody(examinerChairEmail!)
     expect(examinerBody, 'Examiner email should mention the applicant').toContain('Student')

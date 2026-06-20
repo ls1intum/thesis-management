@@ -64,7 +64,7 @@ WITH defaults
   You can view your thesis details and tasks on: <a target="_blank" rel="noopener noreferrer nofollow" th:href="${thesisUrl}">[[${thesisUrl}]]</a>
 </p>
 
-<div th:utext="${config.signature}"></div>
+<div th:utext="${emailSignature}"></div>
 ', 'Application was accepted with different supervisor and examiner'),
                                          ('APPLICATION_ACCEPTED_NO_SUPERVISOR', 'Thesis Application Acceptance', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
@@ -93,7 +93,7 @@ project.
 You can view your thesis details and tasks on: <a target="_blank" rel="noopener noreferrer nofollow" th:href="${thesisUrl}">[[${thesisUrl}]]</a>
 </p>
 
-<div th:utext="${config.signature}"></div>', 'Application was accepted with same supervisor and examiner'),
+<div th:utext="${emailSignature}"></div>', 'Application was accepted with same supervisor and examiner'),
                                          ('APPLICATION_CREATED_CHAIR', 'New Thesis Application', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">there is a new thesis application by <strong>[[${application.applicantFirstName}]]&nbsp;[[${application.applicantLastName}]]</strong>.</p>
@@ -158,11 +158,7 @@ Full Details: <a target="_blank" rel="noopener noreferrer nofollow" th:href="${a
 
 <p th:inline="text"><strong>You can find the submitted files in the attachment part of this email.</strong></p>
 
-<hr/>
-<div style="text-align: center;font-size: 10px">
-    Manage your notification settings <a th:href="${config.clientHost + ''/settings/notifications''}">here</a>
-</div>
-<br/><br/>',
+<div th:utext="${emailSignature}"></div>',
                                           'All examiners and supervisors get a summary about a new application'),
                                          ('APPLICATION_CREATED_STUDENT', 'Thesis Application Confirmation', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
@@ -229,7 +225,9 @@ and research commitments of our group may result in a response time of up to fou
 We appreciate your patience and understanding during this period.
 </p>
 
-<p th:inline="text"><strong>You can find the submitted files in the attachment part of this email.</strong></p>',
+<p th:inline="text"><strong>You can find the submitted files in the attachment part of this email.</strong></p>
+
+<div th:utext="${emailSignature}"></div>',
                                           'Confirmation email to the applying student when application was submitted'),
                                          ('APPLICATION_REJECTED', 'Thesis Application Rejection', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
@@ -244,7 +242,7 @@ The volume of applications received this year was exceptionally high, and I have
 I recommend reaching out to other faculty members who may align more closely with your qualifications and area of interest.
 </p>
 
-<div th:utext="${config.signature}"></div>', 'Application was rejected'),
+<div th:utext="${emailSignature}"></div>', 'Application was rejected'),
                                          ('APPLICATION_REJECTED_TOPIC_REQUIREMENTS', 'Thesis Application Rejection', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">
@@ -256,7 +254,7 @@ After reviewing your application and supporting documents, I regret to inform yo
 I recommend considering other thesis topics or reaching out to faculty members whose research focus may better align with your qualifications.
 </p>
 
-<div th:utext="${config.signature}"></div>', 'Application was rejected because topic requirements were not met'),
+<div th:utext="${emailSignature}"></div>', 'Application was rejected because topic requirements were not met'),
                                          ('APPLICATION_REJECTED_STUDENT_REQUIREMENTS', 'Thesis Application Rejection', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">
@@ -269,7 +267,7 @@ Unfortunately, I must inform you that you do not currently meet the necessary re
 I recommend reaching out to other faculty members who may align more closely with your qualifications and area of interest.
 </p>
 
-<div th:utext="${config.signature}"></div>',
+<div th:utext="${emailSignature}"></div>',
                                           'Application was rejected because student does not fulfil chair''s requirements'),
                                          ('APPLICATION_REJECTED_TITLE_NOT_INTERESTING', 'Thesis Application Rejection', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
@@ -283,7 +281,7 @@ However, the suggested topic does not align with the current research interests 
 I encourage you to explore other faculty members whose research is more closely related to your proposed area of study.
 </p>
 
-<div th:utext="${config.signature}"></div>',
+<div th:utext="${emailSignature}"></div>',
                                           'Application was rejected because the suggested thesis title is not interesting'),
                                          ('APPLICATION_REJECTED_TOPIC_FILLED', 'Thesis Application Rejection', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
@@ -300,7 +298,7 @@ We found a student for the specific topic you applied for.
 You can explore other topics or suggest a topic yourself in your area of interest.
 </p>
 
-<div th:utext="${config.signature}"></div>', 'Application was rejected because topic was closed'),
+<div th:utext="${emailSignature}"></div>', 'Application was rejected because topic was closed'),
                                          ('APPLICATION_REJECTED_TOPIC_OUTDATED', 'Thesis Application Rejection', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">
@@ -316,7 +314,7 @@ I wanted to inform you that the topic you applied for is no longer available.
 You can explore other topics or suggest a topic yourself in your area of interest.
 </p>
 
-<div th:utext="${config.signature}"></div>', 'Application was rejected because topic is outdated'),
+<div th:utext="${emailSignature}"></div>', 'Application was rejected because topic is outdated'),
                                          ('APPLICATION_REMINDER', 'Unreviewed Thesis Applications', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">
@@ -327,11 +325,7 @@ There are currently <strong>[[${unreviewedApplications}]]</strong> unreviewed th
 Review Applications: <a target="_blank" rel="noopener noreferrer nofollow" th:href="${reviewApplicationsLink}">[[${reviewApplicationsLink}]]</a>
 </p>
 
-<hr/>
-<div style="text-align: center;font-size: 10px">
-    Manage your notification settings <a th:href="${config.clientHost + ''/settings/notifications''}">here</a>
-</div>
-<br/><br/>',
+<div th:utext="${emailSignature}"></div>',
                                           'Weekly email if there are more than 10 unreviewed applications'),
                                          ('THESIS_ASSESSMENT_ADDED', 'Assessment added', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
@@ -362,11 +356,7 @@ Review Applications: <a target="_blank" rel="noopener noreferrer nofollow" th:hr
     Full Details: <a target="_blank" rel="noopener noreferrer nofollow" th:href="${thesisUrl}" th:text="${thesisUrl}"></a>
 </p>
 
-<hr/>
-<div style="text-align: center;font-size: 10px">
-    Manage your notification settings <a th:href="${config.clientHost + ''/settings/notifications''}">here</a>
-</div>
-<br/><br/>', 'Assessment was added to a submitted thesis'),
+<div th:utext="${emailSignature}"></div>', 'Assessment was added to a submitted thesis'),
                                          ('THESIS_CLOSED', 'Thesis Closed', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">
@@ -378,11 +368,7 @@ Please contact your supervisor or examiner if you think that this was a mistake.
     Full Details: <a target="_blank" rel="noopener noreferrer nofollow" th:href="${thesisUrl}" th:text="${thesisUrl}"></a>
 </p>
 
-<hr/>
-<div style="text-align: center;font-size: 10px">
-    Manage your notification settings <a th:href="${config.clientHost + ''/settings/notifications''}">here</a>
-</div>
-<br/><br/>', 'Thesis was closed before completion'),
+<div th:utext="${emailSignature}"></div>', 'Thesis was closed before completion'),
                                          ('THESIS_COMMENT_POSTED', 'A Comment was posted', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">
@@ -398,11 +384,7 @@ Please contact your supervisor or examiner if you think that this was a mistake.
     Full Details: <a target="_blank" rel="noopener noreferrer nofollow" th:href="${thesisUrl}" th:text="${thesisUrl}"></a>
 </p>
 
-<hr/>
-<div style="text-align: center;font-size: 10px">
-    Manage your notification settings <a th:href="${config.clientHost + ''/settings/notifications''}">here</a>
-</div>
-<br/><br/>',
+<div th:utext="${emailSignature}"></div>',
                                           'New comment on a thesis. TO depends whether it''s a student or supervisor comment'),
                                          ('THESIS_CREATED', 'Thesis Created', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
@@ -419,7 +401,9 @@ Please contact your supervisor or examiner if you think that this was a mistake.
 
 <p th:inline="text">
 The next step is that you write a proposal and submit it on <a target="_blank" rel="noopener noreferrer nofollow" th:href="${thesisUrl}">[[${thesisUrl}]]</a>
-</p>', 'New thesis was created and assigned to a student'),
+</p>
+
+<div th:utext="${emailSignature}"></div>', 'New thesis was created and assigned to a student'),
                                          ('THESIS_FINAL_GRADE', 'Final Grade available for Thesis', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">
@@ -439,11 +423,7 @@ The next step is that you write a proposal and submit it on <a target="_blank" r
     Full Details: <a target="_blank" rel="noopener noreferrer nofollow" th:href="${thesisUrl}" th:text="${thesisUrl}"></a>
 </p>
 
-<hr/>
-<div style="text-align: center;font-size: 10px">
-    Manage your notification settings <a th:href="${config.clientHost + ''/settings/notifications''}">here</a>
-</div>
-<br/><br/>', 'Final grade was added to a thesis'),
+<div th:utext="${emailSignature}"></div>', 'Final grade was added to a thesis'),
                                          ('THESIS_FINAL_SUBMISSION', 'Thesis Submitted', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">
@@ -458,11 +438,7 @@ The next step is to write an assessment about the thesis.
     Full Details: <a target="_blank" rel="noopener noreferrer nofollow" th:href="${thesisUrl}" th:text="${thesisUrl}"></a>
 </p>
 
-<hr/>
-<div style="text-align: center;font-size: 10px">
-    Manage your notification settings <a th:href="${config.clientHost + ''/settings/notifications''}">here</a>
-</div>
-<br/><br/>', 'Student submitted final thesis'),
+<div th:utext="${emailSignature}"></div>', 'Student submitted final thesis'),
                                          ('THESIS_PRESENTATION_DELETED', 'Presentation deleted', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">
@@ -473,11 +449,7 @@ The next step is to write an assessment about the thesis.
     Full Details: <a target="_blank" rel="noopener noreferrer nofollow" th:href="${thesisUrl}" th:text="${thesisUrl}"></a>
 </p>
 
-<hr/>
-<div style="text-align: center;font-size: 10px">
-    Manage your notification settings <a th:href="${config.clientHost + ''/settings/notifications''}">here</a>
-</div>
-<br/><br/>', 'Scheduled presentation was deleted'),
+<div th:utext="${emailSignature}"></div>', 'Scheduled presentation was deleted'),
                                          ('THESIS_PRESENTATION_SCHEDULED', 'New Presentation scheduled', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">
@@ -513,11 +485,7 @@ The next step is to write an assessment about the thesis.
     Full Details: <a target="_blank" rel="noopener noreferrer nofollow" th:href="${thesisUrl}" th:text="${thesisUrl}"></a>
 </p>
 
-<hr/>
-<div style="text-align: center;font-size: 10px">
-    Manage your notification settings <a th:href="${config.clientHost + ''/settings/notifications''}">here</a>
-</div>
-<br/><br/>', 'New presentation was scheduled'),
+<div th:utext="${emailSignature}"></div>', 'New presentation was scheduled'),
                                          ('THESIS_PRESENTATION_UPDATED', 'Presentation updated', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">
@@ -553,11 +521,7 @@ The next step is to write an assessment about the thesis.
     Full Details: <a target="_blank" rel="noopener noreferrer nofollow" th:href="${thesisUrl}" th:text="${thesisUrl}"></a>
 </p>
 
-<hr/>
-<div style="text-align: center;font-size: 10px">
-    Manage your notification settings <a th:href="${config.clientHost + ''/settings/notifications''}">here</a>
-</div>
-<br/><br/>', 'Presentation was updated'),
+<div th:utext="${emailSignature}"></div>', 'Presentation was updated'),
                                          ('THESIS_PRESENTATION_INVITATION', 'Thesis Presentation Invitation', '<div style="text-align: center" th:inline="text">
 <h2>INVITATION</h2>
 <div>As part of their [[${thesis.type}]]''s thesis</div>
@@ -591,11 +555,7 @@ The presentation will be in [[${presentation.language}]]. Everybody is cordially
 Full Details: <a target="_blank" rel="noopener noreferrer nofollow" th:href="${presentationUrl}">[[${presentationUrl}]]</a>
 </p>
 
-<hr/>
-<div style="text-align: center;font-size: 10px">
-    Manage your notification settings <a th:href="${config.clientHost + ''/settings/notifications''}">here</a>
-</div>
-<br/><br/>', 'Public Presentation Invitation'),
+<div th:utext="${emailSignature}"></div>', 'Public Presentation Invitation'),
                                          ('THESIS_PRESENTATION_INVITATION_CANCELLED', 'Thesis Presentation Cancelled', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">
@@ -604,11 +564,7 @@ The [[${thesis.type}]] thesis presentation of
 [[${presentation.scheduledAt}]] was cancelled.
 </p>
 
-<hr/>
-<div style="text-align: center;font-size: 10px">
-    Manage your notification settings <a th:href="${config.clientHost + ''/settings/notifications''}">here</a>
-</div>
-<br/><br/>', 'Public Presentation was deleted'),
+<div th:utext="${emailSignature}"></div>', 'Public Presentation was deleted'),
                                          ('THESIS_PRESENTATION_INVITATION_UPDATED', 'Thesis Presentation Updated', '<div style="text-align: center" th:inline="text">
 <h2>INVITATION</h2>
 <div>As part of their [[${thesis.type}]]''s thesis</div>
@@ -642,11 +598,7 @@ The presentation will be in [[${presentation.language}]]. Everybody is cordially
 Full Details: <a target="_blank" rel="noopener noreferrer nofollow" th:href="${presentationUrl}">[[${presentationUrl}]]</a>
 </p>
 
-<hr/>
-<div style="text-align: center;font-size: 10px">
-    Manage your notification settings <a th:href="${config.clientHost + ''/settings/notifications''}">here</a>
-</div>
-<br/><br/>', 'Public Presentation was updated'),
+<div th:utext="${emailSignature}"></div>', 'Public Presentation was updated'),
                                          ('THESIS_PROPOSAL_ACCEPTED', 'Thesis Proposal Accepted', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">
@@ -655,11 +607,7 @@ The next step is to start with the project work and with writing the thesis.
 You can see your submission deadline on <a target="_blank" rel="noopener noreferrer nofollow" th:href="${thesisUrl}">[[${thesisUrl}]]</a>.
 </p>
 
-<hr/>
-<div style="text-align: center;font-size: 10px">
-    Manage your notification settings <a th:href="${config.clientHost + ''/settings/notifications''}">here</a>
-</div>
-<br/><br/>', 'Proposal was accepted'),
+<div th:utext="${emailSignature}"></div>', 'Proposal was accepted'),
                                          ('THESIS_PROPOSAL_REJECTED', 'Changes were requested for Proposal', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">
@@ -677,11 +625,7 @@ The following changes were requested:<br />
     Full Details: <a target="_blank" rel="noopener noreferrer nofollow" th:href="${thesisUrl}" th:text="${thesisUrl}"></a>
 </p>
 
-<hr/>
-<div style="text-align: center;font-size: 10px">
-    Manage your notification settings <a th:href="${config.clientHost + ''/settings/notifications''}">here</a>
-</div>
-<br/><br/>', 'Changes were requested for proposal'),
+<div th:utext="${emailSignature}"></div>', 'Changes were requested for proposal'),
                                          ('THESIS_PROPOSAL_UPLOADED', 'Thesis Proposal Added', '<p th:inline="text">Dear [[${recipient.firstName}]],</p>
 
 <p th:inline="text">
@@ -693,11 +637,7 @@ You can find the submitted file in the attachment part of this email.
     Full Details: <a target="_blank" rel="noopener noreferrer nofollow" th:href="${thesisUrl}" th:text="${thesisUrl}"></a>
 </p>
 
-<hr/>
-<div style="text-align: center;font-size: 10px">
-    Manage your notification settings <a th:href="${config.clientHost + ''/settings/notifications''}">here</a>
-</div>
-<br/><br/>',
+<div th:utext="${emailSignature}"></div>',
                                           'Student uploaded new proposal')) AS v(template_case, subject, body_html, description))
 INSERT
 INTO email_templates (email_template_id,

@@ -6,6 +6,7 @@ import {
   getBody,
   getToAddresses,
   assertSentFromApp,
+  assertEmailFooter,
 } from './mailpit'
 
 // Thesis d000-0003 is in ASSESSED state, assigned to student3, has abstract text set
@@ -170,6 +171,7 @@ test.describe.serial('Presentation Workflow', () => {
       'New Presentation scheduled',
     )
     assertSentFromApp(privateEmail)
+    assertEmailFooter(privateEmail)
     expect(getToAddresses(privateEmail)).toContain('student3@test.local')
 
     const body = getBody(privateEmail)

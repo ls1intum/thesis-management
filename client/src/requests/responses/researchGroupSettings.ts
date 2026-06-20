@@ -23,6 +23,7 @@ export interface IResearchGroupSettingsPhase {
 
 export interface IResearchGroupSettingsEmail {
   applicationNotificationEmail?: string | null
+  emailSignature?: string | null
 }
 
 export interface IResearchGroupSettingsWritingGuide {
