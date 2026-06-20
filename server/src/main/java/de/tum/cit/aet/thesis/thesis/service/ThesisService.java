@@ -403,8 +403,16 @@ public class ThesisService {
 		return thesis;
 	}
 
-	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
-	@Transactional
+	/**
+	 * Accepts a pending abstract suggestion, promoting it to the thesis abstract.
+	 *
+	 * <p>The suggestion becomes the abstract, the source is marked {@code EXTRACTED}, and the
+	 * pending suggestion is cleared.
+	 *
+	 * @param thesis the thesis whose suggestion is accepted
+	 * @return the updated thesis
+	 * @throws ResourceNotFoundException if there is no pending suggestion to accept
+	 */
 	public Thesis acceptAbstractSuggestion(Thesis thesis) {
 		requireNotAnonymized(thesis);
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
@@ -419,11 +427,21 @@ public class ThesisService {
 		return thesisRepository.save(thesis);
 	}
 
-	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
-	@Transactional
+	/**
+	 * Dismisses a pending abstract suggestion, keeping the current abstract unchanged.
+	 *
+	 * <p>Dismissing marks the abstract source {@code MANUAL} so a later confident upload only
+	 * suggests again rather than silently overwriting the kept abstract.
+	 *
+	 * @param thesis the thesis whose suggestion is dismissed
+	 * @return the updated thesis
+	 */
 	public Thesis dismissAbstractSuggestion(Thesis thesis) {
 		requireNotAnonymized(thesis);
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+		// Dismissing is an explicit human decision to keep the current abstract, so mark it
+		// MANUAL — a later confident upload must not silently overwrite it.
+		thesis.setAbstractSource(ThesisAbstractSource.MANUAL);
 		thesis.setAbstractSuggestion(null);
 
 		return thesisRepository.save(thesis);

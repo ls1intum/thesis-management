@@ -7,6 +7,8 @@
 -- (only suggested on later uploads); an empty abstract is still auto-filled because the
 -- fill rule keys off "blank" before checking the source.
 ALTER TABLE theses ADD COLUMN abstract_source VARCHAR(20) NOT NULL DEFAULT 'MANUAL';
+ALTER TABLE theses ADD CONSTRAINT chk_theses_abstract_source
+    CHECK (abstract_source IN ('MANUAL', 'EXTRACTED'));
 
 -- Holds a best-effort abstract extracted from an uploaded PDF that we were not confident
 -- enough to store directly (or that would overwrite a human edit). NULL = no pending suggestion.

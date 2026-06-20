@@ -366,6 +366,7 @@ class ThesisControllerTest extends BaseIntegrationTest {
 			Thesis updated = thesisRepository.findById(thesisId).orElseThrow();
 			assertThat(updated.getAbstractSuggestion()).isNull();
 			assertThat(updated.getAbstractField()).isEqualTo("<p>Existing abstract.</p>");
+			assertThat(updated.getAbstractSource()).isEqualTo(ThesisAbstractSource.MANUAL);
 		}
 
 		@Test

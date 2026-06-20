@@ -114,7 +114,7 @@ public static ThesisDto fromThesisEntity(Thesis thesis, boolean supervisorAccess
 		thesis.getInfo(),
 		thesis.getAbstractField(),
 		thesis.getAbstractSource(),
-		thesis.getAbstractSuggestion(),
+		studentAccess ? thesis.getAbstractSuggestion() : null,
 		thesis.getState(),
 		thesis.getApplication() == null ? null : thesis.getApplication().getId(),
 		thesis.getStartDate(),

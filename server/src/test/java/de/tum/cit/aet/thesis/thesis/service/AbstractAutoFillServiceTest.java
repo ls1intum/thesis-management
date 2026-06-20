@@ -1,7 +1,6 @@
 package de.tum.cit.aet.thesis.thesis.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.kernel.font.PdfFont;
@@ -39,9 +38,9 @@ class AbstractAutoFillServiceTest {
 
 		service.apply(thesis, confident("<p>Extracted abstract.</p>"));
 
-		assertEquals("<p>Extracted abstract.</p>", thesis.getAbstractField());
-		assertEquals(ThesisAbstractSource.EXTRACTED, thesis.getAbstractSource());
-		assertNull(thesis.getAbstractSuggestion());
+		assertThat(thesis.getAbstractField()).isEqualTo("<p>Extracted abstract.</p>");
+		assertThat(thesis.getAbstractSource()).isEqualTo(ThesisAbstractSource.EXTRACTED);
+		assertThat(thesis.getAbstractSuggestion()).isNull();
 	}
 
 	@Test
@@ -50,9 +49,9 @@ class AbstractAutoFillServiceTest {
 
 		service.apply(thesis, confident("<p>New extracted abstract.</p>"));
 
-		assertEquals("<p>New extracted abstract.</p>", thesis.getAbstractField());
-		assertEquals(ThesisAbstractSource.EXTRACTED, thesis.getAbstractSource());
-		assertNull(thesis.getAbstractSuggestion());
+		assertThat(thesis.getAbstractField()).isEqualTo("<p>New extracted abstract.</p>");
+		assertThat(thesis.getAbstractSource()).isEqualTo(ThesisAbstractSource.EXTRACTED);
+		assertThat(thesis.getAbstractSuggestion()).isNull();
 	}
 
 	@Test
@@ -61,9 +60,9 @@ class AbstractAutoFillServiceTest {
 
 		service.apply(thesis, confident("<p>Extracted abstract.</p>"));
 
-		assertEquals("<p>Human written abstract.</p>", thesis.getAbstractField());
-		assertEquals(ThesisAbstractSource.MANUAL, thesis.getAbstractSource());
-		assertEquals("<p>Extracted abstract.</p>", thesis.getAbstractSuggestion());
+		assertThat(thesis.getAbstractField()).isEqualTo("<p>Human written abstract.</p>");
+		assertThat(thesis.getAbstractSource()).isEqualTo(ThesisAbstractSource.MANUAL);
+		assertThat(thesis.getAbstractSuggestion()).isEqualTo("<p>Extracted abstract.</p>");
 	}
 
 	@Test
@@ -73,9 +72,9 @@ class AbstractAutoFillServiceTest {
 		service.apply(thesis, new AbstractExtractor.Result(
 				AbstractExtractor.Confidence.UNCERTAIN, "<p>Maybe an abstract.</p>"));
 
-		assertEquals("<p>Human written abstract.</p>", thesis.getAbstractField());
-		assertEquals(ThesisAbstractSource.MANUAL, thesis.getAbstractSource());
-		assertEquals("<p>Maybe an abstract.</p>", thesis.getAbstractSuggestion());
+		assertThat(thesis.getAbstractField()).isEqualTo("<p>Human written abstract.</p>");
+		assertThat(thesis.getAbstractSource()).isEqualTo(ThesisAbstractSource.MANUAL);
+		assertThat(thesis.getAbstractSuggestion()).isEqualTo("<p>Maybe an abstract.</p>");
 	}
 
 	@Test
@@ -85,9 +84,9 @@ class AbstractAutoFillServiceTest {
 
 		service.apply(thesis, new AbstractExtractor.Result(AbstractExtractor.Confidence.NONE, ""));
 
-		assertEquals("<p>Human written abstract.</p>", thesis.getAbstractField());
-		assertEquals(ThesisAbstractSource.MANUAL, thesis.getAbstractSource());
-		assertEquals("<p>stale</p>", thesis.getAbstractSuggestion());
+		assertThat(thesis.getAbstractField()).isEqualTo("<p>Human written abstract.</p>");
+		assertThat(thesis.getAbstractSource()).isEqualTo(ThesisAbstractSource.MANUAL);
+		assertThat(thesis.getAbstractSuggestion()).isEqualTo("<p>stale</p>");
 	}
 
 	@Test
@@ -98,9 +97,9 @@ class AbstractAutoFillServiceTest {
 
 		service.process(thesis, file);
 
-		assertEquals(ThesisAbstractSource.EXTRACTED, thesis.getAbstractSource());
-		assertEquals("<p>This is a clearly extractable abstract for the thesis document.</p>",
-				thesis.getAbstractField());
+		assertThat(thesis.getAbstractSource()).isEqualTo(ThesisAbstractSource.EXTRACTED);
+		assertThat(thesis.getAbstractField())
+				.isEqualTo("<p>This is a clearly extractable abstract for the thesis document.</p>");
 	}
 
 	@Test
@@ -111,9 +110,9 @@ class AbstractAutoFillServiceTest {
 
 		service.process(thesis, file);
 
-		assertEquals("<p>Existing.</p>", thesis.getAbstractField());
-		assertEquals(ThesisAbstractSource.MANUAL, thesis.getAbstractSource());
-		assertNull(thesis.getAbstractSuggestion());
+		assertThat(thesis.getAbstractField()).isEqualTo("<p>Existing.</p>");
+		assertThat(thesis.getAbstractSource()).isEqualTo(ThesisAbstractSource.MANUAL);
+		assertThat(thesis.getAbstractSuggestion()).isNull();
 	}
 
 	private static byte[] buildConfidentPdf() {

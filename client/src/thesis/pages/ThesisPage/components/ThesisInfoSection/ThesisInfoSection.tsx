@@ -82,7 +82,7 @@ const ThesisInfoSection = () => {
   }, 'Abstract suggestion dismissed')
 
   const onEditSuggestion = () => {
-    setAbstractText(thesis.abstractSuggestion)
+    setAbstractText(thesis.abstractSuggestion ?? '')
     setEditMode(true)
   }
 

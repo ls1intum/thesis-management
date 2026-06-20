@@ -1,7 +1,6 @@
 package de.tum.cit.aet.thesis.core.utility;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.kernel.font.PdfFont;
@@ -59,11 +58,10 @@ class AbstractExtractorTest {
 
 		AbstractExtractor.Result result = AbstractExtractor.extract(pdf);
 
-		assertEquals(AbstractExtractor.Confidence.CONFIDENT, result.confidence());
-		assertEquals(
+		assertThat(result.confidence()).isEqualTo(AbstractExtractor.Confidence.CONFIDENT);
+		assertThat(result.html()).isEqualTo(
 				"<p>This paper presents a comprehensive study of abstract extraction from PDFs.</p>"
-						+ "<p>A second paragraph adds more detail.</p>",
-				result.html());
+						+ "<p>A second paragraph adds more detail.</p>");
 	}
 
 	@Test
@@ -75,8 +73,8 @@ class AbstractExtractorTest {
 
 		AbstractExtractor.Result result = AbstractExtractor.extract(pdf);
 
-		assertEquals(AbstractExtractor.Confidence.NONE, result.confidence());
-		assertTrue(result.html() == null || result.html().isEmpty());
+		assertThat(result.confidence()).isEqualTo(AbstractExtractor.Confidence.NONE);
+		assertThat(result.html()).isNullOrEmpty();
 	}
 
 	@Test
@@ -89,7 +87,7 @@ class AbstractExtractorTest {
 
 		AbstractExtractor.Result result = AbstractExtractor.extract(pdf);
 
-		assertEquals(AbstractExtractor.Confidence.NONE, result.confidence());
+		assertThat(result.confidence()).isEqualTo(AbstractExtractor.Confidence.NONE);
 	}
 
 	@Test
@@ -107,8 +105,8 @@ class AbstractExtractorTest {
 
 		AbstractExtractor.Result result = AbstractExtractor.extract(pdf);
 
-		assertEquals(AbstractExtractor.Confidence.UNCERTAIN, result.confidence());
-		assertTrue(result.html().contains("<p>"));
+		assertThat(result.confidence()).isEqualTo(AbstractExtractor.Confidence.UNCERTAIN);
+		assertThat(result.html()).contains("<p>");
 	}
 
 	@Test
@@ -120,7 +118,7 @@ class AbstractExtractorTest {
 
 		AbstractExtractor.Result result = AbstractExtractor.extract(pdf);
 
-		assertEquals(AbstractExtractor.Confidence.UNCERTAIN, result.confidence());
+		assertThat(result.confidence()).isEqualTo(AbstractExtractor.Confidence.UNCERTAIN);
 	}
 
 	@Test
@@ -134,7 +132,8 @@ class AbstractExtractorTest {
 
 		AbstractExtractor.Result result = AbstractExtractor.extract(pdf);
 
-		assertTrue(result.html().contains("Industry-4.0"),
-				"Expected hyphen kept before an uppercase/digit continuation, got: " + result.html());
+		assertThat(result.html())
+				.as("Expected hyphen kept before an uppercase/digit continuation")
+				.contains("Industry-4.0");
 	}
 }
