@@ -1,0 +1,81 @@
+import { Modal, Stack, Title, Text, Paper, Group, Button, Input } from '@mantine/core'
+import { useIsSmallerBreakpoint } from '@/core/hooks/theme'
+import type { IInterviewSlot } from '@/interview/requests/responses/interview'
+import { useInterviewProcessContext } from '@/interview/providers/InterviewProcessProvider/hooks'
+import SlotItem from '@/interview/pages/InterviewTopicOverviewPage/components/SlotItem'
+import AvatarUser from '@/core/components/AvatarUser/AvatarUser'
+
+interface ICancelSlotConfirmationModalProps {
+  cancelModalOpen: boolean
+  setCancelModalOpen: (open: boolean) => void
+
+  slot?: IInterviewSlot
+  onCancelSucessfull?: () => void
+}
+
+const CancelSlotConfirmationModal = ({
+  cancelModalOpen,
+  setCancelModalOpen,
+  slot,
+  onCancelSucessfull,
+}: ICancelSlotConfirmationModalProps) => {
+  const isSmaller = useIsSmallerBreakpoint('sm')
+
+  const { bookingLoading, cancelSlot } = useInterviewProcessContext()
+
+  return (
+    <Modal
+      opened={cancelModalOpen}
+      onClose={() => setCancelModalOpen(false)}
+      title={<Title order={3}>Confirm Cancellation</Title>}
+      size={isSmaller ? 'md' : 'xl'}
+      centered
+    >
+      <Stack>
+        <Text>Are you sure you want to cancel this interview slot booking?</Text>
+
+        {slot?.bookedBy && (
+          <Input.Wrapper label='Interviewee'>
+            <Paper withBorder p='xs'>
+              <AvatarUser user={slot?.bookedBy?.user} />
+            </Paper>
+          </Input.Wrapper>
+        )}
+
+        {slot && (
+          <Input.Wrapper label='Booked Slot'>
+            <SlotItem slot={slot} hoverEffect={false} withDate={true} />
+          </Input.Wrapper>
+        )}
+
+        <Group justify='end' align='center'>
+          <Button
+            variant='default'
+            onClick={() => {
+              setCancelModalOpen(false)
+            }}
+          >
+            Close
+          </Button>
+
+          <Button
+            color='red'
+            loading={bookingLoading}
+            disabled={!slot || !cancelSlot}
+            onClick={() => {
+              if (!slot || !cancelSlot) return
+              cancelSlot(slot.slotId, () => {
+                setCancelModalOpen(false)
+                onCancelSucessfull?.()
+              })
+            }}
+          >
+            Cancel Interview
+          </Button>
+        </Group>
+      </Stack>
+    </Modal>
+  )
+}
+
+export default CancelSlotConfirmationModal

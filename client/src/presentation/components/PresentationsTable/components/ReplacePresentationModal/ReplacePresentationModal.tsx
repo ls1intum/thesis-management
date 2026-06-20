@@ -1,0 +1,223 @@
+import { isNotEmpty, useForm } from '@mantine/form'
+import { DateTimePicker } from '@mantine/dates'
+import { useEffect } from 'react'
+import { useThesisUpdateAction } from '@/thesis/providers/ThesisProvider/hooks'
+import { Accordion, Alert, Button, Modal, Select, Stack, TextInput } from '@mantine/core'
+import { doRequest } from '@/core/requests/request'
+import type {
+  IPublishedPresentation,
+  IPublishedThesis,
+  IThesis,
+  IThesisPresentation,
+} from '@/thesis/requests/responses/thesis'
+import { ApiError } from '@/core/requests/handler'
+import { formatPresentationType, getDefaultLanguage } from '@/core/utils/format'
+import PublicPresentationsTable from '@/presentation/components/PublicPresentationsTable/PublicPresentationsTable'
+import LanguageSelect from '@/core/components/LanguageSelect/LanguageSelect'
+
+interface IReplacePresentationModalProps {
+  opened: boolean
+  onClose: () => unknown
+  thesis: IPublishedThesis | IThesis | undefined
+  presentation?: IThesisPresentation | IPublishedPresentation
+  onChange?: (presentation: IThesisPresentation | IPublishedPresentation | undefined) => unknown
+}
+
+interface IFormValues {
+  type: string
+  visibility: string
+  location: string
+  streamUrl: string
+  language: string | null
+  date: Date | null
+}
+
+const ReplacePresentationModal = (props: IReplacePresentationModalProps) => {
+  const { thesis, presentation, opened, onClose, onChange } = props
+
+  const form = useForm<IFormValues>({
+    mode: 'controlled',
+    initialValues: {
+      type: 'INTERMEDIATE',
+      visibility: 'PUBLIC',
+      location: '',
+      streamUrl: '',
+      language: getDefaultLanguage(),
+      date: null,
+    },
+    validateInputOnBlur: true,
+    validate: {
+      type: isNotEmpty('Type is required'),
+      visibility: isNotEmpty('Visibility is required'),
+      location: (_value, values) => {
+        if (!values.location && !values.streamUrl) {
+          return 'Location or Stream URL is required'
+        }
+      },
+      streamUrl: (_value, values) => {
+        if (!values.location && !values.streamUrl) {
+          return 'Location or Stream URL is required'
+        }
+      },
+      language: isNotEmpty('Language is required'),
+      date: (value) => {
+        if (!value) {
+          return 'Date is required'
+        }
+      },
+    },
+  })
+
+  useEffect(() => {
+    form.validateField('location')
+    form.validateField('streamUrl')
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- form is redefined each render; intentionally re-validate only on value changes
+  }, [form.values.streamUrl, form.values.location])
+
+  useEffect(() => {
+    if (presentation) {
+      form.setInitialValues({
+        type: presentation.type,
+        visibility: presentation.visibility,
+        location: presentation.location ?? '',
+        streamUrl: presentation.streamUrl ?? '',
+        language: presentation.language,
+        date: new Date(presentation.scheduledAt),
+      })
+    } else {
+      form.setInitialValues({
+        type: 'INTERMEDIATE',
+        visibility: 'PUBLIC',
+        location: '',
+        streamUrl: '',
+        language: null,
+        date: null,
+      })
+    }
+
+    form.reset()
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- form is stable across renders; resetting on form identity change would loop
+  }, [opened, presentation])
+
+  const [replacing, onReplacePresentation] = useThesisUpdateAction(
+    async () => {
+      if (!presentation && !thesis) {
+        throw new Error('Either a thesis or an existing presentation is required')
+      }
+
+      const url = presentation
+        ? `/v2/theses/${presentation.thesisId}/presentations/${presentation.presentationId}`
+        : `/v2/theses/${thesis?.thesisId ?? ''}/presentations`
+
+      const response = await doRequest<IThesis>(url, {
+        method: presentation ? 'PUT' : 'POST',
+        requiresAuth: true,
+        data: {
+          type: form.values.type,
+          visibility: form.values.visibility,
+          location: form.values.location,
+          streamUrl: form.values.streamUrl,
+          language: form.values.language,
+          date: form.values.date,
+        },
+      })
+
+      if (response.ok) {
+        onClose()
+
+        // Find the updated or newly created presentation
+        const targetScheduledAt =
+          form.values.date instanceof Date
+            ? form.values.date.toISOString()
+            : form.values.date
+              ? new Date(form.values.date).toISOString()
+              : undefined
+        const updatedPresentation = response.data.presentations?.find((p) =>
+          presentation
+            ? p.presentationId === presentation.presentationId
+            : // For new presentation, match by the freshly-submitted scheduledAt.
+              // Guard against picking a record with scheduledAt === null when the form date is missing.
+              targetScheduledAt !== undefined && p.scheduledAt === targetScheduledAt,
+        )
+
+        onChange?.(updatedPresentation)
+
+        return response.data
+      } else {
+        throw new ApiError(response)
+      }
+    },
+    presentation ? 'Presentation successfully updated' : 'Presentation successfully created',
+  )
+
+  return (
+    <Modal
+      size='xl'
+      opened={opened}
+      onClose={onClose}
+      title={presentation ? 'Update Presentation' : 'Create Presentation'}
+      centered
+    >
+      <form>
+        <Stack gap='md'>
+          {thesis?.abstractText ? (
+            <Alert variant='light' color='blue' title='Notice'>
+              Please make sure that the thesis title and abstract are up to date before scheduling a
+              presentation.
+            </Alert>
+          ) : (
+            <Alert variant='light' color='red' title='Error'>
+              The thesis does not have an abstract yet. Please add one before scheduling a
+              presentation.
+            </Alert>
+          )}
+          <Accordion variant='separated'>
+            <Accordion.Item value='presentations'>
+              <Accordion.Control>Currently Scheduled Presentations</Accordion.Control>
+              <Accordion.Panel>
+                <PublicPresentationsTable includeDrafts={true} reducedData={true} />
+              </Accordion.Panel>
+            </Accordion.Item>
+          </Accordion>
+          <Select
+            label='Presentation Type'
+            required
+            data={['INTERMEDIATE', 'FINAL'].map((type) => ({
+              label: formatPresentationType(type),
+              value: type,
+            }))}
+            {...form.getInputProps('type')}
+          />
+          <Select
+            label='Visibility'
+            required
+            data={[
+              { label: 'Private', value: 'PRIVATE' },
+              { label: 'Public', value: 'PUBLIC' },
+            ]}
+            {...form.getInputProps('visibility')}
+          />
+          <TextInput label='Location' {...form.getInputProps('location')} />
+          <TextInput type='url' label='Stream URL' {...form.getInputProps('streamUrl')} />
+          <LanguageSelect label='Language' required {...form.getInputProps('language')} />
+          <DateTimePicker
+            label='Scheduled At'
+            required
+            {...form.getInputProps('date')}
+            onChange={(date) => form.setFieldValue('date', date ? new Date(date) : null)}
+          />
+          <Button
+            fullWidth
+            onClick={onReplacePresentation}
+            disabled={!thesis?.abstractText || !form.isValid()}
+            loading={replacing}
+          >
+            {presentation ? 'Update Presentation' : 'Create Presentation Draft'}
+          </Button>
+        </Stack>
+      </form>
+    </Modal>
+  )
+}
+
+export default ReplacePresentationModal

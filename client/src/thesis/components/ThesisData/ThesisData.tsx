@@ -1,0 +1,109 @@
+import type { IPublishedThesis, IThesis } from '@/thesis/requests/responses/thesis'
+import { isThesis } from '@/thesis/requests/responses/thesis'
+import { Divider, Grid, Stack, Title } from '@mantine/core'
+import LabeledItem from '@/core/components/LabeledItem/LabeledItem'
+import { formatDate, formatThesisType, pluralize } from '@/core/utils/format'
+import ThesisStateBadge from '@/thesis/components/ThesisStateBadge/ThesisStateBadge'
+import DocumentEditor from '@/core/components/DocumentEditor/DocumentEditor'
+import AvatarUserList from '@/core/components/AvatarUserList/AvatarUserList'
+import React from 'react'
+import ThesisCommentsList from '@/thesis/components/ThesisCommentsList/ThesisCommentsList'
+import ThesisCommentsForm from '@/thesis/components/ThesisCommentsForm/ThesisCommentsForm'
+import ThesisCommentsProvider from '@/thesis/providers/ThesisCommentsProvider/ThesisCommentsProvider'
+import { useThesisAccess } from '@/thesis/providers/ThesisProvider/hooks'
+
+type availableAdditionalInformation =
+  | 'title'
+  | 'abstract'
+  | 'info'
+  | 'state'
+  | 'keywords'
+  | 'supervisor-comments'
+
+interface IThesisDataProps {
+  thesis: IThesis | IPublishedThesis
+  additionalInformation?: availableAdditionalInformation[]
+}
+
+const ThesisData = (props: IThesisDataProps) => {
+  const { thesis, additionalInformation = [] } = props
+
+  const access = useThesisAccess(thesis)
+
+  return (
+    <Stack gap='md'>
+      {additionalInformation.includes('title') && (
+        <LabeledItem label='Title' value={thesis.title} />
+      )}
+      <Grid>
+        <Grid.Col span={{ md: 4 }}>
+          <LabeledItem
+            label={pluralize('Examiner', (thesis.examiners ?? []).length)}
+            value={<AvatarUserList users={thesis.examiners ?? []} withUniversityId={true} />}
+          />
+        </Grid.Col>
+        <Grid.Col span={{ md: 4 }}>
+          <LabeledItem
+            label={pluralize('Supervisor', (thesis.supervisors ?? []).length)}
+            value={<AvatarUserList users={thesis.supervisors ?? []} withUniversityId={true} />}
+          />
+        </Grid.Col>
+        <Grid.Col span={{ md: 4 }}>
+          <LabeledItem
+            label={pluralize('Student', (thesis.students ?? []).length)}
+            value={<AvatarUserList users={thesis.students ?? []} withUniversityId={true} />}
+          />
+        </Grid.Col>
+        <Grid.Col span={{ md: 4 }}>
+          <LabeledItem label='Research Group' value={thesis.researchGroup.name} />
+        </Grid.Col>
+        <Grid.Col span={{ md: 4 }}>
+          <LabeledItem label='Thesis Type' value={formatThesisType(thesis.type)} />
+        </Grid.Col>
+        {thesis.startDate && (
+          <Grid.Col span={{ md: 4 }}>
+            <LabeledItem
+              label='Start Date'
+              value={formatDate(thesis.startDate, { withTime: false })}
+            />
+          </Grid.Col>
+        )}
+        {thesis.endDate && (
+          <Grid.Col span={{ md: 4 }}>
+            <LabeledItem label='End Date' value={formatDate(thesis.endDate, { withTime: false })} />
+          </Grid.Col>
+        )}
+        {additionalInformation.includes('keywords') &&
+          isThesis(thesis) &&
+          (thesis.keywords ?? []).length > 0 && (
+            <Grid.Col span={{ md: 4 }}>
+              <LabeledItem label='Keywords' value={(thesis.keywords ?? []).join(', ')} />
+            </Grid.Col>
+          )}
+        {additionalInformation.includes('state') && isThesis(thesis) && (
+          <Grid.Col span={{ md: 4 }}>
+            <LabeledItem label='State' value={<ThesisStateBadge state={thesis.state} />} />
+          </Grid.Col>
+        )}
+      </Grid>
+      {additionalInformation.includes('abstract') && (
+        <DocumentEditor label='Abstract' value={thesis.abstractText} />
+      )}
+      {additionalInformation.includes('info') && isThesis(thesis) && (
+        <DocumentEditor label='Additional Information' value={thesis.infoText} />
+      )}
+      {additionalInformation.includes('supervisor-comments') &&
+        access.supervisor &&
+        isThesis(thesis) && (
+          <ThesisCommentsProvider limit={10} thesis={thesis} commentType='SUPERVISOR'>
+            <Divider />
+            <Title order={4}>Supervisor Comments (Not visible to student)</Title>
+            <ThesisCommentsList />
+            <ThesisCommentsForm />
+          </ThesisCommentsProvider>
+        )}
+    </Stack>
+  )
+}
+
+export default ThesisData

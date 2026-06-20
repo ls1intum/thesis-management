@@ -1,0 +1,61 @@
+import { use, useEffect, useRef, useState } from 'react'
+import type { IMinimalUser } from '@/core/user/requests/responses/user'
+import type { MantineSize } from '@mantine/core'
+import { Avatar, type BoxProps } from '@mantine/core'
+import { getAvatar, getAvatarPath } from '@/core/utils/user'
+import { AuthenticationContext } from '@/core/providers/AuthenticationContext/context'
+import { doRequest } from '@/core/requests/request'
+
+interface ICustomAvatarProps extends BoxProps {
+  user: IMinimalUser
+  size?: MantineSize | number
+}
+
+export const CustomAvatar = (props: ICustomAvatarProps) => {
+  const { user, size, ...other } = props
+  const auth = use(AuthenticationContext)
+  const isAuthenticated = auth?.isAuthenticated ?? false
+  const [blobUrl, setBlobUrl] = useState<string | undefined>(undefined)
+  const blobUrlRef = useRef<string | undefined>(undefined)
+
+  const avatarPath = getAvatarPath(user)
+
+  useEffect(() => {
+    if (!avatarPath || !isAuthenticated) {
+      setBlobUrl(undefined)
+      return
+    }
+
+    const abort = doRequest<Blob>(
+      avatarPath,
+      { method: 'GET', requiresAuth: true, responseType: 'blob' },
+      (response) => {
+        if (response.ok) {
+          const url = URL.createObjectURL(response.data)
+          blobUrlRef.current = url
+          setBlobUrl(url)
+        }
+      },
+    )
+
+    return () => {
+      abort()
+      if (blobUrlRef.current) {
+        URL.revokeObjectURL(blobUrlRef.current)
+        blobUrlRef.current = undefined
+      }
+    }
+  }, [avatarPath, isAuthenticated])
+
+  const src = isAuthenticated ? blobUrl : getAvatar(user)
+
+  return (
+    <Avatar
+      src={src}
+      name={`${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || undefined}
+      color='initials'
+      size={size}
+      {...other}
+    />
+  )
+}

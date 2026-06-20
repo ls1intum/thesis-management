@@ -1,14 +1,14 @@
 import type { PropsWithChildren } from 'react'
-import Footer from '../../../components/Footer/Footer'
+import Footer from '@/core/components/Footer/Footer'
 import type { MantineSize } from '@mantine/core'
 import { AppShell, Box, Container, Divider, Flex, Stack } from '@mantine/core'
-import ScrollToTop from '../ScrollToTop/ScrollToTop'
-import Header from '../../../components/Header/Header'
-import ContentContainer from '../ContentContainer/ContentContainer'
+import ScrollToTop from '@/app/layout/ScrollToTop/ScrollToTop'
+import Header from '@/core/components/Header/Header'
+import ContentContainer from '@/app/layout/ContentContainer/ContentContainer'
 import EnvironmentBanner, {
   ENVIRONMENT_BANNER_HEIGHT,
   isEnvironmentBannerVisible,
-} from '../../../components/EnvironmentBanner/EnvironmentBanner'
+} from '@/core/components/EnvironmentBanner/EnvironmentBanner'
 
 interface IPublicAreaProps {
   size?: number | MantineSize | (string & {}) | undefined

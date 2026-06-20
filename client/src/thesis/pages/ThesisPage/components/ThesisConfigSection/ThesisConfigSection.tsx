@@ -1,0 +1,543 @@
+import type { IThesis, ThesisState } from '@/thesis/requests/responses/thesis'
+import {
+  Accordion,
+  Alert,
+  Button,
+  Group,
+  List,
+  Modal,
+  Select,
+  Stack,
+  TagsInput,
+  Text,
+  TextInput,
+} from '@mantine/core'
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router'
+import { isNotEmpty, useForm } from '@mantine/form'
+import { DateInput, DateTimePicker } from '@mantine/dates'
+import { UserMultiSelect } from '@/core/user/components/UserMultiSelect/UserMultiSelect'
+import { isNotEmptyUserList } from '@/core/utils/validation'
+import { isThesisClosed } from '@/thesis/utils/thesis'
+import { doRequest } from '@/core/requests/request'
+import ConfirmationButton from '@/core/components/ConfirmationButton/ConfirmationButton'
+import {
+  useLoadedThesisContext,
+  useThesisUpdateAction,
+} from '@/thesis/providers/ThesisProvider/hooks'
+import { GLOBAL_CONFIG } from '@/core/config/global'
+import { ApiError, getApiResponseErrorMessage } from '@/core/requests/handler'
+import ThesisStateBadge from '@/thesis/components/ThesisStateBadge/ThesisStateBadge'
+import ThesisVisibilitySelect from '@/thesis/pages/ThesisPage/components/ThesisVisibilitySelect/ThesisVisibilitySelect'
+import { formatThesisState, formatThesisType } from '@/core/utils/format'
+import LanguageSelect from '@/core/components/LanguageSelect/LanguageSelect'
+import type { PaginationResponse } from '@/core/requests/responses/pagination'
+import type { ILightResearchGroup } from '@/core/group/requests/responses/researchGroup'
+import { showSimpleError, showSimpleSuccess } from '@/core/utils/notification'
+import { useHasGroupAccess } from '@/core/hooks/authentication'
+import { Warning } from '@phosphor-icons/react'
+
+interface IThesisConfigSectionFormValues {
+  title: string
+  type: string
+  language: string
+  visibility: string
+  keywords: string[]
+  startDate: Date | undefined
+  endDate: Date | undefined
+  students: string[]
+  supervisorIds: string[]
+  examinerIds: string[]
+  researchGroupId: string
+  states: Array<{ state: ThesisState; changedAt: Date | null }>
+}
+
+const thesisDatesValidator = (
+  _value: Date | undefined,
+  values: IThesisConfigSectionFormValues,
+): string | undefined => {
+  const startDate = values.startDate
+  const endDate = values.endDate
+
+  if (!startDate && !endDate) {
+    return undefined
+  }
+
+  if (!startDate || !endDate) {
+    return 'Both start and end date must be set'
+  }
+
+  if (startDate.getTime() > endDate.getTime()) {
+    return 'Start date must be before end date'
+  }
+}
+
+const ThesisConfigSection = () => {
+  const { thesis, access } = useLoadedThesisContext()
+  const hasAdminAccess = useHasGroupAccess('admin')
+  const navigate = useNavigate()
+  const [researchGroups, setResearchGroups] = useState<PaginationResponse<ILightResearchGroup>>()
+  const [anonymizeModalOpen, setAnonymizeModalOpen] = useState(false)
+  const [anonymizeWarnings, setAnonymizeWarnings] = useState<string[]>([])
+  const [anonymizeLoading, setAnonymizeLoading] = useState(false)
+
+  const form = useForm<IThesisConfigSectionFormValues>({
+    mode: 'controlled',
+    initialValues: {
+      title: thesis.title,
+      type: thesis.type,
+      language: thesis.language,
+      visibility: thesis.visibility,
+      keywords: thesis.keywords ?? [],
+      startDate: thesis.startDate ? new Date(thesis.startDate) : undefined,
+      endDate: thesis.endDate ? new Date(thesis.endDate) : undefined,
+      students: (thesis.students ?? []).map((student) => student.userId),
+      supervisorIds: (thesis.supervisors ?? []).map((supervisor) => supervisor.userId),
+      examinerIds: (thesis.examiners ?? []).map((examiner) => examiner.userId),
+      researchGroupId: thesis.researchGroup?.id ?? '',
+      states: (thesis.states ?? []).map((state) => ({
+        state: state.state,
+        changedAt: new Date(state.startedAt),
+      })),
+    },
+    validateInputOnBlur: true,
+    validate: {
+      title: isNotEmpty('Title must not be empty'),
+      type: isNotEmpty('Type must not be empty'),
+      language: isNotEmpty('Language must not be empty'),
+      visibility: isNotEmpty('Visibility must not be empty'),
+      keywords: (value) => {
+        if (value && value.length > 2) {
+          return 'You cannot add more than 2 keywords'
+        }
+      },
+      students: isNotEmptyUserList('student'),
+      supervisorIds: isNotEmptyUserList('supervisor'),
+      examinerIds: isNotEmptyUserList('examiner'),
+      researchGroupId: isNotEmpty('Research group must not be empty'),
+      startDate: thesisDatesValidator,
+      endDate: thesisDatesValidator,
+      states: (value) => {
+        let lastTimestamp = 0
+
+        for (const state of value) {
+          if (!state.changedAt) {
+            return 'State must have a changed date'
+          }
+
+          if (state.changedAt.getTime() <= lastTimestamp) {
+            return 'States must be in chronological order'
+          }
+
+          lastTimestamp = state.changedAt.getTime()
+        }
+      },
+    },
+  })
+
+  useEffect(() => {
+    form.validate()
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- form is stable; only re-validate when the relevant fields change
+  }, [form.values.startDate, form.values.endDate, form.values.states])
+
+  useEffect(() => {
+    form.setInitialValues({
+      title: thesis.title,
+      type: thesis.type,
+      language: thesis.language,
+      visibility: thesis.visibility,
+      keywords: thesis.keywords ?? [],
+      startDate: thesis.startDate ? new Date(thesis.startDate) : undefined,
+      endDate: thesis.endDate ? new Date(thesis.endDate) : undefined,
+      students: (thesis.students ?? []).map((student) => student.userId),
+      supervisorIds: (thesis.supervisors ?? []).map((supervisor) => supervisor.userId),
+      examinerIds: (thesis.examiners ?? []).map((examiner) => examiner.userId),
+      researchGroupId: thesis.researchGroup?.id ?? '',
+      states: (thesis.states ?? []).map((state) => ({
+        state: state.state,
+        changedAt: new Date(state.startedAt),
+      })),
+    })
+
+    form.reset()
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- form is stable; only re-seed when the thesis prop changes
+  }, [thesis])
+
+  useEffect(() => {
+    if (!hasAdminAccess) {
+      setResearchGroups({
+        content: [thesis.researchGroup],
+        totalPages: 1,
+        totalElements: 1,
+        last: true,
+        pageNumber: 0,
+        pageSize: -1,
+      })
+      form.setValues({ researchGroupId: thesis.researchGroup.id })
+      return
+    }
+
+    return doRequest<PaginationResponse<ILightResearchGroup>>(
+      '/v2/research-groups',
+      {
+        method: 'GET',
+        requiresAuth: true,
+        params: {
+          page: 0,
+          limit: -1,
+        },
+      },
+      (res) => {
+        if (res.ok) {
+          setResearchGroups({
+            ...res.data,
+            content: res.data.content,
+          })
+
+          if ((res.data.content ?? []).length === 1) {
+            form.setValues({ researchGroupId: (res.data.content ?? [])[0].id })
+          }
+        } else {
+          showSimpleError(getApiResponseErrorMessage(res))
+
+          setResearchGroups({
+            content: [],
+            totalPages: 0,
+            totalElements: 0,
+            last: true,
+            pageNumber: 0,
+            pageSize: -1,
+          })
+        }
+      },
+    )
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- mount-only fetch of research groups; form/admin flag/thesis researchGroup are read but should not retrigger the request
+  }, [])
+
+  const [closing, onClose] = useThesisUpdateAction(async () => {
+    const response = await doRequest<IThesis>(`/v2/theses/${thesis.thesisId}`, {
+      method: 'DELETE',
+      requiresAuth: true,
+    })
+
+    if (response.ok) {
+      return response.data
+    } else {
+      throw new Error(`Failed to close thesis ${response.status}`)
+    }
+  }, 'Thesis closed successfully')
+
+  const orderedStates = [...(thesis.states ?? [])].sort(
+    (a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime(),
+  )
+  const previousState = orderedStates[1]?.state
+  const canRevert = access.supervisor && orderedStates.length >= 2 && !thesis.anonymizedAt
+
+  const [reverting, onRevert] = useThesisUpdateAction(async () => {
+    const response = await doRequest<IThesis>(`/v2/theses/${thesis.thesisId}/revert-state`, {
+      method: 'POST',
+      requiresAuth: true,
+    })
+
+    if (response.ok) {
+      return response.data
+    } else {
+      throw new ApiError(response)
+    }
+  }, 'Thesis state reverted successfully')
+
+  const onDeleteThesisClick = async () => {
+    setAnonymizeLoading(true)
+    try {
+      const response = await doRequest<{ warnings: string[] }>(
+        `/v2/theses/${thesis.thesisId}/anonymize/warnings`,
+        {
+          method: 'GET',
+          requiresAuth: true,
+        },
+      )
+      if (response.ok) {
+        setAnonymizeWarnings(response.data.warnings ?? [])
+        setAnonymizeModalOpen(true)
+      } else {
+        showSimpleError(getApiResponseErrorMessage(response))
+      }
+    } finally {
+      setAnonymizeLoading(false)
+    }
+  }
+
+  const onConfirmAnonymize = async () => {
+    setAnonymizeLoading(true)
+    try {
+      const response = await doRequest(`/v2/theses/${thesis.thesisId}/anonymize`, {
+        method: 'DELETE',
+        requiresAuth: true,
+      })
+      if (response.ok) {
+        showSimpleSuccess('Thesis anonymized successfully')
+        setAnonymizeModalOpen(false)
+        void navigate('/theses')
+      } else {
+        showSimpleError(getApiResponseErrorMessage(response))
+      }
+    } finally {
+      setAnonymizeLoading(false)
+    }
+  }
+
+  const [updating, onSave] = useThesisUpdateAction(async () => {
+    const values = form.values
+
+    const response = await doRequest<IThesis>(`/v2/theses/${thesis.thesisId}`, {
+      method: 'PUT',
+      requiresAuth: true,
+      data: {
+        thesisTitle: values.title,
+        thesisType: values.type,
+        language: values.language,
+        visibility: values.visibility,
+        keywords: values.keywords,
+        startDate: values.startDate,
+        endDate: values.endDate,
+        studentIds: values.students,
+        supervisorIds: values.supervisorIds,
+        examinerIds: values.examinerIds,
+        researchGroupId: values.researchGroupId,
+        states: values.states.map((state) => ({
+          state: state.state,
+          changedAt: state.changedAt,
+        })),
+      },
+    })
+
+    if (response.ok) {
+      return response.data
+    } else {
+      throw new ApiError(response)
+    }
+  }, 'Thesis updated successfully')
+
+  return (
+    <>
+      <Accordion variant='separated' defaultValue=''>
+        <Accordion.Item value='open'>
+          <Accordion.Control>Configuration</Accordion.Control>
+          <Accordion.Panel>
+            <form onSubmit={form.onSubmit(() => void onSave())}>
+              <Stack gap='md'>
+                <TextInput
+                  label='Thesis Title'
+                  required={true}
+                  disabled={!access.supervisor}
+                  {...form.getInputProps('title')}
+                />
+                <Select
+                  label='Thesis Type'
+                  required={true}
+                  disabled={!access.supervisor}
+                  data={Object.keys(GLOBAL_CONFIG.thesis_types).map((key) => ({
+                    value: key,
+                    label: formatThesisType(key),
+                  }))}
+                  {...form.getInputProps('type')}
+                />
+                <LanguageSelect
+                  label='Thesis Language'
+                  required={true}
+                  {...form.getInputProps('language')}
+                />
+                <ThesisVisibilitySelect
+                  label='Visibility'
+                  required={true}
+                  disabled={!access.supervisor}
+                  {...form.getInputProps('visibility')}
+                />
+                <TagsInput
+                  label='Keywords'
+                  disabled={!access.supervisor}
+                  data={form.values.keywords}
+                  {...form.getInputProps('keywords')}
+                />
+                <Group grow>
+                  <DateInput
+                    label='Start Date'
+                    disabled={!access.supervisor}
+                    {...form.getInputProps('startDate')}
+                    onChange={(date) =>
+                      form.setFieldValue('startDate', date ? new Date(date) : undefined)
+                    }
+                  />
+                  <DateInput
+                    label='End Date'
+                    disabled={!access.supervisor}
+                    {...form.getInputProps('endDate')}
+                    onChange={(date) =>
+                      form.setFieldValue('endDate', date ? new Date(date) : undefined)
+                    }
+                  />
+                </Group>
+                <UserMultiSelect
+                  required={true}
+                  disabled={!access.supervisor}
+                  label='Student(s)'
+                  groups={['student']}
+                  initialUsers={thesis.students ?? []}
+                  {...form.getInputProps('students')}
+                />
+                <UserMultiSelect
+                  required={true}
+                  disabled={!access.supervisor}
+                  label='Supervisor(s)'
+                  groups={['advisor', 'supervisor']}
+                  initialUsers={thesis.supervisors ?? []}
+                  {...form.getInputProps('supervisorIds')}
+                />
+                <UserMultiSelect
+                  required={true}
+                  disabled={!access.supervisor}
+                  label='Examiner'
+                  groups={['supervisor']}
+                  initialUsers={thesis.examiners ?? []}
+                  maxValues={1}
+                  {...form.getInputProps('examinerIds')}
+                />
+                {hasAdminAccess ? (
+                  <Select
+                    label='Research Group'
+                    required
+                    nothingFoundMessage={'Nothing found...'}
+                    data={(researchGroups?.content ?? []).map(
+                      (researchGroup: ILightResearchGroup) => ({
+                        label: researchGroup.name,
+                        value: researchGroup.id,
+                      }),
+                    )}
+                    {...form.getInputProps('researchGroupId')}
+                  />
+                ) : (
+                  <TextInput
+                    label='Research Group'
+                    description="Only administrators can change a thesis's research group."
+                    disabled
+                    value={thesis.researchGroup?.name ?? ''}
+                  />
+                )}
+                {form.values.states.map((item, index) => (
+                  <Group key={item.state} grow>
+                    <Group justify='center'>
+                      <Text ta='center' fw='bold'>
+                        State changed to
+                      </Text>
+                      <ThesisStateBadge state={item.state} />
+                      <Text ta='center' fw='bold'>
+                        at
+                      </Text>
+                    </Group>
+                    <DateTimePicker
+                      required={true}
+                      disabled={!access.supervisor}
+                      value={item.changedAt}
+                      error={form.errors.states}
+                      onChange={(value) => {
+                        form.values.states[index] = {
+                          state: item.state,
+                          changedAt: value ? new Date(value) : null,
+                        }
+                        form.setFieldValue('states', [...form.values.states])
+                      }}
+                    />
+                  </Group>
+                ))}
+                {access.supervisor && (
+                  <Group>
+                    {!isThesisClosed(thesis) && (
+                      <ConfirmationButton
+                        confirmationText='Are you sure you want to close the thesis? This will set the thesis state to DROPPED OUT and cannot be undone.'
+                        confirmationTitle='Close Thesis'
+                        variant='outline'
+                        color='red'
+                        loading={closing}
+                        onClick={onClose}
+                      >
+                        Close Thesis
+                      </ConfirmationButton>
+                    )}
+                    {canRevert && previousState && (
+                      <ConfirmationButton
+                        confirmationTitle='Revert Thesis State'
+                        confirmationText={
+                          `Revert from ${formatThesisState(thesis.state)} back to ${formatThesisState(previousState)}? ` +
+                          `Data captured in ${formatThesisState(thesis.state)} ` +
+                          `(assessment, final grade, proposal approval, etc.) will be preserved.`
+                        }
+                        variant='outline'
+                        color='yellow'
+                        loading={reverting}
+                        onClick={onRevert}
+                      >
+                        Revert to Previous State
+                      </ConfirmationButton>
+                    )}
+                    {hasAdminAccess && !thesis.anonymizedAt && (
+                      <Button
+                        variant='outline'
+                        color='red'
+                        loading={anonymizeLoading}
+                        onClick={() => void onDeleteThesisClick()}
+                      >
+                        Anonymize Thesis
+                      </Button>
+                    )}
+                    <Button type='submit' ml='auto' loading={updating} disabled={!form.isValid()}>
+                      Update
+                    </Button>
+                  </Group>
+                )}
+              </Stack>
+            </form>
+          </Accordion.Panel>
+        </Accordion.Item>
+      </Accordion>
+
+      {hasAdminAccess && (
+        <Modal
+          opened={anonymizeModalOpen}
+          onClose={() => setAnonymizeModalOpen(false)}
+          title='Anonymize Thesis'
+        >
+          <Stack gap='md'>
+            {anonymizeWarnings.length > 0 && (
+              <Alert color='orange' icon={<Warning />} title='Warnings'>
+                <List size='sm'>
+                  {anonymizeWarnings.map((warning) => (
+                    <List.Item key={warning}>{warning}</List.Item>
+                  ))}
+                </List>
+              </Alert>
+            )}
+            <Text size='sm'>
+              Are you sure you want to anonymize this thesis? Personal data (files, proposals,
+              comments, assessments, feedback, role assignments) will be removed. Structural thesis
+              metadata is retained for reporting purposes. This action cannot be undone.
+            </Text>
+            <Group justify='flex-end'>
+              <Button variant='default' onClick={() => setAnonymizeModalOpen(false)}>
+                Cancel
+              </Button>
+              <Button
+                color='red'
+                loading={anonymizeLoading}
+                onClick={() => void onConfirmAnonymize()}
+              >
+                Anonymize Thesis
+              </Button>
+            </Group>
+          </Stack>
+        </Modal>
+      )}
+    </>
+  )
+}
+
+export default ThesisConfigSection

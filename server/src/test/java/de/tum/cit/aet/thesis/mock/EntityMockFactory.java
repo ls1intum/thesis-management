@@ -1,17 +1,17 @@
 package de.tum.cit.aet.thesis.mock;
 
-import de.tum.cit.aet.thesis.constants.ApplicationState;
-import de.tum.cit.aet.thesis.constants.ThesisRoleName;
-import de.tum.cit.aet.thesis.constants.ThesisState;
-import de.tum.cit.aet.thesis.entity.Application;
-import de.tum.cit.aet.thesis.entity.ResearchGroup;
-import de.tum.cit.aet.thesis.entity.Thesis;
-import de.tum.cit.aet.thesis.entity.ThesisRole;
-import de.tum.cit.aet.thesis.entity.Topic;
-import de.tum.cit.aet.thesis.entity.User;
-import de.tum.cit.aet.thesis.entity.UserGroup;
-import de.tum.cit.aet.thesis.entity.key.ThesisRoleId;
-import de.tum.cit.aet.thesis.entity.key.UserGroupId;
+import de.tum.cit.aet.thesis.core.application.constants.ApplicationState;
+import de.tum.cit.aet.thesis.core.application.entity.Application;
+import de.tum.cit.aet.thesis.core.group.entity.ResearchGroup;
+import de.tum.cit.aet.thesis.core.topic.entity.Topic;
+import de.tum.cit.aet.thesis.core.user.entity.User;
+import de.tum.cit.aet.thesis.core.user.entity.UserGroup;
+import de.tum.cit.aet.thesis.core.user.entity.key.UserGroupId;
+import de.tum.cit.aet.thesis.thesis.constants.ThesisRoleName;
+import de.tum.cit.aet.thesis.thesis.constants.ThesisState;
+import de.tum.cit.aet.thesis.thesis.entity.Thesis;
+import de.tum.cit.aet.thesis.thesis.entity.ThesisRole;
+import de.tum.cit.aet.thesis.thesis.entity.key.ThesisRoleId;
 
 import java.time.Instant;
 import java.util.ArrayList;

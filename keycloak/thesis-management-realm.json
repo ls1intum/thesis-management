@@ -993,6 +993,35 @@
       "groups": [
         "/thesis-students"
       ]
+    },
+    {
+      "username": "e2e_grouphead",
+      "email": "e2e_grouphead@test.local",
+      "firstName": "E2e",
+      "lastName": "GroupHead",
+      "emailVerified": true,
+      "enabled": true,
+      "attributes": {
+        "matrikelnr": [
+          "03700099"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "e2e_grouphead",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "default-roles-thesis-management"
+      ],
+      "clientRoles": {
+        "thesis-management-app": [
+          "advisor"
+        ]
+      },
+      "groups": []
     }
   ],
   "scopeMappings": [

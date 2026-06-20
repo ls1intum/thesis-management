@@ -1,0 +1,29 @@
+import { Group, Paper, Stack, Title, Text } from '@mantine/core'
+import type { ILightUser } from '@/core/user/requests/responses/user'
+import { CustomAvatar } from '@/core/components/CustomAvatar/CustomAvatar'
+import { formateStudyProgram, formatThesisType } from '@/core/utils/format'
+
+interface IUserCardProps {
+  user: ILightUser
+  semester?: number
+}
+
+const UserCard = ({ user, semester }: IUserCardProps) => {
+  return (
+    <Paper withBorder radius='md' p='md'>
+      <Group align='center'>
+        <CustomAvatar user={user} size={48} />
+        <Stack flex={1} gap={'0.25rem'}>
+          <Title order={5}>
+            {user.firstName} {user.lastName}
+          </Title>
+          <Text c='dimmed' size='sm'>
+            {`${formateStudyProgram(user.studyProgram ?? '')} ${formatThesisType(user.studyDegree)}${semester ? ` - ${semester} Semester` : ''}`}
+          </Text>
+        </Stack>
+      </Group>
+    </Paper>
+  )
+}
+
+export default UserCard

@@ -1,7 +1,7 @@
 import { describe, test } from 'node:test'
 import assert from 'node:assert/strict'
 
-// Tests for `formatDate` in `client/src/utils/format.ts`.
+// Tests for `formatDate` in `client/src/core/utils/format.ts`.
 //
 // The fix for #827 replaced the legacy `{ year: '2-digit', month: '2-digit', day: 'numeric' }`
 // options (which produce the ambiguous "MM/D/YY" form in en-US) with
@@ -80,7 +80,7 @@ describe('formatDate — issue #827 (unambiguous date display)', () => {
     assert.match(out, /\b\d{4}\b/)
   })
 
-  test('production formatDate in src/utils/format.ts uses dateStyle medium + withTime-gated timeStyle', async () => {
+  test('production formatDate in src/core/utils/format.ts uses dateStyle medium + withTime-gated timeStyle', async () => {
     // The local re-implementation above only catches regressions in the test
     // copy. Pin the production source so a revert to numeric/2-digit options
     // (e.g. month: '2-digit') fails this test as well.
@@ -88,7 +88,7 @@ describe('formatDate — issue #827 (unambiguous date display)', () => {
     const { join, dirname } = await import('node:path')
     const { fileURLToPath } = await import('node:url')
     const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
-    const source = readFileSync(join(ROOT, 'src/utils/format.ts'), 'utf8')
+    const source = readFileSync(join(ROOT, 'src/core/utils/format.ts'), 'utf8')
     assert.match(source, /export function formatDate\(/)
     assert.match(source, /dateStyle:\s*'medium'/)
     assert.match(source, /withTime\s*\?\s*\{\s*timeStyle:\s*'short'\s*\}\s*:\s*\{\s*\}/)
@@ -100,7 +100,7 @@ describe('formatDate — issue #827 (unambiguous date display)', () => {
 
 describe('ensureAbsoluteLinkHref — issue #802 (rich-text editor link normalization)', () => {
   // The DocumentEditor calls `ensureAbsoluteLinkHref` (defined in
-  // src/utils/format.ts) from inside the SmartLink extension's overridden
+  // src/core/utils/format.ts) from inside the SmartLink extension's overridden
   // `setLink` command, so a schemeless href the user types into the toolbar's
   // link popover (e.g. "example.com") is stored as the absolute
   // "https://example.com" rather than as a relative path under the current
@@ -156,12 +156,12 @@ describe('ensureAbsoluteLinkHref — issue #802 (rich-text editor link normaliza
     assert.equal(ensureAbsoluteLinkHref('   '), '')
   })
 
-  test('production ensureAbsoluteLinkHref in src/utils/format.ts trims input and prefixes https', async () => {
+  test('production ensureAbsoluteLinkHref in src/core/utils/format.ts trims input and prefixes https', async () => {
     const { readFileSync } = await import('node:fs')
     const { join, dirname } = await import('node:path')
     const { fileURLToPath } = await import('node:url')
     const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
-    const source = readFileSync(join(ROOT, 'src/utils/format.ts'), 'utf8')
+    const source = readFileSync(join(ROOT, 'src/core/utils/format.ts'), 'utf8')
     assert.match(source, /export function ensureAbsoluteLinkHref\(/)
     assert.match(source, /href\.trim\(\)/)
     assert.match(source, /`https:\/\/\$\{trimmed\}`/)
@@ -193,7 +193,7 @@ describe('ensureAbsoluteLinkHref — issue #802 (rich-text editor link normaliza
     const { fileURLToPath } = await import('node:url')
     const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
     const source = readFileSync(
-      join(ROOT, 'src/components/DocumentEditor/DocumentEditor.tsx'),
+      join(ROOT, 'src/core/components/DocumentEditor/DocumentEditor.tsx'),
       'utf8',
     )
     // SmartLink override of setLink (covers the toolbar popover path).

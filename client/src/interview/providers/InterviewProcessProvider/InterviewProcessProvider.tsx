@@ -1,0 +1,267 @@
+import type { PropsWithChildren } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import type { IInterviewProcessContext } from '@/interview/providers/InterviewProcessProvider/context'
+import { InterviewProcessContext } from '@/interview/providers/InterviewProcessProvider/context'
+import { doRequest } from '@/core/requests/request'
+import { showSimpleError } from '@/core/utils/notification'
+import { getApiResponseErrorMessage } from '@/core/requests/handler'
+import type {
+  IIntervieweeLightWithNextSlot,
+  IInterviewSlot,
+} from '@/interview/requests/responses/interview'
+import type { PaginationResponse } from '@/core/requests/responses/pagination'
+import { useParams } from 'react-router'
+
+interface IInterviewProcessProviderProps {
+  excludeBookedSlots?: boolean
+  autoFetchInterviewees?: boolean
+}
+
+const InterviewProcessProvider = (props: PropsWithChildren<IInterviewProcessProviderProps>) => {
+  const { children, excludeBookedSlots, autoFetchInterviewees = true } = props
+  const { processId } = useParams<{ processId: string }>()
+
+  const [interviewSlots, setInterviewSlots] = useState<Record<string, IInterviewSlot[]>>({})
+  const [interviewSlotsLoading, setInterviewSlotsLoading] = useState(false)
+
+  const [bookingLoading, setBookingLoading] = useState(false)
+  const [bookingSuccessful, setBookingSuccessful] = useState(false)
+
+  const [interviewees, setInterviewees] = useState<IIntervieweeLightWithNextSlot[]>([])
+  const [intervieweesLoading, setIntervieweesLoading] = useState(false)
+
+  const [searchIntervieweeKey, setSearchIntervieweeKey] = useState('')
+  const [state, setState] = useState<string>('ALL')
+
+  function groupSlotsByDate(slots: IInterviewSlot[]): Record<string, IInterviewSlot[]> {
+    return slots
+      .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())
+      .reduce(
+        (acc, slot) => {
+          const startDate = new Date(slot.startDate)
+          const endDate = new Date(slot.endDate)
+          const dateKey = startDate.toISOString().slice(0, 10)
+          const slotWithDates = { ...slot, startDate, endDate }
+          if (!acc[dateKey]) acc[dateKey] = []
+          acc[dateKey].push(slotWithDates)
+          return acc
+        },
+        {} as Record<string, IInterviewSlot[]>,
+      )
+  }
+
+  const fetchInterviewSlots = useCallback(() => {
+    setInterviewSlotsLoading(true)
+
+    return doRequest<IInterviewSlot[]>(
+      `/v2/interview-process/${processId}/interview-slots`,
+      {
+        method: 'GET',
+        requiresAuth: true,
+        params: {
+          excludeBooked: excludeBookedSlots ? 'true' : 'false',
+        },
+      },
+      (res) => {
+        if (res.ok) {
+          setInterviewSlots(groupSlotsByDate(res.data))
+        } else {
+          showSimpleError(getApiResponseErrorMessage(res))
+        }
+        setInterviewSlotsLoading(false)
+      },
+    )
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- excludeBookedSlots is read at call time; rebinding when it toggles is intentionally avoided so in-flight fetches keep their captured value
+  }, [processId])
+
+  const bookSlot = useCallback(
+    (slotId: string, intervieweeUserId: string) => {
+      setBookingLoading(true)
+      setBookingSuccessful(false)
+
+      return doRequest<IInterviewSlot>(
+        `/v2/interview-process/${processId}/slot/${slotId}/book`,
+        {
+          method: 'PUT',
+          requiresAuth: true,
+          data: {
+            intervieweeUserId: intervieweeUserId,
+          },
+        },
+        (res) => {
+          setBookingLoading(false)
+
+          if (res.ok) {
+            fetchInterviewSlots()
+            if (autoFetchInterviewees) {
+              void fetchPossibleInterviewees(searchIntervieweeKey, state)
+            }
+            setBookingSuccessful(true)
+          } else {
+            showSimpleError(getApiResponseErrorMessage(res))
+          }
+        },
+      )
+    },
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- autoFetchInterviewees/fetchPossibleInterviewees/searchIntervieweeKey/state are read at call time; rebinding bookSlot every keystroke would force consumers to re-render
+    [processId, fetchInterviewSlots],
+  )
+
+  const cancelSlot = useCallback(
+    (slotId: string, onCancelSucessfull?: () => void) => {
+      setBookingLoading(true)
+
+      return doRequest<IInterviewSlot>(
+        `/v2/interview-process/${processId}/slot/${slotId}/cancel`,
+        {
+          method: 'PUT',
+          requiresAuth: true,
+        },
+        (res) => {
+          setBookingLoading(false)
+
+          if (res.ok) {
+            fetchInterviewSlots()
+            if (autoFetchInterviewees) {
+              void fetchPossibleInterviewees(searchIntervieweeKey, state)
+            }
+            if (onCancelSucessfull) onCancelSucessfull()
+          } else {
+            showSimpleError(getApiResponseErrorMessage(res))
+          }
+        },
+      )
+    },
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- autoFetchInterviewees/fetchPossibleInterviewees/searchIntervieweeKey/state are read at call time; rebinding cancelSlot every keystroke would force consumers to re-render
+    [processId, fetchInterviewSlots],
+  )
+
+  const fetchPossibleInterviewees = useCallback(
+    (
+      searchQuery: string = '',
+      topicState: string = '',
+      updateState: boolean = true,
+    ): Promise<IIntervieweeLightWithNextSlot[]> => {
+      setIntervieweesLoading(true)
+
+      return new Promise<IIntervieweeLightWithNextSlot[]>((resolve) => {
+        doRequest<PaginationResponse<IIntervieweeLightWithNextSlot>>(
+          `/v2/interview-process/${processId}/interviewees`,
+          {
+            method: 'GET',
+            requiresAuth: true,
+            params: {
+              searchQuery,
+              limit: 100,
+              state: topicState !== 'ALL' ? topicState : '',
+            },
+          },
+          (res) => {
+            if (res.ok) {
+              const content = res.data.content ?? []
+              if (updateState) setInterviewees(content)
+              resolve(content)
+            } else {
+              showSimpleError(getApiResponseErrorMessage(res))
+              resolve([])
+            }
+            setIntervieweesLoading(false)
+          },
+        )
+      })
+    },
+    [processId],
+  )
+
+  const addIntervieweesToProcess = useCallback(
+    (intervieweeApplicationIds: string[]): Promise<void> => {
+      if (!processId) return Promise.resolve()
+
+      setIntervieweesLoading(true)
+
+      return new Promise<void>((resolve) => {
+        doRequest<unknown>(
+          `/v2/interview-process/${processId}/interviewees`,
+          {
+            method: 'POST',
+            requiresAuth: true,
+            data: {
+              intervieweeApplicationIds,
+            },
+          },
+          (res) => {
+            if (res.ok) {
+              void fetchPossibleInterviewees() // TODO: Missing searchkey and state?
+            } else {
+              showSimpleError(getApiResponseErrorMessage(res))
+              resolve()
+            }
+
+            setIntervieweesLoading(false)
+          },
+        )
+      })
+    },
+    [processId, fetchPossibleInterviewees],
+  )
+
+  useEffect(() => {
+    // reset when process changes
+    setInterviewSlots({})
+    setInterviewees([])
+
+    fetchInterviewSlots()
+    if (autoFetchInterviewees) {
+      void fetchPossibleInterviewees()
+    }
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- autoFetchInterviewees is read at call time; only refetch when processId or the fetch callbacks change
+  }, [processId, fetchInterviewSlots, fetchPossibleInterviewees])
+
+  const contextState = useMemo<IInterviewProcessContext>(() => {
+    return {
+      processId,
+
+      interviewSlots,
+      interviewSlotsLoading,
+      fetchInterviewSlots,
+
+      bookingLoading,
+      bookingSuccessful,
+      bookSlot,
+
+      interviewees,
+      intervieweesLoading,
+      fetchPossibleInterviewees,
+
+      addIntervieweesToProcess,
+
+      cancelSlot,
+
+      searchIntervieweeKey,
+      setSearchIntervieweeKey,
+      state,
+      setState,
+    }
+  }, [
+    processId,
+    interviewSlots,
+    interviewSlotsLoading,
+    fetchInterviewSlots,
+    bookingLoading,
+    bookingSuccessful,
+    bookSlot,
+    interviewees,
+    intervieweesLoading,
+    fetchPossibleInterviewees,
+    cancelSlot,
+    addIntervieweesToProcess,
+    searchIntervieweeKey,
+    setSearchIntervieweeKey,
+    state,
+    setState,
+  ])
+
+  return <InterviewProcessContext value={contextState}>{children}</InterviewProcessContext>
+}
+
+export default InterviewProcessProvider
