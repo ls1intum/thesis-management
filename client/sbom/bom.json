@@ -15504,17 +15504,17 @@
     {
       "type": "library",
       "name": "mantine-datatable",
-      "version": "9.3.0",
-      "purl": "pkg:npm/mantine-datatable@9.3.0",
-      "bom-ref": "pkg:npm/mantine-datatable@9.3.0",
+      "version": "9.3.1",
+      "purl": "pkg:npm/mantine-datatable@9.3.1",
+      "bom-ref": "pkg:npm/mantine-datatable@9.3.1",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/mantine-datatable/-/mantine-datatable-9.3.0.tgz",
+          "url": "https://registry.npmjs.org/mantine-datatable/-/mantine-datatable-9.3.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "6022c2e550913d41c3a0352f5a0558f356f1d7b3039371b3dfc89c38835efd03b664a0121b13737ffc22a95dc3bf537f0513bad351b254c1d11fa2f3156542ee"
+              "content": "c3e2ad34251c372a609a9c1895b605f730dbd1ee60345139608dd9ae013ef48489c60ffc869996ca9ac0e1854c6ca63c982f34cf03b068aa1ec3994bc747aca0"
             }
           ]
         }
@@ -26907,7 +26907,7 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/mantine-datatable@9.3.0",
+      "ref": "pkg:npm/mantine-datatable@9.3.1",
       "dependsOn": []
     },
     {
@@ -28243,7 +28243,7 @@
         "pkg:npm/jwt-decode@4.0.0",
         "pkg:npm/keycloak-js@26.2.4",
         "pkg:npm/linkifyjs@4.3.3",
-        "pkg:npm/mantine-datatable@9.3.0",
+        "pkg:npm/mantine-datatable@9.3.1",
         "pkg:npm/mini-css-extract-plugin@2.10.2",
         "pkg:npm/patch-package@8.0.1",
         "pkg:npm/postcss-loader@8.2.1",
