@@ -44,14 +44,41 @@ class AbstractAutoFillServiceTest {
 	}
 
 	@Test
-	void apply_confidentAndPreviouslyExtracted_refreshesAbstract() {
+	void apply_confidentAndPreviouslyExtractedDiffers_offersSuggestion() {
+		// A previously auto-filled (EXTRACTED) abstract is real content now — replacing it must be
+		// confirmed by the user, so a differing upload only offers a suggestion.
 		Thesis thesis = thesisWith("<p>Old extracted.</p>", ThesisAbstractSource.EXTRACTED);
 
 		service.apply(thesis, confident("<p>New extracted abstract.</p>"));
 
-		assertThat(thesis.getAbstractField()).isEqualTo("<p>New extracted abstract.</p>");
+		assertThat(thesis.getAbstractField()).isEqualTo("<p>Old extracted.</p>");
 		assertThat(thesis.getAbstractSource()).isEqualTo(ThesisAbstractSource.EXTRACTED);
+		assertThat(thesis.getAbstractSuggestion()).isEqualTo("<p>New extracted abstract.</p>");
+	}
+
+	@Test
+	void apply_extractionMatchesCurrentAbstract_isNoOp() {
+		// No change: the extracted text equals the current abstract — nothing to confirm.
+		Thesis thesis = thesisWith("<p>Same abstract text.</p>", ThesisAbstractSource.MANUAL);
+
+		service.apply(thesis, confident("<p>Same abstract text.</p>"));
+
+		assertThat(thesis.getAbstractField()).isEqualTo("<p>Same abstract text.</p>");
+		assertThat(thesis.getAbstractSource()).isEqualTo(ThesisAbstractSource.MANUAL);
 		assertThat(thesis.getAbstractSuggestion()).isNull();
+	}
+
+	@Test
+	void apply_uncertainAndBlankAbstract_offersSuggestion() {
+		// Even into a blank abstract, an uncertain extraction is never auto-filled — it is offered
+		// for confirmation so a possibly-wrong abstract is never stored silently.
+		Thesis thesis = thesisWith("", ThesisAbstractSource.MANUAL);
+
+		service.apply(thesis, new AbstractExtractor.Result(
+				AbstractExtractor.Confidence.UNCERTAIN, "<p>Maybe an abstract.</p>"));
+
+		assertThat(thesis.getAbstractField()).isNullOrEmpty();
+		assertThat(thesis.getAbstractSuggestion()).isEqualTo("<p>Maybe an abstract.</p>");
 	}
 
 	@Test

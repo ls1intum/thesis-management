@@ -10,7 +10,7 @@ import {
 import { Link } from 'react-router'
 import { ApiError } from '@/core/requests/handler'
 import DownloadAllFilesButton from '@/thesis/pages/ThesisPage/components/ThesisInfoSection/components/DownloadAllFilesButton/DownloadAllFilesButton'
-import AbstractSuggestionBanner from '@/thesis/pages/ThesisPage/components/ThesisInfoSection/components/AbstractSuggestionBanner/AbstractSuggestionBanner'
+import AbstractSuggestionModal from '@/thesis/pages/ThesisPage/components/ThesisInfoSection/components/AbstractSuggestionModal/AbstractSuggestionModal'
 import { isThesisClosed } from '@/thesis/utils/thesis'
 import { GLOBAL_CONFIG } from '@/core/config/global'
 import { formatLanguage } from '@/core/utils/format'
@@ -81,11 +81,6 @@ const ThesisInfoSection = () => {
     }
   }, 'Abstract suggestion dismissed')
 
-  const onEditSuggestion = () => {
-    setAbstractText(thesis.abstractSuggestion ?? '')
-    setEditMode(true)
-  }
-
   const showSuggestion =
     access.student && !editMode && !isThesisClosed(thesis) && !!thesis.abstractSuggestion
 
@@ -118,15 +113,14 @@ const ThesisInfoSection = () => {
                 ))}
               </Stack>
             )}
-            {showSuggestion && thesis.abstractSuggestion && (
-              <AbstractSuggestionBanner
-                suggestion={thesis.abstractSuggestion}
-                loading={accepting || dismissing}
-                onUse={onUseSuggestion}
-                onEdit={onEditSuggestion}
-                onDismiss={onDismissSuggestion}
-              />
-            )}
+            <AbstractSuggestionModal
+              opened={showSuggestion}
+              currentAbstract={thesis.abstractText ?? ''}
+              suggestion={thesis.abstractSuggestion ?? ''}
+              loading={accepting || dismissing}
+              onConfirm={onUseSuggestion}
+              onDeny={onDismissSuggestion}
+            />
             <DocumentEditor
               label='Abstract'
               value={abstractText}
