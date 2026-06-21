@@ -11,7 +11,11 @@ interface IAbstractSuggestionModalProps {
   onDeny: () => void
 }
 
-const hasText = (html: string) => html.replace(/<[^>]*>/g, '').trim().length > 0
+// Detect visible text by parsing the HTML and reading its text content, rather than stripping
+// tags with a regex (which is incomplete and flagged as unsafe sanitization). The parsed document
+// is detached and inert, so no scripts run.
+const hasText = (html: string) =>
+  (new DOMParser().parseFromString(html, 'text/html').body.textContent ?? '').trim().length > 0
 
 /**
  * Shown right after an upload when an abstract was extracted that would replace the current one,
