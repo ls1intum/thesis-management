@@ -10,6 +10,7 @@ import {
 import { Link } from 'react-router'
 import { ApiError } from '@/core/requests/handler'
 import DownloadAllFilesButton from '@/thesis/pages/ThesisPage/components/ThesisInfoSection/components/DownloadAllFilesButton/DownloadAllFilesButton'
+import AbstractSuggestionModal from '@/thesis/pages/ThesisPage/components/ThesisInfoSection/components/AbstractSuggestionModal/AbstractSuggestionModal'
 import { isThesisClosed } from '@/thesis/utils/thesis'
 import { GLOBAL_CONFIG } from '@/core/config/global'
 import { formatLanguage } from '@/core/utils/format'
@@ -54,6 +55,35 @@ const ThesisInfoSection = () => {
     }
   }, 'Thesis info updated successfully')
 
+  const [accepting, onUseSuggestion] = useThesisUpdateAction(async () => {
+    const response = await doRequest<IThesis>(
+      `/v2/theses/${thesis.thesisId}/abstract-suggestion/accept`,
+      { method: 'POST', requiresAuth: true },
+    )
+
+    if (response.ok) {
+      return response.data
+    } else {
+      throw new ApiError(response)
+    }
+  }, 'Abstract updated from the suggestion')
+
+  const [dismissing, onDismissSuggestion] = useThesisUpdateAction(async () => {
+    const response = await doRequest<IThesis>(
+      `/v2/theses/${thesis.thesisId}/abstract-suggestion/dismiss`,
+      { method: 'POST', requiresAuth: true },
+    )
+
+    if (response.ok) {
+      return response.data
+    } else {
+      throw new ApiError(response)
+    }
+  }, 'Abstract suggestion dismissed')
+
+  const showSuggestion =
+    access.student && !editMode && !isThesisClosed(thesis) && !!thesis.abstractSuggestion
+
   return (
     <Accordion variant='separated' defaultValue='open'>
       <Accordion.Item value='open'>
@@ -83,6 +113,14 @@ const ThesisInfoSection = () => {
                 ))}
               </Stack>
             )}
+            <AbstractSuggestionModal
+              opened={showSuggestion}
+              currentAbstract={thesis.abstractText ?? ''}
+              suggestion={thesis.abstractSuggestion ?? ''}
+              loading={accepting || dismissing}
+              onConfirm={onUseSuggestion}
+              onDeny={onDismissSuggestion}
+            />
             <DocumentEditor
               label='Abstract'
               value={abstractText}

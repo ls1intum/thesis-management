@@ -254,6 +254,7 @@ public class ThesisAnonymizationService {
 		thesis.setAnonymizedAt(Instant.now(clock));
 		thesis.setInfo("");
 		thesis.setAbstractField("");
+		thesis.setAbstractSuggestion(null);
 		thesis.setFinalFeedback(null);
 		thesis.setKeywords(new HashSet<>());
 		thesis.setMetadata(new ThesisMetadata(new HashMap<>(), new HashMap<>()));

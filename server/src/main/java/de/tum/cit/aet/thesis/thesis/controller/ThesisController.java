@@ -281,6 +281,50 @@ public class ThesisController {
 	}
 
 	/**
+	 * Accepts the pending auto-extracted abstract suggestion, applying it to the thesis abstract.
+	 *
+	 * @param thesisId the unique identifier of the thesis
+	 * @return the updated thesis
+	 */
+	@PostMapping("/{thesisId}/abstract-suggestion/accept")
+	public ResponseEntity<ThesisDto> acceptAbstractSuggestion(
+			@PathVariable UUID thesisId
+	) {
+		User currentUser = currentUserProvider().getUser();
+		Thesis thesis = thesisService.findById(thesisId);
+
+		if (!thesis.hasStudentAccess(currentUser)) {
+			throw new AccessDeniedException("You need to be a student of this thesis to manage the abstract suggestion");
+		}
+
+		thesis = thesisService.acceptAbstractSuggestion(thesis);
+
+		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasSupervisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
+	}
+
+	/**
+	 * Dismisses the pending auto-extracted abstract suggestion without changing the abstract.
+	 *
+	 * @param thesisId the unique identifier of the thesis
+	 * @return the updated thesis
+	 */
+	@PostMapping("/{thesisId}/abstract-suggestion/dismiss")
+	public ResponseEntity<ThesisDto> dismissAbstractSuggestion(
+			@PathVariable UUID thesisId
+	) {
+		User currentUser = currentUserProvider().getUser();
+		Thesis thesis = thesisService.findById(thesisId);
+
+		if (!thesis.hasStudentAccess(currentUser)) {
+			throw new AccessDeniedException("You need to be a student of this thesis to manage the abstract suggestion");
+		}
+
+		thesis = thesisService.dismissAbstractSuggestion(thesis);
+
+		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasSupervisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
+	}
+
+	/**
 	 * Updates the credit points assigned to a thesis.
 	 *
 	 * @param thesisId the unique identifier of the thesis to update

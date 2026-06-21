@@ -23,6 +23,7 @@ import de.tum.cit.aet.thesis.core.utility.RequestValidator;
 import de.tum.cit.aet.thesis.presentation.entity.ThesisPresentation;
 import de.tum.cit.aet.thesis.proposal.entity.ThesisProposal;
 import de.tum.cit.aet.thesis.proposal.repository.ThesisProposalRepository;
+import de.tum.cit.aet.thesis.thesis.constants.ThesisAbstractSource;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackType;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisRoleName;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisState;
@@ -88,6 +89,7 @@ public class ThesisService {
 	private final ResearchGroupRepository researchGroupRepository;
 	private final ResearchGroupSettingsService researchGroupSettingsService;
 	private final UserService userService;
+	private final AbstractAutoFillService abstractAutoFillService;
 
 	@Value("${thesis-management.client.host}")
 	private String clientHost;
@@ -110,6 +112,7 @@ public class ThesisService {
 	 * @param researchGroupRepository the research group repository
 	 * @param researchGroupSettingsService the research group settings service
 	 * @param userService the user service
+	 * @param abstractAutoFillService the abstract auto-fill service
 	 */
 	@Autowired
 	public ThesisService(
@@ -124,7 +127,8 @@ public class ThesisService {
 			AccessManagementService accessManagementService,
 			ThesisFeedbackRepository thesisFeedbackRepository, ThesisFileRepository thesisFileRepository,
 			ObjectProvider<CurrentUserProvider> currentUserProviderProvider, ResearchGroupRepository researchGroupRepository, ResearchGroupSettingsService researchGroupSettingsService,
-			UserService userService
+			UserService userService,
+			AbstractAutoFillService abstractAutoFillService
 	) {
 		this.thesisRoleRepository = thesisRoleRepository;
 		this.thesisRepository = thesisRepository;
@@ -141,6 +145,7 @@ public class ThesisService {
 		this.researchGroupRepository = researchGroupRepository;
 		this.researchGroupSettingsService = researchGroupSettingsService;
 		this.userService = userService;
+		this.abstractAutoFillService = abstractAutoFillService;
 	}
 
 	private CurrentUserProvider currentUserProvider() {
@@ -388,10 +393,58 @@ public class ThesisService {
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
 		thesis.setAbstractField(abstractText != null ? abstractText : "");
 		thesis.setInfo(infoText != null ? infoText : "");
+		// A human saved the abstract: mark it manual so later uploads never overwrite it,
+		// and clear any pending extraction suggestion.
+		thesis.setAbstractSource(ThesisAbstractSource.MANUAL);
+		thesis.setAbstractSuggestion(null);
 
 		thesis = thesisRepository.save(thesis);
 
 		return thesis;
+	}
+
+	/**
+	 * Accepts a pending abstract suggestion, promoting it to the thesis abstract.
+	 *
+	 * <p>The suggestion becomes the abstract, the source is marked {@code EXTRACTED}, and the
+	 * pending suggestion is cleared.
+	 *
+	 * @param thesis the thesis whose suggestion is accepted
+	 * @return the updated thesis
+	 * @throws ResourceNotFoundException if there is no pending suggestion to accept
+	 */
+	public Thesis acceptAbstractSuggestion(Thesis thesis) {
+		requireNotAnonymized(thesis);
+		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+		if (thesis.getAbstractSuggestion() == null) {
+			throw new ResourceNotFoundException("No abstract suggestion to accept");
+		}
+
+		thesis.setAbstractField(thesis.getAbstractSuggestion());
+		thesis.setAbstractSource(ThesisAbstractSource.EXTRACTED);
+		thesis.setAbstractSuggestion(null);
+
+		return thesisRepository.save(thesis);
+	}
+
+	/**
+	 * Dismisses a pending abstract suggestion, keeping the current abstract unchanged.
+	 *
+	 * <p>Dismissing marks the abstract source {@code MANUAL} so a later confident upload only
+	 * suggests again rather than silently overwriting the kept abstract.
+	 *
+	 * @param thesis the thesis whose suggestion is dismissed
+	 * @return the updated thesis
+	 */
+	public Thesis dismissAbstractSuggestion(Thesis thesis) {
+		requireNotAnonymized(thesis);
+		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+		// Dismissing is an explicit human decision to keep the current abstract, so mark it
+		// MANUAL — a later confident upload must not silently overwrite it.
+		thesis.setAbstractSource(ThesisAbstractSource.MANUAL);
+		thesis.setAbstractSuggestion(null);
+
+		return thesisRepository.save(thesis);
 	}
 
 	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
@@ -535,6 +588,9 @@ public class ThesisService {
 
 		mailingService.sendProposalUploadedEmail(proposal);
 
+		// Auto-fill the abstract from the uploaded proposal PDF (best-effort; never fails the upload).
+		abstractAutoFillService.process(thesis, proposalFile);
+
 		return thesisRepository.save(thesis);
 	}
 
@@ -618,6 +674,11 @@ public class ThesisService {
 
 		List<ThesisFile> files = thesis.getFiles();
 		files.addFirst(thesisFileRepository.save(thesisFile));
+
+		// Auto-fill the abstract from the uploaded thesis document (best-effort; never fails the upload).
+		if ("THESIS".equals(type)) {
+			abstractAutoFillService.process(thesis, file);
+		}
 
 		return thesisRepository.save(thesis);
 	}

@@ -9,6 +9,7 @@ import de.tum.cit.aet.thesis.presentation.constants.ThesisPresentationVisibility
 import de.tum.cit.aet.thesis.presentation.controller.payload.ReplacePresentationPayload;
 import de.tum.cit.aet.thesis.presentation.repository.ThesisPresentationRepository;
 import de.tum.cit.aet.thesis.proposal.repository.ThesisProposalRepository;
+import de.tum.cit.aet.thesis.thesis.constants.ThesisAbstractSource;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisCommentType;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackType;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisState;
@@ -325,6 +326,63 @@ class ThesisControllerTest extends BaseIntegrationTest {
 
 			Thesis thesis = thesisRepository.findById(thesisId).orElseThrow();
 			assertThat(thesis.getTitle()).isEqualTo("Test Thesis");
+		}
+
+		@Test
+		void acceptAbstractSuggestion_Success() throws Exception {
+			UUID thesisId = createTestThesis("Test Thesis");
+			Thesis thesis = thesisRepository.findById(thesisId).orElseThrow();
+			thesis.setAbstractSuggestion("<p>Suggested abstract from the PDF.</p>");
+			thesisRepository.save(thesis);
+
+			String response = mockMvc.perform(MockMvcRequestBuilders
+							.post("/v2/theses/{thesisId}/abstract-suggestion/accept", thesisId)
+							.header("Authorization", createRandomAdminAuthentication()))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			JsonNode json = objectMapper.readTree(response);
+			assertThat(json.get("abstractText").asString()).isEqualTo("<p>Suggested abstract from the PDF.</p>");
+
+			Thesis updated = thesisRepository.findById(thesisId).orElseThrow();
+			assertThat(updated.getAbstractField()).isEqualTo("<p>Suggested abstract from the PDF.</p>");
+			assertThat(updated.getAbstractSuggestion()).isNull();
+			assertThat(updated.getAbstractSource()).isEqualTo(ThesisAbstractSource.EXTRACTED);
+		}
+
+		@Test
+		void dismissAbstractSuggestion_Success() throws Exception {
+			UUID thesisId = createTestThesis("Test Thesis");
+			Thesis thesis = thesisRepository.findById(thesisId).orElseThrow();
+			thesis.setAbstractField("<p>Existing abstract.</p>");
+			thesis.setAbstractSuggestion("<p>Suggested abstract from the PDF.</p>");
+			thesisRepository.save(thesis);
+
+			mockMvc.perform(MockMvcRequestBuilders
+							.post("/v2/theses/{thesisId}/abstract-suggestion/dismiss", thesisId)
+							.header("Authorization", createRandomAdminAuthentication()))
+					.andExpect(status().isOk());
+
+			Thesis updated = thesisRepository.findById(thesisId).orElseThrow();
+			assertThat(updated.getAbstractSuggestion()).isNull();
+			assertThat(updated.getAbstractField()).isEqualTo("<p>Existing abstract.</p>");
+			assertThat(updated.getAbstractSource()).isEqualTo(ThesisAbstractSource.MANUAL);
+		}
+
+		@Test
+		void acceptAbstractSuggestion_AccessDenied_AsUnrelatedStudent() throws Exception {
+			UUID thesisId = createTestThesis("Test Thesis");
+			Thesis thesis = thesisRepository.findById(thesisId).orElseThrow();
+			thesis.setAbstractSuggestion("<p>Suggested abstract from the PDF.</p>");
+			thesisRepository.save(thesis);
+
+			mockMvc.perform(MockMvcRequestBuilders
+							.post("/v2/theses/{thesisId}/abstract-suggestion/accept", thesisId)
+							.header("Authorization", createRandomAuthentication("student")))
+					.andExpect(status().isForbidden());
+
+			Thesis updated = thesisRepository.findById(thesisId).orElseThrow();
+			assertThat(updated.getAbstractSuggestion()).isEqualTo("<p>Suggested abstract from the PDF.</p>");
 		}
 
 		@Test
