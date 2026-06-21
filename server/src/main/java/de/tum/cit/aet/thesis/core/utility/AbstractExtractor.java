@@ -27,23 +27,36 @@ import java.util.regex.Pattern;
  */
 public final class AbstractExtractor {
 
-	/** Only the first few pages are scanned — abstracts always appear at the front. */
-	private static final int MAX_PAGES = 5;
+	/**
+	 * Only the front matter is scanned — abstracts always appear there. Proposals place the
+	 * abstract on page 1, but theses follow a template (title, declaration, acknowledgements,
+	 * then abstract) that pushes it to around page 6, so the window must comfortably cover that.
+	 */
+	private static final int MAX_PAGES = 12;
 	/** Baselines within this many points are considered the same text line. */
 	private static final float LINE_Y_TOLERANCE = 3f;
 	/** A new paragraph starts when the vertical gap exceeds this multiple of the median line gap. */
 	private static final float PARAGRAPH_GAP_FACTOR = 1.5f;
+	/** A line indented more than this many points past the left margin starts a new paragraph. */
+	private static final float PARAGRAPH_INDENT_MIN = 6f;
 	/** Minimum plausible abstract length (characters) for a confident result. */
 	private static final int MIN_CONFIDENT_LENGTH = 50;
 	/** Maximum plausible abstract length (characters) for a confident result. */
 	private static final int MAX_CONFIDENT_LENGTH = 2000;
-	/** Section headings (other than the abstract) that mark the end of the abstract. */
+	/**
+	 * Section headings (other than the abstract) that mark the end of the abstract. The German
+	 * abstract headings are included because theses almost always place a "Zusammenfassung" right
+	 * after the English abstract, set at body point size (so the font-size rule alone misses it).
+	 */
 	private static final Set<String> STOP_HEADINGS = Set.of(
 			"introduction", "contents", "table of contents", "acknowledgements",
-			"acknowledgments", "keywords", "index terms");
+			"acknowledgments", "keywords", "index terms", "list of figures", "list of tables",
+			"zusammenfassung", "kurzfassung");
 	/** English abstract heading words. */
 	private static final Set<String> ABSTRACT_HEADINGS = Set.of("abstract", "summary");
 	private static final Pattern NUMBERED_HEADING = Pattern.compile("^\\d+(\\.\\d+)*\\.?\\s+\\S.*");
+	/** Leading section number on a heading, e.g. "1 ", "1. ", "1.2 " — stripped before matching. */
+	private static final Pattern SECTION_NUMBER_PREFIX = Pattern.compile("^\\d+(\\.\\d+)*\\.?\\s+");
 	private static final Pattern CHAPTER_HEADING = Pattern.compile("^chapter\\s+\\d.*");
 	private static final Pattern TRAILING_PUNCTUATION = Pattern.compile("[\\s:.]+$");
 	private static final Pattern WHITESPACE = Pattern.compile("\\s+");
@@ -73,7 +86,7 @@ public final class AbstractExtractor {
 	private record Chunk(String text, float startX, float endX, float y, float fontSize, int page) {
 	}
 
-	private record Line(String text, int page, float y, float fontSize) {
+	private record Line(String text, int page, float y, float startX, float fontSize) {
 	}
 
 	/**
@@ -100,7 +113,7 @@ public final class AbstractExtractor {
 		boolean boundaryFound = boundaryIndex >= 0;
 		int end = boundaryFound ? boundaryIndex : lines.size();
 
-		List<Line> body = lines.subList(headingIndex + 1, end);
+		List<Line> body = dropFootnoteLines(lines.subList(headingIndex + 1, end));
 		List<String> paragraphs = buildParagraphs(body);
 		String html = toHtml(paragraphs);
 		int plainLength = String.join(" ", paragraphs).length();
@@ -183,16 +196,51 @@ public final class AbstractExtractor {
 		}
 
 		String collapsed = WHITESPACE.matcher(text.toString()).replaceAll(" ").trim();
-		return new Line(collapsed, parts.getFirst().page(), parts.getFirst().y(), maxFontSize);
+		return new Line(normalizeHyphens(collapsed), parts.getFirst().page(), parts.getFirst().y(),
+				parts.getFirst().startX(), maxFontSize);
+	}
+
+	/**
+	 * Normalizes the various hyphen encodings real PDFs use into a plain ASCII hyphen so the
+	 * line-join de-hyphenation works uniformly. Some thesis fonts map their hyphen glyph to the
+	 * Unicode replacement character (U+FFFD); Unicode hyphen / non-breaking hyphen are also
+	 * folded in. A soft hyphen (U+00AD) is only a real break when it ends a line — anywhere else
+	 * it is an invisible discretionary hyphen and is dropped.
+	 *
+	 * <p>Package-private so the normalization can be unit-tested directly: the U+FFFD case cannot
+	 * be reproduced through a synthetic PDF because standard fonts drop the glyph at write time.
+	 *
+	 * @param text the collapsed line text
+	 * @return the line text with hyphen encodings normalized
+	 */
+	static String normalizeHyphens(String text) {
+		String result = text
+				.replace((char) 0xFFFD, '-')
+				.replace((char) 0x2010, '-')
+				.replace((char) 0x2011, '-');
+		String softHyphen = String.valueOf((char) 0x00AD);
+		if (result.endsWith(softHyphen)) {
+			result = result.substring(0, result.length() - 1) + "-";
+		}
+		return result.replace(softHyphen, "");
 	}
 
 	private static int findHeadingIndex(List<Line> lines) {
 		for (int i = 0; i < lines.size(); i++) {
-			if (ABSTRACT_HEADINGS.contains(normalize(lines.get(i).text()))) {
+			if (isAbstractHeading(lines.get(i).text())) {
 				return i;
 			}
 		}
 		return -1;
+	}
+
+	private static boolean isAbstractHeading(String text) {
+		String normalized = normalize(text);
+		if (ABSTRACT_HEADINGS.contains(normalized)) {
+			return true;
+		}
+		String withoutSection = SECTION_NUMBER_PREFIX.matcher(normalized).replaceFirst("");
+		return !withoutSection.equals(normalized) && ABSTRACT_HEADINGS.contains(withoutSection);
 	}
 
 	private static int findBoundaryIndex(List<Line> lines, int headingIndex, float medianFontSize) {
@@ -218,6 +266,33 @@ public final class AbstractExtractor {
 		return line.fontSize() > medianFontSize && words <= 6;
 	}
 
+	/**
+	 * Removes footnote definition lines from the abstract body. Footnotes sit at the page bottom
+	 * and begin with a superscript digit marker; their text (frequently URLs) is not part of the
+	 * abstract. Inline footnote reference markers within sentences are left untouched to avoid
+	 * corrupting legitimate superscripts such as mathematical exponents.
+	 *
+	 * @param body the candidate abstract lines
+	 * @return the lines with footnote definitions removed
+	 */
+	private static List<Line> dropFootnoteLines(List<Line> body) {
+		List<Line> result = new ArrayList<>();
+		for (Line line : body) {
+			String trimmed = line.text().trim();
+			if (!trimmed.isEmpty() && isSuperscriptDigit(trimmed.charAt(0))) {
+				continue;
+			}
+			result.add(line);
+		}
+		return result;
+	}
+
+	private static boolean isSuperscriptDigit(char c) {
+		// ¹ ² ³ live in Latin-1; ⁰ and ⁴–⁹ live in the superscripts block.
+		return c == 0x00B9 || c == 0x00B2 || c == 0x00B3
+				|| c == 0x2070 || (c >= 0x2074 && c <= 0x2079);
+	}
+
 	private static List<String> buildParagraphs(List<Line> body) {
 		List<String> paragraphs = new ArrayList<>();
 		if (body.isEmpty()) {
@@ -225,14 +300,18 @@ public final class AbstractExtractor {
 		}
 
 		float medianGap = medianGap(body);
+		float leftMargin = leftMargin(body);
 		List<Line> current = new ArrayList<>();
 		current.add(body.getFirst());
 
 		for (int i = 1; i < body.size(); i++) {
 			Line prev = body.get(i - 1);
 			Line line = body.get(i);
+			// A paragraph break shows up either as extra vertical space or — in LaTeX-style
+			// abstracts with no inter-paragraph space — as a first-line indent.
 			boolean newParagraph = prev.page() != line.page()
-					|| (prev.y() - line.y()) > PARAGRAPH_GAP_FACTOR * medianGap;
+					|| (prev.y() - line.y()) > PARAGRAPH_GAP_FACTOR * medianGap
+					|| line.startX() - leftMargin > PARAGRAPH_INDENT_MIN;
 			if (newParagraph) {
 				paragraphs.add(joinLines(current));
 				current = new ArrayList<>();
@@ -243,6 +322,15 @@ public final class AbstractExtractor {
 
 		paragraphs.removeIf(String::isBlank);
 		return paragraphs;
+	}
+
+	/** The body's left margin: the smallest line start, i.e. the non-indented continuation lines. */
+	private static float leftMargin(List<Line> body) {
+		float min = Float.MAX_VALUE;
+		for (Line line : body) {
+			min = Math.min(min, line.startX());
+		}
+		return min;
 	}
 
 	private static float medianGap(List<Line> body) {
