@@ -28,9 +28,16 @@ const AbstractSuggestionModal = (props: IAbstractSuggestionModalProps) => {
   return (
     <Modal
       opened={opened}
-      onClose={onDeny}
+      onClose={() => {
+        // Don't let a close-based deny fire while an accept/deny request is already in flight.
+        if (!loading) {
+          onDeny()
+        }
+      }}
       size='lg'
       closeOnClickOutside={false}
+      closeOnEscape={!loading}
+      withCloseButton={!loading}
       title={
         <Group gap='xs'>
           <Sparkle size={18} />

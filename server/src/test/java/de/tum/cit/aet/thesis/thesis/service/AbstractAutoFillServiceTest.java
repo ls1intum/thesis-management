@@ -57,9 +57,11 @@ class AbstractAutoFillServiceTest {
 	}
 
 	@Test
-	void apply_extractionMatchesCurrentAbstract_isNoOp() {
-		// No change: the extracted text equals the current abstract — nothing to confirm.
+	void apply_extractionMatchesCurrentAbstract_clearsStaleSuggestion() {
+		// No change: the extracted text equals the current abstract — nothing to confirm, and any
+		// previously staged suggestion must be cleared so a stale modal can't resurface.
 		Thesis thesis = thesisWith("<p>Same abstract text.</p>", ThesisAbstractSource.MANUAL);
+		thesis.setAbstractSuggestion("<p>stale</p>");
 
 		service.apply(thesis, confident("<p>Same abstract text.</p>"));
 
@@ -105,7 +107,9 @@ class AbstractAutoFillServiceTest {
 	}
 
 	@Test
-	void apply_none_changesNothing() {
+	void apply_none_clearsStaleSuggestionButKeepsAbstract() {
+		// Nothing found: the abstract stays, but any previously staged suggestion is cleared so a
+		// later no-op upload doesn't keep an outdated modal alive.
 		Thesis thesis = thesisWith("<p>Human written abstract.</p>", ThesisAbstractSource.MANUAL);
 		thesis.setAbstractSuggestion("<p>stale</p>");
 
@@ -113,7 +117,7 @@ class AbstractAutoFillServiceTest {
 
 		assertThat(thesis.getAbstractField()).isEqualTo("<p>Human written abstract.</p>");
 		assertThat(thesis.getAbstractSource()).isEqualTo(ThesisAbstractSource.MANUAL);
-		assertThat(thesis.getAbstractSuggestion()).isEqualTo("<p>stale</p>");
+		assertThat(thesis.getAbstractSuggestion()).isNull();
 	}
 
 	@Test

@@ -39,7 +39,8 @@ public class AbstractAutoFillService {
 	 * Applies an extraction result to the thesis.
 	 *
 	 * <ul>
-	 *   <li>Nothing plausible found, or the extraction equals the current abstract: no-op.</li>
+	 *   <li>Nothing plausible found, or the extraction equals the current abstract: the abstract
+	 *       is left untouched and any earlier pending suggestion is cleared.</li>
 	 *   <li>Confident extraction into an empty abstract: filled silently.</li>
 	 *   <li>Anything that would replace existing abstract text, or any uncertain extraction:
 	 *       staged as a suggestion for the student to confirm or deny.</li>
@@ -50,12 +51,16 @@ public class AbstractAutoFillService {
 	 */
 	public void apply(Thesis thesis, AbstractExtractor.Result result) {
 		if (result.confidence() == AbstractExtractor.Confidence.NONE) {
+			// Nothing found — drop any earlier suggestion so a stale modal can't resurface.
+			thesis.setAbstractSuggestion(null);
 			return;
 		}
 
 		String extracted = result.html();
 		if (isBlank(extracted) || sameText(extracted, thesis.getAbstractField())) {
-			// Nothing found, or no change from the current abstract — don't prompt the student.
+			// Nothing found, or no change from the current abstract — don't prompt the student,
+			// and clear any earlier suggestion so the state matches this upload's outcome.
+			thesis.setAbstractSuggestion(null);
 			return;
 		}
 
