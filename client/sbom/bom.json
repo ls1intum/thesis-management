@@ -12234,9 +12234,9 @@
     {
       "type": "library",
       "name": "globals",
-      "version": "17.6.0",
-      "purl": "pkg:npm/globals@17.6.0",
-      "bom-ref": "pkg:npm/globals@17.6.0",
+      "version": "17.7.0",
+      "purl": "pkg:npm/globals@17.7.0",
+      "bom-ref": "pkg:npm/globals@17.7.0",
       "scope": "excluded",
       "properties": [
         {
@@ -12247,11 +12247,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/globals/-/globals-17.6.0.tgz",
+          "url": "https://registry.npmjs.org/globals/-/globals-17.7.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "b1ea5f7e44fcb2dc272186ec301a6808726e24ce65f7c154176027134ee17ef1349bfaa9dd1e7cea1c388c5e2e69d6e1be0d68a08773baeec2b1f0f68f309a34"
+              "content": "0b39b29ece5d52cab8b1e14147f29dc9d866a3ccbd902efd8624a43e7d18706b4d9d85a7ae0b74be3ad28f1f6db29a031969b608c6ab7df46e2e3338c54cfcc6"
             }
           ]
         }
@@ -26251,7 +26251,7 @@
       ]
     },
     {
-      "ref": "pkg:npm/globals@17.6.0",
+      "ref": "pkg:npm/globals@17.7.0",
       "dependsOn": []
     },
     {
@@ -28234,7 +28234,7 @@
         "pkg:npm/eslint-plugin-prettier@5.5.6",
         "pkg:npm/eslint@10.5.0",
         "pkg:npm/fork-ts-checker-webpack-plugin@9.1.0",
-        "pkg:npm/globals@17.6.0",
+        "pkg:npm/globals@17.7.0",
         "pkg:npm/html-webpack-plugin@5.6.7",
         "pkg:npm/husky@9.1.7",
         "pkg:npm/i18n-iso-countries@7.14.0",
