@@ -5686,9 +5686,9 @@
     {
       "type": "library",
       "name": "eslint-plugin",
-      "version": "8.61.1",
-      "purl": "pkg:npm/%40typescript-eslint/eslint-plugin@8.61.1",
-      "bom-ref": "pkg:npm/%40typescript-eslint/eslint-plugin@8.61.1",
+      "version": "8.62.0",
+      "purl": "pkg:npm/%40typescript-eslint/eslint-plugin@8.62.0",
+      "bom-ref": "pkg:npm/%40typescript-eslint/eslint-plugin@8.62.0",
       "scope": "excluded",
       "properties": [
         {
@@ -5700,11 +5700,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@typescript-eslint/eslint-plugin/-/eslint-plugin-8.61.1.tgz",
+          "url": "https://registry.npmjs.org/@typescript-eslint/eslint-plugin/-/eslint-plugin-8.62.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "64f9559773c1ddeb7fe7d35ed1fbffb1c8ba657cf84f81e9e274c9e7a8bf634811f3d0116fe2a98688d3aba8fee7a1393c87b398e20e396c98f9a59015df8891"
+              "content": "a3e9a9cfb11888ccd7a3249788a9b395a6c8bd356a52e2b9c8bac079d44f4430342293c5314575217b7a3aa9632315ff92e98de848d4629e351ea7a587aa7f0f"
             }
           ]
         }
@@ -5713,9 +5713,9 @@
     {
       "type": "library",
       "name": "parser",
-      "version": "8.61.1",
-      "purl": "pkg:npm/%40typescript-eslint/parser@8.61.1",
-      "bom-ref": "pkg:npm/%40typescript-eslint/parser@8.61.1",
+      "version": "8.62.0",
+      "purl": "pkg:npm/%40typescript-eslint/parser@8.62.0",
+      "bom-ref": "pkg:npm/%40typescript-eslint/parser@8.62.0",
       "scope": "excluded",
       "properties": [
         {
@@ -5727,11 +5727,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@typescript-eslint/parser/-/parser-8.61.1.tgz",
+          "url": "https://registry.npmjs.org/@typescript-eslint/parser/-/parser-8.62.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "3c9e6f78fab9fe882705bac87280b9f921cee5d7e978b3f33fd1692e4cd6ae0ba861011e7928e52695703a9a35251493122edd45cc0dcb887877357bd0fa8772"
+              "content": "7731de4f68324b366d2c3b2eab153d02462022c4281c01ed441a4ea8cf8e7f3c75070addd917028d027eea241bb0738847a352df76c5d96d64ddb94dd732c3ac"
             }
           ]
         }
@@ -5766,6 +5766,33 @@
     },
     {
       "type": "library",
+      "name": "project-service",
+      "version": "8.62.0",
+      "purl": "pkg:npm/%40typescript-eslint/project-service@8.62.0",
+      "bom-ref": "pkg:npm/%40typescript-eslint/project-service@8.62.0",
+      "scope": "excluded",
+      "properties": [
+        {
+          "name": "cdx:npm:package:development",
+          "value": "true"
+        }
+      ],
+      "group": "@typescript-eslint",
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@typescript-eslint/project-service/-/project-service-8.62.0.tgz",
+          "hashes": [
+            {
+              "alg": "SHA-512",
+              "content": "c1ec670aa89383b04e1ad6cb0dfb58a515a598bab8c5fa0c77b04a151e98ef9b194b742644a2dd377c962e1988620a8c98ffce5d6a63dc7f287646f99c651109"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "library",
       "name": "scope-manager",
       "version": "8.61.1",
       "purl": "pkg:npm/%40typescript-eslint/scope-manager@8.61.1",
@@ -5786,6 +5813,33 @@
             {
               "alg": "SHA-512",
               "content": "2f66dd21ea104bc165280bce340af6d30e8e70b5de07eaa20ca6c0a284bd03405e9fe89222405e7f4171ab029662ab79b1ad22e0a26dc55c959a133294acc5e7"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "scope-manager",
+      "version": "8.62.0",
+      "purl": "pkg:npm/%40typescript-eslint/scope-manager@8.62.0",
+      "bom-ref": "pkg:npm/%40typescript-eslint/scope-manager@8.62.0",
+      "scope": "excluded",
+      "properties": [
+        {
+          "name": "cdx:npm:package:development",
+          "value": "true"
+        }
+      ],
+      "group": "@typescript-eslint",
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@typescript-eslint/scope-manager/-/scope-manager-8.62.0.tgz",
+          "hashes": [
+            {
+              "alg": "SHA-512",
+              "content": "d655f7f243715c845bf2611cde56eae66747ab53dfdbe5349c553ae4a7d3d7c9ad3f1c65d1fbe3b8413dda61ee5cfb82b4494984eadd74ea72325337674ba610"
             }
           ]
         }
@@ -5820,6 +5874,33 @@
     },
     {
       "type": "library",
+      "name": "tsconfig-utils",
+      "version": "8.62.0",
+      "purl": "pkg:npm/%40typescript-eslint/tsconfig-utils@8.62.0",
+      "bom-ref": "pkg:npm/%40typescript-eslint/tsconfig-utils@8.62.0",
+      "scope": "excluded",
+      "properties": [
+        {
+          "name": "cdx:npm:package:development",
+          "value": "true"
+        }
+      ],
+      "group": "@typescript-eslint",
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@typescript-eslint/tsconfig-utils/-/tsconfig-utils-8.62.0.tgz",
+          "hashes": [
+            {
+              "alg": "SHA-512",
+              "content": "cb6180741eb291a5d4beeb296d89e2cd0738a030f3d13cff61cee25ab5dff66c7cbe6fcbff4bcb1c27b4b52d9ba06f7a672f838af9d50d0f595045a81eaab1d6"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "library",
       "name": "type-utils",
       "version": "8.61.1",
       "purl": "pkg:npm/%40typescript-eslint/type-utils@8.61.1",
@@ -5840,6 +5921,33 @@
             {
               "alg": "SHA-512",
               "content": "19846270a9952b40b87ec2a068009a92739402af4e6b6930b239e916115c4bfe69e07b7920ff4e54b6e022070ae12464f769d51c596ebab83596e983f5d05c2f"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "type-utils",
+      "version": "8.62.0",
+      "purl": "pkg:npm/%40typescript-eslint/type-utils@8.62.0",
+      "bom-ref": "pkg:npm/%40typescript-eslint/type-utils@8.62.0",
+      "scope": "excluded",
+      "properties": [
+        {
+          "name": "cdx:npm:package:development",
+          "value": "true"
+        }
+      ],
+      "group": "@typescript-eslint",
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@typescript-eslint/type-utils/-/type-utils-8.62.0.tgz",
+          "hashes": [
+            {
+              "alg": "SHA-512",
+              "content": "fa0e4ede3d30da57730bce8fbfa7ef6ceff1840a276c914875ffcc290d5ddf4827765b15cd4384f3795d7d2135e50ae5f5f8458cae80a2f1ece56a69eafc7ceb"
             }
           ]
         }
@@ -5874,6 +5982,33 @@
     },
     {
       "type": "library",
+      "name": "types",
+      "version": "8.62.0",
+      "purl": "pkg:npm/%40typescript-eslint/types@8.62.0",
+      "bom-ref": "pkg:npm/%40typescript-eslint/types@8.62.0",
+      "scope": "excluded",
+      "properties": [
+        {
+          "name": "cdx:npm:package:development",
+          "value": "true"
+        }
+      ],
+      "group": "@typescript-eslint",
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@typescript-eslint/types/-/types-8.62.0.tgz",
+          "hashes": [
+            {
+              "alg": "SHA-512",
+              "content": "2af01c96492d3913ef339e1380b800e33f47215d4cf333a0c3d65535797d7fff1d2d87d7617d7090c5cfeea99a6e98a34115796c724b3a6a321906cb31a5187a"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "library",
       "name": "typescript-estree",
       "version": "8.61.1",
       "purl": "pkg:npm/%40typescript-eslint/typescript-estree@8.61.1",
@@ -5894,6 +6029,33 @@
             {
               "alg": "SHA-512",
               "content": "bbea100f706a6163dcf1857d65a6f8bda244949bb038b3d1735d099b5a3fa92fba4307a7d781c25b0c7449ea382e74a7db0c5e6b6224f03c4fb76fc51e6ba1ae"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "typescript-estree",
+      "version": "8.62.0",
+      "purl": "pkg:npm/%40typescript-eslint/typescript-estree@8.62.0",
+      "bom-ref": "pkg:npm/%40typescript-eslint/typescript-estree@8.62.0",
+      "scope": "excluded",
+      "properties": [
+        {
+          "name": "cdx:npm:package:development",
+          "value": "true"
+        }
+      ],
+      "group": "@typescript-eslint",
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@typescript-eslint/typescript-estree/-/typescript-estree-8.62.0.tgz",
+          "hashes": [
+            {
+              "alg": "SHA-512",
+              "content": "fa155b371b56eb8a487195833c66f268a17bbe9d88053558e666b56e5c3092cae376c6ddaaa10abc958c19b0687de8b817a0e8bf1d4cd11260a0578dbb6dbbf4"
             }
           ]
         }
@@ -5928,6 +6090,33 @@
     },
     {
       "type": "library",
+      "name": "utils",
+      "version": "8.62.0",
+      "purl": "pkg:npm/%40typescript-eslint/utils@8.62.0",
+      "bom-ref": "pkg:npm/%40typescript-eslint/utils@8.62.0",
+      "scope": "excluded",
+      "properties": [
+        {
+          "name": "cdx:npm:package:development",
+          "value": "true"
+        }
+      ],
+      "group": "@typescript-eslint",
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@typescript-eslint/utils/-/utils-8.62.0.tgz",
+          "hashes": [
+            {
+              "alg": "SHA-512",
+              "content": "f36afae9f8bdcd8c19fa64eadef2a0c236d9d4f564fc3273ad714ba46e919c16ddbc7f1310654722cf47e1dd9dae190ecdfd2cc99b83fce66fbe5bba1836cfe2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "library",
       "name": "visitor-keys",
       "version": "8.61.1",
       "purl": "pkg:npm/%40typescript-eslint/visitor-keys@8.61.1",
@@ -5948,6 +6137,33 @@
             {
               "alg": "SHA-512",
               "content": "e9f27d3075ad2b5e02d434a488c9475123a6ad579b2fbd79d316490652622fada38e1200e0998eaba7e5c01803c4874128a76889945e97e75f3c3e4c2df9f2df"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "visitor-keys",
+      "version": "8.62.0",
+      "purl": "pkg:npm/%40typescript-eslint/visitor-keys@8.62.0",
+      "bom-ref": "pkg:npm/%40typescript-eslint/visitor-keys@8.62.0",
+      "scope": "excluded",
+      "properties": [
+        {
+          "name": "cdx:npm:package:development",
+          "value": "true"
+        }
+      ],
+      "group": "@typescript-eslint",
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@typescript-eslint/visitor-keys/-/visitor-keys-8.62.0.tgz",
+          "hashes": [
+            {
+              "alg": "SHA-512",
+              "content": "098deec854916dc42fde79d2bfc4b4fa50dfb4c573e8ff7adcfa11971ad5edec3f31de7ae20f6eb7ad0f63374b339a96e23167f7718117e4a88bdd0848037e19"
             }
           ]
         }
@@ -24861,19 +25077,27 @@
       ]
     },
     {
-      "ref": "pkg:npm/%40typescript-eslint/eslint-plugin@8.61.1",
+      "ref": "pkg:npm/%40typescript-eslint/eslint-plugin@8.62.0",
       "dependsOn": [
         "pkg:npm/%40eslint-community/regexpp@4.12.2",
+        "pkg:npm/%40typescript-eslint/scope-manager@8.62.0",
+        "pkg:npm/%40typescript-eslint/type-utils@8.62.0",
+        "pkg:npm/%40typescript-eslint/utils@8.62.0",
+        "pkg:npm/%40typescript-eslint/visitor-keys@8.62.0",
         "pkg:npm/ignore@7.0.5",
         "pkg:npm/natural-compare@1.4.0"
       ]
     },
     {
-      "ref": "pkg:npm/%40typescript-eslint/parser@8.61.1",
+      "ref": "pkg:npm/%40typescript-eslint/parser@8.62.0",
       "dependsOn": []
     },
     {
       "ref": "pkg:npm/%40typescript-eslint/project-service@8.61.1",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:npm/%40typescript-eslint/project-service@8.62.0",
       "dependsOn": []
     },
     {
@@ -24883,7 +25107,17 @@
       ]
     },
     {
+      "ref": "pkg:npm/%40typescript-eslint/scope-manager@8.62.0",
+      "dependsOn": [
+        "pkg:npm/%40typescript-eslint/types@8.62.0"
+      ]
+    },
+    {
       "ref": "pkg:npm/%40typescript-eslint/tsconfig-utils@8.61.1",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:npm/%40typescript-eslint/tsconfig-utils@8.62.0",
       "dependsOn": []
     },
     {
@@ -24891,7 +25125,17 @@
       "dependsOn": []
     },
     {
+      "ref": "pkg:npm/%40typescript-eslint/type-utils@8.62.0",
+      "dependsOn": [
+        "pkg:npm/%40typescript-eslint/typescript-estree@8.62.0"
+      ]
+    },
+    {
       "ref": "pkg:npm/%40typescript-eslint/types@8.61.1",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:npm/%40typescript-eslint/types@8.62.0",
       "dependsOn": []
     },
     {
@@ -24907,6 +25151,13 @@
       ]
     },
     {
+      "ref": "pkg:npm/%40typescript-eslint/typescript-estree@8.62.0",
+      "dependsOn": [
+        "pkg:npm/%40typescript-eslint/project-service@8.62.0",
+        "pkg:npm/%40typescript-eslint/tsconfig-utils@8.62.0"
+      ]
+    },
+    {
       "ref": "pkg:npm/%40typescript-eslint/utils@8.61.1",
       "dependsOn": [
         "pkg:npm/%40eslint-community/eslint-utils@4.9.1",
@@ -24916,10 +25167,18 @@
       ]
     },
     {
+      "ref": "pkg:npm/%40typescript-eslint/utils@8.62.0",
+      "dependsOn": []
+    },
+    {
       "ref": "pkg:npm/%40typescript-eslint/visitor-keys@8.61.1",
       "dependsOn": [
         "pkg:npm/eslint-visitor-keys@5.0.1"
       ]
+    },
+    {
+      "ref": "pkg:npm/%40typescript-eslint/visitor-keys@8.62.0",
+      "dependsOn": []
     },
     {
       "ref": "pkg:npm/%40ungap/structured-clone@1.3.1",
@@ -28218,8 +28477,8 @@
         "pkg:npm/%40tiptap/starter-kit@3.27.1",
         "pkg:npm/%40types/react-dom@19.2.3",
         "pkg:npm/%40types/react@19.2.17",
-        "pkg:npm/%40typescript-eslint/eslint-plugin@8.61.1",
-        "pkg:npm/%40typescript-eslint/parser@8.61.1",
+        "pkg:npm/%40typescript-eslint/eslint-plugin@8.62.0",
+        "pkg:npm/%40typescript-eslint/parser@8.62.0",
         "pkg:npm/%40vitest/coverage-v8@4.1.9",
         "pkg:npm/clean-webpack-plugin@4.0.0",
         "pkg:npm/compression-webpack-plugin@12.0.0",
