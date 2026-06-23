@@ -819,9 +819,9 @@
     {
       "type": "library",
       "name": "ast",
-      "version": "5.9.1",
-      "purl": "pkg:npm/%40eslint-react/ast@5.9.1",
-      "bom-ref": "pkg:npm/%40eslint-react/ast@5.9.1",
+      "version": "5.9.2",
+      "purl": "pkg:npm/%40eslint-react/ast@5.9.2",
+      "bom-ref": "pkg:npm/%40eslint-react/ast@5.9.2",
       "scope": "excluded",
       "properties": [
         {
@@ -833,11 +833,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@eslint-react/ast/-/ast-5.9.1.tgz",
+          "url": "https://registry.npmjs.org/@eslint-react/ast/-/ast-5.9.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "3c404704ac6e286aec78ef36f2ee7f1c5a3cf5374e6bde3aab9bde12374347e063c6532ec6167122a1e43f2a12f77761e84fbd9a46647037ab4866399c2b26f1"
+              "content": "db4e92b49bde6b4d01b3d7ad30e106f789aeb813ff810e8d3cad9383f9bf0dbc75a378443a9a1b9712aa045d63631f750b50c8adbbb3a9aa88d4dfd74df198c7"
             }
           ]
         }
@@ -846,9 +846,9 @@
     {
       "type": "library",
       "name": "core",
-      "version": "5.9.1",
-      "purl": "pkg:npm/%40eslint-react/core@5.9.1",
-      "bom-ref": "pkg:npm/%40eslint-react/core@5.9.1",
+      "version": "5.9.2",
+      "purl": "pkg:npm/%40eslint-react/core@5.9.2",
+      "bom-ref": "pkg:npm/%40eslint-react/core@5.9.2",
       "scope": "excluded",
       "properties": [
         {
@@ -860,11 +860,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@eslint-react/core/-/core-5.9.1.tgz",
+          "url": "https://registry.npmjs.org/@eslint-react/core/-/core-5.9.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "090ed9402468a9a1d207195ddb3cdfbe33c15ae1f447a3a9f45bc2abe35f7a79effe4ea06de700ec8578ed295a5c2ed329507bcf18a2c03de40fc7ed68bf3ec4"
+              "content": "19c5c468c0328c581b20fee0d5343ea7b5688619cce20d70b4471c8f830d5dbd63cd32a2a0f716c5158df7996b067ac262c92f657b0f096338111423310194da"
             }
           ]
         }
@@ -873,9 +873,9 @@
     {
       "type": "library",
       "name": "eslint-plugin",
-      "version": "5.9.1",
-      "purl": "pkg:npm/%40eslint-react/eslint-plugin@5.9.1",
-      "bom-ref": "pkg:npm/%40eslint-react/eslint-plugin@5.9.1",
+      "version": "5.9.2",
+      "purl": "pkg:npm/%40eslint-react/eslint-plugin@5.9.2",
+      "bom-ref": "pkg:npm/%40eslint-react/eslint-plugin@5.9.2",
       "scope": "excluded",
       "properties": [
         {
@@ -887,11 +887,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@eslint-react/eslint-plugin/-/eslint-plugin-5.9.1.tgz",
+          "url": "https://registry.npmjs.org/@eslint-react/eslint-plugin/-/eslint-plugin-5.9.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "51591df60fcdce9ca804825bf0ed4e72334b29ee4134683e2191f93e7b3f68f15d91d5eace6547a604ed2e0fb0d9f0cdceffa18afaa351d5b0f7d110ee40b47c"
+              "content": "a35ad2ca26ffb9695653ca8f83a135534304fe6ad2fd86584abe2bb92c3b746a104cd64138556cd13d0a8af8a82b961f2e4b071f6ca73ce0a7eb0e045271f8ef"
             }
           ]
         }
@@ -900,9 +900,9 @@
     {
       "type": "library",
       "name": "eslint",
-      "version": "5.9.1",
-      "purl": "pkg:npm/%40eslint-react/eslint@5.9.1",
-      "bom-ref": "pkg:npm/%40eslint-react/eslint@5.9.1",
+      "version": "5.9.2",
+      "purl": "pkg:npm/%40eslint-react/eslint@5.9.2",
+      "bom-ref": "pkg:npm/%40eslint-react/eslint@5.9.2",
       "scope": "excluded",
       "properties": [
         {
@@ -914,11 +914,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@eslint-react/eslint/-/eslint-5.9.1.tgz",
+          "url": "https://registry.npmjs.org/@eslint-react/eslint/-/eslint-5.9.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "60955f8f5674fae69823e2a674d0d0a4b4fc29c78b4637fc507de077f7c927e61ede306e4b9b170f1041a06ef8385eb5fe6b53ba0adcf5a0427ace21968bb006"
+              "content": "f05afe76a13c36807b5d1969f00429fc8139928418c69ad7600ce4b429b2495b701fafc8d870d0b15cbfc1c34cb8870233b10f92201bb65f4c3a216f71b4c093"
             }
           ]
         }
@@ -927,9 +927,9 @@
     {
       "type": "library",
       "name": "jsx",
-      "version": "5.9.1",
-      "purl": "pkg:npm/%40eslint-react/jsx@5.9.1",
-      "bom-ref": "pkg:npm/%40eslint-react/jsx@5.9.1",
+      "version": "5.9.2",
+      "purl": "pkg:npm/%40eslint-react/jsx@5.9.2",
+      "bom-ref": "pkg:npm/%40eslint-react/jsx@5.9.2",
       "scope": "excluded",
       "properties": [
         {
@@ -941,11 +941,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@eslint-react/jsx/-/jsx-5.9.1.tgz",
+          "url": "https://registry.npmjs.org/@eslint-react/jsx/-/jsx-5.9.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "ad95485a8b472ce61d6ec98110c242425bb6814787714f1d61aec492158fc2e877a75ab5c9d57e25f9f8c212701d56ff99323ccf2e3de7b46715b1865952daea"
+              "content": "ada835c7eee56470ce4d3f167d6792db67f29a1e4956bd753bc9b64a9b53c88ebc6a8d135a34dce7e0411edbff96f42579af95669447d67e29655ddee0792ca7"
             }
           ]
         }
@@ -954,9 +954,9 @@
     {
       "type": "library",
       "name": "shared",
-      "version": "5.9.1",
-      "purl": "pkg:npm/%40eslint-react/shared@5.9.1",
-      "bom-ref": "pkg:npm/%40eslint-react/shared@5.9.1",
+      "version": "5.9.2",
+      "purl": "pkg:npm/%40eslint-react/shared@5.9.2",
+      "bom-ref": "pkg:npm/%40eslint-react/shared@5.9.2",
       "scope": "excluded",
       "properties": [
         {
@@ -968,11 +968,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@eslint-react/shared/-/shared-5.9.1.tgz",
+          "url": "https://registry.npmjs.org/@eslint-react/shared/-/shared-5.9.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "e95059a3929397252b9f6eda5babba9ea56f5fd8a05b1cd05f4bd5342bff39b9c203a1253a7d53042f443704682bbdc527ce8f713db93d6cb3d4b2518309de7f"
+              "content": "354de91cc0378800c11fb1c43ea97f292653828a06a751d2853e93c9e1b8e93029038d99f97fa0064e4c166c1acc5fc73ddfeadd3d8de8a53980b59136a5e09e"
             }
           ]
         }
@@ -981,9 +981,9 @@
     {
       "type": "library",
       "name": "var",
-      "version": "5.9.1",
-      "purl": "pkg:npm/%40eslint-react/var@5.9.1",
-      "bom-ref": "pkg:npm/%40eslint-react/var@5.9.1",
+      "version": "5.9.2",
+      "purl": "pkg:npm/%40eslint-react/var@5.9.2",
+      "bom-ref": "pkg:npm/%40eslint-react/var@5.9.2",
       "scope": "excluded",
       "properties": [
         {
@@ -995,11 +995,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@eslint-react/var/-/var-5.9.1.tgz",
+          "url": "https://registry.npmjs.org/@eslint-react/var/-/var-5.9.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "b3e85be07fba0b316c2f613a630ebf7376f34857cd7365cd38fd90eb49381b4e5509b51ec37d00a9c7f412189a739c201a6a4367dffdc2426235a9d6d8cd6f88"
+              "content": "f7e27c1a6b0a8b77621c5d888fefaf6f91d5b3a20ef6b6cb52cda2e29cc27aaac666cb72ad3569dc13124b39f619a991383094f59cff4a197cbe1c2b4a4a98b1"
             }
           ]
         }
@@ -10806,9 +10806,9 @@
     {
       "type": "library",
       "name": "eslint-plugin-react-dom",
-      "version": "5.9.1",
-      "purl": "pkg:npm/eslint-plugin-react-dom@5.9.1",
-      "bom-ref": "pkg:npm/eslint-plugin-react-dom@5.9.1",
+      "version": "5.9.2",
+      "purl": "pkg:npm/eslint-plugin-react-dom@5.9.2",
+      "bom-ref": "pkg:npm/eslint-plugin-react-dom@5.9.2",
       "scope": "excluded",
       "properties": [
         {
@@ -10819,11 +10819,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/eslint-plugin-react-dom/-/eslint-plugin-react-dom-5.9.1.tgz",
+          "url": "https://registry.npmjs.org/eslint-plugin-react-dom/-/eslint-plugin-react-dom-5.9.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "7b43697ca64e3af7539184040c94fba8b2a84d7e230231fcfea702b8eae9f33a97d4b30a3eb2a03def035c6c971b94fe06de1bf35fd943fb374b6ce424b16e36"
+              "content": "f6938b7d4581491e3d38b6710880cb9e0c9fa8ea33b288a53e5d53bf7a71a16dfcf40541fc68374a8e117fe50fa50b448c93faf38d219d3664998f80e38ba69e"
             }
           ]
         }
@@ -10832,9 +10832,9 @@
     {
       "type": "library",
       "name": "eslint-plugin-react-jsx",
-      "version": "5.9.1",
-      "purl": "pkg:npm/eslint-plugin-react-jsx@5.9.1",
-      "bom-ref": "pkg:npm/eslint-plugin-react-jsx@5.9.1",
+      "version": "5.9.2",
+      "purl": "pkg:npm/eslint-plugin-react-jsx@5.9.2",
+      "bom-ref": "pkg:npm/eslint-plugin-react-jsx@5.9.2",
       "scope": "excluded",
       "properties": [
         {
@@ -10845,11 +10845,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/eslint-plugin-react-jsx/-/eslint-plugin-react-jsx-5.9.1.tgz",
+          "url": "https://registry.npmjs.org/eslint-plugin-react-jsx/-/eslint-plugin-react-jsx-5.9.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "cf384245bb9716218c86f0ab8e97302aca1bd06a2cf28edddbc127846c36f186a91d7c75298b747f3503b960e8459d9b8588650c7cde53e97e8c481e98fa5a6b"
+              "content": "2cfa208e107915ebdf3e9edd51d876aab92ef836d6bd5baa598c0ee0a6fdb72d5160a40df43b19c750dbd5656677cc7f5b63410cb83392ea47efa489fae911d7"
             }
           ]
         }
@@ -10858,9 +10858,9 @@
     {
       "type": "library",
       "name": "eslint-plugin-react-naming-convention",
-      "version": "5.9.1",
-      "purl": "pkg:npm/eslint-plugin-react-naming-convention@5.9.1",
-      "bom-ref": "pkg:npm/eslint-plugin-react-naming-convention@5.9.1",
+      "version": "5.9.2",
+      "purl": "pkg:npm/eslint-plugin-react-naming-convention@5.9.2",
+      "bom-ref": "pkg:npm/eslint-plugin-react-naming-convention@5.9.2",
       "scope": "excluded",
       "properties": [
         {
@@ -10871,11 +10871,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/eslint-plugin-react-naming-convention/-/eslint-plugin-react-naming-convention-5.9.1.tgz",
+          "url": "https://registry.npmjs.org/eslint-plugin-react-naming-convention/-/eslint-plugin-react-naming-convention-5.9.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "09ed6800be04b77441fb76a44d288521921809ec721bea18ac66062a9b34764cb989a472f0c52c921e045dcab8c88d74f48901095b79da0b726e64774ded25ad"
+              "content": "383804348a5cc58a04e128ef97203b9683d54e37298695366368de85d448e8b665bb19ad91480a4c973c30093fbd2089a0a7d62bafa456eee832a180c96ff0b9"
             }
           ]
         }
@@ -10884,9 +10884,9 @@
     {
       "type": "library",
       "name": "eslint-plugin-react-rsc",
-      "version": "5.9.1",
-      "purl": "pkg:npm/eslint-plugin-react-rsc@5.9.1",
-      "bom-ref": "pkg:npm/eslint-plugin-react-rsc@5.9.1",
+      "version": "5.9.2",
+      "purl": "pkg:npm/eslint-plugin-react-rsc@5.9.2",
+      "bom-ref": "pkg:npm/eslint-plugin-react-rsc@5.9.2",
       "scope": "excluded",
       "properties": [
         {
@@ -10897,11 +10897,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/eslint-plugin-react-rsc/-/eslint-plugin-react-rsc-5.9.1.tgz",
+          "url": "https://registry.npmjs.org/eslint-plugin-react-rsc/-/eslint-plugin-react-rsc-5.9.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "f97340b8978667a95dd6392738f39e27c81d4c83597908f0dac6c13f6d77f907539b026a64b57e0abc1a00deb73bef03f84206b5d9d291fa580c1726de38921a"
+              "content": "8dbe67a932a7ece0ec71059f7ef754232e2a13e40920bdad1d8fbb3653c58df76e3e19f0d836a9871eea5b4a9f5f9a927b5adcc50081303884912dbf1fa96020"
             }
           ]
         }
@@ -10910,9 +10910,9 @@
     {
       "type": "library",
       "name": "eslint-plugin-react-web-api",
-      "version": "5.9.1",
-      "purl": "pkg:npm/eslint-plugin-react-web-api@5.9.1",
-      "bom-ref": "pkg:npm/eslint-plugin-react-web-api@5.9.1",
+      "version": "5.9.2",
+      "purl": "pkg:npm/eslint-plugin-react-web-api@5.9.2",
+      "bom-ref": "pkg:npm/eslint-plugin-react-web-api@5.9.2",
       "scope": "excluded",
       "properties": [
         {
@@ -10923,11 +10923,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/eslint-plugin-react-web-api/-/eslint-plugin-react-web-api-5.9.1.tgz",
+          "url": "https://registry.npmjs.org/eslint-plugin-react-web-api/-/eslint-plugin-react-web-api-5.9.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "0fd33ac0a4f57cfc40cbbd1879b1db7d4fa0cd8bfc93d454b4e0d78d42582e3c6b5e8ab667ba39923075c80675be2df51336cb27e518cc62a2e21c3df22c0f8e"
+              "content": "bb0ff204775c88f3ec6048ae04004b7ca60eb4f68204999c2b0c726c474aa886454c2030795951aaab9c36e94a12c584d429c0e69e9edb9032cd4301f3106033"
             }
           ]
         }
@@ -10936,9 +10936,9 @@
     {
       "type": "library",
       "name": "eslint-plugin-react-x",
-      "version": "5.9.1",
-      "purl": "pkg:npm/eslint-plugin-react-x@5.9.1",
-      "bom-ref": "pkg:npm/eslint-plugin-react-x@5.9.1",
+      "version": "5.9.2",
+      "purl": "pkg:npm/eslint-plugin-react-x@5.9.2",
+      "bom-ref": "pkg:npm/eslint-plugin-react-x@5.9.2",
       "scope": "excluded",
       "properties": [
         {
@@ -10949,11 +10949,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/eslint-plugin-react-x/-/eslint-plugin-react-x-5.9.1.tgz",
+          "url": "https://registry.npmjs.org/eslint-plugin-react-x/-/eslint-plugin-react-x-5.9.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "d06c0ca4b758c771d631b0ddd6fa8dafd5489a4ab7e31fe541a2dc876a834263ce9a2d4350b2f7ca7765df8ef01611f849b13a394a09576cf428203bdaa9efe6"
+              "content": "69ec7f0f381c19d605e3a2ca4a1ad361599915611dee5ad7f4f0fce690036d3526169428a2f18540e2b79ceeaea8f502accb86f7b83fbfae91c9fccf071d20e4"
             }
           ]
         }
@@ -23881,48 +23881,48 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40eslint-react/ast@5.9.1",
+      "ref": "pkg:npm/%40eslint-react/ast@5.9.2",
       "dependsOn": [
         "pkg:npm/string-ts@2.3.1"
       ]
     },
     {
-      "ref": "pkg:npm/%40eslint-react/core@5.9.1",
+      "ref": "pkg:npm/%40eslint-react/core@5.9.2",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40eslint-react/eslint-plugin@5.9.1",
+      "ref": "pkg:npm/%40eslint-react/eslint-plugin@5.9.2",
       "dependsOn": [
-        "pkg:npm/%40eslint-react/shared@5.9.1",
-        "pkg:npm/eslint-plugin-react-dom@5.9.1",
-        "pkg:npm/eslint-plugin-react-jsx@5.9.1",
-        "pkg:npm/eslint-plugin-react-naming-convention@5.9.1",
-        "pkg:npm/eslint-plugin-react-rsc@5.9.1",
-        "pkg:npm/eslint-plugin-react-web-api@5.9.1",
-        "pkg:npm/eslint-plugin-react-x@5.9.1"
+        "pkg:npm/%40eslint-react/shared@5.9.2",
+        "pkg:npm/eslint-plugin-react-dom@5.9.2",
+        "pkg:npm/eslint-plugin-react-jsx@5.9.2",
+        "pkg:npm/eslint-plugin-react-naming-convention@5.9.2",
+        "pkg:npm/eslint-plugin-react-rsc@5.9.2",
+        "pkg:npm/eslint-plugin-react-web-api@5.9.2",
+        "pkg:npm/eslint-plugin-react-x@5.9.2"
       ]
     },
     {
-      "ref": "pkg:npm/%40eslint-react/eslint@5.9.1",
+      "ref": "pkg:npm/%40eslint-react/eslint@5.9.2",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40eslint-react/jsx@5.9.1",
+      "ref": "pkg:npm/%40eslint-react/jsx@5.9.2",
       "dependsOn": [
-        "pkg:npm/%40eslint-react/var@5.9.1"
+        "pkg:npm/%40eslint-react/var@5.9.2"
       ]
     },
     {
-      "ref": "pkg:npm/%40eslint-react/shared@5.9.1",
+      "ref": "pkg:npm/%40eslint-react/shared@5.9.2",
       "dependsOn": [
-        "pkg:npm/%40eslint-react/eslint@5.9.1",
+        "pkg:npm/%40eslint-react/eslint@5.9.2",
         "pkg:npm/%40typescript-eslint/utils@8.61.1",
         "pkg:npm/ts-pattern@5.9.0",
         "pkg:npm/zod@4.4.3"
       ]
     },
     {
-      "ref": "pkg:npm/%40eslint-react/var@5.9.1",
+      "ref": "pkg:npm/%40eslint-react/var@5.9.2",
       "dependsOn": []
     },
     {
@@ -25914,35 +25914,35 @@
       ]
     },
     {
-      "ref": "pkg:npm/eslint-plugin-react-dom@5.9.1",
+      "ref": "pkg:npm/eslint-plugin-react-dom@5.9.2",
       "dependsOn": [
-        "pkg:npm/%40eslint-react/ast@5.9.1",
-        "pkg:npm/%40eslint-react/jsx@5.9.1",
+        "pkg:npm/%40eslint-react/ast@5.9.2",
+        "pkg:npm/%40eslint-react/jsx@5.9.2",
         "pkg:npm/compare-versions@6.1.1"
       ]
     },
     {
-      "ref": "pkg:npm/eslint-plugin-react-jsx@5.9.1",
+      "ref": "pkg:npm/eslint-plugin-react-jsx@5.9.2",
       "dependsOn": [
-        "pkg:npm/%40eslint-react/core@5.9.1"
+        "pkg:npm/%40eslint-react/core@5.9.2"
       ]
     },
     {
-      "ref": "pkg:npm/eslint-plugin-react-naming-convention@5.9.1",
+      "ref": "pkg:npm/eslint-plugin-react-naming-convention@5.9.2",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/eslint-plugin-react-rsc@5.9.1",
+      "ref": "pkg:npm/eslint-plugin-react-rsc@5.9.2",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/eslint-plugin-react-web-api@5.9.1",
+      "ref": "pkg:npm/eslint-plugin-react-web-api@5.9.2",
       "dependsOn": [
         "pkg:npm/birecord@0.1.1"
       ]
     },
     {
-      "ref": "pkg:npm/eslint-plugin-react-x@5.9.1",
+      "ref": "pkg:npm/eslint-plugin-react-x@5.9.2",
       "dependsOn": [
         "pkg:npm/%40typescript-eslint/type-utils@8.61.1"
       ]
@@ -28191,7 +28191,7 @@
     {
       "ref": "pkg:npm/thesis-management@4.11.1",
       "dependsOn": [
-        "pkg:npm/%40eslint-react/eslint-plugin@5.9.1",
+        "pkg:npm/%40eslint-react/eslint-plugin@5.9.2",
         "pkg:npm/%40eslint/js@10.0.1",
         "pkg:npm/%40mantine/carousel@9.3.2",
         "pkg:npm/%40mantine/core@9.3.2",
