@@ -22284,9 +22284,9 @@
     {
       "type": "library",
       "name": "ts-loader",
-      "version": "9.6.1",
-      "purl": "pkg:npm/ts-loader@9.6.1",
-      "bom-ref": "pkg:npm/ts-loader@9.6.1",
+      "version": "9.6.2",
+      "purl": "pkg:npm/ts-loader@9.6.2",
+      "bom-ref": "pkg:npm/ts-loader@9.6.2",
       "scope": "excluded",
       "properties": [
         {
@@ -22297,11 +22297,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/ts-loader/-/ts-loader-9.6.1.tgz",
+          "url": "https://registry.npmjs.org/ts-loader/-/ts-loader-9.6.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "f053079e6c6da6771402ed198e4aa95e739397073d798f797ac1fc59537de20b933cf764836a1f55d8953398fc2f69668e219ead7779eb35dbfc3d89c9540f2e"
+              "content": "4788ae7339ad831bedb88e79eacfa14d9ebfec47b4dd508093f97f33c2d8d4e02c52007b63276c0b1920abd0fda4a45a0fb189a948b6bbc7e9f7364ffee7e328"
             }
           ]
         }
@@ -28257,7 +28257,7 @@
         "pkg:npm/speed-measure-webpack-plugin@1.6.0",
         "pkg:npm/style-loader@4.0.0",
         "pkg:npm/terser-webpack-plugin@5.6.1",
-        "pkg:npm/ts-loader@9.6.1",
+        "pkg:npm/ts-loader@9.6.2",
         "pkg:npm/ts-node@10.9.2",
         "pkg:npm/typescript-plugin-css-modules@5.2.0",
         "pkg:npm/typescript@5.9.3",
@@ -28349,9 +28349,8 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/ts-loader@9.6.1",
+      "ref": "pkg:npm/ts-loader@9.6.2",
       "dependsOn": [
-        "pkg:npm/enhanced-resolve@5.24.0",
         "pkg:npm/source-map@0.7.6"
       ]
     },
@@ -28620,6 +28619,7 @@
         "pkg:npm/%40webassemblyjs/wasm-parser@1.14.1",
         "pkg:npm/acorn-import-phases@1.0.4",
         "pkg:npm/chrome-trace-event@1.0.4",
+        "pkg:npm/enhanced-resolve@5.24.0",
         "pkg:npm/eslint-scope@5.1.1",
         "pkg:npm/events@3.3.0",
         "pkg:npm/glob-to-regexp@0.4.1",
