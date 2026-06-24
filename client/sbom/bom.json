@@ -819,9 +819,9 @@
     {
       "type": "library",
       "name": "ast",
-      "version": "5.9.1",
-      "purl": "pkg:npm/%40eslint-react/ast@5.9.1",
-      "bom-ref": "pkg:npm/%40eslint-react/ast@5.9.1",
+      "version": "5.9.2",
+      "purl": "pkg:npm/%40eslint-react/ast@5.9.2",
+      "bom-ref": "pkg:npm/%40eslint-react/ast@5.9.2",
       "scope": "excluded",
       "properties": [
         {
@@ -833,11 +833,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@eslint-react/ast/-/ast-5.9.1.tgz",
+          "url": "https://registry.npmjs.org/@eslint-react/ast/-/ast-5.9.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "3c404704ac6e286aec78ef36f2ee7f1c5a3cf5374e6bde3aab9bde12374347e063c6532ec6167122a1e43f2a12f77761e84fbd9a46647037ab4866399c2b26f1"
+              "content": "db4e92b49bde6b4d01b3d7ad30e106f789aeb813ff810e8d3cad9383f9bf0dbc75a378443a9a1b9712aa045d63631f750b50c8adbbb3a9aa88d4dfd74df198c7"
             }
           ]
         }
@@ -846,9 +846,9 @@
     {
       "type": "library",
       "name": "core",
-      "version": "5.9.1",
-      "purl": "pkg:npm/%40eslint-react/core@5.9.1",
-      "bom-ref": "pkg:npm/%40eslint-react/core@5.9.1",
+      "version": "5.9.2",
+      "purl": "pkg:npm/%40eslint-react/core@5.9.2",
+      "bom-ref": "pkg:npm/%40eslint-react/core@5.9.2",
       "scope": "excluded",
       "properties": [
         {
@@ -860,11 +860,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@eslint-react/core/-/core-5.9.1.tgz",
+          "url": "https://registry.npmjs.org/@eslint-react/core/-/core-5.9.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "090ed9402468a9a1d207195ddb3cdfbe33c15ae1f447a3a9f45bc2abe35f7a79effe4ea06de700ec8578ed295a5c2ed329507bcf18a2c03de40fc7ed68bf3ec4"
+              "content": "19c5c468c0328c581b20fee0d5343ea7b5688619cce20d70b4471c8f830d5dbd63cd32a2a0f716c5158df7996b067ac262c92f657b0f096338111423310194da"
             }
           ]
         }
@@ -873,9 +873,9 @@
     {
       "type": "library",
       "name": "eslint-plugin",
-      "version": "5.9.1",
-      "purl": "pkg:npm/%40eslint-react/eslint-plugin@5.9.1",
-      "bom-ref": "pkg:npm/%40eslint-react/eslint-plugin@5.9.1",
+      "version": "5.9.2",
+      "purl": "pkg:npm/%40eslint-react/eslint-plugin@5.9.2",
+      "bom-ref": "pkg:npm/%40eslint-react/eslint-plugin@5.9.2",
       "scope": "excluded",
       "properties": [
         {
@@ -887,11 +887,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@eslint-react/eslint-plugin/-/eslint-plugin-5.9.1.tgz",
+          "url": "https://registry.npmjs.org/@eslint-react/eslint-plugin/-/eslint-plugin-5.9.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "51591df60fcdce9ca804825bf0ed4e72334b29ee4134683e2191f93e7b3f68f15d91d5eace6547a604ed2e0fb0d9f0cdceffa18afaa351d5b0f7d110ee40b47c"
+              "content": "a35ad2ca26ffb9695653ca8f83a135534304fe6ad2fd86584abe2bb92c3b746a104cd64138556cd13d0a8af8a82b961f2e4b071f6ca73ce0a7eb0e045271f8ef"
             }
           ]
         }
@@ -900,9 +900,9 @@
     {
       "type": "library",
       "name": "eslint",
-      "version": "5.9.1",
-      "purl": "pkg:npm/%40eslint-react/eslint@5.9.1",
-      "bom-ref": "pkg:npm/%40eslint-react/eslint@5.9.1",
+      "version": "5.9.2",
+      "purl": "pkg:npm/%40eslint-react/eslint@5.9.2",
+      "bom-ref": "pkg:npm/%40eslint-react/eslint@5.9.2",
       "scope": "excluded",
       "properties": [
         {
@@ -914,11 +914,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@eslint-react/eslint/-/eslint-5.9.1.tgz",
+          "url": "https://registry.npmjs.org/@eslint-react/eslint/-/eslint-5.9.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "60955f8f5674fae69823e2a674d0d0a4b4fc29c78b4637fc507de077f7c927e61ede306e4b9b170f1041a06ef8385eb5fe6b53ba0adcf5a0427ace21968bb006"
+              "content": "f05afe76a13c36807b5d1969f00429fc8139928418c69ad7600ce4b429b2495b701fafc8d870d0b15cbfc1c34cb8870233b10f92201bb65f4c3a216f71b4c093"
             }
           ]
         }
@@ -927,9 +927,9 @@
     {
       "type": "library",
       "name": "jsx",
-      "version": "5.9.1",
-      "purl": "pkg:npm/%40eslint-react/jsx@5.9.1",
-      "bom-ref": "pkg:npm/%40eslint-react/jsx@5.9.1",
+      "version": "5.9.2",
+      "purl": "pkg:npm/%40eslint-react/jsx@5.9.2",
+      "bom-ref": "pkg:npm/%40eslint-react/jsx@5.9.2",
       "scope": "excluded",
       "properties": [
         {
@@ -941,11 +941,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@eslint-react/jsx/-/jsx-5.9.1.tgz",
+          "url": "https://registry.npmjs.org/@eslint-react/jsx/-/jsx-5.9.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "ad95485a8b472ce61d6ec98110c242425bb6814787714f1d61aec492158fc2e877a75ab5c9d57e25f9f8c212701d56ff99323ccf2e3de7b46715b1865952daea"
+              "content": "ada835c7eee56470ce4d3f167d6792db67f29a1e4956bd753bc9b64a9b53c88ebc6a8d135a34dce7e0411edbff96f42579af95669447d67e29655ddee0792ca7"
             }
           ]
         }
@@ -954,9 +954,9 @@
     {
       "type": "library",
       "name": "shared",
-      "version": "5.9.1",
-      "purl": "pkg:npm/%40eslint-react/shared@5.9.1",
-      "bom-ref": "pkg:npm/%40eslint-react/shared@5.9.1",
+      "version": "5.9.2",
+      "purl": "pkg:npm/%40eslint-react/shared@5.9.2",
+      "bom-ref": "pkg:npm/%40eslint-react/shared@5.9.2",
       "scope": "excluded",
       "properties": [
         {
@@ -968,11 +968,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@eslint-react/shared/-/shared-5.9.1.tgz",
+          "url": "https://registry.npmjs.org/@eslint-react/shared/-/shared-5.9.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "e95059a3929397252b9f6eda5babba9ea56f5fd8a05b1cd05f4bd5342bff39b9c203a1253a7d53042f443704682bbdc527ce8f713db93d6cb3d4b2518309de7f"
+              "content": "354de91cc0378800c11fb1c43ea97f292653828a06a751d2853e93c9e1b8e93029038d99f97fa0064e4c166c1acc5fc73ddfeadd3d8de8a53980b59136a5e09e"
             }
           ]
         }
@@ -981,9 +981,9 @@
     {
       "type": "library",
       "name": "var",
-      "version": "5.9.1",
-      "purl": "pkg:npm/%40eslint-react/var@5.9.1",
-      "bom-ref": "pkg:npm/%40eslint-react/var@5.9.1",
+      "version": "5.9.2",
+      "purl": "pkg:npm/%40eslint-react/var@5.9.2",
+      "bom-ref": "pkg:npm/%40eslint-react/var@5.9.2",
       "scope": "excluded",
       "properties": [
         {
@@ -995,11 +995,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@eslint-react/var/-/var-5.9.1.tgz",
+          "url": "https://registry.npmjs.org/@eslint-react/var/-/var-5.9.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "b3e85be07fba0b316c2f613a630ebf7376f34857cd7365cd38fd90eb49381b4e5509b51ec37d00a9c7f412189a739c201a6a4367dffdc2426235a9d6d8cd6f88"
+              "content": "f7e27c1a6b0a8b77621c5d888fefaf6f91d5b3a20ef6b6cb52cda2e29cc27aaac666cb72ad3569dc13124b39f619a991383094f59cff4a197cbe1c2b4a4a98b1"
             }
           ]
         }
@@ -2242,18 +2242,18 @@
     {
       "type": "library",
       "name": "carousel",
-      "version": "9.3.2",
-      "purl": "pkg:npm/%40mantine/carousel@9.3.2",
-      "bom-ref": "pkg:npm/%40mantine/carousel@9.3.2",
+      "version": "9.4.0",
+      "purl": "pkg:npm/%40mantine/carousel@9.4.0",
+      "bom-ref": "pkg:npm/%40mantine/carousel@9.4.0",
       "group": "@mantine",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@mantine/carousel/-/carousel-9.3.2.tgz",
+          "url": "https://registry.npmjs.org/@mantine/carousel/-/carousel-9.4.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "79002669e076c4760484d9c6c0aaadaa52279c681cad00137b7d7419d0f5c0bec95ee028609b30745aa53175e018f35faf1eb0c5fd49b086b2fe62251efb3879"
+              "content": "90f5ca3bbf91586144b7c38a3e68a2f091b40eae0f76bc752f31e5b07bf5d99777f61fc36623b531889af4306de769f4e95eb1a5bd6c4c950243d9a31987427f"
             }
           ]
         }
@@ -2262,18 +2262,18 @@
     {
       "type": "library",
       "name": "core",
-      "version": "9.3.2",
-      "purl": "pkg:npm/%40mantine/core@9.3.2",
-      "bom-ref": "pkg:npm/%40mantine/core@9.3.2",
+      "version": "9.4.0",
+      "purl": "pkg:npm/%40mantine/core@9.4.0",
+      "bom-ref": "pkg:npm/%40mantine/core@9.4.0",
       "group": "@mantine",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@mantine/core/-/core-9.3.2.tgz",
+          "url": "https://registry.npmjs.org/@mantine/core/-/core-9.4.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "529cbf67d4a3d9e5b6746ac5814cbfda421256cc4c4c16130df3f64c576c200dcf74f48191da9f48e3d7fee8377771776b86e7c104aa70eebe68f12904887c76"
+              "content": "06f4f3689e4dbade198962c2732d7f7115c4f328c2831b018720329d8d69120e97070fdf0a112a4a06c40767726ce9e4880c6f62df3d4eb9d3ac1068f6a26d9a"
             }
           ]
         }
@@ -2282,18 +2282,18 @@
     {
       "type": "library",
       "name": "dates",
-      "version": "9.3.2",
-      "purl": "pkg:npm/%40mantine/dates@9.3.2",
-      "bom-ref": "pkg:npm/%40mantine/dates@9.3.2",
+      "version": "9.4.0",
+      "purl": "pkg:npm/%40mantine/dates@9.4.0",
+      "bom-ref": "pkg:npm/%40mantine/dates@9.4.0",
       "group": "@mantine",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@mantine/dates/-/dates-9.3.2.tgz",
+          "url": "https://registry.npmjs.org/@mantine/dates/-/dates-9.4.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "3331eb5c6a0e6f7ac29c7065b08fc13c08c2f0ae6d6787fca7383aeadb13b2ea5509005a0691d255ab50c0d449e8ad890bda720b24daf412fcd370bc0225b270"
+              "content": "d798825b1ca4bad115a0550f4eae33f809f761065bed41fa170cdbdecb6c5614cc2e6e85c862d849207a3cbfbdb015754cf9652094a6d488b36364924c31aa41"
             }
           ]
         }
@@ -2302,18 +2302,18 @@
     {
       "type": "library",
       "name": "dropzone",
-      "version": "9.3.2",
-      "purl": "pkg:npm/%40mantine/dropzone@9.3.2",
-      "bom-ref": "pkg:npm/%40mantine/dropzone@9.3.2",
+      "version": "9.4.0",
+      "purl": "pkg:npm/%40mantine/dropzone@9.4.0",
+      "bom-ref": "pkg:npm/%40mantine/dropzone@9.4.0",
       "group": "@mantine",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@mantine/dropzone/-/dropzone-9.3.2.tgz",
+          "url": "https://registry.npmjs.org/@mantine/dropzone/-/dropzone-9.4.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "c31ffac1254b556f8e7cf53d16090c91f9da51deeba0f646d733a5cc4e84211608aac1dc898dce025ae1403a589d3928c2cb1e2695c3838246efcf25e6434351"
+              "content": "944bf0e274db390fec59a888daa85f1408eb4e5ccaec0bbe6cb7784d612e613c0516feacc4989cb67ccdbe0afc359a180efa7a74e7f69782a4b3d9e6c6d570d8"
             }
           ]
         }
@@ -2322,18 +2322,18 @@
     {
       "type": "library",
       "name": "form",
-      "version": "9.3.2",
-      "purl": "pkg:npm/%40mantine/form@9.3.2",
-      "bom-ref": "pkg:npm/%40mantine/form@9.3.2",
+      "version": "9.4.0",
+      "purl": "pkg:npm/%40mantine/form@9.4.0",
+      "bom-ref": "pkg:npm/%40mantine/form@9.4.0",
       "group": "@mantine",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@mantine/form/-/form-9.3.2.tgz",
+          "url": "https://registry.npmjs.org/@mantine/form/-/form-9.4.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "8d6117731f2185d74eb27cbeabf945b554e8352dd50496080ab91f14c589b0df960196a69cf22d5933cbaae953615a754fcba66bd32c119d4b5f892a59414034"
+              "content": "187f915e96cc471d347ee53c37cbf40e1075c5dcb145bce06a8aa5e941eed492766bde401976b9ff3637c50f822fa60c0aef79e2867842a7bc6a63ac86dd3fc5"
             }
           ]
         }
@@ -2342,18 +2342,18 @@
     {
       "type": "library",
       "name": "hooks",
-      "version": "9.3.2",
-      "purl": "pkg:npm/%40mantine/hooks@9.3.2",
-      "bom-ref": "pkg:npm/%40mantine/hooks@9.3.2",
+      "version": "9.4.0",
+      "purl": "pkg:npm/%40mantine/hooks@9.4.0",
+      "bom-ref": "pkg:npm/%40mantine/hooks@9.4.0",
       "group": "@mantine",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@mantine/hooks/-/hooks-9.3.2.tgz",
+          "url": "https://registry.npmjs.org/@mantine/hooks/-/hooks-9.4.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "8ce8e951ed31d40fe4dd7522bb6fda69209ab17448e592993ae726df2a70b2f9bd176bbc0b5c73c01bda82bce56cd670251179bcd60826d09a4fb36e9cfc9cd0"
+              "content": "4949207bc2a58722e84922a1107111c7b8cba2d36eeb7da495d8503e52e7e646ceb898b1a046d4f1f29cbb0a574ac653b734600824f6224a0dfab39186d6531e"
             }
           ]
         }
@@ -2362,18 +2362,18 @@
     {
       "type": "library",
       "name": "notifications",
-      "version": "9.3.2",
-      "purl": "pkg:npm/%40mantine/notifications@9.3.2",
-      "bom-ref": "pkg:npm/%40mantine/notifications@9.3.2",
+      "version": "9.4.0",
+      "purl": "pkg:npm/%40mantine/notifications@9.4.0",
+      "bom-ref": "pkg:npm/%40mantine/notifications@9.4.0",
       "group": "@mantine",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@mantine/notifications/-/notifications-9.3.2.tgz",
+          "url": "https://registry.npmjs.org/@mantine/notifications/-/notifications-9.4.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "9a775af2113f0e2ccf8b905b8b07763368d7c5f49949479acaf9cb60c6c5c1e19029733e411997d68a2dc83455a967b0f296a5b5ec13369f387162e38ffe9f2b"
+              "content": "07b662bb01a56fa948f7b3a051e35dcfbee8fca89f26a0cc241a3b4325a97e67216ea7f74e9ee664cc5f9f84a720b402b4598483aa8a8e2ee5b7db60380dbbf6"
             }
           ]
         }
@@ -2382,18 +2382,18 @@
     {
       "type": "library",
       "name": "store",
-      "version": "9.3.2",
-      "purl": "pkg:npm/%40mantine/store@9.3.2",
-      "bom-ref": "pkg:npm/%40mantine/store@9.3.2",
+      "version": "9.4.0",
+      "purl": "pkg:npm/%40mantine/store@9.4.0",
+      "bom-ref": "pkg:npm/%40mantine/store@9.4.0",
       "group": "@mantine",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@mantine/store/-/store-9.3.2.tgz",
+          "url": "https://registry.npmjs.org/@mantine/store/-/store-9.4.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "b8d9af8e4c1f507649e5bbf342ba0b16fb9bb940078c1334ae1ebd44146c5021b9151e4ae1ff32e125fcfa5721d304ba509baebe876c4882bc1f98ef66e15281"
+              "content": "062257c4874206d7dc383ba73e9cc028bba2229c43786a35991776826ce0492b55e413315a9334cc42fc4b8f6b37ec6e140470cc6a77b7592cec1e84aad847f1"
             }
           ]
         }
@@ -2402,18 +2402,18 @@
     {
       "type": "library",
       "name": "tiptap",
-      "version": "9.3.2",
-      "purl": "pkg:npm/%40mantine/tiptap@9.3.2",
-      "bom-ref": "pkg:npm/%40mantine/tiptap@9.3.2",
+      "version": "9.4.0",
+      "purl": "pkg:npm/%40mantine/tiptap@9.4.0",
+      "bom-ref": "pkg:npm/%40mantine/tiptap@9.4.0",
       "group": "@mantine",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@mantine/tiptap/-/tiptap-9.3.2.tgz",
+          "url": "https://registry.npmjs.org/@mantine/tiptap/-/tiptap-9.4.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "5f7e38c2ab777aeb0c2cf00d5ae3529caa058d30e5084394a58aba84f594eae06fc441c9187b891578ed9bf8e0fc3e9a344bd6afe3fe9b5f84944ede2d3fc6d0"
+              "content": "75c277de89815b7e6f7a57bb06bc5eb6381d934eaf5344de9fbcbc08bec44bd9b94cfecdadeedaeac6dfb261573709b73b3580c686bf3fda0742f7ed880e3cc9"
             }
           ]
         }
@@ -5686,9 +5686,9 @@
     {
       "type": "library",
       "name": "eslint-plugin",
-      "version": "8.61.1",
-      "purl": "pkg:npm/%40typescript-eslint/eslint-plugin@8.61.1",
-      "bom-ref": "pkg:npm/%40typescript-eslint/eslint-plugin@8.61.1",
+      "version": "8.62.0",
+      "purl": "pkg:npm/%40typescript-eslint/eslint-plugin@8.62.0",
+      "bom-ref": "pkg:npm/%40typescript-eslint/eslint-plugin@8.62.0",
       "scope": "excluded",
       "properties": [
         {
@@ -5700,11 +5700,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@typescript-eslint/eslint-plugin/-/eslint-plugin-8.61.1.tgz",
+          "url": "https://registry.npmjs.org/@typescript-eslint/eslint-plugin/-/eslint-plugin-8.62.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "64f9559773c1ddeb7fe7d35ed1fbffb1c8ba657cf84f81e9e274c9e7a8bf634811f3d0116fe2a98688d3aba8fee7a1393c87b398e20e396c98f9a59015df8891"
+              "content": "a3e9a9cfb11888ccd7a3249788a9b395a6c8bd356a52e2b9c8bac079d44f4430342293c5314575217b7a3aa9632315ff92e98de848d4629e351ea7a587aa7f0f"
             }
           ]
         }
@@ -5713,9 +5713,9 @@
     {
       "type": "library",
       "name": "parser",
-      "version": "8.61.1",
-      "purl": "pkg:npm/%40typescript-eslint/parser@8.61.1",
-      "bom-ref": "pkg:npm/%40typescript-eslint/parser@8.61.1",
+      "version": "8.62.0",
+      "purl": "pkg:npm/%40typescript-eslint/parser@8.62.0",
+      "bom-ref": "pkg:npm/%40typescript-eslint/parser@8.62.0",
       "scope": "excluded",
       "properties": [
         {
@@ -5727,11 +5727,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@typescript-eslint/parser/-/parser-8.61.1.tgz",
+          "url": "https://registry.npmjs.org/@typescript-eslint/parser/-/parser-8.62.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "3c9e6f78fab9fe882705bac87280b9f921cee5d7e978b3f33fd1692e4cd6ae0ba861011e7928e52695703a9a35251493122edd45cc0dcb887877357bd0fa8772"
+              "content": "7731de4f68324b366d2c3b2eab153d02462022c4281c01ed441a4ea8cf8e7f3c75070addd917028d027eea241bb0738847a352df76c5d96d64ddb94dd732c3ac"
             }
           ]
         }
@@ -5766,6 +5766,33 @@
     },
     {
       "type": "library",
+      "name": "project-service",
+      "version": "8.62.0",
+      "purl": "pkg:npm/%40typescript-eslint/project-service@8.62.0",
+      "bom-ref": "pkg:npm/%40typescript-eslint/project-service@8.62.0",
+      "scope": "excluded",
+      "properties": [
+        {
+          "name": "cdx:npm:package:development",
+          "value": "true"
+        }
+      ],
+      "group": "@typescript-eslint",
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@typescript-eslint/project-service/-/project-service-8.62.0.tgz",
+          "hashes": [
+            {
+              "alg": "SHA-512",
+              "content": "c1ec670aa89383b04e1ad6cb0dfb58a515a598bab8c5fa0c77b04a151e98ef9b194b742644a2dd377c962e1988620a8c98ffce5d6a63dc7f287646f99c651109"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "library",
       "name": "scope-manager",
       "version": "8.61.1",
       "purl": "pkg:npm/%40typescript-eslint/scope-manager@8.61.1",
@@ -5786,6 +5813,33 @@
             {
               "alg": "SHA-512",
               "content": "2f66dd21ea104bc165280bce340af6d30e8e70b5de07eaa20ca6c0a284bd03405e9fe89222405e7f4171ab029662ab79b1ad22e0a26dc55c959a133294acc5e7"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "scope-manager",
+      "version": "8.62.0",
+      "purl": "pkg:npm/%40typescript-eslint/scope-manager@8.62.0",
+      "bom-ref": "pkg:npm/%40typescript-eslint/scope-manager@8.62.0",
+      "scope": "excluded",
+      "properties": [
+        {
+          "name": "cdx:npm:package:development",
+          "value": "true"
+        }
+      ],
+      "group": "@typescript-eslint",
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@typescript-eslint/scope-manager/-/scope-manager-8.62.0.tgz",
+          "hashes": [
+            {
+              "alg": "SHA-512",
+              "content": "d655f7f243715c845bf2611cde56eae66747ab53dfdbe5349c553ae4a7d3d7c9ad3f1c65d1fbe3b8413dda61ee5cfb82b4494984eadd74ea72325337674ba610"
             }
           ]
         }
@@ -5820,6 +5874,33 @@
     },
     {
       "type": "library",
+      "name": "tsconfig-utils",
+      "version": "8.62.0",
+      "purl": "pkg:npm/%40typescript-eslint/tsconfig-utils@8.62.0",
+      "bom-ref": "pkg:npm/%40typescript-eslint/tsconfig-utils@8.62.0",
+      "scope": "excluded",
+      "properties": [
+        {
+          "name": "cdx:npm:package:development",
+          "value": "true"
+        }
+      ],
+      "group": "@typescript-eslint",
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@typescript-eslint/tsconfig-utils/-/tsconfig-utils-8.62.0.tgz",
+          "hashes": [
+            {
+              "alg": "SHA-512",
+              "content": "cb6180741eb291a5d4beeb296d89e2cd0738a030f3d13cff61cee25ab5dff66c7cbe6fcbff4bcb1c27b4b52d9ba06f7a672f838af9d50d0f595045a81eaab1d6"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "library",
       "name": "type-utils",
       "version": "8.61.1",
       "purl": "pkg:npm/%40typescript-eslint/type-utils@8.61.1",
@@ -5840,6 +5921,33 @@
             {
               "alg": "SHA-512",
               "content": "19846270a9952b40b87ec2a068009a92739402af4e6b6930b239e916115c4bfe69e07b7920ff4e54b6e022070ae12464f769d51c596ebab83596e983f5d05c2f"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "type-utils",
+      "version": "8.62.0",
+      "purl": "pkg:npm/%40typescript-eslint/type-utils@8.62.0",
+      "bom-ref": "pkg:npm/%40typescript-eslint/type-utils@8.62.0",
+      "scope": "excluded",
+      "properties": [
+        {
+          "name": "cdx:npm:package:development",
+          "value": "true"
+        }
+      ],
+      "group": "@typescript-eslint",
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@typescript-eslint/type-utils/-/type-utils-8.62.0.tgz",
+          "hashes": [
+            {
+              "alg": "SHA-512",
+              "content": "fa0e4ede3d30da57730bce8fbfa7ef6ceff1840a276c914875ffcc290d5ddf4827765b15cd4384f3795d7d2135e50ae5f5f8458cae80a2f1ece56a69eafc7ceb"
             }
           ]
         }
@@ -5874,6 +5982,33 @@
     },
     {
       "type": "library",
+      "name": "types",
+      "version": "8.62.0",
+      "purl": "pkg:npm/%40typescript-eslint/types@8.62.0",
+      "bom-ref": "pkg:npm/%40typescript-eslint/types@8.62.0",
+      "scope": "excluded",
+      "properties": [
+        {
+          "name": "cdx:npm:package:development",
+          "value": "true"
+        }
+      ],
+      "group": "@typescript-eslint",
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@typescript-eslint/types/-/types-8.62.0.tgz",
+          "hashes": [
+            {
+              "alg": "SHA-512",
+              "content": "2af01c96492d3913ef339e1380b800e33f47215d4cf333a0c3d65535797d7fff1d2d87d7617d7090c5cfeea99a6e98a34115796c724b3a6a321906cb31a5187a"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "library",
       "name": "typescript-estree",
       "version": "8.61.1",
       "purl": "pkg:npm/%40typescript-eslint/typescript-estree@8.61.1",
@@ -5894,6 +6029,33 @@
             {
               "alg": "SHA-512",
               "content": "bbea100f706a6163dcf1857d65a6f8bda244949bb038b3d1735d099b5a3fa92fba4307a7d781c25b0c7449ea382e74a7db0c5e6b6224f03c4fb76fc51e6ba1ae"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "typescript-estree",
+      "version": "8.62.0",
+      "purl": "pkg:npm/%40typescript-eslint/typescript-estree@8.62.0",
+      "bom-ref": "pkg:npm/%40typescript-eslint/typescript-estree@8.62.0",
+      "scope": "excluded",
+      "properties": [
+        {
+          "name": "cdx:npm:package:development",
+          "value": "true"
+        }
+      ],
+      "group": "@typescript-eslint",
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@typescript-eslint/typescript-estree/-/typescript-estree-8.62.0.tgz",
+          "hashes": [
+            {
+              "alg": "SHA-512",
+              "content": "fa155b371b56eb8a487195833c66f268a17bbe9d88053558e666b56e5c3092cae376c6ddaaa10abc958c19b0687de8b817a0e8bf1d4cd11260a0578dbb6dbbf4"
             }
           ]
         }
@@ -5928,6 +6090,33 @@
     },
     {
       "type": "library",
+      "name": "utils",
+      "version": "8.62.0",
+      "purl": "pkg:npm/%40typescript-eslint/utils@8.62.0",
+      "bom-ref": "pkg:npm/%40typescript-eslint/utils@8.62.0",
+      "scope": "excluded",
+      "properties": [
+        {
+          "name": "cdx:npm:package:development",
+          "value": "true"
+        }
+      ],
+      "group": "@typescript-eslint",
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@typescript-eslint/utils/-/utils-8.62.0.tgz",
+          "hashes": [
+            {
+              "alg": "SHA-512",
+              "content": "f36afae9f8bdcd8c19fa64eadef2a0c236d9d4f564fc3273ad714ba46e919c16ddbc7f1310654722cf47e1dd9dae190ecdfd2cc99b83fce66fbe5bba1836cfe2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "library",
       "name": "visitor-keys",
       "version": "8.61.1",
       "purl": "pkg:npm/%40typescript-eslint/visitor-keys@8.61.1",
@@ -5948,6 +6137,33 @@
             {
               "alg": "SHA-512",
               "content": "e9f27d3075ad2b5e02d434a488c9475123a6ad579b2fbd79d316490652622fada38e1200e0998eaba7e5c01803c4874128a76889945e97e75f3c3e4c2df9f2df"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "visitor-keys",
+      "version": "8.62.0",
+      "purl": "pkg:npm/%40typescript-eslint/visitor-keys@8.62.0",
+      "bom-ref": "pkg:npm/%40typescript-eslint/visitor-keys@8.62.0",
+      "scope": "excluded",
+      "properties": [
+        {
+          "name": "cdx:npm:package:development",
+          "value": "true"
+        }
+      ],
+      "group": "@typescript-eslint",
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@typescript-eslint/visitor-keys/-/visitor-keys-8.62.0.tgz",
+          "hashes": [
+            {
+              "alg": "SHA-512",
+              "content": "098deec854916dc42fde79d2bfc4b4fa50dfb4c573e8ff7adcfa11971ad5edec3f31de7ae20f6eb7ad0f63374b339a96e23167f7718117e4a88bdd0848037e19"
             }
           ]
         }
@@ -10806,9 +11022,9 @@
     {
       "type": "library",
       "name": "eslint-plugin-react-dom",
-      "version": "5.9.1",
-      "purl": "pkg:npm/eslint-plugin-react-dom@5.9.1",
-      "bom-ref": "pkg:npm/eslint-plugin-react-dom@5.9.1",
+      "version": "5.9.2",
+      "purl": "pkg:npm/eslint-plugin-react-dom@5.9.2",
+      "bom-ref": "pkg:npm/eslint-plugin-react-dom@5.9.2",
       "scope": "excluded",
       "properties": [
         {
@@ -10819,11 +11035,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/eslint-plugin-react-dom/-/eslint-plugin-react-dom-5.9.1.tgz",
+          "url": "https://registry.npmjs.org/eslint-plugin-react-dom/-/eslint-plugin-react-dom-5.9.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "7b43697ca64e3af7539184040c94fba8b2a84d7e230231fcfea702b8eae9f33a97d4b30a3eb2a03def035c6c971b94fe06de1bf35fd943fb374b6ce424b16e36"
+              "content": "f6938b7d4581491e3d38b6710880cb9e0c9fa8ea33b288a53e5d53bf7a71a16dfcf40541fc68374a8e117fe50fa50b448c93faf38d219d3664998f80e38ba69e"
             }
           ]
         }
@@ -10832,9 +11048,9 @@
     {
       "type": "library",
       "name": "eslint-plugin-react-jsx",
-      "version": "5.9.1",
-      "purl": "pkg:npm/eslint-plugin-react-jsx@5.9.1",
-      "bom-ref": "pkg:npm/eslint-plugin-react-jsx@5.9.1",
+      "version": "5.9.2",
+      "purl": "pkg:npm/eslint-plugin-react-jsx@5.9.2",
+      "bom-ref": "pkg:npm/eslint-plugin-react-jsx@5.9.2",
       "scope": "excluded",
       "properties": [
         {
@@ -10845,11 +11061,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/eslint-plugin-react-jsx/-/eslint-plugin-react-jsx-5.9.1.tgz",
+          "url": "https://registry.npmjs.org/eslint-plugin-react-jsx/-/eslint-plugin-react-jsx-5.9.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "cf384245bb9716218c86f0ab8e97302aca1bd06a2cf28edddbc127846c36f186a91d7c75298b747f3503b960e8459d9b8588650c7cde53e97e8c481e98fa5a6b"
+              "content": "2cfa208e107915ebdf3e9edd51d876aab92ef836d6bd5baa598c0ee0a6fdb72d5160a40df43b19c750dbd5656677cc7f5b63410cb83392ea47efa489fae911d7"
             }
           ]
         }
@@ -10858,9 +11074,9 @@
     {
       "type": "library",
       "name": "eslint-plugin-react-naming-convention",
-      "version": "5.9.1",
-      "purl": "pkg:npm/eslint-plugin-react-naming-convention@5.9.1",
-      "bom-ref": "pkg:npm/eslint-plugin-react-naming-convention@5.9.1",
+      "version": "5.9.2",
+      "purl": "pkg:npm/eslint-plugin-react-naming-convention@5.9.2",
+      "bom-ref": "pkg:npm/eslint-plugin-react-naming-convention@5.9.2",
       "scope": "excluded",
       "properties": [
         {
@@ -10871,11 +11087,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/eslint-plugin-react-naming-convention/-/eslint-plugin-react-naming-convention-5.9.1.tgz",
+          "url": "https://registry.npmjs.org/eslint-plugin-react-naming-convention/-/eslint-plugin-react-naming-convention-5.9.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "09ed6800be04b77441fb76a44d288521921809ec721bea18ac66062a9b34764cb989a472f0c52c921e045dcab8c88d74f48901095b79da0b726e64774ded25ad"
+              "content": "383804348a5cc58a04e128ef97203b9683d54e37298695366368de85d448e8b665bb19ad91480a4c973c30093fbd2089a0a7d62bafa456eee832a180c96ff0b9"
             }
           ]
         }
@@ -10884,9 +11100,9 @@
     {
       "type": "library",
       "name": "eslint-plugin-react-rsc",
-      "version": "5.9.1",
-      "purl": "pkg:npm/eslint-plugin-react-rsc@5.9.1",
-      "bom-ref": "pkg:npm/eslint-plugin-react-rsc@5.9.1",
+      "version": "5.9.2",
+      "purl": "pkg:npm/eslint-plugin-react-rsc@5.9.2",
+      "bom-ref": "pkg:npm/eslint-plugin-react-rsc@5.9.2",
       "scope": "excluded",
       "properties": [
         {
@@ -10897,11 +11113,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/eslint-plugin-react-rsc/-/eslint-plugin-react-rsc-5.9.1.tgz",
+          "url": "https://registry.npmjs.org/eslint-plugin-react-rsc/-/eslint-plugin-react-rsc-5.9.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "f97340b8978667a95dd6392738f39e27c81d4c83597908f0dac6c13f6d77f907539b026a64b57e0abc1a00deb73bef03f84206b5d9d291fa580c1726de38921a"
+              "content": "8dbe67a932a7ece0ec71059f7ef754232e2a13e40920bdad1d8fbb3653c58df76e3e19f0d836a9871eea5b4a9f5f9a927b5adcc50081303884912dbf1fa96020"
             }
           ]
         }
@@ -10910,9 +11126,9 @@
     {
       "type": "library",
       "name": "eslint-plugin-react-web-api",
-      "version": "5.9.1",
-      "purl": "pkg:npm/eslint-plugin-react-web-api@5.9.1",
-      "bom-ref": "pkg:npm/eslint-plugin-react-web-api@5.9.1",
+      "version": "5.9.2",
+      "purl": "pkg:npm/eslint-plugin-react-web-api@5.9.2",
+      "bom-ref": "pkg:npm/eslint-plugin-react-web-api@5.9.2",
       "scope": "excluded",
       "properties": [
         {
@@ -10923,11 +11139,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/eslint-plugin-react-web-api/-/eslint-plugin-react-web-api-5.9.1.tgz",
+          "url": "https://registry.npmjs.org/eslint-plugin-react-web-api/-/eslint-plugin-react-web-api-5.9.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "0fd33ac0a4f57cfc40cbbd1879b1db7d4fa0cd8bfc93d454b4e0d78d42582e3c6b5e8ab667ba39923075c80675be2df51336cb27e518cc62a2e21c3df22c0f8e"
+              "content": "bb0ff204775c88f3ec6048ae04004b7ca60eb4f68204999c2b0c726c474aa886454c2030795951aaab9c36e94a12c584d429c0e69e9edb9032cd4301f3106033"
             }
           ]
         }
@@ -10936,9 +11152,9 @@
     {
       "type": "library",
       "name": "eslint-plugin-react-x",
-      "version": "5.9.1",
-      "purl": "pkg:npm/eslint-plugin-react-x@5.9.1",
-      "bom-ref": "pkg:npm/eslint-plugin-react-x@5.9.1",
+      "version": "5.9.2",
+      "purl": "pkg:npm/eslint-plugin-react-x@5.9.2",
+      "bom-ref": "pkg:npm/eslint-plugin-react-x@5.9.2",
       "scope": "excluded",
       "properties": [
         {
@@ -10949,11 +11165,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/eslint-plugin-react-x/-/eslint-plugin-react-x-5.9.1.tgz",
+          "url": "https://registry.npmjs.org/eslint-plugin-react-x/-/eslint-plugin-react-x-5.9.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "d06c0ca4b758c771d631b0ddd6fa8dafd5489a4ab7e31fe541a2dc876a834263ce9a2d4350b2f7ca7765df8ef01611f849b13a394a09576cf428203bdaa9efe6"
+              "content": "69ec7f0f381c19d605e3a2ca4a1ad361599915611dee5ad7f4f0fce690036d3526169428a2f18540e2b79ceeaea8f502accb86f7b83fbfae91c9fccf071d20e4"
             }
           ]
         }
@@ -12234,9 +12450,9 @@
     {
       "type": "library",
       "name": "globals",
-      "version": "17.6.0",
-      "purl": "pkg:npm/globals@17.6.0",
-      "bom-ref": "pkg:npm/globals@17.6.0",
+      "version": "17.7.0",
+      "purl": "pkg:npm/globals@17.7.0",
+      "bom-ref": "pkg:npm/globals@17.7.0",
       "scope": "excluded",
       "properties": [
         {
@@ -12247,11 +12463,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/globals/-/globals-17.6.0.tgz",
+          "url": "https://registry.npmjs.org/globals/-/globals-17.7.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "b1ea5f7e44fcb2dc272186ec301a6808726e24ce65f7c154176027134ee17ef1349bfaa9dd1e7cea1c388c5e2e69d6e1be0d68a08773baeec2b1f0f68f309a34"
+              "content": "0b39b29ece5d52cab8b1e14147f29dc9d866a3ccbd902efd8624a43e7d18706b4d9d85a7ae0b74be3ad28f1f6db29a031969b608c6ab7df46e2e3338c54cfcc6"
             }
           ]
         }
@@ -22284,9 +22500,9 @@
     {
       "type": "library",
       "name": "ts-loader",
-      "version": "9.6.1",
-      "purl": "pkg:npm/ts-loader@9.6.1",
-      "bom-ref": "pkg:npm/ts-loader@9.6.1",
+      "version": "9.6.2",
+      "purl": "pkg:npm/ts-loader@9.6.2",
+      "bom-ref": "pkg:npm/ts-loader@9.6.2",
       "scope": "excluded",
       "properties": [
         {
@@ -22297,11 +22513,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/ts-loader/-/ts-loader-9.6.1.tgz",
+          "url": "https://registry.npmjs.org/ts-loader/-/ts-loader-9.6.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "f053079e6c6da6771402ed198e4aa95e739397073d798f797ac1fc59537de20b933cf764836a1f55d8953398fc2f69668e219ead7779eb35dbfc3d89c9540f2e"
+              "content": "4788ae7339ad831bedb88e79eacfa14d9ebfec47b4dd508093f97f33c2d8d4e02c52007b63276c0b1920abd0fda4a45a0fb189a948b6bbc7e9f7364ffee7e328"
             }
           ]
         }
@@ -22485,17 +22701,17 @@
     {
       "type": "library",
       "name": "type-fest",
-      "version": "5.6.0",
-      "purl": "pkg:npm/type-fest@5.6.0",
-      "bom-ref": "pkg:npm/type-fest@5.6.0",
+      "version": "5.7.0",
+      "purl": "pkg:npm/type-fest@5.7.0",
+      "bom-ref": "pkg:npm/type-fest@5.7.0",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/type-fest/-/type-fest-5.6.0.tgz",
+          "url": "https://registry.npmjs.org/type-fest/-/type-fest-5.7.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "f19887166f75a2b6d201ed8f480892541564a35f296e16e207753d1a0952cc5ff3086911fabc691f1eac10c0949b89316382e30c85068027d432dc1f65f8df50"
+              "content": "d54454c54a9f1c533573ecdf48fb1ade09e43bb02adb5ab21fbe5221db8d633e12cd8f7ae2b9f55f6bc2310687487864b62c3ed243dada2c9be8f5295ea07a56"
             }
           ]
         }
@@ -22840,9 +23056,9 @@
     {
       "type": "library",
       "name": "uuid",
-      "version": "14.0.0",
-      "purl": "pkg:npm/uuid@14.0.0",
-      "bom-ref": "pkg:npm/uuid@14.0.0",
+      "version": "14.0.1",
+      "purl": "pkg:npm/uuid@14.0.1",
+      "bom-ref": "pkg:npm/uuid@14.0.1",
       "scope": "excluded",
       "properties": [
         {
@@ -22853,11 +23069,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/uuid/-/uuid-14.0.0.tgz",
+          "url": "https://registry.npmjs.org/uuid/-/uuid-14.0.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "428fae5a08a57d298085708c6afd6e605ca79503bb7cc16231566c42a6513085e9d0eeeb47baa3923f9c3ef0472e006a8bdeb4402a28fcf1f6ffa66d56a2afae"
+              "content": "e99c73569cc35c36b76c959a1e29556b203e047ff5ce6c42268560be6a899e277f80fa0a1f152b4bf682fd3e8b190b4d1d3f971c6f5f5cf241e1df88ad4df413"
             }
           ]
         }
@@ -23881,48 +24097,48 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40eslint-react/ast@5.9.1",
+      "ref": "pkg:npm/%40eslint-react/ast@5.9.2",
       "dependsOn": [
         "pkg:npm/string-ts@2.3.1"
       ]
     },
     {
-      "ref": "pkg:npm/%40eslint-react/core@5.9.1",
+      "ref": "pkg:npm/%40eslint-react/core@5.9.2",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40eslint-react/eslint-plugin@5.9.1",
+      "ref": "pkg:npm/%40eslint-react/eslint-plugin@5.9.2",
       "dependsOn": [
-        "pkg:npm/%40eslint-react/shared@5.9.1",
-        "pkg:npm/eslint-plugin-react-dom@5.9.1",
-        "pkg:npm/eslint-plugin-react-jsx@5.9.1",
-        "pkg:npm/eslint-plugin-react-naming-convention@5.9.1",
-        "pkg:npm/eslint-plugin-react-rsc@5.9.1",
-        "pkg:npm/eslint-plugin-react-web-api@5.9.1",
-        "pkg:npm/eslint-plugin-react-x@5.9.1"
+        "pkg:npm/%40eslint-react/shared@5.9.2",
+        "pkg:npm/eslint-plugin-react-dom@5.9.2",
+        "pkg:npm/eslint-plugin-react-jsx@5.9.2",
+        "pkg:npm/eslint-plugin-react-naming-convention@5.9.2",
+        "pkg:npm/eslint-plugin-react-rsc@5.9.2",
+        "pkg:npm/eslint-plugin-react-web-api@5.9.2",
+        "pkg:npm/eslint-plugin-react-x@5.9.2"
       ]
     },
     {
-      "ref": "pkg:npm/%40eslint-react/eslint@5.9.1",
+      "ref": "pkg:npm/%40eslint-react/eslint@5.9.2",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40eslint-react/jsx@5.9.1",
+      "ref": "pkg:npm/%40eslint-react/jsx@5.9.2",
       "dependsOn": [
-        "pkg:npm/%40eslint-react/var@5.9.1"
+        "pkg:npm/%40eslint-react/var@5.9.2"
       ]
     },
     {
-      "ref": "pkg:npm/%40eslint-react/shared@5.9.1",
+      "ref": "pkg:npm/%40eslint-react/shared@5.9.2",
       "dependsOn": [
-        "pkg:npm/%40eslint-react/eslint@5.9.1",
+        "pkg:npm/%40eslint-react/eslint@5.9.2",
         "pkg:npm/%40typescript-eslint/utils@8.61.1",
         "pkg:npm/ts-pattern@5.9.0",
         "pkg:npm/zod@4.4.3"
       ]
     },
     {
-      "ref": "pkg:npm/%40eslint-react/var@5.9.1",
+      "ref": "pkg:npm/%40eslint-react/var@5.9.2",
       "dependsOn": []
     },
     {
@@ -24158,52 +24374,52 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40mantine/carousel@9.3.2",
+      "ref": "pkg:npm/%40mantine/carousel@9.4.0",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40mantine/core@9.3.2",
+      "ref": "pkg:npm/%40mantine/core@9.4.0",
       "dependsOn": [
         "pkg:npm/%40floating-ui/react@0.27.19",
         "pkg:npm/clsx@2.1.1",
         "pkg:npm/react-number-format@5.4.5",
         "pkg:npm/react-remove-scroll@2.7.2",
-        "pkg:npm/type-fest@5.6.0"
+        "pkg:npm/type-fest@5.7.0"
       ]
     },
     {
-      "ref": "pkg:npm/%40mantine/dates@9.3.2",
+      "ref": "pkg:npm/%40mantine/dates@9.4.0",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40mantine/dropzone@9.3.2",
+      "ref": "pkg:npm/%40mantine/dropzone@9.4.0",
       "dependsOn": [
         "pkg:npm/react-dropzone@15.0.0"
       ]
     },
     {
-      "ref": "pkg:npm/%40mantine/form@9.3.2",
+      "ref": "pkg:npm/%40mantine/form@9.4.0",
       "dependsOn": [
         "pkg:npm/klona@2.0.6"
       ]
     },
     {
-      "ref": "pkg:npm/%40mantine/hooks@9.3.2",
+      "ref": "pkg:npm/%40mantine/hooks@9.4.0",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40mantine/notifications@9.3.2",
+      "ref": "pkg:npm/%40mantine/notifications@9.4.0",
       "dependsOn": [
-        "pkg:npm/%40mantine/store@9.3.2",
+        "pkg:npm/%40mantine/store@9.4.0",
         "pkg:npm/react-transition-group@4.4.5"
       ]
     },
     {
-      "ref": "pkg:npm/%40mantine/store@9.3.2",
+      "ref": "pkg:npm/%40mantine/store@9.4.0",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40mantine/tiptap@9.3.2",
+      "ref": "pkg:npm/%40mantine/tiptap@9.4.0",
       "dependsOn": []
     },
     {
@@ -24861,19 +25077,27 @@
       ]
     },
     {
-      "ref": "pkg:npm/%40typescript-eslint/eslint-plugin@8.61.1",
+      "ref": "pkg:npm/%40typescript-eslint/eslint-plugin@8.62.0",
       "dependsOn": [
         "pkg:npm/%40eslint-community/regexpp@4.12.2",
+        "pkg:npm/%40typescript-eslint/scope-manager@8.62.0",
+        "pkg:npm/%40typescript-eslint/type-utils@8.62.0",
+        "pkg:npm/%40typescript-eslint/utils@8.62.0",
+        "pkg:npm/%40typescript-eslint/visitor-keys@8.62.0",
         "pkg:npm/ignore@7.0.5",
         "pkg:npm/natural-compare@1.4.0"
       ]
     },
     {
-      "ref": "pkg:npm/%40typescript-eslint/parser@8.61.1",
+      "ref": "pkg:npm/%40typescript-eslint/parser@8.62.0",
       "dependsOn": []
     },
     {
       "ref": "pkg:npm/%40typescript-eslint/project-service@8.61.1",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:npm/%40typescript-eslint/project-service@8.62.0",
       "dependsOn": []
     },
     {
@@ -24883,7 +25107,17 @@
       ]
     },
     {
+      "ref": "pkg:npm/%40typescript-eslint/scope-manager@8.62.0",
+      "dependsOn": [
+        "pkg:npm/%40typescript-eslint/types@8.62.0"
+      ]
+    },
+    {
       "ref": "pkg:npm/%40typescript-eslint/tsconfig-utils@8.61.1",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:npm/%40typescript-eslint/tsconfig-utils@8.62.0",
       "dependsOn": []
     },
     {
@@ -24891,7 +25125,17 @@
       "dependsOn": []
     },
     {
+      "ref": "pkg:npm/%40typescript-eslint/type-utils@8.62.0",
+      "dependsOn": [
+        "pkg:npm/%40typescript-eslint/typescript-estree@8.62.0"
+      ]
+    },
+    {
       "ref": "pkg:npm/%40typescript-eslint/types@8.61.1",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:npm/%40typescript-eslint/types@8.62.0",
       "dependsOn": []
     },
     {
@@ -24907,6 +25151,13 @@
       ]
     },
     {
+      "ref": "pkg:npm/%40typescript-eslint/typescript-estree@8.62.0",
+      "dependsOn": [
+        "pkg:npm/%40typescript-eslint/project-service@8.62.0",
+        "pkg:npm/%40typescript-eslint/tsconfig-utils@8.62.0"
+      ]
+    },
+    {
       "ref": "pkg:npm/%40typescript-eslint/utils@8.61.1",
       "dependsOn": [
         "pkg:npm/%40eslint-community/eslint-utils@4.9.1",
@@ -24916,10 +25167,18 @@
       ]
     },
     {
+      "ref": "pkg:npm/%40typescript-eslint/utils@8.62.0",
+      "dependsOn": []
+    },
+    {
       "ref": "pkg:npm/%40typescript-eslint/visitor-keys@8.61.1",
       "dependsOn": [
         "pkg:npm/eslint-visitor-keys@5.0.1"
       ]
+    },
+    {
+      "ref": "pkg:npm/%40typescript-eslint/visitor-keys@8.62.0",
+      "dependsOn": []
     },
     {
       "ref": "pkg:npm/%40ungap/structured-clone@1.3.1",
@@ -25914,35 +26173,35 @@
       ]
     },
     {
-      "ref": "pkg:npm/eslint-plugin-react-dom@5.9.1",
+      "ref": "pkg:npm/eslint-plugin-react-dom@5.9.2",
       "dependsOn": [
-        "pkg:npm/%40eslint-react/ast@5.9.1",
-        "pkg:npm/%40eslint-react/jsx@5.9.1",
+        "pkg:npm/%40eslint-react/ast@5.9.2",
+        "pkg:npm/%40eslint-react/jsx@5.9.2",
         "pkg:npm/compare-versions@6.1.1"
       ]
     },
     {
-      "ref": "pkg:npm/eslint-plugin-react-jsx@5.9.1",
+      "ref": "pkg:npm/eslint-plugin-react-jsx@5.9.2",
       "dependsOn": [
-        "pkg:npm/%40eslint-react/core@5.9.1"
+        "pkg:npm/%40eslint-react/core@5.9.2"
       ]
     },
     {
-      "ref": "pkg:npm/eslint-plugin-react-naming-convention@5.9.1",
+      "ref": "pkg:npm/eslint-plugin-react-naming-convention@5.9.2",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/eslint-plugin-react-rsc@5.9.1",
+      "ref": "pkg:npm/eslint-plugin-react-rsc@5.9.2",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/eslint-plugin-react-web-api@5.9.1",
+      "ref": "pkg:npm/eslint-plugin-react-web-api@5.9.2",
       "dependsOn": [
         "pkg:npm/birecord@0.1.1"
       ]
     },
     {
-      "ref": "pkg:npm/eslint-plugin-react-x@5.9.1",
+      "ref": "pkg:npm/eslint-plugin-react-x@5.9.2",
       "dependsOn": [
         "pkg:npm/%40typescript-eslint/type-utils@8.61.1"
       ]
@@ -26251,7 +26510,7 @@
       ]
     },
     {
-      "ref": "pkg:npm/globals@17.6.0",
+      "ref": "pkg:npm/globals@17.7.0",
       "dependsOn": []
     },
     {
@@ -28013,7 +28272,7 @@
       "ref": "pkg:npm/sockjs@0.3.24",
       "dependsOn": [
         "pkg:npm/faye-websocket@0.11.4",
-        "pkg:npm/uuid@14.0.0",
+        "pkg:npm/uuid@14.0.1",
         "pkg:npm/websocket-driver@0.7.4"
       ]
     },
@@ -28191,16 +28450,16 @@
     {
       "ref": "pkg:npm/thesis-management@4.11.1",
       "dependsOn": [
-        "pkg:npm/%40eslint-react/eslint-plugin@5.9.1",
+        "pkg:npm/%40eslint-react/eslint-plugin@5.9.2",
         "pkg:npm/%40eslint/js@10.0.1",
-        "pkg:npm/%40mantine/carousel@9.3.2",
-        "pkg:npm/%40mantine/core@9.3.2",
-        "pkg:npm/%40mantine/dates@9.3.2",
-        "pkg:npm/%40mantine/dropzone@9.3.2",
-        "pkg:npm/%40mantine/form@9.3.2",
-        "pkg:npm/%40mantine/hooks@9.3.2",
-        "pkg:npm/%40mantine/notifications@9.3.2",
-        "pkg:npm/%40mantine/tiptap@9.3.2",
+        "pkg:npm/%40mantine/carousel@9.4.0",
+        "pkg:npm/%40mantine/core@9.4.0",
+        "pkg:npm/%40mantine/dates@9.4.0",
+        "pkg:npm/%40mantine/dropzone@9.4.0",
+        "pkg:npm/%40mantine/form@9.4.0",
+        "pkg:npm/%40mantine/hooks@9.4.0",
+        "pkg:npm/%40mantine/notifications@9.4.0",
+        "pkg:npm/%40mantine/tiptap@9.4.0",
         "pkg:npm/%40phosphor-icons/react@2.1.10",
         "pkg:npm/%40playwright/test@1.61.0",
         "pkg:npm/%40testing-library/jest-dom@6.9.1",
@@ -28218,8 +28477,8 @@
         "pkg:npm/%40tiptap/starter-kit@3.27.1",
         "pkg:npm/%40types/react-dom@19.2.3",
         "pkg:npm/%40types/react@19.2.17",
-        "pkg:npm/%40typescript-eslint/eslint-plugin@8.61.1",
-        "pkg:npm/%40typescript-eslint/parser@8.61.1",
+        "pkg:npm/%40typescript-eslint/eslint-plugin@8.62.0",
+        "pkg:npm/%40typescript-eslint/parser@8.62.0",
         "pkg:npm/%40vitest/coverage-v8@4.1.9",
         "pkg:npm/clean-webpack-plugin@4.0.0",
         "pkg:npm/compression-webpack-plugin@12.0.0",
@@ -28234,7 +28493,7 @@
         "pkg:npm/eslint-plugin-prettier@5.5.6",
         "pkg:npm/eslint@10.5.0",
         "pkg:npm/fork-ts-checker-webpack-plugin@9.1.0",
-        "pkg:npm/globals@17.6.0",
+        "pkg:npm/globals@17.7.0",
         "pkg:npm/html-webpack-plugin@5.6.7",
         "pkg:npm/husky@9.1.7",
         "pkg:npm/i18n-iso-countries@7.14.0",
@@ -28257,7 +28516,7 @@
         "pkg:npm/speed-measure-webpack-plugin@1.6.0",
         "pkg:npm/style-loader@4.0.0",
         "pkg:npm/terser-webpack-plugin@5.6.1",
-        "pkg:npm/ts-loader@9.6.1",
+        "pkg:npm/ts-loader@9.6.2",
         "pkg:npm/ts-node@10.9.2",
         "pkg:npm/typescript-plugin-css-modules@5.2.0",
         "pkg:npm/typescript@5.9.3",
@@ -28349,9 +28608,8 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/ts-loader@9.6.1",
+      "ref": "pkg:npm/ts-loader@9.6.2",
       "dependsOn": [
-        "pkg:npm/enhanced-resolve@5.24.0",
         "pkg:npm/source-map@0.7.6"
       ]
     },
@@ -28402,7 +28660,7 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/type-fest@5.6.0",
+      "ref": "pkg:npm/type-fest@5.7.0",
       "dependsOn": [
         "pkg:npm/tagged-tag@1.0.0"
       ]
@@ -28481,7 +28739,7 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/uuid@14.0.0",
+      "ref": "pkg:npm/uuid@14.0.1",
       "dependsOn": []
     },
     {
@@ -28620,6 +28878,7 @@
         "pkg:npm/%40webassemblyjs/wasm-parser@1.14.1",
         "pkg:npm/acorn-import-phases@1.0.4",
         "pkg:npm/chrome-trace-event@1.0.4",
+        "pkg:npm/enhanced-resolve@5.24.0",
         "pkg:npm/eslint-scope@5.1.1",
         "pkg:npm/events@3.3.0",
         "pkg:npm/glob-to-regexp@0.4.1",
