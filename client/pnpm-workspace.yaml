@@ -27,7 +27,7 @@ overrides:
   # GHSA-v6wh-96g9-6wx3 (launch-editor NTLMv2 hash disclosure, via webpack-dev-server)
   launch-editor@<2.14.1: 2.14.1
   # GHSA-fx2h-pf6j-xcff (vite server.fs.deny bypass, via vitest)
-  vite@>=8.0.0 <8.0.16: 8.0.16
+  vite@>=8.0.0 <8.0.16: 8.1.0
   # GHSA-ph9p-34f9-6g65 (tmp path traversal, via patch-package)
   tmp@<0.2.6: 0.2.7
   # GHSA-h67p-54hq-rp68 (js-yaml quadratic-complexity DoS, via cosmiconfig)

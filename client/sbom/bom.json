@@ -684,9 +684,9 @@
     {
       "type": "library",
       "name": "core",
-      "version": "1.10.0",
-      "purl": "pkg:npm/%40emnapi/core@1.10.0",
-      "bom-ref": "pkg:npm/%40emnapi/core@1.10.0",
+      "version": "1.11.1",
+      "purl": "pkg:npm/%40emnapi/core@1.11.1",
+      "bom-ref": "pkg:npm/%40emnapi/core@1.11.1",
       "scope": "excluded",
       "properties": [
         {
@@ -698,11 +698,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@emnapi/core/-/core-1.10.0.tgz",
+          "url": "https://registry.npmjs.org/@emnapi/core/-/core-1.11.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "caae8e909e29f360807cf974bbd99079b40728f26463b5ab22e936d3971362761efa4d99f18061d7516b6d11bf1fa8a18aba9c69c3a09760483bca323102de5f"
+              "content": "452bdb4261f374accdb0b61aff01eb6dcdca378b182ca01d3d9c6a88cd87013aaffd2064dbf10d487a6f5c668b38c72c032cf4a68106aa49a62981b739688911"
             }
           ]
         }
@@ -711,9 +711,9 @@
     {
       "type": "library",
       "name": "runtime",
-      "version": "1.10.0",
-      "purl": "pkg:npm/%40emnapi/runtime@1.10.0",
-      "bom-ref": "pkg:npm/%40emnapi/runtime@1.10.0",
+      "version": "1.11.1",
+      "purl": "pkg:npm/%40emnapi/runtime@1.11.1",
+      "bom-ref": "pkg:npm/%40emnapi/runtime@1.11.1",
       "scope": "excluded",
       "properties": [
         {
@@ -725,11 +725,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@emnapi/runtime/-/runtime-1.10.0.tgz",
+          "url": "https://registry.npmjs.org/@emnapi/runtime/-/runtime-1.11.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "7b0bd8964f3ac54a06234cd044dabf982fb5e91d5078394a432db52a2de84985cd80b6f8e465753fa03433efecea7c82b8d0ea7b9569698f380735c6c156f014"
+              "content": "be08fb477cb75a0c76e0841a18f03f47a6055cb1d530e674b951322103da5acfab7750337c43179400b6d856303b55e4291e8d3ecabb9946a7747f2821175917"
             }
           ]
         }
@@ -738,9 +738,9 @@
     {
       "type": "library",
       "name": "wasi-threads",
-      "version": "1.2.1",
-      "purl": "pkg:npm/%40emnapi/wasi-threads@1.2.1",
-      "bom-ref": "pkg:npm/%40emnapi/wasi-threads@1.2.1",
+      "version": "1.2.2",
+      "purl": "pkg:npm/%40emnapi/wasi-threads@1.2.2",
+      "bom-ref": "pkg:npm/%40emnapi/wasi-threads@1.2.2",
       "scope": "excluded",
       "properties": [
         {
@@ -752,11 +752,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@emnapi/wasi-threads/-/wasi-threads-1.2.1.tgz",
+          "url": "https://registry.npmjs.org/@emnapi/wasi-threads/-/wasi-threads-1.2.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "b93208ece605fbf31eb3f32b708398a79c8eb5230b056488a0b3e9720c22a6888a6e58ba937db6b5ca05b31a082313c3a96d35490180824a38133662d8136fdb"
+              "content": "73de6a39790777274d2a1b1c05379ba840b5095019a72a8e7d57c1cd0d6a833ca5de07de95d5232208036c86600cab072e09ec33e8a01fb4c9fde01ab1a56e30"
             }
           ]
         }
@@ -2422,9 +2422,9 @@
     {
       "type": "library",
       "name": "wasm-runtime",
-      "version": "1.1.4",
-      "purl": "pkg:npm/%40napi-rs/wasm-runtime@1.1.4",
-      "bom-ref": "pkg:npm/%40napi-rs/wasm-runtime@1.1.4",
+      "version": "1.1.5",
+      "purl": "pkg:npm/%40napi-rs/wasm-runtime@1.1.5",
+      "bom-ref": "pkg:npm/%40napi-rs/wasm-runtime@1.1.5",
       "scope": "excluded",
       "properties": [
         {
@@ -2436,11 +2436,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@napi-rs/wasm-runtime/-/wasm-runtime-1.1.4.tgz",
+          "url": "https://registry.npmjs.org/@napi-rs/wasm-runtime/-/wasm-runtime-1.1.5.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "dcd40d3600356129496ff90c1f58a574048ff475bbffb9189d1236b335896a87da4b585699b188e07f9ddfedb6686cd75cdf4827e9fe1a21557068a924fd7ca3"
+              "content": "0163e805127db6c9d5868af8b233bbae49e2fbba7ed88004163e9cc74e9480fd748e4407a9acbfdfab9157f6c5920ae1d7c0fdbdbe1cafc4343ed86c920cf2f9"
             }
           ]
         }
@@ -2476,9 +2476,9 @@
     {
       "type": "library",
       "name": "types",
-      "version": "0.133.0",
-      "purl": "pkg:npm/%40oxc-project/types@0.133.0",
-      "bom-ref": "pkg:npm/%40oxc-project/types@0.133.0",
+      "version": "0.137.0",
+      "purl": "pkg:npm/%40oxc-project/types@0.137.0",
+      "bom-ref": "pkg:npm/%40oxc-project/types@0.137.0",
       "scope": "excluded",
       "properties": [
         {
@@ -2490,11 +2490,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@oxc-project/types/-/types-0.133.0.tgz",
+          "url": "https://registry.npmjs.org/@oxc-project/types/-/types-0.137.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "2b391d09de94c6a9dfea5dc73b0d717dab40954511034835e1cbc1605c89e5268d3906ce52f06bf4f280adc3dcacd21e46c05d81c533386ae12af795a6f38818"
+              "content": "593f866f6e22f219afa3ce4022fda8118a2e11791194a0254fd59a09add37cb80d08df8686b24e199b8894ca2e021dfc41ee103b1dba794395b2aef4a97af2c0"
             }
           ]
         }
@@ -3306,9 +3306,9 @@
     {
       "type": "library",
       "name": "binding-android-arm64",
-      "version": "1.0.3",
-      "purl": "pkg:npm/%40rolldown/binding-android-arm64@1.0.3",
-      "bom-ref": "pkg:npm/%40rolldown/binding-android-arm64@1.0.3",
+      "version": "1.1.2",
+      "purl": "pkg:npm/%40rolldown/binding-android-arm64@1.1.2",
+      "bom-ref": "pkg:npm/%40rolldown/binding-android-arm64@1.1.2",
       "scope": "excluded",
       "properties": [
         {
@@ -3320,11 +3320,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@rolldown/binding-android-arm64/-/binding-android-arm64-1.0.3.tgz",
+          "url": "https://registry.npmjs.org/@rolldown/binding-android-arm64/-/binding-android-arm64-1.1.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "e39e2bb3b8c79e08b1a7f34cc5de6cad80f9ece9f34a567f7854c44e33914072f0246d6546d98d3897017ab6657eee068caa9eabc68208842b31d1f2848e751f"
+              "content": "d9c67eef1452f8305cb890492a77f3b1b95eba626106a4a5255a6ecc70b49d3a9f777410ed5c76ff1e5847f0fb7016a6292796a65c28f36167f65a9850310c7c"
             }
           ]
         }
@@ -3333,9 +3333,9 @@
     {
       "type": "library",
       "name": "binding-darwin-arm64",
-      "version": "1.0.3",
-      "purl": "pkg:npm/%40rolldown/binding-darwin-arm64@1.0.3",
-      "bom-ref": "pkg:npm/%40rolldown/binding-darwin-arm64@1.0.3",
+      "version": "1.1.2",
+      "purl": "pkg:npm/%40rolldown/binding-darwin-arm64@1.1.2",
+      "bom-ref": "pkg:npm/%40rolldown/binding-darwin-arm64@1.1.2",
       "scope": "excluded",
       "properties": [
         {
@@ -3347,11 +3347,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@rolldown/binding-darwin-arm64/-/binding-darwin-arm64-1.0.3.tgz",
+          "url": "https://registry.npmjs.org/@rolldown/binding-darwin-arm64/-/binding-darwin-arm64-1.1.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "3dc0213feca78d444dcb2f122869790d03fde1a1ae07fec9ad725bfedecffa16a75ef415316cd4bd1461040720fe535169d061a143ea4a83f8c70e6d47f28110"
+              "content": "4643cc267ca0c6c80e61d91faa0a70634fc5ce6f1dd1541ee87194dbf074d176bd7aa74b6eb208f8338a02875b2409f764bd4027118791944f61ace0198e8b8f"
             }
           ]
         }
@@ -3360,9 +3360,9 @@
     {
       "type": "library",
       "name": "binding-darwin-x64",
-      "version": "1.0.3",
-      "purl": "pkg:npm/%40rolldown/binding-darwin-x64@1.0.3",
-      "bom-ref": "pkg:npm/%40rolldown/binding-darwin-x64@1.0.3",
+      "version": "1.1.2",
+      "purl": "pkg:npm/%40rolldown/binding-darwin-x64@1.1.2",
+      "bom-ref": "pkg:npm/%40rolldown/binding-darwin-x64@1.1.2",
       "scope": "excluded",
       "properties": [
         {
@@ -3374,11 +3374,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@rolldown/binding-darwin-x64/-/binding-darwin-x64-1.0.3.tgz",
+          "url": "https://registry.npmjs.org/@rolldown/binding-darwin-x64/-/binding-darwin-x64-1.1.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "f58a5f794bd2136452ef0cac27cd6e399917273edfed0e791f61afa77544c3f12c6a1a83b6ba61ad9d04c032cae6fbca3b3682ac1b2317c2669cc2dc52defc1a"
+              "content": "52273387abc5870c9f77b58d7bb43b9820382b10222ddcfb8cf13f5868b37d1a4889ea3216e35532633c1ea67d1f0b9d4e463afc078c43094d27d3498a382e5b"
             }
           ]
         }
@@ -3387,9 +3387,9 @@
     {
       "type": "library",
       "name": "binding-freebsd-x64",
-      "version": "1.0.3",
-      "purl": "pkg:npm/%40rolldown/binding-freebsd-x64@1.0.3",
-      "bom-ref": "pkg:npm/%40rolldown/binding-freebsd-x64@1.0.3",
+      "version": "1.1.2",
+      "purl": "pkg:npm/%40rolldown/binding-freebsd-x64@1.1.2",
+      "bom-ref": "pkg:npm/%40rolldown/binding-freebsd-x64@1.1.2",
       "scope": "excluded",
       "properties": [
         {
@@ -3401,11 +3401,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@rolldown/binding-freebsd-x64/-/binding-freebsd-x64-1.0.3.tgz",
+          "url": "https://registry.npmjs.org/@rolldown/binding-freebsd-x64/-/binding-freebsd-x64-1.1.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "c81d48940b123479dc57a4824cbdbbfcc54647986dbd0b281b122fe4a3065c02e9f8b975c18b27fb1f7c33d316eea6be35d49bbebad8ec0348e302c9d27d5eea"
+              "content": "f93a5db534601e22458c25456f0df5d52b8b93729fcad3ce4109fe565004bfe801c583ed2fb13a252f5efed93ef02c3184866f7a624aa38ad32a07d636c2a490"
             }
           ]
         }
@@ -3414,9 +3414,9 @@
     {
       "type": "library",
       "name": "binding-linux-arm-gnueabihf",
-      "version": "1.0.3",
-      "purl": "pkg:npm/%40rolldown/binding-linux-arm-gnueabihf@1.0.3",
-      "bom-ref": "pkg:npm/%40rolldown/binding-linux-arm-gnueabihf@1.0.3",
+      "version": "1.1.2",
+      "purl": "pkg:npm/%40rolldown/binding-linux-arm-gnueabihf@1.1.2",
+      "bom-ref": "pkg:npm/%40rolldown/binding-linux-arm-gnueabihf@1.1.2",
       "scope": "excluded",
       "properties": [
         {
@@ -3428,11 +3428,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@rolldown/binding-linux-arm-gnueabihf/-/binding-linux-arm-gnueabihf-1.0.3.tgz",
+          "url": "https://registry.npmjs.org/@rolldown/binding-linux-arm-gnueabihf/-/binding-linux-arm-gnueabihf-1.1.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "622df42150007cb502cb632c7858db0758c030397554c0806ace52b67629f1d6bdf822af31dd87d9c6c48d6730e4d3da3eacef624548685d673541be6fbbbfb3"
+              "content": "e25bf5fed9268bbb9e2151e7cab79a39e5298993f6e811fdad1cba86861f47ddf5d00d81f675045510ef071ebdbf1eb836bdde4cf3d1932722a8926cfa3f499b"
             }
           ]
         }
@@ -3441,9 +3441,9 @@
     {
       "type": "library",
       "name": "binding-linux-arm64-gnu",
-      "version": "1.0.3",
-      "purl": "pkg:npm/%40rolldown/binding-linux-arm64-gnu@1.0.3",
-      "bom-ref": "pkg:npm/%40rolldown/binding-linux-arm64-gnu@1.0.3",
+      "version": "1.1.2",
+      "purl": "pkg:npm/%40rolldown/binding-linux-arm64-gnu@1.1.2",
+      "bom-ref": "pkg:npm/%40rolldown/binding-linux-arm64-gnu@1.1.2",
       "scope": "excluded",
       "properties": [
         {
@@ -3455,11 +3455,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@rolldown/binding-linux-arm64-gnu/-/binding-linux-arm64-gnu-1.0.3.tgz",
+          "url": "https://registry.npmjs.org/@rolldown/binding-linux-arm64-gnu/-/binding-linux-arm64-gnu-1.1.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "8ec3bb47c4e8f80765620526379b0748265b7e1b4c0643b4594c7c88e4509cf70c31d82beea3360d098cc2069bb371a1373b5d9a82a430a4051c3e834cc08843"
+              "content": "80149454ed1e696830d493232b7801f013255f6324d78f2cda54e2553ddef6f8d5c5b97b5037cc59663c09f21a6aa897b8cf5f553331229533e82028fc1e9597"
             }
           ]
         }
@@ -3468,9 +3468,9 @@
     {
       "type": "library",
       "name": "binding-linux-arm64-musl",
-      "version": "1.0.3",
-      "purl": "pkg:npm/%40rolldown/binding-linux-arm64-musl@1.0.3",
-      "bom-ref": "pkg:npm/%40rolldown/binding-linux-arm64-musl@1.0.3",
+      "version": "1.1.2",
+      "purl": "pkg:npm/%40rolldown/binding-linux-arm64-musl@1.1.2",
+      "bom-ref": "pkg:npm/%40rolldown/binding-linux-arm64-musl@1.1.2",
       "scope": "excluded",
       "properties": [
         {
@@ -3482,11 +3482,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@rolldown/binding-linux-arm64-musl/-/binding-linux-arm64-musl-1.0.3.tgz",
+          "url": "https://registry.npmjs.org/@rolldown/binding-linux-arm64-musl/-/binding-linux-arm64-musl-1.1.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "5569141f05ab8837228adf34c25798c0a20ba11fca32fc61fc87704bfa5a5fe660a6e4690ab28b51d69d25b7343690448b286961ac2c27bde3f5a0af387f9fed"
+              "content": "2e340ffe264b06ef28f0f8c87e4e31dc0b74fe64fa876f36a6fcfc6792c0ca119bbbf9037b3c8eede6badab179ba8aa6827218a9b37f32a2774a2dc0ca68bbc5"
             }
           ]
         }
@@ -3495,9 +3495,9 @@
     {
       "type": "library",
       "name": "binding-linux-ppc64-gnu",
-      "version": "1.0.3",
-      "purl": "pkg:npm/%40rolldown/binding-linux-ppc64-gnu@1.0.3",
-      "bom-ref": "pkg:npm/%40rolldown/binding-linux-ppc64-gnu@1.0.3",
+      "version": "1.1.2",
+      "purl": "pkg:npm/%40rolldown/binding-linux-ppc64-gnu@1.1.2",
+      "bom-ref": "pkg:npm/%40rolldown/binding-linux-ppc64-gnu@1.1.2",
       "scope": "excluded",
       "properties": [
         {
@@ -3509,11 +3509,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@rolldown/binding-linux-ppc64-gnu/-/binding-linux-ppc64-gnu-1.0.3.tgz",
+          "url": "https://registry.npmjs.org/@rolldown/binding-linux-ppc64-gnu/-/binding-linux-ppc64-gnu-1.1.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "e5fd65682d12948474c836c509df1a71486f2486a0e8ddf30b93fba143cdeb05f468e99afae289d300431f96aaec8d4f548dadb53961270cf04480672e248612"
+              "content": "5ffedb54b59e944b1bc960d4497b7bcd5b139e22cb3c86369f5ac7e7caabefc97d8bb30d6dbc41583f20236bd17c159fe0d51724252e4277d90eca77d8baac7d"
             }
           ]
         }
@@ -3522,9 +3522,9 @@
     {
       "type": "library",
       "name": "binding-linux-s390x-gnu",
-      "version": "1.0.3",
-      "purl": "pkg:npm/%40rolldown/binding-linux-s390x-gnu@1.0.3",
-      "bom-ref": "pkg:npm/%40rolldown/binding-linux-s390x-gnu@1.0.3",
+      "version": "1.1.2",
+      "purl": "pkg:npm/%40rolldown/binding-linux-s390x-gnu@1.1.2",
+      "bom-ref": "pkg:npm/%40rolldown/binding-linux-s390x-gnu@1.1.2",
       "scope": "excluded",
       "properties": [
         {
@@ -3536,11 +3536,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@rolldown/binding-linux-s390x-gnu/-/binding-linux-s390x-gnu-1.0.3.tgz",
+          "url": "https://registry.npmjs.org/@rolldown/binding-linux-s390x-gnu/-/binding-linux-s390x-gnu-1.1.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "22ae24a34af85ec81bac5fcbba73601ed0062d1455136917a2701743f315d260ba8d0a4c3a15b54afb598dad84842fe4774e7ef9b3fbf1db2a05e210c9827a62"
+              "content": "81be9d60a5bfd4a0e8ac65f2cb8f20944049b3fb315520b9a5c56ba31fe91465789afc1215e836b0ae4bdad46456c56587b92e7aa3a083818472e8a925c1ae2a"
             }
           ]
         }
@@ -3549,9 +3549,9 @@
     {
       "type": "library",
       "name": "binding-linux-x64-gnu",
-      "version": "1.0.3",
-      "purl": "pkg:npm/%40rolldown/binding-linux-x64-gnu@1.0.3",
-      "bom-ref": "pkg:npm/%40rolldown/binding-linux-x64-gnu@1.0.3",
+      "version": "1.1.2",
+      "purl": "pkg:npm/%40rolldown/binding-linux-x64-gnu@1.1.2",
+      "bom-ref": "pkg:npm/%40rolldown/binding-linux-x64-gnu@1.1.2",
       "scope": "excluded",
       "properties": [
         {
@@ -3563,11 +3563,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@rolldown/binding-linux-x64-gnu/-/binding-linux-x64-gnu-1.0.3.tgz",
+          "url": "https://registry.npmjs.org/@rolldown/binding-linux-x64-gnu/-/binding-linux-x64-gnu-1.1.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "07c9bab43e7efcde4578d4056ca94b03fdb256af727103f549e79dc8461829604d4776506e4bc851c3670cd334de53b5979176ae88a21491a0be82cbc995ed4a"
+              "content": "258e30f39a54de2022255321e67ba4e3f321f468ccb2ea5ef0cac8379debc310195bae062ab59e241b8de92c5083d413539b81d5cc72843cd6f23a919f510007"
             }
           ]
         }
@@ -3576,9 +3576,9 @@
     {
       "type": "library",
       "name": "binding-linux-x64-musl",
-      "version": "1.0.3",
-      "purl": "pkg:npm/%40rolldown/binding-linux-x64-musl@1.0.3",
-      "bom-ref": "pkg:npm/%40rolldown/binding-linux-x64-musl@1.0.3",
+      "version": "1.1.2",
+      "purl": "pkg:npm/%40rolldown/binding-linux-x64-musl@1.1.2",
+      "bom-ref": "pkg:npm/%40rolldown/binding-linux-x64-musl@1.1.2",
       "scope": "excluded",
       "properties": [
         {
@@ -3590,11 +3590,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@rolldown/binding-linux-x64-musl/-/binding-linux-x64-musl-1.0.3.tgz",
+          "url": "https://registry.npmjs.org/@rolldown/binding-linux-x64-musl/-/binding-linux-x64-musl-1.1.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "a5276975424792e0b1ba7f4b13b8ef81407daac4606a2c8d3425fb9bf02f1d372aebb0224ff621a31bf0e733df86b33c93f05f3fc71efe130ea6d84a0e9114a3"
+              "content": "c6fa40ee8e4a0982c1d11c2c726bb295bd7fcc71d2531e20e318a59b8a6b0b98cfefaa44525cc198c6e0a5b87b6d50db21de0d71f4fdea03798ba984e940da8b"
             }
           ]
         }
@@ -3603,9 +3603,9 @@
     {
       "type": "library",
       "name": "binding-openharmony-arm64",
-      "version": "1.0.3",
-      "purl": "pkg:npm/%40rolldown/binding-openharmony-arm64@1.0.3",
-      "bom-ref": "pkg:npm/%40rolldown/binding-openharmony-arm64@1.0.3",
+      "version": "1.1.2",
+      "purl": "pkg:npm/%40rolldown/binding-openharmony-arm64@1.1.2",
+      "bom-ref": "pkg:npm/%40rolldown/binding-openharmony-arm64@1.1.2",
       "scope": "excluded",
       "properties": [
         {
@@ -3617,11 +3617,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@rolldown/binding-openharmony-arm64/-/binding-openharmony-arm64-1.0.3.tgz",
+          "url": "https://registry.npmjs.org/@rolldown/binding-openharmony-arm64/-/binding-openharmony-arm64-1.1.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "3975d2dd1289817dae2f033e818cae1f9a26707f1f2f52c9b3dea964682d7ad5426a138de7bf9de12247cd381988e8f18069129e95e93ac5ae3c31802808a012"
+              "content": "a7fb6ce8a04b8ee938f41a76d571fbee9a101add3688dcfb0a18077a9eedb9d3ce68b8a747f0defd11ddc45f30f188f8aff6c5fdba97c07e8f66b076b00f8dbf"
             }
           ]
         }
@@ -3630,9 +3630,9 @@
     {
       "type": "library",
       "name": "binding-wasm32-wasi",
-      "version": "1.0.3",
-      "purl": "pkg:npm/%40rolldown/binding-wasm32-wasi@1.0.3",
-      "bom-ref": "pkg:npm/%40rolldown/binding-wasm32-wasi@1.0.3",
+      "version": "1.1.2",
+      "purl": "pkg:npm/%40rolldown/binding-wasm32-wasi@1.1.2",
+      "bom-ref": "pkg:npm/%40rolldown/binding-wasm32-wasi@1.1.2",
       "scope": "excluded",
       "properties": [
         {
@@ -3644,11 +3644,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@rolldown/binding-wasm32-wasi/-/binding-wasm32-wasi-1.0.3.tgz",
+          "url": "https://registry.npmjs.org/@rolldown/binding-wasm32-wasi/-/binding-wasm32-wasi-1.1.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "253b5bf01585ca789c352a0fade86c0b306d38a8d9ea384c88f14498e8ae5e0d4597c767d8a1d0a1bf86b8f48647476bc906b53d025bce317776a3bfc218632e"
+              "content": "54cbbfc26ad9f612736254616f0ee32b93ce0e5ba0c8a67998e757efcfa54bc3afb85916350773d6914bac8da9dcfd298d73a6519ec1e3ca39567307f50386b6"
             }
           ]
         }
@@ -3657,9 +3657,9 @@
     {
       "type": "library",
       "name": "binding-win32-arm64-msvc",
-      "version": "1.0.3",
-      "purl": "pkg:npm/%40rolldown/binding-win32-arm64-msvc@1.0.3",
-      "bom-ref": "pkg:npm/%40rolldown/binding-win32-arm64-msvc@1.0.3",
+      "version": "1.1.2",
+      "purl": "pkg:npm/%40rolldown/binding-win32-arm64-msvc@1.1.2",
+      "bom-ref": "pkg:npm/%40rolldown/binding-win32-arm64-msvc@1.1.2",
       "scope": "excluded",
       "properties": [
         {
@@ -3671,11 +3671,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@rolldown/binding-win32-arm64-msvc/-/binding-win32-arm64-msvc-1.0.3.tgz",
+          "url": "https://registry.npmjs.org/@rolldown/binding-win32-arm64-msvc/-/binding-win32-arm64-msvc-1.1.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "80474514437bd00fe3c5bdacbeb5ac3776832fb394b66be53b2fba7dada3c46f0ad3043565b75e2c69e2768bfa62ee7fef7ddd239c927f316543f71bd1b4b3d6"
+              "content": "c6d509aacf2a124b92be24b49f5b6ca2168fbb3ddad523e1672c0e8e2e0ea3eb20ac9b3c75a103319d10b6a2f4392eddc7c3e856983627f659c9c3d8e48dbe66"
             }
           ]
         }
@@ -3684,9 +3684,9 @@
     {
       "type": "library",
       "name": "binding-win32-x64-msvc",
-      "version": "1.0.3",
-      "purl": "pkg:npm/%40rolldown/binding-win32-x64-msvc@1.0.3",
-      "bom-ref": "pkg:npm/%40rolldown/binding-win32-x64-msvc@1.0.3",
+      "version": "1.1.2",
+      "purl": "pkg:npm/%40rolldown/binding-win32-x64-msvc@1.1.2",
+      "bom-ref": "pkg:npm/%40rolldown/binding-win32-x64-msvc@1.1.2",
       "scope": "excluded",
       "properties": [
         {
@@ -3698,11 +3698,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@rolldown/binding-win32-x64-msvc/-/binding-win32-x64-msvc-1.0.3.tgz",
+          "url": "https://registry.npmjs.org/@rolldown/binding-win32-x64-msvc/-/binding-win32-x64-msvc-1.1.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "79707b087b9a41daa625c73792808db4d3e64ff6e3da073df7d9141600711bc01cd0d7605dce2b9021e1aab82b84ddf375dbefbeb8338f57bdd12b927e6c885c"
+              "content": "f396222d0aa350a8123bf6639dff5ed17227e589ab8757cb0d605e02466aa6e051ff747c4e97e81d7bb26e5ab242b7ed4928163bdaa970737c9a4c8ab0badaa0"
             }
           ]
         }
@@ -20313,9 +20313,9 @@
     {
       "type": "library",
       "name": "rolldown",
-      "version": "1.0.3",
-      "purl": "pkg:npm/rolldown@1.0.3",
-      "bom-ref": "pkg:npm/rolldown@1.0.3",
+      "version": "1.1.2",
+      "purl": "pkg:npm/rolldown@1.1.2",
+      "bom-ref": "pkg:npm/rolldown@1.1.2",
       "scope": "excluded",
       "properties": [
         {
@@ -20326,11 +20326,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/rolldown/-/rolldown-1.0.3.tgz",
+          "url": "https://registry.npmjs.org/rolldown/-/rolldown-1.1.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "8b4d25009da4b35058afbae3363282ec172a012ee755f893dd05f5488e5a63e0051db94299a51ff4e13d75b7730ef5ba749c5b8b6642662cbdbf709cc0e897de"
+              "content": "c740ab410a825d619e23c753bc57cdfc39efdf230a4fd86fe6316394eade280c7dc2a2eaf70cfb56f2cb1f26805c2f74fc2a60813bbd4a2b126ec2494cf4a335"
             }
           ]
         }
@@ -23134,9 +23134,9 @@
     {
       "type": "library",
       "name": "vite",
-      "version": "8.0.16",
-      "purl": "pkg:npm/vite@8.0.16",
-      "bom-ref": "pkg:npm/vite@8.0.16",
+      "version": "8.1.0",
+      "purl": "pkg:npm/vite@8.1.0",
+      "bom-ref": "pkg:npm/vite@8.1.0",
       "scope": "excluded",
       "properties": [
         {
@@ -23147,11 +23147,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/vite/-/vite-8.0.16.tgz",
+          "url": "https://registry.npmjs.org/vite/-/vite-8.1.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "87d6d73e62627213f97cb995428dcfc9a1920c4da7dda3eea26780955466d092e6b78ad8eb398f29de7d1d82382cd5bca132bbb654ecb82ee5fe6edac31f4973"
+              "content": "06e25c40aff9e8d4135831a7e0005e6b7ab849205d34f5b035929392452970c3e72e8aae4981fc96546d494220a0bd4a482a47b797a084b4a19f9d261f7eb2ed"
             }
           ]
         }
@@ -24073,17 +24073,17 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40emnapi/core@1.10.0",
+      "ref": "pkg:npm/%40emnapi/core@1.11.1",
       "dependsOn": [
-        "pkg:npm/%40emnapi/wasi-threads@1.2.1"
+        "pkg:npm/%40emnapi/wasi-threads@1.2.2"
       ]
     },
     {
-      "ref": "pkg:npm/%40emnapi/runtime@1.10.0",
+      "ref": "pkg:npm/%40emnapi/runtime@1.11.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40emnapi/wasi-threads@1.2.1",
+      "ref": "pkg:npm/%40emnapi/wasi-threads@1.2.2",
       "dependsOn": []
     },
     {
@@ -24423,7 +24423,7 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40napi-rs/wasm-runtime@1.1.4",
+      "ref": "pkg:npm/%40napi-rs/wasm-runtime@1.1.5",
       "dependsOn": [
         "pkg:npm/%40tybys/wasm-util@0.10.2"
       ]
@@ -24433,7 +24433,7 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40oxc-project/types@0.133.0",
+      "ref": "pkg:npm/%40oxc-project/types@0.137.0",
       "dependsOn": []
     },
     {
@@ -24594,67 +24594,67 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40rolldown/binding-android-arm64@1.0.3",
+      "ref": "pkg:npm/%40rolldown/binding-android-arm64@1.1.2",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40rolldown/binding-darwin-arm64@1.0.3",
+      "ref": "pkg:npm/%40rolldown/binding-darwin-arm64@1.1.2",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40rolldown/binding-darwin-x64@1.0.3",
+      "ref": "pkg:npm/%40rolldown/binding-darwin-x64@1.1.2",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40rolldown/binding-freebsd-x64@1.0.3",
+      "ref": "pkg:npm/%40rolldown/binding-freebsd-x64@1.1.2",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40rolldown/binding-linux-arm-gnueabihf@1.0.3",
+      "ref": "pkg:npm/%40rolldown/binding-linux-arm-gnueabihf@1.1.2",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40rolldown/binding-linux-arm64-gnu@1.0.3",
+      "ref": "pkg:npm/%40rolldown/binding-linux-arm64-gnu@1.1.2",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40rolldown/binding-linux-arm64-musl@1.0.3",
+      "ref": "pkg:npm/%40rolldown/binding-linux-arm64-musl@1.1.2",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40rolldown/binding-linux-ppc64-gnu@1.0.3",
+      "ref": "pkg:npm/%40rolldown/binding-linux-ppc64-gnu@1.1.2",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40rolldown/binding-linux-s390x-gnu@1.0.3",
+      "ref": "pkg:npm/%40rolldown/binding-linux-s390x-gnu@1.1.2",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40rolldown/binding-linux-x64-gnu@1.0.3",
+      "ref": "pkg:npm/%40rolldown/binding-linux-x64-gnu@1.1.2",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40rolldown/binding-linux-x64-musl@1.0.3",
+      "ref": "pkg:npm/%40rolldown/binding-linux-x64-musl@1.1.2",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40rolldown/binding-openharmony-arm64@1.0.3",
+      "ref": "pkg:npm/%40rolldown/binding-openharmony-arm64@1.1.2",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40rolldown/binding-wasm32-wasi@1.0.3",
+      "ref": "pkg:npm/%40rolldown/binding-wasm32-wasi@1.1.2",
       "dependsOn": [
-        "pkg:npm/%40emnapi/core@1.10.0",
-        "pkg:npm/%40emnapi/runtime@1.10.0",
-        "pkg:npm/%40napi-rs/wasm-runtime@1.1.4"
+        "pkg:npm/%40emnapi/core@1.11.1",
+        "pkg:npm/%40emnapi/runtime@1.11.1",
+        "pkg:npm/%40napi-rs/wasm-runtime@1.1.5"
       ]
     },
     {
-      "ref": "pkg:npm/%40rolldown/binding-win32-arm64-msvc@1.0.3",
+      "ref": "pkg:npm/%40rolldown/binding-win32-arm64-msvc@1.1.2",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40rolldown/binding-win32-x64-msvc@1.0.3",
+      "ref": "pkg:npm/%40rolldown/binding-win32-x64-msvc@1.1.2",
       "dependsOn": []
     },
     {
@@ -28085,24 +28085,24 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/rolldown@1.0.3",
+      "ref": "pkg:npm/rolldown@1.1.2",
       "dependsOn": [
-        "pkg:npm/%40oxc-project/types@0.133.0",
-        "pkg:npm/%40rolldown/binding-android-arm64@1.0.3",
-        "pkg:npm/%40rolldown/binding-darwin-arm64@1.0.3",
-        "pkg:npm/%40rolldown/binding-darwin-x64@1.0.3",
-        "pkg:npm/%40rolldown/binding-freebsd-x64@1.0.3",
-        "pkg:npm/%40rolldown/binding-linux-arm-gnueabihf@1.0.3",
-        "pkg:npm/%40rolldown/binding-linux-arm64-gnu@1.0.3",
-        "pkg:npm/%40rolldown/binding-linux-arm64-musl@1.0.3",
-        "pkg:npm/%40rolldown/binding-linux-ppc64-gnu@1.0.3",
-        "pkg:npm/%40rolldown/binding-linux-s390x-gnu@1.0.3",
-        "pkg:npm/%40rolldown/binding-linux-x64-gnu@1.0.3",
-        "pkg:npm/%40rolldown/binding-linux-x64-musl@1.0.3",
-        "pkg:npm/%40rolldown/binding-openharmony-arm64@1.0.3",
-        "pkg:npm/%40rolldown/binding-wasm32-wasi@1.0.3",
-        "pkg:npm/%40rolldown/binding-win32-arm64-msvc@1.0.3",
-        "pkg:npm/%40rolldown/binding-win32-x64-msvc@1.0.3",
+        "pkg:npm/%40oxc-project/types@0.137.0",
+        "pkg:npm/%40rolldown/binding-android-arm64@1.1.2",
+        "pkg:npm/%40rolldown/binding-darwin-arm64@1.1.2",
+        "pkg:npm/%40rolldown/binding-darwin-x64@1.1.2",
+        "pkg:npm/%40rolldown/binding-freebsd-x64@1.1.2",
+        "pkg:npm/%40rolldown/binding-linux-arm-gnueabihf@1.1.2",
+        "pkg:npm/%40rolldown/binding-linux-arm64-gnu@1.1.2",
+        "pkg:npm/%40rolldown/binding-linux-arm64-musl@1.1.2",
+        "pkg:npm/%40rolldown/binding-linux-ppc64-gnu@1.1.2",
+        "pkg:npm/%40rolldown/binding-linux-s390x-gnu@1.1.2",
+        "pkg:npm/%40rolldown/binding-linux-x64-gnu@1.1.2",
+        "pkg:npm/%40rolldown/binding-linux-x64-musl@1.1.2",
+        "pkg:npm/%40rolldown/binding-openharmony-arm64@1.1.2",
+        "pkg:npm/%40rolldown/binding-wasm32-wasi@1.1.2",
+        "pkg:npm/%40rolldown/binding-win32-arm64-msvc@1.1.2",
+        "pkg:npm/%40rolldown/binding-win32-x64-msvc@1.1.2",
         "pkg:npm/%40rolldown/pluginutils@1.0.0"
       ]
     },
@@ -28751,11 +28751,11 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/vite@8.0.16",
+      "ref": "pkg:npm/vite@8.1.0",
       "dependsOn": [
         "pkg:npm/fsevents@2.3.3",
         "pkg:npm/lightningcss@1.32.0",
-        "pkg:npm/rolldown@1.0.3"
+        "pkg:npm/rolldown@1.1.2"
       ]
     },
     {
@@ -28772,7 +28772,7 @@
         "pkg:npm/pathe@2.0.3",
         "pkg:npm/tinybench@2.9.0",
         "pkg:npm/tinyexec@1.1.2",
-        "pkg:npm/vite@8.0.16",
+        "pkg:npm/vite@8.1.0",
         "pkg:npm/why-is-node-running@2.3.0"
       ]
     },
