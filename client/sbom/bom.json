@@ -3252,9 +3252,9 @@
     {
       "type": "library",
       "name": "test",
-      "version": "1.61.0",
-      "purl": "pkg:npm/%40playwright/test@1.61.0",
-      "bom-ref": "pkg:npm/%40playwright/test@1.61.0",
+      "version": "1.61.1",
+      "purl": "pkg:npm/%40playwright/test@1.61.1",
+      "bom-ref": "pkg:npm/%40playwright/test@1.61.1",
       "scope": "excluded",
       "properties": [
         {
@@ -3266,11 +3266,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@playwright/test/-/test-1.61.0.tgz",
+          "url": "https://registry.npmjs.org/@playwright/test/-/test-1.61.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "70a03907a9691443323068f1179e108a17d8a41e05904187faa661b40ac3106fb07b3400258f0faba0bb4f54a35b3f85173b774dbca85c141893fd36f764dd24"
+              "content": "f272afebed112522fd144e2360e1065e73de33f1e0d76a99a66ab3663461dea33463b737cf59ab3937c52e276cef6443418561f56a4b11f47959da4d5f87e48a"
             }
           ]
         }
@@ -17850,9 +17850,9 @@
     {
       "type": "library",
       "name": "playwright-core",
-      "version": "1.61.0",
-      "purl": "pkg:npm/playwright-core@1.61.0",
-      "bom-ref": "pkg:npm/playwright-core@1.61.0",
+      "version": "1.61.1",
+      "purl": "pkg:npm/playwright-core@1.61.1",
+      "bom-ref": "pkg:npm/playwright-core@1.61.1",
       "scope": "excluded",
       "properties": [
         {
@@ -17863,11 +17863,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/playwright-core/-/playwright-core-1.61.0.tgz",
+          "url": "https://registry.npmjs.org/playwright-core/-/playwright-core-1.61.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "71a5fb4eb637325e9e8320d7d1651c4c70f1a1d97f6f9d72e7024e742100dfa42f88afecda0d3cd61be61acf1e684dc359be8d61943a0633bf4243513de9e83c"
+              "content": "87b425b7a9b8444a76e6abc876f6c3b55983e0ba955dfa51c61391bfd2f48f3113334e69e1fb8f27774acae4974310d26d79e64bbf470208bde7cf65192a4b92"
             }
           ]
         }
@@ -17876,9 +17876,9 @@
     {
       "type": "library",
       "name": "playwright",
-      "version": "1.61.0",
-      "purl": "pkg:npm/playwright@1.61.0",
-      "bom-ref": "pkg:npm/playwright@1.61.0",
+      "version": "1.61.1",
+      "purl": "pkg:npm/playwright@1.61.1",
+      "bom-ref": "pkg:npm/playwright@1.61.1",
       "scope": "excluded",
       "properties": [
         {
@@ -17889,11 +17889,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/playwright/-/playwright-1.61.0.tgz",
+          "url": "https://registry.npmjs.org/playwright/-/playwright-1.61.1.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "67eec179ea903d14739251ec5453f8293188c8cc4a5267de440e168ac33a1b7fd75ba9f019e5fa7d7f6a61a0daf82894aa93a46f67fa5f79daaf4e51de44ae25"
+              "content": "0d69d8e68dd86cb58ae06a2fb80570a6a2fed55c0635d506ad1afefbc8fc3ed410cef01565420c8ca43dd1f63af3db042592416d9570d6b5da38a4938ad9333d"
             }
           ]
         }
@@ -24584,9 +24584,9 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/%40playwright/test@1.61.0",
+      "ref": "pkg:npm/%40playwright/test@1.61.1",
       "dependsOn": [
-        "pkg:npm/playwright@1.61.0"
+        "pkg:npm/playwright@1.61.1"
       ]
     },
     {
@@ -27584,14 +27584,14 @@
       ]
     },
     {
-      "ref": "pkg:npm/playwright-core@1.61.0",
+      "ref": "pkg:npm/playwright-core@1.61.1",
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/playwright@1.61.0",
+      "ref": "pkg:npm/playwright@1.61.1",
       "dependsOn": [
         "pkg:npm/fsevents@2.3.2",
-        "pkg:npm/playwright-core@1.61.0"
+        "pkg:npm/playwright-core@1.61.1"
       ]
     },
     {
@@ -28461,7 +28461,7 @@
         "pkg:npm/%40mantine/notifications@9.4.0",
         "pkg:npm/%40mantine/tiptap@9.4.0",
         "pkg:npm/%40phosphor-icons/react@2.1.10",
-        "pkg:npm/%40playwright/test@1.61.0",
+        "pkg:npm/%40playwright/test@1.61.1",
         "pkg:npm/%40testing-library/jest-dom@6.9.1",
         "pkg:npm/%40testing-library/react@16.3.2",
         "pkg:npm/%40testing-library/user-event@14.6.1",
