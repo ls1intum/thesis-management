@@ -14391,9 +14391,9 @@
     {
       "type": "library",
       "name": "js-yaml",
-      "version": "4.2.0",
-      "purl": "pkg:npm/js-yaml@4.2.0",
-      "bom-ref": "pkg:npm/js-yaml@4.2.0",
+      "version": "5.1.0",
+      "purl": "pkg:npm/js-yaml@5.1.0",
+      "bom-ref": "pkg:npm/js-yaml@5.1.0",
       "scope": "excluded",
       "properties": [
         {
@@ -14404,11 +14404,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/js-yaml/-/js-yaml-4.2.0.tgz",
+          "url": "https://registry.npmjs.org/js-yaml/-/js-yaml-5.1.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "78f5acbda9efd035ae0d1b16f1d9edf91e23437d52091090ee184d70f5d93eca016627a6b9935819feda75976a5f60fcea3eabbcaa774690b155349bf164253b"
+              "content": "b3c540e63911f1fdb64b73405e684a3c5a8651dbaa64696cb9f69b54e80dd78893770fd15dcca6edb2a46f08f12caf58c36944bef9898c5a75d7df8a3dea3c2a"
             }
           ]
         }
@@ -25746,7 +25746,7 @@
       "ref": "pkg:npm/cosmiconfig@8.3.6",
       "dependsOn": [
         "pkg:npm/import-fresh@3.3.1",
-        "pkg:npm/js-yaml@4.2.0",
+        "pkg:npm/js-yaml@5.1.0",
         "pkg:npm/parse-json@5.2.0",
         "pkg:npm/path-type@4.0.0"
       ]
@@ -26882,7 +26882,7 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/js-yaml@4.2.0",
+      "ref": "pkg:npm/js-yaml@5.1.0",
       "dependsOn": [
         "pkg:npm/argparse@2.0.1"
       ]
