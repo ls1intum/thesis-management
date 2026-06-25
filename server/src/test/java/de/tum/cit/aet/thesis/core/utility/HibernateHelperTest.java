@@ -36,11 +36,9 @@ class HibernateHelperTest {
 	class GetColumnName {
 
 		@Test
-		void validField_ReturnsColumnName() {
-			// Should not throw for valid fields
-			String result = HibernateHelper.getColumnName(User.class, "firstName");
-			// Returns either the @Column name or the field name
-			assertEquals(result, result); // just verifies no exception
+		void validFieldWithColumnAnnotation_returnsColumnName() {
+			// User.firstName has @Column(name = "first_name")
+			assertEquals("first_name", HibernateHelper.getColumnName(User.class, "firstName"));
 		}
 
 		@Test
@@ -48,5 +46,17 @@ class HibernateHelperTest {
 			assertThrows(ResourceInvalidParametersException.class,
 					() -> HibernateHelper.getColumnName(User.class, "nonExistentField"));
 		}
+
+		@Test
+		void fieldWithoutColumnAnnotation_returnsFieldName() {
+			// Use a local POJO field without @Column to exercise the fallback path.
+			String result = HibernateHelper.getColumnName(WithoutColumn.class, "plainField");
+			assertEquals("plainField", result);
+		}
+	}
+
+	private static final class WithoutColumn {
+		@SuppressWarnings("unused")
+		private String plainField;
 	}
 }
