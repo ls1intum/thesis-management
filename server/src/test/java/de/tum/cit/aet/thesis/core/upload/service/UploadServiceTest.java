@@ -170,4 +170,90 @@ class UploadServiceTest {
 					.isInstanceOf(UploadException.class);
 		}
 	}
+
+	@Nested
+	class StoreBytes {
+		@Test
+		void storeBytes_ValidContent_ReturnsHashedFilename() {
+			byte[] payload = new byte[] { 1, 2, 3, 4 };
+			String filename = uploadService.storeBytes(payload, "pdf", 1024 * 1024);
+			assertThat(filename).endsWith(".pdf");
+			assertThat(filename).doesNotContain("..");
+		}
+
+		@Test
+		void storeBytes_EmptyBytes_ThrowsException() {
+			assertThatThrownBy(() -> uploadService.storeBytes(new byte[0], "pdf", 1024))
+					.isInstanceOf(UploadException.class)
+					.hasMessageContaining("empty");
+		}
+
+		@Test
+		void storeBytes_NullBytes_ThrowsException() {
+			assertThatThrownBy(() -> uploadService.storeBytes(null, "pdf", 1024))
+					.isInstanceOf(UploadException.class)
+					.hasMessageContaining("empty");
+		}
+
+		@Test
+		void storeBytes_TooLarge_ThrowsException() {
+			assertThatThrownBy(() -> uploadService.storeBytes(new byte[] { 1, 2, 3, 4 }, "pdf", 2))
+					.isInstanceOf(UploadException.class)
+					.hasMessageContaining("size");
+		}
+
+		@Test
+		void storeBytes_TraversalExtension_ThrowsException() {
+			assertThatThrownBy(() -> uploadService.storeBytes(new byte[] { 1 }, "../etc", 1024))
+					.isInstanceOf(UploadException.class)
+					.hasMessageContaining("Invalid file extension");
+		}
+
+		@Test
+		void storeBytes_NullExtension_ThrowsException() {
+			assertThatThrownBy(() -> uploadService.storeBytes(new byte[] { 1 }, null, 1024))
+					.isInstanceOf(UploadException.class)
+					.hasMessageContaining("Invalid file extension");
+		}
+
+		@Test
+		void storeBytes_SlashExtension_ThrowsException() {
+			assertThatThrownBy(() -> uploadService.storeBytes(new byte[] { 1 }, "a/b", 1024))
+					.isInstanceOf(UploadException.class)
+					.hasMessageContaining("Invalid file extension");
+		}
+	}
+
+	@Nested
+	class DeleteFile {
+		@Test
+		void deleteFile_ExistingFile_RemovesIt() {
+			MockMultipartFile file = new MockMultipartFile(
+					"file", "del.pdf", "application/pdf", new byte[] { 1, 2, 3 }
+			);
+			String filename = uploadService.store(file, 1024 * 1024, UploadFileType.PDF);
+
+			uploadService.deleteFile(filename);
+
+			assertThatThrownBy(() -> uploadService.load(filename))
+					.isInstanceOf(UploadException.class);
+		}
+
+		@Test
+		void deleteFile_NullOrBlank_DoesNothing() {
+			uploadService.deleteFile(null);
+			uploadService.deleteFile("");
+			uploadService.deleteFile("   ");
+		}
+
+		@Test
+		void deleteFile_TraversalPath_Ignored() {
+			uploadService.deleteFile("../foo.pdf");
+		}
+
+		@Test
+		void deleteFile_NonExistent_DoesNothing() {
+			uploadService.deleteFile("does-not-exist.pdf");
+		}
+	}
 }
