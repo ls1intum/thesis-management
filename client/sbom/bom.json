@@ -12397,32 +12397,6 @@
     },
     {
       "type": "library",
-      "name": "glob-to-regexp",
-      "version": "0.4.1",
-      "purl": "pkg:npm/glob-to-regexp@0.4.1",
-      "bom-ref": "pkg:npm/glob-to-regexp@0.4.1",
-      "scope": "excluded",
-      "properties": [
-        {
-          "name": "cdx:npm:package:development",
-          "value": "true"
-        }
-      ],
-      "externalReferences": [
-        {
-          "type": "distribution",
-          "url": "https://registry.npmjs.org/glob-to-regexp/-/glob-to-regexp-0.4.1.tgz",
-          "hashes": [
-            {
-              "alg": "SHA-512",
-              "content": "9645f51c95f0c8c729af0ff961465cdacec3ae90221c1db5fd5f84d6b1d4ad5368924bc1e9ba8ccd3d157d5ebff3a64d69bb75935e18388693ee70ef397dc88b"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "library",
       "name": "glob",
       "version": "7.2.3",
       "purl": "pkg:npm/glob@7.2.3",
@@ -16251,6 +16225,32 @@
             {
               "alg": "SHA-512",
               "content": "db2c8047ca8190ddd8ba17896a7529582e54ddb6f9a2c0f2c0d07c4730d5943c031dba1c009bdeaaa8f5bbcf92543ee39164f8cafb070a95aaa96a80c5bd3308"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "minimizer-webpack-plugin",
+      "version": "5.6.1",
+      "purl": "pkg:npm/minimizer-webpack-plugin@5.6.1",
+      "bom-ref": "pkg:npm/minimizer-webpack-plugin@5.6.1",
+      "scope": "excluded",
+      "properties": [
+        {
+          "name": "cdx:npm:package:development",
+          "value": "true"
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/minimizer-webpack-plugin/-/minimizer-webpack-plugin-5.6.1.tgz",
+          "hashes": [
+            {
+              "alg": "SHA-512",
+              "content": "0e8780673f10d42d739f0b14cde8f57dda22e2309fefff849b6ee8b8ba9f2bffb79bc1be0fbc83854c2b73708d8634b3194375927ec8bf8b169a37e54077a7a7"
             }
           ]
         }
@@ -21980,32 +21980,6 @@
     {
       "type": "library",
       "name": "terser-webpack-plugin",
-      "version": "5.6.0",
-      "purl": "pkg:npm/terser-webpack-plugin@5.6.0",
-      "bom-ref": "pkg:npm/terser-webpack-plugin@5.6.0",
-      "scope": "excluded",
-      "properties": [
-        {
-          "name": "cdx:npm:package:development",
-          "value": "true"
-        }
-      ],
-      "externalReferences": [
-        {
-          "type": "distribution",
-          "url": "https://registry.npmjs.org/terser-webpack-plugin/-/terser-webpack-plugin-5.6.0.tgz",
-          "hashes": [
-            {
-              "alg": "SHA-512",
-              "content": "12e9bee5a8e468e85fe4a6ccdbaa2cbefdb590b0fb05a1aa435500e009a2e1aad8c329661944138071691c3766268775ab84176baea9d2da3f1412880fe275bc"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "name": "terser-webpack-plugin",
       "version": "5.6.1",
       "purl": "pkg:npm/terser-webpack-plugin@5.6.1",
       "bom-ref": "pkg:npm/terser-webpack-plugin@5.6.1",
@@ -23231,9 +23205,9 @@
     {
       "type": "library",
       "name": "watchpack",
-      "version": "2.5.1",
-      "purl": "pkg:npm/watchpack@2.5.1",
-      "bom-ref": "pkg:npm/watchpack@2.5.1",
+      "version": "2.5.2",
+      "purl": "pkg:npm/watchpack@2.5.2",
+      "bom-ref": "pkg:npm/watchpack@2.5.2",
       "scope": "excluded",
       "properties": [
         {
@@ -23244,11 +23218,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/watchpack/-/watchpack-2.5.1.tgz",
+          "url": "https://registry.npmjs.org/watchpack/-/watchpack-2.5.2.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "667e6e5dd705348035fb5122e4c71177e891cdf84434f09eecb78006426d36e952c6399afa5ee5b4dc79e41599911970467a4e807ab19e3c9a0e02673579eace"
+              "content": "ea2ff4d0d0633f8c863ecf9c68a4b245fa5317ff13a2bb2ed0c396de633321b86021215d7abf22ef16ea80794b33026b76237c9dd055dd4035fc07f33d2afe8e"
             }
           ]
         }
@@ -23465,9 +23439,9 @@
     {
       "type": "library",
       "name": "webpack",
-      "version": "5.107.2",
-      "purl": "pkg:npm/webpack@5.107.2",
-      "bom-ref": "pkg:npm/webpack@5.107.2",
+      "version": "5.108.0",
+      "purl": "pkg:npm/webpack@5.108.0",
+      "bom-ref": "pkg:npm/webpack@5.108.0",
       "scope": "excluded",
       "properties": [
         {
@@ -23478,11 +23452,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/webpack/-/webpack-5.107.2.tgz",
+          "url": "https://registry.npmjs.org/webpack/-/webpack-5.108.0.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "bfb4615da25ba4c955d03ee10bb95bd846e7c64a1e52a7fdaa12abea5a33c77438f29985aeaa8d4666455041a68bba52c26e9f090d87d488ef0a41ea76955d8d"
+              "content": "2e7d49b9818f4535dc1c409aa52152bc00ad1e6584379b10a8525e2cb190d34e7b4bbab34f6797533d0c65479db6622b372de72609c84d2b9b218286103f6349"
             }
           ]
         }
@@ -26496,10 +26470,6 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/glob-to-regexp@0.4.1",
-      "dependsOn": []
-    },
-    {
       "ref": "pkg:npm/glob@7.2.3",
       "dependsOn": [
         "pkg:npm/fs.realpath@1.0.0",
@@ -27270,6 +27240,10 @@
     },
     {
       "ref": "pkg:npm/minimist@1.2.8",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:npm/minimizer-webpack-plugin@5.6.1",
       "dependsOn": []
     },
     {
@@ -28430,10 +28404,6 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/terser-webpack-plugin@5.6.0",
-      "dependsOn": []
-    },
-    {
       "ref": "pkg:npm/terser-webpack-plugin@5.6.1",
       "dependsOn": [
         "pkg:npm/jest-worker@27.5.1"
@@ -28524,7 +28494,7 @@
         "pkg:npm/webpack-bundle-analyzer@5.3.0",
         "pkg:npm/webpack-cli@7.0.3",
         "pkg:npm/webpack-dev-server@5.2.5",
-        "pkg:npm/webpack@5.107.2",
+        "pkg:npm/webpack@5.108.0",
         "pkg:npm/webpackbar@7.0.0"
       ]
     },
@@ -28785,7 +28755,7 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/watchpack@2.5.1",
+      "ref": "pkg:npm/watchpack@2.5.2",
       "dependsOn": []
     },
     {
@@ -28871,7 +28841,7 @@
       "dependsOn": []
     },
     {
-      "ref": "pkg:npm/webpack@5.107.2",
+      "ref": "pkg:npm/webpack@5.108.0",
       "dependsOn": [
         "pkg:npm/%40webassemblyjs/ast@1.14.1",
         "pkg:npm/%40webassemblyjs/wasm-edit@1.14.1",
@@ -28881,12 +28851,11 @@
         "pkg:npm/enhanced-resolve@5.24.0",
         "pkg:npm/eslint-scope@5.1.1",
         "pkg:npm/events@3.3.0",
-        "pkg:npm/glob-to-regexp@0.4.1",
         "pkg:npm/loader-runner@4.3.2",
         "pkg:npm/mime-db@1.54.0",
+        "pkg:npm/minimizer-webpack-plugin@5.6.1",
         "pkg:npm/neo-async@2.6.2",
-        "pkg:npm/terser-webpack-plugin@5.6.0",
-        "pkg:npm/watchpack@2.5.1",
+        "pkg:npm/watchpack@2.5.2",
         "pkg:npm/webpack-sources@3.5.0"
       ]
     },
