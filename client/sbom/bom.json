@@ -19046,9 +19046,9 @@
     {
       "type": "library",
       "name": "prettier",
-      "version": "3.8.4",
-      "purl": "pkg:npm/prettier@3.8.4",
-      "bom-ref": "pkg:npm/prettier@3.8.4",
+      "version": "3.8.5",
+      "purl": "pkg:npm/prettier@3.8.5",
+      "bom-ref": "pkg:npm/prettier@3.8.5",
       "scope": "excluded",
       "properties": [
         {
@@ -19059,11 +19059,11 @@
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/prettier/-/prettier-3.8.4.tgz",
+          "url": "https://registry.npmjs.org/prettier/-/prettier-3.8.5.tgz",
           "hashes": [
             {
               "alg": "SHA-512",
-              "content": "376332952762e3cfb937fe92e63fa669e1db512233cd9e6e39c5f91e6e10a55f0391bd471637c0293297eb234f2500fd021713de27c7341ebab564d32438b5d5"
+              "content": "cf17134c279d34624ce11f2c8ff0aafc5d16fdce2213469f581701c0c4d1b70e161d83fd4d69188dd887de7a4f45462c5d008f47485353dca3a2f3aef84e8440"
             }
           ]
         }
@@ -27800,7 +27800,7 @@
       ]
     },
     {
-      "ref": "pkg:npm/prettier@3.8.4",
+      "ref": "pkg:npm/prettier@3.8.5",
       "dependsOn": []
     },
     {
@@ -28508,7 +28508,7 @@
         "pkg:npm/postcss-loader@8.2.1",
         "pkg:npm/postcss-preset-mantine@1.18.0",
         "pkg:npm/postcss@8.5.15",
-        "pkg:npm/prettier@3.8.4",
+        "pkg:npm/prettier@3.8.5",
         "pkg:npm/react-avatar-editor@15.1.0",
         "pkg:npm/react-dom@19.2.7",
         "pkg:npm/react-router@8.0.1",
