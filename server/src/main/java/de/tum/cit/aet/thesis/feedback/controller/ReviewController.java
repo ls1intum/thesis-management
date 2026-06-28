@@ -1,5 +1,6 @@
 package de.tum.cit.aet.thesis.feedback.controller;
 
+import de.tum.cit.aet.thesis.core.exception.request.ResourceInvalidParametersException;
 import de.tum.cit.aet.thesis.feedback.config.AIFeaturesEnabled;
 import de.tum.cit.aet.thesis.feedback.dto.ProviderCategory;
 import de.tum.cit.aet.thesis.feedback.dto.ReviewRequestDTO;
@@ -44,6 +45,13 @@ public class ReviewController {
 	@PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
 	public ResponseEntity<ReviewResultDTO> reviewProposal(@ModelAttribute ReviewRequestDTO request) {
 		// TODO: Use already uploaded file from the thesis service instead of uploading it again
+
+		if (request.providerCategory() == null) {
+			throw new ResourceInvalidParametersException("providerCategory is required.");
+		}
+		if (request.file() == null) {
+			throw new ResourceInvalidParametersException("file is required.");
+		}
 
 		if (request.providerCategory().equals(ProviderCategory.AZURE)) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Azure provider is not supported yet.");

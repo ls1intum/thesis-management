@@ -1,5 +1,6 @@
 package de.tum.cit.aet.thesis.feedback.service;
 
+import de.tum.cit.aet.thesis.core.exception.request.ResourceInvalidParametersException;
 import de.tum.cit.aet.thesis.feedback.config.AIFeaturesEnabled;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -32,6 +33,9 @@ import java.util.List;
 public class PdfService {
 	private static final Logger log = LoggerFactory.getLogger(PdfService.class);
 
+	/** Maximum number of PDF pages accepted for review. Long documents are rejected outright. */
+	static final int MAX_PAGES = 120;
+
 	/**
 	 * Extracts the text content of each page of the uploaded PDF.
 	 *
@@ -40,15 +44,16 @@ public class PdfService {
 	 */
 	public List<String> extractTextFromPdf(MultipartFile file) {
 		log.debug("Extracting text from PDF file: {}", file.getOriginalFilename());
-		ByteArrayResource resource;
+		byte[] bytes;
 		try {
-			resource = new ByteArrayResource(file.getBytes());
+			bytes = file.getBytes();
 		} catch (IOException e) {
 			throw new RuntimeException("Failed to extract text of file", e);
 		}
+		assertWithinPageLimit(bytes);
 
 		PdfDocumentReaderConfig config = PdfDocumentReaderConfig.builder().withPagesPerDocument(1).build();
-		PagePdfDocumentReader reader = new PagePdfDocumentReader(resource, config);
+		PagePdfDocumentReader reader = new PagePdfDocumentReader(new ByteArrayResource(bytes), config);
 
 		List<Document> docs = reader.read();
 		return docs.stream().map(Document::getText).toList();
@@ -65,6 +70,7 @@ public class PdfService {
 		List<Media> images = new ArrayList<>();
 
 		try (PDDocument document = Loader.loadPDF(file.getBytes())) {
+			assertWithinPageLimit(document.getNumberOfPages());
 			PDFRenderer renderer = new PDFRenderer(document);
 
 			for (int page = 0; page < document.getNumberOfPages(); page++) {
@@ -85,5 +91,20 @@ public class PdfService {
 		}
 
 		return images;
+	}
+
+	private void assertWithinPageLimit(byte[] pdfBytes) {
+		try (PDDocument document = Loader.loadPDF(pdfBytes)) {
+			assertWithinPageLimit(document.getNumberOfPages());
+		} catch (IOException e) {
+			throw new RuntimeException("Failed to read PDF", e);
+		}
+	}
+
+	private void assertWithinPageLimit(int pageCount) {
+		if (pageCount > MAX_PAGES) {
+			throw new ResourceInvalidParametersException(
+					"PDF has " + pageCount + " pages, which exceeds the maximum of " + MAX_PAGES + ".");
+		}
 	}
 }
