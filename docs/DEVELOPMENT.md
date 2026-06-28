@@ -150,6 +150,24 @@ Open the Mailpit web UI to browse captured emails:
 
 All emails (including attachments) sent by the application are available there for inspection. This replaces the previous console-only logging approach and makes it easy to verify email content, formatting, and recipients during development and testing.
 
+## AI Feedback (Experimental)
+
+> **Status: work in progress.** The AI feedback module (`/v2/ai-review/**`, `ReviewService`, `PdfService`) is being developed and is **not necessarily working or integrated end-to-end yet**. Treat it as an opt-in preview, not a supported feature.
+
+The module is gated by a single feature flag implemented as a Spring `Condition` (`de.tum.cit.aet.thesis.feedback.config.AIFeaturesEnabled`). When the flag is off, the controller and services are not registered with the application context and the `/v2/ai-review/**` endpoints return 404.
+
+| Setting                          | Default | Notes                                                                                |
+|----------------------------------|---------|--------------------------------------------------------------------------------------|
+| `thesis-management.ai.enabled`   | `false` | Master switch. Env var: `AI_FEATURES_ENABLED`. Set to `true` in `application-dev.yml`. |
+| `spring.ai.openai.api-key`       | —       | Env var: `OPENAI_API_KEY`. Required when the flag is on so Spring AI can build the chat model. |
+| `spring.ai.openai.base-url`      | `https://gpu.aet.cit.tum.de/api` | Env var: `OPENAI_BASE_URL`. Point at any OpenAI-compatible endpoint. |
+| `spring.ai.openai.chat.model`    | `google/gemma-4-26B-A4B-it` | Env var: `OPENAI_CHAT_MODEL`.                                          |
+
+Notes for local dev:
+- The `dev` profile already sets `thesis-management.ai.enabled: true`, so `./gradlew bootRun --args='--spring.profiles.active=dev'` exposes the endpoints. You still need to point `spring.ai.openai.*` at a reachable LLM (e.g. a local model on `http://localhost:1234/v1`) for actual responses.
+- The `test` profile keeps the flag off by default; the only test that exercises the controller (`ReviewControllerTest`) re-enables it via `@TestPropertySource`.
+- Spring AI's `OpenAiChatAutoConfiguration` instantiates `openAiChatModel` eagerly whenever the Spring AI jars are on the classpath, regardless of this flag. That is why `application.yml` ships a non-empty `OPENAI_API_KEY` placeholder and the test config sets a stub key — neither is used unless the flag is on, but both are needed so the autoconfig can build the bean.
+
 ## Database Migrations (Liquibase)
 
 Liquibase migrations run automatically when the server starts. All migrations are defined under `server/src/main/resources/db/changelog/changes`.

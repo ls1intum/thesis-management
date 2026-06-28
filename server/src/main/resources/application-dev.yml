@@ -16,6 +16,16 @@ spring:
             enable: false
             required: false
 
+  ai:
+    openai:
+      base-url: http://localhost:1234/v1
+      api-key:
+      chat:
+        model: google/gemma-4-e4b
+        temperature: 1.0
+
 thesis-management:
+  ai:
+    enabled: true
   mail:
     enabled: true
