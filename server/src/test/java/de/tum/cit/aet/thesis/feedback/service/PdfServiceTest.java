@@ -16,6 +16,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("checkstyle:LineLength")
 public class PdfServiceTest {
 	private PdfService pdfService;
 	private byte[] helloWorldContent;

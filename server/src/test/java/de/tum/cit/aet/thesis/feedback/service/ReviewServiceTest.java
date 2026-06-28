@@ -8,7 +8,13 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import de.tum.cit.aet.thesis.feedback.dto.*;
+import de.tum.cit.aet.thesis.feedback.dto.AssessmentCategory;
+import de.tum.cit.aet.thesis.feedback.dto.FindingDTO;
+import de.tum.cit.aet.thesis.feedback.dto.IntermediateReviewResult;
+import de.tum.cit.aet.thesis.feedback.dto.Location;
+import de.tum.cit.aet.thesis.feedback.dto.ProviderCategory;
+import de.tum.cit.aet.thesis.feedback.dto.ReviewRequestDTO;
+import de.tum.cit.aet.thesis.feedback.dto.ReviewResultDTO;
 import de.tum.cit.aet.thesis.feedback.service.reviewer.LlmReviewer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,6 +32,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 @ExtendWith(MockitoExtension.class)
+@SuppressWarnings("checkstyle:LineLength")
 public class ReviewServiceTest {
 
 	@Mock

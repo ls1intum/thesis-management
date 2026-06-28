@@ -1,5 +1,11 @@
 package de.tum.cit.aet.thesis.feedback.service.reviewer;
 
+/**
+ * Centralized prompt templates used by the AI review pipeline. Prompts are intentionally kept
+ * as wide text blocks so they read like the original prose; line-length is suppressed for this
+ * file rather than wrapped, which would alter the content sent to the LLM.
+ */
+@SuppressWarnings("checkstyle:LineLength")
 public enum Prompts {
 	SHARED("""
 			You are an expert thesis proposal reviewer for a computer science research group at a top European university. You review student proposals against specific guidelines with surgical precision. You are strict but fair — only flag genuine issues, not stylistic preferences. Each finding must be actionable: the student should know exactly what to fix.
@@ -422,6 +428,11 @@ public enum Prompts {
 		this.prompt = prompt;
 	}
 
+	/**
+	 * Returns the raw prompt text for this template.
+	 *
+	 * @return the prompt content sent to the LLM
+	 */
 	public String getPrompt() {
 		return prompt;
 	}

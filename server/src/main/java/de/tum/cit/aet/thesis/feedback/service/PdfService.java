@@ -23,11 +23,21 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Extracts per-page text and renders per-page PNG images from an uploaded PDF so the LLM
+ * pipeline can reason about both modalities.
+ */
 @Service
 @Conditional(AIFeaturesEnabled.class)
 public class PdfService {
 	private static final Logger log = LoggerFactory.getLogger(PdfService.class);
 
+	/**
+	 * Extracts the text content of each page of the uploaded PDF.
+	 *
+	 * @param file uploaded PDF file
+	 * @return one string per page in document order
+	 */
 	public List<String> extractTextFromPdf(MultipartFile file) {
 		log.debug("Extracting text from PDF file: {}", file.getOriginalFilename());
 		ByteArrayResource resource;
@@ -44,6 +54,12 @@ public class PdfService {
 		return docs.stream().map(Document::getText).toList();
 	}
 
+	/**
+	 * Renders each page of the uploaded PDF to a PNG image at 300 DPI.
+	 *
+	 * @param file uploaded PDF file
+	 * @return one PNG-encoded {@link Media} per page in document order
+	 */
 	public List<Media> extractImagesFromPdf(MultipartFile file) {
 		log.debug("Extracting images from PDF file: {}", file.getOriginalFilename());
 		List<Media> images = new ArrayList<>();

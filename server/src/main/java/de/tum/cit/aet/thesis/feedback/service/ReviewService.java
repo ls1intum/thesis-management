@@ -19,6 +19,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Orchestrates AI review of an uploaded thesis PDF: runs each {@link ReviewCategory} through
+ * an {@link LlmReviewer} and merges the intermediate findings into a single result via a final
+ * LLM call.
+ */
 @Service
 @Conditional(AIFeaturesEnabled.class)
 public class ReviewService {
@@ -27,11 +32,23 @@ public class ReviewService {
 	private final PdfService pdfService;
 	private final ChatClient chatClient;
 
+	/**
+	 * Creates the service and builds the underlying {@link ChatClient}.
+	 *
+	 * @param pdfService          service used to extract text and page images from the PDF
+	 * @param chatClientBuilder   Spring AI builder used to construct the chat client
+	 */
 	public ReviewService(PdfService pdfService, ChatClient.Builder chatClientBuilder) {
 		this.pdfService = pdfService;
 		this.chatClient = chatClientBuilder.build();
 	}
 
+	/**
+	 * Runs the per-category review pipeline against the uploaded PDF and merges the findings.
+	 *
+	 * @param request review request carrying the uploaded file and provider category
+	 * @return the merged review result containing the assessment, overall summary, and findings
+	 */
 	public ReviewResultDTO review(ReviewRequestDTO request) {
 		List<String> pagesText = pdfService.extractTextFromPdf(request.file());
 		List<Media> pagesImages = pdfService.extractImagesFromPdf(request.file());
