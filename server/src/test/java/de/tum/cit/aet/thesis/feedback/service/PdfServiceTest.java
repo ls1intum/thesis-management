@@ -1,5 +1,6 @@
 package de.tum.cit.aet.thesis.feedback.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
@@ -36,21 +37,25 @@ public class PdfServiceTest {
 		List<String> actual = pdfService.extractTextFromPdf(multipartFile);
 
 		assertEquals(1, actual.size(), "Expected exactly one page of text to be extracted");
-		assertEquals(List.of("""
+		// Compare with whitespace normalized: the PDF extractor emits wide, padded runs that
+		// spotless reformats on save. Normalizing keeps the test stable while still verifying
+		// the words and their order.
+		assertThat(actual.getFirst())
+				.as("Extracted text does not match expected content")
+				.isEqualToNormalizingWhitespace("""
+						Hello World
 
-												Hello      World                                                                                                                                                                    \s
+						Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+						tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
+						vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+						no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor
+						sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt
+						ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et
+						accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea
+						takimata sanctus est Lorem ipsum dolor sit amet.
 
-												Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod                                                                                                     \s
-												tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At                                                                                                      \s
-												vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,                                                                                                    \s
-												no sea takimata sanctus est Lorem ipsum dolor sit amet.          Lorem ipsum dolor                                                                                                  \s
-												sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt                                                                                                       \s
-												ut labore et dolore magna aliquyam erat, sed diam voluptua.           At vero eos et                                                                                                \s
-												accusam et justo duo dolores et ea rebum.        Stet clita kasd gubergren, no sea                                                                                                  \s
-												takimata sanctus est Lorem ipsum dolor sit amet.                                                                                                                                    \s
-
-																						1                                                                                                                                         \s
-				"""), actual, "Extracted text does not match expected content");
+						1
+						""");
 	}
 
 	@Test

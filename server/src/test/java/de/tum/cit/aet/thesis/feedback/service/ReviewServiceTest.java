@@ -122,8 +122,9 @@ public class ReviewServiceTest {
 				""";
 
 		// buildMergePrompt iterates an unordered Map, so assert each section is present
-		// independently rather than expecting a fixed ordering.
-		assertThat(mergePrompt).contains(structureSection);
-		assertThat(mergePrompt).contains(writingStyleSection);
+		// independently rather than expecting a fixed ordering. Whitespace is ignored so
+		// spotless reformatting of the expected text blocks doesn't break the test.
+		assertThat(mergePrompt).containsIgnoringWhitespaces(structureSection);
+		assertThat(mergePrompt).containsIgnoringWhitespaces(writingStyleSection);
 	}
 }
