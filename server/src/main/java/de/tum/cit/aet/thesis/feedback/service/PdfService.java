@@ -105,6 +105,8 @@ public class PdfService {
 		if (pageCount > MAX_PAGES) {
 			throw new ResourceInvalidParametersException(
 					"PDF has " + pageCount + " pages, which exceeds the maximum of " + MAX_PAGES + ".");
+		} else if (pageCount == 0) {
+			throw new ResourceInvalidParametersException("PDF has no pages.");
 		}
 	}
 }
