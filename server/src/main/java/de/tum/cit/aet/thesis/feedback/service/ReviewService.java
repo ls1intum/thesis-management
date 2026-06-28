@@ -1,7 +1,6 @@
 package de.tum.cit.aet.thesis.feedback.service;
 
 import de.tum.cit.aet.thesis.feedback.config.AIFeaturesEnabled;
-import de.tum.cit.aet.thesis.feedback.dto.FindingDTO;
 import de.tum.cit.aet.thesis.feedback.dto.IntermediateReviewResult;
 import de.tum.cit.aet.thesis.feedback.dto.ReviewRequestDTO;
 import de.tum.cit.aet.thesis.feedback.dto.ReviewResultDTO;
@@ -14,6 +13,7 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.content.Media;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Service;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.HashMap;
 import java.util.List;
@@ -29,18 +29,25 @@ import java.util.Map;
 public class ReviewService {
 	private static final Logger log = LoggerFactory.getLogger(ReviewService.class);
 
+	/** Fence tag wrapping the JSON-serialized intermediate findings in the merger user message. */
+	static final String FINDINGS_FENCE_TAG = "intermediate-findings";
+
 	private final PdfService pdfService;
 	private final ChatClient chatClient;
+	private final ObjectMapper objectMapper;
 
 	/**
 	 * Creates the service and builds the underlying {@link ChatClient}.
 	 *
 	 * @param pdfService          service used to extract text and page images from the PDF
 	 * @param chatClientBuilder   Spring AI builder used to construct the chat client
+	 * @param objectMapper        Spring-managed Jackson mapper used to serialize the
+	 *                            intermediate findings as untrusted JSON for the merger step
 	 */
-	public ReviewService(PdfService pdfService, ChatClient.Builder chatClientBuilder) {
+	public ReviewService(PdfService pdfService, ChatClient.Builder chatClientBuilder, ObjectMapper objectMapper) {
 		this.pdfService = pdfService;
 		this.chatClient = chatClientBuilder.build();
+		this.objectMapper = objectMapper;
 	}
 
 	/**
@@ -69,33 +76,12 @@ public class ReviewService {
 	}
 
 	String buildMergePrompt(Map<String, IntermediateReviewResult> reviewResults) {
-		StringBuilder builder = new StringBuilder();
-
-		for (Map.Entry<String, IntermediateReviewResult> entry : reviewResults.entrySet()) {
-			builder.append("# Category: ").append(entry.getKey()).append("\n");
-			for (FindingDTO finding : entry.getValue().findings()) {
-				builder.append("## [").append(finding.severity()).append("] ").append(finding.title()).append("\n");
-				builder.append("Category: ").append(finding.category()).append("\n");
-				builder.append("Description: ").append(finding.description()).append("\n");
-				if (finding.locations() != null && !finding.locations().isEmpty()) {
-					builder.append("Locations:\n");
-					for (var loc : finding.locations()) {
-						builder.append("  - Page ").append(loc.page());
-						if (loc.section() != null) {
-							builder.append(", Section: ").append(loc.section());
-						}
-						if (loc.quote() != null) {
-							builder.append(", Quote: \"").append(loc.quote()).append("\"");
-						}
-						builder.append("\n");
-					}
-				}
-				builder.append("\n");
-			}
-			builder.append("\n");
-		}
-
-		return builder.toString();
+		// Serialize the intermediate findings as JSON inside a fenced tag so the merger LLM
+		// can treat every string value (title, description, quote, ...) as untrusted data
+		// rather than interpolating it as raw prompt text. The MERGER prompt repeats this
+		// instruction explicitly.
+		String json = objectMapper.writeValueAsString(reviewResults);
+		return "<" + FINDINGS_FENCE_TAG + ">\n" + json + "\n</" + FINDINGS_FENCE_TAG + ">\n";
 	}
 
 	protected LlmReviewer createReviewer(String taskPrompt) {

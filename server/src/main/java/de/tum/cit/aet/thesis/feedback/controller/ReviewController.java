@@ -1,6 +1,5 @@
 package de.tum.cit.aet.thesis.feedback.controller;
 
-import de.tum.cit.aet.thesis.core.exception.request.ResourceInvalidParametersException;
 import de.tum.cit.aet.thesis.feedback.config.AIFeaturesEnabled;
 import de.tum.cit.aet.thesis.feedback.dto.ProviderCategory;
 import de.tum.cit.aet.thesis.feedback.dto.ReviewRequestDTO;
@@ -17,6 +16,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+
+import jakarta.validation.Valid;
 
 /** REST controller for AI generated feedback. */
 @Slf4j
@@ -43,15 +44,8 @@ public class ReviewController {
 	 */
 	@PostMapping(value = "review-proposal", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	@PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
-	public ResponseEntity<ReviewResultDTO> reviewProposal(@ModelAttribute ReviewRequestDTO request) {
+	public ResponseEntity<ReviewResultDTO> reviewProposal(@Valid @ModelAttribute ReviewRequestDTO request) {
 		// TODO: Use already uploaded file from the thesis service instead of uploading it again
-
-		if (request.providerCategory() == null) {
-			throw new ResourceInvalidParametersException("providerCategory is required.");
-		}
-		if (request.file() == null) {
-			throw new ResourceInvalidParametersException("file is required.");
-		}
 
 		if (request.providerCategory().equals(ProviderCategory.AZURE)) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Azure provider is not supported yet.");

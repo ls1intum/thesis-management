@@ -25,6 +25,7 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.content.Media;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.util.MimeTypeUtils;
+import tools.jackson.databind.ObjectMapper;
 
 import java.net.URI;
 import java.util.List;
@@ -53,12 +54,14 @@ public class ReviewServiceTest {
 	@Mock
 	LlmReviewer llmReviewer;
 
+	private final ObjectMapper objectMapper = new ObjectMapper();
+
 	private ReviewService reviewService;
 
 	@BeforeEach
 	void setUp() {
 		when(chatClientBuilder.build()).thenReturn(chatClient);
-		reviewService = new ReviewService(pdfService, chatClientBuilder) {
+		reviewService = new ReviewService(pdfService, chatClientBuilder, objectMapper) {
 			@Override
 			protected LlmReviewer createReviewer(String taskPrompt) {
 				return llmReviewer;
@@ -103,28 +106,16 @@ public class ReviewServiceTest {
 
 		String mergePrompt = reviewService.buildMergePrompt(reviewResults);
 
-		String structureSection = """
-				# Category: structure
-				## [HIGH] Poor structure
-				Category: structure
-				Description: The paper has a poor structure.
-				Locations:
-				- Page 1, Section: Introduction, Quote: "The introduction is not well structured."
-				""";
-
-		String writingStyleSection = """
-				# Category: writing-style
-				## [LOW] Clear writing style
-				Category: writing-style
-				Description: The writing style is clear.
-				Locations:
-				- Page 2, Section: Methodology, Quote: "The methodology section is well written."
-				""";
-
-		// buildMergePrompt iterates an unordered Map, so assert each section is present
-		// independently rather than expecting a fixed ordering. Whitespace is ignored so
-		// spotless reformatting of the expected text blocks doesn't break the test.
-		assertThat(mergePrompt).containsIgnoringWhitespaces(structureSection);
-		assertThat(mergePrompt).containsIgnoringWhitespaces(writingStyleSection);
+		// The merger receives intermediate findings as JSON inside a fenced tag so the LLM
+		// can treat every field as untrusted data. Assert the fence is present and that each
+		// finding's field values survive serialization (Map iteration order is unspecified).
+		assertThat(mergePrompt).startsWith("<intermediate-findings>\n");
+		assertThat(mergePrompt).endsWith("\n</intermediate-findings>\n");
+		assertThat(mergePrompt).contains("\"title\":\"Poor structure\"");
+		assertThat(mergePrompt).contains("\"description\":\"The paper has a poor structure.\"");
+		assertThat(mergePrompt).contains("\"quote\":\"The introduction is not well structured.\"");
+		assertThat(mergePrompt).contains("\"title\":\"Clear writing style\"");
+		assertThat(mergePrompt).contains("\"description\":\"The writing style is clear.\"");
+		assertThat(mergePrompt).contains("\"quote\":\"The methodology section is well written.\"");
 	}
 }
