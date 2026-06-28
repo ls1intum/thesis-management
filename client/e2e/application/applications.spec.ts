@@ -68,6 +68,45 @@ test.describe('Applications - Supervisor review', () => {
     // Supervisor should NOT see Submit Application link (not a student)
     await expect(page.getByRole('link', { name: 'Submit Application' })).toBeHidden()
   })
+
+  // Regression for #1136: typing into the search field after deselecting the
+  // default filters used to throw "e.currentTarget is null" because the
+  // setState updater read currentTarget after the browser had released the
+  // synthetic event. The page would white-screen until reload.
+  test('search field does not crash when filters are cleared (#1136)', async ({ page }) => {
+    const pageErrors: Error[] = []
+    page.on('pageerror', (error) => pageErrors.push(error))
+
+    await navigateTo(page, '/applications')
+
+    const searchInput = page.getByPlaceholder(/search applications/i)
+    await expect(searchInput).toBeVisible({ timeout: 15_000 })
+
+    // Remove every selected pill from the topic / type / states MultiSelects.
+    // The supervisor lands on the page with a default state ("Not Assessed")
+    // and assigned-topic pills already populated.
+    const removeButtons = page.locator(
+      '.mantine-MultiSelect-root .mantine-Pill-remove, .mantine-MultiSelect-root [data-pill-remove]',
+    )
+    // Loop with a re-query each iteration: each click triggers a re-render so
+    // stale handles would detach.
+    for (let safety = 0; safety < 50; safety++) {
+      const remaining = await removeButtons.count()
+      if (remaining === 0) break
+      await removeButtons.first().click()
+    }
+    await expect(removeButtons).toHaveCount(0)
+
+    // Type into the search input — this is what crashed the app pre-fix.
+    await searchInput.click()
+    await searchInput.fill('alice')
+    await expect(searchInput).toHaveValue('alice')
+
+    // The sidebar (and search input) must still be mounted — i.e. no white
+    // screen — and no unhandled exception should have reached the page.
+    await expect(searchInput).toBeVisible()
+    expect(pageErrors, pageErrors.map((e) => e.message).join('\n')).toHaveLength(0)
+  })
 })
 
 test.describe('Applications - Examiner review', () => {
