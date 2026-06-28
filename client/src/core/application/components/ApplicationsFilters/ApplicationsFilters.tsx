@@ -23,7 +23,11 @@ const ApplicationsFilters = (props: IApplicationsFiltersProps) => {
           leftSection={<MagnifyingGlass size={16} />}
           value={filters.search ?? ''}
           onChange={(e) => {
-            setFilters((prev) => ({ ...prev, search: e.currentTarget.value }))
+            // Capture value synchronously — currentTarget is null once the
+            // browser releases the event after the handler returns, and the
+            // setState updater below runs in a later render tick.
+            const search = e.currentTarget.value
+            setFilters((prev) => ({ ...prev, search }))
           }}
         />
       </Grid.Col>
@@ -113,12 +117,13 @@ const ApplicationsFilters = (props: IApplicationsFiltersProps) => {
           label='Include suggested topics'
           description='Show applications without a specific topic (the student proposed their own thesis title)'
           checked={filters.includeSuggestedTopics !== false}
-          onChange={(e) =>
+          onChange={(e) => {
+            const includeSuggestedTopics = e.currentTarget.checked
             setFilters((prev) => ({
               ...prev,
-              includeSuggestedTopics: e.currentTarget.checked,
+              includeSuggestedTopics,
             }))
-          }
+          }}
         />
       </Grid.Col>
     </Grid>
