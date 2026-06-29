@@ -15,13 +15,17 @@
         },
         "component": {
             "type": "application",
-            "bom-ref": "pkg:maven/de.tum.cit.aet.thesis/thesis-management@4.11.1?project_path=%3A",
+            "bom-ref": "pkg:maven/de.tum.cit.aet.thesis/thesis-management@4.11.2?project_path=%3A",
             "group": "de.tum.cit.aet.thesis",
             "name": "thesis-management",
-            "version": "4.11.1",
-            "purl": "pkg:maven/de.tum.cit.aet.thesis/thesis-management@4.11.1?project_path=%3A",
+            "version": "4.11.2",
+            "purl": "pkg:maven/de.tum.cit.aet.thesis/thesis-management@4.11.2?project_path=%3A",
             "modified": false,
             "externalReferences": [
+                {
+                    "type": "build-system",
+                    "url": "https://github.com/ls1intum/thesis-management/actions/runs/28343744683"
+                },
                 {
                     "type": "vcs",
                     "url": "https://github.com/ls1intum/thesis-management"
@@ -12232,54 +12236,54 @@
         },
         {
             "type": "library",
-            "bom-ref": "pkg:maven/org.mnode.ical4j/ical4j@4.2.5?type=jar",
+            "bom-ref": "pkg:maven/org.mnode.ical4j/ical4j@4.3.0?type=jar",
             "group": "org.mnode.ical4j",
             "name": "ical4j",
-            "version": "4.2.5",
+            "version": "4.3.0",
             "description": "A Java library for reading and writing iCalendar (*.ics) files",
             "hashes": [
                 {
                     "alg": "MD5",
-                    "content": "293c948de305efd36bfe69276939daae"
+                    "content": "ad97375b070caaca0041b214c13f1989"
                 },
                 {
                     "alg": "SHA-1",
-                    "content": "2be94e9a83cd5639d912fcb2d41d4b697deb0ec8"
+                    "content": "d2152541d9962c3d7f2beb122e6b7be14d444fdd"
                 },
                 {
                     "alg": "SHA-256",
-                    "content": "d1c5f3819e617330088b377814557dbf58a3fe706374522871f817decdedc06b"
+                    "content": "05a5401b404a4983b7dd712174f2d619aff003200a7ecf78cddaca0ad99fc93e"
                 },
                 {
                     "alg": "SHA-512",
-                    "content": "cb3e8f7a21f3722ec7139a95005ce14ebf33e58e14a1de5cbbb2595c5d4abb2b905ef3a56a97e23b4fb1f61576393f766d72564810df6a0d614626bae78aff1a"
+                    "content": "856494493a80b534b399e169f1e4f6e86fc13e7e6908b06fb965d9d2039f1d4db19fc1bdb002e521ae13dbf4d1c8bef7cd8cdfc4c94106b1171783edb0a50539"
                 },
                 {
                     "alg": "SHA-384",
-                    "content": "f58d0703d6f7aaac3fa9f64d4b022cb059141d3a4d9b7861296401fe3f890e3e9317473f9868b14f4eb891af1a89aa5e"
+                    "content": "7e46f90134a39e07b5b5eed54450c96045e8056d91bf554fa27e253f4e33854c246224cad84a88b6514897d7cb2f7fe3"
                 },
                 {
                     "alg": "SHA3-384",
-                    "content": "c07dd038a48b5301b3c38018cbc22c9b487178781dac2d8dbe7802a00d78a333af0233c8089241c53e217f79cc97408e"
+                    "content": "61b4a637e5704b2ca038027055d17b5e6fbf267acac21cbd4b67bd0b94cb8703c2c90000d68156d05a274d0db1cf4254"
                 },
                 {
                     "alg": "SHA3-256",
-                    "content": "fb02424145685121c222075c60eeb0465eff4d1b8af15ab199a3fbb0cc32b117"
+                    "content": "e8e50a8a921b6077d7e01a15827237d815ab051e9e075040f92c3342f45d5408"
                 },
                 {
                     "alg": "SHA3-512",
-                    "content": "74fb62983ebe5d7be113ee41b2eea06337436071db96b5fee937d6ffd9b3149a292c56bc606dbfc3c80703f145df87e3048f9c324201d1609cd4872279faa751"
+                    "content": "e40aa9757fca8504d134c34f44ad25fe67bcbc35aaa579ca21b051f81e482c3b84981505129050f2c87b70de460c1d609bde9970e8785615a5b98a13bd6229a3"
                 }
             ],
             "licenses": [
                 {
                     "license": {
-                        "id": "BSD-3-Clause",
-                        "url": "https://opensource.org/licenses/BSD-3-Clause"
+                        "name": "iCal4j - License",
+                        "url": "https://raw.githubusercontent.com/ical4j/ical4j/master/LICENSE"
                     }
                 }
             ],
-            "purl": "pkg:maven/org.mnode.ical4j/ical4j@4.2.5?type=jar",
+            "purl": "pkg:maven/org.mnode.ical4j/ical4j@4.3.0?type=jar",
             "modified": false,
             "externalReferences": [
                 {
@@ -21493,7 +21497,7 @@
             ]
         },
         {
-            "ref": "pkg:maven/de.tum.cit.aet.thesis/thesis-management@4.11.1?project_path=%3A",
+            "ref": "pkg:maven/de.tum.cit.aet.thesis/thesis-management@4.11.2?project_path=%3A",
             "dependsOn": [
                 "pkg:maven/ch.qos.logback/logback-classic@1.5.34?type=jar",
                 "pkg:maven/ch.qos.logback/logback-core@1.5.34?type=jar",
@@ -21520,7 +21524,7 @@
                 "pkg:maven/org.junit.platform/junit-platform-commons@6.1.0?type=jar",
                 "pkg:maven/org.junit.platform/junit-platform-engine@6.1.0?type=jar",
                 "pkg:maven/org.junit.platform/junit-platform-launcher@6.1.0?type=jar",
-                "pkg:maven/org.mnode.ical4j/ical4j@4.2.5?type=jar",
+                "pkg:maven/org.mnode.ical4j/ical4j@4.3.0?type=jar",
                 "pkg:maven/org.mockito/mockito-core@5.23.0?type=jar",
                 "pkg:maven/org.mockito/mockito-junit-jupiter@5.23.0?type=jar",
                 "pkg:maven/org.postgresql/postgresql@42.7.11?type=jar",
@@ -22575,7 +22579,7 @@
             ]
         },
         {
-            "ref": "pkg:maven/org.mnode.ical4j/ical4j@4.2.5?type=jar",
+            "ref": "pkg:maven/org.mnode.ical4j/ical4j@4.3.0?type=jar",
             "dependsOn": [
                 "pkg:maven/commons-codec/commons-codec@1.21.0?type=jar",
                 "pkg:maven/org.apache.commons/commons-lang3@3.20.0?type=jar",
