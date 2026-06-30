@@ -43,6 +43,7 @@ const ReviewApplicationPage = () => {
       limit={10}
       defaultStates={[ApplicationState.NOT_ASSESSED]}
       showOnlyAssignedTopics={true}
+      persistState
     >
       {isSmallScreen && (
         <ApplicationModal

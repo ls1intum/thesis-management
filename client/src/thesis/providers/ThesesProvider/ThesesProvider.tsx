@@ -1,5 +1,6 @@
 import type { PropsWithChildren } from 'react'
 import React, { useEffect, useMemo, useState } from 'react'
+import { useSearchParams } from 'react-router'
 import type {
   IThesesContext,
   IThesesFilters,
@@ -18,20 +19,58 @@ interface IThesesProviderProps {
   limit: number
   defaultStates?: ThesisState[]
   hideIfEmpty?: boolean
+  // When true, the provider reads its initial page/filters/sort from the URL
+  // search params and pushes subsequent changes back to the URL so browser back
+  // restores the previous state. Only enable on pages where this provider owns
+  // the URL state (i.e. no other URL-synced provider on the same route).
+  persistState?: boolean
 }
 
+const DEFAULT_SORT: IThesesSort = { column: 'startDate', direction: 'asc' }
+
 const ThesesProvider = (props: PropsWithChildren<IThesesProviderProps>) => {
-  const { children, fetchAll = false, limit, hideIfEmpty = false, defaultStates } = props
+  const {
+    children,
+    fetchAll = false,
+    limit,
+    hideIfEmpty = false,
+    defaultStates,
+    persistState = false,
+  } = props
+
+  const [searchParams, setSearchParams] = useSearchParams()
 
   const [theses, setTheses] = useState<PaginationResponse<IThesisOverview>>()
-  const [page, setPage] = useState(0)
 
-  const [filters, setFilters] = useState<IThesesFilters>({
-    states: defaultStates,
+  const [page, setPage] = useState(() => {
+    if (!persistState) return 0
+    const raw = parseInt(searchParams.get('page') ?? '', 10)
+    return Number.isFinite(raw) && raw >= 0 ? raw : 0
   })
-  const [sort, setSort] = useState<IThesesSort>({
-    column: 'startDate',
-    direction: 'asc',
+
+  const [filters, setFilters] = useState<IThesesFilters>(() => {
+    if (!persistState) {
+      return { states: defaultStates }
+    }
+    const statesParam = searchParams.get('states')
+    const typesParam = searchParams.get('types')
+    return {
+      search: searchParams.get('search') ?? undefined,
+      states: statesParam
+        ? (statesParam.split(',').filter(Boolean) as ThesisState[])
+        : defaultStates,
+      types: typesParam ? typesParam.split(',').filter(Boolean) : undefined,
+    }
+  })
+
+  const [sort, setSort] = useState<IThesesSort>(() => {
+    if (!persistState) return DEFAULT_SORT
+    const column = searchParams.get('sortBy') as IThesesSort['column'] | null
+    const direction = searchParams.get('sortOrder') as IThesesSort['direction'] | null
+    return {
+      column: column ?? DEFAULT_SORT.column,
+      direction: direction ?? DEFAULT_SORT.direction,
+    }
   })
 
   const [debouncedSearch] = useDebouncedValue(filters.search ?? '', 500)
@@ -77,6 +116,30 @@ const ThesesProvider = (props: PropsWithChildren<IThesesProviderProps>) => {
     )
     // eslint-disable-next-line @eslint-react/exhaustive-deps -- filters.states/types are tracked via joined keys below to avoid identity-based reruns
   }, [fetchAll, page, limit, sort, filterStatesKey, filterTypesKey, debouncedSearch])
+
+  useEffect(() => {
+    if (!persistState) return
+
+    const params = new URLSearchParams(searchParams)
+
+    const setOrDelete = (key: string, value: string | undefined) => {
+      if (value && value.length > 0) {
+        params.set(key, value)
+      } else {
+        params.delete(key)
+      }
+    }
+
+    setOrDelete('page', page > 0 ? String(page) : undefined)
+    setOrDelete('search', filters.search)
+    setOrDelete('states', filterStatesKey)
+    setOrDelete('types', filterTypesKey)
+    setOrDelete('sortBy', sort.column !== DEFAULT_SORT.column ? sort.column : undefined)
+    setOrDelete('sortOrder', sort.direction !== DEFAULT_SORT.direction ? sort.direction : undefined)
+
+    setSearchParams(params, { replace: true })
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- searchParams/setSearchParams change on every navigation; only sync URL when actual state changes
+  }, [persistState, page, filters.search, filterStatesKey, filterTypesKey, sort])
 
   const contextState = useMemo<IThesesContext>(() => {
     return {

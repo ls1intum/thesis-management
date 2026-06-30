@@ -1,5 +1,6 @@
 import type { PropsWithChildren, ReactNode } from 'react'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { useSearchParams } from 'react-router'
 import { doRequest } from '@/core/requests/request'
 import type { PaginationResponse } from '@/core/requests/responses/pagination'
 import type {
@@ -26,7 +27,13 @@ interface IApplicationsProviderProps {
   showOnlyAssignedTopics?: boolean
   hideIfEmpty?: boolean
   emptyComponent?: ReactNode
+  // When true, the provider reads its initial page/filters/sort from the URL
+  // search params and pushes subsequent changes back to the URL. Only enable on
+  // routes where this provider owns the URL state.
+  persistState?: boolean
 }
+
+const DEFAULT_SORT: IApplicationsSort = { column: 'createdAt', direction: 'desc' }
 
 const ApplicationsProvider = (props: PropsWithChildren<IApplicationsProviderProps>) => {
   const {
@@ -38,24 +45,53 @@ const ApplicationsProvider = (props: PropsWithChildren<IApplicationsProviderProp
     fetchAll = false,
     hideIfEmpty = false,
     emptyComponent,
+    persistState = false,
   } = props
 
   const user = useLoggedInUser()
   const topics = useAllTopics()
 
+  const [searchParams, setSearchParams] = useSearchParams()
+
   const [applications, setApplications] = useState<PaginationResponse<IApplication>>()
-  const [page, setPage] = useState(0)
+
+  const [page, setPage] = useState(() => {
+    if (!persistState) return 0
+    const raw = parseInt(searchParams.get('page') ?? '', 10)
+    return Number.isFinite(raw) && raw >= 0 ? raw : 0
+  })
 
   const previousContent = useRef<string[]>([])
 
-  const [filters, setFilters] = useState<IApplicationsFilters>({
-    states: defaultStates,
-    topics: defaultTopics,
-    includeSuggestedTopics: true,
+  const [filters, setFilters] = useState<IApplicationsFilters>(() => {
+    const base: IApplicationsFilters = {
+      states: defaultStates,
+      topics: defaultTopics,
+      includeSuggestedTopics: true,
+    }
+    if (!persistState) return base
+
+    const statesParam = searchParams.get('states')
+    const topicsParam = searchParams.get('topics')
+    const typesParam = searchParams.get('types')
+    return {
+      ...base,
+      search: searchParams.get('search') ?? base.search,
+      states: statesParam
+        ? (statesParam.split(',').filter(Boolean) as ApplicationState[])
+        : base.states,
+      topics: topicsParam ? topicsParam.split(',').filter(Boolean) : base.topics,
+      types: typesParam ? typesParam.split(',').filter(Boolean) : base.types,
+    }
   })
-  const [sort, setSort] = useState<IApplicationsSort>({
-    column: 'createdAt',
-    direction: 'desc',
+  const [sort, setSort] = useState<IApplicationsSort>(() => {
+    if (!persistState) return DEFAULT_SORT
+    const column = searchParams.get('sortBy') as IApplicationsSort['column'] | null
+    const direction = searchParams.get('sortOrder') as IApplicationsSort['direction'] | null
+    return {
+      column: column ?? DEFAULT_SORT.column,
+      direction: direction ?? DEFAULT_SORT.direction,
+    }
   })
 
   const adjustedFilters = useMemo(() => {
@@ -155,6 +191,31 @@ const ApplicationsProvider = (props: PropsWithChildren<IApplicationsProviderProp
     debouncedSearch,
     topicsLoaded,
   ])
+
+  useEffect(() => {
+    if (!persistState) return
+
+    const params = new URLSearchParams(searchParams)
+
+    const setOrDelete = (key: string, value: string | undefined) => {
+      if (value && value.length > 0) {
+        params.set(key, value)
+      } else {
+        params.delete(key)
+      }
+    }
+
+    setOrDelete('page', page > 0 ? String(page) : undefined)
+    setOrDelete('search', filters.search)
+    setOrDelete('states', filterStatesKey)
+    setOrDelete('topics', filterTopicsKey)
+    setOrDelete('types', filterTypesKey)
+    setOrDelete('sortBy', sort.column !== DEFAULT_SORT.column ? sort.column : undefined)
+    setOrDelete('sortOrder', sort.direction !== DEFAULT_SORT.direction ? sort.direction : undefined)
+
+    setSearchParams(params, { replace: true })
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- searchParams/setSearchParams change on every navigation; only sync URL when actual state changes
+  }, [persistState, page, filters.search, filterStatesKey, filterTopicsKey, filterTypesKey, sort])
 
   const fetchApplication = async (applicationId: string): Promise<IApplication | null> => {
     return new Promise((resolve) => {
