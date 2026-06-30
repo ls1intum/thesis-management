@@ -127,16 +127,9 @@ const ApplicationsProvider = (props: PropsWithChildren<IApplicationsProviderProp
   // URL sync uses the raw user-selected topics so the implicit
   // `showOnlyAssignedTopics` expansion is not leaked into `?topics=` params.
   const urlTopicsKey = filters.topics?.join(',')
+  const defaultStatesKey = defaultStates?.join(',')
+  const defaultTopicsKey = defaultTopics?.join(',')
   const topicsLoaded = !!topics
-
-  const didMountRef = useRef(false)
-  useEffect(() => {
-    if (!didMountRef.current) {
-      didMountRef.current = true
-      return
-    }
-    setPage(0)
-  }, [sort, adjustedFilters])
 
   useEffect(() => {
     setApplications(undefined)
@@ -219,17 +212,33 @@ const ApplicationsProvider = (props: PropsWithChildren<IApplicationsProviderProp
       }
     }
 
+    // Only write params that differ from the page-level defaults, so a freshly
+    // loaded `/applications` stays at a clean URL until the user actually
+    // changes filters/sort/page.
     setOrDelete('page', page > 0 ? String(page) : undefined)
     setOrDelete('search', filters.search)
-    setOrDelete('states', filterStatesKey)
-    setOrDelete('topics', urlTopicsKey)
+    setOrDelete(
+      'states',
+      filterStatesKey !== defaultStatesKey ? (filterStatesKey ?? '') : undefined,
+    )
+    setOrDelete('topics', urlTopicsKey !== defaultTopicsKey ? (urlTopicsKey ?? '') : undefined)
     setOrDelete('types', filterTypesKey)
     setOrDelete('sortBy', sort.column !== DEFAULT_SORT.column ? sort.column : undefined)
     setOrDelete('sortOrder', sort.direction !== DEFAULT_SORT.direction ? sort.direction : undefined)
 
     setSearchParams(params, { replace: true })
     // eslint-disable-next-line @eslint-react/exhaustive-deps -- searchParams/setSearchParams change on every navigation; only sync URL when actual state changes
-  }, [persistState, page, filters.search, filterStatesKey, urlTopicsKey, filterTypesKey, sort])
+  }, [
+    persistState,
+    page,
+    filters.search,
+    filterStatesKey,
+    urlTopicsKey,
+    filterTypesKey,
+    defaultStatesKey,
+    defaultTopicsKey,
+    sort,
+  ])
 
   const fetchApplication = async (applicationId: string): Promise<IApplication | null> => {
     return new Promise((resolve) => {
