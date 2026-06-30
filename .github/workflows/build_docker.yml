@@ -40,10 +40,17 @@ jobs:
         if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch) && steps.changed-files.outputs.any_changed == 'true'
         run: |
           VERSION="${{ steps.version.outputs.version }}"
+          HEAD_COMMIT=$(git rev-parse HEAD)
           git fetch --tags --quiet
-          if git rev-parse -q --verify "refs/tags/${VERSION}" >/dev/null || \
-             git rev-parse -q --verify "refs/tags/v${VERSION}" >/dev/null; then
-            echo "::error::Version ${VERSION} has already been released (git tag exists). Please bump the version using supporting_scripts/update_version.sh before merging."
+          TAG_COMMIT=""
+          for ref in "refs/tags/${VERSION}" "refs/tags/v${VERSION}"; do
+            if git rev-parse -q --verify "${ref}" >/dev/null; then
+              TAG_COMMIT=$(git rev-parse "${ref}^{commit}")
+              break
+            fi
+          done
+          if [[ -n "${TAG_COMMIT}" && "${TAG_COMMIT}" != "${HEAD_COMMIT}" ]]; then
+            echo "::error::Version ${VERSION} has already been released at ${TAG_COMMIT}, but this build is for ${HEAD_COMMIT}. Bump the version using supporting_scripts/update_version.sh before merging."
             exit 1
           fi
 
@@ -114,10 +121,17 @@ jobs:
         if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch) && steps.changed-files.outputs.any_changed == 'true'
         run: |
           VERSION="${{ steps.version.outputs.version }}"
+          HEAD_COMMIT=$(git rev-parse HEAD)
           git fetch --tags --quiet
-          if git rev-parse -q --verify "refs/tags/${VERSION}" >/dev/null || \
-             git rev-parse -q --verify "refs/tags/v${VERSION}" >/dev/null; then
-            echo "::error::Version ${VERSION} has already been released (git tag exists). Please bump the version using supporting_scripts/update_version.sh before merging."
+          TAG_COMMIT=""
+          for ref in "refs/tags/${VERSION}" "refs/tags/v${VERSION}"; do
+            if git rev-parse -q --verify "${ref}" >/dev/null; then
+              TAG_COMMIT=$(git rev-parse "${ref}^{commit}")
+              break
+            fi
+          done
+          if [[ -n "${TAG_COMMIT}" && "${TAG_COMMIT}" != "${HEAD_COMMIT}" ]]; then
+            echo "::error::Version ${VERSION} has already been released at ${TAG_COMMIT}, but this build is for ${HEAD_COMMIT}. Bump the version using supporting_scripts/update_version.sh before merging."
             exit 1
           fi
 
