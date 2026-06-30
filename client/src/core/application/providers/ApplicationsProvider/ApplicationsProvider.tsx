@@ -124,6 +124,9 @@ const ApplicationsProvider = (props: PropsWithChildren<IApplicationsProviderProp
   const filterStatesKey = adjustedFilters.states?.join(',')
   const filterTopicsKey = adjustedFilters.topics?.join(',')
   const filterTypesKey = adjustedFilters.types?.join(',')
+  // URL sync uses the raw user-selected topics so the implicit
+  // `showOnlyAssignedTopics` expansion is not leaked into `?topics=` params.
+  const urlTopicsKey = filters.topics?.join(',')
   const topicsLoaded = !!topics
 
   const didMountRef = useRef(false)
@@ -219,14 +222,14 @@ const ApplicationsProvider = (props: PropsWithChildren<IApplicationsProviderProp
     setOrDelete('page', page > 0 ? String(page) : undefined)
     setOrDelete('search', filters.search)
     setOrDelete('states', filterStatesKey)
-    setOrDelete('topics', filterTopicsKey)
+    setOrDelete('topics', urlTopicsKey)
     setOrDelete('types', filterTypesKey)
     setOrDelete('sortBy', sort.column !== DEFAULT_SORT.column ? sort.column : undefined)
     setOrDelete('sortOrder', sort.direction !== DEFAULT_SORT.direction ? sort.direction : undefined)
 
     setSearchParams(params, { replace: true })
     // eslint-disable-next-line @eslint-react/exhaustive-deps -- searchParams/setSearchParams change on every navigation; only sync URL when actual state changes
-  }, [persistState, page, filters.search, filterStatesKey, filterTopicsKey, filterTypesKey, sort])
+  }, [persistState, page, filters.search, filterStatesKey, urlTopicsKey, filterTypesKey, sort])
 
   const fetchApplication = async (applicationId: string): Promise<IApplication | null> => {
     return new Promise((resolve) => {
