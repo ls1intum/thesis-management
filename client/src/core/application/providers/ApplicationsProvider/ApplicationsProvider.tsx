@@ -34,6 +34,8 @@ interface IApplicationsProviderProps {
 }
 
 const DEFAULT_SORT: IApplicationsSort = { column: 'createdAt', direction: 'desc' }
+const SORT_COLUMNS: IApplicationsSort['column'][] = ['createdAt', 'updatedAt']
+const SORT_DIRECTIONS: IApplicationsSort['direction'][] = ['asc', 'desc']
 
 const ApplicationsProvider = (props: PropsWithChildren<IApplicationsProviderProps>) => {
   const {
@@ -86,11 +88,15 @@ const ApplicationsProvider = (props: PropsWithChildren<IApplicationsProviderProp
   })
   const [sort, setSort] = useState<IApplicationsSort>(() => {
     if (!persistState) return DEFAULT_SORT
-    const column = searchParams.get('sortBy') as IApplicationsSort['column'] | null
-    const direction = searchParams.get('sortOrder') as IApplicationsSort['direction'] | null
+    const column = searchParams.get('sortBy')
+    const direction = searchParams.get('sortOrder')
     return {
-      column: column ?? DEFAULT_SORT.column,
-      direction: direction ?? DEFAULT_SORT.direction,
+      column: SORT_COLUMNS.includes(column as IApplicationsSort['column'])
+        ? (column as IApplicationsSort['column'])
+        : DEFAULT_SORT.column,
+      direction: SORT_DIRECTIONS.includes(direction as IApplicationsSort['direction'])
+        ? (direction as IApplicationsSort['direction'])
+        : DEFAULT_SORT.direction,
     }
   })
 
@@ -120,7 +126,12 @@ const ApplicationsProvider = (props: PropsWithChildren<IApplicationsProviderProp
   const filterTypesKey = adjustedFilters.types?.join(',')
   const topicsLoaded = !!topics
 
+  const didMountRef = useRef(false)
   useEffect(() => {
+    if (!didMountRef.current) {
+      didMountRef.current = true
+      return
+    }
     setPage(0)
   }, [sort, adjustedFilters])
 

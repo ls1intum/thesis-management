@@ -27,6 +27,8 @@ interface IThesesProviderProps {
 }
 
 const DEFAULT_SORT: IThesesSort = { column: 'startDate', direction: 'asc' }
+const SORT_COLUMNS: IThesesSort['column'][] = ['startDate', 'endDate', 'createdAt']
+const SORT_DIRECTIONS: IThesesSort['direction'][] = ['asc', 'desc']
 
 const ThesesProvider = (props: PropsWithChildren<IThesesProviderProps>) => {
   const {
@@ -65,11 +67,15 @@ const ThesesProvider = (props: PropsWithChildren<IThesesProviderProps>) => {
 
   const [sort, setSort] = useState<IThesesSort>(() => {
     if (!persistState) return DEFAULT_SORT
-    const column = searchParams.get('sortBy') as IThesesSort['column'] | null
-    const direction = searchParams.get('sortOrder') as IThesesSort['direction'] | null
+    const column = searchParams.get('sortBy')
+    const direction = searchParams.get('sortOrder')
     return {
-      column: column ?? DEFAULT_SORT.column,
-      direction: direction ?? DEFAULT_SORT.direction,
+      column: SORT_COLUMNS.includes(column as IThesesSort['column'])
+        ? (column as IThesesSort['column'])
+        : DEFAULT_SORT.column,
+      direction: SORT_DIRECTIONS.includes(direction as IThesesSort['direction'])
+        ? (direction as IThesesSort['direction'])
+        : DEFAULT_SORT.direction,
     }
   })
 
