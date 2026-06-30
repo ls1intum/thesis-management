@@ -23,10 +23,6 @@
             "modified": false,
             "externalReferences": [
                 {
-                    "type": "build-system",
-                    "url": "https://github.com/ls1intum/thesis-management/actions/runs/28396290061"
-                },
-                {
                     "type": "vcs",
                     "url": "https://github.com/ls1intum/thesis-management"
                 }
@@ -285,6 +281,73 @@
                 {
                     "type": "vcs",
                     "url": "https://github.com/auth0/java-jwt"
+                }
+            ],
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
+            "bom-ref": "pkg:maven/com.ethlo.time/itu@1.14.0?type=jar",
+            "group": "com.ethlo.time",
+            "name": "itu",
+            "version": "1.14.0",
+            "description": "Extremely fast date-time parser and formatter - RFC 3339 (ISO 8601 profile) and W3C format",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "e537d0a2bc8066726f7e4654c253cf84"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "c0f9f9d4f4404787e992ab3af5ae95f2fad79e47"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "5cf40ab0cc77828ab2b875b1f3ecd71c8295d7721933476abc2e08fddcea164a"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "aa69a6af3a7123eb41425bbaf6834e16dc3323172709e2338b8a21b970fd21333d996515f42da4aa0225251e30542ad7d9c8332bdf7d62ed96b42fadc8a1520d"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "8d201334c39b68d13d66fc9df2440fa848b055a9b901e1c630ff66a47e70c8816484d106ae18c642d4257034f33e55f2"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "033715e1422cb3f22c1073bc7b058fd16d1436c6314f49f13480d81c86b656cb77a4d852cbba35542bc8f2ce49244ba6"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "f18d275dd2a0038a82432e06bb9f396151310136e3a316a869ef54d7fae834c5"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "8a51b3c6144eb2e363f8804da316d9e3dc246be07af4c0bb55e9540c2a0deb5eb9beb825120d3d203e3a561fd8a605ad64f3af5d233725e1b9c7e06232deaea9"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/com.ethlo.time/itu@1.14.0?type=jar",
+            "modified": false,
+            "externalReferences": [
+                {
+                    "type": "distribution",
+                    "url": "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+                },
+                {
+                    "type": "vcs",
+                    "url": "https://github.com/ethlo/itu"
                 }
             ],
             "properties": [
@@ -593,7 +656,7 @@
             "properties": [
                 {
                     "name": "cdx:maven:package:test",
-                    "value": "true"
+                    "value": "false"
                 }
             ]
         },
@@ -650,7 +713,7 @@
             "properties": [
                 {
                     "name": "cdx:maven:package:test",
-                    "value": "true"
+                    "value": "false"
                 }
             ]
         },
@@ -879,6 +942,69 @@
                 {
                     "name": "cdx:maven:package:test",
                     "value": "true"
+                }
+            ]
+        },
+        {
+            "type": "library",
+            "bom-ref": "pkg:maven/com.fasterxml.jackson.module/jackson-module-kotlin@2.21.4?type=jar",
+            "group": "com.fasterxml.jackson.module",
+            "name": "jackson-module-kotlin",
+            "version": "2.21.4",
+            "description": "Add-on module for Jackson (https://github.com/FasterXML/jackson/) to support Kotlin language, specifically introspection of method/constructor parameter names, without having to add explicit property name annotation.",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "1f354d80a28c9e41ef000826284f2027"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "fbd8c0e52415d27b2b024630d911c7ed3b9c27b8"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "f9fe2ad3927dbff6c604b122977302fd83f9c3d52d48381db0f40560dec516ca"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "5da2f2c5204b0d31ace9d7ab49a277b379c4329f40020a39a4b01c94ecbfbc9b9ce7a9234c8bdc0484d8d9a423b38ec3ce38b41ecec6e278b3ec7c7c218fb351"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "18467b183fc50d85d11b71c5150c63eb8452fefd84545016750b5714651798b765e81b30b9ee05b1120b0afd73c32011"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "40ea29ef3d1b25f25ee7315eddbbcce44b915a8797ff0402e5708a7ba11dcd1af0470d6ac8e50419cb6a127f08740bdd"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "13294d543c7cf856123094374adb9368b8708025796adb2f629dc275e9db3585"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "78079d0856d260d1185712c51e8106862c19e657b58b48c5c076ed7d5cef0ff3ab3bcc83ecd28e2a96a04837406300f81c408544695ae703ae1da03b981f8b10"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/com.fasterxml.jackson.module/jackson-module-kotlin@2.21.4?type=jar",
+            "modified": false,
+            "externalReferences": [
+                {
+                    "type": "vcs",
+                    "url": "https://github.com/FasterXML/jackson-module-kotlin"
+                }
+            ],
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
                 }
             ]
         },
@@ -1426,6 +1552,177 @@
         },
         {
             "type": "library",
+            "bom-ref": "pkg:maven/com.github.victools/jsonschema-generator@5.0.0?type=jar",
+            "group": "com.github.victools",
+            "name": "jsonschema-generator",
+            "version": "5.0.0",
+            "description": "Java JSON Schema Generator \u2013 creating a JSON Schema (Draft 6, Draft 7 or Draft 2019-09) from your Java classes",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "4e00faebefa42c860a994b66c29d5151"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "c3db83983c3bf81a2ea7da29c9cb35dfe3c87594"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "dc17156260641870fd0f2dcbda5866f7d2fdffc668a41928487b1008ae3335c0"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "378f38f6407058bf932b953d78e462f07c4d567fd47cdf891aafe8b28ed2ab436dcdcc327559bf03c2e8ea1b8cbf53491696bbe593d4019f0d74a6038275b30f"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "9d6a1b1485070d4dded3122d345ffc722ea32fd132fe0820792dfc58e37eb60e193cd3124a19719b6cf8a24da991ecdd"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "0d7fb0d5fecda382ab59a242cdaa90be685eb8d26fcf304b2c90d43f9b1e3c975e29f0b2db2218b354284ae3460d1089"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "75ea4bb4db861e8212abedfd3607ac55c06b0b2e226d343725ef84aa88d987f2"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "73683275bb2f34f281b969d45032717fe33d22b5f8ee6b2c9c0e045f3d0e327f3ef8f4f23f728071206ea0c3f43eab8e25dd7a0a506598f39ed954aa2328a78f"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/com.github.victools/jsonschema-generator@5.0.0?type=jar",
+            "modified": false,
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
+            "bom-ref": "pkg:maven/com.github.victools/jsonschema-module-jackson@5.0.0?type=jar",
+            "group": "com.github.victools",
+            "name": "jsonschema-module-jackson",
+            "version": "5.0.0",
+            "description": "Module for the jsonschema-generator \u2013 deriving JSON Schema attributes from jackson annotations",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "9a189f11cb877f55f08f13ca76c1470a"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "e378b5df91e566552e36a96990728a45e780b8ee"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "5c0d08b4696fd734b314c1b9dd517d932de4055f1cf9a074eafc95a580bb8da2"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "a8a3c45fc8c0551fd0fa8d6a45b8a5c3481bc137a2f38e3caf24f058c62c0a67f24c2d964afff6b654561f954a07962289c0a64137977e6d90485ecabda32715"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "0b812d3c1130a2c4764efe1c27d997174f3cfc9505fe4bb49447e55ca4ff2b65bfffea7a36e916f99b74d0ca690bc1ec"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "6d6edb7508119ee4c9e272a9a321907c81706f7e6a6286d55065153e26510a41ea896481f35335c45155be183d4dd322"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "6d3f94d7d7a2290d6424450fbe4db8d6d5e06bf9985e13de85840f0cb6403aa4"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "ecf5cc130fcd6742a336c2803d0ff39a548c5629b02e497c4343347c0514c618337eb1f50905ded0fa868cbab85ae94b7cd5fbb677806e67c0d6baf93bb67e10"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/com.github.victools/jsonschema-module-jackson@5.0.0?type=jar",
+            "modified": false,
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
+            "bom-ref": "pkg:maven/com.github.victools/jsonschema-module-swagger-2@5.0.0?type=jar",
+            "group": "com.github.victools",
+            "name": "jsonschema-module-swagger-2",
+            "version": "5.0.0",
+            "description": "Module for the jsonschema-generator \u2013 Swagger (2.x)",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "ae09ad89de491e2f3fcb355d95c4434b"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "abddfdd7ec7337b483ace47449e7d638582c3242"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "5c4d6931de56b4b58917c7b9bd3e801b041744ecce1bfed14b0e525379e570c3"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "bd9e977e3cc7430bceed07e6f679ec332228c50e609f393f66c9744783d9b59a85fa1cb33292b50c95974b35802142ec6d95ea9ec756c7157830208cf80b897b"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "b920c5d9bf3363d329af4b74eb19900fad120cd690a1956cdb9bfcc0dcdc65132ef2e8c1c59e89f5307d666392febe3e"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "22b950de59451b0b48077c696e76e25dc15c1592044ae514ff0818360d3af1efdbe4df9ba1f5121804a856969c8d3ba4"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "4ad2d720f7bb52c281a362f418220524241e0227da9adc11af1c26bdeeaa23e1"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "5d41cf71c31149428d5d5f6e72c73df7f0d4bb0282a71ba74719a0569dbe337b748763e759fc3a96e412c47674bb7dbc5f9313c2b4bbc09565bd06775df3cd93"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/com.github.victools/jsonschema-module-swagger-2@5.0.0?type=jar",
+            "modified": false,
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
             "bom-ref": "pkg:maven/com.google.code.findbugs/jsr305@3.0.2?type=jar",
             "group": "com.google.code.findbugs",
             "name": "jsr305",
@@ -1536,6 +1833,62 @@
                 }
             ],
             "purl": "pkg:maven/com.google.code.gson/gson@2.13.2?type=jar",
+            "modified": false,
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
+            "bom-ref": "pkg:maven/com.google.errorprone/error_prone_annotations@2.33.0?type=jar",
+            "group": "com.google.errorprone",
+            "name": "error_prone_annotations",
+            "version": "2.33.0",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "e6ad8ec1d3cfd7e808864f3ccf1ead36"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "8da89b78563865aa950961ae898f8ea0fb4e1d64"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "d9f3af3974fa64cd0f0f34238f40d9898abf7df19ca15849e1978f5beb818cb6"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "190a6c06006b16fa79ed269152b8901cb6c66e4e43774bc334ddd57cfa67f59275ffc0efb5fc0e00dbb01fc39640c31b25bf37eaa87203341ab544faa9e96699"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "f35d79ccbed21d2fc94291dd596e95802275756b2e6778220677eed2ed211420829dec3b65b3d5de42182cd73c3214d8"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "8be64af68f7e97d18f56b3dcfc9982ce732e3e5c1d3957cda17e55717d1be3c19807c1fab56e3ac0aa5c5950b1b72bbe"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "b5f854a81d1e305b759a711b6793b0b33c7cad5107254d66d486db29ac3e877f"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "323a8e82ee84fed0712d162bce421c9feef2987bd3b69fbc906c8be143a328f4e478bfa5b4149ad2041cf6f7cdd87164b124b48d36374a194c017b1a41234646"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/com.google.errorprone/error_prone_annotations@2.33.0?type=jar",
             "modified": false,
             "properties": [
                 {
@@ -3091,6 +3444,141 @@
         },
         {
             "type": "library",
+            "bom-ref": "pkg:maven/com.knuddels/jtokkit@1.1.0?type=jar",
+            "group": "com.knuddels",
+            "name": "jtokkit",
+            "version": "1.1.0",
+            "description": "JTokkit is a Java tokenizer library designed for use with OpenAI models.",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "39b665048d25ad6a8aa19ba7b2dbd7b7"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "b7370f801db3eb8c7c6a2c2c06231909ac6de0b0"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "1501ce0259ab897c6746ccfafa1d208acd404fb17e1ac62e157172f2678b1183"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "6bd471e49d2c07b102a3c102684a0144caae8813a3e522ff034375b4c425bc3afb08f56287e48846dd544da8a9d94b53dea8daf68a3006872b2690aaf9eb066d"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "029b7bbba64701818ec8955c97523a97e603d0b9061f0f8d12d96b3b9dbceffc1ae39c910b41bbb6b931b1a4572fba3e"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "ab7479f587d2bf3e81c6ed48d19dcf0bfefd71b84ece2342e73b5f30c5e1d112aa3dedeb83a8b8f6b8c6f44001d11856"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "a7e8ea44ec9235fd1626c2eecaffbc397322d5d599e5f09f9663d862884a88b1"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "445199030008e6ce6cd32b3c429b5007abec022864978b57f8f458d8d0cf586f473925366dd21d2b0141c9376a760ae10a099fd3f36ee3d3c2789a4e2da6b9ab"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "MIT",
+                        "url": "https://opensource.org/license/mit/"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/com.knuddels/jtokkit@1.1.0?type=jar",
+            "modified": false,
+            "externalReferences": [
+                {
+                    "type": "vcs",
+                    "url": "https://github.com/knuddelsgmbh/jtokkit"
+                }
+            ],
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
+            "bom-ref": "pkg:maven/com.networknt/json-schema-validator@3.0.1?type=jar",
+            "group": "com.networknt",
+            "name": "json-schema-validator",
+            "version": "3.0.1",
+            "description": "A json schema validator that supports draft v4, v6, v7, v2019-09 and v2020-12",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "8150357ae031c2a6508566f8d3d3148d"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "c376290e5c7a3f95d36d8ad1679e18bfb42ed90d"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "271e37c705eea7d0fd9b95d3a601ab9531a0ca49a86beba2e2b792583670494b"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "640b8026ddc81c48593bc50e36611c79d397fa34207556ad6114aae7091b059e8f1e38dfe56062ef61bec50acec5f3e72e9b52cd067ba6d8545e2df66a61dc15"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "9eb2ab1cd025e4bb4009631841e8ef0a3a49ce43372205896e68e65bc63bda923fab8ce70d82d66e51d2f70bf7eea51a"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "19178f1730ab981d9e7080ed7f59c0740e4a1a2349830a9405ec6e625072629492d127cf277c5bc5498c9aa8a5ad5f38"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "4eac314dfba4cfab966c397678af91d1b835bff3bad46a4b33aa2b329779ef5c"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "c781047abb1bc82979875b166f7b24e6ed5a30d44c51e0ce08e95b22cf4d994e4d4016310ae214cedd55b5d78fca6c586b9b2dbbcf39f929c6e5dae0cf7b61a1"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/com.networknt/json-schema-validator@3.0.1?type=jar",
+            "modified": false,
+            "externalReferences": [
+                {
+                    "type": "distribution",
+                    "url": "https://central.sonatype.com/service/local/staging/deploy/maven2/"
+                },
+                {
+                    "type": "issue-tracker",
+                    "url": "https://github.com/networknt/json-schema-validator/issues"
+                },
+                {
+                    "type": "vcs",
+                    "url": "https://github.com/networknt/json-schema-validator.git"
+                }
+            ],
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
             "bom-ref": "pkg:maven/com.nimbusds/content-type@2.3?type=jar",
             "publisher": "Connect2id Ltd.",
             "group": "com.nimbusds",
@@ -3379,6 +3867,70 @@
         },
         {
             "type": "library",
+            "bom-ref": "pkg:maven/com.openai/openai-java-core@4.39.1?type=jar",
+            "group": "com.openai",
+            "name": "openai-java-core",
+            "version": "4.39.1",
+            "description": "The OpenAI REST API. Please see https://platform.openai.com/docs/api-reference for more details.",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "21eb932dc42d54b14edc4430001e79e7"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "d3383b1a8fb7becb4fb921bd68cbca7c82b503e5"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "4983b430650e52b94fc45177c3fe85b6340eb70d3e1858801f62cc065b7b89d6"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "6786b9a2d603f99731d746fe2c307eb9b7751a3f0152b927ba9f68794ca6454a1cc981b4e7ed21de9786db5b6449e3f0ca9c236584565a630b1d0a4056c48055"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "b56a8f3f1d3d20d080d2f2a98d08fd6f1b72e4df210c419b7fabf27dc58242cbf52165174d87abf0b3cb81d3fbe377d9"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "235451fb1646799e8a9378c7c768e8aa26653a78af8a8ea4a16f6f2ab5ddc699e93d30e6379ade7d6e1fdfd5fa5bee8e"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "ef031f1c264d31a5c7bd7ac149f4eb6b8479123df1ee8b7f8c89a1607625d895"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "fe9c18cd96920044f84af199c57dc34e6f1c8072e3bbedb30629dd09ee8f82048d6e90b73b152b3894e0c2e1b2408d023a57022a2438b98777ba6b23fda2177a"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0",
+                        "url": "https://www.apache.org/licenses/LICENSE-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/com.openai/openai-java-core@4.39.1?type=jar",
+            "modified": false,
+            "externalReferences": [
+                {
+                    "type": "vcs",
+                    "url": "https://github.com/openai/openai-java"
+                }
+            ],
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
             "bom-ref": "pkg:maven/com.opencsv/opencsv@5.12.0?type=jar",
             "group": "com.opencsv",
             "name": "opencsv",
@@ -3507,6 +4059,161 @@
                 {
                     "type": "vcs",
                     "url": "https://github.com/checkstyle/checkstyle"
+                }
+            ],
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
+            "bom-ref": "pkg:maven/com.squareup.okhttp3/okhttp@4.12.0?type=jar",
+            "group": "com.squareup.okhttp3",
+            "name": "okhttp",
+            "version": "4.12.0",
+            "description": "Square\u2019s meticulous HTTP client for Java and Kotlin.",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "6acba053af88fed87e710c6c29911d7c"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "2f4525d4a200e97e1b87449c2cd9bd2e25b7e8cd"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "b1050081b14bb7a3a7e55a4d3ef01b5dcfabc453b4573a4fc019767191d5f4e0"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "da63f77c1cae377b40f6fd00cfbbe8177e760e4e622ae2c66860fffd3bbbdf605c8e8e415762e9263445b2289ee834100237c63949f2e01c30b6704315dd8f7b"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "0a8fbe4104c511169232caa90bc52b8a842b6b4cfba525b1c749ca25ede252992c1a3b6c0b6b43143949bc1f1eea742e"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "f41dde0de63dba9c941083a9e9f9681e5e497149cae49988b1a5b36fe2263d351035ee378e06975b5f3145b91393cd75"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "736a6abc2a2128ddcabcf46c9ba70e4656c2bedaeadbe8f9f76bb807db657b05"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "b2a39d9dff52994e78774d628228f7b3959d6070db2b535c70a90de70a7a716ed011d4dc210886314c1ebad8478b2460c652a2bf68094dba30d3593a1a750c75"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/com.squareup.okhttp3/okhttp@4.12.0?type=jar",
+            "modified": false,
+            "externalReferences": [
+                {
+                    "type": "vcs",
+                    "url": "https://github.com/square/okhttp"
+                }
+            ],
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
+            "bom-ref": "pkg:maven/com.squareup.okio/okio-jvm@3.6.0?type=jar",
+            "group": "com.squareup.okio",
+            "name": "okio-jvm",
+            "version": "3.6.0",
+            "description": "A modern I/O library for Android, Java, and Kotlin Multiplatform.",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "26370180ff99a7e8a12dcaac2a70cc6e"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "5600569133b7bdefe1daf9ec7f4abeb6d13e1786"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "67543f0736fc422ae927ed0e504b98bc5e269fda0d3500579337cb713da28412"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "a592e93651fb5e335212bb25c1cf474c1b1076eda68d53cbdc82c383cbdd60114a62b698ca92a3b4b5e416d637a70f2ddabbf8a05551c62d59a240c3e3c3d2c6"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "825856eb690645dbaaa02a6047ebbfe2b2c0a9191d37c177b216160bd89286e98695fc91cd75a9b6ac7e8d1f3a106ff6"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "07c656a88258ed39d50941355e955dfaa74dad3f128ff48e8c2654a53607e940ca3f3383f4f97f1b9e91670734ff1424"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "95baa62978b92951e1921749529688efa24d0a329843427fe822cc4e90399483"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "f2fca794345a93448b2c770c2525586b661447acbac32142fba0152320c164b5cd27d2d6a478e72e72c54ff4e0e93eaa729529b6f5aefa7e6d7b732d0d9532b7"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/com.squareup.okio/okio-jvm@3.6.0?type=jar",
+            "modified": false,
+            "externalReferences": [
+                {
+                    "type": "vcs",
+                    "url": "https://github.com/square/okio/"
+                }
+            ],
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
+            "bom-ref": "pkg:maven/com.squareup.okio/okio@3.6.0?type=pom",
+            "group": "com.squareup.okio",
+            "name": "okio",
+            "version": "3.6.0",
+            "description": "A modern I/O library for Android, Java, and Kotlin Multiplatform.",
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/com.squareup.okio/okio@3.6.0?type=pom",
+            "modified": false,
+            "externalReferences": [
+                {
+                    "type": "vcs",
+                    "url": "https://github.com/square/okio/"
                 }
             ],
             "properties": [
@@ -4338,6 +5045,63 @@
                     "url": "https://github.com/remkop/picocli/tree/master"
                 }
             ],
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
+            "bom-ref": "pkg:maven/io.micrometer/context-propagation@1.2.1?type=jar",
+            "group": "io.micrometer",
+            "name": "context-propagation",
+            "version": "1.2.1",
+            "description": "A library that assists with context propagation across different types of context mechanisms such as ThreadLocal, Reactor Context etc.",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "1e6bffb919609d309626ad653b00e287"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "8951419f78e7bc7e0db246cd9d987d254b014e29"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "5b69e2100640879ccf4b20673ced86de560b8e217b55542f85a53d3563b72aaa"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "372ce3a235fb92bfc5993c621644fa0678accddd0b14c51c05834d1d6538d174f35abc0234c760fee728313d85593f12032fc6f208c47e65ade6d6f886812158"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "f658fe5608b456dac01a28666530e55f0fb0fdcab87eb16f50e3f645505f4231f03ec7f18c26ebadc5f4ed8b97b46e3e"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "bb986fa3082570f167c1f292c85bba80fac9809f85b091c6af52026bf6038b5319265a7c37fb90b0d80ac22611a59513"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "43ab14fd64bd5995eb46fc405769263d674aff07823e8e32e9e78c2b29a9b1c3"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "4a441d207151015671419ac9345d0e7fdc2f321a2fe51fdedd45a2ec9747e47953a53005a95489f4bca88c8ef6ad8ffe93f12854a2b18ba2fcafc77f7ce230c6"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/io.micrometer/context-propagation@1.2.1?type=jar",
+            "modified": false,
             "properties": [
                 {
                     "name": "cdx:maven:package:test",
@@ -6031,6 +6795,122 @@
         },
         {
             "type": "library",
+            "bom-ref": "pkg:maven/io.swagger.core.v3/swagger-annotations-jakarta@2.2.38?type=jar",
+            "group": "io.swagger.core.v3",
+            "name": "swagger-annotations-jakarta",
+            "version": "2.2.38",
+            "description": "swagger-annotations-jakarta",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "81b609b4755d237e297f38c7fbe03482"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "7628340f67c58a7ba9eb965a5b3f8f1d06f9df30"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "cf15aa4ab7e8c747d7b3d979660a49320ea56c0dc88b7021e48cc909c13b997b"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "6d8406a9c30ce06507dabe0bd957571fe3424b367cfa818cff7f21c452b51e6bed696ec74a0c1d8fa79b416414c86b3729f9b2fd718b502095df5bc7c66c4cd4"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "1b6e02586ad6bc64600771fb348e22f77091f8e23dca7c4656b6a741b6532acfeb9a1be082373f4e0ae2b7185045d98b"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "241ba5b00f9470fdd5d3f526fea0ded099bbb4b61929dfe882ff256cebcec04e1e669a03758ae12483d95bad2e3be053"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "3d8714b0f6da1d46adde8d4a5d3434ea58b8d24dc555d069a67792b0dc02658d"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "5384d0d10870ec4df6e2f063625be2b253b7d3cae34c72bd1afdcc5474c69994b2c1c0084fd632103a2f81291ac0a6f1e79a3baec7d3fde65fdddbfa0bb57528"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0",
+                        "url": "https://www.apache.org/licenses/LICENSE-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/io.swagger.core.v3/swagger-annotations-jakarta@2.2.38?type=jar",
+            "modified": false,
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
+            "bom-ref": "pkg:maven/io.swagger.core.v3/swagger-annotations@2.2.31?type=jar",
+            "group": "io.swagger.core.v3",
+            "name": "swagger-annotations",
+            "version": "2.2.31",
+            "description": "swagger-annotations",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "54855a704f7b72f2689c47ec16139036"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "6f9ffc1fbfce9d1d37420eef795821353a77b6af"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "8cb2155211480e5fbd24388a6dc81baeea6dd50f8fcc6504cf4f39e4e3acf96c"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "950abb3943cc5207824e167bf6e71205115773b84522d35c5da9e349d6ba107b20fc98e4ae13894567bdbee36e887c5877cc74619399fbcbb127a1e65ed6ec7f"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "f18208a2d651b1df4cc5bd8dea67e840b356ab27358f7c4dbeda7198cb8194887ab140e1bb5fe4876cc4973cd3dc6d0b"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "f439c6372820f560b65cf78a6db84b88bd70539afc88e27de505912dea9a6fdaab01dfdaf80c1502e620a4a3efe0d3ff"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "0427bf0a353002343c447d802a3e4a4154f7e2362eb630e30c371d97a0e854d4"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "c2882076cf214d15bc7d730c0393a298842f815b65ce37824d30089224f0a43b9cee002830b6831bc327484df28e12dc4c10e7ba5d8166941e8e8cc934005134"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0",
+                        "url": "https://www.apache.org/licenses/LICENSE-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/io.swagger.core.v3/swagger-annotations@2.2.31?type=jar",
+            "modified": false,
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
             "bom-ref": "pkg:maven/jakarta.activation/jakarta.activation-api@2.1.4?type=jar",
             "group": "jakarta.activation",
             "name": "jakarta.activation-api",
@@ -7136,6 +8016,127 @@
         },
         {
             "type": "library",
+            "bom-ref": "pkg:maven/org.antlr/ST4@4.3.4?type=jar",
+            "group": "org.antlr",
+            "name": "ST4",
+            "version": "4.3.4",
+            "description": "StringTemplate is a java template engine for generating source code, web pages, emails, or any other formatted text output. StringTemplate is particularly good at multi-targeted code generators, multiple site skins, and internationalization/localization. It evolved over years of effort developing jGuru.com. StringTemplate also powers the ANTLR 3 and 4 code generator. Its distinguishing characteristic is that unlike other engines, it strictly enforces model-view separation. Strict separation makes websites and code generators more flexible and maintainable; it also provides an excellent defense against malicious template authors.",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "a6de791d02497d94d2f53047c8db6e1c"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "bf68d049dd4e6e104055a79ac3bf9e6307d29258"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "f927ac384c46d749f8b5ec68972a53aed21e00313509299616edb73bfa15ff33"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "ec40080db7c7612ed04f3ff5faa6f2a38304f252d2e246c026fc76b47e03f83427f71aef9dc7cb131b3451e31b68bcd7e597f7b929504186428f517274401199"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "0ba5c388705713c8b87d616416e20175916dffc332f645f4f23bc24b50d21e1111813de7c029421d916fa6057d8b28ac"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "8de5be57b8a149afeb2db13c7ac1c5d4223471cb85e7210fdbf06ea754c7d3321b97a32ab4c0e8465ddbce6dfcb6d75b"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "9b1a9b33d836b7ff89d5eeae381bda73efa342d1fd5a3e107ca2d4d4af6c5165"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "4a0c087514432b884f7f3b00602fa6436bfe5702f9ce7372f5c8a601ef6d22b67df5ba8258272b532e70895ec5fb78ab3190616133ad68ebf5b8d6157010c4b2"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "BSD-4-Clause"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/org.antlr/ST4@4.3.4?type=jar",
+            "modified": false,
+            "externalReferences": [
+                {
+                    "type": "vcs",
+                    "url": "https://github.com/antlr/stringtemplate4/tree/master"
+                }
+            ],
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
+            "bom-ref": "pkg:maven/org.antlr/antlr-runtime@3.5.3?type=jar",
+            "group": "org.antlr",
+            "name": "antlr-runtime",
+            "version": "3.5.3",
+            "description": "A framework for constructing recognizers, compilers, and translators from grammatical descriptions containing Java, C#, C++, or Python actions.",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "0b5c0ce1bb9c8190e2e60401fc439daa"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "9011fb189c5ed6d99e5f3322514848d1ec1e1416"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "68bf9f5a33dfcb34033495c587e6236bef4e37aa6612919f5b1e843b90669fb9"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "7714970915d7187d7abb32610b3764305e67798d8289f8a59461ebb3bf7f26a09b933279de1cf95c14bbb60f213bf3f1af6aa8f20e75b26768223883a6883aaa"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "e2c7c6211b673413739f34a28420af990809a4ed3ef4832d12ce3910c409be42adfbf0a90b949b17f88aaf8980dd124e"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "08924b6c5772c6d588b4bf3a026c79d4cd69b19f460758e94169a72a210efe9da2d8684ea0c029008d028a8a5414cc9f"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "86a8aa88ee5c27c2f90600c9cbedece6a3ac6b8e7762543299e6af7f64729121"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "ef4d5408027ccf3db7ac34065d610d978b59ef759964301103c720a7d6d97d832aa46554ef4e8e70b469d132e870627bd050e7bd165b2385ddc98bd621b3059c"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "name": "BSD licence",
+                        "url": "http://antlr.org/license.html"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/org.antlr/antlr-runtime@3.5.3?type=jar",
+            "modified": false,
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
             "bom-ref": "pkg:maven/org.antlr/antlr4-runtime@4.13.2?type=jar",
             "group": "org.antlr",
             "name": "antlr4-runtime",
@@ -8224,6 +9225,198 @@
             ],
             "purl": "pkg:maven/org.apache.maven.doxia/doxia-sink-api@1.12.0?type=jar",
             "modified": false,
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
+            "bom-ref": "pkg:maven/org.apache.pdfbox/fontbox@3.0.7?type=jar",
+            "group": "org.apache.pdfbox",
+            "name": "fontbox",
+            "version": "3.0.7",
+            "description": "The Apache FontBox library is an open source Java tool to obtain low level information from font files. FontBox is a subproject of Apache PDFBox.",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "fd7e63f326b2e92ced87c15c854bf820"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "48c70ca4297548041b7e05493a2db4780a037cf1"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "8149d9897ab504f7a3f3797d552cd8925ef58149b4de3fb470eb46d747e68f86"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "4b96f514e32b49e01de11ae8bff095f1053f800f36e44061f64d9afbc837bb875117e2340ca1586afa927ab0c4c67ae157906826b50ed60759521750838f00b1"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "efecda469cf8fe4ee8cdc05d31b3b0c60866f823ffb6cef397ab7d34e8e04d9794a83ea577aaf9293c463e536253db2d"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "2bbfdb3d0a62a1cfe58b53912c66afaa37623446363488b7ea82b2e4096dd4bb1a353d865aba6d81bbcd6a71c36c097e"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "e0b367ae4c69b35a344880bb3024fff7e3187e85d6da476a03b0812e5c4581b6"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "c205c93c314ced55b5c4ec9c15ce580618f854a5837ce09801485b873ca78c2fa2ff27f811b6895027f8fb62bbf12c99d49c7e9d474f9f74330ad09358f104b7"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0",
+                        "url": "https://www.apache.org/licenses/LICENSE-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/org.apache.pdfbox/fontbox@3.0.7?type=jar",
+            "modified": false,
+            "externalReferences": [
+                {
+                    "type": "vcs",
+                    "url": "https://svn.apache.org/viewvc/pdfbox/tags/3.0.7/fontbox"
+                }
+            ],
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
+            "bom-ref": "pkg:maven/org.apache.pdfbox/pdfbox-io@3.0.7?type=jar",
+            "group": "org.apache.pdfbox",
+            "name": "pdfbox-io",
+            "version": "3.0.7",
+            "description": "The Apache PDFBox library is an open source Java tool for working with PDF documents. This artefact contains IO related classes.",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "ce78b0210c28f580cbc0550673deace3"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "9ca53467e2ae49a669034c0ac377992dc26e8c20"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "b9a838291978069086efbcd1f62b81b9e4a6016e61dd2c68104ee9f4c2ff997b"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "e720d6c685cc87acb5f70e86fc425ca63a324ab4e9c0400790e4d84e385ee1b89f3d1769ccab4d1ad6705418103f68a66290b7c0be62269fb8058c2ad6cf5c9c"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "9321c186d4f0df47e116ecd51def40c49870012de5af4386e1940525eb7e5cfd24b7de634d9742b1e13ecdf70e9c167d"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "61f9414d955862e0f91ea2c1a2f04b034a5bbc15e6177d8e7bfe776e2a51f631cdb41da6889b3ae5d337bbe5876948d1"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "4ed590da377bab6c71ba39056e4a04861e6ae01990bb9c25c3ec3ad0a37f9a40"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "e36e634e56e66343db8bb62cbd6ab2568c5e19abe83e26152be2eb77249b15afd5ab6f750532d8587a33ff57afacda196bb62c0a4ed592d88e240bf259a8cd1b"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0",
+                        "url": "https://www.apache.org/licenses/LICENSE-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/org.apache.pdfbox/pdfbox-io@3.0.7?type=jar",
+            "modified": false,
+            "externalReferences": [
+                {
+                    "type": "vcs",
+                    "url": "https://svn.apache.org/viewvc/pdfbox/tags/3.0.7/io"
+                }
+            ],
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
+            "bom-ref": "pkg:maven/org.apache.pdfbox/pdfbox@3.0.7?type=jar",
+            "group": "org.apache.pdfbox",
+            "name": "pdfbox",
+            "version": "3.0.7",
+            "description": "The Apache PDFBox library is an open source Java tool for working with PDF documents.",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "adeb0637e9451d49e610ee3bc16781cd"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "ecfc1bbfa656d3e330b8cc9e6996a18cde1c9bd0"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "7cefa717622330951b4343abf1e5d36bccb11f4ba245d78aaa73251d08fec623"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "318f95178539beeaa15c7e1eba9e5634d731a0a4e62eba1e2ebfb79c07c1551b66622353946777869c3b843e2ac5c387b906b4b3a98e16e7b9176bc7fae6c6d7"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "434b441750a787f8505b0028b6628e29e20fc55436a6b55c2b32868f6dd02bbf150332c5c72c912421556eb1964b3695"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "1c48124b8670350b5e00f6f31ba28faba43fd58fd4ea12d65c71f0b04282bffd99df7a309e4daaaf88596c952add30cc"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "c1f8aa6f2e6962e4e59c8165206fd09540a2f7eef6b8e17d03d51570d1b5c9b7"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "53df73a2a025150e688be28859a719d4ccb122f577b69bb5bbdd6bc464da5e3d4cd91437bbae0474f4e199ea4106ac2844e52a3a24c0e530b22be58dae376068"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0",
+                        "url": "https://www.apache.org/licenses/LICENSE-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/org.apache.pdfbox/pdfbox@3.0.7?type=jar",
+            "modified": false,
+            "externalReferences": [
+                {
+                    "type": "vcs",
+                    "url": "https://svn.apache.org/viewvc/pdfbox/tags/3.0.7/pdfbox"
+                }
+            ],
             "properties": [
                 {
                     "name": "cdx:maven:package:test",
@@ -11462,6 +12655,359 @@
         },
         {
             "type": "library",
+            "bom-ref": "pkg:maven/org.jetbrains.kotlin/kotlin-reflect@2.3.21?type=jar",
+            "group": "org.jetbrains.kotlin",
+            "name": "kotlin-reflect",
+            "version": "2.3.21",
+            "description": "Kotlin Full Reflection Library",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "b2240004c8dce1522cf4c6a4309b1242"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "6acc55c52691ce3fd41b20a0472f3513106521a5"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "33e37d9dfa86c7a29ab34e975b5f4a1287b458878611051f3485652220c1a2cb"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "8251a4c44d9deec972a70bca2a9037401f0d1357c48507894f5ae834b61707237fa8ee75e8fd05be83404dc9796daa58ff2a8bc2ad3e4f51603f353ce75b56ec"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "76a6de60658b746f4d19bb7df26a95f073a52f3e3250d4b9617b1fd2231c988fcb2f12ecd15ec67227d88d1db9e0852d"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "6bc4635da2733132f56a1739a83af6a736ad14e3e373e2c9b38d6b6140efc35b615f228bc3acea5ba86c53992ef00553"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "9c222b21d8e8908451806f24c9bcec114f17a8ae9928e3c7d09d62bfe8bc8198"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "368329599ba0da17c953dfded9af388f067879077db3a7459f702db8f0450413d05840a775a8a9668caa2c3505a0384c6abda65a112429b9809c8c3eed92245e"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0",
+                        "url": "https://www.apache.org/licenses/LICENSE-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/org.jetbrains.kotlin/kotlin-reflect@2.3.21?type=jar",
+            "modified": false,
+            "externalReferences": [
+                {
+                    "type": "vcs",
+                    "url": "https://github.com/JetBrains/kotlin"
+                }
+            ],
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
+            "bom-ref": "pkg:maven/org.jetbrains.kotlin/kotlin-stdlib-common@2.3.21?type=pom",
+            "group": "org.jetbrains.kotlin",
+            "name": "kotlin-stdlib-common",
+            "version": "2.3.21",
+            "description": "Kotlin Common Standard Library (legacy, use kotlin-stdlib instead)",
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0",
+                        "url": "https://www.apache.org/licenses/LICENSE-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/org.jetbrains.kotlin/kotlin-stdlib-common@2.3.21?type=pom",
+            "modified": false,
+            "externalReferences": [
+                {
+                    "type": "vcs",
+                    "url": "https://github.com/JetBrains/kotlin"
+                }
+            ],
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
+            "bom-ref": "pkg:maven/org.jetbrains.kotlin/kotlin-stdlib-jdk7@2.3.21?type=jar",
+            "group": "org.jetbrains.kotlin",
+            "name": "kotlin-stdlib-jdk7",
+            "version": "2.3.21",
+            "description": "Kotlin Standard Library JDK 7 extension",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "c8321fd156f98a611412bebde941725f"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "fc813375d768ec8d2557b27a73a9878955024a23"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "e2243abac2bed6e0b47be18b2b7fe1c1b4cf6a431480353dcd49d1ed35f31199"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "1b52586b89918d6f2641a0c144d6ddab896478cb42ae99f000e89150664898a54419b7ad1885c2d2bcafbc2f15ee355b578948293d3dc79c33a732396fb3cd14"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "b64ee5ea59bfe169e8a8541aa57ea3694ba8d3a33bbd4c8099adc7084a0985cb0e7772719387c1d99466aabcb8339cfc"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "61229bf02abbea3548d29f5a4a1fc3ae281da335fcc2f2c723a7bb5d33a3b082711e9606ab9e414b9270e36609506331"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "2f6d090740e09ec2b9612a6eb019517703db282bc7ff5a1bbb242881da7adf65"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "bf842c0d0e0d807c1bb24b6d876c0096c05da3008feafe6d29ed5e5ddb2000695df8e4da910c35803c2ff9a1e0c4dae903fc7ed4ef1b93bd1da5401c0de2df02"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0",
+                        "url": "https://www.apache.org/licenses/LICENSE-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/org.jetbrains.kotlin/kotlin-stdlib-jdk7@2.3.21?type=jar",
+            "modified": false,
+            "externalReferences": [
+                {
+                    "type": "vcs",
+                    "url": "https://github.com/JetBrains/kotlin"
+                }
+            ],
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
+            "bom-ref": "pkg:maven/org.jetbrains.kotlin/kotlin-stdlib-jdk8@2.3.21?type=jar",
+            "group": "org.jetbrains.kotlin",
+            "name": "kotlin-stdlib-jdk8",
+            "version": "2.3.21",
+            "description": "Kotlin Standard Library JDK 8 extension",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "e3e5f3427854ef8bf72a3ecc0d789ec3"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "82bd61b853e2e3dbb2124b2adc693d9c16557bed"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "63091929246beba86b5fb2b020a6f5d06e01693a960b58a59959c8713667991c"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "86e8e8771509f59e375644ee81950a916a0f465db9e575484bc9f2877cbe9979e300882d1bc8162f9b63972bc25e3487dcf9dfb0d7110da2a690032e2568fd59"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "8824f75d71c8e1e0f5b593ad4acb8fde8e74fd25e96206a8b5d69e0a0b461c4225311c401227832a9ba3592795cd2494"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "66fa753b1ac8f7982c2d678eaae720f44f7aaf07891a9ecd2a42a28495c11da9ab1ad6953f6d173a1beab59b276c24ee"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "94aba75127798d5a70ef293fe7338007fe6a868980cc0a14de65ec40f3755fc8"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "b94f570893ae7720306f08405e4efe424e74f87283742464e1078b8cf2ad492832da3af18c05e1c35f674a1245609a4ba8b324f9a71ee09af45ed52ec2ce5df2"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0",
+                        "url": "https://www.apache.org/licenses/LICENSE-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/org.jetbrains.kotlin/kotlin-stdlib-jdk8@2.3.21?type=jar",
+            "modified": false,
+            "externalReferences": [
+                {
+                    "type": "vcs",
+                    "url": "https://github.com/JetBrains/kotlin"
+                }
+            ],
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
+            "bom-ref": "pkg:maven/org.jetbrains.kotlin/kotlin-stdlib@2.3.21?type=jar",
+            "group": "org.jetbrains.kotlin",
+            "name": "kotlin-stdlib",
+            "version": "2.3.21",
+            "description": "Kotlin Standard Library",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "67d962e3bcffbbb88f84b4d49e47fc56"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "a2ee2c4e220fee522f0451b723bab2a43f3481a7"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "6f64eac736db9434dd6925b4a518b9d1d17177652320c37916cf9ba3ce7d7d7a"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "5564b17f006a9fdf93c93439b357e1fb82742c72d23b7aaa2e50d6db730d0b40426257e4e40eca7c70f9d514367b0057e51b84e1d0e49817002bc463939fee59"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "f035eb7c781464e1355ee0b82e73eb7eabce67c37f469b35573c3047e46198904498110a05b4e207c78fb7766cf3524a"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "3fbc298ec3e9f816a889f69fa9fb95599866993059d16fdd108241ae70d70f0960fa2901081d0ebbb9a091c9964559c9"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "ac878d6d6b3394c66b0f5082d965649c243633d4fd8ba6a0926da346e3e23f0b"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "95fa621de32a1cf23c9aad2a872afada708a8feb8c554cc37c2730fe43c64a324ffb9262f62782bbb9558f7c1c22abec2ce26379f9b798b328f13f46fdc9eff1"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0",
+                        "url": "https://www.apache.org/licenses/LICENSE-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/org.jetbrains.kotlin/kotlin-stdlib@2.3.21?type=jar",
+            "modified": false,
+            "externalReferences": [
+                {
+                    "type": "vcs",
+                    "url": "https://github.com/JetBrains/kotlin"
+                }
+            ],
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
+            "bom-ref": "pkg:maven/org.jetbrains/annotations@13.0?type=jar",
+            "group": "org.jetbrains",
+            "name": "annotations",
+            "version": "13.0",
+            "description": "A set of annotations used for code inspection support and code documentation.",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "f4fb462172517b46b6cd90003508515a"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "919f0dfe192fb4e063e7dacadee7f8bb9a2672a9"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "ace2a10dc8e2d5fd34925ecac03e4988b2c0f851650c94b8cef49ba1bd111478"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "5622d0ffe410e7272e2bb9fae1006caedeb86d0c62d2d9f3929a3b3cdcdef1963218fcf0cede82e95ef9f4da3ed4a173fa055ee6e4038886376181e0423e02ff"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "6bcde3a6e471d416522e6288474bc4f9115e2e8abf8ce5d300829bee4aa98dff73be7d8c6f0607f3d6d423c7f5abbf90"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "f4d5a5d5a76b24c4751c8c52f2879b097d2430c3571c59b4630e8c871c9bdb08e24e803a14c24fc8d3378417f29b7244"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "b4a80ea81c4bc7e364e07981465f547e8ed83031806eaf3b97dfb38f894f5b6f"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "15b23bce818b4399b334dd632eb85de5a1b70c47fb9260561e70b1f726211c83bddbc957f3b4c32a1d8c687f9bc6c38d0a638c731cb5daf5b619aa725d6050c2"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/org.jetbrains/annotations@13.0?type=jar",
+            "modified": false,
+            "externalReferences": [
+                {
+                    "type": "distribution",
+                    "url": "http://oss.sonatype.org/service/local/staging/deploy/maven2/"
+                },
+                {
+                    "type": "vcs",
+                    "url": "https://github.com/JetBrains/intellij-community"
+                }
+            ],
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
             "bom-ref": "pkg:maven/org.jetbrains/annotations@17.0.0?type=jar",
             "group": "org.jetbrains",
             "name": "annotations",
@@ -13933,6 +15479,1060 @@
         },
         {
             "type": "library",
+            "bom-ref": "pkg:maven/org.springframework.ai/spring-ai-autoconfigure-model-chat-client@2.0.0?type=jar",
+            "publisher": "Broadcom Inc.",
+            "group": "org.springframework.ai",
+            "name": "spring-ai-autoconfigure-model-chat-client",
+            "version": "2.0.0",
+            "description": "Spring AI Chat Client Auto Configuration",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "79c83c387c563da3bf04f99bb32fb0aa"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "d226aa6952da16100f99d4bd5018f81224f1645f"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "e56a8fff6562a547d235d4632b1eee3401f83b5273a735319b25369173569a16"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "e31a364ac41fa6c4d2cc0dba29193e71bda265ab74c3a77c241b736e7563c7c8f7bc18e60808eca68c3f96df1d94ba0bd6c5421f0de28c5b463b92423846a948"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "1fb71b99675982159c000f6d6fd90a7e6dccc4af13c179da110e30386e35ff3880b1f6922b1f334830d971eed2881554"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "b20c75293fde9057a582e8a40b2fec11233dfed365abdfdad5526a697f915b0eb682bfc33b255e07bcf4baade870cda0"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "62d45060a97cb689c73a02902f199c1af6e157f83b07e0db1f555d901acb3502"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "3c9731919f288f7861a35e9c23f39a08afb9e9c297449068beb944ee5bdfd72c52d651afe235edf6dad271995c1647f04f54371ff954e8003f2db1a8fbc6187f"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/org.springframework.ai/spring-ai-autoconfigure-model-chat-client@2.0.0?type=jar",
+            "modified": false,
+            "externalReferences": [
+                {
+                    "type": "website",
+                    "url": "https://spring.io"
+                },
+                {
+                    "type": "vcs",
+                    "url": "https://github.com/spring-projects/spring-ai/auto-configurations/models/chat/client/spring-ai-autoconfigure-model-chat-client"
+                }
+            ],
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
+            "bom-ref": "pkg:maven/org.springframework.ai/spring-ai-autoconfigure-model-chat-memory@2.0.0?type=jar",
+            "publisher": "Broadcom Inc.",
+            "group": "org.springframework.ai",
+            "name": "spring-ai-autoconfigure-model-chat-memory",
+            "version": "2.0.0",
+            "description": "Spring AI Chat Memory Auto Configuration",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "e4f5810bb26e057c4a10c87addc03a3c"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "89bb220f25a70daefe393f3207a2ec7fa39f76d6"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "2de75403f93bb4aa1c9e5ac0973b5b87dd857f70a976bc7da40b374e4f0f3db4"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "9830238af9be01be5b8a8becc40ada8fa525ce1b76a732bb37204153340beaf9de276075a7fabe97abb9bdab63e67ee5045ad09bb2442330e6bf8e795b127338"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "718d9093980046d6e89c6453a3c72090e774cfe3923d854f9a294034ace53e74693036847e22c41965bbb1da8c9320a7"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "593e8b7fb6c48784bc8f4e7c8c99b1bfbebe434b4c6ac32c6a3730ccd6b59ee9651d587629eed3cded46bda2cc86e035"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "983aea47e400aa2350dc6dc1bf05935078dfbbe0eb4362e479d7e9ce59e6b162"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "800cb6efe8c570b4a87b43401de3053b50f8b99cd13e62749ea842dbbd3abed19b1e1f3d464777dab2d1d57ef135cd78517aafe20f6c71db869870c792df4f05"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/org.springframework.ai/spring-ai-autoconfigure-model-chat-memory@2.0.0?type=jar",
+            "modified": false,
+            "externalReferences": [
+                {
+                    "type": "website",
+                    "url": "https://spring.io"
+                },
+                {
+                    "type": "vcs",
+                    "url": "https://github.com/spring-projects/spring-ai/auto-configurations/models/chat/memory/spring-ai-autoconfigure-model-chat-memory"
+                }
+            ],
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
+            "bom-ref": "pkg:maven/org.springframework.ai/spring-ai-autoconfigure-model-chat-observation@2.0.0?type=jar",
+            "publisher": "Broadcom Inc.",
+            "group": "org.springframework.ai",
+            "name": "spring-ai-autoconfigure-model-chat-observation",
+            "version": "2.0.0",
+            "description": "Spring AI Chat Observation Auto Configuration",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "656a62dd4dcd5325c2b6095d1b020b2b"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "559be3a554f09527eb9143c9893a77835d5927d9"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "a680460253cb3641cab8ad7dea8316f9dc37b752a41818e4f30d4bd917c39b88"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "fd924bf11af2455fb839d0a06d0be9716ecb3e33ef49335a9552fab27099b353f45d6624560ac23b7a550833f72185293702cf8c27b9ce9968a1aec874ce4fcc"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "2a01a49e0617ebe0a98e55f7b0000e45195259c4925c46dc7eeca476994d28f8f4ae7742a34f6e7d6087174b873a520b"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "895f06b0fccc557ccd93d0e741d1f97ca8f7a0331a0ba4d1556cd001a04ef3bf62bfe2e04c8f4bc89675460353106ef5"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "07034c9354a90b3bb49a76b53c1a86d5a43dda45a3e3e96b7a2dc87ef8ee313f"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "12d20a89eed31181ba8c80c690ae0083e0c83bf08d7d0288a079c9dabe75c496f5216172cf4e83ce31023ac61b778cab16bd65cdd44efc3b2dbe0544be96670f"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/org.springframework.ai/spring-ai-autoconfigure-model-chat-observation@2.0.0?type=jar",
+            "modified": false,
+            "externalReferences": [
+                {
+                    "type": "website",
+                    "url": "https://spring.io"
+                },
+                {
+                    "type": "vcs",
+                    "url": "https://github.com/spring-projects/spring-ai/auto-configurations/models/chat/observation/spring-ai-autoconfigure-model-chat-observation"
+                }
+            ],
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
+            "bom-ref": "pkg:maven/org.springframework.ai/spring-ai-autoconfigure-model-embedding-observation@2.0.0?type=jar",
+            "publisher": "Broadcom Inc.",
+            "group": "org.springframework.ai",
+            "name": "spring-ai-autoconfigure-model-embedding-observation",
+            "version": "2.0.0",
+            "description": "Spring AI Embedding Observation Auto Configuration",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "d2ed261c218d62e670fe4e3126bfd4fe"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "7df6d6c8a1adfd314836f0c5872f847bfd6dbc82"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "5756e52f2619a2ae7ee2a856492eef0b1efdad023716cb4818da405f88ba8263"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "ad98cd5775e7f356c78f8329f826d738c09b48541b7eaf3115fa0e758a4ebbee669fa97710575242ad32293cc343dd57d2a24269d204838fcbedd80027794b00"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "cef697a8aab2bb1799e7896950233c702d8cdc3e53e465275294fe9d2a3f6bb6d3446344ac5cfb4e0642fe928e6e06d0"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "cbc205018f1e9fa617c53f769489943a8a05a3866a5a135e26e4455627282b450827172783c920c4effa2c8d89812858"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "b704dbdca315d8484f1f5773cd8d6576d34b65ceb29979fc68a22296d3e44d52"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "68fd0953d1180dca1e4280aba6aad1420842e4946b2c1cdda6d1b3fc90b2064d8b90b672e778231ad13ba7e8bb2583e271b8f52ddd2816eab2e8d6a431063e72"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/org.springframework.ai/spring-ai-autoconfigure-model-embedding-observation@2.0.0?type=jar",
+            "modified": false,
+            "externalReferences": [
+                {
+                    "type": "website",
+                    "url": "https://spring.io"
+                },
+                {
+                    "type": "vcs",
+                    "url": "https://github.com/spring-projects/spring-ai/auto-configurations/models/embedding/observation/spring-ai-autoconfigure-model-embedding-observation"
+                }
+            ],
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
+            "bom-ref": "pkg:maven/org.springframework.ai/spring-ai-autoconfigure-model-image-observation@2.0.0?type=jar",
+            "publisher": "Broadcom Inc.",
+            "group": "org.springframework.ai",
+            "name": "spring-ai-autoconfigure-model-image-observation",
+            "version": "2.0.0",
+            "description": "Spring AI Image Observation Auto Configuration",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "5852cb3e1903981bc44421e08fb70aaf"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "240c5b8c7752144e6494cc794eb34ace1cacee9b"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "8930214762c64288a96a2e0d87e3fea094da89f9c9606130403f5b965b875c09"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "2ec08db8611717a9e6ae31605d0f95cac4f8d173d3b6c5c80148499539fbb325fde8bcb8977355c3551319d31d2c4b48cc39481459d766920454080385eb2a80"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "e84e1ed9ecdd43ebeab86b7db06eb0d6406c2c8bdfcbcec749bafb6b91836b4caae2bfb30faf970fd01f45f48c45bc43"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "1841d9b036fd5a76d6b312c739e6c7f2dd735b70286908a612e5de0fa2e00df6cb51f465c164fb4379b12fb648be32a2"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "4d9109c8aeb01d8826381175f9f78e9136f0305244c2cd6bff472b506f4194b3"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "ddb3c2d4b288057c5e2114889b34d102f686dac0cf9e95dca1801ada3f371d318783ec2f5eb016c415cd6782ce57589245c187ddeceb33ce61dc26a0fc72c206"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/org.springframework.ai/spring-ai-autoconfigure-model-image-observation@2.0.0?type=jar",
+            "modified": false,
+            "externalReferences": [
+                {
+                    "type": "website",
+                    "url": "https://spring.io"
+                },
+                {
+                    "type": "vcs",
+                    "url": "https://github.com/spring-projects/spring-ai/auto-configurations/models/image/observation/spring-ai-autoconfigure-model-image-observation"
+                }
+            ],
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
+            "bom-ref": "pkg:maven/org.springframework.ai/spring-ai-autoconfigure-model-openai@2.0.0?type=jar",
+            "publisher": "Broadcom Inc.",
+            "group": "org.springframework.ai",
+            "name": "spring-ai-autoconfigure-model-openai",
+            "version": "2.0.0",
+            "description": "Spring AI OpenAI Auto Configuration",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "fb459f2814b1656d4c71884255d0b35b"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "a16ed2ab87a1da2bc130f3487962d5903d699f0e"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "84ed3a2c3e185c20a3c9c688e46eaf638b64319474f83db38ad6a738b0f3e28a"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "4229fa47ece8a98a55e94a16b6df102acb9046e4facdedddc1ab7990ed14a321c96a48150196277d80419787eefc7496fd387f8c3f50a103c06199791dedac50"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "3ef3cfde06e43783546b8e3ce7c9ffad14e8515c1ef5b23b97576d281f369903725fd0698c0db345a22ac37ed74120c5"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "3554a6c3f961fef4cf056a41b6ba3f131a3a6ad4ada9bef000f7954cd50fbfcebc4d45cebc4cd2dce128912ece0384de"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "d47d295aa4823df2af0b1b828f98f4fce50dd9b577827e8e5aec10c0f70491e8"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "a407ab78d6c8a17c041909c0f38c319afe7719b04c1e14386a224c8d3962929a990f5fc1db541ecfc56d892458756a16162e5e35e1cdb125a9dc4a2f15b3054b"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/org.springframework.ai/spring-ai-autoconfigure-model-openai@2.0.0?type=jar",
+            "modified": false,
+            "externalReferences": [
+                {
+                    "type": "website",
+                    "url": "https://spring.io"
+                },
+                {
+                    "type": "vcs",
+                    "url": "https://github.com/spring-projects/spring-ai/auto-configurations/models/spring-ai-autoconfigure-model-openai"
+                }
+            ],
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
+            "bom-ref": "pkg:maven/org.springframework.ai/spring-ai-autoconfigure-model-tool@2.0.0?type=jar",
+            "publisher": "Broadcom Inc.",
+            "group": "org.springframework.ai",
+            "name": "spring-ai-autoconfigure-model-tool",
+            "version": "2.0.0",
+            "description": "Spring AI Chat Model Auto Configuration",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "e5e36977ae10d644759403c5fa60358b"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "4e4bedb19a8257c606cc658ca0c3a65885ebb504"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "f3e2b5b7031561c7c43aba04309bceec6c3135df031e9c8bfa615530d906f438"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "d7d05c29e491bd824031598f9e8e55b980c11ffa96a9d57d6746b8bd0da9c75c00ddcc305ff17e7060475a132e36bdf0ae47ee2a791ae0d6d0035e4a38bc16ed"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "8a92fbaaf27403da496433a01e65f780fd5cc06de82253a4104ede6e8ef7786ae2a5916ca27ae86536701167bbed417d"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "3a5553feaac6e5a5dd9e9d6967346ef8210f064f4e27f364298464c83b98d5b6ca48dfd5e7ce97bedbd72daf07f86c50"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "77fcf7c2a65571b6a541e5e1f6348144cbc7b2edb46b032927b48ac65cb0b306"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "2e9e5ebedbb1454e4df7716366edfea1ec343f4ded70303d2c9a49220f3f7902f43772023b36badace1d61a7429ad76554f2dcb1f683b285ae81636c83cbced3"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/org.springframework.ai/spring-ai-autoconfigure-model-tool@2.0.0?type=jar",
+            "modified": false,
+            "externalReferences": [
+                {
+                    "type": "website",
+                    "url": "https://spring.io"
+                },
+                {
+                    "type": "vcs",
+                    "url": "https://github.com/spring-projects/spring-ai/auto-configurations/models/tool/spring-ai-autoconfigure-model-tool"
+                }
+            ],
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
+            "bom-ref": "pkg:maven/org.springframework.ai/spring-ai-autoconfigure-retry@2.0.0?type=jar",
+            "publisher": "Broadcom Inc.",
+            "group": "org.springframework.ai",
+            "name": "spring-ai-autoconfigure-retry",
+            "version": "2.0.0",
+            "description": "Spring AI Retry Auto Configuration",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "8e380711fcc311f6a96dc5657cc92f2d"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "2c8cf36453cb2e0a35817d27e4b91de31c749efb"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "db45cb020eec94d7025a2da17e76c1545c1810427706477cc0ec5d2467717230"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "72d7b71605b4e37bb8d84015a3aa459a28a5ce5baab08bbb4b61660e08eea590217e923a70664eb0083563368f7dd4cf9c2c464110c857280164a207799973c2"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "0c061129c2459323072d2f91df39792ea94e88edf8748f023020498e4e20fddddc1e32cabe1b26408eba57b9f840c27b"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "d2994bb72bf4b339924cde9dc6bb88ff0fab54ba6a54c21dcdd0cc609aaf29eaed8e5092b09311b5f614a3e264a46aa3"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "121e8e7856a1f03c435621c1e6782e82455ad348c4b97610d9ee4cda741b7172"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "496bcc69ff0a9d18d8e06ac2355ab0813bb416357d261214e8e5f500bf46096455e9f01516566428bcb656c41865cb5f4d7df5a1760babfff6e1d4c658a1ac14"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/org.springframework.ai/spring-ai-autoconfigure-retry@2.0.0?type=jar",
+            "modified": false,
+            "externalReferences": [
+                {
+                    "type": "website",
+                    "url": "https://spring.io"
+                },
+                {
+                    "type": "vcs",
+                    "url": "https://github.com/spring-projects/spring-ai/auto-configurations/common/spring-ai-autoconfigure-retry"
+                }
+            ],
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
+            "bom-ref": "pkg:maven/org.springframework.ai/spring-ai-bom@2.0.0?type=pom",
+            "publisher": "Broadcom Inc.",
+            "group": "org.springframework.ai",
+            "name": "spring-ai-bom",
+            "version": "2.0.0",
+            "description": "Bill of Materials POM (BOM) for the Spring AI modules",
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/org.springframework.ai/spring-ai-bom@2.0.0?type=pom",
+            "modified": false,
+            "externalReferences": [
+                {
+                    "type": "website",
+                    "url": "https://spring.io"
+                },
+                {
+                    "type": "vcs",
+                    "url": "https://github.com/spring-projects/spring-ai"
+                }
+            ],
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
+            "bom-ref": "pkg:maven/org.springframework.ai/spring-ai-client-chat@2.0.0?type=jar",
+            "publisher": "Broadcom Inc.",
+            "group": "org.springframework.ai",
+            "name": "spring-ai-client-chat",
+            "version": "2.0.0",
+            "description": "Spring AI Chat Client AI programming",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "e5a286fe4a14559a4710438b778f1778"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "044fc7a2cbad63f2ed933b87a4193520adda82e8"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "cb0e199611d1397eec67f8992c0b16a626d316547cf709d483a90d73fc47aeba"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "58ed8eae122f1c22ecf5ee1130ad8b9463c685667bdbb0b197a2cf3fc6fd3113bec08f69e1f70c1ab8c66b736f19ec4d3704ff8d5bb05c790eddfda130554b60"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "d98ff8b57bb42b604d250fa1a878cdc28630054fe95cc68bad69fe653ae6936dddfc6c08ce1f27ee8d752c227bb7cf22"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "31ae74a65e862bf5b4d4ec2d769e76084eacd25f7807d42fb860b5b5ee60b446f4edf2aa123ff9f87e5c3e55e850b72e"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "5d3f00a2b329338edcce16d57beb3eda16049bc7a2fc26d401cb5d8ad75da5b4"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "d384a81bc62d21be84b0439bfe70690055d6020244daf250f4ec0373d9ee9918f79c8204def8d6cb6328a2a21c5ec4a54edcea67b1e92a8ee5c252abaec9738f"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/org.springframework.ai/spring-ai-client-chat@2.0.0?type=jar",
+            "modified": false,
+            "externalReferences": [
+                {
+                    "type": "website",
+                    "url": "https://spring.io"
+                },
+                {
+                    "type": "vcs",
+                    "url": "https://github.com/spring-projects/spring-ai/spring-ai-client-chat"
+                }
+            ],
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
+            "bom-ref": "pkg:maven/org.springframework.ai/spring-ai-commons@2.0.0?type=jar",
+            "publisher": "Broadcom Inc.",
+            "group": "org.springframework.ai",
+            "name": "spring-ai-commons",
+            "version": "2.0.0",
+            "description": "Common classes used across Spring AI",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "097f84fe32dd43f2afa411c12aabcd7b"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "2b586eae199352f3d92fe365612ee503e9f3b4cf"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "ebf49507c65302069abfa425ed573ef944f3a937b8afa20c6ffa2700f80f39fc"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "264b5e2ba0087d12af878f22dc8c5410fe6955f34c0572ef219d1999fd03305ea5d6a20eb77a55d3d549f10e3a48559fb7053809d18930312d0b8c299bb3c7ed"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "236aab0ad5a52938640ac0259a230cebc0d1f63b2984c03df47c138f27a31d64c6d5cc29bb759e5f06d2e1d2885ba30e"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "f990e00dba464780ee2ec8973dac15a1d832401edc2d74521a34e8f652150e853d7f090ad4db0d0579659b999e9b1771"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "4a7ef6a9ffdbbe9dfdca401013d686291177dcb0fc98f0c506cd9169da3a15c5"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "b3dbc3a04f6f0acd8ca969ae319ad6880bba4d221e9af4bc442b615d235a7d7a9b8dd3325b07fed747928f76afc090dfa58bae3f05b624b15975ea8b437c54e4"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/org.springframework.ai/spring-ai-commons@2.0.0?type=jar",
+            "modified": false,
+            "externalReferences": [
+                {
+                    "type": "website",
+                    "url": "https://spring.io"
+                },
+                {
+                    "type": "vcs",
+                    "url": "https://github.com/spring-projects/spring-ai/spring-ai-commons"
+                }
+            ],
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
+            "bom-ref": "pkg:maven/org.springframework.ai/spring-ai-model@2.0.0?type=jar",
+            "publisher": "Broadcom Inc.",
+            "group": "org.springframework.ai",
+            "name": "spring-ai-model",
+            "version": "2.0.0",
+            "description": "Core model interfaces and classes for Spring AI",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "93572b3a17a0c71b835e7fe688dbaf96"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "08bbf944ff0acc37f5d3d3546fef7d590c6a1681"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "23d91239aa950445d25e269faaed53facf66ff48dcba5284659e59ca62e5e9dc"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "2c87de978881dd58c8477b643c3a5f5807f62d838be2c03f5d06b33489c6e87635402cb5305134ae92a9e6fda6e3cb7fe50d2e0093ffe15b4c4a56ca9e692fd9"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "a3417219c82f99c9f63d192f0ef26e24e54940405d22bf25d19c588de16e20e1e75ab520b5713be97d1bdf374450f7c7"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "75338f7c6dcf1ab7171f38d3b2821c0b4b887740b5cb6ec7d9e7d5e672d53ac9651ef775ad67ace320510242257e7f7e"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "2a6a78ddba04e280e036f1793cdeb6956b1fa2148d6ba7080488f8c603d7efb1"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "4e6e98c6ce2d432828dc965ce6b3331f50267e3f6082b3adb729c9d10b21fd6b9e5bb6311dd92bf095a0fb98d7959d710efd0a1c032eda9578a9f7b3c008b4aa"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/org.springframework.ai/spring-ai-model@2.0.0?type=jar",
+            "modified": false,
+            "externalReferences": [
+                {
+                    "type": "website",
+                    "url": "https://spring.io"
+                },
+                {
+                    "type": "vcs",
+                    "url": "https://github.com/spring-projects/spring-ai/spring-ai-model"
+                }
+            ],
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
+            "bom-ref": "pkg:maven/org.springframework.ai/spring-ai-openai@2.0.0?type=jar",
+            "publisher": "Broadcom Inc.",
+            "group": "org.springframework.ai",
+            "name": "spring-ai-openai",
+            "version": "2.0.0",
+            "description": "OpenAI models support",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "0488666f7d5927ce7b2031a5e6487885"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "052a4e301cb48beffe7543f196ad4380ab217b87"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "0e69bc974e79c86d4291533e5d4e789e89711159a199d10991715514d5abe57a"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "6d2b1b6716d982572acd8cf7fe4039902b23e8fd3a73427272e6af7ab43d6e3b4e6d7a3aa7dad12cb9b7f1a83f1c18bd3c4ba876dcb2f6d7f6be2e5b81348888"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "a6af9466f43a87f9bbfea132715b27ad82a437bf8b67a088c76fa89b4d863655d8d6bf26dd273f0b3992b739de3ef71f"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "4570c7b2b088168e2500a135675a7b81db74bbbe469ae6d1907fc9e56c562e00a9a50da2d2aee9bf00cfb1939208f1d9"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "0930faf4e5ffce371df14b9ffa6773e33e0d8e49ae0be3f10c211226a4bee385"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "abb7f83ba1b1c09323b53e4cd82a445a7ffbf992470190cb58a563b181f4ae77ef7f6cfce2f28809c2c4c033bbc5a9bf8c699055b57704d99e615986fb3ef064"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/org.springframework.ai/spring-ai-openai@2.0.0?type=jar",
+            "modified": false,
+            "externalReferences": [
+                {
+                    "type": "website",
+                    "url": "https://spring.io"
+                },
+                {
+                    "type": "vcs",
+                    "url": "https://github.com/spring-projects/spring-ai/models/spring-ai-openai"
+                }
+            ],
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
+            "bom-ref": "pkg:maven/org.springframework.ai/spring-ai-pdf-document-reader@2.0.0?type=jar",
+            "publisher": "Broadcom Inc.",
+            "group": "org.springframework.ai",
+            "name": "spring-ai-pdf-document-reader",
+            "version": "2.0.0",
+            "description": "Spring AI PDF document reader",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "ec3ccf4cd4b4a773fd144120c1805ac1"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "667ab81422b5b8d0764666fd5770e0525f6e8e88"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "06cac99dd3f5007b1309febcbac1d6692e903bc1c2e79b91ff47eda3fbdf3faa"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "d8c0124e6c0a71d0293c4881aa0f4279820969c24fb97862407773005ee5dc5f1c9cf5f7521e8bdd486054e64634f06694c5977a5596674ceb7f6a498e28d8bd"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "e0e22186eaf10ab67a4aa9ca4acc85050a825116f3f139d041e115f9dadeffc40c9b1af172aff737c25a51628d8cac9e"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "ed9a07a6d10aa7a712bc99e59109381ede6b4bd024f8c650fac52b694ca9ff823b5da4da641cb19f9cb7cd7f6d7a3f9c"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "0cace37dc8904d99c047e7fb77ac757af59bc6eaba8706cb1fe8a0d4ce9210f2"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "1af5898c9b1f5da676cc26de0455ba6ad752568d122f74a8fd07bdb49f00df36d2ac7a2eccde3df030f5395aace91245c9d552aee51a8e3b89a1e6fd2d18f494"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/org.springframework.ai/spring-ai-pdf-document-reader@2.0.0?type=jar",
+            "modified": false,
+            "externalReferences": [
+                {
+                    "type": "website",
+                    "url": "https://spring.io"
+                },
+                {
+                    "type": "vcs",
+                    "url": "https://github.com/spring-projects/spring-ai/document-readers/spring-ai-pdf-document-reader"
+                }
+            ],
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
+            "bom-ref": "pkg:maven/org.springframework.ai/spring-ai-starter-model-openai@2.0.0?type=jar",
+            "publisher": "Broadcom Inc.",
+            "group": "org.springframework.ai",
+            "name": "spring-ai-starter-model-openai",
+            "version": "2.0.0",
+            "description": "Spring AI Open AI Spring Boot Starter",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "652fd0d4facb1fdf629a3d0f3cc84aff"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "dcaa64f61c376ebc34ed6580cc6d78110a4d7206"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "06aded6b2490c0ddf45cbc383bbd011c454ed3a6ed3e5b8feeea3a66a8538a1e"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "37de7ef4f712dd317afdb5924b77d4c6c71067d5ff2421532127461e27c52fbe3005c5b6b449e542d203ddf84fc651ae1652b1c70b76ca9fc95bb368536a2ed9"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "b2b130575dd85354e108a164a42dd0cf1db07ad7c274a77d94f7fd865d4c455ec52205fe171956bf7ff2a1b848ec5b9f"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "4bb6a0a4458f889657ee6b6627ce4e57f0b7aca3ffb46cb4a7e9e7852aabf1149e14da17dfb38bf68ebfb754d212595c"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "bb7d6527843cba4201b8f37bcde2046e4023429671d3e370efc92e0d5a459dfd"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "ef63b7a481128eb94abfd88ead6acf82a25fcfbe7a2b0972beb66603877a95e61d665ce04cd5824651d68608668f5c4bf262973e0d13b577d6ea843f86f3594a"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/org.springframework.ai/spring-ai-starter-model-openai@2.0.0?type=jar",
+            "modified": false,
+            "externalReferences": [
+                {
+                    "type": "website",
+                    "url": "https://spring.io"
+                },
+                {
+                    "type": "vcs",
+                    "url": "https://github.com/spring-projects/spring-ai/starters/spring-ai-starter-model-openai"
+                }
+            ],
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
+            "bom-ref": "pkg:maven/org.springframework.ai/spring-ai-template-st@2.0.0?type=jar",
+            "publisher": "Broadcom Inc.",
+            "group": "org.springframework.ai",
+            "name": "spring-ai-template-st",
+            "version": "2.0.0",
+            "description": "StringTemplate implementation for Spring AI templating",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "22d35c9ace483fe3a33079c6f026ce12"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "dfaea894eafbbbd15074d8ef182b779f58386a24"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "65704f0a2b0f808420b8c4a0fb36760eaa514a55fd143ddfa2086d0bccbc94da"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "7c028401aa99272b9fd520c54100f562e1614a4f795e96ee2a48ce200cb6ef238bb1e881ba559d6e3bf7945fac4e1f1e38f6084295539bff568557306066068d"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "6f2cf0ce7169da0e532d75982271516aa0170db34d5cb47dfaa0f62f3759415b3d98fde30f9330766b8bf1e0a5e5b126"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "f84f2e8e95b492f99f06e5203788a0b7cc25fd9de371d46bbf540683feea506998ae91f26073f1df116fcaeb99e3ec72"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "ebfc06f887e49e2a68a458ba4705375865f7dfcecd8b82d506dca550351b0b7e"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "6baad2d4ec9b5c5b323c6611cda6cbb5a9e46247ed41672b4cdf0bb9b0c6848f2310a598ba68af2d9943b682f5a54d933d11ff4745b1a1cf10c8574e28af613b"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/org.springframework.ai/spring-ai-template-st@2.0.0?type=jar",
+            "modified": false,
+            "externalReferences": [
+                {
+                    "type": "website",
+                    "url": "https://spring.io"
+                },
+                {
+                    "type": "vcs",
+                    "url": "https://github.com/spring-projects/spring-ai/spring-ai-template-st"
+                }
+            ],
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
             "bom-ref": "pkg:maven/org.springframework.boot/spring-boot-actuator-autoconfigure@4.1.0?type=jar",
             "publisher": "VMware, Inc.",
             "group": "org.springframework.boot",
@@ -14485,6 +17085,78 @@
                 }
             ],
             "purl": "pkg:maven/org.springframework.boot/spring-boot-hibernate@4.1.0?type=jar",
+            "modified": false,
+            "externalReferences": [
+                {
+                    "type": "website",
+                    "url": "https://spring.io"
+                },
+                {
+                    "type": "issue-tracker",
+                    "url": "https://github.com/spring-projects/spring-boot/issues"
+                },
+                {
+                    "type": "vcs",
+                    "url": "https://github.com/spring-projects/spring-boot"
+                }
+            ],
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
+            "bom-ref": "pkg:maven/org.springframework.boot/spring-boot-http-client@4.1.0?type=jar",
+            "publisher": "VMware, Inc.",
+            "group": "org.springframework.boot",
+            "name": "spring-boot-http-client",
+            "version": "4.1.0",
+            "description": "Spring Boot HTTP Client",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "3353c13b06633ec6fbd2f322aefe5d6e"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "eb43e8087894445e5e84174c910fbf41453c9f66"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "898e8f4d7e11331d472fe4d07aeb04b505e98027ef794c24c0ef39549c2da6fe"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "480a452cc55f073bdae9910daf3f4cd7d1cdb70f344cd9cd24e5136f07c3c40fc962803331436931d0dbccf73324602565946babeb1b8d3e6c4b05246848759f"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "f8f1d50ef925a5d7ab6aae5f86f4f4a941f6373fbb15f1156460376577c99e0ba0493a855d9e546c9e22057e13397084"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "55a83fef4c529caaafa76ad530c3ac65e5ebefd261cb28d92420e269ed432fc454244f3b54708ace2671052e84609aae"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "5598c1e845e2381c2f823780ed122f219f15e3e33a9426dee8e8e0316b135ea0"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "01e0219e8f7d471cc236a2f09ee5c3ec980bbc8c779a8d5fe25f48954a7140ed7a79d745abe4149f87c24c138c450760e40aab55695ab20fc0ae06bbf4a08e4b"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/org.springframework.boot/spring-boot-http-client@4.1.0?type=jar",
             "modified": false,
             "externalReferences": [
                 {
@@ -15421,6 +18093,78 @@
                 }
             ],
             "purl": "pkg:maven/org.springframework.boot/spring-boot-reactor@4.1.0?type=jar",
+            "modified": false,
+            "externalReferences": [
+                {
+                    "type": "website",
+                    "url": "https://spring.io"
+                },
+                {
+                    "type": "issue-tracker",
+                    "url": "https://github.com/spring-projects/spring-boot/issues"
+                },
+                {
+                    "type": "vcs",
+                    "url": "https://github.com/spring-projects/spring-boot"
+                }
+            ],
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
+            "bom-ref": "pkg:maven/org.springframework.boot/spring-boot-restclient@4.1.0?type=jar",
+            "publisher": "VMware, Inc.",
+            "group": "org.springframework.boot",
+            "name": "spring-boot-restclient",
+            "version": "4.1.0",
+            "description": "Spring Boot RestClient and RestTemplate",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "0878d81d3d36d6f305c19c8790fcd9f7"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "d3f9fadf2847b18b7a5438d7737be3b041fe168e"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "18e89dc45eab8268b03d6a9f9a2152cb12eee3343ff6c1f2e8f3a38873a77553"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "afddbbf1d38a18dabeb491dcdd64ccc94671a25cad5ef4cb43c179b86a3bf8fa4a8e8d5c891db0bd42e89567b79f7faae46051f5ee502bd9ded78fe7f5536eb9"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "36269be19c5ef136e1150048210e4b8de668492b5a8dceca652e065b09916d43b1b939511a430d37bf39056fd831ed07"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "071769d77e1ba412c570586b69992c9d7ef881d437379425dd88528f71ef8664e4fc71dbb1dba7639e19e3adf243fb2b"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "caee35b7b0bcb4b43c72188cd3ce35f87f67d09d506cce15e5cbe8121bcb663b"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "64fc0f7f47799be9fabcb75b02c9e5088909b5e11ec09ec182a1b076ad1fdf64b0fbcdcecb1ba4ab7d288f4118286d0215aa62088669f7b7e51bcca4e7e01ec1"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/org.springframework.boot/spring-boot-restclient@4.1.0?type=jar",
             "modified": false,
             "externalReferences": [
                 {
@@ -16597,6 +19341,78 @@
         },
         {
             "type": "library",
+            "bom-ref": "pkg:maven/org.springframework.boot/spring-boot-starter-restclient@4.1.0?type=jar",
+            "publisher": "VMware, Inc.",
+            "group": "org.springframework.boot",
+            "name": "spring-boot-starter-restclient",
+            "version": "4.1.0",
+            "description": "Starter using Spring's blocking HTTP clients (RestClient, RestTemplate and HTTP Service Clients)",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "df6d8bc5fe7d9227f61585ca8673d01d"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "2f23541ef00728c2406ba0714ee09d5ea63624c0"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "428661363c181ffdae59520bed77b80106de6a1fdd5e6902512a01e2fb09631b"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "f5cbaa479840d7d406ca1dae56f8020e8abd85e2471df638b74ded40f3ebc95482b8f1874f9d48b7dc5430da72b7ec2b4ca4be78d0a1a9b4c0a205afe2bdc2e6"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "2597a17740189012f771e2e884c64ea3807789356717f184bdf327a3763f1a25aca7208018316802690348af2eb99022"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "6594ffe8d0a3752b3092dac537ef2e0751fd6f4c9ac905663df9c0317d055cbcffafafb8f01973ba085ba98dc5f147d5"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "2194862c57c0319603e492cfaad414017dc9da44358fb6c9863ad815a8d2e5fc"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "7d9a78f5b71e9576e47937476a597cc0e988c663df567ab0a40d458052d5eba77180e39390dd2efe3074c1c8566a876c86db942071b4576136631c7f6688610f"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/org.springframework.boot/spring-boot-starter-restclient@4.1.0?type=jar",
+            "modified": false,
+            "externalReferences": [
+                {
+                    "type": "website",
+                    "url": "https://spring.io"
+                },
+                {
+                    "type": "issue-tracker",
+                    "url": "https://github.com/spring-projects/spring-boot/issues"
+                },
+                {
+                    "type": "vcs",
+                    "url": "https://github.com/spring-projects/spring-boot"
+                }
+            ],
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
             "bom-ref": "pkg:maven/org.springframework.boot/spring-boot-starter-security-oauth2-client@4.1.0?type=jar",
             "publisher": "VMware, Inc.",
             "group": "org.springframework.boot",
@@ -17149,6 +19965,78 @@
                 }
             ],
             "purl": "pkg:maven/org.springframework.boot/spring-boot-starter-validation@4.1.0?type=jar",
+            "modified": false,
+            "externalReferences": [
+                {
+                    "type": "website",
+                    "url": "https://spring.io"
+                },
+                {
+                    "type": "issue-tracker",
+                    "url": "https://github.com/spring-projects/spring-boot/issues"
+                },
+                {
+                    "type": "vcs",
+                    "url": "https://github.com/spring-projects/spring-boot"
+                }
+            ],
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
+            "bom-ref": "pkg:maven/org.springframework.boot/spring-boot-starter-webclient@4.1.0?type=jar",
+            "publisher": "VMware, Inc.",
+            "group": "org.springframework.boot",
+            "name": "spring-boot-starter-webclient",
+            "version": "4.1.0",
+            "description": "Starter using Spring's reactive HTTP clients (WebClient and HTTP Service Clients)",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "6a45824a1c9bd14a81705c1782a3336d"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "256c4bc3fda202a967a349562bcb501062ec67e9"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "60684bf7cdbbbe21fa6760d8e3da42bcff4c6c0b5ba7ce91c468a395cc2c333c"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "e73904de46e35b94fee02a0eb45a20bd64fa45a144fbce870688a06b1c789275bdd4a0059dcefc7dff925555c6f85588e0f9658c0d82e3fca420004bffc53912"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "d75f18baba35da36288d85df7fb7a185d51341f457fa8025f4bf8d3b218278a866dc7060708d6368ac60734a10122e75"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "95b641aab5b608bca0dc2ec44f60100563fc5c6b0316bba9a6b953e44513c32e2439dd1b19a2dce883ec1b972d9b212d"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "0e112cd2c5b3f1a2212912dd8e949dae7950d8e076fc8e381322684c0171ce19"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "9b12224a1784b7387750c5f93e108642fc6a81bd7efe0de800720d440176dde77de2059c066f566cf2a53a76d3576d71b375a72d3881853e00b7590b214d6d10"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/org.springframework.boot/spring-boot-starter-webclient@4.1.0?type=jar",
             "modified": false,
             "externalReferences": [
                 {
@@ -17941,6 +20829,78 @@
                 }
             ],
             "purl": "pkg:maven/org.springframework.boot/spring-boot-web-server@4.1.0?type=jar",
+            "modified": false,
+            "externalReferences": [
+                {
+                    "type": "website",
+                    "url": "https://spring.io"
+                },
+                {
+                    "type": "issue-tracker",
+                    "url": "https://github.com/spring-projects/spring-boot/issues"
+                },
+                {
+                    "type": "vcs",
+                    "url": "https://github.com/spring-projects/spring-boot"
+                }
+            ],
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
+            "bom-ref": "pkg:maven/org.springframework.boot/spring-boot-webclient@4.1.0?type=jar",
+            "publisher": "VMware, Inc.",
+            "group": "org.springframework.boot",
+            "name": "spring-boot-webclient",
+            "version": "4.1.0",
+            "description": "Spring Boot WebClient",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "27a16f4bfb7f45916d83ce8b0f3c6486"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "1b2410d96fb0dc6d2032ed077f3a2bfa2e652210"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "129f8959054552cc59878ca78b447a11c4702575242781da52f6c6c9e962a77d"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "26ed43bbe6399303f941216f86f30246f544bb4f4fcfa1738d6030a7959d6bda017b8438b9027ea939d425016fc2d3ceac75590dab892cb59a1add28ce8336f2"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "2cdd5ce1eb60be6f16dc07d512d5f2653b2320722d3cc8409758c1badf9f52ec6d48a652bdd1844e5848c7b37b7aa058"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "fad3b5fbcc7a899fcc23a9a3ac311119f7a7db2d989fda4ed5dda3b3e0fb78481d1a8250987090cabe80929c61d41087"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "168e7cd6db85e09082dab27e3062fefd2c664e3e4cc02dcd02adf4a68d56eb05"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "bf39c67bf96c74071671990ad12aa484c60a8fcb2751fd7ec6b0a375dff890358af216b5ee737dbe479321db71009effefa6142fedf4c70a22339ccf859581bd"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/org.springframework.boot/spring-boot-webclient@4.1.0?type=jar",
             "modified": false,
             "externalReferences": [
                 {
@@ -19529,6 +22489,78 @@
         },
         {
             "type": "library",
+            "bom-ref": "pkg:maven/org.springframework/spring-messaging@7.0.8?type=jar",
+            "publisher": "Spring IO",
+            "group": "org.springframework",
+            "name": "spring-messaging",
+            "version": "7.0.8",
+            "description": "Spring Messaging",
+            "hashes": [
+                {
+                    "alg": "MD5",
+                    "content": "afa1d7aa1c701b171f4e066016b13202"
+                },
+                {
+                    "alg": "SHA-1",
+                    "content": "2379224f4c36aeaeceb706750138b8ca9d265916"
+                },
+                {
+                    "alg": "SHA-256",
+                    "content": "0f96694ebb88fed6bf4aef608010c23ee922a476dd71e0fab76ca9ed0eaa70b0"
+                },
+                {
+                    "alg": "SHA-512",
+                    "content": "83bf70d03617fb516ee3fa1987ef2debfce4f84724c6bc810716a51c1244bad43164af423bf4596b26671bccfdae3c04a53d5d0739905fe29730cf814c4d3218"
+                },
+                {
+                    "alg": "SHA-384",
+                    "content": "c39b2e9e2cc6f5d0fe4665a3360483176cc6625f6937094e2ac05a96f30386067bfc2cfcfcdef2281b7f64ac7507d3bc"
+                },
+                {
+                    "alg": "SHA3-384",
+                    "content": "f5f8c0f64ae092c047b0472a948d078b563aa43f9a7eb2f88467f0360a5b835187e561fd05a45c5c42e9953bbec72507"
+                },
+                {
+                    "alg": "SHA3-256",
+                    "content": "25759480204e50f65f1e48a97d974f7d4fc8b8dc9e8c29dd7cd032b7527d5289"
+                },
+                {
+                    "alg": "SHA3-512",
+                    "content": "ec418fbcac3614d059687cd4e14b06024a092e3838f53f915b1eef6ca2efd84b79d8e922378288be95f5117c432dfe68a7a56a7a16c48d6810617186593d9314"
+                }
+            ],
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0"
+                    }
+                }
+            ],
+            "purl": "pkg:maven/org.springframework/spring-messaging@7.0.8?type=jar",
+            "modified": false,
+            "externalReferences": [
+                {
+                    "type": "website",
+                    "url": "https://spring.io/projects/spring-framework"
+                },
+                {
+                    "type": "issue-tracker",
+                    "url": "https://github.com/spring-projects/spring-framework/issues"
+                },
+                {
+                    "type": "vcs",
+                    "url": "https://github.com/spring-projects/spring-framework"
+                }
+            ],
+            "properties": [
+                {
+                    "name": "cdx:maven:package:test",
+                    "value": "false"
+                }
+            ]
+        },
+        {
+            "type": "library",
             "bom-ref": "pkg:maven/org.springframework/spring-orm@7.0.8?type=jar",
             "publisher": "Spring IO",
             "group": "org.springframework",
@@ -21003,6 +24035,12 @@
             ]
         },
         {
+            "ref": "pkg:maven/com.ethlo.time/itu@1.14.0?type=jar",
+            "dependsOn": [
+                
+            ]
+        },
+        {
             "ref": "pkg:maven/com.fasterxml.jackson.core/jackson-annotations@2.21?type=jar",
             "dependsOn": [
                 
@@ -21085,6 +24123,15 @@
             ]
         },
         {
+            "ref": "pkg:maven/com.fasterxml.jackson.module/jackson-module-kotlin@2.21.4?type=jar",
+            "dependsOn": [
+                "pkg:maven/com.fasterxml.jackson.core/jackson-annotations@2.21?type=jar",
+                "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.21.4?type=jar",
+                "pkg:maven/com.fasterxml.jackson/jackson-bom@2.21.4?type=pom",
+                "pkg:maven/org.jetbrains.kotlin/kotlin-reflect@2.3.21?type=jar"
+            ]
+        },
+        {
             "ref": "pkg:maven/com.fasterxml.jackson/jackson-bom@2.21.4?type=pom",
             "dependsOn": [
                 
@@ -21146,6 +24193,27 @@
             ]
         },
         {
+            "ref": "pkg:maven/com.github.victools/jsonschema-generator@5.0.0?type=jar",
+            "dependsOn": [
+                "pkg:maven/com.fasterxml/classmate@1.7.3?type=jar",
+                "pkg:maven/org.slf4j/slf4j-api@2.0.18?type=jar",
+                "pkg:maven/tools.jackson.core/jackson-core@3.1.4?type=jar",
+                "pkg:maven/tools.jackson.core/jackson-databind@3.1.4?type=jar"
+            ]
+        },
+        {
+            "ref": "pkg:maven/com.github.victools/jsonschema-module-jackson@5.0.0?type=jar",
+            "dependsOn": [
+                "pkg:maven/org.slf4j/slf4j-api@2.0.18?type=jar"
+            ]
+        },
+        {
+            "ref": "pkg:maven/com.github.victools/jsonschema-module-swagger-2@5.0.0?type=jar",
+            "dependsOn": [
+                "pkg:maven/org.slf4j/slf4j-api@2.0.18?type=jar"
+            ]
+        },
+        {
             "ref": "pkg:maven/com.google.code.findbugs/jsr305@3.0.2?type=jar",
             "dependsOn": [
                 
@@ -21155,6 +24223,12 @@
             "ref": "pkg:maven/com.google.code.gson/gson@2.13.2?type=jar",
             "dependsOn": [
                 "pkg:maven/com.google.errorprone/error_prone_annotations@2.41.0?type=jar"
+            ]
+        },
+        {
+            "ref": "pkg:maven/com.google.errorprone/error_prone_annotations@2.33.0?type=jar",
+            "dependsOn": [
+                
             ]
         },
         {
@@ -21375,6 +24449,20 @@
             ]
         },
         {
+            "ref": "pkg:maven/com.knuddels/jtokkit@1.1.0?type=jar",
+            "dependsOn": [
+                
+            ]
+        },
+        {
+            "ref": "pkg:maven/com.networknt/json-schema-validator@3.0.1?type=jar",
+            "dependsOn": [
+                "pkg:maven/com.ethlo.time/itu@1.14.0?type=jar",
+                "pkg:maven/org.slf4j/slf4j-api@2.0.18?type=jar",
+                "pkg:maven/tools.jackson.core/jackson-databind@3.1.4?type=jar"
+            ]
+        },
+        {
             "ref": "pkg:maven/com.nimbusds/content-type@2.3?type=jar",
             "dependsOn": [
                 
@@ -21403,6 +24491,24 @@
             ]
         },
         {
+            "ref": "pkg:maven/com.openai/openai-java-core@4.39.1?type=jar",
+            "dependsOn": [
+                "pkg:maven/com.fasterxml.jackson.core/jackson-annotations@2.21?type=jar",
+                "pkg:maven/com.fasterxml.jackson.core/jackson-core@2.21.4?type=jar",
+                "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.21.4?type=jar",
+                "pkg:maven/com.fasterxml.jackson.datatype/jackson-datatype-jdk8@2.21.4?type=jar",
+                "pkg:maven/com.fasterxml.jackson.datatype/jackson-datatype-jsr310@2.21.4?type=jar",
+                "pkg:maven/com.fasterxml.jackson.module/jackson-module-kotlin@2.21.4?type=jar",
+                "pkg:maven/com.github.victools/jsonschema-generator@5.0.0?type=jar",
+                "pkg:maven/com.github.victools/jsonschema-module-jackson@5.0.0?type=jar",
+                "pkg:maven/com.github.victools/jsonschema-module-swagger-2@5.0.0?type=jar",
+                "pkg:maven/com.google.errorprone/error_prone_annotations@2.33.0?type=jar",
+                "pkg:maven/com.google.errorprone/error_prone_annotations@2.38.0?type=jar",
+                "pkg:maven/io.swagger.core.v3/swagger-annotations@2.2.31?type=jar",
+                "pkg:maven/org.jetbrains.kotlin/kotlin-stdlib-jdk8@2.3.21?type=jar"
+            ]
+        },
+        {
             "ref": "pkg:maven/com.opencsv/opencsv@5.12.0?type=jar",
             "dependsOn": [
                 "pkg:maven/org.apache.commons/commons-collections4@4.5.0?type=jar",
@@ -21422,6 +24528,26 @@
                 "pkg:maven/org.apache.maven.doxia/doxia-module-xdoc@1.12.0?type=jar",
                 "pkg:maven/org.reflections/reflections@0.10.2?type=jar",
                 "pkg:maven/org.slf4j/slf4j-simple@2.0.18?type=jar"
+            ]
+        },
+        {
+            "ref": "pkg:maven/com.squareup.okhttp3/okhttp@4.12.0?type=jar",
+            "dependsOn": [
+                "pkg:maven/com.squareup.okio/okio@3.6.0?type=pom",
+                "pkg:maven/org.jetbrains.kotlin/kotlin-stdlib-jdk8@2.3.21?type=jar"
+            ]
+        },
+        {
+            "ref": "pkg:maven/com.squareup.okio/okio-jvm@3.6.0?type=jar",
+            "dependsOn": [
+                "pkg:maven/org.jetbrains.kotlin/kotlin-stdlib-common@2.3.21?type=pom",
+                "pkg:maven/org.jetbrains.kotlin/kotlin-stdlib-jdk8@2.3.21?type=jar"
+            ]
+        },
+        {
+            "ref": "pkg:maven/com.squareup.okio/okio@3.6.0?type=pom",
+            "dependsOn": [
+                "pkg:maven/com.squareup.okio/okio-jvm@3.6.0?type=jar"
             ]
         },
         {
@@ -21529,6 +24655,9 @@
                 "pkg:maven/org.mockito/mockito-junit-jupiter@5.23.0?type=jar",
                 "pkg:maven/org.postgresql/postgresql@42.7.11?type=jar",
                 "pkg:maven/org.projectlombok/lombok@1.18.46?type=jar",
+                "pkg:maven/org.springframework.ai/spring-ai-bom@2.0.0?type=pom",
+                "pkg:maven/org.springframework.ai/spring-ai-pdf-document-reader@2.0.0?type=jar",
+                "pkg:maven/org.springframework.ai/spring-ai-starter-model-openai@2.0.0?type=jar",
                 "pkg:maven/org.springframework.boot/spring-boot-devtools@4.1.0?type=jar",
                 "pkg:maven/org.springframework.boot/spring-boot-starter-actuator@4.1.0?type=jar",
                 "pkg:maven/org.springframework.boot/spring-boot-starter-data-jpa@4.1.0?type=jar",
@@ -21555,6 +24684,12 @@
             "ref": "pkg:maven/info.picocli/picocli@4.7.7?type=jar",
             "dependsOn": [
                 
+            ]
+        },
+        {
+            "ref": "pkg:maven/io.micrometer/context-propagation@1.2.1?type=jar",
+            "dependsOn": [
+                "pkg:maven/org.jspecify/jspecify@1.0.0?type=jar"
             ]
         },
         {
@@ -21819,6 +24954,18 @@
             ]
         },
         {
+            "ref": "pkg:maven/io.swagger.core.v3/swagger-annotations-jakarta@2.2.38?type=jar",
+            "dependsOn": [
+                
+            ]
+        },
+        {
+            "ref": "pkg:maven/io.swagger.core.v3/swagger-annotations@2.2.31?type=jar",
+            "dependsOn": [
+                
+            ]
+        },
+        {
             "ref": "pkg:maven/jakarta.activation/jakarta.activation-api@2.1.4?type=jar",
             "dependsOn": [
                 
@@ -21912,6 +25059,18 @@
             "ref": "pkg:maven/net.sf.saxon/Saxon-HE@12.9?type=jar",
             "dependsOn": [
                 "pkg:maven/org.xmlresolver/xmlresolver@5.3.3?type=jar"
+            ]
+        },
+        {
+            "ref": "pkg:maven/org.antlr/ST4@4.3.4?type=jar",
+            "dependsOn": [
+                "pkg:maven/org.antlr/antlr-runtime@3.5.3?type=jar"
+            ]
+        },
+        {
+            "ref": "pkg:maven/org.antlr/antlr-runtime@3.5.3?type=jar",
+            "dependsOn": [
+                
             ]
         },
         {
@@ -22046,6 +25205,25 @@
             "ref": "pkg:maven/org.apache.maven.doxia/doxia-sink-api@1.12.0?type=jar",
             "dependsOn": [
                 "pkg:maven/org.apache.maven.doxia/doxia-logging-api@1.12.0?type=jar"
+            ]
+        },
+        {
+            "ref": "pkg:maven/org.apache.pdfbox/fontbox@3.0.7?type=jar",
+            "dependsOn": [
+                "pkg:maven/org.apache.pdfbox/pdfbox-io@3.0.7?type=jar"
+            ]
+        },
+        {
+            "ref": "pkg:maven/org.apache.pdfbox/pdfbox-io@3.0.7?type=jar",
+            "dependsOn": [
+                
+            ]
+        },
+        {
+            "ref": "pkg:maven/org.apache.pdfbox/pdfbox@3.0.7?type=jar",
+            "dependsOn": [
+                "pkg:maven/org.apache.pdfbox/fontbox@3.0.7?type=jar",
+                "pkg:maven/org.apache.pdfbox/pdfbox-io@3.0.7?type=jar"
             ]
         },
         {
@@ -22461,6 +25639,44 @@
             ]
         },
         {
+            "ref": "pkg:maven/org.jetbrains.kotlin/kotlin-reflect@2.3.21?type=jar",
+            "dependsOn": [
+                "pkg:maven/org.jetbrains.kotlin/kotlin-stdlib@2.3.21?type=jar"
+            ]
+        },
+        {
+            "ref": "pkg:maven/org.jetbrains.kotlin/kotlin-stdlib-common@2.3.21?type=pom",
+            "dependsOn": [
+                "pkg:maven/org.jetbrains.kotlin/kotlin-stdlib@2.3.21?type=jar"
+            ]
+        },
+        {
+            "ref": "pkg:maven/org.jetbrains.kotlin/kotlin-stdlib-jdk7@2.3.21?type=jar",
+            "dependsOn": [
+                "pkg:maven/org.jetbrains.kotlin/kotlin-stdlib@2.3.21?type=jar"
+            ]
+        },
+        {
+            "ref": "pkg:maven/org.jetbrains.kotlin/kotlin-stdlib-jdk8@2.3.21?type=jar",
+            "dependsOn": [
+                "pkg:maven/org.jetbrains.kotlin/kotlin-stdlib-jdk7@2.3.21?type=jar",
+                "pkg:maven/org.jetbrains.kotlin/kotlin-stdlib@2.3.21?type=jar"
+            ]
+        },
+        {
+            "ref": "pkg:maven/org.jetbrains.kotlin/kotlin-stdlib@2.3.21?type=jar",
+            "dependsOn": [
+                "pkg:maven/org.jetbrains/annotations@13.0?type=jar",
+                "pkg:maven/org.jetbrains/annotations@17.0.0?type=jar"
+            ]
+        },
+        {
+            "ref": "pkg:maven/org.jetbrains/annotations@13.0?type=jar",
+            "dependsOn": [
+                
+            ]
+        },
+        {
             "ref": "pkg:maven/org.jetbrains/annotations@17.0.0?type=jar",
             "dependsOn": [
                 
@@ -22738,6 +25954,142 @@
             ]
         },
         {
+            "ref": "pkg:maven/org.springframework.ai/spring-ai-autoconfigure-model-chat-client@2.0.0?type=jar",
+            "dependsOn": [
+                
+            ]
+        },
+        {
+            "ref": "pkg:maven/org.springframework.ai/spring-ai-autoconfigure-model-chat-memory@2.0.0?type=jar",
+            "dependsOn": [
+                
+            ]
+        },
+        {
+            "ref": "pkg:maven/org.springframework.ai/spring-ai-autoconfigure-model-chat-observation@2.0.0?type=jar",
+            "dependsOn": [
+                
+            ]
+        },
+        {
+            "ref": "pkg:maven/org.springframework.ai/spring-ai-autoconfigure-model-embedding-observation@2.0.0?type=jar",
+            "dependsOn": [
+                
+            ]
+        },
+        {
+            "ref": "pkg:maven/org.springframework.ai/spring-ai-autoconfigure-model-image-observation@2.0.0?type=jar",
+            "dependsOn": [
+                
+            ]
+        },
+        {
+            "ref": "pkg:maven/org.springframework.ai/spring-ai-autoconfigure-model-openai@2.0.0?type=jar",
+            "dependsOn": [
+                "pkg:maven/org.springframework.ai/spring-ai-autoconfigure-model-chat-observation@2.0.0?type=jar",
+                "pkg:maven/org.springframework.ai/spring-ai-autoconfigure-model-embedding-observation@2.0.0?type=jar",
+                "pkg:maven/org.springframework.ai/spring-ai-autoconfigure-model-image-observation@2.0.0?type=jar",
+                "pkg:maven/org.springframework.ai/spring-ai-autoconfigure-model-tool@2.0.0?type=jar",
+                "pkg:maven/org.springframework.ai/spring-ai-autoconfigure-retry@2.0.0?type=jar"
+            ]
+        },
+        {
+            "ref": "pkg:maven/org.springframework.ai/spring-ai-autoconfigure-model-tool@2.0.0?type=jar",
+            "dependsOn": [
+                
+            ]
+        },
+        {
+            "ref": "pkg:maven/org.springframework.ai/spring-ai-autoconfigure-retry@2.0.0?type=jar",
+            "dependsOn": [
+                
+            ]
+        },
+        {
+            "ref": "pkg:maven/org.springframework.ai/spring-ai-bom@2.0.0?type=pom",
+            "dependsOn": [
+                
+            ]
+        },
+        {
+            "ref": "pkg:maven/org.springframework.ai/spring-ai-client-chat@2.0.0?type=jar",
+            "dependsOn": [
+                "pkg:maven/com.github.victools/jsonschema-generator@5.0.0?type=jar",
+                "pkg:maven/com.github.victools/jsonschema-module-swagger-2@5.0.0?type=jar",
+                "pkg:maven/com.knuddels/jtokkit@1.1.0?type=jar",
+                "pkg:maven/com.networknt/json-schema-validator@3.0.1?type=jar",
+                "pkg:maven/io.projectreactor/reactor-core@3.8.6?type=jar",
+                "pkg:maven/io.swagger.core.v3/swagger-annotations-jakarta@2.2.38?type=jar",
+                "pkg:maven/org.springframework.ai/spring-ai-model@2.0.0?type=jar",
+                "pkg:maven/org.springframework/spring-context@7.0.8?type=jar"
+            ]
+        },
+        {
+            "ref": "pkg:maven/org.springframework.ai/spring-ai-commons@2.0.0?type=jar",
+            "dependsOn": [
+                "pkg:maven/com.knuddels/jtokkit@1.1.0?type=jar",
+                "pkg:maven/io.micrometer/context-propagation@1.2.1?type=jar",
+                "pkg:maven/io.micrometer/micrometer-core@1.17.0?type=jar",
+                "pkg:maven/org.springframework/spring-context@7.0.8?type=jar",
+                "pkg:maven/tools.jackson.core/jackson-databind@3.1.4?type=jar"
+            ]
+        },
+        {
+            "ref": "pkg:maven/org.springframework.ai/spring-ai-model@2.0.0?type=jar",
+            "dependsOn": [
+                "pkg:maven/com.github.victools/jsonschema-generator@5.0.0?type=jar",
+                "pkg:maven/com.github.victools/jsonschema-module-jackson@5.0.0?type=jar",
+                "pkg:maven/com.github.victools/jsonschema-module-swagger-2@5.0.0?type=jar",
+                "pkg:maven/io.micrometer/micrometer-observation@1.17.0?type=jar",
+                "pkg:maven/io.projectreactor/reactor-core@3.8.6?type=jar",
+                "pkg:maven/io.swagger.core.v3/swagger-annotations-jakarta@2.2.38?type=jar",
+                "pkg:maven/org.antlr/antlr4-runtime@4.13.2?type=jar",
+                "pkg:maven/org.springframework.ai/spring-ai-commons@2.0.0?type=jar",
+                "pkg:maven/org.springframework.ai/spring-ai-template-st@2.0.0?type=jar",
+                "pkg:maven/org.springframework/spring-messaging@7.0.8?type=jar",
+                "pkg:maven/tools.jackson.core/jackson-databind@3.1.4?type=jar"
+            ]
+        },
+        {
+            "ref": "pkg:maven/org.springframework.ai/spring-ai-openai@2.0.0?type=jar",
+            "dependsOn": [
+                "pkg:maven/com.openai/openai-java-core@4.39.1?type=jar",
+                "pkg:maven/com.squareup.okhttp3/okhttp@4.12.0?type=jar",
+                "pkg:maven/io.micrometer/context-propagation@1.2.1?type=jar",
+                "pkg:maven/io.micrometer/micrometer-core@1.17.0?type=jar",
+                "pkg:maven/org.springframework.ai/spring-ai-model@2.0.0?type=jar",
+                "pkg:maven/org.springframework/spring-context-support@7.0.8?type=jar"
+            ]
+        },
+        {
+            "ref": "pkg:maven/org.springframework.ai/spring-ai-pdf-document-reader@2.0.0?type=jar",
+            "dependsOn": [
+                "pkg:maven/org.apache.pdfbox/pdfbox@3.0.7?type=jar",
+                "pkg:maven/org.springframework.ai/spring-ai-commons@2.0.0?type=jar"
+            ]
+        },
+        {
+            "ref": "pkg:maven/org.springframework.ai/spring-ai-starter-model-openai@2.0.0?type=jar",
+            "dependsOn": [
+                "pkg:maven/org.jetbrains.kotlin/kotlin-reflect@2.3.21?type=jar",
+                "pkg:maven/org.springframework.ai/spring-ai-autoconfigure-model-chat-client@2.0.0?type=jar",
+                "pkg:maven/org.springframework.ai/spring-ai-autoconfigure-model-chat-memory@2.0.0?type=jar",
+                "pkg:maven/org.springframework.ai/spring-ai-autoconfigure-model-openai@2.0.0?type=jar",
+                "pkg:maven/org.springframework.ai/spring-ai-client-chat@2.0.0?type=jar",
+                "pkg:maven/org.springframework.ai/spring-ai-openai@2.0.0?type=jar",
+                "pkg:maven/org.springframework.boot/spring-boot-starter-restclient@4.1.0?type=jar",
+                "pkg:maven/org.springframework.boot/spring-boot-starter-webclient@4.1.0?type=jar"
+            ]
+        },
+        {
+            "ref": "pkg:maven/org.springframework.ai/spring-ai-template-st@2.0.0?type=jar",
+            "dependsOn": [
+                "pkg:maven/org.antlr/ST4@4.3.4?type=jar",
+                "pkg:maven/org.antlr/antlr4-runtime@4.13.2?type=jar",
+                "pkg:maven/org.springframework.ai/spring-ai-commons@2.0.0?type=jar"
+            ]
+        },
+        {
             "ref": "pkg:maven/org.springframework.boot/spring-boot-actuator-autoconfigure@4.1.0?type=jar",
             "dependsOn": [
                 "pkg:maven/org.springframework.boot/spring-boot-actuator@4.1.0?type=jar",
@@ -22792,6 +26144,14 @@
                 "pkg:maven/org.hibernate.orm/hibernate-core@7.4.1.Final?type=jar",
                 "pkg:maven/org.springframework.boot/spring-boot-jpa@4.1.0?type=jar",
                 "pkg:maven/org.springframework/spring-orm@7.0.8?type=jar"
+            ]
+        },
+        {
+            "ref": "pkg:maven/org.springframework.boot/spring-boot-http-client@4.1.0?type=jar",
+            "dependsOn": [
+                "pkg:maven/org.springframework.boot/spring-boot-http-converter@4.1.0?type=jar",
+                "pkg:maven/org.springframework.boot/spring-boot@4.1.0?type=jar",
+                "pkg:maven/org.springframework/spring-web@7.0.8?type=jar"
             ]
         },
         {
@@ -22892,6 +26252,14 @@
             "ref": "pkg:maven/org.springframework.boot/spring-boot-reactor@4.1.0?type=jar",
             "dependsOn": [
                 "pkg:maven/io.projectreactor/reactor-core@3.8.6?type=jar",
+                "pkg:maven/org.springframework.boot/spring-boot@4.1.0?type=jar"
+            ]
+        },
+        {
+            "ref": "pkg:maven/org.springframework.boot/spring-boot-restclient@4.1.0?type=jar",
+            "dependsOn": [
+                "pkg:maven/org.springframework.boot/spring-boot-http-client@4.1.0?type=jar",
+                "pkg:maven/org.springframework.boot/spring-boot-http-converter@4.1.0?type=jar",
                 "pkg:maven/org.springframework.boot/spring-boot@4.1.0?type=jar"
             ]
         },
@@ -23023,6 +26391,14 @@
             ]
         },
         {
+            "ref": "pkg:maven/org.springframework.boot/spring-boot-starter-restclient@4.1.0?type=jar",
+            "dependsOn": [
+                "pkg:maven/org.springframework.boot/spring-boot-restclient@4.1.0?type=jar",
+                "pkg:maven/org.springframework.boot/spring-boot-starter-jackson@4.1.0?type=jar",
+                "pkg:maven/org.springframework.boot/spring-boot-starter@4.1.0?type=jar"
+            ]
+        },
+        {
             "ref": "pkg:maven/org.springframework.boot/spring-boot-starter-security-oauth2-client@4.1.0?type=jar",
             "dependsOn": [
                 "pkg:maven/org.springframework.boot/spring-boot-security-oauth2-client@4.1.0?type=jar",
@@ -23100,6 +26476,16 @@
             "dependsOn": [
                 "pkg:maven/org.springframework.boot/spring-boot-starter@4.1.0?type=jar",
                 "pkg:maven/org.springframework.boot/spring-boot-validation@4.1.0?type=jar"
+            ]
+        },
+        {
+            "ref": "pkg:maven/org.springframework.boot/spring-boot-starter-webclient@4.1.0?type=jar",
+            "dependsOn": [
+                "pkg:maven/io.projectreactor.netty/reactor-netty-http@1.3.6?type=jar",
+                "pkg:maven/org.springframework.boot/spring-boot-reactor@4.1.0?type=jar",
+                "pkg:maven/org.springframework.boot/spring-boot-starter-jackson@4.1.0?type=jar",
+                "pkg:maven/org.springframework.boot/spring-boot-starter@4.1.0?type=jar",
+                "pkg:maven/org.springframework.boot/spring-boot-webclient@4.1.0?type=jar"
             ]
         },
         {
@@ -23191,6 +26577,15 @@
             "dependsOn": [
                 "pkg:maven/org.springframework.boot/spring-boot@4.1.0?type=jar",
                 "pkg:maven/org.springframework/spring-web@7.0.8?type=jar"
+            ]
+        },
+        {
+            "ref": "pkg:maven/org.springframework.boot/spring-boot-webclient@4.1.0?type=jar",
+            "dependsOn": [
+                "pkg:maven/org.springframework.boot/spring-boot-http-client@4.1.0?type=jar",
+                "pkg:maven/org.springframework.boot/spring-boot-http-codec@4.1.0?type=jar",
+                "pkg:maven/org.springframework.boot/spring-boot@4.1.0?type=jar",
+                "pkg:maven/org.springframework/spring-webflux@7.0.8?type=jar"
             ]
         },
         {
@@ -23382,6 +26777,13 @@
                 "pkg:maven/org.springframework/spring-beans@7.0.8?type=jar",
                 "pkg:maven/org.springframework/spring-core@7.0.8?type=jar",
                 "pkg:maven/org.springframework/spring-tx@7.0.8?type=jar"
+            ]
+        },
+        {
+            "ref": "pkg:maven/org.springframework/spring-messaging@7.0.8?type=jar",
+            "dependsOn": [
+                "pkg:maven/org.springframework/spring-beans@7.0.8?type=jar",
+                "pkg:maven/org.springframework/spring-core@7.0.8?type=jar"
             ]
         },
         {

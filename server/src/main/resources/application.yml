@@ -56,6 +56,14 @@ spring:
             enable: ${MAIL_STARTTLS_ENABLE:false}
             required: ${MAIL_STARTTLS_REQUIRED:false}
 
+  ai:
+    openai:
+      base-url: ${OPENAI_BASE_URL:https://gpu.aet.cit.tum.de/api}
+      api-key: ${OPENAI_API_KEY:**********}
+      chat:
+        model: ${OPENAI_CHAT_MODEL:google/gemma-4-26B-A4B-it}
+        temperature: ${OPENAI_CHAT_TEMPERATURE:1.0}
+
 management:
   endpoints:
     web:
@@ -76,6 +84,8 @@ server:
     context-path: /api
 
 thesis-management:
+  ai:
+    enabled: ${AI_FEATURES_ENABLED:false}
   keycloak:
     host: ${KEYCLOAK_HOST:http://localhost:8181}
     realm-name: ${KEYCLOAK_REALM_NAME:thesis-management}
