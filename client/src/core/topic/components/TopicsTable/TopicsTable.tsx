@@ -1,11 +1,12 @@
 import type { DataTableColumn } from 'mantine-datatable'
 import { DataTable } from 'mantine-datatable'
+import React from 'react'
 import { formatDate } from '@/core/utils/format'
 import { useTopicsContext } from '@/core/topic/providers/TopicsProvider/hooks'
 import type { ITopicOverview } from '@/core/topic/requests/responses/topic'
 import { TopicState } from '@/core/topic/requests/responses/topic'
-import { Link, useNavigate } from 'react-router'
-import { Badge, Box, Center, Stack, Text } from '@mantine/core'
+import { useNavigate } from 'react-router'
+import { Badge, Center, Stack, Text } from '@mantine/core'
 import AvatarUserList from '@/core/components/AvatarUserList/AvatarUserList'
 import ThesisTypeBadge from '@/app/pages/LandingPage/components/ThesisTypBadge/ThesisTypBadge'
 
@@ -35,6 +36,15 @@ const TopicsTable = (props: ITopicOverviewsTableProps) => {
   const navigate = useNavigate()
 
   const { topics, page, setPage, limit, isLoading } = useTopicsContext()
+
+  const openTopic = (topicId: string, openInNewTab: boolean) => {
+    const url = `/topics/${topicId}`
+    if (openInNewTab) {
+      window.open(url, '_blank', 'noopener,noreferrer')
+    } else {
+      void navigate(url)
+    }
+  }
 
   const getTopicColor = (state: TopicState) => {
     switch (state) {
@@ -69,15 +79,6 @@ const TopicsTable = (props: ITopicOverviewsTableProps) => {
       accessor: 'title',
       title: 'Title',
       cellsStyle: () => ({ minWidth: 200 }),
-      render: (record) => (
-        <Box
-          component={Link}
-          to={`/topics/${record.topicId}`}
-          style={{ textDecoration: 'none', color: 'inherit' }}
-        >
-          <Box w={'100%'}>{record.title}</Box>
-        </Box>
-      ),
     },
     types: {
       accessor: 'thesisTypes',
@@ -146,9 +147,17 @@ const TopicsTable = (props: ITopicOverviewsTableProps) => {
       records={topics?.content}
       idAccessor='topicId'
       columns={columns.map((column) => columnConfig[column])}
-      onRowClick={({ record }) => {
-        void navigate(`/topics/${record.topicId}`)
+      onRowClick={({ record, event }) => {
+        openTopic(record.topicId, event.metaKey || event.ctrlKey || event.shiftKey)
       }}
+      customRowAttributes={(record) => ({
+        onAuxClick: (event: React.MouseEvent) => {
+          if (event.button === 1) {
+            event.preventDefault()
+            openTopic(record.topicId, true)
+          }
+        },
+      })}
     />
   )
 }

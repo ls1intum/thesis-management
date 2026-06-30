@@ -35,7 +35,8 @@ type PresentationColumn =
 interface IPresentationsTableProps<T> {
   presentations: T[] | undefined
   theses: IPublishedThesis[]
-  onRowClick?: (presentation: T) => unknown
+  onRowClick?: (presentation: T, event: React.MouseEvent) => unknown
+  customRowAttributes?: (presentation: T, index: number) => Record<string, unknown>
   columns?: PresentationColumn[]
   extraColumns?: Record<PresentationColumn, DataTableColumn<T>>
   pagination?: {
@@ -54,6 +55,7 @@ const PresentationsTable = <T extends IThesisPresentation | IPublishedPresentati
     presentations,
     theses,
     onRowClick,
+    customRowAttributes,
     columns = ['type', 'location', 'streamUrl', 'language', 'scheduledAt'],
     extraColumns,
     pagination,
@@ -253,7 +255,8 @@ const PresentationsTable = <T extends IThesisPresentation | IPublishedPresentati
           onPageChange={pagination.onPageChange}
           idAccessor='presentationId'
           columns={columns.filter((column) => column).map((column) => columnConfig[column])}
-          onRowClick={onRowClick ? ({ record }) => onRowClick(record) : undefined}
+          onRowClick={onRowClick ? ({ record, event }) => onRowClick(record, event) : undefined}
+          customRowAttributes={customRowAttributes}
         />
       ) : (
         <DataTable
