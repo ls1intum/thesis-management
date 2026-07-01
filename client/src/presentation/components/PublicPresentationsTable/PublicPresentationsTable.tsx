@@ -19,15 +19,6 @@ const PublicPresentationsTable = (props: IPublicPresentationsTableProps) => {
 
   const navigate = useNavigate()
 
-  const openPresentation = (presentationId: string, openInNewTab: boolean) => {
-    const url = `/presentations/${presentationId}`
-    if (openInNewTab) {
-      window.open(url, '_blank', 'noopener,noreferrer')
-    } else {
-      void navigate(url)
-    }
-  }
-
   const [presentations, setPresentations] = useState<PaginationResponse<IPublishedPresentation>>()
   const [page, setPage] = useState(0)
   const [version, setVersion] = useState(0)
@@ -74,20 +65,7 @@ const PublicPresentationsTable = (props: IPublicPresentationsTableProps) => {
       }
       presentations={presentations?.content}
       theses={(presentations?.content ?? []).map((row) => row.thesis)}
-      onRowClick={(presentation, event) =>
-        openPresentation(
-          presentation.presentationId,
-          event.metaKey || event.ctrlKey || event.shiftKey,
-        )
-      }
-      customRowAttributes={(presentation) => ({
-        onAuxClick: (event: React.MouseEvent) => {
-          if (event.button === 1) {
-            event.preventDefault()
-            openPresentation(presentation.presentationId, true)
-          }
-        },
-      })}
+      onRowClick={(presentation) => navigate(`/presentations/${presentation.presentationId}`)}
       pagination={{
         totalRecords: presentations?.totalElements ?? 0,
         recordsPerPage: limit,

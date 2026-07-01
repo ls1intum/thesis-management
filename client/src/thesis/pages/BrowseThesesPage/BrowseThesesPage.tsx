@@ -16,7 +16,7 @@ const BrowseThesesPage = () => {
   const managementAccess = useManagementAccess()
 
   return (
-    <ThesesProvider fetchAll={true} limit={20} persistState>
+    <ThesesProvider fetchAll={true} limit={20}>
       <Stack>
         <Group>
           <Title>Browse Theses</Title>
