@@ -46,13 +46,8 @@ const ThesesTable = (props: IThesesTableProps) => {
 
   const navigate = useNavigate()
 
-  const openThesis = (thesisId: string, openInNewTab: boolean) => {
-    const url = `/theses/${thesisId}`
-    if (openInNewTab) {
-      window.open(url, '_blank', 'noopener,noreferrer')
-    } else {
-      void navigate(url)
-    }
+  const onThesisClick = (thesis: IThesisOverview) => {
+    void navigate(`/theses/${thesis.thesisId}`)
   }
 
   const columnConfig: Record<ThesisColumn, DataTableColumn<IThesisOverview>> = {
@@ -160,17 +155,7 @@ const ThesesTable = (props: IThesesTableProps) => {
       records={theses?.content}
       idAccessor='thesisId'
       columns={columns.map((column) => columnConfig[column])}
-      onRowClick={({ record: thesis, event }) => {
-        openThesis(thesis.thesisId, event.metaKey || event.ctrlKey || event.shiftKey)
-      }}
-      customRowAttributes={(record) => ({
-        onAuxClick: (event: React.MouseEvent) => {
-          if (event.button === 1) {
-            event.preventDefault()
-            openThesis(record.thesisId, true)
-          }
-        },
-      })}
+      onRowClick={({ record: thesis }) => onThesisClick(thesis)}
     />
   )
 }

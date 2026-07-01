@@ -40,10 +40,8 @@ const MyTasksSection = () => {
     return null
   }
 
-  const redirectTask = (task: ITask, openInNewTab = false) => {
-    if (openInNewTab) {
-      window.open(task.link, '_blank', 'noopener,noreferrer')
-    } else if (task.link.startsWith('http')) {
+  const redirectTask = (task: ITask) => {
+    if (task.link.startsWith('http')) {
       window.location.replace(task.link)
     } else {
       void navigate(task.link)
@@ -81,17 +79,7 @@ const MyTasksSection = () => {
             ),
           },
         ]}
-        onRowClick={({ record, event }) =>
-          redirectTask(record, event.metaKey || event.ctrlKey || event.shiftKey)
-        }
-        customRowAttributes={(record) => ({
-          onAuxClick: (event: React.MouseEvent) => {
-            if (event.button === 1) {
-              event.preventDefault()
-              redirectTask(record, true)
-            }
-          },
-        })}
+        onRowClick={({ record }) => redirectTask(record)}
       />
     </Stack>
   )
