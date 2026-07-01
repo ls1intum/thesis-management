@@ -13,7 +13,7 @@ plugins {
 }
 
 group = "de.tum.cit.aet.thesis"
-version = "4.11.2"
+version = "4.11.3"
 description = "Thesis Management"
 
 // The explicit Tomcat (11.0.22) and Netty (4.2.13.Final) version overrides that
