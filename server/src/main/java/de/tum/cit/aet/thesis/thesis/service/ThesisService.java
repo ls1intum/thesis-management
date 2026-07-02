@@ -193,7 +193,7 @@ public class ThesisService {
 		Set<ThesisState> statesFilter = states == null || states.length == 0 ? null : new HashSet<>(Arrays.asList(states));
 		Set<String> typesFilter = types == null || types.length == 0 ? null : new HashSet<>(Arrays.asList(types));
 		String supervisorNameFilter = (supervisorName == null || supervisorName.isBlank())
-				? null : supervisorName.trim();
+				? null : supervisorName.trim().toLowerCase();
 
 		Set<UUID> researchGroupIdsFilter = null;
 
