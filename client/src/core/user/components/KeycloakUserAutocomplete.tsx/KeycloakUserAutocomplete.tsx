@@ -18,6 +18,7 @@ interface KeycloakUserAutocompleteProps {
   // responses no longer expose the head's universityId, so callers now often
   // leave this undefined and the "already in a group" hint applies to everyone.
   previousUsername?: string
+  error?: string
 }
 
 const KeycloakUserAutocomplete = ({
@@ -27,6 +28,7 @@ const KeycloakUserAutocomplete = ({
   placeholder = 'Search by name or email...',
   withAsterisk = false,
   previousUsername,
+  error,
 }: KeycloakUserAutocompleteProps) => {
   const [searchKey, setSearchKey] = useState('')
   const [debouncedSearchKey] = useDebouncedValue(searchKey, 300)
@@ -80,6 +82,7 @@ const KeycloakUserAutocomplete = ({
       label={label}
       placeholder={placeholder}
       withAsterisk={withAsterisk}
+      error={error}
       value={searchKey}
       onChange={(val) => {
         setSearchKey(val)
