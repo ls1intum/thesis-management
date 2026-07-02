@@ -21,9 +21,9 @@
     "component": {
       "type": "application",
       "name": "thesis-management",
-      "version": "4.11.3",
-      "purl": "pkg:npm/thesis-management@4.11.3",
-      "bom-ref": "pkg:npm/thesis-management@4.11.3",
+      "version": "4.11.4",
+      "purl": "pkg:npm/thesis-management@4.11.4",
+      "bom-ref": "pkg:npm/thesis-management@4.11.4",
       "authors": [
         {
           "name": "Stephan Krusche"
@@ -28448,7 +28448,7 @@
       ]
     },
     {
-      "ref": "pkg:npm/thesis-management@4.11.3",
+      "ref": "pkg:npm/thesis-management@4.11.4",
       "dependsOn": [
         "pkg:npm/%40eslint-react/eslint-plugin@5.9.2",
         "pkg:npm/%40eslint/js@10.0.1",
