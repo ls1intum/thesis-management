@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useLocation, useNavigate, useParams } from 'react-router'
+import { useNavigate, useParams } from 'react-router'
 import type { IApplication } from '@/core/application/requests/responses/application'
 import { ApplicationState } from '@/core/application/requests/responses/application'
 import { doRequest } from '@/core/requests/request'
@@ -12,7 +12,6 @@ import ApplicationModal from '@/core/application/components/ApplicationModal/App
 
 const ReviewApplicationPage = () => {
   const navigate = useNavigate()
-  const location = useLocation()
   const { applicationId } = useParams<{ applicationId: string }>()
 
   usePageTitle('Review Applications')
@@ -44,13 +43,12 @@ const ReviewApplicationPage = () => {
       limit={10}
       defaultStates={[ApplicationState.NOT_ASSESSED]}
       showOnlyAssignedTopics={true}
-      persistState
     >
       {isSmallScreen && (
         <ApplicationModal
           application={application}
           onClose={() => {
-            void navigate({ pathname: '/applications', search: location.search }, { replace: true })
+            void navigate('/applications', { replace: true })
 
             setApplication(undefined)
           }}
@@ -66,13 +64,9 @@ const ReviewApplicationPage = () => {
             selected={application}
             isSmallScreen={isSmallScreen}
             onSelect={(newApplication) => {
-              void navigate(
-                {
-                  pathname: `/applications/${newApplication.applicationId}`,
-                  search: location.search,
-                },
-                { replace: true },
-              )
+              void navigate(`/applications/${newApplication.applicationId}`, {
+                replace: true,
+              })
 
               setApplication(newApplication)
             }}
@@ -86,10 +80,7 @@ const ReviewApplicationPage = () => {
                 onChange={setApplication}
                 onDelete={() => {
                   setApplication(undefined)
-                  void navigate(
-                    { pathname: '/applications', search: location.search },
-                    { replace: true },
-                  )
+                  void navigate('/applications', { replace: true })
                 }}
               />
             ) : (

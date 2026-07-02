@@ -1,6 +1,5 @@
 import type { PropsWithChildren, ReactNode } from 'react'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { useSearchParams } from 'react-router'
 import { doRequest } from '@/core/requests/request'
 import type { PaginationResponse } from '@/core/requests/responses/pagination'
 import type {
@@ -27,15 +26,7 @@ interface IApplicationsProviderProps {
   showOnlyAssignedTopics?: boolean
   hideIfEmpty?: boolean
   emptyComponent?: ReactNode
-  // When true, the provider reads its initial page/filters/sort from the URL
-  // search params and pushes subsequent changes back to the URL. Only enable on
-  // routes where this provider owns the URL state.
-  persistState?: boolean
 }
-
-const DEFAULT_SORT: IApplicationsSort = { column: 'createdAt', direction: 'desc' }
-const SORT_COLUMNS: IApplicationsSort['column'][] = ['createdAt', 'updatedAt']
-const SORT_DIRECTIONS: IApplicationsSort['direction'][] = ['asc', 'desc']
 
 const ApplicationsProvider = (props: PropsWithChildren<IApplicationsProviderProps>) => {
   const {
@@ -47,57 +38,24 @@ const ApplicationsProvider = (props: PropsWithChildren<IApplicationsProviderProp
     fetchAll = false,
     hideIfEmpty = false,
     emptyComponent,
-    persistState = false,
   } = props
 
   const user = useLoggedInUser()
   const topics = useAllTopics()
 
-  const [searchParams, setSearchParams] = useSearchParams()
-
   const [applications, setApplications] = useState<PaginationResponse<IApplication>>()
-
-  const [page, setPage] = useState(() => {
-    if (!persistState) return 0
-    const raw = parseInt(searchParams.get('page') ?? '', 10)
-    return Number.isFinite(raw) && raw >= 0 ? raw : 0
-  })
+  const [page, setPage] = useState(0)
 
   const previousContent = useRef<string[]>([])
 
-  const [filters, setFilters] = useState<IApplicationsFilters>(() => {
-    const base: IApplicationsFilters = {
-      states: defaultStates,
-      topics: defaultTopics,
-      includeSuggestedTopics: true,
-    }
-    if (!persistState) return base
-
-    const statesParam = searchParams.get('states')
-    const topicsParam = searchParams.get('topics')
-    const typesParam = searchParams.get('types')
-    return {
-      ...base,
-      search: searchParams.get('search') ?? base.search,
-      states: statesParam
-        ? (statesParam.split(',').filter(Boolean) as ApplicationState[])
-        : base.states,
-      topics: topicsParam ? topicsParam.split(',').filter(Boolean) : base.topics,
-      types: typesParam ? typesParam.split(',').filter(Boolean) : base.types,
-    }
+  const [filters, setFilters] = useState<IApplicationsFilters>({
+    states: defaultStates,
+    topics: defaultTopics,
+    includeSuggestedTopics: true,
   })
-  const [sort, setSort] = useState<IApplicationsSort>(() => {
-    if (!persistState) return DEFAULT_SORT
-    const column = searchParams.get('sortBy')
-    const direction = searchParams.get('sortOrder')
-    return {
-      column: SORT_COLUMNS.includes(column as IApplicationsSort['column'])
-        ? (column as IApplicationsSort['column'])
-        : DEFAULT_SORT.column,
-      direction: SORT_DIRECTIONS.includes(direction as IApplicationsSort['direction'])
-        ? (direction as IApplicationsSort['direction'])
-        : DEFAULT_SORT.direction,
-    }
+  const [sort, setSort] = useState<IApplicationsSort>({
+    column: 'createdAt',
+    direction: 'desc',
   })
 
   const adjustedFilters = useMemo(() => {
@@ -124,12 +82,11 @@ const ApplicationsProvider = (props: PropsWithChildren<IApplicationsProviderProp
   const filterStatesKey = adjustedFilters.states?.join(',')
   const filterTopicsKey = adjustedFilters.topics?.join(',')
   const filterTypesKey = adjustedFilters.types?.join(',')
-  // URL sync uses the raw user-selected topics so the implicit
-  // `showOnlyAssignedTopics` expansion is not leaked into `?topics=` params.
-  const urlTopicsKey = filters.topics?.join(',')
-  const defaultStatesKey = defaultStates?.join(',')
-  const defaultTopicsKey = defaultTopics?.join(',')
   const topicsLoaded = !!topics
+
+  useEffect(() => {
+    setPage(0)
+  }, [sort, adjustedFilters])
 
   useEffect(() => {
     setApplications(undefined)
@@ -197,47 +154,6 @@ const ApplicationsProvider = (props: PropsWithChildren<IApplicationsProviderProp
     adjustedFilters.includeSuggestedTopics,
     debouncedSearch,
     topicsLoaded,
-  ])
-
-  useEffect(() => {
-    if (!persistState) return
-
-    const params = new URLSearchParams(searchParams)
-
-    const setOrDelete = (key: string, value: string | undefined) => {
-      if (value && value.length > 0) {
-        params.set(key, value)
-      } else {
-        params.delete(key)
-      }
-    }
-
-    // Only write params that differ from the page-level defaults, so a freshly
-    // loaded `/applications` stays at a clean URL until the user actually
-    // changes filters/sort/page.
-    setOrDelete('page', page > 0 ? String(page) : undefined)
-    setOrDelete('search', filters.search)
-    setOrDelete(
-      'states',
-      filterStatesKey !== defaultStatesKey ? (filterStatesKey ?? '') : undefined,
-    )
-    setOrDelete('topics', urlTopicsKey !== defaultTopicsKey ? (urlTopicsKey ?? '') : undefined)
-    setOrDelete('types', filterTypesKey)
-    setOrDelete('sortBy', sort.column !== DEFAULT_SORT.column ? sort.column : undefined)
-    setOrDelete('sortOrder', sort.direction !== DEFAULT_SORT.direction ? sort.direction : undefined)
-
-    setSearchParams(params, { replace: true })
-    // eslint-disable-next-line @eslint-react/exhaustive-deps -- searchParams/setSearchParams change on every navigation; only sync URL when actual state changes
-  }, [
-    persistState,
-    page,
-    filters.search,
-    filterStatesKey,
-    urlTopicsKey,
-    filterTypesKey,
-    defaultStatesKey,
-    defaultTopicsKey,
-    sort,
   ])
 
   const fetchApplication = async (applicationId: string): Promise<IApplication | null> => {
