@@ -535,4 +535,143 @@ class TopicControllerTest extends BaseIntegrationTest {
 			assertThat(json.get("content").size()).isGreaterThanOrEqualTo(1);
 		}
 	}
+
+	@Nested
+	class TopicSupervisorFiltering {
+		// Test users are created with given_name = family_name = universityId,
+		// so a supervisor's full name reads as "<universityId> <universityId>".
+		private String fullName(TestUser user) {
+			return user.universityId() + " " + user.universityId();
+		}
+
+		private UUID createTopicWithSupervisor(String title, TestUser supervisor, UUID researchGroupId) throws Exception {
+			ReplaceTopicPayload payload = new ReplaceTopicPayload(
+					title, Set.of("MASTER"),
+					"PS", "Req", "Goals", "Refs",
+					List.of(supervisor.userId()), List.of(supervisor.userId()),
+					researchGroupId, null, null, false
+			);
+			String response = mockMvc.perform(MockMvcRequestBuilders.post("/v2/topics")
+							.header("Authorization", createRandomAdminAuthentication())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(payload)))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+			return UUID.fromString(objectMapper.readTree(response).get("topicId").asString());
+		}
+
+		@Test
+		void getTopics_FilterBySupervisorName_ReturnsOnlyMatchingTopics() throws Exception {
+			TestUser advisorA = createRandomTestUser(List.of("supervisor", "advisor"));
+			TestUser advisorB = createRandomTestUser(List.of("supervisor", "advisor"));
+			UUID rg = createTestResearchGroup("Supervisor Filter Group", advisorA.universityId());
+
+			UUID topicIdA = createTopicWithSupervisor("Advisor A Topic", advisorA, rg);
+			createTopicWithSupervisor("Advisor B Topic", advisorB, rg);
+
+			String response = mockMvc.perform(MockMvcRequestBuilders.get("/v2/topics")
+							.header("Authorization", createRandomAdminAuthentication())
+							.param("supervisor", fullName(advisorA)))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			JsonNode json = objectMapper.readTree(response);
+			assertThat(json.get("content").size()).isEqualTo(1);
+			assertThat(json.get("content").get(0).get("topicId").asString())
+					.isEqualTo(topicIdA.toString());
+		}
+
+		@Test
+		void getTopics_FilterBySupervisorName_IsCaseInsensitiveAndTrimmed() throws Exception {
+			TestUser advisor = createRandomTestUser(List.of("supervisor", "advisor"));
+			UUID rg = createTestResearchGroup("Supervisor Case Group", advisor.universityId());
+
+			createTopicWithSupervisor("Case Insensitive Topic", advisor, rg);
+
+			String response = mockMvc.perform(MockMvcRequestBuilders.get("/v2/topics")
+							.header("Authorization", createRandomAdminAuthentication())
+							.param("supervisor", "  " + fullName(advisor).toUpperCase() + "  "))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			JsonNode json = objectMapper.readTree(response);
+			assertThat(json.get("content").size()).isEqualTo(1);
+			assertThat(json.get("content").get(0).get("title").asString())
+					.isEqualTo("Case Insensitive Topic");
+		}
+
+		@Test
+		void getTopics_FilterBySupervisorName_UnknownName_ReturnsEmpty() throws Exception {
+			TestUser advisor = createRandomTestUser(List.of("supervisor", "advisor"));
+			UUID rg = createTestResearchGroup("Supervisor NoMatch Group", advisor.universityId());
+			createTopicWithSupervisor("Some Topic", advisor, rg);
+
+			mockMvc.perform(MockMvcRequestBuilders.get("/v2/topics")
+							.header("Authorization", createRandomAdminAuthentication())
+							.param("supervisor", "Nobody Here"))
+					.andExpect(status().isOk())
+					// DTOs use @JsonInclude(NON_EMPTY) so empty content arrays are omitted entirely
+					.andExpect(jsonPath("$.totalElements").value(0));
+		}
+
+		@Test
+		void getTopics_FilterBySupervisorName_MatchesTopicsWithMultipleSupervisors() throws Exception {
+			TestUser advisorA = createRandomTestUser(List.of("supervisor", "advisor"));
+			TestUser advisorB = createRandomTestUser(List.of("supervisor", "advisor"));
+			UUID rg = createTestResearchGroup("Multi Supervisor Group", advisorA.universityId());
+
+			// Topic with both A and B as supervisors
+			ReplaceTopicPayload payload = new ReplaceTopicPayload(
+					"Shared Topic", Set.of("MASTER"),
+					"PS", "Req", "Goals", "Refs",
+					List.of(advisorA.userId()),
+					List.of(advisorA.userId(), advisorB.userId()),
+					rg, null, null, false
+			);
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/topics")
+							.header("Authorization", createRandomAdminAuthentication())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(payload)))
+					.andExpect(status().isOk());
+
+			// Filtering by either A or B should find the shared topic
+			for (TestUser supervisor : List.of(advisorA, advisorB)) {
+				String response = mockMvc.perform(MockMvcRequestBuilders.get("/v2/topics")
+								.header("Authorization", createRandomAdminAuthentication())
+								.param("supervisor", fullName(supervisor)))
+						.andExpect(status().isOk())
+						.andReturn().getResponse().getContentAsString();
+				JsonNode json = objectMapper.readTree(response);
+				assertThat(json.get("content").size()).isEqualTo(1);
+				assertThat(json.get("content").get(0).get("title").asString()).isEqualTo("Shared Topic");
+			}
+		}
+
+		@Test
+		void getTopics_FilterBySupervisorName_IgnoresExaminerOnlyMatches() throws Exception {
+			TestUser examiner = createRandomTestUser(List.of("supervisor"));
+			TestUser advisor = createRandomTestUser(List.of("supervisor", "advisor"));
+			UUID rg = createTestResearchGroup("Examiner Only Group", advisor.universityId());
+
+			// examiner is only in the EXAMINER role, advisor is the SUPERVISOR
+			ReplaceTopicPayload payload = new ReplaceTopicPayload(
+					"Examiner Only Topic", Set.of("MASTER"),
+					"PS", "Req", "Goals", "Refs",
+					List.of(examiner.userId()),
+					List.of(advisor.userId()),
+					rg, null, null, false
+			);
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/topics")
+							.header("Authorization", createRandomAdminAuthentication())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(payload)))
+					.andExpect(status().isOk());
+
+			mockMvc.perform(MockMvcRequestBuilders.get("/v2/topics")
+							.header("Authorization", createRandomAdminAuthentication())
+							.param("supervisor", fullName(examiner)))
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$.totalElements").value(0));
+		}
+	}
 }

@@ -60,6 +60,7 @@ public class TopicController {
 	 * @param sortBy the field to sort by
 	 * @param sortOrder the sort direction (asc or desc)
 	 * @param researchGroupIds the research group IDs to filter by
+	 * @param supervisor the full name of a supervisor to filter by (case-insensitive)
 	 * @return the paginated list of topics
 	 */
 	@GetMapping
@@ -72,7 +73,8 @@ public class TopicController {
 			@RequestParam(required = false, defaultValue = "50") Integer limit,
 			@RequestParam(required = false, defaultValue = "createdAt") String sortBy,
 			@RequestParam(required = false, defaultValue = "desc") String sortOrder,
-			@RequestParam(required = false, defaultValue = "") UUID[] researchGroupIds
+			@RequestParam(required = false, defaultValue = "") UUID[] researchGroupIds,
+			@RequestParam(required = false) String supervisor
 	) {
 		limit = RequestValidator.clampPageSize(limit);
 		Page<Topic> topics = topicService.getAll(
@@ -84,7 +86,8 @@ public class TopicController {
 				limit,
 				sortBy,
 				sortOrder,
-				researchGroupIds
+				researchGroupIds,
+				supervisor
 		);
 
 		return ResponseEntity.ok(PaginationDto.fromSpringPage(topics.map(TopicOverviewDto::fromTopicEntity)));

@@ -83,6 +83,7 @@ class TopicServiceTest {
 				any(),
 				any(),
 				any(),
+				any(),
 				any(PageRequest.class)
 		)).thenReturn(expectedPage);
 
@@ -95,6 +96,7 @@ class TopicServiceTest {
 				10,
 				"title",
 				"asc",
+				null,
 				null
 		);
 
@@ -104,6 +106,7 @@ class TopicServiceTest {
 				eq(null),
 				eq(null),
 				eq(new String[] { TopicState.OPEN.name()}),
+				eq(null),
 				eq(null),
 				eq(PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "title")))
 		);
