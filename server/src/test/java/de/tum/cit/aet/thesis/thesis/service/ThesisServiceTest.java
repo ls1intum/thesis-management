@@ -396,7 +396,7 @@ class ThesisServiceTest {
 
 		when(thesisRepository.save(any(Thesis.class))).thenAnswer(invocation -> invocation.getArgument(0));
 		when(thesisRepository.searchTheses(
-				any(), any(), any(), any(), any(), any(), any()
+				any(), any(), any(), any(), any(), any(), any(), any()
 		)).thenReturn(new PageImpl<>(Collections.emptyList()));
 
 		Thesis result = thesisService.completeThesis(testThesis);

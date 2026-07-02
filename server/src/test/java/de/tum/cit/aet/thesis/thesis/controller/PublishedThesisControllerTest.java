@@ -5,9 +5,11 @@ import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.jayway.jsonpath.JsonPath;
 import de.tum.cit.aet.thesis.mock.BaseIntegrationTest;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisState;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisVisibility;
+import de.tum.cit.aet.thesis.thesis.controller.payload.CreateThesisPayload;
 import de.tum.cit.aet.thesis.thesis.entity.Thesis;
 import de.tum.cit.aet.thesis.thesis.entity.ThesisStateChange;
 import de.tum.cit.aet.thesis.thesis.entity.key.ThesisStateChangeId;
@@ -16,6 +18,7 @@ import de.tum.cit.aet.thesis.thesis.repository.ThesisStateChangeRepository;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -23,6 +26,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import tools.jackson.databind.JsonNode;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @Testcontainers
@@ -180,6 +184,99 @@ class PublishedThesisControllerTest extends BaseIntegrationTest {
 					.andExpect(status().isOk())
 					.andExpect(jsonPath("$.content", hasSize(2)))
 					.andExpect(jsonPath("$.content[0].thesisId").exists());
+		}
+	}
+
+	@Nested
+	class GetPublishedThesesSupervisorFilter {
+		// Test users are created with given_name = family_name = universityId,
+		// so a supervisor's full name reads as "<universityId> <universityId>".
+		private String fullName(TestUser user) {
+			return user.universityId() + " " + user.universityId();
+		}
+
+		private UUID createFinishedThesisWithRoles(
+				String title,
+				TestUser supervisor,
+				TestUser examiner,
+				TestUser student
+		) throws Exception {
+			UUID researchGroupId = createTestResearchGroup(
+					"Published Filter Group " + UUID.randomUUID(),
+					supervisor.universityId()
+			);
+			createTestEmailTemplate("THESIS_CREATED");
+
+			CreateThesisPayload payload = new CreateThesisPayload(
+					title,
+					"MASTER",
+					"ENGLISH",
+					List.of(student.userId()),
+					List.of(supervisor.userId()),
+					List.of(examiner.userId()),
+					researchGroupId
+			);
+
+			String response = mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses")
+							.header("Authorization", createRandomAdminAuthentication())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(payload)))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			UUID thesisId = UUID.fromString(JsonPath.parse(response).read("$.thesisId", String.class));
+
+			Thesis thesis = thesisRepository.findById(thesisId).orElseThrow();
+			ThesisStateChangeId stateChangeId = new ThesisStateChangeId();
+			stateChangeId.setThesisId(thesis.getId());
+			stateChangeId.setState(ThesisState.FINISHED);
+			ThesisStateChange stateChange = new ThesisStateChange();
+			stateChange.setId(stateChangeId);
+			stateChange.setThesis(thesis);
+			stateChange.setChangedAt(Instant.now());
+			thesisStateChangeRepository.save(stateChange);
+			thesis.setState(ThesisState.FINISHED);
+			thesis.setVisibility(ThesisVisibility.PUBLIC);
+			thesis.getStates().add(stateChange);
+			thesisRepository.save(thesis);
+
+			return thesisId;
+		}
+
+		@Test
+		void getPublishedTheses_FilterBySupervisorName_ReturnsOnlyMatchingTheses() throws Exception {
+			TestUser supervisorA = createRandomTestUser(List.of("supervisor", "advisor"));
+			TestUser supervisorB = createRandomTestUser(List.of("supervisor", "advisor"));
+			TestUser student = createRandomTestUser(List.of("student"));
+
+			UUID thesisA = createFinishedThesisWithRoles("Supervisor A Thesis", supervisorA, supervisorA, student);
+			createFinishedThesisWithRoles("Supervisor B Thesis", supervisorB, supervisorB, student);
+
+			String response = mockMvc.perform(MockMvcRequestBuilders.get("/v2/published-theses")
+							.header("Authorization", createRandomAdminAuthentication())
+							.param("supervisorName", fullName(supervisorA)))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			JsonNode json = objectMapper.readTree(response);
+			assertThat(json.get("totalElements").asInt()).isEqualTo(1);
+			assertThat(json.get("content").get(0).get("thesisId").asString())
+					.isEqualTo(thesisA.toString());
+		}
+
+		@Test
+		void getPublishedTheses_FilterBySupervisorName_IgnoresExaminerOnlyMatches() throws Exception {
+			TestUser supervisor = createRandomTestUser(List.of("supervisor", "advisor"));
+			TestUser examinerOnly = createRandomTestUser(List.of("supervisor"));
+			TestUser student = createRandomTestUser(List.of("student"));
+
+			createFinishedThesisWithRoles("Examiner Only Thesis", supervisor, examinerOnly, student);
+
+			mockMvc.perform(MockMvcRequestBuilders.get("/v2/published-theses")
+							.header("Authorization", createRandomAdminAuthentication())
+							.param("supervisorName", fullName(examinerOnly)))
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$.totalElements").value(0));
 		}
 	}
 }

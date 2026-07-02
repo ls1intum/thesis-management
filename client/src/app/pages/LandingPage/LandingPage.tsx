@@ -213,6 +213,7 @@ const LandingPage = () => {
               filters={{
                 researchGroupIds: researchGroupFilter,
                 types: selectedThesisTypes,
+                supervisorName: supervisorFilter,
               }}
               limit={pageItemLimit}
             />
