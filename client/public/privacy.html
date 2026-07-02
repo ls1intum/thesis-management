@@ -1,13 +1,19 @@
-<p><em>Last updated: May 7, 2026</em></p>
+<p><em>Last updated: July 2, 2026</em></p>
 
 <p>The Research Group for Applied Education Technologies (referred to as AET in the following paragraphs) from the
   Technical University of Munich takes the protection of private data seriously. We process personal data collected
   when you visit and use our application, in compliance with the applicable data protection regulations, in particular
   the Bavarian Data Protection Act (BayDSG), the Telecommunications Digital Services Data Protection Act (TDDDG) and
-  the General Data Protection Regulation (GDPR). Below, we inform you about the type, scope and purpose of the
-  collection and use of personal data.</p>
+  the General Data Protection Regulation (GDPR). Unless otherwise stated, the legal basis for processing your data is
+  Art. 6(1)(e) GDPR in conjunction with Art. 4(1) BayDSG (performance of a task carried out in the public interest).
+  For the organization and assessment of theses as examination performances, Art. 84 of the Bavarian Higher Education
+  Innovation Act (BayHIG) and the General Examination and Study Regulations (Allgemeine Prüfungs- und Studienordnung,
+  APSO) of the Technical University of Munich additionally apply. Below, we inform you about the type, scope and purpose
+  of the collection and use of personal data.</p>
 
-<h2 id="controller">Controller</h2>
+<h2 id="general-information">General information</h2>
+
+<h3 id="controller">Controller</h3>
 <p>The controller responsible for data processing within the meaning of the GDPR is:</p>
 <p>
   Technical University of Munich<br>
@@ -17,7 +23,7 @@
   Email: <a href="mailto:ls1.admin@in.tum.de">ls1.admin@in.tum.de</a>
 </p>
 
-<h2 id="dpo">Data Protection Officer</h2>
+<h3 id="dpo">Data Protection Officer</h3>
 <p>The Data Protection Officer of the Technical University of Munich can be reached at:</p>
 <p>
   The Data Protection Officer of the Technical University of Munich<br>
@@ -26,164 +32,24 @@
   Further information: <a href="https://www.datenschutz.tum.de" rel="noopener" target="_blank">https://www.datenschutz.tum.de</a>
 </p>
 
-<h2 id="account-data">User account and profile data</h2>
-<p>When you log in to this application via your university account (Single Sign-On via Keycloak), the following personal
-  data is automatically retrieved from your university identity provider and stored:</p>
+<h3 id="purposes">Purposes and legal bases for processing</h3>
+<p>The purpose of the processing is to organize and assess theses within the university environment, including the
+  application, supervision, presentation, and grading processes. The following legal bases apply to the processing
+  described in this statement:</p>
 <ul>
-  <li>First name and last name</li>
-  <li>Email address</li>
-  <li>University ID (username)</li>
-  <li>Matriculation number (if available)</li>
-  <li>University role assignments (student, supervisor, advisor, administrator)</li>
-  <li>Last login timestamp</li>
-  <li>Account creation and last profile update timestamps</li>
+  <li>Art. 6(1)(e) GDPR in conjunction with Art. 4(1) BayDSG (performance of a task carried out in the public interest)
+    for the general operation of the application and the organization and assessment of theses;</li>
+  <li>Art. 84 BayHIG and the General Examination and Study Regulations (APSO) of the Technical University of Munich for
+    the processing of examination-related data, in particular theses, assessments, and grades;</li>
+  <li>Art. 6(1)(a) GDPR (consent) for data you provide voluntarily, in particular optional profile information, uploaded
+    documents, and the import of a profile picture from Gravatar; and</li>
+  <li>Art. 6(1)(e) GDPR in conjunction with Section 25(2) no. 2 TDDDG for information that is stored on your device and
+    is technically necessary to operate the application.</li>
 </ul>
-<p>The authentication service (Keycloak) is operated by the university itself on its own infrastructure. No passwords
-  are stored or processed by this application.</p>
-<p>In addition, you may voluntarily provide the following information in your user profile:</p>
-<ul>
-  <li>Gender</li>
-  <li>Nationality</li>
-  <li>Study degree and study program</li>
-  <li>Enrollment semester</li>
-  <li>Interests, projects, and special skills (free text)</li>
-  <li>Research group membership</li>
-  <li>Additional configurable fields as required by your research group</li>
-</ul>
-<p><strong>Legal basis:</strong> Processing of authentication data is necessary for the performance of the university's
-  public task of organizing and assessing theses (Art. 6(1)(e) GDPR in conjunction with Art. 4(1) BayDSG). Processing
-  of voluntarily provided profile data is based on your consent (Art. 6(1)(a) GDPR).</p>
+<p>Where a processing operation relies on your consent (Art. 6(1)(a) GDPR), you may withdraw that consent at any time
+  (see <a href="#your-rights">Your rights</a>).</p>
 
-<h2 id="uploaded-documents">Uploaded documents</h2>
-<p>As part of the thesis application process, you may upload the following documents:</p>
-<ul>
-  <li>Curriculum vitae (CV)</li>
-  <li>Examination report</li>
-  <li>Degree report (for Master's students)</li>
-  <li>Profile picture (avatar)</li>
-</ul>
-<p>During the thesis process, additional documents may be uploaded, such as thesis proposals, final thesis submissions,
-  and supporting files. These documents are stored on the application server and are accessible only to authorized
-  personnel (supervisors, advisors, and administrators of the relevant research group).</p>
-<p><strong>Legal basis:</strong> Consent (Art. 6(1)(a) GDPR) and performance of the university's public task
-  (Art. 6(1)(e) GDPR in conjunction with Art. 4(1) BayDSG).</p>
-
-<h2 id="gravatar">Profile picture lookup (Gravatar)</h2>
-<p>If you choose to import a profile picture from Gravatar, the application sends a SHA-256 hash of your email address
-  to the Gravatar service operated by Automattic Inc. (USA) at <code>gravatar.com</code>. Only the cryptographic hash
-  is transmitted, not your email address itself. The request is made server-side so that your IP address is not exposed
-  to Gravatar. No data is sent to Gravatar unless you explicitly trigger the profile picture import.</p>
-<p><strong>International transfer:</strong> Automattic Inc. is certified under the EU-U.S. Data Privacy Framework.
-  For details, see <a href="https://automattic.com/privacy/" rel="noopener" target="_blank">Automattic's privacy
-  policy</a>.</p>
-<p><strong>Legal basis:</strong> Consent (Art. 6(1)(a) GDPR) — the transfer only occurs when you actively choose to
-  import a profile picture from Gravatar.</p>
-
-<h2 id="thesis-data">Thesis and application data</h2>
-<p>When you apply for or work on a thesis, the following data is processed:</p>
-<ul>
-  <li>Thesis application details (motivation text, desired start date, preferred thesis topic)</li>
-  <li>Thesis metadata (title, type, abstract, keywords, language)</li>
-  <li>Assessment and grading data (feedback, grade suggestions, final grade)</li>
-  <li>Comments and communication within the thesis process</li>
-  <li>Presentation details (date, time, location, stream link)</li>
-  <li>Interview scheduling data (time slots, location, stream link) and interview assessment notes</li>
-</ul>
-<p><strong>Legal basis:</strong> Performance of the university's public task of organizing and assessing theses
-  (Art. 6(1)(e) GDPR in conjunction with Art. 4(1) BayDSG).</p>
-
-<h2 id="email-notifications">Email notifications</h2>
-<p>The application sends automated email notifications related to the thesis process, including:</p>
-<ul>
-  <li>Application status updates (submission confirmation, acceptance, rejection)</li>
-  <li>Application review reminders for research group members</li>
-  <li>Interview invitations, scheduling confirmations, and booking updates</li>
-  <li>Thesis creation and lifecycle notifications</li>
-  <li>Thesis proposal submission, acceptance, and revision request notifications</li>
-  <li>Presentation scheduling notifications and invitations</li>
-  <li>Comment notifications</li>
-  <li>Assessment and final grade notifications</li>
-  <li>Data export readiness notifications</li>
-  <li>Thesis data anonymization reminders (sent to research group heads)</li>
-</ul>
-<p>These emails may contain personal data such as your name, thesis title, and relevant process details. Some emails
-  include file attachments (e.g. CV, examination report, or thesis proposal documents). The research group head
-  receives a copy (BCC) of application acceptance, rejection, and thesis lifecycle emails. Additionally, research
-  groups may configure an additional notification email address that receives a copy of every new application
-  (including attached documents such as CV and examination reports). You can configure your notification preferences in
-  the application settings.</p>
-<p><strong>Legal basis:</strong> Performance of the university's public task (Art. 6(1)(e) GDPR in conjunction with
-  Art. 4(1) BayDSG).</p>
-
-<h2 id="calendar-feeds">Calendar subscription feeds</h2>
-<p>The application provides calendar subscription feeds (ICS format) that users can subscribe to in their
-  calendar applications (e.g. Outlook, Google Calendar, Apple Calendar). These feeds contain:</p>
-<ul>
-  <li><strong>Presentation calendar:</strong> Thesis titles, presentation dates, locations or stream links, and names
-    of participants for thesis presentations.</li>
-  <li><strong>Interview calendar:</strong> Interview time slots, locations or stream links, and topic titles for
-    individual users.</li>
-</ul>
-<p>Calendar feed URLs use unique, non-guessable identifiers and do not require authentication.</p>
-<p><strong>Legal basis:</strong> Performance of the university's public task in organizing thesis presentations and
-  interviews (Art. 6(1)(e) GDPR in conjunction with Art. 4(1) BayDSG).</p>
-
-<h2 id="authentication">Authentication and session data</h2>
-<p>Authentication is handled through Keycloak (Single Sign-On) using your university credentials. The application does
-  not store your password. Authentication tokens (JWT) are stored in your browser's local storage for the duration of
-  your session. The following data is stored in your browser:</p>
-<ul>
-  <li>Authentication tokens (in localStorage, cleared on logout)</li>
-  <li>Privacy consent status (in localStorage)</li>
-  <li>User interface preferences (in localStorage)</li>
-</ul>
-<p><strong>Legal basis:</strong> These are technically necessary for the operation of the application (Art. 6(1)(e) GDPR
-  and Section 25(2) TDDDG).</p>
-
-<h2 id="logging">Server logging</h2>
-<p>The web servers are operated by the AET. Every time the application is accessed, the web server temporarily processes
-  the following information in log files:</p>
-<ul>
-  <li>IP address of the requesting computer</li>
-  <li>Date and time of access</li>
-  <li>Name, URL, and transferred data volume of the accessed resource</li>
-  <li>Access status (requested resource transferred, not found, etc.)</li>
-  <li>Identification data of the browser and operating system used (if transmitted by the requesting web browser)</li>
-  <li>Website from which access was made (if transmitted by the requesting web browser)</li>
-</ul>
-<p>The log entries can be continuously and automatically evaluated in order to detect attacks on the web servers and
-  react accordingly. In individual cases, i.e. in the event of reported malfunctions, errors and security incidents,
-  a manual analysis may be carried out. Log files are automatically deleted after 90 days.</p>
-<p><strong>Legal basis:</strong> Performance of the university's public task (Art. 6(1)(e) GDPR in conjunction with
-  Art. 4(1) BayDSG) and the controller's obligation to ensure security of processing (Art. 32 GDPR).</p>
-
-<h2 id="data-retention">Data retention</h2>
-<p>Personal data is stored for the duration necessary to fulfill the purposes described above:</p>
-<ul>
-  <li><strong>User account data:</strong> Student accounts that have been inactive for more than one year are
-    automatically disabled. Disabled accounts and their associated profile data are deleted after the applicable
-    retention period for any linked thesis or application data has expired. If you log in again before deletion, your
-    account is reactivated.</li>
-  <li><strong>Thesis data and accepted applications:</strong> Thesis data, including assessment and grading records and
-    the associated application, is retained for 5 years after the end of the calendar year of the latest thesis
-    activity (completion date, last state change, or creation date), in accordance with university examination
-    regulations. After this retention period expires, thesis data is anonymized automatically: personal references,
-    files, comments, assessments, and feedback are removed, while the thesis title, type, grade, and dates are
-    preserved for statistical purposes.</li>
-  <li><strong>Rejected application data:</strong> Applications that are rejected are retained for 1 year after
-    rejection to allow for inquiries and reapplications, after which they are automatically deleted.</li>
-  <li><strong>Unassessed application data:</strong> Applications that have not been reviewed are deleted when the
-    associated user account is deleted.</li>
-  <li><strong>Uploaded documents:</strong> Retained for the same period as the associated thesis or application data.</li>
-  <li><strong>Data export files:</strong> Available for download for 7 days after generation, after which they are
-    automatically deleted.</li>
-  <li><strong>Server log files:</strong> Automatically deleted after 90 days.</li>
-</ul>
-<p>The automated data lifecycle processing described above (account deactivation, application deletion, thesis
-  anonymization) runs as scheduled tasks. Affected research group heads receive advance notification before thesis data
-  is anonymized.</p>
-
-<h2 id="data-recipients">Data recipients</h2>
+<h3 id="data-recipients">Recipients of personal data</h3>
 <p>Your personal data may be accessible to the following recipients within the application:</p>
 <ul>
   <li><strong>Supervisors and advisors</strong> of the research group you are associated with can view your profile,
@@ -208,14 +74,20 @@
 </ul>
 <p>Data is not transferred to recipients outside the university, except:</p>
 <ul>
-  <li>Email recipients — presentation invitations may be sent to external email addresses provided by supervisors.</li>
-  <li>Configured notification addresses — research groups may configure an additional notification email address that
-    receives copies of new-application emails, including attached documents (e.g. CV, examination reports). These
-    addresses may be external to the university.</li>
-  <li>Gravatar (Automattic Inc., USA) — when you choose to import a profile picture (see above).</li>
+  <li>Email recipients - presentation invitations may be sent to external email addresses provided by supervisors.</li>
+  <li>Configured notification addresses - research groups may configure an additional notification email address that
+    receives copies of new-application emails, including attached documents (e.g. CV, examination reports) when the
+    research group has enabled the inclusion of application data in emails. These addresses may be external to the
+    university.</li>
+  <li>Gravatar (Automattic Inc., USA) - when you choose to import a profile picture (see below).</li>
 </ul>
 
-<h2 id="your-rights">Your rights</h2>
+<h3 id="data-retention-overview">Duration of storage</h3>
+<p>Personal data is stored only for as long as is necessary to fulfill the purposes described in this statement,
+  taking into account statutory retention periods. The specific retention periods for the individual processing
+  operations are set out in the section <a href="#data-retention">Data retention and deletion</a> below.</p>
+
+<h3 id="your-rights">Your rights</h3>
 <p>Under the GDPR, you have the following rights regarding your personal data:</p>
 <ul>
   <li><strong>Right of access</strong> (Art. 15 GDPR): You have the right to request information about the personal data
@@ -245,7 +117,7 @@
 </ul>
 <p>To exercise any of these rights, please contact us at <a href="mailto:ls1.admin@in.tum.de">ls1.admin@in.tum.de</a>.</p>
 
-<h2 id="supervisory-authority">Right to lodge a complaint</h2>
+<h3 id="supervisory-authority">Right to lodge a complaint</h3>
 <p>You have the right to lodge a complaint with a supervisory authority if you believe that the processing of your
   personal data violates data protection law. The competent supervisory authority for the Technical University of Munich
   is:</p>
@@ -257,12 +129,180 @@
 </p>
 <p>You can also contact the Data Protection Officer of the Technical University of Munich (see above).</p>
 
-<h2 id="encryption">SSL/TLS encryption</h2>
+<h2 id="web-presence">Information about the web presence</h2>
+
+<h3 id="encryption">SSL/TLS encryption</h3>
 <p>For security reasons and to protect the transmission of confidential content, this application uses SSL/TLS
   encryption. This means that data you transmit via this application cannot be read by third parties. You can recognize
   an encrypted connection by the "https://" address line in your browser and by the lock symbol in the browser line.</p>
 
-<h2 id="email-security">Email security</h2>
+<h3 id="logging">Server logging</h3>
+<p>The web servers are operated by the AET. Every time the application is accessed, the web server temporarily processes
+  the following information in log files:</p>
+<ul>
+  <li>IP address of the requesting computer</li>
+  <li>Date and time of access</li>
+  <li>Name, URL, and transferred data volume of the accessed resource</li>
+  <li>Access status (requested resource transferred, not found, etc.)</li>
+  <li>Identification data of the browser and operating system used (if transmitted by the requesting web browser)</li>
+  <li>Website from which access was made (if transmitted by the requesting web browser)</li>
+</ul>
+<p>The log entries can be continuously and automatically evaluated in order to detect attacks on the web servers and
+  react accordingly. In individual cases, i.e. in the event of reported malfunctions, errors and security incidents,
+  a manual analysis may be carried out.</p>
+<p><strong>Retention period:</strong> Log files are automatically deleted after 90 days, unless they are needed to
+  investigate a specific security incident.</p>
+
+<h3 id="authentication">Authentication and session data</h3>
+<p>Authentication is handled through Keycloak (Single Sign-On) using your university credentials. The application does
+  not store your password. Authentication tokens (JWT) are stored in your browser's local storage for the duration of
+  your session. The following data is stored in your browser:</p>
+<ul>
+  <li>Authentication tokens (in localStorage, cleared on logout)</li>
+  <li>Privacy consent status (in localStorage)</li>
+  <li>User interface preferences (in localStorage)</li>
+</ul>
+
+<h2 id="processing-operations">Information on individual processing operations</h2>
+
+<h3 id="account-data">User account and profile data</h3>
+<p>When you log in to this application via your university account (Single Sign-On via Keycloak), the following personal
+  data is retrieved from your university identity provider:</p>
+<ul>
+  <li>First name and last name</li>
+  <li>Email address</li>
+  <li>University ID (username)</li>
+  <li>Matriculation number (if available)</li>
+</ul>
+<p>In addition, the application itself stores and manages the following account data:</p>
+<ul>
+  <li>Your role assignments within this application (student, supervisor, advisor, administrator)</li>
+  <li>Last login timestamp</li>
+  <li>Account creation and last profile update timestamps</li>
+</ul>
+<p>Role assignments are maintained within this application (in its own database) and are not taken from your identity
+  provider, so that changes to your roles take effect immediately. The authentication service (Keycloak) is operated by
+  the university itself on its own infrastructure. No passwords are stored or processed by this application.</p>
+<p>In addition, you may voluntarily provide the following information in your user profile:</p>
+<ul>
+  <li>Gender</li>
+  <li>Nationality</li>
+  <li>Study degree and study program</li>
+  <li>Enrollment semester</li>
+  <li>Interests, projects, and special skills (free text)</li>
+  <li>Additional profile fields configured centrally for this application instance</li>
+</ul>
+<p>Your membership in a research group is assigned by administrators and is not part of the information you provide
+  yourself.</p>
+<p><strong>Retention period:</strong> See <a href="#data-retention">Data retention and deletion</a>.</p>
+
+<h3 id="uploaded-documents">Uploaded documents</h3>
+<p>As part of the thesis application process, you may upload the following documents:</p>
+<ul>
+  <li>Curriculum vitae (CV)</li>
+  <li>Examination report</li>
+  <li>Degree report (for Master's students)</li>
+  <li>Profile picture (avatar)</li>
+</ul>
+<p>During the thesis process, additional documents may be uploaded, such as thesis proposals, final thesis submissions,
+  and supporting files. With the exception of profile pictures, these documents are stored on the application server and
+  are accessible only to you and to authorized personnel (supervisors, advisors, and administrators of the relevant
+  research group). Profile pictures (avatars) are handled differently: they are publicly accessible for users who appear
+  in publicly visible data (see <a href="#data-recipients">Recipients of personal data</a>).</p>
+<p><strong>Retention period:</strong> Uploaded documents are retained for the same period as the associated thesis or
+  application data (see <a href="#data-retention">Data retention and deletion</a>).</p>
+
+<h3 id="gravatar">Profile picture lookup (Gravatar)</h3>
+<p>If you choose to import a profile picture from Gravatar, the application sends a SHA-256 hash of your email address
+  to the Gravatar service operated by Automattic Inc. (USA) at <code>gravatar.com</code>. Only the cryptographic hash
+  is transmitted, not your email address itself. The request is made server-side so that your IP address is not exposed
+  to Gravatar. No data is sent to Gravatar unless you explicitly trigger the profile picture import.</p>
+<p><strong>International transfer:</strong> Automattic Inc. is certified under the EU-U.S. Data Privacy Framework.
+  For details, see <a href="https://automattic.com/privacy/" rel="noopener" target="_blank">Automattic's privacy
+  policy</a>.</p>
+
+<h3 id="thesis-data">Thesis and application data</h3>
+<p>When you apply for or work on a thesis, the following data is processed:</p>
+<ul>
+  <li>Thesis application details (motivation text, desired start date, preferred thesis topic)</li>
+  <li>Thesis metadata (title, type, abstract, keywords, language)</li>
+  <li>Assessment and grading data (feedback, grade suggestions, final grade)</li>
+  <li>Comments and communication within the thesis process</li>
+  <li>Presentation details (date, time, location, stream link)</li>
+  <li>Interview scheduling data (time slots, location, stream link) and interview assessment notes</li>
+</ul>
+<p><strong>Retention period:</strong> See <a href="#data-retention">Data retention and deletion</a>.</p>
+
+<h3 id="email-notifications">Email notifications</h3>
+<p>The application sends automated email notifications related to the thesis process, including:</p>
+<ul>
+  <li>Application status updates (submission confirmation, acceptance, rejection)</li>
+  <li>Application review reminders for research group members</li>
+  <li>Interview invitations, scheduling confirmations, and booking updates</li>
+  <li>Thesis creation and lifecycle notifications</li>
+  <li>Thesis proposal submission, acceptance, and revision request notifications</li>
+  <li>Presentation scheduling notifications and invitations</li>
+  <li>Comment notifications</li>
+  <li>Assessment and final grade notifications</li>
+  <li>Data export readiness notifications</li>
+  <li>Thesis data anonymization reminders (sent to research group heads)</li>
+</ul>
+<p>These emails may contain personal data such as your name, thesis title, and relevant process details. Some emails
+  include file attachments (e.g. CV, examination report, or thesis proposal documents). The research group head
+  receives a copy (BCC) of application acceptance and rejection emails as well as thesis creation and closure
+  notifications. Additionally, research groups may configure an additional notification email address that receives a
+  copy of every new application; if the research group has enabled the inclusion of application data in emails, this
+  copy also contains the attached documents (such as CV and examination reports), otherwise it contains only a link to
+  the application. You can configure your preferences for certain notification types in the application settings.</p>
+
+<h3 id="calendar-feeds">Calendar subscription feeds</h3>
+<p>The application provides calendar subscription feeds (ICS format) that users can subscribe to in their
+  calendar applications (e.g. Outlook, Google Calendar, Apple Calendar). These feeds contain:</p>
+<ul>
+  <li><strong>Presentation calendar:</strong> Thesis titles, presentation dates, locations or stream links, and names
+    of participants for thesis presentations.</li>
+  <li><strong>Interview calendar:</strong> Interview time slots, locations or stream links, and topic titles for
+    individual users.</li>
+</ul>
+<p>These calendar feeds are accessible without authentication. The interview feed is addressed by a non-guessable user
+  identifier; the presentation feed is addressed by the research group's public abbreviation and contains only
+  presentations that have been marked as public.</p>
+
+<h3 id="data-export">Data export</h3>
+<p>You can request an export of your personal data in the application settings. The export is generated as a ZIP file
+  containing your data in JSON format together with your uploaded files (e.g. CV, examination report, degree report,
+  and profile picture). This feature implements your right of access (Art. 15 GDPR) and your right to data portability
+  (Art. 20 GDPR).</p>
+<p><strong>Retention period:</strong> Export files are available for download for 7 days after generation, after which
+  they are automatically deleted.</p>
+
+<h3 id="data-retention">Data retention and deletion</h3>
+<p>Personal data is stored for the duration necessary to fulfill the purposes described above:</p>
+<ul>
+  <li><strong>User account data:</strong> Student accounts that have been inactive for more than one year are
+    automatically disabled. Logging in again reactivates a disabled account. The profile data of a disabled account is
+    deleted when you request deletion of your account; thesis-related data follows the retention periods described
+    below.</li>
+  <li><strong>Thesis data and accepted applications:</strong> Thesis data, including assessment and grading records and
+    the associated application, is retained for 5 years after the end of the calendar year of the latest thesis
+    activity (completion date, last state change, or creation date), in accordance with university examination
+    regulations. After this retention period expires, thesis data is anonymized automatically: personal references,
+    files, comments, assessments, and feedback are removed, while the thesis title, type, grade, and dates are
+    preserved for statistical purposes.</li>
+  <li><strong>Rejected application data:</strong> Applications that are rejected are retained for 1 year after
+    rejection to allow for inquiries and reapplications, after which they are automatically deleted.</li>
+  <li><strong>Unassessed application data:</strong> Applications that have not been reviewed are deleted when the
+    associated user account is deleted.</li>
+  <li><strong>Uploaded documents:</strong> Retained for the same period as the associated thesis or application data.</li>
+  <li><strong>Data export files:</strong> Available for download for 7 days after generation, after which they are
+    automatically deleted.</li>
+  <li><strong>Server log files:</strong> Automatically deleted after 90 days.</li>
+</ul>
+<p>The automated data lifecycle processing described above (account deactivation, application deletion, thesis
+  anonymization) runs as scheduled tasks. Affected research group heads receive advance notification before thesis data
+  is anonymized.</p>
+
+<h3 id="email-security">Email security</h3>
 <p>If you email us, your email address will only be used for correspondence with you. Please note that data transmission
   on the Internet can have security gaps. Complete protection of data from access by third parties is not possible.</p>
 
