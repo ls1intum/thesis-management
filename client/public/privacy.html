@@ -80,6 +80,9 @@
     research group has enabled the inclusion of application data in emails. These addresses may be external to the
     university.</li>
   <li>Gravatar (Automattic Inc., USA) - when you choose to import a profile picture (see below).</li>
+  <li>Microsoft (Azure OpenAI Service) - when the AI-based proposal review feature is used with the Microsoft
+    processing option. Microsoft acts as a processor on the basis of a data processing agreement (AVV) pursuant to
+    Art. 28 GDPR and processes the data exclusively within the European Union (see below).</li>
 </ul>
 
 <h3 id="data-retention-overview">Duration of storage</h3>
@@ -232,6 +235,27 @@
   <li>Interview scheduling data (time slots, location, stream link) and interview assessment notes</li>
 </ul>
 <p><strong>Retention period:</strong> See <a href="#data-retention">Data retention and deletion</a>.</p>
+
+<h3 id="ai-review">AI-based proposal review</h3>
+<p>The application offers an optional AI-based review feature for thesis proposals. When a supervisor, advisor, or
+  administrator starts a review of an uploaded proposal document, the content of the proposal (the extracted text and a
+  rendered image of each page) is sent to a large language model, which returns structured feedback and an assessment.
+  The proposal may contain personal data (such as the author's name or other personal information included in the
+  document); this data is transmitted as part of the review. The feature is triggered manually by authorized staff and
+  is never run automatically. The AI-generated feedback is returned to the person who started the review and is stored
+  as part of the associated thesis record in the application.</p>
+<p>Depending on the configuration of the deployment, one of the following processing options is used:</p>
+<ul>
+  <li><strong>Local AI:</strong> An AI system operated by the AET on the university's own infrastructure (the "Logos"
+    platform). In this case, the data does not leave the university's infrastructure.</li>
+  <li><strong>Microsoft AI:</strong> The Microsoft Azure OpenAI Service. Microsoft acts as a processor on the basis of a
+    data processing agreement (Auftragsverarbeitungsvertrag, AVV) pursuant to Art. 28 GDPR between the Technical
+    University of Munich and Microsoft. Processing takes place exclusively in data centers within the European Union;
+    the data does not leave the EU.</li>
+</ul>
+<p><strong>Retention period:</strong> The AI-generated feedback is stored as part of the associated thesis data and is
+  retained and anonymized together with it (see <a href="#data-retention">Data retention and deletion</a>). The copy of
+  the proposal transmitted to the AI system for the review is not retained beyond the processing of the request.</p>
 
 <h3 id="email-notifications">Email notifications</h3>
 <p>The application sends automated email notifications related to the thesis process, including:</p>
