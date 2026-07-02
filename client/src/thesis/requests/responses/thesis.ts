@@ -32,7 +32,7 @@ export interface IThesisPresentation {
   presentationNoteHtml: string | null
   scheduledAt: string
   createdAt: string
-  createdBy: ILightUser
+  createdBy: IMinimalUser
 }
 
 export interface IThesisOverview {
@@ -80,7 +80,7 @@ export interface IThesis extends IThesisOverview {
     filename: string
     uploadName: string
     uploadedAt: string
-    uploadedBy: ILightUser
+    uploadedBy: IMinimalUser
   }>
   assessment: null | {
     summary: string
@@ -88,7 +88,7 @@ export interface IThesis extends IThesisOverview {
     negatives: string
     gradeSuggestion: string
     createdAt: string
-    createdBy: ILightUser
+    createdBy: IMinimalUser
     gradeComponents?: Array<{
       gradeComponentId: string
       name: string
@@ -102,15 +102,15 @@ export interface IThesis extends IThesisOverview {
     proposalId: string
     filename: string
     createdAt: string
-    createdBy: ILightUser
+    createdBy: IMinimalUser
     approvedAt: string | null
-    approvedBy: ILightUser | null
+    approvedBy: IMinimalUser | null
   }>
   feedback?: Array<{
     feedbackId: string
     type: string
     feedback: string
-    requestedBy: ILightUser
+    requestedBy: IMinimalUser
     requestedAt: string
     completedAt: string | null
   }>
@@ -127,7 +127,7 @@ export interface IThesisComment {
   filename: string | null
   uploadName: string | null
   createdAt: string
-  createdBy: ILightUser
+  createdBy: IMinimalUser
 }
 
 export interface IPublishedThesis {

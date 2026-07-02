@@ -14,7 +14,7 @@ import { formatThesisType, getDefaultLanguage } from '@/core/utils/format'
 import LanguageSelect from '@/core/components/LanguageSelect/LanguageSelect'
 import type { PaginationResponse } from '@/core/requests/responses/pagination'
 import type { ILightResearchGroup } from '@/core/group/requests/responses/researchGroup'
-import type { ILightUser } from '@/core/user/requests/responses/user'
+import type { IMinimalUser } from '@/core/user/requests/responses/user'
 import { useHasGroupAccess } from '@/core/hooks/authentication'
 
 interface ICreateThesisModalProps {
@@ -29,7 +29,7 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
 
   const [loading, setLoading] = useState(false)
   const [researchGroups, setResearchGroups] = useState<PaginationResponse<ILightResearchGroup>>()
-  const [autoSelectedExaminers, setAutoSelectedExaminers] = useState<ILightUser[]>([])
+  const [autoSelectedExaminers, setAutoSelectedExaminers] = useState<IMinimalUser[]>([])
   const hasAdminAccess = useHasGroupAccess('admin')
 
   const form = useForm<{

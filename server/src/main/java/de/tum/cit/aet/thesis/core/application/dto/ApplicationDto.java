@@ -7,7 +7,7 @@ import de.tum.cit.aet.thesis.core.application.entity.Application;
 import de.tum.cit.aet.thesis.core.application.entity.ApplicationReviewer;
 import de.tum.cit.aet.thesis.core.group.dto.LightResearchGroupDto;
 import de.tum.cit.aet.thesis.core.topic.dto.TopicDto;
-import de.tum.cit.aet.thesis.core.user.dto.LightUserDto;
+import de.tum.cit.aet.thesis.core.user.dto.MinimalUserDto;
 import de.tum.cit.aet.thesis.core.user.dto.UserDto;
 
 import java.time.Instant;
@@ -58,7 +58,7 @@ public static ApplicationDto fromApplicationEntity(Application application,
 }
 
 public record ApplicationReviewerDto(
-	LightUserDto user,
+	MinimalUserDto user,
 	ApplicationReviewReason reason,
 	Instant reviewedAt
 ) {
@@ -70,7 +70,7 @@ public record ApplicationReviewerDto(
 	}
 
 	return new ApplicationReviewerDto(
-		LightUserDto.fromUserEntity(reviewer.getUser()),
+		MinimalUserDto.fromUserEntity(reviewer.getUser()),
 		reviewer.getReason(),
 		reviewer.getReviewedAt()
 	);

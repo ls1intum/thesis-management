@@ -3,6 +3,7 @@ package de.tum.cit.aet.thesis.thesis.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.thesis.core.group.dto.LightResearchGroupDto;
 import de.tum.cit.aet.thesis.core.user.dto.LightUserDto;
+import de.tum.cit.aet.thesis.core.user.dto.MinimalUserDto;
 import de.tum.cit.aet.thesis.presentation.constants.ThesisPresentationState;
 import de.tum.cit.aet.thesis.presentation.constants.ThesisPresentationType;
 import de.tum.cit.aet.thesis.presentation.constants.ThesisPresentationVisibility;
@@ -142,7 +143,7 @@ public record ThesisAssessmentDto(
 	String negatives,
 	String gradeSuggestion,
 	String createdAt,
-	LightUserDto createdBy,
+	MinimalUserDto createdBy,
 	List<ThesisGradeComponentDTO> gradeComponents
 ) {
 
@@ -161,7 +162,7 @@ public record ThesisAssessmentDto(
 		assessment.getNegatives(),
 		assessment.getGradeSuggestion(),
 		assessment.getCreatedAt().toString(),
-		LightUserDto.fromUserEntity(assessment.getCreatedBy()),
+		MinimalUserDto.fromUserEntity(assessment.getCreatedBy()),
 		gradeComponents
 	);
 	}
@@ -171,9 +172,9 @@ public record ThesisProposalDto(
 	UUID proposalId,
 	String filename,
 	Instant createdAt,
-	LightUserDto createdBy,
+	MinimalUserDto createdBy,
 	Instant approvedAt,
-	LightUserDto approvedBy
+	MinimalUserDto approvedBy
 ) {
 
 	public static ThesisProposalDto fromProposalEntity(ThesisProposal proposal) {
@@ -185,9 +186,9 @@ public record ThesisProposalDto(
 		proposal.getId(),
 		proposal.getProposalFilename(),
 		proposal.getCreatedAt(),
-		LightUserDto.fromUserEntity(proposal.getCreatedBy()),
+		MinimalUserDto.fromUserEntity(proposal.getCreatedBy()),
 		proposal.getApprovedAt(),
-		LightUserDto.fromUserEntity(proposal.getApprovedBy())
+		MinimalUserDto.fromUserEntity(proposal.getApprovedBy())
 	);
 	}
 }
@@ -204,7 +205,7 @@ public record ThesisPresentationDto(
 	String presentationNoteHtml,
 	Instant scheduledAt,
 	Instant createdAt,
-	LightUserDto createdBy
+	MinimalUserDto createdBy
 ) {
 	public static ThesisPresentationDto fromPresentationEntity(ThesisPresentation presentation) {
 	if (presentation == null) {
@@ -223,7 +224,7 @@ public record ThesisPresentationDto(
 		presentation.getPresentationNoteHtml(),
 		presentation.getScheduledAt(),
 		presentation.getCreatedAt(),
-		LightUserDto.fromUserEntity(presentation.getCreatedBy())
+		MinimalUserDto.fromUserEntity(presentation.getCreatedBy())
 	);
 	}
 }
@@ -232,7 +233,7 @@ public record ThesisFeedbackDto(
 	UUID feedbackId,
 	ThesisFeedbackType type,
 	String feedback,
-	LightUserDto requestedBy,
+	MinimalUserDto requestedBy,
 	Instant requestedAt,
 	Instant completedAt
 ) {
@@ -246,7 +247,7 @@ public record ThesisFeedbackDto(
 		feedback.getId(),
 		feedback.getType(),
 		feedback.getFeedback(),
-		LightUserDto.fromUserEntity(feedback.getRequestedBy()),
+		MinimalUserDto.fromUserEntity(feedback.getRequestedBy()),
 		feedback.getRequestedAt(),
 		feedback.getCompletedAt()
 	);
@@ -259,7 +260,7 @@ public record ThesisFilesDto(
 	String filename,
 	String uploadName,
 	Instant uploadedAt,
-	LightUserDto uploadedBy
+	MinimalUserDto uploadedBy
 ) {
 
 	public static ThesisFilesDto fromThesisFileEntity(ThesisFile file) {
@@ -273,7 +274,7 @@ public record ThesisFilesDto(
 		file.getFilename(),
 		file.getUploadName(),
 		file.getUploadedAt(),
-		LightUserDto.fromUserEntity(file.getUploadedBy())
+		MinimalUserDto.fromUserEntity(file.getUploadedBy())
 	);
 	}
 }

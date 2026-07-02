@@ -440,7 +440,7 @@ class ResearchGroupControllerTest extends BaseIntegrationTest {
 					.andReturn().getResponse().getContentAsString();
 
 			JsonNode json = objectMapper.readTree(response);
-			assertThat(json.get("head").get("universityId").asString()).isEqualTo(newHead.universityId());
+			assertThat(json.get("head").get("userId").asString()).isEqualTo(newHead.userId().toString());
 		}
 
 		@Test

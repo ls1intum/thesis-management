@@ -1,4 +1,4 @@
-import type { ILightUser } from '@/core/user/requests/responses/user'
+import type { IMinimalUser } from '@/core/user/requests/responses/user'
 import type { UploadFileType } from '@/core/config/types'
 import { Button, Center, Group, Input, Table, Text } from '@mantine/core'
 import { formatDate } from '@/core/utils/format'
@@ -15,7 +15,7 @@ interface IFileHistoryTableProps {
     url: string
     filename: string
     uploadedAt: string
-    uploadedBy: ILightUser
+    uploadedBy: IMinimalUser
     onDelete?: () => PromiseLike<unknown>
   }>
 }

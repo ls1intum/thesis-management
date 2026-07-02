@@ -13,13 +13,17 @@ interface IResearchGroupFormProps {
   layout?: 'grid' | 'stack'
 }
 
+// On edit, headUsername starts empty and is only populated when the user picks
+// a new head via the autocomplete — the backend treats an empty value as
+// "keep the existing head", which lets the form avoid requiring the current
+// head's universityId (no longer returned by the public research-group DTO).
 const getInitialValues = (initial: Partial<IResearchGroup> | undefined) => ({
   name: initial?.name ?? '',
   abbreviation: initial?.abbreviation ?? '',
   campus: initial?.campus ?? '',
   description: initial?.description ?? '',
   websiteUrl: initial?.websiteUrl ?? '',
-  headUsername: initial?.head?.universityId ?? '',
+  headUsername: '',
 })
 
 const getInitialHeadLabel = (initial: Partial<IResearchGroup> | undefined): string =>
@@ -42,7 +46,7 @@ const ResearchGroupForm = ({
     validateInputOnChange: true,
     validate: {
       name: (value) => (value.trim().length < 2 ? 'Name must be at least 2 characters' : null),
-      headUsername: (value) => (!value ? 'Please select a group head' : null),
+      headUsername: (value) => (!isEditing && !value ? 'Please select a group head' : null),
       websiteUrl: (value) => {
         if (value && !/^https?:\/\/[^\s/$.?#].[^\s]*$/.test(value)) {
           return 'Please enter a valid URL'
@@ -114,7 +118,6 @@ const ResearchGroupForm = ({
             label='Group Head'
             placeholder='Search by name or email...'
             withAsterisk
-            previousUser={initialFormValues.head}
           />
         </Grid.Col>
 

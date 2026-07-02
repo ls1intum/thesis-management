@@ -27,16 +27,9 @@ const initial: Partial<IResearchGroup> = {
   websiteUrl: 'https://example.com',
   head: {
     userId: 'u1',
-    universityId: 'u1',
     firstName: 'Ada',
     lastName: 'Lovelace',
-    email: 'ada@example.com',
     avatar: null,
-    matriculationNumber: null,
-    studyDegree: null,
-    studyProgram: null,
-    customData: null,
-    joinedAt: '2026-01-01T00:00:00Z',
   },
 }
 

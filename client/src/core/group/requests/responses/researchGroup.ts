@@ -1,4 +1,4 @@
-import type { ILightUser } from '@/core/user/requests/responses/user'
+import type { IMinimalUser } from '@/core/user/requests/responses/user'
 
 export interface IMinimalResearchGroup {
   id: string
@@ -6,7 +6,7 @@ export interface IMinimalResearchGroup {
 }
 
 export interface ILightResearchGroup extends IMinimalResearchGroup {
-  head: ILightUser
+  head: IMinimalUser
   abbreviation: string
 }
 

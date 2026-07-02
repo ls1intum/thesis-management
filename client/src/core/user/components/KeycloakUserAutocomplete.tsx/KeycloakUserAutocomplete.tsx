@@ -5,7 +5,6 @@ import { showSimpleError } from '@/core/utils/notification'
 import { doRequest } from '@/core/requests/request'
 import { getApiResponseErrorMessage } from '@/core/requests/handler'
 import UserInformationRow from '@/core/user/components/UserInformationRow/UserInformationRow'
-import type { ILightUser } from '@/core/user/requests/responses/user'
 import type { IKeycloakUserElement } from '@/core/user/requests/responses/keycloakUser'
 
 interface KeycloakUserAutocompleteProps {
@@ -14,7 +13,11 @@ interface KeycloakUserAutocompleteProps {
   label?: string
   placeholder?: string
   withAsterisk?: boolean
-  previousUser?: ILightUser
+  // The current head's username, when known, is allowed to be re-picked even
+  // though they already belong to the group being edited. Public research-group
+  // responses no longer expose the head's universityId, so callers now often
+  // leave this undefined and the "already in a group" hint applies to everyone.
+  previousUsername?: string
 }
 
 const KeycloakUserAutocomplete = ({
@@ -23,13 +26,13 @@ const KeycloakUserAutocomplete = ({
   label,
   placeholder = 'Search by name or email...',
   withAsterisk = false,
-  previousUser,
+  previousUsername,
 }: KeycloakUserAutocompleteProps) => {
   const [searchKey, setSearchKey] = useState('')
   const [debouncedSearchKey] = useDebouncedValue(searchKey, 300)
   const [userOptions, setUserOptions] = useState<IKeycloakUserElement[]>([])
   const [loadingUsers, setLoadingUsers] = useState(false)
-  const [selectedUsername, setSelectedUsername] = useState<string>(previousUser?.universityId ?? '')
+  const [selectedUsername, setSelectedUsername] = useState<string>(previousUsername ?? '')
 
   const getUserOptionValue = (user: {
     firstName: string
@@ -89,7 +92,7 @@ const KeycloakUserAutocomplete = ({
       data={userOptions.map((user) => ({
         value: getUserOptionValue(user),
         disabled:
-          (user.hasResearchGroup && user.username !== previousUser?.universityId) ||
+          (user.hasResearchGroup && user.username !== previousUsername) ||
           selectedUsername === user.username,
       }))}
       limit={10}
@@ -104,7 +107,7 @@ const KeycloakUserAutocomplete = ({
             username={user?.username}
             email={user?.email}
             disableMessage={
-              user?.hasResearchGroup && user?.username !== previousUser?.universityId
+              user?.hasResearchGroup && user?.username !== previousUsername
                 ? 'User already has a research group'
                 : selectedUsername === user?.username
                   ? 'User is already selected'
