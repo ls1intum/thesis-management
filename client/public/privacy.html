@@ -134,14 +134,19 @@
 
 <h2 id="web-presence">Information about the web presence</h2>
 
+<h3 id="hosting">Hosting and technical operation</h3>
+<p>The application and its data are operated on servers of the Research Group for Applied Education Technologies (AET)
+  and the IT Operations (ITO) of the Technical University of Munich. Backups are stored in the Tivoli Storage Manager
+  (TSM) of the Leibniz Supercomputing Centre (LRZ). All processing takes place on university-operated infrastructure.</p>
+
 <h3 id="encryption">SSL/TLS encryption</h3>
 <p>For security reasons and to protect the transmission of confidential content, this application uses SSL/TLS
   encryption. This means that data you transmit via this application cannot be read by third parties. You can recognize
   an encrypted connection by the "https://" address line in your browser and by the lock symbol in the browser line.</p>
 
 <h3 id="logging">Server logging</h3>
-<p>The web servers are operated by the AET. Every time the application is accessed, the web server temporarily processes
-  the following information in log files:</p>
+<p>The web servers are operated by the AET and the ITO (see above). Every time the application is accessed, the web
+  server temporarily processes the following information in log files:</p>
 <ul>
   <li>IP address of the requesting computer</li>
   <li>Date and time of access</li>
@@ -165,6 +170,12 @@
   <li>Privacy consent status (in localStorage)</li>
   <li>User interface preferences (in localStorage)</li>
 </ul>
+<p>In addition to your university credentials, you may optionally register one or more <strong>passkeys</strong>
+  (WebAuthn/FIDO2) as a passwordless sign-in method. Passkeys are managed and stored by the authentication service
+  (Keycloak), not by this application. For each passkey, a device name derived from your operating system and browser
+  (e.g. "Mac - Safari") is stored so that you can identify and manage your passkeys. You can register and remove
+  passkeys at any time in the application settings; their use is optional, and your university credentials remain
+  available as an alternative.</p>
 
 <h2 id="processing-operations">Information on individual processing operations</h2>
 
