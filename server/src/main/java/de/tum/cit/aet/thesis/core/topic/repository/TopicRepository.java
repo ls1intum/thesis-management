@@ -18,6 +18,13 @@ public interface TopicRepository extends JpaRepository<Topic, UUID> {
 			SELECT t.* FROM topics t WHERE ( :researchGroupIds IS NULL OR t.research_group_id IN (:researchGroupIds)) AND
 					(:searchQuery IS NULL OR t.title ILIKE CONCAT('%', :searchQuery, '%')) AND
 					(t.thesis_types IS NULL OR CAST(:types AS TEXT[]) IS NULL OR t.thesis_types && CAST(:types AS TEXT[])) AND
+					(:supervisorName IS NULL OR EXISTS (
+						SELECT 1 FROM topic_roles tr
+						JOIN users u ON u.user_id = tr.user_id
+						WHERE tr.topic_id = t.topic_id
+							AND tr.role = 'SUPERVISOR'
+							AND LOWER(TRIM(COALESCE(u.first_name, '') || ' ' || COALESCE(u.last_name, ''))) = LOWER(TRIM(:supervisorName))
+					)) AND
 					(
 						CAST(:states AS TEXT[]) IS NULL
 						OR (
@@ -35,6 +42,7 @@ public interface TopicRepository extends JpaRepository<Topic, UUID> {
 			@Param("types") String[] types,
 			@Param("states") String[] states,
 			@Param("searchQuery") String searchQuery,
+			@Param("supervisorName") String supervisorName,
 			Pageable page
 	);
 

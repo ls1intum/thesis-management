@@ -313,6 +313,14 @@ const AppRoutes = () => {
             }
           />
           <Route
+            path='/supervisor/:supervisorName'
+            element={
+              <PublicArea size={publicBreakpointSize}>
+                <LandingPage />
+              </PublicArea>
+            }
+          />
+          <Route
             path='/:researchGroupAbbreviation'
             element={
               <PublicArea size={publicBreakpointSize}>

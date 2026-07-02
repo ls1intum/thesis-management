@@ -21,11 +21,16 @@ import { TOPIC_DISCLAIMER_TEXT } from '@/core/topic/components/TopicDisclaimerAl
 const LandingPage = () => {
   usePageTitle('Find a Thesis Topic')
 
-  const { researchGroupAbbreviation } = useParams<{ researchGroupAbbreviation: string }>()
+  const { researchGroupAbbreviation, supervisorName: supervisorNameParam } = useParams<{
+    researchGroupAbbreviation: string
+    supervisorName: string
+  }>()
 
   const [searchParams, setSearchParams] = useSearchParams()
   const [searchKey, setSearchKey] = useState(searchParams.get('search') ?? '')
   const [debouncedSearch] = useDebouncedValue(searchKey, 300)
+
+  const supervisorFilter = supervisorNameParam ?? searchParams.get('supervisor') ?? undefined
 
   const [topicView, setTopicView] = useState<string>(
     searchParams.get('view') ?? GLOBAL_CONFIG.topic_views_options.OPEN,
@@ -69,8 +74,9 @@ const LandingPage = () => {
       researchGroupIds: researchGroupFilter,
       search: debouncedSearch,
       types: selectedThesisTypes,
+      supervisorName: supervisorFilter,
     }),
-    [researchGroupFilter, debouncedSearch, selectedThesisTypes],
+    [researchGroupFilter, debouncedSearch, selectedThesisTypes, supervisorFilter],
   )
 
   useEffect(() => {
@@ -135,6 +141,7 @@ const LandingPage = () => {
         researchGroupId={
           researchGroups.find((group) => group.abbreviation === researchGroupAbbreviation)?.id
         }
+        supervisorName={supervisorFilter}
       />
 
       <Alert variant='light' color='blue' icon={<InfoIcon />} style={{ flexShrink: 0 }}>

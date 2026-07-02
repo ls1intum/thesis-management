@@ -79,6 +79,7 @@ const TopicsProvider = (props: PropsWithChildren<ITopicsProviderProps>) => {
           onlyOwnResearchGroup: filters.researchSpecific ? 'true' : 'false',
           search: filters.search ?? '',
           researchGroupIds: filters.researchGroupIds?.join(',') ?? '',
+          supervisor: filters.supervisorName ?? '',
         },
       },
       (res) => {
