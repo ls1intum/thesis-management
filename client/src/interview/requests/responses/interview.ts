@@ -2,7 +2,7 @@ import type {
   ApplicationState,
   IApplicationSummary,
 } from '@/core/application/requests/responses/application'
-import type { ILightUser } from '@/core/user/requests/responses/user'
+import type { ILightUser, IMinimalUser } from '@/core/user/requests/responses/user'
 
 export enum InterviewState {
   UNCONTACTED = 'Uncontacted',
@@ -36,7 +36,7 @@ export interface IInterviewSlot {
 
 export interface IIntervieweeLight {
   intervieweeId: string
-  user: ILightUser
+  user: IMinimalUser
   score: number | null
   lastInvited: Date | null
 }
@@ -47,7 +47,8 @@ export interface IIntervieweeLightWithNextSlot extends IIntervieweeLight {
   applicationState: ApplicationState
 }
 
-export interface IInterviewee extends IIntervieweeLight {
+export interface IInterviewee extends Omit<IIntervieweeLight, 'user'> {
+  user: ILightUser
   interviewNote: string | null
   application: IApplicationSummary | null
 }

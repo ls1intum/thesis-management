@@ -233,7 +233,7 @@ public ResponseEntity<ResearchGroupDto> updateResearchGroup(
 
 	researchGroup = researchGroupService.updateResearchGroup(
 		researchGroup,
-		RequestValidator.validateNotNull(payload.headUsername()),
+		payload.headUsername(),
 		RequestValidator.validateNotNull(payload.name()),
 		RequestValidator.validateNotNull(payload.abbreviation()),
 		RequestValidator.validateStringMaxLengthAllowNull(payload.description(), 500),

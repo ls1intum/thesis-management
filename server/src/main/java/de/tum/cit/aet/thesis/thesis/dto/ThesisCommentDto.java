@@ -1,6 +1,6 @@
 package de.tum.cit.aet.thesis.thesis.dto;
 
-import de.tum.cit.aet.thesis.core.user.dto.LightUserDto;
+import de.tum.cit.aet.thesis.core.user.dto.MinimalUserDto;
 import de.tum.cit.aet.thesis.thesis.entity.ThesisComment;
 
 import java.time.Instant;
@@ -12,7 +12,7 @@ public record ThesisCommentDto(
 		String filename,
 		String uploadName,
 		Instant createdAt,
-		LightUserDto createdBy
+		MinimalUserDto createdBy
 ) {
 	public static ThesisCommentDto fromCommentEntity(ThesisComment comment) {
 		if (comment == null) {
@@ -25,7 +25,7 @@ public record ThesisCommentDto(
 				comment.getFilename(),
 				comment.getUploadName(),
 				comment.getCreatedAt(),
-				LightUserDto.fromUserEntity(comment.getCreatedBy())
+				MinimalUserDto.fromUserEntity(comment.getCreatedBy())
 		);
 	}
 }

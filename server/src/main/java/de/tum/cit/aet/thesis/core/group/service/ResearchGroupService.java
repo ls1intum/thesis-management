@@ -300,8 +300,12 @@ public class ResearchGroupService {
 		currentUserProvider().assertCanAccessResearchGroup(researchGroup);
 
 		User oldHead = researchGroup.getHead();
-		//Get the User by universityId else create the user
-		User head = userService.findOrCreateByUniversityId(headUsername);
+		//When headUsername is not provided, keep the existing head unchanged. Admin
+		//edit forms omit it when the user did not touch the head autocomplete, so
+		//they no longer need the current head's universityId to submit other fields.
+		User head = headUsername == null || headUsername.isBlank()
+				? oldHead
+				: userService.findOrCreateByUniversityId(headUsername);
 
 		//Update head only on change
 		if (!oldHead.getId().equals(head.getId())) {
