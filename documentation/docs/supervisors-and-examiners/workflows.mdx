@@ -1,0 +1,82 @@
+---
+title: Workflows
+sidebar_position: 4
+description: Visual overview of the thesis application and writing workflows.
+---
+
+# Workflows
+
+The following flowcharts give a visual overview of the thesis processes
+implemented in Thesis Management. They map out the step-by-step workflows
+from thesis topic selection and application submission through to final
+grading and completion, and they show how students, supervisors, and
+examiners interact along the way.
+
+Use these as a quick reference for understanding how each role engages in
+the thesis process. The detailed walkthroughs live in the
+[Supervisor & Examiner Guide](./supervisor-examiner-guide) and the
+[Student Guide](/students/student-guide).
+
+## Thesis Application Flowchart
+
+![Thesis Application Flowchart](/files/thesis-application-flowchart.svg)
+
+### Automatic Application Expiration
+
+Applications that have not been reviewed within a configurable period are
+automatically rejected. Research group admins can configure the expiration
+delay in weeks (minimum 2 weeks) in the research group settings. When an
+application expires, the student receives the standard rejection email
+notification, so they can reapply or pursue other options.
+
+This mechanism ensures that students are not left waiting indefinitely for
+a response and enables the system to clean up application data after the
+retention period.
+
+## Thesis Writing Flowchart
+
+![Thesis Writing Flowchart](/files/thesis-writing-flowchart.svg)
+
+## Privacy and Data Protection
+
+The platform includes GDPR-compliant privacy and data protection features:
+
+- **Privacy Statement** — a comprehensive privacy page accessible to all
+  users (authenticated and unauthenticated) that documents all data
+  processing activities, legal bases, retention periods, and data subject
+  rights.
+- **Data Export (Art. 15 / Art. 20)** — authenticated users can request an
+  export of all their personal data from the Data Export page (also linked
+  from the Privacy page). Exports are generated as ZIP files containing
+  structured JSON data (profile, applications, theses, assessments) and
+  uploaded documents (CV, degree report, examination report). Exports are
+  processed overnight and the user receives an email notification with a
+  link to download. Downloads are available for 7 days and users can
+  request a new export every 7 days. See the
+  [Data Retention Policy](/admin/data-retention) for details.
+- **Data Retention** — automated cleanup of expired data runs nightly.
+  Rejected applications are deleted after 1 year. Data export files are
+  deleted after 7 days. Admins can trigger the cleanup manually from the
+  Data Retention admin page. See the
+  [Data Retention Policy](/admin/data-retention) for the full retention
+  schedule and rationale.
+- **Application Deletion** — admins can permanently delete rejected
+  applications from the application detail page.
+- **Profile Picture Import** — users can import their profile picture from
+  Gravatar via their profile settings. The lookup is performed server-side
+  to avoid exposing the user's IP address to external services.
+
+## Research Group Settings
+
+Research group admins can configure per-group settings:
+
+- **Scientific Writing Guide** — a customizable link to scientific writing
+  guidelines shown to students during the thesis writing phase. Each
+  research group can configure its own link in the research group settings
+  page.
+- **Application Review Deadline** — the number of weeks (minimum 2) after
+  which unreviewed applications are auto-rejected.
+- **Custom Application Fields** — extra questions shown to applicants
+  during the application flow.
+- **Email Templates** — per-case email templates that can be edited under
+  `/research-groups/<id>/email-templates/<case>/edit`.

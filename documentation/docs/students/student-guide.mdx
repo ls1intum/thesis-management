@@ -1,0 +1,406 @@
+---
+title: Student Guide
+sidebar_position: 2
+description: End-to-end walkthrough of the platform from the student perspective — finding a topic, applying, interviewing, writing, and receiving your grade.
+---
+
+import VideoEmbed from '@site/src/components/VideoEmbed/VideoEmbed';
+
+This guide walks you, the student, through everything the Thesis Management
+platform can do for you — from finding a topic that fits, through writing your
+thesis, all the way to receiving your grade.
+
+If you get stuck at any point, look at the section headings to jump
+straight to the relevant step. Short demo videos are embedded next to the
+sections they cover.
+
+---
+
+## 1. Getting an Account
+
+You sign in with your university identity provider (Keycloak). The first time
+you land on the platform and press **Login**, you are redirected to the
+university's login page. On return, an account is created for you automatically
+and the platform reads your name, email, and matriculation number from your
+university profile.
+
+If your browser supports it, the platform offers to register a **passkey** for
+faster future sign-in — you can accept, dismiss, or manage passkeys later in
+**Settings → Account**.
+
+> _Screenshot placeholder: **`/img/screenshots/student-01-login-passkey-prompt.png`** — the
+> passkey registration prompt that appears after first login, showing the
+> "Register passkey" / "Skip" buttons._
+
+## 2. Landing Page — Finding a Topic
+
+The landing page (`/`) is the public entry point. You can browse topics even
+before logging in, but you will need to sign in to apply.
+
+The landing page offers:
+
+- A **search bar** that filters topics live as you type.
+- A **research-group filter** that narrows the list to a specific chair /
+  research group.
+- A **thesis-type filter** (Bachelor, Master, Project, Seminar).
+- A **view toggle** between grid cards and a compact list.
+- A **tab switch** between _Open Topics_ (topics you can still apply to) and
+  _Published Theses_ (theses whose result is public).
+
+Two special variants of the landing page pre-filter for you:
+
+- **`/<research-group-abbreviation>`** — shows only the topics of that research
+  group. Chairs often link to this URL directly.
+- **`/supervisor/<supervisor-name>`** — shows only the topics owned by a
+  particular supervisor. This link is meant to be shared: any URL a supervisor
+  gives you can jump straight to their list.
+
+![Landing page with the topic grid, search bar, and filter panel](/img/screenshots/student-02-landing-topics.png)
+
+## 3. Reading a Topic in Detail
+
+Clicking a topic opens `/topics/<id>`. The topic page shows:
+
+- **Problem statement**, **requirements**, **goals**, and **references**
+  (rich-text sections).
+- A **side panel** listing the research group, supervisors, examiners, allowed
+  thesis types (Bachelor/Master/…), and the language the thesis is expected to
+  be written in.
+- An **Apply Now** button. If the topic is closed, the button is disabled and
+  labelled accordingly.
+
+![Topic detail page with content sections and side panel](/img/screenshots/student-03-topic-detail.png)
+
+## 4. Submitting an Application
+
+The application flow (`/submit-application/<topicId>`) is a three-step wizard.
+
+### Step 1 — Topic Selection
+
+If you started your application from a specific topic page, this step is
+skipped and the topic is pre-selected. Otherwise you pick a topic from the
+list, or you can apply _without a topic_ if the research group allows suggested
+topics.
+
+### Step 2 — Your Information
+
+The form is pre-filled from your university profile. Read-only fields include
+your name, email, and matriculation number. You can edit:
+
+- **Gender**
+- **Nationality**
+- **Current study degree** (Bachelor, Master, …)
+- **Study program**
+- **Semester in the current program**
+- **Interests**, **Projects**, and **Special skills** (rich text, up to
+  1000 characters each)
+
+You must upload the following **PDF documents** (max 2 MB each):
+
+- **Examination report** (required)
+- **CV** (required)
+- **Bachelor report** (required only if applying for a Master's thesis)
+
+Some research groups configure **custom fields** that appear here (e.g.
+"Which programming languages have you used in projects?"). Fill them in as
+requested.
+
+At the bottom you tick the **privacy consent** checkbox confirming that you
+have read the privacy statement.
+
+![Application wizard — Your Information step with personal fields and file uploads](/img/screenshots/student-04-application-userinfo.png)
+
+### Step 3 — Motivation
+
+- The selected topic is shown as an accordion for reference.
+- Choose the **thesis type** you want to pursue (the options are restricted to
+  what the topic allows).
+- Pick a **desired start date**.
+- Write a **motivation letter** (up to 1000 characters).
+
+Press **Submit Application**. A confirmation modal asks you to confirm, and on
+success you see a green **"Your application was successfully submitted!"** card.
+
+![Application wizard — Motivation step with topic summary and submit button](/img/screenshots/student-05-application-motivation.png)
+
+<VideoEmbed
+  src="https://live.rbg.tum.de/w/artemisintro/53606"
+  title="Submit Thesis Application"
+  caption="Walkthrough: submitting a thesis application end-to-end."
+/>
+
+## 5. Editing or Tracking an Application
+
+Until a supervisor has reviewed your application you can edit it. Open the
+application from your dashboard and press **Edit** — this opens the same
+wizard as before, but every field is pre-populated, and the final button is
+labelled **Update Application**.
+
+Applications are subject to **automatic expiration**: if the supervisors do
+not react within the deadline configured by the research group (at least two
+weeks), the platform rejects the application on their behalf and sends you the
+standard rejection email. You are then free to reapply elsewhere.
+
+![Dashboard "My Applications" table with state badges](/img/screenshots/student-06-application-list.png)
+
+<VideoEmbed
+  src="https://live.rbg.tum.de/w/artemisintro/53607"
+  title="Edit Thesis Application"
+  caption="Walkthrough: editing an already-submitted application before it is reviewed."
+/>
+
+## 6. Booking an Interview Slot
+
+Some research groups run an **interview round** before accepting applicants.
+If they do, you will receive an email with a **booking link** of the form
+`/interview_booking/<processId>`.
+
+The booking page shows:
+
+- A **carousel of available slots**. Each slot displays the date, start and
+  end time, duration, location, and (if it is a remote interview) a stream URL.
+- A **summary panel** with topic information (title, research group,
+  supervisors, examiners) and — once you pick one — the details of the slot
+  you are about to reserve.
+
+Press **Reserve Interview Slot** to confirm your booking. Once booked, the
+page changes into a confirmation card showing the reserved slot. If you need
+to change slots, press **Cancel Interview** and re-book from the carousel.
+
+If the process has been closed by the research group, you'll see an
+**"Interview Process Completed"** message and cannot book anymore.
+
+![Interview-booking page with slot carousel and summary panel](/img/screenshots/student-07-interview-booking.png)
+
+<VideoEmbed
+  src="https://live.rbg.tum.de/w/artemisintro/70067"
+  title="Book Interview Slot"
+  caption="Walkthrough: browsing and booking an interview timeslot."
+/>
+
+## 7. Your Thesis Page
+
+Once your application has been accepted, a thesis is created for you. Open it
+from the dashboard or from `/theses/<id>`. The thesis page is divided into
+sections that light up as the thesis progresses through its states:
+
+**Proposal → Writing → Submitted → Assessed → Graded → Completed**
+
+At the top of the page you see the **header** with the current thesis title
+and a badge for the current state. The sections you interact with most as a
+student are:
+
+- **Info Section** — title, additional-language titles, abstract, extra links.
+- **Proposal Section** — visible during the _Proposal_ state.
+- **Writing Section** — visible from the _Writing_ state onward.
+- **Presentations Section** — appears once writing begins.
+- **Assessment**, **Final Grade** — read-only, filled by staff.
+
+![Thesis page header with title, state badge, and section list](/img/screenshots/student-08-thesis-header.png)
+
+### Info Section
+
+You can edit the **title** (in every configured language), the **abstract**
+(max 2000 chars), and any **additional information / links** while the thesis
+is not yet closed. Press **Edit** to switch the section into edit mode and
+**Save** when you are done. The platform occasionally proposes an
+auto-generated abstract; you can **Accept** or **Dismiss** the suggestion.
+
+## 8. The Proposal Phase
+
+During the _Proposal_ state you upload the document describing what you are
+going to work on.
+
+- Press **Upload Proposal** to attach a PDF (up to 25 MB).
+- Every version is kept in the **history table** below the preview — you can
+  see who uploaded which version and when.
+- Your supervisors will either request **changes** (see the _Feedback_
+  section) or **Accept** the proposal, which moves the thesis into the
+  _Writing_ state.
+
+![Proposal section with PDF preview and version history](/img/screenshots/student-09-proposal.png)
+
+<VideoEmbed
+  src="https://live.rbg.tum.de/w/artemisintro/53608"
+  title="Upload Proposal"
+  caption="Walkthrough: uploading a proposal PDF and reviewing supervisor feedback."
+/>
+
+## 9. The Writing Phase
+
+The Writing section is where you upload your actual thesis and any additional
+artefacts.
+
+- The **left side** shows a PDF preview of the latest thesis upload.
+- The **right side** lists all expected file slots: the **thesis file**
+  (required) and any additional file types configured by your chair (e.g.
+  appendix, code archive, dataset).
+- Each slot has an eye icon (preview), a download icon, and an upload icon.
+  You can re-upload as often as needed; the **file history** at the bottom
+  keeps every previous version.
+- An **orange reminder** at the top warns that uploading here does **not**
+  replace the official university submission (e.g. TUMonline). Follow the link
+  in the reminder for the correct procedure.
+
+![Writing section with PDF preview, file-slot table, and submission reminder](/img/screenshots/student-10-writing.png)
+
+<VideoEmbed
+  src="https://live.rbg.tum.de/w/artemisintro/53609"
+  title="Upload Thesis Files"
+  caption="Walkthrough: uploading thesis files and iterating on versions before final submission."
+/>
+
+## 10. Comments and Feedback
+
+There are two kinds of comment threads you will see:
+
+- **Student-visible comments** — a two-way conversation between you and your
+  supervisors. You can post here, edit your own comments, and attach files.
+- **Supervisor comments** — a private thread among supervisors. It exists on
+  the page but is clearly labelled "Not visible to student" — you will _not_
+  see this thread at all, so don't be surprised that supervisors sometimes
+  refer to internal notes you can't see.
+
+**Feedback requests** are structured to-do items rather than free-form
+comments. When a supervisor requests changes on your proposal or thesis, each
+line becomes a row in a feedback table with a checkbox. Tick a row when you
+have addressed it; supervisors can then verify that everything is done.
+
+![Feedback overview with requested-changes checklist](/img/screenshots/student-11-feedback.png)
+
+## 11. Presentations
+
+Both intermediate presentations and the final thesis defense are managed on
+the platform.
+
+- Press **Create Presentation Draft** in the presentation section.
+- Fill in the **date and time**, **type** (Final, Intermediate, …),
+  **language**, **location**, and — optionally — a **stream URL** for online
+  presentations.
+- The presentation is saved as a **draft** until your supervisors approve it,
+  after which its status changes to **Scheduled**.
+- Once scheduled, invitees are notified by email and the presentation appears
+  in `/presentations` for everyone who has been invited.
+- The **public URL** `/presentations/<id>` can be shared with people outside
+  the platform so they can join.
+
+You can edit or delete a draft yourself; once it has been accepted, ask a
+supervisor to reschedule.
+
+!["Create Presentation Draft" modal with date, type, language, and location fields](/img/screenshots/student-12-presentation-draft.png)
+
+<VideoEmbed
+  src="https://live.rbg.tum.de/w/artemisintro/53604"
+  title="Create Presentation Draft"
+  caption="Walkthrough: drafting a presentation, having it approved, and inviting attendees."
+/>
+
+## 12. Final Submission
+
+When you have uploaded all required files in the writing section, the
+platform enables the **Mark Submission as Final** button. Pressing it opens a
+confirmation dialog:
+
+> "Are you sure you want to submit your thesis? This action cannot be undone."
+
+Confirm to move the thesis into the _Submitted_ state. From this point you
+cannot upload new versions.
+
+> [!IMPORTANT]
+> Marking your submission as final on Thesis Management is not a replacement
+> for the official university submission process. Follow the orange reminder
+> in the writing section for the university's own procedure and deadline.
+
+> _Screenshot placeholder: **`/img/screenshots/student-13-final-submission.png`**
+> — the confirmation modal that appears when you press "Mark Submission as
+> Final", with the warning text and the two buttons (Confirm / Cancel)._
+
+## 13. Assessment, Grade, and Completion
+
+- The **Assessment Section** appears once your supervisors have submitted
+  their evaluation. You will see a summary, strengths and weaknesses, and a
+  proposed grade.
+- The **Final Grade Section** shows the grade set by the examiner and any
+  written feedback attached to it.
+- When the examiner marks the thesis as **completed**, its state moves to
+  _Completed_ and the record becomes read-only.
+
+You cannot post to the assessment section — it is filled in by staff.
+
+## 14. Overview Page (Gantt Chart)
+
+Open `/overview` for a **Gantt-chart** timeline of your thesis (and any
+earlier theses on your record). Bars are colour-coded by state, and hovering
+a bar shows the timeline details. Filters at the top narrow the view by
+thesis type, state, or free-text search.
+
+For most students this page shows a single thesis, but it is useful to
+double-check the intended start and end dates.
+
+![Thesis overview Gantt with a single colour-coded bar](/img/screenshots/student-14-overview-gantt.png)
+
+## 15. Settings and Profile
+
+`/settings` has three tabs:
+
+### My Information
+
+Your personal profile — the same data you entered during the application, but
+you can update it at any time. In particular:
+
+- Upload or replace your **avatar** by clicking on the current picture. You
+  can also **import from Gravatar** — the platform does the Gravatar lookup on
+  the server so your IP address is not exposed to third parties.
+- Keep your **study program** and **semester** up to date so that supervisors
+  see the current information.
+
+### Notification Settings
+
+For students the important toggles are:
+
+- **Presentation Invitations** — email when someone invites you to a public
+  presentation.
+- **Thesis Comments** — email when a new comment is posted on one of your
+  theses. Below the master switch, a table lets you toggle notifications per
+  individual thesis.
+
+### Account
+
+- **Passkeys** — see the passkeys you have registered, add another, or delete
+  one you no longer use.
+- **Delete account** — a destructive action, confirmed with a modal. Your
+  personal data is removed as far as retention policy allows.
+
+![Notification-settings tab with master toggles and per-thesis table](/img/screenshots/student-15-settings-notifications.png)
+
+<VideoEmbed
+  src="https://live.rbg.tum.de/w/artemisintro/53605"
+  title="Manage User Settings"
+  caption="Walkthrough: updating profile, notification, and account settings."
+/>
+
+## 16. Privacy — Data Export and Account Deletion
+
+The platform is GDPR-compliant. Two features you should know about:
+
+- **Data Export** — open `/data-export` (or use the button on the Privacy
+  page) to request a ZIP archive containing all your personal data on the
+  platform: profile, applications, theses, uploads, comments, and
+  assessments. The archive is prepared overnight; you receive an email with
+  a download link once it is ready. Downloads are available for **7 days**,
+  and you can request a new export every **7 days**.
+- **Rejected applications** are automatically deleted after **1 year**. Data
+  export files are automatically deleted after **7 days**.
+
+For the full retention policy see [Data Retention Policy](/admin/data-retention).
+
+![Data Export page with the "Request Data Export" button](/img/screenshots/student-16-data-export.png)
+
+## 17. Getting Help
+
+- The **About page** (`/about`) lists the people behind the platform.
+- The **Imprint** (`/imprint`) has the legal contact.
+- For direct support write to
+  [thesis-management-support.aet@xcit.tum.de](mailto:thesis-management-support.aet@xcit.tum.de).
+- Short **video walk-throughs** for each feature are embedded directly next
+  to the relevant sections of this guide.
