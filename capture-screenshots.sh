@@ -8,7 +8,7 @@ set -euo pipefail
 # client production bundle) and runs the Playwright screenshot pipeline in
 # `client/screenshots/`. Every "scene" registered under
 # `client/screenshots/scenes/` produces a PNG in
-# `documentation/static/files/img/screenshots/`.
+# `documentation/static/img/screenshots/`.
 #
 # Services are left running after the capture so re-runs (especially with
 # --grep) don't pay the full startup cost every time. Use --stop to shut
@@ -30,7 +30,7 @@ ROOT_DIR="$(cd "$(dirname "$0")" && pwd)"
 CLIENT_DIR="$ROOT_DIR/client"
 SERVER_DIR="$ROOT_DIR/server"
 PID_DIR="$ROOT_DIR/.capture-pids"
-OUTPUT_DIR="$ROOT_DIR/documentation/static/files/img/screenshots"
+OUTPUT_DIR="$ROOT_DIR/documentation/static/img/screenshots"
 CONFIG_REL="screenshots/playwright.config.ts"
 
 RED='\033[0;31m'

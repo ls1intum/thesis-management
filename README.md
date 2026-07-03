@@ -1,5 +1,5 @@
 > [!NOTE]
-> Please contact us if you want to get onboarded: **[thesis-management-support.aet@xcit.tum.de](thesis-management-support.aet@xcit.tum.de)**.
+> Please contact us if you want to get onboarded: **[thesis-management-support.aet@xcit.tum.de](mailto:thesis-management-support.aet@xcit.tum.de)**.
 
 # Thesis Management
 
@@ -27,4 +27,4 @@ The Docusaurus site lives under [`documentation/`](documentation/). See [`docume
 
 > [!NOTE]
 > **Couldn't find what you were looking for?**
-> If you need any further help or want to be onboarded to the system, reach out to us at **[thesis-management-support.aet@xcit.tum.de](thesis-management-support.aet@xcit.tum.de)**.
+> If you need any further help or want to be onboarded to the system, reach out to us at **[thesis-management-support.aet@xcit.tum.de](mailto:thesis-management-support.aet@xcit.tum.de)**.
