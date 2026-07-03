@@ -20,14 +20,14 @@
   Research Group for Applied Education Technologies (AET)<br>
   Boltzmannstr. 3<br>
   85748 Garching b. Munich<br>
-  Email: <a href="mailto:ls1.admin@in.tum.de">ls1.admin@in.tum.de</a>
+  Email: <a href="mailto:thesis-management-support.aet@xcit.tum.de">thesis-management-support.aet@xcit.tum.de</a>
 </p>
 
 <h3 id="dpo">Data Protection Officer</h3>
 <p>The Data Protection Officer of the Technical University of Munich can be reached at:</p>
 <p>
-  The Data Protection Officer of the Technical University of Munich<br>
-  Postal address: Arcisstr. 21, 80333 Munich<br>
+  The Data Protection Officer of the Technical University of Munich, Dr. Fabian Franzen<br>
+  Postal address: Boltzmannstr. 3, 85748 Garching<br>
   Email: <a href="mailto:beauftragter@datenschutz.tum.de">beauftragter@datenschutz.tum.de</a><br>
   Further information: <a href="https://www.datenschutz.tum.de" rel="noopener" target="_blank">https://www.datenschutz.tum.de</a>
 </p>
@@ -65,7 +65,9 @@
         "public" by a supervisor appear in this listing.</li>
       <li>Thesis presentation schedules whose visibility is set to "public", including presentation dates,
         locations, stream links, and the names of participants.</li>
-      <li>Published thesis topic listings, including topic title and the names of supervisors and examiners.</li>
+      <li>Published thesis topic listings and detail pages, including topic title, thesis type, topic description,
+        application deadline or intended start date where provided, research group, and the names and profile pictures
+        of the topic creator, supervisors, and examiners.</li>
       <li>Research group information, including the name and contact details of the research group head.</li>
       <li>Profile pictures (avatars) of users who appear in publicly visible data (e.g. published theses,
         topics, or research group listings).</li>
@@ -104,8 +106,9 @@
     application data will be deleted promptly upon request.
     Thesis-related data (including accepted applications, assessments, and grades) is subject to mandatory retention
     under university examination regulations and cannot be deleted until the retention period has expired. In this case,
-    your account will be deactivated and non-essential data will be deleted immediately, while thesis-related data will
-    be fully deleted after the retention period expires.</li>
+    your account will be deactivated and non-essential data will be deleted immediately. Name, university ID,
+    matriculation number, and thesis-related files and records may be retained until the retention period expires.
+    After that, personal thesis references, files, comments, assessments, and feedback are deleted or anonymized.</li>
   <li><strong>Right to restriction of processing</strong> (Art. 18 GDPR): You have the right to request the restriction
     of processing of your personal data under certain conditions.</li>
   <li><strong>Right to data portability</strong> (Art. 20 GDPR): You have the right to receive the personal data you
@@ -118,7 +121,7 @@
     time. An informal message by email is sufficient. The lawfulness of the data processing carried out on the basis
     of the consent until the revocation remains unaffected.</li>
 </ul>
-<p>To exercise any of these rights, please contact us at <a href="mailto:it-admins@aet.cit.tum.de">it-admins@aet.cit.tum.de</a>.</p>
+<p>To exercise any of these rights, please contact us at <a href="mailto:thesis-management-support.aet@xcit.tum.de">thesis-management-support.aet@xcit.tum.de</a>.</p>
 
 <h3 id="supervisory-authority">Right to lodge a complaint</h3>
 <p>You have the right to lodge a complaint with a supervisory authority if you believe that the processing of your
@@ -137,7 +140,8 @@
 <h3 id="hosting">Hosting and technical operation</h3>
 <p>The application and its data are operated on servers of the Research Group for Applied Education Technologies (AET)
   and the IT Operations (ITO) of the Technical University of Munich. Backups are stored in the Tivoli Storage Manager
-  (TSM) of the Leibniz Supercomputing Centre (LRZ). All processing takes place on university-operated infrastructure.</p>
+  (TSM) of the Leibniz Supercomputing Centre (LRZ). Except for the external services expressly described in this
+  statement, core hosting, storage, and backups take place on university-operated infrastructure.</p>
 
 <h3 id="encryption">SSL/TLS encryption</h3>
 <p>For security reasons and to protect the transmission of confidential content, this application uses SSL/TLS
@@ -163,12 +167,12 @@
 
 <h3 id="authentication">Authentication and session data</h3>
 <p>Authentication is handled through Keycloak (Single Sign-On) using your university credentials. The application does
-  not store your password. Authentication tokens (JWT) are stored in your browser's local storage for the duration of
-  your session. The following data is stored in your browser:</p>
+  not store your password. Authentication access and refresh tokens are stored in your browser storage and are
+  cleared on logout or when they are no longer valid. The following data is stored in your browser:</p>
 <ul>
-  <li>Authentication tokens (in localStorage, cleared on logout)</li>
-  <li>Privacy consent status (in localStorage)</li>
-  <li>User interface preferences (in localStorage)</li>
+  <li>Authentication access and refresh tokens in your browser storage, cleared on logout or when no longer valid</li>
+  <li>Privacy consent status in your browser storage</li>
+  <li>User interface preferences in your browser storage</li>
 </ul>
 <p>In addition to your university credentials, you may optionally register one or more <strong>passkeys</strong>
   (WebAuthn/FIDO2) as a passwordless sign-in method. Passkeys are managed and stored by the authentication service
@@ -231,8 +235,8 @@
   to the Gravatar service operated by Automattic Inc. (USA) at <code>gravatar.com</code>. Only the cryptographic hash
   is transmitted, not your email address itself. The request is made server-side so that your IP address is not exposed
   to Gravatar. No data is sent to Gravatar unless you explicitly trigger the profile picture import.</p>
-<p><strong>International transfer:</strong> Automattic Inc. is certified under the EU-U.S. Data Privacy Framework.
-  For details, see <a href="https://automattic.com/privacy/" rel="noopener" target="_blank">Automattic's privacy
+<p><strong>International transfer:</strong> The optional Gravatar import involves a transfer to Automattic Inc. in the
+  USA. For details, see <a href="https://automattic.com/privacy/" rel="noopener" target="_blank">Automattic's privacy
   policy</a>.</p>
 
 <h3 id="thesis-data">Thesis and application data</h3>
@@ -299,15 +303,15 @@
   <li><strong>Interview calendar:</strong> Interview time slots, locations or stream links, and topic titles for
     individual users.</li>
 </ul>
-<p>These calendar feeds are accessible without authentication. The interview feed is addressed by a non-guessable user
-  identifier; the presentation feed is addressed by the research group's public abbreviation and contains only
-  presentations that have been marked as public.</p>
+<p>These calendar feeds are accessible without authentication. The interview feed is addressed by a user-specific
+  subscription URL; anyone who receives that URL can access the feed. The presentation feed is addressed by the research
+  group's public abbreviation and contains only presentations that have been marked as public.</p>
 
 <h3 id="data-export">Data export</h3>
-<p>You can request an export of your personal data in the application settings. The export is generated as a ZIP file
-  containing your data in JSON format together with your uploaded files (e.g. CV, examination report, degree report,
-  and profile picture). This feature implements your right of access (Art. 15 GDPR) and your right to data portability
-  (Art. 20 GDPR).</p>
+<p>You can request a self-service export of key profile, application, thesis, and uploaded-file data in the application
+  settings. The export is generated as a ZIP file containing JSON-formatted data together with your uploaded files
+  (e.g. CV, examination report, degree report, and profile picture). This feature supports your right of access
+  (Art. 15 GDPR) and your right to data portability (Art. 20 GDPR).</p>
 <p><strong>Retention period:</strong> Export files are available for download for 7 days after generation, after which
   they are automatically deleted.</p>
 
