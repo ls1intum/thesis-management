@@ -16,6 +16,7 @@ node_modules/
 
 # misc
 .DS_Store
+**.gradle
 
 # E2E test runner
 .e2e-pids/
