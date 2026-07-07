@@ -7,7 +7,7 @@ settings:
 overrides:
   ajv: 8.20.0
   minimatch: 10.2.5
-  serialize-javascript: 7.0.6
+  serialize-javascript: 7.0.7
   lodash: 4.18.1
   follow-redirects: 1.16.0
   flatted: 3.4.2
@@ -3892,8 +3892,8 @@ packages:
     resolution: {integrity: sha512-VMbMxbDeehAxpOtWJXlcUS5E8iXh6QmN+BkRX1GARS3wRaXEEgzCcB10gTQazO42tpNIya8xIyNx8fll1OFPrg==}
     engines: {node: '>= 0.8.0'}
 
-  serialize-javascript@7.0.6:
-    resolution: {integrity: sha512-ATTK5Q4gFVg0YDp1my2vqygyvhcklD/UV5GIlYHooGTn/NogJqIzpetkD6E5kmuVULqz/S9inUL25XcAgDRJQg==}
+  serialize-javascript@7.0.7:
+    resolution: {integrity: sha512-YAy8Od6KV+uuwUuU50np8fGB/Aues6Y0nAhA9y/hId74PlKUcme4pXcBD46NWKr1Q4osN/iseZ17YqO1XfmI8g==}
     engines: {node: '>=20.0.0'}
 
   serve-index@1.9.2:
@@ -6214,7 +6214,7 @@ snapshots:
   compression-webpack-plugin@12.0.0(webpack@5.108.4):
     dependencies:
       schema-utils: 4.3.3
-      serialize-javascript: 7.0.6
+      serialize-javascript: 7.0.7
       webpack: 5.108.4(postcss@8.5.16)(webpack-cli@7.2.1)
 
   compression@1.8.1:
@@ -6256,7 +6256,7 @@ snapshots:
       glob-parent: 6.0.2
       normalize-path: 3.0.0
       schema-utils: 4.3.3
-      serialize-javascript: 7.0.6
+      serialize-javascript: 7.0.7
       tinyglobby: 0.2.17
       webpack: 5.108.4(postcss@8.5.16)(webpack-cli@7.2.1)
 
@@ -6312,7 +6312,7 @@ snapshots:
       jest-worker: 30.4.1
       postcss: 8.5.16
       schema-utils: 4.3.3
-      serialize-javascript: 7.0.6
+      serialize-javascript: 7.0.7
       webpack: 5.108.4(postcss@8.5.16)(webpack-cli@7.2.1)
 
   css-select@4.3.0:
@@ -8343,7 +8343,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  serialize-javascript@7.0.6: {}
+  serialize-javascript@7.0.7: {}
 
   serve-index@1.9.2:
     dependencies:
