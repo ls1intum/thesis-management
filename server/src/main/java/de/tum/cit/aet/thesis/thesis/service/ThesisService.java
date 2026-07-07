@@ -171,6 +171,7 @@ public class ThesisService {
 	 * @param sortBy the field to sort by
 	 * @param sortOrder the sort direction, "asc" or "desc"
 	 * @param researchGroupIds the research group IDs to filter by
+	 * @param supervisorName the full name ("first last") of a supervisor to filter by, case-insensitive
 	 * @return the paginated list of theses
 	 */
 	public Page<Thesis> getAll(
@@ -183,13 +184,16 @@ public class ThesisService {
 		int limit,
 		String sortBy,
 		String sortOrder,
-		UUID[] researchGroupIds
+		UUID[] researchGroupIds,
+		String supervisorName
 	) {
 		Sort.Order order = new Sort.Order(sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,
 				HibernateHelper.validateSortField(Thesis.class, sortBy));
 		String searchQueryFilter = searchQuery == null || searchQuery.isEmpty() ? null : searchQuery.toLowerCase();
 		Set<ThesisState> statesFilter = states == null || states.length == 0 ? null : new HashSet<>(Arrays.asList(states));
 		Set<String> typesFilter = types == null || types.length == 0 ? null : new HashSet<>(Arrays.asList(types));
+		String supervisorNameFilter = (supervisorName == null || supervisorName.isBlank())
+				? null : supervisorName.trim().toLowerCase();
 
 		Set<UUID> researchGroupIdsFilter = null;
 
@@ -219,6 +223,7 @@ public class ThesisService {
 				searchQueryFilter,
 				statesFilter,
 				typesFilter,
+				supervisorNameFilter,
 				PageRequest.of(page, limit, Sort.by(order))
 		);
 	}
@@ -1020,6 +1025,7 @@ public class ThesisService {
 						ThesisState.ASSESSED,
 						ThesisState.GRADED
 				),
+				null,
 				null,
 				PageRequest.ofSize(1)
 		);

@@ -20,6 +20,7 @@ interface PublishedThesesProps {
   filters?: {
     researchGroupIds?: string[]
     types?: string[]
+    supervisorName?: string
   }
   limit?: number
 }
@@ -46,6 +47,7 @@ const PublishedTheses = ({ search, representationType, filters, limit }: Publish
           search: search,
           researchGroupIds: filters?.researchGroupIds?.join(',') ?? '',
           types: filters?.types?.join(',') ?? '',
+          supervisorName: filters?.supervisorName ?? '',
         },
       },
       (response) => {
