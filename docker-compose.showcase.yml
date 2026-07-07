@@ -77,7 +77,7 @@ services:
       retries: 30
 
   mailpit:
-    image: axllent/mailpit:v1.30.2
+    image: axllent/mailpit:v1.30.3
     container_name: thesis-management-showcase-mailpit
     ports:
       - "1125:1025"
