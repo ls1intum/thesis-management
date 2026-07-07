@@ -16,7 +16,7 @@ overrides:
   yaml: 2.9.0
   uuid: 14.0.1
   picomatch@<4: 2.3.2
-  picomatch@>=4: 4.0.4
+  picomatch@>=4: 4.0.5
   fork-ts-checker-webpack-plugin>schema-utils: 4.3.3
   # GHSA-q8mj-m7cp-5q26
   qs@<6.15.2: 6.15.2
