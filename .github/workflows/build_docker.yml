@@ -66,6 +66,46 @@ jobs:
         if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
         uses: docker/setup-buildx-action@v4
 
+      # Generate SBOMs on the runner before the Docker build so they land
+      # in the build context and get bundled into the server jar via
+      # processResources. They're consumed at runtime by the admin
+      # dependency overview and the weekly vulnerability scan. Not tracked
+      # in the repo (server/sbom, client/sbom are gitignored).
+      - name: Set up JDK 25
+        if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
+        uses: actions/setup-java@v5
+        with:
+          java-version: '25'
+          distribution: 'zulu'
+          cache: 'gradle'
+
+      - name: Generate server SBOM
+        if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
+        working-directory: ./server
+        run: |
+          chmod +x ./gradlew
+          ./gradlew cyclonedxBom --no-daemon
+
+      - name: Enable Corepack
+        if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
+        run: corepack enable
+
+      - name: Set up Node.js
+        if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24.17.0'
+          cache: 'pnpm'
+          cache-dependency-path: 'client/pnpm-lock.yaml'
+
+      # `pnpm sbom` reads the lockfile directly, so we deliberately do NOT
+      # run `pnpm install` — skipping it both saves time and avoids
+      # running dependency lifecycle scripts. Corepack provides pnpm.
+      - name: Generate client SBOM
+        if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
+        working-directory: ./client
+        run: pnpm run sbom
+
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v6

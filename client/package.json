@@ -38,8 +38,7 @@
     "e2e": "playwright test",
     "e2e:ui": "playwright test --ui",
     "e2e:headed": "playwright test --headed",
-    "sbom:gen": "node scripts/generate-sbom.js",
-    "sbom:force": "node scripts/generate-sbom.js --force",
+    "sbom": "node scripts/generate-sbom.js",
     "prepare": "cd .. && husky client/.husky"
   },
   "dependencies": {
