@@ -13,12 +13,7 @@ import ThesisCommentsProvider from '@/thesis/providers/ThesisCommentsProvider/Th
 import { useThesisAccess } from '@/thesis/providers/ThesisProvider/hooks'
 
 type availableAdditionalInformation =
-  | 'title'
-  | 'abstract'
-  | 'info'
-  | 'state'
-  | 'keywords'
-  | 'supervisor-comments'
+  'title' | 'abstract' | 'info' | 'state' | 'keywords' | 'supervisor-comments'
 
 interface IThesisDataProps {
   thesis: IThesis | IPublishedThesis

@@ -300,8 +300,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
     }
 
     const responseData = (await response.json().catch(() => undefined)) as
-      | { challenge?: string }
-      | undefined
+      { challenge?: string } | undefined
 
     if (!responseData?.challenge) {
       throw new Error('Passkey challenge response is missing the challenge value')

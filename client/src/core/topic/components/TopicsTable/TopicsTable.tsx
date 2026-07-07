@@ -10,14 +10,7 @@ import AvatarUserList from '@/core/components/AvatarUserList/AvatarUserList'
 import ThesisTypeBadge from '@/app/pages/LandingPage/components/ThesisTypBadge/ThesisTypBadge'
 
 type TopicColumn =
-  | 'title'
-  | 'types'
-  | 'supervisor'
-  | 'examiner'
-  | 'researchGroup'
-  | 'state'
-  | 'createdAt'
-  | string
+  'title' | 'types' | 'supervisor' | 'examiner' | 'researchGroup' | 'state' | 'createdAt' | string
 
 interface ITopicOverviewsTableProps {
   columns?: TopicColumn[]
