@@ -23,7 +23,7 @@ overrides:
   # GHSA-58qx-3vcg-4xpx
   ws@>=8.0.0 <8.20.1: 8.21.0
   # GHSA-w7jw-789q-3m8p (shell-quote newline escaping, via launch-editor)
-  shell-quote@<1.8.4: 1.8.4
+  shell-quote@<1.8.4: 1.9.0
   # GHSA-v6wh-96g9-6wx3 (launch-editor NTLMv2 hash disclosure, via webpack-dev-server)
   launch-editor@<2.14.1: 2.14.1
   # GHSA-fx2h-pf6j-xcff (vite server.fs.deny bypass, via vitest)
