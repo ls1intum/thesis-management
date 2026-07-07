@@ -98,13 +98,16 @@ jobs:
           cache: 'pnpm'
           cache-dependency-path: 'client/pnpm-lock.yaml'
 
-      # `pnpm sbom` reads the lockfile directly, so we deliberately do NOT
-      # run `pnpm install` — skipping it both saves time and avoids
-      # running dependency lifecycle scripts. Corepack provides pnpm.
+      # `pnpm sbom --lockfile-only` reads the lockfile directly, so we
+      # deliberately do NOT run `pnpm install` — skipping it saves time
+      # and avoids running dependency lifecycle scripts. Corepack provides
+      # pnpm. Invoke the generator via `node` (not `pnpm run sbom`) so
+      # pnpm doesn't try to verify/install deps or run lifecycle scripts
+      # before executing our script.
       - name: Generate client SBOM
         if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
         working-directory: ./client
-        run: pnpm run sbom
+        run: node scripts/generate-sbom.js
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta

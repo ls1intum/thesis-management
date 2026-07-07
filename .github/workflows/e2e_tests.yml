@@ -134,12 +134,15 @@ jobs:
           cache: 'pnpm'
           cache-dependency-path: client/pnpm-lock.yaml
 
-      # `pnpm sbom` reads the lockfile directly (`--lockfile-only`), so no
-      # `pnpm install` is needed here — the client dependency install below
-      # still handles workspace setup for the actual client build.
+      # `pnpm sbom --lockfile-only` reads the lockfile directly, so no
+      # `pnpm install` is needed here — the client dependency install
+      # below still handles workspace setup for the actual client build.
+      # Invoke the generator via `node` (not `pnpm run sbom`) so pnpm
+      # doesn't try to verify/install deps or run lifecycle scripts
+      # before executing our script.
       - name: Generate client SBOM
         working-directory: ./client
-        run: pnpm run sbom
+        run: node scripts/generate-sbom.js
 
       # Start server in background with dev profile
       - name: Start server
