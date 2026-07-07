@@ -30,3 +30,12 @@ node_modules/
 # Claude Code scheduled-task lock files (per-session)
 .claude/scheduled_tasks.lock
 
+# SBOMs are generated at Docker-build time in CI, not tracked in the repo.
+# `.gitkeep` files keep the directories present so `COPY server/sbom` in
+# server.Dockerfile succeeds even when the SBOMs haven't been generated
+# locally (e.g. `./gradlew build` for tests, or a dev-machine docker build).
+server/sbom/*
+!server/sbom/.gitkeep
+client/sbom/*
+!client/sbom/.gitkeep
+

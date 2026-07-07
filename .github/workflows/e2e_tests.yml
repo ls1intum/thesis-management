@@ -117,6 +117,33 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x ./server/gradlew
 
+      # Set up Node.js up front so we can generate the client SBOM before
+      # the server starts. The server's `processResources` bundles both
+      # SBOMs (server + client) into the jar's classpath, and the admin
+      # dependency page's e2e tests rely on both being present. The server
+      # SBOM is regenerated automatically by Gradle (via the implicit
+      # cyclonedxBom -> processResources dependency); the client SBOM has
+      # to be produced explicitly with pnpm.
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24.17.0'
+          cache: 'pnpm'
+          cache-dependency-path: client/pnpm-lock.yaml
+
+      # `pnpm sbom --lockfile-only` reads the lockfile directly, so no
+      # `pnpm install` is needed here — the client dependency install
+      # below still handles workspace setup for the actual client build.
+      # Invoke the generator via `node` (not `pnpm run sbom`) so pnpm
+      # doesn't try to verify/install deps or run lifecycle scripts
+      # before executing our script.
+      - name: Generate client SBOM
+        working-directory: ./client
+        run: node scripts/generate-sbom.js
+
       # Start server in background with dev profile
       - name: Start server
         working-directory: ./server
@@ -131,17 +158,6 @@ jobs:
           KEYCLOAK_SERVICE_CLIENT_ID: thesis-management-service-client
           KEYCLOAK_SERVICE_CLIENT_SECRET: "**********"
           CLIENT_HOST: http://localhost:3100
-
-      # Set up Node.js for client
-      - name: Enable Corepack
-        run: corepack enable
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: '24.17.0'
-          cache: 'pnpm'
-          cache-dependency-path: client/pnpm-lock.yaml
 
       - name: Install client dependencies
         working-directory: ./client
