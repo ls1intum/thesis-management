@@ -6,6 +6,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.jayway.jsonpath.JsonPath;
+import de.tum.cit.aet.thesis.core.user.entity.User;
+import de.tum.cit.aet.thesis.core.user.repository.UserRepository;
 import de.tum.cit.aet.thesis.mock.BaseIntegrationTest;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisState;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisVisibility;
@@ -42,6 +44,9 @@ class PublishedThesisControllerTest extends BaseIntegrationTest {
 
 	@Autowired
 	private ThesisStateChangeRepository thesisStateChangeRepository;
+
+	@Autowired
+	private UserRepository userRepository;
 
 	private UUID createFinishedThesis(String title) throws Exception {
 		UUID thesisId = createTestThesis(title);
@@ -277,6 +282,30 @@ class PublishedThesisControllerTest extends BaseIntegrationTest {
 							.param("supervisorName", fullName(examinerOnly)))
 					.andExpect(status().isOk())
 					.andExpect(jsonPath("$.totalElements").value(0));
+		}
+
+		@Test
+		void getPublishedTheses_FilterBySupervisorName_MatchesSupervisorWithMissingLastName() throws Exception {
+			TestUser supervisor = createRandomTestUser(List.of("supervisor", "advisor"));
+			TestUser student = createRandomTestUser(List.of("student"));
+
+			User supervisorUser = userRepository.findById(supervisor.userId()).orElseThrow();
+			supervisorUser.setLastName(null);
+			userRepository.save(supervisorUser);
+
+			UUID thesisId = createFinishedThesisWithRoles(
+					"Single Name Supervisor Thesis", supervisor, supervisor, student);
+
+			String response = mockMvc.perform(MockMvcRequestBuilders.get("/v2/published-theses")
+							.header("Authorization", createRandomAdminAuthentication())
+							.param("supervisorName", supervisor.universityId()))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			JsonNode json = objectMapper.readTree(response);
+			assertThat(json.get("totalElements").asInt()).isEqualTo(1);
+			assertThat(json.get("content").get(0).get("thesisId").asString())
+					.isEqualTo(thesisId.toString());
 		}
 	}
 }

@@ -44,7 +44,7 @@ public interface ThesisRepository extends JpaRepository<Thesis, UUID> {
 				SELECT 1 FROM ThesisRole sr
 				WHERE sr.thesis.id = t.id
 					AND sr.id.role = de.tum.cit.aet.thesis.thesis.constants.ThesisRoleName.SUPERVISOR
-					AND LOWER(CONCAT(COALESCE(sr.user.firstName, ''), ' ', COALESCE(sr.user.lastName, ''))) = :supervisorName
+					AND LOWER(TRIM(CONCAT(COALESCE(sr.user.firstName, ''), ' ', COALESCE(sr.user.lastName, '')))) = :supervisorName
 			))
 			AND (
 				:searchQuery IS NULL OR (
