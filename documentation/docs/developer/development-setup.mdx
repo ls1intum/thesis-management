@@ -1,4 +1,9 @@
-# Development Setup
+---
+title: Development Setup
+sidebar_position: 1
+description: How to run Thesis Management locally — Docker services, server, client, Keycloak, and Mailpit.
+---
+
 
 ## Showcase / one-command demo
 
@@ -9,7 +14,7 @@ docker compose -f docker-compose.showcase.yml up -d
 # open http://localhost:3100 and log in as admin / admin
 ```
 
-Mailpit is at <http://localhost:8125>. The showcase uses default secrets and the unhardened local-dev Keycloak realm — fine for demos, not for anything internet-facing. Use the standard flow below if you intend to make code changes.
+Mailpit is at [http://localhost:8125](http://localhost:8125). The showcase uses default secrets and the unhardened local-dev Keycloak realm — fine for demos, not for anything internet-facing. Use the standard flow below if you intend to make code changes.
 
 ## Quick Start
 
@@ -54,11 +59,11 @@ These ports are also used during e2e testing. The production system, however, us
 
 ## Application Architecture
 
-![Architecture](files/subsystem-decomposition.svg)
+![Architecture](/files/subsystem-decomposition.svg)
 
 ## Keycloak
 
-When the Keycloak container starts, it automatically imports the [`thesis-management` realm](../keycloak/thesis-management-realm.json), creates all test users with passwords, and configures their role mappings. No manual setup is needed. Start it from the project root:
+When the Keycloak container starts, it automatically imports the [`thesis-management` realm](https://github.com/ls1intum/thesis-management/blob/develop/keycloak/thesis-management-realm.json), creates all test users with passwords, and configures their role mappings. No manual setup is needed. Start it from the project root:
 
 ```bash
 docker compose up keycloak -d
@@ -72,7 +77,7 @@ The realm defines **two** OIDC clients with very different roles. Understanding 
 
 | Client ID                           | Type                                        | Used by                                                                                       | Why it exists                                                                                                                                                                                                                                  |
 |-------------------------------------|---------------------------------------------|-----------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `thesis-management-app`             | **Public** client (no secret), PKCE         | • React SPA → user login (Authorization Code + PKCE)<br>• Spring Boot server → JWT validation | Issues the access tokens that end users carry. The SPA cannot keep a secret, so it must be a public client. The Spring Boot resource server validates these tokens against the realm's JWK set — it does not own the client itself.            |
+| `thesis-management-app`             | **Public** client (no secret), PKCE         | • React SPA → user login (Authorization Code + PKCE)<br />• Spring Boot server → JWT validation | Issues the access tokens that end users carry. The SPA cannot keep a secret, so it must be a public client. The Spring Boot resource server validates these tokens against the realm's JWK set — it does not own the client itself.            |
 | `thesis-management-service-client`  | **Confidential** client (secret), service account | Spring Boot server → Keycloak Admin API calls                                            | Lets the Spring Boot server authenticate **as itself** (Client Credentials grant) to call the Keycloak Admin API — currently only `AccessManagementService.getUserByUsername` / `getAllUsers`, used to search identity-provider users in admin UI flows. |
 
 Concretely:
@@ -189,7 +194,7 @@ To activate the dev profile, either:
 - Set the environment variable `SPRING_PROFILES_ACTIVE=dev`
 - Or pass `--spring.profiles.active=dev` when starting the server
 
-> **Production safety:** The dev seed changelog is annotated with `context="dev"`. The Liquibase runtime context is controlled by the `LIQUIBASE_CONTEXTS` environment variable, which defaults to `prod` in `application.yml`. As long as you do **not** set `LIQUIBASE_CONTEXTS=dev` and do **not** run the server with `SPRING_PROFILES_ACTIVE=dev` (which overrides the context to `dev` via `application-dev.yml`), the dev seed data will never run on a production deployment. See [`CONFIGURATION.md`](CONFIGURATION.md) for the variable reference.
+> **Production safety:** The dev seed changelog is annotated with `context="dev"`. The Liquibase runtime context is controlled by the `LIQUIBASE_CONTEXTS` environment variable, which defaults to `prod` in `application.yml`. As long as you do **not** set `LIQUIBASE_CONTEXTS=dev` and do **not** run the server with `SPRING_PROFILES_ACTIVE=dev` (which overrides the context to `dev` via `application-dev.yml`), the dev seed data will never run on a production deployment. See [Configuration](/admin/configuration) for the variable reference.
 
 #### Test Users and Roles
 
@@ -600,7 +605,7 @@ An alternative approach is to run the server and client in Docker containers dur
 
 ## Postman Collection
 
-A ready-to-use Postman Collection is included: [`Thesis Management API.postman_collection.json`](./Thesis%20Management%20API.postman_collection.json).
+A ready-to-use Postman Collection is included: [`Thesis Management API.postman_collection.json`](https://github.com/ls1intum/thesis-management/blob/develop/documentation/static/files/Thesis%20Management%20API.postman_collection.json).
 
 ### Key Features
 
@@ -619,7 +624,7 @@ A ready-to-use Postman Collection is included: [`Thesis Management API.postman_c
 ### How to Use
 
 1. Open Postman and click **Import** on the top left.
-2. Upload the provided [`Thesis Management API.postman_collection.json`](./Thesis%20Management%20API.postman_collection.json).
+2. Upload the provided [`Thesis Management API.postman_collection.json`](https://github.com/ls1intum/thesis-management/blob/develop/documentation/static/files/Thesis%20Management%20API.postman_collection.json).
 3. The collection will appear in the sidebar.
 4. Start sending requests — OAuth2 authentication will be handled automatically.
 

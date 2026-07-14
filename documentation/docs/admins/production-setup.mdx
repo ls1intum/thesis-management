@@ -1,13 +1,18 @@
-# Production Setup
+---
+title: Production Setup
+sidebar_position: 3
+description: Example production docker-compose file, backup script, and deployment notes.
+---
 
-Example production [docker-compose.prod.yml](/docker-compose.prod.yml) file. 
-You can follow the steps in [deploy_docker.yml](../.github/workflows/deploy_docker.yml) to see how it is used.
+
+Example production [docker-compose.prod.yml](https://github.com/ls1intum/thesis-management/blob/develop/docker-compose.prod.yml) file. 
+You can follow the steps in [deploy_docker.yml](https://github.com/ls1intum/thesis-management/blob/develop/.github/workflows/deploy_docker.yml) to see how it is used.
 
 ## Requirements
 
 1. Setup a production PostgreSQL database
 2. Setup a production Postfix instance for sending mails. Sending mails can be disabled
-3. Setup a production keycloak instance. Guide for first time setup can be found in [Development Setup](DEVELOPMENT.md)
+3. Setup a production keycloak instance. Guide for first time setup can be found in [Development Setup](/developer/development-setup)
    - If you use passkeys in production, enable `webAuthnPolicyPasswordlessPasskeysEnabled` on the production realm and align the other `webAuthnPolicyPasswordless*` realm settings with your intended passkey policy.
 
 ## Running Server
@@ -110,10 +115,10 @@ There are 2 places that require backups:
 
 Note: The `/data-exports` directory contains temporary data export ZIP files that auto-delete after 7 days. Backing up this directory is optional.
 
-There is an example script [thesis-management-backup.sh](../supporting_scripts/thesis-management-backup.sh) that you can call in a cronjob to create regular backups.
+There is an example script [thesis-management-backup.sh](https://github.com/ls1intum/thesis-management/blob/develop/supporting_scripts/thesis-management-backup.sh) that you can call in a cronjob to create regular backups.
 
 ## Further Configuration
 
-All further environment variables can be found [here](CONFIGURATION.md) 
+All further environment variables can be found [here](/admin/configuration) 
 
-If you want to modify the emails, you can read about that [here](MAILS.md) 
+If you want to modify the emails, you can read about that [here](/developer/mails) 

@@ -198,12 +198,17 @@ const InterviewBookingPage = () => {
   }
 
   useEffect(() => {
-    if (processId && auth.isAuthenticated) {
+    // `isAuthenticated` flips true as soon as the stored refresh token is
+    // hydrated from localStorage, but Keycloak's async `init()` may not have
+    // populated `keycloak.token` yet. Gating on `isReady` too avoids racing
+    // the authenticated fetches against Keycloak — otherwise they throw
+    // "User not authenticated" and surface as a red toast in the corner.
+    if (processId && auth.isReady && auth.isAuthenticated) {
       fetchMyBooking()
       fetchTopicInformation()
     }
     // eslint-disable-next-line @eslint-react/exhaustive-deps -- fetchMyBooking and fetchTopicInformation are recreated each render; effect should only re-run on processId/auth changes
-  }, [processId, auth.isAuthenticated])
+  }, [processId, auth.isReady, auth.isAuthenticated])
 
   const [cancelModalOpen, setCancelModalOpen] = useState(false)
 

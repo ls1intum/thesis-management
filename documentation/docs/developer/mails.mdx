@@ -1,4 +1,9 @@
-# Mails
+---
+title: Mails
+sidebar_position: 3
+description: How email templates work — where they live, how to customize them per research group, and available placeholders.
+---
+
 
 Mails can be customized in the email_templates table in the database or via API calls.
 If no research group specific template is found, the default template will be used.
@@ -7,7 +12,7 @@ If no research group specific template is found, the default template will be us
 
 ## Local Testing with Mailpit
 
-For local development, all emails are captured by [Mailpit](https://github.com/axllent/mailpit) which is included in the dev Docker Compose setup. Start it with `docker compose up -d` and open **http://localhost:8025** to inspect emails including their content, recipients, and attachments. See [DEVELOPMENT.md](DEVELOPMENT.md#email-mailpit) for setup details.
+For local development, all emails are captured by [Mailpit](https://github.com/axllent/mailpit) which is included in the dev Docker Compose setup. Start it with `docker compose up -d` and open **http://localhost:8025** to inspect emails including their content, recipients, and attachments. See [Development Setup](/developer/development-setup#email-mailpit) for setup details.
 
 ## Templates
 

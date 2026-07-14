@@ -1,0 +1,502 @@
+---
+title: Supervisor & Examiner Guide
+sidebar_position: 2
+description: End-to-end walkthrough of the platform from the teaching-staff perspective — topics, applications, interviews, thesis supervision, and grading.
+---
+
+import VideoEmbed from '@site/src/components/VideoEmbed/VideoEmbed';
+
+This guide describes the platform from the perspective of teaching staff who
+run the thesis process. Both **Supervisors** and **Examiners** are covered
+here — the roles overlap, but a few actions (final grading, completing the
+thesis) are Examiner-only, and are marked as such throughout. Short demo
+videos are embedded next to the sections they cover.
+
+> [!NOTE]
+> **A word on terminology.** In the UI you will see the labels
+> **Supervisor** (day-to-day advisor of a thesis) and **Examiner** (the
+> professor who is formally responsible for it). Behind the scenes the
+> Keycloak groups are still called `advisor` (= Supervisor) and `supervisor`
+> (= Examiner) for historical reasons — this only matters if you look at
+> log files or configuration.
+
+---
+
+## 1. Dashboard
+
+`/dashboard` is your home page after login. It aggregates everything that
+needs your attention:
+
+- **My Tasks** — a live to-do list generated from the platform state: open
+  applications waiting for you, proposals to review, unassessed theses,
+  interviewees to score, and so on. Each row links to the exact page that
+  will resolve the item.
+- **My Theses** — the theses in which you are assigned as Supervisor or
+  Examiner. A small Gantt bar next to each one gives you a feel for how
+  far along it is.
+- **My Applications** — open applications on your topics. States are
+  colour-coded: `NOT_ASSESSED`, `INTERVIEWING`, `ACCEPTED`, `REJECTED`.
+  Click a row to open the application review modal in-place.
+
+![Dashboard with My Tasks, applications table, and My Theses Gantt](/img/screenshots/staff-01-dashboard.png)
+
+## 2. Managing Thesis Topics
+
+Open `/topics` to see all topics your account manages. The table has columns
+for state, title, thesis types, examiner, supervisor, and creation date. A
+segmented control at the top filters by state (**OPEN**, **DRAFT**,
+**CLOSED**).
+
+### Creating a Topic
+
+Press **Create Topic** to open the topic modal. Fill in:
+
+- **Title** (required)
+- **Problem Statement** (rich text, required)
+- **Requirements**, **Goals**, **References** (rich text)
+- **Thesis Types** allowed (Bachelor / Master / Project / Seminar — multi-select)
+- **Intended Start Date** and **Application Deadline** (optional dates)
+- **Research Group** — locked if you belong to only one group
+- **Supervisors** (multi-select)
+- **Examiners** (multi-select — pre-filled with your group head)
+
+Save to publish. The topic then appears on the public landing page and is
+open for applications.
+
+!["Create Topic" modal with title, problem statement, and role selectors](/img/screenshots/staff-02-topic-create.png)
+
+<VideoEmbed
+  src="https://live.rbg.tum.de/w/artemisintro/53599"
+  title="Create Thesis Topic"
+  caption="Walkthrough: creating a new thesis topic and publishing it to the landing page."
+/>
+
+### Editing or Closing a Topic
+
+- **Edit** re-opens the same modal, pre-populated.
+- **Close** opens a small modal that asks _why_ (Topic was filled / Topic is
+  outdated) and whether to **notify students** who have open applications.
+  Closing a topic automatically rejects all its still-open applications and
+  ends any related interview processes.
+
+![Manage Topics page with state filter and topics table](/img/screenshots/staff-03-topics-list.png)
+
+## 3. Reviewing Applications
+
+Open `/applications` (or click an application row on the dashboard).
+
+The page uses a two-pane layout: the **left sidebar** lists the applications
+you can review, filtered to `NOT_ASSESSED` by default; the **right pane**
+shows the details of the selected application.
+
+For each application you see:
+
+- The student's profile (name, contact, study program, semester).
+- Uploaded PDFs (Examination report, CV, Bachelor report if applicable).
+- Interests, projects, and special skills.
+- The **motivation letter** and the topic they applied for.
+- Any custom fields your research group configured.
+
+### Actions
+
+- **Accept** opens the acceptance form. You confirm the **thesis title**
+  (auto-filled from the topic), the **thesis type**, **language**,
+  **supervisors**, **examiners**, and can add an internal **comment**. Two
+  useful checkboxes:
+  - **Notify user** — send the student the acceptance email (default on).
+  - **Close topic** — if this application fills the topic, close it in one go.
+
+  On save, a new thesis is created and the student is notified.
+- **Reject** opens a modal that asks for a **reason** ("Topic requirements
+  not met" or "Title not interesting") and lets you **notify the user**
+  (default on). The student receives the standard rejection email.
+- **Delete** removes an application. Use this only for spam or duplicate
+  submissions.
+- **Add Interviewee** creates or extends an interview process directly from
+  the application (see [Interview Processes](#4-interview-processes)).
+
+![Application review page — sidebar + detail pane with Accept / Reject actions](/img/screenshots/staff-04-application-review.png)
+
+<VideoEmbed
+  src="https://live.rbg.tum.de/w/artemisintro/53601"
+  title="Review Applications"
+  caption="Walkthrough: reviewing an application and deciding to accept or reject."
+/>
+
+### Application Lifecycle
+
+`NOT_ASSESSED` → `ACCEPTED` (a thesis is created) or `REJECTED`. If you route
+through an interview process, the intermediate state is `INTERVIEWING`. If no
+one acts within the deadline configured by the research group, the
+application is auto-rejected and the standard rejection email is sent.
+
+## 4. Interview Processes
+
+The interview module lets you run structured interview rounds when you have
+more applicants than slots and want a fair way to pick.
+
+### Creating a Process
+
+Two entry points:
+
+- From `/interviews`, press **New Interview Process** and pick a topic.
+- From the application review page, press **Add Interviewee** — the platform
+  creates the process automatically if none exists yet.
+
+!["New Interview Process" modal with topic selector](/img/screenshots/staff-05-interview-new.png)
+
+<VideoEmbed
+  src="https://live.rbg.tum.de/w/artemisintro/70059"
+  title="Create Interview Process (Interview Page)"
+  caption="Walkthrough: creating an interview process from the interview overview."
+/>
+
+<VideoEmbed
+  src="https://live.rbg.tum.de/w/artemisintro/70060"
+  title="Create Interview Process (Application Page)"
+  caption="Walkthrough: creating an interview process directly from an application."
+/>
+
+### The Process Page
+
+Open a process from the list to see three panels:
+
+- **Interviewees** — a table of the candidates you have added, with each
+  candidate's booking status (_not booked_, _booked_, _assessed_) and their
+  assigned slot.
+- **Slots calendar** — a carousel/calendar where you create timeslots. Each
+  slot has date, start / end time, location, and (optionally) a stream URL.
+- **Invitations** — a bulk-invite panel that lets you email selected
+  candidates the booking link.
+
+![Interview process page — interviewees table, slot calendar, and candidate states](/img/screenshots/staff-06-interview-process.png)
+
+<VideoEmbed
+  src="https://live.rbg.tum.de/w/artemisintro/70061"
+  title="Add Interviewees to Process"
+  caption="Walkthrough: adding candidates to an interview process."
+/>
+
+<VideoEmbed
+  src="https://live.rbg.tum.de/w/artemisintro/70062"
+  title="Create Interview Slots"
+  caption="Walkthrough: defining available interview timeslots."
+/>
+
+### Sending Invitations
+
+- **Bulk invite** — select multiple interviewees and press **Send
+  Invitations**; every selected candidate receives an email with a
+  personalised booking link (`/interview_booking/<processId>`).
+- **Individual invite** — the same action, but restricted to one row.
+- If you'd rather assign a slot yourself, use **Assign Slot** — this
+  bypasses the student's booking step.
+
+<VideoEmbed
+  src="https://live.rbg.tum.de/w/artemisintro/70063"
+  title="Invite Interviewees (Bulk)"
+  caption="Walkthrough: sending invitations to multiple interviewees at once."
+/>
+
+<VideoEmbed
+  src="https://live.rbg.tum.de/w/artemisintro/70064"
+  title="Invite Interviewees (Individual)"
+  caption="Walkthrough: sending an invitation to a single interviewee."
+/>
+
+<VideoEmbed
+  src="https://live.rbg.tum.de/w/artemisintro/70065"
+  title="Assign Interviewee"
+  caption="Walkthrough: assigning an interviewee to a specific slot or interviewer."
+/>
+
+### Assessing Interviewees
+
+Click a candidate to open the assessment page (`/interviews/<processId>/interviewee/<id>`).
+You can enter:
+
+- A **numeric score** — updates in real time.
+- **Interview notes** — a rich text editor that auto-saves on blur.
+
+Once you've assessed everyone, go back to the application review page and
+accept or reject the interviewees based on the collected scores.
+
+![Interviewee assessment page with score input and notes editor](/img/screenshots/staff-07-interview-assessment.png)
+
+<VideoEmbed
+  src="https://live.rbg.tum.de/w/artemisintro/70066"
+  title="Assess Interviewees"
+  caption="Walkthrough: scoring and taking notes on interviewees."
+/>
+
+## 5. Working on a Thesis
+
+Open `/theses/<id>`. The page is a stack of accordion sections that appear as
+the thesis progresses through **Proposal → Writing → Submitted → Assessed →
+Graded → Completed**. Sections you rarely touch stay collapsed by default.
+
+### 5.1 Thesis Configuration
+
+The Config section holds the "master data" of the thesis:
+
+- Title, type, language, keywords, start / end date.
+- **Visibility** — see [§5.8](#58-visibility).
+- **Students**, **Supervisors**, **Examiners** — user pickers with search.
+- **State tracking** — a read-only table showing when the thesis entered each
+  state.
+
+Editing is limited to Supervisors, Examiners, and admins.
+
+![Thesis Config accordion — type, language, visibility, dates, role selectors](/img/screenshots/staff-08-thesis-config.png)
+
+### 5.2 Supervisor Comments (Private)
+
+A private thread only visible to Supervisors and Examiners. Use this for
+internal notes ("Ana's proposal needs another pass — the eval section is
+still missing"). Students **never** see this thread, even though the
+accordion is technically on the same page.
+
+### 5.3 Proposal Review
+
+When the thesis is in the _Proposal_ state, the student uploads their
+proposal here. You can:
+
+- Preview the latest PDF inline.
+- Look through the **version history** (who uploaded which version and when).
+- **Delete** an old version if it was uploaded in error.
+- **Request Changes** — opens the feedback modal (see [§8](#8-feedback-system)).
+  Each line becomes one row in the feedback checklist. The student sees a
+  todo-list, can tick items off, and you can verify.
+- **Accept Proposal** — moves the thesis into the _Writing_ state. This is
+  confirmed with a modal.
+
+![Proposal review — PDF preview, history table, Request Changes / Accept buttons](/img/screenshots/staff-09-proposal.png)
+
+<VideoEmbed
+  src="https://live.rbg.tum.de/w/artemisintro/53602"
+  title="Review Proposal"
+  caption="Walkthrough: reviewing a proposal and either requesting changes or accepting it."
+/>
+
+<VideoEmbed
+  src="https://live.rbg.tum.de/w/artemisintro/53600"
+  title="Add Comments"
+  caption="Walkthrough: posting comments and attaching files as feedback for students."
+/>
+
+### 5.4 The Writing Phase
+
+Once the thesis is in _Writing_, the section shows:
+
+- The **thesis PDF** and any auxiliary file types (appendix, code, data)
+  configured by your chair.
+- A **version history** per slot.
+- The **student-visible comment thread**.
+- The **feedback overview** for the thesis (same mechanism as for the
+  proposal, but of type `THESIS`).
+
+Supervisors can also upload files on behalf of the student — useful when a
+student hits a technical block. Deletion of uploaded files is restricted to
+Supervisors / Examiners.
+
+### 5.5 Presentations
+
+The student proposes a presentation date as a **draft**. In the presentation
+section you can:
+
+- **Accept** the draft — the presentation moves from `Draft` to `Scheduled`,
+  invitees are emailed, and the presentation becomes public at
+  `/presentations/<id>`.
+- Reschedule (edit the draft) or **Delete** it.
+- Add attendees, set the location, and pin a stream URL for online defenses.
+
+![Presentation card in Draft state with Accept action](/img/screenshots/staff-10-presentation-approval.png)
+
+<VideoEmbed
+  src="https://live.rbg.tum.de/w/artemisintro/53603"
+  title="Schedule Presentation"
+  caption="Walkthrough: approving a presentation draft and inviting attendees."
+/>
+
+### 5.6 Assessment
+
+The **assessment** is the structured evaluation of the finished thesis.
+Press **Add Assessment** to open the assessment modal:
+
+- **Summary**, **Strengths**, **Weaknesses** — rich text.
+- **Grade Components** — a dynamic table. Each row has a name (e.g. "Written
+  work", "Presentation"), a **weight** (or a Bonus flag), and a **grade**.
+  The final grade suggestion is computed automatically from the components
+  and their weights.
+- **Grade Suggestion** — the free-text field you want to propose to the
+  Examiner.
+
+A **Download PDF** button renders the assessment as a signed-off PDF for your
+records. Both Supervisors and Examiners can add / edit the assessment.
+
+![Saved Assessment section — Summary, Strengths, Weaknesses, grade components, calculated grade](/img/screenshots/staff-11-assessment.png)
+
+<VideoEmbed
+  src="https://live.rbg.tum.de/w/artemisintro/53598"
+  title="Submit Thesis Assessment"
+  caption="Walkthrough: filling in the structured assessment and suggesting a grade."
+/>
+
+### 5.7 Final Grade & Completion _(Examiner-only)_
+
+Only the **Examiner** sees this section. It contains:
+
+- A short **feedback** field (rich text).
+- The **final grade** input.
+- A **Mark thesis as finished** button that becomes active once the thesis is
+  in the `GRADED` state. Pressing it moves the thesis into `COMPLETED` — the
+  record becomes read-only and appears in the student's history.
+
+> [!IMPORTANT]
+> Setting the final grade in Thesis Management does **not** submit the grade
+> to the university's grade-management system. Follow your institution's
+> normal grade submission process in parallel.
+
+![Final Grade section — feedback, grade input, and Mark-as-finished action](/img/screenshots/staff-12-final-grade.png)
+
+<VideoEmbed
+  src="https://live.rbg.tum.de/w/artemisintro/53610"
+  title="Add Final Grade + Complete Thesis"
+  caption="Walkthrough (Examiner-only): adding the final grade and completing the thesis."
+/>
+
+### 5.8 Visibility
+
+Every thesis has a **visibility** setting that decides who can view it:
+
+| Setting     | Who can view                                                                  |
+|-------------|-------------------------------------------------------------------------------|
+| `PRIVATE`   | Only the assigned Examiner, Supervisor, and Student.                          |
+| `STUDENT`   | Assigned people + any authenticated student, advisor, or supervisor.          |
+| `INTERNAL`  | Assigned people + any authenticated advisor or supervisor.                    |
+| `PUBLIC`    | Assigned people + any authenticated user. If the thesis is `FINISHED`, the page is even reachable by unauthenticated visitors. |
+
+Change it in the Thesis Config section. The full permission matrix is on
+the [Permissions](./permissions) page.
+
+## 6. Browse Theses and Overview
+
+- **`/theses`** — a searchable, filterable table of all theses you have
+  access to. Filters by type, state, search text; row click opens the
+  thesis page. Admins can create a thesis directly here via **Create
+  Thesis** (skipping the application flow).
+- **`/overview`** — a Gantt-chart view of the same set. Ideal for chair
+  meetings ("what is everyone actually working on right now?"). Same filters
+  as `/theses`.
+
+![Overview Gantt with several theses stacked and state colour-coded](/img/screenshots/staff-13-overview-gantt.png)
+
+## 7. Presentation Overview
+
+`/presentations` shows the calendar of all scheduled presentations. You can:
+
+- Switch between calendar and list layouts.
+- Filter by research group (helpful if you're a member of several).
+- Copy an **iCal feed URL** to subscribe to the calendar from Outlook,
+  Google Calendar, or Apple Calendar.
+- Open a presentation card for the direct actions (reschedule, delete, view
+  attendees).
+
+![Presentations overview — calendar carousel and upcoming list with iCal URL](/img/screenshots/staff-14-presentations-overview.png)
+
+## 8. Feedback System
+
+Feedback is the platform's structured way to say "please change X". Instead
+of a free-form comment thread, feedback lives in a **checklist** attached to
+either the proposal or the thesis:
+
+- Press **Request Changes**.
+- Type one requested change per line in the textarea.
+- Existing items appear as rows with a checkbox — tick items you consider
+  resolved.
+- Save. Students see the same checklist; they can tick items to indicate
+  "done"; you can un-tick if it wasn't done to your satisfaction.
+- Deleting a row removes the request entirely.
+
+The feedback of type `PROPOSAL` and `THESIS` is shown in the corresponding
+section; the delete/verify controls are only enabled for staff.
+
+![Feedback overview — requested-changes rows with checkboxes and Request Changes button](/img/screenshots/staff-15-feedback.png)
+
+## 9. Notification Settings
+
+Open **Settings → Notification Settings**. Staff members see extra options:
+
+- **New Applications email** — three modes:
+  - _No topics_ — never receive application emails.
+  - _Only my topics_ — email when someone applies to a topic you own.
+  - _All topics_ — email on every new application in your research group.
+- **Include Suggested Topics** — a sub-checkbox that appears when the mode
+  is _Only my topics_ or _All topics_. Extends the notifications to
+  applications submitted _without_ a topic ("suggested topics").
+- **Application Review Reminder** — a weekly digest of applications still
+  waiting for your review. Turn this on if you receive a lot of applications
+  and want to avoid missing any.
+- **Presentation Invitations**, **Thesis Comments** — same toggles as
+  students see, plus a per-thesis table that lets you mute noisy theses
+  without muting all of them.
+
+![Staff notification settings — application-email options, shared toggles, per-thesis table](/img/screenshots/staff-16-notifications.png)
+
+## 10. Research Group Admin Actions
+
+If you are the **head of a research group** or have been given the
+**Group Admin** role, you get access to `/research-groups/<id>` and can:
+
+- Update the group's name, abbreviation, and description.
+- Add or remove **members**.
+- Assign the **Group Admin** role to another member.
+- Configure per-group **settings**:
+  - The application-review deadline (minimum 2 weeks) after which
+    unreviewed applications auto-reject.
+  - **Custom application fields** shown to students during application.
+  - A **Scientific Writing Guide** link surfaced to students during the
+    writing phase.
+  - Per-case **email templates** — edit them at
+    `/research-groups/<id>/email-templates/<case>/edit`.
+
+These options don't affect Supervisors / Examiners who are not group admins,
+so they are only briefly mentioned here. A dedicated Group Admin guide could
+cover them in more depth.
+
+![Research-group settings page — tabs for general info, members, fields, templates](/img/screenshots/staff-17-group-settings.png)
+
+<VideoEmbed
+  src="https://live.rbg.tum.de/w/artemisintro/70058"
+  title="Update Research Group Information"
+  caption="Walkthrough: updating general research group details."
+/>
+
+<VideoEmbed
+  src="https://live.rbg.tum.de/w/artemisintro/70057"
+  title="Change Research Group Settings"
+  caption="Walkthrough: configuring per-group settings such as application deadlines and custom fields."
+/>
+
+<VideoEmbed
+  src="https://live.rbg.tum.de/w/artemisintro/70056"
+  title="Add Members to Research Group"
+  caption="Walkthrough: adding new members to the research group."
+/>
+
+<VideoEmbed
+  src="https://live.rbg.tum.de/w/artemisintro/70055"
+  title="Make a Member Research Group Admin"
+  caption="Walkthrough: granting the Group Admin role to another member."
+/>
+
+## 11. Getting Help
+
+- Short **video walk-throughs** for every staff feature are embedded
+  directly next to the relevant sections of this guide.
+- The full role-by-role permission matrix lives on the
+  [Permissions](./permissions) page.
+- The **Data Retention Policy** at [Data Retention Policy](/admin/data-retention)
+  answers most GDPR-related questions.
+- Direct support:
+  [thesis-management-support.aet@xcit.tum.de](mailto:thesis-management-support.aet@xcit.tum.de).

@@ -13,7 +13,7 @@
 #
 # Log in with one of the seeded users (password = username):
 #   admin, examiner, examiner2, supervisor, supervisor2, student, student2 ...
-# See docs/DEVELOPMENT.md > "Test Users and Roles" for the full list.
+# See the "Test Users and Roles" section of documentation/docs/developer/development-setup.mdx for the full list.
 # Captured emails are at http://localhost:8125 (Mailpit web UI).
 #
 # This deployment is for evaluation and demos only. It uses default secrets,
@@ -96,7 +96,8 @@ services:
     environment:
       # `dev` activates application-dev.yml, which switches Liquibase to the
       # `dev` context and runs the seed migration (test users, topics, theses,
-      # applications). See docs/DEVELOPMENT.md > "Automatic Dev Seed Data".
+      # applications). See the "Automatic Dev Seed Data" section of
+      # documentation/docs/developer/development-setup.mdx.
       SPRING_PROFILES_ACTIVE: dev
       # application-dev.yml also hardcodes server.port=8180, which collides
       # with the published image's expected port 8080. Override back to 8080

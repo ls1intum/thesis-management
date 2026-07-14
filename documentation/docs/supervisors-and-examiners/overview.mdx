@@ -1,0 +1,43 @@
+---
+title: Overview
+sidebar_position: 1
+slug: /
+description: Where to start as a supervisor or examiner on the Thesis Management platform.
+---
+
+# Supervisors & Examiners
+
+This section is written for teaching staff who run the thesis process end-to-end
+— creating topics, reviewing applications, running interview rounds,
+supervising running theses, and (as an examiner) issuing the final grade.
+
+## Where to start
+
+- Read the **[Supervisor & Examiner Guide](./supervisor-examiner-guide)** for
+  the full walkthrough. The two roles are covered together, with Examiner-only
+  actions clearly marked.
+- The **[Permissions](./permissions)** page has the full role-by-role
+  permission matrix for the thesis page and research group actions.
+- The **[Workflows](./workflows)** page has visual flowcharts of the
+  application and thesis-writing processes.
+
+## Terminology
+
+The UI uses two staff role labels:
+
+- **Supervisor** — day-to-day advisor of a thesis. Creates topics, reviews
+  applications, gives feedback on proposal and thesis.
+- **Examiner** — the responsible professor. Can do everything a Supervisor can
+  do, and additionally sets the **final grade** and **completes** the thesis.
+
+Behind the scenes the Keycloak groups are still called `advisor` (= Supervisor)
+and `supervisor` (= Examiner) for historical reasons — this only matters if you
+look at log files or configuration.
+
+## Related links
+
+- [Student Guide](/students/student-guide) — useful for understanding the
+  applicant / student experience on the other side of the platform.
+- [Data Retention Policy](/admin/data-retention) — GDPR-relevant retention
+  periods.
+- [Repository README](https://github.com/ls1intum/thesis-management/blob/develop/README.md).

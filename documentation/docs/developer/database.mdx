@@ -1,4 +1,9 @@
-# 🗄️ Database Changes
+---
+title: Database & Liquibase
+sidebar_position: 2
+description: Liquibase-managed schema changes, PostgreSQL image tag, and manual data-fixture SQL.
+---
+
 
 ThesisManagement uses **Liquibase** for managing database schema changes. All schema modifications
 must be tracked and versioned properly to ensure consistency across development, testing, and
@@ -7,11 +12,11 @@ production environments.
 ## 📋 How to Apply a Schema Change
 
 1. Create a new changeset by adding a SQL script in the [
-   `/server/src/main/resources/db/changelog/changes`](../server/src/main/resources/db/changelog/changes)
+   `/server/src/main/resources/db/changelog/changes`](https://github.com/ls1intum/thesis-management/blob/develop/server/src/main/resources/db/changelog/changes)
    directory.
 2. Use descriptive and unique filenames (e.g. `09_new_feature_name.sql`).
 3. Include the new file in the [
-   `db.changelog-master.xml`](../server/src/main/resources/db/changelog/db.changelog-master.xml) to
+   `db.changelog-master.xml`](https://github.com/ls1intum/thesis-management/blob/develop/server/src/main/resources/db/changelog/db.changelog-master.xml) to
    ensure it is executed.
 4. Stick to the [Liquibase formatted SQL](https://docs.liquibase.com/concepts/basic/sql-format.html)
    format:
@@ -40,7 +45,7 @@ in specific environments (e.g. TUM-specific data).
 📄 Example:
 
 - [
-  `insert_tum_aet_research_group.sql`](../server/src/main/resources/db/changelog/manual/insert_tum_aet_research_group.sql)
+  `insert_tum_aet_research_group.sql`](https://github.com/ls1intum/thesis-management/blob/develop/server/src/main/resources/db/changelog/manual/insert_tum_aet_research_group.sql)
 
 This file manually adds the "Applied Education Technologies (AET)" research group, only applicable
 for TUM environments (DEV & PROD). **Do not include in Liquibase.**
@@ -61,20 +66,20 @@ volume mounts working.
 
 ### Canonical PostgreSQL Version
 
-The PostgreSQL image tag is **`18.4-alpine`**. The committed [`.env`](../.env) (`POSTGRES_IMAGE_TAG`)
+The PostgreSQL image tag is **`18.4-alpine`**. The committed [`.env`](https://github.com/ls1intum/thesis-management/blob/develop/.env) (`POSTGRES_IMAGE_TAG`)
 is the single source of truth: Docker Compose loads it automatically and the Gradle build parses it
 for the integration-test Testcontainers. Every consumer falls back to the same hard-coded default if
 the variable is unset, so the workspace builds even without `.env`:
 
 | Consumer | Reads the version from | Fallback default |
 |----------|------------------------|------------------|
-| `docker-compose.yml`, `docker-compose.prod.yml`, `docker-compose.showcase.yml` | committed [`.env`](../.env) (auto-loaded); `.env.prod` for production | the `${POSTGRES_IMAGE_TAG:-18.4-alpine}` inline fallback in each compose file |
-| Integration-test Testcontainers (`BaseIntegrationTest`, `BaseKeycloakIntegrationTest` via `TestContainerImages`) | committed [`.env`](../.env), parsed in [`server/build.gradle`](../server/build.gradle) (or a `POSTGRES_IMAGE_TAG` env var) | the `System.getProperty(…, "18.4-alpine")` fallback in `TestContainerImages` |
-| `.github/workflows/e2e_tests.yml` (CI service container) | `POSTGRES_IMAGE_TAG` repository variable (*Settings → Secrets and variables → Actions → Variables*) — the workflow `services.image` field cannot read `.env` | the `${{ vars.POSTGRES_IMAGE_TAG || '18.4-alpine' }}` fallback in the workflow |
+| `docker-compose.yml`, `docker-compose.prod.yml`, `docker-compose.showcase.yml` | committed [`.env`](https://github.com/ls1intum/thesis-management/blob/develop/.env) (auto-loaded); `.env.prod` for production | the `${POSTGRES_IMAGE_TAG:-18.4-alpine}` inline fallback in each compose file |
+| Integration-test Testcontainers (`BaseIntegrationTest`, `BaseKeycloakIntegrationTest` via `TestContainerImages`) | committed [`.env`](https://github.com/ls1intum/thesis-management/blob/develop/.env), parsed in [`server/build.gradle`](https://github.com/ls1intum/thesis-management/blob/develop/server/build.gradle) (or a `POSTGRES_IMAGE_TAG` env var) | the `System.getProperty(…, "18.4-alpine")` fallback in `TestContainerImages` |
+| `.github/workflows/e2e_tests.yml` (CI service container) | `POSTGRES_IMAGE_TAG` repository variable (*Settings → Secrets and variables → Actions → Variables*) — the workflow `services.image` field cannot read `.env` | the `${{ vars.POSTGRES_IMAGE_TAG \|\| '18.4-alpine' }}` fallback in the workflow |
 
 `POSTGRES_IMAGE_TAG` is **not a secret** — the committed `.env` must hold non-secret config only.
 
-**To bump the version**, edit `POSTGRES_IMAGE_TAG` in the committed [`.env`](../.env) — that updates
+**To bump the version**, edit `POSTGRES_IMAGE_TAG` in the committed [`.env`](https://github.com/ls1intum/thesis-management/blob/develop/.env) — that updates
 both Docker Compose and the Gradle tests at once. For full reproducibility also update the matching
 hard-coded fallbacks (the `${POSTGRES_IMAGE_TAG:-…}` in the three compose files, the workflow's
 `|| '18.4-alpine'`, and the default in `TestContainerImages`), then run the major-upgrade procedure
@@ -160,6 +165,6 @@ docker compose -f docker-compose.prod.yml --env-file=.env.prod up -d
 
 ## 🗺️ Database Schema
 
-![Database Schema](files/database-schema.svg)
+![Database Schema](/files/database-schema.svg)
 
 _Always regenerate this diagram after structural changes to ensure documentation accuracy._

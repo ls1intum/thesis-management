@@ -186,7 +186,7 @@ bootRun {
 // .env file (POSTGRES_IMAGE_TAG), shared with the docker-compose files. A POSTGRES_IMAGE_TAG shell/CI
 // environment variable overrides it, and 18.4-alpine is the final fallback so IDE/Gradle runs work
 // even without .env. Read via the provider API so the configuration cache tracks .env. See
-// docs/DATABASE.md.
+// documentation/docs/developer/database.mdx.
 def postgresImageTag = providers.environmentVariable("POSTGRES_IMAGE_TAG")
 	.orElse(providers.fileContents(layout.projectDirectory.dir("..").file(".env")).asText.map { content ->
 		def matcher = (content =~ /(?m)^\s*POSTGRES_IMAGE_TAG\s*=\s*(\S+)/)

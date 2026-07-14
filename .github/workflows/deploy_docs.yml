@@ -1,0 +1,70 @@
+name: Build and Deploy Documentation
+
+on:
+  pull_request:
+    branches: [develop]
+    paths:
+      - documentation/**
+      - .github/workflows/deploy_docs.yml
+  push:
+    branches: [develop]
+    paths:
+      - documentation/**
+      - .github/workflows/deploy_docs.yml
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: documentation
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: pnpm
+          cache-dependency-path: documentation/pnpm-lock.yaml
+
+      - name: Setup Pages
+        if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+        uses: actions/configure-pages@v5
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build website
+        run: pnpm build
+
+      - name: Upload Pages artifact
+        if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: documentation/build
+
+  deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
