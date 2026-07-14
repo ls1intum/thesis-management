@@ -5,6 +5,8 @@ import { Link } from 'react-router'
 import packageJson from '@/../package.json'
 import { labelByEnvironment } from '@/core/components/EnvironmentBanner/EnvironmentBanner'
 
+const DOCS_URL = 'https://docs.thesis.aet.cit.tum.de'
+
 const links = [
   { link: '/about', label: 'About', visible: true },
   { link: '/imprint', label: 'Imprint', visible: true },
@@ -56,6 +58,9 @@ const Footer = (props: IFooterProps) => {
           justify='center'
           align='center'
         >
+          <Anchor href={DOCS_URL} target='_blank' c='dimmed'>
+            Docs
+          </Anchor>
           {links
             .filter((link) => link.visible)
             .map((link) => (

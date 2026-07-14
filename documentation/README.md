@@ -1,8 +1,9 @@
 # Documentation
 
 The user-facing documentation site for Thesis Management, built with
-[Docusaurus](https://docusaurus.io/). It is published to GitHub Pages at
-<https://ls1intum.github.io/thesis-management/>.
+[Docusaurus](https://docusaurus.io/). It is published to GitHub Pages under
+the custom domain <https://docs.thesis.aet.cit.tum.de/> (see
+`static/CNAME`).
 
 ## Prerequisites
 
