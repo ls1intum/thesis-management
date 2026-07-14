@@ -12,14 +12,14 @@ Thesis Management was developed as part of multiple bachelor's and master's thes
 
 ## Documentation
 
-The full documentation lives at **[ls1intum.github.io/thesis-management](https://ls1intum.github.io/thesis-management/)**. It contains role-based guides with embedded video walk-throughs, permission matrices, workflow diagrams, and everything an operator or developer needs to run the platform.
+The full documentation lives at **[docs.thesis.aet.cit.tum.de](https://docs.thesis.aet.cit.tum.de/)**. It contains role-based guides with embedded video walk-throughs, permission matrices, workflow diagrams, and everything an operator or developer needs to run the platform.
 
-- **[Students](https://ls1intum.github.io/thesis-management/students/)** — apply for a topic, book interview slots, write your thesis, and receive your grade.
-- **[Supervisors & Examiners](https://ls1intum.github.io/thesis-management/supervisors/)** — create topics, review applications, run interviews, supervise theses, and issue grades. Includes the full [Permissions](https://ls1intum.github.io/thesis-management/supervisors/permissions) matrix and the [Workflows](https://ls1intum.github.io/thesis-management/supervisors/workflows) flowcharts.
-- **[Admins](https://ls1intum.github.io/thesis-management/admin/)** — configuration, production setup, and data retention.
-- **[Developers](https://ls1intum.github.io/thesis-management/developer/)** — local development, database migrations, mail templates, release workflow, and the API reference.
+- **[Students](https://docs.thesis.aet.cit.tum.de/students/)** — apply for a topic, book interview slots, write your thesis, and receive your grade.
+- **[Supervisors & Examiners](https://docs.thesis.aet.cit.tum.de/supervisors/)** — create topics, review applications, run interviews, supervise theses, and issue grades. Includes the full [Permissions](https://docs.thesis.aet.cit.tum.de/supervisors/permissions) matrix and the [Workflows](https://docs.thesis.aet.cit.tum.de/supervisors/workflows) flowcharts.
+- **[Admins](https://docs.thesis.aet.cit.tum.de/admin/)** — configuration, production setup, and data retention.
+- **[Developers](https://docs.thesis.aet.cit.tum.de/developer/)** — local development, database migrations, mail templates, release workflow, and the API reference.
 
-> **Just want a demo?** Run `docker compose -f docker-compose.showcase.yml up -d` and open <http://localhost:3100>. See the [Development Setup](https://ls1intum.github.io/thesis-management/developer/development-setup) guide for details.
+> **Just want a demo?** Run `docker compose -f docker-compose.showcase.yml up -d` and open <http://localhost:3100>. See the [Development Setup](https://docs.thesis.aet.cit.tum.de/developer/development-setup) guide for details.
 
 ## Building the documentation locally
 
