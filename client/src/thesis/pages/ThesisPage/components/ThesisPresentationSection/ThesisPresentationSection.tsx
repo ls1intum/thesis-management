@@ -15,6 +15,14 @@ const ThesisPresentationSection = () => {
     return <></>
   }
 
+  // Hide when there are no presentations and the current user cannot create one
+  // (e.g. the thesis is closed, or the viewer has no student-level write access).
+  const presentations = thesis.presentations ?? []
+  const canCreate = access.student && !isThesisClosed(thesis)
+  if (presentations.length === 0 && !canCreate) {
+    return <></>
+  }
+
   return (
     <Accordion variant='separated' defaultValue='open'>
       <Accordion.Item value='open'>

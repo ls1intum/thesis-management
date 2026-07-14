@@ -60,6 +60,12 @@ const ThesisProposalSection = () => {
     return <></>
   }
 
+  // Hide the section entirely when the thesis has moved past the proposal phase
+  // but no proposal was ever uploaded (i.e. the thesis skipped this step).
+  if (thesis.state !== ThesisState.PROPOSAL && proposals.length === 0) {
+    return <></>
+  }
+
   return (
     <Accordion
       variant='separated'
