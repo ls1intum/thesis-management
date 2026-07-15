@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { authStatePath, expandAccordion, fillRichTextEditor, navigateTo } from '../helpers'
+import { authStatePath, fillRichTextEditor, navigateTo, navigateToThesisConfig } from '../helpers'
 
 const THESIS_ID = '00000000-0000-4000-d000-000000000016'
 const THESIS_URL = `/theses/${THESIS_ID}`
@@ -11,11 +11,8 @@ test.describe('Thesis Content Editing - Supervisor', () => {
   test('supervisor can edit thesis configuration', async ({ page }) => {
     test.setTimeout(90_000)
 
-    await navigateTo(page, THESIS_URL)
-    await expect(page.getByRole('heading', { name: THESIS_TITLE })).toBeVisible({ timeout: 15_000 })
-
-    // Expand Configuration accordion
-    await expandAccordion(page, 'Configuration', page.getByRole('button', { name: 'Update' }))
+    // Navigate directly to the standalone Configuration page
+    await navigateToThesisConfig(page, THESIS_ID)
 
     // Verify form fields are visible and have expected initial values
     const titleInput = page.getByRole('textbox', { name: 'Thesis Title' })
@@ -49,12 +46,9 @@ test.describe('Thesis Content Editing - Supervisor', () => {
     // Verify success notification with exact text from source code
     await expect(page.getByText('Thesis updated successfully')).toBeVisible({ timeout: 10_000 })
 
-    // Reload page and verify the updated configuration persisted
+    // Reload the configuration page and verify the updated fields persisted
     await page.reload({ waitUntil: 'domcontentloaded' })
-    await expect(page.getByRole('heading', { name: /E2E Gap2/i })).toBeVisible({ timeout: 15_000 })
-
-    // Re-expand Configuration and verify field values persisted
-    await expandAccordion(page, 'Configuration', page.getByRole('button', { name: 'Update' }))
+    await expect(page.getByRole('button', { name: 'Update' })).toBeVisible({ timeout: 15_000 })
     await expect(page.getByRole('textbox', { name: 'Thesis Title' })).toHaveValue(THESIS_TITLE)
     await expect(page.getByRole('combobox', { name: 'Visibility' })).toHaveValue(targetVisibility)
   })
@@ -111,32 +105,22 @@ test.describe('Thesis Content Editing - Student', () => {
     }
   })
 
-  test('student cannot see Update button in config', async ({ browser }) => {
+  test('student is redirected away from the configuration page', async ({ browser }) => {
     const context = await browser.newContext({ storageState: authStatePath('student4') })
     const page = await context.newPage()
 
     try {
       test.setTimeout(90_000)
 
-      await navigateTo(page, THESIS_URL)
+      // Students accessing /theses/:id/configuration should be redirected to /theses/:id
+      await navigateTo(page, `${THESIS_URL}/configuration`)
+      await expect(page).toHaveURL(new RegExp(`${THESIS_ID}$`), { timeout: 15_000 })
       await expect(page.getByRole('heading', { name: /E2E Gap2/i })).toBeVisible({
         timeout: 15_000,
       })
 
-      // Expand Configuration accordion
-      await expandAccordion(page, 'Configuration', page.getByText('Thesis Title'))
-
-      // Verify "Update" button is NOT visible for students
-      await expect(page.getByRole('button', { name: 'Update' })).toBeHidden()
-
-      // Verify "Close Thesis" button is NOT visible for students
-      await expect(page.getByRole('button', { name: 'Close Thesis' })).toBeHidden()
-
-      // Verify Thesis Title input is disabled/readonly for students
-      await expect(page.getByRole('textbox', { name: 'Thesis Title' })).toBeDisabled()
-
-      // Verify Visibility select is also disabled for students
-      await expect(page.getByRole('combobox', { name: 'Visibility' })).toBeDisabled()
+      // The Configuration link in the header is hidden for students
+      await expect(page.getByRole('link', { name: 'Configuration' })).toBeHidden()
     } finally {
       await context.close()
     }

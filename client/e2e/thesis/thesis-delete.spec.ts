@@ -1,5 +1,5 @@
 import { test, expect, TestInfo } from '@playwright/test'
-import { authStatePath, navigateToDetail } from '../helpers'
+import { authStatePath, navigateTo, navigateToThesisConfig } from '../helpers'
 
 // Anonymization is irreversible. Once a test attempt anonymizes a thesis, a
 // Playwright retry against the same row would fail at the "Anonymize Thesis"
@@ -38,11 +38,7 @@ test.describe('Thesis Delete (Anonymize) - Admin', () => {
 
   test('admin can anonymize old non-terminal thesis with state warning only', async ({ page }, testInfo) => {
     const thesisId = thesisIdForAttempt(OLD_THESIS_IDS, testInfo)
-    const heading = page.getByRole('heading', { name: /Historical Analysis of Compiler/i })
-    await navigateToDetail(page, `/theses/${thesisId}`, heading)
-
-    // Open Configuration accordion
-    await page.getByText('Configuration').click()
+    await navigateToThesisConfig(page, thesisId)
 
     // Anonymize Thesis button should be visible for admin on non-anonymized thesis
     const deleteButton = page.getByRole('button', { name: 'Anonymize Thesis' })
@@ -77,10 +73,7 @@ test.describe('Thesis Delete (Anonymize) - Admin', () => {
 
   test('admin can anonymize recent thesis with retention warning', async ({ page }, testInfo) => {
     const thesisId = thesisIdForAttempt(RECENT_THESIS_IDS, testInfo)
-    const heading = page.getByRole('heading', { name: /Machine Learning Approaches/i })
-    await navigateToDetail(page, `/theses/${thesisId}`, heading)
-
-    await page.getByText('Configuration').click()
+    await navigateToThesisConfig(page, thesisId)
 
     const deleteButton = page.getByRole('button', { name: 'Anonymize Thesis' })
     await expect(deleteButton).toBeVisible()
@@ -104,10 +97,7 @@ test.describe('Thesis Delete (Anonymize) - Admin', () => {
 
   test('admin can anonymize active thesis with state and retention warnings', async ({ page }, testInfo) => {
     const thesisId = thesisIdForAttempt(ACTIVE_THESIS_IDS, testInfo)
-    const heading = page.getByRole('heading', { name: /Real-Time Anomaly Detection/i })
-    await navigateToDetail(page, `/theses/${thesisId}`, heading)
-
-    await page.getByText('Configuration').click()
+    await navigateToThesisConfig(page, thesisId)
 
     const deleteButton = page.getByRole('button', { name: 'Anonymize Thesis' })
     await expect(deleteButton).toBeVisible()
@@ -135,10 +125,7 @@ test.describe('Thesis Delete (Anonymize) - Modal Interactions', () => {
 
   test('admin can cancel anonymization modal without effect', async ({ page }) => {
     // Use thesis 1 which won't be affected by serial delete tests
-    const heading = page.getByRole('heading', { name: /Automated Code Review/i })
-    await navigateToDetail(page, `/theses/${EXAMINER_THESIS_ID}`, heading)
-
-    await page.getByText('Configuration').click()
+    await navigateToThesisConfig(page, EXAMINER_THESIS_ID)
 
     const anonymizeButton = page.getByRole('button', { name: 'Anonymize Thesis' })
     await expect(anonymizeButton).toBeVisible({ timeout: 5_000 })
@@ -154,18 +141,12 @@ test.describe('Thesis Delete (Anonymize) - Modal Interactions', () => {
     // Modal should close
     await expect(dialog).not.toBeVisible({ timeout: 3_000 })
 
-    // Should still be on the thesis page (not redirected)
-    await expect(heading).toBeVisible()
-
     // Anonymize button should still be visible (thesis wasn't anonymized)
     await expect(anonymizeButton).toBeVisible()
   })
 
   test('anonymization modal closes via X button', async ({ page }) => {
-    const heading = page.getByRole('heading', { name: /Automated Code Review/i })
-    await navigateToDetail(page, `/theses/${EXAMINER_THESIS_ID}`, heading)
-
-    await page.getByText('Configuration').click()
+    await navigateToThesisConfig(page, EXAMINER_THESIS_ID)
 
     const anonymizeButton = page.getByRole('button', { name: 'Anonymize Thesis' })
     await anonymizeButton.click()
@@ -178,7 +159,6 @@ test.describe('Thesis Delete (Anonymize) - Modal Interactions', () => {
 
     // Modal should close and thesis should remain unchanged
     await expect(dialog).not.toBeVisible({ timeout: 3_000 })
-    await expect(heading).toBeVisible()
   })
 })
 
@@ -187,14 +167,9 @@ test.describe('Thesis Delete (Anonymize) - Non-Admin Restrictions', () => {
 
   test('examiner does not see Anonymize Thesis button', async ({ page }) => {
     // Use thesis 1 where examiner has EXAMINER role — not affected by admin delete tests
-    const heading = page.getByRole('heading', { name: /Automated Code Review/i })
-    await navigateToDetail(page, `/theses/${EXAMINER_THESIS_ID}`, heading)
+    await navigateToThesisConfig(page, EXAMINER_THESIS_ID)
 
-    // Open Configuration accordion
-    await page.getByText('Configuration').click()
-
-    // Examiner should see Update button (they have supervisor access) but NOT Anonymize Thesis
-    await expect(page.getByRole('button', { name: 'Update' })).toBeVisible({ timeout: 5_000 })
+    // Examiner reaches the config page but does NOT see the Anonymize Thesis button
     await expect(page.getByRole('button', { name: 'Anonymize Thesis' })).not.toBeVisible({
       timeout: 3_000,
     })
@@ -204,22 +179,15 @@ test.describe('Thesis Delete (Anonymize) - Non-Admin Restrictions', () => {
 test.describe('Thesis Delete (Anonymize) - Student Restrictions', () => {
   test.use({ storageState: authStatePath('student') })
 
-  test('student does not see Anonymize Thesis button', async ({ page }) => {
-    const heading = page.getByRole('heading', { name: /Automated Code Review/i })
-    await navigateToDetail(page, `/theses/${EXAMINER_THESIS_ID}`, heading)
+  test('student cannot access Configuration page and does not see the link', async ({ page }) => {
+    // Visiting the config URL should redirect the student back to the thesis page
+    await navigateTo(page, `/theses/${EXAMINER_THESIS_ID}/configuration`)
+    await expect(page).toHaveURL(new RegExp(`${EXAMINER_THESIS_ID}$`), { timeout: 15_000 })
 
-    // Students should not see the Configuration section's admin controls
-    // Check if Configuration accordion is present at all
-    const configSection = page.getByText('Configuration')
-    const configVisible = await configSection.isVisible().catch(() => false)
+    // The Configuration link is hidden from students in the header
+    await expect(page.getByRole('link', { name: 'Configuration' })).toBeHidden()
 
-    if (configVisible) {
-      await configSection.click()
-      // Student should NOT see Anonymize Thesis button
-      await expect(page.getByRole('button', { name: 'Anonymize Thesis' })).not.toBeVisible({
-        timeout: 3_000,
-      })
-    }
-    // If Configuration section is not visible to students, that's also correct behavior
+    // Anonymize Thesis button must not exist anywhere on the page
+    await expect(page.getByRole('button', { name: 'Anonymize Thesis' })).toBeHidden()
   })
 })

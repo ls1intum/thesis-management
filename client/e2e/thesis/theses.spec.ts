@@ -85,15 +85,19 @@ test.describe('Theses - Detail page (Supervisor)', () => {
       timeout: 15_000,
     })
 
-    // Key thesis sections should be visible (accordion sections)
-    await expect(page.getByText('Configuration')).toBeVisible()
-    await expect(page.getByText('Involved Persons')).toBeVisible()
+    // Supervisor sees the Configuration link in the header
+    await expect(page.getByRole('link', { name: 'Configuration' })).toBeVisible()
 
-    // Thesis accordion sections should be present for supervisor
+    // Overview accordion exposes Info, Involved Persons, and Comments for supervisor
+    await expect(page.getByRole('button', { name: 'Info', exact: true })).toBeVisible()
+    await expect(
+      page.getByRole('button', { name: 'Involved Persons', exact: true }),
+    ).toBeVisible()
+    await expect(page.getByRole('button', { name: /Comments/i })).toBeVisible()
+
+    // Process navbar exposes the applicable phase steps
     await expect(page.getByRole('button', { name: 'Proposal', exact: true })).toBeVisible()
     await expect(page.getByRole('button', { name: 'Presentation', exact: true })).toBeVisible()
-    // Supervisor should see comments section
-    await expect(page.getByRole('button', { name: /supervisor comments/i })).toBeVisible()
 
     // Info section should be expanded by default and show thesis fields
     await expect(page.getByText('English Title')).toBeVisible()
@@ -109,8 +113,8 @@ test.describe('Theses - Detail page (Supervisor)', () => {
       timeout: 15_000,
     })
 
-    // Should show thesis sections
-    await expect(page.getByText('Configuration')).toBeVisible()
+    // Supervisor sees the Configuration link in the header
+    await expect(page.getByRole('link', { name: 'Configuration' })).toBeVisible()
     await expect(page.getByRole('button', { name: 'Proposal', exact: true })).toBeVisible()
   })
 })
@@ -124,13 +128,33 @@ test.describe('Theses - Detail page (Student)', () => {
       timeout: 15_000,
     })
 
-    // Should show thesis accordion sections visible to students
-    await expect(page.getByRole('button', { name: 'Configuration' })).toBeVisible()
+    // Configuration link is only visible to supervisors/examiners
+    await expect(page.getByRole('link', { name: 'Configuration' })).toBeHidden()
+
+    // Student sees the Info section and process navbar steps for the phases they have access to
+    await expect(page.getByRole('button', { name: 'Info', exact: true })).toBeVisible()
     await expect(page.getByRole('button', { name: 'Proposal', exact: true })).toBeVisible()
     await expect(page.getByRole('button', { name: 'Presentation', exact: true })).toBeVisible()
 
-    // Student should see the Comments section
-    await expect(page.getByRole('button', { name: 'Comments' })).toBeVisible()
+    // Involved Persons and Comments are supervisor-only, so students should not see them
+    await expect(
+      page.getByRole('button', { name: 'Involved Persons', exact: true }),
+    ).toBeHidden()
+    await expect(page.getByRole('button', { name: /Comments/i })).toBeHidden()
+  })
+
+  test('student navigating to configuration URL is redirected to the thesis page', async ({
+    page,
+  }) => {
+    await navigateTo(page, '/theses/00000000-0000-4000-d000-000000000001/configuration')
+
+    // Redirect lands the student back on the main thesis page
+    await expect(page).toHaveURL(/\/theses\/00000000-0000-4000-d000-000000000001$/, {
+      timeout: 15_000,
+    })
+    await expect(page.getByRole('heading', { name: /automated code review/i })).toBeVisible({
+      timeout: 15_000,
+    })
   })
 })
 
@@ -145,8 +169,8 @@ test.describe('Theses - Detail page (Examiner2)', () => {
       timeout: 15_000,
     })
 
-    // Should show thesis sections for ASSESSED state
-    await expect(page.getByText('Configuration')).toBeVisible()
+    // Examiner sees the Configuration link in the header
+    await expect(page.getByRole('link', { name: 'Configuration' })).toBeVisible()
     await expect(page.getByRole('button', { name: 'Proposal', exact: true })).toBeVisible()
   })
 })

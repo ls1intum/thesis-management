@@ -189,7 +189,7 @@ const AppRoutes = () => {
           <Route
             path='/theses/:thesisId/configuration'
             element={
-              <AuthenticatedArea requiredGroups={['admin', 'advisor', 'supervisor']}>
+              <AuthenticatedArea>
                 <ThesisConfigPage />
               </AuthenticatedArea>
             }

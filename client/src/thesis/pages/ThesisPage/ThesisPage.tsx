@@ -5,7 +5,9 @@ import ThesisWritingSection from '@/thesis/pages/ThesisPage/components/ThesisWri
 import ThesisAssessmentSection from '@/thesis/pages/ThesisPage/components/ThesisAssessmentSection/ThesisAssessmentSection'
 import ThesisFinalGradeSection from '@/thesis/pages/ThesisPage/components/ThesisFinalGradeSection/ThesisFinalGradeSection'
 import ThesisPresentationSection from '@/thesis/pages/ThesisPage/components/ThesisPresentationSection/ThesisPresentationSection'
-import ThesisProcessNav from '@/thesis/pages/ThesisPage/components/ThesisProcessNav/ThesisProcessNav'
+import ThesisProcessNav, {
+  getAppShellHeaderOffset,
+} from '@/thesis/pages/ThesisPage/components/ThesisProcessNav/ThesisProcessNav'
 import type { IThesisProcessNavStep } from '@/thesis/pages/ThesisPage/components/ThesisProcessNav/ThesisProcessNav'
 import { useParams } from 'react-router'
 import { Alert, Stack } from '@mantine/core'
@@ -17,7 +19,8 @@ import { ThesisState } from '@/thesis/requests/responses/thesis'
 import { checkMinimumThesisState, isThesisClosed } from '@/thesis/utils/thesis'
 import { formatDate } from '@/core/utils/format'
 
-const SECTION_SCROLL_MARGIN = 80
+const NAV_BAR_HEIGHT = 56
+const SECTION_SCROLL_MARGIN = NAV_BAR_HEIGHT + 16
 
 const ThesisPageContent = () => {
   const { thesis, access } = useLoadedThesisContext()
@@ -84,7 +87,7 @@ const ThesisPageContent = () => {
     })
   }
 
-  const anchorStyle = { scrollMarginTop: SECTION_SCROLL_MARGIN }
+  const anchorStyle = { scrollMarginTop: getAppShellHeaderOffset() + SECTION_SCROLL_MARGIN }
 
   return (
     <Stack>

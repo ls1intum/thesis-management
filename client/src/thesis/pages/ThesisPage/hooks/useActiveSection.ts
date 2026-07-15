@@ -24,25 +24,52 @@ export function useActiveSection(sectionIds: string[], topOffset = 100): string 
 
     const visibility = new Map<string, number>()
 
+    const isScrolledToBottom = () => {
+      // Handles both window scrolling and any scrollable ancestor with fixed height.
+      const doc = document.documentElement
+      const winBottom = Math.ceil(window.innerHeight + window.scrollY) >= doc.scrollHeight - 2
+      if (winBottom) {
+        return true
+      }
+      // Also check the closest scroll ancestor of the last section (AppShell.Main).
+      let el: HTMLElement | null = elements[elements.length - 1].parentElement
+      while (el) {
+        const overflowY = getComputedStyle(el).overflowY
+        if (overflowY === 'auto' || overflowY === 'scroll') {
+          return Math.ceil(el.scrollTop + el.clientHeight) >= el.scrollHeight - 2
+        }
+        el = el.parentElement
+      }
+      return false
+    }
+
+    const pickActive = () => {
+      if (isScrolledToBottom()) {
+        setActiveId(elements[elements.length - 1].id)
+        return
+      }
+
+      let best: { id: string; top: number } | null = null
+      for (const el of elements) {
+        if ((visibility.get(el.id) ?? 0) > 0) {
+          const top = el.getBoundingClientRect().top
+          if (!best || top < best.top) {
+            best = { id: el.id, top }
+          }
+        }
+      }
+
+      if (best) {
+        setActiveId(best.id)
+      }
+    }
+
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
           visibility.set(entry.target.id, entry.isIntersecting ? entry.intersectionRatio : 0)
         }
-
-        let best: { id: string; top: number } | null = null
-        for (const el of elements) {
-          if ((visibility.get(el.id) ?? 0) > 0) {
-            const top = el.getBoundingClientRect().top
-            if (!best || top < best.top) {
-              best = { id: el.id, top }
-            }
-          }
-        }
-
-        if (best) {
-          setActiveId(best.id)
-        }
+        pickActive()
       },
       {
         rootMargin: `-${topOffset}px 0px -40% 0px`,
@@ -51,7 +78,16 @@ export function useActiveSection(sectionIds: string[], topOffset = 100): string 
     )
 
     elements.forEach((el) => observer.observe(el))
-    return () => observer.disconnect()
+
+    // Fallback scroll listener catches the "scrolled past the observer's active
+    // band" case for short final sections that never trip the intersection.
+    const onScroll = () => pickActive()
+    window.addEventListener('scroll', onScroll, { passive: true, capture: true })
+
+    return () => {
+      observer.disconnect()
+      window.removeEventListener('scroll', onScroll, true)
+    }
     // eslint-disable-next-line @eslint-react/exhaustive-deps -- `key` (joined ids) captures the array identity
   }, [key, topOffset])
 

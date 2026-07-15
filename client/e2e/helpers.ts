@@ -36,6 +36,17 @@ export async function navigateToDetail(
 }
 
 /**
+ * Navigate to the standalone Configuration page for a thesis and wait for the
+ * "Update" button to become visible so tests can start interacting with the
+ * form. Only supervisors/examiners/admins reach this page; students are
+ * redirected to /theses/:id by the page component itself.
+ */
+export async function navigateToThesisConfig(page: Page, thesisId: string) {
+  await navigateTo(page, `/theses/${thesisId}/configuration`)
+  await expect(page.getByRole('button', { name: 'Update' })).toBeVisible({ timeout: 15_000 })
+}
+
+/**
  * Use a specific auth state file for a test.
  */
 export function authStatePath(

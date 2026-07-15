@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { authStatePath, navigateTo, navigateToDetail } from '../helpers'
+import { authStatePath, navigateTo, navigateToDetail, navigateToThesisConfig } from '../helpers'
 
 const EXPIRED_THESIS_ID = '00000000-0000-4000-d000-000000000008'
 const ALREADY_ANONYMIZED_THESIS_ID = '00000000-0000-4000-d000-000000000009'
@@ -85,14 +85,10 @@ test.describe('Thesis Anonymization - Pre-Anonymized Thesis Banner', () => {
   })
 
   test('anonymize button is hidden on already-anonymized thesis', async ({ page }) => {
-    const heading = page.getByRole('heading', { name: /Archived Research on Software/i })
-    await navigateToDetail(page, `/theses/${ALREADY_ANONYMIZED_THESIS_ID}`, heading)
-
-    // Open Configuration accordion
-    await page.getByText('Configuration').click()
+    // Navigate directly to the configuration page
+    await navigateToThesisConfig(page, ALREADY_ANONYMIZED_THESIS_ID)
 
     // Admin should see Update button but NOT Anonymize Thesis (already anonymized)
-    await expect(page.getByRole('button', { name: 'Update' })).toBeVisible({ timeout: 5_000 })
     await expect(page.getByRole('button', { name: 'Anonymize Thesis' })).not.toBeVisible({
       timeout: 3_000,
     })
@@ -117,11 +113,7 @@ test.describe('Thesis Anonymization - Non-Anonymized Thesis', () => {
   })
 
   test('non-anonymized thesis shows anonymize button for admin', async ({ page }) => {
-    const heading = page.getByRole('heading', { name: /Automated Code Review/i })
-    await navigateToDetail(page, `/theses/${NON_ANONYMIZED_THESIS_ID}`, heading)
-
-    // Open Configuration accordion
-    await page.getByText('Configuration').click()
+    await navigateToThesisConfig(page, NON_ANONYMIZED_THESIS_ID)
 
     // Admin should see the Anonymize Thesis button on non-anonymized thesis
     await expect(page.getByRole('button', { name: 'Anonymize Thesis' })).toBeVisible({
@@ -153,15 +145,10 @@ test.describe('Thesis Anonymization - Supervisor Restrictions', () => {
     })
   })
 
-  test('supervisor does not see anonymize button on thesis detail', async ({ page }) => {
-    const heading = page.getByRole('heading', { name: /Automated Code Review/i })
-    await navigateToDetail(page, `/theses/${NON_ANONYMIZED_THESIS_ID}`, heading)
-
-    // Open Configuration accordion
-    await page.getByText('Configuration').click()
+  test('supervisor does not see anonymize button on thesis config page', async ({ page }) => {
+    await navigateToThesisConfig(page, NON_ANONYMIZED_THESIS_ID)
 
     // Supervisor should see Update button but NOT Anonymize Thesis
-    await expect(page.getByRole('button', { name: 'Update' })).toBeVisible({ timeout: 5_000 })
     await expect(page.getByRole('button', { name: 'Anonymize Thesis' })).not.toBeVisible({
       timeout: 3_000,
     })

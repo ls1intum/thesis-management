@@ -1,6 +1,14 @@
 import type { CSSProperties } from 'react'
 import { Box, Group, ScrollArea, UnstyledButton, useMantineTheme } from '@mantine/core'
 import { useActiveSection } from '@/thesis/pages/ThesisPage/hooks/useActiveSection'
+import {
+  ENVIRONMENT_BANNER_HEIGHT,
+  isEnvironmentBannerVisible,
+} from '@/core/components/EnvironmentBanner/EnvironmentBanner'
+
+export const APP_SHELL_HEADER_HEIGHT = 50
+export const getAppShellHeaderOffset = () =>
+  APP_SHELL_HEADER_HEIGHT + (isEnvironmentBannerVisible() ? ENVIRONMENT_BANNER_HEIGHT : 0)
 
 export interface IThesisProcessNavStep {
   id: string
@@ -22,7 +30,11 @@ const scrollToSection = (id: string) => {
 
 const ThesisProcessNav = ({ steps }: IThesisProcessNavProps) => {
   const theme = useMantineTheme()
-  const activeId = useActiveSection(steps.map((s) => s.id))
+  const headerOffset = getAppShellHeaderOffset()
+  const activeId = useActiveSection(
+    steps.map((s) => s.id),
+    headerOffset + 60,
+  )
 
   if (steps.length === 0) {
     return null
@@ -30,7 +42,7 @@ const ThesisProcessNav = ({ steps }: IThesisProcessNavProps) => {
 
   const containerStyle: CSSProperties = {
     position: 'sticky',
-    top: 0,
+    top: headerOffset,
     zIndex: 50,
     backgroundColor: 'var(--mantine-color-body)',
     borderBottom: `1px solid var(--mantine-color-default-border)`,

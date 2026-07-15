@@ -157,6 +157,10 @@ const InfoContent = () => {
                   onClick={() => {
                     setInfoText(thesis.infoText)
                     setAbstractText(thesis.abstractText)
+                    setTitles({
+                      ...thesis.metadata.titles,
+                      [thesis.language]: thesis.title,
+                    })
                     setEditMode(false)
                   }}
                 >
