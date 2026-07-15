@@ -26,13 +26,23 @@ const InfoContent = () => {
   const [titles, setTitles] = useState<Record<string, string>>({})
 
   useEffect(() => {
+    // Skip resync while the user is editing so an unrelated thesis update from
+    // another section can't wipe their in-progress edits.
+    if (editMode) return
     setInfoText(thesis.infoText)
     setAbstractText(thesis.abstractText)
     setTitles({
       ...thesis.metadata.titles,
       [thesis.language]: thesis.title,
     })
-  }, [thesis.infoText, thesis.abstractText, thesis.metadata, thesis.title, thesis.language])
+  }, [
+    editMode,
+    thesis.infoText,
+    thesis.abstractText,
+    thesis.metadata,
+    thesis.title,
+    thesis.language,
+  ])
 
   const [saving, onSave] = useThesisUpdateAction(async () => {
     const response = await doRequest<IThesis>(`/v2/theses/${thesis.thesisId}/info`, {

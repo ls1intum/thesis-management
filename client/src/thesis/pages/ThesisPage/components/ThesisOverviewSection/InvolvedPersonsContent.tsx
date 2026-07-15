@@ -8,7 +8,7 @@ import {
   useThesisUpdateAction,
 } from '@/thesis/providers/ThesisProvider/hooks'
 import { formatUser } from '@/core/utils/format'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { doRequest } from '@/core/requests/request'
 import { ApiError } from '@/core/requests/handler'
 import { renderCustomDataValue } from '@/core/utils/customDataLink'
@@ -17,8 +17,11 @@ const InvolvedPersonsContent = () => {
   const { thesis } = useLoadedThesisContext()
 
   const [credits, setCredits] = useState(thesis.metadata.credits)
+  // Tracks unsaved edits so an unrelated thesis refresh doesn't stomp them.
+  const dirtyRef = useRef(false)
 
   useEffect(() => {
+    if (dirtyRef.current) return
     setCredits(thesis.metadata.credits)
   }, [thesis.metadata.credits])
 
@@ -34,6 +37,9 @@ const InvolvedPersonsContent = () => {
     })
 
     if (response.ok) {
+      // Clear the dirty flag before the context update propagates so the
+      // resync effect can pick up the just-saved credits.
+      dirtyRef.current = false
       return response.data
     } else {
       throw new ApiError(response)
@@ -121,7 +127,8 @@ const InvolvedPersonsContent = () => {
                   label='Credits for Thesis'
                   min={1}
                   value={credits[user.data.userId]}
-                  onChange={(value) =>
+                  onChange={(value) => {
+                    dirtyRef.current = true
                     setCredits((prev) => {
                       if (value) {
                         return { ...prev, [user.data.userId]: Number(value) }
@@ -131,7 +138,7 @@ const InvolvedPersonsContent = () => {
                         return { ...prev }
                       }
                     })
-                  }
+                  }}
                   inputContainer={(children) => (
                     <Group>
                       {children}
