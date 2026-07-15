@@ -1,6 +1,5 @@
 import type { IThesis, ThesisState } from '@/thesis/requests/responses/thesis'
 import {
-  Accordion,
   Alert,
   Button,
   Group,
@@ -320,185 +319,174 @@ const ThesisConfigSection = () => {
 
   return (
     <>
-      <Accordion variant='separated' defaultValue=''>
-        <Accordion.Item value='open'>
-          <Accordion.Control>Configuration</Accordion.Control>
-          <Accordion.Panel>
-            <form onSubmit={form.onSubmit(() => void onSave())}>
-              <Stack gap='md'>
-                <TextInput
-                  label='Thesis Title'
-                  required={true}
-                  disabled={!access.supervisor}
-                  {...form.getInputProps('title')}
-                />
-                <Select
-                  label='Thesis Type'
-                  required={true}
-                  disabled={!access.supervisor}
-                  data={Object.keys(GLOBAL_CONFIG.thesis_types).map((key) => ({
-                    value: key,
-                    label: formatThesisType(key),
-                  }))}
-                  {...form.getInputProps('type')}
-                />
-                <LanguageSelect
-                  label='Thesis Language'
-                  required={true}
-                  {...form.getInputProps('language')}
-                />
-                <ThesisVisibilitySelect
-                  label='Visibility'
-                  required={true}
-                  disabled={!access.supervisor}
-                  {...form.getInputProps('visibility')}
-                />
-                <TagsInput
-                  label='Keywords'
-                  disabled={!access.supervisor}
-                  data={form.values.keywords}
-                  {...form.getInputProps('keywords')}
-                />
-                <Group grow>
-                  <DateInput
-                    label='Start Date'
-                    disabled={!access.supervisor}
-                    {...form.getInputProps('startDate')}
-                    onChange={(date) =>
-                      form.setFieldValue('startDate', date ? new Date(date) : undefined)
-                    }
-                  />
-                  <DateInput
-                    label='End Date'
-                    disabled={!access.supervisor}
-                    {...form.getInputProps('endDate')}
-                    onChange={(date) =>
-                      form.setFieldValue('endDate', date ? new Date(date) : undefined)
-                    }
-                  />
-                </Group>
-                <UserMultiSelect
-                  required={true}
-                  disabled={!access.supervisor}
-                  label='Student(s)'
-                  groups={['student']}
-                  initialUsers={thesis.students ?? []}
-                  {...form.getInputProps('students')}
-                />
-                <UserMultiSelect
-                  required={true}
-                  disabled={!access.supervisor}
-                  label='Supervisor(s)'
-                  groups={['advisor', 'supervisor']}
-                  initialUsers={thesis.supervisors ?? []}
-                  {...form.getInputProps('supervisorIds')}
-                />
-                <UserMultiSelect
-                  required={true}
-                  disabled={!access.supervisor}
-                  label='Examiner'
-                  groups={['supervisor']}
-                  initialUsers={thesis.examiners ?? []}
-                  maxValues={1}
-                  {...form.getInputProps('examinerIds')}
-                />
-                {hasAdminAccess ? (
-                  <Select
-                    label='Research Group'
-                    required
-                    nothingFoundMessage={'Nothing found...'}
-                    data={(researchGroups?.content ?? []).map(
-                      (researchGroup: ILightResearchGroup) => ({
-                        label: researchGroup.name,
-                        value: researchGroup.id,
-                      }),
-                    )}
-                    {...form.getInputProps('researchGroupId')}
-                  />
-                ) : (
-                  <TextInput
-                    label='Research Group'
-                    description="Only administrators can change a thesis's research group."
-                    disabled
-                    value={thesis.researchGroup?.name ?? ''}
-                  />
-                )}
-                {form.values.states.map((item, index) => (
-                  <Group key={item.state} grow>
-                    <Group justify='center'>
-                      <Text ta='center' fw='bold'>
-                        State changed to
-                      </Text>
-                      <ThesisStateBadge state={item.state} />
-                      <Text ta='center' fw='bold'>
-                        at
-                      </Text>
-                    </Group>
-                    <DateTimePicker
-                      required={true}
-                      disabled={!access.supervisor}
-                      value={item.changedAt}
-                      error={form.errors.states}
-                      onChange={(value) => {
-                        form.values.states[index] = {
-                          state: item.state,
-                          changedAt: value ? new Date(value) : null,
-                        }
-                        form.setFieldValue('states', [...form.values.states])
-                      }}
-                    />
-                  </Group>
-                ))}
-                {access.supervisor && (
-                  <Group>
-                    {!isThesisClosed(thesis) && (
-                      <ConfirmationButton
-                        confirmationText='Are you sure you want to close the thesis? This will set the thesis state to DROPPED OUT and cannot be undone.'
-                        confirmationTitle='Close Thesis'
-                        variant='outline'
-                        color='red'
-                        loading={closing}
-                        onClick={onClose}
-                      >
-                        Close Thesis
-                      </ConfirmationButton>
-                    )}
-                    {canRevert && previousState && (
-                      <ConfirmationButton
-                        confirmationTitle='Revert Thesis State'
-                        confirmationText={
-                          `Revert from ${formatThesisState(thesis.state)} back to ${formatThesisState(previousState)}? ` +
-                          `Data captured in ${formatThesisState(thesis.state)} ` +
-                          `(assessment, final grade, proposal approval, etc.) will be preserved.`
-                        }
-                        variant='outline'
-                        color='yellow'
-                        loading={reverting}
-                        onClick={onRevert}
-                      >
-                        Revert to Previous State
-                      </ConfirmationButton>
-                    )}
-                    {hasAdminAccess && !thesis.anonymizedAt && (
-                      <Button
-                        variant='outline'
-                        color='red'
-                        loading={anonymizeLoading}
-                        onClick={() => void onDeleteThesisClick()}
-                      >
-                        Anonymize Thesis
-                      </Button>
-                    )}
-                    <Button type='submit' ml='auto' loading={updating} disabled={!form.isValid()}>
-                      Update
-                    </Button>
-                  </Group>
-                )}
-              </Stack>
-            </form>
-          </Accordion.Panel>
-        </Accordion.Item>
-      </Accordion>
+      <form onSubmit={form.onSubmit(() => void onSave())}>
+        <Stack gap='md'>
+          <TextInput
+            label='Thesis Title'
+            required={true}
+            disabled={!access.supervisor}
+            {...form.getInputProps('title')}
+          />
+          <Select
+            label='Thesis Type'
+            required={true}
+            disabled={!access.supervisor}
+            data={Object.keys(GLOBAL_CONFIG.thesis_types).map((key) => ({
+              value: key,
+              label: formatThesisType(key),
+            }))}
+            {...form.getInputProps('type')}
+          />
+          <LanguageSelect
+            label='Thesis Language'
+            required={true}
+            {...form.getInputProps('language')}
+          />
+          <ThesisVisibilitySelect
+            label='Visibility'
+            required={true}
+            disabled={!access.supervisor}
+            {...form.getInputProps('visibility')}
+          />
+          <TagsInput
+            label='Keywords'
+            disabled={!access.supervisor}
+            data={form.values.keywords}
+            {...form.getInputProps('keywords')}
+          />
+          <Group grow>
+            <DateInput
+              label='Start Date'
+              disabled={!access.supervisor}
+              {...form.getInputProps('startDate')}
+              onChange={(date) =>
+                form.setFieldValue('startDate', date ? new Date(date) : undefined)
+              }
+            />
+            <DateInput
+              label='End Date'
+              disabled={!access.supervisor}
+              {...form.getInputProps('endDate')}
+              onChange={(date) => form.setFieldValue('endDate', date ? new Date(date) : undefined)}
+            />
+          </Group>
+          <UserMultiSelect
+            required={true}
+            disabled={!access.supervisor}
+            label='Student(s)'
+            groups={['student']}
+            initialUsers={thesis.students ?? []}
+            {...form.getInputProps('students')}
+          />
+          <UserMultiSelect
+            required={true}
+            disabled={!access.supervisor}
+            label='Supervisor(s)'
+            groups={['advisor', 'supervisor']}
+            initialUsers={thesis.supervisors ?? []}
+            {...form.getInputProps('supervisorIds')}
+          />
+          <UserMultiSelect
+            required={true}
+            disabled={!access.supervisor}
+            label='Examiner'
+            groups={['supervisor']}
+            initialUsers={thesis.examiners ?? []}
+            maxValues={1}
+            {...form.getInputProps('examinerIds')}
+          />
+          {hasAdminAccess ? (
+            <Select
+              label='Research Group'
+              required
+              nothingFoundMessage={'Nothing found...'}
+              data={(researchGroups?.content ?? []).map((researchGroup: ILightResearchGroup) => ({
+                label: researchGroup.name,
+                value: researchGroup.id,
+              }))}
+              {...form.getInputProps('researchGroupId')}
+            />
+          ) : (
+            <TextInput
+              label='Research Group'
+              description="Only administrators can change a thesis's research group."
+              disabled
+              value={thesis.researchGroup?.name ?? ''}
+            />
+          )}
+          {form.values.states.map((item, index) => (
+            <Group key={item.state} grow>
+              <Group justify='center'>
+                <Text ta='center' fw='bold'>
+                  State changed to
+                </Text>
+                <ThesisStateBadge state={item.state} />
+                <Text ta='center' fw='bold'>
+                  at
+                </Text>
+              </Group>
+              <DateTimePicker
+                required={true}
+                disabled={!access.supervisor}
+                value={item.changedAt}
+                error={form.errors.states}
+                onChange={(value) => {
+                  form.values.states[index] = {
+                    state: item.state,
+                    changedAt: value ? new Date(value) : null,
+                  }
+                  form.setFieldValue('states', [...form.values.states])
+                }}
+              />
+            </Group>
+          ))}
+          {access.supervisor && (
+            <Group>
+              {!isThesisClosed(thesis) && (
+                <ConfirmationButton
+                  confirmationText='Are you sure you want to close the thesis? This will set the thesis state to DROPPED OUT and cannot be undone.'
+                  confirmationTitle='Close Thesis'
+                  variant='outline'
+                  color='red'
+                  loading={closing}
+                  onClick={onClose}
+                >
+                  Close Thesis
+                </ConfirmationButton>
+              )}
+              {canRevert && previousState && (
+                <ConfirmationButton
+                  confirmationTitle='Revert Thesis State'
+                  confirmationText={
+                    `Revert from ${formatThesisState(thesis.state)} back to ${formatThesisState(previousState)}? ` +
+                    `Data captured in ${formatThesisState(thesis.state)} ` +
+                    `(assessment, final grade, proposal approval, etc.) will be preserved.`
+                  }
+                  variant='outline'
+                  color='yellow'
+                  loading={reverting}
+                  onClick={onRevert}
+                >
+                  Revert to Previous State
+                </ConfirmationButton>
+              )}
+              {hasAdminAccess && !thesis.anonymizedAt && (
+                <Button
+                  variant='outline'
+                  color='red'
+                  loading={anonymizeLoading}
+                  onClick={() => void onDeleteThesisClick()}
+                >
+                  Anonymize Thesis
+                </Button>
+              )}
+              <Button type='submit' ml='auto' loading={updating} disabled={!form.isValid()}>
+                Update
+              </Button>
+            </Group>
+          )}
+        </Stack>
+      </form>
 
       {hasAdminAccess && (
         <Modal

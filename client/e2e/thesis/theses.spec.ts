@@ -93,7 +93,11 @@ test.describe('Theses - Detail page (Supervisor)', () => {
     await expect(
       page.getByRole('button', { name: 'Involved Persons', exact: true }),
     ).toBeVisible()
-    await expect(page.getByRole('button', { name: /Comments/i })).toBeVisible()
+    // Overview Comments carries the "Not visible to student" badge, which
+    // distinguishes it from the Writing section's separate Comments accordion.
+    await expect(
+      page.getByRole('button', { name: 'Comments Not visible to student' }),
+    ).toBeVisible()
 
     // Process navbar exposes the applicable phase steps
     await expect(page.getByRole('button', { name: 'Proposal', exact: true })).toBeVisible()
@@ -136,11 +140,15 @@ test.describe('Theses - Detail page (Student)', () => {
     await expect(page.getByRole('button', { name: 'Proposal', exact: true })).toBeVisible()
     await expect(page.getByRole('button', { name: 'Presentation', exact: true })).toBeVisible()
 
-    // Involved Persons and Comments are supervisor-only, so students should not see them
+    // Involved Persons and the supervisor-only Overview Comments accordion
+    // should be hidden. (The WRITING section has its own Comments accordion
+    // that students can see, so we target only the badge-marked one here.)
     await expect(
       page.getByRole('button', { name: 'Involved Persons', exact: true }),
     ).toBeHidden()
-    await expect(page.getByRole('button', { name: /Comments/i })).toBeHidden()
+    await expect(
+      page.getByRole('button', { name: 'Comments Not visible to student' }),
+    ).toBeHidden()
   })
 
   test('student navigating to configuration URL is redirected to the thesis page', async ({

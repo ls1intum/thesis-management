@@ -167,16 +167,21 @@ export async function searchAndSelectMultiSelect(page: Page, label: string, opti
  * click sometimes doesn't register, so this helper retries up to
  * {@link maxAttempts} times.
  *
+ * Pass a string `section` to locate the accordion by its label text, or pass
+ * a `Locator` when the caller has already resolved the specific item (useful
+ * when multiple accordions share the same label — e.g. the Overview and
+ * Writing sections each expose a "Comments" accordion).
+ *
  * @param contentLocator  A locator for an element inside the accordion panel
  *                        that becomes visible only when the panel is expanded.
  */
 export async function expandAccordion(
   page: Page,
-  sectionLabel: string,
+  section: string | Locator,
   contentLocator: Locator,
   maxAttempts = 3,
 ) {
-  const item = getAccordionItem(page, sectionLabel)
+  const item = typeof section === 'string' ? getAccordionItem(page, section) : section
   const control = item.locator('.mantine-Accordion-control').first()
   await control.waitFor({ state: 'visible', timeout: 10_000 })
 
@@ -208,6 +213,20 @@ export function getAccordionItem(page: Page, sectionLabel: string) {
         has: page.getByText(sectionLabel, { exact: true }),
       }),
     })
+    .first()
+}
+
+/**
+ * Locate the "Comments" accordion inside the merged Overview section (the
+ * supervisor-only one that carries the "Not visible to student" badge). This
+ * disambiguates from the WRITING section's separate "Comments" accordion,
+ * which uses the same label but has no badge.
+ */
+export function getSupervisorCommentsAccordion(page: Page) {
+  return page
+    .locator('.mantine-Accordion-item')
+    .filter({ hasText: 'Comments' })
+    .filter({ hasText: 'Not visible to student' })
     .first()
 }
 

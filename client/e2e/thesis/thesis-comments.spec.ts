@@ -4,7 +4,7 @@ import {
   expandAccordion,
   navigateTo,
   createTestPdfBuffer,
-  getAccordionItem,
+  getSupervisorCommentsAccordion,
 } from '../helpers'
 
 const THESIS_ID = '00000000-0000-4000-d000-000000000017'
@@ -19,8 +19,8 @@ test.describe('Thesis Comments - Supervisor', () => {
     await expect(page.getByRole('heading', { name: THESIS_TITLE })).toBeVisible({ timeout: 15_000 })
 
     // Expand the Comments accordion (inside the merged Overview section)
-    const commentsSection = getAccordionItem(page, 'Comments')
-    await expandAccordion(page, 'Comments', commentsSection.getByText('distributed consensus'))
+    const commentsSection = getSupervisorCommentsAccordion(page)
+    await expandAccordion(page, commentsSection, commentsSection.getByText('distributed consensus'))
 
     // Verify both seeded comments are visible
     await expect(page.getByText('distributed consensus algorithms')).toBeVisible()
@@ -42,8 +42,8 @@ test.describe('Thesis Comments - Supervisor', () => {
     await navigateTo(page, THESIS_URL)
     await expect(page.getByRole('heading', { name: THESIS_TITLE })).toBeVisible({ timeout: 15_000 })
 
-    const commentsSection = getAccordionItem(page, 'Comments')
-    await expandAccordion(page, 'Comments', commentsSection.getByText('distributed consensus'))
+    const commentsSection = getSupervisorCommentsAccordion(page)
+    await expandAccordion(page, commentsSection, commentsSection.getByText('distributed consensus'))
 
     // Type a comment
     const textarea = commentsSection.getByPlaceholder('Add a comment or file...')
@@ -72,8 +72,8 @@ test.describe('Thesis Comments - Supervisor', () => {
     await navigateTo(page, THESIS_URL)
     await expect(page.getByRole('heading', { name: THESIS_TITLE })).toBeVisible({ timeout: 15_000 })
 
-    const commentsSection = getAccordionItem(page, 'Comments')
-    await expandAccordion(page, 'Comments', commentsSection.getByText('distributed consensus'))
+    const commentsSection = getSupervisorCommentsAccordion(page)
+    await expandAccordion(page, commentsSection, commentsSection.getByText('distributed consensus'))
 
     // Type a message
     await commentsSection
@@ -130,9 +130,12 @@ test.describe('Thesis Comments - Student cannot see supervisor comments', () => 
         timeout: 15_000,
       })
 
-      // Verify the student CANNOT see the "Comments" accordion (supervisor-only)
+      // Verify the student CANNOT see the supervisor-only Comments accordion
+      // (identified by the "Not visible to student" badge). Note: the Writing
+      // section has its own Comments accordion that students CAN see, so we
+      // target only the badge-marked one here.
       await expect(
-        page.getByRole('button', { name: /Comments/, exact: false }),
+        page.getByRole('button', { name: 'Comments Not visible to student' }),
       ).toBeHidden()
 
       // Verify the student cannot see any of the seeded supervisor comment text
