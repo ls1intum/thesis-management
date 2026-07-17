@@ -15,8 +15,11 @@ import { createTestPdfBuffer } from '../../e2e/helpers'
  * following the same pattern the e2e specs use.
  */
 const SEED_THESIS_WRITING = '00000000-0000-4000-d000-000000000001' // 'student' assigned
+const SEED_THESIS_PROPOSAL = '00000000-0000-4000-d000-000000000002' // 'student2' assigned, PROPOSAL state
 const SEED_OPEN_TOPIC = '00000000-0000-4000-b000-000000000002' // CI Pipeline Optimization
 const SEED_INTERVIEW_PROCESS = '00000000-0000-4000-e600-000000000001'
+
+const SERVER_HOST = process.env.SERVER_URL ?? 'http://localhost:8180'
 
 /**
  * The `filename` values match the placeholders spelled out in that guide, so
@@ -239,6 +242,92 @@ export const studentScenes: Scene[] = [
       // in the "Requested Change" table before scrolling to it.
       const feedbackHeading = page.getByText('Requested Change').first()
       await expectVisible(feedbackHeading)
+      await feedbackHeading.evaluate((el) => {
+        el.scrollIntoView({ block: 'start', behavior: 'instant' })
+        window.scrollBy(0, -120)
+      })
+      await settle(page)
+    },
+  },
+  {
+    filename: 'student-17-ai-feedback',
+    description:
+      'Proposal feedback overview after clicking "Get AI Feedback" — rows carry AI, severity, category, and version badges',
+    role: 'student2',
+    run: async (page) => {
+      // Navigate first so localStorage is reachable (Playwright starts on about:blank where
+      // storage access throws) and the initial GET /theses/{id} populates our snapshot.
+      await goto(page, `/theses/${SEED_THESIS_PROPOSAL}`)
+      await dismissPasskeyPrompt(page)
+
+      const proposalId = '00000000-0000-4000-e000-000000000002' // Seed proposal for thesis 2
+      const thesis = await page.evaluate(
+        async ({ thesisId, host }: { thesisId: string; host: string }) => {
+          const tokens = JSON.parse(localStorage.getItem('authentication_tokens') ?? '{}') as {
+            access_token?: string
+          }
+          const res = await fetch(`${host}/api/v2/theses/${thesisId}`, {
+            headers: tokens.access_token
+              ? { Authorization: `Bearer ${tokens.access_token}` }
+              : undefined,
+          })
+          return await res.json()
+        },
+        { thesisId: SEED_THESIS_PROPOSAL, host: SERVER_HOST },
+      )
+
+      const now = new Date().toISOString()
+      const author = thesis.students?.[0]
+      thesis.feedback = [
+        ...(thesis.feedback ?? []),
+        {
+          feedbackId: 'aaaaaaaa-0000-4000-8000-000000000001',
+          type: 'PROPOSAL',
+          feedback:
+            '**Missing abstract** — the proposal must contain an abstract of about half a page. (Page 1, Abstract)',
+          requestedBy: author,
+          requestedAt: now,
+          completedAt: null,
+          category: 'STRUCTURE',
+          severity: 'CRITICAL',
+          generationSource: 'AI',
+          documentVersionId: proposalId,
+        },
+        {
+          feedbackId: 'aaaaaaaa-0000-4000-8000-000000000002',
+          type: 'PROPOSAL',
+          feedback:
+            '**Insufficient bibliography** — cite at least 6-8 peer-reviewed sources. (Page 5, Bibliography)',
+          requestedBy: author,
+          requestedAt: now,
+          completedAt: null,
+          category: 'CITATION',
+          severity: 'MAJOR',
+          generationSource: 'AI',
+          documentVersionId: proposalId,
+        },
+      ]
+
+      await page.route(/\/v2\/ai-review\/auto(\?|$)/, async (route) => {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(thesis),
+        })
+      })
+
+      const proposalHeading = page.getByRole('button', { name: 'Proposal', exact: true })
+      await expectVisible(proposalHeading)
+      const alreadyOpen = (await proposalHeading.getAttribute('aria-expanded')) === 'true'
+      if (!alreadyOpen) {
+        await proposalHeading.click()
+      }
+      const aiButton = page.getByRole('button', { name: /Get AI Feedback/i })
+      await expectVisible(aiButton)
+      await aiButton.click()
+      // Wait for the AI-authored rows to land in the table.
+      await expectVisible(page.getByText('Missing abstract').first())
+      const feedbackHeading = page.getByText('Requested Change').first()
       await feedbackHeading.evaluate((el) => {
         el.scrollIntoView({ block: 'start', behavior: 'instant' })
         window.scrollBy(0, -120)
