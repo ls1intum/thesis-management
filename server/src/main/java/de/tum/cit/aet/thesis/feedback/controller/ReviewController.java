@@ -1,21 +1,23 @@
 package de.tum.cit.aet.thesis.feedback.controller;
 
+import de.tum.cit.aet.thesis.core.security.CurrentUserProvider;
+import de.tum.cit.aet.thesis.core.user.entity.User;
 import de.tum.cit.aet.thesis.feedback.config.AIFeaturesEnabled;
-import de.tum.cit.aet.thesis.feedback.dto.ProviderCategory;
-import de.tum.cit.aet.thesis.feedback.dto.ReviewRequestDTO;
-import de.tum.cit.aet.thesis.feedback.dto.ReviewResultDTO;
-import de.tum.cit.aet.thesis.feedback.service.ReviewService;
+import de.tum.cit.aet.thesis.feedback.dto.AIPreviewResponseDTO;
+import de.tum.cit.aet.thesis.feedback.dto.AIReviewRequestDTO;
+import de.tum.cit.aet.thesis.feedback.service.AIFeedbackService;
+import de.tum.cit.aet.thesis.thesis.dto.ThesisDto;
+import de.tum.cit.aet.thesis.thesis.entity.Thesis;
+import de.tum.cit.aet.thesis.thesis.service.ThesisService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.validation.Valid;
 
@@ -25,33 +27,65 @@ import jakarta.validation.Valid;
 @RequestMapping("/v2/ai-review")
 @Conditional(AIFeaturesEnabled.class)
 public class ReviewController {
-	private final ReviewService reviewService;
+	private final AIFeedbackService aiFeedbackService;
+	private final ThesisService thesisService;
+	private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
 
-	/**
-	 * Creates the controller with its review service collaborator.
-	 *
-	 * @param reviewService service that runs the AI review pipeline
-	 */
-	public ReviewController(ReviewService reviewService) {
-		this.reviewService = reviewService;
+	public ReviewController(
+			AIFeedbackService aiFeedbackService,
+			ThesisService thesisService,
+			ObjectProvider<CurrentUserProvider> currentUserProviderProvider) {
+		this.aiFeedbackService = aiFeedbackService;
+		this.thesisService = thesisService;
+		this.currentUserProviderProvider = currentUserProviderProvider;
 	}
 
 	/**
-	 * Runs the AI review pipeline against an uploaded proposal PDF.
-	 *
-	 * @param request multipart payload containing the proposal file and the provider category
-	 * @return the merged review result produced by the LLM pipeline
+	 * Student-facing auto endpoint: runs the AI review pipeline against the thesis's already
+	 * uploaded proposal or thesis PDF and persists each finding as a {@code ThesisFeedback}
+	 * row with {@code generationSource = AI}. Returns the refreshed thesis so the client can
+	 * re-render the feedback list.
 	 */
-	@PostMapping(value = "review-proposal", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	@PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
-	public ResponseEntity<ReviewResultDTO> reviewProposal(@Valid @ModelAttribute ReviewRequestDTO request) {
-		// TODO: Use already uploaded file from the thesis service instead of uploading it again
+	@PostMapping("auto")
+	public ResponseEntity<ThesisDto> autoReview(@Valid @RequestBody AIReviewRequestDTO request) {
+		User currentUser = currentUserProvider().getUser();
+		Thesis thesis = thesisService.findById(request.thesisId());
 
-		if (request.providerCategory().equals(ProviderCategory.AZURE)) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Azure provider is not supported yet.");
+		// Both the student on the thesis and any supervisor may trigger the auto flow.
+		if (!thesis.hasStudentAccess(currentUser) && !thesis.hasSupervisorAccess(currentUser)) {
+			throw new AccessDeniedException(
+					"You must be a student or supervisor on the thesis to run an AI review.");
 		}
 
-		ReviewResultDTO reviewResult = reviewService.review(request);
-		return ResponseEntity.ok().body(reviewResult);
+		aiFeedbackService.assertHasDocument(thesis, request.reviewType());
+		Thesis updated = aiFeedbackService.autoReviewAndSave(thesis, request.reviewType());
+
+		return ResponseEntity.ok(ThesisDto.fromThesisEntity(
+				updated,
+				updated.hasSupervisorAccess(currentUser),
+				updated.hasStudentAccess(currentUser)));
+	}
+
+	/**
+	 * Instructor-facing preview endpoint: runs the AI review pipeline and returns editable
+	 * drafts without saving anything. The instructor UI appends these to its unsaved batch so
+	 * the instructor can edit, delete, or accept each item before committing.
+	 */
+	@PostMapping("preview")
+	public ResponseEntity<AIPreviewResponseDTO> previewReview(@Valid @RequestBody AIReviewRequestDTO request) {
+		User currentUser = currentUserProvider().getUser();
+		Thesis thesis = thesisService.findById(request.thesisId());
+
+		if (!thesis.hasSupervisorAccess(currentUser)) {
+			throw new AccessDeniedException(
+					"You must be a supervisor on the thesis to preview AI feedback.");
+		}
+
+		AIPreviewResponseDTO response = aiFeedbackService.previewReview(thesis, request.reviewType());
+		return ResponseEntity.ok(response);
+	}
+
+	private CurrentUserProvider currentUserProvider() {
+		return currentUserProviderProvider.getObject();
 	}
 }

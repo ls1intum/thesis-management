@@ -433,8 +433,8 @@ class ThesisControllerTest extends BaseIntegrationTest {
 			RequestChangesPayload payload = new RequestChangesPayload(
 					ThesisFeedbackType.THESIS,
 					List.of(
-							new RequestChangesPayload.RequestedChange("Please fix section 1", false),
-							new RequestChangesPayload.RequestedChange("Update references", false)
+							new RequestChangesPayload.RequestedChange("Please fix section 1", false, null, null),
+							new RequestChangesPayload.RequestedChange("Update references", false, null, null)
 					)
 			);
 
@@ -458,7 +458,7 @@ class ThesisControllerTest extends BaseIntegrationTest {
 
 			RequestChangesPayload payload = new RequestChangesPayload(
 					ThesisFeedbackType.THESIS,
-					List.of(new RequestChangesPayload.RequestedChange("Fix this", false))
+					List.of(new RequestChangesPayload.RequestedChange("Fix this", false, null, null))
 			);
 
 			String feedbackResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses/{thesisId}/feedback", thesisId)
@@ -486,7 +486,7 @@ class ThesisControllerTest extends BaseIntegrationTest {
 
 			RequestChangesPayload payload = new RequestChangesPayload(
 					ThesisFeedbackType.THESIS,
-					List.of(new RequestChangesPayload.RequestedChange("Fix this", true))
+					List.of(new RequestChangesPayload.RequestedChange("Fix this", true, null, null))
 			);
 
 			String feedbackResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses/{thesisId}/feedback", thesisId)
@@ -514,7 +514,7 @@ class ThesisControllerTest extends BaseIntegrationTest {
 
 			RequestChangesPayload payload = new RequestChangesPayload(
 					ThesisFeedbackType.THESIS,
-					List.of(new RequestChangesPayload.RequestedChange("Fix this", false))
+					List.of(new RequestChangesPayload.RequestedChange("Fix this", false, null, null))
 			);
 
 			String feedbackResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses/{thesisId}/feedback", thesisId)
@@ -540,7 +540,7 @@ class ThesisControllerTest extends BaseIntegrationTest {
 
 			RequestChangesPayload payload = new RequestChangesPayload(
 					ThesisFeedbackType.THESIS,
-					List.of(new RequestChangesPayload.RequestedChange("Fix this", false))
+					List.of(new RequestChangesPayload.RequestedChange("Fix this", false, null, null))
 			);
 
 			String feedbackResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses/{thesisId}/feedback", thesisId)

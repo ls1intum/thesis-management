@@ -14,6 +14,31 @@ export enum ThesisState {
   DROPPED_OUT = 'DROPPED_OUT',
 }
 
+export enum ThesisFeedbackCategory {
+  FORMATTING = 'FORMATTING',
+  STRUCTURE = 'STRUCTURE',
+  CITATION = 'CITATION',
+  METHODOLOGY = 'METHODOLOGY',
+  WRITING = 'WRITING',
+  FIGURES = 'FIGURES',
+  LOGIC = 'LOGIC',
+  COMPLETENESS = 'COMPLETENESS',
+  OTHER = 'OTHER',
+}
+
+export enum ThesisFeedbackSeverity {
+  CRITICAL = 'CRITICAL',
+  MAJOR = 'MAJOR',
+  MINOR = 'MINOR',
+  SUGGESTION = 'SUGGESTION',
+}
+
+export enum ThesisFeedbackSource {
+  AI = 'AI',
+  HUMAN = 'HUMAN',
+  AI_REVIEWED_BY_HUMAN = 'AI_REVIEWED_BY_HUMAN',
+}
+
 export interface IThesisPresentationOverview {
   presentationId: string
   type: string
@@ -113,6 +138,12 @@ export interface IThesis extends IThesisOverview {
     requestedBy: IMinimalUser
     requestedAt: string
     completedAt: string | null
+    category?: ThesisFeedbackCategory | null
+    severity?: ThesisFeedbackSeverity | null
+    generationSource?: ThesisFeedbackSource
+    // Points at a proposalId (PROPOSAL feedback) or a thesis fileId (THESIS feedback). The
+    // client resolves it to a "v{n}" label by matching against thesis.proposals / thesis.files.
+    documentVersionId?: string | null
   }>
   grade: null | {
     finalGrade: string

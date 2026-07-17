@@ -235,7 +235,11 @@ public record ThesisFeedbackDto(
 	String feedback,
 	MinimalUserDto requestedBy,
 	Instant requestedAt,
-	Instant completedAt
+	Instant completedAt,
+	de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackCategory category,
+	de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackSeverity severity,
+	de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackSource generationSource,
+	UUID documentVersionId
 ) {
 
 	public static ThesisFeedbackDto fromThesisFeedbackEntity(ThesisFeedback feedback) {
@@ -249,7 +253,11 @@ public record ThesisFeedbackDto(
 		feedback.getFeedback(),
 		MinimalUserDto.fromUserEntity(feedback.getRequestedBy()),
 		feedback.getRequestedAt(),
-		feedback.getCompletedAt()
+		feedback.getCompletedAt(),
+		feedback.getCategory(),
+		feedback.getSeverity(),
+		feedback.getGenerationSource(),
+		feedback.getDocumentVersionId()
 	);
 	}
 }

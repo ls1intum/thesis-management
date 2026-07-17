@@ -13,6 +13,7 @@ import org.springframework.ai.reader.pdf.PagePdfDocumentReader;
 import org.springframework.ai.reader.pdf.config.PdfDocumentReaderConfig;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,6 +22,7 @@ import javax.imageio.ImageIO;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,12 +46,21 @@ public class PdfService {
 	 */
 	public List<String> extractTextFromPdf(MultipartFile file) {
 		log.debug("Extracting text from PDF file: {}", file.getOriginalFilename());
-		byte[] bytes;
-		try {
-			bytes = file.getBytes();
-		} catch (IOException e) {
-			throw new RuntimeException("Failed to extract text of file", e);
-		}
+		return extractTextFromPdf(readBytes(file));
+	}
+
+	/**
+	 * Extracts the text content of each page of the PDF loaded from a Spring {@link Resource}.
+	 *
+	 * @param resource PDF resource loaded from the thesis upload store
+	 * @return one string per page in document order
+	 */
+	public List<String> extractTextFromPdf(Resource resource) {
+		log.debug("Extracting text from resource: {}", resource.getDescription());
+		return extractTextFromPdf(readBytes(resource));
+	}
+
+	private List<String> extractTextFromPdf(byte[] bytes) {
 		assertWithinPageLimit(bytes);
 
 		PdfDocumentReaderConfig config = PdfDocumentReaderConfig.builder().withPagesPerDocument(1).build();
@@ -67,9 +78,24 @@ public class PdfService {
 	 */
 	public List<Media> extractImagesFromPdf(MultipartFile file) {
 		log.debug("Extracting images from PDF file: {}", file.getOriginalFilename());
+		return extractImagesFromPdf(readBytes(file));
+	}
+
+	/**
+	 * Renders each page of the PDF loaded from a Spring {@link Resource} to a PNG image at 300 DPI.
+	 *
+	 * @param resource PDF resource loaded from the thesis upload store
+	 * @return one PNG-encoded {@link Media} per page in document order
+	 */
+	public List<Media> extractImagesFromPdf(Resource resource) {
+		log.debug("Extracting images from resource: {}", resource.getDescription());
+		return extractImagesFromPdf(readBytes(resource));
+	}
+
+	private List<Media> extractImagesFromPdf(byte[] bytes) {
 		List<Media> images = new ArrayList<>();
 
-		try (PDDocument document = Loader.loadPDF(file.getBytes())) {
+		try (PDDocument document = Loader.loadPDF(bytes)) {
 			assertWithinPageLimit(document.getNumberOfPages());
 			PDFRenderer renderer = new PDFRenderer(document);
 
@@ -91,6 +117,22 @@ public class PdfService {
 		}
 
 		return images;
+	}
+
+	private byte[] readBytes(MultipartFile file) {
+		try {
+			return file.getBytes();
+		} catch (IOException e) {
+			throw new RuntimeException("Failed to read PDF bytes", e);
+		}
+	}
+
+	private byte[] readBytes(Resource resource) {
+		try (InputStream in = resource.getInputStream()) {
+			return in.readAllBytes();
+		} catch (IOException e) {
+			throw new RuntimeException("Failed to read PDF bytes", e);
+		}
 	}
 
 	private void assertWithinPageLimit(byte[] pdfBytes) {
