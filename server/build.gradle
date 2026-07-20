@@ -119,7 +119,7 @@ dependencies {
 	testImplementation "org.testcontainers:testcontainers-database-commons:${test_container_version}"
 	testImplementation "org.testcontainers:testcontainers-postgresql:${test_container_version}"
 
-	testImplementation "com.github.dasniko:testcontainers-keycloak:4.2.1"
+	testImplementation "com.github.dasniko:testcontainers-keycloak:4.3.1"
 
 	testImplementation "com.icegreen:greenmail-junit5:2.1.9"
 	testImplementation "org.wiremock:wiremock-standalone:3.13.2"
