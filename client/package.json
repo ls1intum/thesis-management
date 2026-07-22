@@ -106,7 +106,7 @@
     "postcss": "8.5.16",
     "postcss-loader": "8.2.1",
     "postcss-preset-mantine": "1.18.0",
-    "prettier": "3.9.4",
+    "prettier": "3.9.6",
     "speed-measure-webpack-plugin": "1.6.0",
     "style-loader": "4.0.0",
     "terser-webpack-plugin": "5.6.1",
