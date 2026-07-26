@@ -13,6 +13,7 @@ import de.tum.cit.aet.thesis.core.utility.AbstractExtractor;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisAbstractSource;
 import de.tum.cit.aet.thesis.thesis.entity.Thesis;
 import org.junit.jupiter.api.Test;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mock.web.MockMultipartFile;
 
 import java.io.ByteArrayOutputStream;
@@ -131,6 +132,33 @@ class AbstractAutoFillServiceTest {
 		assertThat(thesis.getAbstractSource()).isEqualTo(ThesisAbstractSource.EXTRACTED);
 		assertThat(thesis.getAbstractField())
 				.isEqualTo("<p>This is a clearly extractable abstract for the thesis document.</p>");
+	}
+
+	@Test
+	void process_confidentResource_autoFillsFromStoredFile() {
+		// Mirrors the AI review pipeline shape: the caller only has a Spring Resource of the
+		// already-stored PDF, not the original MultipartFile. The Resource overload lets abstract
+		// autofill run against that stored file with the same result.
+		Thesis thesis = thesisWith("", ThesisAbstractSource.MANUAL);
+		ByteArrayResource resource = new ByteArrayResource(buildConfidentPdf());
+
+		service.process(thesis, resource);
+
+		assertThat(thesis.getAbstractSource()).isEqualTo(ThesisAbstractSource.EXTRACTED);
+		assertThat(thesis.getAbstractField())
+				.isEqualTo("<p>This is a clearly extractable abstract for the thesis document.</p>");
+	}
+
+	@Test
+	void process_unreadableResource_isNoOp() {
+		Thesis thesis = thesisWith("<p>Existing.</p>", ThesisAbstractSource.MANUAL);
+		ByteArrayResource resource = new ByteArrayResource("not a real pdf".getBytes());
+
+		service.process(thesis, resource);
+
+		assertThat(thesis.getAbstractField()).isEqualTo("<p>Existing.</p>");
+		assertThat(thesis.getAbstractSource()).isEqualTo(ThesisAbstractSource.MANUAL);
+		assertThat(thesis.getAbstractSuggestion()).isNull();
 	}
 
 	@Test

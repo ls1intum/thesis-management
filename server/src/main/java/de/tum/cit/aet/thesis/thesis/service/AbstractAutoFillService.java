@@ -3,11 +3,13 @@ package de.tum.cit.aet.thesis.thesis.service;
 import de.tum.cit.aet.thesis.core.utility.AbstractExtractor;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisAbstractSource;
 import de.tum.cit.aet.thesis.thesis.entity.Thesis;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.InputStream;
 
 /**
  * Applies an extracted abstract to a thesis. A confident extraction into an empty abstract is
@@ -29,10 +31,31 @@ public class AbstractAutoFillService {
 	 */
 	public void process(Thesis thesis, MultipartFile file) {
 		try {
-			apply(thesis, AbstractExtractor.extract(file.getBytes()));
+			process(thesis, file.getBytes());
 		} catch (Exception e) {
 			log.warn("Abstract extraction failed for thesis {}: {}", thesis.getId(), e.getMessage());
 		}
+	}
+
+	/**
+	 * Extracts the abstract from a PDF loaded via a Spring {@link Resource} (e.g. an already-
+	 * stored thesis or proposal file) and applies it to the thesis. Mirrors
+	 * {@link #process(Thesis, MultipartFile)} so callers that only hold a stored-file resource
+	 * (like the AI review pipeline) can trigger abstract auto-fill against the same file.
+	 *
+	 * @param thesis the thesis to update (mutated in place; the caller persists it)
+	 * @param resource the stored proposal or thesis PDF resource
+	 */
+	public void process(Thesis thesis, Resource resource) {
+		try (InputStream in = resource.getInputStream()) {
+			process(thesis, in.readAllBytes());
+		} catch (Exception e) {
+			log.warn("Abstract extraction failed for thesis {}: {}", thesis.getId(), e.getMessage());
+		}
+	}
+
+	private void process(Thesis thesis, byte[] pdfBytes) {
+		apply(thesis, AbstractExtractor.extract(pdfBytes));
 	}
 
 	/**
