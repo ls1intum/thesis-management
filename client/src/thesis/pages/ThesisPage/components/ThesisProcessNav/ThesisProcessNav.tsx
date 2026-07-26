@@ -1,5 +1,6 @@
-import type { CSSProperties } from 'react'
+import { Fragment, type CSSProperties } from 'react'
 import { Box, Group, ScrollArea, UnstyledButton, useMantineTheme } from '@mantine/core'
+import { CaretRight } from '@phosphor-icons/react'
 import { useActiveSection } from '@/thesis/pages/ThesisPage/hooks/useActiveSection'
 import {
   ENVIRONMENT_BANNER_HEIGHT,
@@ -15,6 +16,7 @@ export interface IThesisProcessNavStep {
   label: string
   isCurrent?: boolean
   isCompleted?: boolean
+  isOverview?: boolean
 }
 
 interface IThesisProcessNavProps {
@@ -23,9 +25,16 @@ interface IThesisProcessNavProps {
 
 const scrollToSection = (id: string) => {
   const el = document.getElementById(id)
-  if (el) {
-    el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  if (!el) {
+    return
   }
+  // Open any collapsed accordion controls inside this section so the panel is
+  // visible once the user lands on it — otherwise a nav click can scroll to a
+  // section whose body is still hidden.
+  el.querySelectorAll<HTMLButtonElement>(
+    'button.mantine-Accordion-control[aria-expanded="false"]',
+  ).forEach((btn) => btn.click())
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 
 const ThesisProcessNav = ({ steps }: IThesisProcessNavProps) => {
@@ -54,6 +63,9 @@ const ThesisProcessNav = ({ steps }: IThesisProcessNavProps) => {
     paddingBottom: 8,
   }
 
+  const primaryColor = theme.colors[theme.primaryColor][6]
+  let lifecycleIndex = 0
+
   return (
     <Box style={containerStyle}>
       <ScrollArea scrollbarSize={4} type='auto' offsetScrollbars={false}>
@@ -62,6 +74,10 @@ const ThesisProcessNav = ({ steps }: IThesisProcessNavProps) => {
             const active = activeId === step.id
             const done = step.isCompleted
             const current = step.isCurrent
+
+            const stepNumber = step.isOverview ? null : ++lifecycleIndex
+            const prevStep = idx > 0 ? steps[idx - 1] : undefined
+            const showArrow = idx > 0 && !prevStep?.isOverview && !step.isOverview
 
             const pillStyle: CSSProperties = {
               display: 'inline-flex',
@@ -74,7 +90,7 @@ const ThesisProcessNav = ({ steps }: IThesisProcessNavProps) => {
               cursor: 'pointer',
               whiteSpace: 'nowrap',
               backgroundColor: active
-                ? theme.colors[theme.primaryColor][6]
+                ? primaryColor
                 : done
                   ? 'var(--mantine-color-default-hover)'
                   : 'transparent',
@@ -94,24 +110,30 @@ const ThesisProcessNav = ({ steps }: IThesisProcessNavProps) => {
               borderRadius: 999,
               fontSize: 11,
               fontWeight: 700,
-              backgroundColor: active
-                ? 'rgba(255,255,255,0.25)'
-                : done
-                  ? theme.colors[theme.primaryColor][6]
-                  : 'var(--mantine-color-default-border)',
-              color: active ? theme.white : done ? theme.white : 'var(--mantine-color-dimmed)',
+              backgroundColor: active ? 'rgba(255,255,255,0.25)' : primaryColor,
+              color: theme.white,
             }
 
             return (
-              <UnstyledButton
-                key={step.id}
-                onClick={() => scrollToSection(step.id)}
-                style={pillStyle}
-                aria-current={active ? 'step' : undefined}
-              >
-                <span style={indicatorStyle}>{idx + 1}</span>
-                <span>{step.label}</span>
-              </UnstyledButton>
+              <Fragment key={step.id}>
+                {showArrow && (
+                  <CaretRight
+                    size={14}
+                    weight='bold'
+                    color='var(--mantine-color-dimmed)'
+                    aria-hidden='true'
+                    style={{ flexShrink: 0 }}
+                  />
+                )}
+                <UnstyledButton
+                  onClick={() => scrollToSection(step.id)}
+                  style={pillStyle}
+                  aria-current={active ? 'step' : undefined}
+                >
+                  {stepNumber !== null && <span style={indicatorStyle}>{stepNumber}</span>}
+                  <span>{step.label}</span>
+                </UnstyledButton>
+              </Fragment>
             )
           })}
         </Group>

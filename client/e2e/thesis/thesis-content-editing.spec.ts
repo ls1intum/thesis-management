@@ -46,8 +46,11 @@ test.describe('Thesis Content Editing - Supervisor', () => {
     // Verify success notification with exact text from source code
     await expect(page.getByText('Thesis updated successfully')).toBeVisible({ timeout: 10_000 })
 
-    // Reload the configuration page and verify the updated fields persisted
-    await page.reload({ waitUntil: 'domcontentloaded' })
+    // After saving, the config page should navigate back to the thesis detail page
+    await expect(page).toHaveURL(new RegExp(`${THESIS_ID}$`), { timeout: 10_000 })
+
+    // Revisit the configuration page and verify the updated fields persisted
+    await navigateToThesisConfig(page, THESIS_ID)
     await expect(page.getByRole('button', { name: 'Update' })).toBeVisible({ timeout: 15_000 })
     await expect(page.getByRole('textbox', { name: 'Thesis Title' })).toHaveValue(THESIS_TITLE)
     await expect(page.getByRole('combobox', { name: 'Visibility' })).toHaveValue(targetVisibility)
