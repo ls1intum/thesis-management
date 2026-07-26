@@ -23,6 +23,7 @@ interface IApplicationsProviderProps {
   limit: number
   defaultStates?: ApplicationState[]
   defaultTopics?: string[]
+  defaultIncludeSuggestedTopics?: boolean
   showOnlyAssignedTopics?: boolean
   hideIfEmpty?: boolean
   emptyComponent?: ReactNode
@@ -34,6 +35,7 @@ const ApplicationsProvider = (props: PropsWithChildren<IApplicationsProviderProp
     limit,
     defaultStates,
     defaultTopics,
+    defaultIncludeSuggestedTopics = true,
     showOnlyAssignedTopics,
     fetchAll = false,
     hideIfEmpty = false,
@@ -51,7 +53,7 @@ const ApplicationsProvider = (props: PropsWithChildren<IApplicationsProviderProp
   const [filters, setFilters] = useState<IApplicationsFilters>({
     states: defaultStates,
     topics: defaultTopics,
-    includeSuggestedTopics: true,
+    includeSuggestedTopics: defaultIncludeSuggestedTopics,
   })
   const [sort, setSort] = useState<IApplicationsSort>({
     column: 'createdAt',

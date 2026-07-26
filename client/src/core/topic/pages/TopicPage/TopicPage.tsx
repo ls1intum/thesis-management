@@ -97,8 +97,14 @@ const TopicPage = () => {
       {managementAccess && (user ? topic.researchGroup.name === user.researchGroupName : false) && (
         <Stack>
           <Divider />
-          <ApplicationsProvider fetchAll={true} limit={10} defaultTopics={[topic.topicId]}>
+          <ApplicationsProvider
+            fetchAll={true}
+            limit={10}
+            defaultTopics={[topic.topicId]}
+            defaultIncludeSuggestedTopics={false}
+          >
             <ApplicationsTable
+              columns={['state', 'thesis_type', 'user', 'created_at']}
               onApplicationClick={(application) =>
                 navigate(`/applications/${application.applicationId}`)
               }
