@@ -84,7 +84,7 @@ dependencies {
 
 	implementation "commons-io:commons-io:2.22.0"
 	implementation "org.mnode.ical4j:ical4j:4.3.0"
-	implementation "com.itextpdf:itext-core:9.6.0"
+	implementation "com.itextpdf:itext-core:9.7.1"
 	implementation "com.itextpdf:html2pdf:6.3.3"
 	implementation "com.auth0:java-jwt:4.5.2"
 
