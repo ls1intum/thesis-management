@@ -121,7 +121,7 @@ dependencies {
 
 	testImplementation "com.github.dasniko:testcontainers-keycloak:4.2.1"
 
-	testImplementation "com.icegreen:greenmail-junit5:2.1.9"
+	testImplementation "com.icegreen:greenmail-junit5:2.1.11"
 	testImplementation "org.wiremock:wiremock-standalone:3.13.2"
 
 	testImplementation "org.junit.jupiter:junit-jupiter:${junit_version}"
