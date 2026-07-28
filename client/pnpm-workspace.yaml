@@ -33,6 +33,6 @@ overrides:
   # GHSA-h67p-54hq-rp68 (js-yaml quadratic-complexity DoS, via cosmiconfig)
   js-yaml@>=4.0.0 <4.2.0: 5.2.2
   # GHSA-vmh5-mc38-953g / GHSA-hm92-r4w5-c3mj (+4) (undici Set-Cookie / cache / SOCKS5 issues, via jsdom)
-  undici@<7.28.0: 7.28.0
+  undici@<7.28.0: 8.9.0
   # GHSA-64mm-vxmg-q3vj (http-proxy-middleware host+path routing bypass, via webpack-dev-server)
   http-proxy-middleware@<3.0.6: 4.2.0
