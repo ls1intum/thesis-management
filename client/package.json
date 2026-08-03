@@ -97,7 +97,7 @@
     "eslint-plugin-prettier": "5.5.6",
     "fork-ts-checker-webpack-plugin": "9.1.0",
     "globals": "17.7.0",
-    "html-webpack-plugin": "5.6.7",
+    "html-webpack-plugin": "5.6.8",
     "husky": "9.1.7",
     "jsdom": "29.1.1",
     "linkifyjs": "4.3.3",
