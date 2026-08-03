@@ -64,16 +64,13 @@ const ApplicationsProvider = (props: PropsWithChildren<IApplicationsProviderProp
     const copiedFilters = { ...filters }
 
     if (showOnlyAssignedTopics && typeof copiedFilters.topics === 'undefined') {
-      copiedFilters.topics = [
-        'NO_TOPIC',
-        ...(topics ?? [])
-          .filter(
-            (topic) =>
-              (topic.examiners ?? []).some((examiner) => examiner.userId === user.userId) ||
-              (topic.supervisors ?? []).some((supervisor) => supervisor.userId === user.userId),
-          )
-          .map((topic) => topic.topicId),
-      ]
+      copiedFilters.topics = (topics ?? [])
+        .filter(
+          (topic) =>
+            (topic.examiners ?? []).some((examiner) => examiner.userId === user.userId) ||
+            (topic.supervisors ?? []).some((supervisor) => supervisor.userId === user.userId),
+        )
+        .map((topic) => topic.topicId)
     }
 
     return copiedFilters
@@ -112,12 +109,7 @@ const ApplicationsProvider = (props: PropsWithChildren<IApplicationsProviderProp
           search: debouncedSearch,
           state: adjustedFilters.states?.join(',') ?? '',
           type: adjustedFilters.types?.join(',') ?? '',
-          topic:
-            adjustedFilters.topics
-              ?.map((topicId) =>
-                topicId === 'NO_TOPIC' ? '00000000-0000-0000-0000-000000000000' : topicId,
-              )
-              .join(',') ?? '',
+          topic: adjustedFilters.topics?.join(',') ?? '',
           includeSuggestedTopics:
             adjustedFilters.includeSuggestedTopics === false ? 'false' : 'true',
           limit,
