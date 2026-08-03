@@ -46,6 +46,14 @@ repositories {
 	mavenCentral()
 }
 
+// Override Spring Boot's managed Jackson 2 BOM (default 2.21.4) up to 2.22.1.
+// iText 9.7.1 requests jackson-databind 2.22.1 to fix CVE-2026-54515, but the
+// Spring Boot 4.1.0 BOM otherwise constrains Jackson 2.x back down to the
+// vulnerable 2.21.4 on the runtime classpath. Bumping the BOM property lets the
+// patched release resolve. Verify with:
+//   ./gradlew dependencyInsight --dependency jackson-databind --configuration runtimeClasspath
+ext['jackson-2-bom.version'] = '2.22.1'
+
 // Exclude Jackson 2.x databind from compile classpath to prevent accidental usage.
 // Jackson 3.x (tools.jackson) is the primary Jackson version in Spring Boot 4.x.
 // Jackson 2.x remains on the runtime classpath for third-party libraries (java-jwt, itext).
