@@ -45,6 +45,7 @@ const ReviewApplicationPage = lazy(
   () => import('@/core/application/pages/ReviewApplicationPage/ReviewApplicationPage'),
 )
 const ThesisPage = lazy(() => import('@/thesis/pages/ThesisPage/ThesisPage'))
+const ThesisConfigPage = lazy(() => import('@/thesis/pages/ThesisConfigPage/ThesisConfigPage'))
 const LandingPage = lazy(() => import('@/app/pages/LandingPage/LandingPage'))
 
 const AdminPage = lazy(() => import('@/core/admin/pages/AdminPage/AdminPage'))
@@ -182,6 +183,14 @@ const AppRoutes = () => {
             element={
               <AuthenticatedArea>
                 <ThesisPage />
+              </AuthenticatedArea>
+            }
+          />
+          <Route
+            path='/theses/:thesisId/configuration'
+            element={
+              <AuthenticatedArea>
+                <ThesisConfigPage />
               </AuthenticatedArea>
             }
           />
