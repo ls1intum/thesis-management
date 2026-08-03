@@ -13,7 +13,10 @@ import de.tum.cit.aet.thesis.feedback.dto.FindingDTO;
 import de.tum.cit.aet.thesis.feedback.dto.IntermediateReviewResult;
 import de.tum.cit.aet.thesis.feedback.dto.Location;
 import de.tum.cit.aet.thesis.feedback.dto.ReviewResultDTO;
+import de.tum.cit.aet.thesis.feedback.entity.jsonb.CategoryGuidelines;
+import de.tum.cit.aet.thesis.feedback.entity.jsonb.StructuredGuidelines;
 import de.tum.cit.aet.thesis.feedback.service.reviewer.LlmReviewer;
+import de.tum.cit.aet.thesis.feedback.service.reviewer.ReviewCategory;
 import de.tum.cit.aet.thesis.feedback.service.reviewer.ReviewType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -58,12 +61,16 @@ public class ReviewServiceTest {
 
 	private ReviewService reviewService;
 
+	private static final StructuredGuidelines GUIDELINES = new StructuredGuidelines(
+			"Group overview.",
+			List.of(new CategoryGuidelines("structure", List.of("Every proposal must contain an Abstract."))));
+
 	@BeforeEach
 	void setUp() {
 		when(chatClientBuilder.build()).thenReturn(chatClient);
 		reviewService = new ReviewService(pdfService, chatClientBuilder, objectMapper, true, "logos/openai/gpt-oss-120b") {
 			@Override
-			protected LlmReviewer createReviewer(String taskPrompt, ReviewType reviewType) {
+			protected LlmReviewer createReviewer(String taskPrompt, ReviewType reviewType, String guidelinesPrompt) {
 				return llmReviewer;
 			}
 		};
@@ -86,7 +93,7 @@ public class ReviewServiceTest {
 		when(chatClientRequestSpec.call()).thenReturn(callResponseSpec);
 		when(callResponseSpec.entity(ReviewResultDTO.class)).thenReturn(expectedResult);
 
-		ReviewResultDTO actualResult = reviewService.review(pdfResource, ReviewType.PROPOSAL);
+		ReviewResultDTO actualResult = reviewService.review(pdfResource, ReviewType.PROPOSAL, GUIDELINES);
 
 		assertSame(expectedResult, actualResult);
 		verify(pdfService).extractTextFromPdf(pdfResource);
@@ -118,5 +125,32 @@ public class ReviewServiceTest {
 		assertThat(mergePrompt).contains("\"title\":\"Clear writing style\"");
 		assertThat(mergePrompt).contains("\"description\":\"The writing style is clear.\"");
 		assertThat(mergePrompt).contains("\"quote\":\"The methodology section is well written.\"");
+	}
+
+	@Test
+	void buildCategoryGuidelinesPrompt_includesOverviewAndOnlyThisCategorysRules() {
+		StructuredGuidelines guidelines = new StructuredGuidelines(
+				"We value concise, well-cited proposals.",
+				List.of(
+						new CategoryGuidelines("bibliography", List.of("Cite at least 6 peer-reviewed sources.")),
+						new CategoryGuidelines("structure", List.of("Include an Abstract."))));
+
+		String prompt = ReviewService.buildCategoryGuidelinesPrompt(guidelines, ReviewCategory.BIBLIOGRAPHY);
+
+		assertThat(prompt).contains("We value concise, well-cited proposals.");
+		assertThat(prompt).contains("Cite at least 6 peer-reviewed sources.");
+		// The bibliography reviewer must not be handed the structure category's rules.
+		assertThat(prompt).doesNotContain("Include an Abstract.");
+	}
+
+	@Test
+	void buildCategoryGuidelinesPrompt_notesAbsenceWhenCategoryHasNoRules() {
+		StructuredGuidelines guidelines = new StructuredGuidelines(
+				"Overview only.",
+				List.of(new CategoryGuidelines("structure", List.of("Include an Abstract."))));
+
+		String prompt = ReviewService.buildCategoryGuidelinesPrompt(guidelines, ReviewCategory.SCHEDULE);
+
+		assertThat(prompt).contains("did not provide specific rules for this category");
 	}
 }

@@ -1,12 +1,16 @@
 package de.tum.cit.aet.thesis.feedback.service;
 
 import de.tum.cit.aet.thesis.core.exception.request.ResourceInvalidParametersException;
+import de.tum.cit.aet.thesis.core.group.entity.ResearchGroup;
 import de.tum.cit.aet.thesis.feedback.config.AIFeaturesEnabled;
 import de.tum.cit.aet.thesis.feedback.dto.AIFeedbackDraftDTO;
 import de.tum.cit.aet.thesis.feedback.dto.AIPreviewResponseDTO;
 import de.tum.cit.aet.thesis.feedback.dto.FindingDTO;
 import de.tum.cit.aet.thesis.feedback.dto.Location;
 import de.tum.cit.aet.thesis.feedback.dto.ReviewResultDTO;
+import de.tum.cit.aet.thesis.feedback.entity.ResearchGroupGuidelines;
+import de.tum.cit.aet.thesis.feedback.entity.jsonb.StructuredGuidelines;
+import de.tum.cit.aet.thesis.feedback.repository.ResearchGroupGuidelinesRepository;
 import de.tum.cit.aet.thesis.feedback.service.reviewer.ReviewType;
 import de.tum.cit.aet.thesis.proposal.entity.ThesisProposal;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackCategory;
@@ -21,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.core.io.Resource;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -48,10 +53,15 @@ public class AIFeedbackService {
 
 	private final ReviewService reviewService;
 	private final ThesisService thesisService;
+	private final ResearchGroupGuidelinesRepository guidelinesRepository;
 
-	public AIFeedbackService(ReviewService reviewService, ThesisService thesisService) {
+	public AIFeedbackService(
+			ReviewService reviewService,
+			ThesisService thesisService,
+			ResearchGroupGuidelinesRepository guidelinesRepository) {
 		this.reviewService = reviewService;
 		this.thesisService = thesisService;
+		this.guidelinesRepository = guidelinesRepository;
 	}
 
 	/**
@@ -62,8 +72,9 @@ public class AIFeedbackService {
 	 * @return the updated thesis with the new feedback rows attached
 	 */
 	public Thesis autoReviewAndSave(Thesis thesis, ReviewType reviewType) {
+		StructuredGuidelines guidelines = requireReadyGuidelines(thesis);
 		Resource pdfResource = loadPdfResource(thesis, reviewType);
-		ReviewResultDTO result = reviewService.review(pdfResource, reviewType);
+		ReviewResultDTO result = reviewService.review(pdfResource, reviewType, guidelines);
 
 		List<RequestChangesPayload.RequestedChange> changes = new ArrayList<>();
 		for (FindingDTO finding : safeFindings(result.findings())) {
@@ -94,8 +105,9 @@ public class AIFeedbackService {
 	 * individual entries before persisting them.
 	 */
 	public AIPreviewResponseDTO previewReview(Thesis thesis, ReviewType reviewType) {
+		StructuredGuidelines guidelines = requireReadyGuidelines(thesis);
 		Resource pdfResource = loadPdfResource(thesis, reviewType);
-		ReviewResultDTO result = reviewService.review(pdfResource, reviewType);
+		ReviewResultDTO result = reviewService.review(pdfResource, reviewType, guidelines);
 
 		List<AIFeedbackDraftDTO> drafts = safeFindings(result.findings()).stream()
 				.map(finding -> new AIFeedbackDraftDTO(
@@ -228,5 +240,30 @@ public class AIFeedbackService {
 	 */
 	public void assertHasDocument(Thesis thesis, ReviewType reviewType) {
 		loadPdfResource(thesis, reviewType);
+	}
+
+	/**
+	 * Resolves the thesis's research group guidelines and requires them to be
+	 * {@code READY} before any AI review may run. This is the per-group gate: members of a
+	 * research group whose lead has not (successfully) uploaded guidelines cannot use the AI
+	 * features. Throws {@link AccessDeniedException} otherwise.
+	 *
+	 * @param thesis the thesis being reviewed
+	 * @return the group's structured guidelines
+	 */
+	private StructuredGuidelines requireReadyGuidelines(Thesis thesis) {
+		ResearchGroup researchGroup = thesis.getResearchGroup();
+		if (researchGroup == null || researchGroup.getId() == null) {
+			throw new AccessDeniedException(
+					"AI review is unavailable because this thesis is not assigned to a research group.");
+		}
+
+		ResearchGroupGuidelines guidelines = guidelinesRepository.findById(researchGroup.getId()).orElse(null);
+		if (guidelines == null || !guidelines.isReady() || guidelines.getStructuredGuidelines() == null) {
+			throw new AccessDeniedException(
+					"AI review is not available yet: your research group lead must upload review guidelines first.");
+		}
+
+		return guidelines.getStructuredGuidelines();
 	}
 }

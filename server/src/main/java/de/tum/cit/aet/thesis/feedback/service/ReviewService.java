@@ -3,6 +3,7 @@ package de.tum.cit.aet.thesis.feedback.service;
 import de.tum.cit.aet.thesis.feedback.config.AIFeaturesEnabled;
 import de.tum.cit.aet.thesis.feedback.dto.IntermediateReviewResult;
 import de.tum.cit.aet.thesis.feedback.dto.ReviewResultDTO;
+import de.tum.cit.aet.thesis.feedback.entity.jsonb.StructuredGuidelines;
 import de.tum.cit.aet.thesis.feedback.service.reviewer.LlmReviewer;
 import de.tum.cit.aet.thesis.feedback.service.reviewer.Prompts;
 import de.tum.cit.aet.thesis.feedback.service.reviewer.ReviewCategory;
@@ -104,22 +105,25 @@ public class ReviewService {
 	 *
 	 * @param pdfResource  PDF resource loaded from the thesis upload store
 	 * @param reviewType   whether the document should be reviewed as a proposal or a thesis
+	 * @param guidelines   the research group's structured guidelines that drive each category
 	 * @return the merged review result containing the assessment, overall summary, and findings
 	 */
-	public ReviewResultDTO review(Resource pdfResource, ReviewType reviewType) {
+	public ReviewResultDTO review(Resource pdfResource, ReviewType reviewType, StructuredGuidelines guidelines) {
 		List<String> pagesText = pdfService.extractTextFromPdf(pdfResource);
 		List<Media> pagesImages = includeImages ? pdfService.extractImagesFromPdf(pdfResource) : List.of();
-		return review(pagesText, pagesImages, reviewType);
+		return review(pagesText, pagesImages, reviewType, guidelines);
 	}
 
-	private ReviewResultDTO review(List<String> pagesText, List<Media> pagesImages, ReviewType reviewType) {
+	private ReviewResultDTO review(List<String> pagesText, List<Media> pagesImages, ReviewType reviewType,
+			StructuredGuidelines guidelines) {
 		// Fan out one LLM call per category on virtual threads. Each category is independent and
 		// IO-bound so this cuts wall-clock time from N * latency down to ~1 * latency.
 		Map<String, CompletableFuture<IntermediateReviewResult>> futures = new LinkedHashMap<>();
 		for (ReviewCategory category : ReviewCategory.values()) {
+			String guidelinesPrompt = buildCategoryGuidelinesPrompt(guidelines, category);
 			futures.put(category.getSlug(), CompletableFuture.supplyAsync(() -> {
 				log.debug("Reviewing category: {} ({})", category.getSlug(), reviewType);
-				LlmReviewer reviewer = createReviewer(category.getPrompt(reviewType), reviewType);
+				LlmReviewer reviewer = createReviewer(category.getPrompt(reviewType), reviewType, guidelinesPrompt);
 				IntermediateReviewResult intermediateResult = reviewer.review(pagesText, pagesImages);
 				log.debug("Review result for category {}: {}", category.getSlug(), intermediateResult);
 				return intermediateResult;
@@ -154,8 +158,41 @@ public class ReviewService {
 		return "<" + FINDINGS_FENCE_TAG + ">\n" + json + "\n</" + FINDINGS_FENCE_TAG + ">\n";
 	}
 
-	protected LlmReviewer createReviewer(String taskPrompt, ReviewType reviewType) {
-		return new LlmReviewer(taskPrompt, reviewType, chatClient);
+	protected LlmReviewer createReviewer(String taskPrompt, ReviewType reviewType, String guidelinesPrompt) {
+		return new LlmReviewer(Prompts.SHARED.getPrompt(reviewType), taskPrompt, guidelinesPrompt, chatClient);
+	}
+
+	/**
+	 * Renders the research group's structured guidelines into the reference-guidelines section of
+	 * the system prompt for a single category. Includes the category-independent overview plus the
+	 * distilled rules that apply to this specific category, so each reviewer only sees the rules
+	 * relevant to its check.
+	 *
+	 * @param guidelines the research group's structured guidelines
+	 * @param category   the category being reviewed
+	 * @return the guidelines prompt text for this category
+	 */
+	static String buildCategoryGuidelinesPrompt(StructuredGuidelines guidelines, ReviewCategory category) {
+		StringBuilder sb = new StringBuilder("## Reference Guidelines\n\n");
+		sb.append("The following are the official guidelines from the research group. They are the authoritative rules for this review — apply them precisely and keep your evaluation focused on the specific rules of your task above.\n");
+
+		String overview = guidelines != null ? guidelines.overview() : null;
+		if (overview != null && !overview.isBlank()) {
+			sb.append("\n").append(overview.strip()).append("\n");
+		}
+
+		List<String> rules = guidelines != null ? guidelines.rulesForCategory(category.getSlug()) : List.of();
+		sb.append("\n### Group rules for ").append(category.getDisplayName()).append("\n");
+		if (rules.isEmpty()) {
+			sb.append("The research group did not provide specific rules for this category. Apply only the task rules above.\n");
+		} else {
+			for (String rule : rules) {
+				if (rule != null && !rule.isBlank()) {
+					sb.append("- ").append(rule.strip()).append("\n");
+				}
+			}
+		}
+		return sb.toString();
 	}
 
 	private static boolean modelSupportsVision(String model) {
