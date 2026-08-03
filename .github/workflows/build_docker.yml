@@ -95,8 +95,6 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: '24.18.0'
-          cache: 'pnpm'
-          cache-dependency-path: 'client/pnpm-lock.yaml'
 
       # `pnpm sbom --lockfile-only` reads the lockfile directly, so we
       # deliberately do NOT run `pnpm install` — skipping it saves time

@@ -11,7 +11,7 @@ overrides:
   lodash: 4.18.1
   follow-redirects: 1.16.0
   flatted: 3.4.2
-  brace-expansion: 5.0.7
+  brace-expansion: 5.0.8
   path-to-regexp: 0.1.13
   yaml: 2.9.0
   uuid: 14.0.1
@@ -27,12 +27,12 @@ overrides:
   # GHSA-v6wh-96g9-6wx3 (launch-editor NTLMv2 hash disclosure, via webpack-dev-server)
   launch-editor@<2.14.1: 2.14.1
   # GHSA-fx2h-pf6j-xcff (vite server.fs.deny bypass, via vitest)
-  vite@>=8.0.0 <8.0.16: 8.1.0
+  vite@>=8.0.0 <8.0.16: 8.1.5
   # GHSA-ph9p-34f9-6g65 (tmp path traversal, via patch-package)
   tmp@<0.2.6: 0.2.7
   # GHSA-h67p-54hq-rp68 (js-yaml quadratic-complexity DoS, via cosmiconfig)
-  js-yaml@>=4.0.0 <4.2.0: 5.1.0
+  js-yaml@>=4.0.0 <4.2.0: 5.2.2
   # GHSA-vmh5-mc38-953g / GHSA-hm92-r4w5-c3mj (+4) (undici Set-Cookie / cache / SOCKS5 issues, via jsdom)
   undici@<7.28.0: 7.28.0
   # GHSA-64mm-vxmg-q3vj (http-proxy-middleware host+path routing bypass, via webpack-dev-server)
-  http-proxy-middleware@<3.0.6: 4.1.1
+  http-proxy-middleware@<3.0.6: 4.2.0
