@@ -1,4 +1,4 @@
-FROM node:24.18.0-alpine AS build
+FROM node:24.19.0-alpine AS build
 WORKDIR /app
 ENV CI=1
 ENV HUSKY=0
