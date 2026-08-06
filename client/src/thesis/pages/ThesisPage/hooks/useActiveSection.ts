@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-// Keys that scroll the page — a keydown from one of these counts as the user
-// taking over navigation and releases a click lock (see below). Plain typing in
-// an input must not release it, so unrelated keys are ignored.
+// Keys that scroll the page — a keydown from one of these arms a click-lock
+// release (see below). Unrelated keys (plain typing) are ignored.
 const SCROLL_KEYS = new Set([
   'ArrowUp',
   'ArrowDown',
@@ -13,6 +12,14 @@ const SCROLL_KEYS = new Set([
   ' ',
   'Spacebar',
 ])
+
+// Space/arrow keys also edit text and move the caret, so a keydown inside an
+// editable control must never arm a release.
+const isEditableTarget = (target: EventTarget | null): boolean =>
+  target instanceof HTMLInputElement ||
+  target instanceof HTMLTextAreaElement ||
+  target instanceof HTMLSelectElement ||
+  (target instanceof HTMLElement && target.isContentEditable)
 
 /**
  * Tracks which of the given section anchor ids is currently in view. Uses
@@ -34,9 +41,14 @@ export function useActiveSection(
   const [activeId, setActiveId] = useState<string | null>(sectionIds[0] ?? null)
   const key = sectionIds.join('|')
   const lockedRef = useRef(false)
+  // Whether a user scroll gesture has "armed" a lock release (see the effect).
+  const armedRef = useRef(false)
 
   const setActiveSection = useCallback((id: string) => {
     lockedRef.current = true
+    // Discard any gesture armed before this click so the programmatic scroll
+    // that follows can't immediately release the fresh lock.
+    armedRef.current = false
     setActiveId(id)
   }, [])
 
@@ -55,6 +67,23 @@ export function useActiveSection(
 
     const visibility = new Map<string, number>()
 
+    // The page may scroll on the window or on a scrollable ancestor (AppShell.Main).
+    const scrollAncestor = (() => {
+      let el: HTMLElement | null = elements[elements.length - 1].parentElement
+      while (el) {
+        const overflowY = getComputedStyle(el).overflowY
+        if (overflowY === 'auto' || overflowY === 'scroll') {
+          return el
+        }
+        el = el.parentElement
+      }
+      return null
+    })()
+
+    // Combined vertical scroll offset. Horizontal gestures (e.g. swiping the
+    // nav's own ScrollArea) don't change this, so they won't release the lock.
+    const getVerticalScroll = () => window.scrollY + (scrollAncestor?.scrollTop ?? 0)
+
     const isScrolledToBottom = () => {
       // Handles both window scrolling and any scrollable ancestor with fixed height.
       const doc = document.documentElement
@@ -62,14 +91,11 @@ export function useActiveSection(
       if (winBottom) {
         return true
       }
-      // Also check the closest scroll ancestor of the last section (AppShell.Main).
-      let el: HTMLElement | null = elements[elements.length - 1].parentElement
-      while (el) {
-        const overflowY = getComputedStyle(el).overflowY
-        if (overflowY === 'auto' || overflowY === 'scroll') {
-          return Math.ceil(el.scrollTop + el.clientHeight) >= el.scrollHeight - 2
-        }
-        el = el.parentElement
+      if (scrollAncestor) {
+        return (
+          Math.ceil(scrollAncestor.scrollTop + scrollAncestor.clientHeight) >=
+          scrollAncestor.scrollHeight - 2
+        )
       }
       return false
     }
@@ -116,33 +142,44 @@ export function useActiveSection(
 
     elements.forEach((el) => observer.observe(el))
 
-    // Fallback scroll listener catches the "scrolled past the observer's active
-    // band" case for short final sections that never trip the intersection.
-    const onScroll = () => pickActive()
+    // Releasing the click lock takes two signals: a scroll gesture that "arms"
+    // the release, and an actual change in the vertical scroll offset. Requiring
+    // both means the programmatic smooth scroll (no gesture) and horizontal nav
+    // swipes (no vertical change) leave the lock intact, while a real vertical
+    // scroll by the user hands control back to the scroll spy.
+    armedRef.current = false
+    let lastScroll = getVerticalScroll()
+
+    const onScroll = () => {
+      const current = getVerticalScroll()
+      if (lockedRef.current && armedRef.current && current !== lastScroll) {
+        lockedRef.current = false
+        armedRef.current = false
+      }
+      lastScroll = current
+      // Fallback for the "scrolled past the observer's active band" case for
+      // short final sections that never trip the intersection.
+      pickActive()
+    }
     window.addEventListener('scroll', onScroll, { passive: true, capture: true })
 
-    // A genuine user-initiated scroll releases the click lock so the scroll spy
-    // resumes tracking the real scroll position.
-    const releaseLock = () => {
-      if (lockedRef.current) {
-        lockedRef.current = false
-        pickActive()
-      }
+    const arm = () => {
+      armedRef.current = true
     }
     const onKeyDown = (event: KeyboardEvent) => {
-      if (SCROLL_KEYS.has(event.key)) {
-        releaseLock()
+      if (!isEditableTarget(event.target) && SCROLL_KEYS.has(event.key)) {
+        armedRef.current = true
       }
     }
-    window.addEventListener('wheel', releaseLock, { passive: true, capture: true })
-    window.addEventListener('touchmove', releaseLock, { passive: true, capture: true })
+    window.addEventListener('wheel', arm, { passive: true, capture: true })
+    window.addEventListener('touchmove', arm, { passive: true, capture: true })
     window.addEventListener('keydown', onKeyDown, { passive: true, capture: true })
 
     return () => {
       observer.disconnect()
       window.removeEventListener('scroll', onScroll, true)
-      window.removeEventListener('wheel', releaseLock, true)
-      window.removeEventListener('touchmove', releaseLock, true)
+      window.removeEventListener('wheel', arm, true)
+      window.removeEventListener('touchmove', arm, true)
       window.removeEventListener('keydown', onKeyDown, true)
     }
     // eslint-disable-next-line @eslint-react/exhaustive-deps -- `key` (joined ids) captures the array identity
