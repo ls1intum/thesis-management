@@ -106,6 +106,60 @@ class GuidelinesServiceTest {
 	}
 
 	@Test
+	void updateGuidelines_storesFailedWhenSpecificButNoCategories() {
+		stubSaveReturnsArgument();
+		when(currentUserProvider.getUser()).thenReturn(new User());
+		when(guidelinesRepository.findById(researchGroupId)).thenReturn(Optional.empty());
+		when(preprocessor.preprocess(any(String.class))).thenReturn(new GuidelinesPreprocessingResult(
+				true, null, "Overview.", List.of()));
+
+		ResearchGroupGuidelines saved = service.updateGuidelines(researchGroupId, "Looks specific but empty.");
+
+		assertThat(saved.getStatus()).isEqualTo(GuidelinesStatus.FAILED);
+		assertThat(saved.getStructuredGuidelines()).isNull();
+		assertThat(saved.getFailureReason()).isNotBlank();
+		assertThat(saved.getProcessedAt()).isNull();
+		assertThat(saved.isReady()).isFalse();
+	}
+
+	@Test
+	void updateGuidelines_storesFailedWhenSpecificButOnlyUnknownSlugsOrBlankRules() {
+		stubSaveReturnsArgument();
+		when(currentUserProvider.getUser()).thenReturn(new User());
+		when(guidelinesRepository.findById(researchGroupId)).thenReturn(Optional.empty());
+		when(preprocessor.preprocess(any(String.class))).thenReturn(new GuidelinesPreprocessingResult(
+				true, null, "Overview.",
+				List.of(
+						new CategoryGuidelines("not-a-real-category", List.of("Some rule.")),
+						new CategoryGuidelines("bibliography", List.of("   ")))));
+
+		ResearchGroupGuidelines saved = service.updateGuidelines(researchGroupId, "Unusable output.");
+
+		assertThat(saved.getStatus()).isEqualTo(GuidelinesStatus.FAILED);
+		assertThat(saved.getStructuredGuidelines()).isNull();
+		assertThat(saved.isReady()).isFalse();
+	}
+
+	@Test
+	void updateGuidelines_storesReadyWhenAtLeastOneKnownCategoryHasNonblankRule() {
+		stubSaveReturnsArgument();
+		when(currentUserProvider.getUser()).thenReturn(new User());
+		when(guidelinesRepository.findById(researchGroupId)).thenReturn(Optional.empty());
+		when(preprocessor.preprocess(any(String.class))).thenReturn(new GuidelinesPreprocessingResult(
+				true, null, "Overview.",
+				List.of(
+						new CategoryGuidelines("not-a-real-category", List.of("Ignored.")),
+						new CategoryGuidelines("structure", List.of("Include an Abstract.")))));
+
+		ResearchGroupGuidelines saved = service.updateGuidelines(researchGroupId, "Mostly usable.");
+
+		assertThat(saved.getStatus()).isEqualTo(GuidelinesStatus.READY);
+		assertThat(saved.getStructuredGuidelines().rulesForCategory("structure"))
+				.containsExactly("Include an Abstract.");
+		assertThat(saved.isReady()).isTrue();
+	}
+
+	@Test
 	void getByResearchGroupId_assertsAccessAndReturnsRepositoryResult() {
 		ResearchGroupGuidelines existing = new ResearchGroupGuidelines();
 		existing.setResearchGroupId(researchGroupId);

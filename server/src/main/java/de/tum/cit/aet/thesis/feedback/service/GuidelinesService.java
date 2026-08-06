@@ -8,8 +8,10 @@ import de.tum.cit.aet.thesis.feedback.config.AIFeaturesEnabled;
 import de.tum.cit.aet.thesis.feedback.dto.GuidelinesPreprocessingResult;
 import de.tum.cit.aet.thesis.feedback.entity.GuidelinesStatus;
 import de.tum.cit.aet.thesis.feedback.entity.ResearchGroupGuidelines;
+import de.tum.cit.aet.thesis.feedback.entity.jsonb.CategoryGuidelines;
 import de.tum.cit.aet.thesis.feedback.entity.jsonb.StructuredGuidelines;
 import de.tum.cit.aet.thesis.feedback.repository.ResearchGroupGuidelinesRepository;
+import de.tum.cit.aet.thesis.feedback.service.reviewer.ReviewCategory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
@@ -17,9 +19,12 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Manages a research group's custom AI review guidelines: lets the group lead read and replace
@@ -35,6 +40,15 @@ import java.util.UUID;
 @Conditional(AIFeaturesEnabled.class)
 public class GuidelinesService {
 	private static final Logger log = LoggerFactory.getLogger(GuidelinesService.class);
+
+	/** The slugs of the fixed review categories, used to validate the preprocessor's output. */
+	private static final Set<String> KNOWN_CATEGORY_SLUGS = Arrays.stream(ReviewCategory.values())
+			.map(ReviewCategory::getSlug)
+			.collect(Collectors.toUnmodifiableSet());
+
+	private static final String NO_USABLE_RULES_REASON =
+			"The guidelines could not be distilled into specific, actionable review rules. "
+					+ "Please provide concrete, actionable guidance.";
 
 	private final ResearchGroupGuidelinesRepository guidelinesRepository;
 	private final ResearchGroupRepository researchGroupRepository;
@@ -92,7 +106,11 @@ public class GuidelinesService {
 		entity.setRawGuidelines(rawGuidelines);
 		entity.setUpdatedBy(currentUserProvider().getUser());
 
-		if (result != null && result.specific()) {
+		// The model can return specific=true while producing an empty category array, unknown
+		// category slugs, or only blank rules. Persisting that as READY would unlock the AI
+		// features for the group with no actual group-specific guidance, defeating the gate. Only
+		// mark READY when at least one recognized category carries a nonblank rule.
+		if (result != null && result.specific() && hasUsableRules(result.categories())) {
 			entity.setStatus(GuidelinesStatus.READY);
 			entity.setStructuredGuidelines(new StructuredGuidelines(
 					result.overview(),
@@ -103,13 +121,45 @@ public class GuidelinesService {
 		} else {
 			entity.setStatus(GuidelinesStatus.FAILED);
 			entity.setStructuredGuidelines(null);
-			entity.setFailureReason(result != null && result.reason() != null && !result.reason().isBlank()
-					? result.reason().strip()
-					: "The guidelines are too vague to build specific review rules. Please provide concrete, actionable guidance.");
+			entity.setFailureReason(resolveFailureReason(result));
 			entity.setProcessedAt(null);
 			log.info("Stored FAILED guidelines for research group {}: {}", researchGroupId, entity.getFailureReason());
 		}
 
 		return guidelinesRepository.save(entity);
+	}
+
+	/**
+	 * Returns whether the preprocessed categories contain at least one recognized
+	 * {@link ReviewCategory} slug with at least one nonblank rule — the minimum needed for the
+	 * guidelines to actually influence the review.
+	 *
+	 * @param categories the per-category rules from the preprocessing result
+	 * @return {@code true} if there is usable, category-specific guidance
+	 */
+	private static boolean hasUsableRules(List<CategoryGuidelines> categories) {
+		if (categories == null) {
+			return false;
+		}
+		return categories.stream().anyMatch(GuidelinesService::isUsableCategory);
+	}
+
+	private static boolean isUsableCategory(CategoryGuidelines category) {
+		return category != null
+				&& KNOWN_CATEGORY_SLUGS.contains(category.category())
+				&& category.rules() != null
+				&& category.rules().stream().anyMatch(rule -> rule != null && !rule.isBlank());
+	}
+
+	private static String resolveFailureReason(GuidelinesPreprocessingResult result) {
+		if (result != null && result.reason() != null && !result.reason().isBlank()) {
+			return result.reason().strip();
+		}
+		// specific=true but no usable rules survived validation: give a distinct, actionable reason.
+		if (result != null && result.specific()) {
+			return NO_USABLE_RULES_REASON;
+		}
+		return "The guidelines are too vague to build specific review rules. "
+				+ "Please provide concrete, actionable guidance.";
 	}
 }
