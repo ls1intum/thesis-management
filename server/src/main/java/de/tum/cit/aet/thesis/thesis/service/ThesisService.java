@@ -47,6 +47,8 @@ import de.tum.cit.aet.thesis.thesis.repository.ThesisFileRepository;
 import de.tum.cit.aet.thesis.thesis.repository.ThesisRepository;
 import de.tum.cit.aet.thesis.thesis.repository.ThesisRoleRepository;
 import de.tum.cit.aet.thesis.thesis.repository.ThesisStateChangeRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -74,6 +76,8 @@ import java.util.UUID;
 /** Manages the full thesis lifecycle, including creation, state transitions, proposals, assessments, and grading. */
 @Service
 public class ThesisService {
+	private static final Logger log = LoggerFactory.getLogger(ThesisService.class);
+
 	private final ThesisRoleRepository thesisRoleRepository;
 	private final ThesisRepository thesisRepository;
 	private final ThesisStateChangeRepository thesisStateChangeRepository;
@@ -637,9 +641,6 @@ public class ThesisService {
 
 		mailingService.sendProposalUploadedEmail(proposal);
 
-		// Auto-fill the abstract from the uploaded proposal PDF (best-effort; never fails the upload).
-		abstractAutoFillService.process(thesis, proposalFile);
-
 		return thesisRepository.save(thesis);
 	}
 
@@ -724,12 +725,33 @@ public class ThesisService {
 		List<ThesisFile> files = thesis.getFiles();
 		files.addFirst(thesisFileRepository.save(thesisFile));
 
-		// Auto-fill the abstract from the uploaded thesis document (best-effort; never fails the upload).
-		if ("THESIS".equals(type)) {
-			abstractAutoFillService.process(thesis, file);
-		}
-
 		return thesisRepository.save(thesis);
+	}
+
+	/**
+	 * Extracts the abstract from an uploaded PDF and persists it on the thesis.
+	 *
+	 * <p>Deliberately <strong>not</strong> {@code @Transactional} and invoked <em>after</em> the
+	 * upload transaction has committed: the extraction may issue a blocking LLM / OCR call whose
+	 * latency must never hold a database connection open (which would exhaust the pool under
+	 * concurrent uploads). The extraction runs with no transaction active; only the closing
+	 * {@link ThesisRepository#save} opens a short, separate per-call transaction to persist the
+	 * result. Best-effort — any failure is swallowed so it can never break the completed upload.
+	 *
+	 * @param thesis the thesis whose abstract should be auto-filled (mutated in place)
+	 * @param file the uploaded proposal or thesis PDF
+	 * @return the thesis, saved when extraction produced a change and returned as-is otherwise
+	 */
+	public Thesis autoFillAbstractFromUpload(Thesis thesis, MultipartFile file) {
+		try {
+			abstractAutoFillService.process(thesis, file);
+			return thesisRepository.save(thesis);
+		} catch (Exception e) {
+			// The upload itself already succeeded; abstract auto-fill is best-effort and must not
+			// surface as an error to the client.
+			log.warn("Abstract auto-fill after upload failed for thesis {}: {}", thesis.getId(), e.getMessage());
+			return thesis;
+		}
 	}
 
 	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems

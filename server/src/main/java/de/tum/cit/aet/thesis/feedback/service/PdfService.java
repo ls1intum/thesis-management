@@ -82,6 +82,20 @@ public class PdfService {
 	}
 
 	/**
+	 * Renders the first {@code maxPages} pages of the uploaded PDF to PNG images at 300 DPI. Used by
+	 * front-matter-only consumers (e.g. abstract extraction) so a long document is not rendered in
+	 * full just to inspect its first pages.
+	 *
+	 * @param file uploaded PDF file
+	 * @param maxPages maximum number of leading pages to render
+	 * @return one PNG-encoded {@link Media} per rendered page in document order (at most {@code maxPages})
+	 */
+	public List<Media> extractImagesFromPdf(MultipartFile file, int maxPages) {
+		log.debug("Extracting first {} page images from PDF file: {}", maxPages, file.getOriginalFilename());
+		return extractImagesFromPdf(readBytes(file), maxPages);
+	}
+
+	/**
 	 * Renders each page of the PDF loaded from a Spring {@link Resource} to a PNG image at 300 DPI.
 	 *
 	 * @param resource PDF resource loaded from the thesis upload store
@@ -93,13 +107,18 @@ public class PdfService {
 	}
 
 	private List<Media> extractImagesFromPdf(byte[] bytes) {
+		return extractImagesFromPdf(bytes, Integer.MAX_VALUE);
+	}
+
+	private List<Media> extractImagesFromPdf(byte[] bytes, int maxPages) {
 		List<Media> images = new ArrayList<>();
 
 		try (PDDocument document = Loader.loadPDF(bytes)) {
 			assertWithinPageLimit(document.getNumberOfPages());
 			PDFRenderer renderer = new PDFRenderer(document);
 
-			for (int page = 0; page < document.getNumberOfPages(); page++) {
+			int pageLimit = Math.min(document.getNumberOfPages(), maxPages);
+			for (int page = 0; page < pageLimit; page++) {
 				var image = renderer.renderImageWithDPI(page, 300);
 
 				ByteArrayOutputStream stream = new ByteArrayOutputStream();
