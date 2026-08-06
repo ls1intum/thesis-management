@@ -21,10 +21,15 @@ import {
 } from '@mantine/core'
 import { doRequest } from '@/core/requests/request'
 import type { IThesis } from '@/thesis/requests/responses/thesis'
-import { ThesisFeedbackCategory, ThesisFeedbackSeverity } from '@/thesis/requests/responses/thesis'
+import {
+  ThesisFeedbackCategory,
+  ThesisFeedbackSeverity,
+  ThesisFeedbackSource,
+} from '@/thesis/requests/responses/thesis'
 import { ApiError, getApiResponseErrorMessage } from '@/core/requests/handler'
 import { Plus, Robot, Trash } from '@phosphor-icons/react'
 import { showSimpleError } from '@/core/utils/notification'
+import { GLOBAL_CONFIG } from '@/core/config/global'
 
 interface IThesisFeedbackRequestButtonProps {
   type: string
@@ -35,6 +40,10 @@ interface INewEntry {
   feedback: string
   category: ThesisFeedbackCategory | ''
   severity: ThesisFeedbackSeverity | ''
+  // Provenance of this row. Manual rows are HUMAN; rows produced by "Generate with AI" are
+  // AI_REVIEWED_BY_HUMAN (an AI draft the instructor reviews before saving). Persisted so the
+  // feedback overview can badge AI-assisted entries correctly.
+  source: ThesisFeedbackSource
 }
 
 interface IAIDraft {
@@ -77,6 +86,7 @@ const emptyEntry = (): INewEntry => ({
   feedback: '',
   category: '',
   severity: '',
+  source: ThesisFeedbackSource.HUMAN,
 })
 
 const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) => {
@@ -130,6 +140,8 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
         feedback: draft.feedback ?? '',
         category: draft.category ?? '',
         severity: draft.severity ?? '',
+        // AI-drafted rows the instructor reviews before saving are persisted as AI + Instructor.
+        source: ThesisFeedbackSource.AI_REVIEWED_BY_HUMAN,
       }))
       const merged = [...cleaned, ...newRows]
       return merged.length === 0 ? [emptyEntry()] : merged
@@ -181,6 +193,7 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
           completed: false,
           category: entry.category || null,
           severity: entry.severity || null,
+          source: entry.source,
         })),
       },
     })
@@ -193,7 +206,9 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
     }
   }, 'Changes requested successfully')
 
-  const supportsAi = type === 'PROPOSAL' || type === 'THESIS'
+  // Only offer AI drafting when the feature is enabled server-side; otherwise the preview
+  // endpoint is unregistered and the button would 404.
+  const supportsAi = GLOBAL_CONFIG.ai_enabled && (type === 'PROPOSAL' || type === 'THESIS')
 
   return (
     <Button variant='outline' color='red' onClick={() => setOpened(true)}>

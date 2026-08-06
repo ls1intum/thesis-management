@@ -47,7 +47,7 @@ class ReviewControllerTest extends BaseIntegrationTest {
 				AssessmentCategory.ACCEPTABLE,
 				"Solid overall but bibliography is thin.",
 				List.of(new AIFeedbackDraftDTO(
-						"**Thin bibliography** — increase to at least 6 peer-reviewed sources.",
+						"Thin bibliography — increase to at least 6 peer-reviewed sources.",
 						ThesisFeedbackCategory.CITATION,
 						ThesisFeedbackSeverity.MAJOR)));
 		when(aiFeedbackService.previewReview(any(Thesis.class), any(ReviewType.class))).thenReturn(mockResponse);

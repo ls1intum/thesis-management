@@ -567,7 +567,9 @@ public class ThesisService {
 			feedback.setCompletedAt(requestedChange.completed() ? Instant.now() : null);
 			feedback.setCategory(requestedChange.category());
 			feedback.setSeverity(requestedChange.severity());
-			feedback.setGenerationSource(source);
+			// Per-item source wins so a mixed batch can carry both manual (HUMAN) and AI-reviewed
+			// (AI_REVIEWED_BY_HUMAN) rows; fall back to the batch source when the item omits it.
+			feedback.setGenerationSource(requestedChange.source() != null ? requestedChange.source() : source);
 			feedback.setDocumentVersionId(documentVersionId);
 
 			feedback = thesisFeedbackRepository.save(feedback);

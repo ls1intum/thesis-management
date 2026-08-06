@@ -71,7 +71,9 @@ public class AIFeedbackService {
 					renderFeedbackText(finding),
 					false,
 					mapCategory(finding.category()),
-					mapSeverity(finding.severity())
+					mapSeverity(finding.severity()),
+					// Null → inherit the batch source (AI) passed to requestChanges below.
+					null
 			));
 		}
 
@@ -143,17 +145,20 @@ public class AIFeedbackService {
 	}
 
 	/**
-	 * Collapses an AI finding into a single feedback string: bold title, description, then a
+	 * Collapses an AI finding into a single feedback string: title, description, then a
 	 * parenthetical hint that surfaces the first location (page + section) so the student knows
 	 * where to look. Additional locations are dropped — {@code ThesisFeedback.feedback} is a
 	 * plain TEXT column and we don't want to explode it into JSON just for this.
+	 *
+	 * <p>The text is stored and rendered verbatim (the feedback overview and the request-changes
+	 * dialog both show it as plain text), so no Markdown markup is added here.
 	 */
 	static String renderFeedbackText(FindingDTO finding) {
 		StringBuilder sb = new StringBuilder();
 
 		String title = finding.title();
 		if (title != null && !title.isBlank()) {
-			sb.append("**").append(title.strip()).append("**");
+			sb.append(title.strip());
 		}
 
 		String description = finding.description();

@@ -175,6 +175,9 @@ jobs:
         run: pnpm build
         env:
           SERVER_HOST: http://localhost:8180
+          # Matches the dev server profile (thesis-management.ai.enabled=true) so the AI
+          # feedback buttons render for the ai-feedback.spec.ts e2e coverage.
+          AI_FEATURES_ENABLED: "true"
           KEYCLOAK_HOST: http://localhost:8181
           KEYCLOAK_REALM_NAME: thesis-management
           KEYCLOAK_CLIENT_ID: thesis-management-app
@@ -184,6 +187,7 @@ jobs:
         run: node ../public/generate-runtime-env.js
         env:
           SERVER_HOST: http://localhost:8180
+          AI_FEATURES_ENABLED: "true"
           KEYCLOAK_HOST: http://localhost:8181
           KEYCLOAK_REALM_NAME: thesis-management
           KEYCLOAK_CLIENT_ID: thesis-management-app

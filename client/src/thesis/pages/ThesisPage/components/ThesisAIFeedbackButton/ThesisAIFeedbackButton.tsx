@@ -7,6 +7,7 @@ import {
 } from '@/thesis/providers/ThesisProvider/hooks'
 import type { IThesis } from '@/thesis/requests/responses/thesis'
 import { ApiError } from '@/core/requests/handler'
+import { GLOBAL_CONFIG } from '@/core/config/global'
 
 interface IThesisAIFeedbackButtonProps {
   type: 'PROPOSAL' | 'THESIS'
@@ -17,6 +18,9 @@ interface IThesisAIFeedbackButtonProps {
  * Student-facing "Get AI feedback" trigger. Fires the auto endpoint, which runs the review
  * pipeline server-side and persists each finding as a ThesisFeedback row with source=AI. On
  * success, the thesis provider is refreshed so the feedback overview shows the new items.
+ *
+ * Renders nothing when AI features are disabled — the server would not register the
+ * `/v2/ai-review/**` endpoints, so the button would only 404.
  */
 const ThesisAIFeedbackButton = ({ type, disabled }: IThesisAIFeedbackButtonProps) => {
   const { thesis } = useLoadedThesisContext()
@@ -37,6 +41,10 @@ const ThesisAIFeedbackButton = ({ type, disabled }: IThesisAIFeedbackButtonProps
       throw new ApiError(response)
     }
   }, 'AI feedback generated')
+
+  if (!GLOBAL_CONFIG.ai_enabled) {
+    return null
+  }
 
   return (
     <Button

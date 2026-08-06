@@ -176,6 +176,9 @@ fi
 if is_port_open 3100; then
   log "Client already running on port 3100 — reusing it."
 else
+  # The AI feedback screenshot scenes mock the endpoints but still need the buttons rendered,
+  # which the client only does when AI features are enabled (matching the dev server profile).
+  export AI_FEATURES_ENABLED=true
   log "Building client (production)..."
   (cd "$CLIENT_DIR" && pnpm build > "$ROOT_DIR/.capture-client-build.log" 2>&1) || {
     err "Client build failed. See $ROOT_DIR/.capture-client-build.log"

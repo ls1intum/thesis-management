@@ -10,6 +10,10 @@ export interface IGlobalConfig {
 
   allow_suggested_topics: boolean
 
+  // Mirrors the server's AI_FEATURES_ENABLED flag. When false, the AI module is not registered
+  // on the server (its /v2/ai-review/** endpoints 404), so the AI feedback buttons are hidden.
+  ai_enabled: boolean
+
   server_host: string
   passkey_rp_id: string
   passkey_rp_name: string

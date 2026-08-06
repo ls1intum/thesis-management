@@ -51,6 +51,10 @@ export const GLOBAL_CONFIG: IGlobalConfig = {
 
   allow_suggested_topics: (getEnvironmentVariable('ALLOW_SUGGESTED_TOPICS') ?? 'true') === 'true',
 
+  // Defaults to false to match the server's AI_FEATURES_ENABLED default, so AI buttons stay
+  // hidden unless a deployment explicitly turns the feature on (as application-dev.yml does).
+  ai_enabled: (getEnvironmentVariable('AI_FEATURES_ENABLED') ?? 'false') === 'true',
+
   genders: getEnvironmentVariable<Record<string, string>>('GENDERS', true) ?? {
     MALE: 'Male',
     FEMALE: 'Female',

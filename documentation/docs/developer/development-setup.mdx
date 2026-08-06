@@ -164,7 +164,7 @@ The AI feedback module runs an LLM review over an uploaded proposal or thesis PD
 Two endpoints are exposed by `ReviewController`:
 
 - `POST /v2/ai-review/auto` — body: `{ thesisId, reviewType }` (`PROPOSAL` or `THESIS`). Runs the pipeline against the thesis's latest uploaded document, persists each finding as a `ThesisFeedback` row with `generation_source = AI`, and returns the refreshed `ThesisDto`. Students, supervisors, and examiners on the thesis may call it; other users get `403`.
-- `POST /v2/ai-review/preview` — same body. Runs the pipeline and returns an `AIPreviewResponseDTO` (overall assessment + summary + editable drafts) **without saving anything**. Supervisor-only.
+- `POST /v2/ai-review/preview` — same body. Runs the pipeline and returns an `AIPreviewResponseDTO` (overall assessment + summary + editable drafts) **without saving anything**. Restricted to users with supervisor access on the thesis (`hasSupervisorAccess`), i.e. its supervisors and examiners plus admins; students and other users get `403`.
 
 **Pipeline shape**
 
