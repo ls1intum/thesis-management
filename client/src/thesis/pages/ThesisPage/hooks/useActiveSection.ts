@@ -146,7 +146,10 @@ export function useActiveSection(
     // the release, and an actual change in the vertical scroll offset. Requiring
     // both means the programmatic smooth scroll (no gesture) and horizontal nav
     // swipes (no vertical change) leave the lock intact, while a real vertical
-    // scroll by the user hands control back to the scroll spy.
+    // scroll by the user hands control back to the scroll spy. Arming is safe to
+    // do generously (release still needs the offset to move), so `pointerdown`
+    // covers dragging the window's or the ancestor's vertical scrollbar — which
+    // fires none of the other gestures.
     armedRef.current = false
     let lastScroll = getVerticalScroll()
 
@@ -173,6 +176,7 @@ export function useActiveSection(
     }
     window.addEventListener('wheel', arm, { passive: true, capture: true })
     window.addEventListener('touchmove', arm, { passive: true, capture: true })
+    window.addEventListener('pointerdown', arm, { passive: true, capture: true })
     window.addEventListener('keydown', onKeyDown, { passive: true, capture: true })
 
     return () => {
@@ -180,6 +184,7 @@ export function useActiveSection(
       window.removeEventListener('scroll', onScroll, true)
       window.removeEventListener('wheel', arm, true)
       window.removeEventListener('touchmove', arm, true)
+      window.removeEventListener('pointerdown', arm, true)
       window.removeEventListener('keydown', onKeyDown, true)
     }
     // eslint-disable-next-line @eslint-react/exhaustive-deps -- `key` (joined ids) captures the array identity
