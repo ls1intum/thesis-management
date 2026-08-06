@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  serialize-javascript@<7.0.5: 7.0.5
+  serialize-javascript@<7.0.5: 7.0.7
   fast-uri@<3.1.5: 3.1.5
   uuid@<11.1.1: 11.1.1
 
@@ -5153,8 +5153,8 @@ packages:
     resolution: {integrity: sha512-VMbMxbDeehAxpOtWJXlcUS5E8iXh6QmN+BkRX1GARS3wRaXEEgzCcB10gTQazO42tpNIya8xIyNx8fll1OFPrg==}
     engines: {node: '>= 0.8.0'}
 
-  serialize-javascript@7.0.5:
-    resolution: {integrity: sha512-F4LcB0UqUl1zErq+1nYEEzSHJnIwb3AF2XWB94b+afhrekOUijwooAYqFyRbjYkm2PAKBabx6oYv/xDxNi8IBw==}
+  serialize-javascript@7.0.7:
+    resolution: {integrity: sha512-YAy8Od6KV+uuwUuU50np8fGB/Aues6Y0nAhA9y/hId74PlKUcme4pXcBD46NWKr1Q4osN/iseZ17YqO1XfmI8g==}
     engines: {node: '>=20.0.0'}
 
   serve-handler@6.1.7:
@@ -9522,7 +9522,7 @@ snapshots:
       globby: 13.2.2
       normalize-path: 3.0.0
       schema-utils: 4.3.3
-      serialize-javascript: 7.0.5
+      serialize-javascript: 7.0.7
       webpack: 5.109.2(@swc/core@1.15.47)(clean-css@5.3.3)(cssnano@6.1.2(postcss@8.5.25))(html-minifier-terser@7.2.0)(postcss@8.5.25)
 
   core-js-compat@3.49.0:
@@ -9589,7 +9589,7 @@ snapshots:
       jest-worker: 29.7.0
       postcss: 8.5.25
       schema-utils: 4.3.3
-      serialize-javascript: 7.0.5
+      serialize-javascript: 7.0.7
       webpack: 5.109.2(@swc/core@1.15.47)(clean-css@5.3.3)(cssnano@6.1.2(postcss@8.5.25))(html-minifier-terser@7.2.0)(postcss@8.5.25)
     optionalDependencies:
       clean-css: 5.3.3
@@ -12398,7 +12398,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  serialize-javascript@7.0.5: {}
+  serialize-javascript@7.0.7: {}
 
   serve-handler@6.1.7:
     dependencies:

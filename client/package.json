@@ -62,7 +62,7 @@
     "@tiptap/react": "3.29.2",
     "@tiptap/starter-kit": "3.29.2",
     "dayjs": "1.11.21",
-    "dompurify": "3.4.12",
+    "dompurify": "3.4.13",
     "embla-carousel": "8.6.0",
     "embla-carousel-react": "8.6.0",
     "i18n-iso-countries": "7.14.0",
@@ -103,7 +103,7 @@
     "linkifyjs": "4.3.3",
     "mini-css-extract-plugin": "2.10.2",
     "patch-package": "8.0.1",
-    "postcss": "8.5.23",
+    "postcss": "8.5.25",
     "postcss-loader": "8.2.1",
     "postcss-preset-mantine": "1.18.0",
     "prettier": "3.9.6",
@@ -117,7 +117,7 @@
     "vitest": "4.1.10",
     "webpack": "5.109.2",
     "webpack-bundle-analyzer": "5.3.1",
-    "webpack-cli": "7.2.1",
+    "webpack-cli": "7.2.2",
     "webpack-dev-server": "6.0.0",
     "webpackbar": "7.0.0"
   }
