@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Alert, Badge, Button, Group, List, Stack, Tabs, Text, Textarea } from '@mantine/core'
-import { CheckCircle, Info, Robot, Warning } from '@phosphor-icons/react'
+import { ActionIcon, Alert, Badge, Button, Group, Stack, Tabs, Text, Textarea } from '@mantine/core'
+import { CheckCircle, FloppyDisk, Info, Plus, Robot, Trash, Warning } from '@phosphor-icons/react'
 import { useParams } from 'react-router'
 import { ResearchGroupSettingsCard } from '@/core/group/pages/ResearchGroupSettingPage/components/ResearchGroupSettingsCard'
 import { doRequest } from '@/core/requests/request'
@@ -8,10 +8,47 @@ import { getApiResponseErrorMessage } from '@/core/requests/handler'
 import { showSimpleError, showSimpleSuccess } from '@/core/utils/notification'
 import type { IResearchGroupGuidelines } from '@/core/group/requests/responses/researchGroupGuidelines'
 
+/** A single editable rule, carrying a stable id so React keeps input focus across edits/removals. */
+interface IEditableRule {
+  id: string
+  text: string
+}
+
+/** Local, editable representation of the structured rules keyed by review category slug. */
+interface IRuleDraft {
+  overview: string
+  rules: Record<string, IEditableRule[]>
+}
+
+const newRule = (text: string): IEditableRule => ({ id: crypto.randomUUID(), text })
+
+/** Builds the editable draft from the persisted guidelines, preserving the fixed category order. */
+const buildRuleDraft = (guidelines: IResearchGroupGuidelines): IRuleDraft => ({
+  overview: guidelines.overview ?? '',
+  rules: Object.fromEntries(
+    (guidelines.categories ?? []).map((category) => [
+      category.category,
+      (category.rules ?? []).map((rule) => newRule(rule)),
+    ]),
+  ),
+})
+
+/** Drops blank rules and empty categories, producing the shape the `/rules` endpoint expects. */
+const normalizeRules = (rules: Record<string, IEditableRule[]>) =>
+  Object.entries(rules)
+    .map(([category, list]) => ({
+      category,
+      rules: list.map((rule) => rule.text.trim()).filter(Boolean),
+    }))
+    .filter((category) => category.rules.length > 0)
+
 /**
  * Lets a research group lead upload and manage the custom guidelines that unlock the AI review
  * features for the group. The raw text is preprocessed server-side into the fixed review
  * categories; until specific guidelines are stored, the group's members cannot use AI features.
+ *
+ * Once processed, the lead can also refine the generated per-category rules by hand — tweaking
+ * wording, adding a new convention, or removing a rule — without regenerating from the raw text.
  *
  * The card fetches its own state and hides itself entirely when the AI features are disabled
  * server-side (the endpoint 404s in that case).
@@ -24,6 +61,8 @@ const AIReviewGuidelinesSettingsCard = () => {
   const [guidelines, setGuidelines] = useState<IResearchGroupGuidelines | undefined>(undefined)
   const [draft, setDraft] = useState('')
   const [saving, setSaving] = useState(false)
+  const [ruleDraft, setRuleDraft] = useState<IRuleDraft>({ overview: '', rules: {} })
+  const [savingRules, setSavingRules] = useState(false)
 
   useEffect(() => {
     if (!researchGroupId) return
@@ -48,6 +87,13 @@ const AIReviewGuidelinesSettingsCard = () => {
       },
     )
   }, [researchGroupId])
+
+  // Re-seed the editable rule draft whenever a new set of ready guidelines arrives (load or save).
+  useEffect(() => {
+    if (guidelines?.status === 'ready') {
+      setRuleDraft(buildRuleDraft(guidelines))
+    }
+  }, [guidelines])
 
   const save = () => {
     setSaving(true)
@@ -80,14 +126,68 @@ const AIReviewGuidelinesSettingsCard = () => {
     )
   }
 
+  const saveRules = () => {
+    setSavingRules(true)
+    doRequest<IResearchGroupGuidelines>(
+      `/v2/ai-review/guidelines/${researchGroupId}/rules`,
+      {
+        method: 'PUT',
+        requiresAuth: true,
+        data: { overview: ruleDraft.overview.trim(), categories: normalizeRules(ruleDraft.rules) },
+      },
+      (res) => {
+        setSavingRules(false)
+        if (res.ok) {
+          setGuidelines(res.data)
+          showSimpleSuccess('Guidelines updated.')
+        } else {
+          showSimpleError(getApiResponseErrorMessage(res))
+        }
+      },
+    )
+  }
+
+  const setRule = (category: string, id: string, value: string) =>
+    setRuleDraft((current) => ({
+      ...current,
+      rules: {
+        ...current.rules,
+        [category]: (current.rules[category] ?? []).map((rule) =>
+          rule.id === id ? { ...rule, text: value } : rule,
+        ),
+      },
+    }))
+
+  const addRule = (category: string) =>
+    setRuleDraft((current) => ({
+      ...current,
+      rules: { ...current.rules, [category]: [...(current.rules[category] ?? []), newRule('')] },
+    }))
+
+  const removeRule = (category: string, id: string) =>
+    setRuleDraft((current) => ({
+      ...current,
+      rules: {
+        ...current.rules,
+        [category]: (current.rules[category] ?? []).filter((rule) => rule.id !== id),
+      },
+    }))
+
   if (aiDisabled) {
     return null
   }
 
   const hasChanges = draft.trim() !== (guidelines?.rawGuidelines ?? '')
-  const categoriesWithRules = (guidelines?.categories ?? []).filter(
-    (category) => (category.rules ?? []).length > 0,
-  )
+  const categories = guidelines?.categories ?? []
+  const normalizedRules = normalizeRules(ruleDraft.rules)
+  const rulesUsable = normalizedRules.length > 0
+  const rulesDirty =
+    guidelines?.status === 'ready' &&
+    JSON.stringify({ o: ruleDraft.overview.trim(), r: normalizedRules }) !==
+      JSON.stringify({
+        o: (guidelines.overview ?? '').trim(),
+        r: normalizeRules(buildRuleDraft(guidelines).rules),
+      })
 
   return (
     <ResearchGroupSettingsCard
@@ -151,34 +251,121 @@ const AIReviewGuidelinesSettingsCard = () => {
           </Button>
         </Group>
 
-        {guidelines?.status === 'ready' && categoriesWithRules.length > 0 && (
-          <Stack gap={5}>
-            <Text size='sm' fw={500}>
-              Processed rules by category
-            </Text>
-            {guidelines.overview && (
-              <Text size='sm' c='dimmed'>
-                {guidelines.overview}
+        {guidelines?.status === 'ready' && categories.length > 0 && (
+          <Stack gap='sm'>
+            <div>
+              <Text size='sm' fw={500}>
+                Refine rules by category
               </Text>
-            )}
-            <Tabs defaultValue={categoriesWithRules[0].category} orientation='horizontal'>
+              <Text size='xs' c='dimmed'>
+                Fine-tune the generated rules — edit wording, add a new convention, or remove one —
+                without regenerating. Re-running “Save &amp; process” above replaces these edits.
+              </Text>
+            </div>
+
+            <Textarea
+              label='Overview'
+              description='Short, category-independent summary applied across all categories.'
+              autosize
+              minRows={2}
+              maxRows={6}
+              value={ruleDraft.overview}
+              onChange={(event) =>
+                setRuleDraft((current) => ({ ...current, overview: event.currentTarget.value }))
+              }
+              disabled={savingRules}
+            />
+
+            <Tabs defaultValue={categories[0]?.category} orientation='horizontal'>
               <Tabs.List>
-                {categoriesWithRules.map((category) => (
-                  <Tabs.Tab key={category.category} value={category.category}>
-                    {category.displayName}
-                  </Tabs.Tab>
-                ))}
+                {categories.map((category) => {
+                  const count = (ruleDraft.rules[category.category] ?? []).filter((rule) =>
+                    rule.text.trim(),
+                  ).length
+                  return (
+                    <Tabs.Tab
+                      key={category.category}
+                      value={category.category}
+                      rightSection={
+                        count > 0 ? (
+                          <Badge size='xs' variant='light' circle>
+                            {count}
+                          </Badge>
+                        ) : undefined
+                      }
+                    >
+                      {category.displayName}
+                    </Tabs.Tab>
+                  )
+                })}
               </Tabs.List>
-              {categoriesWithRules.map((category) => (
-                <Tabs.Panel key={category.category} value={category.category} pt='sm'>
-                  <List size='sm' spacing='xs'>
-                    {(category.rules ?? []).map((rule) => (
-                      <List.Item key={rule}>{rule}</List.Item>
-                    ))}
-                  </List>
-                </Tabs.Panel>
-              ))}
+              {categories.map((category) => {
+                const rules = ruleDraft.rules[category.category] ?? []
+                return (
+                  <Tabs.Panel key={category.category} value={category.category} pt='sm'>
+                    <Stack gap='xs'>
+                      {rules.length === 0 && (
+                        <Text size='sm' c='dimmed'>
+                          No rules for this category yet. Add one to include it in the review.
+                        </Text>
+                      )}
+                      {rules.map((rule) => (
+                        <Group key={rule.id} align='flex-start' wrap='nowrap'>
+                          <Textarea
+                            autosize
+                            minRows={1}
+                            style={{ flex: 1 }}
+                            value={rule.text}
+                            onChange={(event) =>
+                              setRule(category.category, rule.id, event.currentTarget.value)
+                            }
+                            disabled={savingRules}
+                          />
+                          <ActionIcon
+                            variant='subtle'
+                            color='red'
+                            mt={4}
+                            onClick={() => removeRule(category.category, rule.id)}
+                            disabled={savingRules}
+                            aria-label='Remove rule'
+                          >
+                            <Trash size={16} />
+                          </ActionIcon>
+                        </Group>
+                      ))}
+                      <Button
+                        variant='light'
+                        size='xs'
+                        leftSection={<Plus size={14} />}
+                        onClick={() => addRule(category.category)}
+                        disabled={savingRules}
+                        style={{ alignSelf: 'flex-start' }}
+                      >
+                        Add rule
+                      </Button>
+                    </Stack>
+                  </Tabs.Panel>
+                )
+              })}
             </Tabs>
+
+            <Group justify='flex-end'>
+              <Button
+                variant='default'
+                onClick={() => setRuleDraft(buildRuleDraft(guidelines))}
+                disabled={savingRules || !rulesDirty}
+              >
+                Reset
+              </Button>
+              <Button
+                leftSection={<FloppyDisk size={16} />}
+                loading={savingRules}
+                disabled={savingRules || !rulesDirty || !rulesUsable}
+                onClick={saveRules}
+              >
+                Save changes
+              </Button>
+            </Group>
           </Stack>
         )}
       </Stack>

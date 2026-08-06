@@ -116,6 +116,46 @@ class GuidelinesControllerTest extends BaseIntegrationTest {
 	}
 
 	@Test
+	void updateStructuredGuidelines_returnsRefinedGuidelinesForGroupAdmin() throws Exception {
+		UUID researchGroupId = UUID.randomUUID();
+		when(guidelinesService.updateStructuredGuidelines(eq(researchGroupId), any(), any()))
+				.thenReturn(readyGuidelines(researchGroupId));
+
+		String body = "{\"overview\":\"Concise, well-cited proposals.\","
+				+ "\"categories\":[{\"category\":\"bibliography\",\"rules\":[\"Cite at least 6 peer-reviewed sources.\"]}]}";
+		mockMvc.perform(put("/v2/ai-review/guidelines/" + researchGroupId + "/rules")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(body)
+						.header("Authorization", createRandomAuthentication("group-admin")))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.status").value("ready"));
+	}
+
+	@Test
+	void updateStructuredGuidelines_rejectsMissingCategories() throws Exception {
+		UUID researchGroupId = UUID.randomUUID();
+
+		String body = "{\"overview\":\"No categories field.\"}";
+		mockMvc.perform(put("/v2/ai-review/guidelines/" + researchGroupId + "/rules")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(body)
+						.header("Authorization", createRandomAuthentication("group-admin")))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	void updateStructuredGuidelines_returnsForbiddenForStudent() throws Exception {
+		UUID researchGroupId = UUID.randomUUID();
+
+		String body = "{\"overview\":\"x\",\"categories\":[]}";
+		mockMvc.perform(put("/v2/ai-review/guidelines/" + researchGroupId + "/rules")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(body)
+						.header("Authorization", createRandomAuthentication("student")))
+				.andExpect(status().isForbidden());
+	}
+
+	@Test
 	void getGuidelines_returnsUnauthorizedWithoutAuthentication() throws Exception {
 		mockMvc.perform(get("/v2/ai-review/guidelines/" + UUID.randomUUID()))
 				.andExpect(status().isUnauthorized());

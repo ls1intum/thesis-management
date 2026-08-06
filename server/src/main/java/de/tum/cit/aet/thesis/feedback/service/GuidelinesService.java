@@ -1,5 +1,6 @@
 package de.tum.cit.aet.thesis.feedback.service;
 
+import de.tum.cit.aet.thesis.core.exception.request.ResourceInvalidParametersException;
 import de.tum.cit.aet.thesis.core.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.core.group.entity.ResearchGroup;
 import de.tum.cit.aet.thesis.core.group.repository.ResearchGroupRepository;
@@ -127,6 +128,76 @@ public class GuidelinesService {
 		}
 
 		return guidelinesRepository.save(entity);
+	}
+
+	/**
+	 * Manually replaces a research group's structured guidelines without re-running the
+	 * preprocessor. This is the post-processing path: after the automatic distribution has produced
+	 * a first draft, the lead can tweak wording, add rules for a new convention, or drop ones that
+	 * no longer apply. The raw text is left untouched.
+	 *
+	 * <p>Edits that would leave no usable, category-specific guidance are rejected (the existing
+	 * {@link GuidelinesStatus#READY} state is preserved) rather than silently downgrading the group
+	 * out of the AI features. On success the record is (re)marked {@link GuidelinesStatus#READY}.
+	 *
+	 * @param researchGroupId the research group id
+	 * @param overview        the edited category-independent overview (blank clears it)
+	 * @param categories      the edited per-category rules
+	 * @return the persisted guidelines
+	 * @throws ResourceNotFoundException          if the group has no guidelines to edit yet
+	 * @throws ResourceInvalidParametersException if the edit leaves no recognized category with a
+	 *                                            nonblank rule
+	 */
+	public ResearchGroupGuidelines updateStructuredGuidelines(
+			UUID researchGroupId, String overview, List<CategoryGuidelines> categories) {
+		ResearchGroup researchGroup = researchGroupRepository.findById(researchGroupId)
+				.orElseThrow(() -> new ResourceNotFoundException("Research group not found"));
+		currentUserProvider().assertCanAccessResearchGroup(researchGroup);
+
+		ResearchGroupGuidelines entity = guidelinesRepository.findById(researchGroupId)
+				.orElseThrow(() -> new ResourceNotFoundException(
+						"This research group has no guidelines to edit yet. Generate them first."));
+
+		List<CategoryGuidelines> sanitized = sanitizeCategories(categories);
+		if (!hasUsableRules(sanitized)) {
+			throw new ResourceInvalidParametersException(
+					"The guidelines must keep at least one rule for a recognized review category.");
+		}
+
+		String cleanedOverview = overview != null && !overview.isBlank() ? overview.strip() : null;
+		entity.setStructuredGuidelines(new StructuredGuidelines(cleanedOverview, sanitized));
+		entity.setStatus(GuidelinesStatus.READY);
+		entity.setFailureReason(null);
+		entity.setProcessedAt(Instant.now());
+		entity.setUpdatedBy(currentUserProvider().getUser());
+		log.info("Stored manually edited guidelines for research group {} ({} categories)",
+				researchGroupId, sanitized.size());
+
+		return guidelinesRepository.save(entity);
+	}
+
+	/**
+	 * Normalizes edited categories: keeps only recognized {@link ReviewCategory} slugs, strips and
+	 * drops blank rules, and drops categories left with no rules. Guards the stored representation
+	 * against unknown slugs and whitespace-only rules regardless of what the client sends.
+	 *
+	 * @param categories the raw edited categories
+	 * @return the cleaned categories, one entry per non-empty recognized category
+	 */
+	private static List<CategoryGuidelines> sanitizeCategories(List<CategoryGuidelines> categories) {
+		if (categories == null) {
+			return List.of();
+		}
+		return categories.stream()
+				.filter(category -> category != null && KNOWN_CATEGORY_SLUGS.contains(category.category()))
+				.map(category -> new CategoryGuidelines(
+						category.category(),
+						category.rules() == null ? List.of() : category.rules().stream()
+								.filter(rule -> rule != null && !rule.isBlank())
+								.map(String::strip)
+								.toList()))
+				.filter(category -> !category.rules().isEmpty())
+				.toList();
 	}
 
 	/**

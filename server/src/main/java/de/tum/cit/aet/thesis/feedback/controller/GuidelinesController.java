@@ -2,8 +2,10 @@ package de.tum.cit.aet.thesis.feedback.controller;
 
 import de.tum.cit.aet.thesis.feedback.config.AIFeaturesEnabled;
 import de.tum.cit.aet.thesis.feedback.controller.payload.UpdateGuidelinesPayload;
+import de.tum.cit.aet.thesis.feedback.controller.payload.UpdateStructuredGuidelinesPayload;
 import de.tum.cit.aet.thesis.feedback.dto.GuidelinesDTO;
 import de.tum.cit.aet.thesis.feedback.entity.ResearchGroupGuidelines;
+import de.tum.cit.aet.thesis.feedback.entity.jsonb.CategoryGuidelines;
 import de.tum.cit.aet.thesis.feedback.service.GuidelinesService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Conditional;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -66,6 +69,29 @@ public class GuidelinesController {
 			@PathVariable UUID researchGroupId,
 			@Valid @RequestBody UpdateGuidelinesPayload payload) {
 		ResearchGroupGuidelines saved = guidelinesService.updateGuidelines(researchGroupId, payload.rawGuidelines());
+		return ResponseEntity.ok(GuidelinesDTO.fromEntity(saved));
+	}
+
+	/**
+	 * Manually refines the already-generated per-category rules without re-running the LLM
+	 * preprocessor — the lead's post-processing path for tweaking wording or adding a new
+	 * convention. Requires guidelines to already exist for the group; an edit that leaves no usable
+	 * rule for any recognized category is rejected with {@code 400}.
+	 *
+	 * @param researchGroupId the research group id
+	 * @param payload         the edited overview and per-category rules
+	 * @return the persisted guidelines
+	 */
+	@PutMapping("/{researchGroupId}/rules")
+	@PreAuthorize("hasAnyRole('admin', 'group-admin')")
+	public ResponseEntity<GuidelinesDTO> updateStructuredGuidelines(
+			@PathVariable UUID researchGroupId,
+			@Valid @RequestBody UpdateStructuredGuidelinesPayload payload) {
+		List<CategoryGuidelines> categories = payload.categories().stream()
+				.map(category -> new CategoryGuidelines(category.category(), category.rules()))
+				.toList();
+		ResearchGroupGuidelines saved = guidelinesService.updateStructuredGuidelines(
+				researchGroupId, payload.overview(), categories);
 		return ResponseEntity.ok(GuidelinesDTO.fromEntity(saved));
 	}
 }

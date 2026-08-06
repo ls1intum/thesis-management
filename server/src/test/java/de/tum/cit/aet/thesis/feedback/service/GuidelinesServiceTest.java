@@ -1,11 +1,15 @@
 package de.tum.cit.aet.thesis.feedback.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import de.tum.cit.aet.thesis.core.exception.request.ResourceInvalidParametersException;
+import de.tum.cit.aet.thesis.core.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.core.group.entity.ResearchGroup;
 import de.tum.cit.aet.thesis.core.group.repository.ResearchGroupRepository;
 import de.tum.cit.aet.thesis.core.security.CurrentUserProvider;
@@ -157,6 +161,86 @@ class GuidelinesServiceTest {
 		assertThat(saved.getStructuredGuidelines().rulesForCategory("structure"))
 				.containsExactly("Include an Abstract.");
 		assertThat(saved.isReady()).isTrue();
+	}
+
+	@Test
+	void updateStructuredGuidelines_persistsSanitizedRulesAndKeepsReady() {
+		stubSaveReturnsArgument();
+		ResearchGroupGuidelines existing = new ResearchGroupGuidelines();
+		existing.setResearchGroupId(researchGroupId);
+		existing.setRawGuidelines("Original raw text.");
+		existing.setStatus(GuidelinesStatus.READY);
+		when(currentUserProvider.getUser()).thenReturn(new User());
+		when(guidelinesRepository.findById(researchGroupId)).thenReturn(Optional.of(existing));
+
+		ResearchGroupGuidelines saved = service.updateStructuredGuidelines(
+				researchGroupId,
+				"  Edited overview.  ",
+				List.of(
+						new CategoryGuidelines("structure", List.of("  Include an Abstract.  ", "   ")),
+						new CategoryGuidelines("not-a-real-category", List.of("Dropped.")),
+						new CategoryGuidelines("figures", List.of())));
+
+		verify(currentUserProvider).assertCanAccessResearchGroup(researchGroup);
+		assertThat(saved.getStatus()).isEqualTo(GuidelinesStatus.READY);
+		assertThat(saved.getRawGuidelines()).isEqualTo("Original raw text.");
+		assertThat(saved.getStructuredGuidelines().overview()).isEqualTo("Edited overview.");
+		// Blank rule stripped, unknown slug dropped, empty category dropped.
+		assertThat(saved.getStructuredGuidelines().rulesForCategory("structure"))
+				.containsExactly("Include an Abstract.");
+		assertThat(saved.getStructuredGuidelines().rulesForCategory("not-a-real-category")).isEmpty();
+		assertThat(saved.getStructuredGuidelines().rulesForCategory("figures")).isEmpty();
+		assertThat(saved.getFailureReason()).isNull();
+		assertThat(saved.getProcessedAt()).isNotNull();
+	}
+
+	@Test
+	void updateStructuredGuidelines_promotesFailedRecordToReadyWhenRulesUsable() {
+		stubSaveReturnsArgument();
+		ResearchGroupGuidelines existing = new ResearchGroupGuidelines();
+		existing.setResearchGroupId(researchGroupId);
+		existing.setStatus(GuidelinesStatus.FAILED);
+		existing.setFailureReason("was too vague");
+		when(currentUserProvider.getUser()).thenReturn(new User());
+		when(guidelinesRepository.findById(researchGroupId)).thenReturn(Optional.of(existing));
+
+		ResearchGroupGuidelines saved = service.updateStructuredGuidelines(
+				researchGroupId, null,
+				List.of(new CategoryGuidelines("bibliography", List.of("Cite at least 6 sources."))));
+
+		assertThat(saved.getStatus()).isEqualTo(GuidelinesStatus.READY);
+		assertThat(saved.getFailureReason()).isNull();
+		assertThat(saved.isReady()).isTrue();
+	}
+
+	@Test
+	void updateStructuredGuidelines_rejectsEditThatLeavesNoUsableRule() {
+		ResearchGroupGuidelines existing = new ResearchGroupGuidelines();
+		existing.setResearchGroupId(researchGroupId);
+		existing.setStatus(GuidelinesStatus.READY);
+		when(guidelinesRepository.findById(researchGroupId)).thenReturn(Optional.of(existing));
+
+		assertThatThrownBy(() -> service.updateStructuredGuidelines(
+				researchGroupId, "Overview.",
+				List.of(
+						new CategoryGuidelines("structure", List.of("   ")),
+						new CategoryGuidelines("not-a-real-category", List.of("Dropped.")))))
+				.isInstanceOf(ResourceInvalidParametersException.class);
+
+		verify(currentUserProvider).assertCanAccessResearchGroup(researchGroup);
+		verify(guidelinesRepository, never()).save(any(ResearchGroupGuidelines.class));
+	}
+
+	@Test
+	void updateStructuredGuidelines_throwsWhenNoGuidelinesExist() {
+		when(guidelinesRepository.findById(researchGroupId)).thenReturn(Optional.empty());
+
+		assertThatThrownBy(() -> service.updateStructuredGuidelines(
+				researchGroupId, "Overview.",
+				List.of(new CategoryGuidelines("structure", List.of("A rule.")))))
+				.isInstanceOf(ResourceNotFoundException.class);
+
+		verify(guidelinesRepository, never()).save(any(ResearchGroupGuidelines.class));
 	}
 
 	@Test
