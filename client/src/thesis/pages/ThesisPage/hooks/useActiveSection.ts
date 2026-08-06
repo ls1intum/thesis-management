@@ -1,13 +1,44 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+
+// Keys that scroll the page — a keydown from one of these counts as the user
+// taking over navigation and releases a click lock (see below). Plain typing in
+// an input must not release it, so unrelated keys are ignored.
+const SCROLL_KEYS = new Set([
+  'ArrowUp',
+  'ArrowDown',
+  'PageUp',
+  'PageDown',
+  'Home',
+  'End',
+  ' ',
+  'Spacebar',
+])
 
 /**
  * Tracks which of the given section anchor ids is currently in view. Uses
  * IntersectionObserver with a top offset so a section counts as "active" once
  * it scrolls above the sticky navbar rather than only when centered.
+ *
+ * Returns the active id plus a `setActiveSection` setter. Call the setter when
+ * the user clicks a nav item: it highlights that section immediately and locks
+ * the scroll spy so it can't snap the highlight back. Without the lock, clicking
+ * a nav item on a short/collapsed page (where the target can't scroll all the
+ * way to the top) would leave whatever sits at the top — usually "Overview" —
+ * highlighted, which is misleading. The lock is released as soon as the user
+ * scrolls the page themselves, after which the scroll spy resumes tracking.
  */
-export function useActiveSection(sectionIds: string[], topOffset = 100): string | null {
+export function useActiveSection(
+  sectionIds: string[],
+  topOffset = 100,
+): [string | null, (id: string) => void] {
   const [activeId, setActiveId] = useState<string | null>(sectionIds[0] ?? null)
   const key = sectionIds.join('|')
+  const lockedRef = useRef(false)
+
+  const setActiveSection = useCallback((id: string) => {
+    lockedRef.current = true
+    setActiveId(id)
+  }, [])
 
   useEffect(() => {
     if (sectionIds.length === 0) {
@@ -44,6 +75,12 @@ export function useActiveSection(sectionIds: string[], topOffset = 100): string 
     }
 
     const pickActive = () => {
+      // A click lock pins the highlight to the user's chosen section until they
+      // scroll the page themselves, so don't override it here.
+      if (lockedRef.current) {
+        return
+      }
+
       if (isScrolledToBottom()) {
         setActiveId(elements[elements.length - 1].id)
         return
@@ -84,12 +121,32 @@ export function useActiveSection(sectionIds: string[], topOffset = 100): string 
     const onScroll = () => pickActive()
     window.addEventListener('scroll', onScroll, { passive: true, capture: true })
 
+    // A genuine user-initiated scroll releases the click lock so the scroll spy
+    // resumes tracking the real scroll position.
+    const releaseLock = () => {
+      if (lockedRef.current) {
+        lockedRef.current = false
+        pickActive()
+      }
+    }
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (SCROLL_KEYS.has(event.key)) {
+        releaseLock()
+      }
+    }
+    window.addEventListener('wheel', releaseLock, { passive: true, capture: true })
+    window.addEventListener('touchmove', releaseLock, { passive: true, capture: true })
+    window.addEventListener('keydown', onKeyDown, { passive: true, capture: true })
+
     return () => {
       observer.disconnect()
       window.removeEventListener('scroll', onScroll, true)
+      window.removeEventListener('wheel', releaseLock, true)
+      window.removeEventListener('touchmove', releaseLock, true)
+      window.removeEventListener('keydown', onKeyDown, true)
     }
     // eslint-disable-next-line @eslint-react/exhaustive-deps -- `key` (joined ids) captures the array identity
   }, [key, topOffset])
 
-  return activeId
+  return [activeId, setActiveSection]
 }

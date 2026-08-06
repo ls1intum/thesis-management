@@ -40,7 +40,7 @@ const scrollToSection = (id: string) => {
 const ThesisProcessNav = ({ steps }: IThesisProcessNavProps) => {
   const theme = useMantineTheme()
   const headerOffset = getAppShellHeaderOffset()
-  const activeId = useActiveSection(
+  const [activeId, setActiveSection] = useActiveSection(
     steps.map((s) => s.id),
     headerOffset + 60,
   )
@@ -126,7 +126,10 @@ const ThesisProcessNav = ({ steps }: IThesisProcessNavProps) => {
                   />
                 )}
                 <UnstyledButton
-                  onClick={() => scrollToSection(step.id)}
+                  onClick={() => {
+                    setActiveSection(step.id)
+                    scrollToSection(step.id)
+                  }}
                   style={pillStyle}
                   aria-current={active ? 'step' : undefined}
                 >
