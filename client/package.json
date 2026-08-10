@@ -46,7 +46,7 @@
     "@mantine/core": "9.4.1",
     "@mantine/dates": "9.4.1",
     "@mantine/dropzone": "9.4.1",
-    "@mantine/form": "9.4.1",
+    "@mantine/form": "9.5.1",
     "@mantine/hooks": "9.4.1",
     "@mantine/notifications": "9.4.1",
     "@mantine/tiptap": "9.4.1",
