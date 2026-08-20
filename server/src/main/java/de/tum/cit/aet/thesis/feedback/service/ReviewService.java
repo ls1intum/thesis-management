@@ -21,6 +21,7 @@ import jakarta.annotation.PreDestroy;
 
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -173,7 +174,7 @@ public class ReviewService {
 		if (model == null || model.isBlank()) {
 			return false;
 		}
-		String lower = model.toLowerCase();
+		String lower = model.toLowerCase(Locale.ROOT);
 		return VISION_MODEL_KEYWORDS.stream().anyMatch(lower::contains);
 	}
 }
