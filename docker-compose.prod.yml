@@ -65,6 +65,9 @@ services:
       - KEYCLOAK_SERVICE_CLIENT_ID
       - KEYCLOAK_SERVICE_CLIENT_SECRET
       - MAIL_SENDER
+      # Shared with the client below: gates the AI feedback module. Both services must agree,
+      # otherwise the client shows AI buttons the server answers with 404 (or vice versa).
+      - AI_FEATURES_ENABLED
     networks:
       - thesis-management-network
 
@@ -91,6 +94,9 @@ services:
       - PASSKEY_RP_NAME
       - PASSKEY_PROMPT_APPS
       - ALLOW_SUGGESTED_TOPICS
+      # Shared with the server above: must match so AI buttons are only shown when the
+      # server actually serves the /v2/ai-review endpoints.
+      - AI_FEATURES_ENABLED
       - THESIS_TYPES
       - STUDY_PROGRAMS
       - STUDY_DEGREES
