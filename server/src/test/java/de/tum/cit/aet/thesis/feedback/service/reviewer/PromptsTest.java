@@ -2,7 +2,6 @@ package de.tum.cit.aet.thesis.feedback.service.reviewer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
@@ -30,10 +29,9 @@ public class PromptsTest {
 	@Test
 	void everyPromptHasBothVariants() {
 		for (Prompts prompt : Prompts.values()) {
-			assertNotNull(prompt.getPrompt(ReviewType.PROPOSAL), "Proposal variant missing for " + prompt);
-			assertNotNull(prompt.getPrompt(ReviewType.THESIS), "Thesis variant missing for " + prompt);
-			assertThat(prompt.getPrompt(ReviewType.PROPOSAL)).isNotBlank();
-			assertThat(prompt.getPrompt(ReviewType.THESIS)).isNotBlank();
+			// isNotBlank() already fails on null, so it covers the "variant missing" case too.
+			assertThat(prompt.getPrompt(ReviewType.PROPOSAL)).as("Proposal variant for %s", prompt).isNotBlank();
+			assertThat(prompt.getPrompt(ReviewType.THESIS)).as("Thesis variant for %s", prompt).isNotBlank();
 		}
 	}
 }
