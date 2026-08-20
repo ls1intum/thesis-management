@@ -9,7 +9,7 @@ plugins {
 	id "io.spring.dependency-management" version "1.1.7"
 	id "com.github.ben-manes.versions" version "0.54.0"
 	id "com.diffplug.spotless" version "8.8.0"
-	id "org.cyclonedx.bom" version "3.2.4"
+	id "org.cyclonedx.bom" version "3.3.0"
 }
 
 group = "de.tum.cit.aet.thesis"
@@ -45,6 +45,14 @@ java {
 repositories {
 	mavenCentral()
 }
+
+// Override Spring Boot's managed Jackson 2 BOM (default 2.21.4) up to 2.22.1.
+// iText 9.7.1 requests jackson-databind 2.22.1 to fix CVE-2026-54515, but the
+// Spring Boot 4.1.0 BOM otherwise constrains Jackson 2.x back down to the
+// vulnerable 2.21.4 on the runtime classpath. Bumping the BOM property lets the
+// patched release resolve. Verify with:
+//   ./gradlew dependencyInsight --dependency jackson-databind --configuration runtimeClasspath
+ext['jackson-2-bom.version'] = '2.22.1'
 
 // Exclude Jackson 2.x databind from compile classpath to prevent accidental usage.
 // Jackson 3.x (tools.jackson) is the primary Jackson version in Spring Boot 4.x.
@@ -84,9 +92,9 @@ dependencies {
 
 	implementation "commons-io:commons-io:2.22.0"
 	implementation "org.mnode.ical4j:ical4j:4.3.0"
-	implementation "com.itextpdf:itext-core:9.6.0"
-	implementation "com.itextpdf:html2pdf:6.3.2"
-	implementation "com.auth0:java-jwt:4.5.2"
+	implementation "com.itextpdf:itext-core:9.7.1"
+	implementation "com.itextpdf:html2pdf:6.3.3"
+	implementation "com.auth0:java-jwt:4.6.0"
 
 	// Use the latest version of commons-lang3 to avoid security issues
 	implementation "org.apache.commons:commons-lang3:${commons_lang3_version}"
@@ -119,9 +127,9 @@ dependencies {
 	testImplementation "org.testcontainers:testcontainers-database-commons:${test_container_version}"
 	testImplementation "org.testcontainers:testcontainers-postgresql:${test_container_version}"
 
-	testImplementation "com.github.dasniko:testcontainers-keycloak:4.2.1"
+	testImplementation "com.github.dasniko:testcontainers-keycloak:4.3.1"
 
-	testImplementation "com.icegreen:greenmail-junit5:2.1.9"
+	testImplementation "com.icegreen:greenmail-junit5:2.1.11"
 	testImplementation "org.wiremock:wiremock-standalone:3.13.2"
 
 	testImplementation "org.junit.jupiter:junit-jupiter:${junit_version}"

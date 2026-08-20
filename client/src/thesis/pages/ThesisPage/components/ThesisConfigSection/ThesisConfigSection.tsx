@@ -311,6 +311,7 @@ const ThesisConfigSection = () => {
     })
 
     if (response.ok) {
+      void navigate(`/theses/${thesis.thesisId}`)
       return response.data
     } else {
       throw new ApiError(response)
@@ -331,6 +332,7 @@ const ThesisConfigSection = () => {
             label='Thesis Type'
             required={true}
             disabled={!access.supervisor}
+            maw={360}
             data={Object.keys(GLOBAL_CONFIG.thesis_types).map((key) => ({
               value: key,
               label: formatThesisType(key),
@@ -340,12 +342,14 @@ const ThesisConfigSection = () => {
           <LanguageSelect
             label='Thesis Language'
             required={true}
+            maw={360}
             {...form.getInputProps('language')}
           />
           <ThesisVisibilitySelect
             label='Visibility'
             required={true}
             disabled={!access.supervisor}
+            maw={360}
             {...form.getInputProps('visibility')}
           />
           <TagsInput
@@ -399,6 +403,7 @@ const ThesisConfigSection = () => {
             <Select
               label='Research Group'
               required
+              maw={360}
               nothingFoundMessage={'Nothing found...'}
               data={(researchGroups?.content ?? []).map((researchGroup: ILightResearchGroup) => ({
                 label: researchGroup.name,
@@ -411,6 +416,7 @@ const ThesisConfigSection = () => {
               label='Research Group'
               description="Only administrators can change a thesis's research group."
               disabled
+              maw={360}
               value={thesis.researchGroup?.name ?? ''}
             />
           )}
