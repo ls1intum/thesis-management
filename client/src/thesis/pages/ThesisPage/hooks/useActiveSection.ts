@@ -85,19 +85,18 @@ export function useActiveSection(
     const getVerticalScroll = () => window.scrollY + (scrollAncestor?.scrollTop ?? 0)
 
     const isScrolledToBottom = () => {
-      // Handles both window scrolling and any scrollable ancestor with fixed height.
-      const doc = document.documentElement
-      const winBottom = Math.ceil(window.innerHeight + window.scrollY) >= doc.scrollHeight - 2
-      if (winBottom) {
-        return true
-      }
+      // When an ancestor is the scroll container, the window itself usually
+      // doesn't overflow, so its bottom check reads as permanently true — check
+      // the ancestor exclusively and only fall back to the window when there's
+      // no scroll ancestor.
       if (scrollAncestor) {
         return (
           Math.ceil(scrollAncestor.scrollTop + scrollAncestor.clientHeight) >=
           scrollAncestor.scrollHeight - 2
         )
       }
-      return false
+      const doc = document.documentElement
+      return Math.ceil(window.innerHeight + window.scrollY) >= doc.scrollHeight - 2
     }
 
     const pickActive = () => {
