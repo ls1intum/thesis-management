@@ -28,12 +28,25 @@ const scrollToSection = (id: string) => {
   if (!el) {
     return
   }
-  // Open any collapsed accordion controls inside this section so the panel is
-  // visible once the user lands on it — otherwise a nav click can scroll to a
-  // section whose body is still hidden.
+  // Reveal a collapsed accordion so the user doesn't land on a section whose
+  // body is still hidden — but only when the accordion is *fully* collapsed.
+  // In a single-select accordion one item is already open, so clicking a closed
+  // control there would merely toggle the open sibling shut (e.g. flipping the
+  // Files/Comments panels in the Writing section on every nav click).
   el.querySelectorAll<HTMLButtonElement>(
     'button.mantine-Accordion-control[aria-expanded="false"]',
-  ).forEach((btn) => btn.click())
+  ).forEach((btn) => {
+    const root = btn.closest('.mantine-Accordion-item')?.parentElement
+    const siblingHasOpenPanel = root
+      ? Array.from(root.children)
+          .filter((child) => child.classList.contains('mantine-Accordion-item'))
+          .map((item) => item.querySelector('.mantine-Accordion-control'))
+          .some((control) => control?.getAttribute('aria-expanded') === 'true')
+      : false
+    if (!siblingHasOpenPanel) {
+      btn.click()
+    }
+  })
   el.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 
