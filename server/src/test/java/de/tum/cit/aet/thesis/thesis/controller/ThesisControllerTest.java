@@ -75,6 +75,9 @@ class ThesisControllerTest extends BaseIntegrationTest {
 	@Autowired
 	private ThesisAssessmentRepository thesisAssessmentRepository;
 
+	@Autowired
+	private de.tum.cit.aet.thesis.core.security.AiPreviewTokenService aiPreviewTokenService;
+
 	@Nested
 	class ThesisBasicOperations {
 		@Test
@@ -453,19 +456,18 @@ class ThesisControllerTest extends BaseIntegrationTest {
 		}
 
 		@Test
-		void requestChanges_persistsPerEntrySource() throws Exception {
-			UUID thesisId = createTestThesis("Mixed feedback thesis");
+		void requestChanges_recordsHumanWhenPreviewTokenMissingOrForged() throws Exception {
+			UUID thesisId = createTestThesis("Forged provenance thesis");
 
-			// A single batch mixing a manually typed row (no source -> HUMAN) with an AI draft the
-			// instructor reviewed (AI_REVIEWED_BY_HUMAN). Each row must keep its own provenance.
+			// A client cannot pick the provenance. A row with no token and a row carrying a bogus
+			// (unsigned) token must both be recorded as HUMAN — no AI label can be forged.
 			RequestChangesPayload payload = new RequestChangesPayload(
 					ThesisFeedbackType.THESIS,
 					List.of(
 							new RequestChangesPayload.RequestedChange(
 									"Manually typed feedback", false, null, null, null),
 							new RequestChangesPayload.RequestedChange(
-									"AI-drafted feedback", false, null, null,
-									ThesisFeedbackSource.AI_REVIEWED_BY_HUMAN)
+									"Forged AI feedback", false, null, null, "not-a-real-token")
 					)
 			);
 
@@ -475,14 +477,55 @@ class ThesisControllerTest extends BaseIntegrationTest {
 							.content(objectMapper.writeValueAsString(payload)))
 					.andExpect(status().isOk());
 
-			Thesis thesis = thesisRepository.findById(thesisId).orElseThrow();
-			assertThat(thesis.getFeedback())
+			assertThat(thesisFeedbackRepository.findAll())
 					.extracting(f -> f.getFeedback(), f -> f.getGenerationSource())
 					.containsExactlyInAnyOrder(
 							org.assertj.core.groups.Tuple.tuple(
 									"Manually typed feedback", ThesisFeedbackSource.HUMAN),
 							org.assertj.core.groups.Tuple.tuple(
-									"AI-drafted feedback", ThesisFeedbackSource.AI_REVIEWED_BY_HUMAN));
+									"Forged AI feedback", ThesisFeedbackSource.HUMAN));
+		}
+
+		@Test
+		void requestChanges_recordsAiReviewedOnlyForValidPreviewToken() throws Exception {
+			TestUser reviewer = createRandomTestUser(List.of("admin"));
+			String reviewerAuth = generateTestAuthenticationHeader(
+					reviewer.universityId(), List.of("admin"));
+			UUID thesisId = createTestThesis("Valid AI provenance thesis");
+
+			// A genuine, server-issued token for this reviewer + thesis upgrades the row to
+			// AI_REVIEWED_BY_HUMAN. A token issued for a different thesis must not — the binding is
+			// enforced — and a manual row stays HUMAN.
+			String validToken = aiPreviewTokenService.issueToken(thesisId, reviewer.userId());
+			String otherThesisToken = aiPreviewTokenService.issueToken(UUID.randomUUID(), reviewer.userId());
+
+			RequestChangesPayload payload = new RequestChangesPayload(
+					ThesisFeedbackType.THESIS,
+					List.of(
+							new RequestChangesPayload.RequestedChange(
+									"Manually typed feedback", false, null, null, null),
+							new RequestChangesPayload.RequestedChange(
+									"AI-drafted feedback", false, null, null, validToken),
+							new RequestChangesPayload.RequestedChange(
+									"AI feedback with wrong-thesis token", false, null, null, otherThesisToken)
+					)
+			);
+
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses/{thesisId}/feedback", thesisId)
+							.header("Authorization", reviewerAuth)
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(payload)))
+					.andExpect(status().isOk());
+
+			assertThat(thesisFeedbackRepository.findAll())
+					.extracting(f -> f.getFeedback(), f -> f.getGenerationSource())
+					.containsExactlyInAnyOrder(
+							org.assertj.core.groups.Tuple.tuple(
+									"Manually typed feedback", ThesisFeedbackSource.HUMAN),
+							org.assertj.core.groups.Tuple.tuple(
+									"AI-drafted feedback", ThesisFeedbackSource.AI_REVIEWED_BY_HUMAN),
+							org.assertj.core.groups.Tuple.tuple(
+									"AI feedback with wrong-thesis token", ThesisFeedbackSource.HUMAN));
 		}
 
 		@Test

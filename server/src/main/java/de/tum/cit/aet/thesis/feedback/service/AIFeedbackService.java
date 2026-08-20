@@ -48,10 +48,15 @@ public class AIFeedbackService {
 
 	private final ReviewService reviewService;
 	private final ThesisService thesisService;
+	private final de.tum.cit.aet.thesis.core.security.AiPreviewTokenService aiPreviewTokenService;
 
-	public AIFeedbackService(ReviewService reviewService, ThesisService thesisService) {
+	public AIFeedbackService(
+			ReviewService reviewService,
+			ThesisService thesisService,
+			de.tum.cit.aet.thesis.core.security.AiPreviewTokenService aiPreviewTokenService) {
 		this.reviewService = reviewService;
 		this.thesisService = thesisService;
+		this.aiPreviewTokenService = aiPreviewTokenService;
 	}
 
 	/**
@@ -72,7 +77,8 @@ public class AIFeedbackService {
 					false,
 					mapCategory(finding.category()),
 					mapSeverity(finding.severity()),
-					// Null → inherit the batch source (AI) passed to requestChanges below.
+					// No preview token: these rows are server-generated and inherit the batch
+					// source (AI) passed to requestChanges below.
 					null
 			));
 		}
@@ -95,7 +101,7 @@ public class AIFeedbackService {
 	 * anything to the database. The instructor UI can then let the user tweak, accept, or drop
 	 * individual entries before persisting them.
 	 */
-	public AIPreviewResponseDTO previewReview(Thesis thesis, ReviewType reviewType) {
+	public AIPreviewResponseDTO previewReview(Thesis thesis, ReviewType reviewType, java.util.UUID reviewerId) {
 		Resource pdfResource = loadPdfResource(thesis, reviewType);
 		ReviewResultDTO result = reviewService.review(pdfResource, reviewType);
 
@@ -111,7 +117,11 @@ public class AIFeedbackService {
 				))
 				.toList();
 
-		return new AIPreviewResponseDTO(result.category(), result.summary(), drafts);
+		// Sign a proof that this preview really ran for this reviewer + thesis. The client echoes
+		// it back on save so accepted drafts can be trusted as AI_REVIEWED_BY_HUMAN.
+		String previewToken = aiPreviewTokenService.issueToken(thesis.getId(), reviewerId);
+
+		return new AIPreviewResponseDTO(result.category(), result.summary(), drafts, previewToken);
 	}
 
 	private Resource loadPdfResource(Thesis thesis, ReviewType reviewType) {

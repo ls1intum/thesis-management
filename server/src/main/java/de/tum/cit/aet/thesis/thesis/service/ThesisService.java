@@ -9,6 +9,7 @@ import de.tum.cit.aet.thesis.core.group.entity.ResearchGroup;
 import de.tum.cit.aet.thesis.core.group.entity.ResearchGroupSettings;
 import de.tum.cit.aet.thesis.core.group.repository.ResearchGroupRepository;
 import de.tum.cit.aet.thesis.core.group.service.ResearchGroupSettingsService;
+import de.tum.cit.aet.thesis.core.security.AiPreviewTokenService;
 import de.tum.cit.aet.thesis.core.security.CurrentUserProvider;
 import de.tum.cit.aet.thesis.core.upload.constants.UploadFileType;
 import de.tum.cit.aet.thesis.core.upload.service.UploadService;
@@ -90,6 +91,7 @@ public class ThesisService {
 	private final ResearchGroupSettingsService researchGroupSettingsService;
 	private final UserService userService;
 	private final AbstractAutoFillService abstractAutoFillService;
+	private final AiPreviewTokenService aiPreviewTokenService;
 
 	@Value("${thesis-management.client.host}")
 	private String clientHost;
@@ -128,7 +130,8 @@ public class ThesisService {
 			ThesisFeedbackRepository thesisFeedbackRepository, ThesisFileRepository thesisFileRepository,
 			ObjectProvider<CurrentUserProvider> currentUserProviderProvider, ResearchGroupRepository researchGroupRepository, ResearchGroupSettingsService researchGroupSettingsService,
 			UserService userService,
-			AbstractAutoFillService abstractAutoFillService
+			AbstractAutoFillService abstractAutoFillService,
+			AiPreviewTokenService aiPreviewTokenService
 	) {
 		this.thesisRoleRepository = thesisRoleRepository;
 		this.thesisRepository = thesisRepository;
@@ -146,6 +149,7 @@ public class ThesisService {
 		this.researchGroupSettingsService = researchGroupSettingsService;
 		this.userService = userService;
 		this.abstractAutoFillService = abstractAutoFillService;
+		this.aiPreviewTokenService = aiPreviewTokenService;
 	}
 
 	private CurrentUserProvider currentUserProvider() {
@@ -556,20 +560,20 @@ public class ThesisService {
 		// is not versioned — its column stays null.
 		UUID documentVersionId = resolveLatestDocumentVersionId(thesis, type);
 
+		User currentUser = currentUserProvider().getUser();
+
 		for (var requestedChange : requestedChanges) {
 			ThesisFeedback feedback = new ThesisFeedback();
 
 			feedback.setRequestedAt(Instant.now());
-			feedback.setRequestedBy(currentUserProvider().getUser());
+			feedback.setRequestedBy(currentUser);
 			feedback.setThesis(thesis);
 			feedback.setType(type);
 			feedback.setFeedback(RequestValidator.validateStringMaxLength(requestedChange.feedback(), StringLimits.LONGTEXT.getLimit()));
 			feedback.setCompletedAt(requestedChange.completed() ? Instant.now() : null);
 			feedback.setCategory(requestedChange.category());
 			feedback.setSeverity(requestedChange.severity());
-			// Per-item source wins so a mixed batch can carry both manual (HUMAN) and AI-reviewed
-			// (AI_REVIEWED_BY_HUMAN) rows; fall back to the batch source when the item omits it.
-			feedback.setGenerationSource(requestedChange.source() != null ? requestedChange.source() : source);
+			feedback.setGenerationSource(resolveGenerationSource(requestedChange, thesis, currentUser, source));
 			feedback.setDocumentVersionId(documentVersionId);
 
 			feedback = thesisFeedbackRepository.save(feedback);
@@ -581,10 +585,33 @@ public class ThesisService {
 		if (type == ThesisFeedbackType.PROPOSAL && source != de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackSource.AI) {
 			// Only notify supervisors by email for human-initiated change requests. Auto AI
 			// runs happen on demand from the student and don't warrant an outgoing email.
-			mailingService.sendProposalChangeRequestEmail(currentUserProvider().getUser(), thesis);
+			mailingService.sendProposalChangeRequestEmail(currentUser, thesis);
 		}
 
 		return thesis;
+	}
+
+	/**
+	 * Determines the trustworthy provenance for a single feedback row. Provenance is <em>never</em>
+	 * taken from a client-chosen enum. Server-internal AI-auto batches keep their {@code AI} source.
+	 * For the instructor-facing manual batch, a row is stamped {@code AI_REVIEWED_BY_HUMAN} only when
+	 * it carries a valid, server-issued preview token bound to this thesis and user; otherwise it is
+	 * recorded as {@code HUMAN}, so a client cannot forge an AI label on hand-typed feedback.
+	 */
+	private de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackSource resolveGenerationSource(
+			RequestChangesPayload.RequestedChange requestedChange,
+			Thesis thesis,
+			User currentUser,
+			de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackSource batchSource) {
+		if (batchSource == de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackSource.AI) {
+			return de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackSource.AI;
+		}
+
+		boolean reviewedAiDraft = aiPreviewTokenService.isValid(
+				requestedChange.previewToken(), thesis.getId(), currentUser.getId());
+		return reviewedAiDraft
+				? de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackSource.AI_REVIEWED_BY_HUMAN
+				: de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackSource.HUMAN;
 	}
 
 	/**

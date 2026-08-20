@@ -92,7 +92,8 @@ public class ReviewController {
 					"You must be a supervisor on the thesis to preview AI feedback.");
 		}
 
-		AIPreviewResponseDTO response = aiFeedbackService.previewReview(thesis, request.reviewType());
+		AIPreviewResponseDTO response =
+				aiFeedbackService.previewReview(thesis, request.reviewType(), currentUser.getId());
 		return ResponseEntity.ok(response);
 	}
 

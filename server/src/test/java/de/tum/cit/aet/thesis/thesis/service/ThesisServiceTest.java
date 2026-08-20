@@ -79,6 +79,8 @@ class ThesisServiceTest {
 	private UserService userService;
 	@Mock
 	private AbstractAutoFillService abstractAutoFillService;
+	@Mock
+	private de.tum.cit.aet.thesis.core.security.AiPreviewTokenService aiPreviewTokenService;
 
 	private ThesisService thesisService;
 	private Thesis testThesis;
@@ -93,7 +95,7 @@ class ThesisServiceTest {
 				uploadService, mailingService, accessManagementService,
 				thesisFeedbackRepository, thesisFileRepository,
 				currentUserProviderProvider, researchGroupRepository, researchGroupSettingsService,
-				userService, abstractAutoFillService
+				userService, abstractAutoFillService, aiPreviewTokenService
 		);
 		when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
 
