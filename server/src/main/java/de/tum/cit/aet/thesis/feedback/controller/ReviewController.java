@@ -93,7 +93,7 @@ public class ReviewController {
 	 * the instructor can edit, delete, or accept each item before committing.
 	 *
 	 * @param request the thesis id and review type to run
-	 * @return the assessment, summary, editable drafts, and a signed preview token
+	 * @return the assessment, summary, and editable drafts
 	 */
 	@PostMapping("preview")
 	public ResponseEntity<AIPreviewResponseDTO> previewReview(@Valid @RequestBody AIReviewRequestDTO request) {
@@ -105,8 +105,7 @@ public class ReviewController {
 					"You must be a supervisor on the thesis to preview AI feedback.");
 		}
 
-		AIPreviewResponseDTO response =
-				aiFeedbackService.previewReview(thesis, request.reviewType(), currentUser.getId());
+		AIPreviewResponseDTO response = aiFeedbackService.previewReview(thesis, request.reviewType());
 		return ResponseEntity.ok(response);
 	}
 

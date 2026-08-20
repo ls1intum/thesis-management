@@ -48,22 +48,16 @@ public class AIFeedbackService {
 
 	private final ReviewService reviewService;
 	private final ThesisService thesisService;
-	private final de.tum.cit.aet.thesis.core.security.AiPreviewTokenService aiPreviewTokenService;
 
 	/**
 	 * Creates the AI feedback service.
 	 *
 	 * @param reviewService the pipeline that runs the LLM review over a PDF
 	 * @param thesisService the service used to load documents and persist feedback
-	 * @param aiPreviewTokenService issues the signed token proving a preview genuinely ran
 	 */
-	public AIFeedbackService(
-			ReviewService reviewService,
-			ThesisService thesisService,
-			de.tum.cit.aet.thesis.core.security.AiPreviewTokenService aiPreviewTokenService) {
+	public AIFeedbackService(ReviewService reviewService, ThesisService thesisService) {
 		this.reviewService = reviewService;
 		this.thesisService = thesisService;
-		this.aiPreviewTokenService = aiPreviewTokenService;
 	}
 
 	/**
@@ -86,8 +80,7 @@ public class AIFeedbackService {
 					false,
 					mapCategory(finding.category()),
 					mapSeverity(finding.severity()),
-					// No preview token: these rows are server-generated and inherit the batch
-					// source (AI) passed to requestChanges below.
+					// Null → inherit the batch source (AI) passed to requestChanges below.
 					null
 			));
 		}
@@ -112,10 +105,9 @@ public class AIFeedbackService {
 	 *
 	 * @param thesis the thesis whose uploaded document is reviewed
 	 * @param reviewType whether to review the proposal or the thesis document
-	 * @param reviewerId the id of the instructor running the preview, bound into the preview token
-	 * @return the assessment, summary, editable drafts, and a signed preview token
+	 * @return the assessment, summary, and editable drafts
 	 */
-	public AIPreviewResponseDTO previewReview(Thesis thesis, ReviewType reviewType, java.util.UUID reviewerId) {
+	public AIPreviewResponseDTO previewReview(Thesis thesis, ReviewType reviewType) {
 		Resource pdfResource = loadPdfResource(thesis, reviewType);
 		ReviewResultDTO result = reviewService.review(pdfResource, reviewType);
 
@@ -131,11 +123,7 @@ public class AIFeedbackService {
 				))
 				.toList();
 
-		// Sign a proof that this preview really ran for this reviewer + thesis. The client echoes
-		// it back on save so accepted drafts can be trusted as AI_REVIEWED_BY_HUMAN.
-		String previewToken = aiPreviewTokenService.issueToken(thesis.getId(), reviewerId);
-
-		return new AIPreviewResponseDTO(result.category(), result.summary(), drafts, previewToken);
+		return new AIPreviewResponseDTO(result.category(), result.summary(), drafts);
 	}
 
 	private Resource loadPdfResource(Thesis thesis, ReviewType reviewType) {

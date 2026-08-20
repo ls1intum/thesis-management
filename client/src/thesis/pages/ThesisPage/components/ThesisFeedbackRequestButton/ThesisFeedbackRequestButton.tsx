@@ -21,7 +21,11 @@ import {
 } from '@mantine/core'
 import { doRequest } from '@/core/requests/request'
 import type { IThesis } from '@/thesis/requests/responses/thesis'
-import { ThesisFeedbackCategory, ThesisFeedbackSeverity } from '@/thesis/requests/responses/thesis'
+import {
+  ThesisFeedbackCategory,
+  ThesisFeedbackSeverity,
+  ThesisFeedbackSource,
+} from '@/thesis/requests/responses/thesis'
 import { ApiError, getApiResponseErrorMessage } from '@/core/requests/handler'
 import { Plus, Robot, Trash } from '@phosphor-icons/react'
 import { showSimpleError } from '@/core/utils/notification'
@@ -36,10 +40,10 @@ interface INewEntry {
   feedback: string
   category: ThesisFeedbackCategory | ''
   severity: ThesisFeedbackSeverity | ''
-  // Whether this row originated from "Generate with AI" (an AI draft the instructor reviews before
-  // saving). On save these rows echo the preview token so the server can record them as
-  // AI_REVIEWED_BY_HUMAN; the client cannot set the provenance directly.
-  aiReviewed: boolean
+  // Provenance of this row. Manual rows are HUMAN; rows produced by "Generate with AI" are
+  // AI_REVIEWED_BY_HUMAN (an AI draft the instructor reviews before saving). Persisted so the
+  // feedback overview can badge AI-assisted entries correctly.
+  source: ThesisFeedbackSource
 }
 
 interface IAIDraft {
@@ -52,9 +56,6 @@ interface IAIPreviewResponse {
   assessment?: 'GOOD' | 'ACCEPTABLE' | 'NEEDS_WORK'
   summary?: string
   drafts?: IAIDraft[]
-  // Opaque, server-signed proof that the preview ran. Echoed back on save so accepted AI drafts
-  // are recorded as AI_REVIEWED_BY_HUMAN instead of HUMAN.
-  previewToken?: string
 }
 
 const CATEGORY_OPTIONS = Object.values(ThesisFeedbackCategory).map((value) => ({
@@ -85,7 +86,7 @@ const emptyEntry = (): INewEntry => ({
   feedback: '',
   category: '',
   severity: '',
-  aiReviewed: false,
+  source: ThesisFeedbackSource.HUMAN,
 })
 
 const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) => {
@@ -102,7 +103,6 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
     }>
   >([])
   const [aiAssessment, setAiAssessment] = useState<IAIPreviewResponse | null>(null)
-  const [previewToken, setPreviewToken] = useState<string | null>(null)
   const [aiLoading, setAiLoading] = useState(false)
   const [showDisregardChanges, setShowDisregardChanges] = useState(false)
 
@@ -111,7 +111,6 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
       setEntries([emptyEntry()])
       setEditChanges([])
       setAiAssessment(null)
-      setPreviewToken(null)
     }
   }, [opened])
 
@@ -141,9 +140,8 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
         feedback: draft.feedback ?? '',
         category: draft.category ?? '',
         severity: draft.severity ?? '',
-        // Marked AI-reviewed; the server confirms this via the preview token on save and then
-        // records the row as AI + Instructor (AI_REVIEWED_BY_HUMAN).
-        aiReviewed: true,
+        // AI-drafted rows the instructor reviews before saving are persisted as AI + Instructor.
+        source: ThesisFeedbackSource.AI_REVIEWED_BY_HUMAN,
       }))
       const merged = [...cleaned, ...newRows]
       return merged.length === 0 ? [emptyEntry()] : merged
@@ -166,7 +164,6 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
         const drafts = response.data.drafts ?? []
         appendAiDrafts(drafts)
         setAiAssessment(response.data)
-        setPreviewToken(response.data.previewToken ?? null)
       } else {
         showSimpleError(getApiResponseErrorMessage(response))
       }
@@ -196,9 +193,7 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
           completed: false,
           category: entry.category || null,
           severity: entry.severity || null,
-          // Only AI-reviewed rows carry the server-issued preview token; manual rows send none and
-          // are recorded as HUMAN. The client cannot set the provenance directly.
-          previewToken: entry.aiReviewed ? previewToken : null,
+          source: entry.source,
         })),
       },
     })

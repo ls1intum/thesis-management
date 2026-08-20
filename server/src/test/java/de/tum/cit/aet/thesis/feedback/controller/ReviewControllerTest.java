@@ -56,10 +56,8 @@ class ReviewControllerTest extends BaseIntegrationTest {
 				List.of(new AIFeedbackDraftDTO(
 						"Thin bibliography — increase to at least 6 peer-reviewed sources.",
 						ThesisFeedbackCategory.CITATION,
-						ThesisFeedbackSeverity.MAJOR)),
-				"signed-preview-token");
-		when(aiFeedbackService.previewReview(any(Thesis.class), any(ReviewType.class), any()))
-				.thenReturn(mockResponse);
+						ThesisFeedbackSeverity.MAJOR)));
+		when(aiFeedbackService.previewReview(any(Thesis.class), any(ReviewType.class))).thenReturn(mockResponse);
 
 		String body = "{\"thesisId\":\"" + thesisId + "\",\"reviewType\":\"PROPOSAL\"}";
 		mockMvc.perform(post("/v2/ai-review/preview")
@@ -70,10 +68,9 @@ class ReviewControllerTest extends BaseIntegrationTest {
 				.andExpect(jsonPath("$.assessment").value("ACCEPTABLE"))
 				.andExpect(jsonPath("$.summary").value("Solid overall but bibliography is thin."))
 				.andExpect(jsonPath("$.drafts[0].category").value("CITATION"))
-				.andExpect(jsonPath("$.drafts[0].severity").value("MAJOR"))
-				.andExpect(jsonPath("$.previewToken").value("signed-preview-token"));
+				.andExpect(jsonPath("$.drafts[0].severity").value("MAJOR"));
 
-		verify(aiFeedbackService).previewReview(any(Thesis.class), any(ReviewType.class), any());
+		verify(aiFeedbackService).previewReview(any(Thesis.class), any(ReviewType.class));
 	}
 
 	@Test
