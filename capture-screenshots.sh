@@ -173,9 +173,24 @@ fi
 # Same production-bundle strategy as e2e: it eliminates the dev overlay that
 # occasionally intercepts pointer events, so screenshots stay clean.
 
+need_client_start=1
 if is_port_open 3100; then
-  log "Client already running on port 3100 — reusing it."
-else
+  # A client is already listening. Only reuse it when it was built with AI features enabled —
+  # staff-19-request-changes-ai-drafts needs the "Generate with AI" button, which the client
+  # renders only when AI_FEATURES_ENABLED=true. The generated runtime-env.js carries that flag,
+  # so probe it; if AI is not confirmed, restart the client with the required environment rather
+  # than capturing against an incompatible build.
+  if curl -sf "http://localhost:3100/runtime-env.js" 2>/dev/null | grep -q '"AI_FEATURES_ENABLED":"true"'; then
+    log "Client already running on port 3100 with AI features enabled — reusing it."
+    need_client_start=0
+  else
+    warn "Client on port 3100 was not built with AI_FEATURES_ENABLED=true — restarting it so AI screenshots render..."
+    kill_pid "client"
+    wait_for_port_release 3100
+  fi
+fi
+
+if [[ "$need_client_start" == "1" ]]; then
   # The AI feedback screenshot scenes mock the endpoints but still need the buttons rendered,
   # which the client only does when AI features are enabled (matching the dev server profile).
   export AI_FEATURES_ENABLED=true
