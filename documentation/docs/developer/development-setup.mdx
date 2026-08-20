@@ -163,7 +163,7 @@ The AI feedback module runs an LLM review over an uploaded proposal or thesis PD
 
 Two endpoints are exposed by `ReviewController`:
 
-- `POST /v2/ai-review/auto` — body: `{ thesisId, reviewType }` (`PROPOSAL` or `THESIS`). Runs the pipeline against the thesis's latest uploaded document, persists each finding as a `ThesisFeedback` row with `generation_source = AI`, and returns the refreshed `ThesisDto`. Students, supervisors, and examiners on the thesis may call it; other users get `403`.
+- `POST /v2/ai-review/auto` — body: `{ thesisId, reviewType }` (`PROPOSAL` or `THESIS`). Runs the pipeline against the thesis's latest uploaded document, persists each finding as a `ThesisFeedback` row with `generation_source = AI`, and returns the refreshed `ThesisDto`. Students, supervisors, and examiners on the thesis may call it; other users get `403`. Students may only request the review that matches the thesis's current phase — `PROPOSAL` while the thesis is in the proposal phase and `THESIS` while it is in writing (any other phase or a mismatched type is rejected with `400`). Supervisors and examiners can override this and run either review type in any phase.
 - `POST /v2/ai-review/preview` — same body. Runs the pipeline and returns an `AIPreviewResponseDTO` (overall assessment + summary + editable drafts) **without saving anything**. Restricted to users with supervisor access on the thesis (`hasSupervisorAccess`), i.e. its supervisors and examiners plus admins; students and other users get `403`.
 
 **Pipeline shape**
@@ -172,7 +172,7 @@ Two endpoints are exposed by `ReviewController`:
 2. `PdfService` extracts per-page text and (optionally) rendered page images.
 3. `ReviewService` fans out one LLM call per `ReviewCategory` on a virtual-thread executor, then invokes a final "merger" prompt to deduplicate and rank the findings.
 4. Prompts branch per `ReviewType`. Proposal prompts check things like the proposal-specific section structure and schedule; thesis prompts check chapter structure, evaluation rigor, and reproducibility.
-5. Findings are collapsed into a single feedback string (bold title, description, first location hint) with the AI category/severity preserved in dedicated columns. Every row is pinned to `document_version_id` — the id of the proposal/thesis file that was reviewed — so later uploads never silently re-target older AI comments.
+5. Findings are collapsed into a single feedback string (plain title, description, first location hint) with the AI category/severity preserved in dedicated columns. Every row is pinned to `document_version_id` — the id of the proposal/thesis file that was reviewed — so later uploads never silently re-target older AI comments.
 
 **Configuration**
 
