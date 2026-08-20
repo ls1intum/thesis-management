@@ -1,11 +1,14 @@
 package de.tum.cit.aet.thesis.feedback.controller;
 
+import de.tum.cit.aet.thesis.core.exception.request.ResourceInvalidParametersException;
 import de.tum.cit.aet.thesis.core.security.CurrentUserProvider;
 import de.tum.cit.aet.thesis.core.user.entity.User;
 import de.tum.cit.aet.thesis.feedback.config.AIFeaturesEnabled;
 import de.tum.cit.aet.thesis.feedback.dto.AIPreviewResponseDTO;
 import de.tum.cit.aet.thesis.feedback.dto.AIReviewRequestDTO;
 import de.tum.cit.aet.thesis.feedback.service.AIFeedbackService;
+import de.tum.cit.aet.thesis.feedback.service.reviewer.ReviewType;
+import de.tum.cit.aet.thesis.thesis.constants.ThesisState;
 import de.tum.cit.aet.thesis.thesis.dto.ThesisDto;
 import de.tum.cit.aet.thesis.thesis.entity.Thesis;
 import de.tum.cit.aet.thesis.thesis.service.ThesisService;
@@ -52,9 +55,17 @@ public class ReviewController {
 		Thesis thesis = thesisService.findById(request.thesisId());
 
 		// Both the student on the thesis and any supervisor may trigger the auto flow.
-		if (!thesis.hasStudentAccess(currentUser) && !thesis.hasSupervisorAccess(currentUser)) {
+		boolean supervisorAccess = thesis.hasSupervisorAccess(currentUser);
+		if (!thesis.hasStudentAccess(currentUser) && !supervisorAccess) {
 			throw new AccessDeniedException(
 					"You must be a student or supervisor on the thesis to run an AI review.");
+		}
+
+		// Students may only run the review that matches the thesis's current phase: a PROPOSAL
+		// review during the proposal phase, a THESIS review during writing. Supervisors keep an
+		// explicit override so they can, e.g., re-run a proposal review after writing has begun.
+		if (!supervisorAccess) {
+			assertReviewTypeMatchesPhase(thesis, request.reviewType());
 		}
 
 		aiFeedbackService.assertHasDocument(thesis, request.reviewType());
@@ -83,6 +94,31 @@ public class ReviewController {
 
 		AIPreviewResponseDTO response = aiFeedbackService.previewReview(thesis, request.reviewType());
 		return ResponseEntity.ok(response);
+	}
+
+	/**
+	 * Rejects a student-triggered review whose type does not match the thesis's current phase.
+	 * The proposal phase only accepts {@link ReviewType#PROPOSAL} reviews and the writing phase
+	 * only {@link ReviewType#THESIS} reviews; every other state has no student review at all.
+	 */
+	private static void assertReviewTypeMatchesPhase(Thesis thesis, ReviewType reviewType) {
+		ThesisState state = thesis.getState();
+		ReviewType allowed = switch (state) {
+			case PROPOSAL -> ReviewType.PROPOSAL;
+			case WRITING -> ReviewType.THESIS;
+			default -> null;
+		};
+
+		if (allowed == null) {
+			throw new ResourceInvalidParametersException(
+					"AI reviews can only be run while the thesis is in the proposal or writing phase.");
+		}
+
+		if (reviewType != allowed) {
+			throw new ResourceInvalidParametersException(
+					"A " + reviewType + " review cannot be run while the thesis is in the "
+							+ state + " phase.");
+		}
 	}
 
 	private CurrentUserProvider currentUserProvider() {

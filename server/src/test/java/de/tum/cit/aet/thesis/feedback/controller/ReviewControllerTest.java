@@ -1,6 +1,7 @@
 package de.tum.cit.aet.thesis.feedback.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -15,9 +16,12 @@ import de.tum.cit.aet.thesis.feedback.service.reviewer.ReviewType;
 import de.tum.cit.aet.thesis.mock.BaseIntegrationTest;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackCategory;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackSeverity;
+import de.tum.cit.aet.thesis.thesis.constants.ThesisState;
 import de.tum.cit.aet.thesis.thesis.entity.Thesis;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.TestPropertySource;
@@ -38,6 +42,9 @@ class ReviewControllerTest extends BaseIntegrationTest {
 
 	@MockitoBean
 	private AIFeedbackService aiFeedbackService;
+
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
 
 	@Test
 	void preview_returnsMockedDraftsForSupervisor() throws Exception {
@@ -106,5 +113,120 @@ class ReviewControllerTest extends BaseIntegrationTest {
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(body))
 				.andExpect(status().isUnauthorized());
+	}
+
+	@Test
+	void auto_rejectsThesisReviewFromStudentDuringProposalPhase() throws Exception {
+		UUID thesisId = createTestThesis("AI review proposal-phase gate test");
+		setThesisState(thesisId, ThesisState.PROPOSAL);
+		TestUser student = addThesisRole(thesisId, "STUDENT", "student");
+
+		String body = "{\"thesisId\":\"" + thesisId + "\",\"reviewType\":\"THESIS\"}";
+		mockMvc.perform(post("/v2/ai-review/auto")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(body)
+						.header("Authorization", authFor(student, "student")))
+				.andExpect(status().isBadRequest());
+
+		// The wrong-phase request must be rejected before the review pipeline runs.
+		verify(aiFeedbackService, never()).autoReviewAndSave(any(Thesis.class), any(ReviewType.class));
+	}
+
+	@Test
+	void auto_rejectsProposalReviewFromStudentDuringWritingPhase() throws Exception {
+		UUID thesisId = createTestThesis("AI review writing-phase gate test");
+		setThesisState(thesisId, ThesisState.WRITING);
+		TestUser student = addThesisRole(thesisId, "STUDENT", "student");
+
+		String body = "{\"thesisId\":\"" + thesisId + "\",\"reviewType\":\"PROPOSAL\"}";
+		mockMvc.perform(post("/v2/ai-review/auto")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(body)
+						.header("Authorization", authFor(student, "student")))
+				.andExpect(status().isBadRequest());
+
+		verify(aiFeedbackService, never()).autoReviewAndSave(any(Thesis.class), any(ReviewType.class));
+	}
+
+	@Test
+	void auto_rejectsStudentReviewOutsideProposalAndWritingPhases() throws Exception {
+		UUID thesisId = createTestThesis("AI review submitted-phase gate test");
+		setThesisState(thesisId, ThesisState.SUBMITTED);
+		TestUser student = addThesisRole(thesisId, "STUDENT", "student");
+
+		String body = "{\"thesisId\":\"" + thesisId + "\",\"reviewType\":\"THESIS\"}";
+		mockMvc.perform(post("/v2/ai-review/auto")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(body)
+						.header("Authorization", authFor(student, "student")))
+				.andExpect(status().isBadRequest());
+
+		verify(aiFeedbackService, never()).autoReviewAndSave(any(Thesis.class), any(ReviewType.class));
+	}
+
+	@Test
+	void auto_allowsMatchingProposalReviewFromStudentDuringProposalPhase() throws Exception {
+		UUID thesisId = createTestThesis("AI review matching-phase test");
+		setThesisState(thesisId, ThesisState.PROPOSAL);
+		TestUser student = addThesisRole(thesisId, "STUDENT", "student");
+		when(aiFeedbackService.autoReviewAndSave(any(Thesis.class), any(ReviewType.class)))
+				.thenAnswer(invocation -> invocation.getArgument(0, Thesis.class));
+
+		String body = "{\"thesisId\":\"" + thesisId + "\",\"reviewType\":\"PROPOSAL\"}";
+		mockMvc.perform(post("/v2/ai-review/auto")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(body)
+						.header("Authorization", authFor(student, "student")))
+				.andExpect(status().isOk());
+
+		verify(aiFeedbackService).autoReviewAndSave(any(Thesis.class), any(ReviewType.class));
+	}
+
+	@Test
+	void auto_allowsSupervisorToOverridePhaseGate() throws Exception {
+		UUID thesisId = createTestThesis("AI review supervisor-override test");
+		setThesisState(thesisId, ThesisState.PROPOSAL);
+		// A supervisor (advisor group + SUPERVISOR role) may run a THESIS review even while the
+		// thesis is still in the proposal phase — the phase gate only constrains students.
+		TestUser supervisor = addThesisRole(thesisId, "SUPERVISOR", "advisor");
+		when(aiFeedbackService.autoReviewAndSave(any(Thesis.class), any(ReviewType.class)))
+				.thenAnswer(invocation -> invocation.getArgument(0, Thesis.class));
+
+		String body = "{\"thesisId\":\"" + thesisId + "\",\"reviewType\":\"THESIS\"}";
+		mockMvc.perform(post("/v2/ai-review/auto")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(body)
+						.header("Authorization", authFor(supervisor, "advisor")))
+				.andExpect(status().isOk());
+
+		verify(aiFeedbackService).autoReviewAndSave(any(Thesis.class), any(ReviewType.class));
+	}
+
+	/**
+	 * Creates a fresh user with the given group, grants them the given thesis role, and puts them
+	 * in the thesis's research group so research-group scoping does not reject their request.
+	 */
+	private TestUser addThesisRole(UUID thesisId, String role, String group) throws Exception {
+		TestUser user = createRandomTestUser(List.of(group));
+		jdbcTemplate.update(
+				"INSERT INTO thesis_roles (thesis_id, user_id, role, position, assigned_at, assigned_by) "
+						+ "VALUES (?::uuid, ?::uuid, ?, 0, NOW(), ?::uuid)",
+				thesisId.toString(), user.userId().toString(), role, user.userId().toString());
+		jdbcTemplate.update(
+				"UPDATE users SET research_group_id = "
+						+ "(SELECT research_group_id FROM theses WHERE thesis_id = ?::uuid) "
+						+ "WHERE user_id = ?::uuid",
+				thesisId.toString(), user.userId().toString());
+		return user;
+	}
+
+	private void setThesisState(UUID thesisId, ThesisState state) {
+		jdbcTemplate.update(
+				"UPDATE theses SET state = ? WHERE thesis_id = ?::uuid",
+				state.getValue(), thesisId.toString());
+	}
+
+	private String authFor(TestUser user, String role) {
+		return generateTestAuthenticationHeader(user.universityId(), List.of(role));
 	}
 }
