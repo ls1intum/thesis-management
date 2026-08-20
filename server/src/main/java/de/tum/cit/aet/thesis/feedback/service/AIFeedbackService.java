@@ -50,6 +50,13 @@ public class AIFeedbackService {
 	private final ThesisService thesisService;
 	private final de.tum.cit.aet.thesis.core.security.AiPreviewTokenService aiPreviewTokenService;
 
+	/**
+	 * Creates the AI feedback service.
+	 *
+	 * @param reviewService the pipeline that runs the LLM review over a PDF
+	 * @param thesisService the service used to load documents and persist feedback
+	 * @param aiPreviewTokenService issues the signed token proving a preview genuinely ran
+	 */
 	public AIFeedbackService(
 			ReviewService reviewService,
 			ThesisService thesisService,
@@ -64,6 +71,8 @@ public class AIFeedbackService {
 	 * with {@code generationSource = AI}. Access control is delegated to the caller (typically
 	 * the controller, which enforces student/supervisor access based on the review type).
 	 *
+	 * @param thesis the thesis whose uploaded document is reviewed
+	 * @param reviewType whether to review the proposal or the thesis document
 	 * @return the updated thesis with the new feedback rows attached
 	 */
 	public Thesis autoReviewAndSave(Thesis thesis, ReviewType reviewType) {
@@ -100,6 +109,11 @@ public class AIFeedbackService {
 	 * Runs the AI review pipeline and returns the findings as editable drafts without saving
 	 * anything to the database. The instructor UI can then let the user tweak, accept, or drop
 	 * individual entries before persisting them.
+	 *
+	 * @param thesis the thesis whose uploaded document is reviewed
+	 * @param reviewType whether to review the proposal or the thesis document
+	 * @param reviewerId the id of the instructor running the preview, bound into the preview token
+	 * @return the assessment, summary, editable drafts, and a signed preview token
 	 */
 	public AIPreviewResponseDTO previewReview(Thesis thesis, ReviewType reviewType, java.util.UUID reviewerId) {
 		Resource pdfResource = loadPdfResource(thesis, reviewType);
@@ -240,6 +254,9 @@ public class AIFeedbackService {
 	/**
 	 * Throws if the thesis does not have an uploaded document for the given review type. Kept
 	 * public because the controller wants to check before doing the work.
+	 *
+	 * @param thesis the thesis whose uploaded document is required
+	 * @param reviewType whether the proposal or the thesis document is required
 	 */
 	public void assertHasDocument(Thesis thesis, ReviewType reviewType) {
 		loadPdfResource(thesis, reviewType);

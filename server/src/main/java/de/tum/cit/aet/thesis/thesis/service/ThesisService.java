@@ -115,6 +115,7 @@ public class ThesisService {
 	 * @param researchGroupSettingsService the research group settings service
 	 * @param userService the user service
 	 * @param abstractAutoFillService the abstract auto-fill service
+	 * @param aiPreviewTokenService the service that issues and validates AI preview tokens
 	 */
 	@Autowired
 	public ThesisService(
@@ -542,9 +543,16 @@ public class ThesisService {
 	}
 
 	/**
-	 * Persists a batch of feedback items with an explicit source marker. Used by the AI-auto
+	 * Persists a batch of feedback items with an explicit batch source marker. Used by the AI-auto
 	 * endpoint (which writes items with {@code source == AI}) and by the manual endpoint (which
-	 * defaults to {@code HUMAN}).
+	 * defaults to {@code HUMAN}). Per-row provenance is resolved server-side — see
+	 * {@link #resolveGenerationSource}.
+	 *
+	 * @param thesis the thesis the feedback belongs to
+	 * @param type the feedback type (proposal, thesis, or presentation)
+	 * @param requestedChanges the feedback rows to persist
+	 * @param source the batch-level source applied when a row does not qualify for another
+	 * @return the thesis with the new feedback rows attached
 	 */
 	@Transactional
 	public Thesis requestChanges(

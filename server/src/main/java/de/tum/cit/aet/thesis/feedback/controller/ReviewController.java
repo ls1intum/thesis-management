@@ -34,6 +34,13 @@ public class ReviewController {
 	private final ThesisService thesisService;
 	private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
 
+	/**
+	 * Creates the AI review controller.
+	 *
+	 * @param aiFeedbackService the service that runs the AI review pipeline and persists findings
+	 * @param thesisService the service used to load the target thesis
+	 * @param currentUserProviderProvider the provider for the current authenticated user
+	 */
 	public ReviewController(
 			AIFeedbackService aiFeedbackService,
 			ThesisService thesisService,
@@ -48,6 +55,9 @@ public class ReviewController {
 	 * uploaded proposal or thesis PDF and persists each finding as a {@code ThesisFeedback}
 	 * row with {@code generationSource = AI}. Returns the refreshed thesis so the client can
 	 * re-render the feedback list.
+	 *
+	 * @param request the thesis id and review type to run
+	 * @return the refreshed thesis with the newly persisted AI feedback
 	 */
 	@PostMapping("auto")
 	public ResponseEntity<ThesisDto> autoReview(@Valid @RequestBody AIReviewRequestDTO request) {
@@ -81,6 +91,9 @@ public class ReviewController {
 	 * Instructor-facing preview endpoint: runs the AI review pipeline and returns editable
 	 * drafts without saving anything. The instructor UI appends these to its unsaved batch so
 	 * the instructor can edit, delete, or accept each item before committing.
+	 *
+	 * @param request the thesis id and review type to run
+	 * @return the assessment, summary, editable drafts, and a signed preview token
 	 */
 	@PostMapping("preview")
 	public ResponseEntity<AIPreviewResponseDTO> previewReview(@Valid @RequestBody AIReviewRequestDTO request) {
