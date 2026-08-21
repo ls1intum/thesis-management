@@ -1,6 +1,10 @@
 package de.tum.cit.aet.thesis.thesis.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.kernel.font.PdfFont;
@@ -13,13 +17,15 @@ import de.tum.cit.aet.thesis.core.utility.AbstractExtractor;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisAbstractSource;
 import de.tum.cit.aet.thesis.thesis.entity.Thesis;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayOutputStream;
 
 class AbstractAutoFillServiceTest {
 
-	private final AbstractAutoFillService service = new AbstractAutoFillService();
+	private final AbstractAutoFillService service = new AbstractAutoFillService(emptyProvider());
 
 	private static Thesis thesisWith(String abstractText, ThesisAbstractSource source) {
 		Thesis thesis = new Thesis();
@@ -30,6 +36,20 @@ class AbstractAutoFillServiceTest {
 
 	private static AbstractExtractor.Result confident(String html) {
 		return new AbstractExtractor.Result(AbstractExtractor.Confidence.CONFIDENT, html);
+	}
+
+	@SuppressWarnings("unchecked")
+	private static ObjectProvider<AiAbstractExtractor> emptyProvider() {
+		ObjectProvider<AiAbstractExtractor> provider = mock(ObjectProvider.class);
+		when(provider.getIfAvailable()).thenReturn(null);
+		return provider;
+	}
+
+	@SuppressWarnings("unchecked")
+	private static ObjectProvider<AiAbstractExtractor> providerOf(AiAbstractExtractor extractor) {
+		ObjectProvider<AiAbstractExtractor> provider = mock(ObjectProvider.class);
+		when(provider.getIfAvailable()).thenReturn(extractor);
+		return provider;
 	}
 
 	@Test
@@ -140,6 +160,47 @@ class AbstractAutoFillServiceTest {
 				"application/pdf", "not a real pdf".getBytes());
 
 		service.process(thesis, file);
+
+		assertThat(thesis.getAbstractField()).isEqualTo("<p>Existing.</p>");
+		assertThat(thesis.getAbstractSource()).isEqualTo(ThesisAbstractSource.MANUAL);
+		assertThat(thesis.getAbstractSuggestion()).isNull();
+	}
+
+	@Test
+	void process_aiExtractorAvailable_delegatesInsteadOfStatic() {
+		// With AI features enabled, the AiAbstractExtractor bean is present and should be used
+		// instead of the static iText fallback. The static extractor would return NONE for a
+		// non-PDF payload; if the AI extractor is invoked its returned result reaches the thesis.
+		AiAbstractExtractor aiExtractor = mock(AiAbstractExtractor.class);
+		when(aiExtractor.extract(any(MultipartFile.class)))
+				.thenReturn(new AbstractExtractor.Result(AbstractExtractor.Confidence.CONFIDENT,
+						"<p>AI-extracted abstract.</p>"));
+		AbstractAutoFillService aiService = new AbstractAutoFillService(providerOf(aiExtractor));
+
+		Thesis thesis = thesisWith("", ThesisAbstractSource.MANUAL);
+		MockMultipartFile file = new MockMultipartFile("file", "opaque.pdf",
+				"application/pdf", "does-not-need-to-parse".getBytes());
+
+		aiService.process(thesis, file);
+
+		verify(aiExtractor).extract(file);
+		assertThat(thesis.getAbstractField()).isEqualTo("<p>AI-extracted abstract.</p>");
+		assertThat(thesis.getAbstractSource()).isEqualTo(ThesisAbstractSource.EXTRACTED);
+	}
+
+	@Test
+	void process_aiExtractorThrows_isNoOp() {
+		// AI extraction failures never break the upload; the abstract stays untouched.
+		AiAbstractExtractor aiExtractor = mock(AiAbstractExtractor.class);
+		when(aiExtractor.extract(any(MultipartFile.class)))
+				.thenThrow(new RuntimeException("chat client offline"));
+		AbstractAutoFillService aiService = new AbstractAutoFillService(providerOf(aiExtractor));
+
+		Thesis thesis = thesisWith("<p>Existing.</p>", ThesisAbstractSource.MANUAL);
+		MockMultipartFile file = new MockMultipartFile("file", "thesis.pdf",
+				"application/pdf", buildConfidentPdf());
+
+		aiService.process(thesis, file);
 
 		assertThat(thesis.getAbstractField()).isEqualTo("<p>Existing.</p>");
 		assertThat(thesis.getAbstractSource()).isEqualTo(ThesisAbstractSource.MANUAL);

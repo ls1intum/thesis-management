@@ -508,7 +508,11 @@ public class ThesisController {
 			throw new AccessDeniedException("Only supervisors can upload a new proposal if thesis state is not PROPOSAL");
 		}
 
-		thesis = thesisService.uploadProposal(thesis, RequestValidator.validateNotNull(proposalFile));
+		MultipartFile validatedProposal = RequestValidator.validateNotNull(proposalFile);
+		thesis = thesisService.uploadProposal(thesis, validatedProposal);
+		// Auto-fill the abstract only after the upload transaction has committed: extraction may
+		// issue a slow LLM / OCR call that must not hold a DB connection open (best-effort).
+		thesis = thesisService.autoFillAbstractFromUpload(thesis, validatedProposal);
 
 		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasSupervisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
@@ -584,7 +588,13 @@ public class ThesisController {
 			throw new AccessDeniedException("Only supervisors can upload a new file if thesis state is not WRITING");
 		}
 
-		thesis = thesisService.uploadThesisFile(thesis, type, RequestValidator.validateNotNull(file));
+		MultipartFile validatedFile = RequestValidator.validateNotNull(file);
+		thesis = thesisService.uploadThesisFile(thesis, type, validatedFile);
+		// Auto-fill the abstract from the thesis document after the upload transaction commits so the
+		// slow LLM / OCR extraction never holds a DB connection open (best-effort).
+		if ("THESIS".equals(type)) {
+			thesis = thesisService.autoFillAbstractFromUpload(thesis, validatedFile);
+		}
 
 		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasSupervisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
