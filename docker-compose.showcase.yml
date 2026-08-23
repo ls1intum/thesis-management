@@ -77,7 +77,7 @@ services:
       retries: 30
 
   mailpit:
-    image: axllent/mailpit:v1.30.3
+    image: axllent/mailpit:v1.30.6
     container_name: thesis-management-showcase-mailpit
     ports:
       - "1125:1025"
@@ -149,6 +149,10 @@ services:
       # only accepts production / staging / test / dev — `dev` is the closest
       # match for a seeded demo deployment.
       ENVIRONMENT: dev
+      # The showcase server runs the `dev` profile, which enables the AI feedback
+      # module (application-dev.yml → thesis-management.ai.enabled=true). Mirror it
+      # here so the client actually renders the AI buttons the server serves.
+      AI_FEATURES_ENABLED: "true"
     ports:
       - "3100:80"
 

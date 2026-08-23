@@ -55,6 +55,13 @@ public class AIFeedbackService {
 	private final ThesisService thesisService;
 	private final ResearchGroupGuidelinesRepository guidelinesRepository;
 
+	/**
+	 * Creates the AI feedback service.
+	 *
+	 * @param reviewService the pipeline that runs the LLM review over a PDF
+	 * @param thesisService the service used to load documents and persist feedback
+	 * @param guidelinesRepository the repository used to load and gate on per-group review guidelines
+	 */
 	public AIFeedbackService(
 			ReviewService reviewService,
 			ThesisService thesisService,
@@ -69,6 +76,8 @@ public class AIFeedbackService {
 	 * with {@code generationSource = AI}. Access control is delegated to the caller (typically
 	 * the controller, which enforces student/supervisor access based on the review type).
 	 *
+	 * @param thesis the thesis whose uploaded document is reviewed
+	 * @param reviewType whether to review the proposal or the thesis document
 	 * @return the updated thesis with the new feedback rows attached
 	 */
 	public Thesis autoReviewAndSave(Thesis thesis, ReviewType reviewType) {
@@ -82,7 +91,9 @@ public class AIFeedbackService {
 					renderFeedbackText(finding),
 					false,
 					mapCategory(finding.category()),
-					mapSeverity(finding.severity())
+					mapSeverity(finding.severity()),
+					// Null → inherit the batch source (AI) passed to requestChanges below.
+					null
 			));
 		}
 
@@ -103,6 +114,10 @@ public class AIFeedbackService {
 	 * Runs the AI review pipeline and returns the findings as editable drafts without saving
 	 * anything to the database. The instructor UI can then let the user tweak, accept, or drop
 	 * individual entries before persisting them.
+	 *
+	 * @param thesis the thesis whose uploaded document is reviewed
+	 * @param reviewType whether to review the proposal or the thesis document
+	 * @return the assessment, summary, and editable drafts
 	 */
 	public AIPreviewResponseDTO previewReview(Thesis thesis, ReviewType reviewType) {
 		StructuredGuidelines guidelines = requireReadyGuidelines(thesis);
@@ -155,17 +170,20 @@ public class AIFeedbackService {
 	}
 
 	/**
-	 * Collapses an AI finding into a single feedback string: bold title, description, then a
+	 * Collapses an AI finding into a single feedback string: title, description, then a
 	 * parenthetical hint that surfaces the first location (page + section) so the student knows
 	 * where to look. Additional locations are dropped — {@code ThesisFeedback.feedback} is a
 	 * plain TEXT column and we don't want to explode it into JSON just for this.
+	 *
+	 * <p>The text is stored and rendered verbatim (the feedback overview and the request-changes
+	 * dialog both show it as plain text), so no Markdown markup is added here.
 	 */
 	static String renderFeedbackText(FindingDTO finding) {
 		StringBuilder sb = new StringBuilder();
 
 		String title = finding.title();
 		if (title != null && !title.isBlank()) {
-			sb.append("**").append(title.strip()).append("**");
+			sb.append(title.strip());
 		}
 
 		String description = finding.description();
@@ -237,6 +255,9 @@ public class AIFeedbackService {
 	/**
 	 * Throws if the thesis does not have an uploaded document for the given review type. Kept
 	 * public because the controller wants to check before doing the work.
+	 *
+	 * @param thesis the thesis whose uploaded document is required
+	 * @param reviewType whether the proposal or the thesis document is required
 	 */
 	public void assertHasDocument(Thesis thesis, ReviewType reviewType) {
 		loadPdfResource(thesis, reviewType);

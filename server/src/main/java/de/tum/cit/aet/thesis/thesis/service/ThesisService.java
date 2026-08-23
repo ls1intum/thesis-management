@@ -540,7 +540,14 @@ public class ThesisService {
 	/**
 	 * Persists a batch of feedback items with an explicit source marker. Used by the AI-auto
 	 * endpoint (which writes items with {@code source == AI}) and by the manual endpoint (which
-	 * defaults to {@code HUMAN}).
+	 * defaults to {@code HUMAN}). A per-item source, when present, wins over the batch source so a
+	 * single batch can mix manual and AI-reviewed rows.
+	 *
+	 * @param thesis the thesis the feedback belongs to
+	 * @param type the feedback type (proposal, thesis, or presentation)
+	 * @param requestedChanges the feedback rows to persist
+	 * @param source the batch-level source applied when a row does not specify its own
+	 * @return the thesis with the new feedback rows attached
 	 */
 	@Transactional
 	public Thesis requestChanges(
@@ -567,7 +574,9 @@ public class ThesisService {
 			feedback.setCompletedAt(requestedChange.completed() ? Instant.now() : null);
 			feedback.setCategory(requestedChange.category());
 			feedback.setSeverity(requestedChange.severity());
-			feedback.setGenerationSource(source);
+			// Per-item source wins so a mixed batch can carry both manual (HUMAN) and AI-reviewed
+			// (AI_REVIEWED_BY_HUMAN) rows; fall back to the batch source when the item omits it.
+			feedback.setGenerationSource(requestedChange.source() != null ? requestedChange.source() : source);
 			feedback.setDocumentVersionId(documentVersionId);
 
 			feedback = thesisFeedbackRepository.save(feedback);

@@ -18,13 +18,16 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
 
+import jakarta.annotation.PreDestroy;
+
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
@@ -74,7 +77,7 @@ public class ReviewService {
 	 * because each category call is IO-bound (waiting on the remote LLM) and cheap to fan out —
 	 * we do not want to starve the common ForkJoinPool with blocking network waits.
 	 */
-	private final Executor reviewExecutor;
+	private final ExecutorService reviewExecutor;
 
 	/**
 	 * Creates the service and builds the underlying {@link ChatClient}.
@@ -97,6 +100,15 @@ public class ReviewService {
 		this.reviewExecutor = Executors.newVirtualThreadPerTaskExecutor();
 		log.info("AI review image processing {} (model: {}, override: {})",
 				this.includeImages ? "enabled" : "disabled", chatModel, includeImagesOverride);
+	}
+
+	/**
+	 * Shuts down the dedicated review executor on bean destruction so its virtual threads do not
+	 * outlive the application context and graceful shutdown stays predictable.
+	 */
+	@PreDestroy
+	void shutdownReviewExecutor() {
+		reviewExecutor.shutdown();
 	}
 
 	/**
@@ -199,7 +211,7 @@ public class ReviewService {
 		if (model == null || model.isBlank()) {
 			return false;
 		}
-		String lower = model.toLowerCase();
+		String lower = model.toLowerCase(Locale.ROOT);
 		return VISION_MODEL_KEYWORDS.stream().anyMatch(lower::contains);
 	}
 }

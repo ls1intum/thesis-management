@@ -10,6 +10,9 @@ import de.tum.cit.aet.thesis.presentation.constants.ThesisPresentationVisibility
 import de.tum.cit.aet.thesis.presentation.entity.ThesisPresentation;
 import de.tum.cit.aet.thesis.proposal.entity.ThesisProposal;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisAbstractSource;
+import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackCategory;
+import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackSeverity;
+import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackSource;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackType;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisState;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisVisibility;
@@ -229,6 +232,7 @@ public record ThesisPresentationDto(
 	}
 }
 
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record ThesisFeedbackDto(
 	UUID feedbackId,
 	ThesisFeedbackType type,
@@ -236,9 +240,9 @@ public record ThesisFeedbackDto(
 	MinimalUserDto requestedBy,
 	Instant requestedAt,
 	Instant completedAt,
-	de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackCategory category,
-	de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackSeverity severity,
-	de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackSource generationSource,
+	ThesisFeedbackCategory category,
+	ThesisFeedbackSeverity severity,
+	ThesisFeedbackSource generationSource,
 	UUID documentVersionId
 ) {
 

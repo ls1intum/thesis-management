@@ -108,6 +108,42 @@ wait_for_port_release() {
   exit 1
 }
 
+# PIDs of the process(es) listening on $1, using whichever tool is available (mirrors
+# is_port_open's detection). Empty when none can be determined.
+listener_pids() {
+  local port="$1"
+  if command -v lsof >/dev/null 2>&1; then
+    lsof -tiTCP:"$port" -sTCP:LISTEN -P -n 2>/dev/null
+  elif command -v ss >/dev/null 2>&1; then
+    ss -tlnpH "sport = :$port" 2>/dev/null | grep -oE 'pid=[0-9]+' | cut -d= -f2 | sort -u
+  fi
+}
+
+# Stops a process holding $1 that we did NOT start via a pidfile (a stray `serve`, a manual
+# `pnpm dev`, or a run whose pidfile was removed). Sends SIGTERM and waits briefly; returns 0
+# once the port is free. Fails immediately with an actionable error if the owner can't be
+# identified or won't release the port — never a blind SIGKILL on a process we don't own.
+stop_port_listener() {
+  local port="$1" pids
+  pids=$(listener_pids "$port")
+  if [[ -z "$pids" ]]; then
+    err "Port $port is in use but its owner could not be identified (need lsof or ss). Free port $port and re-run."
+    exit 1
+  fi
+
+  warn "Stopping untracked process(es) holding port $port: $(echo "$pids" | tr '\n' ' ')"
+  # shellcheck disable=SC2086
+  kill $pids 2>/dev/null || true
+
+  for _ in $(seq 1 10); do
+    is_port_open "$port" || return 0
+    sleep 1
+  done
+
+  err "Could not free port $port (still held by PID(s): $(echo "$pids" | tr '\n' ' ')). Stop it manually and re-run."
+  exit 1
+}
+
 # ---------------------------------------------------------------------------
 # --stop: Shut down all services and exit
 # ---------------------------------------------------------------------------
@@ -173,9 +209,33 @@ fi
 # Same production-bundle strategy as e2e: it eliminates the dev overlay that
 # occasionally intercepts pointer events, so screenshots stay clean.
 
+need_client_start=1
 if is_port_open 3100; then
-  log "Client already running on port 3100 — reusing it."
-else
+  # A client is already listening. Only reuse it when it was built with AI features enabled —
+  # staff-19-request-changes-ai-drafts needs the "Generate with AI" button, which the client
+  # renders only when AI_FEATURES_ENABLED=true. The generated runtime-env.js carries that flag,
+  # so probe it; if AI is not confirmed, restart the client with the required environment rather
+  # than capturing against an incompatible build.
+  if curl -sf "http://localhost:3100/runtime-env.js" 2>/dev/null | grep -q '"AI_FEATURES_ENABLED":"true"'; then
+    log "Client already running on port 3100 with AI features enabled — reusing it."
+    need_client_start=0
+  else
+    warn "Client on port 3100 was not built with AI_FEATURES_ENABLED=true — restarting it so AI screenshots render..."
+    kill_pid "client"
+    # kill_pid only stops a client THIS script started (tracked via .capture-pids/client.pid).
+    # If a foreign process still holds 3100, stop it too — otherwise wait_for_port_release would
+    # just hang for 30s before aborting.
+    if is_port_open 3100; then
+      stop_port_listener 3100
+    fi
+    wait_for_port_release 3100
+  fi
+fi
+
+if [[ "$need_client_start" == "1" ]]; then
+  # The AI feedback screenshot scenes mock the endpoints but still need the buttons rendered,
+  # which the client only does when AI features are enabled (matching the dev server profile).
+  export AI_FEATURES_ENABLED=true
   log "Building client (production)..."
   (cd "$CLIENT_DIR" && pnpm build > "$ROOT_DIR/.capture-client-build.log" 2>&1) || {
     err "Client build failed. See $ROOT_DIR/.capture-client-build.log"

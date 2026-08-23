@@ -45,7 +45,7 @@ const ThesisPageContent = () => {
   const reachedGraded = thesis.state === ThesisState.GRADED || thesis.state === ThesisState.FINISHED
 
   const steps: IThesisProcessNavStep[] = [
-    { id: 'section-overview', label: 'Overview', isCompleted: true },
+    { id: 'section-overview', label: 'Overview', isOverview: true },
   ]
   if (showProposal) {
     steps.push({

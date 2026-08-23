@@ -14,7 +14,9 @@ const ThesisHeader = () => {
   return (
     <Stack>
       <Group justify='space-between' align='flex-start' wrap='nowrap'>
-        <Title style={{ flex: 1 }}>{thesis.title}</Title>
+        <Title order={2} style={{ flex: 1 }}>
+          {thesis.title}
+        </Title>
         {access.supervisor && (
           <Button
             component={Link}
