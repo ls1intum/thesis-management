@@ -155,22 +155,41 @@ Open the Mailpit web UI to browse captured emails:
 
 All emails (including attachments) sent by the application are available there for inspection. This replaces the previous console-only logging approach and makes it easy to verify email content, formatting, and recipients during development and testing.
 
-## AI Feedback (Experimental)
+## AI Feedback
 
-> **Status: work in progress.** The AI feedback module (`/v2/ai-review/**`, `ReviewService`, `PdfService`) is being developed and is **not necessarily working or integrated end-to-end yet**. Treat it as an opt-in preview, not a supported feature.
+The AI feedback module runs an LLM review over an uploaded proposal or thesis PDF and turns the findings into rows in `thesis_feedback`. The whole module is gated by a Spring `Condition` (`de.tum.cit.aet.thesis.feedback.config.AIFeaturesEnabled`); when the flag is off, the controller and services are not registered with the application context and the `/v2/ai-review/**` endpoints return 404.
 
-The module is gated by a single feature flag implemented as a Spring `Condition` (`de.tum.cit.aet.thesis.feedback.config.AIFeaturesEnabled`). When the flag is off, the controller and services are not registered with the application context and the `/v2/ai-review/**` endpoints return 404.
+**Endpoints**
+
+Two endpoints are exposed by `ReviewController`:
+
+- `POST /v2/ai-review/auto` — body: `{ thesisId, reviewType }` (`PROPOSAL` or `THESIS`). Runs the pipeline against the thesis's latest uploaded document, persists each finding as a `ThesisFeedback` row with `generation_source = AI`, and returns the refreshed `ThesisDto`. Students, supervisors, and examiners on the thesis may call it; other users get `403`. Students may only request the review that matches the thesis's current phase — `PROPOSAL` while the thesis is in the proposal phase and `THESIS` while it is in writing (any other phase or a mismatched type is rejected with `400`). Supervisors and examiners can override this and run either review type in any phase.
+- `POST /v2/ai-review/preview` — same body. Runs the pipeline and returns an `AIPreviewResponseDTO` (overall assessment + summary + editable drafts) **without saving anything**. Restricted to users with supervisor access on the thesis (`hasSupervisorAccess`), i.e. its supervisors and examiners plus admins; students and other users get `403`.
+
+**Pipeline shape**
+
+1. `AIFeedbackService` loads the target PDF from the thesis's existing files (proposal or `THESIS` file) — the client never re-uploads.
+2. `PdfService` extracts per-page text and (optionally) rendered page images.
+3. `ReviewService` fans out one LLM call per `ReviewCategory` on a virtual-thread executor, then invokes a final "merger" prompt to deduplicate and rank the findings.
+4. Prompts branch per `ReviewType`. Proposal prompts check things like the proposal-specific section structure and schedule; thesis prompts check chapter structure, evaluation rigor, and reproducibility.
+5. Findings are collapsed into a single feedback string (plain title, description, first location hint) with the AI category/severity preserved in dedicated columns. Every row is pinned to `document_version_id` — the id of the proposal/thesis file that was reviewed — so later uploads never silently re-target older AI comments.
+
+**Configuration**
 
 | Setting                          | Default | Notes                                                                                |
 |----------------------------------|---------|--------------------------------------------------------------------------------------|
-| `thesis-management.ai.enabled`   | `false` | Master switch. Env var: `AI_FEATURES_ENABLED`. Set to `true` in `application-dev.yml`. |
+| `thesis-management.ai.enabled`   | `false` | Master switch. Env var: `AI_FEATURES_ENABLED`. **Shared server + client setting** — the client reads the same `AI_FEATURES_ENABLED` to show/hide the AI buttons. Set to `true` in `application-dev.yml` (server) and defaulted to `true` by `pnpm dev` (client). |
+| `thesis-management.ai.review-include-images` | _(auto-detect)_ | Env var: `AI_REVIEW_INCLUDE_IMAGES`. Force per-page image rendering on/off; when unset, the pipeline enables it for vision-capable models (`gpt-4o`, `claude-3+`, `gemini-1.5+`, `qwen-vl`, `pixtral`, …). |
 | `spring.ai.openai.api-key`       | —       | Env var: `OPENAI_API_KEY`. Required when the flag is on so Spring AI can build the chat model. |
 | `spring.ai.openai.base-url`      | `https://gpu.aet.cit.tum.de/api` | Env var: `OPENAI_BASE_URL`. Point at any OpenAI-compatible endpoint. |
 | `spring.ai.openai.chat.model`    | `google/gemma-4-26B-A4B-it` | Env var: `OPENAI_CHAT_MODEL`.                                          |
 
-Notes for local dev:
-- The `dev` profile already sets `thesis-management.ai.enabled: true`, so `./gradlew bootRun --args='--spring.profiles.active=dev'` exposes the endpoints. You still need to point `spring.ai.openai.*` at a reachable LLM (e.g. a local model on `http://localhost:1234/v1`) for actual responses.
-- The `test` profile keeps the flag off by default; the only test that exercises the controller (`ReviewControllerTest`) re-enables it via `@TestPropertySource`.
+**Notes for local dev**
+
+- The `dev` profile already sets `thesis-management.ai.enabled: true`, so `./gradlew bootRun --args='--spring.profiles.active=dev'` exposes the endpoints. Point `spring.ai.openai.*` at a reachable LLM for real responses.
+- The flag is shared with the client: `pnpm dev` defaults `AI_FEATURES_ENABLED` to `true` (webpack `DefinePlugin`) so the AI buttons show up against the dev server without any extra setup. Set `AI_FEATURES_ENABLED=false` in the shell before `pnpm dev` to hide them again. Production images read the value at container start via `runtime-env.js`, so it must be forwarded to **both** the `server` and `client` services in `docker-compose.prod.yml`.
+- The `test` profile keeps the flag off by default; the tests that exercise the controller (`ReviewControllerTest`) re-enable it via `@TestPropertySource` and mock `AIFeedbackService`.
+- The E2E screenshot pipeline mocks `/v2/ai-review/auto` and `/v2/ai-review/preview` at the network layer (`page.route`) so shots do not depend on a reachable LLM.
 - Spring AI's `OpenAiChatAutoConfiguration` instantiates `openAiChatModel` eagerly whenever the Spring AI jars are on the classpath, regardless of this flag. That is why `application.yml` ships a non-empty `OPENAI_API_KEY` placeholder and the test config sets a stub key — neither is used unless the flag is on, but both are needed so the autoconfig can build the bean.
 
 ## Database Migrations (Liquibase)

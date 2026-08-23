@@ -12,10 +12,9 @@ import de.tum.cit.aet.thesis.feedback.dto.AssessmentCategory;
 import de.tum.cit.aet.thesis.feedback.dto.FindingDTO;
 import de.tum.cit.aet.thesis.feedback.dto.IntermediateReviewResult;
 import de.tum.cit.aet.thesis.feedback.dto.Location;
-import de.tum.cit.aet.thesis.feedback.dto.ProviderCategory;
-import de.tum.cit.aet.thesis.feedback.dto.ReviewRequestDTO;
 import de.tum.cit.aet.thesis.feedback.dto.ReviewResultDTO;
 import de.tum.cit.aet.thesis.feedback.service.reviewer.LlmReviewer;
+import de.tum.cit.aet.thesis.feedback.service.reviewer.ReviewType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,7 +22,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.content.Media;
-import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.util.MimeTypeUtils;
 import tools.jackson.databind.ObjectMapper;
 
@@ -61,9 +61,9 @@ public class ReviewServiceTest {
 	@BeforeEach
 	void setUp() {
 		when(chatClientBuilder.build()).thenReturn(chatClient);
-		reviewService = new ReviewService(pdfService, chatClientBuilder, objectMapper) {
+		reviewService = new ReviewService(pdfService, chatClientBuilder, objectMapper, true, "logos/openai/gpt-oss-120b") {
 			@Override
-			protected LlmReviewer createReviewer(String taskPrompt) {
+			protected LlmReviewer createReviewer(String taskPrompt, ReviewType reviewType) {
 				return llmReviewer;
 			}
 		};
@@ -71,15 +71,14 @@ public class ReviewServiceTest {
 
 	@Test
 	void testReview() {
-		// TODO Check
-		MockMultipartFile file = new MockMultipartFile("file", "proposal.pdf", "application/pdf", "pdf-content".getBytes());
+		Resource pdfResource = new ByteArrayResource("pdf-content".getBytes());
 		List<String> extractedText = List.of("Extracted text from PDF");
 		List<Media> extractedImages = List.of(new Media(MimeTypeUtils.IMAGE_PNG, URI.create("file:///proposal-template-page-1.png")));
 		IntermediateReviewResult intermediateReviewResult = new IntermediateReviewResult(List.of());
 		ReviewResultDTO expectedResult = new ReviewResultDTO(AssessmentCategory.ACCEPTABLE, "Overall assessment", List.of());
 
-		when(pdfService.extractTextFromPdf(any())).thenReturn(extractedText);
-		when(pdfService.extractImagesFromPdf(any())).thenReturn(extractedImages);
+		when(pdfService.extractTextFromPdf(any(Resource.class))).thenReturn(extractedText);
+		when(pdfService.extractImagesFromPdf(any(Resource.class))).thenReturn(extractedImages);
 		when(llmReviewer.review(anyList(), anyList())).thenReturn(intermediateReviewResult);
 		when(chatClient.prompt()).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.system(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptSystemSpec>>any())).thenReturn(chatClientRequestSpec);
@@ -87,11 +86,13 @@ public class ReviewServiceTest {
 		when(chatClientRequestSpec.call()).thenReturn(callResponseSpec);
 		when(callResponseSpec.entity(ReviewResultDTO.class)).thenReturn(expectedResult);
 
-		ReviewResultDTO actualResult = reviewService.review(new ReviewRequestDTO(ProviderCategory.LOCAL, file));
+		ReviewResultDTO actualResult = reviewService.review(pdfResource, ReviewType.PROPOSAL);
 
 		assertSame(expectedResult, actualResult);
-		verify(pdfService).extractTextFromPdf(file);
-		verify(pdfService).extractImagesFromPdf(file);
+		verify(pdfService).extractTextFromPdf(pdfResource);
+		verify(pdfService).extractImagesFromPdf(pdfResource);
+		// Fan-out remains one call per ReviewCategory even after parallelization — the executor
+		// waits for all futures before invoking the merger step.
 		verify(llmReviewer, times(9)).review(extractedText, extractedImages);
 		verify(chatClient).prompt();
 		verify(callResponseSpec).entity(ReviewResultDTO.class);

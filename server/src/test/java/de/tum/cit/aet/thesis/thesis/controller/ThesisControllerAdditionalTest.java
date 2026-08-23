@@ -443,7 +443,7 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 
 			RequestChangesPayload payload = new RequestChangesPayload(
 					ThesisFeedbackType.THESIS,
-					List.of(new RequestChangesPayload.RequestedChange("Fix this", false))
+					List.of(new RequestChangesPayload.RequestedChange("Fix this", false, null, null, null))
 			);
 
 			mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses/{thesisId}/feedback", thesisId)
@@ -944,7 +944,7 @@ class ThesisControllerAdditionalTest extends BaseIntegrationTest {
 			// Request changes
 			RequestChangesPayload changesPayload = new RequestChangesPayload(
 					ThesisFeedbackType.PROPOSAL,
-					List.of(new RequestChangesPayload.RequestedChange("Improve the introduction", false))
+					List.of(new RequestChangesPayload.RequestedChange("Improve the introduction", false, null, null, null))
 			);
 
 			mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses/{thesisId}/feedback", setup.thesisId)

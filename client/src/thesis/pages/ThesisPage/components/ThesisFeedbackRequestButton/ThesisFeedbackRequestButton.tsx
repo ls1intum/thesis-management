@@ -1,16 +1,93 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   useLoadedThesisContext,
   useThesisUpdateAction,
 } from '@/thesis/providers/ThesisProvider/hooks'
-import { Button, Checkbox, Modal, Stack, Textarea, Text, Title, Group } from '@mantine/core'
+import {
+  ActionIcon,
+  Alert,
+  Badge,
+  Button,
+  Checkbox,
+  Divider,
+  Group,
+  Modal,
+  Select,
+  Stack,
+  Text,
+  Textarea,
+  Title,
+  Tooltip,
+} from '@mantine/core'
 import { doRequest } from '@/core/requests/request'
 import type { IThesis } from '@/thesis/requests/responses/thesis'
-import { ApiError } from '@/core/requests/handler'
+import {
+  ThesisFeedbackCategory,
+  ThesisFeedbackSeverity,
+  ThesisFeedbackSource,
+} from '@/thesis/requests/responses/thesis'
+import { ApiError, getApiResponseErrorMessage } from '@/core/requests/handler'
+import { Plus, Robot, Trash } from '@phosphor-icons/react'
+import { showSimpleError } from '@/core/utils/notification'
+import { GLOBAL_CONFIG } from '@/core/config/global'
 
 interface IThesisFeedbackRequestButtonProps {
   type: string
 }
+
+interface INewEntry {
+  key: string
+  feedback: string
+  category: ThesisFeedbackCategory | ''
+  severity: ThesisFeedbackSeverity | ''
+  // Provenance of this row. Manual rows are HUMAN; rows produced by "Generate with AI" are
+  // AI_REVIEWED_BY_HUMAN (an AI draft the instructor reviews before saving). Persisted so the
+  // feedback overview can badge AI-assisted entries correctly.
+  source: ThesisFeedbackSource
+}
+
+interface IAIDraft {
+  feedback: string
+  category?: ThesisFeedbackCategory | null
+  severity?: ThesisFeedbackSeverity | null
+}
+
+interface IAIPreviewResponse {
+  assessment?: 'GOOD' | 'ACCEPTABLE' | 'NEEDS_WORK'
+  summary?: string
+  drafts?: IAIDraft[]
+}
+
+const CATEGORY_OPTIONS = Object.values(ThesisFeedbackCategory).map((value) => ({
+  value,
+  label: value.toLowerCase().replace(/(^\w|_\w)/g, (m) => m.replace('_', ' ').toUpperCase()),
+}))
+
+const SEVERITY_OPTIONS = Object.values(ThesisFeedbackSeverity).map((value) => ({
+  value,
+  label: value.charAt(0) + value.slice(1).toLowerCase(),
+}))
+
+const SEVERITY_COLOR: Record<ThesisFeedbackSeverity, string> = {
+  [ThesisFeedbackSeverity.CRITICAL]: 'red',
+  [ThesisFeedbackSeverity.MAJOR]: 'orange',
+  [ThesisFeedbackSeverity.MINOR]: 'yellow',
+  [ThesisFeedbackSeverity.SUGGESTION]: 'blue',
+}
+
+const ASSESSMENT_LABEL: Record<NonNullable<IAIPreviewResponse['assessment']>, string> = {
+  GOOD: 'Good — ready to submit with minor tweaks',
+  ACCEPTABLE: 'Acceptable — some work needed',
+  NEEDS_WORK: 'Needs work — significant issues remain',
+}
+
+const emptyEntry = (): INewEntry => ({
+  key: crypto.randomUUID(),
+  feedback: '',
+  category: '',
+  severity: '',
+  source: ThesisFeedbackSource.HUMAN,
+})
 
 const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) => {
   const { type } = props
@@ -18,24 +95,84 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
   const { thesis } = useLoadedThesisContext()
 
   const [opened, setOpened] = useState(false)
-  const [changes, setChanges] = useState('')
+  const [entries, setEntries] = useState<INewEntry[]>([])
   const [editChanges, setEditChanges] = useState<
     Array<{
       feedbackId: string
       completed: boolean
     }>
   >([])
-
-  useEffect(() => {
-    setChanges('')
-    setEditChanges([])
-  }, [opened])
-
-  const newChanges = changes.split('\n').filter((x) => x.trim())
-
+  const [aiAssessment, setAiAssessment] = useState<IAIPreviewResponse | null>(null)
+  const [aiLoading, setAiLoading] = useState(false)
   const [showDisregardChanges, setShowDisregardChanges] = useState(false)
 
-  const [loading, onSave] = useThesisUpdateAction(async () => {
+  useEffect(() => {
+    if (opened) {
+      setEntries([emptyEntry()])
+      setEditChanges([])
+      setAiAssessment(null)
+    }
+  }, [opened])
+
+  const validEntries = useMemo(
+    () => entries.filter((entry) => entry.feedback.trim().length > 0),
+    [entries],
+  )
+
+  const hasUnsavedWork = validEntries.length > 0 || editChanges.length > 0
+
+  const updateEntry = (key: string, patch: Partial<INewEntry>) => {
+    setEntries((prev) => prev.map((entry) => (entry.key === key ? { ...entry, ...patch } : entry)))
+  }
+
+  const removeEntry = (key: string) => {
+    setEntries((prev) => {
+      const next = prev.filter((entry) => entry.key !== key)
+      return next.length === 0 ? [emptyEntry()] : next
+    })
+  }
+
+  const appendAiDrafts = (drafts: IAIDraft[]) => {
+    setEntries((prev) => {
+      const cleaned = prev.filter((entry) => entry.feedback.trim().length > 0)
+      const newRows: INewEntry[] = drafts.map((draft) => ({
+        key: crypto.randomUUID(),
+        feedback: draft.feedback ?? '',
+        category: draft.category ?? '',
+        severity: draft.severity ?? '',
+        // AI-drafted rows the instructor reviews before saving are persisted as AI + Instructor.
+        source: ThesisFeedbackSource.AI_REVIEWED_BY_HUMAN,
+      }))
+      const merged = [...cleaned, ...newRows]
+      return merged.length === 0 ? [emptyEntry()] : merged
+    })
+  }
+
+  const onGenerateAi = async () => {
+    setAiLoading(true)
+    try {
+      const response = await doRequest<IAIPreviewResponse>('/v2/ai-review/preview', {
+        method: 'POST',
+        requiresAuth: true,
+        data: {
+          thesisId: thesis.thesisId,
+          reviewType: type === 'PROPOSAL' ? 'PROPOSAL' : 'THESIS',
+        },
+      })
+
+      if (response.ok) {
+        const drafts = response.data.drafts ?? []
+        appendAiDrafts(drafts)
+        setAiAssessment(response.data)
+      } else {
+        showSimpleError(getApiResponseErrorMessage(response))
+      }
+    } finally {
+      setAiLoading(false)
+    }
+  }
+
+  const [saving, onSave] = useThesisUpdateAction(async () => {
     for (const editChange of editChanges) {
       await doRequest<IThesis>(
         `/v2/theses/${thesis.thesisId}/feedback/${editChange.feedbackId}/${editChange.completed ? 'complete' : 'request'}`,
@@ -51,21 +188,27 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
       requiresAuth: true,
       data: {
         type,
-        requestedChanges: newChanges.map((newChange) => ({
-          feedback: newChange,
+        requestedChanges: validEntries.map((entry) => ({
+          feedback: entry.feedback.trim(),
           completed: false,
+          category: entry.category || null,
+          severity: entry.severity || null,
+          source: entry.source,
         })),
       },
     })
 
     if (response.ok) {
       setOpened(false)
-
       return response.data
     } else {
       throw new ApiError(response)
     }
   }, 'Changes requested successfully')
+
+  // Only offer AI drafting when the feature is enabled server-side; otherwise the preview
+  // endpoint is unregistered and the button would 404.
+  const supportsAi = GLOBAL_CONFIG.ai_enabled && (type === 'PROPOSAL' || type === 'THESIS')
 
   return (
     <Button variant='outline' color='red' onClick={() => setOpened(true)}>
@@ -73,7 +216,7 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
         title='Request Changes'
         opened={opened}
         onClose={() => {
-          if (editChanges.length === 0 && newChanges.length === 0) {
+          if (!hasUnsavedWork) {
             setOpened(false)
           } else if (!showDisregardChanges) {
             setShowDisregardChanges(true)
@@ -98,7 +241,7 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
                   Keep editing
                 </Button>
                 <Button
-                  loading={loading}
+                  loading={saving}
                   onClick={() => {
                     onSave()
                     setShowDisregardChanges(false)
@@ -110,7 +253,7 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
               <Button
                 onClick={() => {
                   setOpened(false)
-                  setChanges('')
+                  setEntries([emptyEntry()])
                   setEditChanges([])
                   setShowDisregardChanges(false)
                 }}
@@ -148,16 +291,124 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
                   }}
                 />
               ))}
-            <Textarea
-              label='New Change Requests (one request per line)'
-              rows={10}
-              value={changes}
-              onChange={(e) => setChanges(e.target.value)}
-            />
+
+            <Divider label='New feedback entries' labelPosition='left' />
+
+            {aiAssessment && (
+              <Alert color='grape' variant='light' title='AI review'>
+                <Stack gap={4}>
+                  {aiAssessment.assessment && (
+                    <Text size='sm' fw={500}>
+                      {ASSESSMENT_LABEL[aiAssessment.assessment]}
+                    </Text>
+                  )}
+                  {aiAssessment.summary && (
+                    <Text size='sm' c='dimmed'>
+                      {aiAssessment.summary}
+                    </Text>
+                  )}
+                  <Text size='xs' c='dimmed'>
+                    Entries below are drafts — edit or delete them before saving.
+                  </Text>
+                </Stack>
+              </Alert>
+            )}
+
+            <Stack gap='sm'>
+              {entries.map((entry, index) => (
+                <Stack
+                  key={entry.key}
+                  gap={6}
+                  p='sm'
+                  style={{ border: '1px solid var(--mantine-color-gray-3)', borderRadius: 6 }}
+                >
+                  <Group justify='space-between' align='center'>
+                    <Group gap={6}>
+                      <Text size='sm' fw={500}>
+                        Entry {index + 1}
+                      </Text>
+                      {entry.severity && (
+                        <Badge size='sm' color={SEVERITY_COLOR[entry.severity]} variant='light'>
+                          {entry.severity}
+                        </Badge>
+                      )}
+                    </Group>
+                    <Tooltip label='Remove entry'>
+                      <ActionIcon
+                        variant='subtle'
+                        color='red'
+                        onClick={() => removeEntry(entry.key)}
+                        aria-label='Remove entry'
+                      >
+                        <Trash />
+                      </ActionIcon>
+                    </Tooltip>
+                  </Group>
+                  <Textarea
+                    autosize
+                    minRows={2}
+                    maxRows={8}
+                    placeholder='Describe the change you want the student to make…'
+                    value={entry.feedback}
+                    onChange={(e) => updateEntry(entry.key, { feedback: e.target.value })}
+                  />
+                  <Group grow>
+                    <Select
+                      label='Category'
+                      placeholder='Uncategorized'
+                      data={CATEGORY_OPTIONS}
+                      value={entry.category || null}
+                      clearable
+                      onChange={(value) =>
+                        updateEntry(entry.key, {
+                          category: (value as ThesisFeedbackCategory) || '',
+                        })
+                      }
+                    />
+                    <Select
+                      label='Severity'
+                      placeholder='Unspecified'
+                      data={SEVERITY_OPTIONS}
+                      value={entry.severity || null}
+                      clearable
+                      onChange={(value) =>
+                        updateEntry(entry.key, {
+                          severity: (value as ThesisFeedbackSeverity) || '',
+                        })
+                      }
+                    />
+                  </Group>
+                </Stack>
+              ))}
+            </Stack>
+
+            <Group>
+              <Button
+                variant='outline'
+                leftSection={<Plus size={16} />}
+                onClick={() => setEntries((prev) => [...prev, emptyEntry()])}
+              >
+                Add Entry
+              </Button>
+              {supportsAi && (
+                <Button
+                  variant='outline'
+                  color='grape'
+                  leftSection={<Robot size={16} />}
+                  loading={aiLoading}
+                  onClick={() => {
+                    void onGenerateAi()
+                  }}
+                >
+                  Generate with AI
+                </Button>
+              )}
+            </Group>
+
             <Button
               fullWidth
-              loading={loading}
-              disabled={editChanges.length === 0 && newChanges.length === 0}
+              loading={saving}
+              disabled={editChanges.length === 0 && validEntries.length === 0}
               onClick={onSave}
             >
               Request Changes

@@ -259,10 +259,47 @@ There are two kinds of comment threads you will see:
 
 **Feedback requests** are structured to-do items rather than free-form
 comments. When a supervisor requests changes on your proposal or thesis, each
-line becomes a row in a feedback table with a checkbox. Tick a row when you
-have addressed it; supervisors can then verify that everything is done.
+row in the feedback table represents one requested change with a checkbox.
+Tick a row when you have addressed it; supervisors can then verify that
+everything is done.
+
+Each row also carries a small set of badges that tell you more about the
+change at a glance:
+
+- A **severity** badge (`CRITICAL`, `MAJOR`, `MINOR`, or `SUGGESTION`) tells
+  you how urgent the fix is.
+- A **category** badge (Structure, Citation, Writing, Figures, …) groups
+  related items so you can plan a review session around one type of issue at
+  a time.
+- A **source** badge marks who authored the row: `AI` for machine-generated
+  feedback, `AI + Instructor` for AI-generated feedback an instructor reviewed
+  and saved (whether or not they edited it), and no badge (implicit
+  "Instructor") for hand-written entries.
+- A **version badge** (`v1`, `v2`, …) pins the row to the specific
+  proposal/thesis revision it was written against, so older comments do not
+  silently re-target a newer upload.
 
 ![Feedback overview with requested-changes checklist](/img/screenshots/student-11-feedback.png)
+
+### Automatic AI Feedback
+
+In the Proposal section (during the _Proposal_ state) and in the Writing
+section (during _Writing_) you'll see a **Get AI Feedback** button. Pressing
+it runs the platform's AI review pipeline against your latest upload and adds
+the findings straight to your feedback list.
+
+Each finding shows up with the same badges as instructor feedback — severity,
+category, an **AI** source badge, and the document version tag. You can tick
+items off as you address them exactly like supervisor-authored feedback.
+Running the button again will produce another set of findings against the
+current upload; older AI feedback stays in the list, still tagged with the
+older version.
+
+![Feedback overview after running the AI reviewer — AI-authored rows with severity, category, and version badges](/img/screenshots/student-17-ai-feedback.png)
+
+The AI runs on the currently-uploaded PDF and takes a minute or two, so you
+will see a loading spinner while it works. If your chair has disabled AI
+features, the button will not appear.
 
 ## 11. Presentations
 

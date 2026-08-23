@@ -235,6 +235,85 @@ export const staffScenes: Scene[] = [
     },
   },
   {
+    filename: 'staff-18-request-changes-dialog',
+    description:
+      'Redesigned Request Changes dialog — structured entry with category/severity dropdowns and the "Generate with AI" button',
+    role: 'supervisor',
+    run: async (page) => {
+      await goto(page, `/theses/${SEED_THESIS_PROPOSAL}`)
+      const proposalHeading = page.getByRole('button', { name: 'Proposal', exact: true })
+      await expectVisible(proposalHeading)
+      // Only click when the accordion is collapsed — thesis 2 is PROPOSAL-state so the panel
+      // is already open on load, and toggling it would hide the Request Changes button.
+      const proposalExpanded = (await proposalHeading.getAttribute('aria-expanded')) === 'true'
+      if (!proposalExpanded) {
+        await proposalHeading.click()
+      }
+      const requestChangesButton = page.getByRole('button', { name: 'Request Changes' }).first()
+      await expectVisible(requestChangesButton)
+      await requestChangesButton.click()
+      const dialog = page.getByRole('dialog')
+      await expectVisible(dialog)
+      await expectVisible(
+        dialog.getByPlaceholder('Describe the change you want the student to make…').first(),
+      )
+      await settle(page)
+    },
+  },
+  {
+    filename: 'staff-19-request-changes-ai-drafts',
+    description:
+      'Request Changes dialog after clicking "Generate with AI" — assessment banner + editable AI-authored draft entries',
+    role: 'supervisor',
+    run: async (page) => {
+      // Mock the preview endpoint so the shot never depends on a reachable LLM. Response
+      // shape mirrors AIPreviewResponseDTO.
+      await page.route(/\/v2\/ai-review\/preview(\?|$)/, async (route) => {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            assessment: 'ACCEPTABLE',
+            summary:
+              'The proposal presents the problem clearly, but the bibliography is thin and the schedule needs more concrete deliverables.',
+            drafts: [
+              {
+                feedback:
+                  '**Thin bibliography** — increase to at least 6 peer-reviewed sources. (Page 5, Bibliography)',
+                category: 'CITATION',
+                severity: 'MAJOR',
+              },
+              {
+                feedback:
+                  '**Schedule too coarse** — split each iteration into concrete deliverables. (Page 6, Schedule)',
+                category: 'STRUCTURE',
+                severity: 'MINOR',
+              },
+            ],
+          }),
+        })
+      })
+
+      await goto(page, `/theses/${SEED_THESIS_PROPOSAL}`)
+      const proposalHeading = page.getByRole('button', { name: 'Proposal', exact: true })
+      await expectVisible(proposalHeading)
+      // Only click when the accordion is collapsed — thesis 2 is PROPOSAL-state so the panel
+      // is already open on load, and toggling it would hide the Request Changes button.
+      const proposalExpanded = (await proposalHeading.getAttribute('aria-expanded')) === 'true'
+      if (!proposalExpanded) {
+        await proposalHeading.click()
+      }
+      const requestChangesButton = page.getByRole('button', { name: 'Request Changes' }).first()
+      await expectVisible(requestChangesButton)
+      await requestChangesButton.click()
+      const dialog = page.getByRole('dialog')
+      await expectVisible(dialog)
+      await dialog.getByRole('button', { name: 'Generate with AI' }).click()
+      await expectVisible(dialog.getByText(/bibliography is thin/i))
+      await settle(page)
+    },
+  },
+  {
     filename: 'staff-17-group-settings',
     description: 'Research-group settings page (admin view)',
     role: 'admin',

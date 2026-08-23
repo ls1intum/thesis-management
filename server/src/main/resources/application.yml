@@ -86,6 +86,9 @@ server:
 thesis-management:
   ai:
     enabled: ${AI_FEATURES_ENABLED:false}
+    # Force per-page image rendering on/off. Left blank (unset) so the pipeline auto-detects
+    # vision support from the configured chat model; an empty value binds to a null Boolean.
+    review-include-images: ${AI_REVIEW_INCLUDE_IMAGES:}
   keycloak:
     host: ${KEYCLOAK_HOST:http://localhost:8181}
     realm-name: ${KEYCLOAK_REALM_NAME:thesis-management}

@@ -10,6 +10,9 @@ import de.tum.cit.aet.thesis.presentation.constants.ThesisPresentationVisibility
 import de.tum.cit.aet.thesis.presentation.entity.ThesisPresentation;
 import de.tum.cit.aet.thesis.proposal.entity.ThesisProposal;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisAbstractSource;
+import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackCategory;
+import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackSeverity;
+import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackSource;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackType;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisState;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisVisibility;
@@ -229,13 +232,18 @@ public record ThesisPresentationDto(
 	}
 }
 
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record ThesisFeedbackDto(
 	UUID feedbackId,
 	ThesisFeedbackType type,
 	String feedback,
 	MinimalUserDto requestedBy,
 	Instant requestedAt,
-	Instant completedAt
+	Instant completedAt,
+	ThesisFeedbackCategory category,
+	ThesisFeedbackSeverity severity,
+	ThesisFeedbackSource generationSource,
+	UUID documentVersionId
 ) {
 
 	public static ThesisFeedbackDto fromThesisFeedbackEntity(ThesisFeedback feedback) {
@@ -249,7 +257,11 @@ public record ThesisFeedbackDto(
 		feedback.getFeedback(),
 		MinimalUserDto.fromUserEntity(feedback.getRequestedBy()),
 		feedback.getRequestedAt(),
-		feedback.getCompletedAt()
+		feedback.getCompletedAt(),
+		feedback.getCategory(),
+		feedback.getSeverity(),
+		feedback.getGenerationSource(),
+		feedback.getDocumentVersionId()
 	);
 	}
 }

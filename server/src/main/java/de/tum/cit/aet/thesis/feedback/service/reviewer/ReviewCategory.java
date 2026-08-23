@@ -3,7 +3,8 @@ package de.tum.cit.aet.thesis.feedback.service.reviewer;
 /**
  * Enumerates the review dimensions exercised by the AI feedback pipeline. Each value pairs a
  * URL/JSON-friendly slug with the {@link Prompts} task prompt that drives the LLM for that
- * category.
+ * category. The concrete prompt text is chosen at call time based on the {@link ReviewType}
+ * (proposal versus final thesis).
  */
 public enum ReviewCategory {
 	STRUCTURE("structure", Prompts.STRUCTURE),
@@ -34,12 +35,13 @@ public enum ReviewCategory {
 	}
 
 	/**
-	 * Returns the task prompt text used to drive the LLM for this category.
+	 * Returns the task prompt text used to drive the LLM for this category and review type.
 	 *
+	 * @param type whether the review targets a proposal or a thesis
 	 * @return the resolved prompt text
 	 */
-	public String getPrompt() {
-		return prompt.getPrompt();
+	public String getPrompt(ReviewType type) {
+		return prompt.getPrompt(type);
 	}
 
 	/**

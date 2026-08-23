@@ -12,6 +12,7 @@ import { ApiError, getApiResponseErrorMessage } from '@/core/requests/handler'
 import { formatThesisFilename } from '@/core/utils/format'
 import ThesisFeedbackRequestButton from '@/thesis/pages/ThesisPage/components/ThesisFeedbackRequestButton/ThesisFeedbackRequestButton'
 import ThesisFeedbackOverview from '@/thesis/pages/ThesisPage/components/ThesisFeedbackOverview/ThesisFeedbackOverview'
+import ThesisAIFeedbackButton from '@/thesis/pages/ThesisPage/components/ThesisAIFeedbackButton/ThesisAIFeedbackButton'
 import { AuthenticatedFilePreview } from '@/core/components/AuthenticatedFilePreview/AuthenticatedFilePreview'
 import { UploadFileButton } from '@/core/components/UploadFileButton/UploadFileButton'
 import FileHistoryTable from '@/thesis/pages/ThesisPage/components/FileHistoryTable/FileHistoryTable'
@@ -152,6 +153,9 @@ const ThesisProposalSection = () => {
               />
             )}
             <Group ml='auto'>
+              {proposal && access.student && thesis.state === ThesisState.PROPOSAL && (
+                <ThesisAIFeedbackButton type='PROPOSAL' />
+              )}
               {proposal && access.supervisor && thesis.state === ThesisState.PROPOSAL && (
                 <ThesisFeedbackRequestButton type='PROPOSAL' />
               )}

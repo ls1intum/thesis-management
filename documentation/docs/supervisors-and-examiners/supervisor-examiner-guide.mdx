@@ -407,21 +407,63 @@ the [Permissions](./permissions) page.
 ## 8. Feedback System
 
 Feedback is the platform's structured way to say "please change X". Instead
-of a free-form comment thread, feedback lives in a **checklist** attached to
-either the proposal or the thesis:
+of a free-form comment thread, feedback lives in a **classified checklist**
+attached to either the proposal or the thesis.
+
+### 8.1 Adding Feedback Manually
 
 - Press **Request Changes**.
-- Type one requested change per line in the textarea.
-- Existing items appear as rows with a checkbox — tick items you consider
-  resolved.
-- Save. Students see the same checklist; they can tick items to indicate
-  "done"; you can un-tick if it wasn't done to your satisfaction.
-- Deleting a row removes the request entirely.
+- The dialog opens with a single empty **entry**. Type the change into the
+  textarea, then optionally pick a **category** (Structure, Citation,
+  Writing, Figures, …) and a **severity** (`CRITICAL` → `SUGGESTION`) from
+  the dropdowns. Category and severity are optional — leave them blank if
+  the row does not need classification.
+- Use **Add Entry** to append more rows. Each row can be removed with the
+  trash icon before saving, so it is safe to over-add and prune later.
+- The list of already-saved feedback appears above the new entries as
+  checkboxes — tick the ones you consider resolved. Un-ticking a completed
+  row reopens it.
+- Save. Students see the same checklist; each row also renders the
+  category/severity/source badges you picked.
 
-The feedback of type `PROPOSAL` and `THESIS` is shown in the corresponding
-section; the delete/verify controls are only enabled for staff.
+![Redesigned Request Changes dialog with structured entries and category/severity dropdowns](/img/screenshots/staff-18-request-changes-dialog.png)
+
+### 8.2 Generating AI Drafts
+
+Inside the same dialog, press **Generate with AI** to run the AI review
+pipeline against the current proposal (or thesis, in the Writing section) and
+append the findings as **editable draft entries**. Nothing is saved until you
+press **Request Changes** — you can:
+
+- Reword or shorten a draft before saving.
+- Change the category or severity the AI suggested.
+- Delete drafts that are not actionable.
+- Mix AI drafts with hand-written entries in the same batch.
+
+Once saved, entries that came out of the AI pipeline are tagged as
+`AI + Instructor` (source `AI_REVIEWED_BY_HUMAN`) so it is always clear which
+comments were machine-drafted and which were typed by a human.
+
+![Request Changes dialog after clicking "Generate with AI" — assessment banner and editable AI drafts](/img/screenshots/staff-19-request-changes-ai-drafts.png)
+
+### 8.3 What Appears on the Feedback Overview
+
+The feedback table (in the Proposal and Writing sections) surfaces the same
+classification the dialog captures:
+
+- **Severity** and **category** badges next to each row.
+- A **source** badge — no badge for a plain instructor entry, `AI` for a
+  row that a student generated with the auto endpoint, `AI + Instructor` for
+  drafts you accepted from the preview dialog.
+- A **version** badge (`v1`, `v2`, …) pinning the row to the proposal or
+  thesis file revision it was written against, so a later upload does not
+  silently reassign feedback to a newer version.
 
 ![Feedback overview — requested-changes rows with checkboxes and Request Changes button](/img/screenshots/staff-15-feedback.png)
+
+> AI review is opt-in per deployment (`AI_FEATURES_ENABLED`). If the flag is
+> off, the "Get AI Feedback" and "Generate with AI" controls simply do not
+> render.
 
 ## 9. Notification Settings
 

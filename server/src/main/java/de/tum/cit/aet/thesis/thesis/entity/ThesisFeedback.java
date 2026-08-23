@@ -1,6 +1,9 @@
 package de.tum.cit.aet.thesis.thesis.entity;
 
 import de.tum.cit.aet.thesis.core.user.entity.User;
+import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackCategory;
+import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackSeverity;
+import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackSource;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackType;
 import lombok.Getter;
 import lombok.Setter;
@@ -56,4 +59,26 @@ public class ThesisFeedback {
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "requested_by", nullable = false)
 	private User requestedBy;
+
+	// Nullable: legacy rows created before the classification columns existed have no category
+	// or severity. The UI renders them as "Uncategorized".
+	@Enumerated(EnumType.STRING)
+	@Column(name = "category")
+	private ThesisFeedbackCategory category;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "severity")
+	private ThesisFeedbackSeverity severity;
+
+	@NotNull
+	@Enumerated(EnumType.STRING)
+	@Column(name = "generation_source", nullable = false)
+	private ThesisFeedbackSource generationSource = ThesisFeedbackSource.HUMAN;
+
+	// Points at either a thesis_proposals row (for PROPOSAL feedback) or a thesis_files row (for
+	// THESIS feedback); the {@link ThesisFeedbackType} disambiguates which table. Populated
+	// automatically at write time with whatever revision was current when the feedback was
+	// created, so later uploads don't reassign old comments to the wrong version.
+	@Column(name = "document_version_id")
+	private UUID documentVersionId;
 }

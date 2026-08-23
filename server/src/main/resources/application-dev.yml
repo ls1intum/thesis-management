@@ -4,6 +4,7 @@ server:
 spring:
   liquibase:
     contexts: dev
+
   mail:
     host: localhost
     port: 1125
@@ -21,11 +22,18 @@ spring:
       base-url: http://localhost:1234/v1
       api-key:
       chat:
-        model: google/gemma-4-e4b
+        model: openai/gpt-oss-120b
         temperature: 1.0
+        options:
+          timeout: 10m
 
 thesis-management:
   ai:
     enabled: true
+    review-include-images: false
   mail:
     enabled: true
+
+logging:
+  level:
+    root: DEBUG

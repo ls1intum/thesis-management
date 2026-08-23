@@ -534,8 +534,35 @@ public class ThesisService {
 	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis requestChanges(Thesis thesis, ThesisFeedbackType type, List<RequestChangesPayload.RequestedChange> requestedChanges) {
+		return requestChanges(thesis, type, requestedChanges, de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackSource.HUMAN);
+	}
+
+	/**
+	 * Persists a batch of feedback items with an explicit source marker. Used by the AI-auto
+	 * endpoint (which writes items with {@code source == AI}) and by the manual endpoint (which
+	 * defaults to {@code HUMAN}). A per-item source, when present, wins over the batch source so a
+	 * single batch can mix manual and AI-reviewed rows.
+	 *
+	 * @param thesis the thesis the feedback belongs to
+	 * @param type the feedback type (proposal, thesis, or presentation)
+	 * @param requestedChanges the feedback rows to persist
+	 * @param source the batch-level source applied when a row does not specify its own
+	 * @return the thesis with the new feedback rows attached
+	 */
+	@Transactional
+	public Thesis requestChanges(
+			Thesis thesis,
+			ThesisFeedbackType type,
+			List<RequestChangesPayload.RequestedChange> requestedChanges,
+			de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackSource source) {
 		requireNotAnonymized(thesis);
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+
+		// Pin every new feedback row to the currently-latest revision of the underlying document
+		// so later uploads don't silently re-target old comments at v2/v3. Presentation feedback
+		// is not versioned — its column stays null.
+		UUID documentVersionId = resolveLatestDocumentVersionId(thesis, type);
+
 		for (var requestedChange : requestedChanges) {
 			ThesisFeedback feedback = new ThesisFeedback();
 
@@ -545,6 +572,12 @@ public class ThesisService {
 			feedback.setType(type);
 			feedback.setFeedback(RequestValidator.validateStringMaxLength(requestedChange.feedback(), StringLimits.LONGTEXT.getLimit()));
 			feedback.setCompletedAt(requestedChange.completed() ? Instant.now() : null);
+			feedback.setCategory(requestedChange.category());
+			feedback.setSeverity(requestedChange.severity());
+			// Per-item source wins so a mixed batch can carry both manual (HUMAN) and AI-reviewed
+			// (AI_REVIEWED_BY_HUMAN) rows; fall back to the batch source when the item omits it.
+			feedback.setGenerationSource(requestedChange.source() != null ? requestedChange.source() : source);
+			feedback.setDocumentVersionId(documentVersionId);
 
 			feedback = thesisFeedbackRepository.save(feedback);
 
@@ -552,11 +585,31 @@ public class ThesisService {
 			thesis.setFeedback(thesis.getFeedback());
 		}
 
-		if (type == ThesisFeedbackType.PROPOSAL) {
+		if (type == ThesisFeedbackType.PROPOSAL && source != de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackSource.AI) {
+			// Only notify supervisors by email for human-initiated change requests. Auto AI
+			// runs happen on demand from the student and don't warrant an outgoing email.
 			mailingService.sendProposalChangeRequestEmail(currentUserProvider().getUser(), thesis);
 		}
 
 		return thesis;
+	}
+
+	/**
+	 * Resolves the id of the currently-latest revision of the document a feedback item refers to.
+	 * PROPOSAL feedback points at {@code thesis_proposals}, THESIS feedback at {@code thesis_files},
+	 * PRESENTATION feedback is not versioned and returns {@code null}. Returns {@code null} when
+	 * the thesis has no matching document yet — callers save the row anyway; the field just stays
+	 * unset until a document exists.
+	 */
+	private UUID resolveLatestDocumentVersionId(Thesis thesis, ThesisFeedbackType type) {
+		return switch (type) {
+			case PROPOSAL -> {
+				List<de.tum.cit.aet.thesis.proposal.entity.ThesisProposal> proposals = thesis.getProposals();
+				yield (proposals == null || proposals.isEmpty()) ? null : proposals.getFirst().getId();
+			}
+			case THESIS -> thesis.getLatestFile("THESIS").map(ThesisFile::getId).orElse(null);
+			case PRESENTATION -> null;
+		};
 	}
 
 	/* PROPOSAL */

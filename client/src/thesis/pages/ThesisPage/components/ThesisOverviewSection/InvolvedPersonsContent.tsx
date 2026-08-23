@@ -133,9 +133,12 @@ const InvolvedPersonsContent = () => {
                       if (value) {
                         return { ...prev, [user.data.userId]: Number(value) }
                       } else {
-                        delete prev[user.data.userId]
+                        // Copy first, then delete: prev may alias the shared
+                        // thesis.metadata.credits object, which must not be mutated.
+                        const next = { ...prev }
+                        delete next[user.data.userId]
 
-                        return { ...prev }
+                        return next
                       }
                     })
                   }}

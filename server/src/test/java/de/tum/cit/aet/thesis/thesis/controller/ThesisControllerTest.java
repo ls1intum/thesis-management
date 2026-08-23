@@ -11,6 +11,7 @@ import de.tum.cit.aet.thesis.presentation.repository.ThesisPresentationRepositor
 import de.tum.cit.aet.thesis.proposal.repository.ThesisProposalRepository;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisAbstractSource;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisCommentType;
+import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackSource;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackType;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisState;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisVisibility;
@@ -433,8 +434,8 @@ class ThesisControllerTest extends BaseIntegrationTest {
 			RequestChangesPayload payload = new RequestChangesPayload(
 					ThesisFeedbackType.THESIS,
 					List.of(
-							new RequestChangesPayload.RequestedChange("Please fix section 1", false),
-							new RequestChangesPayload.RequestedChange("Update references", false)
+							new RequestChangesPayload.RequestedChange("Please fix section 1", false, null, null, null),
+							new RequestChangesPayload.RequestedChange("Update references", false, null, null, null)
 					)
 			);
 
@@ -452,13 +453,45 @@ class ThesisControllerTest extends BaseIntegrationTest {
 		}
 
 		@Test
+		void requestChanges_persistsPerEntrySource() throws Exception {
+			UUID thesisId = createTestThesis("Mixed feedback thesis");
+
+			// A single batch mixing a manually typed row (no source -> HUMAN) with an AI draft the
+			// instructor reviewed (AI_REVIEWED_BY_HUMAN). Each row must keep its own provenance.
+			RequestChangesPayload payload = new RequestChangesPayload(
+					ThesisFeedbackType.THESIS,
+					List.of(
+							new RequestChangesPayload.RequestedChange(
+									"Manually typed feedback", false, null, null, null),
+							new RequestChangesPayload.RequestedChange(
+									"AI-drafted feedback", false, null, null,
+									ThesisFeedbackSource.AI_REVIEWED_BY_HUMAN)
+					)
+			);
+
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses/{thesisId}/feedback", thesisId)
+							.header("Authorization", createRandomAdminAuthentication())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(payload)))
+					.andExpect(status().isOk());
+
+			assertThat(thesisFeedbackRepository.findAll())
+					.extracting(f -> f.getFeedback(), f -> f.getGenerationSource())
+					.containsExactlyInAnyOrder(
+							org.assertj.core.groups.Tuple.tuple(
+									"Manually typed feedback", ThesisFeedbackSource.HUMAN),
+							org.assertj.core.groups.Tuple.tuple(
+									"AI-drafted feedback", ThesisFeedbackSource.AI_REVIEWED_BY_HUMAN));
+		}
+
+		@Test
 		void completeFeedback_Success() throws Exception {
 			UUID thesisId = createTestThesis("Test Thesis");
 			String adminAuth = createRandomAdminAuthentication();
 
 			RequestChangesPayload payload = new RequestChangesPayload(
 					ThesisFeedbackType.THESIS,
-					List.of(new RequestChangesPayload.RequestedChange("Fix this", false))
+					List.of(new RequestChangesPayload.RequestedChange("Fix this", false, null, null, null))
 			);
 
 			String feedbackResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses/{thesisId}/feedback", thesisId)
@@ -486,7 +519,7 @@ class ThesisControllerTest extends BaseIntegrationTest {
 
 			RequestChangesPayload payload = new RequestChangesPayload(
 					ThesisFeedbackType.THESIS,
-					List.of(new RequestChangesPayload.RequestedChange("Fix this", true))
+					List.of(new RequestChangesPayload.RequestedChange("Fix this", true, null, null, null))
 			);
 
 			String feedbackResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses/{thesisId}/feedback", thesisId)
@@ -514,7 +547,7 @@ class ThesisControllerTest extends BaseIntegrationTest {
 
 			RequestChangesPayload payload = new RequestChangesPayload(
 					ThesisFeedbackType.THESIS,
-					List.of(new RequestChangesPayload.RequestedChange("Fix this", false))
+					List.of(new RequestChangesPayload.RequestedChange("Fix this", false, null, null, null))
 			);
 
 			String feedbackResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses/{thesisId}/feedback", thesisId)
@@ -540,7 +573,7 @@ class ThesisControllerTest extends BaseIntegrationTest {
 
 			RequestChangesPayload payload = new RequestChangesPayload(
 					ThesisFeedbackType.THESIS,
-					List.of(new RequestChangesPayload.RequestedChange("Fix this", false))
+					List.of(new RequestChangesPayload.RequestedChange("Fix this", false, null, null, null))
 			);
 
 			String feedbackResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses/{thesisId}/feedback", thesisId)
