@@ -60,6 +60,12 @@ spring:
     openai:
       base-url: ${OPENAI_BASE_URL:https://gpu.aet.cit.tum.de/api}
       api-key: ${OPENAI_API_KEY:**********}
+      # Whole-request timeout applied to the underlying OpenAI HTTP client. Spring AI defaults to
+      # 60s, which is far too short for a full thesis PDF review: the model streams for minutes and
+      # the client hangs up mid-generation (the provider logs "client disconnected"), then retries.
+      # Note that spring.ai.openai.chat.options.timeout is a deprecated no-op in Spring AI 2.0 —
+      # only this property (or spring.ai.openai.chat.timeout) reaches the HTTP client.
+      timeout: ${OPENAI_TIMEOUT:10m}
       chat:
         model: ${OPENAI_CHAT_MODEL:google/gemma-4-26B-A4B-it}
         temperature: ${OPENAI_CHAT_TEMPERATURE:1.0}

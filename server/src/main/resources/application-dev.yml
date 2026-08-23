@@ -21,11 +21,10 @@ spring:
     openai:
       base-url: http://localhost:1234/v1
       api-key:
+      timeout: 10m
       chat:
         model: openai/gpt-oss-120b
         temperature: 1.0
-        options:
-          timeout: 10m
 
 thesis-management:
   ai:
