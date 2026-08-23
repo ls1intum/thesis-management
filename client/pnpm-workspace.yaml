@@ -21,7 +21,7 @@ overrides:
   # GHSA-q8mj-m7cp-5q26
   qs@<6.15.2: 6.15.3
   # GHSA-58qx-3vcg-4xpx
-  ws@>=8.0.0 <8.20.1: 8.21.0
+  ws@>=8.0.0 <8.20.1: 8.21.3
   # GHSA-w7jw-789q-3m8p (shell-quote newline escaping, via launch-editor)
   shell-quote@<1.8.4: 1.9.0
   # GHSA-v6wh-96g9-6wx3 (launch-editor NTLMv2 hash disclosure, via webpack-dev-server)
@@ -41,4 +41,4 @@ overrides:
   # GHSA-7p8r-x3mc-p8w7 / GHSA-v2hh-gcrm-f6hx (fast-uri host confusion, via ajv)
   fast-uri@<3.1.5: 3.1.5
   # GHSA-fxqj-rqcc-2cmp (postcss sourceMappingURL arbitrary read, transitive via vitest>vite)
-  postcss@<8.5.23: 8.5.25
+  postcss@<8.5.23: 8.5.26
