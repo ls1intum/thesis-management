@@ -85,7 +85,7 @@ class AIFeedbackServiceTest {
 	}
 
 	@Test
-	void previewReview_throwsWhenGuidelinesNotReady() {
+	void autoReviewAndSave_throwsWhenGuidelinesNotReady() {
 		ResearchGroupGuidelines failed = new ResearchGroupGuidelines();
 		failed.setResearchGroupId(researchGroupId);
 		failed.setStatus(GuidelinesStatus.FAILED);

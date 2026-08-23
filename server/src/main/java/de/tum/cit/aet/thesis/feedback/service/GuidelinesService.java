@@ -21,7 +21,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -115,15 +118,20 @@ public class GuidelinesService {
 		entity.setRawGuidelines(rawGuidelines);
 		entity.setUpdatedBy(currentUserProvider().getUser());
 
-		// The model can return specific=true while producing an empty category array, unknown
+		// The model's output is untrusted: it can contain unknown or null category slugs, blank
+		// rules, or several entries for the same category. Canonicalize it first so validation and
+		// persistence see the same normalized form -- storing the raw output would leave duplicate
+		// entries whose rules StructuredGuidelines#rulesForCategory silently drops.
+		List<CategoryGuidelines> sanitized = sanitizeCategories(
+				result != null ? result.categories() : null);
+
+		// The model can also return specific=true while producing an empty category array, unknown
 		// category slugs, or only blank rules. Persisting that as READY would unlock the AI
 		// features for the group with no actual group-specific guidance, defeating the gate. Only
 		// mark READY when at least one recognized category carries a nonblank rule.
-		if (result != null && result.specific() && hasUsableRules(result.categories())) {
+		if (result != null && result.specific() && hasUsableRules(sanitized)) {
 			entity.setStatus(GuidelinesStatus.READY);
-			entity.setStructuredGuidelines(new StructuredGuidelines(
-					result.overview(),
-					result.categories() != null ? result.categories() : List.of()));
+			entity.setStructuredGuidelines(new StructuredGuidelines(result.overview(), sanitized));
 			entity.setFailureReason(null);
 			entity.setProcessedAt(Instant.now());
 			log.info("Stored READY guidelines for research group {}", researchGroupId);
@@ -185,26 +193,41 @@ public class GuidelinesService {
 	}
 
 	/**
-	 * Normalizes edited categories: keeps only recognized {@link ReviewCategory} slugs, strips and
-	 * drops blank rules, and drops categories left with no rules. Guards the stored representation
-	 * against unknown slugs and whitespace-only rules regardless of what the client sends.
+	 * Normalizes categories from either the preprocessor or a manual edit: keeps only recognized
+	 * {@link ReviewCategory} slugs, strips and drops blank rules, merges repeated entries for the
+	 * same category into one, drops exact duplicate rules, and drops categories left with no rules.
+	 * Guards the stored representation against unknown or null slugs, whitespace-only rules and
+	 * duplicate entries regardless of what the client or the model sends.
 	 *
-	 * @param categories the raw edited categories
+	 * <p>Merging matters because {@link StructuredGuidelines#rulesForCategory} resolves a slug to
+	 * the first matching entry, so a second entry for the same category would never be read.
+	 *
+	 * @param categories the raw categories, may be {@code null} or contain {@code null} entries
 	 * @return the cleaned categories, one entry per non-empty recognized category
 	 */
 	private static List<CategoryGuidelines> sanitizeCategories(List<CategoryGuidelines> categories) {
 		if (categories == null) {
 			return List.of();
 		}
-		return categories.stream()
-				.filter(category -> category != null && KNOWN_CATEGORY_SLUGS.contains(category.category()))
-				.map(category -> new CategoryGuidelines(
-						category.category(),
-						category.rules() == null ? List.of() : category.rules().stream()
-								.filter(rule -> rule != null && !rule.isBlank())
-								.map(String::strip)
-								.toList()))
-				.filter(category -> !category.rules().isEmpty())
+		// Null slugs must be screened out before the lookup: KNOWN_CATEGORY_SLUGS is an immutable
+		// set, whose contains(null) throws rather than returning false.
+		Map<String, Set<String>> rulesBySlug = new LinkedHashMap<>();
+		for (CategoryGuidelines category : categories) {
+			if (category == null
+					|| category.category() == null
+					|| !KNOWN_CATEGORY_SLUGS.contains(category.category())
+					|| category.rules() == null) {
+				continue;
+			}
+			for (String rule : category.rules()) {
+				if (rule != null && !rule.isBlank()) {
+					rulesBySlug.computeIfAbsent(category.category(), slug -> new LinkedHashSet<>())
+							.add(rule.strip());
+				}
+			}
+		}
+		return rulesBySlug.entrySet().stream()
+				.map(entry -> new CategoryGuidelines(entry.getKey(), List.copyOf(entry.getValue())))
 				.toList();
 	}
 

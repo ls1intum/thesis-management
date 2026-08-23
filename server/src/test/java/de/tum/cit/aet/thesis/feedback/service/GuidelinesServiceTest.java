@@ -18,6 +18,7 @@ import de.tum.cit.aet.thesis.feedback.dto.GuidelinesPreprocessingResult;
 import de.tum.cit.aet.thesis.feedback.entity.GuidelinesStatus;
 import de.tum.cit.aet.thesis.feedback.entity.ResearchGroupGuidelines;
 import de.tum.cit.aet.thesis.feedback.entity.jsonb.CategoryGuidelines;
+import de.tum.cit.aet.thesis.feedback.entity.jsonb.StructuredGuidelines;
 import de.tum.cit.aet.thesis.feedback.repository.ResearchGroupGuidelinesRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,6 +27,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.ObjectProvider;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -273,5 +275,53 @@ class GuidelinesServiceTest {
 		assertThat(saved).isSameAs(existing);
 		assertThat(saved.getStatus()).isEqualTo(GuidelinesStatus.READY);
 		assertThat(saved.getFailureReason()).isNull();
+	}
+
+	@Test
+	void updateGuidelines_canonicalizesUnnormalizedPreprocessorOutput() {
+		stubSaveReturnsArgument();
+		when(currentUserProvider.getUser()).thenReturn(new User());
+		when(guidelinesRepository.findById(researchGroupId)).thenReturn(Optional.empty());
+		// Nothing constrains the model to well-formed output: it can emit a null entry, a null or
+		// unknown slug, blank rules, several entries for one category and a repeated rule.
+		when(preprocessor.preprocess(eq("Specific."))).thenReturn(new GuidelinesPreprocessingResult(
+				true, null, "Overview.",
+				Arrays.asList(
+						null,
+						new CategoryGuidelines(null, List.of("Null slug.")),
+						new CategoryGuidelines("not-a-real-category", List.of("Unknown slug.")),
+						new CategoryGuidelines("structure", List.of("  Include an Abstract.  ", "   ")),
+						new CategoryGuidelines("structure", List.of("Include an Abstract.", "Add a Conclusion.")))));
+
+		ResearchGroupGuidelines saved = service.updateGuidelines(researchGroupId, "Specific.");
+
+		assertThat(saved.getStatus()).isEqualTo(GuidelinesStatus.READY);
+		StructuredGuidelines structured = saved.getStructuredGuidelines();
+		// One merged entry per recognized slug, so rulesForCategory reaches every rule instead of
+		// resolving to the first of two entries and dropping the rest.
+		assertThat(structured.categories()).hasSize(1);
+		assertThat(structured.rulesForCategory("structure"))
+				.containsExactly("Include an Abstract.", "Add a Conclusion.");
+		assertThat(structured.rulesForCategory("not-a-real-category")).isEmpty();
+	}
+
+	@Test
+	void updateStructuredGuidelines_mergesRepeatedCategoryEntries() {
+		stubSaveReturnsArgument();
+		ResearchGroupGuidelines existing = new ResearchGroupGuidelines();
+		existing.setResearchGroupId(researchGroupId);
+		existing.setStatus(GuidelinesStatus.READY);
+		when(currentUserProvider.getUser()).thenReturn(new User());
+		when(guidelinesRepository.findById(researchGroupId)).thenReturn(Optional.of(existing));
+
+		ResearchGroupGuidelines saved = service.updateStructuredGuidelines(
+				researchGroupId, null,
+				List.of(
+						new CategoryGuidelines("bibliography", List.of("Cite at least 6 sources.")),
+						new CategoryGuidelines("bibliography", List.of("Prefer peer-reviewed venues."))));
+
+		assertThat(saved.getStructuredGuidelines().categories()).hasSize(1);
+		assertThat(saved.getStructuredGuidelines().rulesForCategory("bibliography"))
+				.containsExactly("Cite at least 6 sources.", "Prefer peer-reviewed venues.");
 	}
 }
