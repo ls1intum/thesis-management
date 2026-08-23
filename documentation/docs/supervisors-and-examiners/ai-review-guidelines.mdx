@@ -1,17 +1,91 @@
-# Example Research Group Guidelines
-
-> **How to use this file.** Paste the text below (everything from "General Expectations"
-> onward) into *Research Group Settings → AI Review Guidelines*. The preprocessing step
-> distills it into per-category rules that drive the AI review; you can then edit the
-> distilled rules directly in the structured editor.
->
-> Treat this as a starting point, not a standard. Replace every number (page counts,
-> citation counts, iteration lengths) with the values your group actually enforces —
-> the AI reviewer checks the thresholds literally, so wrong numbers produce wrong findings.
-> Delete rules you do not care about: a shorter, honest list beats a long aspirational one.
-
+---
+title: AI Review Guidelines
+sidebar_position: 5
+description: How research group leads configure the writing guidelines that drive the AI review — including a copy-paste example template.
 ---
 
+# AI Review Guidelines
+
+The AI reviewer does not ship with an opinion of its own. Everything it flags
+comes from **your research group's writing guidelines**, which the group lead
+enters once under **Research Group Settings → AI Review Guidelines**.
+
+Until those guidelines are saved and processed successfully, the AI features
+stay switched off for the whole group: students pressing **Get AI Feedback**
+and supervisors pressing **Generate with AI** are told to ask their examiner or
+group lead to configure them.
+
+## How Processing Works
+
+1. You paste your guidelines as **free text** (Markdown is fine — most groups
+   already have a wiki page or PDF they can copy from).
+2. Pressing **Save & process** sends the text through a one-off AI pass that
+   distills it into short, checkable rules and sorts them into a **fixed set of
+   review categories** (listed below). Your text is treated strictly as data:
+   instructions embedded in it are never followed.
+3. The result is stored with a status:
+   - **Ready** — the AI features are now active for every member of the group.
+   - **Failed** — the input was too vague to build concrete rules from. The
+     reason is shown in the card; revise and save again.
+4. Once ready, the distilled rules appear under **Refine rules by category**,
+   where you can correct wording, add a convention the AI missed, or delete a
+   rule — without re-running the processing step. Pressing **Save & process**
+   again replaces those manual edits.
+
+At review time each category runs as its own pass, and that pass sees only your
+group's overview plus the rules filed under its category. A category you said
+nothing about falls back to the platform's built-in checks for that dimension.
+
+## Review Categories
+
+| Category | What it covers |
+| --- | --- |
+| Structure & Completeness | Required sections, overall and per-section length limits, and the objectives structure. |
+| Problem, Motivation & Objectives | Quality of those sections — named actors, no solutions in the problem, action-form objectives. |
+| Bibliography & Citations | Number and quality of references, peer-reviewed-only sources, citation style and placement. |
+| Figures & Diagrams | Number, type, readability, captions, referencing, and file format. |
+| Writing Style | Active voice, filler words and superlatives, contractions, forbidden sentence starters, abbreviations. |
+| Paragraph Structure | Paragraph length, one idea per paragraph, prose over bullet points, subsection depth. |
+| Formatting & Terminology | Title-case headings and consistent terminology. |
+| AI Transparency Statement | Presence, first-person voice, specificity, tools and purposes, review confirmation. |
+| Schedule Quality | Iteration length, measurable deliverables, vertically integrated features, agile principles. For a submitted thesis this pass inspects evaluation rigor instead. |
+
+## Writing Guidelines the AI Can Actually Check
+
+The processing step is deliberately strict, because a rule the reviewer cannot
+verify produces either silence or invented findings.
+
+**Works well**
+
+- One checkable statement per rule: *"The bibliography must contain at least 6
+  peer-reviewed publications."*
+- Concrete thresholds — page counts, citation counts, iteration lengths,
+  section names. These are preserved **verbatim** and enforced literally, so
+  make sure the numbers are the ones you actually apply.
+- Named section titles, so the reviewer can tell whether one is missing.
+- Explicit exceptions: *"Bullet points are acceptable in the Schedule section."*
+
+**Gets rejected or produces noise**
+
+- Aspirational prose with nothing to measure: *"Write well and cite good
+  sources."*
+- Rules that depend on judgement the reviewer cannot make from the PDF alone,
+  such as novelty of the contribution.
+- Contradictions between sections — the reviewer will flag both sides.
+- Numbers you copied from someone else's handbook and do not enforce.
+
+:::tip
+Shorter and honest beats long and aspirational. Twenty rules you actually
+enforce give better feedback than eighty you do not.
+:::
+
+## Example Guidelines
+
+The text below is a complete, working starting point. Copy it into the
+**Guidelines** field, then replace every number with the values your group
+enforces and delete the rules you do not care about.
+
+```markdown
 ## General Expectations
 
 Students in this group write a proposal before starting the thesis and a final thesis at
@@ -144,3 +218,17 @@ English and follow the group's LaTeX template.
   construct validity.
 * The thesis states how the results can be reproduced: repository link, dataset access, and
   configuration.
+```
+
+## Who Can Edit This
+
+Editing the guidelines requires the **Group Admin** role (or platform admin).
+Supervisors and examiners without that role use the AI features but cannot
+change the rules behind them — see
+[Research Group Admin Actions](./supervisor-examiner-guide#10-research-group-admin-actions).
+
+:::note
+AI review is also opt-in per deployment (`AI_FEATURES_ENABLED`). If the flag is
+off, the guidelines card and every AI control are hidden regardless of what the
+group configured.
+:::

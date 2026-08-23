@@ -1,5 +1,16 @@
 import { useEffect, useState } from 'react'
-import { ActionIcon, Alert, Badge, Button, Group, Stack, Tabs, Text, Textarea } from '@mantine/core'
+import {
+  ActionIcon,
+  Alert,
+  Anchor,
+  Badge,
+  Button,
+  Group,
+  Stack,
+  Tabs,
+  Text,
+  Textarea,
+} from '@mantine/core'
 import { CheckCircle, FloppyDisk, Info, Plus, Robot, Trash, Warning } from '@phosphor-icons/react'
 import { useParams } from 'react-router'
 import { ResearchGroupSettingsCard } from '@/core/group/pages/ResearchGroupSettingPage/components/ResearchGroupSettingsCard'
@@ -19,6 +30,13 @@ interface IRuleDraft {
   overview: string
   rules: Record<string, IEditableRule[]>
 }
+
+/**
+ * Guide for group leads: what the processing step expects, which review categories exist, and a
+ * copy-paste example set of guidelines. Linked from the editor because a first-time lead has no
+ * other way to know how specific the input has to be before it is accepted.
+ */
+const GUIDELINES_DOCS_URL = 'https://docs.thesis.aet.cit.tum.de/supervisors/ai-review-guidelines'
 
 const newRule = (text: string): IEditableRule => ({ id: crypto.randomUUID(), text })
 
@@ -218,6 +236,14 @@ const AIReviewGuidelinesSettingsCard = () => {
               'The guidelines were too vague to build specific review rules. Please provide concrete, actionable guidance.'}
           </Alert>
         )}
+
+        <Text size='sm' c='dimmed'>
+          Not sure how specific the guidelines have to be?{' '}
+          <Anchor href={GUIDELINES_DOCS_URL} target='_blank' rel='noopener noreferrer'>
+            Read the guide
+          </Anchor>{' '}
+          for the review categories, what makes a rule checkable, and an example you can copy.
+        </Text>
 
         <Textarea
           label='Guidelines'
