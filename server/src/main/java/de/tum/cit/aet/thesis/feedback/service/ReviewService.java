@@ -186,7 +186,9 @@ public class ReviewService {
 	 */
 	static String buildCategoryGuidelinesPrompt(StructuredGuidelines guidelines, ReviewCategory category) {
 		StringBuilder sb = new StringBuilder("## Reference Guidelines\n\n");
-		sb.append("The following are the official guidelines from the research group. They are the authoritative rules for this review — apply them precisely and keep your evaluation focused on the specific rules of your task above.\n");
+		sb.append("The following are the official guidelines from the research group. ")
+				.append("They are the authoritative rules for this review — apply them precisely ")
+				.append("and keep your evaluation focused on the specific rules of your task above.\n");
 
 		String overview = guidelines != null ? guidelines.overview() : null;
 		if (overview != null && !overview.isBlank()) {

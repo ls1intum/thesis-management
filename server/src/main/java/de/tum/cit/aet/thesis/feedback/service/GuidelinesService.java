@@ -56,6 +56,14 @@ public class GuidelinesService {
 	private final GuidelinesPreprocessor preprocessor;
 	private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
 
+	/**
+	 * Creates the service.
+	 *
+	 * @param guidelinesRepository           repository for the stored per-group guidelines
+	 * @param researchGroupRepository        repository used to resolve the target research group
+	 * @param preprocessor                   distills raw guideline text into structured rules
+	 * @param currentUserProviderProvider    lazy provider for the request-scoped current user
+	 */
 	public GuidelinesService(
 			ResearchGroupGuidelinesRepository guidelinesRepository,
 			ResearchGroupRepository researchGroupRepository,

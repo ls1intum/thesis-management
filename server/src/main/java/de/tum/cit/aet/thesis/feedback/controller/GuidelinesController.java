@@ -36,6 +36,11 @@ import java.util.UUID;
 public class GuidelinesController {
 	private final GuidelinesService guidelinesService;
 
+	/**
+	 * Creates the controller.
+	 *
+	 * @param guidelinesService service handling guideline reads and updates
+	 */
 	public GuidelinesController(GuidelinesService guidelinesService) {
 		this.guidelinesService = guidelinesService;
 	}
