@@ -17,6 +17,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -60,6 +61,7 @@ public class ReviewController {
 	 * @return the refreshed thesis with the newly persisted AI feedback
 	 */
 	@PostMapping("auto")
+	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<ThesisDto> autoReview(@Valid @RequestBody AIReviewRequestDTO request) {
 		User currentUser = currentUserProvider().getUser();
 		Thesis thesis = thesisService.findById(request.thesisId());
@@ -96,6 +98,7 @@ public class ReviewController {
 	 * @return the assessment, summary, and editable drafts
 	 */
 	@PostMapping("preview")
+	@PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
 	public ResponseEntity<AIPreviewResponseDTO> previewReview(@Valid @RequestBody AIReviewRequestDTO request) {
 		User currentUser = currentUserProvider().getUser();
 		Thesis thesis = thesisService.findById(request.thesisId());
