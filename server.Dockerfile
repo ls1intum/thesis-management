@@ -1,4 +1,4 @@
-FROM azul/zulu-openjdk:25.0.3-jdk AS build
+FROM azul/zulu-openjdk:25.0.4.1-jdk AS build
 WORKDIR /home/gradle/thesis-management/server
 
 # Copy dependency files first for layer caching
@@ -20,7 +20,7 @@ COPY client/sbom ../client/sbom
 
 RUN ./gradlew build -x test -x checkstyleMain -x checkstyleTest --no-daemon
 
-FROM azul/zulu-openjdk:25.0.3-jre
+FROM azul/zulu-openjdk:25.0.4.1-jre
 
 EXPOSE 8080
 
