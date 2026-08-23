@@ -8,6 +8,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import de.tum.cit.aet.thesis.core.exception.request.AccessDeniedException;
 import de.tum.cit.aet.thesis.core.group.entity.ResearchGroup;
 import de.tum.cit.aet.thesis.feedback.dto.AIPreviewResponseDTO;
 import de.tum.cit.aet.thesis.feedback.dto.AssessmentCategory;
@@ -28,7 +29,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-import org.springframework.security.access.AccessDeniedException;
 
 import java.util.List;
 import java.util.Optional;
@@ -77,7 +77,9 @@ class AIFeedbackServiceTest {
 		when(guidelinesRepository.findById(researchGroupId)).thenReturn(Optional.empty());
 
 		assertThatThrownBy(() -> service.previewReview(thesis, ReviewType.PROPOSAL))
-				.isInstanceOf(AccessDeniedException.class);
+				.isInstanceOf(AccessDeniedException.class)
+				.hasMessageContaining("not set up for your research group yet")
+				.hasMessageContaining("research group lead");
 
 		verify(reviewService, never()).review(any(), any(), any());
 	}
@@ -90,7 +92,9 @@ class AIFeedbackServiceTest {
 		when(guidelinesRepository.findById(researchGroupId)).thenReturn(Optional.of(failed));
 
 		assertThatThrownBy(() -> service.autoReviewAndSave(thesis, ReviewType.PROPOSAL))
-				.isInstanceOf(AccessDeniedException.class);
+				.isInstanceOf(AccessDeniedException.class)
+				.hasMessageContaining("could not be turned into review rules")
+				.hasMessageContaining("research group lead");
 
 		verify(reviewService, never()).review(any(), any(), any());
 	}

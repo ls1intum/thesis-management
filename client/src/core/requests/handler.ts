@@ -27,8 +27,17 @@ export function getApiResponseErrorMessage(response: ApiResponse<unknown>) {
     message = `Unknown error ${response.status}`
   }
 
-  if (!response.ok && response.error) {
-    message += `: ${response.error.message}`
+  // A message from the server is written for the end user (see ErrorDto / the request
+  // exceptions) and is always more specific than the generic status text above — e.g. "AI review
+  // is not set up for your research group yet…" instead of "You are not authorized to access this
+  // resource". Show it on its own rather than prefixing it with the status text, which would bury
+  // the actionable part and, for 403s, tell the user they lack access when they only lack setup.
+  // Codes 1000/1005 are synthetic (network failure, abort); their `error` is the raw fetch error
+  // ("Failed to fetch"), which only makes sense behind the generic text — so keep appending there.
+  const isHttpStatus = response.status >= 400 && response.status < 600
+
+  if (!response.ok && response.error?.message) {
+    return isHttpStatus ? response.error.message : `${message}: ${response.error.message}`
   }
 
   return message

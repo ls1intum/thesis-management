@@ -1,5 +1,6 @@
 package de.tum.cit.aet.thesis.feedback.service;
 
+import de.tum.cit.aet.thesis.core.exception.request.AccessDeniedException;
 import de.tum.cit.aet.thesis.core.exception.request.ResourceInvalidParametersException;
 import de.tum.cit.aet.thesis.core.group.entity.ResearchGroup;
 import de.tum.cit.aet.thesis.feedback.config.AIFeaturesEnabled;
@@ -25,7 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.core.io.Resource;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -42,6 +42,24 @@ import java.util.Locale;
 @Conditional(AIFeaturesEnabled.class)
 public class AIFeedbackService {
 	private static final Logger log = LoggerFactory.getLogger(AIFeedbackService.class);
+
+	/**
+	 * Shown when the thesis's research group has never configured AI review guidelines. Students
+	 * cannot fix this themselves, so the message names who can and where.
+	 */
+	private static final String GUIDELINES_MISSING_MESSAGE =
+			"AI review is not set up for your research group yet. Please ask your examiner or your research "
+					+ "group lead to add the group's writing guidelines under Research Group Settings → AI Review "
+					+ "Guidelines. Once they are saved, AI feedback becomes available for everyone in the group.";
+
+	/**
+	 * Shown when guidelines exist but preprocessing rejected them as too vague (or they are still
+	 * being processed) — a different fix than the missing case, so it gets its own wording.
+	 */
+	private static final String GUIDELINES_NOT_READY_MESSAGE =
+			"AI review is not available yet because your research group's writing guidelines could not be turned "
+					+ "into review rules. Please ask your examiner or your research group lead to revise them under "
+					+ "Research Group Settings → AI Review Guidelines.";
 
 	/** Severity levels sorted from most to least urgent for stable preview ordering. */
 	private static final Comparator<ThesisFeedbackSeverity> SEVERITY_ORDER = Comparator.comparingInt(sev -> switch (sev) {
@@ -276,13 +294,16 @@ public class AIFeedbackService {
 		ResearchGroup researchGroup = thesis.getResearchGroup();
 		if (researchGroup == null || researchGroup.getId() == null) {
 			throw new AccessDeniedException(
-					"AI review is unavailable because this thesis is not assigned to a research group.");
+					"AI review is not available for this thesis because it is not assigned to a research group. "
+							+ "Please ask your examiner or supervisor to assign the thesis to a research group.");
 		}
 
 		ResearchGroupGuidelines guidelines = guidelinesRepository.findById(researchGroup.getId()).orElse(null);
-		if (guidelines == null || !guidelines.isReady() || guidelines.getStructuredGuidelines() == null) {
-			throw new AccessDeniedException(
-					"AI review is not available yet: your research group lead must upload review guidelines first.");
+		if (guidelines == null) {
+			throw new AccessDeniedException(GUIDELINES_MISSING_MESSAGE);
+		}
+		if (!guidelines.isReady() || guidelines.getStructuredGuidelines() == null) {
+			throw new AccessDeniedException(GUIDELINES_NOT_READY_MESSAGE);
 		}
 
 		return guidelines.getStructuredGuidelines();
