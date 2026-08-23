@@ -9,10 +9,7 @@ import de.tum.cit.aet.thesis.presentation.constants.ThesisPresentationType;
 import de.tum.cit.aet.thesis.presentation.constants.ThesisPresentationVisibility;
 import de.tum.cit.aet.thesis.presentation.entity.ThesisPresentation;
 import de.tum.cit.aet.thesis.proposal.entity.ThesisProposal;
-import de.tum.cit.aet.thesis.thesis.constants.ThesisAbstractSource;
-import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackType;
-import de.tum.cit.aet.thesis.thesis.constants.ThesisState;
-import de.tum.cit.aet.thesis.thesis.constants.ThesisVisibility;
+import de.tum.cit.aet.thesis.thesis.constants.*;
 import de.tum.cit.aet.thesis.thesis.entity.Thesis;
 import de.tum.cit.aet.thesis.thesis.entity.ThesisAssessment;
 import de.tum.cit.aet.thesis.thesis.entity.ThesisFeedback;
@@ -236,9 +233,9 @@ public record ThesisFeedbackDto(
 	MinimalUserDto requestedBy,
 	Instant requestedAt,
 	Instant completedAt,
-	de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackCategory category,
-	de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackSeverity severity,
-	de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackSource generationSource,
+	ThesisFeedbackCategory category,
+	ThesisFeedbackSeverity severity,
+	ThesisFeedbackSource generationSource,
 	UUID documentVersionId
 ) {
 
