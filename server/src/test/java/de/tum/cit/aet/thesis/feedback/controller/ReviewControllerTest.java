@@ -50,14 +50,7 @@ class ReviewControllerTest extends BaseIntegrationTest {
 	void preview_returnsMockedDraftsForSupervisor() throws Exception {
 		UUID thesisId = createTestThesis("AI review preview test");
 
-		AIPreviewResponseDTO mockResponse = new AIPreviewResponseDTO(
-				AssessmentCategory.ACCEPTABLE,
-				"Solid overall but bibliography is thin.",
-				List.of(new AIFeedbackDraftDTO(
-						"Thin bibliography — increase to at least 6 peer-reviewed sources.",
-						ThesisFeedbackCategory.CITATION,
-						ThesisFeedbackSeverity.MAJOR)));
-		when(aiFeedbackService.previewReview(any(Thesis.class), any(ReviewType.class))).thenReturn(mockResponse);
+		stubPreviewResponse();
 
 		String body = "{\"thesisId\":\"" + thesisId + "\",\"reviewType\":\"PROPOSAL\"}";
 		mockMvc.perform(post("/v2/ai-review/preview")
@@ -69,6 +62,44 @@ class ReviewControllerTest extends BaseIntegrationTest {
 				.andExpect(jsonPath("$.summary").value("Solid overall but bibliography is thin."))
 				.andExpect(jsonPath("$.drafts[0].category").value("CITATION"))
 				.andExpect(jsonPath("$.drafts[0].severity").value("MAJOR"));
+
+		verify(aiFeedbackService).previewReview(any(Thesis.class), any(ReviewType.class));
+	}
+
+	@Test
+	void preview_returnsMockedDraftsForSupervisorGroup() throws Exception {
+		UUID thesisId = createTestThesis("AI review preview supervisor test");
+		// advisor group + SUPERVISOR thesis role clears both the hasAnyRole('advisor')
+		// gate and the inner hasSupervisorAccess check.
+		TestUser supervisor = addThesisRole(thesisId, "SUPERVISOR", "advisor");
+		stubPreviewResponse();
+
+		String body = "{\"thesisId\":\"" + thesisId + "\",\"reviewType\":\"PROPOSAL\"}";
+		mockMvc.perform(post("/v2/ai-review/preview")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(body)
+						.header("Authorization", authFor(supervisor, "advisor")))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.assessment").value("ACCEPTABLE"));
+
+		verify(aiFeedbackService).previewReview(any(Thesis.class), any(ReviewType.class));
+	}
+
+	@Test
+	void preview_returnsMockedDraftsForExaminerGroup() throws Exception {
+		UUID thesisId = createTestThesis("AI review preview examiner test");
+		// supervisor group + EXAMINER thesis role clears both the hasAnyRole('supervisor')
+		// gate and the inner hasSupervisorAccess check (via hasExaminerAccess).
+		TestUser examiner = addThesisRole(thesisId, "EXAMINER", "supervisor");
+		stubPreviewResponse();
+
+		String body = "{\"thesisId\":\"" + thesisId + "\",\"reviewType\":\"PROPOSAL\"}";
+		mockMvc.perform(post("/v2/ai-review/preview")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(body)
+						.header("Authorization", authFor(examiner, "supervisor")))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.assessment").value("ACCEPTABLE"));
 
 		verify(aiFeedbackService).previewReview(any(Thesis.class), any(ReviewType.class));
 	}
@@ -228,5 +259,16 @@ class ReviewControllerTest extends BaseIntegrationTest {
 
 	private String authFor(TestUser user, String role) {
 		return generateTestAuthenticationHeader(user.universityId(), List.of(role));
+	}
+
+	private void stubPreviewResponse() {
+		AIPreviewResponseDTO mockResponse = new AIPreviewResponseDTO(
+				AssessmentCategory.ACCEPTABLE,
+				"Solid overall but bibliography is thin.",
+				List.of(new AIFeedbackDraftDTO(
+						"Thin bibliography — increase to at least 6 peer-reviewed sources.",
+						ThesisFeedbackCategory.CITATION,
+						ThesisFeedbackSeverity.MAJOR)));
+		when(aiFeedbackService.previewReview(any(Thesis.class), any(ReviewType.class))).thenReturn(mockResponse);
 	}
 }

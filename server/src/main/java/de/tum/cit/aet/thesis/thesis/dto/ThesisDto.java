@@ -226,6 +226,7 @@ public record ThesisPresentationDto(
 	}
 }
 
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record ThesisFeedbackDto(
 	UUID feedbackId,
 	ThesisFeedbackType type,
