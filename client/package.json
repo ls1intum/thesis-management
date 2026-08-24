@@ -60,7 +60,7 @@
     "@tiptap/extension-text-style": "3.29.2",
     "@tiptap/extension-underline": "3.29.2",
     "@tiptap/react": "3.29.2",
-    "@tiptap/starter-kit": "3.29.2",
+    "@tiptap/starter-kit": "3.30.2",
     "dayjs": "1.11.21",
     "dompurify": "3.4.13",
     "embla-carousel": "8.6.0",
