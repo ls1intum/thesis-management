@@ -8,7 +8,7 @@ overrides:
   # GHSA-qj8w-gfj5-8c6v (RCE) + serialize-javascript CPU exhaustion
   serialize-javascript@<7.0.5: 7.0.7
   # GHSA-7p8r-x3mc-p8w7 / GHSA-v2hh-gcrm-f6hx (fast-uri host confusion, via ajv)
-  fast-uri@<3.1.5: 3.1.5
+  fast-uri@<3.1.5: 3.1.6
   # GHSA (uuid missing buffer bounds check in v3/v5/v6)
   uuid@<11.1.1: 11.1.1
   # GHSA-2v37-7h3g-55p8 (nanoid infinite loop when a custom generator gets size 0, via postcss)

@@ -39,6 +39,6 @@ overrides:
   # GHSA-2p49-hgcm-8545 (svgo removeScripts leaves executable code, via svg loaders)
   svgo@>=4.0.0 <4.0.2: 4.0.2
   # GHSA-7p8r-x3mc-p8w7 / GHSA-v2hh-gcrm-f6hx (fast-uri host confusion, via ajv)
-  fast-uri@<3.1.5: 3.1.5
+  fast-uri@<3.1.5: 3.1.6
   # GHSA-fxqj-rqcc-2cmp (postcss sourceMappingURL arbitrary read, transitive via vitest>vite)
   postcss@<8.5.23: 8.5.26
