@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.core.io.Resource;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -180,12 +181,29 @@ public class AIFeedbackService {
 		AIReviewSummary summary = reviewSummaryRepository
 				.findByThesisIdAndType(thesis.getId(), reviewType)
 				.orElseGet(AIReviewSummary::new);
+		applyReviewResult(summary, thesis, reviewType, result);
+
+		try {
+			reviewSummaryRepository.save(summary);
+		} catch (DataIntegrityViolationException e) {
+			// Two review runs for the same (thesis, type) raced: both found no existing row and
+			// both tried to insert. Retry as an update against the row the other one just
+			// created, so a concurrent request fails the review rather than this bookkeeping.
+			AIReviewSummary existing = reviewSummaryRepository
+					.findByThesisIdAndType(thesis.getId(), reviewType)
+					.orElseThrow(() -> e);
+			applyReviewResult(existing, thesis, reviewType, result);
+			reviewSummaryRepository.save(existing);
+		}
+	}
+
+	private static void applyReviewResult(AIReviewSummary summary, Thesis thesis, ReviewType reviewType,
+			ReviewResultDTO result) {
 		summary.setThesis(thesis);
 		summary.setType(reviewType);
 		summary.setScore(result.score());
 		summary.setAssessment(result.category());
 		summary.setSummary(result.summary());
-		reviewSummaryRepository.save(summary);
 	}
 
 	private Resource loadPdfResource(Thesis thesis, ReviewType reviewType) {

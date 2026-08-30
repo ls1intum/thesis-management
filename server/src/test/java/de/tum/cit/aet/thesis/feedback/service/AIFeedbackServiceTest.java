@@ -162,4 +162,38 @@ class AIFeedbackServiceTest {
 		verify(reviewSummaryRepository).save(savedSummary.capture());
 		assertThat(savedSummary.getValue().getScore()).isEqualTo(95);
 	}
+
+	@Test
+	void previewReview_retriesAsUpdateWhenConcurrentInsertRacesTheSummary() {
+		ResearchGroupGuidelines guidelines = readyGuidelines();
+		when(guidelinesRepository.findById(researchGroupId)).thenReturn(Optional.of(guidelines));
+
+		ThesisProposal proposal = org.mockito.Mockito.mock(ThesisProposal.class);
+		when(thesis.getProposals()).thenReturn(List.of(proposal));
+		Resource pdfResource = new ByteArrayResource("pdf".getBytes());
+		when(thesisService.getProposalFile(proposal)).thenReturn(pdfResource);
+
+		when(reviewService.review(eq(pdfResource), eq(ReviewType.PROPOSAL), eq(guidelines.getStructuredGuidelines())))
+				.thenReturn(new ReviewResultDTO(AssessmentCategory.GOOD, 90, "All good.", List.of()));
+		UUID thesisId = UUID.randomUUID();
+		when(thesis.getId()).thenReturn(thesisId);
+
+		// Both this run and a concurrent one see no existing row first...
+		AIReviewSummary concurrentlyInserted = new AIReviewSummary();
+		when(reviewSummaryRepository.findByThesisIdAndType(thesisId, ReviewType.PROPOSAL))
+				.thenReturn(Optional.empty())
+				.thenReturn(Optional.of(concurrentlyInserted));
+		// ...so this run's own insert violates the (thesis_id, type) unique constraint.
+		when(reviewSummaryRepository.save(org.mockito.ArgumentMatchers.argThat(
+				candidate -> candidate != concurrentlyInserted)))
+				.thenThrow(new org.springframework.dao.DataIntegrityViolationException("duplicate key"));
+
+		AIPreviewResponseDTO response = service.previewReview(thesis, ReviewType.PROPOSAL);
+
+		assertThat(response.score()).isEqualTo(90);
+		// The retry updates the row the concurrent run just inserted rather than failing.
+		verify(reviewSummaryRepository).save(concurrentlyInserted);
+		assertThat(concurrentlyInserted.getScore()).isEqualTo(90);
+		assertThat(concurrentlyInserted.getAssessment()).isEqualTo(AssessmentCategory.GOOD);
+	}
 }
