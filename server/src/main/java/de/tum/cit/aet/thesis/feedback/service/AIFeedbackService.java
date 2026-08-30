@@ -142,6 +142,12 @@ public class AIFeedbackService {
 	 * anything to the database. The instructor UI can then let the user tweak, accept, or drop
 	 * individual entries before persisting them.
 	 *
+	 * <p>Deliberately does NOT call {@link #persistReviewSummary}: a preview is supervisor-only
+	 * and provisional — the instructor may edit or discard every draft before saving anything.
+	 * The persisted summary backs the "Overall Score" shown on the student-visible feedback
+	 * overview, so persisting a discarded preview's score/summary there would leak content the
+	 * instructor never approved.
+	 *
 	 * @param thesis the thesis whose uploaded document is reviewed
 	 * @param reviewType whether to review the proposal or the thesis document
 	 * @return the assessment, summary, and editable drafts
@@ -150,7 +156,6 @@ public class AIFeedbackService {
 		StructuredGuidelines guidelines = requireReadyGuidelines(thesis);
 		Resource pdfResource = loadPdfResource(thesis, reviewType);
 		ReviewResultDTO result = reviewService.review(pdfResource, reviewType, guidelines);
-		persistReviewSummary(thesis, reviewType, result);
 
 		List<AIFeedbackDraftDTO> drafts = safeFindings(result.findings()).stream()
 				.map(finding -> new AIFeedbackDraftDTO(
@@ -169,9 +174,10 @@ public class AIFeedbackService {
 
 	/**
 	 * Upserts the {@code (thesis, reviewType)} row recording the AI review pipeline's latest
-	 * score, assessment, and summary — independent of whether the resulting findings are ever
-	 * saved. Called after every review run (auto or preview) so the feedback overview can show a
-	 * running "Overall Score" without depending on the caller having accepted any drafts.
+	 * score, assessment, and summary. Only called from {@link #autoReviewAndSave} — that flow
+	 * always saves its findings as real, already-visible {@code ThesisFeedback} rows, so the
+	 * summary describes content the student can already see. {@link #previewReview} must NOT call
+	 * this (see its Javadoc).
 	 *
 	 * @param thesis the thesis that was reviewed
 	 * @param reviewType whether the proposal or the thesis document was reviewed

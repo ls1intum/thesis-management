@@ -118,23 +118,15 @@ class AIFeedbackServiceTest {
 
 		when(reviewService.review(eq(pdfResource), eq(ReviewType.PROPOSAL), eq(guidelines.getStructuredGuidelines())))
 				.thenReturn(new ReviewResultDTO(AssessmentCategory.GOOD, 90, "All good.", List.of()));
-		UUID thesisId = UUID.randomUUID();
-		when(thesis.getId()).thenReturn(thesisId);
-		when(reviewSummaryRepository.findByThesisIdAndType(thesisId, ReviewType.PROPOSAL)).thenReturn(Optional.empty());
 
 		AIPreviewResponseDTO response = service.previewReview(thesis, ReviewType.PROPOSAL);
 
 		assertThat(response.summary()).isEqualTo("All good.");
 		assertThat(response.score()).isEqualTo(90);
 		verify(reviewService).review(pdfResource, ReviewType.PROPOSAL, guidelines.getStructuredGuidelines());
-
-		ArgumentCaptor<AIReviewSummary> savedSummary = ArgumentCaptor.forClass(AIReviewSummary.class);
-		verify(reviewSummaryRepository).save(savedSummary.capture());
-		assertThat(savedSummary.getValue().getThesis()).isEqualTo(thesis);
-		assertThat(savedSummary.getValue().getType()).isEqualTo(ReviewType.PROPOSAL);
-		assertThat(savedSummary.getValue().getScore()).isEqualTo(90);
-		assertThat(savedSummary.getValue().getAssessment()).isEqualTo(AssessmentCategory.GOOD);
-		assertThat(savedSummary.getValue().getSummary()).isEqualTo("All good.");
+		// A preview is supervisor-only and provisional (drafts may be edited/discarded), so it
+		// must never persist a summary the student-visible feedback overview would then show.
+		verify(reviewSummaryRepository, never()).save(any());
 	}
 
 	@Test
@@ -164,7 +156,7 @@ class AIFeedbackServiceTest {
 	}
 
 	@Test
-	void previewReview_retriesAsUpdateWhenConcurrentInsertRacesTheSummary() {
+	void autoReviewAndSave_retriesAsUpdateWhenConcurrentInsertRacesTheSummary() {
 		ResearchGroupGuidelines guidelines = readyGuidelines();
 		when(guidelinesRepository.findById(researchGroupId)).thenReturn(Optional.of(guidelines));
 
@@ -188,9 +180,8 @@ class AIFeedbackServiceTest {
 				candidate -> candidate != concurrentlyInserted)))
 				.thenThrow(new org.springframework.dao.DataIntegrityViolationException("duplicate key"));
 
-		AIPreviewResponseDTO response = service.previewReview(thesis, ReviewType.PROPOSAL);
+		service.autoReviewAndSave(thesis, ReviewType.PROPOSAL);
 
-		assertThat(response.score()).isEqualTo(90);
 		// The retry updates the row the concurrent run just inserted rather than failing.
 		verify(reviewSummaryRepository).save(concurrentlyInserted);
 		assertThat(concurrentlyInserted.getScore()).isEqualTo(90);
