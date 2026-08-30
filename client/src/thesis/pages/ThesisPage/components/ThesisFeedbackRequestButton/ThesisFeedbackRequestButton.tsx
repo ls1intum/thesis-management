@@ -117,12 +117,12 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
 
   const categoryCounts = useMemo(() => {
     const counts = new Map<ThesisFeedbackCategory, number>()
-    validEntries.forEach((entry) => {
-      if (!entry.category) return
-      counts.set(entry.category, (counts.get(entry.category) ?? 0) + 1)
+    ;(aiAssessment?.drafts ?? []).forEach((draft) => {
+      if (!draft.category) return
+      counts.set(draft.category, (counts.get(draft.category) ?? 0) + 1)
     })
     return counts
-  }, [validEntries])
+  }, [aiAssessment])
 
   const hasUnsavedWork = validEntries.length > 0 || editChanges.length > 0
 
