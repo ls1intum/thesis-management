@@ -169,7 +169,7 @@ public class AIFeedbackService {
 				))
 				.toList();
 
-		return new AIPreviewResponseDTO(result.category(), result.score(), result.summary(), drafts);
+		return new AIPreviewResponseDTO(result.category(), sanitizeScore(result.score()), result.summary(), drafts);
 	}
 
 	/**
@@ -207,9 +207,24 @@ public class AIFeedbackService {
 			ReviewResultDTO result) {
 		summary.setThesis(thesis);
 		summary.setType(reviewType);
-		summary.setScore(result.score());
+		summary.setScore(sanitizeScore(result.score()));
 		summary.setAssessment(result.category());
 		summary.setSummary(result.summary());
+	}
+
+	/**
+	 * The score comes straight from the merger LLM's structured output — the prompt asks for an
+	 * integer 0-100, but nothing enforces that at the schema level. Treat a missing or
+	 * out-of-range value as "no score" rather than persisting or returning a bogus number.
+	 *
+	 * @param score the raw score reported by the review pipeline
+	 * @return the score if it is a valid integer in [0, 100], otherwise {@code null}
+	 */
+	private static Integer sanitizeScore(Integer score) {
+		if (score == null || score < 0 || score > 100) {
+			return null;
+		}
+		return score;
 	}
 
 	private Resource loadPdfResource(Thesis thesis, ReviewType reviewType) {

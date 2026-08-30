@@ -130,6 +130,60 @@ class AIFeedbackServiceTest {
 	}
 
 	@Test
+	void previewReview_treatsNullScoreAsAbsent() {
+		ResearchGroupGuidelines guidelines = readyGuidelines();
+		when(guidelinesRepository.findById(researchGroupId)).thenReturn(Optional.of(guidelines));
+
+		ThesisProposal proposal = org.mockito.Mockito.mock(ThesisProposal.class);
+		when(thesis.getProposals()).thenReturn(List.of(proposal));
+		Resource pdfResource = new ByteArrayResource("pdf".getBytes());
+		when(thesisService.getProposalFile(proposal)).thenReturn(pdfResource);
+
+		when(reviewService.review(eq(pdfResource), eq(ReviewType.PROPOSAL), eq(guidelines.getStructuredGuidelines())))
+				.thenReturn(new ReviewResultDTO(AssessmentCategory.GOOD, null, "All good.", List.of()));
+
+		AIPreviewResponseDTO response = service.previewReview(thesis, ReviewType.PROPOSAL);
+
+		assertThat(response.score()).isNull();
+	}
+
+	@Test
+	void previewReview_nullsOutNegativeScore() {
+		ResearchGroupGuidelines guidelines = readyGuidelines();
+		when(guidelinesRepository.findById(researchGroupId)).thenReturn(Optional.of(guidelines));
+
+		ThesisProposal proposal = org.mockito.Mockito.mock(ThesisProposal.class);
+		when(thesis.getProposals()).thenReturn(List.of(proposal));
+		Resource pdfResource = new ByteArrayResource("pdf".getBytes());
+		when(thesisService.getProposalFile(proposal)).thenReturn(pdfResource);
+
+		when(reviewService.review(eq(pdfResource), eq(ReviewType.PROPOSAL), eq(guidelines.getStructuredGuidelines())))
+				.thenReturn(new ReviewResultDTO(AssessmentCategory.GOOD, -5, "All good.", List.of()));
+
+		AIPreviewResponseDTO response = service.previewReview(thesis, ReviewType.PROPOSAL);
+
+		assertThat(response.score()).isNull();
+	}
+
+	@Test
+	void previewReview_nullsOutScoreAboveMax() {
+		ResearchGroupGuidelines guidelines = readyGuidelines();
+		when(guidelinesRepository.findById(researchGroupId)).thenReturn(Optional.of(guidelines));
+
+		ThesisProposal proposal = org.mockito.Mockito.mock(ThesisProposal.class);
+		when(thesis.getProposals()).thenReturn(List.of(proposal));
+		Resource pdfResource = new ByteArrayResource("pdf".getBytes());
+		when(thesisService.getProposalFile(proposal)).thenReturn(pdfResource);
+
+		when(reviewService.review(eq(pdfResource), eq(ReviewType.PROPOSAL), eq(guidelines.getStructuredGuidelines())))
+				.thenReturn(new ReviewResultDTO(AssessmentCategory.GOOD, 150, "All good.", List.of()));
+
+		AIPreviewResponseDTO response = service.previewReview(thesis, ReviewType.PROPOSAL);
+
+		assertThat(response.score()).isNull();
+	}
+
+	@Test
 	void autoReviewAndSave_persistsReviewSummaryEvenWithNoActionableFindings() {
 		ResearchGroupGuidelines guidelines = readyGuidelines();
 		when(guidelinesRepository.findById(researchGroupId)).thenReturn(Optional.of(guidelines));

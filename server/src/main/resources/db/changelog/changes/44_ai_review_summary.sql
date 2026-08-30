@@ -10,7 +10,7 @@ CREATE TABLE ai_review_summary (
     ai_review_summary_id UUID PRIMARY KEY,
     thesis_id             UUID        NOT NULL REFERENCES theses (thesis_id) ON DELETE CASCADE,
     type                  VARCHAR(20) NOT NULL CHECK (type IN ('PROPOSAL', 'THESIS')),
-    score                 INTEGER,
+    score                 INTEGER     CHECK (score IS NULL OR (score >= 0 AND score <= 100)),
     assessment            VARCHAR(20) CHECK (assessment IS NULL OR assessment IN ('GOOD', 'ACCEPTABLE', 'NEEDS_WORK')),
     summary               TEXT,
     updated_at            TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
