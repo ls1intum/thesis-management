@@ -82,7 +82,7 @@ public class ReviewServiceTest {
 		List<String> extractedText = List.of("Extracted text from PDF");
 		List<Media> extractedImages = List.of(new Media(MimeTypeUtils.IMAGE_PNG, URI.create("file:///proposal-template-page-1.png")));
 		IntermediateReviewResult intermediateReviewResult = new IntermediateReviewResult(List.of());
-		ReviewResultDTO expectedResult = new ReviewResultDTO(AssessmentCategory.ACCEPTABLE, "Overall assessment", List.of());
+		ReviewResultDTO expectedResult = new ReviewResultDTO(AssessmentCategory.ACCEPTABLE, 65, "Overall assessment", List.of());
 
 		when(pdfService.extractTextFromPdf(any(Resource.class))).thenReturn(extractedText);
 		when(pdfService.extractImagesFromPdf(any(Resource.class))).thenReturn(extractedImages);

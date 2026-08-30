@@ -145,6 +145,16 @@ export interface IThesis extends IThesisOverview {
     // client resolves it to a "v{n}" label by matching against thesis.proposals / thesis.files.
     documentVersionId?: string | null
   }>
+  // The AI review pipeline's latest read on the proposal/thesis document — persisted on every
+  // review run (student auto-review or supervisor preview), independent of which findings (if
+  // any) were saved.
+  aiReviewSummaries?: Array<{
+    type: 'PROPOSAL' | 'THESIS'
+    score?: number | null
+    assessment?: 'GOOD' | 'ACCEPTABLE' | 'NEEDS_WORK' | null
+    summary?: string | null
+    updatedAt: string
+  }>
   grade: null | {
     finalGrade: string
     feedback: string

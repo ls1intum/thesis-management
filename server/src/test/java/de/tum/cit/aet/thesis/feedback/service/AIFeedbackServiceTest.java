@@ -3,6 +3,7 @@ package de.tum.cit.aet.thesis.feedback.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -13,10 +14,12 @@ import de.tum.cit.aet.thesis.core.group.entity.ResearchGroup;
 import de.tum.cit.aet.thesis.feedback.dto.AIPreviewResponseDTO;
 import de.tum.cit.aet.thesis.feedback.dto.AssessmentCategory;
 import de.tum.cit.aet.thesis.feedback.dto.ReviewResultDTO;
+import de.tum.cit.aet.thesis.feedback.entity.AIReviewSummary;
 import de.tum.cit.aet.thesis.feedback.entity.GuidelinesStatus;
 import de.tum.cit.aet.thesis.feedback.entity.ResearchGroupGuidelines;
 import de.tum.cit.aet.thesis.feedback.entity.jsonb.CategoryGuidelines;
 import de.tum.cit.aet.thesis.feedback.entity.jsonb.StructuredGuidelines;
+import de.tum.cit.aet.thesis.feedback.repository.AIReviewSummaryRepository;
 import de.tum.cit.aet.thesis.feedback.repository.ResearchGroupGuidelinesRepository;
 import de.tum.cit.aet.thesis.feedback.service.reviewer.ReviewType;
 import de.tum.cit.aet.thesis.proposal.entity.ThesisProposal;
@@ -25,6 +28,7 @@ import de.tum.cit.aet.thesis.thesis.service.ThesisService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.ByteArrayResource;
@@ -47,6 +51,9 @@ class AIFeedbackServiceTest {
 	private ResearchGroupGuidelinesRepository guidelinesRepository;
 
 	@Mock
+	private AIReviewSummaryRepository reviewSummaryRepository;
+
+	@Mock
 	private Thesis thesis;
 
 	private AIFeedbackService service;
@@ -55,7 +62,7 @@ class AIFeedbackServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		service = new AIFeedbackService(reviewService, thesisService, guidelinesRepository);
+		service = new AIFeedbackService(reviewService, thesisService, guidelinesRepository, reviewSummaryRepository);
 
 		ResearchGroup researchGroup = new ResearchGroup();
 		researchGroup.setId(researchGroupId);
@@ -110,11 +117,49 @@ class AIFeedbackServiceTest {
 		when(thesisService.getProposalFile(proposal)).thenReturn(pdfResource);
 
 		when(reviewService.review(eq(pdfResource), eq(ReviewType.PROPOSAL), eq(guidelines.getStructuredGuidelines())))
-				.thenReturn(new ReviewResultDTO(AssessmentCategory.GOOD, "All good.", List.of()));
+				.thenReturn(new ReviewResultDTO(AssessmentCategory.GOOD, 90, "All good.", List.of()));
+		UUID thesisId = UUID.randomUUID();
+		when(thesis.getId()).thenReturn(thesisId);
+		when(reviewSummaryRepository.findByThesisIdAndType(thesisId, ReviewType.PROPOSAL)).thenReturn(Optional.empty());
 
 		AIPreviewResponseDTO response = service.previewReview(thesis, ReviewType.PROPOSAL);
 
 		assertThat(response.summary()).isEqualTo("All good.");
+		assertThat(response.score()).isEqualTo(90);
 		verify(reviewService).review(pdfResource, ReviewType.PROPOSAL, guidelines.getStructuredGuidelines());
+
+		ArgumentCaptor<AIReviewSummary> savedSummary = ArgumentCaptor.forClass(AIReviewSummary.class);
+		verify(reviewSummaryRepository).save(savedSummary.capture());
+		assertThat(savedSummary.getValue().getThesis()).isEqualTo(thesis);
+		assertThat(savedSummary.getValue().getType()).isEqualTo(ReviewType.PROPOSAL);
+		assertThat(savedSummary.getValue().getScore()).isEqualTo(90);
+		assertThat(savedSummary.getValue().getAssessment()).isEqualTo(AssessmentCategory.GOOD);
+		assertThat(savedSummary.getValue().getSummary()).isEqualTo("All good.");
+	}
+
+	@Test
+	void autoReviewAndSave_persistsReviewSummaryEvenWithNoActionableFindings() {
+		ResearchGroupGuidelines guidelines = readyGuidelines();
+		when(guidelinesRepository.findById(researchGroupId)).thenReturn(Optional.of(guidelines));
+
+		ThesisProposal proposal = org.mockito.Mockito.mock(ThesisProposal.class);
+		when(thesis.getProposals()).thenReturn(List.of(proposal));
+		Resource pdfResource = new ByteArrayResource("pdf".getBytes());
+		when(thesisService.getProposalFile(proposal)).thenReturn(pdfResource);
+
+		when(reviewService.review(eq(pdfResource), eq(ReviewType.PROPOSAL), eq(guidelines.getStructuredGuidelines())))
+				.thenReturn(new ReviewResultDTO(AssessmentCategory.GOOD, 95, "Nothing to flag.", List.of()));
+		UUID thesisId = UUID.randomUUID();
+		when(thesis.getId()).thenReturn(thesisId);
+		when(reviewSummaryRepository.findByThesisIdAndType(thesisId, ReviewType.PROPOSAL)).thenReturn(Optional.empty());
+
+		Thesis result = service.autoReviewAndSave(thesis, ReviewType.PROPOSAL);
+
+		assertThat(result).isSameAs(thesis);
+		verify(thesisService, never()).requestChanges(any(), any(), anyList(), any());
+
+		ArgumentCaptor<AIReviewSummary> savedSummary = ArgumentCaptor.forClass(AIReviewSummary.class);
+		verify(reviewSummaryRepository).save(savedSummary.capture());
+		assertThat(savedSummary.getValue().getScore()).isEqualTo(95);
 	}
 }

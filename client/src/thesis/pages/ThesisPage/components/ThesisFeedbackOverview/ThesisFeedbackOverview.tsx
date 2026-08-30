@@ -3,24 +3,23 @@ import {
   useThesisUpdateAction,
 } from '@/thesis/providers/ThesisProvider/hooks'
 import {
+  Alert,
   Badge,
   Center,
   Checkbox,
   Group,
   Input,
   Pagination,
+  Progress,
   Select,
   Stack,
   Table,
   Text,
   TextInput,
+  Tooltip,
 } from '@mantine/core'
 import type { IThesis } from '@/thesis/requests/responses/thesis'
-import {
-  ThesisFeedbackCategory,
-  ThesisFeedbackSeverity,
-  ThesisFeedbackSource,
-} from '@/thesis/requests/responses/thesis'
+import { ThesisFeedbackCategory, ThesisFeedbackSource } from '@/thesis/requests/responses/thesis'
 import React from 'react'
 import AvatarUser from '@/core/components/AvatarUser/AvatarUser'
 import { formatDate } from '@/core/utils/format'
@@ -28,6 +27,17 @@ import { doRequest } from '@/core/requests/request'
 import { ApiError } from '@/core/requests/handler'
 import { MagnifyingGlass, Trash } from '@phosphor-icons/react'
 import ConfirmationButton from '@/core/components/ConfirmationButton/ConfirmationButton'
+import {
+  ASSESSMENT_COLOR,
+  ASSESSMENT_LABEL,
+  CATEGORY_DESCRIPTION,
+  humanizeFeedbackCategory,
+  SEVERITY_COLOR,
+  SEVERITY_DESCRIPTION,
+  SOURCE_COLOR,
+  SOURCE_DESCRIPTION,
+  SOURCE_LABEL,
+} from '@/thesis/utils/feedbackLabels'
 
 const PAGE_SIZE = 10
 
@@ -36,32 +46,6 @@ type ResolvedFilter = 'ALL' | 'OPEN' | 'RESOLVED'
 interface IThesisFeedbackOverviewProps {
   type: string
   allowEdit: boolean
-}
-
-const SEVERITY_COLOR: Record<ThesisFeedbackSeverity, string> = {
-  [ThesisFeedbackSeverity.CRITICAL]: 'red',
-  [ThesisFeedbackSeverity.MAJOR]: 'orange',
-  [ThesisFeedbackSeverity.MINOR]: 'yellow',
-  [ThesisFeedbackSeverity.SUGGESTION]: 'blue',
-}
-
-const SOURCE_LABEL: Record<ThesisFeedbackSource, string> = {
-  [ThesisFeedbackSource.AI]: 'AI',
-  [ThesisFeedbackSource.HUMAN]: 'Instructor',
-  [ThesisFeedbackSource.AI_REVIEWED_BY_HUMAN]: 'AI + Instructor',
-}
-
-const SOURCE_COLOR: Record<ThesisFeedbackSource, string> = {
-  [ThesisFeedbackSource.AI]: 'grape',
-  [ThesisFeedbackSource.HUMAN]: 'gray',
-  [ThesisFeedbackSource.AI_REVIEWED_BY_HUMAN]: 'teal',
-}
-
-const humanizeCategory = (value: ThesisFeedbackCategory | string | null | undefined): string => {
-  if (!value) return ''
-  return String(value)
-    .toLowerCase()
-    .replace(/(^\w|_\w)/g, (m) => m.replace('_', ' ').toUpperCase())
 }
 
 /**
@@ -137,6 +121,25 @@ const ThesisFeedbackOverview = (props: IThesisFeedbackOverviewProps) => {
     [thesis.feedback, type],
   )
 
+  const reviewSummary = React.useMemo(
+    () => (thesis.aiReviewSummaries ?? []).find((summary) => summary.type === type),
+    [thesis.aiReviewSummaries, type],
+  )
+
+  const categoryCounts = React.useMemo(() => {
+    const counts = new Map<ThesisFeedbackCategory, number>()
+    feedbackForType.forEach((item) => {
+      if (!item.category) return
+      counts.set(item.category, (counts.get(item.category) ?? 0) + 1)
+    })
+    return counts
+  }, [feedbackForType])
+
+  const addressedCount = React.useMemo(
+    () => feedbackForType.filter((item) => item.completedAt).length,
+    [feedbackForType],
+  )
+
   const [search, setSearch] = React.useState('')
   const [categoryFilter, setCategoryFilter] = React.useState<string | null>(null)
   const [resolvedFilter, setResolvedFilter] = React.useState<ResolvedFilter>('ALL')
@@ -175,12 +178,74 @@ const ThesisFeedbackOverview = (props: IThesisFeedbackOverviewProps) => {
 
   const categoryOptions = Object.values(ThesisFeedbackCategory).map((value) => ({
     value,
-    label: humanizeCategory(value),
+    label: humanizeFeedbackCategory(value),
   }))
 
   return (
     <Input.Wrapper label='Feedback'>
       <Stack gap='sm'>
+        {reviewSummary &&
+          (Boolean(reviewSummary.summary) || typeof reviewSummary.score === 'number') && (
+            <Alert
+              color={reviewSummary.assessment ? ASSESSMENT_COLOR[reviewSummary.assessment] : 'gray'}
+              variant='light'
+              title={
+                typeof reviewSummary.score === 'number'
+                  ? `Overall Score: ${reviewSummary.score}/100`
+                  : 'AI review summary'
+              }
+            >
+              <Stack gap={4}>
+                {reviewSummary.assessment && (
+                  <Text size='sm' fw={500}>
+                    {ASSESSMENT_LABEL[reviewSummary.assessment]}
+                  </Text>
+                )}
+                {reviewSummary.summary && (
+                  <Text size='sm' c='dimmed'>
+                    {reviewSummary.summary}
+                  </Text>
+                )}
+              </Stack>
+            </Alert>
+          )}
+        <Group gap='lg' align='center' wrap='wrap'>
+          <Group gap={6} align='center'>
+            <Text size='sm' fw={500}>
+              {addressedCount}/{feedbackForType.length} addressed
+            </Text>
+            <Progress.Root size={8} radius='xl' style={{ width: 120 }}>
+              <Progress.Section
+                value={feedbackForType.length ? (addressedCount / feedbackForType.length) * 100 : 0}
+                color='green'
+              />
+              <Progress.Section
+                value={
+                  feedbackForType.length
+                    ? ((feedbackForType.length - addressedCount) / feedbackForType.length) * 100
+                    : 0
+                }
+                color='gray.3'
+              />
+            </Progress.Root>
+          </Group>
+          {categoryCounts.size > 0 && (
+            <Group gap={6}>
+              {Array.from(categoryCounts.entries()).map(([category, count]) => (
+                <Tooltip
+                  key={category}
+                  label={CATEGORY_DESCRIPTION[category]}
+                  withArrow
+                  openDelay={300}
+                >
+                  <Badge size='sm' color='gray' variant='outline'>
+                    {humanizeFeedbackCategory(category)}: {count}
+                  </Badge>
+                </Tooltip>
+              ))}
+            </Group>
+          )}
+        </Group>
         <Group gap='sm' align='flex-end' wrap='wrap'>
           <TextInput
             style={{ flex: 1, minWidth: 200 }}
@@ -241,27 +306,55 @@ const ThesisFeedbackOverview = (props: IThesisFeedbackOverviewProps) => {
                   </Table.Td>
                   <Table.Td>
                     <Stack gap={4}>
-                      <Text>{item.feedback}</Text>
+                      <Text
+                        td={item.completedAt ? 'line-through' : undefined}
+                        c={item.completedAt ? 'dimmed' : undefined}
+                      >
+                        {item.feedback}
+                      </Text>
                       <Group gap={4}>
-                        {item.severity && (
-                          <Badge size='sm' color={SEVERITY_COLOR[item.severity]} variant='light'>
-                            {item.severity}
+                        {item.completedAt && (
+                          <Badge size='sm' color='green' variant='light'>
+                            Addressed
                           </Badge>
                         )}
+                        {item.severity && (
+                          <Tooltip
+                            label={SEVERITY_DESCRIPTION[item.severity]}
+                            withArrow
+                            openDelay={300}
+                          >
+                            <Badge size='sm' color={SEVERITY_COLOR[item.severity]} variant='light'>
+                              {item.severity}
+                            </Badge>
+                          </Tooltip>
+                        )}
                         {item.category && (
-                          <Badge size='sm' color='gray' variant='outline'>
-                            {humanizeCategory(item.category)}
-                          </Badge>
+                          <Tooltip
+                            label={CATEGORY_DESCRIPTION[item.category]}
+                            withArrow
+                            openDelay={300}
+                          >
+                            <Badge size='sm' color='gray' variant='outline'>
+                              {humanizeFeedbackCategory(item.category)}
+                            </Badge>
+                          </Tooltip>
                         )}
                         {item.generationSource &&
                           item.generationSource !== ThesisFeedbackSource.HUMAN && (
-                            <Badge
-                              size='sm'
-                              color={SOURCE_COLOR[item.generationSource]}
-                              variant='light'
+                            <Tooltip
+                              label={SOURCE_DESCRIPTION[item.generationSource]}
+                              withArrow
+                              openDelay={300}
                             >
-                              {SOURCE_LABEL[item.generationSource]}
-                            </Badge>
+                              <Badge
+                                size='sm'
+                                color={SOURCE_COLOR[item.generationSource]}
+                                variant='light'
+                              >
+                                {SOURCE_LABEL[item.generationSource]}
+                              </Badge>
+                            </Tooltip>
                           )}
                         {item.documentVersionId && versionLabelById.get(item.documentVersionId) && (
                           <Badge size='sm' color='blue' variant='outline'>

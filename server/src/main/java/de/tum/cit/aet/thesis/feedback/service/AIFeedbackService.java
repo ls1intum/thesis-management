@@ -9,8 +9,10 @@ import de.tum.cit.aet.thesis.feedback.dto.AIPreviewResponseDTO;
 import de.tum.cit.aet.thesis.feedback.dto.FindingDTO;
 import de.tum.cit.aet.thesis.feedback.dto.Location;
 import de.tum.cit.aet.thesis.feedback.dto.ReviewResultDTO;
+import de.tum.cit.aet.thesis.feedback.entity.AIReviewSummary;
 import de.tum.cit.aet.thesis.feedback.entity.ResearchGroupGuidelines;
 import de.tum.cit.aet.thesis.feedback.entity.jsonb.StructuredGuidelines;
+import de.tum.cit.aet.thesis.feedback.repository.AIReviewSummaryRepository;
 import de.tum.cit.aet.thesis.feedback.repository.ResearchGroupGuidelinesRepository;
 import de.tum.cit.aet.thesis.feedback.service.reviewer.ReviewType;
 import de.tum.cit.aet.thesis.proposal.entity.ThesisProposal;
@@ -72,6 +74,7 @@ public class AIFeedbackService {
 	private final ReviewService reviewService;
 	private final ThesisService thesisService;
 	private final ResearchGroupGuidelinesRepository guidelinesRepository;
+	private final AIReviewSummaryRepository reviewSummaryRepository;
 
 	/**
 	 * Creates the AI feedback service.
@@ -79,14 +82,18 @@ public class AIFeedbackService {
 	 * @param reviewService the pipeline that runs the LLM review over a PDF
 	 * @param thesisService the service used to load documents and persist feedback
 	 * @param guidelinesRepository the repository used to load and gate on per-group review guidelines
+	 * @param reviewSummaryRepository the repository used to persist the latest score/assessment/summary
+	 *                                per (thesis, review type)
 	 */
 	public AIFeedbackService(
 			ReviewService reviewService,
 			ThesisService thesisService,
-			ResearchGroupGuidelinesRepository guidelinesRepository) {
+			ResearchGroupGuidelinesRepository guidelinesRepository,
+			AIReviewSummaryRepository reviewSummaryRepository) {
 		this.reviewService = reviewService;
 		this.thesisService = thesisService;
 		this.guidelinesRepository = guidelinesRepository;
+		this.reviewSummaryRepository = reviewSummaryRepository;
 	}
 
 	/**
@@ -102,6 +109,7 @@ public class AIFeedbackService {
 		StructuredGuidelines guidelines = requireReadyGuidelines(thesis);
 		Resource pdfResource = loadPdfResource(thesis, reviewType);
 		ReviewResultDTO result = reviewService.review(pdfResource, reviewType, guidelines);
+		persistReviewSummary(thesis, reviewType, result);
 
 		List<RequestChangesPayload.RequestedChange> changes = new ArrayList<>();
 		for (FindingDTO finding : safeFindings(result.findings())) {
@@ -141,6 +149,7 @@ public class AIFeedbackService {
 		StructuredGuidelines guidelines = requireReadyGuidelines(thesis);
 		Resource pdfResource = loadPdfResource(thesis, reviewType);
 		ReviewResultDTO result = reviewService.review(pdfResource, reviewType, guidelines);
+		persistReviewSummary(thesis, reviewType, result);
 
 		List<AIFeedbackDraftDTO> drafts = safeFindings(result.findings()).stream()
 				.map(finding -> new AIFeedbackDraftDTO(
@@ -154,7 +163,29 @@ public class AIFeedbackService {
 				))
 				.toList();
 
-		return new AIPreviewResponseDTO(result.category(), result.summary(), drafts);
+		return new AIPreviewResponseDTO(result.category(), result.score(), result.summary(), drafts);
+	}
+
+	/**
+	 * Upserts the {@code (thesis, reviewType)} row recording the AI review pipeline's latest
+	 * score, assessment, and summary — independent of whether the resulting findings are ever
+	 * saved. Called after every review run (auto or preview) so the feedback overview can show a
+	 * running "Overall Score" without depending on the caller having accepted any drafts.
+	 *
+	 * @param thesis the thesis that was reviewed
+	 * @param reviewType whether the proposal or the thesis document was reviewed
+	 * @param result the merged review result to persist
+	 */
+	private void persistReviewSummary(Thesis thesis, ReviewType reviewType, ReviewResultDTO result) {
+		AIReviewSummary summary = reviewSummaryRepository
+				.findByThesisIdAndType(thesis.getId(), reviewType)
+				.orElseGet(AIReviewSummary::new);
+		summary.setThesis(thesis);
+		summary.setType(reviewType);
+		summary.setScore(result.score());
+		summary.setAssessment(result.category());
+		summary.setSummary(result.summary());
+		reviewSummaryRepository.save(summary);
 	}
 
 	private Resource loadPdfResource(Thesis thesis, ReviewType reviewType) {
