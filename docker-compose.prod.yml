@@ -74,6 +74,7 @@ services:
       - OPENAI_BASE_URL
       - OPENAI_CHAT_MODEL
       - OPENAI_CHAT_TEMPERATURE
+      - OPENAI_TIMEOUT
       - AI_REVIEW_INCLUDE_IMAGES
     networks:
       - thesis-management-network

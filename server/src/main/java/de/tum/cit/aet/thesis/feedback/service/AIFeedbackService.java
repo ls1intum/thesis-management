@@ -1,12 +1,17 @@
 package de.tum.cit.aet.thesis.feedback.service;
 
+import de.tum.cit.aet.thesis.core.exception.request.AccessDeniedException;
 import de.tum.cit.aet.thesis.core.exception.request.ResourceInvalidParametersException;
+import de.tum.cit.aet.thesis.core.group.entity.ResearchGroup;
 import de.tum.cit.aet.thesis.feedback.config.AIFeaturesEnabled;
 import de.tum.cit.aet.thesis.feedback.dto.AIFeedbackDraftDTO;
 import de.tum.cit.aet.thesis.feedback.dto.AIPreviewResponseDTO;
 import de.tum.cit.aet.thesis.feedback.dto.FindingDTO;
 import de.tum.cit.aet.thesis.feedback.dto.Location;
 import de.tum.cit.aet.thesis.feedback.dto.ReviewResultDTO;
+import de.tum.cit.aet.thesis.feedback.entity.ResearchGroupGuidelines;
+import de.tum.cit.aet.thesis.feedback.entity.jsonb.StructuredGuidelines;
+import de.tum.cit.aet.thesis.feedback.repository.ResearchGroupGuidelinesRepository;
 import de.tum.cit.aet.thesis.feedback.service.reviewer.ReviewType;
 import de.tum.cit.aet.thesis.proposal.entity.ThesisProposal;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackCategory;
@@ -38,6 +43,24 @@ import java.util.Locale;
 public class AIFeedbackService {
 	private static final Logger log = LoggerFactory.getLogger(AIFeedbackService.class);
 
+	/**
+	 * Shown when the thesis's research group has never configured AI review guidelines. Students
+	 * cannot fix this themselves, so the message names who can and where.
+	 */
+	private static final String GUIDELINES_MISSING_MESSAGE =
+			"AI review is not set up for your research group yet. Please ask your examiner or your research "
+					+ "group lead to add the group's writing guidelines under Research Group Settings → AI Review "
+					+ "Guidelines. Once they are saved, AI feedback becomes available for everyone in the group.";
+
+	/**
+	 * Shown when guidelines exist but preprocessing rejected them as too vague (or they are still
+	 * being processed) — a different fix than the missing case, so it gets its own wording.
+	 */
+	private static final String GUIDELINES_NOT_READY_MESSAGE =
+			"AI review is not available yet because your research group's writing guidelines could not be turned "
+					+ "into review rules. Please ask your examiner or your research group lead to revise them under "
+					+ "Research Group Settings → AI Review Guidelines.";
+
 	/** Severity levels sorted from most to least urgent for stable preview ordering. */
 	private static final Comparator<ThesisFeedbackSeverity> SEVERITY_ORDER = Comparator.comparingInt(sev -> switch (sev) {
 		case CRITICAL -> 0;
@@ -48,16 +71,22 @@ public class AIFeedbackService {
 
 	private final ReviewService reviewService;
 	private final ThesisService thesisService;
+	private final ResearchGroupGuidelinesRepository guidelinesRepository;
 
 	/**
 	 * Creates the AI feedback service.
 	 *
 	 * @param reviewService the pipeline that runs the LLM review over a PDF
 	 * @param thesisService the service used to load documents and persist feedback
+	 * @param guidelinesRepository the repository used to load and gate on per-group review guidelines
 	 */
-	public AIFeedbackService(ReviewService reviewService, ThesisService thesisService) {
+	public AIFeedbackService(
+			ReviewService reviewService,
+			ThesisService thesisService,
+			ResearchGroupGuidelinesRepository guidelinesRepository) {
 		this.reviewService = reviewService;
 		this.thesisService = thesisService;
+		this.guidelinesRepository = guidelinesRepository;
 	}
 
 	/**
@@ -70,8 +99,9 @@ public class AIFeedbackService {
 	 * @return the updated thesis with the new feedback rows attached
 	 */
 	public Thesis autoReviewAndSave(Thesis thesis, ReviewType reviewType) {
+		StructuredGuidelines guidelines = requireReadyGuidelines(thesis);
 		Resource pdfResource = loadPdfResource(thesis, reviewType);
-		ReviewResultDTO result = reviewService.review(pdfResource, reviewType);
+		ReviewResultDTO result = reviewService.review(pdfResource, reviewType, guidelines);
 
 		List<RequestChangesPayload.RequestedChange> changes = new ArrayList<>();
 		for (FindingDTO finding : safeFindings(result.findings())) {
@@ -108,8 +138,9 @@ public class AIFeedbackService {
 	 * @return the assessment, summary, and editable drafts
 	 */
 	public AIPreviewResponseDTO previewReview(Thesis thesis, ReviewType reviewType) {
+		StructuredGuidelines guidelines = requireReadyGuidelines(thesis);
 		Resource pdfResource = loadPdfResource(thesis, reviewType);
-		ReviewResultDTO result = reviewService.review(pdfResource, reviewType);
+		ReviewResultDTO result = reviewService.review(pdfResource, reviewType, guidelines);
 
 		List<AIFeedbackDraftDTO> drafts = safeFindings(result.findings()).stream()
 				.map(finding -> new AIFeedbackDraftDTO(
@@ -248,5 +279,33 @@ public class AIFeedbackService {
 	 */
 	public void assertHasDocument(Thesis thesis, ReviewType reviewType) {
 		loadPdfResource(thesis, reviewType);
+	}
+
+	/**
+	 * Resolves the thesis's research group guidelines and requires them to be
+	 * {@code READY} before any AI review may run. This is the per-group gate: members of a
+	 * research group whose lead has not (successfully) uploaded guidelines cannot use the AI
+	 * features. Throws {@link AccessDeniedException} otherwise.
+	 *
+	 * @param thesis the thesis being reviewed
+	 * @return the group's structured guidelines
+	 */
+	private StructuredGuidelines requireReadyGuidelines(Thesis thesis) {
+		ResearchGroup researchGroup = thesis.getResearchGroup();
+		if (researchGroup == null || researchGroup.getId() == null) {
+			throw new AccessDeniedException(
+					"AI review is not available for this thesis because it is not assigned to a research group. "
+							+ "Please ask your examiner or supervisor to assign the thesis to a research group.");
+		}
+
+		ResearchGroupGuidelines guidelines = guidelinesRepository.findById(researchGroup.getId()).orElse(null);
+		if (guidelines == null) {
+			throw new AccessDeniedException(GUIDELINES_MISSING_MESSAGE);
+		}
+		if (!guidelines.isReady() || guidelines.getStructuredGuidelines() == null) {
+			throw new AccessDeniedException(GUIDELINES_NOT_READY_MESSAGE);
+		}
+
+		return guidelines.getStructuredGuidelines();
 	}
 }

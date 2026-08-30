@@ -16,6 +16,7 @@ const sidebars: SidebarsConfig = {
         'supervisor-examiner-guide',
         'permissions',
         'workflows',
+        'ai-review-guidelines',
       ],
     },
   ],

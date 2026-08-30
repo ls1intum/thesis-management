@@ -46,18 +46,6 @@ public class LlmReviewer {
 	}
 
 	/**
-	 * Creates a reviewer using the default shared and guidelines prompts from {@link Prompts},
-	 * resolved for the given review type.
-	 *
-	 * @param taskPrompt   category-specific task instructions
-	 * @param reviewType   whether the review targets a proposal or a thesis
-	 * @param chatClient   Spring AI chat client used to call the LLM
-	 */
-	public LlmReviewer(String taskPrompt, ReviewType reviewType, ChatClient chatClient) {
-		this(Prompts.SHARED.getPrompt(reviewType), taskPrompt, Prompts.GUIDELINES.getPrompt(reviewType), chatClient);
-	}
-
-	/**
 	 * Runs a single review pass over the provided pages and images.
 	 *
 	 * @param pages   per-page extracted text in document order

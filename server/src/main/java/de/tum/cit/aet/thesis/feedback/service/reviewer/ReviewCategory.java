@@ -7,21 +7,34 @@ package de.tum.cit.aet.thesis.feedback.service.reviewer;
  * (proposal versus final thesis).
  */
 public enum ReviewCategory {
-	STRUCTURE("structure", Prompts.STRUCTURE),
-	PROBLEM_MOTIVATION_OBJECTIVES("problem-motivation-objectives", Prompts.PROBLEM_MOTIVATION_OBJECTIVES),
-	BIBLIOGRAPHY("bibliography", Prompts.BIBLIOGRAPHY),
-	FIGURES("figures", Prompts.FIGURES),
-	WRITING_STYLE("writing-style", Prompts.WRITING_STYLE),
-	WRITING_STRUCTURE("writing-structure", Prompts.WRITING_STRUCTURE),
-	WRITING_FORMATTING("writing-formatting", Prompts.WRITING_FORMATTING),
-	AI_TRANSPARENCY("ai-transparency", Prompts.AI_TRANSPARENCY),
-	SCHEDULE("schedule", Prompts.SCHEDULE);
+	STRUCTURE("structure", "Structure & Completeness",
+			"Required sections, overall and per-section length limits, and the objectives structure.", Prompts.STRUCTURE),
+	PROBLEM_MOTIVATION_OBJECTIVES("problem-motivation-objectives", "Problem, Motivation & Objectives",
+			"Quality of the problem, motivation, and objectives sections (actors, no solutions in the problem, action-form objectives).", Prompts.PROBLEM_MOTIVATION_OBJECTIVES),
+	BIBLIOGRAPHY("bibliography", "Bibliography & Citations",
+			"Number and quality of references, peer-reviewed-only sources, citation style and placement.", Prompts.BIBLIOGRAPHY),
+	FIGURES("figures", "Figures & Diagrams",
+			"Number, type, readability, captions, referencing, and format of figures and diagrams.", Prompts.FIGURES),
+	WRITING_STYLE("writing-style", "Writing Style",
+			"Active voice, filler words and superlatives, contractions, forbidden sentence starters, abbreviations.", Prompts.WRITING_STYLE),
+	WRITING_STRUCTURE("writing-structure", "Paragraph Structure",
+			"Paragraph length, one idea per paragraph, prose over bullet points, subsection depth, text before subsections.", Prompts.WRITING_STRUCTURE),
+	WRITING_FORMATTING("writing-formatting", "Formatting & Terminology",
+			"Title-case headings and consistent terminology.", Prompts.WRITING_FORMATTING),
+	AI_TRANSPARENCY("ai-transparency", "AI Transparency Statement",
+			"Presence, first-person voice, specificity, tools/purposes, and review confirmation of the AI transparency statement.", Prompts.AI_TRANSPARENCY),
+	SCHEDULE("schedule", "Schedule Quality",
+			"Iteration length, measurable deliverables, vertically integrated features, agile principles.", Prompts.SCHEDULE);
 
 	private final String slug;
+	private final String displayName;
+	private final String description;
 	private final Prompts prompt;
 
-	ReviewCategory(String slug, Prompts prompt) {
+	ReviewCategory(String slug, String displayName, String description, Prompts prompt) {
 		this.slug = slug;
+		this.displayName = displayName;
+		this.description = description;
 		this.prompt = prompt;
 	}
 
@@ -32,6 +45,25 @@ public enum ReviewCategory {
 	 */
 	public String getSlug() {
 		return slug;
+	}
+
+	/**
+	 * Returns the human-readable name of this category, used in the UI and preprocessing prompts.
+	 *
+	 * @return the display name
+	 */
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	/**
+	 * Returns a short description of what this category covers, used to guide guideline
+	 * preprocessing.
+	 *
+	 * @return the category description
+	 */
+	public String getDescription() {
+		return description;
 	}
 
 	/**

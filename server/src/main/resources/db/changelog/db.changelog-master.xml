@@ -48,6 +48,8 @@
     <include file="changes/41_thesis_feedback_ai_columns.sql" relativeToChangelogFile="true" />
     <include file="changes/42_thesis_feedback_document_version.sql" relativeToChangelogFile="true" />
 
+    <include file="changes/43_research_group_guidelines.sql" relativeToChangelogFile="true" />
+
     <!-- Dev/test seed data — must be last so it can reference all columns from prior migrations -->
     <include file="changes/23_seed_dev_test_data.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>
