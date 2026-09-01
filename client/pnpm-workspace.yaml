@@ -14,10 +14,15 @@ overrides:
   # GHSA-rgw5-rvv9-x895 (brace-expansion ReDoS via unbounded intermediate)
   brace-expansion: 5.0.9
   yaml: 2.9.0
-  uuid: 14.0.1
+  uuid: 14.0.2
   picomatch@<4: 2.3.2
   picomatch@>=4: 4.0.5
   fork-ts-checker-webpack-plugin>schema-utils: 4.3.3
+  # @tiptap/react pulls its menu extensions in as optionalDependencies with a
+  # caret range, but they peer-require an exact @tiptap/core match. Pin them to
+  # the family version so the range cannot drift ahead of @tiptap/core.
+  '@tiptap/extension-bubble-menu': 3.30.2
+  '@tiptap/extension-floating-menu': 3.30.2
   # GHSA-q8mj-m7cp-5q26
   qs@<6.15.2: 6.15.3
   # GHSA-58qx-3vcg-4xpx
@@ -38,7 +43,8 @@ overrides:
   http-proxy-middleware@<3.0.6: 4.2.0
   # GHSA-2p49-hgcm-8545 (svgo removeScripts leaves executable code, via svg loaders)
   svgo@>=4.0.0 <4.0.2: 4.0.2
-  # GHSA-7p8r-x3mc-p8w7 / GHSA-v2hh-gcrm-f6hx (fast-uri host confusion, via ajv)
-  fast-uri@<3.1.5: 3.1.5
+  # GHSA-5jgf-p345-68v8 / GHSA-fph4-wmhf-6fwf / GHSA-f65p-4m7j-42xc / GHSA-jqff-g426-hqxp
+  # (fast-uri host confusion + SSRF, on top of GHSA-7p8r-x3mc-p8w7 / GHSA-v2hh-gcrm-f6hx, via ajv)
+  fast-uri@<3.1.6: 3.1.6
   # GHSA-fxqj-rqcc-2cmp (postcss sourceMappingURL arbitrary read, transitive via vitest>vite)
   postcss@<8.5.23: 8.5.26
