@@ -1,6 +1,8 @@
 package de.tum.cit.aet.thesis.feedback.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -11,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import de.tum.cit.aet.thesis.feedback.dto.AIFeedbackDraftDTO;
 import de.tum.cit.aet.thesis.feedback.dto.AIPreviewResponseDTO;
 import de.tum.cit.aet.thesis.feedback.dto.AssessmentCategory;
+import de.tum.cit.aet.thesis.feedback.dto.FeedbackClassificationDTO;
 import de.tum.cit.aet.thesis.feedback.service.AIFeedbackService;
 import de.tum.cit.aet.thesis.feedback.service.reviewer.ReviewType;
 import de.tum.cit.aet.thesis.mock.BaseIntegrationTest;
@@ -232,6 +235,63 @@ class ReviewControllerTest extends BaseIntegrationTest {
 				.andExpect(status().isOk());
 
 		verify(aiFeedbackService).autoReviewAndSave(any(Thesis.class), any(ReviewType.class));
+	}
+
+	@Test
+	void classifyFeedback_returnsSuggestionForSupervisor() throws Exception {
+		UUID thesisId = createTestThesis("AI feedback classification test");
+		TestUser supervisor = addThesisRole(thesisId, "SUPERVISOR", "advisor");
+		when(aiFeedbackService.classifyFeedbackLine(any(Thesis.class), anyString()))
+				.thenReturn(new FeedbackClassificationDTO(
+						ThesisFeedbackCategory.CITATION, ThesisFeedbackSeverity.MAJOR));
+
+		String body = "{\"thesisId\":\"" + thesisId + "\",\"feedback\":\"Cite a peer-reviewed source here.\"}";
+		mockMvc.perform(post("/v2/ai-review/classify-feedback")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(body)
+						.header("Authorization", authFor(supervisor, "advisor")))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.category").value("CITATION"))
+				.andExpect(jsonPath("$.severity").value("MAJOR"));
+
+		verify(aiFeedbackService).classifyFeedbackLine(any(Thesis.class), eq("Cite a peer-reviewed source here."));
+	}
+
+	@Test
+	void classifyFeedback_returnsForbiddenForStudent() throws Exception {
+		UUID thesisId = createTestThesis("AI feedback classification forbidden test");
+
+		String body = "{\"thesisId\":\"" + thesisId + "\",\"feedback\":\"Cite a peer-reviewed source here.\"}";
+		mockMvc.perform(post("/v2/ai-review/classify-feedback")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(body)
+						.header("Authorization", createRandomAuthentication("student")))
+				.andExpect(status().isForbidden());
+
+		verify(aiFeedbackService, never()).classifyFeedbackLine(any(Thesis.class), anyString());
+	}
+
+	@Test
+	void classifyFeedback_rejectsBlankFeedback() throws Exception {
+		UUID thesisId = createTestThesis("AI feedback classification validation test");
+
+		String body = "{\"thesisId\":\"" + thesisId + "\",\"feedback\":\"   \"}";
+		mockMvc.perform(post("/v2/ai-review/classify-feedback")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(body)
+						.header("Authorization", createRandomAdminAuthentication()))
+				.andExpect(status().isBadRequest());
+
+		verify(aiFeedbackService, never()).classifyFeedbackLine(any(Thesis.class), anyString());
+	}
+
+	@Test
+	void classifyFeedback_returnsUnauthorizedWithoutAuthentication() throws Exception {
+		String body = "{\"thesisId\":\"" + UUID.randomUUID() + "\",\"feedback\":\"Cite a source.\"}";
+		mockMvc.perform(post("/v2/ai-review/classify-feedback")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(body))
+				.andExpect(status().isUnauthorized());
 	}
 
 	/**

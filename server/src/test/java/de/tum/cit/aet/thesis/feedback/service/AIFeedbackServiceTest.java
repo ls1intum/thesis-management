@@ -14,6 +14,8 @@ import de.tum.cit.aet.thesis.core.exception.request.ResourceInvalidParametersExc
 import de.tum.cit.aet.thesis.core.group.entity.ResearchGroup;
 import de.tum.cit.aet.thesis.feedback.dto.AIPreviewResponseDTO;
 import de.tum.cit.aet.thesis.feedback.dto.AssessmentCategory;
+import de.tum.cit.aet.thesis.feedback.dto.FeedbackClassificationDTO;
+import de.tum.cit.aet.thesis.feedback.dto.FeedbackClassificationResult;
 import de.tum.cit.aet.thesis.feedback.dto.FindingDTO;
 import de.tum.cit.aet.thesis.feedback.dto.ReviewResultDTO;
 import de.tum.cit.aet.thesis.feedback.entity.AIReviewSummary;
@@ -26,6 +28,8 @@ import de.tum.cit.aet.thesis.feedback.repository.ResearchGroupGuidelinesReposito
 import de.tum.cit.aet.thesis.feedback.service.reviewer.ReviewType;
 import de.tum.cit.aet.thesis.proposal.entity.ThesisProposal;
 import de.tum.cit.aet.thesis.proposal.repository.ThesisProposalRepository;
+import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackCategory;
+import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackSeverity;
 import de.tum.cit.aet.thesis.thesis.entity.Thesis;
 import de.tum.cit.aet.thesis.thesis.entity.ThesisFile;
 import de.tum.cit.aet.thesis.thesis.repository.ThesisFileRepository;
@@ -65,6 +69,9 @@ class AIFeedbackServiceTest {
 	private ThesisFileRepository thesisFileRepository;
 
 	@Mock
+	private FeedbackClassificationService feedbackClassificationService;
+
+	@Mock
 	private Thesis thesis;
 
 	private AIFeedbackService service;
@@ -74,7 +81,7 @@ class AIFeedbackServiceTest {
 	@BeforeEach
 	void setUp() {
 		service = new AIFeedbackService(reviewService, thesisService, guidelinesRepository, reviewSummaryRepository,
-				proposalRepository, thesisFileRepository);
+				proposalRepository, thesisFileRepository, feedbackClassificationService);
 
 		ResearchGroup researchGroup = new ResearchGroup();
 		researchGroup.setId(researchGroupId);
@@ -366,5 +373,81 @@ class AIFeedbackServiceTest {
 		assertThat(concurrentlyInserted.getScore()).isEqualTo(90);
 		assertThat(concurrentlyInserted.getAssessment()).isEqualTo(AssessmentCategory.GOOD);
 		assertThat(concurrentlyInserted.getDocumentVersionId()).isEqualTo(proposalId);
+	}
+
+	@Test
+	void classifyFeedbackLine_mapsLenientlySpelledLlmValues() {
+		when(guidelinesRepository.findById(researchGroupId)).thenReturn(Optional.of(readyGuidelines()));
+		// The prompt asks for upper-case enum names, but nothing enforces the casing at the schema
+		// level — a lower-case answer must still land on the right dropdown value.
+		when(feedbackClassificationService.classify("Cite a peer-reviewed source for this claim."))
+				.thenReturn(new FeedbackClassificationResult("citation", " Major "));
+
+		FeedbackClassificationDTO classification =
+				service.classifyFeedbackLine(thesis, "  Cite a peer-reviewed source for this claim.  ");
+
+		assertThat(classification.category()).isEqualTo(ThesisFeedbackCategory.CITATION);
+		assertThat(classification.severity()).isEqualTo(ThesisFeedbackSeverity.MAJOR);
+	}
+
+	@Test
+	void classifyFeedbackLine_degradesUnknownCategoryAndKeepsMissingSeverityOpen() {
+		when(guidelinesRepository.findById(researchGroupId)).thenReturn(Optional.of(readyGuidelines()));
+		when(feedbackClassificationService.classify("Reword the abstract."))
+				.thenReturn(new FeedbackClassificationResult("tone-of-voice", null));
+
+		FeedbackClassificationDTO classification = service.classifyFeedbackLine(thesis, "Reword the abstract.");
+
+		// An off-enum category is recorded as OTHER; an omitted severity stays null so the UI
+		// leaves that dropdown to the instructor instead of guessing.
+		assertThat(classification.category()).isEqualTo(ThesisFeedbackCategory.OTHER);
+		assertThat(classification.severity()).isNull();
+	}
+
+	@Test
+	void classifyFeedbackLine_returnsEmptySuggestionWhenLlmReturnsNothing() {
+		when(guidelinesRepository.findById(researchGroupId)).thenReturn(Optional.of(readyGuidelines()));
+		when(feedbackClassificationService.classify("Add a schedule section.")).thenReturn(null);
+
+		FeedbackClassificationDTO classification = service.classifyFeedbackLine(thesis, "Add a schedule section.");
+
+		assertThat(classification.category()).isNull();
+		assertThat(classification.severity()).isNull();
+	}
+
+	@Test
+	void classifyFeedbackLine_capsTheTextHandedToTheLlm() {
+		when(guidelinesRepository.findById(researchGroupId)).thenReturn(Optional.of(readyGuidelines()));
+		when(feedbackClassificationService.classify(any()))
+				.thenReturn(new FeedbackClassificationResult("WRITING", "MINOR"));
+
+		service.classifyFeedbackLine(thesis, "x".repeat(5000));
+
+		ArgumentCaptor<String> classified = ArgumentCaptor.forClass(String.class);
+		verify(feedbackClassificationService).classify(classified.capture());
+		// A pasted wall of text must not turn one dropdown suggestion into an unbounded LLM bill.
+		assertThat(classified.getValue()).hasSize(2000);
+	}
+
+	@Test
+	void classifyFeedbackLine_rejectsBlankFeedbackWithoutCallingTheLlm() {
+		when(guidelinesRepository.findById(researchGroupId)).thenReturn(Optional.of(readyGuidelines()));
+
+		assertThatThrownBy(() -> service.classifyFeedbackLine(thesis, "   "))
+				.isInstanceOf(ResourceInvalidParametersException.class)
+				.hasMessageContaining("empty feedback line");
+
+		verify(feedbackClassificationService, never()).classify(any());
+	}
+
+	@Test
+	void classifyFeedbackLine_appliesTheSamePerGroupAiGateAsAReview() {
+		when(guidelinesRepository.findById(researchGroupId)).thenReturn(Optional.empty());
+
+		assertThatThrownBy(() -> service.classifyFeedbackLine(thesis, "Cite a source."))
+				.isInstanceOf(AccessDeniedException.class)
+				.hasMessageContaining("not set up for your research group yet");
+
+		verify(feedbackClassificationService, never()).classify(any());
 	}
 }
