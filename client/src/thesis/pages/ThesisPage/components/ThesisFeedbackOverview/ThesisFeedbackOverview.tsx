@@ -205,8 +205,36 @@ const ThesisFeedbackOverview = (props: IThesisFeedbackOverviewProps) => {
   const clampedPage = Math.min(page, totalPages)
   const visibleItems = filteredItems.slice((clampedPage - 1) * PAGE_SIZE, clampedPage * PAGE_SIZE)
 
+  const summaryAlert =
+    reviewSummary && (Boolean(reviewSummary.summary) || typeof reviewSummary.score === 'number') ? (
+      <Alert
+        color={reviewSummary.assessment ? ASSESSMENT_COLOR[reviewSummary.assessment] : 'gray'}
+        variant='light'
+        title={
+          typeof reviewSummary.score === 'number'
+            ? `Overall Score: ${reviewSummary.score}/100`
+            : 'AI review summary'
+        }
+      >
+        <Stack gap={4}>
+          {reviewSummary.assessment && (
+            <Text size='sm' fw={500}>
+              {ASSESSMENT_LABEL[reviewSummary.assessment]}
+            </Text>
+          )}
+          {reviewSummary.summary && (
+            <Text size='sm' c='dimmed'>
+              {reviewSummary.summary}
+            </Text>
+          )}
+        </Stack>
+      </Alert>
+    ) : null
+
+  // A review that flags nothing still records a score, so an empty feedback list does not mean
+  // there is nothing to show — just nothing to count, filter, or tabulate.
   if (feedbackForType.length === 0) {
-    return null
+    return summaryAlert ? <Input.Wrapper label='Feedback'>{summaryAlert}</Input.Wrapper> : null
   }
 
   const categoryOptions = Object.values(ThesisFeedbackCategory).map((value) => ({
@@ -217,31 +245,7 @@ const ThesisFeedbackOverview = (props: IThesisFeedbackOverviewProps) => {
   return (
     <Input.Wrapper label='Feedback'>
       <Stack gap='sm'>
-        {reviewSummary &&
-          (Boolean(reviewSummary.summary) || typeof reviewSummary.score === 'number') && (
-            <Alert
-              color={reviewSummary.assessment ? ASSESSMENT_COLOR[reviewSummary.assessment] : 'gray'}
-              variant='light'
-              title={
-                typeof reviewSummary.score === 'number'
-                  ? `Overall Score: ${reviewSummary.score}/100`
-                  : 'AI review summary'
-              }
-            >
-              <Stack gap={4}>
-                {reviewSummary.assessment && (
-                  <Text size='sm' fw={500}>
-                    {ASSESSMENT_LABEL[reviewSummary.assessment]}
-                  </Text>
-                )}
-                {reviewSummary.summary && (
-                  <Text size='sm' c='dimmed'>
-                    {reviewSummary.summary}
-                  </Text>
-                )}
-              </Stack>
-            </Alert>
-          )}
+        {summaryAlert}
         <Group gap='lg' align='center' wrap='wrap'>
           <Group gap={6} align='center'>
             <Text size='sm' fw={500}>
