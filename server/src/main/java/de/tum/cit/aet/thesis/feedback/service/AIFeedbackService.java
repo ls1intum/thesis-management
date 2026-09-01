@@ -121,7 +121,6 @@ public class AIFeedbackService {
 		StructuredGuidelines guidelines = requireReadyGuidelines(thesis);
 		ReviewDocument document = loadReviewDocument(thesis, reviewType);
 		ReviewResultDTO result = reviewService.review(document.resource(), reviewType, guidelines);
-		persistReviewSummary(thesis, reviewType, result, document.versionId());
 
 		List<RequestChangesPayload.RequestedChange> changes = new ArrayList<>();
 		for (FindingDTO finding : safeFindings(result.findings())) {
@@ -135,17 +134,24 @@ public class AIFeedbackService {
 			));
 		}
 
+		Thesis reviewed = thesis;
 		if (changes.isEmpty()) {
 			log.info("AI auto review for thesis {} ({}) produced no actionable findings", thesis.getId(), reviewType);
-			return thesis;
+		} else {
+			reviewed = thesisService.requestChanges(
+					thesis,
+					toFeedbackType(reviewType),
+					changes,
+					ThesisFeedbackSource.AI
+			);
 		}
 
-		return thesisService.requestChanges(
-				thesis,
-				toFeedbackType(reviewType),
-				changes,
-				ThesisFeedbackSource.AI
-		);
+		// Last, so the summary only ever describes findings that actually landed: requestChanges
+		// is transactional, and persisting the score first would leave it standing on its own if
+		// saving the feedback rows failed and rolled them back.
+		persistReviewSummary(thesis, reviewType, result, document.versionId());
+
+		return reviewed;
 	}
 
 	/**

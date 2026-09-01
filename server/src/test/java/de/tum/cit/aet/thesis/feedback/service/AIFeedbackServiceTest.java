@@ -10,9 +10,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import de.tum.cit.aet.thesis.core.exception.request.AccessDeniedException;
+import de.tum.cit.aet.thesis.core.exception.request.ResourceInvalidParametersException;
 import de.tum.cit.aet.thesis.core.group.entity.ResearchGroup;
 import de.tum.cit.aet.thesis.feedback.dto.AIPreviewResponseDTO;
 import de.tum.cit.aet.thesis.feedback.dto.AssessmentCategory;
+import de.tum.cit.aet.thesis.feedback.dto.FindingDTO;
 import de.tum.cit.aet.thesis.feedback.dto.ReviewResultDTO;
 import de.tum.cit.aet.thesis.feedback.entity.AIReviewSummary;
 import de.tum.cit.aet.thesis.feedback.entity.GuidelinesStatus;
@@ -274,6 +276,31 @@ class AIFeedbackServiceTest {
 		ArgumentCaptor<AIReviewSummary> savedSummary = ArgumentCaptor.forClass(AIReviewSummary.class);
 		verify(reviewSummaryRepository).save(savedSummary.capture());
 		assertThat(savedSummary.getValue().getDocumentVersionId()).isEqualTo(fileId);
+	}
+
+	@Test
+	void autoReviewAndSave_doesNotPersistTheSummaryWhenSavingTheFindingsFails() {
+		ResearchGroupGuidelines guidelines = readyGuidelines();
+		when(guidelinesRepository.findById(researchGroupId)).thenReturn(Optional.of(guidelines));
+
+		ThesisProposal proposal = org.mockito.Mockito.mock(ThesisProposal.class);
+		when(thesis.getProposals()).thenReturn(List.of(proposal));
+		Resource pdfResource = new ByteArrayResource("pdf".getBytes());
+		when(thesisService.getProposalFile(proposal)).thenReturn(pdfResource);
+
+		when(reviewService.review(eq(pdfResource), eq(ReviewType.PROPOSAL), eq(guidelines.getStructuredGuidelines())))
+				.thenReturn(new ReviewResultDTO(AssessmentCategory.NEEDS_WORK, 40, "Needs work.", List.of(
+						new FindingDTO("MAJOR", "STRUCTURE", "Missing related work", "Add a section.", List.of()))));
+
+		// requestChanges is transactional, so a rejected batch leaves no feedback rows behind —
+		// the score describing those rows must not be persisted on its own either.
+		when(thesisService.requestChanges(any(), any(), anyList(), any()))
+				.thenThrow(new ResourceInvalidParametersException("Feedback text too long"));
+
+		assertThatThrownBy(() -> service.autoReviewAndSave(thesis, ReviewType.PROPOSAL))
+				.isInstanceOf(ResourceInvalidParametersException.class);
+
+		verify(reviewSummaryRepository, never()).save(any());
 	}
 
 	@Test
