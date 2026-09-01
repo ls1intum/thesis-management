@@ -65,6 +65,9 @@ describe('ThesisFeedbackOverview — AI review summary staleness', () => {
 
     expect(screen.getByText(/overall score: 82\/100/i)).toBeInTheDocument()
     expect(screen.getByText('Solid proposal.')).toBeInTheDocument()
+    // Dated and version-labelled, so it does not read as a live verdict on the whole list. The
+    // date itself is locale-formatted, hence only the stable prefix is asserted.
+    expect(screen.getByText(/^AI review of v1 · /)).toBeInTheDocument()
   })
 
   test('hides the summary once a newer proposal has been uploaded', () => {

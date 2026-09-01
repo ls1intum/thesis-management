@@ -205,6 +205,19 @@ const ThesisFeedbackOverview = (props: IThesisFeedbackOverviewProps) => {
   const clampedPage = Math.min(page, totalPages)
   const visibleItems = filteredItems.slice((clampedPage - 1) * PAGE_SIZE, clampedPage * PAGE_SIZE)
 
+  // Say where the score came from. It is the AI's read of one specific revision at one point in
+  // time, not a live verdict on the feedback list it sits above — supervisors keep adding entries
+  // afterwards without the score moving, so the alert has to date itself.
+  const summaryVersionLabel = reviewSummary?.documentVersionId
+    ? versionLabelById.get(reviewSummary.documentVersionId)
+    : undefined
+  const summaryProvenance = [
+    summaryVersionLabel ? `AI review of ${summaryVersionLabel}` : 'AI review',
+    reviewSummary?.updatedAt ? formatDate(reviewSummary.updatedAt, { withTime: false }) : '',
+  ]
+    .filter(Boolean)
+    .join(' · ')
+
   const summaryAlert =
     reviewSummary && (Boolean(reviewSummary.summary) || typeof reviewSummary.score === 'number') ? (
       <Alert
@@ -227,6 +240,9 @@ const ThesisFeedbackOverview = (props: IThesisFeedbackOverviewProps) => {
               {reviewSummary.summary}
             </Text>
           )}
+          <Text size='xs' c='dimmed'>
+            {summaryProvenance}
+          </Text>
         </Stack>
       </Alert>
     ) : null
