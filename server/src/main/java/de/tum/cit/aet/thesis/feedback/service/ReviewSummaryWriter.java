@@ -31,6 +31,12 @@ public class ReviewSummaryWriter {
 	private final AIReviewSummaryRepository repository;
 	private final ReviewDocuments documents;
 
+	/**
+	 * Creates the writer.
+	 *
+	 * @param repository repository for the per-(thesis, review type) summary rows
+	 * @param documents  used to check whether the reviewed revision is still the current one
+	 */
 	public ReviewSummaryWriter(AIReviewSummaryRepository repository, ReviewDocuments documents) {
 		this.repository = repository;
 		this.documents = documents;

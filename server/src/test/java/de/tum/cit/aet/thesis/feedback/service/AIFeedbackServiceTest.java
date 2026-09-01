@@ -12,9 +12,11 @@ import static org.mockito.Mockito.when;
 import de.tum.cit.aet.thesis.core.exception.request.AccessDeniedException;
 import de.tum.cit.aet.thesis.core.exception.request.ResourceInvalidParametersException;
 import de.tum.cit.aet.thesis.feedback.dto.AIPreviewResponseDTO;
+import de.tum.cit.aet.thesis.feedback.dto.FeedbackClassificationDTO;
 import de.tum.cit.aet.thesis.feedback.entity.jsonb.CategoryGuidelines;
 import de.tum.cit.aet.thesis.feedback.entity.jsonb.StructuredGuidelines;
 import de.tum.cit.aet.thesis.feedback.model.AssessmentCategory;
+import de.tum.cit.aet.thesis.feedback.model.FeedbackClassificationResult;
 import de.tum.cit.aet.thesis.feedback.model.Finding;
 import de.tum.cit.aet.thesis.feedback.model.Location;
 import de.tum.cit.aet.thesis.feedback.model.ReviewResult;
@@ -60,6 +62,9 @@ class AIFeedbackServiceTest {
 	private ReviewSummaryWriter summaryWriter;
 
 	@Mock
+	private FeedbackClassificationService feedbackClassificationService;
+
+	@Mock
 	private Thesis thesis;
 
 	private AIFeedbackService service;
@@ -72,7 +77,8 @@ class AIFeedbackServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		service = new AIFeedbackService(reviewer, thesisService, guidelinesGate, documents, summaryWriter);
+		service = new AIFeedbackService(reviewer, thesisService, guidelinesGate, documents, summaryWriter,
+				feedbackClassificationService);
 	}
 
 	/** Wires the happy path up to (but excluding) the review call itself. */
@@ -201,5 +207,80 @@ class AIFeedbackServiceTest {
 
 		assertThatThrownBy(() -> service.assertHasDocument(thesis, ReviewType.THESIS))
 				.isInstanceOf(ResourceInvalidParametersException.class);
+	}
+
+	@Test
+	void classifyFeedbackLineMapsLenientlySpelledLlmValues() {
+		when(guidelinesGate.requireReady(any())).thenReturn(GUIDELINES);
+		// The prompt asks for upper-case enum names, but nothing enforces the casing at the schema
+		// level — a lower-case answer must still land on the right dropdown value.
+		when(feedbackClassificationService.classify("Cite a peer-reviewed source for this claim."))
+				.thenReturn(new FeedbackClassificationResult("citation", " Major "));
+
+		FeedbackClassificationDTO classification =
+				service.classifyFeedbackLine(thesis, "  Cite a peer-reviewed source for this claim.  ");
+
+		assertThat(classification.category()).isEqualTo(ThesisFeedbackCategory.CITATION);
+		assertThat(classification.severity()).isEqualTo(ThesisFeedbackSeverity.MAJOR);
+	}
+
+	@Test
+	void classifyFeedbackLineDegradesUnknownCategoryAndKeepsMissingSeverityOpen() {
+		when(guidelinesGate.requireReady(any())).thenReturn(GUIDELINES);
+		when(feedbackClassificationService.classify("Reword the abstract."))
+				.thenReturn(new FeedbackClassificationResult("tone-of-voice", null));
+
+		FeedbackClassificationDTO classification = service.classifyFeedbackLine(thesis, "Reword the abstract.");
+
+		// An off-enum category is recorded as OTHER; an omitted severity stays null so the UI leaves
+		// that dropdown to the instructor instead of guessing.
+		assertThat(classification.category()).isEqualTo(ThesisFeedbackCategory.OTHER);
+		assertThat(classification.severity()).isNull();
+	}
+
+	@Test
+	void classifyFeedbackLineReturnsAnEmptySuggestionWhenTheLlmReturnsNothing() {
+		when(guidelinesGate.requireReady(any())).thenReturn(GUIDELINES);
+		when(feedbackClassificationService.classify("Add a schedule section.")).thenReturn(null);
+
+		FeedbackClassificationDTO classification = service.classifyFeedbackLine(thesis, "Add a schedule section.");
+
+		assertThat(classification.category()).isNull();
+		assertThat(classification.severity()).isNull();
+	}
+
+	@Test
+	void classifyFeedbackLineCapsTheTextHandedToTheLlm() {
+		when(guidelinesGate.requireReady(any())).thenReturn(GUIDELINES);
+		when(feedbackClassificationService.classify(any()))
+				.thenReturn(new FeedbackClassificationResult("WRITING", "MINOR"));
+
+		service.classifyFeedbackLine(thesis, "x".repeat(5000));
+
+		ArgumentCaptor<String> classified = ArgumentCaptor.forClass(String.class);
+		verify(feedbackClassificationService).classify(classified.capture());
+		// A pasted wall of text must not turn one dropdown suggestion into an unbounded LLM bill.
+		assertThat(classified.getValue()).hasSize(2000);
+	}
+
+	@Test
+	void classifyFeedbackLineRejectsBlankFeedbackWithoutCallingTheLlm() {
+		when(guidelinesGate.requireReady(any())).thenReturn(GUIDELINES);
+
+		assertThatThrownBy(() -> service.classifyFeedbackLine(thesis, "   "))
+				.isInstanceOf(ResourceInvalidParametersException.class)
+				.hasMessageContaining("empty feedback line");
+
+		verify(feedbackClassificationService, never()).classify(any());
+	}
+
+	@Test
+	void classifyFeedbackLineAppliesTheSamePerGroupAiGateAsAReview() {
+		when(guidelinesGate.requireReady(any())).thenThrow(new AccessDeniedException("not set up"));
+
+		assertThatThrownBy(() -> service.classifyFeedbackLine(thesis, "Cite a source."))
+				.isInstanceOf(AccessDeniedException.class);
+
+		verify(feedbackClassificationService, never()).classify(any());
 	}
 }

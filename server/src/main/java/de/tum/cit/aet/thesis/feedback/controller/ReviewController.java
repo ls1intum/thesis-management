@@ -7,6 +7,8 @@ import de.tum.cit.aet.thesis.core.user.entity.User;
 import de.tum.cit.aet.thesis.feedback.config.AIFeaturesEnabled;
 import de.tum.cit.aet.thesis.feedback.dto.AIPreviewResponseDTO;
 import de.tum.cit.aet.thesis.feedback.dto.AIReviewRequestDTO;
+import de.tum.cit.aet.thesis.feedback.dto.ClassifyFeedbackRequestDTO;
+import de.tum.cit.aet.thesis.feedback.dto.FeedbackClassificationDTO;
 import de.tum.cit.aet.thesis.feedback.model.ReviewType;
 import de.tum.cit.aet.thesis.feedback.service.AIFeedbackService;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisState;
@@ -110,6 +112,31 @@ public class ReviewController {
 
 		AIPreviewResponseDTO response = aiFeedbackService.previewReview(thesis, request.reviewType());
 		return ResponseEntity.ok(response);
+	}
+
+	/**
+	 * Instructor-facing classification endpoint: suggests a category and severity for one feedback
+	 * line the instructor is currently typing, so they do not have to pick both from dropdowns by
+	 * hand. Persists nothing — the suggestion lands in the instructor's unsaved draft, which they
+	 * can still change before saving the batch.
+	 *
+	 * @param request the thesis the feedback belongs to and the feedback line to classify
+	 * @return the suggested category and severity; either may be absent if the model did not commit
+	 *         to a value
+	 */
+	@PostMapping("classify-feedback")
+	@PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
+	public ResponseEntity<FeedbackClassificationDTO> classifyFeedback(
+			@Valid @RequestBody ClassifyFeedbackRequestDTO request) {
+		User currentUser = currentUserProvider().getUser();
+		Thesis thesis = thesisService.findById(request.thesisId());
+
+		if (!thesis.hasSupervisorAccess(currentUser)) {
+			throw new AccessDeniedException(
+					"You must be a supervisor on the thesis to classify feedback.");
+		}
+
+		return ResponseEntity.ok(aiFeedbackService.classifyFeedbackLine(thesis, request.feedback()));
 	}
 
 	/**

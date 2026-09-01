@@ -22,6 +22,7 @@ public record ReviewResult(
 		String summary,
 		List<Finding> findings
 ) {
+	/** Canonicalizes {@code findings}: a model may omit the list or put nulls in it. */
 	public ReviewResult {
 		findings = findings == null ? List.of()
 				: findings.stream().filter(Objects::nonNull).toList();

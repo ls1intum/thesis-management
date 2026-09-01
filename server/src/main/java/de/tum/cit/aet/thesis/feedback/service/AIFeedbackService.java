@@ -1,9 +1,12 @@
 package de.tum.cit.aet.thesis.feedback.service;
 
+import de.tum.cit.aet.thesis.core.exception.request.ResourceInvalidParametersException;
 import de.tum.cit.aet.thesis.feedback.config.AIFeaturesEnabled;
 import de.tum.cit.aet.thesis.feedback.dto.AIFeedbackDraftDTO;
 import de.tum.cit.aet.thesis.feedback.dto.AIPreviewResponseDTO;
+import de.tum.cit.aet.thesis.feedback.dto.FeedbackClassificationDTO;
 import de.tum.cit.aet.thesis.feedback.entity.jsonb.StructuredGuidelines;
+import de.tum.cit.aet.thesis.feedback.model.FeedbackClassificationResult;
 import de.tum.cit.aet.thesis.feedback.model.ReviewResult;
 import de.tum.cit.aet.thesis.feedback.model.ReviewType;
 import de.tum.cit.aet.thesis.feedback.review.ReviewRequest;
@@ -27,7 +30,8 @@ import java.util.UUID;
  * The application-side half of the AI feedback feature: gate on the research group's guidelines,
  * pick the document to review, hand it to whichever {@link ThesisReviewer} is configured, and turn
  * the findings into either persisted thesis feedback (auto flow, student-driven) or editable drafts
- * for an instructor preview.
+ * for an instructor preview. Also serves the much smaller classification request an instructor
+ * makes while typing a feedback line by hand.
  *
  * <p>Knows nothing about prompts, models, or PDFs — swapping the review strategy does not touch
  * this class.
@@ -44,28 +48,41 @@ public class AIFeedbackService {
 	private static final Comparator<AIFeedbackDraftDTO> BY_SEVERITY = Comparator.comparing(
 			AIFeedbackDraftDTO::severity, Comparator.nullsLast(Comparator.naturalOrder()));
 
+	/**
+	 * Upper bound on the text handed to the classification LLM. A feedback line is a sentence or
+	 * two; anything longer is pasted prose, and classifying its opening is enough to pick a label
+	 * without paying for the whole blob.
+	 */
+	private static final int MAX_CLASSIFICATION_CHARS = 2000;
+
 	private final ThesisReviewer reviewer;
 	private final ThesisService thesisService;
 	private final GuidelinesGate guidelinesGate;
 	private final ReviewDocuments documents;
 	private final ReviewSummaryWriter summaryWriter;
+	private final FeedbackClassificationService feedbackClassificationService;
 
 	/**
 	 * Creates the AI feedback service.
 	 *
-	 * @param reviewer       the configured review strategy
-	 * @param thesisService  the service used to persist feedback
-	 * @param guidelinesGate the per-research-group gate on the AI features
-	 * @param documents      resolves which uploaded document a review runs against
-	 * @param summaryWriter  persists the latest score/assessment/summary per (thesis, review type)
+	 * @param reviewer                      the configured review strategy
+	 * @param thesisService                 the service used to persist feedback
+	 * @param guidelinesGate                the per-research-group gate on the AI features
+	 * @param documents                     resolves which uploaded document a review runs against
+	 * @param summaryWriter                 persists the latest score/assessment/summary per
+	 *                                      (thesis, review type)
+	 * @param feedbackClassificationService the single-call classifier used to suggest a category and
+	 *                                      severity for a manually written feedback line
 	 */
 	public AIFeedbackService(ThesisReviewer reviewer, ThesisService thesisService, GuidelinesGate guidelinesGate,
-			ReviewDocuments documents, ReviewSummaryWriter summaryWriter) {
+			ReviewDocuments documents, ReviewSummaryWriter summaryWriter,
+			FeedbackClassificationService feedbackClassificationService) {
 		this.reviewer = reviewer;
 		this.thesisService = thesisService;
 		this.guidelinesGate = guidelinesGate;
 		this.documents = documents;
 		this.summaryWriter = summaryWriter;
+		this.feedbackClassificationService = feedbackClassificationService;
 	}
 
 	/**
@@ -123,6 +140,45 @@ public class AIFeedbackService {
 				result.normalizedScore(),
 				result.summary(),
 				reviewed.drafts().stream().sorted(BY_SEVERITY).toList());
+	}
+
+	/**
+	 * Suggests a category and severity for a single feedback line an instructor typed by hand, so
+	 * the two dropdowns they would otherwise fill in themselves come pre-selected.
+	 *
+	 * <p>Nothing is persisted: the suggestion is applied to the instructor's unsaved draft row and
+	 * can be changed or cleared before the batch is saved. Either field may come back {@code null}
+	 * when the model did not answer with a usable value — a missing suggestion leaves that dropdown
+	 * to the instructor rather than guessing on their behalf.
+	 *
+	 * @param thesis   the thesis the feedback is written for; used to resolve the research group's
+	 *                 AI opt-in
+	 * @param feedback the feedback line to classify
+	 * @return the suggested category and severity, either of which may be {@code null}
+	 */
+	public FeedbackClassificationDTO classifyFeedbackLine(Thesis thesis, String feedback) {
+		// Same per-group gate as every other AI feature: a group whose lead has not set up (valid)
+		// guidelines has not opted in, so no LLM call is made on its behalf. The guidelines
+		// themselves do not influence the classification.
+		guidelinesGate.requireReady(thesis.getResearchGroup());
+
+		String line = feedback == null ? "" : feedback.strip();
+		if (line.isEmpty()) {
+			throw new ResourceInvalidParametersException("Cannot classify an empty feedback line.");
+		}
+		if (line.length() > MAX_CLASSIFICATION_CHARS) {
+			line = line.substring(0, MAX_CLASSIFICATION_CHARS);
+		}
+
+		FeedbackClassificationResult result = feedbackClassificationService.classify(line);
+		if (result == null) {
+			log.warn("Feedback classification returned no result for thesis {}", thesis.getId());
+			return new FeedbackClassificationDTO(null, null);
+		}
+
+		return new FeedbackClassificationDTO(
+				FeedbackMapper.toCategory(result.category()),
+				FeedbackMapper.toSeverity(result.severity()));
 	}
 
 	/**

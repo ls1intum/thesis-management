@@ -27,7 +27,7 @@ import type {
 } from '@/thesis/requests/responses/thesis'
 import { ThesisFeedbackSource } from '@/thesis/requests/responses/thesis'
 import { ApiError, getApiResponseErrorMessage } from '@/core/requests/handler'
-import { Plus, Robot, Trash } from '@phosphor-icons/react'
+import { MagicWand, Plus, Robot, Trash } from '@phosphor-icons/react'
 import { showSimpleError } from '@/core/utils/notification'
 import { GLOBAL_CONFIG } from '@/core/config/global'
 import FeedbackCategoryCounts from '@/thesis/components/FeedbackCategoryCounts/FeedbackCategoryCounts'
@@ -62,6 +62,11 @@ interface IAIDraft {
   severity?: ThesisFeedbackSeverity | null
 }
 
+interface IFeedbackClassification {
+  category?: ThesisFeedbackCategory | null
+  severity?: ThesisFeedbackSeverity | null
+}
+
 interface IAIPreviewResponse {
   assessment?: AIAssessment
   score?: number | null
@@ -92,6 +97,9 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
   >([])
   const [aiAssessment, setAiAssessment] = useState<IAIPreviewResponse | null>(null)
   const [aiLoading, setAiLoading] = useState(false)
+  // Keys of the entries currently being classified. A set rather than a single key so two rows
+  // classified back to back each keep their own spinner until their own request returns.
+  const [classifyingKeys, setClassifyingKeys] = useState<ReadonlySet<string>>(() => new Set())
   const [showDisregardChanges, setShowDisregardChanges] = useState(false)
 
   useEffect(() => {
@@ -136,6 +144,54 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
       const merged = [...cleaned, ...newRows]
       return merged.length === 0 ? [emptyEntry()] : merged
     })
+  }
+
+  /**
+   * Asks the server to classify one manually written entry and fills in whichever of category and
+   * severity the AI committed to. The text itself is never touched — only the two labels the
+   * instructor would otherwise pick by hand — so the entry stays a human-authored one.
+   */
+  const onSuggestClassification = async (entry: INewEntry) => {
+    const feedback = entry.feedback.trim()
+    if (!feedback) {
+      return
+    }
+
+    setClassifyingKeys((prev) => new Set(prev).add(entry.key))
+    try {
+      const response = await doRequest<IFeedbackClassification>('/v2/ai-review/classify-feedback', {
+        method: 'POST',
+        requiresAuth: true,
+        data: {
+          thesisId: thesis.thesisId,
+          feedback,
+        },
+      })
+
+      if (!response.ok) {
+        showSimpleError(getApiResponseErrorMessage(response))
+        return
+      }
+
+      const { category, severity } = response.data
+      if (!category && !severity) {
+        showSimpleError('The AI could not classify this entry. Please select the values manually.')
+        return
+      }
+
+      // NON_EMPTY serialization drops a field the AI left open; keep whatever is already selected
+      // for that dropdown rather than clearing it.
+      updateEntry(entry.key, {
+        ...(category ? { category } : {}),
+        ...(severity ? { severity } : {}),
+      })
+    } finally {
+      setClassifyingKeys((prev) => {
+        const next = new Set(prev)
+        next.delete(entry.key)
+        return next
+      })
+    }
   }
 
   const onGenerateAi = async () => {
@@ -199,6 +255,10 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
   // Only offer AI drafting when the feature is enabled server-side; otherwise the preview
   // endpoint is unregistered and the button would 404.
   const supportsAi = GLOBAL_CONFIG.ai_enabled && (type === 'PROPOSAL' || type === 'THESIS')
+
+  // Classification reads the feedback line alone, so unlike a document review it does not depend
+  // on an uploaded proposal or thesis and is offered for every feedback type.
+  const supportsClassification = GLOBAL_CONFIG.ai_enabled
 
   return (
     <Button variant='outline' color='red' onClick={() => setOpened(true)}>
@@ -357,8 +417,9 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
                     value={entry.feedback}
                     onChange={(e) => updateEntry(entry.key, { feedback: e.target.value })}
                   />
-                  <Group grow>
+                  <Group align='flex-end' gap='sm' wrap='nowrap'>
                     <Select
+                      style={{ flex: 1 }}
                       label='Category'
                       placeholder='Uncategorized'
                       data={FEEDBACK_CATEGORY_OPTIONS}
@@ -371,6 +432,7 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
                       }
                     />
                     <Select
+                      style={{ flex: 1 }}
                       label='Severity'
                       placeholder='Unspecified'
                       data={FEEDBACK_SEVERITY_OPTIONS}
@@ -382,6 +444,30 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
                         })
                       }
                     />
+                    {supportsClassification && (
+                      <Tooltip
+                        label={
+                          entry.feedback.trim()
+                            ? 'Suggest category and severity with AI'
+                            : 'Write the feedback first, then let the AI classify it'
+                        }
+                        withArrow
+                      >
+                        <ActionIcon
+                          variant='light'
+                          color='grape'
+                          size={36}
+                          aria-label='Suggest category and severity with AI'
+                          disabled={!entry.feedback.trim()}
+                          loading={classifyingKeys.has(entry.key)}
+                          onClick={() => {
+                            void onSuggestClassification(entry)
+                          }}
+                        >
+                          <MagicWand size={18} />
+                        </ActionIcon>
+                      </Tooltip>
+                    )}
                   </Group>
                 </Stack>
               ))}

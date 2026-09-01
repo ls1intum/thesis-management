@@ -15,6 +15,9 @@ import java.util.Locale;
  * Turns a model's {@link Finding} into the shape thesis feedback uses: one plain-text string, a
  * category, and a severity. The severity and category tokens come from an LLM, so an unexpected
  * value is mapped to a catch-all rather than failing a review that has otherwise completed.
+ *
+ * <p>{@link #toCategory} and {@link #toSeverity} are also used on their own by the single-line
+ * classification flow, which gets the same lenient treatment of the model's tokens.
  */
 final class FeedbackMapper {
 	private static final Logger log = LoggerFactory.getLogger(FeedbackMapper.class);
@@ -72,7 +75,7 @@ final class FeedbackMapper {
 		sb.append(value.strip());
 	}
 
-	private static ThesisFeedbackCategory toCategory(String category) {
+	static ThesisFeedbackCategory toCategory(String category) {
 		if (category == null || category.isBlank()) {
 			return null;
 		}
@@ -84,7 +87,7 @@ final class FeedbackMapper {
 		}
 	}
 
-	private static ThesisFeedbackSeverity toSeverity(String severity) {
+	static ThesisFeedbackSeverity toSeverity(String severity) {
 		if (severity == null || severity.isBlank()) {
 			return null;
 		}

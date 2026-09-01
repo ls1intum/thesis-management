@@ -16,6 +16,7 @@ import java.util.Objects;
  * @param document   the PDF to review; the reviewer decides which parts of it it needs
  */
 public record ReviewRequest(ReviewType type, StructuredGuidelines guidelines, Resource document) {
+	/** Rejects an incomplete request: every field is required for a review to mean anything. */
 	public ReviewRequest {
 		Objects.requireNonNull(type, "type");
 		Objects.requireNonNull(guidelines, "guidelines");

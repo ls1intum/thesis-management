@@ -27,6 +27,7 @@ public record Finding(
 		String description,
 		List<Location> locations
 ) {
+	/** Canonicalizes {@code locations}: a model may omit the list or put nulls in it. */
 	public Finding {
 		locations = locations == null ? List.of()
 				: locations.stream().filter(Objects::nonNull).toList();

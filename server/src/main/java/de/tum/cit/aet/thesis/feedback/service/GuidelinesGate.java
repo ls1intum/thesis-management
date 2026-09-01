@@ -43,6 +43,11 @@ public class GuidelinesGate {
 
 	private final ResearchGroupGuidelinesRepository guidelinesRepository;
 
+	/**
+	 * Creates the gate.
+	 *
+	 * @param guidelinesRepository repository for the stored per-group guidelines
+	 */
 	public GuidelinesGate(ResearchGroupGuidelinesRepository guidelinesRepository) {
 		this.guidelinesRepository = guidelinesRepository;
 	}

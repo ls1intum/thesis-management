@@ -13,6 +13,7 @@ import java.util.Objects;
  * @param findings the issues this category's pass found; never {@code null}
  */
 public record CategoryFindings(List<Finding> findings) {
+	/** Canonicalizes {@code findings}: a model may omit the list or put nulls in it. */
 	public CategoryFindings {
 		findings = findings == null ? List.of()
 				: findings.stream().filter(Objects::nonNull).toList();

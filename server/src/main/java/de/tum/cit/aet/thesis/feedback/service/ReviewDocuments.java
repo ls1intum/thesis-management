@@ -31,6 +31,13 @@ public class ReviewDocuments {
 	private final ThesisProposalRepository proposalRepository;
 	private final ThesisFileRepository thesisFileRepository;
 
+	/**
+	 * Creates the lookup.
+	 *
+	 * @param thesisService        used to load the stored file behind a proposal or thesis upload
+	 * @param proposalRepository   used to re-check which proposal is currently the newest
+	 * @param thesisFileRepository used to re-check which thesis file is currently the newest
+	 */
 	public ReviewDocuments(ThesisService thesisService, ThesisProposalRepository proposalRepository,
 			ThesisFileRepository thesisFileRepository) {
 		this.thesisService = thesisService;
