@@ -18,6 +18,7 @@ const requestedBy = {
 // Newest-first, matching the server's ordering.
 let proposals = [{ proposalId: 'proposal-v1' }]
 let aiReviewSummaries: Array<Record<string, unknown>> = []
+let feedback: Array<Record<string, unknown>> = []
 
 vi.mock('@/thesis/providers/ThesisProvider/hooks', () => ({
   useLoadedThesisContext: () => ({
@@ -25,17 +26,7 @@ vi.mock('@/thesis/providers/ThesisProvider/hooks', () => ({
       thesisId: 'thesis-1',
       proposals,
       aiReviewSummaries,
-      feedback: [
-        {
-          feedbackId: 'fb-1',
-          type: 'PROPOSAL',
-          feedback: 'Tighten the introduction.',
-          requestedBy,
-          requestedAt: '2026-04-01T10:00:00Z',
-          completedAt: null,
-          documentVersionId: 'proposal-v1',
-        },
-      ],
+      feedback,
     },
     access: { student: false, supervisor: true, examiner: false },
     updateThesis: vi.fn(),
@@ -46,6 +37,17 @@ vi.mock('@/thesis/providers/ThesisProvider/hooks', () => ({
 describe('ThesisFeedbackOverview — AI review summary staleness', () => {
   beforeEach(() => {
     proposals = [{ proposalId: 'proposal-v1' }]
+    feedback = [
+      {
+        feedbackId: 'fb-1',
+        type: 'PROPOSAL',
+        feedback: 'Tighten the introduction.',
+        requestedBy,
+        requestedAt: '2026-04-01T10:00:00Z',
+        completedAt: null,
+        documentVersionId: 'proposal-v1',
+      },
+    ]
     aiReviewSummaries = [
       {
         type: 'PROPOSAL',
@@ -63,6 +65,9 @@ describe('ThesisFeedbackOverview — AI review summary staleness', () => {
 
     expect(screen.getByText(/overall score: 82\/100/i)).toBeInTheDocument()
     expect(screen.getByText('Solid proposal.')).toBeInTheDocument()
+    // Dated and version-labelled, so it does not read as a live verdict on the whole list. The
+    // date itself is locale-formatted, hence only the stable prefix is asserted.
+    expect(screen.getByText(/^AI review of v1 · /)).toBeInTheDocument()
   })
 
   test('hides the summary once a newer proposal has been uploaded', () => {
@@ -74,6 +79,30 @@ describe('ThesisFeedbackOverview — AI review summary staleness', () => {
     expect(screen.queryByText('Solid proposal.')).not.toBeInTheDocument()
     // The feedback table itself still renders — only the summary is version-scoped.
     expect(screen.getByText('Tighten the introduction.')).toBeInTheDocument()
+  })
+
+  test('still shows the summary when the review found nothing to flag', () => {
+    // An AI review with no actionable findings saves a summary and no feedback rows at all.
+    feedback = []
+
+    renderWithProviders(<ThesisFeedbackOverview type='PROPOSAL' allowEdit />)
+
+    expect(screen.getByText(/overall score: 82\/100/i)).toBeInTheDocument()
+    expect(screen.getByText('Solid proposal.')).toBeInTheDocument()
+    // Nothing to count or filter, so the table chrome stays away.
+    expect(screen.queryByPlaceholderText(/search feedback/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/addressed/i)).not.toBeInTheDocument()
+  })
+
+  test('renders nothing when there is neither feedback nor a current summary', () => {
+    feedback = []
+    aiReviewSummaries = []
+
+    renderWithProviders(<ThesisFeedbackOverview type='PROPOSAL' allowEdit />)
+
+    // renderWithProviders injects Mantine's style tags, so assert on the section itself.
+    expect(screen.queryByText('Feedback')).not.toBeInTheDocument()
+    expect(screen.queryByText(/overall score/i)).not.toBeInTheDocument()
   })
 
   test('hides a legacy summary that carries no document version', () => {
