@@ -24,6 +24,7 @@ import de.tum.cit.aet.thesis.feedback.repository.ResearchGroupGuidelinesReposito
 import de.tum.cit.aet.thesis.feedback.service.reviewer.ReviewType;
 import de.tum.cit.aet.thesis.proposal.entity.ThesisProposal;
 import de.tum.cit.aet.thesis.thesis.entity.Thesis;
+import de.tum.cit.aet.thesis.thesis.entity.ThesisFile;
 import de.tum.cit.aet.thesis.thesis.service.ThesisService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -210,11 +211,65 @@ class AIFeedbackServiceTest {
 	}
 
 	@Test
+	void autoReviewAndSave_recordsTheReviewedProposalVersionOnTheSummary() {
+		ResearchGroupGuidelines guidelines = readyGuidelines();
+		when(guidelinesRepository.findById(researchGroupId)).thenReturn(Optional.of(guidelines));
+
+		UUID proposalId = UUID.randomUUID();
+		ThesisProposal proposal = org.mockito.Mockito.mock(ThesisProposal.class);
+		when(proposal.getId()).thenReturn(proposalId);
+		when(thesis.getProposals()).thenReturn(List.of(proposal));
+		Resource pdfResource = new ByteArrayResource("pdf".getBytes());
+		when(thesisService.getProposalFile(proposal)).thenReturn(pdfResource);
+
+		when(reviewService.review(eq(pdfResource), eq(ReviewType.PROPOSAL), eq(guidelines.getStructuredGuidelines())))
+				.thenReturn(new ReviewResultDTO(AssessmentCategory.GOOD, 95, "Nothing to flag.", List.of()));
+		UUID thesisId = UUID.randomUUID();
+		when(thesis.getId()).thenReturn(thesisId);
+		when(reviewSummaryRepository.findByThesisIdAndType(thesisId, ReviewType.PROPOSAL)).thenReturn(Optional.empty());
+
+		service.autoReviewAndSave(thesis, ReviewType.PROPOSAL);
+
+		// Without the version the UI cannot tell this summary apart from one describing an older
+		// upload, and would keep showing the stale score as current.
+		ArgumentCaptor<AIReviewSummary> savedSummary = ArgumentCaptor.forClass(AIReviewSummary.class);
+		verify(reviewSummaryRepository).save(savedSummary.capture());
+		assertThat(savedSummary.getValue().getDocumentVersionId()).isEqualTo(proposalId);
+	}
+
+	@Test
+	void autoReviewAndSave_recordsTheReviewedThesisFileVersionOnTheSummary() {
+		ResearchGroupGuidelines guidelines = readyGuidelines();
+		when(guidelinesRepository.findById(researchGroupId)).thenReturn(Optional.of(guidelines));
+
+		UUID fileId = UUID.randomUUID();
+		ThesisFile thesisFile = org.mockito.Mockito.mock(ThesisFile.class);
+		when(thesisFile.getId()).thenReturn(fileId);
+		when(thesis.getLatestFile("THESIS")).thenReturn(Optional.of(thesisFile));
+		Resource pdfResource = new ByteArrayResource("pdf".getBytes());
+		when(thesisService.getThesisFile(thesisFile)).thenReturn(pdfResource);
+
+		when(reviewService.review(eq(pdfResource), eq(ReviewType.THESIS), eq(guidelines.getStructuredGuidelines())))
+				.thenReturn(new ReviewResultDTO(AssessmentCategory.ACCEPTABLE, 70, "Some gaps.", List.of()));
+		UUID thesisId = UUID.randomUUID();
+		when(thesis.getId()).thenReturn(thesisId);
+		when(reviewSummaryRepository.findByThesisIdAndType(thesisId, ReviewType.THESIS)).thenReturn(Optional.empty());
+
+		service.autoReviewAndSave(thesis, ReviewType.THESIS);
+
+		ArgumentCaptor<AIReviewSummary> savedSummary = ArgumentCaptor.forClass(AIReviewSummary.class);
+		verify(reviewSummaryRepository).save(savedSummary.capture());
+		assertThat(savedSummary.getValue().getDocumentVersionId()).isEqualTo(fileId);
+	}
+
+	@Test
 	void autoReviewAndSave_retriesAsUpdateWhenConcurrentInsertRacesTheSummary() {
 		ResearchGroupGuidelines guidelines = readyGuidelines();
 		when(guidelinesRepository.findById(researchGroupId)).thenReturn(Optional.of(guidelines));
 
+		UUID proposalId = UUID.randomUUID();
 		ThesisProposal proposal = org.mockito.Mockito.mock(ThesisProposal.class);
+		when(proposal.getId()).thenReturn(proposalId);
 		when(thesis.getProposals()).thenReturn(List.of(proposal));
 		Resource pdfResource = new ByteArrayResource("pdf".getBytes());
 		when(thesisService.getProposalFile(proposal)).thenReturn(pdfResource);
@@ -240,5 +295,6 @@ class AIFeedbackServiceTest {
 		verify(reviewSummaryRepository).save(concurrentlyInserted);
 		assertThat(concurrentlyInserted.getScore()).isEqualTo(90);
 		assertThat(concurrentlyInserted.getAssessment()).isEqualTo(AssessmentCategory.GOOD);
+		assertThat(concurrentlyInserted.getDocumentVersionId()).isEqualTo(proposalId);
 	}
 }

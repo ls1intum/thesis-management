@@ -25,9 +25,9 @@ import java.util.UUID;
 
 /**
  * The AI review pipeline's latest read on a thesis's proposal or thesis document: a numeric
- * score, the {@link AssessmentCategory}, and a short summary. There is at most one record per
- * {@code (thesis, type)} pair — every review run (student auto-review or supervisor preview)
- * upserts this row, independent of whether any resulting findings are actually saved.
+ * score, the {@link AssessmentCategory}, a short summary, and the document revision it was
+ * produced from. There is at most one record per {@code (thesis, type)} pair — each auto-review
+ * run upserts this row, independent of whether any resulting findings are actually saved.
  */
 @Getter
 @Setter
@@ -56,6 +56,16 @@ public class AIReviewSummary {
 
 	@Column(name = "summary", columnDefinition = "text")
 	private String summary;
+
+	/**
+	 * The revision this summary was produced from — a {@code thesis_proposals} id for
+	 * {@link ReviewType#PROPOSAL}, a {@code thesis_files} id for {@link ReviewType#THESIS}. Lets
+	 * the UI drop the score once a newer document is uploaded rather than showing a stale one as
+	 * current. Null for rows written before the column existed, or when the reviewed document
+	 * could not be resolved.
+	 */
+	@Column(name = "document_version_id")
+	private UUID documentVersionId;
 
 	@UpdateTimestamp
 	@Column(name = "updated_at", nullable = false)

@@ -277,6 +277,9 @@ public record ThesisAIReviewSummaryDto(
 	Integer score,
 	AssessmentCategory assessment,
 	String summary,
+	// Points at the proposalId (PROPOSAL) or thesis fileId (THESIS) the review ran against. The
+	// client compares it with the latest revision and hides the summary once it no longer matches.
+	UUID documentVersionId,
 	Instant updatedAt
 ) {
 
@@ -290,6 +293,7 @@ public record ThesisAIReviewSummaryDto(
 		summary.getScore(),
 		summary.getAssessment(),
 		summary.getSummary(),
+		summary.getDocumentVersionId(),
 		summary.getUpdatedAt()
 	);
 	}

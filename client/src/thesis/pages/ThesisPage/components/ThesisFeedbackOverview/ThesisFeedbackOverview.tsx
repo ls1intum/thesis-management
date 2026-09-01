@@ -69,6 +69,24 @@ const buildVersionLabelMap = (
   return map
 }
 
+/**
+ * The id of the newest revision of the document this feedback section is about — the current
+ * proposal for PROPOSAL, the current thesis file for THESIS. Both lists are newest-first.
+ */
+const resolveLatestVersionId = (
+  type: string,
+  proposals: IThesis['proposals'] | undefined,
+  files: IThesis['files'] | undefined,
+): string | undefined => {
+  if (type === 'PROPOSAL') {
+    return (proposals ?? [])[0]?.proposalId
+  }
+  if (type === 'THESIS') {
+    return (files ?? []).find((file) => file.type === 'THESIS')?.fileId
+  }
+  return undefined
+}
+
 const ThesisFeedbackOverview = (props: IThesisFeedbackOverviewProps) => {
   const { type, allowEdit } = props
 
@@ -121,9 +139,24 @@ const ThesisFeedbackOverview = (props: IThesisFeedbackOverviewProps) => {
     [thesis.feedback, type],
   )
 
+  const latestVersionId = React.useMemo(
+    () => resolveLatestVersionId(type, thesis.proposals, thesis.files),
+    [type, thesis.proposals, thesis.files],
+  )
+
+  // A summary describes one specific revision, so it only stands for the document currently on
+  // screen. Once a newer proposal or thesis file is uploaded (or for legacy rows that predate
+  // the version column and cannot be placed), drop it rather than passing off an obsolete score
+  // as the current one — the next AI review writes a summary for the new revision.
   const reviewSummary = React.useMemo(
-    () => (thesis.aiReviewSummaries ?? []).find((summary) => summary.type === type),
-    [thesis.aiReviewSummaries, type],
+    () =>
+      (thesis.aiReviewSummaries ?? []).find(
+        (summary) =>
+          summary.type === type &&
+          Boolean(latestVersionId) &&
+          summary.documentVersionId === latestVersionId,
+      ),
+    [thesis.aiReviewSummaries, type, latestVersionId],
   )
 
   const categoryCounts = React.useMemo(() => {

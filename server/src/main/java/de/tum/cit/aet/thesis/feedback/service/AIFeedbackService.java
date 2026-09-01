@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 /**
  * Runs the AI review pipeline against a thesis's existing uploaded PDF and either (a) persists
@@ -108,9 +109,9 @@ public class AIFeedbackService {
 	 */
 	public Thesis autoReviewAndSave(Thesis thesis, ReviewType reviewType) {
 		StructuredGuidelines guidelines = requireReadyGuidelines(thesis);
-		Resource pdfResource = loadPdfResource(thesis, reviewType);
-		ReviewResultDTO result = reviewService.review(pdfResource, reviewType, guidelines);
-		persistReviewSummary(thesis, reviewType, result);
+		ReviewDocument document = loadReviewDocument(thesis, reviewType);
+		ReviewResultDTO result = reviewService.review(document.resource(), reviewType, guidelines);
+		persistReviewSummary(thesis, reviewType, result, document.versionId());
 
 		List<RequestChangesPayload.RequestedChange> changes = new ArrayList<>();
 		for (FindingDTO finding : safeFindings(result.findings())) {
@@ -154,8 +155,8 @@ public class AIFeedbackService {
 	 */
 	public AIPreviewResponseDTO previewReview(Thesis thesis, ReviewType reviewType) {
 		StructuredGuidelines guidelines = requireReadyGuidelines(thesis);
-		Resource pdfResource = loadPdfResource(thesis, reviewType);
-		ReviewResultDTO result = reviewService.review(pdfResource, reviewType, guidelines);
+		ReviewDocument document = loadReviewDocument(thesis, reviewType);
+		ReviewResultDTO result = reviewService.review(document.resource(), reviewType, guidelines);
 
 		List<AIFeedbackDraftDTO> drafts = safeFindings(result.findings()).stream()
 				.map(finding -> new AIFeedbackDraftDTO(
@@ -182,12 +183,15 @@ public class AIFeedbackService {
 	 * @param thesis the thesis that was reviewed
 	 * @param reviewType whether the proposal or the thesis document was reviewed
 	 * @param result the merged review result to persist
+	 * @param documentVersionId the id of the document revision the review ran against, so the UI
+	 *                          can tell a current summary from one describing an older upload
 	 */
-	private void persistReviewSummary(Thesis thesis, ReviewType reviewType, ReviewResultDTO result) {
+	private void persistReviewSummary(Thesis thesis, ReviewType reviewType, ReviewResultDTO result,
+			UUID documentVersionId) {
 		AIReviewSummary summary = reviewSummaryRepository
 				.findByThesisIdAndType(thesis.getId(), reviewType)
 				.orElseGet(AIReviewSummary::new);
-		applyReviewResult(summary, thesis, reviewType, result);
+		applyReviewResult(summary, thesis, reviewType, result, documentVersionId);
 
 		try {
 			reviewSummaryRepository.save(summary);
@@ -198,18 +202,19 @@ public class AIFeedbackService {
 			AIReviewSummary existing = reviewSummaryRepository
 					.findByThesisIdAndType(thesis.getId(), reviewType)
 					.orElseThrow(() -> e);
-			applyReviewResult(existing, thesis, reviewType, result);
+			applyReviewResult(existing, thesis, reviewType, result, documentVersionId);
 			reviewSummaryRepository.save(existing);
 		}
 	}
 
 	private static void applyReviewResult(AIReviewSummary summary, Thesis thesis, ReviewType reviewType,
-			ReviewResultDTO result) {
+			ReviewResultDTO result, UUID documentVersionId) {
 		summary.setThesis(thesis);
 		summary.setType(reviewType);
 		summary.setScore(sanitizeScore(result.score()));
 		summary.setAssessment(result.category());
 		summary.setSummary(result.summary());
+		summary.setDocumentVersionId(documentVersionId);
 	}
 
 	/**
@@ -227,7 +232,18 @@ public class AIFeedbackService {
 		return score;
 	}
 
-	private Resource loadPdfResource(Thesis thesis, ReviewType reviewType) {
+	/**
+	 * The document a review run reads, paired with the id of the revision it came from. Reviews
+	 * always run against the newest upload, and the id is what lets a persisted summary be
+	 * recognised as stale once a newer proposal or thesis file replaces it.
+	 *
+	 * @param resource the PDF handed to the review pipeline
+	 * @param versionId the {@code thesis_proposals} / {@code thesis_files} id of that revision
+	 */
+	private record ReviewDocument(Resource resource, UUID versionId) {
+	}
+
+	private ReviewDocument loadReviewDocument(Thesis thesis, ReviewType reviewType) {
 		return switch (reviewType) {
 			case PROPOSAL -> {
 				List<ThesisProposal> proposals = thesis.getProposals();
@@ -235,13 +251,14 @@ public class AIFeedbackService {
 					throw new ResourceInvalidParametersException(
 							"Thesis has no uploaded proposal — cannot run an AI review.");
 				}
-				yield thesisService.getProposalFile(proposals.getFirst());
+				ThesisProposal proposal = proposals.getFirst();
+				yield new ReviewDocument(thesisService.getProposalFile(proposal), proposal.getId());
 			}
 			case THESIS -> {
 				ThesisFile thesisFile = thesis.getLatestFile("THESIS").orElseThrow(() ->
 						new ResourceInvalidParametersException(
 								"Thesis has no uploaded thesis document — cannot run an AI review."));
-				yield thesisService.getThesisFile(thesisFile);
+				yield new ReviewDocument(thesisService.getThesisFile(thesisFile), thesisFile.getId());
 			}
 		};
 	}
@@ -348,7 +365,7 @@ public class AIFeedbackService {
 	 * @param reviewType whether the proposal or the thesis document is required
 	 */
 	public void assertHasDocument(Thesis thesis, ReviewType reviewType) {
-		loadPdfResource(thesis, reviewType);
+		loadReviewDocument(thesis, reviewType);
 	}
 
 	/**
