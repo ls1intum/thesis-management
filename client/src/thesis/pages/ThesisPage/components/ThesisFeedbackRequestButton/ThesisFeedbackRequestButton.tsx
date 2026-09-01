@@ -21,19 +21,21 @@ import {
 } from '@mantine/core'
 import { doRequest } from '@/core/requests/request'
 import type { IThesis } from '@/thesis/requests/responses/thesis'
-import {
+import type {
   ThesisFeedbackCategory,
   ThesisFeedbackSeverity,
-  ThesisFeedbackSource,
 } from '@/thesis/requests/responses/thesis'
+import { ThesisFeedbackSource } from '@/thesis/requests/responses/thesis'
 import { ApiError, getApiResponseErrorMessage } from '@/core/requests/handler'
 import { Plus, Robot, Trash } from '@phosphor-icons/react'
 import { showSimpleError } from '@/core/utils/notification'
 import { GLOBAL_CONFIG } from '@/core/config/global'
+import FeedbackCategoryCounts from '@/thesis/components/FeedbackCategoryCounts/FeedbackCategoryCounts'
 import {
   ASSESSMENT_LABEL,
-  CATEGORY_DESCRIPTION,
-  humanizeFeedbackCategory,
+  countByCategory,
+  FEEDBACK_CATEGORY_OPTIONS,
+  FEEDBACK_SEVERITY_OPTIONS,
   SEVERITY_COLOR,
   SEVERITY_DESCRIPTION,
 } from '@/thesis/utils/feedbackLabels'
@@ -66,16 +68,6 @@ interface IAIPreviewResponse {
   summary?: string
   drafts?: IAIDraft[]
 }
-
-const CATEGORY_OPTIONS = Object.values(ThesisFeedbackCategory).map((value) => ({
-  value,
-  label: humanizeFeedbackCategory(value),
-}))
-
-const SEVERITY_OPTIONS = Object.values(ThesisFeedbackSeverity).map((value) => ({
-  value,
-  label: value.charAt(0) + value.slice(1).toLowerCase(),
-}))
 
 const emptyEntry = (): INewEntry => ({
   key: crypto.randomUUID(),
@@ -115,14 +107,7 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
     [entries],
   )
 
-  const categoryCounts = useMemo(() => {
-    const counts = new Map<ThesisFeedbackCategory, number>()
-    ;(aiAssessment?.drafts ?? []).forEach((draft) => {
-      if (!draft.category) return
-      counts.set(draft.category, (counts.get(draft.category) ?? 0) + 1)
-    })
-    return counts
-  }, [aiAssessment])
+  const categoryCounts = useMemo(() => countByCategory(aiAssessment?.drafts ?? []), [aiAssessment])
 
   const hasUnsavedWork = validEntries.length > 0 || editChanges.length > 0
 
@@ -320,22 +305,7 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
                       {aiAssessment.summary}
                     </Text>
                   )}
-                  {categoryCounts.size > 0 && (
-                    <Group gap={6}>
-                      {Array.from(categoryCounts.entries()).map(([category, count]) => (
-                        <Tooltip
-                          key={category}
-                          label={CATEGORY_DESCRIPTION[category]}
-                          withArrow
-                          openDelay={300}
-                        >
-                          <Badge size='sm' color='gray' variant='outline'>
-                            {humanizeFeedbackCategory(category)}: {count}
-                          </Badge>
-                        </Tooltip>
-                      ))}
-                    </Group>
-                  )}
+                  <FeedbackCategoryCounts counts={categoryCounts} />
                   <Text size='xs' c='dimmed'>
                     Entries below are drafts — edit or delete them before saving.
                   </Text>
@@ -391,7 +361,7 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
                     <Select
                       label='Category'
                       placeholder='Uncategorized'
-                      data={CATEGORY_OPTIONS}
+                      data={FEEDBACK_CATEGORY_OPTIONS}
                       value={entry.category || null}
                       clearable
                       onChange={(value) =>
@@ -403,7 +373,7 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
                     <Select
                       label='Severity'
                       placeholder='Unspecified'
-                      data={SEVERITY_OPTIONS}
+                      data={FEEDBACK_SEVERITY_OPTIONS}
                       value={entry.severity || null}
                       clearable
                       onChange={(value) =>

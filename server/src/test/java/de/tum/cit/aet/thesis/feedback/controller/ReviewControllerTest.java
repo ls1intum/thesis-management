@@ -10,9 +10,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import de.tum.cit.aet.thesis.feedback.dto.AIFeedbackDraftDTO;
 import de.tum.cit.aet.thesis.feedback.dto.AIPreviewResponseDTO;
-import de.tum.cit.aet.thesis.feedback.dto.AssessmentCategory;
+import de.tum.cit.aet.thesis.feedback.model.AssessmentCategory;
+import de.tum.cit.aet.thesis.feedback.model.ReviewType;
 import de.tum.cit.aet.thesis.feedback.service.AIFeedbackService;
-import de.tum.cit.aet.thesis.feedback.service.reviewer.ReviewType;
 import de.tum.cit.aet.thesis.mock.BaseIntegrationTest;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackCategory;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackSeverity;

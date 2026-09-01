@@ -1,7 +1,7 @@
 package de.tum.cit.aet.thesis.feedback.entity;
 
-import de.tum.cit.aet.thesis.feedback.dto.AssessmentCategory;
-import de.tum.cit.aet.thesis.feedback.service.reviewer.ReviewType;
+import de.tum.cit.aet.thesis.feedback.model.AssessmentCategory;
+import de.tum.cit.aet.thesis.feedback.model.ReviewType;
 import de.tum.cit.aet.thesis.thesis.entity.Thesis;
 import lombok.Getter;
 import lombok.Setter;

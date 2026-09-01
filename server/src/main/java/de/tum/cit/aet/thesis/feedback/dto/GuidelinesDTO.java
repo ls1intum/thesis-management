@@ -4,9 +4,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.thesis.feedback.entity.GuidelinesStatus;
 import de.tum.cit.aet.thesis.feedback.entity.ResearchGroupGuidelines;
 import de.tum.cit.aet.thesis.feedback.entity.jsonb.StructuredGuidelines;
-import de.tum.cit.aet.thesis.feedback.service.reviewer.ReviewCategory;
+import de.tum.cit.aet.thesis.feedback.model.ReviewCategory;
 
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -25,13 +26,6 @@ public record GuidelinesDTO(
 		Instant updatedAt
 ) {
 	/**
-	 * Builds the DTO from a persisted entity, expanding the structured guidelines into per-category
-	 * DTOs in the fixed category order and attaching each category's display name.
-	 *
-	 * @param entity the persisted guidelines
-	 * @return the API representation
-	 */
-	/**
 	 * Returns an empty representation used when a research group has no guidelines yet. With
 	 * {@code NON_EMPTY} serialization this becomes an empty JSON object, which the client reads
 	 * as the "not configured" state.
@@ -42,6 +36,13 @@ public record GuidelinesDTO(
 		return new GuidelinesDTO(null, null, null, List.of(), null, null, null);
 	}
 
+	/**
+	 * Builds the DTO from a persisted entity, expanding the structured guidelines into per-category
+	 * DTOs in the fixed category order and attaching each category's display name.
+	 *
+	 * @param entity the persisted guidelines
+	 * @return the API representation
+	 */
 	public static GuidelinesDTO fromEntity(ResearchGroupGuidelines entity) {
 		StructuredGuidelines structured = entity.getStructuredGuidelines();
 		List<CategoryGuidelinesDTO> categories = List.of();
@@ -49,7 +50,7 @@ public record GuidelinesDTO(
 
 		if (structured != null) {
 			overview = structured.overview();
-			categories = java.util.Arrays.stream(ReviewCategory.values())
+			categories = Arrays.stream(ReviewCategory.values())
 					.map(category -> new CategoryGuidelinesDTO(
 							category.getSlug(),
 							category.getDisplayName(),

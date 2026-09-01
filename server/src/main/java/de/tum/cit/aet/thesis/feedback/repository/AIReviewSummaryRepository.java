@@ -1,7 +1,7 @@
 package de.tum.cit.aet.thesis.feedback.repository;
 
 import de.tum.cit.aet.thesis.feedback.entity.AIReviewSummary;
-import de.tum.cit.aet.thesis.feedback.service.reviewer.ReviewType;
+import de.tum.cit.aet.thesis.feedback.model.ReviewType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

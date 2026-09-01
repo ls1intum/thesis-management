@@ -13,6 +13,32 @@ export const humanizeFeedbackCategory = (
     .replace(/(^\w|_\w)/g, (m) => m.replace('_', ' ').toUpperCase())
 }
 
+/**
+ * Options for the category and severity `Select`s. Shared so the feedback overview and the
+ * request-changes dialog cannot drift apart on either the values or their labels.
+ */
+export const FEEDBACK_CATEGORY_OPTIONS = Object.values(ThesisFeedbackCategory).map((value) => ({
+  value,
+  label: humanizeFeedbackCategory(value),
+}))
+
+export const FEEDBACK_SEVERITY_OPTIONS = Object.values(ThesisFeedbackSeverity).map((value) => ({
+  value,
+  label: humanizeFeedbackCategory(value),
+}))
+
+/** Counts items per category, skipping the uncategorized ones. */
+export const countByCategory = (
+  items: { category?: ThesisFeedbackCategory | null }[],
+): Map<ThesisFeedbackCategory, number> => {
+  const counts = new Map<ThesisFeedbackCategory, number>()
+  items.forEach((item) => {
+    if (!item.category) return
+    counts.set(item.category, (counts.get(item.category) ?? 0) + 1)
+  })
+  return counts
+}
+
 export const SEVERITY_COLOR: Record<ThesisFeedbackSeverity, string> = {
   [ThesisFeedbackSeverity.CRITICAL]: 'red',
   [ThesisFeedbackSeverity.MAJOR]: 'orange',
