@@ -1,4 +1,4 @@
-package de.tum.cit.aet.thesis.feedback.dto;
+package de.tum.cit.aet.thesis.feedback.model;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -17,6 +17,8 @@ class AssessmentCategoryTest {
 
 	@Test
 	void deserializesRealMergerTokensIntoReviewResult() {
+		// "category" was the field name before it was renamed to "assessment"; @JsonAlias keeps
+		// responses from an older prompt or a cached model deployment readable.
 		String mergerJson = """
 				{
 					"category": "needs-work",
@@ -25,9 +27,9 @@ class AssessmentCategoryTest {
 				}
 				""";
 
-		ReviewResultDTO result = objectMapper.readValue(mergerJson, ReviewResultDTO.class);
+		ReviewResult result = objectMapper.readValue(mergerJson, ReviewResult.class);
 
-		assertThat(result.category()).isEqualTo(AssessmentCategory.NEEDS_WORK);
+		assertThat(result.assessment()).isEqualTo(AssessmentCategory.NEEDS_WORK);
 		assertThat(result.summary()).isEqualTo("The proposal needs significant work before submission.");
 	}
 

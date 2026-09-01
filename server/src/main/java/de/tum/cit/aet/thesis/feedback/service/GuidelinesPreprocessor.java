@@ -2,13 +2,14 @@ package de.tum.cit.aet.thesis.feedback.service;
 
 import de.tum.cit.aet.thesis.feedback.config.AIFeaturesEnabled;
 import de.tum.cit.aet.thesis.feedback.dto.GuidelinesPreprocessingResult;
-import de.tum.cit.aet.thesis.feedback.service.reviewer.ReviewCategory;
+import de.tum.cit.aet.thesis.feedback.model.ReviewCategory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.stream.Collectors;
 
 /**
@@ -80,7 +81,7 @@ public class GuidelinesPreprocessor {
 	}
 
 	private static String buildCategoryList() {
-		return java.util.Arrays.stream(ReviewCategory.values())
+		return Arrays.stream(ReviewCategory.values())
 				.map(category -> "- \"" + category.getSlug() + "\" (" + category.getDisplayName() + "): "
 						+ category.getDescription())
 				.collect(Collectors.joining("\n"));

@@ -19,7 +19,7 @@ import {
   Tooltip,
 } from '@mantine/core'
 import type { IThesis } from '@/thesis/requests/responses/thesis'
-import { ThesisFeedbackCategory, ThesisFeedbackSource } from '@/thesis/requests/responses/thesis'
+import { ThesisFeedbackSource } from '@/thesis/requests/responses/thesis'
 import React from 'react'
 import AvatarUser from '@/core/components/AvatarUser/AvatarUser'
 import { formatDate } from '@/core/utils/format'
@@ -27,10 +27,13 @@ import { doRequest } from '@/core/requests/request'
 import { ApiError } from '@/core/requests/handler'
 import { MagnifyingGlass, Trash } from '@phosphor-icons/react'
 import ConfirmationButton from '@/core/components/ConfirmationButton/ConfirmationButton'
+import FeedbackCategoryCounts from '@/thesis/components/FeedbackCategoryCounts/FeedbackCategoryCounts'
 import {
   ASSESSMENT_COLOR,
   ASSESSMENT_LABEL,
   CATEGORY_DESCRIPTION,
+  countByCategory,
+  FEEDBACK_CATEGORY_OPTIONS,
   humanizeFeedbackCategory,
   SEVERITY_COLOR,
   SEVERITY_DESCRIPTION,
@@ -159,14 +162,7 @@ const ThesisFeedbackOverview = (props: IThesisFeedbackOverviewProps) => {
     [thesis.aiReviewSummaries, type, latestVersionId],
   )
 
-  const categoryCounts = React.useMemo(() => {
-    const counts = new Map<ThesisFeedbackCategory, number>()
-    feedbackForType.forEach((item) => {
-      if (!item.category) return
-      counts.set(item.category, (counts.get(item.category) ?? 0) + 1)
-    })
-    return counts
-  }, [feedbackForType])
+  const categoryCounts = React.useMemo(() => countByCategory(feedbackForType), [feedbackForType])
 
   const addressedCount = React.useMemo(
     () => feedbackForType.filter((item) => item.completedAt).length,
@@ -253,11 +249,6 @@ const ThesisFeedbackOverview = (props: IThesisFeedbackOverviewProps) => {
     return summaryAlert ? <Input.Wrapper label='Feedback'>{summaryAlert}</Input.Wrapper> : null
   }
 
-  const categoryOptions = Object.values(ThesisFeedbackCategory).map((value) => ({
-    value,
-    label: humanizeFeedbackCategory(value),
-  }))
-
   return (
     <Input.Wrapper label='Feedback'>
       <Stack gap='sm'>
@@ -282,22 +273,7 @@ const ThesisFeedbackOverview = (props: IThesisFeedbackOverviewProps) => {
               />
             </Progress.Root>
           </Group>
-          {categoryCounts.size > 0 && (
-            <Group gap={6}>
-              {Array.from(categoryCounts.entries()).map(([category, count]) => (
-                <Tooltip
-                  key={category}
-                  label={CATEGORY_DESCRIPTION[category]}
-                  withArrow
-                  openDelay={300}
-                >
-                  <Badge size='sm' color='gray' variant='outline'>
-                    {humanizeFeedbackCategory(category)}: {count}
-                  </Badge>
-                </Tooltip>
-              ))}
-            </Group>
-          )}
+          <FeedbackCategoryCounts counts={categoryCounts} />
         </Group>
         <Group gap='sm' align='flex-end' wrap='wrap'>
           <TextInput
@@ -309,7 +285,7 @@ const ThesisFeedbackOverview = (props: IThesisFeedbackOverviewProps) => {
           />
           <Select
             placeholder='All categories'
-            data={categoryOptions}
+            data={FEEDBACK_CATEGORY_OPTIONS}
             value={categoryFilter}
             onChange={setCategoryFilter}
             clearable

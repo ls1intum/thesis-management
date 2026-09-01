@@ -1,6 +1,7 @@
 package de.tum.cit.aet.thesis.feedback.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import de.tum.cit.aet.thesis.feedback.model.AssessmentCategory;
 
 import java.util.List;
 
