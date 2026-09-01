@@ -59,6 +59,7 @@ class ReviewControllerTest extends BaseIntegrationTest {
 						.header("Authorization", createRandomAdminAuthentication()))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.assessment").value("ACCEPTABLE"))
+				.andExpect(jsonPath("$.score").value(62))
 				.andExpect(jsonPath("$.summary").value("Solid overall but bibliography is thin."))
 				.andExpect(jsonPath("$.drafts[0].category").value("CITATION"))
 				.andExpect(jsonPath("$.drafts[0].severity").value("MAJOR"));
@@ -264,6 +265,7 @@ class ReviewControllerTest extends BaseIntegrationTest {
 	private void stubPreviewResponse() {
 		AIPreviewResponseDTO mockResponse = new AIPreviewResponseDTO(
 				AssessmentCategory.ACCEPTABLE,
+				62,
 				"Solid overall but bibliography is thin.",
 				List.of(new AIFeedbackDraftDTO(
 						"Thin bibliography — increase to at least 6 peer-reviewed sources.",

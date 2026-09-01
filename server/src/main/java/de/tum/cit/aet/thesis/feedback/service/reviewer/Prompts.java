@@ -525,7 +525,8 @@ public enum Prompts {
 					3. FILTER: Remove any findings that are not actionable or are actually positive observations (e.g. "The proposal clearly explains the research question" or "Bibliography meets requirements")
 					4. RANK: Sort by severity (critical → major → minor → suggestion)
 					5. ASSESS: Provide an overall assessment of the proposal quality
-					6. LIMIT: Produce 0-25 actionable feedback items total. If all check groups returned zero findings (or only positive observations), return an empty findings array. Do not invent issues to fill a quota.
+					6. SCORE: Provide an integer "score" from 0-100 reflecting overall quality, consistent with your assessment (good ≈ 80-100, acceptable ≈ 50-79, needs-work ≈ 0-49). Weigh critical/major findings more heavily than minor ones/suggestions.
+					7. LIMIT: Produce 0-25 actionable feedback items total. If all check groups returned zero findings (or only positive observations), return an empty findings array. Do not invent issues to fill a quota.
 
 					Rules:
 					- Keep the severity levels as assigned by the check groups unless clearly wrong
@@ -550,7 +551,8 @@ public enum Prompts {
 					3. FILTER: Remove any findings that are not actionable or are actually positive observations
 					4. RANK: Sort by severity (critical → major → minor → suggestion)
 					5. ASSESS: Provide an overall assessment of the thesis quality
-					6. LIMIT: Produce 0-40 actionable feedback items total (a thesis is longer than a proposal and legitimately generates more findings). If all check groups returned zero findings (or only positive observations), return an empty findings array. Do not invent issues to fill a quota.
+					6. SCORE: Provide an integer "score" from 0-100 reflecting overall quality, consistent with your assessment (good ≈ 80-100, acceptable ≈ 50-79, needs-work ≈ 0-49). Weigh critical/major findings more heavily than minor ones/suggestions.
+					7. LIMIT: Produce 0-40 actionable feedback items total (a thesis is longer than a proposal and legitimately generates more findings). If all check groups returned zero findings (or only positive observations), return an empty findings array. Do not invent issues to fill a quota.
 
 					Rules:
 					- Keep the severity levels as assigned by the check groups unless clearly wrong

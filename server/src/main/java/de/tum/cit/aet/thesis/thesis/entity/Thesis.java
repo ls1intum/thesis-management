@@ -3,6 +3,7 @@ package de.tum.cit.aet.thesis.thesis.entity;
 import de.tum.cit.aet.thesis.core.application.entity.Application;
 import de.tum.cit.aet.thesis.core.group.entity.ResearchGroup;
 import de.tum.cit.aet.thesis.core.user.entity.User;
+import de.tum.cit.aet.thesis.feedback.entity.AIReviewSummary;
 import de.tum.cit.aet.thesis.presentation.entity.ThesisPresentation;
 import de.tum.cit.aet.thesis.proposal.entity.ThesisProposal;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisAbstractSource;
@@ -154,6 +155,9 @@ public class Thesis {
 	@OneToMany(mappedBy = "thesis", fetch = FetchType.LAZY)
 	@OrderBy("uploadedAt DESC")
 	private List<ThesisFile> files = new ArrayList<>();
+
+	@OneToMany(mappedBy = "thesis", fetch = FetchType.LAZY)
+	private List<AIReviewSummary> aiReviewSummaries = new ArrayList<>();
 
 	@OneToMany(mappedBy = "thesis", fetch = FetchType.EAGER)
 	private Set<ThesisStateChange> states = new HashSet<>();

@@ -30,6 +30,14 @@ import { ApiError, getApiResponseErrorMessage } from '@/core/requests/handler'
 import { Plus, Robot, Trash } from '@phosphor-icons/react'
 import { showSimpleError } from '@/core/utils/notification'
 import { GLOBAL_CONFIG } from '@/core/config/global'
+import {
+  ASSESSMENT_LABEL,
+  CATEGORY_DESCRIPTION,
+  humanizeFeedbackCategory,
+  SEVERITY_COLOR,
+  SEVERITY_DESCRIPTION,
+} from '@/thesis/utils/feedbackLabels'
+import type { AIAssessment } from '@/thesis/utils/feedbackLabels'
 
 interface IThesisFeedbackRequestButtonProps {
   type: string
@@ -53,33 +61,21 @@ interface IAIDraft {
 }
 
 interface IAIPreviewResponse {
-  assessment?: 'GOOD' | 'ACCEPTABLE' | 'NEEDS_WORK'
+  assessment?: AIAssessment
+  score?: number | null
   summary?: string
   drafts?: IAIDraft[]
 }
 
 const CATEGORY_OPTIONS = Object.values(ThesisFeedbackCategory).map((value) => ({
   value,
-  label: value.toLowerCase().replace(/(^\w|_\w)/g, (m) => m.replace('_', ' ').toUpperCase()),
+  label: humanizeFeedbackCategory(value),
 }))
 
 const SEVERITY_OPTIONS = Object.values(ThesisFeedbackSeverity).map((value) => ({
   value,
   label: value.charAt(0) + value.slice(1).toLowerCase(),
 }))
-
-const SEVERITY_COLOR: Record<ThesisFeedbackSeverity, string> = {
-  [ThesisFeedbackSeverity.CRITICAL]: 'red',
-  [ThesisFeedbackSeverity.MAJOR]: 'orange',
-  [ThesisFeedbackSeverity.MINOR]: 'yellow',
-  [ThesisFeedbackSeverity.SUGGESTION]: 'blue',
-}
-
-const ASSESSMENT_LABEL: Record<NonNullable<IAIPreviewResponse['assessment']>, string> = {
-  GOOD: 'Good — ready to submit with minor tweaks',
-  ACCEPTABLE: 'Acceptable — some work needed',
-  NEEDS_WORK: 'Needs work — significant issues remain',
-}
 
 const emptyEntry = (): INewEntry => ({
   key: crypto.randomUUID(),
@@ -118,6 +114,15 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
     () => entries.filter((entry) => entry.feedback.trim().length > 0),
     [entries],
   )
+
+  const categoryCounts = useMemo(() => {
+    const counts = new Map<ThesisFeedbackCategory, number>()
+    ;(aiAssessment?.drafts ?? []).forEach((draft) => {
+      if (!draft.category) return
+      counts.set(draft.category, (counts.get(draft.category) ?? 0) + 1)
+    })
+    return counts
+  }, [aiAssessment])
 
   const hasUnsavedWork = validEntries.length > 0 || editChanges.length > 0
 
@@ -295,7 +300,15 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
             <Divider label='New feedback entries' labelPosition='left' />
 
             {aiAssessment && (
-              <Alert color='grape' variant='light' title='AI review'>
+              <Alert
+                color='grape'
+                variant='light'
+                title={
+                  typeof aiAssessment.score === 'number'
+                    ? `AI review — Overall Score: ${aiAssessment.score}/100`
+                    : 'AI review'
+                }
+              >
                 <Stack gap={4}>
                   {aiAssessment.assessment && (
                     <Text size='sm' fw={500}>
@@ -306,6 +319,22 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
                     <Text size='sm' c='dimmed'>
                       {aiAssessment.summary}
                     </Text>
+                  )}
+                  {categoryCounts.size > 0 && (
+                    <Group gap={6}>
+                      {Array.from(categoryCounts.entries()).map(([category, count]) => (
+                        <Tooltip
+                          key={category}
+                          label={CATEGORY_DESCRIPTION[category]}
+                          withArrow
+                          openDelay={300}
+                        >
+                          <Badge size='sm' color='gray' variant='outline'>
+                            {humanizeFeedbackCategory(category)}: {count}
+                          </Badge>
+                        </Tooltip>
+                      ))}
+                    </Group>
                   )}
                   <Text size='xs' c='dimmed'>
                     Entries below are drafts — edit or delete them before saving.
@@ -328,9 +357,15 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
                         Entry {index + 1}
                       </Text>
                       {entry.severity && (
-                        <Badge size='sm' color={SEVERITY_COLOR[entry.severity]} variant='light'>
-                          {entry.severity}
-                        </Badge>
+                        <Tooltip
+                          label={SEVERITY_DESCRIPTION[entry.severity]}
+                          withArrow
+                          openDelay={300}
+                        >
+                          <Badge size='sm' color={SEVERITY_COLOR[entry.severity]} variant='light'>
+                            {entry.severity}
+                          </Badge>
+                        </Tooltip>
                       )}
                     </Group>
                     <Tooltip label='Remove entry'>

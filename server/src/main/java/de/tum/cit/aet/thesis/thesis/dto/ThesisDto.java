@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.thesis.core.group.dto.LightResearchGroupDto;
 import de.tum.cit.aet.thesis.core.user.dto.LightUserDto;
 import de.tum.cit.aet.thesis.core.user.dto.MinimalUserDto;
+import de.tum.cit.aet.thesis.feedback.dto.AssessmentCategory;
+import de.tum.cit.aet.thesis.feedback.entity.AIReviewSummary;
+import de.tum.cit.aet.thesis.feedback.service.reviewer.ReviewType;
 import de.tum.cit.aet.thesis.presentation.constants.ThesisPresentationState;
 import de.tum.cit.aet.thesis.presentation.constants.ThesisPresentationType;
 import de.tum.cit.aet.thesis.presentation.constants.ThesisPresentationVisibility;
@@ -55,6 +58,7 @@ public record ThesisDto(
 	List<ThesisFeedbackDto> feedback,
 	List<ThesisFilesDto> files,
 	ThesisGradeDto grade,
+	List<ThesisAIReviewSummaryDto> aiReviewSummaries,
 
 	List<ThesisPresentationDto> presentations,
 
@@ -131,6 +135,7 @@ public static ThesisDto fromThesisEntity(Thesis thesis, boolean supervisorAccess
 		thesis.getFeedback().stream().map(ThesisFeedbackDto::fromThesisFeedbackEntity).toList(),
 		thesis.getFiles().stream().map(ThesisFilesDto::fromThesisFileEntity).toList(),
 		studentAccess ? ThesisGradeDto.fromThesisEntity(thesis) : null,
+		thesis.getAiReviewSummaries().stream().map(ThesisAIReviewSummaryDto::fromEntity).toList(),
 		presentations.stream().map(ThesisPresentationDto::fromPresentationEntity).toList(),
 		students,
 		supervisors,
@@ -262,6 +267,34 @@ public record ThesisFeedbackDto(
 		feedback.getSeverity(),
 		feedback.getGenerationSource(),
 		feedback.getDocumentVersionId()
+	);
+	}
+}
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+public record ThesisAIReviewSummaryDto(
+	ReviewType type,
+	Integer score,
+	AssessmentCategory assessment,
+	String summary,
+	// Points at the proposalId (PROPOSAL) or thesis fileId (THESIS) the review ran against. The
+	// client compares it with the latest revision and hides the summary once it no longer matches.
+	UUID documentVersionId,
+	Instant updatedAt
+) {
+
+	public static ThesisAIReviewSummaryDto fromEntity(AIReviewSummary summary) {
+	if (summary == null) {
+		return null;
+	}
+
+	return new ThesisAIReviewSummaryDto(
+		summary.getType(),
+		summary.getScore(),
+		summary.getAssessment(),
+		summary.getSummary(),
+		summary.getDocumentVersionId(),
+		summary.getUpdatedAt()
 	);
 	}
 }
