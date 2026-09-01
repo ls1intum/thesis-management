@@ -6,6 +6,8 @@ import de.tum.cit.aet.thesis.core.group.entity.ResearchGroup;
 import de.tum.cit.aet.thesis.feedback.config.AIFeaturesEnabled;
 import de.tum.cit.aet.thesis.feedback.dto.AIFeedbackDraftDTO;
 import de.tum.cit.aet.thesis.feedback.dto.AIPreviewResponseDTO;
+import de.tum.cit.aet.thesis.feedback.dto.FeedbackClassificationDTO;
+import de.tum.cit.aet.thesis.feedback.dto.FeedbackClassificationResult;
 import de.tum.cit.aet.thesis.feedback.dto.FindingDTO;
 import de.tum.cit.aet.thesis.feedback.dto.Location;
 import de.tum.cit.aet.thesis.feedback.dto.ReviewResultDTO;
@@ -65,6 +67,13 @@ public class AIFeedbackService {
 					+ "into review rules. Please ask your examiner or your research group lead to revise them under "
 					+ "Research Group Settings → AI Review Guidelines.";
 
+	/**
+	 * Upper bound on the text handed to the classification LLM. A feedback line is a sentence or
+	 * two; anything longer is pasted prose, and classifying its opening is enough to pick a label
+	 * without paying for the whole blob.
+	 */
+	private static final int MAX_CLASSIFICATION_CHARS = 2000;
+
 	/** Severity levels sorted from most to least urgent for stable preview ordering. */
 	private static final Comparator<ThesisFeedbackSeverity> SEVERITY_ORDER = Comparator.comparingInt(sev -> switch (sev) {
 		case CRITICAL -> 0;
@@ -77,6 +86,7 @@ public class AIFeedbackService {
 	private final ThesisService thesisService;
 	private final ResearchGroupGuidelinesRepository guidelinesRepository;
 	private final AIReviewSummaryRepository reviewSummaryRepository;
+	private final FeedbackClassificationService feedbackClassificationService;
 
 	/**
 	 * Creates the AI feedback service.
@@ -86,16 +96,20 @@ public class AIFeedbackService {
 	 * @param guidelinesRepository the repository used to load and gate on per-group review guidelines
 	 * @param reviewSummaryRepository the repository used to persist the latest score/assessment/summary
 	 *                                per (thesis, review type)
+	 * @param feedbackClassificationService the single-call classifier used to suggest a category and
+	 *                                      severity for a manually written feedback line
 	 */
 	public AIFeedbackService(
 			ReviewService reviewService,
 			ThesisService thesisService,
 			ResearchGroupGuidelinesRepository guidelinesRepository,
-			AIReviewSummaryRepository reviewSummaryRepository) {
+			AIReviewSummaryRepository reviewSummaryRepository,
+			FeedbackClassificationService feedbackClassificationService) {
 		this.reviewService = reviewService;
 		this.thesisService = thesisService;
 		this.guidelinesRepository = guidelinesRepository;
 		this.reviewSummaryRepository = reviewSummaryRepository;
+		this.feedbackClassificationService = feedbackClassificationService;
 	}
 
 	/**
@@ -171,6 +185,43 @@ public class AIFeedbackService {
 				.toList();
 
 		return new AIPreviewResponseDTO(result.category(), sanitizeScore(result.score()), result.summary(), drafts);
+	}
+
+	/**
+	 * Suggests a category and severity for a single feedback line an instructor typed by hand, so
+	 * the two dropdowns they would otherwise fill in themselves come pre-selected.
+	 *
+	 * <p>Nothing is persisted: the suggestion is applied to the instructor's unsaved draft row and
+	 * can be changed or cleared before the batch is saved. Either field may come back {@code null}
+	 * when the model did not answer with a usable value — a missing suggestion leaves that dropdown
+	 * to the instructor rather than guessing on their behalf.
+	 *
+	 * @param thesis the thesis the feedback is written for; used to resolve the research group's
+	 *               AI opt-in
+	 * @param feedback the feedback line to classify
+	 * @return the suggested category and severity, either of which may be {@code null}
+	 */
+	public FeedbackClassificationDTO classifyFeedbackLine(Thesis thesis, String feedback) {
+		// Same per-group gate as every other AI feature: a group whose lead has not set up (valid)
+		// guidelines has not opted in, so no LLM call is made on its behalf. The guidelines
+		// themselves do not influence the classification.
+		requireReadyGuidelines(thesis);
+
+		String line = feedback == null ? "" : feedback.strip();
+		if (line.isEmpty()) {
+			throw new ResourceInvalidParametersException("Cannot classify an empty feedback line.");
+		}
+		if (line.length() > MAX_CLASSIFICATION_CHARS) {
+			line = line.substring(0, MAX_CLASSIFICATION_CHARS);
+		}
+
+		FeedbackClassificationResult result = feedbackClassificationService.classify(line);
+		if (result == null) {
+			log.warn("Feedback classification returned no result for thesis {}", thesis.getId());
+			return new FeedbackClassificationDTO(null, null);
+		}
+
+		return new FeedbackClassificationDTO(mapCategory(result.category()), mapSeverity(result.severity()));
 	}
 
 	/**
