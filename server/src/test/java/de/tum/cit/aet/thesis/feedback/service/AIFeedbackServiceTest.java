@@ -23,8 +23,10 @@ import de.tum.cit.aet.thesis.feedback.repository.AIReviewSummaryRepository;
 import de.tum.cit.aet.thesis.feedback.repository.ResearchGroupGuidelinesRepository;
 import de.tum.cit.aet.thesis.feedback.service.reviewer.ReviewType;
 import de.tum.cit.aet.thesis.proposal.entity.ThesisProposal;
+import de.tum.cit.aet.thesis.proposal.repository.ThesisProposalRepository;
 import de.tum.cit.aet.thesis.thesis.entity.Thesis;
 import de.tum.cit.aet.thesis.thesis.entity.ThesisFile;
+import de.tum.cit.aet.thesis.thesis.repository.ThesisFileRepository;
 import de.tum.cit.aet.thesis.thesis.service.ThesisService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,6 +57,12 @@ class AIFeedbackServiceTest {
 	private AIReviewSummaryRepository reviewSummaryRepository;
 
 	@Mock
+	private ThesisProposalRepository proposalRepository;
+
+	@Mock
+	private ThesisFileRepository thesisFileRepository;
+
+	@Mock
 	private Thesis thesis;
 
 	private AIFeedbackService service;
@@ -63,7 +71,8 @@ class AIFeedbackServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		service = new AIFeedbackService(reviewService, thesisService, guidelinesRepository, reviewSummaryRepository);
+		service = new AIFeedbackService(reviewService, thesisService, guidelinesRepository, reviewSummaryRepository,
+				proposalRepository, thesisFileRepository);
 
 		ResearchGroup researchGroup = new ResearchGroup();
 		researchGroup.setId(researchGroupId);
@@ -190,6 +199,7 @@ class AIFeedbackServiceTest {
 		when(guidelinesRepository.findById(researchGroupId)).thenReturn(Optional.of(guidelines));
 
 		ThesisProposal proposal = org.mockito.Mockito.mock(ThesisProposal.class);
+		when(proposal.getId()).thenReturn(UUID.randomUUID());
 		when(thesis.getProposals()).thenReturn(List.of(proposal));
 		Resource pdfResource = new ByteArrayResource("pdf".getBytes());
 		when(thesisService.getProposalFile(proposal)).thenReturn(pdfResource);
@@ -198,6 +208,7 @@ class AIFeedbackServiceTest {
 				.thenReturn(new ReviewResultDTO(AssessmentCategory.GOOD, 95, "Nothing to flag.", List.of()));
 		UUID thesisId = UUID.randomUUID();
 		when(thesis.getId()).thenReturn(thesisId);
+		when(proposalRepository.findFirstByThesisIdOrderByCreatedAtDesc(thesisId)).thenReturn(Optional.of(proposal));
 		when(reviewSummaryRepository.findByThesisIdAndType(thesisId, ReviewType.PROPOSAL)).thenReturn(Optional.empty());
 
 		Thesis result = service.autoReviewAndSave(thesis, ReviewType.PROPOSAL);
@@ -226,6 +237,7 @@ class AIFeedbackServiceTest {
 				.thenReturn(new ReviewResultDTO(AssessmentCategory.GOOD, 95, "Nothing to flag.", List.of()));
 		UUID thesisId = UUID.randomUUID();
 		when(thesis.getId()).thenReturn(thesisId);
+		when(proposalRepository.findFirstByThesisIdOrderByCreatedAtDesc(thesisId)).thenReturn(Optional.of(proposal));
 		when(reviewSummaryRepository.findByThesisIdAndType(thesisId, ReviewType.PROPOSAL)).thenReturn(Optional.empty());
 
 		service.autoReviewAndSave(thesis, ReviewType.PROPOSAL);
@@ -253,6 +265,8 @@ class AIFeedbackServiceTest {
 				.thenReturn(new ReviewResultDTO(AssessmentCategory.ACCEPTABLE, 70, "Some gaps.", List.of()));
 		UUID thesisId = UUID.randomUUID();
 		when(thesis.getId()).thenReturn(thesisId);
+		when(thesisFileRepository.findFirstByThesisIdAndTypeOrderByUploadedAtDesc(thesisId, "THESIS"))
+				.thenReturn(Optional.of(thesisFile));
 		when(reviewSummaryRepository.findByThesisIdAndType(thesisId, ReviewType.THESIS)).thenReturn(Optional.empty());
 
 		service.autoReviewAndSave(thesis, ReviewType.THESIS);
@@ -260,6 +274,34 @@ class AIFeedbackServiceTest {
 		ArgumentCaptor<AIReviewSummary> savedSummary = ArgumentCaptor.forClass(AIReviewSummary.class);
 		verify(reviewSummaryRepository).save(savedSummary.capture());
 		assertThat(savedSummary.getValue().getDocumentVersionId()).isEqualTo(fileId);
+	}
+
+	@Test
+	void autoReviewAndSave_discardsTheSummaryWhenANewerDocumentWasUploadedDuringTheReview() {
+		ResearchGroupGuidelines guidelines = readyGuidelines();
+		when(guidelinesRepository.findById(researchGroupId)).thenReturn(Optional.of(guidelines));
+
+		ThesisProposal reviewedProposal = org.mockito.Mockito.mock(ThesisProposal.class);
+		when(reviewedProposal.getId()).thenReturn(UUID.randomUUID());
+		when(thesis.getProposals()).thenReturn(List.of(reviewedProposal));
+		Resource pdfResource = new ByteArrayResource("pdf".getBytes());
+		when(thesisService.getProposalFile(reviewedProposal)).thenReturn(pdfResource);
+
+		when(reviewService.review(eq(pdfResource), eq(ReviewType.PROPOSAL), eq(guidelines.getStructuredGuidelines())))
+				.thenReturn(new ReviewResultDTO(AssessmentCategory.NEEDS_WORK, 40, "Stale read.", List.of()));
+		UUID thesisId = UUID.randomUUID();
+		when(thesis.getId()).thenReturn(thesisId);
+
+		// The student uploaded a new proposal while the pipeline was running, and a review of that
+		// one may already have written the summary — this run's result is about the old revision.
+		ThesisProposal newerProposal = org.mockito.Mockito.mock(ThesisProposal.class);
+		when(newerProposal.getId()).thenReturn(UUID.randomUUID());
+		when(proposalRepository.findFirstByThesisIdOrderByCreatedAtDesc(thesisId))
+				.thenReturn(Optional.of(newerProposal));
+
+		service.autoReviewAndSave(thesis, ReviewType.PROPOSAL);
+
+		verify(reviewSummaryRepository, never()).save(any());
 	}
 
 	@Test
@@ -278,6 +320,7 @@ class AIFeedbackServiceTest {
 				.thenReturn(new ReviewResultDTO(AssessmentCategory.GOOD, 90, "All good.", List.of()));
 		UUID thesisId = UUID.randomUUID();
 		when(thesis.getId()).thenReturn(thesisId);
+		when(proposalRepository.findFirstByThesisIdOrderByCreatedAtDesc(thesisId)).thenReturn(Optional.of(proposal));
 
 		// Both this run and a concurrent one see no existing row first...
 		AIReviewSummary concurrentlyInserted = new AIReviewSummary();

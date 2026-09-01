@@ -16,6 +16,7 @@ import de.tum.cit.aet.thesis.feedback.repository.AIReviewSummaryRepository;
 import de.tum.cit.aet.thesis.feedback.repository.ResearchGroupGuidelinesRepository;
 import de.tum.cit.aet.thesis.feedback.service.reviewer.ReviewType;
 import de.tum.cit.aet.thesis.proposal.entity.ThesisProposal;
+import de.tum.cit.aet.thesis.proposal.repository.ThesisProposalRepository;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackCategory;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackSeverity;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackSource;
@@ -23,6 +24,7 @@ import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackType;
 import de.tum.cit.aet.thesis.thesis.controller.payload.RequestChangesPayload;
 import de.tum.cit.aet.thesis.thesis.entity.Thesis;
 import de.tum.cit.aet.thesis.thesis.entity.ThesisFile;
+import de.tum.cit.aet.thesis.thesis.repository.ThesisFileRepository;
 import de.tum.cit.aet.thesis.thesis.service.ThesisService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,6 +79,8 @@ public class AIFeedbackService {
 	private final ThesisService thesisService;
 	private final ResearchGroupGuidelinesRepository guidelinesRepository;
 	private final AIReviewSummaryRepository reviewSummaryRepository;
+	private final ThesisProposalRepository proposalRepository;
+	private final ThesisFileRepository thesisFileRepository;
 
 	/**
 	 * Creates the AI feedback service.
@@ -86,16 +90,22 @@ public class AIFeedbackService {
 	 * @param guidelinesRepository the repository used to load and gate on per-group review guidelines
 	 * @param reviewSummaryRepository the repository used to persist the latest score/assessment/summary
 	 *                                per (thesis, review type)
+	 * @param proposalRepository the repository used to re-check which proposal is currently the newest
+	 * @param thesisFileRepository the repository used to re-check which thesis file is currently the newest
 	 */
 	public AIFeedbackService(
 			ReviewService reviewService,
 			ThesisService thesisService,
 			ResearchGroupGuidelinesRepository guidelinesRepository,
-			AIReviewSummaryRepository reviewSummaryRepository) {
+			AIReviewSummaryRepository reviewSummaryRepository,
+			ThesisProposalRepository proposalRepository,
+			ThesisFileRepository thesisFileRepository) {
 		this.reviewService = reviewService;
 		this.thesisService = thesisService;
 		this.guidelinesRepository = guidelinesRepository;
 		this.reviewSummaryRepository = reviewSummaryRepository;
+		this.proposalRepository = proposalRepository;
+		this.thesisFileRepository = thesisFileRepository;
 	}
 
 	/**
@@ -188,6 +198,16 @@ public class AIFeedbackService {
 	 */
 	private void persistReviewSummary(Thesis thesis, ReviewType reviewType, ReviewResultDTO result,
 			UUID documentVersionId) {
+		// A review takes long enough for the student to upload a new document while it runs. The
+		// single (thesis, type) row would then be overwritten with a result about a superseded
+		// revision — clobbering the summary of a review that already finished for the newer one.
+		// Drop the stale result instead; the row stays on whatever revision is actually current.
+		if (!isCurrentRevision(thesis, reviewType, documentVersionId)) {
+			log.info("Discarding AI review summary for thesis {} ({}): reviewed revision {} is no longer current",
+					thesis.getId(), reviewType, documentVersionId);
+			return;
+		}
+
 		AIReviewSummary summary = reviewSummaryRepository
 				.findByThesisIdAndType(thesis.getId(), reviewType)
 				.orElseGet(AIReviewSummary::new);
@@ -215,6 +235,32 @@ public class AIFeedbackService {
 		summary.setAssessment(result.category());
 		summary.setSummary(result.summary());
 		summary.setDocumentVersionId(documentVersionId);
+	}
+
+	/**
+	 * Whether the revision a review ran against is still the thesis's newest upload.
+	 *
+	 * <p>Reads the current revision from the database rather than from {@code thesis}: that
+	 * entity's proposal/file collections were initialised before the review started, so they
+	 * cannot show an upload that landed while the (potentially minute-long) pipeline was running.
+	 *
+	 * @param thesis the thesis that was reviewed
+	 * @param reviewType whether the proposal or the thesis document was reviewed
+	 * @param documentVersionId the revision the review ran against
+	 * @return {@code true} when that revision is still the newest one
+	 */
+	private boolean isCurrentRevision(Thesis thesis, ReviewType reviewType, UUID documentVersionId) {
+		UUID currentVersionId = switch (reviewType) {
+			case PROPOSAL -> proposalRepository.findFirstByThesisIdOrderByCreatedAtDesc(thesis.getId())
+					.map(ThesisProposal::getId)
+					.orElse(null);
+			case THESIS -> thesisFileRepository
+					.findFirstByThesisIdAndTypeOrderByUploadedAtDesc(thesis.getId(), "THESIS")
+					.map(ThesisFile::getId)
+					.orElse(null);
+		};
+
+		return currentVersionId != null && currentVersionId.equals(documentVersionId);
 	}
 
 	/**
