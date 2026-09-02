@@ -254,11 +254,11 @@ importers:
         specifier: 5.109.2
         version: 5.109.2(postcss@8.5.26)(webpack-cli@7.2.2)
       webpack-bundle-analyzer:
-        specifier: 5.3.1
-        version: 5.3.1
+        specifier: 5.3.2
+        version: 5.3.2
       webpack-cli:
         specifier: 7.2.2
-        version: 7.2.2(js-yaml@5.2.3)(json5@2.2.3)(webpack-bundle-analyzer@5.3.1)(webpack-dev-server@6.0.0)(webpack@5.109.2)
+        version: 7.2.2(js-yaml@5.2.3)(json5@2.2.3)(webpack-bundle-analyzer@5.3.2)(webpack-dev-server@6.0.0)(webpack@5.109.2)
       webpack-dev-server:
         specifier: 6.0.0
         version: 6.0.0(tslib@2.8.1)(webpack-cli@7.2.2)(webpack@5.109.2)
@@ -4331,8 +4331,8 @@ packages:
     resolution: {integrity: sha512-BMhLD/Sw+GbJC21C/UgyaZX41nPt8bUTg+jWyDeg7e7YN4xOM05YPSIXceACnXVtqyEw/LMClUQMtMZ+PGGpqQ==}
     engines: {node: '>=20'}
 
-  webpack-bundle-analyzer@5.3.1:
-    resolution: {integrity: sha512-wP2EusncRGL1tZyMHC/umLkjPdYMkTL9nPEKh8G8dkYCJ9TyF6xnXFqjhdqmv5J900irN/g0P5jMvLT22krEXQ==}
+  webpack-bundle-analyzer@5.3.2:
+    resolution: {integrity: sha512-IagCa/GrdxSz+ba9OMgK7UCfQp97HtXbgjXu7ObcqmRo9PTp0d+24rgY+mIFOx7JPQ9bo6FGsqZhA55rYRZrrQ==}
     engines: {node: '>= 20.9.0'}
     hasBin: true
 
@@ -8577,7 +8577,7 @@ snapshots:
 
   webidl-conversions@8.0.1: {}
 
-  webpack-bundle-analyzer@5.3.1:
+  webpack-bundle-analyzer@5.3.2:
     dependencies:
       '@discoveryjs/json-ext': 0.6.3
       acorn: 8.17.0
@@ -8593,7 +8593,7 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  webpack-cli@7.2.2(js-yaml@5.2.3)(json5@2.2.3)(webpack-bundle-analyzer@5.3.1)(webpack-dev-server@6.0.0)(webpack@5.109.2):
+  webpack-cli@7.2.2(js-yaml@5.2.3)(json5@2.2.3)(webpack-bundle-analyzer@5.3.2)(webpack-dev-server@6.0.0)(webpack@5.109.2):
     dependencies:
       '@discoveryjs/json-ext': 1.1.0
       commander: 14.0.3
@@ -8607,7 +8607,7 @@ snapshots:
     optionalDependencies:
       js-yaml: 5.2.3
       json5: 2.2.3
-      webpack-bundle-analyzer: 5.3.1
+      webpack-bundle-analyzer: 5.3.2
       webpack-dev-server: 6.0.0(tslib@2.8.1)(webpack-cli@7.2.2)(webpack@5.109.2)
 
   webpack-dev-middleware@8.1.1(tslib@2.8.1)(webpack@5.109.2):
@@ -8650,7 +8650,7 @@ snapshots:
       ws: 8.21.3
     optionalDependencies:
       webpack: 5.109.2(postcss@8.5.26)(webpack-cli@7.2.2)
-      webpack-cli: 7.2.2(js-yaml@5.2.3)(json5@2.2.3)(webpack-bundle-analyzer@5.3.1)(webpack-dev-server@6.0.0)(webpack@5.109.2)
+      webpack-cli: 7.2.2(js-yaml@5.2.3)(json5@2.2.3)(webpack-bundle-analyzer@5.3.2)(webpack-dev-server@6.0.0)(webpack@5.109.2)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -8688,7 +8688,7 @@ snapshots:
       watchpack: 2.5.2
       webpack-sources: 3.5.1
     optionalDependencies:
-      webpack-cli: 7.2.2(js-yaml@5.2.3)(json5@2.2.3)(webpack-bundle-analyzer@5.3.1)(webpack-dev-server@6.0.0)(webpack@5.109.2)
+      webpack-cli: 7.2.2(js-yaml@5.2.3)(json5@2.2.3)(webpack-bundle-analyzer@5.3.2)(webpack-dev-server@6.0.0)(webpack@5.109.2)
     transitivePeerDependencies:
       - '@minify-html/node'
       - '@swc/core'
