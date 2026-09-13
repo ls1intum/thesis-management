@@ -10,6 +10,8 @@ import de.tum.cit.aet.thesis.feedback.dto.AIReviewRequestDTO;
 import de.tum.cit.aet.thesis.feedback.dto.ClassifyFeedbackRequestDTO;
 import de.tum.cit.aet.thesis.feedback.dto.FeedbackClassificationDTO;
 import de.tum.cit.aet.thesis.feedback.model.ReviewType;
+import de.tum.cit.aet.thesis.feedback.progress.ProgressReporter;
+import de.tum.cit.aet.thesis.feedback.progress.ReviewProgressPublisher;
 import de.tum.cit.aet.thesis.feedback.service.AIFeedbackService;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisState;
 import de.tum.cit.aet.thesis.thesis.dto.ThesisDto;
@@ -27,6 +29,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 
+import java.util.UUID;
+
 /** REST controller for AI generated feedback. */
 @Slf4j
 @RestController
@@ -35,6 +39,7 @@ import jakarta.validation.Valid;
 public class ReviewController {
 	private final AIFeedbackService aiFeedbackService;
 	private final ThesisService thesisService;
+	private final ReviewProgressPublisher progressPublisher;
 	private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
 
 	/**
@@ -42,14 +47,17 @@ public class ReviewController {
 	 *
 	 * @param aiFeedbackService the service that runs the AI review pipeline and persists findings
 	 * @param thesisService the service used to load the target thesis
+	 * @param progressPublisher publishes per-call progress events to a client that supplied a job id
 	 * @param currentUserProviderProvider the provider for the current authenticated user
 	 */
 	public ReviewController(
 			AIFeedbackService aiFeedbackService,
 			ThesisService thesisService,
+			ReviewProgressPublisher progressPublisher,
 			ObjectProvider<CurrentUserProvider> currentUserProviderProvider) {
 		this.aiFeedbackService = aiFeedbackService;
 		this.thesisService = thesisService;
+		this.progressPublisher = progressPublisher;
 		this.currentUserProviderProvider = currentUserProviderProvider;
 	}
 
@@ -83,7 +91,9 @@ public class ReviewController {
 		}
 
 		aiFeedbackService.assertHasDocument(thesis, request.reviewType());
-		Thesis updated = aiFeedbackService.autoReviewAndSave(thesis, request.reviewType());
+		Thesis updated = request.jobId() == null
+				? aiFeedbackService.autoReviewAndSave(thesis, request.reviewType())
+				: aiFeedbackService.autoReviewAndSave(thesis, request.reviewType(), progressFor(request.jobId(), currentUser));
 
 		return ResponseEntity.ok(ThesisDto.fromThesisEntity(
 				updated,
@@ -110,7 +120,9 @@ public class ReviewController {
 					"You must be a supervisor on the thesis to preview AI feedback.");
 		}
 
-		AIPreviewResponseDTO response = aiFeedbackService.previewReview(thesis, request.reviewType());
+		AIPreviewResponseDTO response = request.jobId() == null
+				? aiFeedbackService.previewReview(thesis, request.reviewType())
+				: aiFeedbackService.previewReview(thesis, request.reviewType(), progressFor(request.jobId(), currentUser));
 		return ResponseEntity.ok(response);
 	}
 
@@ -166,5 +178,14 @@ public class ReviewController {
 
 	private CurrentUserProvider currentUserProvider() {
 		return currentUserProviderProvider.getObject();
+	}
+
+	/**
+	 * Builds a reporter that publishes progress to the current user's
+	 * {@code /queue/ai-review-progress/{jobId}} destination, keyed by their university id — the
+	 * same principal name their STOMP session authenticates as.
+	 */
+	private ProgressReporter progressFor(UUID jobId, User currentUser) {
+		return progressPublisher.reporterFor(currentUser.getUniversityId(), jobId);
 	}
 }

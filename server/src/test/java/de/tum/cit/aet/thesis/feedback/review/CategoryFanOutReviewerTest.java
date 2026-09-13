@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -16,6 +17,7 @@ import de.tum.cit.aet.thesis.feedback.model.Location;
 import de.tum.cit.aet.thesis.feedback.model.ReviewCategory;
 import de.tum.cit.aet.thesis.feedback.model.ReviewResult;
 import de.tum.cit.aet.thesis.feedback.model.ReviewType;
+import de.tum.cit.aet.thesis.feedback.progress.ProgressReporter;
 import de.tum.cit.aet.thesis.feedback.service.PdfService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,6 +57,9 @@ public class CategoryFanOutReviewerTest {
 
 	@Mock
 	CategoryReviewer categoryReviewer;
+
+	@Mock
+	private ProgressReporter progressReporter;
 
 	private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -101,6 +106,44 @@ public class CategoryFanOutReviewerTest {
 		verify(categoryReviewer, times(ReviewCategory.values().length)).review(extractedText, extractedImages);
 		verify(chatClient).prompt();
 		verify(callResponseSpec).entity(ReviewResult.class);
+	}
+
+	@Test
+	void reviewReportsOneStepPerCategoryPlusTheMergeToTheProgressReporter() {
+		Resource pdfResource = new ByteArrayResource("pdf-content".getBytes());
+		int total = ReviewCategory.values().length + 1;
+
+		when(pdfService.extractTextFromPdf(any(Resource.class))).thenReturn(List.of("Extracted text"));
+		when(pdfService.extractImagesFromPdf(any(Resource.class))).thenReturn(List.of());
+		when(categoryReviewer.review(anyList(), anyList())).thenReturn(new CategoryFindings(List.of()));
+		when(chatClient.prompt()).thenReturn(chatClientRequestSpec);
+		when(chatClientRequestSpec.system(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptSystemSpec>>any())).thenReturn(chatClientRequestSpec);
+		when(chatClientRequestSpec.user(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptUserSpec>>any())).thenReturn(chatClientRequestSpec);
+		when(chatClientRequestSpec.call()).thenReturn(callResponseSpec);
+		when(callResponseSpec.entity(ReviewResult.class))
+				.thenReturn(new ReviewResult(AssessmentCategory.GOOD, 90, "Fine.", List.of()));
+
+		reviewer.review(new ReviewRequest(ReviewType.PROPOSAL, GUIDELINES, pdfResource, progressReporter));
+
+		// Categories are dispatched in ReviewCategory declaration order on the calling thread, one
+		// call per category.
+		org.mockito.InOrder dispatchOrder = org.mockito.Mockito.inOrder(progressReporter);
+		int index = 0;
+		for (ReviewCategory category : ReviewCategory.values()) {
+			index++;
+			dispatchOrder.verify(progressReporter)
+					.stepStarted(category.getSlug(), category.getDisplayName(), index, total);
+		}
+		// Completions land on virtual threads, so only that each category completed exactly once is
+		// asserted, not the order.
+		for (ReviewCategory category : ReviewCategory.values()) {
+			verify(progressReporter).stepCompleted(eq(category.getSlug()), org.mockito.ArgumentMatchers.anyInt(), eq(total));
+		}
+
+		// The merge step is the last one, dispatched only once every category has completed.
+		verify(progressReporter).stepStarted("merge", "Consolidating findings", total, total);
+		verify(progressReporter).stepCompleted("merge", total, total);
+		verify(progressReporter, org.mockito.Mockito.never()).stepFailed(any(), org.mockito.ArgumentMatchers.anyInt(), org.mockito.ArgumentMatchers.anyInt(), any());
 	}
 
 	@Test

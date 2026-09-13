@@ -4,6 +4,7 @@ import de.tum.cit.aet.thesis.feedback.config.AIFeaturesEnabled;
 import de.tum.cit.aet.thesis.feedback.model.ReviewCategory;
 import de.tum.cit.aet.thesis.feedback.model.ReviewResult;
 import de.tum.cit.aet.thesis.feedback.model.ReviewType;
+import de.tum.cit.aet.thesis.feedback.progress.ProgressReporter;
 import de.tum.cit.aet.thesis.feedback.service.PdfService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +45,9 @@ public class CategoryFanOutReviewer implements ThesisReviewer {
 
 	/** Fence tag wrapping the JSON-serialized per-category findings in the merger user message. */
 	static final String FINDINGS_FENCE_TAG = "intermediate-findings";
+
+	/** Progress step id for the merge call, reported after every category has been reviewed. */
+	private static final String MERGE_STEP_ID = "merge";
 
 	private final PdfService pdfService;
 	private final ChatClient chatClient;
@@ -95,7 +99,7 @@ public class CategoryFanOutReviewer implements ThesisReviewer {
 		List<String> pages = pdfService.extractTextFromPdf(request.document());
 		List<Media> images = includeImages ? pdfService.extractImagesFromPdf(request.document()) : List.of();
 
-		return merge(request.type(), reviewEachCategory(request, pages, images));
+		return merge(request.type(), reviewEachCategory(request, pages, images), request.progress());
 	}
 
 	/**
@@ -107,12 +111,26 @@ public class CategoryFanOutReviewer implements ThesisReviewer {
 	 */
 	private Map<String, CategoryFindings> reviewEachCategory(ReviewRequest request, List<String> pages,
 			List<Media> images) {
+		ProgressReporter progress = request.progress();
+		int total = ReviewCategory.values().length + 1;
+
 		Map<ReviewCategory, CompletableFuture<CategoryFindings>> futures = new EnumMap<>(ReviewCategory.class);
+		int index = 0;
 		for (ReviewCategory category : ReviewCategory.values()) {
+			index++;
+			int stepIndex = index;
 			String guidelinesPrompt = GuidelinesPrompt.forCategory(request.guidelines(), category);
+			progress.stepStarted(category.getSlug(), category.getDisplayName(), stepIndex, total);
 			futures.put(category, CompletableFuture.supplyAsync(() -> {
 				log.debug("Reviewing category {} ({})", category.getSlug(), request.type());
-				return createReviewer(category, request.type(), guidelinesPrompt).review(pages, images);
+				try {
+					CategoryFindings findings = createReviewer(category, request.type(), guidelinesPrompt).review(pages, images);
+					progress.stepCompleted(category.getSlug(), stepIndex, total);
+					return findings;
+				} catch (RuntimeException e) {
+					progress.stepFailed(category.getSlug(), stepIndex, total, e.getMessage());
+					throw e;
+				}
 			}, reviewExecutor));
 		}
 
@@ -121,13 +139,23 @@ public class CategoryFanOutReviewer implements ThesisReviewer {
 		return results;
 	}
 
-	private ReviewResult merge(ReviewType reviewType, Map<String, CategoryFindings> perCategory) {
-		String mergerSystemPrompt = Prompts.MERGER.getPrompt(reviewType);
-		return chatClient.prompt()
-				.system(systemMessage -> systemMessage.text(mergerSystemPrompt))
-				.user(userMessage -> userMessage.text(buildMergePrompt(perCategory)))
-				.call()
-				.entity(ReviewResult.class);
+	private ReviewResult merge(ReviewType reviewType, Map<String, CategoryFindings> perCategory,
+			ProgressReporter progress) {
+		int total = ReviewCategory.values().length + 1;
+		progress.stepStarted(MERGE_STEP_ID, "Consolidating findings", total, total);
+		try {
+			String mergerSystemPrompt = Prompts.MERGER.getPrompt(reviewType);
+			ReviewResult result = chatClient.prompt()
+					.system(systemMessage -> systemMessage.text(mergerSystemPrompt))
+					.user(userMessage -> userMessage.text(buildMergePrompt(perCategory)))
+					.call()
+					.entity(ReviewResult.class);
+			progress.stepCompleted(MERGE_STEP_ID, total, total);
+			return result;
+		} catch (RuntimeException e) {
+			progress.stepFailed(MERGE_STEP_ID, total, total, e.getMessage());
+			throw e;
+		}
 	}
 
 	/**
