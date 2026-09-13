@@ -74,6 +74,7 @@ dependencies {
 	implementation "org.springframework.boot:spring-boot-starter-security-oauth2-resource-server"
 	implementation "org.springframework.boot:spring-boot-starter-thymeleaf"
 	implementation "org.springframework.boot:spring-boot-starter-actuator"
+	implementation "org.springframework.boot:spring-boot-starter-websocket"
 
 	implementation platform("org.springframework.ai:spring-ai-bom:2.0.1")
 	implementation "org.springframework.ai:spring-ai-pdf-document-reader"

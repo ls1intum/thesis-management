@@ -9,6 +9,7 @@ import de.tum.cit.aet.thesis.feedback.entity.jsonb.StructuredGuidelines;
 import de.tum.cit.aet.thesis.feedback.model.FeedbackClassificationResult;
 import de.tum.cit.aet.thesis.feedback.model.ReviewResult;
 import de.tum.cit.aet.thesis.feedback.model.ReviewType;
+import de.tum.cit.aet.thesis.feedback.progress.ProgressReporter;
 import de.tum.cit.aet.thesis.feedback.review.ReviewRequest;
 import de.tum.cit.aet.thesis.feedback.review.ThesisReviewer;
 import de.tum.cit.aet.thesis.feedback.service.ReviewDocuments.ReviewDocument;
@@ -95,7 +96,20 @@ public class AIFeedbackService {
 	 * @return the updated thesis with the new feedback rows attached
 	 */
 	public Thesis autoReviewAndSave(Thesis thesis, ReviewType reviewType) {
-		Reviewed reviewed = execute(thesis, reviewType);
+		return autoReviewAndSave(thesis, reviewType, ProgressReporter.NOOP);
+	}
+
+	/**
+	 * Same as {@link #autoReviewAndSave(Thesis, ReviewType)}, additionally reporting per-call
+	 * progress as the review runs.
+	 *
+	 * @param thesis     the thesis whose uploaded document is reviewed
+	 * @param reviewType whether to review the proposal or the thesis document
+	 * @param progress   sink for per-call progress events
+	 * @return the updated thesis with the new feedback rows attached
+	 */
+	public Thesis autoReviewAndSave(Thesis thesis, ReviewType reviewType, ProgressReporter progress) {
+		Reviewed reviewed = execute(thesis, reviewType, progress);
 
 		List<RequestedChange> changes = reviewed.drafts().stream()
 				.map(draft -> new RequestedChange(
@@ -132,7 +146,20 @@ public class AIFeedbackService {
 	 * @return the assessment, summary, and editable drafts
 	 */
 	public AIPreviewResponseDTO previewReview(Thesis thesis, ReviewType reviewType) {
-		Reviewed reviewed = execute(thesis, reviewType);
+		return previewReview(thesis, reviewType, ProgressReporter.NOOP);
+	}
+
+	/**
+	 * Same as {@link #previewReview(Thesis, ReviewType)}, additionally reporting per-call progress
+	 * as the review runs.
+	 *
+	 * @param thesis     the thesis whose uploaded document is reviewed
+	 * @param reviewType whether to review the proposal or the thesis document
+	 * @param progress   sink for per-call progress events
+	 * @return the assessment, summary, and editable drafts
+	 */
+	public AIPreviewResponseDTO previewReview(Thesis thesis, ReviewType reviewType, ProgressReporter progress) {
+		Reviewed reviewed = execute(thesis, reviewType, progress);
 		ReviewResult result = reviewed.result();
 
 		return new AIPreviewResponseDTO(
@@ -201,11 +228,11 @@ public class AIFeedbackService {
 	 * that has not set up the feature gets that explanation rather than a complaint about a missing
 	 * upload.
 	 */
-	private Reviewed execute(Thesis thesis, ReviewType reviewType) {
+	private Reviewed execute(Thesis thesis, ReviewType reviewType, ProgressReporter progress) {
 		StructuredGuidelines guidelines = guidelinesGate.requireReady(thesis.getResearchGroup());
 		ReviewDocument document = documents.load(thesis, reviewType);
 
-		ReviewResult result = reviewer.review(new ReviewRequest(reviewType, guidelines, document.resource()));
+		ReviewResult result = reviewer.review(new ReviewRequest(reviewType, guidelines, document.resource(), progress));
 		log.debug("Review of thesis {} ({}) by {} produced {} findings",
 				thesis.getId(), reviewType, reviewer.strategy(), result.findings().size());
 

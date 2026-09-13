@@ -1,4 +1,4 @@
-import { Button } from '@mantine/core'
+import { Button, Stack } from '@mantine/core'
 import { Robot } from '@phosphor-icons/react'
 import { doRequest } from '@/core/requests/request'
 import {
@@ -8,6 +8,8 @@ import {
 import type { IThesis } from '@/thesis/requests/responses/thesis'
 import { ApiError } from '@/core/requests/handler'
 import { GLOBAL_CONFIG } from '@/core/config/global'
+import { useReviewProgress } from '@/core/hooks/useReviewProgress'
+import AiReviewProgress from '@/thesis/components/AiReviewProgress/AiReviewProgress'
 
 interface IThesisAIFeedbackButtonProps {
   type: 'PROPOSAL' | 'THESIS'
@@ -24,21 +26,29 @@ interface IThesisAIFeedbackButtonProps {
  */
 const ThesisAIFeedbackButton = ({ type, disabled }: IThesisAIFeedbackButtonProps) => {
   const { thesis } = useLoadedThesisContext()
+  const { steps, total, start, stop } = useReviewProgress()
 
   const [loading, onClick] = useThesisUpdateAction(async () => {
-    const response = await doRequest<IThesis>('/v2/ai-review/auto', {
-      method: 'POST',
-      requiresAuth: true,
-      data: {
-        thesisId: thesis.thesisId,
-        reviewType: type,
-      },
-    })
+    const jobId = crypto.randomUUID()
+    start(jobId)
+    try {
+      const response = await doRequest<IThesis>('/v2/ai-review/auto', {
+        method: 'POST',
+        requiresAuth: true,
+        data: {
+          thesisId: thesis.thesisId,
+          reviewType: type,
+          jobId,
+        },
+      })
 
-    if (response.ok) {
-      return response.data
-    } else {
-      throw new ApiError(response)
+      if (response.ok) {
+        return response.data
+      } else {
+        throw new ApiError(response)
+      }
+    } finally {
+      stop()
     }
   }, 'AI feedback generated')
 
@@ -47,16 +57,19 @@ const ThesisAIFeedbackButton = ({ type, disabled }: IThesisAIFeedbackButtonProps
   }
 
   return (
-    <Button
-      variant='outline'
-      color='grape'
-      leftSection={<Robot size={16} />}
-      loading={loading}
-      disabled={disabled}
-      onClick={onClick}
-    >
-      Get AI Feedback
-    </Button>
+    <Stack gap={0} align='flex-start'>
+      <Button
+        variant='outline'
+        color='grape'
+        leftSection={<Robot size={16} />}
+        loading={loading}
+        disabled={disabled}
+        onClick={onClick}
+      >
+        Get AI Feedback
+      </Button>
+      {loading && <AiReviewProgress steps={steps} total={total} />}
+    </Stack>
   )
 }
 

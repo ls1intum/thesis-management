@@ -30,6 +30,8 @@ import { ApiError, getApiResponseErrorMessage } from '@/core/requests/handler'
 import { MagicWand, Plus, Robot, Trash } from '@phosphor-icons/react'
 import { showSimpleError } from '@/core/utils/notification'
 import { GLOBAL_CONFIG } from '@/core/config/global'
+import { useReviewProgress } from '@/core/hooks/useReviewProgress'
+import AiReviewProgress from '@/thesis/components/AiReviewProgress/AiReviewProgress'
 import FeedbackCategoryCounts from '@/thesis/components/FeedbackCategoryCounts/FeedbackCategoryCounts'
 import {
   ASSESSMENT_LABEL,
@@ -86,6 +88,12 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
   const { type } = props
 
   const { thesis } = useLoadedThesisContext()
+  const {
+    steps: aiSteps,
+    total: aiTotal,
+    start: startAiProgress,
+    stop: stopAiProgress,
+  } = useReviewProgress()
 
   const [opened, setOpened] = useState(false)
   const [entries, setEntries] = useState<INewEntry[]>([])
@@ -196,6 +204,8 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
 
   const onGenerateAi = async () => {
     setAiLoading(true)
+    const jobId = crypto.randomUUID()
+    startAiProgress(jobId)
     try {
       const response = await doRequest<IAIPreviewResponse>('/v2/ai-review/preview', {
         method: 'POST',
@@ -203,6 +213,7 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
         data: {
           thesisId: thesis.thesisId,
           reviewType: type === 'PROPOSAL' ? 'PROPOSAL' : 'THESIS',
+          jobId,
         },
       })
 
@@ -215,6 +226,7 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
       }
     } finally {
       setAiLoading(false)
+      stopAiProgress()
     }
   }
 
@@ -495,6 +507,8 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
                 </Button>
               )}
             </Group>
+
+            {aiLoading && <AiReviewProgress steps={aiSteps} total={aiTotal} />}
 
             <Button
               fullWidth
