@@ -1,50 +1,40 @@
 package de.tum.cit.aet.thesis.feedback.service;
 
-import de.tum.cit.aet.thesis.core.exception.request.AccessDeniedException;
 import de.tum.cit.aet.thesis.core.exception.request.ResourceInvalidParametersException;
-import de.tum.cit.aet.thesis.core.group.entity.ResearchGroup;
 import de.tum.cit.aet.thesis.feedback.config.AIFeaturesEnabled;
 import de.tum.cit.aet.thesis.feedback.dto.AIFeedbackDraftDTO;
 import de.tum.cit.aet.thesis.feedback.dto.AIPreviewResponseDTO;
 import de.tum.cit.aet.thesis.feedback.dto.FeedbackClassificationDTO;
-import de.tum.cit.aet.thesis.feedback.dto.FeedbackClassificationResult;
-import de.tum.cit.aet.thesis.feedback.dto.FindingDTO;
-import de.tum.cit.aet.thesis.feedback.dto.Location;
-import de.tum.cit.aet.thesis.feedback.dto.ReviewResultDTO;
-import de.tum.cit.aet.thesis.feedback.entity.AIReviewSummary;
-import de.tum.cit.aet.thesis.feedback.entity.ResearchGroupGuidelines;
 import de.tum.cit.aet.thesis.feedback.entity.jsonb.StructuredGuidelines;
-import de.tum.cit.aet.thesis.feedback.repository.AIReviewSummaryRepository;
-import de.tum.cit.aet.thesis.feedback.repository.ResearchGroupGuidelinesRepository;
-import de.tum.cit.aet.thesis.feedback.service.reviewer.ReviewType;
-import de.tum.cit.aet.thesis.proposal.entity.ThesisProposal;
-import de.tum.cit.aet.thesis.proposal.repository.ThesisProposalRepository;
-import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackCategory;
-import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackSeverity;
+import de.tum.cit.aet.thesis.feedback.model.FeedbackClassificationResult;
+import de.tum.cit.aet.thesis.feedback.model.ReviewResult;
+import de.tum.cit.aet.thesis.feedback.model.ReviewType;
+import de.tum.cit.aet.thesis.feedback.review.ReviewRequest;
+import de.tum.cit.aet.thesis.feedback.review.ThesisReviewer;
+import de.tum.cit.aet.thesis.feedback.service.ReviewDocuments.ReviewDocument;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackSource;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackType;
-import de.tum.cit.aet.thesis.thesis.controller.payload.RequestChangesPayload;
+import de.tum.cit.aet.thesis.thesis.controller.payload.RequestChangesPayload.RequestedChange;
 import de.tum.cit.aet.thesis.thesis.entity.Thesis;
-import de.tum.cit.aet.thesis.thesis.entity.ThesisFile;
-import de.tum.cit.aet.thesis.thesis.repository.ThesisFileRepository;
 import de.tum.cit.aet.thesis.thesis.service.ThesisService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.core.io.Resource;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
 import java.util.UUID;
 
 /**
- * Runs the AI review pipeline against a thesis's existing uploaded PDF and either (a) persists
- * the findings as {@code ThesisFeedback} rows (auto flow, student-driven) or (b) shapes them
- * as editable drafts for an instructor preview (preview flow).
+ * The application-side half of the AI feedback feature: gate on the research group's guidelines,
+ * pick the document to review, hand it to whichever {@link ThesisReviewer} is configured, and turn
+ * the findings into either persisted thesis feedback (auto flow, student-driven) or editable drafts
+ * for an instructor preview. Also serves the much smaller classification request an instructor
+ * makes while typing a feedback line by hand.
+ *
+ * <p>Knows nothing about prompts, models, or PDFs — swapping the review strategy does not touch
+ * this class.
  */
 @Service
 @Conditional(AIFeaturesEnabled.class)
@@ -52,22 +42,11 @@ public class AIFeedbackService {
 	private static final Logger log = LoggerFactory.getLogger(AIFeedbackService.class);
 
 	/**
-	 * Shown when the thesis's research group has never configured AI review guidelines. Students
-	 * cannot fix this themselves, so the message names who can and where.
+	 * Most urgent first. {@link de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackSeverity} is
+	 * declared in that order, so its natural order is the presentation order.
 	 */
-	private static final String GUIDELINES_MISSING_MESSAGE =
-			"AI review is not set up for your research group yet. Please ask your examiner or your research "
-					+ "group lead to add the group's writing guidelines under Research Group Settings → AI Review "
-					+ "Guidelines. Once they are saved, AI feedback becomes available for everyone in the group.";
-
-	/**
-	 * Shown when guidelines exist but preprocessing rejected them as too vague (or they are still
-	 * being processed) — a different fix than the missing case, so it gets its own wording.
-	 */
-	private static final String GUIDELINES_NOT_READY_MESSAGE =
-			"AI review is not available yet because your research group's writing guidelines could not be turned "
-					+ "into review rules. Please ask your examiner or your research group lead to revise them under "
-					+ "Research Group Settings → AI Review Guidelines.";
+	private static final Comparator<AIFeedbackDraftDTO> BY_SEVERITY = Comparator.comparing(
+			AIFeedbackDraftDTO::severity, Comparator.nullsLast(Comparator.naturalOrder()));
 
 	/**
 	 * Upper bound on the text handed to the classification LLM. A feedback line is a sentence or
@@ -76,131 +55,91 @@ public class AIFeedbackService {
 	 */
 	private static final int MAX_CLASSIFICATION_CHARS = 2000;
 
-	/** Severity levels sorted from most to least urgent for stable preview ordering. */
-	private static final Comparator<ThesisFeedbackSeverity> SEVERITY_ORDER = Comparator.comparingInt(sev -> switch (sev) {
-		case CRITICAL -> 0;
-		case MAJOR -> 1;
-		case MINOR -> 2;
-		case SUGGESTION -> 3;
-	});
-
-	private final ReviewService reviewService;
+	private final ThesisReviewer reviewer;
 	private final ThesisService thesisService;
-	private final ResearchGroupGuidelinesRepository guidelinesRepository;
-	private final AIReviewSummaryRepository reviewSummaryRepository;
-	private final ThesisProposalRepository proposalRepository;
-	private final ThesisFileRepository thesisFileRepository;
+	private final GuidelinesGate guidelinesGate;
+	private final ReviewDocuments documents;
+	private final ReviewSummaryWriter summaryWriter;
 	private final FeedbackClassificationService feedbackClassificationService;
 
 	/**
 	 * Creates the AI feedback service.
 	 *
-	 * @param reviewService the pipeline that runs the LLM review over a PDF
-	 * @param thesisService the service used to load documents and persist feedback
-	 * @param guidelinesRepository the repository used to load and gate on per-group review guidelines
-	 * @param reviewSummaryRepository the repository used to persist the latest score/assessment/summary
-	 *                                per (thesis, review type)
-	 * @param proposalRepository the repository used to re-check which proposal is currently the newest
-	 * @param thesisFileRepository the repository used to re-check which thesis file is currently the newest
+	 * @param reviewer                      the configured review strategy
+	 * @param thesisService                 the service used to persist feedback
+	 * @param guidelinesGate                the per-research-group gate on the AI features
+	 * @param documents                     resolves which uploaded document a review runs against
+	 * @param summaryWriter                 persists the latest score/assessment/summary per
+	 *                                      (thesis, review type)
 	 * @param feedbackClassificationService the single-call classifier used to suggest a category and
 	 *                                      severity for a manually written feedback line
 	 */
-	public AIFeedbackService(
-			ReviewService reviewService,
-			ThesisService thesisService,
-			ResearchGroupGuidelinesRepository guidelinesRepository,
-			AIReviewSummaryRepository reviewSummaryRepository,
-			ThesisProposalRepository proposalRepository,
-			ThesisFileRepository thesisFileRepository,
+	public AIFeedbackService(ThesisReviewer reviewer, ThesisService thesisService, GuidelinesGate guidelinesGate,
+			ReviewDocuments documents, ReviewSummaryWriter summaryWriter,
 			FeedbackClassificationService feedbackClassificationService) {
-		this.reviewService = reviewService;
+		this.reviewer = reviewer;
 		this.thesisService = thesisService;
-		this.guidelinesRepository = guidelinesRepository;
-		this.reviewSummaryRepository = reviewSummaryRepository;
-		this.proposalRepository = proposalRepository;
-		this.thesisFileRepository = thesisFileRepository;
+		this.guidelinesGate = guidelinesGate;
+		this.documents = documents;
+		this.summaryWriter = summaryWriter;
 		this.feedbackClassificationService = feedbackClassificationService;
 	}
 
 	/**
-	 * Runs the AI review pipeline and persists the findings on the thesis as feedback items
-	 * with {@code generationSource = AI}. Access control is delegated to the caller (typically
-	 * the controller, which enforces student/supervisor access based on the review type).
+	 * Runs a review and persists the findings on the thesis as feedback items with
+	 * {@code generationSource = AI}. Access control is delegated to the caller (typically the
+	 * controller, which enforces student/supervisor access based on the review type).
 	 *
-	 * @param thesis the thesis whose uploaded document is reviewed
+	 * @param thesis     the thesis whose uploaded document is reviewed
 	 * @param reviewType whether to review the proposal or the thesis document
 	 * @return the updated thesis with the new feedback rows attached
 	 */
 	public Thesis autoReviewAndSave(Thesis thesis, ReviewType reviewType) {
-		StructuredGuidelines guidelines = requireReadyGuidelines(thesis);
-		ReviewDocument document = loadReviewDocument(thesis, reviewType);
-		ReviewResultDTO result = reviewService.review(document.resource(), reviewType, guidelines);
+		Reviewed reviewed = execute(thesis, reviewType);
 
-		List<RequestChangesPayload.RequestedChange> changes = new ArrayList<>();
-		for (FindingDTO finding : safeFindings(result.findings())) {
-			changes.add(new RequestChangesPayload.RequestedChange(
-					renderFeedbackText(finding),
-					false,
-					mapCategory(finding.category()),
-					mapSeverity(finding.severity()),
-					// Null → inherit the batch source (AI) passed to requestChanges below.
-					null
-			));
-		}
+		List<RequestedChange> changes = reviewed.drafts().stream()
+				.map(draft -> new RequestedChange(
+						draft.feedback(),
+						false,
+						draft.category(),
+						draft.severity(),
+						// Null → inherit the batch source (AI) passed to requestChanges below.
+						null))
+				.toList();
 
-		Thesis reviewed = thesis;
+		Thesis updated = thesis;
 		if (changes.isEmpty()) {
 			log.info("AI auto review for thesis {} ({}) produced no actionable findings", thesis.getId(), reviewType);
 		} else {
-			reviewed = thesisService.requestChanges(
-					thesis,
-					toFeedbackType(reviewType),
-					changes,
-					ThesisFeedbackSource.AI
-			);
+			updated = thesisService.requestChanges(thesis, toFeedbackType(reviewType), changes, ThesisFeedbackSource.AI);
 		}
 
-		// Last, so the summary only ever describes findings that actually landed: requestChanges
-		// is transactional, and persisting the score first would leave it standing on its own if
-		// saving the feedback rows failed and rolled them back.
-		persistReviewSummary(thesis, reviewType, result, document.versionId());
+		// Last, so the summary only ever describes findings that actually landed: requestChanges is
+		// transactional, and persisting the score first would leave it standing on its own if saving
+		// the feedback rows failed and rolled them back.
+		summaryWriter.record(thesis, reviewType, reviewed.result(), reviewed.documentVersionId());
 
-		return reviewed;
+		return updated;
 	}
 
 	/**
-	 * Runs the AI review pipeline and returns the findings as editable drafts without saving
-	 * anything to the database. The instructor UI can then let the user tweak, accept, or drop
-	 * individual entries before persisting them.
+	 * Runs a review and returns the findings as editable drafts without saving anything. The
+	 * instructor UI can then let the user tweak, accept, or drop individual entries before
+	 * persisting them. Deliberately writes no summary — see {@link ReviewSummaryWriter}.
 	 *
-	 * <p>Deliberately does NOT call {@link #persistReviewSummary}: a preview is supervisor-only
-	 * and provisional — the instructor may edit or discard every draft before saving anything.
-	 * The persisted summary backs the "Overall Score" shown on the student-visible feedback
-	 * overview, so persisting a discarded preview's score/summary there would leak content the
-	 * instructor never approved.
-	 *
-	 * @param thesis the thesis whose uploaded document is reviewed
+	 * @param thesis     the thesis whose uploaded document is reviewed
 	 * @param reviewType whether to review the proposal or the thesis document
 	 * @return the assessment, summary, and editable drafts
 	 */
 	public AIPreviewResponseDTO previewReview(Thesis thesis, ReviewType reviewType) {
-		StructuredGuidelines guidelines = requireReadyGuidelines(thesis);
-		ReviewDocument document = loadReviewDocument(thesis, reviewType);
-		ReviewResultDTO result = reviewService.review(document.resource(), reviewType, guidelines);
+		Reviewed reviewed = execute(thesis, reviewType);
+		ReviewResult result = reviewed.result();
 
-		List<AIFeedbackDraftDTO> drafts = safeFindings(result.findings()).stream()
-				.map(finding -> new AIFeedbackDraftDTO(
-						renderFeedbackText(finding),
-						mapCategory(finding.category()),
-						mapSeverity(finding.severity())
-				))
-				.sorted(Comparator.comparing(
-						AIFeedbackDraftDTO::severity,
-						Comparator.nullsLast(SEVERITY_ORDER)
-				))
-				.toList();
-
-		return new AIPreviewResponseDTO(result.category(), sanitizeScore(result.score()), result.summary(), drafts);
+		return new AIPreviewResponseDTO(
+				result.assessment(),
+				result.normalizedScore(),
+				result.summary(),
+				reviewed.drafts().stream().sorted(BY_SEVERITY).toList());
 	}
 
 	/**
@@ -212,8 +151,8 @@ public class AIFeedbackService {
 	 * when the model did not answer with a usable value — a missing suggestion leaves that dropdown
 	 * to the instructor rather than guessing on their behalf.
 	 *
-	 * @param thesis the thesis the feedback is written for; used to resolve the research group's
-	 *               AI opt-in
+	 * @param thesis   the thesis the feedback is written for; used to resolve the research group's
+	 *                 AI opt-in
 	 * @param feedback the feedback line to classify
 	 * @return the suggested category and severity, either of which may be {@code null}
 	 */
@@ -221,7 +160,7 @@ public class AIFeedbackService {
 		// Same per-group gate as every other AI feature: a group whose lead has not set up (valid)
 		// guidelines has not opted in, so no LLM call is made on its behalf. The guidelines
 		// themselves do not influence the classification.
-		requireReadyGuidelines(thesis);
+		guidelinesGate.requireReady(thesis.getResearchGroup());
 
 		String line = feedback == null ? "" : feedback.strip();
 		if (line.isEmpty()) {
@@ -237,133 +176,43 @@ public class AIFeedbackService {
 			return new FeedbackClassificationDTO(null, null);
 		}
 
-		return new FeedbackClassificationDTO(mapCategory(result.category()), mapSeverity(result.severity()));
+		return new FeedbackClassificationDTO(
+				FeedbackMapper.toCategory(result.category()),
+				FeedbackMapper.toSeverity(result.severity()));
 	}
 
 	/**
-	 * Upserts the {@code (thesis, reviewType)} row recording the AI review pipeline's latest
-	 * score, assessment, and summary. Only called from {@link #autoReviewAndSave} — that flow
-	 * always saves its findings as real, already-visible {@code ThesisFeedback} rows, so the
-	 * summary describes content the student can already see. {@link #previewReview} must NOT call
-	 * this (see its Javadoc).
+	 * Throws if the thesis does not have an uploaded document for the given review type. Public
+	 * because the controller wants to check before doing the work.
 	 *
-	 * @param thesis the thesis that was reviewed
-	 * @param reviewType whether the proposal or the thesis document was reviewed
-	 * @param result the merged review result to persist
-	 * @param documentVersionId the id of the document revision the review ran against, so the UI
-	 *                          can tell a current summary from one describing an older upload
+	 * @param thesis     the thesis whose uploaded document is required
+	 * @param reviewType whether the proposal or the thesis document is required
 	 */
-	private void persistReviewSummary(Thesis thesis, ReviewType reviewType, ReviewResultDTO result,
-			UUID documentVersionId) {
-		// A review takes long enough for the student to upload a new document while it runs. The
-		// single (thesis, type) row would then be overwritten with a result about a superseded
-		// revision — clobbering the summary of a review that already finished for the newer one.
-		// Drop the stale result instead; the row stays on whatever revision is actually current.
-		if (!isCurrentRevision(thesis, reviewType, documentVersionId)) {
-			log.info("Discarding AI review summary for thesis {} ({}): reviewed revision {} is no longer current",
-					thesis.getId(), reviewType, documentVersionId);
-			return;
-		}
-
-		AIReviewSummary summary = reviewSummaryRepository
-				.findByThesisIdAndType(thesis.getId(), reviewType)
-				.orElseGet(AIReviewSummary::new);
-		applyReviewResult(summary, thesis, reviewType, result, documentVersionId);
-
-		try {
-			reviewSummaryRepository.save(summary);
-		} catch (DataIntegrityViolationException e) {
-			// Two review runs for the same (thesis, type) raced: both found no existing row and
-			// both tried to insert. Retry as an update against the row the other one just
-			// created, so a concurrent request fails the review rather than this bookkeeping.
-			AIReviewSummary existing = reviewSummaryRepository
-					.findByThesisIdAndType(thesis.getId(), reviewType)
-					.orElseThrow(() -> e);
-			applyReviewResult(existing, thesis, reviewType, result, documentVersionId);
-			reviewSummaryRepository.save(existing);
-		}
+	public void assertHasDocument(Thesis thesis, ReviewType reviewType) {
+		documents.load(thesis, reviewType);
 	}
 
-	private static void applyReviewResult(AIReviewSummary summary, Thesis thesis, ReviewType reviewType,
-			ReviewResultDTO result, UUID documentVersionId) {
-		summary.setThesis(thesis);
-		summary.setType(reviewType);
-		summary.setScore(sanitizeScore(result.score()));
-		summary.setAssessment(result.category());
-		summary.setSummary(result.summary());
-		summary.setDocumentVersionId(documentVersionId);
+	/** One completed review: the raw result, its drafts, and the revision it ran against. */
+	private record Reviewed(ReviewResult result, List<AIFeedbackDraftDTO> drafts, UUID documentVersionId) {
 	}
 
 	/**
-	 * Whether the revision a review ran against is still the thesis's newest upload.
-	 *
-	 * <p>Reads the current revision from the database rather than from {@code thesis}: that
-	 * entity's proposal/file collections were initialised before the review started, so they
-	 * cannot show an upload that landed while the (potentially minute-long) pipeline was running.
-	 *
-	 * @param thesis the thesis that was reviewed
-	 * @param reviewType whether the proposal or the thesis document was reviewed
-	 * @param documentVersionId the revision the review ran against
-	 * @return {@code true} when that revision is still the newest one
+	 * The shared path both flows take. Gates on guidelines before touching the document, so a group
+	 * that has not set up the feature gets that explanation rather than a complaint about a missing
+	 * upload.
 	 */
-	private boolean isCurrentRevision(Thesis thesis, ReviewType reviewType, UUID documentVersionId) {
-		UUID currentVersionId = switch (reviewType) {
-			case PROPOSAL -> proposalRepository.findFirstByThesisIdOrderByCreatedAtDesc(thesis.getId())
-					.map(ThesisProposal::getId)
-					.orElse(null);
-			case THESIS -> thesisFileRepository
-					.findFirstByThesisIdAndTypeOrderByUploadedAtDesc(thesis.getId(), "THESIS")
-					.map(ThesisFile::getId)
-					.orElse(null);
-		};
+	private Reviewed execute(Thesis thesis, ReviewType reviewType) {
+		StructuredGuidelines guidelines = guidelinesGate.requireReady(thesis.getResearchGroup());
+		ReviewDocument document = documents.load(thesis, reviewType);
 
-		return currentVersionId != null && currentVersionId.equals(documentVersionId);
-	}
+		ReviewResult result = reviewer.review(new ReviewRequest(reviewType, guidelines, document.resource()));
+		log.debug("Review of thesis {} ({}) by {} produced {} findings",
+				thesis.getId(), reviewType, reviewer.strategy(), result.findings().size());
 
-	/**
-	 * The score comes straight from the merger LLM's structured output — the prompt asks for an
-	 * integer 0-100, but nothing enforces that at the schema level. Treat a missing or
-	 * out-of-range value as "no score" rather than persisting or returning a bogus number.
-	 *
-	 * @param score the raw score reported by the review pipeline
-	 * @return the score if it is a valid integer in [0, 100], otherwise {@code null}
-	 */
-	private static Integer sanitizeScore(Integer score) {
-		if (score == null || score < 0 || score > 100) {
-			return null;
-		}
-		return score;
-	}
-
-	/**
-	 * The document a review run reads, paired with the id of the revision it came from. Reviews
-	 * always run against the newest upload, and the id is what lets a persisted summary be
-	 * recognised as stale once a newer proposal or thesis file replaces it.
-	 *
-	 * @param resource the PDF handed to the review pipeline
-	 * @param versionId the {@code thesis_proposals} / {@code thesis_files} id of that revision
-	 */
-	private record ReviewDocument(Resource resource, UUID versionId) {
-	}
-
-	private ReviewDocument loadReviewDocument(Thesis thesis, ReviewType reviewType) {
-		return switch (reviewType) {
-			case PROPOSAL -> {
-				List<ThesisProposal> proposals = thesis.getProposals();
-				if (proposals == null || proposals.isEmpty()) {
-					throw new ResourceInvalidParametersException(
-							"Thesis has no uploaded proposal — cannot run an AI review.");
-				}
-				ThesisProposal proposal = proposals.getFirst();
-				yield new ReviewDocument(thesisService.getProposalFile(proposal), proposal.getId());
-			}
-			case THESIS -> {
-				ThesisFile thesisFile = thesis.getLatestFile("THESIS").orElseThrow(() ->
-						new ResourceInvalidParametersException(
-								"Thesis has no uploaded thesis document — cannot run an AI review."));
-				yield new ReviewDocument(thesisService.getThesisFile(thesisFile), thesisFile.getId());
-			}
-		};
+		return new Reviewed(
+				result,
+				result.findings().stream().map(FeedbackMapper::toDraft).toList(),
+				document.versionId());
 	}
 
 	private static ThesisFeedbackType toFeedbackType(ReviewType reviewType) {
@@ -371,131 +220,5 @@ public class AIFeedbackService {
 			case PROPOSAL -> ThesisFeedbackType.PROPOSAL;
 			case THESIS -> ThesisFeedbackType.THESIS;
 		};
-	}
-
-	private static List<FindingDTO> safeFindings(List<FindingDTO> findings) {
-		return findings != null ? findings : List.of();
-	}
-
-	/**
-	 * Collapses an AI finding into a single feedback string: title, description, then a
-	 * parenthetical hint that surfaces the first location (page + section) so the student knows
-	 * where to look. Additional locations are dropped — {@code ThesisFeedback.feedback} is a
-	 * plain TEXT column and we don't want to explode it into JSON just for this.
-	 *
-	 * <p>The text is stored and rendered verbatim (the feedback overview and the request-changes
-	 * dialog both show it as plain text), so no Markdown markup is added here.
-	 */
-	static String renderFeedbackText(FindingDTO finding) {
-		StringBuilder sb = new StringBuilder();
-
-		String title = finding.title();
-		if (title != null && !title.isBlank()) {
-			sb.append(title.strip());
-		}
-
-		String description = finding.description();
-		if (description != null && !description.isBlank()) {
-			if (!sb.isEmpty()) {
-				sb.append(" — ");
-			}
-			sb.append(description.strip());
-		}
-
-		List<Location> locations = finding.locations();
-		if (locations != null && !locations.isEmpty()) {
-			Location first = locations.getFirst();
-			String hint = formatLocationHint(first);
-			if (!hint.isEmpty()) {
-				if (!sb.isEmpty()) {
-					sb.append(' ');
-				}
-				sb.append("(").append(hint).append(")");
-			}
-		}
-
-		if (sb.isEmpty()) {
-			// Defensive fallback: shouldn't happen since the LLM contract requires a title.
-			return "AI feedback finding";
-		}
-		return sb.toString();
-	}
-
-	private static String formatLocationHint(Location location) {
-		StringBuilder sb = new StringBuilder();
-		if (location.page() != null) {
-			sb.append("Page ").append(location.page());
-		}
-		if (location.section() != null && !location.section().isBlank()) {
-			if (!sb.isEmpty()) {
-				sb.append(", ");
-			}
-			sb.append(location.section().strip());
-		}
-		return sb.toString();
-	}
-
-	private static ThesisFeedbackCategory mapCategory(String category) {
-		if (category == null || category.isBlank()) {
-			return null;
-		}
-		try {
-			return ThesisFeedbackCategory.valueOf(category.trim().toUpperCase(Locale.ROOT));
-		} catch (IllegalArgumentException ignored) {
-			// LLM emitted a category outside our enum — record as OTHER instead of failing the request.
-			log.warn("Unknown AI category '{}' — mapping to OTHER", category);
-			return ThesisFeedbackCategory.OTHER;
-		}
-	}
-
-	private static ThesisFeedbackSeverity mapSeverity(String severity) {
-		if (severity == null || severity.isBlank()) {
-			return null;
-		}
-		try {
-			return ThesisFeedbackSeverity.valueOf(severity.trim().toUpperCase(Locale.ROOT));
-		} catch (IllegalArgumentException ignored) {
-			log.warn("Unknown AI severity '{}' — mapping to MINOR", severity);
-			return ThesisFeedbackSeverity.MINOR;
-		}
-	}
-
-	/**
-	 * Throws if the thesis does not have an uploaded document for the given review type. Kept
-	 * public because the controller wants to check before doing the work.
-	 *
-	 * @param thesis the thesis whose uploaded document is required
-	 * @param reviewType whether the proposal or the thesis document is required
-	 */
-	public void assertHasDocument(Thesis thesis, ReviewType reviewType) {
-		loadReviewDocument(thesis, reviewType);
-	}
-
-	/**
-	 * Resolves the thesis's research group guidelines and requires them to be
-	 * {@code READY} before any AI review may run. This is the per-group gate: members of a
-	 * research group whose lead has not (successfully) uploaded guidelines cannot use the AI
-	 * features. Throws {@link AccessDeniedException} otherwise.
-	 *
-	 * @param thesis the thesis being reviewed
-	 * @return the group's structured guidelines
-	 */
-	private StructuredGuidelines requireReadyGuidelines(Thesis thesis) {
-		ResearchGroup researchGroup = thesis.getResearchGroup();
-		if (researchGroup == null || researchGroup.getId() == null) {
-			throw new AccessDeniedException(
-					"AI review is not available for this thesis because it is not assigned to a research group. "
-							+ "Please ask your examiner or supervisor to assign the thesis to a research group.");
-		}
-
-		ResearchGroupGuidelines guidelines = guidelinesRepository.findById(researchGroup.getId()).orElse(null);
-		if (guidelines == null) {
-			throw new AccessDeniedException(GUIDELINES_MISSING_MESSAGE);
-		}
-		if (!guidelines.isReady() || guidelines.getStructuredGuidelines() == null) {
-			throw new AccessDeniedException(GUIDELINES_NOT_READY_MESSAGE);
-		}
-
-		return guidelines.getStructuredGuidelines();
 	}
 }

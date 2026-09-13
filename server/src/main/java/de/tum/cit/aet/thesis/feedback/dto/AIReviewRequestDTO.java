@@ -1,6 +1,6 @@
 package de.tum.cit.aet.thesis.feedback.dto;
 
-import de.tum.cit.aet.thesis.feedback.service.reviewer.ReviewType;
+import de.tum.cit.aet.thesis.feedback.model.ReviewType;
 
 import jakarta.validation.constraints.NotNull;
 

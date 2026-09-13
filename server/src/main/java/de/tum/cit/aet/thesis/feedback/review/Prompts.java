@@ -1,10 +1,16 @@
-package de.tum.cit.aet.thesis.feedback.service.reviewer;
+package de.tum.cit.aet.thesis.feedback.review;
+
+import de.tum.cit.aet.thesis.feedback.model.ReviewCategory;
+import de.tum.cit.aet.thesis.feedback.model.ReviewType;
 
 /**
- * Centralized prompt templates used by the AI review pipeline. Every entry carries a proposal
- * and a thesis variant — the runtime picks the right one based on the caller's {@link ReviewType}.
- * Prompts are kept as wide text blocks so they read like the original prose; line-length is
- * suppressed for this file rather than wrapped, which would alter the content sent to the LLM.
+ * Prompt templates for {@link CategoryFanOutReviewer}. Every entry carries a proposal and a thesis
+ * variant — the runtime picks the right one based on the caller's {@link ReviewType}. Prompts are
+ * kept as wide text blocks so they read like the original prose; line-length is suppressed for this
+ * file rather than wrapped, which would alter the content sent to the LLM.
+ *
+ * <p>Besides {@link #SHARED} and {@link #MERGER} there is one entry per {@link ReviewCategory};
+ * {@link #taskPromptFor} is the only supported way to get from a category to its prompt.
  */
 @SuppressWarnings("checkstyle:LineLength")
 public enum Prompts {
@@ -50,156 +56,6 @@ public enum Prompts {
 					- "quote": a verbatim excerpt from the thesis showing the issue (full sentence or clause, enough context to be meaningful), with the specific offending part wrapped in **bold** markers (e.g. "The system **don't** handle edge cases properly when multiple users connect.")
 					- Include multiple locations if the same issue appears in several places
 					- Use an empty locations array only for structural absences (e.g. a missing chapter)
-					"""),
-	GUIDELINES(
-			// PROPOSAL
-			"""
-					## Reference Guidelines
-
-					The following are the official guidelines from the research group. Use them as additional context to inform your review, but keep your evaluation focused on the specific rules listed above.
-
-					**1. General Writing Style**
-
-					* Use the provided templates (see below)
-					* Avoid "As discussed before" or similar phrases.
-					* Limit the use of filler words such as "additional," "furthermore," "moreover," and "also"; only use them when necessary.
-					* Use clear and direct language to articulate your arguments and findings, avoiding unnecessary complexity or ambiguity. Avoid writing in a German essay style. Use concise, simple, and academic sentences without excessive elaboration.
-					* Do not start sentences with "As…", "Since…", "To…", "In order to…", or "Because…".
-					* **Use active formulations, avoid passive voice, "one," "I," and "our."** Use "we" sparingly, only when referring to the thesis' approach.
-					* **Identify actors and powerful subjects and formulate all your sentences in active voice!**
-					* Ensure consistency in terminology and phrasing, especially when referring to key concepts, models, or theories. Repetitions are encouraged for consistency; avoid synonyms that might confuse readers.
-					* Avoid strong statements and superlatives (e.g., "very", "wide", "optimal").
-					* Avoid filler words (e.g., "actually", "clearly", "obviously").
-					* Do not excessively use abbreviations, because readers might not be familiar with them. Maintain a list of abbreviations.
-					* Avoid contractions (e.g., use "do not" instead of "don't" and "it is" instead of "it's").
-					* Avoid jargon or highly technical terms unless necessary, and provide clear definitions when using specialized terms.
-
-					### **2. Paragraphs and Section Structure**
-
-					* Ensure that each section introduces and concludes with a clear point to maintain a logical flow of ideas
-					* Use subheadings to break up long sections, improving readability and making it easier for the reader to follow the structure.
-					* Avoid too detailed subsection structures / outlines, i.e. use at most three digits. E.g. 3.1.4 is ok, but 3.1.4.1 is too much!
-					* Every chapter/section needs to include text, even Section 1 before Section 1.1.
-					* Avoid overly short sections or paragraphs that disrupt the flow; combine them with adjacent sections if necessary, i.e. every chapter/section should be at least two paragraphs long, ideally at least half a page; otherwise, consider making it a paragraph.
-					* Ensure clarity and readability:
-					* **Focus**: Each paragraph should develop **a single coherent idea**. Avoid combining unrelated thoughts.
-					* **Length**: Aim for **5 to 8 lines per paragraph**. Paragraphs that are too short may lack depth; overly long ones risk losing the reader.
-					* **Balance**: Maintain a **consistent paragraph length** throughout your text to support a well-structured and professional presentation.
-					* Ensure a smooth transition between sections and paragraphs by linking ideas coherently to maintain continuity
-					* Write the text mainly in regular paragraphs, **not** in bullet points.
-					* Keep bullet points and lists to a maximum of 1-2 lines.
-
-					### **3. Bibliography and References**
-
-					* Ensure that all cited sources are relevant and contribute meaningfully to your argument or background.
-					* Use a consistent citation style throughout the thesis (ideally **alpha** with [ABC12]).
-					* Only include peer-reviewed conference papers or journal articles in your bibliography.
-					* Avoid including internet sources in the literature; if used at all, include them as footnotes.
-					* Clean up your bibliography to avoid duplicate or incorrect information (e.g., location details for ACM conferences).
-					* Avoid simply copying and pasting Google Scholar entries; manual cleanup is often required.
-					* The citation should be placed before the full stop (e.g., some example text [AB12].) and **not** after the full stop.
-					* Regularly cross-check in-text citations with the bibliography to ensure all sources are listed and correctly referenced.
-					* If citing textbooks or technical reports, ensure they are authoritative and well-established within the field.
-
-					### **4. Figures, Diagrams, and Tables**
-
-					* Include many figures and tables to enhance readability.
-					* Avoid short, generic, and meaningless captions; instead, use long, informative captions.
-					* Avoid using sequence diagrams; instead, consider using activity or communication diagrams.
-					* **Use light mode for tool screenshots on white paper** (dark mode does not look good and wastes ink in case someone still prints the work)
-					* Ensure that every figure and table is referenced in the text and explained in detail.
-					* **Ensure that all figures and tables are readable when you open the PDF in 100%.**
-					* **Use vector graphics (SVG, PDF) whenever possible to improve figure readability and decrease PDF size.**
-					* Use high-quality images, diagrams, and tables to ensure clarity, especially when conveying complex information.
-					* Make sure to use consistent keys (legends) in all figures throughout the work and always label x and y axis accordingly.
-					* Keep figures and diagrams as simple as possible, avoiding excessive detail that could overwhelm the reader.
-					* Ensure that figures and tables are placed close to where they are first referenced in the text for better readability.
-					* Use consistent styles and formats for all figures, diagrams, and tables throughout the thesis to maintain a professional and cohesive appearance.
-					* Ensure that tables are used to present structured, comparable data, and not as a substitute for narrative text.
-
-					# Proposal
-
-					### Before you start your thesis, you have to hand in a proposal. This proposal describes the problem you want to solve, the motivation why this problem should be solved, the objectives you want to achieve and a preliminary schedule for the thesis.
-
-					Your proposal should be a high-level overview, enriched with details where necessary. The proposal should be around 5-7 pages long. Try to be as concise as possible.
-
-					Make sure to enrich your proposal with figures and UML diagrams. Use the type of diagram you find most appropriate for your topic. (Important: Keep it high-level! — Describe the problem!). You should have at least 2 diagrams/mockups!
-
-					You have to back your claims with scientific sources. Make sure to cite at least 6-8 publications to show you already invested time and effort to understand the topic thoroughly.
-
-					## Proposal Structure
-
-					Expected length of proposals is **at most 4-6 text pages**.
-
-					Abstract, Introduction, Problem, Motivation, Objective (with subsections), Schedule, Bibliography, Transparency statement.
-					""",
-			// THESIS
-			"""
-					## Reference Guidelines
-
-					The following are the official guidelines from the research group. Use them as additional context to inform your review, but keep your evaluation focused on the specific rules listed above.
-
-					**1. General Writing Style**
-
-					* Use the provided templates.
-					* Avoid "As discussed before" or similar phrases.
-					* Limit the use of filler words such as "additional," "furthermore," "moreover," and "also"; only use them when necessary.
-					* Use clear and direct language to articulate your arguments and findings, avoiding unnecessary complexity or ambiguity. Avoid writing in a German essay style. Use concise, simple, and academic sentences without excessive elaboration.
-					* Do not start sentences with "As…", "Since…", "To…", "In order to…", or "Because…".
-					* **Use active formulations, avoid passive voice, "one," "I," and "our."** Use "we" sparingly, only when referring to the thesis' approach.
-					* **Identify actors and powerful subjects and formulate all your sentences in active voice!**
-					* Ensure consistency in terminology and phrasing, especially when referring to key concepts, models, or theories. Repetitions are encouraged for consistency.
-					* Avoid strong statements and superlatives (e.g., "very", "wide", "optimal").
-					* Avoid filler words and contractions.
-					* Do not excessively use abbreviations. Maintain a list of abbreviations.
-
-					### **2. Paragraphs and Section Structure**
-
-					* Each section introduces and concludes with a clear point to maintain logical flow.
-					* Use subheadings, but do not exceed 3-digit numbering (e.g. 3.1.4 is OK; 3.1.4.1 is too deep).
-					* Every chapter/section needs introductory text before its first subsection.
-					* Paragraphs: 5-8 lines each, one coherent idea per paragraph, balanced lengths, prose over bullet points.
-
-					### **3. Bibliography and References**
-
-					* Only include peer-reviewed conference papers or journal articles.
-					* Internet sources belong in footnotes, not the bibliography.
-					* Citations before the full stop, e.g. "some text [AB12]."
-					* Use a consistent citation style (ideally alpha [ABC12]).
-					* A thesis typically cites **30-50+ peer-reviewed sources**; a bachelor's thesis on the lower end, a master's/PhD on the higher end.
-
-					### **4. Figures, Diagrams, and Tables**
-
-					* Long, informative captions.
-					* No sequence diagrams — use activity or communication diagrams.
-					* Screenshots in light mode.
-					* All figures and tables must be readable at 100% zoom.
-					* Prefer vector graphics.
-					* Every figure/table must be referenced and discussed in the text.
-					* A thesis should have many figures — architecture, activity, workflow, data-flow, and evaluation charts.
-
-					### 5. **Author's Work and Related Work**
-
-					* Clearly distinguish between related work and the author's own contributions.
-					* Related work must be critically analyzed, grouped thematically, and cover both seminal and current publications.
-					* State explicitly how the author's work builds upon, extends, or differs from prior work.
-
-					# Thesis
-
-					A thesis is a substantive research artifact. Expected length varies (Bachelor: 30-60 pages; Master: 60-100+ pages). The thesis should include, at minimum:
-					* Abstract (~1 page)
-					* Introduction (background, problem, motivation, contributions, thesis outline)
-					* Background / Foundations (technical prerequisites the reader needs)
-					* Related Work
-					* Methodology / Approach / System Design
-					* Implementation
-					* Evaluation (with experimental setup, metrics, results, discussion, threats to validity)
-					* Discussion / Limitations
-					* Conclusion and Future Work
-					* Bibliography
-					* AI Transparency Statement
-
-					The thesis should present research contributions grounded in scientific method: a clear research question, a described approach, and a rigorous evaluation that validates the approach's effectiveness.
 					"""),
 	STRUCTURE(
 			// PROPOSAL
@@ -587,5 +443,28 @@ public enum Prompts {
 			case PROPOSAL -> proposalPrompt;
 			case THESIS -> thesisPrompt;
 		};
+	}
+
+	/**
+	 * Returns the task prompt that drives one category's review pass. An exhaustive switch, so
+	 * adding a {@link ReviewCategory} without a prompt is a compile error rather than a runtime one.
+	 *
+	 * @param category the category being reviewed
+	 * @param type     whether the review targets a proposal or a thesis
+	 * @return the resolved task prompt
+	 */
+	public static String taskPromptFor(ReviewCategory category, ReviewType type) {
+		Prompts prompt = switch (category) {
+			case STRUCTURE -> STRUCTURE;
+			case PROBLEM_MOTIVATION_OBJECTIVES -> PROBLEM_MOTIVATION_OBJECTIVES;
+			case BIBLIOGRAPHY -> BIBLIOGRAPHY;
+			case FIGURES -> FIGURES;
+			case WRITING_STYLE -> WRITING_STYLE;
+			case WRITING_STRUCTURE -> WRITING_STRUCTURE;
+			case WRITING_FORMATTING -> WRITING_FORMATTING;
+			case AI_TRANSPARENCY -> AI_TRANSPARENCY;
+			case SCHEDULE -> SCHEDULE;
+		};
+		return prompt.getPrompt(type);
 	}
 }

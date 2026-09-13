@@ -1,7 +1,7 @@
 package de.tum.cit.aet.thesis.feedback.service;
 
 import de.tum.cit.aet.thesis.feedback.config.AIFeaturesEnabled;
-import de.tum.cit.aet.thesis.feedback.dto.FeedbackClassificationResult;
+import de.tum.cit.aet.thesis.feedback.model.FeedbackClassificationResult;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Service;
@@ -10,9 +10,9 @@ import org.springframework.stereotype.Service;
  * Classifies a single manually written feedback line into a category and severity with one LLM
  * call.
  *
- * <p>Deliberately separate from {@link ReviewService}: no PDF is read, no research group rules
- * drive the decision, and the whole interaction is one short request rather than the
- * fan-out-per-category-and-merge pipeline a document review runs. The category and severity
+ * <p>Deliberately not a {@link de.tum.cit.aet.thesis.feedback.review.ThesisReviewer}: no PDF is
+ * read, no research group rules drive the decision, and the whole interaction is one short
+ * request rather than a document-review pipeline. The category and severity
  * definitions are copied from the review pipeline's prompts so a suggested label means the same
  * thing as one the AI review assigns.
  */

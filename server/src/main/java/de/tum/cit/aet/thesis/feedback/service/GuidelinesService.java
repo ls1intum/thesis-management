@@ -11,8 +11,8 @@ import de.tum.cit.aet.thesis.feedback.entity.GuidelinesStatus;
 import de.tum.cit.aet.thesis.feedback.entity.ResearchGroupGuidelines;
 import de.tum.cit.aet.thesis.feedback.entity.jsonb.CategoryGuidelines;
 import de.tum.cit.aet.thesis.feedback.entity.jsonb.StructuredGuidelines;
+import de.tum.cit.aet.thesis.feedback.model.ReviewCategory;
 import de.tum.cit.aet.thesis.feedback.repository.ResearchGroupGuidelinesRepository;
-import de.tum.cit.aet.thesis.feedback.service.reviewer.ReviewCategory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
@@ -20,7 +20,6 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -28,7 +27,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * Manages a research group's custom AI review guidelines: lets the group lead read and replace
@@ -44,11 +42,6 @@ import java.util.stream.Collectors;
 @Conditional(AIFeaturesEnabled.class)
 public class GuidelinesService {
 	private static final Logger log = LoggerFactory.getLogger(GuidelinesService.class);
-
-	/** The slugs of the fixed review categories, used to validate the preprocessor's output. */
-	private static final Set<String> KNOWN_CATEGORY_SLUGS = Arrays.stream(ReviewCategory.values())
-			.map(ReviewCategory::getSlug)
-			.collect(Collectors.toUnmodifiableSet());
 
 	private static final String NO_USABLE_RULES_REASON =
 			"The guidelines could not be distilled into specific, actionable review rules. "
@@ -129,7 +122,7 @@ public class GuidelinesService {
 		// category slugs, or only blank rules. Persisting that as READY would unlock the AI
 		// features for the group with no actual group-specific guidance, defeating the gate. Only
 		// mark READY when at least one recognized category carries a nonblank rule.
-		if (result != null && result.specific() && hasUsableRules(sanitized)) {
+		if (result != null && result.specific() && !sanitized.isEmpty()) {
 			entity.setStatus(GuidelinesStatus.READY);
 			entity.setStructuredGuidelines(new StructuredGuidelines(result.overview(), sanitized));
 			entity.setFailureReason(null);
@@ -175,7 +168,7 @@ public class GuidelinesService {
 						"This research group has no guidelines to edit yet. Generate them first."));
 
 		List<CategoryGuidelines> sanitized = sanitizeCategories(categories);
-		if (!hasUsableRules(sanitized)) {
+		if (sanitized.isEmpty()) {
 			throw new ResourceInvalidParametersException(
 					"The guidelines must keep at least one rule for a recognized review category.");
 		}
@@ -209,13 +202,13 @@ public class GuidelinesService {
 		if (categories == null) {
 			return List.of();
 		}
-		// Null slugs must be screened out before the lookup: KNOWN_CATEGORY_SLUGS is an immutable
+		// Null slugs must be screened out before the lookup: ReviewCategory.SLUGS is an immutable
 		// set, whose contains(null) throws rather than returning false.
 		Map<String, Set<String>> rulesBySlug = new LinkedHashMap<>();
 		for (CategoryGuidelines category : categories) {
 			if (category == null
 					|| category.category() == null
-					|| !KNOWN_CATEGORY_SLUGS.contains(category.category())
+					|| !ReviewCategory.SLUGS.contains(category.category())
 					|| category.rules() == null) {
 				continue;
 			}
@@ -229,28 +222,6 @@ public class GuidelinesService {
 		return rulesBySlug.entrySet().stream()
 				.map(entry -> new CategoryGuidelines(entry.getKey(), List.copyOf(entry.getValue())))
 				.toList();
-	}
-
-	/**
-	 * Returns whether the preprocessed categories contain at least one recognized
-	 * {@link ReviewCategory} slug with at least one nonblank rule — the minimum needed for the
-	 * guidelines to actually influence the review.
-	 *
-	 * @param categories the per-category rules from the preprocessing result
-	 * @return {@code true} if there is usable, category-specific guidance
-	 */
-	private static boolean hasUsableRules(List<CategoryGuidelines> categories) {
-		if (categories == null) {
-			return false;
-		}
-		return categories.stream().anyMatch(GuidelinesService::isUsableCategory);
-	}
-
-	private static boolean isUsableCategory(CategoryGuidelines category) {
-		return category != null
-				&& KNOWN_CATEGORY_SLUGS.contains(category.category())
-				&& category.rules() != null
-				&& category.rules().stream().anyMatch(rule -> rule != null && !rule.isBlank());
 	}
 
 	private static String resolveFailureReason(GuidelinesPreprocessingResult result) {
