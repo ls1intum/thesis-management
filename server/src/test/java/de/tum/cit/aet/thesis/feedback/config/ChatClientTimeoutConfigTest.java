@@ -101,11 +101,9 @@ class ChatClientTimeoutConfigTest {
 				Field field = c.getDeclaredField(fieldName);
 				field.setAccessible(true);
 				return field.get(target);
-			}
-			catch (NoSuchFieldException e) {
+			} catch (NoSuchFieldException e) {
 				// declared further up the hierarchy
-			}
-			catch (IllegalAccessException e) {
+			} catch (IllegalAccessException e) {
 				throw new IllegalStateException("Cannot read " + fieldName, e);
 			}
 		}
