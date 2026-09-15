@@ -42,7 +42,7 @@ overrides:
   # GHSA-64mm-vxmg-q3vj (http-proxy-middleware host+path routing bypass, via webpack-dev-server)
   http-proxy-middleware@<3.0.6: 4.2.0
   # GHSA-2p49-hgcm-8545 (svgo removeScripts leaves executable code, via svg loaders)
-  svgo@>=4.0.0 <4.0.2: 4.0.2
+  svgo@>=4.0.0 <4.0.2: 4.1.0
   # GHSA-5jgf-p345-68v8 / GHSA-fph4-wmhf-6fwf / GHSA-f65p-4m7j-42xc / GHSA-jqff-g426-hqxp
   # (fast-uri host confusion + SSRF, on top of GHSA-7p8r-x3mc-p8w7 / GHSA-v2hh-gcrm-f6hx, via ajv)
   fast-uri@<3.1.6: 3.1.6
