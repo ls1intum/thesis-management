@@ -12,5 +12,11 @@ import java.util.UUID;
  */
 public record AIReviewRequestDTO(
 		@NotNull UUID thesisId,
-		@NotNull ReviewType reviewType
+		@NotNull ReviewType reviewType,
+		/**
+		 * Optional, client-generated id correlating this run's websocket progress events
+		 * ({@code /user/queue/ai-review-progress/{jobId}}). Absent when the caller does not want
+		 * live progress.
+		 */
+		UUID jobId
 ) {}
