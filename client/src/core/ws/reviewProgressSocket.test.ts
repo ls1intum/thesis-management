@@ -157,6 +157,23 @@ describe('subscribeToReviewProgress', () => {
     expect(client.published).toHaveLength(probesAtAck)
   })
 
+  it('does not orphan the probe interval when the socket reconnects', async () => {
+    const { subscribeToReviewProgress } = await loadModule()
+
+    const { unsubscribe } = subscribeToReviewProgress(JOB_ID, () => {})
+    const client = stomp.instances[0]
+    client.connect()
+    // A drop and reconnect mid-review re-subscribes every live job.
+    client.connect()
+
+    client.deliver(subscribedEvent())
+    unsubscribe()
+
+    const probesAtCleanup = client.published.length
+    await vi.advanceTimersByTimeAsync(2000)
+    expect(client.published).toHaveLength(probesAtCleanup)
+  })
+
   it('gives up waiting after the bounded timeout so the review still runs', async () => {
     const { subscribeToReviewProgress } = await loadModule()
 

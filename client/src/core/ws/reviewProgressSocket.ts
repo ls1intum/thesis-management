@@ -56,11 +56,15 @@ const wsBrokerUrl = () => {
   return url.toString()
 }
 
-const clearTimers = (job: IJob) => {
+const clearProbeTimer = (job: IJob) => {
   if (job.probeTimer !== undefined) {
     clearInterval(job.probeTimer)
     job.probeTimer = undefined
   }
+}
+
+const clearTimers = (job: IJob) => {
+  clearProbeTimer(job)
   if (job.readyTimer !== undefined) {
     clearTimeout(job.readyTimer)
     job.readyTimer = undefined
@@ -87,6 +91,10 @@ const probeUntilReady = (stompClient: Client, jobId: string, job: IJob) => {
     }
   }
 
+  // A reconnect re-subscribes every live job, so drop any interval from the previous session
+  // first — overwriting the handle would orphan it, leaving it probing for the life of the tab
+  // with nothing able to clear it.
+  clearProbeTimer(job)
   probe()
   job.probeTimer = setInterval(probe, PROBE_INTERVAL_MS)
 }
