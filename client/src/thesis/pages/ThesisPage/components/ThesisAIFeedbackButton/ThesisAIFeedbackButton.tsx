@@ -30,8 +30,11 @@ const ThesisAIFeedbackButton = ({ type, disabled }: IThesisAIFeedbackButtonProps
 
   const [loading, onClick] = useThesisUpdateAction(async () => {
     const jobId = crypto.randomUUID()
-    start(jobId)
     try {
+      // Progress events are not replayed, so the subscription has to be live before the review
+      // starts — otherwise the first LLM calls finish unseen.
+      await start(jobId)
+
       const response = await doRequest<IThesis>('/v2/ai-review/auto', {
         method: 'POST',
         requiresAuth: true,

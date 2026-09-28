@@ -205,8 +205,11 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
   const onGenerateAi = async () => {
     setAiLoading(true)
     const jobId = crypto.randomUUID()
-    startAiProgress(jobId)
     try {
+      // Progress events are not replayed, so the subscription has to be live before the review
+      // starts — otherwise the first LLM calls finish unseen.
+      await startAiProgress(jobId)
+
       const response = await doRequest<IAIPreviewResponse>('/v2/ai-review/preview', {
         method: 'POST',
         requiresAuth: true,

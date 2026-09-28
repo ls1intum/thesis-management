@@ -60,6 +60,16 @@ class ReviewProgressPublisherTest {
 	}
 
 	@Test
+	void publishSubscribedAnswersOnTheSameDestinationAsProgressEvents() {
+		// The handshake acknowledgement is only meaningful because it travels the exact path real
+		// progress events take — that is what proves the client's subscription is live.
+		publisher.publishSubscribed("ga12abc", jobId);
+
+		verify(messagingTemplate).convertAndSendToUser(eq("ga12abc"), eq("/queue/ai-review-progress/" + jobId),
+				eq(new ReviewProgressEvent(jobId, "subscription", null, ReviewProgressStatus.SUBSCRIBED, 0, 0, null)));
+	}
+
+	@Test
 	void aBrokenPublishNeverEscapesTheReporter() {
 		// Progress is a side channel: a disconnected client (or any other messaging failure) must
 		// never surface as an exception to the review pipeline that is reporting progress.

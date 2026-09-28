@@ -16,6 +16,9 @@ import java.util.UUID;
 public class ReviewProgressPublisher {
 	private static final Logger log = LoggerFactory.getLogger(ReviewProgressPublisher.class);
 
+	/** Step id of the handshake acknowledgement, which belongs to no review step. */
+	private static final String SUBSCRIBED_STEP_ID = "subscription";
+
 	private final SimpMessagingTemplate messagingTemplate;
 
 	/**
@@ -36,33 +39,47 @@ public class ReviewProgressPublisher {
 	 * @return a reporter bound to that user and job
 	 */
 	public ProgressReporter reporterFor(String username, UUID jobId) {
-		String destination = "/queue/ai-review-progress/" + jobId;
-
 		return new ProgressReporter() {
 			@Override
 			public void stepStarted(String stepId, String label, int index, int total) {
-				publish(new ReviewProgressEvent(jobId, stepId, label, ReviewProgressStatus.STARTED, index, total, null));
+				publish(username, jobId,
+						new ReviewProgressEvent(jobId, stepId, label, ReviewProgressStatus.STARTED, index, total, null));
 			}
 
 			@Override
 			public void stepCompleted(String stepId, int index, int total) {
-				publish(new ReviewProgressEvent(jobId, stepId, null, ReviewProgressStatus.COMPLETED, index, total, null));
+				publish(username, jobId,
+						new ReviewProgressEvent(jobId, stepId, null, ReviewProgressStatus.COMPLETED, index, total, null));
 			}
 
 			@Override
 			public void stepFailed(String stepId, int index, int total, String message) {
-				publish(new ReviewProgressEvent(jobId, stepId, null, ReviewProgressStatus.FAILED, index, total, message));
-			}
-
-			private void publish(ReviewProgressEvent event) {
-				try {
-					messagingTemplate.convertAndSendToUser(username, destination, event);
-				} catch (RuntimeException e) {
-					// A disconnected or never-subscribed client must never fail the review itself —
-					// progress is a side channel, not a required part of the request.
-					log.debug("Failed to publish review progress event {} to {}", event, username, e);
-				}
+				publish(username, jobId,
+						new ReviewProgressEvent(jobId, stepId, null, ReviewProgressStatus.FAILED, index, total, message));
 			}
 		};
+	}
+
+	/**
+	 * Answers a client's subscription probe by sending a {@link ReviewProgressStatus#SUBSCRIBED}
+	 * event down the very destination that job's progress events will use. Because it travels the
+	 * same broker path as those events, receiving it proves the client's subscription is live.
+	 *
+	 * @param username the STOMP principal name (the user's university id) to publish to
+	 * @param jobId    the client-supplied id correlating events to one review request
+	 */
+	public void publishSubscribed(String username, UUID jobId) {
+		publish(username, jobId,
+				new ReviewProgressEvent(jobId, SUBSCRIBED_STEP_ID, null, ReviewProgressStatus.SUBSCRIBED, 0, 0, null));
+	}
+
+	private void publish(String username, UUID jobId, ReviewProgressEvent event) {
+		try {
+			messagingTemplate.convertAndSendToUser(username, "/queue/ai-review-progress/" + jobId, event);
+		} catch (RuntimeException e) {
+			// A disconnected or never-subscribed client must never fail the review itself —
+			// progress is a side channel, not a required part of the request.
+			log.debug("Failed to publish review progress event {} to {}", event, username, e);
+		}
 	}
 }
