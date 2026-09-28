@@ -59,16 +59,17 @@ public class AIFeedbackService {
 	private static final int MAX_CLASSIFICATION_CHARS = 2000;
 
 	/**
-	 * Upper bound on the notes handed to the splitting LLM. Notes taken while reading a document
-	 * are a page or two of shorthand; the cap is generous enough for a whole reading pass and still
-	 * bounds what one paste can cost.
+	 * Largest note block one import accepts. Notes taken while reading a document are a page or two
+	 * of shorthand; the limit is generous enough for a whole reading pass and still bounds what one
+	 * paste can cost. A longer paste is rejected rather than truncated — see {@link #importNotes}.
 	 */
 	private static final int MAX_NOTES_CHARS = 20000;
 
 	/**
-	 * Upper bound on the entries one import may produce. A reading pass yields tens of notes, not
-	 * hundreds — a longer list means the model started splitting prose into fragments, and the
-	 * instructor should not have to delete a hundred rows by hand.
+	 * Most entries one import may produce. A reading pass yields tens of notes, not hundreds — a
+	 * longer list means the model started splitting prose into fragments, and the instructor should
+	 * not have to delete a hundred rows by hand. A longer result is rejected rather than trimmed —
+	 * see {@link #importNotes}.
 	 */
 	private static final int MAX_IMPORTED_ENTRIES = 100;
 
@@ -213,10 +214,17 @@ public class AIFeedbackService {
 	 * severity is routinely {@code null} here — a terse note often does not say enough to label it,
 	 * and the instructor either picks the value or asks {@link #classifyFeedbackLine} for it.
 	 *
+	 * <p>An oversized paste and an oversized result are both rejected rather than cut down: the
+	 * client reports a successful import and clears the notes it sent, so a partial result would
+	 * quietly lose issues the instructor believes they imported.
+	 *
 	 * @param thesis the thesis the notes were taken for; used to resolve the research group's AI
 	 *               opt-in
 	 * @param notes  the raw notes to split
 	 * @return the entries in the order the notes raise them; empty when the notes held no feedback
+	 * @throws ResourceInvalidParametersException if the notes are blank, longer than
+	 *                                            {@value #MAX_NOTES_CHARS} characters, or produce
+	 *                                            more than {@value #MAX_IMPORTED_ENTRIES} entries
 	 */
 	public ImportedNotesDTO importNotes(Thesis thesis, String notes) {
 		// Same per-group gate as every other AI feature — see classifyFeedbackLine.
@@ -226,8 +234,13 @@ public class AIFeedbackService {
 		if (text.isEmpty()) {
 			throw new ResourceInvalidParametersException("Cannot import empty notes.");
 		}
+		// Rejected rather than truncated: the client reports a successful import and clears the
+		// notes it sent, so silently dropping the tail would lose issues the instructor believes
+		// they imported. Splitting the paste is something they can act on.
 		if (text.length() > MAX_NOTES_CHARS) {
-			text = text.substring(0, MAX_NOTES_CHARS);
+			throw new ResourceInvalidParametersException(
+					"These notes are too long to import at once (" + text.length() + " characters, limit "
+							+ MAX_NOTES_CHARS + "). Please import them in smaller parts.");
 		}
 
 		NoteSplitResult result = noteSplittingService.split(text);
@@ -240,12 +253,21 @@ public class AIFeedbackService {
 				// An entry without text is nothing the instructor could save or edit; drop it
 				// rather than showing them an empty row to clean up.
 				.filter(entry -> entry.feedback() != null && !entry.feedback().isBlank())
-				.limit(MAX_IMPORTED_ENTRIES)
 				.map(entry -> new AIFeedbackDraftDTO(
 						entry.feedback().strip(),
 						FeedbackMapper.toCategory(entry.category()),
 						FeedbackMapper.toSeverity(entry.severity())))
 				.toList();
+
+		// Rejected rather than capped, for the same reason the character limit is: keeping the
+		// first hundred would drop issues from an import the instructor is told succeeded.
+		if (entries.size() > MAX_IMPORTED_ENTRIES) {
+			log.warn("Note import for thesis {} produced {} entries, over the {} limit",
+					thesis.getId(), entries.size(), MAX_IMPORTED_ENTRIES);
+			throw new ResourceInvalidParametersException(
+					"These notes produced " + entries.size() + " entries, more than the " + MAX_IMPORTED_ENTRIES
+							+ " one import can add. Please import them in smaller parts.");
+		}
 
 		if (entries.isEmpty()) {
 			log.info("Note import for thesis {} produced no entries", thesis.getId());

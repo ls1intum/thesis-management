@@ -255,6 +255,59 @@ describe('ThesisFeedbackRequestButton — note import', () => {
     expect(await screen.findByLabelText(NOTES_LABEL)).toHaveValue('ch 4 thin')
   })
 
+  test('refuses to save while notes are still waiting to be imported', async () => {
+    // Saving writes entries, not notes: with notes still in the panel it would discard them, and
+    // with nothing but notes it would send an empty change request.
+    const user = userEvent.setup()
+    renderWithProviders(<ThesisFeedbackRequestButton type='THESIS' />)
+    const notes = await openImportPanel(user)
+    await user.type(notes, 'ch 4 thin')
+    await user.keyboard('{Escape}')
+
+    expect(await screen.findByText(/have not been imported yet/)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Save & close' })).toBeDisabled()
+  })
+
+  test('ignores an import that answers after the panel was cancelled', async () => {
+    // Appending entries — or clearing the field — after the instructor walked away would undo a
+    // deliberate cancellation.
+    const user = userEvent.setup()
+    let resolveImport: (value: unknown) => void = () => {}
+    requestMock.doRequest.mockReturnValueOnce(
+      new Promise((resolve) => {
+        resolveImport = resolve
+      }),
+    )
+
+    renderWithProviders(<ThesisFeedbackRequestButton type='THESIS' />)
+    const notes = await openImportPanel(user)
+    await user.type(notes, 'ch 4 thin')
+    await user.click(screen.getByRole('button', { name: 'Import' }))
+    await user.click(screen.getByRole('button', { name: 'Cancel' }))
+
+    resolveImport(okResponse({ entries: [{ feedback: 'Chapter 4 is thin.' }] }))
+
+    // The panel is gone and the batch still holds nothing but its empty starter row.
+    await waitFor(() => expect(screen.queryByLabelText(NOTES_LABEL)).not.toBeInTheDocument())
+    expect(screen.getAllByPlaceholderText(FEEDBACK_PLACEHOLDER)).toHaveLength(1)
+    expect(screen.getByPlaceholderText(FEEDBACK_PLACEHOLDER)).toHaveValue('')
+    expect(notifyMock.showSimpleSuccess).not.toHaveBeenCalled()
+  })
+
+  test('locks the notes field while the split is running', async () => {
+    // The entries that come back describe the text that was sent, so edits made in the meantime
+    // would silently be thrown away with it.
+    const user = userEvent.setup()
+    requestMock.doRequest.mockReturnValueOnce(new Promise(() => {}))
+
+    renderWithProviders(<ThesisFeedbackRequestButton type='THESIS' />)
+    const notes = await openImportPanel(user)
+    await user.type(notes, 'ch 4 thin')
+    await user.click(screen.getByRole('button', { name: 'Import' }))
+
+    await waitFor(() => expect(screen.getByLabelText(NOTES_LABEL)).toBeDisabled())
+  })
+
   test('does not import an empty note block', async () => {
     // Splitting nothing would spend an LLM call to produce nothing.
     const user = userEvent.setup()

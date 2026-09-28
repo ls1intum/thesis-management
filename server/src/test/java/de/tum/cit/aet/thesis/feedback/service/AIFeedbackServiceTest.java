@@ -340,28 +340,49 @@ class AIFeedbackServiceTest {
 	}
 
 	@Test
-	void importNotesCapsTheNumberOfEntriesOneImportCanProduce() {
+	void importNotesRejectsAResultWithMoreEntriesThanOneImportMayAdd() {
 		when(guidelinesGate.requireReady(any())).thenReturn(GUIDELINES);
 		when(noteSplittingService.split(any())).thenReturn(new NoteSplitResult(
 				IntStream.range(0, 150).mapToObj(i -> new NoteEntry("Issue " + i, null, null)).toList()));
 
-		ImportedNotesDTO imported = service.importNotes(thesis, "many notes");
-
-		// A model that starts splitting prose into fragments must not leave the instructor with
-		// hundreds of rows to delete by hand.
-		assertThat(imported.entries()).hasSize(100);
+		// Returning the first hundred would drop issues from an import the instructor is told
+		// succeeded — and the client clears the notes it sent, so those issues would be gone.
+		assertThatThrownBy(() -> service.importNotes(thesis, "many notes"))
+				.isInstanceOf(ResourceInvalidParametersException.class)
+				.hasMessageContaining("smaller parts");
 	}
 
 	@Test
-	void importNotesCapsTheTextHandedToTheLlm() {
+	void importNotesAcceptsAResultExactlyAtTheEntryLimit() {
+		when(guidelinesGate.requireReady(any())).thenReturn(GUIDELINES);
+		when(noteSplittingService.split(any())).thenReturn(new NoteSplitResult(
+				IntStream.range(0, 100).mapToObj(i -> new NoteEntry("Issue " + i, null, null)).toList()));
+
+		assertThat(service.importNotes(thesis, "many notes").entries()).hasSize(100);
+	}
+
+	@Test
+	void importNotesRejectsAPasteTooLongToSplitWithoutCallingTheLlm() {
+		when(guidelinesGate.requireReady(any())).thenReturn(GUIDELINES);
+
+		// Truncating would spend an LLM call and still report success over notes whose tail was
+		// never read; one paste must also not turn into an unbounded LLM bill.
+		assertThatThrownBy(() -> service.importNotes(thesis, "x".repeat(50000)))
+				.isInstanceOf(ResourceInvalidParametersException.class)
+				.hasMessageContaining("too long to import");
+
+		verify(noteSplittingService, never()).split(any());
+	}
+
+	@Test
+	void importNotesAcceptsAPasteExactlyAtTheCharacterLimit() {
 		when(guidelinesGate.requireReady(any())).thenReturn(GUIDELINES);
 		when(noteSplittingService.split(any())).thenReturn(new NoteSplitResult(List.of()));
 
-		service.importNotes(thesis, "x".repeat(50000));
+		service.importNotes(thesis, "x".repeat(20000));
 
 		ArgumentCaptor<String> split = ArgumentCaptor.forClass(String.class);
 		verify(noteSplittingService).split(split.capture());
-		// One paste must not turn into an unbounded LLM bill.
 		assertThat(split.getValue()).hasSize(20000);
 	}
 

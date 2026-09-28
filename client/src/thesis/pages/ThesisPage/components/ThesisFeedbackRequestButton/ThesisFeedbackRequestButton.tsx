@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   useLoadedThesisContext,
   useThesisUpdateAction,
@@ -117,14 +117,26 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
   const [showImportNotes, setShowImportNotes] = useState(false)
   const [notes, setNotes] = useState('')
   const [importing, setImporting] = useState(false)
+  // Identifies the import request whose answer the panel is still waiting for. Bumped by every
+  // exit from the panel, so an answer that arrives afterwards can be recognised as stale.
+  const importToken = useRef(0)
+
+  /** Abandons a pending import so its answer can no longer change the panel. */
+  const cancelImport = () => {
+    importToken.current += 1
+    setImporting(false)
+    setNotes('')
+    setShowImportNotes(false)
+  }
 
   useEffect(() => {
     if (opened) {
       setEntries([emptyEntry()])
       setEditChanges([])
       setAiAssessment(null)
-      setShowImportNotes(false)
-      setNotes('')
+      // Only touches setters and a ref, all stable for the life of the component, so it needs no
+      // place in the dependency list.
+      cancelImport()
     }
   }, [opened])
 
@@ -145,8 +157,11 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
     [entries],
   )
 
-  const hasUnsavedWork =
-    validEntries.length > 0 || editChanges.length > 0 || notes.trim().length > 0
+  // Notes typed into the panel but not imported yet. They are unsaved work, but saving cannot
+  // keep them — only importing turns them into entries.
+  const hasPendingNotes = notes.trim().length > 0
+  const hasSavableWork = validEntries.length > 0 || editChanges.length > 0
+  const hasUnsavedWork = hasSavableWork || hasPendingNotes
 
   const updateEntry = (key: string, patch: Partial<INewEntry>) => {
     setEntries((prev) => prev.map((entry) => (entry.key === key ? { ...entry, ...patch } : entry)))
@@ -283,6 +298,12 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
       return
     }
 
+    // A split takes a while, so the panel can be cancelled or the modal closed before the answer
+    // arrives. Every such exit bumps the token, and a response that no longer matches is dropped:
+    // appending entries — or clearing the field — after the instructor walked away would undo a
+    // deliberate cancellation.
+    const token = ++importToken.current
+
     setImporting(true)
     try {
       const response = await doRequest<IImportedNotes>('/v2/ai-review/import-notes', {
@@ -293,6 +314,10 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
           notes: trimmed,
         },
       })
+
+      if (importToken.current !== token) {
+        return
+      }
 
       if (!response.ok) {
         showSimpleError(getApiResponseErrorMessage(response))
@@ -315,7 +340,9 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
       setNotes('')
       setShowImportNotes(false)
     } finally {
-      setImporting(false)
+      if (importToken.current === token) {
+        setImporting(false)
+      }
     }
   }
 
@@ -409,7 +436,9 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
             <Stack gap={'0.25rem'} align='center'>
               <Title order={4}>Unsaved changes</Title>
               <Text c='dimmed' ta={'center'}>
-                You have unsaved changes. Do you want to discard them or keep editing?
+                {hasPendingNotes
+                  ? 'Your notes have not been imported yet. Import them first, or discard them — saving now would not keep them.'
+                  : 'You have unsaved changes. Do you want to discard them or keep editing?'}
               </Text>
             </Stack>
 
@@ -420,6 +449,10 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
                 </Button>
                 <Button
                   loading={saving}
+                  // Saving writes the entries, not the notes: with notes still in the panel it
+                  // would discard them, and with nothing but notes it would send an empty
+                  // request. Import or discard them first.
+                  disabled={hasPendingNotes || !hasSavableWork}
                   onClick={() => {
                     onSave()
                     setShowDisregardChanges(false)
@@ -434,8 +467,7 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
                   setEntries([emptyEntry()])
                   setEditChanges([])
                   setShowDisregardChanges(false)
-                  setShowImportNotes(false)
-                  setNotes('')
+                  cancelImport()
                 }}
                 variant='transparent'
                 color='gray'
@@ -464,18 +496,14 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
               label='Your notes'
               placeholder={'p. 4 fig 3 unreadable, and Smith is not cited\nch 4 too thin\n…'}
               value={notes}
+              // Locked while the split runs: the entries that come back describe the text that was
+              // sent, so edits made in the meantime would silently be thrown away with it.
+              disabled={importing}
               onChange={(e) => setNotes(e.target.value)}
             />
 
             <Group justify='flex-end'>
-              <Button
-                variant='outline'
-                color='gray'
-                onClick={() => {
-                  setShowImportNotes(false)
-                  setNotes('')
-                }}
-              >
+              <Button variant='outline' color='gray' onClick={cancelImport}>
                 Cancel
               </Button>
               <Button
@@ -704,12 +732,7 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
               )}
             </Group>
 
-            <Button
-              fullWidth
-              loading={saving}
-              disabled={editChanges.length === 0 && validEntries.length === 0}
-              onClick={onSave}
-            >
+            <Button fullWidth loading={saving} disabled={!hasSavableWork} onClick={onSave}>
               Request Changes
             </Button>
           </Stack>
