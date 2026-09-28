@@ -13,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import de.tum.cit.aet.thesis.feedback.dto.AIFeedbackDraftDTO;
 import de.tum.cit.aet.thesis.feedback.dto.AIPreviewResponseDTO;
 import de.tum.cit.aet.thesis.feedback.dto.FeedbackClassificationDTO;
+import de.tum.cit.aet.thesis.feedback.dto.ImportedNotesDTO;
 import de.tum.cit.aet.thesis.feedback.model.AssessmentCategory;
 import de.tum.cit.aet.thesis.feedback.model.ReviewType;
 import de.tum.cit.aet.thesis.feedback.service.AIFeedbackService;
@@ -289,6 +290,71 @@ class ReviewControllerTest extends BaseIntegrationTest {
 	void classifyFeedback_returnsUnauthorizedWithoutAuthentication() throws Exception {
 		String body = "{\"thesisId\":\"" + UUID.randomUUID() + "\",\"feedback\":\"Cite a source.\"}";
 		mockMvc.perform(post("/v2/ai-review/classify-feedback")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(body))
+				.andExpect(status().isUnauthorized());
+	}
+
+	@Test
+	void importNotes_returnsEntriesForSupervisor() throws Exception {
+		UUID thesisId = createTestThesis("AI note import test");
+		TestUser supervisor = addThesisRole(thesisId, "SUPERVISOR", "advisor");
+		when(aiFeedbackService.importNotes(any(Thesis.class), anyString()))
+				.thenReturn(new ImportedNotesDTO(List.of(
+						new AIFeedbackDraftDTO("Figure 3 is unreadable.",
+								ThesisFeedbackCategory.FIGURES, ThesisFeedbackSeverity.MAJOR),
+						new AIFeedbackDraftDTO("Chapter 4 is thin.", null, null))));
+
+		String body = "{\"thesisId\":\"" + thesisId + "\",\"notes\":\"fig 3 unreadable\\nch 4 thin\"}";
+		mockMvc.perform(post("/v2/ai-review/import-notes")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(body)
+						.header("Authorization", authFor(supervisor, "advisor")))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.entries[0].feedback").value("Figure 3 is unreadable."))
+				.andExpect(jsonPath("$.entries[0].category").value("FIGURES"))
+				.andExpect(jsonPath("$.entries[0].severity").value("MAJOR"))
+				.andExpect(jsonPath("$.entries[1].feedback").value("Chapter 4 is thin."))
+				// NON_EMPTY drops the labels the notes did not say enough about; the client leaves
+				// those dropdowns open.
+				.andExpect(jsonPath("$.entries[1].category").doesNotExist())
+				.andExpect(jsonPath("$.entries[1].severity").doesNotExist());
+
+		verify(aiFeedbackService).importNotes(any(Thesis.class), eq("fig 3 unreadable\nch 4 thin"));
+	}
+
+	@Test
+	void importNotes_returnsForbiddenForStudent() throws Exception {
+		UUID thesisId = createTestThesis("AI note import forbidden test");
+
+		String body = "{\"thesisId\":\"" + thesisId + "\",\"notes\":\"fig 3 unreadable\"}";
+		mockMvc.perform(post("/v2/ai-review/import-notes")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(body)
+						.header("Authorization", createRandomAuthentication("student")))
+				.andExpect(status().isForbidden());
+
+		verify(aiFeedbackService, never()).importNotes(any(Thesis.class), anyString());
+	}
+
+	@Test
+	void importNotes_rejectsBlankNotes() throws Exception {
+		UUID thesisId = createTestThesis("AI note import validation test");
+
+		String body = "{\"thesisId\":\"" + thesisId + "\",\"notes\":\"   \"}";
+		mockMvc.perform(post("/v2/ai-review/import-notes")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(body)
+						.header("Authorization", createRandomAdminAuthentication()))
+				.andExpect(status().isBadRequest());
+
+		verify(aiFeedbackService, never()).importNotes(any(Thesis.class), anyString());
+	}
+
+	@Test
+	void importNotes_returnsUnauthorizedWithoutAuthentication() throws Exception {
+		String body = "{\"thesisId\":\"" + UUID.randomUUID() + "\",\"notes\":\"fig 3 unreadable\"}";
+		mockMvc.perform(post("/v2/ai-review/import-notes")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(body))
 				.andExpect(status().isUnauthorized());

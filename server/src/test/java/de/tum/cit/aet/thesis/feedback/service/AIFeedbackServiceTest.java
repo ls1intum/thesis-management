@@ -11,14 +11,18 @@ import static org.mockito.Mockito.when;
 
 import de.tum.cit.aet.thesis.core.exception.request.AccessDeniedException;
 import de.tum.cit.aet.thesis.core.exception.request.ResourceInvalidParametersException;
+import de.tum.cit.aet.thesis.feedback.dto.AIFeedbackDraftDTO;
 import de.tum.cit.aet.thesis.feedback.dto.AIPreviewResponseDTO;
 import de.tum.cit.aet.thesis.feedback.dto.FeedbackClassificationDTO;
+import de.tum.cit.aet.thesis.feedback.dto.ImportedNotesDTO;
 import de.tum.cit.aet.thesis.feedback.entity.jsonb.CategoryGuidelines;
 import de.tum.cit.aet.thesis.feedback.entity.jsonb.StructuredGuidelines;
 import de.tum.cit.aet.thesis.feedback.model.AssessmentCategory;
 import de.tum.cit.aet.thesis.feedback.model.FeedbackClassificationResult;
 import de.tum.cit.aet.thesis.feedback.model.Finding;
 import de.tum.cit.aet.thesis.feedback.model.Location;
+import de.tum.cit.aet.thesis.feedback.model.NoteEntry;
+import de.tum.cit.aet.thesis.feedback.model.NoteSplitResult;
 import de.tum.cit.aet.thesis.feedback.model.ReviewResult;
 import de.tum.cit.aet.thesis.feedback.model.ReviewType;
 import de.tum.cit.aet.thesis.feedback.review.ReviewRequest;
@@ -42,6 +46,7 @@ import org.springframework.core.io.Resource;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.IntStream;
 
 @ExtendWith(MockitoExtension.class)
 class AIFeedbackServiceTest {
@@ -65,6 +70,9 @@ class AIFeedbackServiceTest {
 	private FeedbackClassificationService feedbackClassificationService;
 
 	@Mock
+	private NoteSplittingService noteSplittingService;
+
+	@Mock
 	private Thesis thesis;
 
 	private AIFeedbackService service;
@@ -78,7 +86,7 @@ class AIFeedbackServiceTest {
 	@BeforeEach
 	void setUp() {
 		service = new AIFeedbackService(reviewer, thesisService, guidelinesGate, documents, summaryWriter,
-				feedbackClassificationService);
+				feedbackClassificationService, noteSplittingService);
 	}
 
 	/** Wires the happy path up to (but excluding) the review call itself. */
@@ -282,5 +290,107 @@ class AIFeedbackServiceTest {
 				.isInstanceOf(AccessDeniedException.class);
 
 		verify(feedbackClassificationService, never()).classify(any());
+	}
+
+	@Test
+	void importNotesKeepsTheOrderOfTheNotesAndMapsLenientlySpelledLlmValues() {
+		when(guidelinesGate.requireReady(any())).thenReturn(GUIDELINES);
+		when(noteSplittingService.split("fig 3 unreadable; cite Smith")).thenReturn(new NoteSplitResult(List.of(
+				new NoteEntry("Figure 3 is unreadable.", "figures", " Major "),
+				new NoteEntry("Cite Smith for this claim.", "CITATION", "MAJOR"))));
+
+		ImportedNotesDTO imported = service.importNotes(thesis, "  fig 3 unreadable; cite Smith  ");
+
+		// Notes follow the document, so the instructor's own order survives the import — unlike
+		// preview drafts, which are ranked by severity.
+		assertThat(imported.entries()).extracting(AIFeedbackDraftDTO::feedback)
+				.containsExactly("Figure 3 is unreadable.", "Cite Smith for this claim.");
+		assertThat(imported.entries().getFirst().category()).isEqualTo(ThesisFeedbackCategory.FIGURES);
+		assertThat(imported.entries().getFirst().severity()).isEqualTo(ThesisFeedbackSeverity.MAJOR);
+	}
+
+	@Test
+	void importNotesLeavesUnlabelledEntriesForTheInstructorToClassify() {
+		when(guidelinesGate.requireReady(any())).thenReturn(GUIDELINES);
+		when(noteSplittingService.split("ch 4 thin")).thenReturn(new NoteSplitResult(List.of(
+				new NoteEntry("Chapter 4 is thin.", null, null))));
+
+		ImportedNotesDTO imported = service.importNotes(thesis, "ch 4 thin");
+
+		// A terse note often does not say enough to label it. Both dropdowns stay open rather than
+		// being guessed at; the instructor picks them or asks for a classification.
+		assertThat(imported.entries()).hasSize(1);
+		assertThat(imported.entries().getFirst().category()).isNull();
+		assertThat(imported.entries().getFirst().severity()).isNull();
+	}
+
+	@Test
+	void importNotesDropsEntriesWithoutText() {
+		when(guidelinesGate.requireReady(any())).thenReturn(GUIDELINES);
+		when(noteSplittingService.split("notes")).thenReturn(new NoteSplitResult(List.of(
+				new NoteEntry(null, "WRITING", "MINOR"),
+				new NoteEntry("   ", "WRITING", "MINOR"),
+				new NoteEntry("  Reword the abstract.  ", "WRITING", "MINOR"))));
+
+		ImportedNotesDTO imported = service.importNotes(thesis, "notes");
+
+		// An entry with no text is nothing the instructor could save or edit.
+		assertThat(imported.entries()).extracting(AIFeedbackDraftDTO::feedback)
+				.containsExactly("Reword the abstract.");
+	}
+
+	@Test
+	void importNotesCapsTheNumberOfEntriesOneImportCanProduce() {
+		when(guidelinesGate.requireReady(any())).thenReturn(GUIDELINES);
+		when(noteSplittingService.split(any())).thenReturn(new NoteSplitResult(
+				IntStream.range(0, 150).mapToObj(i -> new NoteEntry("Issue " + i, null, null)).toList()));
+
+		ImportedNotesDTO imported = service.importNotes(thesis, "many notes");
+
+		// A model that starts splitting prose into fragments must not leave the instructor with
+		// hundreds of rows to delete by hand.
+		assertThat(imported.entries()).hasSize(100);
+	}
+
+	@Test
+	void importNotesCapsTheTextHandedToTheLlm() {
+		when(guidelinesGate.requireReady(any())).thenReturn(GUIDELINES);
+		when(noteSplittingService.split(any())).thenReturn(new NoteSplitResult(List.of()));
+
+		service.importNotes(thesis, "x".repeat(50000));
+
+		ArgumentCaptor<String> split = ArgumentCaptor.forClass(String.class);
+		verify(noteSplittingService).split(split.capture());
+		// One paste must not turn into an unbounded LLM bill.
+		assertThat(split.getValue()).hasSize(20000);
+	}
+
+	@Test
+	void importNotesReturnsNoEntriesWhenTheLlmReturnsNothing() {
+		when(guidelinesGate.requireReady(any())).thenReturn(GUIDELINES);
+		when(noteSplittingService.split("Looks good overall.")).thenReturn(null);
+
+		assertThat(service.importNotes(thesis, "Looks good overall.").entries()).isEmpty();
+	}
+
+	@Test
+	void importNotesRejectsBlankNotesWithoutCallingTheLlm() {
+		when(guidelinesGate.requireReady(any())).thenReturn(GUIDELINES);
+
+		assertThatThrownBy(() -> service.importNotes(thesis, "   "))
+				.isInstanceOf(ResourceInvalidParametersException.class)
+				.hasMessageContaining("empty notes");
+
+		verify(noteSplittingService, never()).split(any());
+	}
+
+	@Test
+	void importNotesAppliesTheSamePerGroupAiGateAsAReview() {
+		when(guidelinesGate.requireReady(any())).thenThrow(new AccessDeniedException("not set up"));
+
+		assertThatThrownBy(() -> service.importNotes(thesis, "fig 3 unreadable"))
+				.isInstanceOf(AccessDeniedException.class);
+
+		verify(noteSplittingService, never()).split(any());
 	}
 }
