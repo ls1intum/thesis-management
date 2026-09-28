@@ -1,10 +1,13 @@
 package de.tum.cit.aet.thesis.feedback.review;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -22,6 +25,7 @@ import de.tum.cit.aet.thesis.feedback.service.PdfService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ai.chat.client.ChatClient;
@@ -144,6 +148,27 @@ public class CategoryFanOutReviewerTest {
 		verify(progressReporter).stepStarted("merge", "Consolidating findings", total, total);
 		verify(progressReporter).stepCompleted("merge", total, total);
 		verify(progressReporter, org.mockito.Mockito.never()).stepFailed(any(), org.mockito.ArgumentMatchers.anyInt(), org.mockito.ArgumentMatchers.anyInt(), any());
+	}
+
+	@Test
+	void aFailedCategoryReportsAFixedMessageRatherThanTheProviderException() {
+		Resource pdfResource = new ByteArrayResource("pdf-content".getBytes());
+		int total = ReviewCategory.values().length + 1;
+
+		when(pdfService.extractTextFromPdf(any(Resource.class))).thenReturn(List.of("Extracted text"));
+		when(pdfService.extractImagesFromPdf(any(Resource.class))).thenReturn(List.of());
+		// Whatever the provider says — endpoints, models, quota details — stays server-side.
+		when(categoryReviewer.review(anyList(), anyList()))
+				.thenThrow(new RuntimeException("401 Unauthorized calling https://internal-llm.example/v1/chat/completions"));
+
+		ReviewRequest request = new ReviewRequest(ReviewType.PROPOSAL, GUIDELINES, pdfResource, progressReporter);
+		assertThatThrownBy(() -> reviewer.review(request)).isInstanceOf(IllegalStateException.class);
+
+		ArgumentCaptor<String> reported = ArgumentCaptor.forClass(String.class);
+		verify(progressReporter, atLeastOnce()).stepFailed(any(), anyInt(), eq(total), reported.capture());
+		assertThat(reported.getAllValues())
+				.isNotEmpty()
+				.allSatisfy(message -> assertThat(message).isEqualTo("This step could not be completed"));
 	}
 
 	@Test

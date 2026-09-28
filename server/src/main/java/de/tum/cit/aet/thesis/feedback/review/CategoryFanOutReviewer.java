@@ -49,6 +49,14 @@ public class CategoryFanOutReviewer implements ThesisReviewer {
 	/** Progress step id for the merge call, reported after every category has been reviewed. */
 	private static final String MERGE_STEP_ID = "merge";
 
+	/**
+	 * What a failed step reports to the client. Deliberately fixed: the underlying exception comes
+	 * from the LLM provider and its message can carry endpoint, model, or request details that have
+	 * no place on a student's screen. The exception itself is logged server-side with its category
+	 * or merge context instead.
+	 */
+	private static final String STEP_FAILURE_MESSAGE = "This step could not be completed";
+
 	private final PdfService pdfService;
 	private final ChatClient chatClient;
 	private final ObjectMapper objectMapper;
@@ -128,7 +136,8 @@ public class CategoryFanOutReviewer implements ThesisReviewer {
 					progress.stepCompleted(category.getSlug(), stepIndex, total);
 					return findings;
 				} catch (RuntimeException e) {
-					progress.stepFailed(category.getSlug(), stepIndex, total, e.getMessage());
+					log.warn("AI review failed for category {} ({})", category.getSlug(), request.type(), e);
+					progress.stepFailed(category.getSlug(), stepIndex, total, STEP_FAILURE_MESSAGE);
 					throw e;
 				}
 			}, reviewExecutor));
@@ -153,7 +162,8 @@ public class CategoryFanOutReviewer implements ThesisReviewer {
 			progress.stepCompleted(MERGE_STEP_ID, total, total);
 			return result;
 		} catch (RuntimeException e) {
-			progress.stepFailed(MERGE_STEP_ID, total, total, e.getMessage());
+			log.warn("AI review failed consolidating {} findings ({})", perCategory.size(), reviewType, e);
+			progress.stepFailed(MERGE_STEP_ID, total, total, STEP_FAILURE_MESSAGE);
 			throw e;
 		}
 	}
