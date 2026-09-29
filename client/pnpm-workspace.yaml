@@ -21,8 +21,8 @@ overrides:
   # @tiptap/react pulls its menu extensions in as optionalDependencies with a
   # caret range, but they peer-require an exact @tiptap/core match. Pin them to
   # the family version so the range cannot drift ahead of @tiptap/core.
-  '@tiptap/extension-bubble-menu': 3.30.2
-  '@tiptap/extension-floating-menu': 3.30.2
+  '@tiptap/extension-bubble-menu': 3.31.3
+  '@tiptap/extension-floating-menu': 3.31.3
   # GHSA-q8mj-m7cp-5q26
   qs@<6.15.2: 6.15.3
   # GHSA-58qx-3vcg-4xpx
