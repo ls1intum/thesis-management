@@ -87,7 +87,7 @@
     "@types/react-dom": "19.3.0",
     "@typescript-eslint/eslint-plugin": "8.67.0",
     "@typescript-eslint/parser": "8.67.0",
-    "@vitest/coverage-v8": "4.1.10",
+    "@vitest/coverage-v8": "4.1.11",
     "clean-webpack-plugin": "4.0.0",
     "compression-webpack-plugin": "12.0.0",
     "copy-webpack-plugin": "14.0.0",
