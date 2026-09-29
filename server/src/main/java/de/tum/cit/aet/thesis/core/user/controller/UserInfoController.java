@@ -114,6 +114,36 @@ public class UserInfoController {
 	}
 
 	/**
+	 * Replaces the authenticated user's profile picture without touching any other profile data.
+	 *
+	 * @param avatar the avatar image file
+	 * @param jwt the JWT authentication token
+	 * @return the updated user profile information
+	 */
+	@PostMapping(value = "/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<UserDto> uploadAvatar(
+			@RequestPart("avatar") MultipartFile avatar,
+			JwtAuthenticationToken jwt
+	) {
+		User user = this.authenticationService.getAuthenticatedUser(jwt);
+
+		return ResponseEntity.ok(UserDto.fromUserEntity(this.authenticationService.updateAvatar(user, avatar)));
+	}
+
+	/**
+	 * Records that the authenticated user dismissed the "add a profile picture" prompt.
+	 *
+	 * @param jwt the JWT authentication token
+	 * @return the updated user profile information
+	 */
+	@PostMapping("/dismiss-avatar-prompt")
+	public ResponseEntity<UserDto> dismissAvatarPrompt(JwtAuthenticationToken jwt) {
+		User user = this.authenticationService.getAuthenticatedUser(jwt);
+
+		return ResponseEntity.ok(UserDto.fromUserEntity(this.authenticationService.dismissAvatarPrompt(user)));
+	}
+
+	/**
 	 * Retrieves the notification settings of the authenticated user.
 	 *
 	 * @param jwt the JWT authentication token

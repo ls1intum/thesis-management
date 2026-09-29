@@ -1,6 +1,7 @@
 import { test as setup, expect, type Page } from '@playwright/test'
 
 const DISABLE_PASSKEY_PROMPT_STORAGE_KEY = 'passkey_prompt_disabled'
+const DISABLE_PROFILE_PICTURE_PROMPT_STORAGE_KEY = 'profile_picture_prompt_disabled'
 
 const waitForAppBootstrap = async (page: Page) => {
   await page
@@ -147,9 +148,12 @@ for (const user of TEST_USERS) {
       { timeout: 15_000 },
     )
 
-    await page.evaluate((storageKey) => {
-      localStorage.setItem(storageKey, 'true')
-    }, DISABLE_PASSKEY_PROMPT_STORAGE_KEY)
+    await page.evaluate(
+      (storageKeys) => {
+        storageKeys.forEach((storageKey) => localStorage.setItem(storageKey, 'true'))
+      },
+      [DISABLE_PASSKEY_PROMPT_STORAGE_KEY, DISABLE_PROFILE_PICTURE_PROMPT_STORAGE_KEY],
+    )
 
     // Save the authenticated state (localStorage + cookies including Keycloak session)
     await page.context().storageState({ path: `e2e/.auth/${user.name}.json` })

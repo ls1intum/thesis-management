@@ -48,6 +48,7 @@ import EnvironmentBanner, {
 } from '@/core/components/EnvironmentBanner/EnvironmentBanner'
 import Header from '@/core/components/Header/Header'
 import { useIsSmallerBreakpoint } from '@/core/hooks/theme'
+import ProfilePicturePrompt from '@/core/user/components/ProfilePicturePrompt/ProfilePicturePrompt'
 
 export interface IAuthenticatedAreaProps {
   size?: MantineSize
@@ -343,6 +344,8 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
           </AppShell.Section>
         )}
       </AppShell.Navbar>
+
+      <ProfilePicturePrompt />
 
       <AppShell.Main>
         <Box h={`calc(100vh - ${HEADER_HEIGHT}px)`}>

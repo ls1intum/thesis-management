@@ -1,23 +1,12 @@
 import { getAvatar } from '@/core/utils/user'
-import AvatarEditor, { type AvatarEditorRef } from 'react-avatar-editor'
 import { useAuthenticationContext, useLoggedInUser } from '@/core/hooks/authentication'
-import {
-  Avatar,
-  Button,
-  Center,
-  Group,
-  Input,
-  Modal,
-  Slider,
-  Stack,
-  Text,
-  Tooltip,
-} from '@mantine/core'
+import { Avatar, Button, Group, Input, Stack, Text, Tooltip } from '@mantine/core'
 import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone'
-import { useMemo, useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { doRequest } from '@/core/requests/request'
 import { showSimpleError } from '@/core/utils/notification'
 import type { IUser } from '@/core/user/requests/responses/user'
+import AvatarCropModal from '@/core/user/components/AvatarCropModal/AvatarCropModal'
 
 const IMPORT_TOOLTIP =
   'Imports your profile picture from Gravatar (gravatar.com), a US-based service.' +
@@ -34,7 +23,6 @@ interface IAvatarInputProps {
 const AvatarInput = (props: IAvatarInputProps) => {
   const { value, onChange, label, required } = props
 
-  const editorRef = useRef<AvatarEditorRef | null>(null)
   const { updateUser } = useAuthenticationContext()
   const user = useLoggedInUser()
 
@@ -43,22 +31,7 @@ const AvatarInput = (props: IAvatarInputProps) => {
   }, [user, value])
 
   const [file, setFile] = useState<File>()
-  const [scale, setScale] = useState(1)
   const [importLoading, setImportLoading] = useState(false)
-
-  const onSave = async () => {
-    const canvas = editorRef.current?.getImageScaledToCanvas().toDataURL()
-
-    if (!canvas) {
-      return
-    }
-
-    const data = await fetch(canvas).then((res) => res.blob())
-
-    onChange(new File([data], 'avatar.png'))
-    setFile(undefined)
-    setScale(1)
-  }
 
   const importProfilePicture = async () => {
     setImportLoading(true)
@@ -121,33 +94,14 @@ const AvatarInput = (props: IAvatarInputProps) => {
           </Tooltip>
         </Group>
       )}
-      <Modal opened={Boolean(file)} onClose={() => setFile(undefined)}>
-        {file && (
-          <Stack>
-            <Center>
-              <AvatarEditor
-                ref={editorRef}
-                image={file}
-                width={300}
-                height={300}
-                border={20}
-                scale={scale}
-                color={[255, 255, 255, 0.6]}
-                rotate={0}
-              />
-            </Center>
-            <Slider value={scale} onChange={(x) => setScale(x)} min={1} max={3} step={0.1} />
-            <Button
-              onClick={() => {
-                void onSave()
-              }}
-              fullWidth
-            >
-              Save Avatar
-            </Button>
-          </Stack>
-        )}
-      </Modal>
+      <AvatarCropModal
+        file={file}
+        onClose={() => setFile(undefined)}
+        onSave={(cropped) => {
+          onChange(cropped)
+          setFile(undefined)
+        }}
+      />
     </Input.Wrapper>
   )
 }

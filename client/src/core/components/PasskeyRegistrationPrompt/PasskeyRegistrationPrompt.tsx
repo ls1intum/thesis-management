@@ -23,6 +23,7 @@ import {
 } from '@/core/utils/passkey'
 import { showSimpleError, showSimpleSuccess } from '@/core/utils/notification'
 import { GLOBAL_CONFIG } from '@/core/config/global'
+import { usePromptSlot } from '@/core/hooks/prompt-slot'
 
 const NEVER_ASK_AGAIN_STORAGE_KEY = 'passkey_prompt_never_ask_again'
 const MAYBE_LATER_STORAGE_KEY = 'passkey_prompt_maybe_later'
@@ -77,6 +78,7 @@ const PasskeyRegistrationPrompt = () => {
   const location = useLocation()
   const promptApps = GLOBAL_CONFIG.passkey_prompt_apps
   const [isOpen, setIsOpen] = useState(false)
+  const hasPromptSlot = usePromptSlot('passkey', isOpen)
   const [isRegistering, setIsRegistering] = useState(false)
   const [neverAskAgain, setNeverAskAgain] = useState(false)
   const checkedUserIdRef = useRef<string | undefined>(undefined)
@@ -197,7 +199,7 @@ const PasskeyRegistrationPrompt = () => {
 
   return (
     <Modal
-      opened={isOpen}
+      opened={isOpen && hasPromptSlot}
       onClose={closeModal}
       title='Register a passkey'
       size='lg'

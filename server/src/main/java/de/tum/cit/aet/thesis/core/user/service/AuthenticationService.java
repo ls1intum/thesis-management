@@ -196,6 +196,43 @@ public class AuthenticationService {
 	}
 
 	/**
+	 * Replaces the user's profile picture and removes the previously stored file.
+	 *
+	 * @param user the user to update
+	 * @param avatar the new avatar image file
+	 * @return the updated user
+	 */
+	public User updateAvatar(User user, MultipartFile avatar) {
+		String oldAvatar = user.getAvatar();
+		String storedFilename = uploadService.store(avatar, 1024 * 1024, UploadFileType.IMAGE);
+
+		user.setAvatar(storedFilename);
+		user = userRepository.save(user);
+
+		if (oldAvatar != null && !oldAvatar.equals(storedFilename)) {
+			uploadService.deleteFile(oldAvatar);
+		}
+
+		return user;
+	}
+
+	/**
+	 * Records that the user dismissed the "add a profile picture" prompt so they are not asked again.
+	 * Does nothing if the prompt was already dismissed.
+	 *
+	 * @param user the user who dismissed the prompt
+	 * @return the updated user
+	 */
+	public User dismissAvatarPrompt(User user) {
+		if (user.isAvatarPromptDismissed()) {
+			return user;
+		}
+
+		user.setAvatarPromptDismissedAt(Instant.now());
+		return userRepository.save(user);
+	}
+
+	/**
 	 * Returns the notification settings for the given user.
 	 *
 	 * @param user the user whose notification settings to retrieve

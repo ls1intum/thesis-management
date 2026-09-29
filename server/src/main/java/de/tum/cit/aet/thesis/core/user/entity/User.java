@@ -54,6 +54,9 @@ public class User {
 	@Column(name = "avatar")
 	private String avatar;
 
+	@Column(name = "avatar_prompt_dismissed_at")
+	private Instant avatarPromptDismissedAt;
+
 	@Column(name = "first_name")
 	private String firstName;
 
@@ -146,6 +149,10 @@ public class User {
 		}
 
 		return null;
+	}
+
+	public boolean isAvatarPromptDismissed() {
+		return avatarPromptDismissedAt != null;
 	}
 
 	public boolean isAnonymized() {
