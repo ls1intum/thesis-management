@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   useLoadedThesisContext,
   useThesisUpdateAction,
@@ -27,8 +27,8 @@ import type {
 } from '@/thesis/requests/responses/thesis'
 import { ThesisFeedbackSource } from '@/thesis/requests/responses/thesis'
 import { ApiError, getApiResponseErrorMessage } from '@/core/requests/handler'
-import { MagicWand, Plus, Robot, Trash } from '@phosphor-icons/react'
-import { showSimpleError } from '@/core/utils/notification'
+import { ListBullets, MagicWand, Plus, Robot, Trash } from '@phosphor-icons/react'
+import { showSimpleError, showSimpleSuccess } from '@/core/utils/notification'
 import { GLOBAL_CONFIG } from '@/core/config/global'
 import { useReviewProgress } from '@/core/hooks/useReviewProgress'
 import AiReviewProgress from '@/thesis/components/AiReviewProgress/AiReviewProgress'
@@ -69,12 +69,35 @@ interface IFeedbackClassification {
   severity?: ThesisFeedbackSeverity | null
 }
 
+interface IImportedNotes {
+  entries?: IAIDraft[]
+}
+
+/**
+ * What a suggestion may write. 'replace' overwrites both labels — what the per-entry wand offers.
+ * 'fill-missing' only fills a dropdown that is still empty, leaving the instructor's own picks
+ * alone; that is what the bulk sweep does.
+ */
+type IClassifyMode = 'replace' | 'fill-missing'
+
+/**
+ * What became of one classification: applied, dropped because the entry's text changed while the
+ * request was running, or a failure with a message to show.
+ */
+type IClassifyOutcome =
+  | { classified: true }
+  | { classified: false; superseded: true }
+  | { classified: false; reason: string }
+
 interface IAIPreviewResponse {
   assessment?: AIAssessment
   score?: number | null
   summary?: string
   drafts?: IAIDraft[]
 }
+
+const NO_SUGGESTION_MESSAGE =
+  'The AI could not classify this entry. Please select the values manually.'
 
 const emptyEntry = (): INewEntry => ({
   key: crypto.randomUUID(),
@@ -108,13 +131,41 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
   // Keys of the entries currently being classified. A set rather than a single key so two rows
   // classified back to back each keep their own spinner until their own request returns.
   const [classifyingKeys, setClassifyingKeys] = useState<ReadonlySet<string>>(() => new Set())
+  const [bulkClassifying, setBulkClassifying] = useState(false)
   const [showDisregardChanges, setShowDisregardChanges] = useState(false)
+  // The offline-notes paste panel. It replaces the modal's content while open, the way the
+  // unsaved-changes prompt does, rather than stacking a second modal on top of the first.
+  const [showImportNotes, setShowImportNotes] = useState(false)
+  const [notes, setNotes] = useState('')
+  const [importing, setImporting] = useState(false)
+  // Identifies the import request whose answer the panel is still waiting for. Bumped by every
+  // exit from the panel, so an answer that arrives afterwards can be recognised as stale.
+  const importToken = useRef(0)
+  // The rows as they stand right now, readable from an async callback that started before the
+  // instructor's latest edit. Classification uses it to tell a still-matching row from a rewritten
+  // one; render always reads `entries` itself.
+  const entriesRef = useRef<INewEntry[]>(entries)
+
+  useEffect(() => {
+    entriesRef.current = entries
+  }, [entries])
+
+  /** Abandons a pending import so its answer can no longer change the panel. */
+  const cancelImport = () => {
+    importToken.current += 1
+    setImporting(false)
+    setNotes('')
+    setShowImportNotes(false)
+  }
 
   useEffect(() => {
     if (opened) {
       setEntries([emptyEntry()])
       setEditChanges([])
       setAiAssessment(null)
+      // Only touches setters and a ref, all stable for the life of the component, so it needs no
+      // place in the dependency list.
+      cancelImport()
     }
   }, [opened])
 
@@ -125,7 +176,21 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
 
   const categoryCounts = useMemo(() => countByCategory(aiAssessment?.drafts ?? []), [aiAssessment])
 
-  const hasUnsavedWork = validEntries.length > 0 || editChanges.length > 0
+  // Entries worth spending a classification call on: written, but still missing at least one of
+  // the two labels. Imported notes are the usual source of these.
+  const unclassifiedEntries = useMemo(
+    () =>
+      entries.filter(
+        (entry) => entry.feedback.trim().length > 0 && (!entry.category || !entry.severity),
+      ),
+    [entries],
+  )
+
+  // Notes typed into the panel but not imported yet. They are unsaved work, but saving cannot
+  // keep them — only importing turns them into entries.
+  const hasPendingNotes = notes.trim().length > 0
+  const hasSavableWork = validEntries.length > 0 || editChanges.length > 0
+  const hasUnsavedWork = hasSavableWork || hasPendingNotes
 
   const updateEntry = (key: string, patch: Partial<INewEntry>) => {
     setEntries((prev) => prev.map((entry) => (entry.key === key ? { ...entry, ...patch } : entry)))
@@ -138,7 +203,12 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
     })
   }
 
-  const appendAiDrafts = (drafts: IAIDraft[]) => {
+  /**
+   * Appends rows for drafts the server produced, dropping the empty placeholder row they would
+   * otherwise sit below. The source is the caller's to decide: a finding the AI made is
+   * AI-authored, whereas an imported note is the instructor's own — the AI only split it up.
+   */
+  const appendEntries = (drafts: IAIDraft[], source: ThesisFeedbackSource) => {
     setEntries((prev) => {
       const cleaned = prev.filter((entry) => entry.feedback.trim().length > 0)
       const newRows: INewEntry[] = drafts.map((draft) => ({
@@ -146,8 +216,7 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
         feedback: draft.feedback ?? '',
         category: draft.category ?? '',
         severity: draft.severity ?? '',
-        // AI-drafted rows the instructor reviews before saving are persisted as AI + Instructor.
-        source: ThesisFeedbackSource.AI_REVIEWED_BY_HUMAN,
+        source,
       }))
       const merged = [...cleaned, ...newRows]
       return merged.length === 0 ? [emptyEntry()] : merged
@@ -155,14 +224,26 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
   }
 
   /**
-   * Asks the server to classify one manually written entry and fills in whichever of category and
-   * severity the AI committed to. The text itself is never touched — only the two labels the
-   * instructor would otherwise pick by hand — so the entry stays a human-authored one.
+   * Asks the server to classify one entry and applies whichever of category and severity the AI
+   * committed to. The text itself is never touched — only the two labels the instructor would
+   * otherwise pick by hand — so the entry stays a human-authored one.
+   *
+   * `mode` decides what a suggestion may touch. A wand click is aimed at one row, so it replaces
+   * both labels: the instructor asked this row to be classified and expects an answer. "Classify
+   * all" sweeps rows that are merely missing one of the two, so it only fills what is still empty
+   * — silently replacing a label the instructor chose themselves is not what that button offers.
+   *
+   * Reports the outcome instead of notifying: a single wand click surfaces its own failure right
+   * away, while "Classify all" collects them into one message rather than stacking a notification
+   * per entry.
    */
-  const onSuggestClassification = async (entry: INewEntry) => {
+  const classifyEntry = async (
+    entry: INewEntry,
+    mode: IClassifyMode = 'replace',
+  ): Promise<IClassifyOutcome> => {
     const feedback = entry.feedback.trim()
     if (!feedback) {
-      return
+      return { classified: false, reason: NO_SUGGESTION_MESSAGE }
     }
 
     setClassifyingKeys((prev) => new Set(prev).add(entry.key))
@@ -177,28 +258,178 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
       })
 
       if (!response.ok) {
-        showSimpleError(getApiResponseErrorMessage(response))
-        return
+        return { classified: false, reason: getApiResponseErrorMessage(response) }
       }
 
       const { category, severity } = response.data
       if (!category && !severity) {
-        showSimpleError('The AI could not classify this entry. Please select the values manually.')
-        return
+        return { classified: false, reason: NO_SUGGESTION_MESSAGE }
+      }
+
+      // The textarea stays editable while the request runs, and these labels describe the text
+      // that was sent. An entry rewritten in the meantime is left alone: labelling the new text
+      // with the old text's verdict would be worse than not labelling it at all. The same
+      // condition guards the write itself, so a row can never take a suggestion meant for text it
+      // no longer holds.
+      const current = entriesRef.current.find((row) => row.key === entry.key)
+      if (current?.feedback.trim() !== feedback) {
+        return { classified: false, superseded: true }
+      }
+
+      // In 'fill-missing' mode a label the row already carries is the instructor's own pick and
+      // stays untouched — which can leave nothing for the suggestion to do. That is a suggestion
+      // this row did not get, not a success: the field that sent it into the sweep is still empty.
+      const fills = <T,>(value: T | null | undefined, chosen: string): value is T =>
+        Boolean(value) && (mode === 'replace' || !chosen)
+      if (!fills(category, current.category) && !fills(severity, current.severity)) {
+        return { classified: false, reason: NO_SUGGESTION_MESSAGE }
       }
 
       // NON_EMPTY serialization drops a field the AI left open; keep whatever is already selected
-      // for that dropdown rather than clearing it.
-      updateEntry(entry.key, {
-        ...(category ? { category } : {}),
-        ...(severity ? { severity } : {}),
-      })
+      // for that dropdown rather than clearing it. Re-checked against the row as it stands now,
+      // since the instructor may have picked a label while the request was in flight.
+      setEntries((prev) =>
+        prev.map((row) =>
+          row.key === entry.key && row.feedback.trim() === feedback
+            ? {
+                ...row,
+                ...(fills(category, row.category) ? { category } : {}),
+                ...(fills(severity, row.severity) ? { severity } : {}),
+              }
+            : row,
+        ),
+      )
+      return { classified: true }
     } finally {
       setClassifyingKeys((prev) => {
         const next = new Set(prev)
         next.delete(entry.key)
         return next
       })
+    }
+  }
+
+  const onSuggestClassification = async (entry: INewEntry) => {
+    const outcome = await classifyEntry(entry)
+    if (outcome.classified) {
+      return
+    }
+
+    showSimpleError(
+      'superseded' in outcome
+        ? 'You changed this entry while the AI was classifying it, so the suggestion was discarded.'
+        : outcome.reason,
+    )
+  }
+
+  /**
+   * Classifies every entry that still lacks a category or a severity, in one go. Imported notes
+   * routinely arrive without labels — a terse note often does not say enough for the split to
+   * judge it — and labelling a whole reading pass one wand click at a time is the tedious part.
+   *
+   * Only the empty dropdown is filled. A row can enter the sweep with one label already chosen,
+   * and that one is the instructor's own: a button that labels what is missing must not quietly
+   * revise what is already there.
+   *
+   * Entries are classified concurrently; each keeps its own spinner, and the failures are reported
+   * once at the end rather than one notification per entry.
+   */
+  const onClassifyAll = async () => {
+    const pending = unclassifiedEntries
+    if (pending.length === 0) {
+      return
+    }
+
+    setBulkClassifying(true)
+    try {
+      const outcomes = await Promise.all(
+        pending.map((entry) => classifyEntry(entry, 'fill-missing')),
+      )
+
+      // Entries the instructor rewrote mid-flight count as neither successes nor failures: they
+      // were deliberately left alone, so reporting them as unclassifiable would be a lie.
+      const reasons = outcomes.flatMap((outcome) =>
+        !outcome.classified && 'reason' in outcome ? [outcome.reason] : [],
+      )
+      const applied = outcomes.filter((outcome) => outcome.classified).length
+      const attempted = applied + reasons.length
+
+      if (reasons.length === 0) {
+        return
+      }
+      if (attempted === 1) {
+        showSimpleError(reasons[0])
+      } else if (reasons.length === attempted) {
+        showSimpleError(
+          'The AI could not classify any of these entries. Please select the values manually.',
+        )
+      } else {
+        showSimpleError(
+          `The AI could not classify ${reasons.length} of ${attempted} entries. Please select those values manually.`,
+        )
+      }
+    } finally {
+      setBulkClassifying(false)
+    }
+  }
+
+  /**
+   * Splits the notes the instructor took offline into one entry per issue and appends them to the
+   * batch. A line raising two issues becomes two entries, several lines about one issue become
+   * one, and a note too terse to label arrives with its dropdowns open — the wand, or "Classify
+   * all", fills those in afterwards.
+   */
+  const onImportNotes = async () => {
+    const trimmed = notes.trim()
+    if (!trimmed) {
+      return
+    }
+
+    // A split takes a while, so the panel can be cancelled or the modal closed before the answer
+    // arrives. Every such exit bumps the token, and a response that no longer matches is dropped:
+    // appending entries — or clearing the field — after the instructor walked away would undo a
+    // deliberate cancellation.
+    const token = ++importToken.current
+
+    setImporting(true)
+    try {
+      const response = await doRequest<IImportedNotes>('/v2/ai-review/import-notes', {
+        method: 'POST',
+        requiresAuth: true,
+        data: {
+          thesisId: thesis.thesisId,
+          notes: trimmed,
+        },
+      })
+
+      if (importToken.current !== token) {
+        return
+      }
+
+      if (!response.ok) {
+        showSimpleError(getApiResponseErrorMessage(response))
+        return
+      }
+
+      // NON_EMPTY serialization drops the list entirely when the notes held no feedback at all.
+      const imported = response.data.entries ?? []
+      if (imported.length === 0) {
+        showSimpleError('No feedback entries were found in these notes.')
+        return
+      }
+
+      appendEntries(imported, ThesisFeedbackSource.HUMAN)
+      showSimpleSuccess(
+        imported.length === 1
+          ? 'Added 1 entry from your notes.'
+          : `Added ${imported.length} entries from your notes.`,
+      )
+      setNotes('')
+      setShowImportNotes(false)
+    } finally {
+      if (importToken.current === token) {
+        setImporting(false)
+      }
     }
   }
 
@@ -222,7 +453,8 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
 
       if (response.ok) {
         const drafts = response.data.drafts ?? []
-        appendAiDrafts(drafts)
+        // AI-drafted rows the instructor reviews before saving are persisted as AI + Instructor.
+        appendEntries(drafts, ThesisFeedbackSource.AI_REVIEWED_BY_HUMAN)
         setAiAssessment(response.data)
       } else {
         showSimpleError(getApiResponseErrorMessage(response))
@@ -291,12 +523,16 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
         size='xl'
         centered
       >
+        {/* The unsaved-changes prompt wins over the import panel: it is what closing the modal
+            raises, and it would otherwise be invisible behind the panel. */}
         {showDisregardChanges ? (
           <Stack align='center' gap={'2rem'} w={400} mx='auto'>
             <Stack gap={'0.25rem'} align='center'>
               <Title order={4}>Unsaved changes</Title>
               <Text c='dimmed' ta={'center'}>
-                You have unsaved changes. Do you want to discard them or keep editing?
+                {hasPendingNotes
+                  ? 'Your notes have not been imported yet. Import them first, or discard them — saving now would not keep them.'
+                  : 'You have unsaved changes. Do you want to discard them or keep editing?'}
               </Text>
             </Stack>
 
@@ -307,6 +543,10 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
                 </Button>
                 <Button
                   loading={saving}
+                  // Saving writes the entries, not the notes: with notes still in the panel it
+                  // would discard them, and with nothing but notes it would send an empty
+                  // request. Import or discard them first.
+                  disabled={hasPendingNotes || !hasSavableWork}
                   onClick={() => {
                     onSave()
                     setShowDisregardChanges(false)
@@ -321,6 +561,7 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
                   setEntries([emptyEntry()])
                   setEditChanges([])
                   setShowDisregardChanges(false)
+                  cancelImport()
                 }}
                 variant='transparent'
                 color='gray'
@@ -329,6 +570,47 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
                 Discard
               </Button>
             </Stack>
+          </Stack>
+        ) : showImportNotes ? (
+          <Stack>
+            <Stack gap={'0.25rem'}>
+              <Title order={4}>Import notes</Title>
+              <Text c='dimmed' size='sm'>
+                Paste the notes you took while reading. They are split into one entry per issue — a
+                line raising two problems becomes two entries — and each entry gets a category and
+                severity wherever the note says enough to judge it. Nothing is saved until you
+                request the changes.
+              </Text>
+            </Stack>
+
+            <Textarea
+              autosize
+              minRows={8}
+              maxRows={18}
+              label='Your notes'
+              placeholder={'p. 4 fig 3 unreadable, and Smith is not cited\nch 4 too thin\n…'}
+              value={notes}
+              // Locked while the split runs: the entries that come back describe the text that was
+              // sent, so edits made in the meantime would silently be thrown away with it.
+              disabled={importing}
+              onChange={(e) => setNotes(e.target.value)}
+            />
+
+            <Group justify='flex-end'>
+              <Button variant='outline' color='gray' onClick={cancelImport}>
+                Cancel
+              </Button>
+              <Button
+                leftSection={<ListBullets size={16} />}
+                loading={importing}
+                disabled={!notes.trim()}
+                onClick={() => {
+                  void onImportNotes()
+                }}
+              >
+                Import
+              </Button>
+            </Group>
           </Stack>
         ) : (
           <Stack>
@@ -496,6 +778,39 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
               >
                 Add Entry
               </Button>
+              {supportsClassification && (
+                <Button
+                  variant='outline'
+                  color='grape'
+                  leftSection={<ListBullets size={16} />}
+                  onClick={() => setShowImportNotes(true)}
+                >
+                  Import notes
+                </Button>
+              )}
+              {supportsClassification && (
+                <Tooltip
+                  label={
+                    unclassifiedEntries.length > 0
+                      ? 'Suggest category and severity for every entry still missing one'
+                      : 'Every entry already has a category and a severity'
+                  }
+                  withArrow
+                >
+                  <Button
+                    variant='outline'
+                    color='grape'
+                    leftSection={<MagicWand size={16} />}
+                    loading={bulkClassifying}
+                    disabled={unclassifiedEntries.length === 0}
+                    onClick={() => {
+                      void onClassifyAll()
+                    }}
+                  >
+                    Classify all
+                  </Button>
+                </Tooltip>
+              )}
               {supportsAi && (
                 <Button
                   variant='outline'
@@ -513,12 +828,7 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
 
             {aiLoading && <AiReviewProgress steps={aiSteps} total={aiTotal} />}
 
-            <Button
-              fullWidth
-              loading={saving}
-              disabled={editChanges.length === 0 && validEntries.length === 0}
-              onClick={onSave}
-            >
+            <Button fullWidth loading={saving} disabled={!hasSavableWork} onClick={onSave}>
               Request Changes
             </Button>
           </Stack>

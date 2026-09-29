@@ -9,6 +9,8 @@ import de.tum.cit.aet.thesis.feedback.dto.AIPreviewResponseDTO;
 import de.tum.cit.aet.thesis.feedback.dto.AIReviewRequestDTO;
 import de.tum.cit.aet.thesis.feedback.dto.ClassifyFeedbackRequestDTO;
 import de.tum.cit.aet.thesis.feedback.dto.FeedbackClassificationDTO;
+import de.tum.cit.aet.thesis.feedback.dto.ImportNotesRequestDTO;
+import de.tum.cit.aet.thesis.feedback.dto.ImportedNotesDTO;
 import de.tum.cit.aet.thesis.feedback.model.ReviewType;
 import de.tum.cit.aet.thesis.feedback.progress.ProgressReporter;
 import de.tum.cit.aet.thesis.feedback.progress.ReviewProgressPublisher;
@@ -149,6 +151,30 @@ public class ReviewController {
 		}
 
 		return ResponseEntity.ok(aiFeedbackService.classifyFeedbackLine(thesis, request.feedback()));
+	}
+
+	/**
+	 * Instructor-facing note import endpoint: splits the notes an instructor took offline while
+	 * reading into individual feedback entries, suggesting a category and severity for each one the
+	 * notes say enough about. Persists nothing — the entries land in the instructor's unsaved
+	 * batch, where each can still be edited, relabelled, or deleted before saving.
+	 *
+	 * @param request the thesis the notes were taken for and the raw notes to split
+	 * @return the entries carved out of the notes, in the order the notes raise them
+	 */
+	@PostMapping("import-notes")
+	@PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
+	public ResponseEntity<ImportedNotesDTO> importNotes(
+			@Valid @RequestBody ImportNotesRequestDTO request) {
+		User currentUser = currentUserProvider().getUser();
+		Thesis thesis = thesisService.findById(request.thesisId());
+
+		if (!thesis.hasSupervisorAccess(currentUser)) {
+			throw new AccessDeniedException(
+					"You must be a supervisor on the thesis to import notes.");
+		}
+
+		return ResponseEntity.ok(aiFeedbackService.importNotes(thesis, request.notes()));
 	}
 
 	/**

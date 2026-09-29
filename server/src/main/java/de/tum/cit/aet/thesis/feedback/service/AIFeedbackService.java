@@ -5,8 +5,10 @@ import de.tum.cit.aet.thesis.feedback.config.AIFeaturesEnabled;
 import de.tum.cit.aet.thesis.feedback.dto.AIFeedbackDraftDTO;
 import de.tum.cit.aet.thesis.feedback.dto.AIPreviewResponseDTO;
 import de.tum.cit.aet.thesis.feedback.dto.FeedbackClassificationDTO;
+import de.tum.cit.aet.thesis.feedback.dto.ImportedNotesDTO;
 import de.tum.cit.aet.thesis.feedback.entity.jsonb.StructuredGuidelines;
 import de.tum.cit.aet.thesis.feedback.model.FeedbackClassificationResult;
+import de.tum.cit.aet.thesis.feedback.model.NoteSplitResult;
 import de.tum.cit.aet.thesis.feedback.model.ReviewResult;
 import de.tum.cit.aet.thesis.feedback.model.ReviewType;
 import de.tum.cit.aet.thesis.feedback.progress.ProgressReporter;
@@ -31,8 +33,9 @@ import java.util.UUID;
  * The application-side half of the AI feedback feature: gate on the research group's guidelines,
  * pick the document to review, hand it to whichever {@link ThesisReviewer} is configured, and turn
  * the findings into either persisted thesis feedback (auto flow, student-driven) or editable drafts
- * for an instructor preview. Also serves the much smaller classification request an instructor
- * makes while typing a feedback line by hand.
+ * for an instructor preview. Also serves the two much smaller requests an instructor makes while
+ * writing feedback by hand: classifying one line, and splitting a block of offline notes into
+ * entries.
  *
  * <p>Knows nothing about prompts, models, or PDFs — swapping the review strategy does not touch
  * this class.
@@ -56,12 +59,28 @@ public class AIFeedbackService {
 	 */
 	private static final int MAX_CLASSIFICATION_CHARS = 2000;
 
+	/**
+	 * Largest note block one import accepts. Notes taken while reading a document are a page or two
+	 * of shorthand; the limit is generous enough for a whole reading pass and still bounds what one
+	 * paste can cost. A longer paste is rejected rather than truncated — see {@link #importNotes}.
+	 */
+	private static final int MAX_NOTES_CHARS = 20000;
+
+	/**
+	 * Most entries one import may produce. A reading pass yields tens of notes, not hundreds — a
+	 * longer list means the model started splitting prose into fragments, and the instructor should
+	 * not have to delete a hundred rows by hand. A longer result is rejected rather than trimmed —
+	 * see {@link #importNotes}.
+	 */
+	private static final int MAX_IMPORTED_ENTRIES = 100;
+
 	private final ThesisReviewer reviewer;
 	private final ThesisService thesisService;
 	private final GuidelinesGate guidelinesGate;
 	private final ReviewDocuments documents;
 	private final ReviewSummaryWriter summaryWriter;
 	private final FeedbackClassificationService feedbackClassificationService;
+	private final NoteSplittingService noteSplittingService;
 
 	/**
 	 * Creates the AI feedback service.
@@ -74,16 +93,20 @@ public class AIFeedbackService {
 	 *                                      (thesis, review type)
 	 * @param feedbackClassificationService the single-call classifier used to suggest a category and
 	 *                                      severity for a manually written feedback line
+	 * @param noteSplittingService          the single-call splitter used to turn offline notes into
+	 *                                      individual feedback entries
 	 */
 	public AIFeedbackService(ThesisReviewer reviewer, ThesisService thesisService, GuidelinesGate guidelinesGate,
 			ReviewDocuments documents, ReviewSummaryWriter summaryWriter,
-			FeedbackClassificationService feedbackClassificationService) {
+			FeedbackClassificationService feedbackClassificationService,
+			NoteSplittingService noteSplittingService) {
 		this.reviewer = reviewer;
 		this.thesisService = thesisService;
 		this.guidelinesGate = guidelinesGate;
 		this.documents = documents;
 		this.summaryWriter = summaryWriter;
 		this.feedbackClassificationService = feedbackClassificationService;
+		this.noteSplittingService = noteSplittingService;
 	}
 
 	/**
@@ -206,6 +229,80 @@ public class AIFeedbackService {
 		return new FeedbackClassificationDTO(
 				FeedbackMapper.toCategory(result.category()),
 				FeedbackMapper.toSeverity(result.severity()));
+	}
+
+	/**
+	 * Splits the notes an instructor wrote offline into individual feedback entries, so a reading
+	 * pass typed up as shorthand becomes editable rows instead of one wall of text. A single line
+	 * raising two issues becomes two entries; several lines about one issue become one.
+	 *
+	 * <p>Nothing is persisted: the entries land in the instructor's unsaved batch, where every one
+	 * of them can still be edited, relabelled, or deleted before saving. An entry's category or
+	 * severity is routinely {@code null} here — a terse note often does not say enough to label it,
+	 * and the instructor either picks the value or asks {@link #classifyFeedbackLine} for it.
+	 *
+	 * <p>An oversized paste and an oversized result are both rejected rather than cut down: the
+	 * client reports a successful import and clears the notes it sent, so a partial result would
+	 * quietly lose issues the instructor believes they imported.
+	 *
+	 * @param thesis the thesis the notes were taken for; used to resolve the research group's AI
+	 *               opt-in
+	 * @param notes  the raw notes to split
+	 * @return the entries in the order the notes raise them; empty when the notes held no feedback
+	 * @throws ResourceInvalidParametersException if the notes are blank, longer than
+	 *                                            {@value #MAX_NOTES_CHARS} characters, or produce
+	 *                                            more than {@value #MAX_IMPORTED_ENTRIES} entries
+	 */
+	public ImportedNotesDTO importNotes(Thesis thesis, String notes) {
+		// Same per-group gate as every other AI feature — see classifyFeedbackLine.
+		guidelinesGate.requireReady(thesis.getResearchGroup());
+
+		String text = notes == null ? "" : notes.strip();
+		if (text.isEmpty()) {
+			throw new ResourceInvalidParametersException("Cannot import empty notes.");
+		}
+		// Rejected rather than truncated: the client reports a successful import and clears the
+		// notes it sent, so silently dropping the tail would lose issues the instructor believes
+		// they imported. Splitting the paste is something they can act on.
+		if (text.length() > MAX_NOTES_CHARS) {
+			throw new ResourceInvalidParametersException(
+					"These notes are too long to import at once (" + text.length() + " characters, limit "
+							+ MAX_NOTES_CHARS + "). Please import them in smaller parts.");
+		}
+
+		NoteSplitResult result = noteSplittingService.split(text);
+		if (result == null) {
+			log.warn("Note splitting returned no result for thesis {}", thesis.getId());
+			return new ImportedNotesDTO(List.of());
+		}
+
+		List<AIFeedbackDraftDTO> entries = result.entries().stream()
+				// An entry without text is nothing the instructor could save or edit; drop it
+				// rather than showing them an empty row to clean up.
+				.filter(entry -> entry.feedback() != null && !entry.feedback().isBlank())
+				.map(entry -> new AIFeedbackDraftDTO(
+						entry.feedback().strip(),
+						FeedbackMapper.toCategory(entry.category()),
+						FeedbackMapper.toSeverity(entry.severity())))
+				.toList();
+
+		// Rejected rather than capped, for the same reason the character limit is: keeping the
+		// first hundred would drop issues from an import the instructor is told succeeded.
+		if (entries.size() > MAX_IMPORTED_ENTRIES) {
+			log.warn("Note import for thesis {} produced {} entries, over the {} limit",
+					thesis.getId(), entries.size(), MAX_IMPORTED_ENTRIES);
+			throw new ResourceInvalidParametersException(
+					"These notes produced " + entries.size() + " entries, more than the " + MAX_IMPORTED_ENTRIES
+							+ " one import can add. Please import them in smaller parts.");
+		}
+
+		if (entries.isEmpty()) {
+			log.info("Note import for thesis {} produced no entries", thesis.getId());
+		}
+
+		// Deliberately unsorted, unlike previewReview: notes follow the document, so the
+		// instructor's own order is the order they expect to check the entries in.
+		return new ImportedNotesDTO(entries);
 	}
 
 	/**
