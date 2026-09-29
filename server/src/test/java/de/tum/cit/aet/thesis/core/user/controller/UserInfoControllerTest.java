@@ -134,6 +134,93 @@ class UserInfoControllerTest extends BaseIntegrationTest {
 	}
 
 	@Nested
+	class AvatarPrompt {
+		@Test
+		void getUserInfo_NewUser_AvatarPromptNotDismissed() throws Exception {
+			String auth = generateTestAuthenticationHeader("prompt" + System.currentTimeMillis(), List.of("student"));
+
+			String response = mockMvc.perform(MockMvcRequestBuilders.get("/v2/user-info")
+							.header("Authorization", auth))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			JsonNode json = objectMapper.readTree(response);
+			assertThat(json.path("avatar").isNull() || json.path("avatar").isMissingNode()).isTrue();
+			assertThat(json.get("avatarPromptDismissed").asBoolean()).isFalse();
+		}
+
+		@Test
+		void dismissAvatarPrompt_PersistsAndIsIdempotent() throws Exception {
+			TestUser user = createRandomTestUser(List.of("student"));
+			String auth = generateTestAuthenticationHeader(user.universityId(), List.of("student"));
+
+			for (int i = 0; i < 2; i++) {
+				String response = mockMvc.perform(MockMvcRequestBuilders.post("/v2/user-info/dismiss-avatar-prompt")
+								.header("Authorization", auth))
+						.andExpect(status().isOk())
+						.andReturn().getResponse().getContentAsString();
+
+				assertThat(objectMapper.readTree(response).get("avatarPromptDismissed").asBoolean()).isTrue();
+			}
+
+			String info = mockMvc.perform(MockMvcRequestBuilders.get("/v2/user-info")
+							.header("Authorization", auth))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			assertThat(objectMapper.readTree(info).get("avatarPromptDismissed").asBoolean()).isTrue();
+		}
+
+		@Test
+		void dismissAvatarPrompt_Unauthenticated_ReturnsUnauthorized() throws Exception {
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/user-info/dismiss-avatar-prompt"))
+					.andExpect(status().isUnauthorized());
+		}
+
+		@Test
+		void uploadAvatar_SetsAvatarAndKeepsRestOfProfile() throws Exception {
+			TestUser user = createRandomTestUser(List.of("student"));
+			String auth = generateTestAuthenticationHeader(user.universityId(), List.of("student"));
+
+			MockMultipartFile avatarPart = new MockMultipartFile("avatar", "avatar.png", "image/png", new byte[]{1, 2, 3, 4});
+
+			String response = mockMvc.perform(MockMvcRequestBuilders.multipart("/v2/user-info/avatar")
+							.file(avatarPart)
+							.header("Authorization", auth))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			JsonNode json = objectMapper.readTree(response);
+			assertThat(json.get("avatar").asString()).endsWith(".png");
+			assertThat(json.get("universityId").asString()).isEqualTo(user.universityId());
+
+			MockMultipartFile replacement = new MockMultipartFile("avatar", "avatar.png", "image/png", new byte[]{5, 6, 7, 8});
+
+			String replaced = mockMvc.perform(MockMvcRequestBuilders.multipart("/v2/user-info/avatar")
+							.file(replacement)
+							.header("Authorization", auth))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			assertThat(objectMapper.readTree(replaced).get("avatar").asString())
+					.isNotEqualTo(json.get("avatar").asString());
+		}
+
+		@Test
+		void uploadAvatar_InvalidFileType_IsRejected() throws Exception {
+			TestUser user = createRandomTestUser(List.of("student"));
+			String auth = generateTestAuthenticationHeader(user.universityId(), List.of("student"));
+
+			MockMultipartFile notAnImage = new MockMultipartFile("avatar", "avatar.exe", "application/octet-stream", new byte[]{1, 2, 3});
+
+			mockMvc.perform(MockMvcRequestBuilders.multipart("/v2/user-info/avatar")
+							.file(notAnImage)
+							.header("Authorization", auth))
+					.andExpect(status().isInternalServerError());
+		}
+	}
+
+	@Nested
 	class NotificationSettings {
 		@Test
 		void getNotifications_ReturnsEmptyList() throws Exception {

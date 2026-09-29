@@ -5,6 +5,7 @@ const PASSKEY_PROMPT_TITLE = 'Register a passkey'
 const NEVER_ASK_AGAIN_STORAGE_KEY_PREFIX = 'passkey_prompt_never_ask_again'
 const MAYBE_LATER_STORAGE_KEY_PREFIX = 'passkey_prompt_maybe_later'
 const DISABLE_PASSKEY_PROMPT_STORAGE_KEY = 'passkey_prompt_disabled'
+const DISABLE_PROFILE_PICTURE_PROMPT_STORAGE_KEY = 'profile_picture_prompt_disabled'
 
 const passkeyPromptDialog = (page: Page) => page.getByRole('dialog', { name: PASSKEY_PROMPT_TITLE })
 
@@ -12,6 +13,13 @@ const disablePasskeyPromptAtStartup = async (page: Page) => {
   await page.addInitScript((storageKey) => {
     localStorage.setItem(storageKey, 'true')
   }, DISABLE_PASSKEY_PROMPT_STORAGE_KEY)
+}
+
+// Fresh browser contexts have no auth state, so the profile picture prompt would cover the page
+const disableProfilePicturePromptAtStartup = async (page: Page) => {
+  await page.addInitScript((storageKey) => {
+    localStorage.setItem(storageKey, 'true')
+  }, DISABLE_PROFILE_PICTURE_PROMPT_STORAGE_KEY)
 }
 
 const clearPasskeyPromptPreferences = async (page: Page) => {
@@ -255,6 +263,7 @@ test.describe('Passkey - Login', () => {
 
   test('signs in with a registered passkey from the login modal', async ({ page }) => {
     await disablePasskeyPromptAtStartup(page)
+    await disableProfilePicturePromptAtStartup(page)
 
     const { cdpSession, authenticatorId } = await setupVirtualAuthenticator(page)
     try {

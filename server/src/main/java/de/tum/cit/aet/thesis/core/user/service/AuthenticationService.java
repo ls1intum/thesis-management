@@ -196,6 +196,36 @@ public class AuthenticationService {
 	}
 
 	/**
+	 * Replaces the user's profile picture. The previous file is kept because uploads are stored by content hash
+	 * and may also be referenced by other entities (e.g. thesis files or comment attachments).
+	 *
+	 * @param user the user to update
+	 * @param avatar the new avatar image file
+	 * @return the updated user
+	 */
+	public User updateAvatar(User user, MultipartFile avatar) {
+		user.setAvatar(uploadService.store(avatar, 1024 * 1024, UploadFileType.IMAGE));
+
+		return userRepository.save(user);
+	}
+
+	/**
+	 * Records that the user dismissed the "add a profile picture" prompt so they are not asked again.
+	 * Does nothing if the prompt was already dismissed.
+	 *
+	 * @param user the user who dismissed the prompt
+	 * @return the updated user
+	 */
+	public User dismissAvatarPrompt(User user) {
+		if (user.isAvatarPromptDismissed()) {
+			return user;
+		}
+
+		user.setAvatarPromptDismissedAt(Instant.now());
+		return userRepository.save(user);
+	}
+
+	/**
 	 * Returns the notification settings for the given user.
 	 *
 	 * @param user the user whose notification settings to retrieve

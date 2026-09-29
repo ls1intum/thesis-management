@@ -236,4 +236,68 @@ class AuthenticationServiceTest {
 		assertEquals("New", result.getFirstName());
 		assertEquals("Student", result.getLastName());
 	}
+	@Test
+	void updateAvatar_ReplacesAvatarAndKeepsOldFileBecauseStorageIsShared() {
+		MockMultipartFile avatar = new MockMultipartFile("avatar", "avatar.png", "image/png", "test".getBytes());
+		testUser.setAvatar("old.png");
+
+		when(uploadService.store(any(), any(), eq(UploadFileType.IMAGE))).thenReturn("new.png");
+		when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+		User result = authenticationService.updateAvatar(testUser, avatar);
+
+		assertEquals("new.png", result.getAvatar());
+		verify(uploadService, never()).deleteFile(any());
+	}
+
+	@Test
+	void dismissAvatarPrompt_FirstTime_StoresTimestamp() {
+		when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+		assertFalse(testUser.isAvatarPromptDismissed());
+
+		User result = authenticationService.dismissAvatarPrompt(testUser);
+
+		assertTrue(result.isAvatarPromptDismissed());
+		assertNotNull(result.getAvatarPromptDismissedAt());
+	}
+
+	@Test
+	void dismissAvatarPrompt_AlreadyDismissed_KeepsOriginalTimestampAndDoesNotSave() {
+		Instant dismissedAt = Instant.parse("2026-01-01T00:00:00Z");
+		testUser.setAvatarPromptDismissedAt(dismissedAt);
+
+		User result = authenticationService.dismissAvatarPrompt(testUser);
+
+		assertEquals(dismissedAt, result.getAvatarPromptDismissedAt());
+		verify(userRepository, never()).save(any(User.class));
+	}
+
+	@Test
+	void updateAuthenticatedUser_DoesNotTouchAvatarPromptDecision() {
+		String universityId = "ab12cde";
+		Instant dismissedAt = Instant.parse("2026-01-01T00:00:00Z");
+		testUser.setUniversityId(universityId);
+		testUser.setAvatarPromptDismissedAt(dismissedAt);
+
+		setupJwtMock(universityId, Map.of("email", "test@example.com", "given_name", "Test", "family_name", "User"));
+		when(userRepository.findByUniversityId(universityId)).thenReturn(Optional.of(testUser));
+		when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+		User result = authenticationService.updateAuthenticatedUser(jwtToken);
+
+		assertEquals(dismissedAt, result.getAvatarPromptDismissedAt());
+	}
+
+	@Test
+	void updateUserInformation_WithoutAvatar_KeepsAvatarPromptDecision() {
+		Instant dismissedAt = Instant.parse("2026-01-01T00:00:00Z");
+		testUser.setAvatarPromptDismissedAt(dismissedAt);
+		when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+		User result = authenticationService.updateUserInformation(
+				testUser, "A", "B", null, null, "a@example.com", null, null, null, null, null, null, new HashMap<>(),
+				null, null, null, null);
+
+		assertEquals(dismissedAt, result.getAvatarPromptDismissedAt());
+	}
 }

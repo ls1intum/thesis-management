@@ -35,6 +35,7 @@ export interface IUser extends ILightUser {
   specialSkills: string | null
   enrolledAt: string | null
   updatedAt: string
+  avatarPromptDismissed?: boolean
   hasCv: boolean
   hasDegreeReport: boolean
   hasExaminationReport: boolean
