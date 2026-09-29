@@ -29,9 +29,9 @@ const renderPrompt = (user: IUser | undefined, updateUser = vi.fn()) => {
 
   renderWithProviders(
     <MemoryRouter>
-      <AuthenticationContext.Provider value={context}>
+      <AuthenticationContext value={context}>
         <ProfilePicturePrompt />
-      </AuthenticationContext.Provider>
+      </AuthenticationContext>
     </MemoryRouter>,
   )
 
