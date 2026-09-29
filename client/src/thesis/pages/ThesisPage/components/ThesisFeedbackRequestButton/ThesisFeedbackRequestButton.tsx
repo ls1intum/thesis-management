@@ -74,6 +74,13 @@ interface IImportedNotes {
 }
 
 /**
+ * What a suggestion may write. 'replace' overwrites both labels — what the per-entry wand offers.
+ * 'fill-missing' only fills a dropdown that is still empty, leaving the instructor's own picks
+ * alone; that is what the bulk sweep does.
+ */
+type IClassifyMode = 'replace' | 'fill-missing'
+
+/**
  * What became of one classification: applied, dropped because the entry's text changed while the
  * request was running, or a failure with a message to show.
  */
@@ -217,15 +224,23 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
   }
 
   /**
-   * Asks the server to classify one entry and fills in whichever of category and severity the AI
+   * Asks the server to classify one entry and applies whichever of category and severity the AI
    * committed to. The text itself is never touched — only the two labels the instructor would
    * otherwise pick by hand — so the entry stays a human-authored one.
+   *
+   * `mode` decides what a suggestion may touch. A wand click is aimed at one row, so it replaces
+   * both labels: the instructor asked this row to be classified and expects an answer. "Classify
+   * all" sweeps rows that are merely missing one of the two, so it only fills what is still empty
+   * — silently replacing a label the instructor chose themselves is not what that button offers.
    *
    * Reports the outcome instead of notifying: a single wand click surfaces its own failure right
    * away, while "Classify all" collects them into one message rather than stacking a notification
    * per entry.
    */
-  const classifyEntry = async (entry: INewEntry): Promise<IClassifyOutcome> => {
+  const classifyEntry = async (
+    entry: INewEntry,
+    mode: IClassifyMode = 'replace',
+  ): Promise<IClassifyOutcome> => {
     const feedback = entry.feedback.trim()
     if (!feedback) {
       return { classified: false, reason: NO_SUGGESTION_MESSAGE }
@@ -261,15 +276,25 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
         return { classified: false, superseded: true }
       }
 
+      // In 'fill-missing' mode a label the row already carries is the instructor's own pick and
+      // stays untouched — which can leave nothing for the suggestion to do. That is a suggestion
+      // this row did not get, not a success: the field that sent it into the sweep is still empty.
+      const fills = <T,>(value: T | null | undefined, chosen: string): value is T =>
+        Boolean(value) && (mode === 'replace' || !chosen)
+      if (!fills(category, current.category) && !fills(severity, current.severity)) {
+        return { classified: false, reason: NO_SUGGESTION_MESSAGE }
+      }
+
       // NON_EMPTY serialization drops a field the AI left open; keep whatever is already selected
-      // for that dropdown rather than clearing it.
+      // for that dropdown rather than clearing it. Re-checked against the row as it stands now,
+      // since the instructor may have picked a label while the request was in flight.
       setEntries((prev) =>
         prev.map((row) =>
           row.key === entry.key && row.feedback.trim() === feedback
             ? {
                 ...row,
-                ...(category ? { category } : {}),
-                ...(severity ? { severity } : {}),
+                ...(fills(category, row.category) ? { category } : {}),
+                ...(fills(severity, row.severity) ? { severity } : {}),
               }
             : row,
         ),
@@ -302,6 +327,10 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
    * routinely arrive without labels — a terse note often does not say enough for the split to
    * judge it — and labelling a whole reading pass one wand click at a time is the tedious part.
    *
+   * Only the empty dropdown is filled. A row can enter the sweep with one label already chosen,
+   * and that one is the instructor's own: a button that labels what is missing must not quietly
+   * revise what is already there.
+   *
    * Entries are classified concurrently; each keeps its own spinner, and the failures are reported
    * once at the end rather than one notification per entry.
    */
@@ -313,7 +342,9 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
 
     setBulkClassifying(true)
     try {
-      const outcomes = await Promise.all(pending.map((entry) => classifyEntry(entry)))
+      const outcomes = await Promise.all(
+        pending.map((entry) => classifyEntry(entry, 'fill-missing')),
+      )
 
       // Entries the instructor rewrote mid-flight count as neither successes nor failures: they
       // were deliberately left alone, so reporting them as unclassifiable would be a lie.

@@ -413,6 +413,64 @@ describe('ThesisFeedbackRequestButton — bulk classification', () => {
     )
   })
 
+  test('fills only the empty dropdown and leaves the instructor’s own pick alone', async () => {
+    // A row enters the sweep for its missing label; the one it already carries was chosen by the
+    // instructor. A button that labels what is missing must not quietly revise what is there.
+    const user = userEvent.setup()
+    requestMock.doRequest.mockResolvedValueOnce(
+      okResponse({ entries: [{ feedback: 'Figure 3 is unreadable.' }] }),
+    )
+
+    renderWithProviders(<ThesisFeedbackRequestButton type='THESIS' />)
+    await openModal(user)
+    await user.click(screen.getByRole('button', { name: 'Import notes' }))
+    await user.type(await screen.findByLabelText(NOTES_LABEL), 'fig 3')
+    await user.click(screen.getByRole('button', { name: 'Import' }))
+    await screen.findByDisplayValue('Figure 3 is unreadable.')
+
+    await user.click(categoryInput())
+    await user.click(await screen.findByText('Structure'))
+
+    requestMock.doRequest.mockResolvedValueOnce(
+      okResponse({ category: 'FIGURES', severity: 'MAJOR' }),
+    )
+    await user.click(screen.getByRole('button', { name: 'Classify all' }))
+
+    await waitFor(() => expect(severityInput()).toHaveValue('Major'))
+    expect(categoryInput()).toHaveValue('Structure')
+  })
+
+  test('reports a row whose only missing label the AI did not answer', async () => {
+    // The response filled nothing the row was swept up for, so the severity dropdown is still
+    // empty — reporting that as classified would tell the instructor a job was done that was not.
+    const user = userEvent.setup()
+    requestMock.doRequest.mockResolvedValueOnce(
+      okResponse({ entries: [{ feedback: 'Figure 3 is unreadable.' }] }),
+    )
+
+    renderWithProviders(<ThesisFeedbackRequestButton type='THESIS' />)
+    await openModal(user)
+    await user.click(screen.getByRole('button', { name: 'Import notes' }))
+    await user.type(await screen.findByLabelText(NOTES_LABEL), 'fig 3')
+    await user.click(screen.getByRole('button', { name: 'Import' }))
+    await screen.findByDisplayValue('Figure 3 is unreadable.')
+
+    await user.click(categoryInput())
+    await user.click(await screen.findByText('Structure'))
+
+    // Only a category comes back, and that is the field the instructor already filled.
+    requestMock.doRequest.mockResolvedValueOnce(okResponse({ category: 'FIGURES' }))
+    await user.click(screen.getByRole('button', { name: 'Classify all' }))
+
+    await waitFor(() =>
+      expect(notifyMock.showSimpleError).toHaveBeenCalledWith(
+        'The AI could not classify this entry. Please select the values manually.',
+      ),
+    )
+    expect(categoryInput()).toHaveValue('Structure')
+    expect(severityInput()).toHaveValue('')
+  })
+
   test('skips an entry rewritten mid-run without counting it as a failure', async () => {
     // The instructor edited that row on purpose; labelling it from the old text would be wrong,
     // and calling it unclassifiable would be a lie.
