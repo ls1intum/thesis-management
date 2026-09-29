@@ -491,7 +491,9 @@ describe('ThesisFeedbackRequestButton — bulk classification', () => {
 
     const textareas = screen.getAllByPlaceholderText(FEEDBACK_PLACEHOLDER)
     await user.clear(textareas[1])
-    await user.type(textareas[1], 'Chapter 4 needs a related work section')
+    // paste instead of type: typing ~40 characters one by one exceeds the 5s test timeout on slow CI runners
+    await user.click(textareas[1])
+    await user.paste('Chapter 4 needs a related work section')
     resolveSecond(okResponse({ category: 'COMPLETENESS', severity: 'CRITICAL' }))
 
     // Wait for that response to have been handled — its row's wand goes idle again — so the
