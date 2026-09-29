@@ -24,7 +24,7 @@ overrides:
   '@tiptap/extension-bubble-menu': 3.31.3
   '@tiptap/extension-floating-menu': 3.31.3
   # GHSA-q8mj-m7cp-5q26
-  qs@<6.15.2: 6.16.0
+  qs@<6.16.0: 6.16.0
   # GHSA-58qx-3vcg-4xpx
   ws@>=8.0.0 <8.20.1: 8.21.3
   # GHSA-w7jw-789q-3m8p (shell-quote newline escaping, via launch-editor)
@@ -48,3 +48,11 @@ overrides:
   fast-uri@<3.1.6: 3.1.7
   # GHSA-fxqj-rqcc-2cmp (postcss sourceMappingURL arbitrary read, transitive via vitest>vite)
   postcss@<8.5.23: 8.5.26
+  # GHSA-vp8m-p9jh-q5pm (+ 6 more) (undici 8.x, via jsdom)
+  undici@>=8.0.0 <8.10.2: 8.10.2
+  # GHSA-73wf-gq98-2v4g (browserslist)
+  browserslist@<4.28.7: 4.28.7
+  # GHSA-w5vr-8v7q-w6rv (baseline-browser-mapping)
+  baseline-browser-mapping@<2.11.0: 2.11.0
+  # GHSA-g84c-rxfj-3j2c (webpack-dev-middleware, via webpack-dev-server)
+  webpack-dev-middleware@<8.3.0: 8.3.0
