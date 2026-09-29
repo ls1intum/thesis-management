@@ -210,10 +210,24 @@ public class AuthenticationService {
 		user = userRepository.save(user);
 
 		if (oldAvatar != null && !oldAvatar.equals(storedFilename)) {
-			uploadService.deleteFile(oldAvatar);
+			deleteAvatarFileIfUnreferenced(oldAvatar);
 		}
 
 		return user;
+	}
+
+	/**
+	 * Deletes a stored avatar file unless another user still references it.
+	 * Uploaded files are named by content hash, so users with an identical picture share one file.
+	 *
+	 * @param filename the avatar file that is no longer used by the caller
+	 */
+	public void deleteAvatarFileIfUnreferenced(String filename) {
+		if (filename == null || userRepository.existsByAvatar(filename)) {
+			return;
+		}
+
+		uploadService.deleteFile(filename);
 	}
 
 	/**

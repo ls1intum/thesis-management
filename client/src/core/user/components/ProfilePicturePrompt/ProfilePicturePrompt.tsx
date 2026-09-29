@@ -35,7 +35,7 @@ const BENEFITS: Array<{ icon: Icon; title: string; text: string }> = [
   {
     icon: ClockIcon,
     title: 'Takes ten seconds',
-    text: 'Upload a photo or import it from Gravatar. It is optional, and you can change or remove it any time in your settings.',
+    text: 'Upload a photo or import it from Gravatar. It is optional, and you can change it any time in your settings.',
   },
 ]
 
@@ -62,7 +62,7 @@ const ProfilePicturePrompt = () => {
   const hasPromptSlot = usePromptSlot('profile-picture', shouldPrompt)
 
   const dismiss = async () => {
-    // Close right away; the server remembers the decision so the user is never asked again.
+    // Close right away for this session; the server remembers the decision so the user is not asked again.
     setDismissedForUserId(userId)
 
     try {
@@ -71,11 +71,14 @@ const ProfilePicturePrompt = () => {
         requiresAuth: true,
       })
 
-      if (response.ok) {
-        updateUser(response.data)
+      if (!response.ok) {
+        throw response.error ?? new Error(`Request failed with status ${response.status}`)
       }
+
+      updateUser(response.data)
     } catch (error) {
       console.error('Failed to store that the profile picture prompt was dismissed', error)
+      showSimpleError('Your choice could not be saved, so we may ask you again next time.')
     }
   }
 
@@ -94,7 +97,10 @@ const ProfilePicturePrompt = () => {
       })
 
       if (!response.ok) {
-        throw new Error('Could not save your profile picture. Please try another image.')
+        throw new Error(
+          response.error?.message ??
+            'Could not save your profile picture. Please try another image.',
+        )
       }
 
       updateUser(response.data)

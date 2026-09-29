@@ -28,7 +28,13 @@ const AvatarCropModal = (props: IAvatarCropModalProps) => {
   }
 
   return (
-    <Modal opened={Boolean(file)} onClose={onClose}>
+    <Modal
+      opened={Boolean(file)}
+      onClose={() => {
+        setScale(1)
+        onClose()
+      }}
+    >
       {file && (
         <Stack>
           <Center>

@@ -212,7 +212,7 @@ public class UserInfoController {
 		user = userRepository.save(user);
 
 		if (oldAvatar != null && !oldAvatar.equals(storedFilename)) {
-			uploadService.deleteFile(oldAvatar);
+			authenticationService.deleteAvatarFileIfUnreferenced(oldAvatar);
 		}
 
 		return ResponseEntity.ok(UserDto.fromUserEntity(user));

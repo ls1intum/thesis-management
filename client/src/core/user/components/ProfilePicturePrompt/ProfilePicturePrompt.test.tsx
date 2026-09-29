@@ -9,8 +9,10 @@ import type { IUser } from '@/core/user/requests/responses/user'
 const doRequest = vi.hoisted(() => vi.fn())
 
 vi.mock('@/core/requests/request', () => ({ doRequest }))
+const showSimpleError = vi.hoisted(() => vi.fn())
+
 vi.mock('@/core/utils/notification', () => ({
-  showSimpleError: vi.fn(),
+  showSimpleError,
   showSimpleSuccess: vi.fn(),
 }))
 
@@ -41,6 +43,7 @@ const renderPrompt = (user: IUser | undefined, updateUser = vi.fn(), path = '/da
 describe('ProfilePicturePrompt', () => {
   beforeEach(() => {
     doRequest.mockReset()
+    showSimpleError.mockReset()
     localStorage.clear()
   })
 
@@ -98,10 +101,16 @@ describe('ProfilePicturePrompt', () => {
     expect(screen.queryByText('Put a face to your name')).not.toBeInTheDocument()
   })
 
-  test('closes without calling the server again when the dismissal request fails', async () => {
+  test.each([
+    ['the request throws', () => doRequest.mockRejectedValue(new Error('network down'))],
+    [
+      'the server answers with an error',
+      () => doRequest.mockResolvedValue({ ok: false, status: 500 }),
+    ],
+  ])('closes for this session and tells the user when %s', async (_name, arrange) => {
     const user = userEvent.setup()
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined)
-    doRequest.mockRejectedValue(new Error('network down'))
+    arrange()
 
     const { updateUser } = renderPrompt(createUser())
 
@@ -110,6 +119,7 @@ describe('ProfilePicturePrompt', () => {
     await waitFor(() =>
       expect(screen.queryByText('Put a face to your name')).not.toBeInTheDocument(),
     )
+    await waitFor(() => expect(showSimpleError).toHaveBeenCalled())
     expect(updateUser).not.toHaveBeenCalled()
     consoleError.mockRestore()
   })

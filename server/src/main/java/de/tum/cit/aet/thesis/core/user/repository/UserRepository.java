@@ -20,6 +20,8 @@ import java.util.UUID;
 public interface UserRepository extends JpaRepository<User, UUID> {
 	Optional<User> findByUniversityId(String universityId);
 
+	boolean existsByAvatar(String avatar);
+
 	List<User> findAllByUniversityIdIn(List<String> universityIds);
 
 	@Query("SELECT u FROM User u LEFT JOIN FETCH u.researchGroup WHERE u.universityId = :universityId")
