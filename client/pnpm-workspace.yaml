@@ -53,6 +53,6 @@ overrides:
   # GHSA-73wf-gq98-2v4g (browserslist)
   browserslist@<4.28.7: 4.28.7
   # GHSA-w5vr-8v7q-w6rv (baseline-browser-mapping)
-  baseline-browser-mapping@<2.11.0: 2.11.0
+  baseline-browser-mapping@<2.11.0: 2.11.26
   # GHSA-g84c-rxfj-3j2c (webpack-dev-middleware, via webpack-dev-server)
   webpack-dev-middleware@<8.3.0: 8.3.0
