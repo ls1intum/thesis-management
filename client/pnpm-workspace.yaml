@@ -16,7 +16,7 @@ overrides:
   yaml: 2.9.0
   uuid: 14.0.2
   picomatch@<4: 2.3.2
-  picomatch@>=4: 4.0.5
+  picomatch@>=4: 4.0.7
   fork-ts-checker-webpack-plugin>schema-utils: 4.3.3
   # @tiptap/react pulls its menu extensions in as optionalDependencies with a
   # caret range, but they peer-require an exact @tiptap/core match. Pin them to
