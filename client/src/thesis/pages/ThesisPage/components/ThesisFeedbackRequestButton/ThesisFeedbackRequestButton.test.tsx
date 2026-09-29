@@ -131,6 +131,36 @@ describe('ThesisFeedbackRequestButton — AI classification', () => {
     expect(severityInput()).toHaveValue('')
   })
 
+  test('drops a suggestion for text the instructor has since rewritten', async () => {
+    // The labels describe the text that was sent. Applying them to a rewritten entry would put
+    // the old text's verdict on the new text, which is worse than leaving it unlabelled.
+    const user = userEvent.setup()
+    let resolveClassification: (value: unknown) => void = () => {}
+    requestMock.doRequest.mockReturnValueOnce(
+      new Promise((resolve) => {
+        resolveClassification = resolve
+      }),
+    )
+
+    renderWithProviders(<ThesisFeedbackRequestButton type='THESIS' />)
+    await openModal(user)
+    const feedback = screen.getByPlaceholderText(FEEDBACK_PLACEHOLDER)
+    await user.type(feedback, 'Cite the original paper')
+    await user.click(screen.getByRole('button', { name: WAND_LABEL }))
+
+    await user.clear(feedback)
+    await user.type(feedback, 'Figure 2 has no caption')
+    resolveClassification(okResponse({ category: 'CITATION', severity: 'MAJOR' }))
+
+    await waitFor(() =>
+      expect(notifyMock.showSimpleError).toHaveBeenCalledWith(
+        'You changed this entry while the AI was classifying it, so the suggestion was discarded.',
+      ),
+    )
+    expect(categoryInput()).toHaveValue('')
+    expect(severityInput()).toHaveValue('')
+  })
+
   test('reports a suggestion the AI could not make', async () => {
     // An empty body is a successful call with no answer — tell the instructor to pick manually
     // rather than leaving them staring at two untouched dropdowns.
@@ -381,6 +411,42 @@ describe('ThesisFeedbackRequestButton — bulk classification', () => {
       '/v2/ai-review/classify-feedback',
       expect.objectContaining({ data: { thesisId: 'thesis-1', feedback: 'Chapter 4 is thin.' } }),
     )
+  })
+
+  test('skips an entry rewritten mid-run without counting it as a failure', async () => {
+    // The instructor edited that row on purpose; labelling it from the old text would be wrong,
+    // and calling it unclassifiable would be a lie.
+    const user = userEvent.setup()
+    renderWithProviders(<ThesisFeedbackRequestButton type='THESIS' />)
+    await importTwoUnlabelledEntries(user)
+
+    let resolveSecond: (value: unknown) => void = () => {}
+    requestMock.doRequest
+      .mockResolvedValueOnce(okResponse({ category: 'FIGURES', severity: 'MAJOR' }))
+      .mockReturnValueOnce(
+        new Promise((resolve) => {
+          resolveSecond = resolve
+        }),
+      )
+
+    await user.click(screen.getByRole('button', { name: 'Classify all' }))
+
+    const textareas = screen.getAllByPlaceholderText(FEEDBACK_PLACEHOLDER)
+    await user.clear(textareas[1])
+    await user.type(textareas[1], 'Chapter 4 needs a related work section')
+    resolveSecond(okResponse({ category: 'COMPLETENESS', severity: 'CRITICAL' }))
+
+    // Wait for that response to have been handled — its row's wand goes idle again — so the
+    // assertions below cannot pass simply by running before it lands.
+    await waitFor(() =>
+      expect(screen.getAllByRole('button', { name: WAND_LABEL })[1]).not.toBeDisabled(),
+    )
+
+    // The untouched row takes its labels; the rewritten one keeps its dropdowns open.
+    const categories = screen.getAllByRole('combobox', { name: 'Category' })
+    expect(categories[0]).toHaveValue('Figures')
+    expect(categories[1]).toHaveValue('')
+    expect(notifyMock.showSimpleError).not.toHaveBeenCalled()
   })
 
   test('reports partial failures once rather than per entry', async () => {

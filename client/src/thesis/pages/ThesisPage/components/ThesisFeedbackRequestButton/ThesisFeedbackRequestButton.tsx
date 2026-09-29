@@ -73,8 +73,14 @@ interface IImportedNotes {
   entries?: IAIDraft[]
 }
 
-/** Why an entry came back unlabelled, or nothing when it was classified. */
-type IClassifyOutcome = { classified: true } | { classified: false; reason: string }
+/**
+ * What became of one classification: applied, dropped because the entry's text changed while the
+ * request was running, or a failure with a message to show.
+ */
+type IClassifyOutcome =
+  | { classified: true }
+  | { classified: false; superseded: true }
+  | { classified: false; reason: string }
 
 interface IAIPreviewResponse {
   assessment?: AIAssessment
@@ -128,6 +134,14 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
   // Identifies the import request whose answer the panel is still waiting for. Bumped by every
   // exit from the panel, so an answer that arrives afterwards can be recognised as stale.
   const importToken = useRef(0)
+  // The rows as they stand right now, readable from an async callback that started before the
+  // instructor's latest edit. Classification uses it to tell a still-matching row from a rewritten
+  // one; render always reads `entries` itself.
+  const entriesRef = useRef<INewEntry[]>(entries)
+
+  useEffect(() => {
+    entriesRef.current = entries
+  }, [entries])
 
   /** Abandons a pending import so its answer can no longer change the panel. */
   const cancelImport = () => {
@@ -237,12 +251,29 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
         return { classified: false, reason: NO_SUGGESTION_MESSAGE }
       }
 
+      // The textarea stays editable while the request runs, and these labels describe the text
+      // that was sent. An entry rewritten in the meantime is left alone: labelling the new text
+      // with the old text's verdict would be worse than not labelling it at all. The same
+      // condition guards the write itself, so a row can never take a suggestion meant for text it
+      // no longer holds.
+      const current = entriesRef.current.find((row) => row.key === entry.key)
+      if (current?.feedback.trim() !== feedback) {
+        return { classified: false, superseded: true }
+      }
+
       // NON_EMPTY serialization drops a field the AI left open; keep whatever is already selected
       // for that dropdown rather than clearing it.
-      updateEntry(entry.key, {
-        ...(category ? { category } : {}),
-        ...(severity ? { severity } : {}),
-      })
+      setEntries((prev) =>
+        prev.map((row) =>
+          row.key === entry.key && row.feedback.trim() === feedback
+            ? {
+                ...row,
+                ...(category ? { category } : {}),
+                ...(severity ? { severity } : {}),
+              }
+            : row,
+        ),
+      )
       return { classified: true }
     } finally {
       setClassifyingKeys((prev) => {
@@ -255,9 +286,15 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
 
   const onSuggestClassification = async (entry: INewEntry) => {
     const outcome = await classifyEntry(entry)
-    if (!outcome.classified) {
-      showSimpleError(outcome.reason)
+    if (outcome.classified) {
+      return
     }
+
+    showSimpleError(
+      'superseded' in outcome
+        ? 'You changed this entry while the AI was classifying it, so the suggestion was discarded.'
+        : outcome.reason,
+    )
   }
 
   /**
@@ -277,16 +314,27 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
     setBulkClassifying(true)
     try {
       const outcomes = await Promise.all(pending.map((entry) => classifyEntry(entry)))
-      const failed = outcomes.filter((outcome) => !outcome.classified).length
-      if (failed === pending.length) {
+
+      // Entries the instructor rewrote mid-flight count as neither successes nor failures: they
+      // were deliberately left alone, so reporting them as unclassifiable would be a lie.
+      const reasons = outcomes.flatMap((outcome) =>
+        !outcome.classified && 'reason' in outcome ? [outcome.reason] : [],
+      )
+      const applied = outcomes.filter((outcome) => outcome.classified).length
+      const attempted = applied + reasons.length
+
+      if (reasons.length === 0) {
+        return
+      }
+      if (attempted === 1) {
+        showSimpleError(reasons[0])
+      } else if (reasons.length === attempted) {
         showSimpleError(
-          pending.length === 1
-            ? NO_SUGGESTION_MESSAGE
-            : 'The AI could not classify any of these entries. Please select the values manually.',
+          'The AI could not classify any of these entries. Please select the values manually.',
         )
-      } else if (failed > 0) {
+      } else {
         showSimpleError(
-          `The AI could not classify ${failed} of ${pending.length} entries. Please select those values manually.`,
+          `The AI could not classify ${reasons.length} of ${attempted} entries. Please select those values manually.`,
         )
       }
     } finally {
