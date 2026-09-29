@@ -196,38 +196,17 @@ public class AuthenticationService {
 	}
 
 	/**
-	 * Replaces the user's profile picture and removes the previously stored file.
+	 * Replaces the user's profile picture. The previous file is kept because uploads are stored by content hash
+	 * and may also be referenced by other entities (e.g. thesis files or comment attachments).
 	 *
 	 * @param user the user to update
 	 * @param avatar the new avatar image file
 	 * @return the updated user
 	 */
 	public User updateAvatar(User user, MultipartFile avatar) {
-		String oldAvatar = user.getAvatar();
-		String storedFilename = uploadService.store(avatar, 1024 * 1024, UploadFileType.IMAGE);
+		user.setAvatar(uploadService.store(avatar, 1024 * 1024, UploadFileType.IMAGE));
 
-		user.setAvatar(storedFilename);
-		user = userRepository.save(user);
-
-		if (oldAvatar != null && !oldAvatar.equals(storedFilename)) {
-			deleteAvatarFileIfUnreferenced(oldAvatar);
-		}
-
-		return user;
-	}
-
-	/**
-	 * Deletes a stored avatar file unless another user still references it.
-	 * Uploaded files are named by content hash, so users with an identical picture share one file.
-	 *
-	 * @param filename the avatar file that is no longer used by the caller
-	 */
-	public void deleteAvatarFileIfUnreferenced(String filename) {
-		if (filename == null || userRepository.existsByAvatar(filename)) {
-			return;
-		}
-
-		uploadService.deleteFile(filename);
+		return userRepository.save(user);
 	}
 
 	/**

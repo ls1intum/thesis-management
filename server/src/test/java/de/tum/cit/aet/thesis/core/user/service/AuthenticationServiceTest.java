@@ -237,7 +237,7 @@ class AuthenticationServiceTest {
 		assertEquals("Student", result.getLastName());
 	}
 	@Test
-	void updateAvatar_ReplacesAvatarAndDeletesOldFile() {
+	void updateAvatar_ReplacesAvatarAndKeepsOldFileBecauseStorageIsShared() {
 		MockMultipartFile avatar = new MockMultipartFile("avatar", "avatar.png", "image/png", "test".getBytes());
 		testUser.setAvatar("old.png");
 
@@ -247,34 +247,6 @@ class AuthenticationServiceTest {
 		User result = authenticationService.updateAvatar(testUser, avatar);
 
 		assertEquals("new.png", result.getAvatar());
-		verify(uploadService).deleteFile("old.png");
-	}
-
-	@Test
-	void updateAvatar_OldFileStillUsedByAnotherUser_KeepsFile() {
-		MockMultipartFile avatar = new MockMultipartFile("avatar", "avatar.png", "image/png", "test".getBytes());
-		testUser.setAvatar("shared.png");
-
-		when(uploadService.store(any(), any(), eq(UploadFileType.IMAGE))).thenReturn("new.png");
-		when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
-		when(userRepository.existsByAvatar("shared.png")).thenReturn(true);
-
-		User result = authenticationService.updateAvatar(testUser, avatar);
-
-		assertEquals("new.png", result.getAvatar());
-		verify(uploadService, never()).deleteFile(any());
-	}
-
-	@Test
-	void updateAvatar_WithoutPreviousAvatar_DoesNotDeleteAnything() {
-		MockMultipartFile avatar = new MockMultipartFile("avatar", "avatar.png", "image/png", "test".getBytes());
-		testUser.setAvatar(null);
-
-		when(uploadService.store(any(), any(), eq(UploadFileType.IMAGE))).thenReturn("new.png");
-		when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
-
-		authenticationService.updateAvatar(testUser, avatar);
-
 		verify(uploadService, never()).deleteFile(any());
 	}
 
