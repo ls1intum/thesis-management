@@ -24,11 +24,11 @@ const createUser = (overrides: Partial<IUser> = {}): IUser =>
     ...overrides,
   }) as IUser
 
-const renderPrompt = (user: IUser | undefined, updateUser = vi.fn()) => {
+const renderPrompt = (user: IUser | undefined, updateUser = vi.fn(), path = '/dashboard') => {
   const context = { user, updateUser } as unknown as IAuthenticationContext
 
   renderWithProviders(
-    <MemoryRouter>
+    <MemoryRouter initialEntries={[path]}>
       <AuthenticationContext value={context}>
         <ProfilePicturePrompt />
       </AuthenticationContext>
@@ -90,6 +90,43 @@ describe('ProfilePicturePrompt', () => {
     )
     await waitFor(() =>
       expect(screen.queryByText('Put a face to your name')).not.toBeInTheDocument(),
+    )
+  })
+  test('does not ask on the logout page', () => {
+    renderPrompt(createUser(), vi.fn(), '/logout')
+
+    expect(screen.queryByText('Put a face to your name')).not.toBeInTheDocument()
+  })
+
+  test('closes without calling the server again when the dismissal request fails', async () => {
+    const user = userEvent.setup()
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    doRequest.mockRejectedValue(new Error('network down'))
+
+    const { updateUser } = renderPrompt(createUser())
+
+    await user.click(await screen.findByRole('button', { name: /maybe not/i }))
+
+    await waitFor(() =>
+      expect(screen.queryByText('Put a face to your name')).not.toBeInTheDocument(),
+    )
+    expect(updateUser).not.toHaveBeenCalled()
+    consoleError.mockRestore()
+  })
+
+  test('imports the picture from Gravatar and stores the returned user', async () => {
+    const user = userEvent.setup()
+    const withPicture = createUser({ avatar: 'picture.png' })
+    doRequest.mockResolvedValue({ ok: true, status: 200, data: withPicture })
+
+    const { updateUser } = renderPrompt(createUser())
+
+    await user.click(await screen.findByRole('button', { name: /import from gravatar/i }))
+
+    await waitFor(() => expect(updateUser).toHaveBeenCalledWith(withPicture))
+    expect(doRequest).toHaveBeenCalledWith(
+      '/v2/user-info/import-profile-picture',
+      expect.objectContaining({ method: 'POST' }),
     )
   })
 })
