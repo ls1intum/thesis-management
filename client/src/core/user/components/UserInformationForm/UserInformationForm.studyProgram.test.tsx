@@ -72,6 +72,16 @@ describe('UserInformationForm - study program', () => {
     expect(await screen.findByText('Please state your study program')).toBeInTheDocument()
   })
 
+  test('does not block the profile when every study program is deactivated', async () => {
+    studyPrograms = [{ id: 'p1', key: 'OLD', name: 'Discontinued', active: false }]
+    renderForm()
+
+    await leaveStudyProgramEmpty()
+
+    expect(screen.queryByText('Please state your study program')).not.toBeInTheDocument()
+    expect(screen.getByRole('combobox', { name: /Study Program/ })).not.toBeRequired()
+  })
+
   test('does not block the profile when no study program is configured yet', async () => {
     studyPrograms = []
     renderForm()

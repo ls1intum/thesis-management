@@ -52,6 +52,8 @@ const UserInformationForm = (props: IUserInformationFormProps) => {
   const { updateInformation } = useAuthenticationContext()
   const user = useLoggedInUser()
   const { studyPrograms } = useOrganization()
+  // Only programs that can still be selected make the field mandatory; otherwise students could not complete their profile
+  const hasSelectableStudyProgram = studyPrograms.some((program) => program.active !== false)
 
   const form = useForm<
     Omit<IUpdateUserInformationPayload, 'enrolledAt' | 'studyProgramId'> & {
@@ -102,9 +104,9 @@ const UserInformationForm = (props: IUserInformationFormProps) => {
       gender: requireCompletion ? isNotEmpty('Please state your gender') : undefined,
       nationality: requireCompletion ? isNotEmpty('Please state your nationality') : undefined,
       studyDegree: requireCompletion ? isNotEmpty('Please state your study degree') : undefined,
-      // an instance without any study program yet must not lock students out of applying
+      // an instance without a selectable study program must not lock students out of applying
       studyProgramId:
-        requireCompletion && studyPrograms.length > 0
+        requireCompletion && hasSelectableStudyProgram
           ? (value) => (value ? null : 'Please state your study program')
           : undefined,
       semester: requireCompletion ? isNotEmpty('Please state your semester date') : undefined,
@@ -370,7 +372,7 @@ const UserInformationForm = (props: IUserInformationFormProps) => {
             label='Study Program'
             placeholder='Study Program'
             studyPrograms={studyPrograms}
-            required={requireCompletion && studyPrograms.length > 0}
+            required={requireCompletion && hasSelectableStudyProgram}
             {...form.getInputProps('studyProgramId')}
           />
           <NumberInput
