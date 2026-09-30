@@ -102,9 +102,11 @@ const UserInformationForm = (props: IUserInformationFormProps) => {
       gender: requireCompletion ? isNotEmpty('Please state your gender') : undefined,
       nationality: requireCompletion ? isNotEmpty('Please state your nationality') : undefined,
       studyDegree: requireCompletion ? isNotEmpty('Please state your study degree') : undefined,
-      studyProgramId: requireCompletion
-        ? (value) => (value ? null : 'Please state your study program')
-        : undefined,
+      // an instance without any study program yet must not lock students out of applying
+      studyProgramId:
+        requireCompletion && studyPrograms.length > 0
+          ? (value) => (value ? null : 'Please state your study program')
+          : undefined,
       semester: requireCompletion ? isNotEmpty('Please state your semester date') : undefined,
       specialSkills: (value) => {
         if (!value && requireCompletion) {
@@ -368,7 +370,7 @@ const UserInformationForm = (props: IUserInformationFormProps) => {
             label='Study Program'
             placeholder='Study Program'
             studyPrograms={studyPrograms}
-            required={requireCompletion}
+            required={requireCompletion && studyPrograms.length > 0}
             {...form.getInputProps('studyProgramId')}
           />
           <NumberInput

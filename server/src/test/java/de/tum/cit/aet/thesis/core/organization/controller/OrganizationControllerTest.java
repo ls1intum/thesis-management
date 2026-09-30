@@ -326,6 +326,46 @@ class OrganizationControllerTest extends BaseIntegrationTest {
 		}
 
 		@Test
+		void updateResearchGroup_AsGroupAdminOfThatGroup_MayChangeSchoolButNotOfAnotherGroup() throws Exception {
+			String admin = createRandomAdminAuthentication();
+			UUID schoolId = createSchool(admin, null);
+			TestUser head = createRandomTestUser(List.of("supervisor", "group-admin"));
+			TestUser otherHead = createRandomTestUser(List.of("supervisor", "group-admin"));
+			JsonNode group = post("/v2/research-groups", admin, groupBody(head, null, null), 200);
+			JsonNode otherGroup = post("/v2/research-groups", admin, groupBody(otherHead, null, null), 200);
+			String groupAdmin = generateTestAuthenticationHeader(head.universityId(), List.of("supervisor", "group-admin"));
+
+			Map<String, Object> update = groupBody(head, schoolId, null);
+			update.remove("headUsername");
+			update.put("name", group.get("name").asString());
+			update.put("abbreviation", group.get("abbreviation").asString());
+			JsonNode updated = put("/v2/research-groups/" + group.get("id").asString(), groupAdmin, update, 200);
+			assertThat(updated.get("school").get("id").asString()).isEqualTo(schoolId.toString());
+
+			put("/v2/research-groups/" + otherGroup.get("id").asString(), groupAdmin, update, 403);
+		}
+
+		@Test
+		void updateResearchGroup_DeactivatedSchool_CanBeKeptButNotNewlySelected() throws Exception {
+			String admin = createRandomAdminAuthentication();
+			UUID schoolId = createSchool(admin, null);
+			TestUser head = createRandomTestUser(List.of("supervisor"));
+			JsonNode group = post("/v2/research-groups", admin, groupBody(head, schoolId, null), 200);
+			JsonNode school = objectMapper.readTree(objectMapper.writeValueAsString(Map.of("id", schoolId.toString())));
+			Map<String, Object> deactivate = schoolBody(unique("Closed"), abbreviation(), null);
+			deactivate.put("active", false);
+			put("/v2/schools/" + school.get("id").asString(), admin, deactivate, 200);
+
+			Map<String, Object> update = groupBody(head, schoolId, null);
+			update.put("name", group.get("name").asString());
+			update.put("abbreviation", group.get("abbreviation").asString());
+			put("/v2/research-groups/" + group.get("id").asString(), admin, update, 200);
+
+			TestUser otherHead = createRandomTestUser(List.of("supervisor"));
+			post("/v2/research-groups", admin, groupBody(otherHead, schoolId, null), 400);
+		}
+
+		@Test
 		void updateResearchGroup_ChangesAndClearsSchool() throws Exception {
 			String admin = createRandomAdminAuthentication();
 			UUID schoolId = createSchool(admin, null);

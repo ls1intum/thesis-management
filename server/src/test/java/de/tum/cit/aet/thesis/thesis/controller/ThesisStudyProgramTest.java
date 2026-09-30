@@ -219,6 +219,47 @@ class ThesisStudyProgramTest extends BaseIntegrationTest {
 	}
 
 	@Test
+	void updateStudyProgram_AsSupervisorOfAnotherThesis_ReturnsForbidden() throws Exception {
+		TestUser staff = createRandomTestUser(List.of("supervisor", "advisor"));
+		TestUser otherStaff = createRandomTestUser(List.of("supervisor", "advisor"));
+		TestUser student = createRandomTestUser(List.of("student"));
+		JsonNode thesis = createThesis(staff, student, createGroup(staff, null), null);
+		StudyProgram program = createProgram(null);
+
+		mockMvc.perform(MockMvcRequestBuilders.put("/v2/theses/" + thesis.get("thesisId").asString() + "/study-program")
+						.header("Authorization", staffAuth(otherStaff))
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(Map.of("studyProgramId", program.getId().toString()))))
+				.andExpect(status().isForbidden());
+	}
+
+	@Test
+	void updateStudyProgram_DeactivatedProgram_CanBeKeptButNotNewlySelected() throws Exception {
+		TestUser staff = createRandomTestUser(List.of("supervisor", "advisor"));
+		TestUser student = createRandomTestUser(List.of("student"));
+		StudyProgram program = createProgram(createSchool(MGT_PORTAL));
+		UUID groupId = createGroup(staff, null);
+		JsonNode thesis = createThesis(staff, student, groupId, program.getId());
+		String path = "/v2/theses/" + thesis.get("thesisId").asString() + "/study-program";
+		String body = objectMapper.writeValueAsString(Map.of("studyProgramId", program.getId().toString()));
+
+		program.setActive(false);
+		studyProgramRepository.save(program);
+
+		// the program the thesis already has stays valid
+		mockMvc.perform(MockMvcRequestBuilders.put(path).header("Authorization", staffAuth(staff))
+						.contentType(MediaType.APPLICATION_JSON).content(body))
+				.andExpect(status().isOk());
+
+		// but another thesis cannot newly pick it
+		JsonNode otherThesis = createThesis(staff, createRandomTestUser(List.of("student")), groupId, null);
+		mockMvc.perform(MockMvcRequestBuilders.put("/v2/theses/" + otherThesis.get("thesisId").asString() + "/study-program")
+						.header("Authorization", staffAuth(staff))
+						.contentType(MediaType.APPLICATION_JSON).content(body))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
 	void updateStudyProgram_AsStudentOfTheThesis_ReturnsForbidden() throws Exception {
 		TestUser staff = createRandomTestUser(List.of("supervisor", "advisor"));
 		TestUser student = createRandomTestUser(List.of("student"));

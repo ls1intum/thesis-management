@@ -65,7 +65,7 @@ CREATE INDEX ix_theses_study_program ON theses (study_program_id);
 INSERT INTO study_programs (key, name)
 SELECT DISTINCT ON (lower(btrim(study_program)))
        left(btrim(study_program), 255),
-       CASE btrim(study_program)
+       CASE upper(btrim(study_program))
            WHEN 'COMPUTER_SCIENCE' THEN 'Computer Science'
            WHEN 'INFORMATION_SYSTEMS' THEN 'Information Systems'
            WHEN 'GAMES_ENGINEERING' THEN 'Games Engineering'
@@ -76,7 +76,8 @@ SELECT DISTINCT ON (lower(btrim(study_program)))
 FROM users
 WHERE study_program IS NOT NULL
   AND btrim(study_program) <> ''
-ORDER BY lower(btrim(study_program)), btrim(study_program);
+-- COLLATE "C" makes the surviving spelling of case variants independent of the database collation (uppercase wins)
+ORDER BY lower(btrim(study_program)), btrim(study_program) COLLATE "C";
 
 UPDATE users u
 SET study_program_id = sp.study_program_id

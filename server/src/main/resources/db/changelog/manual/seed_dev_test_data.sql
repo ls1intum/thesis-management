@@ -2267,7 +2267,9 @@ VALUES
     ('00000000-0000-4000-d300-000000000003'::UUID, 'INFORMATION_SYSTEMS', 'Information Systems', '00000000-0000-4000-d100-000000000001'::UUID),
     ('00000000-0000-4000-d300-000000000004'::UUID, 'MANAGEMENT_AND_TECHNOLOGY', 'Management and Technology', '00000000-0000-4000-d100-000000000002'::UUID),
     ('00000000-0000-4000-d300-000000000005'::UUID, 'OTHER', 'Other', NULL)
-ON CONFLICT DO NOTHING;
+-- databases seeded before this feature already got these keys from the migration, without a school
+ON CONFLICT (lower(key)) DO UPDATE
+    SET school_id = COALESCE(study_programs.school_id, EXCLUDED.school_id);
 
 UPDATE users u
 SET study_program_id = sp.study_program_id

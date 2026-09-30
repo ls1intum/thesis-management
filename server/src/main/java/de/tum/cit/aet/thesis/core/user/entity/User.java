@@ -86,6 +86,13 @@ public class User {
 	@JoinColumn(name = "study_program_id")
 	private StudyProgram studyProgram;
 
+	/**
+	 * The former free-text study program. It is no longer read or written; the column only stays for one release
+	 * so the migration can be rolled back. It is mapped so account deletion can still clear the personal data in it.
+	 */
+	@Column(name = "study_program")
+	private String legacyStudyProgram;
+
 	@Column(name = "projects")
 	private String projects;
 

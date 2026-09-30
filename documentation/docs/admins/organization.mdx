@@ -36,4 +36,6 @@ Set `REFERENCE_DATA_PRESET=tum` to pre-fill the seven TUM schools with their dep
 
 ## Migration from `STUDY_PROGRAMS`
 
-On upgrade, every study program key that students already have (for example `COMPUTER_SCIENCE`) becomes a study program entry and the students are linked to it. Existing theses take the study program of their first student. Keys that were configured through `STUDY_PROGRAMS` receive a generated name and no school; complete them under **Organization**. The `STUDY_PROGRAMS` variable is no longer read.
+On upgrade, every study program key that a student already has (for example `COMPUTER_SCIENCE`) becomes a study program entry and the students are linked to it. Existing theses take the study program of their first student. Known keys keep their former label; keys that came from a customised `STUDY_PROGRAMS` receive a generated name and no school, so complete them under **Organization**. Study programs that were configured in `STUDY_PROGRAMS` but that no student has chosen yet are **not** migrated: create them under **Organization** or use the preset. The `STUDY_PROGRAMS` variable is no longer read.
+
+While an instance has no study program at all, the study program is not required in the profile, so students can still apply.
