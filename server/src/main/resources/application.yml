@@ -93,6 +93,9 @@ server:
     context-path: /api
 
 thesis-management:
+  reference-data:
+    # Pre-fills schools, departments and study programs on first start (e.g. `tum`); empty for none
+    preset: ${REFERENCE_DATA_PRESET:}
   ai:
     enabled: ${AI_FEATURES_ENABLED:false}
     # Force per-page image rendering on/off. Left blank (unset) so the pipeline auto-detects

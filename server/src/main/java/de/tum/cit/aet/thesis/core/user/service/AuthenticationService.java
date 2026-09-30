@@ -4,6 +4,7 @@ import de.tum.cit.aet.thesis.core.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.core.notification.entity.NotificationSetting;
 import de.tum.cit.aet.thesis.core.notification.entity.key.NotificationSettingId;
 import de.tum.cit.aet.thesis.core.notification.repository.NotificationSettingRepository;
+import de.tum.cit.aet.thesis.core.organization.entity.StudyProgram;
 import de.tum.cit.aet.thesis.core.upload.constants.UploadFileType;
 import de.tum.cit.aet.thesis.core.upload.service.UploadService;
 import de.tum.cit.aet.thesis.core.user.entity.User;
@@ -140,7 +141,7 @@ public class AuthenticationService {
 	 * @param nationality the user's nationality
 	 * @param email the user's email address
 	 * @param studyDegree the user's study degree
-	 * @param studyProgram the user's study program
+	 * @param studyProgram the user's study program, may be {@code null}
 	 * @param enrolledAt the enrollment date
 	 * @param specialSkills the user's special skills
 	 * @param interests the user's interests
@@ -160,7 +161,7 @@ public class AuthenticationService {
 			String nationality,
 			String email,
 			String studyDegree,
-			String studyProgram,
+			StudyProgram studyProgram,
 			Instant enrolledAt,
 			String specialSkills,
 			String interests,

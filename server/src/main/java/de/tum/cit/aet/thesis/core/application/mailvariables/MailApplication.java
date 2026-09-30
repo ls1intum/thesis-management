@@ -44,7 +44,7 @@ public record MailApplication(
 				valueOrEmpty(applicant != null && applicant.getEmail() != null ? applicant.getEmail().getAddress() : null),
 				valueOrEmpty(applicant != null ? applicant.getUniversityId() : null),
 				valueOrEmpty(applicant != null ? applicant.getMatriculationNumber() : null),
-				valueOrEmpty(DataFormatter.formatConstantName(applicant != null ? applicant.getStudyProgram() : null)),
+				valueOrEmpty(applicant != null ? applicant.getStudyProgramName() : null),
 				valueOrEmpty(DataFormatter.formatConstantName(applicant != null ? applicant.getStudyDegree() : null)),
 				valueOrEmpty(DataFormatter.formatSemester(applicant != null ? applicant.getEnrolledAt() : null)),
 				valueOrEmpty(DataFormatter.formatDate(application.getDesiredStartDate())),

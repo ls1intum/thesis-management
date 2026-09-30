@@ -19,6 +19,7 @@ public record LightUserDto(
 	String email,
 	String studyDegree,
 	String studyProgram,
+	UUID studyProgramId,
 	Map<String, String> customData,
 	Instant joinedAt,
 	List<String> groups
@@ -30,7 +31,8 @@ public record LightUserDto(
 
 		return new LightUserDto(
 				user.getId(), user.getAdjustedAvatar(), user.getUniversityId(), user.getMatriculationNumber(),
-				user.getFirstName(), user.getLastName(), user.getEmail() != null ? user.getEmail().toString() : null, user.getStudyDegree(), user.getStudyProgram(),
+				user.getFirstName(), user.getLastName(), user.getEmail() != null ? user.getEmail().toString() : null, user.getStudyDegree(), user.getStudyProgramName(),
+				user.getStudyProgram() == null ? null : user.getStudyProgram().getId(),
 				user.getCustomData(),
 				user.getJoinedAt(), user.getGroups().stream().map(x -> x.getId().getGroup()).toList()
 		);

@@ -2239,3 +2239,115 @@ WHERE application_id IN (
     '00000000-0000-4000-c000-000000000041'::UUID
 ) AND consent_timestamp IS NULL;
 
+
+-- ============================================================================
+-- SCHOOLS, DEPARTMENTS AND STUDY PROGRAMS
+-- The seed creates the reference data itself so dev/e2e data does not depend on the startup preset
+-- (thesis-management.reference-data.preset), which only applies to an empty schools table.
+-- ============================================================================
+INSERT INTO schools (school_id, name, abbreviation, website_url, thesis_portal_url)
+VALUES
+    ('00000000-0000-4000-d100-000000000001'::UUID, 'TUM School of Computation, Information and Technology', 'CIT',
+     'https://www.cit.tum.de/en/cit/home/', 'https://portal.cit.tum.de/'),
+    ('00000000-0000-4000-d100-000000000002'::UUID, 'TUM School of Management', 'MGT',
+     'https://www.mgt.tum.de/', 'https://portal.mgt.tum.de/')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO departments (department_id, school_id, name)
+VALUES
+    ('00000000-0000-4000-d200-000000000001'::UUID, '00000000-0000-4000-d100-000000000001'::UUID, 'Computer Science'),
+    ('00000000-0000-4000-d200-000000000002'::UUID, '00000000-0000-4000-d100-000000000001'::UUID, 'Mathematics'),
+    ('00000000-0000-4000-d200-000000000003'::UUID, '00000000-0000-4000-d100-000000000002'::UUID, 'Operations and Technology')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO study_programs (study_program_id, key, name, school_id)
+VALUES
+    ('00000000-0000-4000-d300-000000000001'::UUID, 'COMPUTER_SCIENCE', 'Computer Science', '00000000-0000-4000-d100-000000000001'::UUID),
+    ('00000000-0000-4000-d300-000000000002'::UUID, 'GAMES_ENGINEERING', 'Games Engineering', '00000000-0000-4000-d100-000000000001'::UUID),
+    ('00000000-0000-4000-d300-000000000003'::UUID, 'INFORMATION_SYSTEMS', 'Information Systems', '00000000-0000-4000-d100-000000000001'::UUID),
+    ('00000000-0000-4000-d300-000000000004'::UUID, 'MANAGEMENT_AND_TECHNOLOGY', 'Management and Technology', '00000000-0000-4000-d100-000000000002'::UUID),
+    ('00000000-0000-4000-d300-000000000005'::UUID, 'OTHER', 'Other', NULL)
+ON CONFLICT DO NOTHING;
+
+UPDATE users u
+SET study_program_id = sp.study_program_id
+FROM study_programs sp
+WHERE u.study_program_id IS NULL
+  AND u.study_program IS NOT NULL
+  AND lower(u.study_program) = lower(sp.key);
+
+UPDATE research_groups
+SET school_id     = '00000000-0000-4000-d100-000000000001'::UUID,
+    department_id = '00000000-0000-4000-d200-000000000001'::UUID
+WHERE research_group_id IN ('00000000-0000-4000-a000-000000000001'::UUID, '00000000-0000-4000-a000-000000000002'::UUID)
+  AND school_id IS NULL;
+
+-- Dedicated theses for the submission portal e2e tests (students of the School of Management and of CIT)
+INSERT INTO theses (thesis_id, title, type, language, metadata, info, abstract, state,
+                    visibility, keywords, application_id, start_date, end_date, created_at,
+                    research_group_id)
+VALUES
+    ('00000000-0000-4000-d000-000000000030'::UUID,
+     'E2E Portal: School of Management Thesis',
+     'BACHELOR', 'ENGLISH',
+     '{"titles":{},"credits":{}}',
+     '', '',
+     'WRITING', 'PRIVATE',
+     ARRAY['e2e', 'portal'],
+     NULL,
+     NOW() - INTERVAL '20 days', NOW() + INTERVAL '160 days',
+     NOW() - INTERVAL '25 days',
+     '00000000-0000-4000-a000-000000000001'::UUID),
+    ('00000000-0000-4000-d000-000000000031'::UUID,
+     'E2E Portal: CIT Thesis',
+     'MASTER', 'ENGLISH',
+     '{"titles":{},"credits":{}}',
+     '', '',
+     'WRITING', 'PRIVATE',
+     ARRAY['e2e', 'portal'],
+     NULL,
+     NOW() - INTERVAL '20 days', NOW() + INTERVAL '160 days',
+     NOW() - INTERVAL '25 days',
+     '00000000-0000-4000-a000-000000000001'::UUID)
+ON CONFLICT DO NOTHING;
+
+INSERT INTO thesis_roles (thesis_id, user_id, role, position, assigned_at, assigned_by)
+VALUES
+    ('00000000-0000-4000-d000-000000000030'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'student5'), 'STUDENT', 0,
+     NOW() - INTERVAL '20 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
+    ('00000000-0000-4000-d000-000000000030'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
+     NOW() - INTERVAL '20 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
+    ('00000000-0000-4000-d000-000000000030'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'examiner'), 'EXAMINER', 0,
+     NOW() - INTERVAL '20 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
+    ('00000000-0000-4000-d000-000000000031'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'student3'), 'STUDENT', 0,
+     NOW() - INTERVAL '20 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
+    ('00000000-0000-4000-d000-000000000031'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'supervisor'), 'SUPERVISOR', 0,
+     NOW() - INTERVAL '20 days', (SELECT user_id FROM users WHERE university_id = 'examiner')),
+    ('00000000-0000-4000-d000-000000000031'::UUID,
+     (SELECT user_id FROM users WHERE university_id = 'examiner'), 'EXAMINER', 0,
+     NOW() - INTERVAL '20 days', (SELECT user_id FROM users WHERE university_id = 'examiner'))
+ON CONFLICT DO NOTHING;
+
+INSERT INTO thesis_state_changes (thesis_id, state, changed_at)
+VALUES
+    ('00000000-0000-4000-d000-000000000030'::UUID, 'PROPOSAL', NOW() - INTERVAL '25 days'),
+    ('00000000-0000-4000-d000-000000000030'::UUID, 'WRITING', NOW() - INTERVAL '20 days'),
+    ('00000000-0000-4000-d000-000000000031'::UUID, 'PROPOSAL', NOW() - INTERVAL '25 days'),
+    ('00000000-0000-4000-d000-000000000031'::UUID, 'WRITING', NOW() - INTERVAL '20 days')
+ON CONFLICT DO NOTHING;
+
+UPDATE theses t
+SET study_program_id = (SELECT u.study_program_id
+                        FROM thesis_roles r
+                                 JOIN users u ON u.user_id = r.user_id
+                        WHERE r.thesis_id = t.thesis_id
+                          AND r.role = 'STUDENT'
+                          AND u.study_program_id IS NOT NULL
+                        ORDER BY r.position
+                        LIMIT 1)
+WHERE t.study_program_id IS NULL;

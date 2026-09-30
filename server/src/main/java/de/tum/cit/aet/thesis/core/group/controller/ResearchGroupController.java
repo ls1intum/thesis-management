@@ -6,6 +6,7 @@ import de.tum.cit.aet.thesis.core.group.dto.LightResearchGroupDto;
 import de.tum.cit.aet.thesis.core.group.dto.ResearchGroupDto;
 import de.tum.cit.aet.thesis.core.group.entity.ResearchGroup;
 import de.tum.cit.aet.thesis.core.group.service.ResearchGroupService;
+import de.tum.cit.aet.thesis.core.organization.service.OrganizationService;
 import de.tum.cit.aet.thesis.core.user.dto.LightUserDto;
 import de.tum.cit.aet.thesis.core.user.entity.User;
 import de.tum.cit.aet.thesis.core.user.repository.UserRepository;
@@ -37,6 +38,7 @@ import java.util.stream.Collectors;
 public class ResearchGroupController {
 
 private final ResearchGroupService researchGroupService;
+private final OrganizationService organizationService;
 private final UserRepository userRepository;
 
 /**
@@ -44,11 +46,14 @@ private final UserRepository userRepository;
  *
  * @param researchGroupService the research group service
  * @param userRepository the user repository, used for member-count lookups
+ * @param organizationService the organization service used to resolve school and department
  */
 @Autowired
 public ResearchGroupController(ResearchGroupService researchGroupService,
-								UserRepository userRepository) {
+								UserRepository userRepository,
+								OrganizationService organizationService) {
 	this.researchGroupService = researchGroupService;
+	this.organizationService = organizationService;
 	this.userRepository = userRepository;
 }
 
@@ -204,13 +209,18 @@ public ResponseEntity<ResearchGroupDto> getResearchGroup(
 public ResponseEntity<ResearchGroupDto> createResearchGroup(
 	@RequestBody CreateResearchGroupPayload payload
 ) {
+	OrganizationService.SchoolAndDepartment organization = organizationService.resolveSchoolAndDepartment(
+		payload.schoolId(), payload.departmentId(), null, null);
+
 	ResearchGroup researchGroup = researchGroupService.createResearchGroup(
 		RequestValidator.validateNotNull(payload.headUsername()),
 		RequestValidator.validateNotNull(payload.name()),
 		RequestValidator.validateNotNull(payload.abbreviation()),
 		RequestValidator.validateStringMaxLengthAllowNull(payload.description(), 500),
 		payload.websiteUrl(),
-		payload.campus()
+		payload.campus(),
+		organization.school(),
+		organization.department()
 	);
 
 	return ResponseEntity.ok(ResearchGroupDto.fromResearchGroupEntity(researchGroup));
@@ -230,6 +240,8 @@ public ResponseEntity<ResearchGroupDto> updateResearchGroup(
 	@RequestBody CreateResearchGroupPayload payload
 ) {
 	ResearchGroup researchGroup = researchGroupService.findById(researchGroupId);
+	OrganizationService.SchoolAndDepartment organization = organizationService.resolveSchoolAndDepartment(
+		payload.schoolId(), payload.departmentId(), researchGroup.getSchool(), researchGroup.getDepartment());
 
 	researchGroup = researchGroupService.updateResearchGroup(
 		researchGroup,
@@ -238,7 +250,9 @@ public ResponseEntity<ResearchGroupDto> updateResearchGroup(
 		RequestValidator.validateNotNull(payload.abbreviation()),
 		RequestValidator.validateStringMaxLengthAllowNull(payload.description(), 500),
 		payload.websiteUrl(),
-		payload.campus()
+		payload.campus(),
+		organization.school(),
+		organization.department()
 	);
 
 	return ResponseEntity.ok(ResearchGroupDto.fromResearchGroupEntity(researchGroup));

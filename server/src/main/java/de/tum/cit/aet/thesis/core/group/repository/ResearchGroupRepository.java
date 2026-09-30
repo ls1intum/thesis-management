@@ -57,4 +57,8 @@ Page<ResearchGroup> searchResearchGroup(
 	ResearchGroup findByAbbreviation(String abbreviation);
 
 	boolean existsByHeadId(UUID headId);
+
+	boolean existsBySchoolId(UUID schoolId);
+
+	boolean existsByDepartmentId(UUID departmentId);
 }

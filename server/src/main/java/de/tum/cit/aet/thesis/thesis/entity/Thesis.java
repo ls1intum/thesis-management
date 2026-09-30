@@ -2,6 +2,8 @@ package de.tum.cit.aet.thesis.thesis.entity;
 
 import de.tum.cit.aet.thesis.core.application.entity.Application;
 import de.tum.cit.aet.thesis.core.group.entity.ResearchGroup;
+import de.tum.cit.aet.thesis.core.organization.entity.School;
+import de.tum.cit.aet.thesis.core.organization.entity.StudyProgram;
 import de.tum.cit.aet.thesis.core.user.entity.User;
 import de.tum.cit.aet.thesis.feedback.entity.AIReviewSummary;
 import de.tum.cit.aet.thesis.presentation.entity.ThesisPresentation;
@@ -130,6 +132,10 @@ public class Thesis {
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "research_group_id", nullable = false)
 	private ResearchGroup researchGroup;
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "study_program_id")
+	private StudyProgram studyProgram;
 
 	@OneToMany(mappedBy = "thesis", fetch = FetchType.EAGER)
 	@OrderBy("position ASC")
@@ -338,5 +344,28 @@ public class Thesis {
 		}
 
 		return Optional.empty();
+	}
+
+	/**
+	 * Returns the portal students submit this thesis to, if the organisation defines one: the portal of the
+	 * school of the thesis' study program, otherwise the portal of the research group's school. {@code null}
+	 * means that the instance default applies.
+	 *
+	 * @return the thesis portal URL or {@code null}
+	 */
+	public String getSubmissionPortalUrl() {
+		School programSchool = studyProgram == null ? null : studyProgram.getSchool();
+
+		if (programSchool != null && programSchool.getThesisPortalUrl() != null && !programSchool.getThesisPortalUrl().isBlank()) {
+			return programSchool.getThesisPortalUrl();
+		}
+
+		School groupSchool = researchGroup == null ? null : researchGroup.getSchool();
+
+		if (groupSchool != null && groupSchool.getThesisPortalUrl() != null && !groupSchool.getThesisPortalUrl().isBlank()) {
+			return groupSchool.getThesisPortalUrl();
+		}
+
+		return null;
 	}
 }

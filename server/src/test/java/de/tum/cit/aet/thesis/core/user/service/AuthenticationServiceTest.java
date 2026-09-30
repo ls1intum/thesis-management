@@ -7,6 +7,7 @@ import static org.mockito.Mockito.*;
 import de.tum.cit.aet.thesis.core.notification.entity.NotificationSetting;
 import de.tum.cit.aet.thesis.core.notification.entity.key.NotificationSettingId;
 import de.tum.cit.aet.thesis.core.notification.repository.NotificationSettingRepository;
+import de.tum.cit.aet.thesis.core.organization.entity.StudyProgram;
 import de.tum.cit.aet.thesis.core.upload.constants.UploadFileType;
 import de.tum.cit.aet.thesis.core.upload.service.UploadService;
 import de.tum.cit.aet.thesis.core.user.entity.User;
@@ -71,6 +72,10 @@ class AuthenticationServiceTest {
 		when(uploadService.store(any(), any(), any(UploadFileType.class))).thenReturn("stored-file");
 		when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
+		StudyProgram studyProgram = new StudyProgram();
+		studyProgram.setKey("COMPUTER_SCIENCE");
+		studyProgram.setName("Computer Science");
+
 		User result = authenticationService.updateUserInformation(
 				testUser,
 				"Updated",
@@ -79,7 +84,7 @@ class AuthenticationServiceTest {
 				"German",
 				"updated@test.com",
 				"Bachelor",
-				"Computer Science",
+				studyProgram,
 				Instant.now(),
 				"Java",
 				"AI",
@@ -92,6 +97,7 @@ class AuthenticationServiceTest {
 		);
 
 		assertNotNull(result);
+		assertEquals("Computer Science", result.getStudyProgramName());
 		verify(uploadService).store(any(), any(), eq(UploadFileType.IMAGE));
 		verify(userRepository).save(any(User.class));
 	}

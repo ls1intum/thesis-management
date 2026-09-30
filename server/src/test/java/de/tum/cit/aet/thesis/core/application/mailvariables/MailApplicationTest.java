@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import de.tum.cit.aet.thesis.core.application.entity.Application;
 import de.tum.cit.aet.thesis.core.dto.MailVariableDto;
+import de.tum.cit.aet.thesis.core.organization.entity.StudyProgram;
 import de.tum.cit.aet.thesis.core.topic.entity.Topic;
 import de.tum.cit.aet.thesis.core.user.entity.User;
 import org.junit.jupiter.api.Test;
@@ -32,7 +33,10 @@ class MailApplicationTest {
 		user.setUniversityId("ge47zig");
 		user.setMatriculationNumber("12345678");
 		user.setStudyDegree("BACHELOR");
-		user.setStudyProgram("INFORMATICS");
+		StudyProgram studyProgram = new StudyProgram();
+		studyProgram.setKey("INFORMATICS");
+		studyProgram.setName("Informatics");
+		user.setStudyProgram(studyProgram);
 		user.setEmail("max@example.com");
 		user.setEnrolledAt(Instant.now());
 		user.setSpecialSkills("skills");
