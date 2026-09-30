@@ -365,7 +365,19 @@ public class OrganizationService {
 
 	private void applyStudyProgram(StudyProgram studyProgram, String key, String name, UUID schoolId, Boolean active) {
 		String validName = requireText(name, "name", MAX_NAME_LENGTH);
-		String validKey = key == null || key.isBlank() ? generateKey(validName) : normalizeKey(key);
+		String existingKey = studyProgram.getKey();
+		String validKey;
+
+		if (key == null || key.isBlank()) {
+			// keys are stable identifiers: an update without a key keeps the current one, only new programs get a generated key
+			validKey = existingKey != null ? existingKey : normalizeKey(validName);
+		} else if (existingKey != null && key.trim().equals(existingKey)) {
+			// keys migrated from free-text values may not follow the normalized spelling; leave an unchanged key as it is
+			validKey = existingKey;
+		} else {
+			validKey = normalizeKey(key);
+		}
+
 		UUID id = studyProgram.getId() == null ? new UUID(0, 0) : studyProgram.getId();
 
 		if (studyProgramRepository.existsByKeyIgnoreCaseAndIdNot(validKey, id)) {
@@ -396,14 +408,10 @@ public class OrganizationService {
 		String normalized = key.trim().toUpperCase(Locale.ROOT).replaceAll("[^A-Z0-9]+", "_").replaceAll("^_+|_+$", "");
 
 		if (normalized.isEmpty() || normalized.length() > MAX_NAME_LENGTH) {
-			throw new ResourceInvalidParametersException("Invalid study program key");
+			throw new ResourceInvalidParametersException("The key must contain latin letters or digits and be at most " + MAX_NAME_LENGTH + " characters long");
 		}
 
 		return normalized;
-	}
-
-	private static String generateKey(String name) {
-		return normalizeKey(name);
 	}
 
 	private static String requireText(String value, String field, int maxLength) {

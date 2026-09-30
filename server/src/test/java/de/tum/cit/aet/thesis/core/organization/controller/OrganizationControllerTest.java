@@ -3,9 +3,12 @@ package de.tum.cit.aet.thesis.core.organization.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import de.tum.cit.aet.thesis.core.organization.entity.StudyProgram;
+import de.tum.cit.aet.thesis.core.organization.repository.StudyProgramRepository;
 import de.tum.cit.aet.thesis.mock.BaseIntegrationTest;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -26,6 +29,9 @@ class OrganizationControllerTest extends BaseIntegrationTest {
 	static void configureDynamicProperties(DynamicPropertyRegistry registry) {
 		configureProperties(registry);
 	}
+
+	@Autowired
+	private StudyProgramRepository studyProgramRepository;
 
 	private String unique(String prefix) {
 		return prefix + " " + UUID.randomUUID().toString().substring(0, 8);
@@ -195,6 +201,40 @@ class OrganizationControllerTest extends BaseIntegrationTest {
 
 			assertThat(program.get("key").asString()).startsWith("DATA_SCIENCE_");
 			assertThat(program.get("school").get("id").asString()).isEqualTo(schoolId.toString());
+		}
+
+		@Test
+		void updateStudyProgram_WithoutKey_KeepsTheExistingKey() throws Exception {
+			String admin = createRandomAdminAuthentication();
+			JsonNode program = post("/v2/study-programs", admin, Map.of("name", unique("Program"), "key", unique("KEEP").replace(' ', '_')), 200);
+
+			Map<String, Object> update = new HashMap<>();
+			update.put("name", unique("Renamed Program"));
+			JsonNode updated = put("/v2/study-programs/" + program.get("id").asString(), admin, update, 200);
+
+			assertThat(updated.get("key").asString()).isEqualTo(program.get("key").asString());
+			assertThat(updated.get("name").asString()).isNotEqualTo(program.get("name").asString());
+		}
+
+		@Test
+		void updateStudyProgram_UnchangedLegacyKey_IsNotRewritten() throws Exception {
+			String admin = createRandomAdminAuthentication();
+			StudyProgram legacy = new StudyProgram();
+			legacy.setKey("legacy free text " + UUID.randomUUID());
+			legacy.setName("Legacy");
+			legacy = studyProgramRepository.save(legacy);
+
+			Map<String, Object> update = new HashMap<>();
+			update.put("name", "Legacy renamed");
+			update.put("key", legacy.getKey());
+			JsonNode updated = put("/v2/study-programs/" + legacy.getId(), admin, update, 200);
+
+			assertThat(updated.get("key").asString()).isEqualTo(legacy.getKey());
+		}
+
+		@Test
+		void createStudyProgram_KeyWithoutLatinCharacters_ReturnsBadRequest() throws Exception {
+			post("/v2/study-programs", createRandomAdminAuthentication(), Map.of("name", "\u4fe1\u606f", "key", "\u4fe1\u606f"), 400);
 		}
 
 		@Test
