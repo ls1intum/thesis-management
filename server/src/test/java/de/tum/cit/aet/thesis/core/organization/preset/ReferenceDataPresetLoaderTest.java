@@ -1,6 +1,7 @@
 package de.tum.cit.aet.thesis.core.organization.preset;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import de.tum.cit.aet.thesis.core.organization.entity.School;
 import de.tum.cit.aet.thesis.core.organization.entity.StudyProgram;
@@ -121,6 +122,20 @@ class ReferenceDataPresetLoaderTest extends BaseIntegrationTest {
 
 		assertThat(studyProgramRepository.findByKeyIgnoreCase("ADMIN_" + keyPrefix).orElseThrow().getSchool().getId())
 				.isEqualTo(adminChoice.getId());
+	}
+
+	@Test
+	void applyAtomically_RollsBackEverythingWhenALaterEntryFails() {
+		String abbreviation = "RB" + java.util.UUID.randomUUID().toString().substring(0, 8);
+		PresetData broken = new PresetData(
+				List.of(new ReferenceDataPresetLoader.PresetSchool("Rollback School " + abbreviation, abbreviation, null, null,
+						List.of(new ReferenceDataPresetLoader.PresetDepartment("Department", null)))),
+				// a study program without key violates the not-null constraint after the school was written
+				List.of(new ReferenceDataPresetLoader.PresetStudyProgram(null, "Broken", abbreviation)));
+
+		assertThatThrownBy(() -> loader.applyAtomically(broken)).isInstanceOf(Exception.class);
+
+		assertThat(schoolRepository.findByAbbreviationIgnoreCase(abbreviation)).isEmpty();
 	}
 
 	@Test

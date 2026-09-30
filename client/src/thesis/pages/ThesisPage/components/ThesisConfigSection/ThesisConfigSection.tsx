@@ -12,7 +12,7 @@ import {
   Text,
   TextInput,
 } from '@mantine/core'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { isNotEmpty, useForm } from '@mantine/form'
 import { DateInput, DateTimePicker } from '@mantine/dates'
@@ -142,6 +142,9 @@ const ThesisConfigSection = () => {
     // eslint-disable-next-line @eslint-react/exhaustive-deps -- form is stable; only re-validate when the relevant fields change
   }, [form.values.startDate, form.values.endDate, form.values.states])
 
+  // The study program is saved on its own; applying its response must not throw away unsaved edits of the form
+  const keepUnsavedEditsRef = useRef(false)
+
   useEffect(() => {
     form.setInitialValues({
       title: thesis.title,
@@ -161,7 +164,11 @@ const ThesisConfigSection = () => {
       })),
     })
 
-    form.reset()
+    if (keepUnsavedEditsRef.current) {
+      keepUnsavedEditsRef.current = false
+    } else {
+      form.reset()
+    }
     // eslint-disable-next-line @eslint-react/exhaustive-deps -- form is stable; only re-seed when the thesis prop changes
   }, [thesis])
 
@@ -299,6 +306,7 @@ const ThesisConfigSection = () => {
       })
 
       if (response.ok) {
+        keepUnsavedEditsRef.current = true
         return response.data
       } else {
         throw new ApiError(response)

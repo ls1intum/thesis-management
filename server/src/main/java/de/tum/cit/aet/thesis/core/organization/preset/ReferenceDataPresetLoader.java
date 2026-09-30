@@ -14,6 +14,8 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -40,6 +42,7 @@ public class ReferenceDataPresetLoader implements ApplicationRunner {
 	private final SchoolRepository schoolRepository;
 	private final DepartmentRepository departmentRepository;
 	private final StudyProgramRepository studyProgramRepository;
+	private final TransactionTemplate transactionTemplate;
 
 	/**
 	 * Creates the loader.
@@ -49,6 +52,7 @@ public class ReferenceDataPresetLoader implements ApplicationRunner {
 	 * @param schoolRepository the school repository
 	 * @param departmentRepository the department repository
 	 * @param studyProgramRepository the study program repository
+	 * @param transactionManager the transaction manager used to apply the preset atomically
 	 */
 	@Autowired
 	public ReferenceDataPresetLoader(
@@ -56,13 +60,15 @@ public class ReferenceDataPresetLoader implements ApplicationRunner {
 			ObjectMapper objectMapper,
 			SchoolRepository schoolRepository,
 			DepartmentRepository departmentRepository,
-			StudyProgramRepository studyProgramRepository
+			StudyProgramRepository studyProgramRepository,
+			PlatformTransactionManager transactionManager
 	) {
 		this.preset = preset == null ? "" : preset.trim().toLowerCase(Locale.ROOT);
 		this.objectMapper = objectMapper;
 		this.schoolRepository = schoolRepository;
 		this.departmentRepository = departmentRepository;
 		this.studyProgramRepository = studyProgramRepository;
+		this.transactionTemplate = new TransactionTemplate(transactionManager);
 	}
 
 	/**
@@ -100,7 +106,17 @@ public class ReferenceDataPresetLoader implements ApplicationRunner {
 			data = objectMapper.readValue(in, PresetData.class);
 		}
 
-		apply(data);
+		applyAtomically(data);
+	}
+
+	/**
+	 * Applies the preset in a single transaction. The preset is skipped once a school exists, so a partially
+	 * applied preset (for example after a crash) would never be completed; either everything is written or nothing.
+	 *
+	 * @param data the preset data
+	 */
+	void applyAtomically(PresetData data) {
+		transactionTemplate.executeWithoutResult(status -> apply(data));
 	}
 
 	/**
