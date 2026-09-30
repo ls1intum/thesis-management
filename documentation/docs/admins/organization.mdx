@@ -1,0 +1,39 @@
+---
+title: Schools, Departments and Study Programs
+sidebar_position: 5
+description: How admins maintain the schools (faculties), departments and study programs of an instance and how they affect research groups, students and theses.
+---
+
+The organizational structure is maintained by admins at runtime under **Organization** in the navigation (`/admin/organization`). It replaces the former `STUDY_PROGRAMS` environment variable.
+
+## Concepts
+
+| Concept | Description |
+|---|---|
+| **School** | Called *faculty* at some universities. Has a name, an abbreviation, an optional website and an optional **thesis portal** (the website students submit their final thesis to). |
+| **Department** | Belongs to exactly one school and cannot be moved to another one. |
+| **Study program** | Belongs to a school (optional). The degree (Bachelor/Master) remains a separate field of the student's profile, so one entry such as *Informatics* serves both degrees. |
+| **Research group** | Belongs to a school and to one of its departments (both optional). Admins and group admins set them in the research group settings. |
+| **Thesis** | Is assigned to a study program when it is created. Without an explicit choice it takes the study program of its first student that has one. Supervisors can change it on the thesis configuration page. |
+
+## Thesis portal link
+
+The link shown to students for the final submission is resolved in this order:
+
+1. the thesis portal of the school of the thesis' study program,
+2. the thesis portal of the school of the thesis' research group,
+3. the instance default `THESIS_PORTAL_URL` (see [Configuration](./configuration.mdx)).
+
+Only `http(s)` URLs are accepted for portals and websites.
+
+## Deactivating and deleting
+
+Entries that are still used cannot be deleted: a school with departments, study programs or research groups, a department used by a research group, and a study program used by a student or thesis. The application explains this and offers deactivation instead. Deactivated entries disappear from selection lists but stay visible where they are already assigned, so history and existing assignments are kept.
+
+## Pre-filling an instance
+
+Set `REFERENCE_DATA_PRESET=tum` to pre-fill the seven TUM schools with their departments, the thesis portals of the schools that have one and about 50 study programs on the first start. The preset is only applied while no school exists yet: it never overwrites what admins edited and never brings back what they deleted. Study programs that already exist (for example the ones migrated from the former free-text values) keep their name and only receive the school of the preset if they had none.
+
+## Migration from `STUDY_PROGRAMS`
+
+On upgrade, every study program key that students already have (for example `COMPUTER_SCIENCE`) becomes a study program entry and the students are linked to it. Existing theses take the study program of their first student. Keys that were configured through `STUDY_PROGRAMS` receive a generated name and no school; complete them under **Organization**. The `STUDY_PROGRAMS` variable is no longer read.

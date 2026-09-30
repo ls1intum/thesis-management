@@ -65,6 +65,8 @@ services:
       - KEYCLOAK_SERVICE_CLIENT_ID
       - KEYCLOAK_SERVICE_CLIENT_SECRET
       - MAIL_SENDER
+      # Pre-fills schools, departments and study programs on first start (e.g. `tum`); empty for none
+      - REFERENCE_DATA_PRESET
       # Shared with the client below: gates the AI feedback module. Both services must agree,
       # otherwise the client shows AI buttons the server answers with 404 (or vice versa).
       - AI_FEATURES_ENABLED
@@ -106,7 +108,7 @@ services:
       # server actually serves the /v2/ai-review endpoints.
       - AI_FEATURES_ENABLED
       - THESIS_TYPES
-      - STUDY_PROGRAMS
+      - THESIS_PORTAL_URL
       - STUDY_DEGREES
       - GENDERS
       - LANGUAGES

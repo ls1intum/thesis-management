@@ -18,6 +18,7 @@ import * as classes from '@/app/layout/AuthenticatedArea/AuthenticatedArea.modul
 import { Link, useLocation, useNavigationType } from 'react-router'
 import { useDebouncedValue, useDisclosure } from '@mantine/hooks'
 import {
+  BuildingsIcon,
   CaretDoubleLeftIcon,
   CaretDoubleRightIcon,
   ChatsCircleIcon,
@@ -122,6 +123,12 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
       link: '/admin',
       label: 'Administration',
       icon: GearSixIcon,
+      groups: ['admin'],
+    },
+    {
+      link: '/admin/organization',
+      label: 'Organization',
+      icon: BuildingsIcon,
       groups: ['admin'],
     },
     {

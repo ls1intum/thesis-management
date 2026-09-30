@@ -3,7 +3,11 @@ import { ThesisState } from '@/thesis/requests/responses/thesis'
 import { Accordion, Center, Grid, Group, Stack, Text, Table, Alert } from '@mantine/core'
 import ConfirmationButton from '@/core/components/ConfirmationButton/ConfirmationButton'
 import { doRequest } from '@/core/requests/request'
-import { checkMinimumThesisState, isThesisClosed } from '@/thesis/utils/thesis'
+import {
+  checkMinimumThesisState,
+  getThesisSubmissionPortalUrl,
+  isThesisClosed,
+} from '@/thesis/utils/thesis'
 import {
   useLoadedThesisContext,
   useThesisUpdateAction,
@@ -102,7 +106,7 @@ const ThesisWritingSection = () => {
   const thesisSubmissionReminder = (
     <>
       This is not the official submission website. Please also make sure to submit your thesis{' '}
-      <a href='https://portal.cit.tum.de/' target='_blank' rel='noopener noreferrer'>
+      <a href={getThesisSubmissionPortalUrl(thesis)} target='_blank' rel='noopener noreferrer'>
         here
       </a>
       .

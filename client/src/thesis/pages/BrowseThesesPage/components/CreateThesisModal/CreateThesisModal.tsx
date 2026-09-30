@@ -16,6 +16,8 @@ import type { PaginationResponse } from '@/core/requests/responses/pagination'
 import type { ILightResearchGroup } from '@/core/group/requests/responses/researchGroup'
 import type { IMinimalUser } from '@/core/user/requests/responses/user'
 import { useHasGroupAccess } from '@/core/hooks/authentication'
+import StudyProgramSelect from '@/core/organization/components/StudyProgramSelect'
+import { useOrganization } from '@/core/organization/hooks/useOrganization'
 
 interface ICreateThesisModalProps {
   opened: boolean
@@ -31,6 +33,7 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
   const [researchGroups, setResearchGroups] = useState<PaginationResponse<ILightResearchGroup>>()
   const [autoSelectedExaminers, setAutoSelectedExaminers] = useState<IMinimalUser[]>([])
   const hasAdminAccess = useHasGroupAccess('admin')
+  const { studyPrograms } = useOrganization()
 
   const form = useForm<{
     title: string
@@ -41,6 +44,7 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
     supervisorIds: string[]
     examinerIds: string[]
     researchGroupId: string
+    studyProgramId: string | null
   }>({
     mode: 'controlled',
     initialValues: {
@@ -52,6 +56,7 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
       supervisorIds: [],
       examinerIds: [],
       researchGroupId: '',
+      studyProgramId: null,
     },
     validateInputOnBlur: true,
     validate: {
@@ -133,6 +138,7 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
                 supervisorIds: values.supervisorIds,
                 examinerIds: values.examinerIds,
                 researchGroupId: values.researchGroupId,
+                studyProgramId: values.studyProgramId,
               },
             })
 
@@ -180,6 +186,12 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
               form.setFieldValue('additionalStudentUsernames', next.keycloakUsernames)
             }}
             error={form.errors.studentDbUserIds}
+          />
+          <StudyProgramSelect
+            label='Study Program'
+            description="Leave empty to use the student's study program"
+            studyPrograms={studyPrograms}
+            {...form.getInputProps('studyProgramId')}
           />
           <UserMultiSelect
             label='Supervisor(s)'

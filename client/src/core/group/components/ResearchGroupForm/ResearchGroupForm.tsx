@@ -2,7 +2,8 @@ import { Select, Textarea, TextInput, Text, Button, Grid, Group } from '@mantine
 import { useForm } from '@mantine/form'
 import KeycloakUserAutocomplete from '@/core/user/components/KeycloakUserAutocomplete.tsx/KeycloakUserAutocomplete'
 import { GLOBAL_CONFIG } from '@/core/config/global'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useOrganization } from '@/core/organization/hooks/useOrganization'
 import type { ResearchGroupFormValues } from '@/core/group/pages/ResearchGroupAdminPage/components/CreateResearchGroupModal'
 import type { IResearchGroup } from '@/core/group/requests/responses/researchGroup'
 
@@ -24,6 +25,8 @@ const getInitialValues = (initial: Partial<IResearchGroup> | undefined) => ({
   description: initial?.description ?? '',
   websiteUrl: initial?.websiteUrl ?? '',
   headUsername: '',
+  schoolId: initial?.school?.id ?? null,
+  departmentId: initial?.department?.id ?? null,
 })
 
 const getInitialHeadLabel = (initial: Partial<IResearchGroup> | undefined): string =>
@@ -37,6 +40,7 @@ const ResearchGroupForm = ({
 }: IResearchGroupFormProps) => {
   const descriptionMaxLength = 500
   const initialValues = getInitialValues(initialFormValues)
+  const { schools } = useOrganization()
   // Discard only makes sense in the edit flow — on create there's nothing
   // meaningful to revert to.
   const isEditing = Boolean(initialFormValues?.id) || Boolean(initialFormValues?.name)
@@ -116,12 +120,49 @@ const ResearchGroupForm = ({
     initialFormValues.campus,
     initialFormValues.description,
     initialFormValues.websiteUrl,
+    initialFormValues.school?.id,
+    initialFormValues.department?.id,
   ])
 
   const hasFieldChanges = (Object.keys(initialValues) as Array<keyof typeof initialValues>).some(
     (key) => initialValues[key] !== form.values[key],
   )
   const hasChanges = hasFieldChanges || headTouched
+
+  // Deactivated schools/departments stay visible only while the group still belongs to them. The
+  // group's current school and department are always part of the options: the Select resets its value
+  // to null when the value is missing from `data`, which would drop them while the lists still load.
+  const schoolOptions = useMemo(() => {
+    const options = schools
+      .filter((school) => school.active !== false || school.id === form.values.schoolId)
+      .map((school) => ({ value: school.id, label: `${school.name} (${school.abbreviation})` }))
+    const current = initialFormValues.school
+
+    if (current && !options.some((option) => option.value === current.id)) {
+      options.push({ value: current.id, label: `${current.name} (${current.abbreviation})` })
+    }
+
+    return options
+  }, [schools, form.values.schoolId, initialFormValues.school])
+  const departmentOptions = useMemo(() => {
+    const options = (
+      schools.find((school) => school.id === form.values.schoolId)?.departments ?? []
+    )
+      .filter(
+        (department) => department.active !== false || department.id === form.values.departmentId,
+      )
+      .map((department) => ({ value: department.id, label: department.name }))
+    const current = initialFormValues.department
+
+    if (
+      current?.schoolId === form.values.schoolId &&
+      !options.some((option) => option.value === current.id)
+    ) {
+      options.push({ value: current.id, label: current.name })
+    }
+
+    return options
+  }, [schools, form.values.schoolId, form.values.departmentId, initialFormValues.department])
 
   // In edit mode the user may clear the autocomplete without picking anyone;
   // headUsername stays '' (the "keep current" sentinel) but the user's intent
@@ -185,6 +226,35 @@ const ResearchGroupForm = ({
             placeholder='Select a campus'
             data={Object.values(GLOBAL_CONFIG.research_groups_location)}
             {...form.getInputProps('campus')}
+          />
+        </Grid.Col>
+
+        <Grid.Col span={layout === 'grid' ? { base: 12, md: 6 } : 12}>
+          <Select
+            label='School'
+            placeholder='Select a school'
+            data={schoolOptions}
+            clearable
+            searchable
+            value={form.values.schoolId}
+            onChange={(schoolId) => {
+              form.setFieldValue('schoolId', schoolId)
+              // A department only exists within its school.
+              form.setFieldValue('departmentId', null)
+            }}
+            error={form.errors.schoolId}
+          />
+        </Grid.Col>
+
+        <Grid.Col span={layout === 'grid' ? { base: 12, md: 6 } : 12}>
+          <Select
+            label='Department'
+            placeholder={form.values.schoolId ? 'Select a department' : 'Select a school first'}
+            data={departmentOptions}
+            clearable
+            searchable
+            disabled={!form.values.schoolId}
+            {...form.getInputProps('departmentId')}
           />
         </Grid.Col>
 

@@ -68,10 +68,18 @@ export function doRequest<T>(
     })
 
     if (result.status >= 200 && result.status < 300) {
+      // 204 No Content (e.g. successful deletes) has no body to parse
+      const data =
+        options.responseType === 'blob'
+          ? await result.blob()
+          : result.status === 204
+            ? undefined
+            : await result.json()
+
       return {
         ok: true,
         status: result.status,
-        data: options.responseType === 'blob' ? await result.blob() : await result.json(),
+        data: data as T,
       }
     } else {
       let errorMessage: string | undefined = undefined
