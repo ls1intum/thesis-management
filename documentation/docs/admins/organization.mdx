@@ -34,6 +34,8 @@ Entries that are still used cannot be deleted: a school with departments, study 
 
 Set `REFERENCE_DATA_PRESET=tum` to pre-fill the seven TUM schools with their departments, the thesis portals of the schools that have one and about 50 study programs on the first start. The preset is only applied while no school exists yet: it never overwrites what admins edited and never brings back what they deleted. Study programs that already exist (for example the ones migrated from the former free-text values) keep their name and only receive the school of the preset if they had none.
 
+The `tum` preset also assigns the school **CIT** to every research group that has no school yet, because all research groups of the instance existed before schools did. Groups that already have a school are left alone and the department is not guessed, so admins pick the department in the group settings and correct a group that does not belong to CIT.
+
 ## Migration from `STUDY_PROGRAMS`
 
 On upgrade, every study program key that a student already has (for example `COMPUTER_SCIENCE`) becomes a study program entry and the students are linked to it. Existing theses take the study program of their first student. Known keys keep their former label; keys that came from a customised `STUDY_PROGRAMS` receive a generated name and no school, so complete them under **Organization**. Study programs that were configured in `STUDY_PROGRAMS` but that no student has chosen yet are **not** migrated: create them under **Organization** or use the preset. The `STUDY_PROGRAMS` variable is no longer read.

@@ -3,6 +3,8 @@ package de.tum.cit.aet.thesis.core.organization.preset;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import de.tum.cit.aet.thesis.core.group.entity.ResearchGroup;
+import de.tum.cit.aet.thesis.core.group.repository.ResearchGroupRepository;
 import de.tum.cit.aet.thesis.core.organization.entity.School;
 import de.tum.cit.aet.thesis.core.organization.entity.StudyProgram;
 import de.tum.cit.aet.thesis.core.organization.preset.ReferenceDataPresetLoader.PresetData;
@@ -21,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Testcontainers
@@ -46,6 +49,9 @@ class ReferenceDataPresetLoaderTest extends BaseIntegrationTest {
 	@Autowired
 	private StudyProgramRepository studyProgramRepository;
 
+	@Autowired
+	private ResearchGroupRepository researchGroupRepository;
+
 	private PresetData tumPreset() throws IOException {
 		try (InputStream in = getClass().getResourceAsStream("/reference-data/tum.json")) {
 			return mapper.readValue(in, PresetData.class);
@@ -58,6 +64,7 @@ class ReferenceDataPresetLoaderTest extends BaseIntegrationTest {
 
 		assertThat(preset.schools()).extracting(ReferenceDataPresetLoader.PresetSchool::abbreviation)
 				.containsExactlyInAnyOrder("CIT", "ED", "NAT", "LS", "MH", "MGT", "SOT");
+		assertThat(preset.defaultResearchGroupSchool()).isEqualTo("CIT");
 		assertThat(preset.schools()).allSatisfy(school -> assertThat(school.departments()).isNotEmpty());
 		assertThat(preset.schools()).filteredOn(school -> school.thesisPortalUrl() != null)
 				.extracting(ReferenceDataPresetLoader.PresetSchool::thesisPortalUrl)
@@ -100,6 +107,61 @@ class ReferenceDataPresetLoaderTest extends BaseIntegrationTest {
 		StudyProgram created = studyProgramRepository.findByKeyIgnoreCase(key + "_NEW").orElseThrow();
 		assertThat(created.getName()).isEqualTo("New program");
 		assertThat(created.getSchool().getId()).isEqualTo(school.getId());
+	}
+
+	private ResearchGroup createGroup() throws Exception {
+		TestUser head = createRandomTestUser(List.of("supervisor"));
+		UUID groupId = createTestResearchGroup("Preset Group", head.universityId());
+		return researchGroupRepository.findById(groupId).orElseThrow();
+	}
+
+	@Test
+	void apply_AssignsTheDefaultSchoolToResearchGroupsWithoutSchoolOnly() throws Exception {
+		String abbreviation = "DG" + UUID.randomUUID().toString().substring(0, 8);
+		School otherSchool = new School();
+		otherSchool.setName("Other " + abbreviation);
+		otherSchool.setAbbreviation("OS" + abbreviation);
+		otherSchool = schoolRepository.save(otherSchool);
+
+		ResearchGroup withoutSchool = createGroup();
+		ResearchGroup withOtherSchool = createGroup();
+		withOtherSchool.setSchool(otherSchool);
+		researchGroupRepository.save(withOtherSchool);
+
+		loader.apply(new PresetData(
+				List.of(new ReferenceDataPresetLoader.PresetSchool("Default " + abbreviation, abbreviation, null, null,
+						List.of(new ReferenceDataPresetLoader.PresetDepartment("Some Department", null)))),
+				List.of(),
+				abbreviation));
+
+		School defaultSchool = schoolRepository.findByAbbreviationIgnoreCase(abbreviation).orElseThrow();
+		ResearchGroup assigned = researchGroupRepository.findById(withoutSchool.getId()).orElseThrow();
+		assertThat(assigned.getSchool().getId()).isEqualTo(defaultSchool.getId());
+		// the department is not guessed
+		assertThat(assigned.getDepartment()).isNull();
+		assertThat(researchGroupRepository.findById(withOtherSchool.getId()).orElseThrow().getSchool().getId())
+				.isEqualTo(otherSchool.getId());
+	}
+
+	@Test
+	void apply_WithoutDefaultSchool_LeavesResearchGroupsAlone() throws Exception {
+		String abbreviation = "ND" + UUID.randomUUID().toString().substring(0, 8);
+		ResearchGroup group = createGroup();
+
+		loader.apply(new PresetData(
+				List.of(new ReferenceDataPresetLoader.PresetSchool("No Default " + abbreviation, abbreviation, null, null, null)),
+				List.of()));
+
+		assertThat(researchGroupRepository.findById(group.getId()).orElseThrow().getSchool()).isNull();
+	}
+
+	@Test
+	void apply_UnknownDefaultSchool_LeavesResearchGroupsAloneAndDoesNotFail() throws Exception {
+		ResearchGroup group = createGroup();
+
+		loader.apply(new PresetData(List.of(), List.of(), "DOES_NOT_EXIST_" + UUID.randomUUID()));
+
+		assertThat(researchGroupRepository.findById(group.getId()).orElseThrow().getSchool()).isNull();
 	}
 
 	@Test

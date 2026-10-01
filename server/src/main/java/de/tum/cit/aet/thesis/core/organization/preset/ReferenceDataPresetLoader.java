@@ -1,5 +1,7 @@
 package de.tum.cit.aet.thesis.core.organization.preset;
 
+import de.tum.cit.aet.thesis.core.group.entity.ResearchGroup;
+import de.tum.cit.aet.thesis.core.group.repository.ResearchGroupRepository;
 import de.tum.cit.aet.thesis.core.organization.entity.Department;
 import de.tum.cit.aet.thesis.core.organization.entity.School;
 import de.tum.cit.aet.thesis.core.organization.entity.StudyProgram;
@@ -42,6 +44,7 @@ public class ReferenceDataPresetLoader implements ApplicationRunner {
 	private final SchoolRepository schoolRepository;
 	private final DepartmentRepository departmentRepository;
 	private final StudyProgramRepository studyProgramRepository;
+	private final ResearchGroupRepository researchGroupRepository;
 	private final TransactionTemplate transactionTemplate;
 
 	/**
@@ -52,6 +55,7 @@ public class ReferenceDataPresetLoader implements ApplicationRunner {
 	 * @param schoolRepository the school repository
 	 * @param departmentRepository the department repository
 	 * @param studyProgramRepository the study program repository
+	 * @param researchGroupRepository the research group repository
 	 * @param transactionManager the transaction manager used to apply the preset atomically
 	 */
 	@Autowired
@@ -61,6 +65,7 @@ public class ReferenceDataPresetLoader implements ApplicationRunner {
 			SchoolRepository schoolRepository,
 			DepartmentRepository departmentRepository,
 			StudyProgramRepository studyProgramRepository,
+			ResearchGroupRepository researchGroupRepository,
 			PlatformTransactionManager transactionManager
 	) {
 		this.preset = preset == null ? "" : preset.trim().toLowerCase(Locale.ROOT);
@@ -68,6 +73,7 @@ public class ReferenceDataPresetLoader implements ApplicationRunner {
 		this.schoolRepository = schoolRepository;
 		this.departmentRepository = departmentRepository;
 		this.studyProgramRepository = studyProgramRepository;
+		this.researchGroupRepository = researchGroupRepository;
 		this.transactionTemplate = new TransactionTemplate(transactionManager);
 	}
 
@@ -165,7 +171,35 @@ public class ReferenceDataPresetLoader implements ApplicationRunner {
 			}
 		}
 
+		assignDefaultSchoolToResearchGroups(data.defaultResearchGroupSchool());
+
 		log.info("Applied reference data preset '{}': {} schools, {} study programs", preset, data.schools().size(), data.studyPrograms().size());
+	}
+
+	/**
+	 * Research groups that existed before schools did belong to the school the preset names as default; groups
+	 * that already have a school are left alone. The department is not guessed.
+	 */
+	private void assignDefaultSchoolToResearchGroups(String schoolAbbreviation) {
+		if (schoolAbbreviation == null || schoolAbbreviation.isBlank()) {
+			return;
+		}
+
+		School school = schoolRepository.findByAbbreviationIgnoreCase(schoolAbbreviation).orElse(null);
+
+		if (school == null) {
+			log.warn("Default school '{}' of the reference data preset does not exist, research groups stay unassigned", schoolAbbreviation);
+			return;
+		}
+
+		List<ResearchGroup> groups = researchGroupRepository.findAllBySchoolIsNull();
+
+		for (ResearchGroup group : groups) {
+			group.setSchool(school);
+		}
+
+		researchGroupRepository.saveAll(groups);
+		log.info("Assigned school {} to {} research groups without a school", school.getAbbreviation(), groups.size());
 	}
 
 	/**
@@ -173,17 +207,29 @@ public class ReferenceDataPresetLoader implements ApplicationRunner {
 	 *
 	 * @param schools the schools with their departments
 	 * @param studyPrograms the study programs
+	 * @param defaultResearchGroupSchool abbreviation of the school that research groups without a school are assigned to, optional
 	 */
-	public record PresetData(List<PresetSchool> schools, List<PresetStudyProgram> studyPrograms) {
+	public record PresetData(List<PresetSchool> schools, List<PresetStudyProgram> studyPrograms, String defaultResearchGroupSchool) {
 		/**
 		 * Normalises missing lists to empty ones.
 		 *
 		 * @param schools the schools with their departments
 		 * @param studyPrograms the study programs
+		 * @param defaultResearchGroupSchool abbreviation of the default school of research groups, optional
 		 */
 		public PresetData {
 			schools = schools == null ? List.of() : schools;
 			studyPrograms = studyPrograms == null ? List.of() : studyPrograms;
+		}
+
+		/**
+		 * Creates a preset without a default school for research groups.
+		 *
+		 * @param schools the schools with their departments
+		 * @param studyPrograms the study programs
+		 */
+		public PresetData(List<PresetSchool> schools, List<PresetStudyProgram> studyPrograms) {
+			this(schools, studyPrograms, null);
 		}
 	}
 
