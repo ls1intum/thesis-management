@@ -16,6 +16,7 @@ const sidebars: SidebarsConfig = {
         'configuration',
         'production-setup',
         'data-retention',
+        'organization',
       ],
     },
   ],

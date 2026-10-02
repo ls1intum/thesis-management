@@ -25,6 +25,8 @@ import { getHtmlTextLength } from '@/core/utils/validation'
 import { enrollmentDateToSemester, semesterToEnrollmentDate } from '@/core/utils/converter'
 import { Link } from 'react-router'
 import AvatarInput from '@/core/user/components/UserInformationForm/components/AvatarInput/AvatarInput'
+import StudyProgramSelect from '@/core/organization/components/StudyProgramSelect'
+import { useOrganization } from '@/core/organization/hooks/useOrganization'
 
 interface IUserInformationFormProps {
   requireCompletion: boolean
@@ -49,9 +51,13 @@ const UserInformationForm = (props: IUserInformationFormProps) => {
 
   const { updateInformation } = useAuthenticationContext()
   const user = useLoggedInUser()
+  const { studyPrograms } = useOrganization()
+  // Only programs that can still be selected make the field mandatory; otherwise students could not complete their profile
+  const hasSelectableStudyProgram = studyPrograms.some((program) => program.active !== false)
 
   const form = useForm<
-    Omit<IUpdateUserInformationPayload, 'enrolledAt'> & {
+    Omit<IUpdateUserInformationPayload, 'enrolledAt' | 'studyProgramId'> & {
+      studyProgramId: string | null
       matriculationNumber: string // read-only, synced from Keycloak, not sent to server
       semester: string
       researchGroupName: string | null
@@ -72,7 +78,7 @@ const UserInformationForm = (props: IUserInformationFormProps) => {
       gender: '',
       nationality: '',
       studyDegree: '',
-      studyProgram: '',
+      studyProgramId: null,
       semester: '',
       researchGroupName: '',
       specialSkills: '',
@@ -98,7 +104,11 @@ const UserInformationForm = (props: IUserInformationFormProps) => {
       gender: requireCompletion ? isNotEmpty('Please state your gender') : undefined,
       nationality: requireCompletion ? isNotEmpty('Please state your nationality') : undefined,
       studyDegree: requireCompletion ? isNotEmpty('Please state your study degree') : undefined,
-      studyProgram: requireCompletion ? isNotEmpty('Please state your study program') : undefined,
+      // an instance without a selectable study program must not lock students out of applying
+      studyProgramId:
+        requireCompletion && hasSelectableStudyProgram
+          ? (value) => (value ? null : 'Please state your study program')
+          : undefined,
       semester: requireCompletion ? isNotEmpty('Please state your semester date') : undefined,
       specialSkills: (value) => {
         if (!value && requireCompletion) {
@@ -166,7 +176,7 @@ const UserInformationForm = (props: IUserInformationFormProps) => {
       gender: user?.gender ?? '',
       nationality: user?.nationality ?? '',
       studyDegree: user?.studyDegree ?? '',
-      studyProgram: user?.studyProgram ?? '',
+      studyProgramId: user?.studyProgramId ?? null,
       semester: user?.enrolledAt ? enrollmentDateToSemester(user.enrolledAt).toString() : '',
       researchGroupName: user?.researchGroupName ?? '',
       specialSkills: user?.specialSkills ?? '',
@@ -213,7 +223,7 @@ const UserInformationForm = (props: IUserInformationFormProps) => {
               nationality: values.nationality || null,
               email: values.email || null,
               studyDegree: values.studyDegree || null,
-              studyProgram: values.studyProgram || null,
+              studyProgramId: values.studyProgramId ?? null,
               enrolledAt: semesterToEnrollmentDate(values.semester),
               specialSkills: values.specialSkills || null,
               interests: values.interests || null,
@@ -358,18 +368,12 @@ const UserInformationForm = (props: IUserInformationFormProps) => {
             searchable={true}
             {...form.getInputProps('studyDegree')}
           />
-          <Select
+          <StudyProgramSelect
             label='Study Program'
             placeholder='Study Program'
-            data={Object.keys(GLOBAL_CONFIG.study_programs).map((key) => {
-              return {
-                label: GLOBAL_CONFIG.study_programs[key],
-                value: key,
-              }
-            })}
-            required={requireCompletion}
-            searchable={true}
-            {...form.getInputProps('studyProgram')}
+            studyPrograms={studyPrograms}
+            required={requireCompletion && hasSelectableStudyProgram}
+            {...form.getInputProps('studyProgramId')}
           />
           <NumberInput
             required={requireCompletion}

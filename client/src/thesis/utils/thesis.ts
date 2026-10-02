@@ -1,9 +1,18 @@
 import type { IPublishedThesis, IThesis } from '@/thesis/requests/responses/thesis'
 import { ThesisState } from '@/thesis/requests/responses/thesis'
 import type { ILightUser } from '@/core/user/requests/responses/user'
+import { GLOBAL_CONFIG } from '@/core/config/global'
 
 export function isThesisClosed(thesis: IThesis | IPublishedThesis) {
   return thesis.state === ThesisState.FINISHED || thesis.state === ThesisState.DROPPED_OUT
+}
+
+/**
+ * The portal students submit the final thesis to: the one of the school the thesis belongs to,
+ * otherwise the instance default.
+ */
+export function getThesisSubmissionPortalUrl(thesis: Pick<IThesis, 'submissionPortalUrl'>) {
+  return thesis.submissionPortalUrl ?? GLOBAL_CONFIG.thesis_portal_url
 }
 
 export function checkMinimumThesisState(thesis: IThesis, state: ThesisState) {

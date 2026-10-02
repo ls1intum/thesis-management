@@ -102,10 +102,7 @@ const InvolvedPersonsContent = () => {
               <Grid.Col span={{ md: 2 }}>
                 <LabeledItem
                   label='Study Degree'
-                  value={`${
-                    GLOBAL_CONFIG.study_programs[user.data.studyProgram || ''] ??
-                    user.data.studyProgram
-                  } ${
+                  value={`${user.data.studyProgram} ${
                     GLOBAL_CONFIG.study_degrees[user.data.studyDegree || ''] ??
                     user.data.studyDegree
                   } `}

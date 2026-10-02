@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.UUID;
 
 @Repository
@@ -57,4 +58,10 @@ Page<ResearchGroup> searchResearchGroup(
 	ResearchGroup findByAbbreviation(String abbreviation);
 
 	boolean existsByHeadId(UUID headId);
+
+	boolean existsBySchoolId(UUID schoolId);
+
+	List<ResearchGroup> findAllBySchoolIsNull();
+
+	boolean existsByDepartmentId(UUID departmentId);
 }

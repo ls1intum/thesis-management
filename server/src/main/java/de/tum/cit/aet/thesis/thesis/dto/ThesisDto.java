@@ -2,6 +2,7 @@ package de.tum.cit.aet.thesis.thesis.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.thesis.core.group.dto.LightResearchGroupDto;
+import de.tum.cit.aet.thesis.core.organization.dto.StudyProgramDto;
 import de.tum.cit.aet.thesis.core.user.dto.LightUserDto;
 import de.tum.cit.aet.thesis.core.user.dto.MinimalUserDto;
 import de.tum.cit.aet.thesis.feedback.entity.AIReviewSummary;
@@ -52,6 +53,8 @@ public record ThesisDto(
 	Instant endDate,
 	Instant createdAt,
 	LightResearchGroupDto researchGroup,
+	StudyProgramDto studyProgram,
+	String submissionPortalUrl,
 
 	ThesisAssessmentDto assessment,
 	List<ThesisProposalDto> proposals,
@@ -129,6 +132,8 @@ public static ThesisDto fromThesisEntity(Thesis thesis, boolean supervisorAccess
 		thesis.getEndDate(),
 		thesis.getCreatedAt(),
 		LightResearchGroupDto.fromResearchGroupEntity(thesis.getResearchGroup()),
+		StudyProgramDto.fromStudyProgramEntity(thesis.getStudyProgram()),
+		thesis.getSubmissionPortalUrl(),
 		supervisorAccess && !assessments.isEmpty()
 			? ThesisDto.ThesisAssessmentDto.fromAssessmentEntity(assessments.getFirst()) : null,
 		proposals.stream().map(ThesisProposalDto::fromProposalEntity).toList(),

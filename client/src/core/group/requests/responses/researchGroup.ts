@@ -1,4 +1,8 @@
 import type { IMinimalUser } from '@/core/user/requests/responses/user'
+import type {
+  IDepartment,
+  IMinimalSchool,
+} from '@/core/organization/requests/responses/organization'
 
 export interface IMinimalResearchGroup {
   id: string
@@ -14,5 +18,7 @@ export interface IResearchGroup extends ILightResearchGroup {
   description: string
   websiteUrl: string
   campus: string
+  school?: IMinimalSchool
+  department?: IDepartment
   memberCount?: number
 }

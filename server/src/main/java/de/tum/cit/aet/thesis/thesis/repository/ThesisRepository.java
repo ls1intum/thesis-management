@@ -18,6 +18,8 @@ import java.util.UUID;
 
 @Repository
 public interface ThesisRepository extends JpaRepository<Thesis, UUID> {
+	boolean existsByStudyProgramId(UUID studyProgramId);
+
 	@Query("""
 			SELECT DISTINCT t FROM Thesis t
 			LEFT JOIN ThesisRole r ON t.id = r.thesis.id

@@ -3,6 +3,7 @@ import type {
   IMinimalResearchGroup,
 } from '@/core/group/requests/responses/researchGroup'
 import type { ILightUser, IMinimalUser } from '@/core/user/requests/responses/user'
+import type { IStudyProgram } from '@/core/organization/requests/responses/organization'
 
 export enum ThesisState {
   PROPOSAL = 'PROPOSAL',
@@ -96,6 +97,9 @@ export interface IThesis extends IThesisOverview {
   anonymized?: boolean
   anonymizedAt?: string
   researchGroup: ILightResearchGroup
+  studyProgram?: IStudyProgram
+  // Portal of the school of the study program (or research group); the instance default applies if missing
+  submissionPortalUrl?: string
   students?: ILightUser[]
   supervisors?: ILightUser[]
   examiners?: ILightUser[]

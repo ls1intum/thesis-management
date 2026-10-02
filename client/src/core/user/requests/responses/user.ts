@@ -11,6 +11,7 @@ export interface ILightUser extends IMinimalUser {
   email: string | null
   studyDegree: string | null
   studyProgram: string | null
+  studyProgramId?: string | null
   customData: Record<string, string> | null
   joinedAt: string
   groups?: string[]

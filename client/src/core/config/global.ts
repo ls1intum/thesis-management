@@ -46,6 +46,7 @@ export const GLOBAL_CONFIG: IGlobalConfig = {
 
   chair_name: getEnvironmentVariable('CHAIR_NAME') ?? 'ThesisManagement',
   chair_url: getEnvironmentVariable('CHAIR_URL') ?? window.origin,
+  thesis_portal_url: getEnvironmentVariable('THESIS_PORTAL_URL') ?? 'https://portal.cit.tum.de/',
 
   environment: parseEnvironment(getEnvironmentVariable('ENVIRONMENT')),
 
@@ -67,13 +68,6 @@ export const GLOBAL_CONFIG: IGlobalConfig = {
     MASTER: 'Master',
   },
 
-  study_programs: getEnvironmentVariable<Record<string, string>>('STUDY_PROGRAMS', true) ?? {
-    COMPUTER_SCIENCE: 'Computer Science',
-    INFORMATION_SYSTEMS: 'Information Systems',
-    GAMES_ENGINEERING: 'Games Engineering',
-    MANAGEMENT_AND_TECHNOLOGY: 'Management and Technology',
-    OTHER: 'Other',
-  },
   topic_views_options: getEnvironmentVariable('TOPIC_VIEWS_OPTIONS', true) ?? {
     OPEN: 'Open Topics',
     PUBLISHED: 'Published Topics',

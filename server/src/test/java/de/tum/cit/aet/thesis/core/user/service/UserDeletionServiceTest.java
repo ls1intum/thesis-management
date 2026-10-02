@@ -5,6 +5,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import de.tum.cit.aet.thesis.core.application.repository.ApplicationRepository;
 import de.tum.cit.aet.thesis.core.notification.repository.NotificationSettingRepository;
+import de.tum.cit.aet.thesis.core.organization.entity.StudyProgram;
+import de.tum.cit.aet.thesis.core.organization.repository.StudyProgramRepository;
 import de.tum.cit.aet.thesis.core.topic.repository.TopicRoleRepository;
 import de.tum.cit.aet.thesis.core.user.entity.User;
 import de.tum.cit.aet.thesis.core.user.repository.UserGroupRepository;
@@ -16,6 +18,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -60,6 +63,12 @@ class UserDeletionServiceTest extends BaseIntegrationTest {
 
 	@Autowired
 	private EntityManager entityManager;
+
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
+
+	@Autowired
+	private StudyProgramRepository studyProgramRepository;
 
 	@Autowired
 	private TransactionTemplate transactionTemplate;
@@ -391,6 +400,26 @@ class UserDeletionServiceTest extends BaseIntegrationTest {
 			assertThat(user.getProjects()).isNull();
 			assertThat(user.getInterests()).isNull();
 			assertThat(user.getSpecialSkills()).isNull();
+		}
+
+		@Test
+		void clearsTheStudyProgramIncludingTheLegacyColumnDuringRetention() throws Exception {
+			StudentWithThesis swt = createStudentWithCompletedThesis(2);
+			StudyProgram studyProgram = new StudyProgram();
+			studyProgram.setKey("DELETION_" + UUID.randomUUID());
+			studyProgram.setName("Deletion Program");
+			studyProgram = studyProgramRepository.save(studyProgram);
+			User student = userRepository.findById(swt.student().userId()).orElseThrow();
+			student.setStudyProgram(studyProgram);
+			userRepository.save(student);
+			jdbcTemplate.update("UPDATE users SET study_program = 'COMPUTER_SCIENCE' WHERE user_id = ?::uuid",
+					swt.student().userId().toString());
+
+			userDeletionService.deleteOrAnonymizeUser(swt.student().userId());
+
+			assertThat(userRepository.findById(swt.student().userId()).orElseThrow().getStudyProgram()).isNull();
+			assertThat(jdbcTemplate.queryForList("SELECT study_program FROM users WHERE user_id = ?::uuid", String.class,
+					swt.student().userId().toString())).containsExactly((String) null);
 		}
 
 		@Test

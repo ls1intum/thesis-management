@@ -5,6 +5,8 @@ export interface IGlobalConfig {
 
   chair_name: string
   chair_url: string
+  // Portal students submit their final thesis to, unless the school of the thesis defines its own
+  thesis_portal_url: string
 
   environment?: Environment
 
@@ -20,7 +22,6 @@ export interface IGlobalConfig {
   passkey_prompt_apps: string[]
 
   genders: Record<string, string>
-  study_programs: Record<string, string>
   study_degrees: Record<string, string>
   languages: Record<string, string>
 

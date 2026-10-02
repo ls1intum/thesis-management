@@ -4,6 +4,8 @@ import de.tum.cit.aet.thesis.core.exception.request.AccessDeniedException;
 import de.tum.cit.aet.thesis.core.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.core.group.entity.ResearchGroup;
 import de.tum.cit.aet.thesis.core.group.repository.ResearchGroupRepository;
+import de.tum.cit.aet.thesis.core.organization.entity.Department;
+import de.tum.cit.aet.thesis.core.organization.entity.School;
 import de.tum.cit.aet.thesis.core.security.CurrentUserProvider;
 import de.tum.cit.aet.thesis.core.user.entity.User;
 import de.tum.cit.aet.thesis.core.user.repository.UserRepository;
@@ -222,7 +224,9 @@ public class ResearchGroupService {
 			String abbreviation,
 			String description,
 			String websiteUrl,
-			String campus
+			String campus,
+			School school,
+			Department department
 	) {
 		//Get the User by universityId else create the user
 		User head = userService.findOrCreateByUniversityId(headUsername);
@@ -240,6 +244,8 @@ public class ResearchGroupService {
 		researchGroup.setDescription(description);
 		researchGroup.setWebsiteUrl(websiteUrl);
 		researchGroup.setCampus(campus);
+		researchGroup.setSchool(school);
+		researchGroup.setDepartment(department);
 		researchGroup.setCreatedAt(Instant.now());
 		researchGroup.setUpdatedAt(Instant.now());
 		researchGroup.setCreatedBy(currentUserProvider().getUser());
@@ -282,6 +288,8 @@ public class ResearchGroupService {
 	 * @param description the new description
 	 * @param websiteUrl the new website URL
 	 * @param campus the new campus
+	 * @param school the school the group belongs to, may be {@code null}
+	 * @param department the department of that school, may be {@code null}
 	 * @return the updated research group
 	 */
 	public ResearchGroup updateResearchGroup(
@@ -291,7 +299,9 @@ public class ResearchGroupService {
 			String abbreviation,
 			String description,
 			String websiteUrl,
-			String campus
+			String campus,
+			School school,
+			Department department
 	) {
 		if (researchGroup.isArchived()) {
 			throw new AccessDeniedException("Cannot update an archived research group.");
@@ -328,6 +338,8 @@ public class ResearchGroupService {
 		researchGroup.setDescription(description);
 		researchGroup.setWebsiteUrl(websiteUrl);
 		researchGroup.setCampus(campus);
+		researchGroup.setSchool(school);
+		researchGroup.setDepartment(department);
 		researchGroup.setUpdatedAt(Instant.now());
 		researchGroup.setUpdatedBy(currentUserProvider().getUser());
 

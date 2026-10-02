@@ -1,6 +1,7 @@
 import type { IThesis, ThesisState } from '@/thesis/requests/responses/thesis'
 import {
   Alert,
+  Anchor,
   Button,
   Group,
   List,
@@ -11,13 +12,13 @@ import {
   Text,
   TextInput,
 } from '@mantine/core'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { isNotEmpty, useForm } from '@mantine/form'
 import { DateInput, DateTimePicker } from '@mantine/dates'
 import { UserMultiSelect } from '@/core/user/components/UserMultiSelect/UserMultiSelect'
 import { isNotEmptyUserList } from '@/core/utils/validation'
-import { isThesisClosed } from '@/thesis/utils/thesis'
+import { getThesisSubmissionPortalUrl, isThesisClosed } from '@/thesis/utils/thesis'
 import { doRequest } from '@/core/requests/request'
 import ConfirmationButton from '@/core/components/ConfirmationButton/ConfirmationButton'
 import {
@@ -35,6 +36,8 @@ import type { ILightResearchGroup } from '@/core/group/requests/responses/resear
 import { showSimpleError, showSimpleSuccess } from '@/core/utils/notification'
 import { useHasGroupAccess } from '@/core/hooks/authentication'
 import { Warning } from '@phosphor-icons/react'
+import StudyProgramSelect from '@/core/organization/components/StudyProgramSelect'
+import { useOrganization } from '@/core/organization/hooks/useOrganization'
 
 interface IThesisConfigSectionFormValues {
   title: string
@@ -139,6 +142,9 @@ const ThesisConfigSection = () => {
     // eslint-disable-next-line @eslint-react/exhaustive-deps -- form is stable; only re-validate when the relevant fields change
   }, [form.values.startDate, form.values.endDate, form.values.states])
 
+  // The study program is saved on its own; applying its response must not throw away unsaved edits of the form
+  const keepUnsavedEditsRef = useRef(false)
+
   useEffect(() => {
     form.setInitialValues({
       title: thesis.title,
@@ -158,7 +164,11 @@ const ThesisConfigSection = () => {
       })),
     })
 
-    form.reset()
+    if (keepUnsavedEditsRef.current) {
+      keepUnsavedEditsRef.current = false
+    } else {
+      form.reset()
+    }
     // eslint-disable-next-line @eslint-react/exhaustive-deps -- form is stable; only re-seed when the thesis prop changes
   }, [thesis])
 
@@ -285,6 +295,26 @@ const ThesisConfigSection = () => {
     }
   }
 
+  const { studyPrograms } = useOrganization()
+
+  const [updatingStudyProgram, onStudyProgramChange] = useThesisUpdateAction(
+    async (studyProgramId: string | null) => {
+      const response = await doRequest<IThesis>(`/v2/theses/${thesis.thesisId}/study-program`, {
+        method: 'PUT',
+        requiresAuth: true,
+        data: { studyProgramId },
+      })
+
+      if (response.ok) {
+        keepUnsavedEditsRef.current = true
+        return response.data
+      } else {
+        throw new ApiError(response)
+      }
+    },
+    'Study program updated successfully',
+  )
+
   const [updating, onSave] = useThesisUpdateAction(async () => {
     const values = form.values
 
@@ -344,6 +374,27 @@ const ThesisConfigSection = () => {
             required={true}
             maw={360}
             {...form.getInputProps('language')}
+          />
+          <StudyProgramSelect
+            label='Study Program'
+            description={
+              <>
+                Decides where the final thesis is submitted:{' '}
+                <Anchor
+                  href={getThesisSubmissionPortalUrl(thesis)}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  inherit
+                >
+                  {getThesisSubmissionPortalUrl(thesis)}
+                </Anchor>
+              </>
+            }
+            studyPrograms={studyPrograms}
+            value={thesis.studyProgram?.id ?? null}
+            onChange={(studyProgramId) => void onStudyProgramChange(studyProgramId)}
+            disabled={!access.supervisor || updatingStudyProgram}
+            maw={360}
           />
           <ThesisVisibilitySelect
             label='Visibility'

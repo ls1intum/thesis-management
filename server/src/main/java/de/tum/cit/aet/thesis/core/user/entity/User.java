@@ -2,6 +2,7 @@ package de.tum.cit.aet.thesis.core.user.entity;
 
 import de.tum.cit.aet.thesis.core.group.entity.ResearchGroup;
 import de.tum.cit.aet.thesis.core.notification.entity.NotificationSetting;
+import de.tum.cit.aet.thesis.core.organization.entity.StudyProgram;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
@@ -81,8 +82,16 @@ public class User {
 	@Column(name = "study_degree")
 	private String studyDegree;
 
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "study_program_id")
+	private StudyProgram studyProgram;
+
+	/**
+	 * The former free-text study program. It is no longer read or written; the column only stays for one release
+	 * so the migration can be rolled back. It is mapped so account deletion can still clear the personal data in it.
+	 */
 	@Column(name = "study_program")
-	private String studyProgram;
+	private String legacyStudyProgram;
 
 	@Column(name = "projects")
 	private String projects;
@@ -153,6 +162,10 @@ public class User {
 
 	public boolean isAvatarPromptDismissed() {
 		return avatarPromptDismissedAt != null;
+	}
+
+	public String getStudyProgramName() {
+		return studyProgram == null ? null : studyProgram.getName();
 	}
 
 	public boolean isAnonymized() {

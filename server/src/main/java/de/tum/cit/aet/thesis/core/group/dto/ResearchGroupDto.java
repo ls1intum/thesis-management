@@ -2,6 +2,8 @@ package de.tum.cit.aet.thesis.core.group.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.thesis.core.group.entity.ResearchGroup;
+import de.tum.cit.aet.thesis.core.organization.dto.DepartmentDto;
+import de.tum.cit.aet.thesis.core.organization.dto.MinimalSchoolDto;
 import de.tum.cit.aet.thesis.core.user.dto.MinimalUserDto;
 
 import java.util.UUID;
@@ -15,6 +17,8 @@ public record ResearchGroupDto(
 	String description,
 	String websiteUrl,
 	String campus,
+	MinimalSchoolDto school,
+	DepartmentDto department,
 	Long memberCount
 ) {
 
@@ -35,6 +39,8 @@ public static ResearchGroupDto fromResearchGroupEntity(ResearchGroup group, Long
 		group.getDescription(),
 		group.getWebsiteUrl(),
 		group.getCampus(),
+		MinimalSchoolDto.fromSchoolEntity(group.getSchool()),
+		DepartmentDto.fromDepartmentEntity(group.getDepartment()),
 		memberCount
 	);
 }

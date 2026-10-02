@@ -53,6 +53,8 @@
     <include file="changes/44_ai_review_summary.sql" relativeToChangelogFile="true" />
     <include file="changes/45_ai_review_summary_document_version.sql" relativeToChangelogFile="true" />
 
+    <include file="changes/46_schools_departments_study_programs.sql" relativeToChangelogFile="true" />
+
     <!-- Dev/test seed data — must be last so it can reference all columns from prior migrations -->
     <include file="changes/23_seed_dev_test_data.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>

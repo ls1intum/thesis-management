@@ -37,6 +37,7 @@ class DataFormatterTest {
 				firstName.toLowerCase() + "@example.com",
 				"Bachelor",
 				"Computer Science",
+				null,
 				new HashMap<>(),
 				Instant.now(),
 				Arrays.asList("admin", "supervisor")

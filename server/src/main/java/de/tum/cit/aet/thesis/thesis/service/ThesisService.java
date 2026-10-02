@@ -9,6 +9,7 @@ import de.tum.cit.aet.thesis.core.group.entity.ResearchGroup;
 import de.tum.cit.aet.thesis.core.group.entity.ResearchGroupSettings;
 import de.tum.cit.aet.thesis.core.group.repository.ResearchGroupRepository;
 import de.tum.cit.aet.thesis.core.group.service.ResearchGroupSettingsService;
+import de.tum.cit.aet.thesis.core.organization.entity.StudyProgram;
 import de.tum.cit.aet.thesis.core.security.CurrentUserProvider;
 import de.tum.cit.aet.thesis.core.upload.constants.UploadFileType;
 import de.tum.cit.aet.thesis.core.upload.service.UploadService;
@@ -256,6 +257,41 @@ public class ThesisService {
 			boolean notifyUser,
 			UUID researchGroupId
 	) {
+		return createThesis(thesisTitle, thesisType, language, examinerIds, supervisorIds, studentIds,
+				additionalStudentUsernames, application, notifyUser, researchGroupId, null);
+	}
+
+	/**
+	 * Creates a new thesis like {@link #createThesis(String, String, String, List, List, List, List, Application, boolean, UUID)}
+	 * and assigns it to a study program. Without an explicit study program the thesis takes the one of its first
+	 * student that has one.
+	 *
+	 * @param thesisTitle the title of the thesis
+	 * @param thesisType the type of the thesis
+	 * @param language the language of the thesis
+	 * @param examinerIds the IDs of the examiners
+	 * @param supervisorIds the IDs of the supervisors
+	 * @param studentIds the IDs of the students
+	 * @param additionalStudentUsernames the usernames of additional students
+	 * @param application the application the thesis originates from, may be {@code null}
+	 * @param notifyUser whether to notify the involved users
+	 * @param researchGroupId the ID of the research group the thesis belongs to
+	 * @param studyProgram the study program of the thesis, may be {@code null} to derive it from the students
+	 * @return the created thesis
+	 */
+	public Thesis createThesis(
+			String thesisTitle,
+			String thesisType,
+			String language,
+			List<UUID> examinerIds,
+			List<UUID> supervisorIds,
+			List<UUID> studentIds,
+			List<String> additionalStudentUsernames,
+			Application application,
+			boolean notifyUser,
+			UUID researchGroupId,
+			StudyProgram studyProgram
+	) {
 		ResearchGroup researchGroup = researchGroupRepository.findById(researchGroupId)
 				.orElseThrow(() -> new ResourceNotFoundException("Research group not found"));
 
@@ -284,6 +320,13 @@ public class ThesisService {
 		assignThesisRoles(thesis, examinerIds, supervisorIds, effectiveStudentIds);
 		saveStateChange(thesis, nextState);
 
+		StudyProgram thesisStudyProgram = studyProgram != null ? studyProgram : firstStudyProgramOfStudents(thesis);
+
+		if (thesisStudyProgram != null) {
+			thesis.setStudyProgram(thesisStudyProgram);
+			thesis = thesisRepository.save(thesis);
+		}
+
 		if (notifyUser) {
 			mailingService.sendThesisCreatedEmail(currentUserProvider().getUser(), thesis);
 		}
@@ -293,6 +336,31 @@ public class ThesisService {
 		}
 
 		return thesis;
+	}
+
+	private static StudyProgram firstStudyProgramOfStudents(Thesis thesis) {
+		return thesis.getStudents().stream()
+				.map(User::getStudyProgram)
+				.filter(Objects::nonNull)
+				.findFirst()
+				.orElse(null);
+	}
+
+	/**
+	 * Changes the study program a thesis is assigned to. The portal link on the thesis page follows the
+	 * school of the study program.
+	 *
+	 * @param thesis the thesis to update
+	 * @param studyProgram the new study program, may be {@code null}
+	 * @return the updated thesis
+	 */
+	public Thesis updateStudyProgram(Thesis thesis, StudyProgram studyProgram) {
+		requireNotAnonymized(thesis);
+		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+
+		thesis.setStudyProgram(studyProgram);
+
+		return thesisRepository.save(thesis);
 	}
 
 	/**

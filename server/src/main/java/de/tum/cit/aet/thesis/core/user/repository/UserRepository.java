@@ -18,6 +18,8 @@ import java.util.UUID;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
+	boolean existsByStudyProgramId(UUID studyProgramId);
+
 	Optional<User> findByUniversityId(String universityId);
 
 	List<User> findAllByUniversityIdIn(List<String> universityIds);
