@@ -72,7 +72,7 @@
     "keycloak-js": "26.2.4",
     "mantine-datatable": "9.4.0",
     "react": "19.3.0",
-    "react-avatar-editor": "15.1.0",
+    "react-avatar-editor": "15.2.0",
     "react-dom": "19.3.0",
     "react-router": "8.4.0"
   },
