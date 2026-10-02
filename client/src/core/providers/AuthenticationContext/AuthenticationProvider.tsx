@@ -12,6 +12,7 @@ import { jwtDecode } from 'jwt-decode'
 import type { IAuthenticationTokens } from '@/core/hooks/authentication'
 import { getAuthenticationTokens, useAuthenticationTokens } from '@/core/hooks/authentication'
 import { useSignal } from '@/core/hooks/utility'
+import { useClearAvatarCacheOnSignOut } from '@/core/components/CustomAvatar/useClearAvatarCacheOnSignOut'
 import type { IUser } from '@/core/user/requests/responses/user'
 import { doRequest } from '@/core/requests/request'
 import { showSimpleError } from '@/core/utils/notification'
@@ -193,6 +194,8 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
   const [universityId, setUniversityId] = useState<string>()
   const [user, setUser] = useState<IUser>()
   const [authenticationTokens, setAuthenticationTokens] = useAuthenticationTokens()
+
+  useClearAvatarCacheOnSignOut(Boolean(authenticationTokens?.access_token))
   const { signal: readySignal, triggerSignal: triggerReadySignal, ref: readyRef } = useSignal()
   const isReady = readyRef.isTriggerred
   const [researchGroups, setResearchGroups] = useState<ILightResearchGroup[]>([])

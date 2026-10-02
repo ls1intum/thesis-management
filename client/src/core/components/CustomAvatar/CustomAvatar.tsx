@@ -4,7 +4,7 @@ import type { MantineSize } from '@mantine/core'
 import { Avatar, type BoxProps } from '@mantine/core'
 import { getAvatar, getAvatarPath } from '@/core/utils/user'
 import { AuthenticationContext } from '@/core/providers/AuthenticationContext/context'
-import { clearAvatarCache, loadAvatar } from '@/core/components/CustomAvatar/avatarCache'
+import { loadAvatar } from '@/core/components/CustomAvatar/avatarCache'
 
 interface ICustomAvatarProps extends BoxProps {
   user: IMinimalUser
@@ -20,10 +20,6 @@ export const CustomAvatar = (props: ICustomAvatarProps) => {
   const avatarPath = getAvatarPath(user)
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      clearAvatarCache()
-    }
-
     if (!avatarPath || !isAuthenticated) {
       setBlobUrl(undefined)
       return
