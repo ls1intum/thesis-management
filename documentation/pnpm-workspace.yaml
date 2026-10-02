@@ -6,7 +6,7 @@ allowBuilds:
 # by Docusaurus and its plugins.
 overrides:
   # GHSA-qj8w-gfj5-8c6v (RCE) + serialize-javascript CPU exhaustion
-  serialize-javascript@<7.0.5: 7.0.7
+  serialize-javascript@<7.0.5: 7.1.2
   # GHSA-5jgf-p345-68v8 / GHSA-fph4-wmhf-6fwf / GHSA-f65p-4m7j-42xc / GHSA-jqff-g426-hqxp
   # (fast-uri host confusion + SSRF, on top of GHSA-7p8r-x3mc-p8w7 / GHSA-v2hh-gcrm-f6hx, via ajv)
   fast-uri@<3.1.6: 3.1.8
