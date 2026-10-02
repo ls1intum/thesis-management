@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { renderWithProviders, waitFor } from '@/../test/render'
+import { clearAvatarCache } from '@/core/components/CustomAvatar/avatarCache'
 import AvatarInput from '@/core/user/components/UserInformationForm/components/AvatarInput/AvatarInput'
 import { AuthenticationContext } from '@/core/providers/AuthenticationContext/context'
 import type { IAuthenticationContext } from '@/core/providers/AuthenticationContext/context'
@@ -39,16 +40,12 @@ describe('AvatarInput', () => {
   beforeEach(() => {
     URL.createObjectURL = vi.fn((blob: Blob | MediaSource) => `blob:mock-${(blob as Blob).size}`)
     URL.revokeObjectURL = vi.fn()
-    // callback form of doRequest, like the real one: hand out the picture of the user
-    doRequest.mockImplementation(
-      (_url: string, _options: unknown, callback?: (response: unknown) => void) => {
-        callback?.({ ok: true, status: 200, data: new Blob(['x'.repeat(7)]) })
-        return () => undefined
-      },
-    )
+    // hand out the picture of the user
+    doRequest.mockResolvedValue({ ok: true, status: 200, data: new Blob(['x'.repeat(7)]) })
   })
 
   afterEach(() => {
+    clearAvatarCache()
     vi.clearAllMocks()
   })
 
@@ -62,7 +59,6 @@ describe('AvatarInput', () => {
     expect(doRequest).toHaveBeenCalledWith(
       '/v2/avatars/u1?filename=abc123.png',
       expect.objectContaining({ requiresAuth: true, responseType: 'blob' }),
-      expect.any(Function),
     )
   })
 
