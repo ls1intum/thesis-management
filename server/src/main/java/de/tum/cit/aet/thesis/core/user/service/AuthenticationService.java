@@ -147,7 +147,7 @@ public class AuthenticationService {
 	 * @param interests the user's interests
 	 * @param projects the user's projects
 	 * @param customData additional custom data fields
-	 * @param avatar the avatar image file
+	 * @param avatar the new avatar image file, {@code null} or empty keeps the current one
 	 * @param examinationReport the examination report file
 	 * @param cv the CV file
 	 * @param degreeReport the degree report file
@@ -185,8 +185,10 @@ public class AuthenticationService {
 		user.setProjects(projects);
 		user.setCustomData(customData);
 
-		if (avatar != null) {
-			user.setAvatar(avatar.isEmpty() ? null : uploadService.store(avatar, 1024 * 1024, UploadFileType.IMAGE));
+		// An empty upload (for example a browser that could not render a large picture) must never delete the current
+		// picture; there is no way to remove it through this endpoint.
+		if (avatar != null && !avatar.isEmpty()) {
+			user.setAvatar(uploadService.store(avatar, 1024 * 1024, UploadFileType.IMAGE));
 		}
 
 		user.setExaminationFilename(examinationReport == null ? null : uploadService.store(examinationReport, 3 * 1024 * 1024, UploadFileType.PDF));

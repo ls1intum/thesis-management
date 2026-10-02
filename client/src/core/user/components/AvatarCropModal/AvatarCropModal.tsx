@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import AvatarEditor, { type AvatarEditorRef } from 'react-avatar-editor'
 import { Button, Center, Modal, Slider, Stack } from '@mantine/core'
+import { showSimpleError } from '@/core/utils/notification'
 
 interface IAvatarCropModalProps {
   file: File | undefined
@@ -22,6 +23,13 @@ const AvatarCropModal = (props: IAvatarCropModalProps) => {
     }
 
     const data = await fetch(canvas).then((res) => res.blob())
+
+    // Browsers return an empty image for pictures that are too large for a canvas. Saving that would replace the
+    // current picture with nothing, so ask for another picture instead.
+    if (data.size === 0) {
+      showSimpleError('This image could not be processed. Please choose a smaller image.')
+      return
+    }
 
     onSave(new File([data], 'avatar.png'))
     setScale(1)

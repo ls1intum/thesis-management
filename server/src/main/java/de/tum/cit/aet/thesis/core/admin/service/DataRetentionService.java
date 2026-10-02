@@ -20,6 +20,8 @@ import java.util.UUID;
 /** Runs scheduled data retention tasks including application cleanup, user deactivation, and export processing. */
 @Service
 public class DataRetentionService {
+	private static final int DISABLE_BATCH_SIZE = 1000;
+
 	private static final Logger log = LoggerFactory.getLogger(DataRetentionService.class);
 
 	private final ApplicationRepository applicationRepository;
@@ -94,8 +96,14 @@ public class DataRetentionService {
 			return 0;
 		}
 
-		toDisable.forEach(user -> user.setDisabled(true));
-		userRepository.saveAll(toDisable);
+		// Only the disabled column is written: the users were loaded a moment ago and saving them as a whole could
+		// overwrite changes made in the meantime, for example a new profile picture.
+		List<UUID> userIds = toDisable.stream().map(User::getId).toList();
+
+		// in batches, the number of bind parameters of a single statement is limited
+		for (int from = 0; from < userIds.size(); from += DISABLE_BATCH_SIZE) {
+			userRepository.disableAllById(userIds.subList(from, Math.min(from + DISABLE_BATCH_SIZE, userIds.size())));
+		}
 
 		log.info("Disabled {} inactive student accounts (inactive for more than {} days)", toDisable.size(), inactiveUserDays);
 

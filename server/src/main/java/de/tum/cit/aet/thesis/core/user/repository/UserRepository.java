@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -79,6 +80,15 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 	List<User> findAllByDeletionRequestedAtIsNotNull();
 
 	List<User> findAllByDeletionScheduledForIsNotNull();
+
+	/**
+	 * Disables the given users by writing only the disabled column. A full-row save of users loaded earlier would
+	 * also write back their other, possibly outdated, columns such as the avatar.
+	 */
+	@Modifying
+	@Transactional
+	@Query("UPDATE User u SET u.disabled = TRUE WHERE u.id IN :userIds")
+	void disableAllById(@Param("userIds") Collection<UUID> userIds);
 
 	@Modifying
 	@Transactional
