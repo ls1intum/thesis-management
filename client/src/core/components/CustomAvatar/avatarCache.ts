@@ -13,7 +13,7 @@ const wait = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, 
 // and server errors may.
 const isRetryable = (status: number) => status === 429 || status >= 500
 
-async function fetchAvatar(path: string): Promise<string | undefined> {
+const fetchAvatar = async (path: string): Promise<string | undefined> => {
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
     const response = await doRequest<Blob>(path, {
       method: 'GET',
@@ -35,7 +35,7 @@ async function fetchAvatar(path: string): Promise<string | undefined> {
   return undefined
 }
 
-export function loadAvatar(path: string): Promise<string | undefined> {
+export const loadAvatar = (path: string): Promise<string | undefined> => {
   const cached = cache.get(path)
 
   if (cached) {
@@ -55,7 +55,7 @@ export function loadAvatar(path: string): Promise<string | undefined> {
   return pending
 }
 
-export function clearAvatarCache() {
+export const clearAvatarCache = () => {
   const entries = [...cache.values()]
   cache.clear()
 
