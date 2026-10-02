@@ -94,8 +94,9 @@ public class DataRetentionService {
 			return 0;
 		}
 
-		toDisable.forEach(user -> user.setDisabled(true));
-		userRepository.saveAll(toDisable);
+		// Only the disabled column is written: the users were loaded a moment ago and saving them as a whole could
+		// overwrite changes made in the meantime, for example a new profile picture.
+		userRepository.disableAllById(toDisable.stream().map(User::getId).toList());
 
 		log.info("Disabled {} inactive student accounts (inactive for more than {} days)", toDisable.size(), inactiveUserDays);
 

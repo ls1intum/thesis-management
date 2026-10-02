@@ -234,6 +234,24 @@ class DataRetentionServiceTest extends BaseIntegrationTest {
 	}
 
 	@Test
+	void disablingOnlyChangesTheDisabledFlag() throws Exception {
+		TestUser student = createRandomTestUser(List.of("student"));
+		backdateUserActivity(student.userId(), 400);
+
+		// only the disabled column may be written, other columns such as the picture must stay as they are
+		transactionTemplate.executeWithoutResult(status -> entityManager
+				.createNativeQuery("UPDATE users SET avatar = 'new-picture.png' WHERE user_id = :id")
+				.setParameter("id", student.userId())
+				.executeUpdate());
+
+		dataRetentionService.disableInactiveUsers();
+
+		User user = userRepository.findById(student.userId()).orElseThrow();
+		assertThat(user.isDisabled()).isTrue();
+		assertThat(user.getAvatar()).isEqualTo("new-picture.png");
+	}
+
+	@Test
 	void doesNotDisableRecentlyActiveStudent() throws Exception {
 		TestUser student = createRandomTestUser(List.of("student"));
 		// Student was just created with a recent last_login_at, so should not be disabled

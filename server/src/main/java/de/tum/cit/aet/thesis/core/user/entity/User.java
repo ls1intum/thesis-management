@@ -39,7 +39,9 @@ import java.util.UUID;
  * <p>Updates only write the columns that changed ({@link DynamicUpdate}). A user is loaded and saved by many requests,
  * for example the sync of the profile on every page load. If these wrote all columns, a request working on a copy it
  * loaded earlier would silently revert columns another request changed in the meantime, such as the profile picture
- * or an uploaded document.</p>
+ * or an uploaded document. This applies to entities that stay managed for the whole request. A user that was loaded
+ * in one call and saved in another is merged as a whole, so such jobs must update the single column with a query
+ * instead of saving the entity.</p>
  */
 @Getter
 @Setter

@@ -2,7 +2,7 @@ import { CustomAvatar } from '@/core/components/CustomAvatar/CustomAvatar'
 import { useAuthenticationContext, useLoggedInUser } from '@/core/hooks/authentication'
 import { Avatar, Button, Group, Input, Stack, Text, Tooltip } from '@mantine/core'
 import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { doRequest } from '@/core/requests/request'
 import { showSimpleError } from '@/core/utils/notification'
 import type { IUser } from '@/core/user/requests/responses/user'
@@ -26,17 +26,23 @@ const AvatarInput = (props: IAvatarInputProps) => {
   const { updateUser } = useAuthenticationContext()
   const user = useLoggedInUser()
 
-  // Preview of a picture that was chosen but not saved yet.
-  const previewUrl = useMemo(() => (value ? URL.createObjectURL(value) : undefined), [value])
+  // Preview of a picture that was chosen but not saved yet. The object URL is created and revoked in the same
+  // effect, so a render that is thrown away (or a Strict Mode remount) can neither leak nor break it.
+  const [previewUrl, setPreviewUrl] = useState<string>()
 
-  useEffect(
-    () => () => {
-      if (previewUrl) {
-        URL.revokeObjectURL(previewUrl)
-      }
-    },
-    [previewUrl],
-  )
+  useEffect(() => {
+    if (!value) {
+      setPreviewUrl(undefined)
+      return
+    }
+
+    const url = URL.createObjectURL(value)
+    setPreviewUrl(url)
+
+    return () => {
+      URL.revokeObjectURL(url)
+    }
+  }, [value])
 
   const [file, setFile] = useState<File>()
   const [importLoading, setImportLoading] = useState(false)

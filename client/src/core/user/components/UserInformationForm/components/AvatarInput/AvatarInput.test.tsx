@@ -71,4 +71,17 @@ describe('AvatarInput', () => {
       expect(document.querySelector('img')?.getAttribute('src')).toBe('blob:mock-5'),
     )
   })
+
+  test('releases the preview when the form goes away', async () => {
+    const chosen = new File(['12345'], 'new.png', { type: 'image/png' })
+
+    const { unmount } = renderInput(chosen)
+    await waitFor(() =>
+      expect(document.querySelector('img')?.getAttribute('src')).toBe('blob:mock-5'),
+    )
+
+    unmount()
+
+    expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:mock-5')
+  })
 })
