@@ -1,8 +1,8 @@
-import { getAvatar } from '@/core/utils/user'
+import { CustomAvatar } from '@/core/components/CustomAvatar/CustomAvatar'
 import { useAuthenticationContext, useLoggedInUser } from '@/core/hooks/authentication'
 import { Avatar, Button, Group, Input, Stack, Text, Tooltip } from '@mantine/core'
 import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { doRequest } from '@/core/requests/request'
 import { showSimpleError } from '@/core/utils/notification'
 import type { IUser } from '@/core/user/requests/responses/user'
@@ -26,9 +26,17 @@ const AvatarInput = (props: IAvatarInputProps) => {
   const { updateUser } = useAuthenticationContext()
   const user = useLoggedInUser()
 
-  const avatarUrl = useMemo(() => {
-    return value ? URL.createObjectURL(value) : getAvatar(user)
-  }, [user, value])
+  // Preview of a picture that was chosen but not saved yet.
+  const previewUrl = useMemo(() => (value ? URL.createObjectURL(value) : undefined), [value])
+
+  useEffect(
+    () => () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl)
+      }
+    },
+    [previewUrl],
+  )
 
   const [file, setFile] = useState<File>()
   const [importLoading, setImportLoading] = useState(false)
@@ -65,12 +73,18 @@ const AvatarInput = (props: IAvatarInputProps) => {
         accept={IMAGE_MIME_TYPE}
       >
         <Group>
-          <Avatar
-            src={avatarUrl}
-            name={`${user.firstName} ${user.lastName}`}
-            color='initials'
-            size='xl'
-          />
+          {previewUrl ? (
+            <Avatar
+              src={previewUrl}
+              name={`${user.firstName} ${user.lastName}`}
+              color='initials'
+              size='xl'
+            />
+          ) : (
+            // The saved picture is only served to signed-in users (and publicly listed people), so it has to
+            // be loaded with the login token; a plain image URL shows initials for most users.
+            <CustomAvatar user={user} size='xl' />
+          )}
           <Stack>
             <Text size='xl' inline>
               Drag the file here or click to select file
