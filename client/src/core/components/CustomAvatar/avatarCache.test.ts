@@ -60,4 +60,21 @@ describe('loadAvatar', () => {
     expect(await loadAvatar('/v2/avatars/d')).toBeUndefined()
     expect(await loadAvatar('/v2/avatars/d')).toBe('blob:test')
   })
+
+  it('keeps the newer request when an older one fails after the cache was cleared', async () => {
+    let failOldRequest: (value: unknown) => void = () => undefined
+    doRequestMock.mockImplementationOnce(() => new Promise((resolve) => (failOldRequest = resolve)))
+    doRequestMock.mockImplementation(ok)
+
+    const oldRequest = loadAvatar('/v2/avatars/e')
+    clearAvatarCache()
+    expect(await loadAvatar('/v2/avatars/e')).toBe('blob:test')
+
+    failOldRequest({ ok: false, status: 404, data: undefined })
+    expect(await oldRequest).toBeUndefined()
+
+    // the entry of the newer request is still there, so no third request is made
+    expect(await loadAvatar('/v2/avatars/e')).toBe('blob:test')
+    expect(doRequestMock).toHaveBeenCalledTimes(2)
+  })
 })

@@ -42,8 +42,9 @@ export const loadAvatar = (path: string): Promise<string | undefined> => {
     return cached
   }
 
-  const pending = fetchAvatar(path).then((url) => {
-    if (!url) {
+  const pending: Promise<string | undefined> = fetchAvatar(path).then((url) => {
+    // only forget this request's own entry: after a sign-out the path may already belong to a newer request
+    if (!url && cache.get(path) === pending) {
       cache.delete(path)
     }
 
