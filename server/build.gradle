@@ -196,7 +196,7 @@ bootRun {
 
 // PostgreSQL image tag for integration-test Testcontainers. Single source of truth is the repo-root
 // .env file (POSTGRES_IMAGE_TAG), shared with the docker-compose files. A POSTGRES_IMAGE_TAG shell/CI
-// environment variable overrides it, and 18.4-alpine is the final fallback so IDE/Gradle runs work
+// environment variable overrides it, and 18.6-alpine is the final fallback so IDE/Gradle runs work
 // even without .env. Read via the provider API so the configuration cache tracks .env. See
 // documentation/docs/developer/database.mdx.
 def postgresImageTag = providers.environmentVariable("POSTGRES_IMAGE_TAG")
@@ -204,7 +204,7 @@ def postgresImageTag = providers.environmentVariable("POSTGRES_IMAGE_TAG")
 		def matcher = (content =~ /(?m)^\s*POSTGRES_IMAGE_TAG\s*=\s*(\S+)/)
 		matcher.find() ? matcher.group(1) : null
 	})
-	.getOrElse("18.4-alpine")
+	.getOrElse("18.6-alpine")
 
 test {
 	useJUnitPlatform()
