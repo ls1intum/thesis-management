@@ -54,6 +54,9 @@ repositories {
 //   ./gradlew dependencyInsight --dependency jackson-databind --configuration runtimeClasspath
 ext['jackson-2-bom.version'] = '2.22.1'
 
+// The Spring Boot BOM manages Logback 1.5.x; use the newer 1.6 line
+ext['logback.version'] = '1.6.5'
+
 // Exclude Jackson 2.x databind from compile classpath to prevent accidental usage.
 // Jackson 3.x (tools.jackson) is the primary Jackson version in Spring Boot 4.x.
 // Jackson 2.x remains on the runtime classpath for third-party libraries (java-jwt, itext).
@@ -119,8 +122,8 @@ dependencies {
 	}
 	testImplementation "org.springframework.boot:spring-boot-starter-webmvc-test"
 
-	testImplementation "org.mockito:mockito-core:5.23.0"
-	testImplementation "org.mockito:mockito-junit-jupiter:5.23.0"
+	testImplementation "org.mockito:mockito-core:5.24.0"
+	testImplementation "org.mockito:mockito-junit-jupiter:5.24.0"
 
 	testImplementation "org.testcontainers:testcontainers:${test_container_version}"
 	testImplementation "org.testcontainers:testcontainers-junit-jupiter:${test_container_version}"
@@ -180,7 +183,7 @@ spotless {
 
 
 checkstyle {
-	toolVersion = "13.11.0"
+	toolVersion = "14.3.0"
 	configFile = file("config/checkstyle/checkstyle.xml")
 	maxWarnings = 0
 }
@@ -234,6 +237,10 @@ test {
 			println "==============================================================="
 		}
 	}
+}
+
+jacoco {
+	toolVersion = "0.8.15"
 }
 
 jacocoTestReport {
