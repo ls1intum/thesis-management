@@ -12,7 +12,7 @@ package de.tum.cit.aet.thesis.mock;
  */
 public final class TestContainerImages {
 
-	public static final String POSTGRES = "postgres:" + System.getProperty("postgres.image.tag", "18.4-alpine");
+	public static final String POSTGRES = "postgres:" + System.getProperty("postgres.image.tag", "18.6-alpine");
 
 	private TestContainerImages() {
 	}
