@@ -31,7 +31,7 @@ overrides:
   svgo@>=4.0.0 <4.0.2: 4.1.0
   fast-uri@<3.1.6: 3.1.8
   postcss@<8.5.23: 8.5.28
-  undici@>=8.0.0 <8.10.2: 8.10.2
+  undici@>=8.0.0 <8.10.2: 8.11.2
   browserslist@<4.28.7: 4.29.3
   baseline-browser-mapping@<2.11.0: 2.11.27
   webpack-dev-middleware@<8.3.0: 8.3.0
