@@ -1,6 +1,7 @@
 package de.tum.cit.aet.thesis.feedback.service;
 
 import de.tum.cit.aet.thesis.feedback.config.AIFeaturesEnabled;
+import de.tum.cit.aet.thesis.feedback.config.LenientOutputConverter;
 import de.tum.cit.aet.thesis.feedback.model.NoteSplitResult;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.context.annotation.Conditional;
@@ -105,7 +106,7 @@ public class NoteSplittingService {
 				.system(systemMessage -> systemMessage.text(buildSystemPrompt()))
 				.user(userMessage -> userMessage.text(buildUserMessage(notes)))
 				.call()
-				.entity(NoteSplitResult.class);
+				.entity(LenientOutputConverter.forType(NoteSplitResult.class));
 	}
 
 	static String buildSystemPrompt() {

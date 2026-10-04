@@ -30,6 +30,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.content.Media;
+import org.springframework.ai.converter.StructuredOutputConverter;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.MimeTypeUtils;
@@ -61,6 +62,9 @@ public class CategoryFanOutReviewerTest {
 
 	@Mock
 	CategoryReviewer categoryReviewer;
+
+	@Mock
+	CategoryReviewer failingCategoryReviewer;
 
 	@Mock
 	private ProgressReporter progressReporter;
@@ -98,7 +102,7 @@ public class CategoryFanOutReviewerTest {
 		when(chatClientRequestSpec.system(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptSystemSpec>>any())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.user(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptUserSpec>>any())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.call()).thenReturn(callResponseSpec);
-		when(callResponseSpec.entity(ReviewResult.class)).thenReturn(expectedResult);
+		when(callResponseSpec.entity(anyReviewResultConverter())).thenReturn(expectedResult);
 
 		ReviewResult actualResult = reviewer.review(new ReviewRequest(ReviewType.PROPOSAL, GUIDELINES, pdfResource));
 
@@ -109,7 +113,7 @@ public class CategoryFanOutReviewerTest {
 		// waits for all futures before invoking the merger step.
 		verify(categoryReviewer, times(ReviewCategory.values().length)).review(extractedText, extractedImages);
 		verify(chatClient).prompt();
-		verify(callResponseSpec).entity(ReviewResult.class);
+		verify(callResponseSpec).entity(anyReviewResultConverter());
 	}
 
 	@Test
@@ -124,7 +128,7 @@ public class CategoryFanOutReviewerTest {
 		when(chatClientRequestSpec.system(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptSystemSpec>>any())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.user(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptUserSpec>>any())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.call()).thenReturn(callResponseSpec);
-		when(callResponseSpec.entity(ReviewResult.class))
+		when(callResponseSpec.entity(anyReviewResultConverter()))
 				.thenReturn(new ReviewResult(AssessmentCategory.GOOD, 90, "Fine.", List.of()));
 
 		reviewer.review(new ReviewRequest(ReviewType.PROPOSAL, GUIDELINES, pdfResource, progressReporter));
@@ -148,6 +152,118 @@ public class CategoryFanOutReviewerTest {
 		verify(progressReporter).stepStarted("merge", "Consolidating findings", total, total);
 		verify(progressReporter).stepCompleted("merge", total, total);
 		verify(progressReporter, org.mockito.Mockito.never()).stepFailed(any(), org.mockito.ArgumentMatchers.anyInt(), org.mockito.ArgumentMatchers.anyInt(), any());
+	}
+
+	@Test
+	void aFailedCategoryIsDroppedAndTheOthersStillProduceAResult() {
+		Resource pdfResource = new ByteArrayResource("pdf-content".getBytes());
+		ReviewCategory failingCategory = ReviewCategory.values()[0];
+		int total = ReviewCategory.values().length + 1;
+		ReviewResult expectedResult = new ReviewResult(AssessmentCategory.ACCEPTABLE, 60, "Partial review.", List.of());
+
+		CategoryFanOutReviewer partiallyFailing = new CategoryFanOutReviewer(pdfService, chatClientBuilder, objectMapper, false, "") {
+			@Override
+			protected CategoryReviewer createReviewer(ReviewCategory category, ReviewType reviewType, String guidelinesPrompt) {
+				return category == failingCategory ? failingCategoryReviewer : categoryReviewer;
+			}
+		};
+
+		when(pdfService.extractTextFromPdf(any(Resource.class))).thenReturn(List.of("Extracted text"));
+		when(failingCategoryReviewer.review(anyList(), anyList())).thenThrow(new RuntimeException("502 Bad Gateway"));
+		when(categoryReviewer.review(anyList(), anyList())).thenReturn(new CategoryFindings(List.of()));
+		when(chatClient.prompt()).thenReturn(chatClientRequestSpec);
+		when(chatClientRequestSpec.system(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptSystemSpec>>any())).thenReturn(chatClientRequestSpec);
+		when(chatClientRequestSpec.user(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptUserSpec>>any())).thenReturn(chatClientRequestSpec);
+		when(chatClientRequestSpec.call()).thenReturn(callResponseSpec);
+		when(callResponseSpec.entity(anyReviewResultConverter())).thenReturn(expectedResult);
+
+		ReviewResult actualResult = partiallyFailing.review(
+				new ReviewRequest(ReviewType.PROPOSAL, GUIDELINES, pdfResource, progressReporter));
+
+		// One flaky LLM call costs its own category, not the whole review: every other category
+		// still ran and the merge step still consolidated what came back.
+		assertThat(actualResult.findings()).isEqualTo(expectedResult.findings());
+		verify(categoryReviewer, times(ReviewCategory.values().length - 1)).review(anyList(), anyList());
+		verify(progressReporter).stepFailed(eq(failingCategory.getSlug()), anyInt(), eq(total), eq("This step could not be completed"));
+		verify(progressReporter, org.mockito.Mockito.never()).stepCompleted(eq(failingCategory.getSlug()), anyInt(), anyInt());
+		verify(progressReporter).stepCompleted("merge", total, total);
+	}
+
+	@Test
+	void anIncompleteReviewGivesUpItsScoreAndAssessmentAndSaysWhichChecksAreMissing() {
+		Resource pdfResource = new ByteArrayResource("pdf-content".getBytes());
+		ReviewCategory failingCategory = ReviewCategory.values()[0];
+		Finding finding = new Finding("MINOR", "WRITING", "Run-on sentence", "Split it in two.", List.of());
+
+		CategoryFanOutReviewer partiallyFailing = new CategoryFanOutReviewer(pdfService, chatClientBuilder, objectMapper, false, "") {
+			@Override
+			protected CategoryReviewer createReviewer(ReviewCategory category, ReviewType reviewType, String guidelinesPrompt) {
+				return category == failingCategory ? failingCategoryReviewer : categoryReviewer;
+			}
+		};
+
+		when(pdfService.extractTextFromPdf(any(Resource.class))).thenReturn(List.of("Extracted text"));
+		when(failingCategoryReviewer.review(anyList(), anyList())).thenThrow(new RuntimeException("502 Bad Gateway"));
+		when(categoryReviewer.review(anyList(), anyList())).thenReturn(new CategoryFindings(List.of()));
+		when(chatClient.prompt()).thenReturn(chatClientRequestSpec);
+		when(chatClientRequestSpec.system(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptSystemSpec>>any())).thenReturn(chatClientRequestSpec);
+		when(chatClientRequestSpec.user(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptUserSpec>>any())).thenReturn(chatClientRequestSpec);
+		when(chatClientRequestSpec.call()).thenReturn(callResponseSpec);
+		// The merger only ever saw the categories that answered, yet reads like a verdict on all of
+		// them — here, a clean bill of health that would otherwise be shown and persisted as one.
+		when(callResponseSpec.entity(anyReviewResultConverter()))
+				.thenReturn(new ReviewResult(AssessmentCategory.GOOD, 92, "A solid proposal.", List.of(finding)));
+
+		ReviewResult actualResult = partiallyFailing.review(
+				new ReviewRequest(ReviewType.PROPOSAL, GUIDELINES, pdfResource, progressReporter));
+
+		// The findings are real and survive; the two claims the run cannot support do not.
+		assertThat(actualResult.findings()).containsExactly(finding);
+		assertThat(actualResult.assessment()).isNull();
+		assertThat(actualResult.score()).isNull();
+		assertThat(actualResult.normalizedScore()).isNull();
+		// Both the supervisor's preview and the persisted summary row read this string, so the
+		// caveat outlives the progress list that reported the failure while the review ran.
+		assertThat(actualResult.summary())
+				.startsWith("Incomplete review: 1 of " + ReviewCategory.values().length + " checks could not be completed ("
+						+ failingCategory.getDisplayName() + ").")
+				.contains("no overall score or assessment is given")
+				.endsWith("A solid proposal.");
+	}
+
+	@Test
+	void aCompleteReviewKeepsTheMergerScoreAssessmentAndSummaryUntouched() {
+		Resource pdfResource = new ByteArrayResource("pdf-content".getBytes());
+		ReviewResult expectedResult = new ReviewResult(AssessmentCategory.GOOD, 92, "A solid proposal.", List.of());
+
+		when(pdfService.extractTextFromPdf(any(Resource.class))).thenReturn(List.of("Extracted text"));
+		when(pdfService.extractImagesFromPdf(any(Resource.class))).thenReturn(List.of());
+		when(categoryReviewer.review(anyList(), anyList())).thenReturn(new CategoryFindings(List.of()));
+		when(chatClient.prompt()).thenReturn(chatClientRequestSpec);
+		when(chatClientRequestSpec.system(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptSystemSpec>>any())).thenReturn(chatClientRequestSpec);
+		when(chatClientRequestSpec.user(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptUserSpec>>any())).thenReturn(chatClientRequestSpec);
+		when(chatClientRequestSpec.call()).thenReturn(callResponseSpec);
+		when(callResponseSpec.entity(anyReviewResultConverter())).thenReturn(expectedResult);
+
+		ReviewResult actualResult = reviewer.review(new ReviewRequest(ReviewType.PROPOSAL, GUIDELINES, pdfResource));
+
+		// Nothing is qualified when every category answered — the merger's verdict stands as-is.
+		assertSame(expectedResult, actualResult);
+	}
+
+	@Test
+	void aReviewWhoseEveryCategoryFailedHasNothingToConsolidateAndFails() {
+		Resource pdfResource = new ByteArrayResource("pdf-content".getBytes());
+
+		when(pdfService.extractTextFromPdf(any(Resource.class))).thenReturn(List.of("Extracted text"));
+		when(pdfService.extractImagesFromPdf(any(Resource.class))).thenReturn(List.of());
+		when(categoryReviewer.review(anyList(), anyList())).thenThrow(new RuntimeException("502 Bad Gateway"));
+
+		ReviewRequest request = new ReviewRequest(ReviewType.PROPOSAL, GUIDELINES, pdfResource, progressReporter);
+		assertThatThrownBy(() -> reviewer.review(request)).isInstanceOf(IllegalStateException.class);
+
+		// No merge call is attempted when there is nothing to merge.
+		verify(chatClient, org.mockito.Mockito.never()).prompt();
 	}
 
 	@Test
@@ -209,12 +325,20 @@ public class CategoryFanOutReviewerTest {
 		when(chatClientRequestSpec.system(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptSystemSpec>>any())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.user(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptUserSpec>>any())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.call()).thenReturn(callResponseSpec);
-		when(callResponseSpec.entity(ReviewResult.class))
+		when(callResponseSpec.entity(anyReviewResultConverter()))
 				.thenReturn(new ReviewResult(AssessmentCategory.GOOD, 90, "Fine.", List.of()));
 
 		textOnly.review(new ReviewRequest(ReviewType.THESIS, GUIDELINES, pdfResource));
 
 		verify(pdfService, times(0)).extractImagesFromPdf(any(Resource.class));
 		verify(categoryReviewer, times(ReviewCategory.values().length)).review(List.of("Page one."), List.of());
+	}
+
+	/**
+	 * Matches the structured-output converter the reviewer hands to {@code entity(...)}: a lenient
+	 * one built for {@link ReviewResult} rather than the plain class literal.
+	 */
+	private static StructuredOutputConverter<ReviewResult> anyReviewResultConverter() {
+		return any();
 	}
 }

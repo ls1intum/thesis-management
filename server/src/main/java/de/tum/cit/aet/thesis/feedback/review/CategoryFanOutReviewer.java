@@ -1,6 +1,7 @@
 package de.tum.cit.aet.thesis.feedback.review;
 
 import de.tum.cit.aet.thesis.feedback.config.AIFeaturesEnabled;
+import de.tum.cit.aet.thesis.feedback.config.LenientOutputConverter;
 import de.tum.cit.aet.thesis.feedback.model.ReviewCategory;
 import de.tum.cit.aet.thesis.feedback.model.ReviewResult;
 import de.tum.cit.aet.thesis.feedback.model.ReviewType;
@@ -18,6 +19,7 @@ import tools.jackson.databind.ObjectMapper;
 
 import jakarta.annotation.PreDestroy;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -26,12 +28,19 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 /**
  * The default {@link ThesisReviewer}: a fixed fan-out with a merge step. Every
  * {@link ReviewCategory} gets its own LLM call, all of them run concurrently, and a final call
  * consolidates the per-category findings into one ranked, deduplicated result. Control flow is
  * entirely in code — the model decides what to report, never what to do next.
+ *
+ * <p>The fan-out is fault-tolerant: a category whose call fails is dropped and the merge runs on
+ * the categories that answered, so one flaky LLM call costs a slice of the review rather than all
+ * of it. Only a run in which every category failed aborts. Such a run is reported as incomplete —
+ * findings but no overall score or assessment, and a summary naming the checks that are missing —
+ * so reduced coverage is never passed off as a clean result.
  *
  * <p>Selected by {@code thesis-management.ai.reviewer=category-fan-out}, which is also the default.
  * A different strategy replaces this bean by implementing {@link ThesisReviewer} and declaring its
@@ -107,17 +116,19 @@ public class CategoryFanOutReviewer implements ThesisReviewer {
 		List<String> pages = pdfService.extractTextFromPdf(request.document());
 		List<Media> images = includeImages ? pdfService.extractImagesFromPdf(request.document()) : List.of();
 
-		return merge(request.type(), reviewEachCategory(request, pages, images), request.progress());
+		CategoryOutcomes outcomes = reviewEachCategory(request, pages, images);
+		ReviewResult merged = merge(request.type(), outcomes.findings(), request.progress());
+
+		return qualifyIncompleteCoverage(merged, outcomes.failed());
 	}
 
 	/**
 	 * Fans one LLM call out per category on virtual threads. Each category is independent and
 	 * IO-bound, so this cuts wall-clock time from N * latency down to roughly one latency.
 	 *
-	 * @return the findings keyed by category slug, in {@link ReviewCategory} declaration order so
-	 *         the merge prompt is deterministic
+	 * @return what the categories that succeeded found, plus the ones that did not
 	 */
-	private Map<String, CategoryFindings> reviewEachCategory(ReviewRequest request, List<String> pages,
+	private CategoryOutcomes reviewEachCategory(ReviewRequest request, List<String> pages,
 			List<Media> images) {
 		ProgressReporter progress = request.progress();
 		int total = ReviewCategory.values().length + 1;
@@ -143,9 +154,92 @@ public class CategoryFanOutReviewer implements ThesisReviewer {
 			}, reviewExecutor));
 		}
 
+		return collectSucceeded(futures);
+	}
+
+	/**
+	 * Waits for every dispatched category and keeps the ones that came back.
+	 *
+	 * <p>A category that failed is dropped rather than failing the whole review. The categories are
+	 * independent passes over the same document, so the ones that did answer still carry a useful
+	 * review, and the student already sees the failed call marked as such in the live progress
+	 * list. Only a run where every single category failed has nothing left to consolidate, and that
+	 * one throws.
+	 *
+	 * <p>Every category is awaited even once one has failed: they were all dispatched up front and
+	 * are already in flight, so there is nothing to save by abandoning them.
+	 *
+	 * @param futures the dispatched per-category calls, in {@link ReviewCategory} declaration order
+	 * @return the findings of the successful categories, keyed by category slug and in that same
+	 *         order, together with the categories that failed
+	 */
+	private CategoryOutcomes collectSucceeded(Map<ReviewCategory, CompletableFuture<CategoryFindings>> futures) {
 		Map<String, CategoryFindings> results = new LinkedHashMap<>();
-		futures.forEach((category, future) -> results.put(category.getSlug(), await(category, future)));
-		return results;
+		List<ReviewCategory> failed = new ArrayList<>();
+		Throwable firstFailure = null;
+
+		for (Map.Entry<ReviewCategory, CompletableFuture<CategoryFindings>> entry : futures.entrySet()) {
+			ReviewCategory category = entry.getKey();
+			try {
+				results.put(category.getSlug(), entry.getValue().get());
+			} catch (InterruptedException e) {
+				// The run itself is being cancelled — unlike a single category failing, there is no
+				// point carrying on.
+				Thread.currentThread().interrupt();
+				throw new IllegalStateException("Category review interrupted for " + category.getSlug(), e);
+			} catch (ExecutionException e) {
+				// The task already logged the cause and reported the step as failed.
+				failed.add(category);
+				if (firstFailure == null) {
+					firstFailure = e.getCause();
+				}
+			}
+		}
+
+		if (results.isEmpty()) {
+			throw new IllegalStateException("Category review failed for every category: " + slugsOf(failed),
+					firstFailure);
+		}
+		if (!failed.isEmpty()) {
+			log.warn("Continuing the review with {} of {} categories; {} failed and were dropped",
+					results.size(), futures.size(), slugsOf(failed));
+		}
+		return new CategoryOutcomes(results, List.copyOf(failed));
+	}
+
+	/**
+	 * Marks a result as incomplete when some categories never answered.
+	 *
+	 * <p>The merger only ever saw the categories that succeeded, so its verdict covers a subset of
+	 * the checks while reading like a verdict on all of them. Left alone, a run where eight of the
+	 * nine categories failed and the ninth happened to find nothing would be shown — and persisted
+	 * — as a clean bill of health. The live progress list does mark each failed call, but it is
+	 * gone the moment the review finishes and never reaches whoever opens the thesis later.
+	 *
+	 * <p>An incomplete run therefore keeps its findings, which are real, and gives up the two
+	 * claims it cannot support: the overall score and the assessment are dropped, and the summary
+	 * leads with which checks are missing. Both the supervisor's preview and the persisted summary
+	 * row read exactly those three fields, so the caveat travels with the result rather than living
+	 * in a log line.
+	 *
+	 * @param result the merged result, describing only the categories that answered
+	 * @param failed the categories that failed; empty for a complete run
+	 * @return {@code result} unchanged for a complete run, otherwise a qualified copy
+	 */
+	private static ReviewResult qualifyIncompleteCoverage(ReviewResult result, List<ReviewCategory> failed) {
+		if (failed.isEmpty() || result == null) {
+			return result;
+		}
+
+		String missing = failed.stream().map(ReviewCategory::getDisplayName).collect(Collectors.joining(", "));
+		String warning = ("Incomplete review: %d of %d checks could not be completed (%s). "
+				+ "The findings below cover only the checks that ran, so no overall score or assessment is given.")
+						.formatted(failed.size(), ReviewCategory.values().length, missing);
+		String summary = result.summary() == null || result.summary().isBlank()
+				? warning
+				: warning + "\n\n" + result.summary();
+
+		return new ReviewResult(null, null, summary, result.findings());
 	}
 
 	private ReviewResult merge(ReviewType reviewType, Map<String, CategoryFindings> perCategory,
@@ -158,7 +252,7 @@ public class CategoryFanOutReviewer implements ThesisReviewer {
 					.system(systemMessage -> systemMessage.text(mergerSystemPrompt))
 					.user(userMessage -> userMessage.text(buildMergePrompt(perCategory)))
 					.call()
-					.entity(ReviewResult.class);
+					.entity(LenientOutputConverter.forType(ReviewResult.class));
 			progress.stepCompleted(MERGE_STEP_ID, total, total);
 			return result;
 		} catch (RuntimeException e) {
@@ -187,14 +281,17 @@ public class CategoryFanOutReviewer implements ThesisReviewer {
 				chatClient);
 	}
 
-	private static CategoryFindings await(ReviewCategory category, CompletableFuture<CategoryFindings> future) {
-		try {
-			return future.get();
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-			throw new IllegalStateException("Category review interrupted for " + category.getSlug(), e);
-		} catch (ExecutionException e) {
-			throw new IllegalStateException("Category review failed for " + category.getSlug(), e.getCause());
-		}
+	private static String slugsOf(List<ReviewCategory> categories) {
+		return categories.stream().map(ReviewCategory::getSlug).collect(Collectors.joining(", "));
+	}
+
+	/**
+	 * The fan-out's outcome: what each surviving category found, keyed by slug, and which
+	 * categories failed outright.
+	 *
+	 * @param findings the findings of the categories that answered
+	 * @param failed   the categories whose call failed; empty when every category answered
+	 */
+	private record CategoryOutcomes(Map<String, CategoryFindings> findings, List<ReviewCategory> failed) {
 	}
 }

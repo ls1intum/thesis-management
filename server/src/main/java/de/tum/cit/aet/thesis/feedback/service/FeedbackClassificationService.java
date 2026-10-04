@@ -1,6 +1,7 @@
 package de.tum.cit.aet.thesis.feedback.service;
 
 import de.tum.cit.aet.thesis.feedback.config.AIFeaturesEnabled;
+import de.tum.cit.aet.thesis.feedback.config.LenientOutputConverter;
 import de.tum.cit.aet.thesis.feedback.model.FeedbackClassificationResult;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.context.annotation.Conditional;
@@ -92,7 +93,7 @@ public class FeedbackClassificationService {
 				.system(systemMessage -> systemMessage.text(buildSystemPrompt()))
 				.user(userMessage -> userMessage.text(buildUserMessage(feedbackLine)))
 				.call()
-				.entity(FeedbackClassificationResult.class);
+				.entity(LenientOutputConverter.forType(FeedbackClassificationResult.class));
 	}
 
 	static String buildSystemPrompt() {

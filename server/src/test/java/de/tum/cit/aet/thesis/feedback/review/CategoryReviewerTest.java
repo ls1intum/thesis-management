@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.content.Media;
+import org.springframework.ai.converter.StructuredOutputConverter;
 import org.springframework.util.MimeTypeUtils;
 
 import java.net.URI;
@@ -46,7 +47,7 @@ public class CategoryReviewerTest {
 		when(chatClientRequestSpec.system(anyPromptSystemConsumer())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.user(anyPromptUserConsumer())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.call()).thenReturn(callResponseSpec);
-		when(callResponseSpec.entity(CategoryFindings.class)).thenReturn(expectedResult);
+		when(callResponseSpec.entity(anyCategoryFindingsConverter())).thenReturn(expectedResult);
 		when(promptSystemSpec.text(anyString())).thenReturn(promptSystemSpec);
 		when(promptUserSpec.text(anyString())).thenReturn(promptUserSpec);
 		when(promptUserSpec.media(any(Media[].class))).thenReturn(promptUserSpec);
@@ -90,6 +91,33 @@ public class CategoryReviewerTest {
 				</student-upload-page-text>""");
 	}
 
+	@Test
+	void reviewParsesAModelAnswerWhoseStringsContainRawLineBreaks() {
+		when(chatClient.prompt()).thenReturn(chatClientRequestSpec);
+		when(chatClientRequestSpec.system(anyPromptSystemConsumer())).thenReturn(chatClientRequestSpec);
+		when(chatClientRequestSpec.user(anyPromptUserConsumer())).thenReturn(chatClientRequestSpec);
+		when(chatClientRequestSpec.call()).thenReturn(callResponseSpec);
+		when(callResponseSpec.entity(anyCategoryFindingsConverter())).thenReturn(new CategoryFindings(List.of()));
+
+		new CategoryReviewer("shared", "task", "guidelines", chatClient).review(List.of("Page one."), List.of());
+
+		ArgumentCaptor<StructuredOutputConverter<CategoryFindings>> converterCaptor = converterCaptor();
+		verify(callResponseSpec).entity(converterCaptor.capture());
+
+		// Models routinely put an unescaped line break inside a JSON string value; a strict parser
+		// rejects it outright ("Illegal unquoted character (CTRL-CHAR, code 10)") and loses an
+		// otherwise perfectly usable set of findings.
+		CategoryFindings parsed = converterCaptor.getValue().convert("""
+				{"findings": [{"severity": "MINOR", "category": "WRITING", "title": "Run-on sentence",
+				"description": "The sentence runs on.
+				Split it in two."}]}""");
+
+		assertThat(parsed.findings()).singleElement().satisfies(finding -> {
+			assertThat(finding.title()).isEqualTo("Run-on sentence");
+			assertThat(finding.description()).isEqualTo("The sentence runs on.\nSplit it in two.");
+		});
+	}
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	private static <T> ArgumentCaptor<Consumer<T>> consumerCaptor() {
 		return ArgumentCaptor.forClass((Class) Consumer.class);
@@ -100,6 +128,15 @@ public class CategoryReviewerTest {
 	}
 
 	private static Consumer<ChatClient.PromptUserSpec> anyPromptUserConsumer() {
+		return any();
+	}
+
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	private static <T> ArgumentCaptor<StructuredOutputConverter<T>> converterCaptor() {
+		return ArgumentCaptor.forClass((Class) StructuredOutputConverter.class);
+	}
+
+	private static StructuredOutputConverter<CategoryFindings> anyCategoryFindingsConverter() {
 		return any();
 	}
 }

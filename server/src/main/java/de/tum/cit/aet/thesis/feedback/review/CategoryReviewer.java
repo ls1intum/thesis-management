@@ -1,5 +1,6 @@
 package de.tum.cit.aet.thesis.feedback.review;
 
+import de.tum.cit.aet.thesis.feedback.config.LenientOutputConverter;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.content.Media;
 
@@ -58,6 +59,6 @@ public class CategoryReviewer {
 						.text(OPEN_TAG + "\n" + pagesText + "\n" + CLOSE_TAG)
 						.media(images.toArray(new Media[0])))
 				.call()
-				.entity(CategoryFindings.class);
+				.entity(LenientOutputConverter.forType(CategoryFindings.class));
 	}
 }

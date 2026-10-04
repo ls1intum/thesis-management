@@ -2,6 +2,7 @@ package de.tum.cit.aet.thesis.feedback.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.converter.StructuredOutputConverter;
 
 import java.util.Arrays;
 import java.util.List;
@@ -53,12 +55,12 @@ class NoteSplittingServiceTest {
 		when(chatClientRequestSpec.user(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptUserSpec>>any()))
 				.thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.call()).thenReturn(callResponseSpec);
-		when(callResponseSpec.entity(NoteSplitResult.class)).thenReturn(expected);
+		when(callResponseSpec.entity(anyNoteSplitConverter())).thenReturn(expected);
 
 		NoteSplitResult actual = service.split("fig 3 unreadable; cite Smith");
 
 		assertSame(expected, actual);
-		verify(callResponseSpec).entity(NoteSplitResult.class);
+		verify(callResponseSpec).entity(anyNoteSplitConverter());
 	}
 
 	@Test
@@ -114,4 +116,8 @@ class NoteSplittingServiceTest {
 				.entries()).hasSize(1);
 	}
 
+	/** Matches the lenient structured-output converter the service hands to {@code entity(...)}. */
+	private static StructuredOutputConverter<NoteSplitResult> anyNoteSplitConverter() {
+		return any();
+	}
 }
