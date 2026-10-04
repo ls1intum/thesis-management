@@ -64,6 +64,9 @@ public class CategoryFanOutReviewerTest {
 	CategoryReviewer categoryReviewer;
 
 	@Mock
+	CategoryReviewer failingCategoryReviewer;
+
+	@Mock
 	private ProgressReporter progressReporter;
 
 	private final ObjectMapper objectMapper = new ObjectMapper();
@@ -149,6 +152,56 @@ public class CategoryFanOutReviewerTest {
 		verify(progressReporter).stepStarted("merge", "Consolidating findings", total, total);
 		verify(progressReporter).stepCompleted("merge", total, total);
 		verify(progressReporter, org.mockito.Mockito.never()).stepFailed(any(), org.mockito.ArgumentMatchers.anyInt(), org.mockito.ArgumentMatchers.anyInt(), any());
+	}
+
+	@Test
+	void aFailedCategoryIsDroppedAndTheOthersStillProduceAResult() {
+		Resource pdfResource = new ByteArrayResource("pdf-content".getBytes());
+		ReviewCategory failingCategory = ReviewCategory.values()[0];
+		int total = ReviewCategory.values().length + 1;
+		ReviewResult expectedResult = new ReviewResult(AssessmentCategory.ACCEPTABLE, 60, "Partial review.", List.of());
+
+		CategoryFanOutReviewer partiallyFailing = new CategoryFanOutReviewer(pdfService, chatClientBuilder, objectMapper, false, "") {
+			@Override
+			protected CategoryReviewer createReviewer(ReviewCategory category, ReviewType reviewType, String guidelinesPrompt) {
+				return category == failingCategory ? failingCategoryReviewer : categoryReviewer;
+			}
+		};
+
+		when(pdfService.extractTextFromPdf(any(Resource.class))).thenReturn(List.of("Extracted text"));
+		when(failingCategoryReviewer.review(anyList(), anyList())).thenThrow(new RuntimeException("502 Bad Gateway"));
+		when(categoryReviewer.review(anyList(), anyList())).thenReturn(new CategoryFindings(List.of()));
+		when(chatClient.prompt()).thenReturn(chatClientRequestSpec);
+		when(chatClientRequestSpec.system(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptSystemSpec>>any())).thenReturn(chatClientRequestSpec);
+		when(chatClientRequestSpec.user(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptUserSpec>>any())).thenReturn(chatClientRequestSpec);
+		when(chatClientRequestSpec.call()).thenReturn(callResponseSpec);
+		when(callResponseSpec.entity(anyReviewResultConverter())).thenReturn(expectedResult);
+
+		ReviewResult actualResult = partiallyFailing.review(
+				new ReviewRequest(ReviewType.PROPOSAL, GUIDELINES, pdfResource, progressReporter));
+
+		// One flaky LLM call costs its own category, not the whole review: every other category
+		// still ran and the merge step still consolidated what came back.
+		assertSame(expectedResult, actualResult);
+		verify(categoryReviewer, times(ReviewCategory.values().length - 1)).review(anyList(), anyList());
+		verify(progressReporter).stepFailed(eq(failingCategory.getSlug()), anyInt(), eq(total), eq("This step could not be completed"));
+		verify(progressReporter, org.mockito.Mockito.never()).stepCompleted(eq(failingCategory.getSlug()), anyInt(), anyInt());
+		verify(progressReporter).stepCompleted("merge", total, total);
+	}
+
+	@Test
+	void aReviewWhoseEveryCategoryFailedHasNothingToConsolidateAndFails() {
+		Resource pdfResource = new ByteArrayResource("pdf-content".getBytes());
+
+		when(pdfService.extractTextFromPdf(any(Resource.class))).thenReturn(List.of("Extracted text"));
+		when(pdfService.extractImagesFromPdf(any(Resource.class))).thenReturn(List.of());
+		when(categoryReviewer.review(anyList(), anyList())).thenThrow(new RuntimeException("502 Bad Gateway"));
+
+		ReviewRequest request = new ReviewRequest(ReviewType.PROPOSAL, GUIDELINES, pdfResource, progressReporter);
+		assertThatThrownBy(() -> reviewer.review(request)).isInstanceOf(IllegalStateException.class);
+
+		// No merge call is attempted when there is nothing to merge.
+		verify(chatClient, org.mockito.Mockito.never()).prompt();
 	}
 
 	@Test

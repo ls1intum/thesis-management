@@ -19,6 +19,7 @@ import tools.jackson.databind.ObjectMapper;
 
 import jakarta.annotation.PreDestroy;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -33,6 +34,10 @@ import java.util.concurrent.Executors;
  * {@link ReviewCategory} gets its own LLM call, all of them run concurrently, and a final call
  * consolidates the per-category findings into one ranked, deduplicated result. Control flow is
  * entirely in code — the model decides what to report, never what to do next.
+ *
+ * <p>The fan-out is fault-tolerant: a category whose call fails is dropped and the merge runs on
+ * the categories that answered, so one flaky LLM call costs a slice of the review rather than all
+ * of it. Only a run in which every category failed aborts.
  *
  * <p>Selected by {@code thesis-management.ai.reviewer=category-fan-out}, which is also the default.
  * A different strategy replaces this bean by implementing {@link ThesisReviewer} and declaring its
@@ -115,8 +120,8 @@ public class CategoryFanOutReviewer implements ThesisReviewer {
 	 * Fans one LLM call out per category on virtual threads. Each category is independent and
 	 * IO-bound, so this cuts wall-clock time from N * latency down to roughly one latency.
 	 *
-	 * @return the findings keyed by category slug, in {@link ReviewCategory} declaration order so
-	 *         the merge prompt is deterministic
+	 * @return the findings of the categories that succeeded, keyed by category slug, in
+	 *         {@link ReviewCategory} declaration order so the merge prompt is deterministic
 	 */
 	private Map<String, CategoryFindings> reviewEachCategory(ReviewRequest request, List<String> pages,
 			List<Media> images) {
@@ -144,8 +149,56 @@ public class CategoryFanOutReviewer implements ThesisReviewer {
 			}, reviewExecutor));
 		}
 
+		return collectSucceeded(futures);
+	}
+
+	/**
+	 * Waits for every dispatched category and keeps the ones that came back.
+	 *
+	 * <p>A category that failed is dropped rather than failing the whole review. The categories are
+	 * independent passes over the same document, so the ones that did answer still carry a useful
+	 * review, and the student already sees the failed call marked as such in the live progress
+	 * list. Only a run where every single category failed has nothing left to consolidate, and that
+	 * one throws.
+	 *
+	 * <p>Every category is awaited even once one has failed: they were all dispatched up front and
+	 * are already in flight, so there is nothing to save by abandoning them.
+	 *
+	 * @param futures the dispatched per-category calls, in {@link ReviewCategory} declaration order
+	 * @return the findings of the successful categories, keyed by category slug, in that same order
+	 */
+	private Map<String, CategoryFindings> collectSucceeded(
+			Map<ReviewCategory, CompletableFuture<CategoryFindings>> futures) {
 		Map<String, CategoryFindings> results = new LinkedHashMap<>();
-		futures.forEach((category, future) -> results.put(category.getSlug(), await(category, future)));
+		List<String> failed = new ArrayList<>();
+		Throwable firstFailure = null;
+
+		for (Map.Entry<ReviewCategory, CompletableFuture<CategoryFindings>> entry : futures.entrySet()) {
+			ReviewCategory category = entry.getKey();
+			try {
+				results.put(category.getSlug(), entry.getValue().get());
+			} catch (InterruptedException e) {
+				// The run itself is being cancelled — unlike a single category failing, there is no
+				// point carrying on.
+				Thread.currentThread().interrupt();
+				throw new IllegalStateException("Category review interrupted for " + category.getSlug(), e);
+			} catch (ExecutionException e) {
+				// The task already logged the cause and reported the step as failed.
+				failed.add(category.getSlug());
+				if (firstFailure == null) {
+					firstFailure = e.getCause();
+				}
+			}
+		}
+
+		if (results.isEmpty()) {
+			throw new IllegalStateException("Category review failed for every category: " + String.join(", ", failed),
+					firstFailure);
+		}
+		if (!failed.isEmpty()) {
+			log.warn("Continuing the review with {} of {} categories; {} failed and were dropped",
+					results.size(), futures.size(), failed);
+		}
 		return results;
 	}
 
@@ -186,16 +239,5 @@ public class CategoryFanOutReviewer implements ThesisReviewer {
 				Prompts.taskPromptFor(category, reviewType),
 				guidelinesPrompt,
 				chatClient);
-	}
-
-	private static CategoryFindings await(ReviewCategory category, CompletableFuture<CategoryFindings> future) {
-		try {
-			return future.get();
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-			throw new IllegalStateException("Category review interrupted for " + category.getSlug(), e);
-		} catch (ExecutionException e) {
-			throw new IllegalStateException("Category review failed for " + category.getSlug(), e.getCause());
-		}
 	}
 }
