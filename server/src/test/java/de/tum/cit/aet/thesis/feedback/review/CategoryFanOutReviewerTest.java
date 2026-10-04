@@ -30,6 +30,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.content.Media;
+import org.springframework.ai.converter.StructuredOutputConverter;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.MimeTypeUtils;
@@ -98,7 +99,7 @@ public class CategoryFanOutReviewerTest {
 		when(chatClientRequestSpec.system(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptSystemSpec>>any())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.user(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptUserSpec>>any())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.call()).thenReturn(callResponseSpec);
-		when(callResponseSpec.entity(ReviewResult.class)).thenReturn(expectedResult);
+		when(callResponseSpec.entity(anyReviewResultConverter())).thenReturn(expectedResult);
 
 		ReviewResult actualResult = reviewer.review(new ReviewRequest(ReviewType.PROPOSAL, GUIDELINES, pdfResource));
 
@@ -109,7 +110,7 @@ public class CategoryFanOutReviewerTest {
 		// waits for all futures before invoking the merger step.
 		verify(categoryReviewer, times(ReviewCategory.values().length)).review(extractedText, extractedImages);
 		verify(chatClient).prompt();
-		verify(callResponseSpec).entity(ReviewResult.class);
+		verify(callResponseSpec).entity(anyReviewResultConverter());
 	}
 
 	@Test
@@ -124,7 +125,7 @@ public class CategoryFanOutReviewerTest {
 		when(chatClientRequestSpec.system(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptSystemSpec>>any())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.user(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptUserSpec>>any())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.call()).thenReturn(callResponseSpec);
-		when(callResponseSpec.entity(ReviewResult.class))
+		when(callResponseSpec.entity(anyReviewResultConverter()))
 				.thenReturn(new ReviewResult(AssessmentCategory.GOOD, 90, "Fine.", List.of()));
 
 		reviewer.review(new ReviewRequest(ReviewType.PROPOSAL, GUIDELINES, pdfResource, progressReporter));
@@ -209,12 +210,20 @@ public class CategoryFanOutReviewerTest {
 		when(chatClientRequestSpec.system(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptSystemSpec>>any())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.user(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptUserSpec>>any())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.call()).thenReturn(callResponseSpec);
-		when(callResponseSpec.entity(ReviewResult.class))
+		when(callResponseSpec.entity(anyReviewResultConverter()))
 				.thenReturn(new ReviewResult(AssessmentCategory.GOOD, 90, "Fine.", List.of()));
 
 		textOnly.review(new ReviewRequest(ReviewType.THESIS, GUIDELINES, pdfResource));
 
 		verify(pdfService, times(0)).extractImagesFromPdf(any(Resource.class));
 		verify(categoryReviewer, times(ReviewCategory.values().length)).review(List.of("Page one."), List.of());
+	}
+
+	/**
+	 * Matches the structured-output converter the reviewer hands to {@code entity(...)}: a lenient
+	 * one built for {@link ReviewResult} rather than the plain class literal.
+	 */
+	private static StructuredOutputConverter<ReviewResult> anyReviewResultConverter() {
+		return any();
 	}
 }

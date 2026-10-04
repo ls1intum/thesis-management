@@ -1,6 +1,7 @@
 package de.tum.cit.aet.thesis.feedback.review;
 
 import de.tum.cit.aet.thesis.feedback.config.AIFeaturesEnabled;
+import de.tum.cit.aet.thesis.feedback.config.LenientOutputConverter;
 import de.tum.cit.aet.thesis.feedback.model.ReviewCategory;
 import de.tum.cit.aet.thesis.feedback.model.ReviewResult;
 import de.tum.cit.aet.thesis.feedback.model.ReviewType;
@@ -158,7 +159,7 @@ public class CategoryFanOutReviewer implements ThesisReviewer {
 					.system(systemMessage -> systemMessage.text(mergerSystemPrompt))
 					.user(userMessage -> userMessage.text(buildMergePrompt(perCategory)))
 					.call()
-					.entity(ReviewResult.class);
+					.entity(LenientOutputConverter.forType(ReviewResult.class));
 			progress.stepCompleted(MERGE_STEP_ID, total, total);
 			return result;
 		} catch (RuntimeException e) {

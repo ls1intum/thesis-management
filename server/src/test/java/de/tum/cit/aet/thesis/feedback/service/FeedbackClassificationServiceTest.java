@@ -2,6 +2,7 @@ package de.tum.cit.aet.thesis.feedback.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.converter.StructuredOutputConverter;
 
 import java.util.function.Consumer;
 
@@ -48,12 +50,12 @@ class FeedbackClassificationServiceTest {
 		when(chatClientRequestSpec.user(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptUserSpec>>any()))
 				.thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.call()).thenReturn(callResponseSpec);
-		when(callResponseSpec.entity(FeedbackClassificationResult.class)).thenReturn(expected);
+		when(callResponseSpec.entity(anyClassificationConverter())).thenReturn(expected);
 
 		FeedbackClassificationResult actual = service.classify("Cite a peer-reviewed source for this claim.");
 
 		assertSame(expected, actual);
-		verify(callResponseSpec).entity(FeedbackClassificationResult.class);
+		verify(callResponseSpec).entity(anyClassificationConverter());
 	}
 
 	@Test
@@ -87,4 +89,8 @@ class FeedbackClassificationServiceTest {
 		assertThat(message).startsWith("<feedback-line>\n").endsWith("\n</feedback-line>\n");
 	}
 
+	/** Matches the lenient structured-output converter the service hands to {@code entity(...)}. */
+	private static StructuredOutputConverter<FeedbackClassificationResult> anyClassificationConverter() {
+		return any();
+	}
 }

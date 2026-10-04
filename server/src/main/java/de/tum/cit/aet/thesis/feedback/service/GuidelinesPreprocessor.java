@@ -1,6 +1,7 @@
 package de.tum.cit.aet.thesis.feedback.service;
 
 import de.tum.cit.aet.thesis.feedback.config.AIFeaturesEnabled;
+import de.tum.cit.aet.thesis.feedback.config.LenientOutputConverter;
 import de.tum.cit.aet.thesis.feedback.dto.GuidelinesPreprocessingResult;
 import de.tum.cit.aet.thesis.feedback.model.ReviewCategory;
 import org.slf4j.Logger;
@@ -72,7 +73,7 @@ public class GuidelinesPreprocessor {
 				.system(systemMessage -> systemMessage.text(systemPrompt))
 				.user(userSpec -> userSpec.text(userMessage))
 				.call()
-				.entity(GuidelinesPreprocessingResult.class);
+				.entity(LenientOutputConverter.forType(GuidelinesPreprocessingResult.class));
 
 		log.debug("Preprocessed guidelines: specific={}, categories={}",
 				result != null && result.specific(),
