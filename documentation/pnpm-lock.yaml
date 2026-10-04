@@ -165,7 +165,7 @@ settings:
 overrides:
   serialize-javascript@<7.0.5: 7.1.2
   fast-uri@<3.1.6: 4.2.1
-  uuid@<11.1.1: 11.1.1
+  uuid@<11.1.1: 14.0.2
   nanoid@<3.3.18: 6.0.1
   image-size@<2.0.3: 2.0.4
   js-yaml@>=4.0.0 <4.3.2: 5.4.2
@@ -5742,8 +5742,8 @@ packages:
     resolution: {integrity: sha512-pMZTvIkT1d+TFGvDOqodOclx0QWkkgi6Tdoa8gC8ffGAAqz9pzPTZWAybbsHHoED/ztMtkv/VoYTYyShUn81hA==}
     engines: {node: '>= 0.4.0'}
 
-  uuid@11.1.1:
-    resolution: {integrity: sha512-vIYxrBCC/N/K+Js3qSN88go7kIfNPssr/hHCesKCQNAjmgvYS2oqr69kIufEG+O4+PfezOH4EbIeHCfFov8ZgQ==}
+  uuid@14.0.2:
+    resolution: {integrity: sha512-xZe/16rV4aa+HGSOCiY2YeLT1OybRLrrkL/Rqaq7p7GMVXjFh+6wN4oMYgjFmnSnhY8t6Xpdl2l9qmnHYuMHwQ==}
     hasBin: true
 
   value-equal@1.0.1:
@@ -12645,7 +12645,7 @@ snapshots:
   sockjs@0.3.24:
     dependencies:
       faye-websocket: 0.11.4
-      uuid: 11.1.1
+      uuid: 14.0.2
       websocket-driver: 0.7.5
 
   sort-css-media-queries@2.2.0: {}
@@ -12985,7 +12985,7 @@ snapshots:
 
   utils-merge@1.0.1: {}
 
-  uuid@11.1.1: {}
+  uuid@14.0.2: {}
 
   value-equal@1.0.1: {}
 
