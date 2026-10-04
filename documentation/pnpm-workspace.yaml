@@ -13,11 +13,11 @@ overrides:
   # GHSA (uuid missing buffer bounds check in v3/v5/v6)
   uuid@<11.1.1: 11.1.1
   # GHSA-2v37-7h3g-55p8 (nanoid infinite loop when a custom generator gets size 0, via postcss)
-  nanoid@<3.3.18: 3.3.19
+  nanoid@<3.3.18: 6.0.1
   # GHSA-w3rx-r6r6-pgpr / GHSA-5p2g-fcmc-qvqq (image-size)
   image-size@<2.0.3: 2.0.4
   # GHSA-2883-xcg3-v3hh (js-yaml 4.x)
-  js-yaml@>=4.0.0 <4.3.2: 4.3.2
+  js-yaml@>=4.0.0 <4.3.2: 5.4.2
   # GHSA-w27v-7q3p-w38r / GHSA-4vpr-x523-8j87 (svgo 3.x, via cssnano)
   svgo@>=3.0.0 <3.3.5: 3.3.5
   # GHSA-3wwx-pv8p-q78v (+ more) (undici 7.x)
