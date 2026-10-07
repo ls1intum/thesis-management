@@ -6,9 +6,9 @@
   "minimumReleaseAge": "24 hours",
   "packageRules": [
     {
-      "description": "TypeScript 7 ships without the compiler API that ts-loader, fork-ts-checker-webpack-plugin and typescript-eslint rely on (planned for 7.1), and typescript-eslint pins typescript to <6.1.0. Stay on 6.x until those tools support 7.",
+      "description": "typescript-eslint requires typescript <6.1.0, and TypeScript 7 ships without the compiler API that ts-loader, fork-ts-checker-webpack-plugin and typescript-eslint rely on (planned for 7.1). Stay on 6.0.x until those tools support 7.",
       "matchPackageNames": ["typescript"],
-      "allowedVersions": "<7"
+      "allowedVersions": "<6.1.0"
     }
   ]
 }
