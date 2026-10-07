@@ -17,7 +17,7 @@ overrides:
   # GHSA-w3rx-r6r6-pgpr / GHSA-5p2g-fcmc-qvqq (image-size)
   image-size@<2.0.3: 2.0.4
   # GHSA-2883-xcg3-v3hh (js-yaml 4.x)
-  js-yaml@>=4.0.0 <4.3.2: 5.4.2
+  js-yaml@>=4.0.0 <4.3.2: 5.4.3
   # GHSA-w27v-7q3p-w38r / GHSA-4vpr-x523-8j87 (svgo 3.x, via cssnano)
   svgo@>=3.0.0 <3.3.5: 4.1.0
   # GHSA-3wwx-pv8p-q78v (+ more) (undici 7.x)
