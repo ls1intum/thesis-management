@@ -47,7 +47,7 @@ overrides:
   # (fast-uri host confusion + SSRF, on top of GHSA-7p8r-x3mc-p8w7 / GHSA-v2hh-gcrm-f6hx, via ajv)
   fast-uri@<3.1.6: 4.2.1
   # GHSA-fxqj-rqcc-2cmp (postcss sourceMappingURL arbitrary read, transitive via vitest>vite)
-  postcss@<8.5.23: 8.5.28
+  postcss@<8.5.23: 8.5.29
   # GHSA-vp8m-p9jh-q5pm (+ 6 more) (undici 8.x, via jsdom)
   undici@>=8.0.0 <8.10.2: 8.11.2
   # GHSA-73wf-gq98-2v4g (browserslist)
