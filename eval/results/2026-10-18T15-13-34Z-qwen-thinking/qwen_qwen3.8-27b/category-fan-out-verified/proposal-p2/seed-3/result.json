@@ -1,0 +1,176 @@
+{
+  "assessment" : "NEEDS_WORK",
+  "score" : 48,
+  "summary" : "The proposal demonstrates a solid understanding of the research problem and objectives, with no issues flagged in the problem/motivation/objective content, bibliography, or figures. However, it suffers from significant structural problems: the body text exceeds the page limit, the schedule follows a horizontal rather than vertical agile pattern with a non-deliverable final sprint and an impermissible documentation task, and the AI transparency statement lacks required section-level specificity. These major issues must be resolved before submission, alongside several minor writing and consistency corrections.",
+  "findings" : [ {
+    "severity" : "MAJOR",
+    "category" : "structure",
+    "title" : "Total proposal text exceeds the 4–6 page limit",
+    "description" : "Excluding the title page, two embedded figures, and the Schedule section, the remaining body text (Abstract through end of Objective 4.4, plus Bibliography and Transparency Statement) spans approximately 7–8 pages of text. This exceeds the 4–6 page maximum specified in the guidelines. The student should trim content, particularly in the Objective subsections and/or the Motivation section, to bring the total within range.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Abstract",
+      "quote" : "Supervisors of theses spend considerable time on non-content-related feedback such as document structure, coherence, and linguistic accuracy."
+    }, {
+      "page" : 12,
+      "section" : "Transparency Statement",
+      "quote" : "In preparing this proposal, I made use of several AI-based tools across different stages of the writing process."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "methodology",
+    "title" : "Horizontal layering across Iterations 1–3 instead of vertically integrated features",
+    "description" : "Iterations 1–3 follow a horizontal split: Iteration 1 prepares the infrastructure (modularize Thesis Management), Iteration 2 builds the backend engine (core feedback generation pipeline), and Iteration 3 connects the two (integrate into Thesis Management). No single iteration in this sequence delivers an end-to-end, user-visible feature. Per the vertical integration guideline, each iteration should deliver a working (even if minimal) end-to-end slice. For example, Iteration 2 could deliver a basic end-to-end feedback generation flow (hard-coded guidelines, minimal UI in TM), and Iteration 3 could enhance it with the full TM workflow. The current split means no working product exists until the end of Iteration 3.",
+    "locations" : [ {
+      "page" : 9,
+      "section" : "Schedule",
+      "quote" : "Iteration 1 (08.06.2026 - 2 weeks) • **Modularize Thesis Management to prepare integration of the feedback module** (Objective 4)"
+    }, {
+      "page" : 9,
+      "section" : "Schedule",
+      "quote" : "Iteration 2 (22.06.2026 - 2 weeks) • **Implement core feedback generation pipeline** (Objective 1) • Define input/output contract and structured output format (Objective 1)"
+    }, {
+      "page" : 9,
+      "section" : "Schedule",
+      "quote" : "Iteration 3 (06.07.2026 - 2 weeks) • **Connect feedback tool to Thesis Management** (Objective 4) • Extend feedback workflow in Thesis Management for thesis (Objective 4)"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "methodology",
+    "title" : "Final iteration is a non-deliverable QA/buffer sprint (waterfall pattern)",
+    "description" : "Iteration 9 ('Review the system and check for bugs') does not produce a measurable, deliverable work item. It is a classic waterfall-style final testing/QA phase rather than an agile sprint delivering a vertical feature. In an agile schedule, bug-fixing and stability work should be distributed across iterations as part of each feature's completion criteria, rather than concentrated in a final 'review' sprint. The student should either distribute testing/stabilization work across earlier iterations or replace this with a concrete, measurable deliverable (e.g., a specific end-to-end scenario that must pass, or a performance benchmark to be met).",
+    "locations" : [ {
+      "page" : 10,
+      "section" : "Schedule",
+      "quote" : "Iteration 9 (05.10.2026 - 3 weeks) • **Review the system and check for bugs**"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "structure",
+    "title" : "Documentation task included in schedule",
+    "description" : "Iteration 9 lists 'Documentation' as a work item. Per the schedule guidelines, the schedule should focus on development/research work only and must not include documentation writing tasks. This item should be removed from the schedule.",
+    "locations" : [ {
+      "page" : 10,
+      "section" : "Schedule",
+      "quote" : "Review the system and check for bugs • **Documentation**"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "completeness",
+    "title" : "AI transparency statement does not name specific proposal sections where tools were used",
+    "description" : "The statement uses vague phrasing such as \"across different stages of the writing process\" and \"throughout the proposal\" but does not identify which specific sections (e.g., Abstract, Introduction, Problem, Motivation, Objective, Schedule, Bibliography) each AI tool was applied to. The guidelines require the statement to name \"the sections involved.\" The student should revise the statement to map each tool (or at least the main ones) to the sections where it was actually used, e.g., \"I used Grammarly primarily on the Introduction and Problem sections\" or \"I used ChatGPT to expand ideas in the Motivation and Objective sections.\"",
+    "locations" : [ {
+      "page" : 12,
+      "section" : "Transparency in the Use of AI Tools",
+      "quote" : "In preparing this proposal, I made use of several AI-based tools **across different stages of the writing process**."
+    }, {
+      "page" : 12,
+      "section" : "Transparency in the Use of AI Tools",
+      "quote" : "For citation assistance, I used Zotero to manage my references and to ensure proper citation formatting **throughout the proposal**."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "structure",
+    "title" : "Overly short paragraph (1–2 lines) in Introduction",
+    "description" : "The sentence 'The student, by contrast, hands in the thesis itself as a single final submission.' stands alone as a 1–2 line paragraph at the end of Section 1. This is too short to constitute a proper paragraph (target is 5–8 lines). It should be merged into the preceding paragraph about the iterative proposal workflow, which already discusses the contrast between proposal and thesis submission.",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "Introduction",
+      "quote" : "The student, by contrast, hands in the thesis itself as a **single final submission**."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "methodology",
+    "title" : "Several work items lack measurable specificity",
+    "description" : "Multiple items are too vague to constitute a clear, measurable deliverable. 'Modularize Thesis Management to prepare integration' does not specify what will be modularized or what the concrete output is. 'Implement core feedback generation pipeline' does not state what the pipeline produces or how success is measured. 'Connect feedback tool to Thesis Management' does not define what a working connection looks like. Each item should name a concrete, verifiable outcome (e.g., 'Expose /api/feedback endpoint that accepts a proposal PDF and returns structured feedback JSON' or 'Supervisor can trigger feedback generation from the TM UI and see results within the proposal view').",
+    "locations" : [ {
+      "page" : 9,
+      "section" : "Schedule",
+      "quote" : "Iteration 1 (08.06.2026 - 2 weeks) • **Modularize Thesis Management to prepare integration of the feedback module** (Objective 4)"
+    }, {
+      "page" : 9,
+      "section" : "Schedule",
+      "quote" : "Iteration 2 (22.06.2026 - 2 weeks) • **Implement core feedback generation pipeline** (Objective 1)"
+    }, {
+      "page" : 9,
+      "section" : "Schedule",
+      "quote" : "Iteration 3 (06.07.2026 - 2 weeks) • **Connect feedback tool to Thesis Management** (Objective 4)"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "structure",
+    "title" : "Motivation section slightly exceeds the 3/4 page limit",
+    "description" : "The Motivation section (Section 3) spans from page 4 (after the Problem ends) through the top of page 5 (before the Objective section). The combined text is approximately 25 lines, corresponding to roughly 5/6 of a page — slightly over the 3/4 page maximum. The student should tighten the second paragraph (the student-benefits discussion) to bring the section within the limit.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Motivation",
+      "quote" : "Better and faster feedback has significant advantages for students as well. When feedback arrives sooner, students can act on it while the writing process is still fresh in their minds."
+    }, {
+      "page" : 5,
+      "section" : "Motivation",
+      "quote" : "discussing it with the supervisor, and uses it to improve their knowledge, beliefs, and broader strategy for proceeding with the work [NM06]."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Forbidden sentence starter: \"As\"",
+    "description" : "The sentence begins with \"As Figure 1 illustrates,\" which violates the rule against starting sentences with \"As…\". Rephrase to begin with the subject or the figure reference, e.g., \"Figure 1 illustrates how an LLM-powered Reviewer works alongside the supervisor…\".",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Motivation",
+      "quote" : "**As** Figure 1 illustrates, an LLM-powered Reviewer works alongside the supervisor, evaluating the thesis against the research group's writing guidelines and generating automatic formative feedback [NM06]."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Forbidden sentence starter: \"Because\"",
+    "description" : "The sentence begins with \"Because the feedback tool is powered by LLMs,\" which violates the rule against starting sentences with \"Because…\". Rephrase to lead with the subject, e.g., \"Students can obtain instant formative feedback at any point during the writing process because the feedback tool is powered by LLMs.\"",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Motivation",
+      "quote" : "**Because** the feedback tool is powered by LLMs, students can obtain instant formative feedback at any point during the writing process."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Passive voice: \"is produced\"",
+    "description" : "The clause \"no LLM-generated feedback is produced at all\" uses passive voice without identifying the actor. Rephrase to active voice, e.g., \"the supervisor provides all feedback and no LLM-generated feedback is part of the output\" or \"the system generates no LLM feedback; all feedback comes from the supervisor.\"",
+    "locations" : [ {
+      "page" : 6,
+      "section" : "Objective",
+      "quote" : "In one mode, no LLM-generated feedback **is produced** at all and all feedback comes from the supervisor."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Inconsistent terminology: \"the tool\" vs. \"the feedback tool\"",
+    "description" : "The Abstract refers to \"the tool\" while every occurrence in the body text uses \"the feedback tool.\" Use the same noun phrase throughout to avoid ambiguity about which tool is meant.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Abstract",
+      "quote" : "Beyond a single draft, **the tool** also compares iterations to highlight improvements"
+    }, {
+      "page" : 6,
+      "section" : "Objective",
+      "quote" : "When **the feedback tool** has access to previous iterations of the proposal or thesis"
+    }, {
+      "page" : 8,
+      "section" : "Objective",
+      "quote" : "With a single click, supervisors invoke **the feedback tool** to write feedback directly into Thesis Management."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Inconsistent terminology: \"local\" vs. \"self-hosted\" for the same LLM hosting option",
+    "description" : "The Abstract describes the trade-off as between \"local and cloud hosting,\" while the body consistently uses \"self-hosted\" and \"cloud-hosted\" (e.g., \"locally self-hosted LLMs versus cloud-hosted ones\"). Align the Abstract with the terminology used in the main text.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Abstract",
+      "quote" : "assess trade-offs between **local** and **cloud** hosting"
+    }, {
+      "page" : 8,
+      "section" : "Objective",
+      "quote" : "privacy regulations and cost require careful consideration of when to use **locally self-hosted** LLMs versus **cloud-hosted** ones"
+    } ]
+  } ]
+}

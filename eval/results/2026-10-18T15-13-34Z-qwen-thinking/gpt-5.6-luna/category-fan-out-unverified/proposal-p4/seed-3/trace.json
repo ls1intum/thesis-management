@@ -1,0 +1,473 @@
+{
+  "categories" : [ {
+    "category" : "STRUCTURE",
+    "generated" : [ {
+      "severity" : "CRITICAL",
+      "category" : "COMPLETENESS",
+      "title" : "Missing Abstract section",
+      "description" : "The proposal does not contain the required Abstract section. Add an Abstract of approximately one-third to one-half page summarizing the problem, motivation, objectives, and proposed approach."
+    }, {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Objective 4 lacks two paragraphs",
+      "description" : "Section 4.4 consists of one continuous paragraph, but each objective subsection must contain at least two paragraphs. Split the discussion into a second substantive paragraph, for example separating the recertification workflow from its logging, escalation, and evaluation details.",
+      "locations" : [ {
+        "page" : 6,
+        "section" : "4.4 Automate the Recertification of Grants",
+        "quote" : "**I will attach a recertification interval to each resource, which its descendants inherit, and open a campaign whenever the interval elapses. The maintainer decides to keep or revoke each grant, and the platform stores every decision as an immutable record. Ignored campaigns escalate and may revoke grants automatically, but never in a campaign that reached nobody. The platform logs every change with the person who made it, and the admin event log of Keycloak keeps**"
+      }, {
+        "page" : 7,
+        "section" : "4.4 Automate the Recertification of Grants",
+        "quote" : "**change with the person who made it, and the admin event log of Keycloak keeps a second copy.**"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "CRITICAL",
+      "category" : "COMPLETENESS",
+      "title" : "Missing Abstract section",
+      "description" : "The proposal does not contain the required Abstract section. Add an Abstract of approximately one-third to one-half page summarizing the problem, motivation, objectives, and proposed approach."
+    }, {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Objective 4 lacks two paragraphs",
+      "description" : "Section 4.4 consists of one continuous paragraph, but each objective subsection must contain at least two paragraphs. Split the discussion into a second substantive paragraph, for example separating the recertification workflow from its logging, escalation, and evaluation details.",
+      "locations" : [ {
+        "page" : 6,
+        "section" : "4.4 Automate the Recertification of Grants",
+        "quote" : "**I will attach a recertification interval to each resource, which its descendants inherit, and open a campaign whenever the interval elapses. The maintainer decides to keep or revoke each grant, and the platform stores every decision as an immutable record. Ignored campaigns escalate and may revoke grants automatically, but never in a campaign that reached nobody. The platform logs every change with the person who made it, and the admin event log of Keycloak keeps**"
+      }, {
+        "page" : 7,
+        "section" : "4.4 Automate the Recertification of Grants",
+        "quote" : "**change with the person who made it, and the admin event log of Keycloak keeps a second copy.**"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "PROBLEM_MOTIVATION_OBJECTIVES",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "METHODOLOGY",
+      "title" : "Problem section proposes a solution",
+      "description" : "The Problem section introduces a proposed solution instead of restricting itself to the problem and its consequences. Remove this sentence from the Problem section and describe the desired remedy only in the Objectives or Motivation sections.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "A **self-service platform that arms the workflow engine of Keycloak with an expiry date at grant time would end this accumulation**."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Objective heading uses double verbs",
+      "description" : "The objective heading contains two coordinated action verbs. Replace it with one action verb, or split it into two separate objectives; for example, use “Provide connectors with expiry” if that accurately captures the intended objective.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Objective 2",
+        "quote" : "**Design and implement** connectors with expiry"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Objective 4 lacks two detailed paragraphs",
+      "description" : "Objective 4 is not described in at least two paragraphs. Add a second substantive paragraph explaining the objective’s design, scope, and evaluation criteria, rather than treating the continuation after the page break as a new paragraph.",
+      "locations" : [ {
+        "page" : 6,
+        "section" : "Objective 4.4",
+        "quote" : "I will attach a recertification interval to each resource, which its descendants inherit, and open a campaign whenever the interval elapses. The maintainer decides to keep or revoke each grant, and the platform stores every decision as an immutable record. Ignored campaigns escalate and may revoke grants automatically, but never in a campaign that reached nobody. The platform logs every"
+      }, {
+        "page" : 7,
+        "section" : "Objective 4.4",
+        "quote" : "change with the person who made it, and the admin event log of Keycloak keeps a second copy."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Main objective heading is not in action form",
+      "description" : "The main Section 4 heading is a noun rather than an action-form objective heading. Replace it with an action-oriented heading that states what the proposal will do, such as “Build a Platform for Time-Limited Access,” if this accurately reflects the intended objective.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Objective",
+        "quote" : "**4 Objective**"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "METHODOLOGY",
+      "title" : "Problem section proposes a solution",
+      "description" : "The Problem section introduces a proposed solution instead of restricting itself to the problem and its consequences. Remove this sentence from the Problem section and describe the desired remedy only in the Objectives or Motivation sections.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "A **self-service platform that arms the workflow engine of Keycloak with an expiry date at grant time would end this accumulation**."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Objective heading uses double verbs",
+      "description" : "The objective heading contains two coordinated action verbs. Replace it with one action verb, or split it into two separate objectives; for example, use “Provide connectors with expiry” if that accurately captures the intended objective.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Objective 2",
+        "quote" : "**Design and implement** connectors with expiry"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Objective 4 lacks two detailed paragraphs",
+      "description" : "Objective 4 is not described in at least two paragraphs. Add a second substantive paragraph explaining the objective’s design, scope, and evaluation criteria, rather than treating the continuation after the page break as a new paragraph.",
+      "locations" : [ {
+        "page" : 6,
+        "section" : "Objective 4.4",
+        "quote" : "I will attach a recertification interval to each resource, which its descendants inherit, and open a campaign whenever the interval elapses. The maintainer decides to keep or revoke each grant, and the platform stores every decision as an immutable record. Ignored campaigns escalate and may revoke grants automatically, but never in a campaign that reached nobody. The platform logs every"
+      }, {
+        "page" : 7,
+        "section" : "Objective 4.4",
+        "quote" : "change with the person who made it, and the admin event log of Keycloak keeps a second copy."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Main objective heading is not in action form",
+      "description" : "The main Section 4 heading is a noun rather than an action-form objective heading. Replace it with an action-oriented heading that states what the proposal will do, such as “Build a Platform for Time-Limited Access,” if this accurately reflects the intended objective.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Objective",
+        "quote" : "**4 Objective**"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "BIBLIOGRAPHY",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "CITATION",
+      "title" : "Documentation source listed in the bibliography",
+      "description" : "The bibliography contains a non-peer-reviewed documentation source. Move the Keycloak Administration Guide to a footnote at its point of use and remove it from the Bibliography; retain only scientific, peer-reviewed publications in the bibliography.",
+      "locations" : [ {
+        "page" : 8,
+        "section" : "Bibliography",
+        "quote" : "[Key26] Keycloak Authors, “Keycloak Server Administration Guide.” Accessed: Oct. 18, 2026. [Online]. Available: https://www.keycloak.org/docs/latest/server_admin/"
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "CITATION",
+      "title" : "Citation placed after the full stop",
+      "description" : "Place the citation before the full stop rather than after it. Change the sentence to end with the citation, for example: “Bertino et al. attach enabling and disabling events to roles in their temporal model [BBF01].”",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Motivation",
+        "quote" : "Bertino et al. attach enabling and disabling events to roles in their temporal model. **[BBF01]** Joshi et al. generalise this idea to role assignments with a limited duration [Jos+05]."
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "CITATION",
+      "title" : "Documentation source listed in the bibliography",
+      "description" : "The bibliography contains a non-peer-reviewed documentation source. Move the Keycloak Administration Guide to a footnote at its point of use and remove it from the Bibliography; retain only scientific, peer-reviewed publications in the bibliography.",
+      "locations" : [ {
+        "page" : 8,
+        "section" : "Bibliography",
+        "quote" : "[Key26] Keycloak Authors, “Keycloak Server Administration Guide.” Accessed: Oct. 18, 2026. [Online]. Available: https://www.keycloak.org/docs/latest/server_admin/"
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "CITATION",
+      "title" : "Citation placed after the full stop",
+      "description" : "Place the citation before the full stop rather than after it. Change the sentence to end with the citation, for example: “Bertino et al. attach enabling and disabling events to roles in their temporal model [BBF01].”",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Motivation",
+        "quote" : "Bertino et al. attach enabling and disabling events to roles in their temporal model. **[BBF01]** Joshi et al. generalise this idea to role assignments with a limited duration [Jos+05]."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "FIGURES",
+    "generated" : [ {
+      "severity" : "MINOR",
+      "category" : "FIGURES",
+      "title" : "Figure 2 has an insufficiently informative caption",
+      "description" : "Replace the generic caption with a long, informative caption that explains the major components, the integrations and data/control flows between them, and how the architecture supports time-limited granting and revocation. The diagram itself is referenced in the surrounding text, but its caption currently provides no interpretation beyond a title.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "4.2 Design and Implement Connectors with Expiry",
+        "quote" : "Figure 2: **System Architecture**"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MINOR",
+      "category" : "FIGURES",
+      "title" : "Figure 2 has an insufficiently informative caption",
+      "description" : "Replace the generic caption with a long, informative caption that explains the major components, the integrations and data/control flows between them, and how the architecture supports time-limited granting and revocation. The diagram itself is referenced in the surrounding text, but its caption currently provides no interpretation beyond a title.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "4.2 Design and Implement Connectors with Expiry",
+        "quote" : "Figure 2: **System Architecture**"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STYLE",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Repeated first-person narration",
+      "description" : "The proposal repeatedly uses first-person narration, although the guidelines recommend avoiding “I.” Replace these constructions with explicit subject-based formulations, such as “The platform will...” or “The implementation will...” while retaining active voice.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Objective",
+        "quote" : "**I will build** a platform on which any member of the chair requests time-limited access to any resource, a maintainer decides, and the access ends on its own."
+      }, {
+        "page" : 5,
+        "section" : "Structure Resources as an Inheriting Tree",
+        "quote" : "**I will replace** the fat list of hosts and channels with a resource tree whose inner nodes are folders and whose leaves each carry a binding to one target system."
+      }, {
+        "page" : 6,
+        "section" : "Design and Implement Connectors with Expiry",
+        "quote" : "**I will define** one connector contract that validates a binding, grants and revokes access, and optionally lists the current members."
+      }, {
+        "page" : 7,
+        "section" : "Schedule",
+        "quote" : "The thesis runs from 1 October 2026 to 31 March 2027, and **I divide it** into iterations of two to four weeks."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Unspecified actor in passive construction",
+      "description" : "Use active voice by naming the actor responsible for reaching the hosts. Rewrite the reduced passive construction, for example, as “Users reach Linux hosts with graphics processors over Secure Shell (SSH).”",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Setting",
+        "quote" : "A university research chair, or a team of similar size, operates shared infrastructure: Linux hosts with graphics processors **reached over Secure Shell (SSH)**, a Slack workspace, a GitHub organisation, and a handful of internal dashboards and databases."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Passive voice obscures responsibility",
+      "description" : "Replace the passive construction with an active subject. For example, state which condition or evaluation determines that the objective is met, and identify who adds the resource later.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Structure Resources as an Inheriting Tree",
+        "quote" : "**The objective is met** when a grant on a folder with bindable descendants yields exactly provisioning commands and **a resource added later** inherits the grant without a new request."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Contraction used",
+      "description" : "Do not use contractions. Expand “doesn’t” to “does not.”",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "The current process **doesn’t** scale and is the worst bottleneck of the chair."
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Repeated first-person narration",
+      "description" : "The proposal repeatedly uses first-person narration, although the guidelines recommend avoiding “I.” Replace these constructions with explicit subject-based formulations, such as “The platform will...” or “The implementation will...” while retaining active voice.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Objective",
+        "quote" : "**I will build** a platform on which any member of the chair requests time-limited access to any resource, a maintainer decides, and the access ends on its own."
+      }, {
+        "page" : 5,
+        "section" : "Structure Resources as an Inheriting Tree",
+        "quote" : "**I will replace** the fat list of hosts and channels with a resource tree whose inner nodes are folders and whose leaves each carry a binding to one target system."
+      }, {
+        "page" : 6,
+        "section" : "Design and Implement Connectors with Expiry",
+        "quote" : "**I will define** one connector contract that validates a binding, grants and revokes access, and optionally lists the current members."
+      }, {
+        "page" : 7,
+        "section" : "Schedule",
+        "quote" : "The thesis runs from 1 October 2026 to 31 March 2027, and **I divide it** into iterations of two to four weeks."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Unspecified actor in passive construction",
+      "description" : "Use active voice by naming the actor responsible for reaching the hosts. Rewrite the reduced passive construction, for example, as “Users reach Linux hosts with graphics processors over Secure Shell (SSH).”",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Setting",
+        "quote" : "A university research chair, or a team of similar size, operates shared infrastructure: Linux hosts with graphics processors **reached over Secure Shell (SSH)**, a Slack workspace, a GitHub organisation, and a handful of internal dashboards and databases."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Passive voice obscures responsibility",
+      "description" : "Replace the passive construction with an active subject. For example, state which condition or evaluation determines that the objective is met, and identify who adds the resource later.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Structure Resources as an Inheriting Tree",
+        "quote" : "**The objective is met** when a grant on a folder with bindable descendants yields exactly provisioning commands and **a resource added later** inherits the grant without a new request."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Contraction used",
+      "description" : "Do not use contractions. Expand “doesn’t” to “does not.”",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "The current process **doesn’t** scale and is the worst bottleneck of the chair."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STRUCTURE",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Introduction lacks text before its first subsection",
+      "description" : "Section 1 begins immediately with subsection 1.1 and therefore lacks introductory prose explaining the purpose or scope of the Introduction chapter. Add a short introductory paragraph between the Section 1 heading and subsection 1.1.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Introduction",
+        "quote" : "1 Introduction\n**1.1 Setting**"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Introduction lacks text before its first subsection",
+      "description" : "Section 1 begins immediately with subsection 1.1 and therefore lacks introductory prose explaining the purpose or scope of the Introduction chapter. Add a short introductory paragraph between the Section 1 heading and subsection 1.1.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Introduction",
+        "quote" : "1 Introduction\n**1.1 Setting**"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_FORMATTING",
+    "generated" : [ {
+      "severity" : "MINOR",
+      "category" : "FORMATTING",
+      "title" : "Figure 1 Caption Is Not in Title Case",
+      "description" : "The Figure 1 caption uses sentence case for its title. Change “Use case diagram of the access platform” to “Use Case Diagram of the Access Platform” to apply title case consistently.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Objective",
+        "quote" : "Figure 1: **Use case diagram of the access platform**. Requesters fll in forms and request access, maintainers review, grant, and recertify, and the super admin maintains the resource tree and completes every grant that needs privileged rights."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "TERMINOLOGY",
+      "title" : "Inconsistent Term for the Request-Reviewing Role",
+      "description" : "The proposal uses “maintainer” and “resource owner” for what appears to be the same role: the person who reviews or approves access requests. Choose one term and use it consistently, or explicitly distinguish the roles if they are intended to be different.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "**Maintainers**, the staf who look after a project, know whether a request is legitimate but lack the rights to act on it, while the super admin holds the rights but lacks the context."
+      }, {
+        "page" : 6,
+        "section" : "Delegate Request Review Without Privilege Escalation",
+        "quote" : "Keycloak requires a realm-wide administrative role for its workfow API, and no **resource owner** may hold that role."
+      }, {
+        "page" : 6,
+        "section" : "Delegate Request Review Without Privilege Escalation",
+        "quote" : "The **resource owner** completes a request alone when it touches only non-privileged bindings, such as a Slack channel."
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MINOR",
+      "category" : "FORMATTING",
+      "title" : "Figure 1 Caption Is Not in Title Case",
+      "description" : "The Figure 1 caption uses sentence case for its title. Change “Use case diagram of the access platform” to “Use Case Diagram of the Access Platform” to apply title case consistently.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Objective",
+        "quote" : "Figure 1: **Use case diagram of the access platform**. Requesters fll in forms and request access, maintainers review, grant, and recertify, and the super admin maintains the resource tree and completes every grant that needs privileged rights."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "TERMINOLOGY",
+      "title" : "Inconsistent Term for the Request-Reviewing Role",
+      "description" : "The proposal uses “maintainer” and “resource owner” for what appears to be the same role: the person who reviews or approves access requests. Choose one term and use it consistently, or explicitly distinguish the roles if they are intended to be different.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "**Maintainers**, the staf who look after a project, know whether a request is legitimate but lack the rights to act on it, while the super admin holds the rights but lacks the context."
+      }, {
+        "page" : 6,
+        "section" : "Delegate Request Review Without Privilege Escalation",
+        "quote" : "Keycloak requires a realm-wide administrative role for its workfow API, and no **resource owner** may hold that role."
+      }, {
+        "page" : 6,
+        "section" : "Delegate Request Review Without Privilege Escalation",
+        "quote" : "The **resource owner** completes a request alone when it touches only non-privileged bindings, such as a Slack channel."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "AI_TRANSPARENCY",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "COMPLETENESS",
+      "title" : "Missing confirmation of review of AI-generated text",
+      "description" : "The AI transparency statement does not include the required confirmation that you carefully checked all AI-generated text for correctness and coherence. Add an explicit first-person sentence such as: “I have carefully checked all text created with these tools to ensure that it is correct and makes sense.”",
+      "locations" : [ {
+        "page" : 10,
+        "section" : "AI Transparency Statement",
+        "quote" : "Tool Model / Date(s) Level Purpose Scope ... Drafting text, authoring the Typst sources and bibliography entries, researching references"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "COMPLETENESS",
+      "title" : "Missing confirmation of review of AI-generated text",
+      "description" : "The AI transparency statement does not include the required confirmation that you carefully checked all AI-generated text for correctness and coherence. Add an explicit first-person sentence such as: “I have carefully checked all text created with these tools to ensure that it is correct and makes sense.”",
+      "locations" : [ {
+        "page" : 10,
+        "section" : "AI Transparency Statement",
+        "quote" : "Tool Model / Date(s) Level Purpose Scope ... Drafting text, authoring the Typst sources and bibliography entries, researching references"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "SCHEDULE",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "METHODOLOGY",
+      "title" : "Schedule includes thesis writing and presentation preparation",
+      "description" : "Iteration 7 is dedicated to thesis writing and presentation preparation, which violates the schedule rule that iterations focus on development/research work rather than thesis-writing, documentation, or presentation tasks. Remove these tasks from the iteration plan and use the time for a research or development increment; schedule final writing and presentation preparation separately if required.",
+      "locations" : [ {
+        "page" : 7,
+        "section" : "Schedule",
+        "quote" : "• Iteration 7 (18–31 March): **Write the thesis and prepare the final presentation.**"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "METHODOLOGY",
+      "title" : "Schedule includes thesis writing and presentation preparation",
+      "description" : "Iteration 7 is dedicated to thesis writing and presentation preparation, which violates the schedule rule that iterations focus on development/research work rather than thesis-writing, documentation, or presentation tasks. Remove these tasks from the iteration plan and use the time for a research or development increment; schedule final writing and presentation preparation separately if required.",
+      "locations" : [ {
+        "page" : 7,
+        "section" : "Schedule",
+        "quote" : "• Iteration 7 (18–31 March): **Write the thesis and prepare the final presentation.**"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  } ],
+  "categoryFailures" : { }
+}

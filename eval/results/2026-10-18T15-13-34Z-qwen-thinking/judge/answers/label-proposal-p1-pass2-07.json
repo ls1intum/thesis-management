@@ -1,0 +1,250 @@
+{
+  "job": "label-proposal-p1-pass2-07",
+  "answer": {
+    "judgements": [
+      {
+        "id": "F1e4d9ae2bc",
+        "rule": "R20",
+        "reason": "R20 bans requirements-gathering tasks from the schedule. The June entry 'Requirements (parallel to prototype implementation)' is one.",
+        "label": "valid"
+      },
+      {
+        "id": "F2a3b51f6dc",
+        "rule": "R1",
+        "reason": "R1 requires a Motivation section. The proposal has none; its sections are Problem Statement, Proposed Solution, Related Work, System Requirements and Expected Findings.",
+        "label": "valid"
+      },
+      {
+        "id": "F512dc6f2bd",
+        "rule": "R20",
+        "reason": "R20 bans thesis-writing and documentation tasks from the schedule. It lists 'Documentation for installation...', 'October: Writing', thesis review and 'Thesis' entries.",
+        "label": "valid"
+      },
+      {
+        "id": "F31e589fede",
+        "rule": "R12",
+        "reason": "R12 requires abbreviations to be defined before use. 'API' first appears in the abstract and is never spelled out.",
+        "label": "valid"
+      },
+      {
+        "id": "F2f401d5793",
+        "rule": "R17",
+        "reason": "R17 requires an AI transparency statement. The document has none.",
+        "label": "valid"
+      },
+      {
+        "id": "F8f80bff435",
+        "rule": "R9",
+        "reason": "R9 requires at least two figures. The document contains only Figure 1.",
+        "label": "valid"
+      },
+      {
+        "id": "F1e614b8ad5",
+        "rule": "R16",
+        "reason": "R16 requires consistent terminology. The abstract says 'task' for what the rest of the text calls an 'exercise', and 'CI server' and 'CI service' are used for the same thing.",
+        "label": "valid"
+      },
+      {
+        "id": "F35ebfe58ef",
+        "rule": "R4",
+        "reason": "R4 requires negative consequences for identified actors. The Problem section names smaller universities but does not explicitly link the build-plan problems to instructors or students.",
+        "label": "valid"
+      },
+      {
+        "id": "F02d97a29d5",
+        "rule": "R9",
+        "reason": "The claim is that Figure 1 is a forbidden sequence diagram. Its numbered messages (1.1, 2.2, ...) between actors and systems match a communication-style diagram, and nothing shows lifelines, so a sequence diagram is not shown.",
+        "label": "invalid"
+      },
+      {
+        "id": "F9c83304887",
+        "rule": "R7",
+        "reason": "R7 requires at least 6-8 peer-reviewed publications. The bibliography lists only five entries.",
+        "label": "valid"
+      },
+      {
+        "id": "Fbd282b303b",
+        "rule": "R11",
+        "reason": "R11 forbids filler words. 'Furthermore', 'In addition' and the adjective 'additional' are connectives or words with meaning, not filler, so no breach is shown.",
+        "label": "invalid"
+      },
+      {
+        "id": "F5b8b68838f",
+        "rule": "R10",
+        "reason": "R10 requires every figure to be referenced in the text. Figure 1 is never mentioned; the text only says 'illustrated in section 4'.",
+        "label": "valid"
+      },
+      {
+        "id": "Fefae563795",
+        "rule": "R3",
+        "reason": "R3 requires one subsection per objective, each at least two paragraphs. The proposal has no objective subsections at all.",
+        "label": "valid"
+      },
+      {
+        "id": "F2278b18367",
+        "rule": "R16",
+        "reason": "R16 concerns using the same term for the same concept. 'CI Server' versus 'CI server' is the same term with different capitalization, not inconsistent terminology.",
+        "label": "invalid"
+      },
+      {
+        "id": "F8751556666",
+        "rule": "R4",
+        "reason": "The finding claims the Problem section names no actors. It does name smaller universities, students and the instructor, so the claim does not hold.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fcc0d5d4406",
+        "rule": "R15",
+        "reason": "R15 applies to headings only. The schedule items, scenario name and figure caption cited here are not headings, and 'workfow' is a text-extraction artifact.",
+        "label": "invalid"
+      },
+      {
+        "id": "F370d5c87c4",
+        "rule": "R10",
+        "reason": "R10 requires every figure to be referenced in the text. Figure 1 is never referenced by name; the text only points to 'section 4'.",
+        "label": "valid"
+      },
+      {
+        "id": "F9148503598",
+        "rule": "R13",
+        "reason": "R13 calls for paragraphs of 5-8 lines. Each abstract paragraph is only about three lines long.",
+        "label": "valid"
+      },
+      {
+        "id": "Feab5b48f2b",
+        "rule": "R4",
+        "reason": "The finding claims the Problem section names no stakeholders. It mentions smaller universities, students and the instructor, so the claim does not hold.",
+        "label": "invalid"
+      },
+      {
+        "id": "F093692d519",
+        "rule": "R16",
+        "reason": "The cited inconsistency is only capitalization of the same term ('CI Server' vs 'CI server'). It uses no different term for the same concept, so R16 is not breached.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fbfb6d52081",
+        "rule": "R1",
+        "reason": "R1 requires an Objective section with subsections. The proposal has none.",
+        "label": "valid"
+      },
+      {
+        "id": "F7c1b801cfd",
+        "rule": "R7",
+        "reason": "R7 requires at least 6-8 peer-reviewed publications. Only five are listed.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc4f88edc45",
+        "rule": "R4",
+        "reason": "R4 requires consequences for identified actors. The manual build-plan update problem is not tied to a named actor; instructors are only implied.",
+        "label": "valid"
+      },
+      {
+        "id": "Fcc50851d8a",
+        "rule": "R19",
+        "reason": "R19 requires 2-4 week iterations with measurable deliverables. The schedule lists scattered single-week tasks by month with no iteration structure.",
+        "label": "valid"
+      },
+      {
+        "id": "F95415d2f3f",
+        "rule": "R1",
+        "reason": "R1 requires an Objective section with subsections. None exists; 'Expected Findings' does not serve as one.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd724b1b57a",
+        "rule": "R1",
+        "reason": "R1 requires an Introduction section. The document goes straight from the Abstract to '1 Problem Statement'.",
+        "label": "valid"
+      },
+      {
+        "id": "F35ebd9fe39",
+        "rule": "R1",
+        "reason": "R1 requires a Motivation section. There is no Motivation section.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc30005901d",
+        "rule": "R15",
+        "reason": "R15 applies to headings. The cited items are message labels inside Figure 1, not headings.",
+        "label": "invalid"
+      },
+      {
+        "id": "F2ca5baada8",
+        "rule": null,
+        "reason": "Duplicated words and similar typos are not covered by any rule.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F27f657513c",
+        "rule": "R19",
+        "reason": "R19 requires 2-4 week iterations. The schedule is a list of single-week tasks by month, not sprints.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc398ca6d8c",
+        "rule": "R1",
+        "reason": "R1 requires a Motivation section. It is absent.",
+        "label": "valid"
+      },
+      {
+        "id": "F2461cf1fbe",
+        "rule": "R17",
+        "reason": "R17 requires an AI transparency statement. The document has none.",
+        "label": "valid"
+      },
+      {
+        "id": "F9dd688b5c5",
+        "rule": "R13",
+        "reason": "R13 allows lists only in the Schedule and objective lists. Section 4 presents the visionary scenario as a long numbered list rather than prose.",
+        "label": "valid"
+      },
+      {
+        "id": "F1e10102e4e",
+        "rule": "R7",
+        "reason": "R7 requires at least 6-8 peer-reviewed publications. The bibliography has only five entries.",
+        "label": "valid"
+      },
+      {
+        "id": "F69510e636e",
+        "rule": "R1",
+        "reason": "R1 requires Introduction, Motivation and Objective sections. All three are missing.",
+        "label": "valid"
+      },
+      {
+        "id": "F7edf24fedc",
+        "rule": "R1",
+        "reason": "R1 requires a standalone Motivation section. None exists.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc61013229a",
+        "rule": "R3",
+        "reason": "R3 requires an objectives intro, a bullet list of 3-4 objectives and one subsection per objective. None of this structure is present.",
+        "label": "valid"
+      },
+      {
+        "id": "F6a946744ba",
+        "rule": "R12",
+        "reason": "R12 requires abbreviations to be defined before use. 'API' is never defined.",
+        "label": "valid"
+      },
+      {
+        "id": "F64ca11c601",
+        "rule": "R7",
+        "reason": "R7 requires at least 6-8 peer-reviewed publications. Only five references are listed.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc0f4d5a6fb",
+        "rule": "R4",
+        "reason": "R4 applies to the Problem section. The quoted sentence 'The CI server should be migrated to the VC server' comes from the Abstract's 'Problem Statement' paragraph, not from section 1.",
+        "label": "invalid"
+      }
+    ]
+  },
+  "costUsd": 0.2671748,
+  "durationMs": 40171,
+  "model": "claude-opus-5-5[1m]"
+}

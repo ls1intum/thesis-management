@@ -1,0 +1,593 @@
+{
+  "categories" : [ {
+    "category" : "STRUCTURE",
+    "generated" : [ {
+      "severity" : "CRITICAL",
+      "category" : "STRUCTURE",
+      "title" : "Missing Introduction Section",
+      "description" : "The proposal does not contain an Introduction section, which is required by the guidelines."
+    }, {
+      "severity" : "CRITICAL",
+      "category" : "STRUCTURE",
+      "title" : "Missing Motivation Section",
+      "description" : "The proposal does not contain a Motivation section, which is required by the guidelines."
+    }, {
+      "severity" : "CRITICAL",
+      "category" : "STRUCTURE",
+      "title" : "Missing Objective Section",
+      "description" : "The proposal does not contain an Objective section with the required bullet list and subsections."
+    }, {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Problem Section Too Long",
+      "description" : "The Problem section exceeds the maximum allowed length of 3/4 page.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Problem",
+        "quote" : "**The interactive learning platform Artemis is an approach to use interactive learning during large computer science classes [Krusche17, Krusche18].** Main goal is to give the students immediately individual and automatic generated feedback."
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "CRITICAL",
+      "category" : "STRUCTURE",
+      "title" : "Missing Introduction Section",
+      "description" : "The proposal does not contain an Introduction section, which is required by the guidelines."
+    }, {
+      "severity" : "CRITICAL",
+      "category" : "STRUCTURE",
+      "title" : "Missing Motivation Section",
+      "description" : "The proposal does not contain a Motivation section, which is required by the guidelines."
+    }, {
+      "severity" : "CRITICAL",
+      "category" : "STRUCTURE",
+      "title" : "Missing Objective Section",
+      "description" : "The proposal does not contain an Objective section with the required bullet list and subsections."
+    }, {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Problem Section Too Long",
+      "description" : "The Problem section exceeds the maximum allowed length of 3/4 page.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Problem",
+        "quote" : "**The interactive learning platform Artemis is an approach to use interactive learning during large computer science classes [Krusche17, Krusche18].** Main goal is to give the students immediately individual and automatic generated feedback."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "PROBLEM_MOTIVATION_OBJECTIVES",
+    "generated" : [ {
+      "severity" : "CRITICAL",
+      "category" : "WRITING",
+      "title" : "Problem section includes solution content",
+      "description" : "The Problem section presents solution statements such as “CI server should be migrated to the VC server” and includes a “Proposed Solution” subsection, which violates the rule that the Problem section must not contain solutions.",
+      "locations" : [ {
+        "page" : 1,
+        "section" : "Problem",
+        "quote" : "Problem Statement: The interactive learning platform Artemis currently only supports setups with an external CI server. **The CI server should be migrated to the VC server.**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Missing Motivation section",
+      "description" : "The proposal does not contain a dedicated Motivation section; only a combined “Motivation/Objective” line appears in the abstract, violating the requirement for a separate visionary Motivation section."
+    }, {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Missing Objectives section",
+      "description" : "There is no separate Objectives section (Section 4) listing objectives in action form, so the requirements for action‑form headings, single verbs, and detailed subsections cannot be satisfied."
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "CRITICAL",
+      "category" : "WRITING",
+      "title" : "Problem section includes solution content",
+      "description" : "The Problem section presents solution statements such as “CI server should be migrated to the VC server” and includes a “Proposed Solution” subsection, which violates the rule that the Problem section must not contain solutions.",
+      "locations" : [ {
+        "page" : 1,
+        "section" : "Problem",
+        "quote" : "Problem Statement: The interactive learning platform Artemis currently only supports setups with an external CI server. **The CI server should be migrated to the VC server.**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Missing Motivation section",
+      "description" : "The proposal does not contain a dedicated Motivation section; only a combined “Motivation/Objective” line appears in the abstract, violating the requirement for a separate visionary Motivation section."
+    }, {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Missing Objectives section",
+      "description" : "There is no separate Objectives section (Section 4) listing objectives in action form, so the requirements for action‑form headings, single verbs, and detailed subsections cannot be satisfied."
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "BIBLIOGRAPHY",
+    "generated" : [ {
+      "severity" : "CRITICAL",
+      "category" : "COMPLETENESS",
+      "title" : "Bibliography contains fewer than required publications",
+      "description" : "The bibliography lists only 5 peer‑reviewed publications, but the guidelines require at least 6‑8 peer‑reviewed publications.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "References",
+        "quote" : "References ... [Booch95] ... [Gamma95] ... [Hilton16] ... [Krusche17] ... [Krusche18]"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "CRITICAL",
+      "category" : "COMPLETENESS",
+      "title" : "Bibliography contains fewer than required publications",
+      "description" : "The bibliography lists only 5 peer‑reviewed publications, but the guidelines require at least 6‑8 peer‑reviewed publications.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "References",
+        "quote" : "References ... [Booch95] ... [Gamma95] ... [Hilton16] ... [Krusche17] ... [Krusche18]"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "FIGURES",
+    "generated" : [ {
+      "severity" : "CRITICAL",
+      "category" : "FIGURES",
+      "title" : "Insufficient number of figures",
+      "description" : "The proposal includes only one figure (Figure 1) whereas the guidelines require at least two diagrams/mockups/figures.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "System Requirements and Top Level Design",
+        "quote" : "Figure 1: Depiction of the top-level workfow of the interactions in relation to Artemis and GitLab CI"
+      } ]
+    }, {
+      "severity" : "CRITICAL",
+      "category" : "FIGURES",
+      "title" : "Missing required UML diagram",
+      "description" : "No UML diagram (class, activity, component, etc.) is present in the proposal; the single figure is a workflow illustration, not a UML diagram.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "System Requirements and Top Level Design",
+        "quote" : "Figure 1: **Depiction of the top-level workfow of the interactions in relation to Artemis and GitLab CI**"
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "FIGURES",
+      "title" : "Caption is not sufficiently informative",
+      "description" : "The caption for Figure 1 is short and generic; guidelines require long, descriptive captions.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "System Requirements and Top Level Design",
+        "quote" : "Figure 1: **Depiction of the top-level workfow of the interactions in relation to Artemis and GitLab CI**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "FIGURES",
+      "title" : "Figure not referenced in the text",
+      "description" : "Figure 1 is never cited or discussed in the surrounding text, violating the requirement that every figure be referenced.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "System Requirements and Top Level Design",
+        "quote" : "Figure 1: Depiction of the top-level workfow of the interactions in relation to Artemis and GitLab CI"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "CRITICAL",
+      "category" : "FIGURES",
+      "title" : "Insufficient number of figures",
+      "description" : "The proposal includes only one figure (Figure 1) whereas the guidelines require at least two diagrams/mockups/figures.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "System Requirements and Top Level Design",
+        "quote" : "Figure 1: Depiction of the top-level workfow of the interactions in relation to Artemis and GitLab CI"
+      } ]
+    }, {
+      "severity" : "CRITICAL",
+      "category" : "FIGURES",
+      "title" : "Missing required UML diagram",
+      "description" : "No UML diagram (class, activity, component, etc.) is present in the proposal; the single figure is a workflow illustration, not a UML diagram.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "System Requirements and Top Level Design",
+        "quote" : "Figure 1: **Depiction of the top-level workfow of the interactions in relation to Artemis and GitLab CI**"
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "FIGURES",
+      "title" : "Caption is not sufficiently informative",
+      "description" : "The caption for Figure 1 is short and generic; guidelines require long, descriptive captions.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "System Requirements and Top Level Design",
+        "quote" : "Figure 1: **Depiction of the top-level workfow of the interactions in relation to Artemis and GitLab CI**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "FIGURES",
+      "title" : "Figure not referenced in the text",
+      "description" : "Figure 1 is never cited or discussed in the surrounding text, violating the requirement that every figure be referenced.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "System Requirements and Top Level Design",
+        "quote" : "Figure 1: Depiction of the top-level workfow of the interactions in relation to Artemis and GitLab CI"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STYLE",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Passive voice usage",
+      "description" : "Several sentences are written in passive voice, which reduces clarity and should be rewritten in active voice.",
+      "locations" : [ {
+        "page" : 1,
+        "section" : "Abstract",
+        "quote" : "The CI server **should be migrated** to the VC server."
+      }, {
+        "page" : 2,
+        "section" : "Problem Statement",
+        "quote" : "The base build plan **is copied** once after the student started the exercise."
+      }, {
+        "page" : 2,
+        "section" : "Problem Statement",
+        "quote" : "Later changes to the base build plan **are not patched** automatically to all student build plans."
+      }, {
+        "page" : 2,
+        "section" : "Proposed Solution",
+        "quote" : "the build plan **is fetched** from the API on each run."
+      }, {
+        "page" : 2,
+        "section" : "Proposed Solution",
+        "quote" : "The build plan **can be made available** via the API of Artemis."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Excessive filler words and intensifiers",
+      "description" : "The document contains filler words and intensifiers such as 'Additionally', 'Furthermore', and 'very' that should be avoided for concise academic writing.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Problem Statement",
+        "quote" : "**Additionally**, the base build plan is copied once after the student started the exercise."
+      }, {
+        "page" : 2,
+        "section" : "Proposed Solution",
+        "quote" : "**Furthermore**, the CI service should be part of the VC server to reduce additional effort."
+      }, {
+        "page" : 3,
+        "section" : "Discussion",
+        "quote" : "makes it **very** cumbersome to update the build plan afterwards."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Forbidden sentence starters",
+      "description" : "Sentences start with disallowed words such as 'Since' and 'To', which violate the writing style guidelines.",
+      "locations" : [ {
+        "page" : 1,
+        "section" : "Abstract",
+        "quote" : "**Since** some Version Control (VC) systems include a Continuous Integration (CI) application..."
+      }, {
+        "page" : 2,
+        "section" : "Problem Statement",
+        "quote" : "**To** achieve this goal, Artemis uses a Version Control (VC) and Continuous Integration (CI) server..."
+      }, {
+        "page" : 3,
+        "section" : "Discussion",
+        "quote" : "**Since** the benefits of using CI are quite high and nearly half of the developers who do not use CI mention a lack of familiarity..."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Undefined abbreviation 'API'",
+      "description" : "The abbreviation 'API' is introduced without a prior definition, which may confuse readers unfamiliar with the term.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Proposed Solution",
+        "quote" : "The build plan can be made available via the **API** of Artemis."
+      }, {
+        "page" : 1,
+        "section" : "Abstract",
+        "quote" : "supports the provision of the build plan via the Artemis **API**, which makes it possible to update the build plan retrospectively"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Passive voice usage",
+      "description" : "Several sentences are written in passive voice, which reduces clarity and should be rewritten in active voice.",
+      "locations" : [ {
+        "page" : 1,
+        "section" : "Abstract",
+        "quote" : "The CI server **should be migrated** to the VC server."
+      }, {
+        "page" : 2,
+        "section" : "Problem Statement",
+        "quote" : "The base build plan **is copied** once after the student started the exercise."
+      }, {
+        "page" : 2,
+        "section" : "Problem Statement",
+        "quote" : "Later changes to the base build plan **are not patched** automatically to all student build plans."
+      }, {
+        "page" : 2,
+        "section" : "Proposed Solution",
+        "quote" : "the build plan **is fetched** from the API on each run."
+      }, {
+        "page" : 2,
+        "section" : "Proposed Solution",
+        "quote" : "The build plan **can be made available** via the API of Artemis."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Excessive filler words and intensifiers",
+      "description" : "The document contains filler words and intensifiers such as 'Additionally', 'Furthermore', and 'very' that should be avoided for concise academic writing.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Problem Statement",
+        "quote" : "**Additionally**, the base build plan is copied once after the student started the exercise."
+      }, {
+        "page" : 2,
+        "section" : "Proposed Solution",
+        "quote" : "**Furthermore**, the CI service should be part of the VC server to reduce additional effort."
+      }, {
+        "page" : 3,
+        "section" : "Discussion",
+        "quote" : "makes it **very** cumbersome to update the build plan afterwards."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Forbidden sentence starters",
+      "description" : "Sentences start with disallowed words such as 'Since' and 'To', which violate the writing style guidelines.",
+      "locations" : [ {
+        "page" : 1,
+        "section" : "Abstract",
+        "quote" : "**Since** some Version Control (VC) systems include a Continuous Integration (CI) application..."
+      }, {
+        "page" : 2,
+        "section" : "Problem Statement",
+        "quote" : "**To** achieve this goal, Artemis uses a Version Control (VC) and Continuous Integration (CI) server..."
+      }, {
+        "page" : 3,
+        "section" : "Discussion",
+        "quote" : "**Since** the benefits of using CI are quite high and nearly half of the developers who do not use CI mention a lack of familiarity..."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Undefined abbreviation 'API'",
+      "description" : "The abbreviation 'API' is introduced without a prior definition, which may confuse readers unfamiliar with the term.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Proposed Solution",
+        "quote" : "The build plan can be made available via the **API** of Artemis."
+      }, {
+        "page" : 1,
+        "section" : "Abstract",
+        "quote" : "supports the provision of the build plan via the Artemis **API**, which makes it possible to update the build plan retrospectively"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STRUCTURE",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "FORMATTING",
+      "title" : "Excessive use of bullet points in System Requirements section",
+      "description" : "Replace the extensive list of numbered items with prose paragraphs. Lists should be limited to 1‑2 lines each and used only for schedule or contribution objectives.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "System Requirements and Top Level Design",
+        "quote" : "**1)  Name:      Exercise work fow**\n\n**2)  Participating actors: Bob: Instructor, Mary: Student**\n\n**3)  Flow of events:**\n\n1.  Bob   prepares  the  exercise ...\n2.   Artemis confgures the build plan ...\n3.  Mary clicks the start exercise button ..."
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "FORMATTING",
+      "title" : "Excessive use of bullet points in System Requirements section",
+      "description" : "Replace the extensive list of numbered items with prose paragraphs. Lists should be limited to 1‑2 lines each and used only for schedule or contribution objectives.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "System Requirements and Top Level Design",
+        "quote" : "**1)  Name:      Exercise work fow**\n\n**2)  Participating actors: Bob: Instructor, Mary: Student**\n\n**3)  Flow of events:**\n\n1.  Bob   prepares  the  exercise ...\n2.   Artemis confgures the build plan ...\n3.  Mary clicks the start exercise button ..."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_FORMATTING",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Inconsistent terminology for CI component",
+      "description" : "The proposal uses both “CI server” and “CI service” to refer to the same concept, which violates the consistency requirement.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Problem Statement",
+        "quote" : "as a CI **server**"
+      }, {
+        "page" : 2,
+        "section" : "Proposed Solution",
+        "quote" : "the CI **service** should be part of the VC server"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Inconsistent terminology for CI component",
+      "description" : "The proposal uses both “CI server” and “CI service” to refer to the same concept, which violates the consistency requirement.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Problem Statement",
+        "quote" : "as a CI **server**"
+      }, {
+        "page" : 2,
+        "section" : "Proposed Solution",
+        "quote" : "the CI **service** should be part of the VC server"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "AI_TRANSPARENCY",
+    "generated" : [ {
+      "severity" : "CRITICAL",
+      "category" : "STRUCTURE",
+      "title" : "Missing AI Transparency Statement",
+      "description" : "The proposal does not contain an AI transparency statement as required by the research group guidelines."
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "CRITICAL",
+      "category" : "STRUCTURE",
+      "title" : "Missing AI Transparency Statement",
+      "description" : "The proposal does not contain an AI transparency statement as required by the research group guidelines."
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "SCHEDULE",
+    "generated" : [ {
+      "severity" : "CRITICAL",
+      "category" : "OTHER",
+      "title" : "Iteration length too short",
+      "description" : "All listed iterations span only a single week, which is shorter than the required 2–4 week minimum.",
+      "locations" : [ {
+        "page" : 5,
+        "quote" : "– **2nd week**: Docker GitLab CI Runner configuration"
+      } ]
+    }, {
+      "severity" : "CRITICAL",
+      "category" : "OTHER",
+      "title" : "Thesis writing tasks in schedule",
+      "description" : "The schedule contains dedicated weeks for writing, reviewing and finalizing the thesis, which are prohibited.",
+      "locations" : [ {
+        "page" : 5,
+        "quote" : "October: **Writing . . .**"
+      }, {
+        "page" : 5,
+        "quote" : "– 2nd week: **Thesis ready for review**"
+      }, {
+        "page" : 5,
+        "quote" : "– 3rd week: **Review fnished**"
+      }, {
+        "page" : 5,
+        "quote" : "– 1st week: **Thesis**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "OTHER",
+      "title" : "Requirements-only iteration",
+      "description" : "June includes a 'Requirements' work item that constitutes a dedicated requirements sprint, violating the rule against a requirements-only iteration.",
+      "locations" : [ {
+        "page" : 5,
+        "quote" : "– 4th week: **Requirements** (parallel to prototype implementation)"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "OTHER",
+      "title" : "Documentation tasks in schedule",
+      "description" : "The schedule lists documentation work (installation and configuration documentation) which is not allowed.",
+      "locations" : [ {
+        "page" : 5,
+        "quote" : "– 2nd week: **Documentation** for installation and configuration of Artemis with GitLab CI"
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "OTHER",
+      "title" : "Horizontal work item (Models) not vertically integrated",
+      "description" : "June lists a 'Models' work item that does not represent a vertically integrated end‑to‑end feature.",
+      "locations" : [ {
+        "page" : 5,
+        "quote" : "– 4th week: **Models** (parallel to prototype implementation)"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "OTHER",
+      "title" : "Schedule follows waterfall style",
+      "description" : "The overall schedule is organized month‑by‑month with linear tasks rather than iterative sprints, not adhering to agile principles.",
+      "locations" : [ {
+        "page" : 4,
+        "quote" : "It is planned to adhere to the following time schedule:"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "CRITICAL",
+      "category" : "OTHER",
+      "title" : "Iteration length too short",
+      "description" : "All listed iterations span only a single week, which is shorter than the required 2–4 week minimum.",
+      "locations" : [ {
+        "page" : 5,
+        "quote" : "– **2nd week**: Docker GitLab CI Runner configuration"
+      } ]
+    }, {
+      "severity" : "CRITICAL",
+      "category" : "OTHER",
+      "title" : "Thesis writing tasks in schedule",
+      "description" : "The schedule contains dedicated weeks for writing, reviewing and finalizing the thesis, which are prohibited.",
+      "locations" : [ {
+        "page" : 5,
+        "quote" : "October: **Writing . . .**"
+      }, {
+        "page" : 5,
+        "quote" : "– 2nd week: **Thesis ready for review**"
+      }, {
+        "page" : 5,
+        "quote" : "– 3rd week: **Review fnished**"
+      }, {
+        "page" : 5,
+        "quote" : "– 1st week: **Thesis**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "OTHER",
+      "title" : "Requirements-only iteration",
+      "description" : "June includes a 'Requirements' work item that constitutes a dedicated requirements sprint, violating the rule against a requirements-only iteration.",
+      "locations" : [ {
+        "page" : 5,
+        "quote" : "– 4th week: **Requirements** (parallel to prototype implementation)"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "OTHER",
+      "title" : "Documentation tasks in schedule",
+      "description" : "The schedule lists documentation work (installation and configuration documentation) which is not allowed.",
+      "locations" : [ {
+        "page" : 5,
+        "quote" : "– 2nd week: **Documentation** for installation and configuration of Artemis with GitLab CI"
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "OTHER",
+      "title" : "Horizontal work item (Models) not vertically integrated",
+      "description" : "June lists a 'Models' work item that does not represent a vertically integrated end‑to‑end feature.",
+      "locations" : [ {
+        "page" : 5,
+        "quote" : "– 4th week: **Models** (parallel to prototype implementation)"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "OTHER",
+      "title" : "Schedule follows waterfall style",
+      "description" : "The overall schedule is organized month‑by‑month with linear tasks rather than iterative sprints, not adhering to agile principles.",
+      "locations" : [ {
+        "page" : 4,
+        "quote" : "It is planned to adhere to the following time schedule:"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  } ],
+  "categoryFailures" : { }
+}

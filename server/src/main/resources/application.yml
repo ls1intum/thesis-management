@@ -98,6 +98,16 @@ thesis-management:
     preset: ${REFERENCE_DATA_PRESET:}
   ai:
     enabled: ${AI_FEATURES_ENABLED:false}
+    # Review strategy: `category-fan-out` (default) runs one LLM call per review category and
+    # merges them; `agentic` lets a single agent drive its own tool calls and decide its own depth;
+    # `single-prompt` checks every category in one call, the baseline the other two are measured by.
+    reviewer: ${AI_REVIEWER:category-fan-out}
+    # Hard cap on the model turns one agentic review may take. Ignored by the fan-out strategy.
+    agent-max-turns: ${AI_AGENT_MAX_TURNS:40}
+    # Check each category's findings against that category's own rules before consolidating them,
+    # dropping ungrounded quotes and findings that enforce a rule the guidelines do not state.
+    # Costs one extra LLM call per category that found something. Fan-out strategy only.
+    verify-findings: ${AI_VERIFY_FINDINGS:true}
     # Force per-page image rendering on/off. Left blank (unset) so the pipeline auto-detects
     # vision support from the configured chat model; an empty value binds to a null Boolean.
     review-include-images: ${AI_REVIEW_INCLUDE_IMAGES:}

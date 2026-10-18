@@ -1,0 +1,154 @@
+{
+  "assessment" : "NEEDS_WORK",
+  "score" : 55,
+  "summary" : "The proposal is well organized: a clearly scoped problem for named actors (requester, maintainer, super admin, auditor), a visionary motivation grounded in 12 peer-reviewed access-control publications, four measurable objectives with a two-paragraph subsection each (except 4.4), two properly referenced UML diagrams, and a plausible four-week iteration schedule with demonstrable outcomes. However, one required section is missing entirely (Abstract — critical) and several rule violations must be fixed before submission: the Problem section prescribes a solution, objective 2 uses the prohibited double verb \"Design and implement\", subsection 4.4 is only one paragraph, the online Keycloak documentation sits in the bibliography instead of a footnote, Bruegge and Dutoit are named in the text without a citation or reference, the AI transparency statement lacks the required author-check confirmation, and the schedule ends with an iteration devoted to writing the thesis and preparing the presentation. Minor fixes: add introductory text under \"1 Introduction\", move [BBF01] before the full stop, expand Figure 2's one-line caption, remove the contraction \"doesn't\" and the superlative \"worst bottleneck\", reduce the pervasive first-person \"I\", and unify \"maintainer\"/\"resource owner\".",
+  "findings" : [ {
+    "severity" : "CRITICAL",
+    "category" : "STRUCTURE",
+    "title" : "Required Abstract section is missing",
+    "description" : "The proposal has no Abstract section at all (the word \"Abstract\" does not occur anywhere). The required sections are Abstract, Introduction, Problem, Motivation, Objective, Schedule, Bibliography, and AI Transparency Statement. Add an abstract of 1/3 to 1/2 page summarizing the problem, the proposed platform, and the four objectives, placed before the Introduction.",
+    "locations" : [ {
+      "page" : 1,
+      "section" : "Abstract"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "STRUCTURE",
+    "title" : "Problem section presents a solution",
+    "description" : "The Problem section must describe only problems and their negative consequences, not solutions. The final sentence of the Problem section prescribes the solution (a self-service platform arming the Keycloak workflow engine with an expiry date). Move this sentence — and any solution design — into Motivation or Objective, and end the Problem section with the negative consequences (stale access, no audit trail) instead.",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "Problem",
+      "quote" : "A self-service platform that arms the workfow engine of Keycloak with an expiry date at grant time would end this accumulation."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "WRITING",
+    "title" : "Objective 2 uses a double verb (\"Design and implement\")",
+    "description" : "Objective 2 (bullet in Section 4 and heading of 4.2) uses a double verb, exactly the pattern the guidelines prohibit (\"Design and implement\" is the cited bad example). Pick a single verb per objective, e.g. \"Implement connectors with expiry\" or \"Design connectors with expiry\", in both the bullet list and the subsection heading.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Objective",
+      "quote" : "Design   and   implement      connectors     with   expiry"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "STRUCTURE",
+    "title" : "Objective subsection 4.4 has only one paragraph",
+    "description" : "Each objective subsection must be at least two paragraphs long, but Section 4.4 contains only a single paragraph (four sentences that continue across the page break to page 7). Subsections 4.1, 4.2, and 4.3 each have two paragraphs. Split 4.4 into at least two paragraphs — for example, one on how recertification intervals and campaigns work, and one on escalation, automatic revocation, and the audit record.",
+    "locations" : [ {
+      "page" : 6,
+      "section" : "4.4 Automate the Recertifcation of Grants",
+      "quote" : "I will attach a recertifcation interval to each resource, which its descendants inherit, and open a campaign whenever the interval elapses."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "STRUCTURE",
+    "title" : "Section 1 has no introductory text before its first subsection",
+    "description" : "Section 1 (Introduction) jumps directly from the section heading to subsection 1.1 \"Setting\" without any introductory text. Every chapter must have introductory prose before its first subsection. Add a short paragraph under \"1 Introduction\" that frames the thesis topic and previews the Setting and Existing Infrastructure subsections.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Introduction",
+      "quote" : "1.1 Setting"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "CITATION",
+    "title" : "Bruegge and Dutoit referenced in text but missing from the bibliography",
+    "description" : "The text attributes a method to Bruegge and Dutoit without a citation marker, and there is no Bruegge/Dutoit entry in the bibliography. Add a citation (e.g. [BD11] for \"Software Engineering: An Object-Oriented Case Study\") immediately after the mention and add the corresponding reference entry.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Objective",
+      "quote" : "I follow the object-oriented software engineering method of Bruegge and Dutoit, and Figure 1 shows the actors and use cases of the platform"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "CITATION",
+    "title" : "Citation [BBF01] placed after the full stop",
+    "description" : "The citation [BBF01] is placed after the full stop (\"temporal model. [BBF01]\"), whereas all other citations in the proposal are placed before the punctuation. Move the marker to before the period: \"... in their temporal model [BBF01].\"",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Motivation",
+      "quote" : "temporal    model.    [BBF01]     Joshi  et  al. generalise   this  idea  to  role  assignments  with a limited   duration     [Jos+05]."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "FIGURES",
+    "title" : "Figure 2 caption is short and generic",
+    "description" : "Figure 2's caption is just \"System Architecture\" — short and generic, while Figure 1's caption is a full, informative description. Expand the caption to describe the components (mgmt-ui, mgmt-api with GrantPlanner/ConnectorRegistry/DeprovisionReaper, PostgreSQL, ldap-bridge), the role of Keycloak, and why Slack/GitHub/Linux hosts are secondary actors, matching the style of Figure 1's caption.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "4.2 Design and Implement Connectors with Expiry",
+      "quote" : "Figure 2:  System  Architecture"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "WRITING",
+    "title" : "Contraction \"doesn't\" in the Problem section",
+    "description" : "Contractions are not allowed in the proposal. Rewrite \"doesn't\" as \"does not\".",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "Problem",
+      "quote" : "The    current   process    doesn’t scale  and   is the  worst   bottleneck     of the  chair."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "CITATION",
+    "title" : "Documentation source [Key26] belongs in a footnote, not the bibliography",
+    "description" : "[Key26] is a product documentation page (Keycloak Server Administration Guide, accessed online). Internet/documentation sources must be footnotes, not bibliography entries, and the bibliography may contain only peer-reviewed publications. Move this URL into a footnote (as the author already does for the Slack/GitHub API docs) and keep the peer-reviewed entries in the bibliography.",
+    "locations" : [ {
+      "page" : 8,
+      "section" : "Bibliography",
+      "quote" : "Oct. 18, 2026. [Online]. Available: https://www.keycloak.org/docs/"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "WRITING",
+    "title" : "Superlative \"worst bottleneck\" in the Problem section",
+    "description" : "\"worst bottleneck\" is a superlative/hyperbole in a factual problem statement. State the concrete negative consequence instead (e.g., access requests wait for days and block onboarding), without superlative wording.",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "Problem",
+      "quote" : "scale  and   is the  worst   bottleneck     of the  chair."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "WRITING",
+    "title" : "Systematic use of \"I\" in Objectives and Schedule",
+    "description" : "The style guide asks to avoid \"I\" and to use \"we\" only sparingly for the thesis approach, but Section 4 (Objective) and the Schedule use first-person singular in nearly every sentence (\"I will build\", \"I will replace\", \"I will store\", \"I will define\", \"I measure\", \"I will compare\", \"I will attach\", \"I divide it\", \"I demonstrate\"). Reformulate the thesis approach with \"we\" (or a subject such as \"the platform\") so \"I\" does not dominate the text.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Objective",
+      "quote" : "I will build  a  platform    on  which   any  member     of  the  chair  requests   time-limited access   to  any  resource,    a maintainer      decides,    and  the  access   ends   on  its  own."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "FORMATTING",
+    "title" : "Inconsistent terminology: \"maintainer\" vs \"resource owner\"",
+    "description" : "The same actor is called \"maintainer\" throughout (Introduction, Problem, Motivation, Figure 1, Sections 4.1 and 4.4) but \"resource owner\" in Section 4.3. Pick one term — the diagrams and most of the prose use \"maintainer\" — and replace \"resource owner\" in 4.3 for consistency.",
+    "locations" : [ {
+      "page" : 6,
+      "section" : "4.3 Delegate Request Review Without Privilege Escalation",
+      "quote" : "in  the   review   step,  the  resource   owner    records   a decision   without    changing     Keycloak,    and"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "OTHER",
+    "title" : "AI transparency statement lacks the author-check confirmation",
+    "description" : "The AI transparency statement names the tool, model, version, date, level, purposes, and sections, which is good, but it lacks the required confirmation sentence stating that the author has carefully checked all AI-generated text. Add a sentence such as: \"I have carefully checked all texts created with these tools to ensure that they are correct and make sense.\"",
+    "locations" : [ {
+      "page" : 10,
+      "section" : "Transparency in the Use of AI Tools"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "OTHER",
+    "title" : "Iteration 7 contains thesis writing and presentation preparation",
+    "description" : "The schedule must focus on development/research work and must not include thesis-writing or presentation-preparation tasks. Iteration 7 is exactly that. Remove it and redistribute the 18-31 March window into the development iterations (e.g., extend iteration 6 or add a hardening/deployment iteration).",
+    "locations" : [ {
+      "page" : 7,
+      "section" : "Schedule",
+      "quote" : "Iteration     7  (18–31      March):      Write   the   thesis  and   prepare    the"
+    } ]
+  } ]
+}

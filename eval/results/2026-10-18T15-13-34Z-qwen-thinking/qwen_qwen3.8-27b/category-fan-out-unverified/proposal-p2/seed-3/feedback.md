@@ -1,0 +1,151 @@
+# proposal-p2 — category-fan-out-unverified
+
+- **Model:** Qwen/Qwen3.8-27B
+- **Document type:** PROPOSAL
+- **Seed:** 3
+- **Assessment:** NEEDS_WORK
+- **Score:** 38
+- **Findings:** 14
+- **Cost:** 10 calls, 0 tool calls, depth 2, 124406 tokens, 264s
+- **Coverage:** 9/9 categories
+
+## Summary
+
+The proposal presents a well-motivated research topic with clear objectives, but contains a critical bibliography deficiency (only 5 entries vs. the required 6) and numerous structural and writing-rule violations including section length overruns, excessive paragraph lengths, forbidden sentence starters, and inconsistent system terminology. The schedule deviates from agile principles with a waterfall progression, unmeasurable deliverables, and a prohibited documentation task. Substantial revision is needed across structure, writing style, schedule, and citations before submission.
+
+## Findings
+
+### 1. Bibliography contains fewer than the minimum 6 publications
+
+`CRITICAL` · `citation`
+
+The bibliography on page 11 lists only 5 entries: [TP21], [AAM17], [BBE10], [Bog+07], and [NM06]. The guidelines require at least 6–8 peer-reviewed publications. The student must add at least one more relevant, peer-reviewed source to meet the minimum threshold.
+
+- Page 11, Bibliography: “[TP21] T. Tuononen and A. Parpala, … [AAM17] P. Ashwin, A. Abbas, and M. McLean, … [BBE10] J. Bitchener, H. Basturkmen, and M. East, … [Bog+07] M. Bogo, C. Regehr, R. Power, and G. Regehr, … [NM06] D. J. Nicol and D. Macfarlane-Dick, …”
+
+### 2. Problem section exceeds the 3/4-page length limit
+
+`MAJOR` · `structure`
+
+The Problem section (Section 2) spans from the middle of page 3 to the top of page 4, containing approximately 26 lines of body text across four paragraphs. This corresponds to roughly 85–90% of a full text page, exceeding the prescribed maximum of 3/4 page (75%). The section should be trimmed by at least one full paragraph or by tightening the existing prose to bring it under the limit.
+
+- Page 3, Problem: “For students' research proposals and theses, supervisors often provide feedback that is critical to their progress. The supervisor takes the role of an experienced peer and coach in a mentoring environment, gradually increasing the student's level of independence.”
+- Page 4, Problem: “Having to wait for feedback on purely formal aspects of a thesis or proposal can be frustrating for students, as these issues are governed by institutional conventions rather than research substance.”
+
+### 3. Motivation section exceeds 3/4-page limit; both paragraphs exceed 10-line maximum
+
+`MAJOR` · `structure`
+
+The Motivation section (Section 3) spans from the middle of page 4 to just past Figure 1 on page 5, corresponding to roughly 80–85% of a full text page—exceeding the 3/4-page maximum. Additionally, both paragraphs individually exceed the 10-line limit: the first spans 11 rendered lines (page 4), and the second spans approximately 12 rendered lines across pages 4–5. Splitting each paragraph (e.g., after the sentence about freeing supervisors to focus on specific content, and after the sentence about improving knowledge and beliefs) would address both the section-length and paragraph-length violations simultaneously.
+
+- Page 4, Motivation: “Integrating large language models (LLMs) to assist supervisors with non-content-related feedback could improve the thesis writing process. As Figure 1 illustrates, an LLM-powered Reviewer works alongside the supervisor, evaluating the thesis against the research group's writing guidelines and generating automatic formative feedback [NM06].”
+- Page 5, Motivation: “discussing it with the supervisor, and uses it to improve their knowledge, beliefs, and broader strategy for proceeding with the work [NM06]. Because the feedback tool is powered by LLMs, students can obtain instant formative feedback at any point during the writing process.”
+
+### 4. Section 4.1 first paragraph exceeds 10-line limit and combines two distinct ideas
+
+`MAJOR` · `structure`
+
+The first paragraph of Section 4.1 spans approximately 11 rendered lines across pages 5–6, exceeding the 10-line maximum. It also develops two distinct topics: (1) the practical pipeline of how supervisor guidelines are preprocessed to produce LLM feedback, and (2) the ethical distinction between formative and normative feedback. Splitting after 'it can act on' would separate the mechanism from the ethical rationale and bring both paragraphs within the line limit.
+
+- Page 6, Objective: “need to preprocess them into a structured representation it can act on. Ethically, it is difficult to let LLMs grade a final thesis, as this constitutes normative feedback and requires close scrutiny. Formative feedback, on the other hand, is less critical since it serves as input for students to improve their work.”
+
+### 5. Forbidden sentence starters: 'As', 'Because', 'Since'
+
+`MAJOR` · `writing`
+
+Three sentences begin with explicitly forbidden words: 'As' (page 4), 'Because' (page 5), and 'Since' (page 5). The guidelines prohibit sentences starting with 'As…', 'Since…', 'To…', 'In order to…', or 'Because…'. Each should be restructured to place the subject first or use an alternative construction.
+
+- Page 4, Motivation: “As Figure 1 illustrates, an LLM-powered Reviewer works alongside the supervisor, evaluating the thesis against the research group's writing guidelines and generating automatic formative feedback [NM06].”
+- Page 5, Motivation: “Because the feedback tool is powered by LLMs, students can obtain instant formative feedback at any point during the writing process.”
+- Page 5, Objective: “Since guidelines may not already be in a suitable format, the LLM may first need to preprocess them into a structured representation it can act on.”
+
+### 6. Inconsistent naming of the LLM-based feedback system
+
+`MAJOR` · `writing`
+
+The same system is referred to by at least five different names: 'the tool' (Abstract), 'an LLM-powered Reviewer' (Motivation), 'an LLM Reviewer' (Figure 1 caption), 'the Reviewer' (Motivation), and 'the feedback tool' (all of Objectives §4). 'LLM-powered Reviewer' and 'LLM Reviewer' are two slightly different labels for the same entity appearing just one page apart. The author should settle on a single term and use it consistently throughout.
+
+- Page 2, Abstract: “Beyond a single draft, the tool also compares iterations to highlight improvements and surface persistent issues with more explanatory feedback.”
+- Page 4, Motivation: “an LLM-powered Reviewer works alongside the supervisor, evaluating the thesis against the research group's writing guidelines and generating automatic formative feedback”
+- Page 5, Motivation: “Figure 1: Analysis object model of the envisioned feedback process: an LLM Reviewer works alongside the supervisor, generating formative feedback on the thesis”
+- Page 6, Objective: “When the feedback tool has access to previous iterations of the proposal or thesis, it can compare the latest submission with earlier ones”
+- Page 8, Objective: “so we integrate the feedback tool into this existing system.”
+
+### 7. AI Transparency Statement is a single 14-line paragraph
+
+`MAJOR` · `structure`
+
+The entire AI Transparency Statement on page 12 is written as one continuous paragraph of approximately 14 rendered lines, well over the 10-line maximum. The content naturally divides into shorter paragraphs: (1) writing and translation tools, (2) content generation and coding assistance tools, (3) citation management and verification. Splitting into 2–3 paragraphs would improve readability and comply with the length rule.
+
+- Page 12, AI Transparency Statement: “In preparing this proposal, I made use of several AI-based tools across different stages of the writing process. For grammar and style correction, I used Grammarly to identify grammatical errors, improve sentence structure, and refine the overall writing style of my drafts. For translation and language enhancement, I used DeepL to translate passages between German and English and to improve the fluency of phrasings.”
+
+### 8. AI transparency statement does not specify which proposal sections the tools were used in
+
+`MAJOR` · `completeness`
+
+The transparency statement describes the purposes for which each tool was used (grammar correction, translation, content generation, coding assistance, citation management) but does not specify which sections of the proposal the AI tools were applied to. The rules require the statement to 'specify which sections of the proposal the AI tools were used for.' Vague phrasing such as 'across different stages of the writing process' and 'throughout the proposal' does not satisfy this requirement. The student should indicate, for example, which tools were used for the Abstract, which for the Problem and Motivation sections, which for the Objective section, etc.
+
+- Page 12, Transparency in the Use of AI Tools: “In preparing this proposal, I made use of several AI-based tools across different stages of the writing process.”
+- Page 12, Transparency in the Use of AI Tools: “I used Zotero to manage my references and to ensure proper citation formatting throughout the proposal.”
+
+### 9. Schedule follows a waterfall pattern; Iterations 1–2 deliver no user-visible value
+
+`MAJOR` · `methodology`
+
+Iteration 1 is purely backend refactoring ('Modularize Thesis Management to prepare integration') and Iteration 2 is purely backend pipeline building ('Implement core feedback generation pipeline', 'Define input/output contract'). Neither iteration delivers a vertically integrated, user-visible feature. The overall progression (prepare infrastructure → build core engine → integrate → add features → evaluate → finalize) defers all user-visible value to Iteration 3 and beyond. In an agile schedule, each iteration should deliver a shippable increment of user value (e.g., 'supervisor can generate and publish structural feedback for one thesis chapter' by the end of Iteration 2, then extend scope in later iterations).
+
+- Page 9, Schedule: “Iteration 1 (08.06.2026 - 2 weeks) • Modularize Thesis Management to prepare integration of the feedback module (Objective 4)”
+- Page 9, Schedule: “Iteration 2 (22.06.2026 - 2 weeks) • Implement core feedback generation pipeline (Objective 1) • Define input/output contract and structured output format (Objective 1)”
+- Page 9, Schedule: “Iteration 3 (06.07.2026 - 2 weeks) • Connect feedback tool to Thesis Management (Objective 4)”
+- Page 9, Schedule: “We divided the time into several two-week iterations, each containing tasks to fulfill the overall goals”
+
+### 10. Schedule includes documentation writing as a dedicated task
+
+`MAJOR` · `methodology`
+
+Iteration 9 explicitly lists 'Documentation' as a work item. The schedule rules prohibit thesis writing, documentation writing, or presentation preparation tasks. Documentation should be an ongoing byproduct of development, not a dedicated schedule item.
+
+- Page 10, Schedule: “• Documentation”
+
+### 11. Unmeasurable deliverable in Iteration 9
+
+`MAJOR` · `methodology`
+
+'Review the system and check for bugs' is not a measurable, deliverable work item. It lacks specific criteria (what is reviewed? what constitutes a pass?). Additionally, dedicating an entire iteration to a final bug-check phase reflects a waterfall testing pattern rather than an agile practice where testing and integration are continuous across all iterations.
+
+- Page 10, Schedule: “• Review the system and check for bugs”
+
+### 12. Passive voice in six sentences across the document
+
+`MINOR` · `writing`
+
+Six instances of passive voice are present across the document. While not extreme, the recurring use weakens the active-voice requirement. Each instance has an identifiable actor (supervisor, student, LLM, etc.) that should be made the subject of an active sentence.
+
+- Page 3, Introduction: “This cycle continues until the proposal is accepted.”
+- Page 5, Objective: “In one mode, no LLM-generated feedback is produced at all and all feedback comes from the supervisor.”
+- Page 8, Objective: “A single plain prompt to an LLM may not cover all of them reliably, since attention can dilute when many heterogeneous criteria are bundled into one request.”
+- Page 8, Objective: “Alternatives include prompt chaining and agentic setups, in which the LLM itself identifies where further lookups into the proposal are required and triggers specialized feedback generations focused on a narrower set of aspects.”
+- Page 8, Objective: “Self-hosted models keep student drafts inside the university's infrastructure but are limited by the available hardware, while cloud-hosted models offer stronger capabilities at usage-based prices.”
+- Page 9, Objective: “At present, the feedback flow in Thesis Management only exists for the proposal, since the thesis is handed in as a single final submission without an iterative feedback cycle.”
+
+### 13. Excessive use of filler and transitional words
+
+`MINOR` · `writing`
+
+The document uses six filler/transitional words across ten pages: 'also' (×2), 'Moreover', 'Additionally', 'In addition', and 'as well'. While each is individually acceptable, their clustered use adds padding without adding information. Removing or replacing most of these will tighten the prose.
+
+- Page 2, Abstract: “Beyond a single draft, the tool also compares iterations to highlight improvements and surface persistent issues with more explanatory feedback.”
+- Page 3, Problem: “Moreover, the time spent on repetitive feedback leaves less time for what matters most: helping students with their research and providing feedback on substantive topics.”
+- Page 4, Motivation: “Additionally, supervisors can provide feedback faster, making the process more scalable.”
+- Page 4, Motivation: “Better and faster feedback has significant advantages for students as well.”
+- Page 8, Objective: “In addition, privacy regulations and cost require careful consideration of when to use locally self-hosted LLMs versus cloud-hosted ones.”
+- Page 9, Objective: “We extend the existing proposal feedback flow to also cover the thesis, enabling formative feedback during the writing of the thesis itself.”
+
+### 14. Vague evaluation tasks in Iterations 5–6 lack measurable criteria
+
+`MINOR` · `methodology`
+
+Both Iteration 5 ('Build prototype implementations for agentic and prompt chaining setups' / 'Evaluate agentic and prompt chaining setups') and Iteration 6 ('Build prototype implementations for the selected LLM models and providers' / 'Evaluate different LLM models and providers') use the terms 'prototype' and 'evaluate' without specifying measurable outcomes. What metrics are used? What constitutes a successful prototype? What is the concrete deliverable (e.g., a benchmark report with accuracy/F1 scores on N sample theses, a go/no-go decision)? Without these, the iterations lack measurable, deliverable work items.
+
+- Page 9, Schedule: “• Build prototype implementations for agentic and prompt chaining setups (Objective 3) • Evaluate agentic and prompt chaining setups (Objective 3)”
+- Page 9, Schedule: “• Build prototype implementations for the selected LLM models and providers (Objective 3) • Evaluate different LLM models and providers (Objective 3)”

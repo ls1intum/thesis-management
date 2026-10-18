@@ -1,0 +1,82 @@
+{
+  "assessment" : "NEEDS_WORK",
+  "score" : 42,
+  "summary" : "The proposal presents a clear research direction but suffers from several structural and formatting violations. Critical issues include exceeding the allowed page limit and insufficient detail in objective subsections, while multiple paragraphs are overly long and an abbreviation is undefined.",
+  "findings" : [ {
+    "severity" : "CRITICAL",
+    "category" : "structure",
+    "title" : "Proposal exceeds maximum allowed length",
+    "description" : "The total text length of the proposal (excluding figures, tables, and schedule) spans more than 6 pages, violating the 4‑6 page limit.",
+    "locations" : [ {
+      "page" : 12,
+      "quote" : "**=== PAGE 12 ===**"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "structure",
+    "title" : "Objective subsections lack required detail and insufficient paragraph count",
+    "description" : "Each objective subsection contains only a single paragraph; the guidelines require at least two paragraphs with detailed descriptions for every objective.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Objective",
+      "quote" : "I model   the   resources    as a  tree whose    folders  pass   maintainership,      audit  policy, and   grants   down    to  leaves  bound     to target   systems,    as  the  UML     object   diagram   in Figure 2 shows."
+    }, {
+      "page" : 5,
+      "section" : "4.1 Unify Heterogeneous Resources in One Tree",
+      "quote" : "I model the resources as a tree whose folders pass maintainership, audit policy, and grants down to leaves bound to target systems, as the UML object diagram in Figure 2 shows."
+    }, {
+      "page" : 6,
+      "section" : "4.2 Enforce an Expiry Date on Every Grant",
+      "quote" : "The platform changes Keycloak only with the token of the calling user and holds no service account, so no background process of the platform can remove a membership."
+    }, {
+      "page" : 8,
+      "section" : "4.3 Delegate the Approval of Requests to Maintainers",
+      "quote" : "Requesters fll in a declarative request form instead of naming resources, and its rules turn answers into requests for a resource path, an access level, and a duration, which the platform routes to the maintainer of each resource."
+    }, {
+      "page" : 8,
+      "section" : "4.4 Automate the Recertifcation of Active Grants",
+      "quote" : "Every resource carries a recertifcation interval that its descendants inherit, and each elapsed interval opens a campaign in which the maintainer keeps or revokes every grant with an immutable decision."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "formatting",
+    "title" : "Paragraphs exceed recommended length",
+    "description" : "Several paragraphs (abstract, introductory sections, problem, motivation, and objective) span more than ten lines, exceeding the 5‑8 line recommendation.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Abstract",
+      "quote" : "**A university   research    chair  grants   access   to its compute     hosts,  chat   workspace,** and  code   repositories    by  hand,   while  the  people    who   need   that  access  change    every semester.    Requests    travel   by  chat  message     or  e-mail,  nobody     records   an   end  date, and   access  granted    for  one   project   outlives   the  time   a person    spends    at  the  chair."
+    }, {
+      "page" : 2,
+      "section" : "Introduction",
+      "quote" : "**A  university    research    chair,  or  a team    of similar   size,  runs  shared    infrastruc** ture:  Linux    hosts   with   graphics     processors    that   its  members      reach   over   Secure"
+    }, {
+      "page" : 3,
+      "section" : "Problem",
+      "quote" : "**Requesters,       such   as thesis  students    and   external   collaborators,     do  not  know** who manages which system. A student who needs a host, a channel, and a"
+    }, {
+      "page" : 3,
+      "section" : "Motivation",
+      "quote" : "**Expiring    access   reverses   the   default   of an   organisation:     access   lasts  until  its** expiry   date  unless   its holder   explains    the  need   for more    time."
+    }, {
+      "page" : 4,
+      "section" : "Objective",
+      "quote" : "**In  this  thesis,  I develop    a self-service    platform    on   which    requesters    ask  for** time-limited    access,   maintainers     decide,   and  access   ends  on  its own;   Figure  1  shows"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Undefined abbreviation \"UML\" used without prior definition",
+    "description" : "The abbreviation 'UML' appears in the proposal before it is defined, violating the guideline that abbreviations must be defined before use.",
+    "locations" : [ {
+      "page" : 5,
+      "quote" : "Figure 1: **UML** use case diagram of the access management platform."
+    }, {
+      "page" : 6,
+      "quote" : "Figure 2: **UML** object diagram of a small resource tree at the chair."
+    }, {
+      "page" : 7,
+      "quote" : "Figure 3: **UML** component diagram of the platform and its environment."
+    } ]
+  } ]
+}

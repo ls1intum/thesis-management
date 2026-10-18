@@ -1,0 +1,250 @@
+{
+  "job": "label-proposal-p1-pass2-06",
+  "answer": {
+    "judgements": [
+      {
+        "id": "F4dc654be78",
+        "rule": "R19",
+        "reason": "R19 requires measurable deliverables. Schedule items such as 'Models (parallel to prototype implementation)' and 'Implement improvements' name no verifiable outcome.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd0382d8c09",
+        "rule": "R13",
+        "reason": "R13 requires 5-8 line paragraphs with one idea each. The Krusche et al. paragraph runs from page 2 onto page 3, takes about 11 lines and covers several ideas.",
+        "label": "valid"
+      },
+      {
+        "id": "Ff428593874",
+        "rule": "R9",
+        "reason": "R9 forbids sequence diagrams. Figure 1 shows actors with numbered messages (1.1, 2.2, ...) and no lifelines, so it reads as a communication-style diagram rather than a sequence diagram. The central claim does not hold.",
+        "label": "invalid"
+      },
+      {
+        "id": "F93a68ce725",
+        "rule": "R19",
+        "reason": "R19 requires 2-4 week iterations. The schedule is a month-by-month list of scattered single-week entries with no iteration structure.",
+        "label": "valid"
+      },
+      {
+        "id": "F62f0f0013c",
+        "rule": "R1",
+        "reason": "R1 lists the required sections. The document has no Introduction, Motivation or Objective section.",
+        "label": "valid"
+      },
+      {
+        "id": "F2e8744d183",
+        "rule": "R19",
+        "reason": "R19 requires an agile, vertically integrated schedule. The schedule moves step by step from setup to prototype parts, then models, requirements, documentation and writing, which is a waterfall order.",
+        "label": "valid"
+      },
+      {
+        "id": "F829cfca4aa",
+        "rule": "R10",
+        "reason": "R10 requires every figure to be referenced in the text. Figure 1 is never mentioned; the text only says 'illustrated in section 4'.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc5c398dd9b",
+        "rule": "R9",
+        "reason": "R9 requires at least two figures. The document contains only Figure 1.",
+        "label": "valid"
+      },
+      {
+        "id": "F6dc2035a7e",
+        "rule": "R11",
+        "reason": "R11 requires active voice. The quoted passive sentences, such as 'should be migrated' and 'is copied once', appear in the document.",
+        "label": "valid"
+      },
+      {
+        "id": "F8b4e141b2e",
+        "rule": "R9",
+        "reason": "R9 requires at least two figures. Only Figure 1 is present.",
+        "label": "valid"
+      },
+      {
+        "id": "F9069c9e53e",
+        "rule": "R20",
+        "reason": "R20 forbids documentation tasks in the schedule. September lists 'Documentation for installation and confguration of Artemis with GitLab CI'.",
+        "label": "valid"
+      },
+      {
+        "id": "Fa94404c564",
+        "rule": "R17",
+        "reason": "R17 requires an AI transparency statement. None appears anywhere in the document.",
+        "label": "valid"
+      },
+      {
+        "id": "Ff9b79b5cab",
+        "rule": "R19",
+        "reason": "R19 requires 2-4 week agile iterations. The schedule is organized by month in a sequential order without iterations.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc0f4366d5c",
+        "rule": "R13",
+        "reason": "R13 requires prose outside the Schedule and objective lists. Section 4 presents the visionary scenario as a numbered list.",
+        "label": "valid"
+      },
+      {
+        "id": "F0f293491f0",
+        "rule": "R19",
+        "reason": "R19 requires measurable deliverables. Items like 'Revise models with concrete implementation' and 'Implement improvements' are vague.",
+        "label": "valid"
+      },
+      {
+        "id": "Fe2328aa14d",
+        "rule": "R11",
+        "reason": "R11 says to avoid filler words. 'very cumbersome' occurs (in the Problem Statement, not Proposed Solution as cited). 'Additional' and 'Furthermore' are not really filler, but at least one location holds.",
+        "label": "valid"
+      },
+      {
+        "id": "Ffd2aa4bc03",
+        "rule": "R17",
+        "reason": "R17 requires an AI transparency statement. The document has none.",
+        "label": "valid"
+      },
+      {
+        "id": "F8a017b8751",
+        "rule": "R12",
+        "reason": "R12 requires abbreviations to be defined before use. 'API' is used from the abstract onward and never defined.",
+        "label": "valid"
+      },
+      {
+        "id": "Ffe3bf144b1",
+        "rule": "R3",
+        "reason": "R3 requires an Objective section with an intro, a bullet list of objectives and one subsection per objective. No such section exists.",
+        "label": "valid"
+      },
+      {
+        "id": "F53f6c1d432",
+        "rule": "R3",
+        "reason": "R3 requires an objective structure in Section 4. Section 4 is a requirements/design scenario with no objective list or objective subsections.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb6ed08c76a",
+        "rule": null,
+        "reason": "Avoiding the first person is not stated in any rule.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F06497a0def",
+        "rule": "R7",
+        "reason": "R7 requires at least 6-8 peer-reviewed publications. The bibliography lists only five entries, two of which are books.",
+        "label": "valid"
+      },
+      {
+        "id": "F2bf9de772f",
+        "rule": "R11",
+        "reason": "R11 requires active voice. The quoted passive constructions, such as 'must be updated' and 'is split up', occur in the text.",
+        "label": "valid"
+      },
+      {
+        "id": "F17f40c0e42",
+        "rule": "R13",
+        "reason": "R13 limits paragraphs to 5-8 lines. The Krusche et al. paragraph runs to about 11 lines across pages 2-3.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb68befb5df",
+        "rule": "R17",
+        "reason": "R17 requires an AI transparency statement. None is present.",
+        "label": "valid"
+      },
+      {
+        "id": "Fe9c62008d4",
+        "rule": "R17",
+        "reason": "R17 requires an AI transparency statement. The document contains none.",
+        "label": "valid"
+      },
+      {
+        "id": "F6798355cef",
+        "rule": "R11",
+        "reason": "R11 requires active voice. Passive forms such as 'is fetched' and 'are not patched' appear as quoted.",
+        "label": "valid"
+      },
+      {
+        "id": "F0931e66e40",
+        "rule": "R20",
+        "reason": "R20 forbids thesis-writing and documentation tasks in the schedule. The schedule includes 'October: Writing', 'Thesis ready for review', 'December – 1st week: Thesis' and a documentation task.",
+        "label": "valid"
+      },
+      {
+        "id": "Ff7ada9a1d5",
+        "rule": "R19",
+        "reason": "The schedule does not define one-week iterations. The cited 'Proposal' entry is a week-marked milestone, not an iteration, so the specific claim does not hold.",
+        "label": "invalid"
+      },
+      {
+        "id": "F156c6444a8",
+        "rule": "R6",
+        "reason": "R6 applies to stated objectives, and the document has none. The quoted abstract sentences are problem and motivation statements, not objectives.",
+        "label": "invalid"
+      },
+      {
+        "id": "Faafc42c8c0",
+        "rule": null,
+        "reason": "No rule forbids the first person.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Fdc7171295c",
+        "rule": "R17",
+        "reason": "R17 requires an AI transparency statement. None appears.",
+        "label": "valid"
+      },
+      {
+        "id": "F44fd364610",
+        "rule": "R11",
+        "reason": "R11 requires active voice. 'is copied', 'are not patched' and 'must be updated' occur in the Problem Statement; the first quote is actually from the Abstract.",
+        "label": "valid"
+      },
+      {
+        "id": "F107b7423bd",
+        "rule": "R20",
+        "reason": "R20 forbids a requirements-gathering sprint. The schedule lists 'Requirements (parallel to prototype implementation)' in June.",
+        "label": "valid"
+      },
+      {
+        "id": "F9c2ad622b8",
+        "rule": "R9",
+        "reason": "R9 requires at least two figures. Only one figure is present.",
+        "label": "valid"
+      },
+      {
+        "id": "F2a9e5a9bf9",
+        "rule": "R13",
+        "reason": "The abstract consists of labeled prose paragraphs, not bullet points. It does not break the prose requirement.",
+        "label": "invalid"
+      },
+      {
+        "id": "F40bdfcc56c",
+        "rule": "R11",
+        "reason": "'Additionally' and 'Furthermore' are transition words, not filler words, and 'In order to' is not quoted. The claimed breach is not shown.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fb5d139834d",
+        "rule": "R10",
+        "reason": "R10 requires every figure to be referenced. Figure 1 is never referenced by number; the text only says 'illustrated in section 4', and the caption is brief.",
+        "label": "valid"
+      },
+      {
+        "id": "F9cff3dba59",
+        "rule": "R16",
+        "reason": "R16 requires consistent terminology. The author's prose uses 'CI server', 'CI service' and 'CI system' for the same concept.",
+        "label": "valid"
+      },
+      {
+        "id": "Fcbf5d64929",
+        "rule": "R1",
+        "reason": "R1 requires an Introduction. The document has no Introduction section.",
+        "label": "valid"
+      }
+    ]
+  },
+  "costUsd": 0.2781028,
+  "durationMs": 40887,
+  "model": "claude-opus-5-5[1m]"
+}

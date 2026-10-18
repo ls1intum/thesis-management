@@ -1,0 +1,250 @@
+{
+  "job": "label-proposal-p2-pass3-07",
+  "answer": {
+    "judgements": [
+      {
+        "id": "F893e1796b6",
+        "rule": "R20",
+        "reason": "R20 forbids documentation tasks in the schedule, and Iteration 9 lists 'Documentation'.",
+        "label": "valid"
+      },
+      {
+        "id": "Ff63c6fde78",
+        "rule": "R13",
+        "reason": "R13 limits paragraphs to 5-8 lines. The first paragraph of 4.1 runs from page 5 to page 6 and is about 11-12 lines long. The Abstract location is within the limit, but one cited location shows the breach.",
+        "label": "valid"
+      },
+      {
+        "id": "F8a7e309d54",
+        "rule": null,
+        "reason": "No rule covers whether the iteration dates match the stated thesis start date.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Fcb37299c5f",
+        "rule": "R20",
+        "reason": "The central claim holds: Iteration 9 contains a 'Documentation' task, which R20 prohibits.",
+        "label": "valid"
+      },
+      {
+        "id": "F907c0044f5",
+        "rule": "R5",
+        "reason": "R5 says the Motivation must not repeat the Problem. The Motivation restates the repetitive feedback that 'currently drains supervisors', which is the Problem's content.",
+        "label": "valid"
+      },
+      {
+        "id": "Fbc3d5a0b92",
+        "rule": "R12",
+        "reason": "R12 forbids starting sentences with 'As', 'Since', or 'Because'. The document has 'As Figure 1 illustrates', 'Since guidelines may not...', and 'Because the feedback tool...'.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd66105589b",
+        "rule": "R11",
+        "reason": "R11 requires active voice, and 'no LLM-generated feedback is produced at all' is passive.",
+        "label": "valid"
+      },
+      {
+        "id": "F0fd7bbfb01",
+        "rule": "R10",
+        "reason": "R10 requires long, informative captions. The Figure 2 caption runs several sentences and describes the workflow, so it is not short.",
+        "label": "invalid"
+      },
+      {
+        "id": "F050d150472",
+        "rule": "R13",
+        "reason": "The quote joins two separate paragraphs. 'Better and faster feedback...' starts a new paragraph, so no single paragraph mixes these ideas.",
+        "label": "invalid"
+      },
+      {
+        "id": "F86f817b4fb",
+        "rule": "R12",
+        "reason": "R12 only forbids starting a sentence with 'Since'. Here 'since' appears in the middle of the sentence.",
+        "label": "invalid"
+      },
+      {
+        "id": "F1a2e66d137",
+        "rule": "R2",
+        "reason": "R2 limits the Problem to 3/4 page. The Problem fills about 19 lines on page 3 and 8 on page 4, close to a full page of body text, which is clearly over the limit.",
+        "label": "valid"
+      },
+      {
+        "id": "F9464b7b792",
+        "rule": "R7",
+        "reason": "R7 requires at least 6-8 peer-reviewed publications, and the bibliography lists only five.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd78f96f940",
+        "rule": "R20",
+        "reason": "Iteration 9 includes a 'Documentation' task, which R20 prohibits.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb4e6fbeccc",
+        "rule": "R17",
+        "reason": "R17 requires the statement to name the sections involved. The statement gives tools and purposes but never names any proposal section.",
+        "label": "valid"
+      },
+      {
+        "id": "F017aa7f20c",
+        "rule": "R13",
+        "reason": "The sentence is not a standalone paragraph. It continues the paragraph about the proposal workflow on page 3.",
+        "label": "invalid"
+      },
+      {
+        "id": "Ff3555e03c9",
+        "rule": "R16",
+        "reason": "'Local hosting' and 'locally self-hosted' name the same concept with essentially the same wording, so this is not a real terminology inconsistency.",
+        "label": "invalid"
+      },
+      {
+        "id": "F325629362f",
+        "rule": "R11",
+        "reason": "R11 forbids superlatives, and the document uses 'matters most', 'performs best', 'least disruption', and 'greatest simplification'.",
+        "label": "valid"
+      },
+      {
+        "id": "Fff8e2f23ed",
+        "rule": "R19",
+        "reason": "R19 requires measurable deliverables. Items such as 'Review the system and check for bugs' and 'Evaluate different LLM models' give no measurable outcome.",
+        "label": "valid"
+      },
+      {
+        "id": "F5e5ea405b9",
+        "rule": "R20",
+        "reason": "Iteration 9 contains a 'Documentation' task, which R20 prohibits.",
+        "label": "valid"
+      },
+      {
+        "id": "F037f5bc335",
+        "rule": "R12",
+        "reason": "R12 forbids starting a sentence with 'As', and the Motivation has 'As Figure 1 illustrates, ...'.",
+        "label": "valid"
+      },
+      {
+        "id": "F951b57936a",
+        "rule": "R11",
+        "reason": "R11 requires active voice, and 'the thesis is handed in as a single final submission' is passive with no actor named.",
+        "label": "valid"
+      },
+      {
+        "id": "F351d02d4b4",
+        "rule": "R2",
+        "reason": "The Problem section fills nearly a full page across pages 3-4, clearly over the 3/4-page limit in R2.",
+        "label": "valid"
+      },
+      {
+        "id": "F0cdd90d61f",
+        "rule": "R7",
+        "reason": "Only five publications are listed, below R7's minimum of 6-8.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb980701b75",
+        "rule": "R12",
+        "reason": "R12 requires abbreviations to be defined before use. 'AI' first appears in the Figure 2 caption ('AI-generated draft') and is never expanded before that.",
+        "label": "valid"
+      },
+      {
+        "id": "Fbffd4c694c",
+        "rule": "R12",
+        "reason": "A Motivation sentence starts with 'Because the feedback tool is powered by LLMs', which R12 forbids.",
+        "label": "valid"
+      },
+      {
+        "id": "F632623ce23",
+        "rule": "R11",
+        "reason": "R11 requires active voice. 'are governed by', 'is powered by', 'as illustrated in Figure 2', and 'are bundled' are passive. The last cited sentence is actually active.",
+        "label": "valid"
+      },
+      {
+        "id": "Ff6321aa4f5",
+        "rule": "R11",
+        "reason": "R11 forbids superlatives, and 'greatest simplification' is one. 'Wide' is not a superlative, but the central claim holds.",
+        "label": "valid"
+      },
+      {
+        "id": "Ffacce2364e",
+        "rule": "R2",
+        "reason": "Excluding the figures and schedule, the text from the Abstract to the end of the Objective fills roughly six pages. That is near the 4-6 page limit, not a clear breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fd0f24ff7f9",
+        "rule": "R17",
+        "reason": "The transparency statement names no proposal sections, which R17 requires.",
+        "label": "valid"
+      },
+      {
+        "id": "Fa061392413",
+        "rule": "R3",
+        "reason": "Each objective subsection, 4.1 to 4.4, has two paragraphs, so the claim of single-paragraph subsections is false.",
+        "label": "invalid"
+      },
+      {
+        "id": "Ff977acad0c",
+        "rule": "R16",
+        "reason": "R16 requires consistent terminology. The Motivation calls the LLM component 'Reviewer', while the Objective calls the same component 'the feedback tool'.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc28dfa9d5b",
+        "rule": null,
+        "reason": "Whether iteration dates match the stated start date is a date-consistency issue. No rule covers it.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F34833b0de3",
+        "rule": "R19",
+        "reason": "R19 requires measurable deliverables. 'Evaluate ...' and 'Review the system and check for bugs' define no measurable outcome.",
+        "label": "valid"
+      },
+      {
+        "id": "Ff2cebf270b",
+        "rule": "R7",
+        "reason": "The bibliography has five entries, below R7's minimum of 6-8.",
+        "label": "valid"
+      },
+      {
+        "id": "Ff9a8b0ff32",
+        "rule": "R16",
+        "reason": "The same system is called 'LLM-powered Reviewer', 'LLM Reviewer', 'the Reviewer', and 'the feedback tool', which is inconsistent terminology under R16.",
+        "label": "valid"
+      },
+      {
+        "id": "F8ae16929b0",
+        "rule": "R13",
+        "reason": "R13 asks for 5-8 line paragraphs with one idea each. The first paragraph of 4.1 runs about 11-12 lines and combines guideline-based feedback with the ethics of grading.",
+        "label": "valid"
+      },
+      {
+        "id": "F4d8ecdbbb8",
+        "rule": "R2",
+        "reason": "The Problem section fills nearly a full page, clearly over R2's 3/4-page limit.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb3b2949e28",
+        "rule": "R11",
+        "reason": "'is powered by' and 'is produced' are passive, which R11 rules out. 'is less severe' and 'is less critical' are not passive, and some section labels are wrong.",
+        "label": "valid"
+      },
+      {
+        "id": "Fe735b36b96",
+        "rule": "R16",
+        "reason": "The Motivation calls the tool 'Reviewer', while the Objective sections call it 'the feedback tool', which is inconsistent terminology under R16.",
+        "label": "valid"
+      },
+      {
+        "id": "F8857a37a31",
+        "rule": "R7",
+        "reason": "The bibliography lists only five publications, below R7's minimum of 6-8.",
+        "label": "valid"
+      }
+    ]
+  },
+  "costUsd": 0.3110948,
+  "durationMs": 44201,
+  "model": "claude-opus-5-5[1m]"
+}

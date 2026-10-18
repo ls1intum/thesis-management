@@ -1,0 +1,250 @@
+{
+  "job": "label-proposal-p1-pass3-03",
+  "answer": {
+    "judgements": [
+      {
+        "id": "Fe07b5d62bd",
+        "rule": "R19",
+        "reason": "Schedule jumps from June week 4 to September week 2 with no deliverable, breaking 2-4 week iterations.",
+        "label": "valid"
+      },
+      {
+        "id": "F1f2f202dac",
+        "rule": "R1",
+        "reason": "The document goes from Abstract directly to '1 Problem Statement'; no Introduction section exists.",
+        "label": "valid"
+      },
+      {
+        "id": "F9c2ad622b8",
+        "rule": "R9",
+        "reason": "Only one figure (Figure 1) is present, below the required minimum of two.",
+        "label": "valid"
+      },
+      {
+        "id": "Fcff162e452",
+        "rule": "R17",
+        "reason": "No AI transparency statement appears anywhere in the document.",
+        "label": "valid"
+      },
+      {
+        "id": "Fa5d4da21a8",
+        "rule": "R9",
+        "reason": "Figure 1 uses numbered messages between actors, which is communication-diagram notation; it does not clearly show a sequence diagram with lifelines.",
+        "label": "invalid"
+      },
+      {
+        "id": "F6a76e62df9",
+        "rule": "R9",
+        "reason": "Only one figure is included; at least two are required.",
+        "label": "valid"
+      },
+      {
+        "id": "F82df2dfef4",
+        "rule": "R9",
+        "reason": "The numbered-message layout of Figure 1 matches a communication diagram, not a sequence diagram, so the claimed forbidden type is not shown.",
+        "label": "invalid"
+      },
+      {
+        "id": "F3abcf51042",
+        "rule": "R15",
+        "reason": "The cited items are figure labels and a title in which lowercase 'with' is correct title case. The abstract paragraph is not a single line.",
+        "label": "invalid"
+      },
+      {
+        "id": "F70bfaf0580",
+        "rule": "R12",
+        "reason": "Sentences start with 'Since' (Abstract and Section 3), 'To' (Section 1) and 'In order to' (Section 3).",
+        "label": "valid"
+      },
+      {
+        "id": "F0798dff1cc",
+        "rule": "R1",
+        "reason": "There is no Motivation section; only an abstract label mentions motivation.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc4f7a91ebc",
+        "rule": "R7",
+        "reason": "The bibliography lists only five entries, below the minimum of six.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb2b23ae54e",
+        "rule": null,
+        "reason": "No rule covers typos or spelling errors.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F2a1670c45e",
+        "rule": "R7",
+        "reason": "Only five bibliography entries; at least 6-8 are required.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd0924b8ad2",
+        "rule": "R10",
+        "reason": "The text refers only to 'section 4', never to Figure 1, and the caption is short and generic.",
+        "label": "valid"
+      },
+      {
+        "id": "F4d12f79f68",
+        "rule": "R10",
+        "reason": "Figure 1 is never referenced in the text.",
+        "label": "valid"
+      },
+      {
+        "id": "F254b211907",
+        "rule": "R10",
+        "reason": "The text points to 'section 4' but never references Figure 1 itself.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd45443797c",
+        "rule": "R15",
+        "reason": "The scenario labels are list content, not headings, so the title-case rule does not apply.",
+        "label": "invalid"
+      },
+      {
+        "id": "F6a946744ba",
+        "rule": "R12",
+        "reason": "'API' is used in the Abstract and later without ever being defined.",
+        "label": "valid"
+      },
+      {
+        "id": "F81fc62e312",
+        "rule": "R17",
+        "reason": "No AI transparency statement is present.",
+        "label": "valid"
+      },
+      {
+        "id": "F309eb1a121",
+        "rule": "R12",
+        "reason": "Sentences begin with 'Since', 'To', 'As a result', 'In order to' and 'As described', all of which the rule forbids.",
+        "label": "valid"
+      },
+      {
+        "id": "Fcb828d0480",
+        "rule": "R4",
+        "reason": "The Problem section states a wanted capability ('it would be useful to change the student build plans...'), which is solution content.",
+        "label": "valid"
+      },
+      {
+        "id": "F0981fefd4c",
+        "rule": "R7",
+        "reason": "Only five bibliography entries are listed.",
+        "label": "valid"
+      },
+      {
+        "id": "Fdee5dcffec",
+        "rule": "R11",
+        "reason": "'Additionally', 'Furthermore' and 'In addition' are linking words, not filler words.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fdf65d90f24",
+        "rule": "R7",
+        "reason": "The bibliography has five entries, below the minimum of six.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc61013229a",
+        "rule": "R3",
+        "reason": "There is no Objective section with an intro, a bullet list of objectives and subsections.",
+        "label": "valid"
+      },
+      {
+        "id": "F990bb47d18",
+        "rule": "R16",
+        "reason": "The same concept is written as 'CI server' and 'CI Server', and as 'VC server' and 'VC Server'.",
+        "label": "valid"
+      },
+      {
+        "id": "Fe4c08d959c",
+        "rule": "R10",
+        "reason": "Figure 1 is never referenced in the text.",
+        "label": "valid"
+      },
+      {
+        "id": "F3c91fd007f",
+        "rule": "R1",
+        "reason": "There is no Introduction section; Section 1 is the Problem Statement.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd27eeb2658",
+        "rule": "R19",
+        "reason": "The June 'Models' item is a horizontal activity, not a vertically integrated deliverable.",
+        "label": "valid"
+      },
+      {
+        "id": "F40bdfcc56c",
+        "rule": "R11",
+        "reason": "The cited 'Additionally' and 'Furthermore' are linking words, not filler words.",
+        "label": "invalid"
+      },
+      {
+        "id": "F80bf2afc5a",
+        "rule": "R10",
+        "reason": "The caption is one short generic line, not long and informative.",
+        "label": "valid"
+      },
+      {
+        "id": "F2176716cb4",
+        "rule": "R9",
+        "reason": "Only one figure is present; two are required.",
+        "label": "valid"
+      },
+      {
+        "id": "Faf4008261c",
+        "rule": "R13",
+        "reason": "The 'In addition, universities will save time...' paragraph is a single line, far below 5-8 lines.",
+        "label": "valid"
+      },
+      {
+        "id": "F60941854b4",
+        "rule": "R4",
+        "reason": "The quoted sentence does not occur in the document, and the Problem section does name affected actors (smaller universities, students).",
+        "label": "invalid"
+      },
+      {
+        "id": "Fb68befb5df",
+        "rule": "R17",
+        "reason": "No AI transparency statement appears anywhere.",
+        "label": "valid"
+      },
+      {
+        "id": "Fa9ffe633a7",
+        "rule": "R1",
+        "reason": "No standalone Motivation section exists.",
+        "label": "valid"
+      },
+      {
+        "id": "F9eec1f42e1",
+        "rule": "R12",
+        "reason": "The Abstract sentence starts with 'Since'.",
+        "label": "valid"
+      },
+      {
+        "id": "F4c18e2e070",
+        "rule": "R13",
+        "reason": "The paragraph has one idea, further research opportunities, and both items are examples of it.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fd69325a2e1",
+        "rule": "R12",
+        "reason": "'API' is never expanded at its first use.",
+        "label": "valid"
+      },
+      {
+        "id": "F02145b57ea",
+        "rule": "R3",
+        "reason": "There is no Objective section with an intro, a bullet list and per-objective subsections; Section 5 is undivided prose.",
+        "label": "valid"
+      }
+    ]
+  },
+  "costUsd": 0.2688908,
+  "durationMs": 41332,
+  "model": "claude-opus-5-5[1m]"
+}

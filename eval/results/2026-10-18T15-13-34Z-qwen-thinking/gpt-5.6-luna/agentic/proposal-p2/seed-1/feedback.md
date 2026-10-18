@@ -1,0 +1,120 @@
+# proposal-p2 — agentic
+
+- **Model:** gpt-5.6-luna
+- **Document type:** PROPOSAL
+- **Seed:** 1
+- **Assessment:** NEEDS_WORK
+- **Score:** 68
+- **Findings:** 12
+- **Cost:** 7 calls, 45 tool calls, depth 7, 117306 tokens, 116s
+- **Coverage:** 9/9 categories
+
+## Summary
+
+The proposal has the required core sections, two referenced figures including an activity diagram, an appropriately detailed AI statement, and two-week iterations tied to objectives. However, it exceeds the 4–6-page text limit, has only five bibliography entries, omits section-specific AI-use information, includes several forbidden/filler sentence openers, and contains schedule items that are undocumented, vague, or internally misdated. Address the critical bibliography gap and major length, transparency, and schedule issues before submission.
+
+## Findings
+
+### 1. Bibliography Below Minimum Publication Count
+
+`CRITICAL` · `CITATION`
+
+The bibliography contains only five publications ([TP21], [AAM17], [BBE10], [Bog+07], and [NM06]), below the required minimum of 6–8. Add at least one more peer-reviewed publication, preferably several to reach the expected range, and cite it where it supports the proposal.
+
+- Page 11, Bibliography: “[NM06]        D.  J.  Nicol  and   D.   Macfarlane-Dick,       “Formative      Assessment      and   Self-”
+
+### 2. High-Level Objectives Use Numbering Instead of Bullets
+
+`MINOR` · `STRUCTURE`
+
+Section 4 presents the high-level objectives as a numbered list, whereas the guideline requires a bullet list. Convert the four one-line entries to bullets while retaining the corresponding subsections.
+
+- Page 5, Objective: “1.  Generate    Feedback     Based    on  Guidelines
+
+                     2.  Highlight    Changes     Across   Iterations
+
+                     3.  Compare     Prompting      Techniques      and   LLM    Models
+
+                     4.  Integrate   With    Thesis    Management”
+
+### 3. Proposal Text Exceeds the Length Limit
+
+`MAJOR` · `COMPLETENESS`
+
+The proposal's substantive text extends beyond the permitted 4–6 text pages: the abstract/introduction/problem/motivation/objectives occupy pages 2–8 before the schedule begins on page 9. Condense the explanatory material or move nonessential detail out of the proposal so the text fits the limit.
+
+- Page 8, Objective: “4.4 Integrate           With       Thesis       Management”
+
+### 4. AI Statement Does Not Identify Used Sections
+
+`MAJOR` · `COMPLETENESS`
+
+The transparency statement names tools and purposes and confirms review, but it does not identify which proposal sections used those tools. Add an explicit mapping, such as the sections in which Grammarly, DeepL, generative tools, Copilot, or Zotero were used.
+
+- Page 12, Transparency in the Use of AI Tools: “In  preparing    this  proposal,     I made    use  of  several   AI-based     tools  across   diferent stages  of the  writing   process.”
+
+### 5. Forbidden Sentence Starter: Since
+
+`MINOR` · `WRITING`
+
+This sentence begins with the forbidden starter “Since.” Rewrite it with the main clause first or replace the opener (for example, “Guidelines may not already be in a suitable format, so…”).
+
+- Page 5, Generate Feedback Based on Guidelines: “Since   guidelines     may    not  already   be  in  a suitable   format,   the  LLM     may   frst”
+
+### 6. Rewrite Causal Since Construction
+
+`MINOR` · `WRITING`
+
+This sentence contains the forbidden causal opener pattern with “since.” Rewrite it as a direct statement, for example by placing the main clause first (“Attention can dilute … when…”).
+
+- Page 8, Compare Prompting Techniques and LLM Models: “A  single   plain prompt    to  an  LLM     may    not  cover   all of them    reliably,   since  attention    can   dilute”
+
+### 7. Filler Transition at Sentence Start
+
+`MINOR` · `WRITING`
+
+This sentence begins with the filler transition “Moreover.” Replace it with a direct subject-led sentence; the guideline specifically prohibits excessive filler transitions.
+
+- Page 3, Problem: “Moreover,     the  time   spent   on  repetitive    feedback    leaves  less  time   for  what   matters    most:”
+
+### 8. Filler Transition at Sentence Start
+
+`MINOR` · `WRITING`
+
+This sentence begins with the filler transition “Additionally.” Replace it with a direct formulation, such as “Supervisors can also provide feedback faster…” without using a transition as the sentence opener.
+
+- Page 4, Motivation: “Additionally,     supervisors     can   provide    feedback    faster,  making
+
+                     the  process   more    scalable.”
+
+### 9. Schedule Includes Documentation Task
+
+`MAJOR` · `SCHEDULE`
+
+The final iteration includes “Documentation,” which the schedule rules explicitly exclude. Replace it with a development or evaluation deliverable; if thesis documentation is needed, keep it outside the schedule's iteration work items.
+
+- Page 10, Schedule: “•   Documentation”
+
+### 10. Bug-Checking Deliverable Is Not Measurable
+
+`MAJOR` · `SCHEDULE`
+
+Several schedule items are not measurable deliverables. In particular, “Review the system and check for bugs” does not specify test scope, acceptance criteria, or a resulting artifact. State what will be tested and what constitutes completion.
+
+- Page 10, Schedule: “•   Review    the  system    and   check   for  bugs”
+
+### 11. LLM Evaluation Deliverable Is Underspecified
+
+`MAJOR` · `SCHEDULE`
+
+The item “Evaluate different LLM models and providers” is too vague to be measurable: it specifies neither the models/providers, evaluation dataset or tasks, metrics, nor a decision artifact. Define those elements and a concrete output.
+
+- Page 9, Schedule: “•   Evaluate    diferent    LLM    models    and   providers    (Objective     3)”
+
+### 12. Schedule Begins Before Thesis Start Date
+
+`MAJOR` · `SCHEDULE`
+
+Iteration 1 is scheduled to begin on 08.06.2026, but the proposal states that the Bachelor thesis starts on 26.06.2026. Align the iteration dates with the official thesis period or explain the discrepancy; otherwise the schedule is not internally consistent.
+
+- Page 9, Schedule: “The   Bachelor    thesis  starts   on  26.06.2026    and   the  submission     is on  26.10.2026.”

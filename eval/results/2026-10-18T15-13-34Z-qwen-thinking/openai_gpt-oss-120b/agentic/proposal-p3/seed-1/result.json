@@ -1,0 +1,23 @@
+{
+  "findings" : [ {
+    "severity" : "MAJOR",
+    "category" : "METHODOLOGY",
+    "title" : "Missing second paragraph in Objective subsection 4.1",
+    "description" : "Objective subsection 4.1 lacks the required minimum of two paragraphs; only a single paragraph is present.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Objective",
+      "quote" : "**I model   the  resources    as a  tree whose    folders  pass   maintainership,      audit  policy, and   grants   down    to  leaves  bound     to target   systems,    as  the  UML     object   diagram   in Figure 2 shows.**"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "METHODOLOGY",
+    "title" : "Missing second paragraph in Objective subsection 4.3",
+    "description" : "Objective subsection 4.3 lacks the required minimum of two paragraphs; only a single paragraph is present.",
+    "locations" : [ {
+      "page" : 8,
+      "section" : "Objective",
+      "quote" : "**Requesters     fll in  a declarative    request   form   instead    of naming     resources,   and  its rules   turn   answers    into   requests    for  a  resource    path,    an  access   level,  and    a  duration,    which   the  platform    routes   to the  maintainer     of each   resource.**"
+    } ]
+  } ]
+}

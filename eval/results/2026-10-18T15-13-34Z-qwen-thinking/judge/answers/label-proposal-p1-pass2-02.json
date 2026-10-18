@@ -1,0 +1,250 @@
+{
+  "job": "label-proposal-p1-pass2-02",
+  "answer": {
+    "judgements": [
+      {
+        "id": "F720dc574f8",
+        "rule": "R4",
+        "reason": "R4 requires problems tied to negative consequences for identified actors. The Problem section names only 'smaller universities' and describes manual build-plan updates without saying who carries the burden, such as instructors.",
+        "label": "valid"
+      },
+      {
+        "id": "F7c5d099285",
+        "rule": "R17",
+        "reason": "R17 requires an AI transparency statement. The document contains none.",
+        "label": "valid"
+      },
+      {
+        "id": "F5578ee33c0",
+        "rule": "R19",
+        "reason": "R19 requires measurable deliverables. The schedule items 'Models' and 'Requirements' do not name any verifiable artifact.",
+        "label": "valid"
+      },
+      {
+        "id": "F091ef5a2e0",
+        "rule": "R16",
+        "reason": "R16 requires consistent terminology. The prose switches between 'CI service' and 'CI server' for the same component, for example in the abstract and the Problem Statement.",
+        "label": "valid"
+      },
+      {
+        "id": "F141375b34a",
+        "rule": "R1",
+        "reason": "R1 requires an Introduction section. The document goes straight from the Abstract to '1 Problem Statement'.",
+        "label": "valid"
+      },
+      {
+        "id": "Ff57744167f",
+        "rule": "R19",
+        "reason": "R19 requires vertically integrated deliverables. The prototype work is split by layer (connectivity, then API, then results), with models as a separate track.",
+        "label": "valid"
+      },
+      {
+        "id": "Ff2d3955d59",
+        "rule": "R19",
+        "reason": "R19 requires agile iterations. The schedule is a linear sequence of tasks that runs from implementation to models to documentation to writing, with no iterative cycles.",
+        "label": "valid"
+      },
+      {
+        "id": "Ffeac00399f",
+        "rule": "R20",
+        "reason": "R20 forbids a requirements task in the schedule. The June entry '4th week: Requirements' is one.",
+        "label": "valid"
+      },
+      {
+        "id": "F9f96a128ff",
+        "rule": "R12",
+        "reason": "R12 requires abbreviations to be defined before use. 'API' is never spelled out.",
+        "label": "valid"
+      },
+      {
+        "id": "Fdf65d90f24",
+        "rule": "R7",
+        "reason": "R7 requires at least 6-8 peer-reviewed publications. The bibliography lists only five entries.",
+        "label": "valid"
+      },
+      {
+        "id": "F8816262af3",
+        "rule": "R11",
+        "reason": "R11 requires active voice. Passive constructions such as 'must be updated manually' and 'is split up' do occur. The 'is copied' quote is from the scenario on page 3, not the Problem Statement.",
+        "label": "valid"
+      },
+      {
+        "id": "F41964ab24a",
+        "rule": "R17",
+        "reason": "R17 requires an AI transparency statement. The document has none.",
+        "label": "valid"
+      },
+      {
+        "id": "F4ea4d909e7",
+        "rule": "R13",
+        "reason": "R13 calls for 5-8 line paragraphs with one idea each. The Krusche17 paragraph runs about 10 lines across pages 2-3 and covers several ideas.",
+        "label": "valid"
+      },
+      {
+        "id": "Fdbee968b00",
+        "rule": "R13",
+        "reason": "R13 calls for 5-8 line paragraphs. Both cited sentences on page 3 are one-line paragraphs on their own.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc3b9520d87",
+        "rule": "R10",
+        "reason": "R10 requires a long, informative caption. The Figure 1 caption is a single short line.",
+        "label": "valid"
+      },
+      {
+        "id": "F52de267f37",
+        "rule": "R10",
+        "reason": "R10 requires every figure to be referenced in the text. Figure 1 is never mentioned; the text only says 'illustrated in section 4'.",
+        "label": "valid"
+      },
+      {
+        "id": "F0ecb5dfbb7",
+        "rule": "R20",
+        "reason": "R20 forbids thesis-writing and documentation tasks. The schedule includes 'Writing', 'Thesis ready for review', 'Thesis' and a documentation task.",
+        "label": "valid"
+      },
+      {
+        "id": "F7bbf0f7d42",
+        "rule": "R1",
+        "reason": "R1 requires Introduction, Motivation and Objective sections. None of the three appears in the document.",
+        "label": "valid"
+      },
+      {
+        "id": "Fca7b988e3e",
+        "rule": "R3",
+        "reason": "R3 requires an Objective section with an intro, a bullet list of 3-4 objectives and one subsection each. No such section exists; Expected Findings is written as expectations.",
+        "label": "valid"
+      },
+      {
+        "id": "F708e79a5b2",
+        "rule": "R10",
+        "reason": "R10 requires long, informative captions. The Figure 1 caption is brief.",
+        "label": "valid"
+      },
+      {
+        "id": "Fed238d8b62",
+        "rule": "R10",
+        "reason": "R10 requires each figure to be referenced and to have a long caption. Figure 1 is never referenced by number and its caption is short.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb3af458a84",
+        "rule": "R7",
+        "reason": "R7 requires at least 6-8 peer-reviewed publications. Only five references are listed.",
+        "label": "valid"
+      },
+      {
+        "id": "Fad9e157805",
+        "rule": "R9",
+        "reason": "R9 requires at least two figures. The document has only Figure 1.",
+        "label": "valid"
+      },
+      {
+        "id": "F31c0a5936f",
+        "rule": "R1",
+        "reason": "R1 requires a Motivation section. The document has no such section.",
+        "label": "valid"
+      },
+      {
+        "id": "F49b3eefe5b",
+        "rule": "R15",
+        "reason": "R15 applies to headings only. The scenario name 'Exercise work fow' is a list entry, not a heading.",
+        "label": "invalid"
+      },
+      {
+        "id": "F24c48659b6",
+        "rule": "R11",
+        "reason": "R11 forbids filler words. 'very cumbersome' is a filler intensifier. Some other cited words, such as 'additional', are not really filler.",
+        "label": "valid"
+      },
+      {
+        "id": "Ff64f77d053",
+        "rule": "R20",
+        "reason": "R20 forbids requirements and thesis-writing tasks. The schedule contains Requirements, Documentation, Writing and Thesis items. The page 6 location is wrong; that entry is on page 5.",
+        "label": "valid"
+      },
+      {
+        "id": "F309eb1a121",
+        "rule": "R12",
+        "reason": "R12 forbids sentences starting with 'Since', 'To', 'As' or 'In order to'. All six cited sentences do start this way.",
+        "label": "valid"
+      },
+      {
+        "id": "F81ef71ca1b",
+        "rule": "R1",
+        "reason": "R1 requires an Introduction section. The document has none.",
+        "label": "valid"
+      },
+      {
+        "id": "Ffceff89527",
+        "rule": "R9",
+        "reason": "R9 requires at least two figures. Only one is present, so the central claim holds.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc3d088660c",
+        "rule": "R19",
+        "reason": "R19 requires 2-4 week iterations. The schedule lists individual week-based tasks without defined iterations.",
+        "label": "valid"
+      },
+      {
+        "id": "F0385da2c7c",
+        "rule": "R3",
+        "reason": "R3 requires an Objective section with intro, bullet list and subsections. Sections 4 and 5 do not provide this structure.",
+        "label": "valid"
+      },
+      {
+        "id": "F051323bfa3",
+        "rule": "R9",
+        "reason": "R9 requires at least two figures. Only one figure is present.",
+        "label": "valid"
+      },
+      {
+        "id": "F7d1ef87a98",
+        "rule": "R3",
+        "reason": "R3 requires an Objective section with an intro, a bullet list and subsections. The document has none.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd790b6510a",
+        "rule": "R1",
+        "reason": "R1 requires an Introduction section. The document has none.",
+        "label": "valid"
+      },
+      {
+        "id": "Ff0b1238692",
+        "rule": "R3",
+        "reason": "R3 requires an Objective section with a bullet list and a subsection per objective. The document has no such section.",
+        "label": "valid"
+      },
+      {
+        "id": "F67ecedf0c2",
+        "rule": "R12",
+        "reason": "R12 forbids sentences starting with 'Since'. The sentence in the abstract does start with 'Since'.",
+        "label": "valid"
+      },
+      {
+        "id": "F819b5dfe1e",
+        "rule": "R20",
+        "reason": "R20 forbids thesis-writing tasks in the schedule. 'Writing' and 'Thesis ready for review' are listed.",
+        "label": "valid"
+      },
+      {
+        "id": "F3d2f1f02f4",
+        "rule": "R15",
+        "reason": "R15 applies to headings only. A figure caption is not a heading, so title case is not required.",
+        "label": "invalid"
+      },
+      {
+        "id": "F6a627dbfd7",
+        "rule": "R19",
+        "reason": "The finding says the schedule defines one-week iterations, but it does not. It lists milestone weeks spaced several weeks apart, and 'Proposal' is a single dated milestone, not an iteration.",
+        "label": "invalid"
+      }
+    ]
+  },
+  "costUsd": 0.2681788,
+  "durationMs": 39314,
+  "model": "claude-opus-5-5[1m]"
+}

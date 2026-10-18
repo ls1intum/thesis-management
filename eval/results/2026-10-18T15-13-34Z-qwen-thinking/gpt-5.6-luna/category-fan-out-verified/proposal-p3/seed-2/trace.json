@@ -1,0 +1,175 @@
+{
+  "categories" : [ {
+    "category" : "STRUCTURE",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "PROBLEM_MOTIVATION_OBJECTIVES",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Problem section presents workarounds",
+      "description" : "The Problem section includes proposed or existing workaround alternatives, contrary to the requirement that it describe only problems and their negative consequences. Remove these workaround descriptions from the Problem section or rephrase them solely in terms of their harmful consequences; discuss possible solutions elsewhere.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "A student who needs a host, a channel, and a repository asks several people and waits for each of them, and some **bridge the delay with a shared login** that hides who acted."
+      }, {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "The common workaround **hands maintainers full administrative rights**, which violates the principle of least privilege [SS75] and exposes every user and every host to a mistake made for a single project."
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Problem section presents workarounds",
+      "description" : "The Problem section includes proposed or existing workaround alternatives, contrary to the requirement that it describe only problems and their negative consequences. Remove these workaround descriptions from the Problem section or rephrase them solely in terms of their harmful consequences; discuss possible solutions elsewhere.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "A student who needs a host, a channel, and a repository asks several people and waits for each of them, and some **bridge the delay with a shared login** that hides who acted."
+      }, {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "The common workaround **hands maintainers full administrative rights**, which violates the principle of least privilege [SS75] and exposes every user and every host to a mistake made for a single project."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "BIBLIOGRAPHY",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "FIGURES",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STYLE",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Excessive use of first-person singular",
+      "description" : "The proposal uses first-person singular extensively, despite the guideline to avoid “I.” Replace these instances with an explicit subject such as “the thesis,” “the platform,” or “the implementation,” retaining first person only where it is necessary to describe the researcher's decisions.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "In this thesis, **I develop** a self-service platform on which every grant carries an expiry date from the moment somebody requests it."
+      }, {
+        "page" : 4,
+        "section" : "Objective",
+        "quote" : "In this thesis, **I develop** a self-service platform on which requesters ask for time-limited access, maintainers decide, and access ends on its own."
+      }, {
+        "page" : 6,
+        "section" : "4.1 Unify Heterogeneous Resources in One Tree",
+        "quote" : "**I implement** the keycloak-group, slack-channel, github-team, and webhook connectors, whose credentials administrators configure at runtime."
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "• Iteration 1, 1–28 October (Objective 1): **I deliver** the Keycloak realm with OpenID Connect login, SSH key self-service, and the resource tree with inherited maintainers."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Passive constructions obscure actors",
+      "description" : "Several passages use passive or reduced passive constructions that obscure the actor. Name the responsible actor and use an active construction, for example, “staff grant access for one project” and “I write the connector after freezing the framework.”",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "Requests travel by chat message or e-mail, nobody records an end date, and **access granted for one project** outlives the time a person spends at the chair."
+      }, {
+        "page" : 6,
+        "section" : "4.1 Unify Heterogeneous Resources in One Tree",
+        "quote" : "I reach this objective when the webhook connector, **written after I freeze the framework**, needs one new class and one registry entry."
+      }, {
+        "page" : 7,
+        "section" : "4.2 Enforce an Expiry Date on Every Grant",
+        "quote" : "I reach this objective when each access disappears after expiry and, in a second run with the workflow engine **disabled on purpose**, the drift check reports the remaining SSH membership."
+      } ]
+    } ],
+    "ungrounded" : [ {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Excessive use of first-person singular",
+      "description" : "The proposal uses first-person singular extensively, despite the guideline to avoid “I.” Replace these instances with an explicit subject such as “the thesis,” “the platform,” or “the implementation,” retaining first person only where it is necessary to describe the researcher's decisions.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "In this thesis, **I develop** a self-service platform on which every grant carries an expiry date from the moment somebody requests it."
+      }, {
+        "page" : 4,
+        "section" : "Objective",
+        "quote" : "In this thesis, **I develop** a self-service platform on which requesters ask for time-limited access, maintainers decide, and access ends on its own."
+      }, {
+        "page" : 6,
+        "section" : "4.1 Unify Heterogeneous Resources in One Tree",
+        "quote" : "**I implement** the keycloak-group, slack-channel, github-team, and webhook connectors, whose credentials administrators configure at runtime."
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "• Iteration 1, 1–28 October (Objective 1): **I deliver** the Keycloak realm with OpenID Connect login, SSH key self-service, and the resource tree with inherited maintainers."
+      } ]
+    } ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Passive constructions obscure actors",
+      "description" : "Several passages use passive or reduced passive constructions that obscure the actor. Name the responsible actor and use an active construction, for example, “staff grant access for one project” and “I write the connector after freezing the framework.”",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "Requests travel by chat message or e-mail, nobody records an end date, and **access granted for one project** outlives the time a person spends at the chair."
+      }, {
+        "page" : 6,
+        "section" : "4.1 Unify Heterogeneous Resources in One Tree",
+        "quote" : "I reach this objective when the webhook connector, **written after I freeze the framework**, needs one new class and one registry entry."
+      }, {
+        "page" : 7,
+        "section" : "4.2 Enforce an Expiry Date on Every Grant",
+        "quote" : "I reach this objective when each access disappears after expiry and, in a second run with the workflow engine **disabled on purpose**, the drift check reports the remaining SSH membership."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STRUCTURE",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_FORMATTING",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "AI_TRANSPARENCY",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "SCHEDULE",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  } ],
+  "categoryFailures" : { }
+}

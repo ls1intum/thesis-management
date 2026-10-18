@@ -1,0 +1,91 @@
+{
+  "assessment" : "NEEDS_WORK",
+  "score" : 32,
+  "summary" : "The proposal is missing several mandatory sections, contains too few peer‑reviewed references, and fails key requirements for figures and schedule. Critical structural and compliance issues must be resolved before submission.",
+  "findings" : [ {
+    "severity" : "CRITICAL",
+    "category" : "completeness",
+    "title" : "Missing required sections",
+    "description" : "The proposal lacks the mandatory sections: Introduction, Motivation, Objective, and AI Transparency Statement."
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "citation",
+    "title" : "Insufficient bibliography entries",
+    "description" : "Only 5 peer‑reviewed publications are listed; at least 6‑8 are required.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Bibliography",
+      "quote" : "References ... [Booch95] ... [Krusche18]"
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "figures",
+    "title" : "Not enough figures",
+    "description" : "The proposal includes only one figure; at least two diagrams/mockups are required.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Figures",
+      "quote" : "Figure 1: Depiction of the top‑level workfow of the interactions in relation to Artemis and GitLab CI"
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "figures",
+    "title" : "Missing UML diagram",
+    "description" : "The sole figure is a workflow diagram, not a suitable UML diagram (class, activity, component).",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Figures",
+      "quote" : "Figure 1: Depiction of the top‑level workfow of the interactions in relation to Artemis and GitLab CI"
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "figures",
+    "title" : "Figure not referenced in text",
+    "description" : "Figure 1 is never cited in the main text (e.g., 'Figure 1 shows…'), violating the requirement that every figure be referenced.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Figures",
+      "quote" : "Figure 1: Depiction of the top‑level workfow of the interactions in relation to Artemis and GitLab CI"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "other",
+    "title" : "Thesis writing tasks in schedule",
+    "description" : "The schedule lists activities such as working on the thesis and a generic 'Writing …' entry, which are prohibited.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Schedule",
+      "quote" : "Every week, Wednesday is set aside for working on the thesis."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "other",
+    "title" : "Schedule iterations too short",
+    "description" : "The schedule divides work into weekly items (<2 weeks), whereas iterations must be 2‑4 weeks long.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Schedule",
+      "quote" : "5th week: Proposal … 2nd week: Docker GitLab CI Runner configuration …"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "other",
+    "title" : "Requirements‑gathering sprint in schedule",
+    "description" : "The schedule contains a dedicated 'Requirements' task, which is not allowed in an agile‑style schedule.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Schedule",
+      "quote" : "–  4th week: Requirements (parallel to prototype implementation)"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Forbidden sentence starter",
+    "description" : "Sentence begins with 'Since', which is prohibited by the writing style rules.",
+    "locations" : [ {
+      "page" : 1,
+      "section" : "Abstract",
+      "quote" : "Since some Version Control (VC) systems include a Continuous Integration (CI) application, it is possible to reduce the efort required to maintain the servers..."
+    } ]
+  } ]
+}

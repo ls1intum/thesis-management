@@ -1,0 +1,154 @@
+{
+  "assessment" : "NEEDS_WORK",
+  "score" : 38,
+  "summary" : "The proposal has a clear technical direction and a relevant workflow, but it requires substantial revision before it meets the group's guidelines. Critical gaps are the missing Introduction, Motivation, properly structured Objective section, AI Transparency Statement, insufficient peer-reviewed bibliography, and second/UML figure. The problem statement also contains a solution prescription, while the schedule is largely a waterfall-style set of horizontal tasks with vague deliverables and includes documentation/thesis-writing work. Reorganize the proposal around the required sections, add measurable end-to-end iterations tied to explicit objectives, and revise the flagged wording and figure coverage.",
+  "findings" : [ {
+    "severity" : "CRITICAL",
+    "category" : "STRUCTURE",
+    "title" : "Missing Introduction Section",
+    "description" : "Add the required Introduction section before the problem discussion; it should orient the reader and lead into the proposal's problem, motivation, and objectives.",
+    "locations" : [ {
+      "page" : 1,
+      "section" : "Introduction"
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "STRUCTURE",
+    "title" : "Missing Motivation Section",
+    "description" : "Add a distinct Motivation section that explains the scientific and practical value of solving the problem, rather than leaving motivation only as a label in the abstract.",
+    "locations" : [ {
+      "page" : 1,
+      "section" : "Motivation",
+      "quote" : "**Motivation/Objective:** Since some Version Control (VC) systems include a Continuous Integration (CI) application, it is possible to reduce the efort required to maintain the servers and migrate the CI service from external applications as Jenkins to the inbuilt CI service."
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "STRUCTURE",
+    "title" : "Required Objective Structure Is Absent",
+    "description" : "Replace Section 4 with an Objective section: begin with a short introduction and a one-line bullet list of 3–4 high-level objectives, then provide one subsection per objective with at least two paragraphs each. The current section is a requirements/design scenario and contains no objective list or objective subsections.",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "System Requirements and Top Level Design",
+      "quote" : "4     **System        Requirements              and     Top     Level     Design**"
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "STRUCTURE",
+    "title" : "Missing AI Transparency Statement",
+    "description" : "Add an AI Transparency Statement as a dedicated required section, in addition to correcting the other required-section omissions.",
+    "locations" : [ {
+      "page" : 6,
+      "section" : "AI Transparency Statement"
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "BIBLIOGRAPHY",
+    "title" : "Too Few Bibliography Publications",
+    "description" : "Expand the bibliography to at least 6–8 peer-reviewed publications. It currently contains five entries; the five visible entries are Booch95, Gamma95, Hilton16, Krusche17, and Krusche18.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "References",
+      "quote" : "**References**"
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "FIGURES",
+    "title" : "Fewer Than Two Required Figures",
+    "description" : "Add at least one more diagram or mockup and ensure that at least one of the figures is a suitable UML diagram. The proposal currently contains only Figure 1.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Figures",
+      "quote" : "Figure 1: Depiction of the top-level workfow of the interactions in relation to Artemis and GitLab CI"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "PROBLEM",
+    "title" : "Solution Prescription Appears in Problem Statement",
+    "description" : "Keep the Problem section strictly diagnostic: move solution prescriptions such as migrating the CI server out of the problem statement and into the Proposed Solution or objectives. State the affected actors and consequences there instead.",
+    "locations" : [ {
+      "page" : 1,
+      "section" : "Abstract",
+      "quote" : "**Problem Statement:** The interactive learning platform Artemis currently only supports setups with an external CI server.   **The CI server should be migrated to the VC server.**"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "WRITING",
+    "title" : "Forbidden Sentence Starter",
+    "description" : "Rewrite the sentence without a forbidden “Since” opening, for example by making the causal relationship a main-clause statement. Apply the same correction to other sentences beginning with forbidden starters.",
+    "locations" : [ {
+      "page" : 1,
+      "section" : "Abstract",
+      "quote" : "**Since** some Version Control (VC) systems include a Continuous Integration (CI) application, it is possible to reduce the efort required to maintain the servers and migrate the CI service from external applications as Jenkins to the inbuilt CI service."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "WRITING",
+    "title" : "Repeated Filler Transitions",
+    "description" : "Reduce repeated additive/filler transitions such as “Furthermore,” and “Additionally,” by combining related sentences or stating the contribution directly; these occur repeatedly across the proposal.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Problem Statement",
+      "quote" : "**Additionally,** the base build plan is copied once after the student started the exercise [Krusche18]."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "WRITING",
+    "title" : "Passive or Awkward Agent Construction",
+    "description" : "Replace the passive construction with an active subject, such as “GitLab CI fetches the build plan...” This makes the actor and operation explicit.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Proposed Solution",
+      "quote" : "The build plan can be made available via the API of Artemis and **GitLab CI is downloading the build plan** for each execution of the test cases."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "WRITING_STRUCTURE",
+    "title" : "Workflow Relies Heavily on Enumeration",
+    "description" : "Convert the 14-step workflow into concise prose around the diagram, or retain only a short, necessary list and explain the key end-to-end behavior in paragraphs. The current section relies heavily on a long enumerated list outside the schedule/objective-list exceptions.",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "System Requirements and Top Level Design",
+      "quote" : "**3)  Flow of events:**"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "SCHEDULE",
+    "title" : "Schedule Includes Documentation and Thesis Writing",
+    "description" : "Remove thesis-writing and documentation tasks from the development schedule, or separate them from the agile research iterations if a separate administrative plan is allowed. The listed tasks include documentation and writing rather than research/development deliverables.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Time Schedule",
+      "quote" : "**2nd week: Documentation for installation and confguration of Artemis with GitLab CI**"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "SCHEDULE",
+    "title" : "Vague and Requirements-Focused Schedule Items",
+    "description" : "Replace vague or non-measurable entries with verifiable deliverables and define 2–4-week iterations. “Models” and “Requirements” do not state what artifact or tested capability will be completed.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Time Schedule",
+      "quote" : "**4th week: Models (parallel to prototype implementation)**\n\n                          –  4th week: Requirements (parallel to prototype implementation)"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "SCHEDULE",
+    "title" : "Schedule Lacks Objective-Linked Acceptance Criteria",
+    "description" : "Tie each iteration to explicit high-level objectives and acceptance criteria. The schedule lists activities but never identifies which objective each increment satisfies or how completion will be measured.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Time Schedule",
+      "quote" : "It is planned to adhere to the following time schedule:"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "WRITING",
+    "title" : "Awkward Passive and Progressive Construction",
+    "description" : "Use an active construction with GitLab CI as the subject, for example “GitLab CI fetches the build plan from the Artemis API for each test execution.”",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Proposed Solution",
+      "quote" : "The build plan can be made available via the API of Artemis and **GitLab CI is downloading the build plan** for each execution of the test cases."
+    } ]
+  } ]
+}

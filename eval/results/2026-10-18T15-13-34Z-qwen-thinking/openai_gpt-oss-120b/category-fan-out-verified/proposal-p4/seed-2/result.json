@@ -1,0 +1,70 @@
+{
+  "assessment" : "NEEDS_WORK",
+  "score" : 35,
+  "summary" : "The proposal has major structural and compliance issues, including a missing abstract, excessive length, and a problem section that inappropriately proposes a solution. Additional concerns involve unclear objectives, brief figure captions, and several writing style violations. Significant revisions are required before the proposal can be considered ready for submission.",
+  "findings" : [ {
+    "severity" : "CRITICAL",
+    "category" : "structure",
+    "title" : "Missing Abstract section",
+    "description" : "The proposal does not contain an Abstract section, which is required by the guidelines."
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "completeness",
+    "title" : "Proposal exceeds allowed length",
+    "description" : "The document spans 10 pages of content, which is longer than the maximum allowed 4‑6 pages for the main text of the proposal.",
+    "locations" : [ {
+      "page" : 1,
+      "quote" : "=== PAGE 1 ==="
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "logic",
+    "title" : "Problem section includes a solution proposal",
+    "description" : "The Problem section should only describe the problem and its negative consequences, but it contains a sentence proposing a self‑service platform as a solution.",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "Problem",
+      "quote" : "A **self-service platform that arms the workfow engine of Keycloak with an expiry date at grant time would end this accumulation**."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "writing",
+    "title" : "Objective uses double verbs",
+    "description" : "Objective bullet **Design and implement connectors with expiry** contains two verbs, which violates the rule that each objective should be formulated with a single action verb.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Objectives",
+      "quote" : "•   **Design and implement** connectors with expiry"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "figures",
+    "title" : "Caption for Figure 2 is too short",
+    "description" : "Figure captions must be long and informative. The caption for Figure 2 is only \"System Architecture\" which is generic and insufficient.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Objective",
+      "quote" : "Figure  2:  System  Architecture"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Contraction usage",
+    "description" : "The text contains a contraction, which violates the rule prohibiting contractions.",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "Problem",
+      "quote" : "The current process **doesn’t** scale and is the worst bottleneck of the chair."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Superlative word usage",
+    "description" : "A superlative ('worst') is used, which is discouraged in the writing style guidelines.",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "Problem",
+      "quote" : "The current process doesn’t scale and is the **worst** bottleneck of the chair."
+    } ]
+  } ]
+}

@@ -1,0 +1,153 @@
+{
+  "assessment" : "NEEDS_WORK",
+  "score" : 28,
+  "summary" : "The proposal has a concrete technical topic, a relevant problem context, and a preliminary implementation direction involving Artemis and GitLab CI. However, it is not ready for submission because several required sections are missing, the objective structure and AI transparency statement are absent, the bibliography is too short, only one figure is provided, and the schedule does not follow the required agile iteration model.",
+  "findings" : [ {
+    "severity" : "CRITICAL",
+    "category" : "structure",
+    "title" : "Required Sections Are Missing",
+    "description" : "The proposal does not contain the required Introduction, Motivation, or Objective section. Section 4 instead presents system requirements and a workflow, while Section 5 presents expected findings. Add the required sections with the prescribed content and numbering."
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "structure",
+    "title" : "Objective Structure Is Missing",
+    "description" : "The required Objective section is absent. Add a short introduction, a one-line bullet list containing 3–4 high-level objectives, and one subsection for each objective; each subsection must contain at least two paragraphs."
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "completeness",
+    "title" : "AI Transparency Statement Is Missing",
+    "description" : "No AI transparency statement is included. Add a first-person statement naming the specific AI tools used, their purposes, the sections in which they were used, and confirming that all AI-generated text was carefully checked."
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "figures",
+    "title" : "Minimum Figure Count Is Not Met",
+    "description" : "The proposal contains only one figure, but at least two figures or diagrams are required. Add a second meaningful figure or mockup, preferably an activity, component, or class diagram if Figure 1 is not intended as a valid UML diagram.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "System Requirements and Top Level Design",
+      "quote" : "Figure 1: Depiction of the top-level workfow of the interactions in relation to Artemis and GitLab CI"
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "citation",
+    "title" : "Bibliography Contains Too Few Publications",
+    "description" : "The bibliography contains only five entries, below the required minimum of 6–8 publications. Add at least one, preferably several, additional peer-reviewed scientific publications. Rename the References section to Bibliography if that is the required section label.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "References",
+      "quote" : "References"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "schedule",
+    "title" : "Schedule Does Not Use Agile Iterations",
+    "description" : "The schedule is organized as isolated weekly milestones rather than 2–4-week agile iterations. Reorganize it into iterations with measurable, end-to-end deliverables tied explicitly to the high-level objectives, rather than separating work into disconnected implementation, model, and configuration tasks.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Time Schedule",
+      "quote" : "April – 2nd week: Docker GitLab CI Runner confguration – 4th week: prototype implementation: Connectivity to GitLab CI"
+    }, {
+      "page" : 5,
+      "section" : "Time Schedule",
+      "quote" : "May – 3nd week: prototype implementation: Artemis API for confguration"
+    }, {
+      "page" : 5,
+      "section" : "Time Schedule",
+      "quote" : "June – 4th week: prototype implementation: Sending build results to Artemis – 4th week: Models (parallel to prototype implementation) – 4th week: Requirements (parallel to prototype implementation)"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "schedule",
+    "title" : "Schedule Contains Prohibited Tasks",
+    "description" : "The schedule includes prohibited requirements-gathering, documentation, thesis-writing, and review tasks. Replace these with development or research deliverables; requirements should be handled through the backlog within iterations rather than as a dedicated task, and thesis writing should not appear in the development schedule.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Time Schedule",
+      "quote" : "4th week: Requirements (parallel to prototype implementation)"
+    }, {
+      "page" : 5,
+      "section" : "Time Schedule",
+      "quote" : "September – 2nd week: Documentation for installation and confguration of Artemis with GitLab CI"
+    }, {
+      "page" : 5,
+      "section" : "Time Schedule",
+      "quote" : "October: Writing . . ."
+    }, {
+      "page" : 5,
+      "section" : "Time Schedule",
+      "quote" : "November – 2nd week: Thesis ready for review – 3rd week: Review fnished"
+    }, {
+      "page" : 6,
+      "section" : "Time Schedule",
+      "quote" : "December – 1st week: Thesis"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "figures",
+    "title" : "Figure Reference and Caption Are Insufficient",
+    "description" : "The figure is not explicitly referenced by figure number in the surrounding prose, and its caption is not sufficiently extensive for the caption requirement. Add an explicit reference such as “Figure 1 shows…” and expand the caption to explain the actors, systems, numbered interactions, and relevance to the proposed architecture.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Proposed Solution",
+      "quote" : "This process is illustrated in section 4."
+    }, {
+      "page" : 4,
+      "section" : "System Requirements and Top Level Design",
+      "quote" : "Figure 1: Depiction of the top-level workfow of the interactions in relation to Artemis and GitLab CI"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "writing",
+    "title" : "Passive Voice Obscures Actors",
+    "description" : "The proposal uses passive or impersonal constructions extensively, which obscures the responsible actor. Rewrite sentences with explicit subjects, for example, identify who copies the repository, updates the build plans, or fetches the configuration instead of using constructions such as “is copied” and “must be updated.”",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Problem Statement",
+      "quote" : "The student base repository **is copied** [Krusche18]."
+    }, {
+      "page" : 2,
+      "section" : "Problem Statement",
+      "quote" : "the build plans **must be updated manually** in the CI Server."
+    }, {
+      "page" : 3,
+      "section" : "Related Work",
+      "quote" : "the lecture **is split up** into multiple iterations"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Forbidden Sentence Starters Occur",
+    "description" : "Several sentences begin with forbidden starters. Rewrite these sentences so that they begin with a direct subject or an independent clause.",
+    "locations" : [ {
+      "page" : 1,
+      "section" : "Abstract",
+      "quote" : "**Since** some Version Control (VC) systems include a Continuous Integration (CI) application, it is possible to reduce the efort required to maintain the servers."
+    }, {
+      "page" : 2,
+      "section" : "Problem Statement",
+      "quote" : "**To** achieve this goal, Artemis uses a Version Control (VC) and Continuous Integration (CI) server."
+    }, {
+      "page" : 3,
+      "section" : "Related Work",
+      "quote" : "**In order to** implement this idea, the lecture is split up into multiple iterations."
+    }, {
+      "page" : 3,
+      "section" : "Related Work",
+      "quote" : "**Since** the benefts of using CI are quite high and nearly half of the developers who do not use CI mention a lack of familiarity as the reason for not using a CI service, it is useful to teach the concepts of CI at university [Hilton16]."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "API Is Not Defined",
+    "description" : "The abbreviation API is used without being defined at first use. Expand it as “application programming interface (API)” before using the abbreviation throughout the proposal.",
+    "locations" : [ {
+      "page" : 1,
+      "section" : "Abstract",
+      "quote" : "This system supports the provision of the build plan via the Artemis **API**."
+    }, {
+      "page" : 2,
+      "section" : "Proposed Solution",
+      "quote" : "The build plan can be made available via the **API** of Artemis."
+    } ]
+  } ]
+}

@@ -1,0 +1,250 @@
+{
+  "job": "label-proposal-p2-pass2-07",
+  "answer": {
+    "judgements": [
+      {
+        "id": "F02b0f18670",
+        "rule": "R13",
+        "reason": "The second abstract paragraph runs about 9 printed lines, only marginally above the 5-8 line range; this is near the limit, not a clear breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "F33a2ff24a9",
+        "rule": "R20",
+        "reason": "Iteration 9 lists 'Documentation', a documentation task forbidden in the schedule.",
+        "label": "valid"
+      },
+      {
+        "id": "F05512452ca",
+        "rule": "R11",
+        "reason": "'especially' carries meaning here (qualifying which categories are repetitive) and is not a filler word.",
+        "label": "invalid"
+      },
+      {
+        "id": "F56548f2807",
+        "rule": "R17",
+        "reason": "The AI statement names tools and purposes but never names the proposal sections involved.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd558ec855d",
+        "rule": "R11",
+        "reason": "'Additionally' is a logical connective introducing a new point, not a filler word.",
+        "label": "invalid"
+      },
+      {
+        "id": "F3d57578ecd",
+        "rule": "R19",
+        "reason": "Several items, notably 'Review the system and check for bugs' and the generic prototype/evaluate items, lack measurable deliverables.",
+        "label": "valid"
+      },
+      {
+        "id": "F050d150472",
+        "rule": "R13",
+        "reason": "The quote combines two separate paragraphs; the first Motivation paragraph does not itself discuss student benefits.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fcd788f8d24",
+        "rule": "R19",
+        "reason": "'Implement core feedback generation pipeline' states no verifiable outcome, so the deliverable is not measurable.",
+        "label": "valid"
+      },
+      {
+        "id": "Fdd3fd63a34",
+        "rule": "R13",
+        "reason": "The paragraph spans about 12 lines across pages 4-5 and combines several ideas, exceeding 5-8 lines.",
+        "label": "valid"
+      },
+      {
+        "id": "F4f9fba09e4",
+        "rule": "R2",
+        "reason": "Problem (about 26 lines across pages 3-4) and Motivation (about 26 lines across pages 4-5) each clearly exceed 3/4 of a roughly 30-line page.",
+        "label": "valid"
+      },
+      {
+        "id": "F4678964364",
+        "rule": "R16",
+        "reason": "The same artefact is called 'LLM-powered Reviewer' and 'the feedback tool', even within the Motivation section.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc3467ea241",
+        "rule": "R2",
+        "reason": "Motivation fills most of page 4 plus part of page 5, clearly more than 3/4 page.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc653712925",
+        "rule": "R19",
+        "reason": "Iteration 9's 'Review the system and check for bugs' is not a measurable, vertically integrated deliverable.",
+        "label": "valid"
+      },
+      {
+        "id": "F7708dab4e8",
+        "rule": "R7",
+        "reason": "The bibliography has only five entries, below the required 6-8.",
+        "label": "valid"
+      },
+      {
+        "id": "F2638ca99d7",
+        "rule": "R11",
+        "reason": "'Moreover', 'Additionally', 'In addition' and 'also' express logical relations and are not filler words under the rule.",
+        "label": "invalid"
+      },
+      {
+        "id": "F8b7e3ee817",
+        "rule": "R20",
+        "reason": "Iteration 9 includes a 'Documentation' task, which the schedule rules forbid.",
+        "label": "valid"
+      },
+      {
+        "id": "F64cfcb3f83",
+        "rule": "R10",
+        "reason": "The Figure 2 caption is long and informative (about three lines describing the workflow), not brief.",
+        "label": "invalid"
+      },
+      {
+        "id": "F893e1796b6",
+        "rule": "R20",
+        "reason": "'Documentation' is listed as a schedule item in Iteration 9.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb73a9e1553",
+        "rule": "R19",
+        "reason": "Iterations 1-2 deliver only backend refactoring and pipeline work with no vertically integrated increment.",
+        "label": "valid"
+      },
+      {
+        "id": "F8857a37a31",
+        "rule": "R7",
+        "reason": "Only five publications are cited, below the 6-8 minimum.",
+        "label": "valid"
+      },
+      {
+        "id": "F59d9854867",
+        "rule": "R12",
+        "reason": "The sentence 'Because the feedback tool is powered by LLMs...' starts with the forbidden 'Because'. The section label is wrong (it is in Motivation), but the breach holds.",
+        "label": "valid"
+      },
+      {
+        "id": "F25653fae87",
+        "rule": "R20",
+        "reason": "The schedule contains a 'Documentation' item.",
+        "label": "valid"
+      },
+      {
+        "id": "F09cacd93a5",
+        "rule": "R5",
+        "reason": "The Motivation restates the Problem's repetitive-feedback burden that drains supervisors instead of staying visionary.",
+        "label": "valid"
+      },
+      {
+        "id": "F38a20a00c6",
+        "rule": "R17",
+        "reason": "The statement does not identify which proposal sections the tools were used in.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb6474b231b",
+        "rule": "R19",
+        "reason": "Building the pipeline in Iteration 2 and integrating it in Iteration 3 is a horizontal split, not vertical integration.",
+        "label": "valid"
+      },
+      {
+        "id": "Fe4c689ffa6",
+        "rule": "R13",
+        "reason": "The first abstract paragraph is about 5 lines and the second about 9 lines, not one or two lines.",
+        "label": "invalid"
+      },
+      {
+        "id": "F0cdd90d61f",
+        "rule": "R7",
+        "reason": "The bibliography lists only five publications.",
+        "label": "valid"
+      },
+      {
+        "id": "F75671be0dd",
+        "rule": "R11",
+        "reason": "The cited words are ordinary connectives with logical meaning, and the finding itself concedes each is acceptable; this is not a filler-word breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "F1f272c84bb",
+        "rule": "R2",
+        "reason": "The abstract takes about 14 of roughly 31 lines on page 2, under half a page.",
+        "label": "invalid"
+      },
+      {
+        "id": "F6f85769eb6",
+        "rule": "R13",
+        "reason": "The first 4.1 paragraph (about 11 lines) and the second 4.2 paragraph (about 10 lines) exceed 8 lines and mix several ideas.",
+        "label": "valid"
+      },
+      {
+        "id": "F3020075e90",
+        "rule": "R17",
+        "reason": "No proposal sections are named in the AI statement.",
+        "label": "valid"
+      },
+      {
+        "id": "F205aef3e47",
+        "rule": "R17",
+        "reason": "The statement refers only to 'drafts' and 'throughout the proposal' without naming sections.",
+        "label": "valid"
+      },
+      {
+        "id": "Fddb1d073f8",
+        "rule": "R12",
+        "reason": "The sentence 'As Figure 1 illustrates, ...' starts with the forbidden 'As'.",
+        "label": "valid"
+      },
+      {
+        "id": "F42fc4f0c8f",
+        "rule": "R12",
+        "reason": "'AI' is used in the Figure 2 caption and the statement but is never defined as artificial intelligence.",
+        "label": "valid"
+      },
+      {
+        "id": "F28b6b478e6",
+        "rule": "R13",
+        "reason": "The paragraph 'Before starting their research project...' is about 3 lines, below the 5-8 line range.",
+        "label": "valid"
+      },
+      {
+        "id": "F106c0b6bba",
+        "rule": "R20",
+        "reason": "Iteration 9 lists 'Documentation', which is forbidden in the schedule.",
+        "label": "valid"
+      },
+      {
+        "id": "F43a56e4655",
+        "rule": "R17",
+        "reason": "The statement gives tools and purposes but no specific sections.",
+        "label": "valid"
+      },
+      {
+        "id": "F4f8083e2e7",
+        "rule": "R7",
+        "reason": "Only five bibliography entries, below the required minimum.",
+        "label": "valid"
+      },
+      {
+        "id": "F07c31fdb6a",
+        "rule": null,
+        "reason": "No rule covers whether iteration dates match the thesis start date.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Fcfc637f304",
+        "rule": "R12",
+        "reason": "The sentence starts with the forbidden 'Because'.",
+        "label": "valid"
+      }
+    ]
+  },
+  "costUsd": 0.3040348,
+  "durationMs": 43515,
+  "model": "claude-opus-5-5[1m]"
+}

@@ -1,0 +1,26 @@
+{
+  "assessment" : "ACCEPTABLE",
+  "score" : 68,
+  "summary" : "The proposal presents a clear research objective and relevant background, but the writing needs improvement. Specifically, passive constructions and undefined abbreviations detract from readability. Addressing these issues will strengthen the submission.",
+  "findings" : [ {
+    "severity" : "MAJOR",
+    "category" : "writing",
+    "title" : "Passive voice usage",
+    "description" : "The sentence uses passive voice; rewrite in active voice.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Abstract",
+      "quote" : "and **access granted** for one project outlives the time a person spends at the chair."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Undefined abbreviation",
+    "description" : "Abbreviation \"API\" is used without prior definition.",
+    "locations" : [ {
+      "page" : 6,
+      "section" : "Objective",
+      "quote" : "connector that calls its **API** behind one contract"
+    } ]
+  } ]
+}

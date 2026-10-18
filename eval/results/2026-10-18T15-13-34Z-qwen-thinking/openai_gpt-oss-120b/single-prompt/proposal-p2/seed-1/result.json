@@ -1,0 +1,80 @@
+{
+  "assessment" : "NEEDS_WORK",
+  "score" : 45,
+  "summary" : "The proposal contains several serious shortcomings: the bibliography is too short, key sections exceed the allowed length, and objective subsections lack sufficient detail. Additionally, the AI transparency statement does not specify which sections used AI tools, and minor writing issues are present. These problems must be addressed before the proposal can be accepted.",
+  "findings" : [ {
+    "severity" : "CRITICAL",
+    "category" : "citation",
+    "title" : "Bibliography contains too few entries",
+    "description" : "The bibliography lists only five publications, but the guidelines require at least six to eight peer‑reviewed sources.",
+    "locations" : [ {
+      "page" : 11,
+      "section" : "Bibliography",
+      "quote" : "Bibliography ... [NM06]."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "structure",
+    "title" : "Objective subsections are not long enough",
+    "description" : "Several objective subsections (e.g., 4.1, 4.3, 4.4) contain only a single paragraph, whereas the guidelines require at least two paragraphs per subsection.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "4.1 Generate Feedback Based on Guidelines",
+      "quote" : "4.1 Generate Feedback Based on Guidelines Supervisors should be able to provide their own scientific writing guidelines ... Since guidelines may not already be in a suitable format, the LLM may first need to preprocess them ..."
+    }, {
+      "page" : 6,
+      "section" : "4.3 Compare Prompting Techniques and LLM Models",
+      "quote" : "4.3 Compare Prompting Techniques and LLM Models Based on the writing guidelines, the feedback tool needs to cover a range of aspects ..."
+    }, {
+      "page" : 7,
+      "section" : "4.4 Integrate With Thesis Management",
+      "quote" : "4.4 Integrate With Thesis Management Around 50 research groups at TUM use Thesis Management to manage the thesis lifecycle ..."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "completeness",
+    "title" : "Motivation section exceeds permitted length",
+    "description" : "The Motivation section spans more than three quarters of a page, violating the maximum length requirement.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Motivation",
+      "quote" : "Integrating large language models (LLMs) to assist supervisors with non‑content‑related feedback could improve the thesis writing process. As Figure 1 illustrates, an LLM‑powered Reviewer works alongside the supervisor, evaluating the thesis against the research group’s writing guidelines ..."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "completeness",
+    "title" : "Abstract is longer than allowed",
+    "description" : "The abstract occupies more than half a page, exceeding the 1/3–1/2 page limit.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Abstract",
+      "quote" : "Supervisors of theses spend considerable time on non‑content‑related feedback such as document structure, coherence, and linguistic accuracy. ... The tool integrates into Thesis Management, the thesis‑lifecycle portal used by around 50 research groups at the Technical University of Munich ..."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "completeness",
+    "title" : "Overall proposal length exceeds 6 pages of text",
+    "description" : "Counting the main sections (excluding title page, figures, tables, and schedule) the proposal spans more than six pages of continuous text, which is beyond the permitted 4–6 page range.",
+    "locations" : [ { } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Forbidden sentence starter used",
+    "description" : "A sentence in the Motivation section begins with the prohibited starter \"As\".",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Motivation",
+      "quote" : "**As** Figure 1 illustrates, an LLM‑powered Reviewer works alongside the supervisor ..."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "other",
+    "title" : "AI transparency statement does not specify used sections",
+    "description" : "The transparency statement lists the AI tools employed but does not indicate which sections of the proposal were written or edited with each tool, contrary to the guidelines.",
+    "locations" : [ {
+      "page" : 12,
+      "section" : "Transparency",
+      "quote" : "In preparing this proposal, I made use of several AI‑based tools across different stages of the writing process. For grammar and style correction, I used Grammarly ... For coding assistance, I used GitHub Copilot, ChatGPT, OpenAI Codex, Claude, and Claude Code ..."
+    } ]
+  } ]
+}

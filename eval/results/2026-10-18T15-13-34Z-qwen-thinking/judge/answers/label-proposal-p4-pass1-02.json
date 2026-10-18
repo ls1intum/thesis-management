@@ -1,0 +1,250 @@
+{
+  "job": "label-proposal-p4-pass1-02",
+  "answer": {
+    "judgements": [
+      {
+        "id": "Fd98ac222a5",
+        "rule": "R6",
+        "reason": "Objective bullet and heading 4.2 use the double verb 'Design and implement', which R6 explicitly forbids.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc2fa8ef253",
+        "rule": "R18",
+        "reason": "The transparency statement on page 10 contains no confirmation that the author checked the AI-generated text.",
+        "label": "valid"
+      },
+      {
+        "id": "F2714bb7291",
+        "rule": "R1",
+        "reason": "The document goes straight from the title page to the Introduction; there is no Abstract.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc6161d5303",
+        "rule": "R18",
+        "reason": "There is no sentence confirming that the author carefully checked the AI-generated text.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc1e2d76ae0",
+        "rule": "R11",
+        "reason": "Page 3 of the Problem section uses the contraction 'doesn't'.",
+        "label": "valid"
+      },
+      {
+        "id": "F242c87dc0d",
+        "rule": "R10",
+        "reason": "The Figure 2 caption is only 'System Architecture', which is not a long, informative caption.",
+        "label": "valid"
+      },
+      {
+        "id": "F48baa67b1f",
+        "rule": "R10",
+        "reason": "The Figure 2 caption 'System Architecture' is short and uninformative.",
+        "label": "valid"
+      },
+      {
+        "id": "Faa6dd855b6",
+        "rule": "R3",
+        "reason": "Subsection 4.4 is a single paragraph, but each objective subsection needs at least two.",
+        "label": "valid"
+      },
+      {
+        "id": "F6fc3b69d3c",
+        "rule": "R12",
+        "reason": "'nslcd' and 'sshd' are program names rather than abbreviations needing definition; SSH and LDAP are defined.",
+        "label": "invalid"
+      },
+      {
+        "id": "F35e035e5b4",
+        "rule": "R1",
+        "reason": "The proposal has no Abstract section.",
+        "label": "valid"
+      },
+      {
+        "id": "Fcbe771ab46",
+        "rule": "R18",
+        "reason": "The statement does not confirm that the author checked the AI-generated text.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd612ee12ba",
+        "rule": "R14",
+        "reason": "Section 1 begins directly with subsection 1.1 and has no introductory text.",
+        "label": "valid"
+      },
+      {
+        "id": "F4168d219a1",
+        "rule": "R7",
+        "reason": "The Slack and GitHub URLs are already in footnote 1, not embedded in the text.",
+        "label": "invalid"
+      },
+      {
+        "id": "F15145f0ad5",
+        "rule": "R20",
+        "reason": "Iteration 7 is about writing the thesis and preparing the presentation, which the schedule must not include.",
+        "label": "valid"
+      },
+      {
+        "id": "F76be3bd1a1",
+        "rule": null,
+        "reason": "R15 requires title case for headings only; no rule sets the capitalization of figure captions.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F33e2eea245",
+        "rule": "R11",
+        "reason": "The Problem section uses the contraction 'doesn't'.",
+        "label": "valid"
+      },
+      {
+        "id": "F41f3be2e25",
+        "rule": "R14",
+        "reason": "There is no introductory text between the '1 Introduction' heading and '1.1 Setting'.",
+        "label": "valid"
+      },
+      {
+        "id": "F7013262aaa",
+        "rule": "R10",
+        "reason": "The Figure 2 caption 'System Architecture' is generic and not informative.",
+        "label": "valid"
+      },
+      {
+        "id": "Fe1333b1aaf",
+        "rule": "R6",
+        "reason": "The objective bullet 'Design and implement connectors with expiry' uses a double verb.",
+        "label": "valid"
+      },
+      {
+        "id": "F6fbeafde96",
+        "rule": "R16",
+        "reason": "Section 4.3 calls the reviewing role the 'resource owner', while the rest of the proposal calls it the 'maintainer'.",
+        "label": "valid"
+      },
+      {
+        "id": "F3696e30207",
+        "rule": "R7",
+        "reason": "[Key26] is an online documentation page listed in the bibliography, but internet sources belong in footnotes.",
+        "label": "valid"
+      },
+      {
+        "id": "Fa6d334041c",
+        "rule": "R11",
+        "reason": "The contraction 'doesn't' appears in the Problem section.",
+        "label": "valid"
+      },
+      {
+        "id": "F3c69279de3",
+        "rule": "R8",
+        "reason": "The document uses [BSW08] in uppercase; the lowercase '[bsw08]' the finding cites does not occur.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fafe96daa5d",
+        "rule": "R11",
+        "reason": "'the worst bottleneck' is a superlative. The sentence is on page 3, not page 2, but the breach holds.",
+        "label": "valid"
+      },
+      {
+        "id": "F3465a15abc",
+        "rule": "R20",
+        "reason": "Iteration 7 is a thesis-writing iteration, which is forbidden in the schedule.",
+        "label": "valid"
+      },
+      {
+        "id": "Fca4c73ff06",
+        "rule": "R11",
+        "reason": "The contraction 'doesn't' is used on page 3.",
+        "label": "valid"
+      },
+      {
+        "id": "F37fc731ed4",
+        "rule": "R4",
+        "reason": "The Problem section ends by proposing a self-service platform as the solution.",
+        "label": "valid"
+      },
+      {
+        "id": "F9b358a7de4",
+        "rule": "R18",
+        "reason": "The statement lacks confirmation that the author checked the AI-generated text.",
+        "label": "valid"
+      },
+      {
+        "id": "F96d3f05aa0",
+        "rule": "R2",
+        "reason": "The body text including figures fills about six pages (pages 2-7), within the 4-6 page limit, so there is no clear breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "Ffdb46000a1",
+        "rule": "R4",
+        "reason": "The Problem section contains a proposed solution sentence about a self-service platform.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd6743fc6c1",
+        "rule": "R3",
+        "reason": "Subsection 4.4 has only one paragraph, which breaches the rule; 4.1 and 4.3 do have two paragraphs, so those locations are wrong.",
+        "label": "valid"
+      },
+      {
+        "id": "F063e5f45f5",
+        "rule": null,
+        "reason": "No rule forbids the first person; R17 in fact requires a first-person statement.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Fdc6b9a3df4",
+        "rule": "R10",
+        "reason": "The Figure 2 caption is only 'System Architecture'.",
+        "label": "valid"
+      },
+      {
+        "id": "F639ac0dcc1",
+        "rule": "R1",
+        "reason": "There is no Abstract; the document starts with Section 1.",
+        "label": "valid"
+      },
+      {
+        "id": "F95efe41264",
+        "rule": "R10",
+        "reason": "The Figure 2 caption is short and generic.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb0a1c023ae",
+        "rule": null,
+        "reason": "Title case is required only for headings; no rule covers caption capitalization.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F81e2476a14",
+        "rule": "R20",
+        "reason": "Iteration 7 consists of writing the thesis and preparing the presentation.",
+        "label": "valid"
+      },
+      {
+        "id": "F66808e3b79",
+        "rule": "R10",
+        "reason": "The Figure 2 caption 'System Architecture' is not informative.",
+        "label": "valid"
+      },
+      {
+        "id": "F480ef32fae",
+        "rule": "R7",
+        "reason": "The online Keycloak documentation is in the bibliography instead of a footnote.",
+        "label": "valid"
+      },
+      {
+        "id": "F15acb4b159",
+        "rule": "R1",
+        "reason": "The required Abstract section is missing.",
+        "label": "valid"
+      }
+    ]
+  },
+  "costUsd": 0.2631348,
+  "durationMs": 37090,
+  "model": "claude-opus-5-5[1m]"
+}

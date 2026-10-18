@@ -1,0 +1,378 @@
+{
+  "categories" : [ {
+    "category" : "STRUCTURE",
+    "generated" : [ {
+      "severity" : "CRITICAL",
+      "category" : "STRUCTURE",
+      "title" : "Missing Abstract section",
+      "description" : "The proposal does not contain an Abstract section, which is required by the guidelines."
+    }, {
+      "severity" : "CRITICAL",
+      "category" : "COMPLETENESS",
+      "title" : "Proposal exceeds allowed length",
+      "description" : "The document spans 10 pages of content, which is longer than the maximum allowed 4‑6 pages for the main text of the proposal.",
+      "locations" : [ {
+        "page" : 1,
+        "quote" : "=== PAGE 1 ==="
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "CRITICAL",
+      "category" : "STRUCTURE",
+      "title" : "Missing Abstract section",
+      "description" : "The proposal does not contain an Abstract section, which is required by the guidelines."
+    }, {
+      "severity" : "CRITICAL",
+      "category" : "COMPLETENESS",
+      "title" : "Proposal exceeds allowed length",
+      "description" : "The document spans 10 pages of content, which is longer than the maximum allowed 4‑6 pages for the main text of the proposal.",
+      "locations" : [ {
+        "page" : 1,
+        "quote" : "=== PAGE 1 ==="
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "PROBLEM_MOTIVATION_OBJECTIVES",
+    "generated" : [ {
+      "severity" : "CRITICAL",
+      "category" : "LOGIC",
+      "title" : "Problem section includes a solution proposal",
+      "description" : "The Problem section should only describe the problem and its negative consequences, but it contains a sentence proposing a self‑service platform as a solution.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "A **self-service platform that arms the workfow engine of Keycloak with an expiry date at grant time would end this accumulation**."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Objective uses double verbs",
+      "description" : "Objective bullet **Design and implement connectors with expiry** contains two verbs, which violates the rule that each objective should be formulated with a single action verb.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Objectives",
+        "quote" : "•   **Design and implement** connectors with expiry"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "CRITICAL",
+      "category" : "LOGIC",
+      "title" : "Problem section includes a solution proposal",
+      "description" : "The Problem section should only describe the problem and its negative consequences, but it contains a sentence proposing a self‑service platform as a solution.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "A **self-service platform that arms the workfow engine of Keycloak with an expiry date at grant time would end this accumulation**."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Objective uses double verbs",
+      "description" : "Objective bullet **Design and implement connectors with expiry** contains two verbs, which violates the rule that each objective should be formulated with a single action verb.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Objectives",
+        "quote" : "•   **Design and implement** connectors with expiry"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "BIBLIOGRAPHY",
+    "generated" : [ {
+      "severity" : "CRITICAL",
+      "category" : "CITATION",
+      "title" : "Non‑peer‑reviewed source listed in bibliography",
+      "description" : "The bibliography contains an entry that is not a peer‑reviewed publication (Keycloak Server Administration Guide), which must be moved to a footnote according to the citation policy.",
+      "locations" : [ {
+        "page" : 8,
+        "section" : "Bibliography",
+        "quote" : "[Key26]       Keycloak Authors, “**Keycloak Server Administration Guide**.” Accessed: Oct. 18, 2026. [Online]. Available: https://www.keycloak.org/docs/latest/server_admin/"
+      } ]
+    } ],
+    "ungrounded" : [ {
+      "severity" : "CRITICAL",
+      "category" : "CITATION",
+      "title" : "Non‑peer‑reviewed source listed in bibliography",
+      "description" : "The bibliography contains an entry that is not a peer‑reviewed publication (Keycloak Server Administration Guide), which must be moved to a footnote according to the citation policy.",
+      "locations" : [ {
+        "page" : 8,
+        "section" : "Bibliography",
+        "quote" : "[Key26]       Keycloak Authors, “**Keycloak Server Administration Guide**.” Accessed: Oct. 18, 2026. [Online]. Available: https://www.keycloak.org/docs/latest/server_admin/"
+      } ]
+    } ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "FIGURES",
+    "generated" : [ {
+      "severity" : "MINOR",
+      "category" : "FIGURES",
+      "title" : "Caption for Figure 2 is too short",
+      "description" : "Figure captions must be long and informative. The caption for Figure 2 is only \"System Architecture\" which is generic and insufficient.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "Figure  2:  System  Architecture"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MINOR",
+      "category" : "FIGURES",
+      "title" : "Caption for Figure 2 is too short",
+      "description" : "Figure captions must be long and informative. The caption for Figure 2 is only \"System Architecture\" which is generic and insufficient.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "Figure  2:  System  Architecture"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STYLE",
+    "generated" : [ {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Contraction usage",
+      "description" : "The text contains a contraction, which violates the rule prohibiting contractions.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "The current process **doesn’t** scale and is the worst bottleneck of the chair."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Superlative word usage",
+      "description" : "A superlative ('worst') is used, which is discouraged in the writing style guidelines.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "The current process doesn’t scale and is the **worst** bottleneck of the chair."
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Contraction usage",
+      "description" : "The text contains a contraction, which violates the rule prohibiting contractions.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "The current process **doesn’t** scale and is the worst bottleneck of the chair."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Superlative word usage",
+      "description" : "A superlative ('worst') is used, which is discouraged in the writing style guidelines.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "The current process doesn’t scale and is the **worst** bottleneck of the chair."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STRUCTURE",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "FORMATTING",
+      "title" : "Paragraph exceeds recommended length",
+      "description" : "Paragraph in Section 1.1 Setting spans more than 10 lines, reducing readability.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "1.1 Setting",
+        "quote" : "**A university research chair, or a team of similar size, operates shared infra‑structure: Linux hosts with graphics processors reached over Secure Shell (SSH), a Slack workspace, a GitHub organisation, and a handful of internal dashboards and databases. Its people change every semester, because thesis students, external collaborators, and working students join and leave on their own dates. Whoever needs access to any part of this infrastructure asks for it by chat message or e‑mail.**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "FORMATTING",
+      "title" : "Paragraph exceeds recommended length",
+      "description" : "Paragraph in Section 1.2 Existing Infrastructure spans more than 10 lines, reducing readability.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "1.2 Existing Infrastructure",
+        "quote" : "**Keycloak serves as the identity provider of the chair. It handles OpenID Connect (OIDC) login, groups, and profle attributes such as SSH public keys, and its Fine‑Grained Admin Permissions restrict an administrative right to a single group [Key26]. The Linux hosts read this directory over the Lightweight Directory Access Protocol (LDAP) through nslcd, sshd, pam_access, and sudoers, and an Ansible role confgures each host. Slack and GitHub manage membership through their own application programming interfaces (APIs) 1 and tokens, and neither shares an administrative interface with Keycloak.**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "FORMATTING",
+      "title" : "Paragraph exceeds recommended length",
+      "description" : "Paragraph in Section 2 Problem spans more than 10 lines, reducing readability.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "2 Problem",
+        "quote" : "**Requesters do not know who manages which resource. A student who needs a host, a channel, and a repository asks several people and meanwhile borrows the session of a colleague or works under a shared account. Bauer et al. observed this workaround in far more mature organisations [Bau+09], and Beautement et al. 1https://api.slack.com/ and https://docs.github.com/en/rest 2.**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "FORMATTING",
+      "title" : "Paragraph exceeds recommended length",
+      "description" : "Paragraph in Section 3 Motivation spans more than 10 lines, reducing readability.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "3 Motivation",
+        "quote" : "**Access that ends on its own changes the question an organisation answers: it no longer asks who still needs a grant, but only who wants more time. The requester describes a need once, in terms of a project, and receives working access within minutes. The maintainer keeps the judgement over a request without holding any privilege in the identity provider, and the super admin works through a queue of vetted requests instead of interruptions. The auditor receives evidence as a by‑product of normal operation. Research on access control supplies the building blocks for this vision. Role‑based access control gave organisations a shared vocabulary for who may do what [San+96], and Ferraiolo et al. consolidated its models into a reference standard [Fer+01]. Bertino et al. attach enabling and disabling events to roles in their temporal model. [BBF01] Joshi et al. generalise this idea to role assignments with a limited duration [Jos+05].**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Missing introductory text before first subsection",
+      "description" : "Section 1 Introduction jumps directly to subsection 1.1 without an introductory paragraph, violating the guideline that every section must start with introductory text.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "1 Introduction",
+        "quote" : "1  Introduction"
+      } ]
+    } ],
+    "ungrounded" : [ {
+      "severity" : "MAJOR",
+      "category" : "FORMATTING",
+      "title" : "Paragraph exceeds recommended length",
+      "description" : "Paragraph in Section 1.1 Setting spans more than 10 lines, reducing readability.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "1.1 Setting",
+        "quote" : "**A university research chair, or a team of similar size, operates shared infra‑structure: Linux hosts with graphics processors reached over Secure Shell (SSH), a Slack workspace, a GitHub organisation, and a handful of internal dashboards and databases. Its people change every semester, because thesis students, external collaborators, and working students join and leave on their own dates. Whoever needs access to any part of this infrastructure asks for it by chat message or e‑mail.**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "FORMATTING",
+      "title" : "Paragraph exceeds recommended length",
+      "description" : "Paragraph in Section 1.2 Existing Infrastructure spans more than 10 lines, reducing readability.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "1.2 Existing Infrastructure",
+        "quote" : "**Keycloak serves as the identity provider of the chair. It handles OpenID Connect (OIDC) login, groups, and profle attributes such as SSH public keys, and its Fine‑Grained Admin Permissions restrict an administrative right to a single group [Key26]. The Linux hosts read this directory over the Lightweight Directory Access Protocol (LDAP) through nslcd, sshd, pam_access, and sudoers, and an Ansible role confgures each host. Slack and GitHub manage membership through their own application programming interfaces (APIs) 1 and tokens, and neither shares an administrative interface with Keycloak.**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "FORMATTING",
+      "title" : "Paragraph exceeds recommended length",
+      "description" : "Paragraph in Section 2 Problem spans more than 10 lines, reducing readability.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "2 Problem",
+        "quote" : "**Requesters do not know who manages which resource. A student who needs a host, a channel, and a repository asks several people and meanwhile borrows the session of a colleague or works under a shared account. Bauer et al. observed this workaround in far more mature organisations [Bau+09], and Beautement et al. 1https://api.slack.com/ and https://docs.github.com/en/rest 2.**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "FORMATTING",
+      "title" : "Paragraph exceeds recommended length",
+      "description" : "Paragraph in Section 3 Motivation spans more than 10 lines, reducing readability.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "3 Motivation",
+        "quote" : "**Access that ends on its own changes the question an organisation answers: it no longer asks who still needs a grant, but only who wants more time. The requester describes a need once, in terms of a project, and receives working access within minutes. The maintainer keeps the judgement over a request without holding any privilege in the identity provider, and the super admin works through a queue of vetted requests instead of interruptions. The auditor receives evidence as a by‑product of normal operation. Research on access control supplies the building blocks for this vision. Role‑based access control gave organisations a shared vocabulary for who may do what [San+96], and Ferraiolo et al. consolidated its models into a reference standard [Fer+01]. Bertino et al. attach enabling and disabling events to roles in their temporal model. [BBF01] Joshi et al. generalise this idea to role assignments with a limited duration [Jos+05].**"
+      } ]
+    } ],
+    "rejected" : [ {
+      "finding" : {
+        "severity" : "MAJOR",
+        "category" : "STRUCTURE",
+        "title" : "Missing introductory text before first subsection",
+        "description" : "Section 1 Introduction jumps directly to subsection 1.1 without an introductory paragraph, violating the guideline that every section must start with introductory text.",
+        "locations" : [ {
+          "page" : 2,
+          "section" : "1 Introduction",
+          "quote" : "1  Introduction"
+        } ]
+      },
+      "reason" : "Quoted evidence does not demonstrate missing introductory text."
+    } ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_FORMATTING",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "AI_TRANSPARENCY",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Missing AI-generated text verification statement",
+      "description" : "The AI transparency statement does not contain the required sentence confirming that the author has carefully checked all AI-generated text for correctness and sense.",
+      "locations" : [ {
+        "page" : 10,
+        "section" : "Transparency in the Use of AI Tools",
+        "quote" : "I used the following generative artificial intelligence (AI) tool while preparing this proposal. ... **I have carefully checked all texts created with these tools to ensure that they are correct and make sense.**"
+      } ]
+    } ],
+    "ungrounded" : [ {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Missing AI-generated text verification statement",
+      "description" : "The AI transparency statement does not contain the required sentence confirming that the author has carefully checked all AI-generated text for correctness and sense.",
+      "locations" : [ {
+        "page" : 10,
+        "section" : "Transparency in the Use of AI Tools",
+        "quote" : "I used the following generative artificial intelligence (AI) tool while preparing this proposal. ... **I have carefully checked all texts created with these tools to ensure that they are correct and make sense.**"
+      } ]
+    } ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "SCHEDULE",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "OTHER",
+      "title" : "Iteration exceeds maximum length",
+      "description" : "Iteration 6 lasts 29 days, exceeding the allowed 2‑4 week (≤4 weeks) maximum for each iteration.",
+      "locations" : [ {
+        "page" : 7,
+        "section" : "Schedule",
+        "quote" : "Iteration 6 (**18 February – 17 March**), Objectives 2 and 3: webhook connector and deployment at the chair."
+      } ]
+    }, {
+      "severity" : "CRITICAL",
+      "category" : "OTHER",
+      "title" : "Thesis writing tasks included in schedule",
+      "description" : "Iteration 7 contains thesis writing and presentation preparation tasks, which are prohibited in the development schedule and lack measurable, deliverable work items.",
+      "locations" : [ {
+        "page" : 7,
+        "section" : "Schedule",
+        "quote" : "Iteration 7 (18–31 March): **Write the thesis and prepare the final presentation**."
+      } ]
+    } ],
+    "ungrounded" : [ {
+      "severity" : "MAJOR",
+      "category" : "OTHER",
+      "title" : "Iteration exceeds maximum length",
+      "description" : "Iteration 6 lasts 29 days, exceeding the allowed 2‑4 week (≤4 weeks) maximum for each iteration.",
+      "locations" : [ {
+        "page" : 7,
+        "section" : "Schedule",
+        "quote" : "Iteration 6 (**18 February – 17 March**), Objectives 2 and 3: webhook connector and deployment at the chair."
+      } ]
+    }, {
+      "severity" : "CRITICAL",
+      "category" : "OTHER",
+      "title" : "Thesis writing tasks included in schedule",
+      "description" : "Iteration 7 contains thesis writing and presentation preparation tasks, which are prohibited in the development schedule and lack measurable, deliverable work items.",
+      "locations" : [ {
+        "page" : 7,
+        "section" : "Schedule",
+        "quote" : "Iteration 7 (18–31 March): **Write the thesis and prepare the final presentation**."
+      } ]
+    } ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  } ],
+  "categoryFailures" : { }
+}

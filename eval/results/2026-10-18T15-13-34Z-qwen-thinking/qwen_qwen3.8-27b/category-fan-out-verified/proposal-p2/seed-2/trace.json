@@ -1,0 +1,510 @@
+{
+  "categories" : [ {
+    "category" : "STRUCTURE",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "PROBLEM_MOTIVATION_OBJECTIVES",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "BIBLIOGRAPHY",
+    "generated" : [ {
+      "severity" : "CRITICAL",
+      "category" : "CITATION",
+      "title" : "Bibliography contains only 5 publications; minimum 6 required",
+      "description" : "The bibliography on page 11 lists only 5 entries: [TP21], [AAM17], [BBE10], [Bog+07], and [NM06]. The guidelines require at least 6-8 peer-reviewed publications. The student must add at least one more relevant peer-reviewed source (e.g., a paper on LLM-based text evaluation, formative feedback technology, or agentic LLM systems) to meet the minimum threshold.",
+      "locations" : [ {
+        "page" : 11,
+        "section" : "Bibliography",
+        "quote" : "[NM06] D. J. Nicol and D. Macfarlane-Dick, \"Formative Assessment and Self-Regulated Learning: A Model and Seven Principles of Good Feedback Practice,\" Studies in Higher Education, vol. 31, no. 2, pp. 199–218, 2006, doi: 10.1080/03075070600572090."
+      } ]
+    } ],
+    "ungrounded" : [ {
+      "severity" : "CRITICAL",
+      "category" : "CITATION",
+      "title" : "Bibliography contains only 5 publications; minimum 6 required",
+      "description" : "The bibliography on page 11 lists only 5 entries: [TP21], [AAM17], [BBE10], [Bog+07], and [NM06]. The guidelines require at least 6-8 peer-reviewed publications. The student must add at least one more relevant peer-reviewed source (e.g., a paper on LLM-based text evaluation, formative feedback technology, or agentic LLM systems) to meet the minimum threshold.",
+      "locations" : [ {
+        "page" : 11,
+        "section" : "Bibliography",
+        "quote" : "[NM06] D. J. Nicol and D. Macfarlane-Dick, \"Formative Assessment and Self-Regulated Learning: A Model and Seven Principles of Good Feedback Practice,\" Studies in Higher Education, vol. 31, no. 2, pp. 199–218, 2006, doi: 10.1080/03075070600572090."
+      } ]
+    } ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "FIGURES",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STYLE",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Forbidden sentence starter: \"As…\"",
+      "description" : "The sentence begins with 'As Figure 1 illustrates,' which violates the rule against starting sentences with 'As…'. Restructure the sentence so the subject or a different word opens it (e.g., 'Figure 1 illustrates how an LLM-powered Reviewer works alongside the supervisor').",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Motivation",
+        "quote" : "**As Figure 1 illustrates**, an LLM-powered Reviewer works alongside the supervisor, evaluating the thesis against the research group's writing guidelines and generating automatic formative feedback [NM06]."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Forbidden sentence starter: \"Because…\"",
+      "description" : "The sentence begins with 'Because the feedback tool is powered by LLMs,' which violates the rule against starting sentences with 'Because…'. Restructure so the main clause leads (e.g., 'Students can obtain instant formative feedback at any point during the writing process, since the feedback tool is powered by LLMs.'—or rephrase entirely).",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Motivation",
+        "quote" : "**Because the feedback tool is powered by LLMs**, students can obtain instant formative feedback at any point during the writing process."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Forbidden sentence starter: \"Since…\"",
+      "description" : "The sentence begins with 'Since guidelines may not already be in a suitable format,' which violates the rule against starting sentences with 'Since…'. Restructure to place the main clause first or use a different connector (e.g., 'Guidelines may not already be in a suitable format; the LLM may first need to preprocess them…').",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "**Since guidelines may not already be in a suitable format**, the LLM may first need to preprocess them into a structured representation it can act on."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Multiple filler words across the document",
+      "description" : "The document uses four different filler words: 'also' (two instances), 'Moreover', and 'Additionally'. While not overwhelming, the repeated use of these transitional fillers dilutes the prose. Remove or replace them to tighten the writing (e.g., delete 'also', restructure 'Moreover, …' into a direct continuation, drop 'Additionally').",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "Beyond a single draft, the tool **also** compares iterations to highlight improvements and surface persistent issues with more explanatory feedback."
+      }, {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "**Moreover**, the time spent on repetitive feedback leaves less time for what matters most: helping students with their research and providing feedback on substantive topics."
+      }, {
+        "page" : 4,
+        "section" : "Motivation",
+        "quote" : "**Additionally**, supervisors can provide feedback faster, making the process more scalable."
+      }, {
+        "page" : 9,
+        "section" : "Objective",
+        "quote" : "We extend the existing proposal feedback flow to **also** cover the thesis, enabling formative feedback during the writing of the thesis itself."
+      } ]
+    } ],
+    "ungrounded" : [ {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Forbidden sentence starter: \"Since…\"",
+      "description" : "The sentence begins with 'Since guidelines may not already be in a suitable format,' which violates the rule against starting sentences with 'Since…'. Restructure to place the main clause first or use a different connector (e.g., 'Guidelines may not already be in a suitable format; the LLM may first need to preprocess them…').",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "**Since guidelines may not already be in a suitable format**, the LLM may first need to preprocess them into a structured representation it can act on."
+      } ]
+    } ],
+    "rejected" : [ {
+      "finding" : {
+        "severity" : "MINOR",
+        "category" : "WRITING",
+        "title" : "Multiple filler words across the document",
+        "description" : "The document uses four different filler words: 'also' (two instances), 'Moreover', and 'Additionally'. While not overwhelming, the repeated use of these transitional fillers dilutes the prose. Remove or replace them to tighten the writing (e.g., delete 'also', restructure 'Moreover, …' into a direct continuation, drop 'Additionally').",
+        "locations" : [ {
+          "page" : 2,
+          "section" : "Abstract",
+          "quote" : "Beyond a single draft, the tool **also** compares iterations to highlight improvements and surface persistent issues with more explanatory feedback."
+        }, {
+          "page" : 3,
+          "section" : "Problem",
+          "quote" : "**Moreover**, the time spent on repetitive feedback leaves less time for what matters most: helping students with their research and providing feedback on substantive topics."
+        }, {
+          "page" : 4,
+          "section" : "Motivation",
+          "quote" : "**Additionally**, supervisors can provide feedback faster, making the process more scalable."
+        }, {
+          "page" : 9,
+          "section" : "Objective",
+          "quote" : "We extend the existing proposal feedback flow to **also** cover the thesis, enabling formative feedback during the writing of the thesis itself."
+        } ]
+      },
+      "reason" : "'Moreover,' 'Additionally,' and 'also' (in the given contexts) are standard academic transitional/discourse words, not filler words; the rule says 'avoid filler words' but does not extend that term to cover legitimate conjunctions and adverbs that add structural or semantic content."
+    } ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Forbidden sentence starter: \"As…\"",
+      "description" : "The sentence begins with 'As Figure 1 illustrates,' which violates the rule against starting sentences with 'As…'. Restructure the sentence so the subject or a different word opens it (e.g., 'Figure 1 illustrates how an LLM-powered Reviewer works alongside the supervisor').",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Motivation",
+        "quote" : "**As Figure 1 illustrates**, an LLM-powered Reviewer works alongside the supervisor, evaluating the thesis against the research group's writing guidelines and generating automatic formative feedback [NM06]."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Forbidden sentence starter: \"Because…\"",
+      "description" : "The sentence begins with 'Because the feedback tool is powered by LLMs,' which violates the rule against starting sentences with 'Because…'. Restructure so the main clause leads (e.g., 'Students can obtain instant formative feedback at any point during the writing process, since the feedback tool is powered by LLMs.'—or rephrase entirely).",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Motivation",
+        "quote" : "**Because the feedback tool is powered by LLMs**, students can obtain instant formative feedback at any point during the writing process."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STRUCTURE",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Motivation first paragraph exceeds 10 lines",
+      "description" : "The first paragraph of the Motivation section spans approximately 11 rendered lines, exceeding the 5-8 line target and the 10-line maximum. It packs multiple related points (LLM-assisted feedback concept, what the Reviewer covers, quality improvement, scalability) into a single block. Consider splitting after the sentence about the Reviewer covering the repetitive layer, starting a new paragraph with the quality/scalability benefits.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Motivation",
+        "quote" : "Integrating large language models (LLMs) to assist supervisors with non-content-related feedback could improve the thesis writing process. As Figure 1 illustrates, an LLM-powered Reviewer works alongside the supervisor, evaluating the thesis against the research group's writing guidelines and generating automatic formative feedback [NM06]. This Reviewer covers exactly the repetitive, non-content-related layer of feedback that currently drains supervisors, freeing them to focus on specifc content and on discussions with their students, which is key in mentoring environments [BBE10, NM06]. **The quality of feedback improves as supervisors have more time to engage deeply with the thesis, leading to better outcomes overall. Additionally, supervisors can provide feedback faster, making the process more scalable.**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Motivation second paragraph exceeds 10 lines and mixes distinct ideas",
+      "description" : "The second paragraph of the Motivation section spans approximately 12 rendered lines (continuing from page 4 to page 5). It combines three distinct ideas: (1) students benefit from faster feedback, (2) a detailed explanation of self-regulated learning theory (knowledge, beliefs, interpretation of guidelines), and (3) the practical advantage of instant LLM-powered feedback. Split the paragraph after the first sentence or after the self-regulated-learning explanation to keep each paragraph focused on one idea and within the 5-8 line range.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Motivation",
+        "quote" : "Better and faster feedback has signifcant advantages for students as well. When feedback arrives sooner, students can act on it while the writing process is still fresh in their minds. **The student brings both knowledge, comprising theoretical and practical domain expertise, and beliefs about how to approach the task and how to work and write scientifcally, which include the student's personal interpretation of the writing guidelines. Drawing on this knowledge and these beliefs, the student writes the thesis. Through self-regulated learning, the student engages with the Reviewer's feedback, refecting on it independently or**"
+      }, {
+        "page" : 5,
+        "section" : "Motivation",
+        "quote" : "discussing it with the supervisor, and uses it to improve their knowledge, beliefs, and broader strategy for proceeding with the work [NM06]. **Because the feedback tool is powered by LLMs, students can obtain instant formative feedback at any point during the writing process.**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Section 4.1 first paragraph exceeds 10 lines and shifts topic",
+      "description" : "The first paragraph under 4.1 spans approximately 11 rendered lines (pages 5-6) and shifts from describing the technical mechanism (supervisors provide guidelines → LLM preprocesses and generates feedback) to an ethical discussion of normative vs. formative feedback. These are two distinct ideas: the system design and the ethical justification for using formative rather than normative feedback. Split after the sentence about preprocessing guidelines, starting a new paragraph with 'Ethically, it is difcult…'.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Objective – Generate Feedback Based on Guidelines",
+        "quote" : "Supervisors should be able to provide their own scientifc writing guidelines as well as conventions on the style of theses and proposals. Based on these guidelines, the LLM can provide formative feedback that is restricted to the aspects they cover. Since guidelines may not already be in a suitable format, the LLM may frst"
+      }, {
+        "page" : 6,
+        "section" : "Objective – Generate Feedback Based on Guidelines",
+        "quote" : "need to preprocess them into a structured representation it can act on. **Ethically, it is difcult to let LLMs grade a fnal thesis, as this constitutes normative feedback and requires close scrutiny. Formative feedback, on the other hand, is less critical since it serves as input for students to improve their work. The idea is that students interpret the feedback themselves and discuss it, either independently or with their supervisor. Therefore, it is less important that every output of the LLM is perfectly correct.**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "AI Transparency Statement is a single 14-line paragraph",
+      "description" : "The entire AI Transparency Statement is written as one continuous paragraph of approximately 14 rendered lines, well above the 10-line maximum. It covers at least four distinct tool categories (grammar/style, translation, content generation, coding, citation). Split into 2-3 shorter paragraphs grouped by purpose (e.g., writing assistance, content/coding assistance, citation management) to keep each paragraph within the 5-8 line guideline and focused on one idea.",
+      "locations" : [ {
+        "page" : 12,
+        "section" : "AI Transparency Statement",
+        "quote" : "In preparing this proposal, I made use of several AI-based tools across diferent stages of the writing process. For grammar and style correction, I used Grammarly to identify grammatical errors, improve sentence structure, and refne the overall writing style of my drafts. **For translation and language enhancement, I used DeepL to translate passages between German and English and to improve the fuency of phrasings. For content generation and idea expansion, I used ChatGPT, OpenAI Codex, Claude, and Claude Code to reformulate sentences I had already drafted, expand on ideas I had outlined, and obtain suggestions for clearer phrasing. For coding assistance, I used GitHub Copilot, ChatGPT, OpenAI Codex, Claude, and Claude Code to support Typst formatting, generate snippets for fgures and macros, and resolve template-related issues. For citation assistance, I used Zotero to manage my references and to ensure proper citation formatting throughout the proposal.** I have carefully checked all texts created with these tools to ensure that they are correct and make sense."
+      } ]
+    } ],
+    "ungrounded" : [ {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Motivation first paragraph exceeds 10 lines",
+      "description" : "The first paragraph of the Motivation section spans approximately 11 rendered lines, exceeding the 5-8 line target and the 10-line maximum. It packs multiple related points (LLM-assisted feedback concept, what the Reviewer covers, quality improvement, scalability) into a single block. Consider splitting after the sentence about the Reviewer covering the repetitive layer, starting a new paragraph with the quality/scalability benefits.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Motivation",
+        "quote" : "Integrating large language models (LLMs) to assist supervisors with non-content-related feedback could improve the thesis writing process. As Figure 1 illustrates, an LLM-powered Reviewer works alongside the supervisor, evaluating the thesis against the research group's writing guidelines and generating automatic formative feedback [NM06]. This Reviewer covers exactly the repetitive, non-content-related layer of feedback that currently drains supervisors, freeing them to focus on specifc content and on discussions with their students, which is key in mentoring environments [BBE10, NM06]. **The quality of feedback improves as supervisors have more time to engage deeply with the thesis, leading to better outcomes overall. Additionally, supervisors can provide feedback faster, making the process more scalable.**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "AI Transparency Statement is a single 14-line paragraph",
+      "description" : "The entire AI Transparency Statement is written as one continuous paragraph of approximately 14 rendered lines, well above the 10-line maximum. It covers at least four distinct tool categories (grammar/style, translation, content generation, coding, citation). Split into 2-3 shorter paragraphs grouped by purpose (e.g., writing assistance, content/coding assistance, citation management) to keep each paragraph within the 5-8 line guideline and focused on one idea.",
+      "locations" : [ {
+        "page" : 12,
+        "section" : "AI Transparency Statement",
+        "quote" : "In preparing this proposal, I made use of several AI-based tools across diferent stages of the writing process. For grammar and style correction, I used Grammarly to identify grammatical errors, improve sentence structure, and refne the overall writing style of my drafts. **For translation and language enhancement, I used DeepL to translate passages between German and English and to improve the fuency of phrasings. For content generation and idea expansion, I used ChatGPT, OpenAI Codex, Claude, and Claude Code to reformulate sentences I had already drafted, expand on ideas I had outlined, and obtain suggestions for clearer phrasing. For coding assistance, I used GitHub Copilot, ChatGPT, OpenAI Codex, Claude, and Claude Code to support Typst formatting, generate snippets for fgures and macros, and resolve template-related issues. For citation assistance, I used Zotero to manage my references and to ensure proper citation formatting throughout the proposal.** I have carefully checked all texts created with these tools to ensure that they are correct and make sense."
+      } ]
+    } ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Motivation second paragraph exceeds 10 lines and mixes distinct ideas",
+      "description" : "The second paragraph of the Motivation section spans approximately 12 rendered lines (continuing from page 4 to page 5). It combines three distinct ideas: (1) students benefit from faster feedback, (2) a detailed explanation of self-regulated learning theory (knowledge, beliefs, interpretation of guidelines), and (3) the practical advantage of instant LLM-powered feedback. Split the paragraph after the first sentence or after the self-regulated-learning explanation to keep each paragraph focused on one idea and within the 5-8 line range.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Motivation",
+        "quote" : "Better and faster feedback has signifcant advantages for students as well. When feedback arrives sooner, students can act on it while the writing process is still fresh in their minds. **The student brings both knowledge, comprising theoretical and practical domain expertise, and beliefs about how to approach the task and how to work and write scientifcally, which include the student's personal interpretation of the writing guidelines. Drawing on this knowledge and these beliefs, the student writes the thesis. Through self-regulated learning, the student engages with the Reviewer's feedback, refecting on it independently or**"
+      }, {
+        "page" : 5,
+        "section" : "Motivation",
+        "quote" : "discussing it with the supervisor, and uses it to improve their knowledge, beliefs, and broader strategy for proceeding with the work [NM06]. **Because the feedback tool is powered by LLMs, students can obtain instant formative feedback at any point during the writing process.**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Section 4.1 first paragraph exceeds 10 lines and shifts topic",
+      "description" : "The first paragraph under 4.1 spans approximately 11 rendered lines (pages 5-6) and shifts from describing the technical mechanism (supervisors provide guidelines → LLM preprocesses and generates feedback) to an ethical discussion of normative vs. formative feedback. These are two distinct ideas: the system design and the ethical justification for using formative rather than normative feedback. Split after the sentence about preprocessing guidelines, starting a new paragraph with 'Ethically, it is difcult…'.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Objective – Generate Feedback Based on Guidelines",
+        "quote" : "Supervisors should be able to provide their own scientifc writing guidelines as well as conventions on the style of theses and proposals. Based on these guidelines, the LLM can provide formative feedback that is restricted to the aspects they cover. Since guidelines may not already be in a suitable format, the LLM may frst"
+      }, {
+        "page" : 6,
+        "section" : "Objective – Generate Feedback Based on Guidelines",
+        "quote" : "need to preprocess them into a structured representation it can act on. **Ethically, it is difcult to let LLMs grade a fnal thesis, as this constitutes normative feedback and requires close scrutiny. Formative feedback, on the other hand, is less critical since it serves as input for students to improve their work. The idea is that students interpret the feedback themselves and discuss it, either independently or with their supervisor. Therefore, it is less important that every output of the LLM is perfectly correct.**"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_FORMATTING",
+    "generated" : [ {
+      "severity" : "MINOR",
+      "category" : "TERMINOLOGY",
+      "title" : "Inconsistent hyphenation of 'prompt-chaining'",
+      "description" : "The term is hyphenated as 'prompt-chaining' in the Abstract (page 2) but appears without a hyphen as 'prompt chaining' in sections 4.3 and the Schedule (pages 8–9). As a compound modifier before 'setups', the hyphenated form should be used consistently.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "We evaluate single-prompt, **prompt-chaining**, and agentic setups"
+      }, {
+        "page" : 8,
+        "section" : "Objective",
+        "quote" : "Alternatives include **prompt chaining** and agentic setups"
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "Build prototype implementations for agentic and **prompt chaining** setups (Objective 3)"
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "TERMINOLOGY",
+      "title" : "Inconsistent terminology: 'local' vs. 'self-hosted' for on-premises LLMs",
+      "description" : "The Abstract refers to 'local and cloud hosting', while the body of section 4.3 uses 'locally self-hosted LLMs' and 'Self-hosted models'. The same concept (LLMs deployed on university infrastructure) should be referred to with a consistent term throughout the author's prose.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "assess trade-offs between **local** and cloud hosting"
+      }, {
+        "page" : 8,
+        "section" : "Objective",
+        "quote" : "privacy regulations and cost require careful consideration of when to use **locally self-hosted** LLMs versus cloud-hosted ones"
+      }, {
+        "page" : 8,
+        "section" : "Objective",
+        "quote" : "**Self-hosted** models keep student drafts inside the university's infrastructure"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ {
+      "finding" : {
+        "severity" : "MINOR",
+        "category" : "TERMINOLOGY",
+        "title" : "Inconsistent hyphenation of 'prompt-chaining'",
+        "description" : "The term is hyphenated as 'prompt-chaining' in the Abstract (page 2) but appears without a hyphen as 'prompt chaining' in sections 4.3 and the Schedule (pages 8–9). As a compound modifier before 'setups', the hyphenated form should be used consistently.",
+        "locations" : [ {
+          "page" : 2,
+          "section" : "Abstract",
+          "quote" : "We evaluate single-prompt, **prompt-chaining**, and agentic setups"
+        }, {
+          "page" : 8,
+          "section" : "Objective",
+          "quote" : "Alternatives include **prompt chaining** and agentic setups"
+        }, {
+          "page" : 9,
+          "section" : "Schedule",
+          "quote" : "Build prototype implementations for agentic and **prompt chaining** setups (Objective 3)"
+        } ]
+      },
+      "reason" : "The inconsistency is purely a hyphenation/punctuation difference ('prompt-chaining' vs 'prompt chaining'), not a difference in terminology (word choice) for the same concept; the rules state 'Terminology is consistent for the same concept' which addresses word choice, not hyphenation."
+    } ],
+    "kept" : [ {
+      "severity" : "MINOR",
+      "category" : "TERMINOLOGY",
+      "title" : "Inconsistent terminology: 'local' vs. 'self-hosted' for on-premises LLMs",
+      "description" : "The Abstract refers to 'local and cloud hosting', while the body of section 4.3 uses 'locally self-hosted LLMs' and 'Self-hosted models'. The same concept (LLMs deployed on university infrastructure) should be referred to with a consistent term throughout the author's prose.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "assess trade-offs between **local** and cloud hosting"
+      }, {
+        "page" : 8,
+        "section" : "Objective",
+        "quote" : "privacy regulations and cost require careful consideration of when to use **locally self-hosted** LLMs versus cloud-hosted ones"
+      }, {
+        "page" : 8,
+        "section" : "Objective",
+        "quote" : "**Self-hosted** models keep student drafts inside the university's infrastructure"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "AI_TRANSPARENCY",
+    "generated" : [ {
+      "severity" : "MINOR",
+      "category" : "COMPLETENESS",
+      "title" : "AI Transparency Statement does not specify which sections of the proposal the tools were used for",
+      "description" : "The statement uses general phrasing such as 'across different stages of the writing process' and 'throughout the proposal' but does not name specific sections (e.g., Abstract, Introduction, Problem, Motivation, Objective, Schedule, Bibliography) where each tool was applied. The guidelines require specifying which sections of the proposal the AI tools were used for. For example, stating that Grammarly was primarily used on the Introduction and Problem sections, or that ChatGPT was used to expand ideas in the Motivation and Objective sections, would satisfy this requirement.",
+      "locations" : [ {
+        "page" : 12,
+        "section" : "Transparency in the Use of AI Tools",
+        "quote" : "In preparing this proposal, I made use of several AI-based tools **across diferent stages of the writing process**."
+      }, {
+        "page" : 12,
+        "section" : "Transparency in the Use of AI Tools",
+        "quote" : "I used Zotero to manage my references and to ensure proper citation formatting **throughout the proposal**."
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MINOR",
+      "category" : "COMPLETENESS",
+      "title" : "AI Transparency Statement does not specify which sections of the proposal the tools were used for",
+      "description" : "The statement uses general phrasing such as 'across different stages of the writing process' and 'throughout the proposal' but does not name specific sections (e.g., Abstract, Introduction, Problem, Motivation, Objective, Schedule, Bibliography) where each tool was applied. The guidelines require specifying which sections of the proposal the AI tools were used for. For example, stating that Grammarly was primarily used on the Introduction and Problem sections, or that ChatGPT was used to expand ideas in the Motivation and Objective sections, would satisfy this requirement.",
+      "locations" : [ {
+        "page" : 12,
+        "section" : "Transparency in the Use of AI Tools",
+        "quote" : "In preparing this proposal, I made use of several AI-based tools **across diferent stages of the writing process**."
+      }, {
+        "page" : 12,
+        "section" : "Transparency in the Use of AI Tools",
+        "quote" : "I used Zotero to manage my references and to ensure proper citation formatting **throughout the proposal**."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "SCHEDULE",
+    "generated" : [ {
+      "severity" : "CRITICAL",
+      "category" : "LOGIC",
+      "title" : "Iteration 1 starts before the stated thesis start date",
+      "description" : "The schedule states 'The Bachelor thesis starts on 26.06.2026' and the title page confirms 'Start Date: 26.06.2026'. However, Iteration 1 is dated 08.06.2026, which is 18 days before the official start date. All subsequent iteration dates are shifted accordingly. The student must reconcile the start date with the iteration timeline — either correct the start date or shift all iterations forward by two weeks.",
+      "locations" : [ {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "The Bachelor thesis starts on 26.06.2026 and the submission is on 26.10.2026."
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "Iteration 1 (**08.06.2026** - 2 weeks)"
+      }, {
+        "page" : 1,
+        "quote" : "Start Date: **26.06.2026**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Documentation task included in the schedule",
+      "description" : "Iteration 9 lists 'Documentation' as a work item. Per the schedule guidelines, the schedule should focus on development/research work only and must not include documentation writing tasks. This item should be removed from the schedule; documentation is an implicit byproduct of each iteration, not a separate scheduled task.",
+      "locations" : [ {
+        "page" : 10,
+        "section" : "Schedule",
+        "quote" : "• Review the system and check for bugs\n• **Documentation**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "METHODOLOGY",
+      "title" : "Vague, non-measurable deliverable in final iteration",
+      "description" : "'Review the system and check for bugs' is not a measurable, deliverable work item. It does not specify what will be reviewed, what the acceptance criteria are, or what the concrete output is. In an agile schedule, testing and bug-fixing should be part of each iteration's definition of done, not deferred to a catch-all final phase. The student should either integrate quality assurance into each iteration or replace this with a specific, measurable task (e.g., 'Run end-to-end test suite covering all four objectives; fix all P1/P2 bugs').",
+      "locations" : [ {
+        "page" : 10,
+        "section" : "Schedule",
+        "quote" : "• **Review the system and check for bugs**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "METHODOLOGY",
+      "title" : "Waterfall-style final iteration dedicated to review/bug-fixing",
+      "description" : "Deduplicating Iteration 9 as a separate 'review and check for bugs' phase follows a waterfall pattern (build → test → fix). Agile practice requires that each iteration produces working, tested, and demonstrable software. The student should restructure so that each iteration includes testing of its own deliverables, and the final iteration contains a specific remaining development or research task rather than a generic quality-assurance pass.",
+      "locations" : [ {
+        "page" : 10,
+        "section" : "Schedule",
+        "quote" : "Iteration 9 (05.10.2026 - 3 weeks)\n• **Review the system and check for bugs**\n• Documentation"
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "COMPLETENESS",
+      "title" : "Iteration 1 lacks a concrete, user-facing deliverable",
+      "description" : "'Modularize Thesis Management to prepare integration of the feedback module' describes internal refactoring without a measurable outcome. What does 'modularize' mean concretely? The student should specify a verifiable deliverable, e.g., 'Extract feedback-related logic into a separate module with a defined API; existing TM functionality passes regression tests.' As written, there is no way to measure whether the iteration is complete.",
+      "locations" : [ {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "• **Modularize Thesis Management to prepare integration of the feedback module** (Objective 4)"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ {
+      "finding" : {
+        "severity" : "CRITICAL",
+        "category" : "LOGIC",
+        "title" : "Iteration 1 starts before the stated thesis start date",
+        "description" : "The schedule states 'The Bachelor thesis starts on 26.06.2026' and the title page confirms 'Start Date: 26.06.2026'. However, Iteration 1 is dated 08.06.2026, which is 18 days before the official start date. All subsequent iteration dates are shifted accordingly. The student must reconcile the start date with the iteration timeline — either correct the start date or shift all iterations forward by two weeks.",
+        "locations" : [ {
+          "page" : 9,
+          "section" : "Schedule",
+          "quote" : "The Bachelor thesis starts on 26.06.2026 and the submission is on 26.10.2026."
+        }, {
+          "page" : 9,
+          "section" : "Schedule",
+          "quote" : "Iteration 1 (**08.06.2026** - 2 weeks)"
+        }, {
+          "page" : 1,
+          "quote" : "Start Date: **26.06.2026**"
+        } ]
+      },
+      "reason" : "The Schedule Quality rules contain no requirement about aligning iteration dates with a thesis start date or title-page dates; this is a general consistency issue not covered by the stated rules."
+    } ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Documentation task included in the schedule",
+      "description" : "Iteration 9 lists 'Documentation' as a work item. Per the schedule guidelines, the schedule should focus on development/research work only and must not include documentation writing tasks. This item should be removed from the schedule; documentation is an implicit byproduct of each iteration, not a separate scheduled task.",
+      "locations" : [ {
+        "page" : 10,
+        "section" : "Schedule",
+        "quote" : "• Review the system and check for bugs\n• **Documentation**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "METHODOLOGY",
+      "title" : "Vague, non-measurable deliverable in final iteration",
+      "description" : "'Review the system and check for bugs' is not a measurable, deliverable work item. It does not specify what will be reviewed, what the acceptance criteria are, or what the concrete output is. In an agile schedule, testing and bug-fixing should be part of each iteration's definition of done, not deferred to a catch-all final phase. The student should either integrate quality assurance into each iteration or replace this with a specific, measurable task (e.g., 'Run end-to-end test suite covering all four objectives; fix all P1/P2 bugs').",
+      "locations" : [ {
+        "page" : 10,
+        "section" : "Schedule",
+        "quote" : "• **Review the system and check for bugs**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "METHODOLOGY",
+      "title" : "Waterfall-style final iteration dedicated to review/bug-fixing",
+      "description" : "Deduplicating Iteration 9 as a separate 'review and check for bugs' phase follows a waterfall pattern (build → test → fix). Agile practice requires that each iteration produces working, tested, and demonstrable software. The student should restructure so that each iteration includes testing of its own deliverables, and the final iteration contains a specific remaining development or research task rather than a generic quality-assurance pass.",
+      "locations" : [ {
+        "page" : 10,
+        "section" : "Schedule",
+        "quote" : "Iteration 9 (05.10.2026 - 3 weeks)\n• **Review the system and check for bugs**\n• Documentation"
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "COMPLETENESS",
+      "title" : "Iteration 1 lacks a concrete, user-facing deliverable",
+      "description" : "'Modularize Thesis Management to prepare integration of the feedback module' describes internal refactoring without a measurable outcome. What does 'modularize' mean concretely? The student should specify a verifiable deliverable, e.g., 'Extract feedback-related logic into a separate module with a defined API; existing TM functionality passes regression tests.' As written, there is no way to measure whether the iteration is complete.",
+      "locations" : [ {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "• **Modularize Thesis Management to prepare integration of the feedback module** (Objective 4)"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  } ],
+  "categoryFailures" : { }
+}

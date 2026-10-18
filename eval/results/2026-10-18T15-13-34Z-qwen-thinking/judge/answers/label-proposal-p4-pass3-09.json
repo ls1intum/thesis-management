@@ -1,0 +1,250 @@
+{
+  "job": "label-proposal-p4-pass3-09",
+  "answer": {
+    "judgements": [
+      {
+        "id": "Ff21a3c1d5e",
+        "rule": "R11",
+        "reason": "R11 says to avoid superlatives. The Problem section calls the process 'the worst bottleneck of the chair'.",
+        "label": "valid"
+      },
+      {
+        "id": "Fcb64a75760",
+        "rule": "R16",
+        "reason": "R16 requires consistent terms for the same concept. Section 4.3 calls the reviewing role 'resource owner', while the rest of the document and Figure 1 call it 'maintainer'.",
+        "label": "valid"
+      },
+      {
+        "id": "F37fc731ed4",
+        "rule": "R4",
+        "reason": "R4 says the Problem section must contain no solutions. Its last sentence proposes a self-service platform that arms the Keycloak workflow engine with an expiry date.",
+        "label": "valid"
+      },
+      {
+        "id": "F8bb799b14a",
+        "rule": "R14",
+        "reason": "R14 requires introductory text before a section's first subsection. Section 1 Introduction goes straight to 1.1 Setting with no text in between.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd682b5a85f",
+        "rule": "R6",
+        "reason": "R6 applies to the objectives and their headings, not to the required section title 'Objective'. The objective headings themselves are in action form.",
+        "label": "invalid"
+      },
+      {
+        "id": "F95efe41264",
+        "rule": "R10",
+        "reason": "R10 requires a long, informative caption for every figure. Figure 2's caption is only 'System Architecture'.",
+        "label": "valid"
+      },
+      {
+        "id": "F44b6f15dd0",
+        "rule": "R2",
+        "reason": "R2 caps the Problem section at 3/4 page. The section fills a few lines of page 2 and about half of page 3, roughly 2/3 of a page, so there is no clear breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "F9495ac5b3b",
+        "rule": "R18",
+        "reason": "R18 requires the statement to confirm that the author checked all AI-generated text. The statement contains only the intro sentence and the table, with no such confirmation.",
+        "label": "valid"
+      },
+      {
+        "id": "Fa844bdf4e1",
+        "rule": "R2",
+        "reason": "R2 caps the Problem section at 3/4 page. The section is about 2/3 of a page, not a full page, so there is no clear breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "Feea067f9e8",
+        "rule": "R2",
+        "reason": "R2 caps Problem and Motivation at 3/4 page each. Problem is about 2/3 of a page and Motivation about half a page, so neither clearly exceeds the limit.",
+        "label": "invalid"
+      },
+      {
+        "id": "F1811673c81",
+        "rule": "R13",
+        "reason": "R13 asks for 5-8 line paragraphs. The first paragraph of 4.1 runs about six lines; the finding quotes only its first two.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fa6d334041c",
+        "rule": "R11",
+        "reason": "R11 forbids contractions. The Problem section uses 'doesn't'.",
+        "label": "valid"
+      },
+      {
+        "id": "Fdc6b9a3df4",
+        "rule": "R10",
+        "reason": "R10 requires informative captions. Figure 2's caption is only 'System Architecture'.",
+        "label": "valid"
+      },
+      {
+        "id": "F10554f9b70",
+        "rule": "R7",
+        "reason": "R7 says internet sources go in footnotes, not the bibliography. [Key26], an online Keycloak administration guide, is listed in the bibliography.",
+        "label": "valid"
+      },
+      {
+        "id": "F8365235531",
+        "rule": "R11",
+        "reason": "R11 forbids contractions. The Problem section uses 'doesn't'.",
+        "label": "valid"
+      },
+      {
+        "id": "Fdea91cfa08",
+        "rule": "R4",
+        "reason": "R4 says the Problem section must contain no solutions. Its final sentence proposes a self-service platform as the solution.",
+        "label": "valid"
+      },
+      {
+        "id": "F7822bb7203",
+        "rule": null,
+        "reason": "R15 requires title case only for headings. No rule requires figure captions to be in title case.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F6d06428d8e",
+        "rule": "R20",
+        "reason": "R20 forbids thesis-writing tasks in the schedule. Iteration 7 is 'Write the thesis and prepare the final presentation'.",
+        "label": "valid"
+      },
+      {
+        "id": "F2feae4bf35",
+        "rule": "R1",
+        "reason": "R1 requires an Abstract. The document goes from the title page directly to 1 Introduction, with no abstract.",
+        "label": "valid"
+      },
+      {
+        "id": "F1820a6141b",
+        "rule": "R13",
+        "reason": "The quoted '2' is a page number, not a paragraph, so it says nothing about paragraph length under R13.",
+        "label": "invalid"
+      },
+      {
+        "id": "F9623431470",
+        "rule": "R6",
+        "reason": "R6 forbids double verbs in objective headings. The heading of 4.2 is 'Design and Implement Connectors with Expiry'.",
+        "label": "valid"
+      },
+      {
+        "id": "Ff43a673cc8",
+        "rule": "R14",
+        "reason": "R14 requires text before a section's first subsection. Section 1 has none before 1.1.",
+        "label": "valid"
+      },
+      {
+        "id": "Ffa358867e4",
+        "rule": "R8",
+        "reason": "R8 requires citations before the full stop. The text reads 'temporal model. [BBF01]'.",
+        "label": "valid"
+      },
+      {
+        "id": "Fe7896a5ff4",
+        "rule": "R4",
+        "reason": "R4 says the Problem section must contain no solutions. Its final sentence proposes a self-service platform.",
+        "label": "valid"
+      },
+      {
+        "id": "F87e24114e3",
+        "rule": "R20",
+        "reason": "R20 forbids thesis writing in the schedule. Iteration 7 is dedicated to writing the thesis and preparing the presentation.",
+        "label": "valid"
+      },
+      {
+        "id": "F50dff4074c",
+        "rule": null,
+        "reason": "No rule forbids the first person 'I'.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Fddb67292b3",
+        "rule": null,
+        "reason": "No rule forbids the first person 'I'.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Fca06821869",
+        "rule": "R13",
+        "reason": "The first quote joins sentences from separate paragraphs. The real paragraphs, such as the maintainers paragraph, are about 5-6 lines and each covers one idea.",
+        "label": "invalid"
+      },
+      {
+        "id": "Faea2d7e1c4",
+        "rule": "R18",
+        "reason": "R18 requires confirmation that the author checked all AI-generated text. The statement contains no such sentence.",
+        "label": "valid"
+      },
+      {
+        "id": "F41f3be2e25",
+        "rule": "R14",
+        "reason": "R14 requires text before the first subsection. Section 1 jumps straight to 1.1.",
+        "label": "valid"
+      },
+      {
+        "id": "Fe2d750239f",
+        "rule": "R6",
+        "reason": "R6 forbids double verbs in objectives. The objective bullet reads 'Design and implement connectors with expiry'.",
+        "label": "valid"
+      },
+      {
+        "id": "F5bc896d89a",
+        "rule": "R14",
+        "reason": "R14 requires text before the first subsection. Section 1 Introduction has no text before 1.1 Setting.",
+        "label": "valid"
+      },
+      {
+        "id": "Fee28ac1505",
+        "rule": "R18",
+        "reason": "R18 requires confirmation that the AI-generated text was checked. The transparency statement contains no such confirmation.",
+        "label": "valid"
+      },
+      {
+        "id": "F5d9f90389d",
+        "rule": "R11",
+        "reason": "R11 requires active voice. Section 4.1 uses the passive 'The objective is met when...'.",
+        "label": "valid"
+      },
+      {
+        "id": "F8c79eca964",
+        "rule": "R8",
+        "reason": "R8 requires citations before the full stop. The text reads 'temporal model. [BBF01]'. The section label in the finding is wrong but does not affect the claim.",
+        "label": "valid"
+      },
+      {
+        "id": "F1a9b37c61f",
+        "rule": "R11",
+        "reason": "R11 forbids contractions. The Problem section uses 'doesn't'.",
+        "label": "valid"
+      },
+      {
+        "id": "F00ce037bb8",
+        "rule": "R7",
+        "reason": "R7 says internet sources go in footnotes. The online Keycloak guide [Key26] is listed in the bibliography.",
+        "label": "valid"
+      },
+      {
+        "id": "F70731beec3",
+        "rule": "R8",
+        "reason": "R8 requires citations before the full stop. [BBF01] follows the period.",
+        "label": "valid"
+      },
+      {
+        "id": "F462ee69f12",
+        "rule": "R7",
+        "reason": "R7 says internet sources go in footnotes. The Keycloak documentation page [Key26] is listed as a bibliography entry.",
+        "label": "valid"
+      },
+      {
+        "id": "Fe07321cbd4",
+        "rule": "R6",
+        "reason": "R6 forbids double verbs in objectives. One objective reads 'Design and implement connectors with expiry'.",
+        "label": "valid"
+      }
+    ]
+  },
+  "costUsd": 0.27675079999999996,
+  "durationMs": 34290,
+  "model": "claude-opus-5-5[1m]"
+}

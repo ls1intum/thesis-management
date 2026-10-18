@@ -1,0 +1,62 @@
+{
+  "assessment" : "NEEDS_WORK",
+  "score" : 42,
+  "summary" : "The proposal contains a critical violation of the page limit and several major structural and writing issues, notably overly brief objective subsections and a paragraph that mixes multiple ideas. Minor passive‑voice usage is also noted. Significant revisions are required before the proposal can be submitted.",
+  "findings" : [ {
+    "severity" : "CRITICAL",
+    "category" : "structure",
+    "title" : "Proposal exceeds allowed page limit",
+    "description" : "The proposal spans 12 pages, exceeding the maximum of 6 pages specified.",
+    "locations" : [ {
+      "page" : 12,
+      "section" : "Bibliography",
+      "quote" : "=== PAGE **12** ==="
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "structure",
+    "title" : "Objective subsections are too short",
+    "description" : "Each objective subsection (4.1–4.4) contains only a single paragraph; the guidelines require at least two paragraphs per subsection.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Objective",
+      "quote" : "4.1 **Unify** Heterogeneous Resources in One Tree"
+    }, {
+      "page" : 7,
+      "section" : "Objective",
+      "quote" : "4.2 **Enforce** an Expiry Date on Every Grant"
+    }, {
+      "page" : 8,
+      "section" : "Objective",
+      "quote" : "4.3 **Delegate** the Approval of Requests to Maintainers"
+    }, {
+      "page" : 8,
+      "section" : "Objective",
+      "quote" : "4.4 **Automate** the Recertifcation of Active Grants"
+    }, {
+      "page" : 5,
+      "section" : "Objective",
+      "quote" : "**I model the resources as a tree whose folders pass maintainership, audit policy, and grants down to leaves bound to target systems, as the UML object diagram in Figure 2 shows. One approval on a folder covers every resource beneath it, including later additions. A transitive‑closure table stores the tree, and a fan‑out cap keeps an approval on the root from provisioning the whole infrastructure.**"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "writing",
+    "title" : "Paragraph mixes multiple ideas",
+    "description" : "A paragraph in the Problem section combines distinct topics (persistent access, audit consequences, and historical traceability) instead of focusing on a single coherent idea, violating the one‑idea‑per‑paragraph rule.",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "Problem",
+      "quote" : "**Access never ends. Nobody records when a person stops needing access, so access piles up, and former students keep login access to the compute hosts long after they leave, a decay that studies of enterprises report as well [Ker+02, SMJ01].** Auditors bear the consequence: the history lies scattered across systems and chat logs, and nobody can say who had access to a host last March and who approved it."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Passive voice usage",
+    "description" : "The sentence uses passive voice ('written after I freeze the framework'), which conflicts with the active voice requirement.",
+    "locations" : [ {
+      "page" : 6,
+      "section" : "Objective",
+      "quote" : "I reach this objective when the webhook connector, **written after I freeze the framework**, needs one new class and one registry entry."
+    } ]
+  } ]
+}

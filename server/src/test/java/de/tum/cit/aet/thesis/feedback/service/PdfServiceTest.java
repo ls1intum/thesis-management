@@ -120,4 +120,46 @@ public class PdfServiceTest {
 
 		assertThrows(RuntimeException.class, () -> pdfService.extractImagesFromPdf(multipartFile), "Expected an IOException to be thrown for invalid PDF content");
 	}
+
+	/** A lone high surrogate; written as a cast because the compiler rejects the source escape. */
+	private static final String LONE_HIGH_SURROGATE = String.valueOf((char) 0xd835);
+
+	/** Its matching low half. Apart they are invalid UTF-8; together they are one character. */
+	private static final String LONE_LOW_SURROGATE = String.valueOf((char) 0xdc53);
+
+	@Test
+	void extractedTextKeepsOrdinaryContentUntouched() {
+		assertThat(PdfService.toValidText("Section 1\nThe system handles\tedge cases."))
+				.isEqualTo("Section 1\nThe system handles\tedge cases.");
+	}
+
+	@Test
+	void anUnpairedSurrogateIsRemovedBecauseItCannotBeEncodedAsUtf8() {
+		// Verified against the provider: one of these anywhere in a document answers 500 Internal
+		// Server Error for every call of every review strategy, with no hint as to the cause.
+		assertThat(PdfService.toValidText("Say OK." + LONE_HIGH_SURROGATE)).isEqualTo("Say OK.");
+		assertThat(PdfService.toValidText(LONE_LOW_SURROGATE + " trailing")).isEqualTo(" trailing");
+		assertThat(PdfService.toValidText("a" + LONE_HIGH_SURROGATE + "b")).isEqualTo("ab");
+	}
+
+	@Test
+	void aSurrogatePairIsKeptBecauseTogetherTheyAreAnOrdinaryCharacter() {
+		// U+1D453 MATHEMATICAL ITALIC SMALL F — exactly the kind of glyph a thesis uses, and
+		// dropping it would silently delete content rather than fix anything.
+		String mathematicalF = LONE_HIGH_SURROGATE + LONE_LOW_SURROGATE;
+		assertThat(mathematicalF.codePointAt(0)).isEqualTo(0x1d453);
+		assertThat(PdfService.toValidText("let " + mathematicalF + " be")).isEqualTo("let " + mathematicalF + " be");
+	}
+
+	@Test
+	void controlCharactersThatCarryNoTextAreDroppedButLineBreaksSurvive() {
+		String withControls = "a" + (char) 0x00 + "b" + (char) 0x07 + "c";
+		assertThat(PdfService.toValidText(withControls)).isEqualTo("abc");
+		assertThat(PdfService.toValidText("line\r\nnext\tcol")).isEqualTo("line\r\nnext\tcol");
+	}
+
+	@Test
+	void nullTextBecomesEmptyRatherThanPropagating() {
+		assertThat(PdfService.toValidText(null)).isEmpty();
+	}
 }

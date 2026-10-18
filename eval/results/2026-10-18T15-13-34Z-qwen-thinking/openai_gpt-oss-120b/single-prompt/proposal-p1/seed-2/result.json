@@ -1,0 +1,106 @@
+{
+  "assessment" : "NEEDS_WORK",
+  "score" : 30,
+  "summary" : "The proposal is missing several mandatory sections, including Introduction, Motivation, Objectives, and an AI Transparency statement, and it falls short on bibliography size, figure count, and UML inclusion. The schedule also contains prohibited thesis writing and documentation tasks and lacks proper iteration structuring. These critical gaps must be addressed before the proposal can be accepted.",
+  "findings" : [ {
+    "severity" : "CRITICAL",
+    "category" : "completeness",
+    "title" : "Missing Introduction section",
+    "description" : "The proposal does not contain an Introduction section, which is required by the guidelines."
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "completeness",
+    "title" : "Missing Motivation section",
+    "description" : "The proposal does not contain a separate Motivation section, which is required by the guidelines."
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "completeness",
+    "title" : "Missing Objective section with subsections",
+    "description" : "The proposal lacks an Objective section that includes a bullet list of 3‑4 high‑level objectives and dedicated subsections for each."
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "completeness",
+    "title" : "Missing AI Transparency Statement",
+    "description" : "The proposal does not contain the required AI transparency statement."
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "citation",
+    "title" : "Insufficient bibliography entries",
+    "description" : "Only five bibliography entries are provided; the guidelines require at least six to eight peer‑reviewed publications.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "References",
+      "quote" : "[Booch95]     Booch,     G.       Object-oriented    analysis    and   design    with   applications   (2.   ed.)."
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "figures",
+    "title" : "Insufficient figures (only one provided)",
+    "description" : "The proposal includes only a single figure, whereas at least two diagrams or figures are required.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "System Requirements and Top Level Design",
+      "quote" : "Figure 1: Depiction of the top-level workfow of the interactions in relation to Artemis and GitLab CI"
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "figures",
+    "title" : "Missing UML diagram",
+    "description" : "No UML diagram (class, activity, component, etc.) is present in the proposal, which is a mandatory requirement.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "System Requirements and Top Level Design",
+      "quote" : "Figure 1: Depiction of the top-level workfow of the interactions in relation to Artemis and GitLab CI"
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "other",
+    "title" : "Schedule includes thesis writing tasks",
+    "description" : "The time schedule lists thesis writing activities (e.g., \"October: Writing ...\"), which are prohibited in the schedule section.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Time Schedule",
+      "quote" : "October: Writing . . ."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "other",
+    "title" : "Schedule includes documentation tasks",
+    "description" : "The schedule contains documentation work (e.g., \"September – 2nd week: Documentation for installation and configuration ...\"), which should not appear in the schedule.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Time Schedule",
+      "quote" : "September – 2nd week: Documentation for installation and confguration of Artemis with GitLab CI"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "other",
+    "title" : "Schedule not organized into 2–4 week iterations",
+    "description" : "The schedule lists individual weeks and tasks but does not group work into clear 2‑ to 4‑week iterations as required.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Time Schedule",
+      "quote" : "The following assumptions were made for the preparation of the time schedule:"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "logic",
+    "title" : "Problem section does not identify actors",
+    "description" : "The Problem section describes the issue but does not explicitly identify the stakeholders (actors) affected by the problem.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Problem Statement",
+      "quote" : "The interactive learning platform Artemis is an approach to use interactive learning during large computer science classes..."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Forbidden sentence starter 'Since' in abstract",
+    "description" : "The abstract begins a sentence with 'Since', which is prohibited by the writing style guidelines.",
+    "locations" : [ {
+      "page" : 1,
+      "section" : "Abstract",
+      "quote" : "Since some Version Control (VC) systems include a Continuous Integration (CI) application, it is possible to reduce the efort required to maintain the servers..."
+    } ]
+  } ]
+}

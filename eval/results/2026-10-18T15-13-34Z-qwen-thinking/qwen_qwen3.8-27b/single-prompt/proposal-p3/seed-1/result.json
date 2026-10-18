@@ -1,0 +1,56 @@
+{
+  "assessment" : "GOOD",
+  "score" : 87,
+  "summary" : "This is a well-structured, clearly written proposal that meets virtually all structural, bibliographic, and figure requirements. The problem section correctly identifies actors and negative consequences without presenting solutions, the motivation is visionary and non-repetitive, all four objectives are in action form with single verbs and detailed subsections, and the schedule uses 4-week vertically integrated iterations with measurable outcomes. The three minor findings (first-person \"I\" usage, a book cited only as a URL footnote, and a slightly imprecise transparency confirmation) are easy fixes that would bring the proposal into full alignment with the group's style guidelines.",
+  "findings" : [ {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Excessive use of first-person singular \"I\"",
+    "description" : "The guidelines state: \"Avoid 'one,' 'I,' and 'our.' Use 'we' sparingly, only for the thesis approach.\" The proposal uses \"I\" over 20 times to describe the thesis work (e.g., \"I develop,\" \"I model,\" \"I reach this objective,\" \"I deliver\"). The guideline recommends avoiding \"I\" entirely and using \"we\" sparingly for the thesis approach. Consider replacing most instances with \"we\" (sparingly) or restructuring sentences to use the platform/system as the subject (e.g., \"The platform enforces an expiry date\" instead of \"I enforce an expiry date\").",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Abstract",
+      "quote" : "In this thesis, **I develop** a self-service platform on which every grant carries an expiry date"
+    }, {
+      "page" : 4,
+      "section" : "Objective",
+      "quote" : "Following the object-oriented software engineering method of Bruegge and Dutoit, **I pursue** four objectives:"
+    }, {
+      "page" : 5,
+      "section" : "4.1 Unify Heterogeneous Resources in One Tree",
+      "quote" : "**I model** the resources as a tree whose folders pass maintainership"
+    }, {
+      "page" : 6,
+      "section" : "4.1 Unify Heterogeneous Resources in One Tree",
+      "quote" : "**I implement** the keycloak-group, slack-channel, github-team, and webhook connectors"
+    }, {
+      "page" : 7,
+      "section" : "4.2 Enforce an Expiry Date on Every Grant",
+      "quote" : "**I evaluate** correctness with an automated scenario"
+    }, {
+      "page" : 9,
+      "section" : "Schedule",
+      "quote" : "**I deliver** the Keycloak realm with OpenID Connect login, SSH key self-service, and the resource tree"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "citation",
+    "title" : "Academic book cited only as a footnote URL rather than a bibliography entry",
+    "description" : "The Bruegge and Dutoit textbook (\"Object-Oriented Software Engineering Using UML, Patterns and Java\") is referenced in Section 4 via footnote 3, which is a Pearson store URL (https://pearson.com/store/p/...). Scientific books are explicitly allowed in the bibliography per the guidelines. The URL should appear as a footnote if needed, but the book itself should have a proper bibliography entry (author, title, edition, publisher, year, ISBN).",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Objective",
+      "quote" : "Following the object-oriented software engineering method of Bruegge and Dutoit ³, I pursue four objectives:"
+    } ]
+  }, {
+    "severity" : "SUGGESTION",
+    "category" : "completeness",
+    "title" : "AI transparency confirmation could more explicitly state the purpose of checking",
+    "description" : "The transparency statement says \"I carefully checked all AI-generated text, revised it where necessary, verified every citation against the original publication, and compiled and inspected every diagram.\" The guidelines recommend language similar to \"I have carefully checked all texts created with these tools to ensure that they are correct and make sense.\" Adding an explicit purpose clause (e.g., \"to ensure that they are correct and make sense\") would more closely match the recommended phrasing.",
+    "locations" : [ {
+      "page" : 12,
+      "section" : "Transparency in the Use of AI Tools",
+      "quote" : "I carefully checked all AI-generated text, revised it where necessary, verified every citation against the original publication, and compiled and inspected every diagram."
+    } ]
+  } ]
+}

@@ -1,0 +1,11 @@
+{
+  "strategy" : "CategoryFanOutReviewer",
+  "llmCalls" : 14,
+  "toolCalls" : 0,
+  "callDepth" : 3,
+  "promptTokens" : 83085,
+  "completionTokens" : 19705,
+  "categoriesCovered" : 9,
+  "categoriesTotal" : 9,
+  "wallMillis" : 58622
+}

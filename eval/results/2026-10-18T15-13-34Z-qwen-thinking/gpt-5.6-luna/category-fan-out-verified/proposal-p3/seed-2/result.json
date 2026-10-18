@@ -1,0 +1,38 @@
+{
+  "assessment" : "ACCEPTABLE",
+  "score" : 72,
+  "summary" : "The proposal appears generally well structured, with no reported issues in bibliography, figures, scheduling, formatting, or transparency. It needs revision to keep workaround descriptions out of the Problem section and to clarify actors in several passive constructions.",
+  "findings" : [ {
+    "severity" : "MAJOR",
+    "category" : "structure",
+    "title" : "Problem section presents workarounds",
+    "description" : "The Problem section includes proposed or existing workaround alternatives, contrary to the requirement that it describe only problems and their negative consequences. Remove these workaround descriptions from the Problem section or rephrase them solely in terms of their harmful consequences; discuss possible solutions elsewhere.",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "Problem",
+      "quote" : "A student who needs a host, a channel, and a repository asks several people and waits for each of them, and some **bridge the delay with a shared login** that hides who acted."
+    }, {
+      "page" : 3,
+      "section" : "Problem",
+      "quote" : "The common workaround **hands maintainers full administrative rights**, which violates the principle of least privilege [SS75] and exposes every user and every host to a mistake made for a single project."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Passive constructions obscure actors",
+    "description" : "Several passages use passive or reduced passive constructions that obscure the responsible actor. Name the actor and use active constructions, such as “staff grant access for one project” and “I write the connector after freezing the framework.”",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Abstract",
+      "quote" : "Requests travel by chat message or e-mail, nobody records an end date, and **access granted for one project** outlives the time a person spends at the chair."
+    }, {
+      "page" : 6,
+      "section" : "4.1 Unify Heterogeneous Resources in One Tree",
+      "quote" : "I reach this objective when the webhook connector, **written after I freeze the framework**, needs one new class and one registry entry."
+    }, {
+      "page" : 7,
+      "section" : "4.2 Enforce an Expiry Date on Every Grant",
+      "quote" : "I reach this objective when each access disappears after expiry and, in a second run with the workflow engine **disabled on purpose**, the drift check reports the remaining SSH membership."
+    } ]
+  } ]
+}

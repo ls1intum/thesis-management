@@ -1,0 +1,250 @@
+{
+  "job": "label-proposal-p1-pass1-09",
+  "answer": {
+    "judgements": [
+      {
+        "id": "F708e79a5b2",
+        "rule": "R10",
+        "label": "valid",
+        "reason": "R10 asks for a long, informative caption. The Figure 1 caption is one short line that does not explain the numbered interactions or the actors."
+      },
+      {
+        "id": "F0ca684b9f0",
+        "rule": "R17",
+        "label": "valid",
+        "reason": "R17 requires an AI transparency statement. The document has none."
+      },
+      {
+        "id": "F0ecb5dfbb7",
+        "rule": "R20",
+        "label": "valid",
+        "reason": "R20 forbids thesis-writing and documentation tasks in the schedule. The schedule lists 'Writing', 'Thesis ready for review', 'Thesis' and 'Documentation for installation...'."
+      },
+      {
+        "id": "F70a361a750",
+        "rule": "R1",
+        "label": "valid",
+        "reason": "R1 requires a Motivation section. The proposal has no Motivation section, only a label inside the abstract."
+      },
+      {
+        "id": "Fd7df127ce1",
+        "rule": "R13",
+        "label": "valid",
+        "reason": "R13 asks for 5-8 line paragraphs. The abstract and Problem Statement paragraphs are only about 2-4 lines each."
+      },
+      {
+        "id": "Ff8abd19f19",
+        "rule": "R16",
+        "label": "valid",
+        "reason": "R16 requires consistent terminology. The CI component is called an 'application', a 'service' and a 'server', and the assignment is called a 'task' in one place and an 'exercise' everywhere else."
+      },
+      {
+        "id": "F71dcf97fff",
+        "rule": "R17",
+        "label": "valid",
+        "reason": "R17 requires an AI transparency statement. No such statement appears anywhere in the document."
+      },
+      {
+        "id": "Fe76ac56669",
+        "rule": "R9",
+        "label": "valid",
+        "reason": "R9 requires at least two figures. The proposal contains only Figure 1."
+      },
+      {
+        "id": "Fb4e16135ce",
+        "rule": "R19",
+        "label": "valid",
+        "reason": "R19 requires 2-4 week iterations with deliverables. The schedule is a list of scattered monthly milestones with large gaps and no iteration structure."
+      },
+      {
+        "id": "Ffbb9908cb9",
+        "rule": "R11",
+        "label": "invalid",
+        "reason": "R11 asks for active voice. The highlighted clause 'GitLab CI is downloading the build plan' is already active, so it shows no passive voice."
+      },
+      {
+        "id": "F8ee59f9adc",
+        "rule": "R19",
+        "label": "valid",
+        "reason": "R19 requires vertically integrated deliverables. The schedule splits the work by technical layer (runner configuration, connectivity, API, sending results) instead of delivering end-to-end increments."
+      },
+      {
+        "id": "Ffca20ade97",
+        "rule": "R4",
+        "label": "invalid",
+        "reason": "R4 asks the Problem section to state negative consequences for identified actors. The section does name actors and consequences (smaller universities might not use Artemis, instructors face manual updates in large courses), and the cited sentence itself names an actor."
+      },
+      {
+        "id": "F377e413a07",
+        "rule": "R2",
+        "label": "invalid",
+        "reason": "R2 sets a maximum of 4-6 pages, not a minimum. The document fills about five pages, so there is no breach."
+      },
+      {
+        "id": "Fac2fa95383",
+        "rule": "R20",
+        "label": "valid",
+        "reason": "R20 forbids documentation tasks in the schedule. The September entry 'Documentation for installation and configuration' is one."
+      },
+      {
+        "id": "Fcff162e452",
+        "rule": "R17",
+        "label": "valid",
+        "reason": "R17 requires an AI transparency statement. The document has none."
+      },
+      {
+        "id": "F0b46057e4a",
+        "rule": "R20",
+        "label": "valid",
+        "reason": "R20 forbids a requirements task in the schedule. The June entry 'Requirements (parallel to prototype implementation)' is one."
+      },
+      {
+        "id": "F7d48c8f345",
+        "rule": "R9",
+        "label": "valid",
+        "reason": "R9 requires at least two figures. Only Figure 1 exists."
+      },
+      {
+        "id": "Fd82b8672e5",
+        "rule": "R11",
+        "label": "invalid",
+        "reason": "R11 bans filler words. Connectives such as 'Furthermore', 'Additionally' and 'In addition' link claims logically and are not filler words in the sense of the rule."
+      },
+      {
+        "id": "F60941854b4",
+        "rule": "R4",
+        "label": "invalid",
+        "reason": "R4 requires problems with consequences for identified actors. The Problem section does identify actors and consequences, and the quoted passage is a paraphrase that does not occur in the document."
+      },
+      {
+        "id": "Fd6b266d0b0",
+        "rule": "R13",
+        "label": "valid",
+        "reason": "R13 calls for prose except in the Schedule and objective lists. The visionary scenario in Section 4 is a long numbered list rather than prose."
+      },
+      {
+        "id": "F905d9a510d",
+        "rule": "R13",
+        "label": "valid",
+        "reason": "R13 asks for 5-8 line paragraphs. Several Expected Findings paragraphs are only one or two lines long."
+      },
+      {
+        "id": "Fc446d520e9",
+        "rule": "R9",
+        "label": "valid",
+        "reason": "R9 requires at least two figures. The proposal has only one."
+      },
+      {
+        "id": "F898381687f",
+        "rule": null,
+        "label": "out_of_scope",
+        "reason": "No rule forbids the first person."
+      },
+      {
+        "id": "F5d5dabf26f",
+        "rule": "R3",
+        "label": "valid",
+        "reason": "R3 requires an Objectives section with an intro, 3-4 bullet objectives and one subsection per objective. Section 4 is 'System Requirements and Top Level Design' and has none of this structure."
+      },
+      {
+        "id": "Ff0b1238692",
+        "rule": "R3",
+        "label": "valid",
+        "reason": "R3 requires the objective structure with a bullet list and per-objective subsections. Neither Section 4 nor Section 5 provides it."
+      },
+      {
+        "id": "F98f9541f01",
+        "rule": "R20",
+        "label": "valid",
+        "reason": "R20 forbids documentation tasks in the schedule. The cited documentation entry is present."
+      },
+      {
+        "id": "F5b3bcfd60b",
+        "rule": "R9",
+        "label": "valid",
+        "reason": "R9 requires at least two figures, one of them a suitable UML diagram. The proposal has only one figure, and it is not clearly a UML diagram."
+      },
+      {
+        "id": "F1f2f202dac",
+        "rule": "R1",
+        "label": "valid",
+        "reason": "R1 requires an Introduction section. The document has none."
+      },
+      {
+        "id": "F3d85839c6f",
+        "rule": "R3",
+        "label": "valid",
+        "reason": "R3 requires the specified objective structure. Section 4 does not provide an Objective section with a bullet list and subsections."
+      },
+      {
+        "id": "F69510e636e",
+        "rule": "R1",
+        "label": "valid",
+        "reason": "R1 requires Introduction, Motivation and Objective sections. All three are missing."
+      },
+      {
+        "id": "Faafc42c8c0",
+        "rule": null,
+        "label": "out_of_scope",
+        "reason": "No rule forbids the first person."
+      },
+      {
+        "id": "F1690724d91",
+        "rule": "R16",
+        "label": "valid",
+        "reason": "R16 requires consistent terminology. The same CI component is called a 'CI server', 'CI service' and 'CI system'. One quote is attributed to page 2 but actually appears in the abstract on page 1, which does not affect the label."
+      },
+      {
+        "id": "Fc7700c4d90",
+        "rule": "R20",
+        "label": "invalid",
+        "reason": "R20 forbids thesis-writing tasks, but the cited sentence is a planning assumption about which weekday is reserved, not a writing task. The only cited location therefore does not show the breach."
+      },
+      {
+        "id": "Fa0c7330a24",
+        "rule": "R10",
+        "label": "valid",
+        "reason": "R10 requires every figure to be referenced in the text. Figure 1 is never mentioned; the text only points to 'section 4'."
+      },
+      {
+        "id": "Fe5530b92ad",
+        "rule": "R10",
+        "label": "valid",
+        "reason": "R10 requires every figure to be referenced in the text. The text only refers to 'section 4' and never refers to Figure 1."
+      },
+      {
+        "id": "F6bc87050d4",
+        "rule": "R10",
+        "label": "valid",
+        "reason": "R10 requires every figure to be referenced in the text. Figure 1 is only reached indirectly through 'section 4'."
+      },
+      {
+        "id": "Fb6ed08c76a",
+        "rule": null,
+        "label": "out_of_scope",
+        "reason": "No rule forbids the first person 'I'."
+      },
+      {
+        "id": "Fd0382d8c09",
+        "rule": "R13",
+        "label": "valid",
+        "reason": "R13 asks for 5-8 line paragraphs with one idea each. The Krusche17 paragraph runs across pages 2-3 for well over 10 lines and covers several ideas."
+      },
+      {
+        "id": "Fc5034ba2c9",
+        "rule": "R11",
+        "label": "valid",
+        "reason": "R11 asks for active voice. Passive constructions such as 'is fetched' and 'was built' occur, and 'API' is never defined, which also breaks R12. One location is mislabelled as a Motivation section, which does not affect the label."
+      },
+      {
+        "id": "Fad10def3bf",
+        "rule": "R16",
+        "label": "valid",
+        "reason": "R16 requires consistent terminology. 'CI server' and 'CI service' are used interchangeably for the same concept."
+      }
+    ]
+  },
+  "costUsd": 0.2631388,
+  "durationMs": 38948,
+  "model": "claude-opus-5-5[1m]"
+}

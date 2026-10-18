@@ -1,0 +1,60 @@
+{
+  "assessment" : "NEEDS_WORK",
+  "score" : 55,
+  "summary" : "The proposal contains the required sections and most content, but the objectives lack the mandated two‑paragraph depth and their bullet items are too long. Additionally, the abstract is longer than allowed. These issues prevent the proposal from meeting the group's structural standards and need to be corrected before submission.",
+  "findings" : [ {
+    "severity" : "MAJOR",
+    "category" : "structure",
+    "title" : "Objective subsections lack required paragraph count",
+    "description" : "Each objective subsection (4.1 – 4.4) contains only a single paragraph, but the guidelines require at least two paragraphs per subsection.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "4.1 Unify Heterogeneous Resources in One Tree",
+      "quote" : "**I model the resources as a tree whose folders pass maintainership, audit policy, and grants down to leaves bound to target systems, as the UML object diagram in Figure 2 shows.**"
+    }, {
+      "page" : 6,
+      "section" : "4.2 Enforce an Expiry Date on Every Grant",
+      "quote" : "**The platform changes Keycloak only with the token of the calling user and holds no service account, so no background process of the platform can remove a membership.**"
+    }, {
+      "page" : 8,
+      "section" : "4.3 Delegate the Approval of Requests to Maintainers",
+      "quote" : "**Requesters fill in a declarative request form instead of naming resources, and its rules turn answers into requests for a resource path, an access level, and a duration, which the platform routes to the maintainer of each resource.**"
+    }, {
+      "page" : 8,
+      "section" : "4.4 Automate the Recertifcation of Active Grants",
+      "quote" : "**Every resource carries a recertifcation interval that its descendants inherit, and each elapsed interval opens a campaign in which the maintainer keeps or revokes every grant with an immutable decision.**"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "formatting",
+    "title" : "Objective bullet points exceed single‑line length",
+    "description" : "The bullet points in the Objectives list are long and wrap onto multiple lines, violating the requirement that each objective fit on one line.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Objective",
+      "quote" : "**1.  Unify   heterogeneous      resources    in  one  tree.**"
+    }, {
+      "page" : 4,
+      "section" : "Objective",
+      "quote" : "**2.  Enforce    an  expiry   date   on  every   grant.**"
+    }, {
+      "page" : 4,
+      "section" : "Objective",
+      "quote" : "**3.  Delegate    the  approval    of  requests   to  maintainers.**"
+    }, {
+      "page" : 4,
+      "section" : "Objective",
+      "quote" : "**4.  Automate      the  recertifcation     of  active   grants.**"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "completeness",
+    "title" : "Abstract exceeds allowed length",
+    "description" : "The abstract spans more than half a page, exceeding the permitted 1/3 to 1/2 page length.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Abstract",
+      "quote" : "**A university research chair grants access to its compute hosts, chat workspace, and code repositories by hand, while the people who need that access change every semester. Requests travel by chat message or e‑mail, nobody records an end date, and access granted for one project outlives the time a person spends at the chair. No single record states who holds which access or who approved it.**"
+    } ]
+  } ]
+}

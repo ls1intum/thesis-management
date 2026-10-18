@@ -1,0 +1,216 @@
+{
+  "assessment" : "NEEDS_WORK",
+  "score" : 32,
+  "summary" : "The proposal addresses a clear and well-motivated technical problem (migrating Artemis's CI from external Jenkins/Bamboo to GitLab's integrated CI) but fails to meet the required structural template: it is missing the Introduction, Motivation, and Objectives sections entirely, lacks an AI transparency statement, and has only 5 references and 1 figure (which is a forbidden sequence diagram). The schedule includes thesis-writing tasks and is not structured as 2-4 week agile iterations. While the technical content shows solid domain understanding, the proposal would need a substantial restructure to align with the group's format requirements before it could be considered ready for review.",
+  "findings" : [ {
+    "severity" : "CRITICAL",
+    "category" : "structure",
+    "title" : "Missing Introduction Section",
+    "description" : "The proposal lacks a dedicated Introduction section. The required sections are: Abstract, Introduction, Problem, Motivation, Objective (with subsections), Schedule, Bibliography. The proposal jumps directly from Abstract to Section 1 'Problem Statement' without any introductory text or section.",
+    "locations" : [ {
+      "page" : 2
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "structure",
+    "title" : "Missing Motivation Section",
+    "description" : "There is no separate Motivation section in the proposal. The guidelines require a dedicated Motivation section that is visionary and outlines the scientific importance of solving the problem. The proposal has 'Proposed Solution' and 'Expected Findings' but no Motivation section.",
+    "locations" : [ {
+      "page" : 2
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "structure",
+    "title" : "Missing Objective Section with Subsections",
+    "description" : "The proposal lacks a dedicated Objectives section (Section 4 in the required structure) that starts with a short introduction, a bullet list of 3-4 high-level objectives, and a subsection for each objective (at least two paragraphs each). Section 4 is 'System Requirements and Top Level Design' and Section 5 is 'Expected Findings' — neither fulfills the required Objectives structure.",
+    "locations" : [ {
+      "page" : 4
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "completeness",
+    "title" : "Missing AI Transparency Statement",
+    "description" : "The proposal does not contain an AI transparency statement. The guidelines require a specific, first-person statement naming the AI tools used, their purpose, the sections involved, and confirming the author carefully checked all AI-generated text.",
+    "locations" : [ {
+      "page" : 6
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "citation",
+    "title" : "Bibliography Contains Only 5 Publications",
+    "description" : "The bibliography lists only 5 references ([Booch95], [Gamma95], [Hilton16], [Krusche17], [Krusche18]). The guidelines require at least 6-8 peer-reviewed publications. At least one additional peer-reviewed source must be added.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "References",
+      "quote" : "[Booch95] Booch, G. ... [Gamma95] Gamma, E.; ... [Hilton16] Hilton, M.; ... [Krusche17] Krusche, S.; ... [Krusche18] Krusche, S.; ..."
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "figures",
+    "title" : "Only One Figure in Proposal",
+    "description" : "The proposal contains only one figure (Figure 1 on page 4). The guidelines require at least two diagrams/mockups/figures. A second figure (e.g., a class diagram, component diagram, or architecture mockup) must be added.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "System Requirements and Top Level Design",
+      "quote" : "Figure 1: Depiction of the top-level workfow of the interactions in relation to Artemis and GitLab CI"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "figures",
+    "title" : "Figure 1 Is a Sequence Diagram (Explicitly Forbidden)",
+    "description" : "Figure 1 shows two lifelines (Instructor and Student) with numbered messages flowing between them (1.1, 1.2, 2.1, 2.2, 3.1, 3.2, 3.3), which is a sequence diagram. The guidelines explicitly state: 'NO sequence diagrams — suggest activity or communication diagrams instead.' This figure must be replaced with an activity diagram, communication diagram, or component diagram.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "System Requirements and Top Level Design",
+      "quote" : "1.1: Push code template, test cases and sample solution ... 1.2: Assign exercise ... Instructor ... 2.2: Setup student repository ... 3.2: Trigger CI ... 3.3: Send build results ... 2.1: Participate in exercise ... 3.1: Push code ... Student"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "structure",
+    "title" : "Schedule Contains Thesis Writing and Documentation Tasks",
+    "description" : "The schedule includes multiple thesis writing and documentation tasks that violate the guideline: 'The schedule should NOT include thesis writing, documentation writing, or presentation preparation tasks.' Specifically: 'October: Writing . . .', 'November: 2nd week: Thesis ready for review', 'November: 3rd week: Review finished', 'December: 1st week: Thesis', and 'September: 2nd week: Documentation for installation and configuration of Artemis with GitLab CI'.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Time Schedule",
+      "quote" : "October: Writing . . ."
+    }, {
+      "page" : 5,
+      "section" : "Time Schedule",
+      "quote" : "2nd week: Thesis ready for review"
+    }, {
+      "page" : 5,
+      "section" : "Time Schedule",
+      "quote" : "December – 1st week: Thesis"
+    }, {
+      "page" : 5,
+      "section" : "Time Schedule",
+      "quote" : "2nd week: Documentation for installation and confguration of Artemis with GitLab CI"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "structure",
+    "title" : "Schedule Not Structured as 2-4 Week Iterations",
+    "description" : "The schedule is organized by calendar months with sporadic week entries rather than consistent 2-4 week iterations. Gaps between work items exceed 4 weeks in several places (e.g., between May 3rd week and June 4th week is approximately 5-6 weeks; between April 4th week and May 3rd week is about 3-4 weeks but with no deliverable at the end of the iteration). The work should be restructured into consistent 2-4 week sprints with measurable deliverables at the end of each.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Time Schedule",
+      "quote" : "April – 2nd week: Docker GitLab CI Runner confguration – 4th week: prototype implementation: Connectivity to GitLab CI ... May – 3nd week: prototype implementation: Artemis API for confguration ... June – 4th week: prototype implementation: Sending build results to Artemis"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "structure",
+    "title" : "Schedule Includes a Requirements Activity",
+    "description" : "The schedule lists 'Requirements (parallel to prototype implementation)' in June. While it is parallel to implementation, the guidelines state there must NOT be an iteration dedicated solely to collecting requirements. In agile practice, requirements are picked from a backlog each sprint rather than gathered in a dedicated activity. This item should be removed or reframed as part of a specific feature iteration.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Time Schedule",
+      "quote" : "4th week: Requirements (parallel to prototype implementation)"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Forbidden Sentence Starters: 'Since', 'To', 'In order to'",
+    "description" : "Multiple sentences begin with forbidden words. The guidelines prohibit sentences starting with 'As…', 'Since…', 'To…', 'In order to…', or 'Because…'. Four violations were found.",
+    "locations" : [ {
+      "page" : 1,
+      "section" : "Abstract",
+      "quote" : "**Since** some Version Control (VC) systems include a Continuous Integration (CI) application, it is possible to reduce the efort required..."
+    }, {
+      "page" : 2,
+      "section" : "Problem Statement",
+      "quote" : "**To** achieve this goal, Artemis uses a Version Control (VC) and Continuous Integration (CI) server, to execute test cases..."
+    }, {
+      "page" : 2,
+      "section" : "Related Work",
+      "quote" : "**In order to** implement this idea, the lecture is split up into multiple iterations..."
+    }, {
+      "page" : 3,
+      "section" : "Related Work",
+      "quote" : "**Since** the benefts of using CI are quite high and nearly half of the developers who do not use CI mention a lack of familiarity..."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "formatting",
+    "title" : "Inconsistent Terminology: 'CI server' vs 'CI service'",
+    "description" : "The proposal uses both 'CI server' and 'CI service' to refer to the same concept (e.g., 'migrate the CI service from external applications', 'the CI and the Version Control (VC) are running on different servers', 'CI server for executing the tests'). Consistent terminology should be used throughout.",
+    "locations" : [ {
+      "page" : 1,
+      "section" : "Abstract",
+      "quote" : "migrate the **CI service** from external applications as Jenkins to the inbuilt **CI service**"
+    }, {
+      "page" : 2,
+      "section" : "Problem Statement",
+      "quote" : "Artemis currently supports Bamboo and Jenkins as a **CI server** for executing the tests."
+    }, {
+      "page" : 2,
+      "section" : "Proposed Solution",
+      "quote" : "the **CI service** should be part of the VC server"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Use of First-Person Singular 'I'",
+    "description" : "The guidelines state to avoid 'I' and 'our'. The schedule section uses 'I' twice: 'I will not have time to work on my thesis' and 'I plan to work on my thesis for about 2 weeks'. These should be rephrased in a more formal register.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Time Schedule",
+      "quote" : "During this time, **I** will not have time to work on my thesis. Instead, **I** plan to work on my thesis for about 2 weeks during the summer holidays in August."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "figures",
+    "title" : "Figure Not Explicitly Referenced by Number in Text",
+    "description" : "The text references the figure indirectly as 'This process is illustrated in section 4' rather than explicitly stating 'Figure 1 shows...'. Every figure must be clearly referenced in the text by its figure number.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Proposed Solution",
+      "quote" : "This process is illustrated in **section 4**."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "structure",
+    "title" : "Schedule Does Not Reference High-Level Objectives",
+    "description" : "The schedule does not reference any high-level goals or objectives. The guidelines state the schedule should 'reference the high-level goals from the Objectives section.' Since no proper Objectives section exists, the schedule items should at minimum be traceable to clearly stated project goals.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Time Schedule",
+      "quote" : "It is planned to adhere to the following time schedule:"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Passive Voice Used Excessively",
+    "description" : "Several key technical descriptions use passive voice where active voice would be clearer and more direct. Examples include 'the build plan is copied', 'the build plan is fetched', 'the build plan is downloaded', 'the student base repository is copied'. The guidelines require active voice with identified actors/subjects.",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "System Requirements and Top Level Design",
+      "quote" : "The student base repository **is copied** [Krusche18]."
+    }, {
+      "page" : 2,
+      "section" : "Proposed Solution",
+      "quote" : "the build plan **is fetched**. It could be transposed with a CI server which is dynamically updating the student build plan."
+    }, {
+      "page" : 3,
+      "section" : "System Requirements and Top Level Design",
+      "quote" : "GitLab CI fetches the build plan from the API and executes the test cases according to the plan."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Filler Words: 'Furthermore' and 'Additionally' Used Repeatedly",
+    "description" : "The word 'Furthermore' appears in the Abstract and Section 2, and 'Additionally' appears in Section 1. While not extreme, these fillers add wordiness without adding information and should be removed or replaced with more direct phrasing.",
+    "locations" : [ {
+      "page" : 1,
+      "section" : "Abstract",
+      "quote" : "**Furthermore**, it should be possible to adjust the build plan after the task has been assigned."
+    }, {
+      "page" : 2,
+      "section" : "Proposed Solution",
+      "quote" : "**Furthermore**, the CI service should be part of the VC server to reduce additional efort by maintaining two servers."
+    }, {
+      "page" : 2,
+      "section" : "Problem Statement",
+      "quote" : "**Additionally**, the base build plan is copied once after the student started the exercise [Krusche18]."
+    } ]
+  } ]
+}

@@ -1,0 +1,196 @@
+{
+  "job": "label-proposal-p3-pass2-03",
+  "answer": {
+    "judgements": [
+      {
+        "id": "F4cc3576396",
+        "rule": "R18",
+        "reason": "The statement already says 'I carefully checked all AI-generated text'; R18 does not require exact phrasing.",
+        "label": "invalid"
+      },
+      {
+        "id": "F49e020f549",
+        "rule": "R18",
+        "reason": "The statement explicitly confirms careful checking of all AI-generated text; no purpose clause is required.",
+        "label": "invalid"
+      },
+      {
+        "id": "F9ad4e0951a",
+        "rule": null,
+        "reason": "No rule forbids first-person 'I' or requires 'we'.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F540fe19a57",
+        "rule": "R10",
+        "reason": "The Figure 2 caption is long and informative, explaining folders, leaf bindings, and approval coverage; the finding quotes only its first sentence.",
+        "label": "invalid"
+      },
+      {
+        "id": "Ff1f6483584",
+        "rule": null,
+        "reason": "Avoiding the first person is not a stated rule.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F8767726271",
+        "rule": "R16",
+        "reason": "The same system is called 'self-service platform' in the prose and 'access management platform' in the Figure 1 caption, so the terminology is inconsistent.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd751f77e92",
+        "rule": "R11",
+        "reason": "'a mistake made for a single project' is a short participial modifier inside an active sentence, not a passive-voice clause.",
+        "label": "invalid"
+      },
+      {
+        "id": "F4d1cb70e9f",
+        "rule": "R2",
+        "reason": "The abstract fills about a third of page 2, which is within the 1/3-1/2 page range; there is no clear breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "F26909af971",
+        "rule": "R2",
+        "reason": "Excluding the figures, the body text from Abstract to Schedule comes to about six pages; there is no clear breach of the 4-6 page limit.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fe2eaade35c",
+        "rule": "R3",
+        "reason": "Each objective subsection 4.1-4.4 has two paragraphs (e.g., 4.1 continues with 'Every target system joins...').",
+        "label": "invalid"
+      },
+      {
+        "id": "Fefddcad14d",
+        "rule": "R11",
+        "reason": "The cited phrases are participial modifiers inside active sentences; the document uses active voice.",
+        "label": "invalid"
+      },
+      {
+        "id": "F8ea5b37edd",
+        "rule": "R2",
+        "reason": "The 12 pages include the title page, figures, bibliography, and transparency statement; the proposal text itself is within the limit.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fac09b8242b",
+        "rule": null,
+        "reason": "No rule restricts first-person formulations.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F69100460a6",
+        "rule": "R4",
+        "reason": "The workarounds appear as current practice with negative consequences (hidden actors, least-privilege violations), not as proposed solutions.",
+        "label": "invalid"
+      },
+      {
+        "id": "F7e4f4c60a4",
+        "rule": "R2",
+        "reason": "The Problem section fills about two-thirds of page 3, within the 3/4 page limit.",
+        "label": "invalid"
+      },
+      {
+        "id": "F795b351d28",
+        "rule": "R3",
+        "reason": "Subsection 4.1 has two paragraphs, the second starting 'Every target system joins the platform...' on page 6.",
+        "label": "invalid"
+      },
+      {
+        "id": "F8ab97fb178",
+        "rule": "R3",
+        "reason": "Subsection 4.1 has two paragraphs, separated by Figure 2.",
+        "label": "invalid"
+      },
+      {
+        "id": "F1a2627fbf2",
+        "rule": "R4",
+        "reason": "The workaround is described as a current practice and its harm, which is a problem with consequences, not a solution.",
+        "label": "invalid"
+      },
+      {
+        "id": "F2833a10166",
+        "rule": null,
+        "reason": "Avoiding 'I' is not a stated rule.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F11d8b80595",
+        "rule": "R12",
+        "reason": "UML is defined as 'Unified Modeling Language (UML)' on page 4, before the figures use it.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fccf7fb5de3",
+        "rule": null,
+        "reason": "No rule forbids first-person narration.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F230891ac4b",
+        "rule": "R8",
+        "reason": "Every other source uses an alpha key, but the Bruegge and Dutoit textbook is cited only through a bookstore-URL footnote, so the citation style is inconsistent.",
+        "label": "valid"
+      },
+      {
+        "id": "F406f98c506",
+        "rule": "R4",
+        "reason": "The shared login and admin-rights workaround illustrate current problems and their consequences; the section proposes no solution.",
+        "label": "invalid"
+      },
+      {
+        "id": "F7af5ae9b55",
+        "rule": null,
+        "reason": "No rule addresses diagram legibility or font size.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F2880c46c63",
+        "rule": "R11",
+        "reason": "The quoted sentence is in active voice ('Requests travel', 'nobody records').",
+        "label": "invalid"
+      },
+      {
+        "id": "Fb74eee270c",
+        "rule": "R12",
+        "reason": "API is defined on page 2 as 'application programming interfaces (APIs)', before its use on page 6.",
+        "label": "invalid"
+      },
+      {
+        "id": "Ff0e9efc9e7",
+        "rule": null,
+        "reason": "No rule forbids 'I' or requires 'we'.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F3a515ca782",
+        "rule": "R2",
+        "reason": "The abstract fills about a third of page 2, well under half a page.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fe5ca6ee30a",
+        "rule": "R16",
+        "reason": "'e-mail' is spelled the same way in every cited location; there is no inconsistency.",
+        "label": "invalid"
+      },
+      {
+        "id": "F742bdf0c1f",
+        "rule": "R11",
+        "reason": "The cited phrases are participial modifiers inside active sentences, not passive-voice clauses.",
+        "label": "invalid"
+      },
+      {
+        "id": "F60da585e70",
+        "rule": "R3",
+        "reason": "Each of subsections 4.1-4.4 has two paragraphs.",
+        "label": "invalid"
+      }
+    ]
+  },
+  "costUsd": 0.0959048,
+  "durationMs": 37347,
+  "model": "claude-opus-5-5[1m]"
+}

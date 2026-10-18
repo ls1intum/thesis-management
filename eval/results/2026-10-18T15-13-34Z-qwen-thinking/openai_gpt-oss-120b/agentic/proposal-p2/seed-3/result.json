@@ -1,0 +1,96 @@
+{
+  "findings" : [ {
+    "severity" : "CRITICAL",
+    "category" : "STRUCTURE",
+    "title" : "Excessive total length",
+    "description" : "Proposal exceeds the allowed total length of 4-6 pages; the document spans 12 pages including title and appendix.",
+    "locations" : [ {
+      "page" : 12,
+      "quote" : "=== PAGE 12 ==="
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "CITATION",
+    "title" : "Insufficient bibliography entries",
+    "description" : "Bibliography contains only 5 entries, fewer than the required minimum of 6-8 peer-reviewed publications.",
+    "locations" : [ {
+      "page" : 11,
+      "section" : "Bibliography",
+      "quote" : "[TP21]        T. Tuononen and A. Parpala, “The Role of Academic Competences\n                                   and   Learning     Processes    in  Predicting     Bachelor's    and   Master's     Thesis\n                                   Grades,”     Studies   in  Educational      Evaluation,     vol.  70,  p.  101001,    2021,"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "CITATION",
+    "title" : "Improper inline URL",
+    "description" : "A URL is included inline in the body text instead of as a footnote, violating the rule that non‑peer‑reviewed sources must be footnotes.",
+    "locations" : [ {
+      "page" : 3,
+      "quote" : "1https://github.com/ls1intum/thesis-management"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "WRITING",
+    "title" : "Passive voice",
+    "description" : "Passive voice used: \"the feedback tool is powered by LLMs\".",
+    "locations" : [ {
+      "page" : 5,
+      "quote" : "because the feedback tool is powered by llms, students can obtain instant formative feedback at any point during the writing process."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "WRITING",
+    "title" : "Filler word",
+    "description" : "Filler word \"Additionally\" used, which should be avoided.",
+    "locations" : [ {
+      "page" : 4,
+      "quote" : "Additionally, supervisors can provide feedback faster, making the process more scalable."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "WRITING",
+    "title" : "Forbidden sentence starter",
+    "description" : "Sentence starts with forbidden word \"As\".",
+    "locations" : [ {
+      "page" : 4,
+      "quote" : "As   Figure 1 illustrates,   an  LLM-powered        Reviewer works   alongside    the  supervisor,     evaluating the thesis"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "WRITING",
+    "title" : "Forbidden sentence starter",
+    "description" : "Sentence starts with forbidden word \"Because\".",
+    "locations" : [ {
+      "page" : 5,
+      "quote" : "because the feedback tool is powered by llms, students can obtain instant formative feedback at any point during the writing process."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "METHODOLOGY",
+    "title" : "Insufficient paragraph count in objective subsection",
+    "description" : "Objective subsections (e.g., 4.1) contain only one paragraph; each should have at least two paragraphs.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "4.1 Generate Feedback Based on Guidelines",
+      "quote" : "Supervisors should be able to provide their own scientifc writing guidelines as well as conventions on the style of theses and proposals. Based on these guidelines, the LLM can provide formative feedback that is restricted to the aspects they cover. Since guidelines may not already be in a suitable format, the LLM may frst"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "SCHEDULE",
+    "title" : "Vague schedule item",
+    "description" : "Iteration 9 includes a vague deliverable \"Documentation\" without measurable specifics.",
+    "locations" : [ {
+      "page" : 10,
+      "section" : "Iteration 9",
+      "quote" : "•   Documentation"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "FIGURES",
+    "title" : "Short figure caption",
+    "description" : "Figure 2 caption is short and generic; captions should be long and informative.",
+    "locations" : [ {
+      "page" : 7,
+      "quote" : "Figure 2: Activity diagram of the envisioned feedback workfow."
+    } ]
+  } ]
+}

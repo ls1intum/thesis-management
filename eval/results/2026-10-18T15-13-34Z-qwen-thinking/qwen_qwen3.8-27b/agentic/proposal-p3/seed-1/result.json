@@ -1,0 +1,16 @@
+{
+  "assessment" : "GOOD",
+  "score" : 91,
+  "summary" : "A strong, well-structured proposal. All required sections are present with compliant lengths; the Problem section names its actors and stays free of solutions; the Motivation is visionary and non-repetitive; all four objectives are single-verb, action-form with two-paragraph subsections. The bibliography has 12 peer-reviewed entries in a consistent alpha style with citations before full stops and documentation URLs correctly relegated to footnotes. Three UML figures (use case, object, component) are all referenced and carry long, informative captions. The schedule is genuinely agile: six 4-week iterations with measurable, vertically integrated outcomes, objective references, and a buffer, no requirements sprint or writing tasks. The AI transparency statement is specific, first-person, tabulated by purpose and scope, and confirms careful review of AI output. The only finding: the house rule to avoid \"I\" (use \"we\" sparingly for the thesis approach) is violated throughout — \"I develop\", \"I implement\", \"I reach this objective\", \"I divide/deliver\" — a mechanical fix. No structural, citation, figure, or scheduling issues found.",
+  "findings" : [ {
+    "severity" : "MINOR",
+    "category" : "WRITING",
+    "title" : "Thesis-approach text uses \"I\" instead of the prescribed \"we\"",
+    "description" : "The group's writing-style rule is to avoid \"I\" and to use \"we\" (sparingly) for the thesis approach, but the proposal consistently uses first person singular for its own work: \"In this thesis, I develop...\" (Abstract and Section 4), \"I model the resources...\" (4.1), \"I implement the keycloak-group... connectors\" (4.1), \"I reach this objective when...\" (4.1-4.4), \"I split each decision...\" (4.3), and \"I divide the work into six iterations\" / \"I deliver...\" in every schedule entry. Replace these with \"we\" per the house style (the first-person \"I\" in the AI Transparency Statement is required and should stay).",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Abstract",
+      "quote" : "In this thesis, **I develop** a self-service platform on which every grant carries an expiry date from the moment somebody requests it."
+    } ]
+  } ]
+}

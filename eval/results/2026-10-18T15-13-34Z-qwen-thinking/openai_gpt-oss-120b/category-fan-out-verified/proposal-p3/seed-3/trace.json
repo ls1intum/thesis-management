@@ -1,0 +1,224 @@
+{
+  "categories" : [ {
+    "category" : "STRUCTURE",
+    "generated" : [ {
+      "severity" : "CRITICAL",
+      "category" : "COMPLETENESS",
+      "title" : "Proposal exceeds maximum allowed length",
+      "description" : "The document spans 12 pages of text, which is beyond the required 4-6 pages.",
+      "locations" : [ {
+        "page" : 12,
+        "section" : "Overall",
+        "quote" : "The proposal spans **12 pages**, exceeding the maximum allowed 6 pages."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "COMPLETENESS",
+      "title" : "Problem section exceeds length limit",
+      "description" : "The Problem section extends beyond the allowed 3/4 page maximum.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "**Problem**\n\nRequesters, such as thesis students and external collaborators, do not know who manages which system. A student who needs a host, a channel, and a repository asks several people and waits for each of them, and some bridge the delay with a shared login that hides who acted."
+      } ]
+    } ],
+    "ungrounded" : [ {
+      "severity" : "CRITICAL",
+      "category" : "COMPLETENESS",
+      "title" : "Proposal exceeds maximum allowed length",
+      "description" : "The document spans 12 pages of text, which is beyond the required 4-6 pages.",
+      "locations" : [ {
+        "page" : 12,
+        "section" : "Overall",
+        "quote" : "The proposal spans **12 pages**, exceeding the maximum allowed 6 pages."
+      } ]
+    } ],
+    "rejected" : [ {
+      "finding" : {
+        "severity" : "MAJOR",
+        "category" : "COMPLETENESS",
+        "title" : "Problem section exceeds length limit",
+        "description" : "The Problem section extends beyond the allowed 3/4 page maximum.",
+        "locations" : [ {
+          "page" : 3,
+          "section" : "Problem",
+          "quote" : "**Problem**\n\nRequesters, such as thesis students and external collaborators, do not know who manages which system. A student who needs a host, a channel, and a repository asks several people and waits for each of them, and some bridge the delay with a shared login that hides who acted."
+        } ]
+      },
+      "reason" : "Evidence does not show the Problem section exceeds the 3/4 page limit."
+    } ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "PROBLEM_MOTIVATION_OBJECTIVES",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "COMPLETENESS",
+      "title" : "Objective subsection 4.1 is too brief",
+      "description" : "Each objective subsection must contain at least two paragraphs with detailed descriptions. Subsection 4.1 \"Unify Heterogeneous Resources in One Tree\" consists of a single paragraph only, lacking the required depth.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Objective 4.1",
+        "quote" : "**I model the resources as a tree whose folders pass maintainership, audit policy, and grants down to leaves bound to target systems, as the UML object diagram in Figure 2 shows. One approval on a folder covers every resource beneath it, including later additions. A transitive‑closure table stores the tree, and a fan‑out cap keeps an approval on the root from provisioning the whole infrastructure.**"
+      } ]
+    } ],
+    "ungrounded" : [ {
+      "severity" : "MAJOR",
+      "category" : "COMPLETENESS",
+      "title" : "Objective subsection 4.1 is too brief",
+      "description" : "Each objective subsection must contain at least two paragraphs with detailed descriptions. Subsection 4.1 \"Unify Heterogeneous Resources in One Tree\" consists of a single paragraph only, lacking the required depth.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Objective 4.1",
+        "quote" : "**I model the resources as a tree whose folders pass maintainership, audit policy, and grants down to leaves bound to target systems, as the UML object diagram in Figure 2 shows. One approval on a folder covers every resource beneath it, including later additions. A transitive‑closure table stores the tree, and a fan‑out cap keeps an approval on the root from provisioning the whole infrastructure.**"
+      } ]
+    } ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "BIBLIOGRAPHY",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "FIGURES",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STYLE",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Passive voice usage",
+      "description" : "Passive voice detected; replace with active voice where possible.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "Requests travel by chat message or e‑mail, nobody records an end date, and **access granted** for one project outlives the time a person spends at the chair."
+      } ]
+    } ],
+    "ungrounded" : [ {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Passive voice usage",
+      "description" : "Passive voice detected; replace with active voice where possible.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "Requests travel by chat message or e‑mail, nobody records an end date, and **access granted** for one project outlives the time a person spends at the chair."
+      } ]
+    } ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STRUCTURE",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "FORMATTING",
+      "title" : "Paragraph too short",
+      "description" : "Paragraphs should be 5-8 lines long. This paragraph contains only 3 lines, which is shorter than the required minimum.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Introduction",
+        "quote" : "**interface   with   Keycloak.     People    ask   for  access   to  any   of  these   systems    by  chat   message    or  e-mail,   and   that   message    is often   the  only   record   of  the  change.    The   chair  therefore    holds   identities   in one   place  but   grants   access   in three.**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "FORMATTING",
+      "title" : "Paragraph too short",
+      "description" : "Paragraphs should be 5-8 lines long. This paragraph contains only 2 lines, which is shorter than the required minimum.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Motivation",
+        "quote" : "**work   through    a queue   that   maintainers     have  already   reviewed,    and   auditors   receive evidence    as  a by-product     of  daily  operation.**"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ {
+      "finding" : {
+        "severity" : "MAJOR",
+        "category" : "FORMATTING",
+        "title" : "Paragraph too short",
+        "description" : "Paragraphs should be 5-8 lines long. This paragraph contains only 3 lines, which is shorter than the required minimum.",
+        "locations" : [ {
+          "page" : 3,
+          "section" : "Introduction",
+          "quote" : "**interface   with   Keycloak.     People    ask   for  access   to  any   of  these   systems    by  chat   message    or  e-mail,   and   that   message    is often   the  only   record   of  the  change.    The   chair  therefore    holds   identities   in one   place  but   grants   access   in three.**"
+        } ]
+      },
+      "reason" : "Evidence does not demonstrate the paragraph is only 3 lines"
+    }, {
+      "finding" : {
+        "severity" : "MAJOR",
+        "category" : "FORMATTING",
+        "title" : "Paragraph too short",
+        "description" : "Paragraphs should be 5-8 lines long. This paragraph contains only 2 lines, which is shorter than the required minimum.",
+        "locations" : [ {
+          "page" : 4,
+          "section" : "Motivation",
+          "quote" : "**work   through    a queue   that   maintainers     have  already   reviewed,    and   auditors   receive evidence    as  a by-product     of  daily  operation.**"
+        } ]
+      },
+      "reason" : "Evidence does not demonstrate the paragraph is only 2 lines"
+    } ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_FORMATTING",
+    "generated" : [ {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Inconsistent spelling of \"workflow\" as \"workfow\"",
+      "description" : "The term \"workflow\" is misspelled as \"workfow\" in multiple places, leading to inconsistent terminology.",
+      "locations" : [ {
+        "page" : 7,
+        "section" : "Enforce an Expiry Date on Every Grant",
+        "quote" : "... arms the **workfow** engine of Keycloak through its API at grant time."
+      }, {
+        "page" : 7,
+        "section" : "Enforce an Expiry Date on Every Grant",
+        "quote" : "... with the **workfow** engine disabled on purpose, the drift check reports ..."
+      } ]
+    } ],
+    "ungrounded" : [ {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Inconsistent spelling of \"workflow\" as \"workfow\"",
+      "description" : "The term \"workflow\" is misspelled as \"workfow\" in multiple places, leading to inconsistent terminology.",
+      "locations" : [ {
+        "page" : 7,
+        "section" : "Enforce an Expiry Date on Every Grant",
+        "quote" : "... arms the **workfow** engine of Keycloak through its API at grant time."
+      }, {
+        "page" : 7,
+        "section" : "Enforce an Expiry Date on Every Grant",
+        "quote" : "... with the **workfow** engine disabled on purpose, the drift check reports ..."
+      } ]
+    } ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "AI_TRANSPARENCY",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "SCHEDULE",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  } ],
+  "categoryFailures" : { }
+}

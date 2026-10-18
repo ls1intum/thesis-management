@@ -1,0 +1,250 @@
+{
+  "job": "label-proposal-p3-pass1-02",
+  "answer": {
+    "judgements": [
+      {
+        "id": "Ff16f0ac51a",
+        "rule": "R13",
+        "reason": "Page numbers are not prose paragraphs; the paragraph-length rule does not apply to them.",
+        "label": "invalid"
+      },
+      {
+        "id": "F2f95ae0b7a",
+        "rule": null,
+        "reason": "No rule requires scientific books to appear as bibliography entries; R7 only requires internet sources in footnotes, which the document does.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Fc7bb27bca3",
+        "rule": "R4",
+        "reason": "The shared login and the admin-rights workaround describe current behaviour and its negative consequences, not solutions the proposal puts forward.",
+        "label": "invalid"
+      },
+      {
+        "id": "F5e1cbf72e0",
+        "rule": "R16",
+        "reason": "Section 4.2 calls the mechanism that lists memberships outliving their grants a 'drift check', while the Schedule calls the same deliverable a 'drift report'.",
+        "label": "valid"
+      },
+      {
+        "id": "Fe9f8d164d6",
+        "rule": "R4",
+        "reason": "The workaround sentence presents an existing harmful practice and its consequences (violated least privilege), not a solution.",
+        "label": "invalid"
+      },
+      {
+        "id": "F9585de6600",
+        "rule": "R4",
+        "reason": "The workaround is described as a problematic practice with negative consequences, which fits the Problem section.",
+        "label": "invalid"
+      },
+      {
+        "id": "Facc830938b",
+        "rule": "R2",
+        "reason": "The 12 pages include the title page, the bibliography and the AI statement; the body text excluding figures is about six pages, so there is no clear breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fe5ca6ee30a",
+        "rule": "R16",
+        "reason": "'e-mail' is spelled the same way throughout; there is no inconsistency.",
+        "label": "invalid"
+      },
+      {
+        "id": "Ffd6a06260b",
+        "rule": null,
+        "reason": "No rule forbids the first person 'I'.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Fd774c774b0",
+        "rule": "R13",
+        "reason": "The cited paragraphs are about five lines each, not more than ten.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fb74eee270c",
+        "rule": "R12",
+        "reason": "API is defined on page 2 as 'application programming interfaces (APIs)', before its use on page 6.",
+        "label": "invalid"
+      },
+      {
+        "id": "F7eba54e14c",
+        "rule": "R3",
+        "reason": "Subsection 4.3 has two paragraphs ('Requesters fill in…' and 'Keycloak gates…').",
+        "label": "invalid"
+      },
+      {
+        "id": "F6b5fb69cfe",
+        "rule": "R12",
+        "reason": "UML and the other abbreviations (SSH, LDAP, API, AI) are defined at first use; no undefined abbreviation is shown.",
+        "label": "invalid"
+      },
+      {
+        "id": "Ff1f6483584",
+        "rule": null,
+        "reason": "No rule forbids first-person 'I'.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Fe275da73b6",
+        "rule": "R18",
+        "reason": "The statement already confirms the author carefully checked all AI-generated text; no purpose clause is required.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fdf891eaa59",
+        "rule": "R3",
+        "reason": "Subsection 4.1 is one paragraph that continues unindented after Figure 2, so it lacks the required second paragraph.",
+        "label": "valid"
+      },
+      {
+        "id": "Ffe098f9eb1",
+        "rule": "R2",
+        "reason": "Excluding the figures, the body text is about six pages; the page-12 marker counts the bibliography and the AI statement, so there is no clear breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "F795b351d28",
+        "rule": "R3",
+        "reason": "Subsection 4.1 consists of a single paragraph that runs on past Figure 2, so it lacks the required second paragraph.",
+        "label": "valid"
+      },
+      {
+        "id": "Fff5f3aabf3",
+        "rule": "R2",
+        "reason": "Pages 2–8 contain three large figures; the actual text is within or near the limit, so there is no clear breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "F49e020f549",
+        "rule": "R18",
+        "reason": "The statement confirms the author carefully checked all AI-generated text, which is all the rule requires.",
+        "label": "invalid"
+      },
+      {
+        "id": "F3a515ca782",
+        "rule": "R2",
+        "reason": "The abstract fills about ten lines, well under half a page.",
+        "label": "invalid"
+      },
+      {
+        "id": "F984f436080",
+        "rule": "R16",
+        "reason": "The same machines are called 'compute hosts' in the Abstract and Problem but 'Linux hosts' in the Introduction and elsewhere.",
+        "label": "valid"
+      },
+      {
+        "id": "F60da585e70",
+        "rule": "R3",
+        "reason": "Subsection 4.1 is a single paragraph, which breaches the rule; the claim is wrong for 4.2–4.4, which each have two paragraphs.",
+        "label": "valid"
+      },
+      {
+        "id": "F043f625ca0",
+        "rule": "R3",
+        "reason": "Subsection 4.2 has two paragraphs ('The platform changes…' and 'A drift check…').",
+        "label": "invalid"
+      },
+      {
+        "id": "Ffbb4c67122",
+        "rule": null,
+        "reason": "No rule requires books to have bibliography entries; the URL is correctly placed in a footnote.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F9eb17f64bb",
+        "rule": "R11",
+        "reason": "'access granted for one project' is a participial modifier inside an active main clause, not a passive sentence.",
+        "label": "invalid"
+      },
+      {
+        "id": "F26909af971",
+        "rule": "R2",
+        "reason": "Excluding figures, the body text is about six pages, at the limit and not a clear breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "F026a60c426",
+        "rule": "R13",
+        "reason": "The paragraph treats one idea: access that never ends, together with its consequence for auditors.",
+        "label": "invalid"
+      },
+      {
+        "id": "F21744e1cb1",
+        "rule": null,
+        "reason": "Spelling and typos are not covered by any rule; 'fll' is also a ligature extraction artifact.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F94f0764407",
+        "rule": null,
+        "reason": "No rule requires a bibliography entry for books; the internet source sits in a footnote as R7 asks.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Fc9d2ab389a",
+        "rule": "R16",
+        "reason": "The document uses 'compute hosts'/'Linux hosts' and 'drift check'/'drift report' for the same concepts.",
+        "label": "valid"
+      },
+      {
+        "id": "F406f98c506",
+        "rule": "R4",
+        "reason": "The shared login and the full-admin-rights examples describe existing problematic practices and their consequences, not proposed solutions.",
+        "label": "invalid"
+      },
+      {
+        "id": "Ff908a1d6fc",
+        "rule": "R11",
+        "reason": "'written after I freeze the framework' is a participial modifier in an active sentence, not a passive clause.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fc5f75624fa",
+        "rule": null,
+        "reason": "No rule forbids the first person 'I'.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F3381eb3f2d",
+        "rule": "R18",
+        "reason": "The statement confirms that all AI-generated text was carefully checked; the exact purpose wording is not required.",
+        "label": "invalid"
+      },
+      {
+        "id": "F4e1ec4ff34",
+        "rule": null,
+        "reason": "No rule forbids 'I' or the numeral/pronoun 'one'.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Fd751f77e92",
+        "rule": "R11",
+        "reason": "'a mistake made for a single project' is a participial modifier in an active clause, not passive voice.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fc5045c7548",
+        "rule": "R4",
+        "reason": "The workaround is presented as a harmful current practice with negative consequences, not as a solution.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fbf6dc2106e",
+        "rule": "R11",
+        "reason": "'that message is often the only record' is a copular sentence, not passive voice.",
+        "label": "invalid"
+      },
+      {
+        "id": "F2833a10166",
+        "rule": null,
+        "reason": "No rule forbids first-person formulations.",
+        "label": "out_of_scope"
+      }
+    ]
+  },
+  "costUsd": 0.3517788,
+  "durationMs": 51128,
+  "model": "claude-opus-5-5[1m]"
+}

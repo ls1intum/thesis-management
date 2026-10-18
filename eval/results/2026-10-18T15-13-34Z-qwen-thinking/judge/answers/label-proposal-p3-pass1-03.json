@@ -1,0 +1,196 @@
+{
+  "job": "label-proposal-p3-pass1-03",
+  "answer": {
+    "judgements": [
+      {
+        "id": "Faa66c7bf9c",
+        "rule": null,
+        "reason": "No rule forbids first-person 'I'; R11 lists only passive voice, contractions, filler words, and superlatives.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Febf7e70cd6",
+        "rule": null,
+        "reason": "No rule addresses spelling typos (and 'confgure' looks like a lost ligature from text extraction).",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F4ad09d7b89",
+        "rule": "R12",
+        "reason": "R12's list of forbidden sentence starters is exhaustive and does not include 'Following'.",
+        "label": "invalid"
+      },
+      {
+        "id": "F756ce80982",
+        "rule": "R16",
+        "reason": "The spellings are ligature artifacts and are the same everywhere; no different terms are used for one concept.",
+        "label": "invalid"
+      },
+      {
+        "id": "F1b78c54efe",
+        "rule": null,
+        "reason": "No rule addresses spelling typos.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Fd4bf47d4f6",
+        "rule": "R16",
+        "reason": "'the supervisors who know...' is an appositive explaining who the maintainers are; the text uses 'maintainers' consistently.",
+        "label": "invalid"
+      },
+      {
+        "id": "F7e4f4c60a4",
+        "rule": "R2",
+        "reason": "The Problem section fills about two-thirds of page 3, within the 3/4-page limit; no clear breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "F30869da477",
+        "rule": null,
+        "reason": "No rule requires scientific books to appear in the bibliography; R7 only says internet sources go in footnotes, and the document does that.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F8ea5b37edd",
+        "rule": "R2",
+        "reason": "The 12 pages include the title page, bibliography, and statement; the proposal text with figures removed is about 6 pages, so there is no clear breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "F230891ac4b",
+        "rule": null,
+        "reason": "No rule requires the textbook to be a bibliography entry; the URL footnote follows R7's footnote rule.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Fe0a86577af",
+        "rule": null,
+        "reason": "No rule addresses spelling typos.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F5e07fd95d2",
+        "rule": "R3",
+        "reason": "Sections 4.1 and 4.2 each have only one paragraph, which breaches R3; the 4.3 and 4.4 locations are wrong because those subsections have two indented paragraphs.",
+        "label": "valid"
+      },
+      {
+        "id": "Fef61b02aa3",
+        "rule": "R3",
+        "reason": "Section 4.2 is a single paragraph: 'A drift check...' continues without an indent, so the subsection lacks the required two paragraphs.",
+        "label": "valid"
+      },
+      {
+        "id": "F455a77f2f6",
+        "rule": "R18",
+        "reason": "The statement explicitly says 'I carefully checked all AI-generated text', which satisfies R18; no exact wording is required.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fb02d0edf05",
+        "rule": "R2",
+        "reason": "The page count includes the title page, bibliography, and statement; the proposal text is about 6 pages, so there is no clear breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "F35b895c838",
+        "rule": "R11",
+        "reason": "The quoted passages are active clauses with participle modifiers, not passive-voice clauses.",
+        "label": "invalid"
+      },
+      {
+        "id": "F4d1cb70e9f",
+        "rule": "R2",
+        "reason": "The abstract fills about a third of page 2, within the 1/3–1/2 page range.",
+        "label": "invalid"
+      },
+      {
+        "id": "F540fe19a57",
+        "rule": "R10",
+        "reason": "The Figure 2 caption is long and informative (four sentences describing folders, leaves, and the approval scope).",
+        "label": "invalid"
+      },
+      {
+        "id": "F7864d27dc5",
+        "rule": "R3",
+        "reason": "Section 4.1 is one paragraph; the text after the figure continues it without an indent.",
+        "label": "valid"
+      },
+      {
+        "id": "F97e4d547a3",
+        "rule": null,
+        "reason": "No rule requires books to be listed in the bibliography rather than cited via a footnote.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F3aede5d808",
+        "rule": null,
+        "reason": "No rule forbids the first person.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F1a2627fbf2",
+        "rule": "R4",
+        "reason": "The workaround is described as a current harmful practice with negative consequences, not as a proposed solution, so the Problem section complies.",
+        "label": "invalid"
+      },
+      {
+        "id": "F86bbff50d5",
+        "rule": "R8",
+        "reason": "The citation '[Bau+09, BSW08].' already comes before the full stop.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fffb6371d33",
+        "rule": null,
+        "reason": "No rule requires objectives to fit on one line (and they each do).",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Fa17d2a8b95",
+        "rule": "R11",
+        "reason": "The cited phrases are participle modifiers inside active main clauses; the document does not use passive voice here.",
+        "label": "invalid"
+      },
+      {
+        "id": "F0e6c157152",
+        "rule": "R3",
+        "reason": "Section 4.1 contains only one paragraph, breaching the two-paragraph minimum per objective subsection.",
+        "label": "valid"
+      },
+      {
+        "id": "Fe64f043d4e",
+        "rule": "R15",
+        "reason": "The heading 'Unify Heterogeneous Resources in One Tree' is already in title case.",
+        "label": "invalid"
+      },
+      {
+        "id": "F69100460a6",
+        "rule": "R4",
+        "reason": "The shared login and admin-rights workarounds are current practices described with their negative consequences, not solutions; R4 is satisfied.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fdb396e1849",
+        "rule": "R2",
+        "reason": "Pages 2–9 include three figures taking about half a page each; the text is about 6 pages, near the limit but not a clear breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fccf7fb5de3",
+        "rule": null,
+        "reason": "No rule forbids the first person.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Fac09b8242b",
+        "rule": null,
+        "reason": "No rule forbids the first person.",
+        "label": "out_of_scope"
+      }
+    ]
+  },
+  "costUsd": 0.3027308,
+  "durationMs": 47931,
+  "model": "claude-opus-5-5[1m]"
+}

@@ -1,0 +1,269 @@
+{
+  "categories" : [ {
+    "category" : "STRUCTURE",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Proposal exceeds allowed total length",
+      "description" : "The proposal text spans significantly more than the maximum of 6 pages (including title page, abstract, introduction, problem, motivation, objectives, and bibliography). This violates the total length requirement of 4-6 pages.",
+      "locations" : [ {
+        "quote" : "The proposal spans 12 pages of content, exceeding the allowed 4‑6 page limit."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Objective subsection 4.1 lacks required paragraphs",
+      "description" : "Subsection 4.1 contains only a single paragraph; each objective subsection must have at least two paragraphs.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "**4.1 Unify Heterogeneous Resources in One Tree**\nI model the resources as a tree whose folders pass maintainership, audit policy, and grants down to leaves bound to target systems..."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Objective subsection 4.2 lacks required paragraphs",
+      "description" : "Subsection 4.2 contains only a single paragraph; each objective subsection must have at least two paragraphs.",
+      "locations" : [ {
+        "page" : 7,
+        "section" : "Objective",
+        "quote" : "**4.2 Enforce an Expiry Date on Every Grant**\nThe platform changes Keycloak only with the token of the calling user and holds no service account..."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Objective subsection 4.3 lacks required paragraphs",
+      "description" : "Subsection 4.3 contains only a single paragraph; each objective subsection must have at least two paragraphs.",
+      "locations" : [ {
+        "page" : 8,
+        "section" : "Objective",
+        "quote" : "**4.3 Delegate the Approval of Requests to Maintainers**\nRequesters fill in a declarative request form instead of naming resources, and its rules turn answers into requests for a resource path..."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Objective subsection 4.4 lacks required paragraphs",
+      "description" : "Subsection 4.4 contains only a single paragraph; each objective subsection must have at least two paragraphs.",
+      "locations" : [ {
+        "page" : 8,
+        "section" : "Objective",
+        "quote" : "**4.4 Automate the Recertifcation of Active Grants**\nEvery resource carries a recertifcation interval that its descendants inherit, and each elapsed interval opens a campaign..."
+      } ]
+    } ],
+    "ungrounded" : [ {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Proposal exceeds allowed total length",
+      "description" : "The proposal text spans significantly more than the maximum of 6 pages (including title page, abstract, introduction, problem, motivation, objectives, and bibliography). This violates the total length requirement of 4-6 pages.",
+      "locations" : [ {
+        "quote" : "The proposal spans 12 pages of content, exceeding the allowed 4‑6 page limit."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Objective subsection 4.1 lacks required paragraphs",
+      "description" : "Subsection 4.1 contains only a single paragraph; each objective subsection must have at least two paragraphs.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "**4.1 Unify Heterogeneous Resources in One Tree**\nI model the resources as a tree whose folders pass maintainership, audit policy, and grants down to leaves bound to target systems..."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Objective subsection 4.2 lacks required paragraphs",
+      "description" : "Subsection 4.2 contains only a single paragraph; each objective subsection must have at least two paragraphs.",
+      "locations" : [ {
+        "page" : 7,
+        "section" : "Objective",
+        "quote" : "**4.2 Enforce an Expiry Date on Every Grant**\nThe platform changes Keycloak only with the token of the calling user and holds no service account..."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Objective subsection 4.3 lacks required paragraphs",
+      "description" : "Subsection 4.3 contains only a single paragraph; each objective subsection must have at least two paragraphs.",
+      "locations" : [ {
+        "page" : 8,
+        "section" : "Objective",
+        "quote" : "**4.3 Delegate the Approval of Requests to Maintainers**\nRequesters fill in a declarative request form instead of naming resources, and its rules turn answers into requests for a resource path..."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Objective subsection 4.4 lacks required paragraphs",
+      "description" : "Subsection 4.4 contains only a single paragraph; each objective subsection must have at least two paragraphs.",
+      "locations" : [ {
+        "page" : 8,
+        "section" : "Objective",
+        "quote" : "**4.4 Automate the Recertifcation of Active Grants**\nEvery resource carries a recertifcation interval that its descendants inherit, and each elapsed interval opens a campaign..."
+      } ]
+    } ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "PROBLEM_MOTIVATION_OBJECTIVES",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "COMPLETENESS",
+      "title" : "Objective subsection 4.1 too short",
+      "description" : "Objective subsection 4.1 contains only a single paragraph; each objective subsection must consist of at least two paragraphs with detailed descriptions.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "**4.1 Unify Heterogeneous Resources in One Tree**"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ {
+      "finding" : {
+        "severity" : "MAJOR",
+        "category" : "COMPLETENESS",
+        "title" : "Objective subsection 4.1 too short",
+        "description" : "Objective subsection 4.1 contains only a single paragraph; each objective subsection must consist of at least two paragraphs with detailed descriptions.",
+        "locations" : [ {
+          "page" : 5,
+          "section" : "Objective",
+          "quote" : "**4.1 Unify Heterogeneous Resources in One Tree**"
+        } ]
+      },
+      "reason" : "Invented rule: requirement that each objective subsection must have at least two paragraphs is not in the guidelines."
+    } ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "BIBLIOGRAPHY",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "FIGURES",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STYLE",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Passive voice usage",
+      "description" : "The sentence uses passive voice; rewrite in active voice.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "and **access granted** for one project outlives the time a person spends at the chair."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Passive voice usage",
+      "description" : "The sentence uses passive voice; rewrite in active voice.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "that message **is often the only record** of the change."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Undefined abbreviation",
+      "description" : "Abbreviation \"API\" is used without prior definition.",
+      "locations" : [ {
+        "page" : 6,
+        "section" : "Objective",
+        "quote" : "connector that calls its **API** behind one contract"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ {
+      "finding" : {
+        "severity" : "MAJOR",
+        "category" : "WRITING",
+        "title" : "Passive voice usage",
+        "description" : "The sentence uses passive voice; rewrite in active voice.",
+        "locations" : [ {
+          "page" : 3,
+          "section" : "Problem",
+          "quote" : "that message **is often the only record** of the change."
+        } ]
+      },
+      "reason" : "Quoted evidence does not demonstrate passive voice."
+    } ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Passive voice usage",
+      "description" : "The sentence uses passive voice; rewrite in active voice.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "and **access granted** for one project outlives the time a person spends at the chair."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Undefined abbreviation",
+      "description" : "Abbreviation \"API\" is used without prior definition.",
+      "locations" : [ {
+        "page" : 6,
+        "section" : "Objective",
+        "quote" : "connector that calls its **API** behind one contract"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STRUCTURE",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "FORMATTING",
+      "title" : "Abstract paragraph exceeds recommended line length",
+      "description" : "The abstract forms a single paragraph that spans more than 10 lines, violating the guideline that paragraphs should be 5‑8 lines long.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "In this thesis, I develop **a self‑service platform** on which every grant carries an expiry date from the moment somebody requests it."
+      } ]
+    } ],
+    "ungrounded" : [ {
+      "severity" : "MAJOR",
+      "category" : "FORMATTING",
+      "title" : "Abstract paragraph exceeds recommended line length",
+      "description" : "The abstract forms a single paragraph that spans more than 10 lines, violating the guideline that paragraphs should be 5‑8 lines long.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "In this thesis, I develop **a self‑service platform** on which every grant carries an expiry date from the moment somebody requests it."
+      } ]
+    } ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_FORMATTING",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "AI_TRANSPARENCY",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "SCHEDULE",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  } ],
+  "categoryFailures" : { }
+}

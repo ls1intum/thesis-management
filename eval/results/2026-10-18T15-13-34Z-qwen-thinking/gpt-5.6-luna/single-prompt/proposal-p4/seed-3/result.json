@@ -1,0 +1,105 @@
+{
+  "assessment" : "NEEDS_WORK",
+  "score" : 43,
+  "summary" : "The proposal has a well-defined problem context, four substantive objectives, two appropriate UML diagrams, and a detailed bibliography with substantially more than the required number of scientific publications. However, it is not ready to submit because the Abstract is missing, the Problem section contains a proposed solution, the schedule includes a thesis-writing iteration, and the AI transparency statement lacks the required review confirmation.",
+  "findings" : [ {
+    "severity" : "CRITICAL",
+    "category" : "COMPLETENESS",
+    "title" : "Missing Abstract",
+    "description" : "The proposal has no Abstract section. Add an Abstract before the Introduction and keep it between one-third and one-half page, summarising the problem, motivation, objectives, and planned work."
+  }, {
+    "severity" : "MAJOR",
+    "category" : "LOGIC",
+    "title" : "Problem Section Introduces a Solution",
+    "description" : "The Problem section proposes a concrete solution instead of describing only the problem and its consequences. Move this sentence to the Motivation or Objective section, and keep the Problem section focused on stakeholders, deficiencies, and negative effects.",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "Problem",
+      "quote" : "A **self-service platform that arms the workflow engine of Keycloak with an expiry date at grant time would end this accumulation**."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "WRITING",
+    "title" : "Objective Uses Double Verbs",
+    "description" : "The second high-level objective uses two coordinated action verbs, and its subsection heading repeats the same issue. Replace it with one primary action, for example “Provide Connectors with Expiry” or “Implement Expiring Connectors,” and align the bullet and subsection heading.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Objective",
+      "quote" : "• **Design and implement** connectors with expiry"
+    }, {
+      "page" : 5,
+      "section" : "4.2 Design and Implement Connectors with Expiry",
+      "quote" : "4.2 **Design and Implement** Connectors with Expiry"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "METHODOLOGY",
+    "title" : "Schedule Contains Thesis-Writing Tasks",
+    "description" : "Iteration 7 is dedicated to thesis writing and presentation preparation, which is outside the required development- and research-focused schedule. Replace it with a final vertically integrated validation or evaluation increment; handle writing and presentation work outside the proposal schedule.",
+    "locations" : [ {
+      "page" : 7,
+      "section" : "Schedule",
+      "quote" : "• Iteration 7 (18–31 March): **Write the thesis and prepare the final presentation**."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "CITATION",
+    "title" : "Non-Peer-Reviewed Documentation in Bibliography",
+    "description" : "The bibliography contains a Keycloak administration guide, which is an online documentation source rather than a peer-reviewed publication. Remove it from the bibliography and retain the URL as a footnote where it is cited.",
+    "locations" : [ {
+      "page" : 8,
+      "section" : "Bibliography",
+      "quote" : "[Key26] Keycloak Authors, **“Keycloak Server Administration Guide.”** Accessed: Oct. 18, 2026. [Online]. Available: https://www.keycloak.org/docs/"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "COMPLETENESS",
+    "title" : "AI Statement Lacks Review Confirmation",
+    "description" : "The AI transparency statement identifies the tool, purpose, and sections, but it does not confirm that the author carefully checked all AI-generated text. Add an explicit first-person sentence confirming that every AI-generated text and artefact was reviewed for correctness and coherence.",
+    "locations" : [ {
+      "page" : 10,
+      "section" : "Transparency in the Use of AI Tools",
+      "quote" : "I used the following generative artificial intelligence (AI) tool while preparing this proposal."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "FIGURES",
+    "title" : "Figure 2 Caption Is Not Informative",
+    "description" : "Figure 2 has a generic caption that does not explain the depicted components, interfaces, data flows, or the architectural significance. Replace it with a longer, informative caption describing how the management UI, API, connectors, Keycloak, LDAP bridge, Linux hosts, Slack, GitHub, and database interact.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "4.2 Design and Implement Connectors with Expiry",
+      "quote" : "Figure 2: **System Architecture**"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "CITATION",
+    "title" : "Citation Placed After Full Stop",
+    "description" : "The citation appears after the sentence-ending full stop. Move the citation before the full stop to match the citation convention used elsewhere, producing “...temporal role-based access control model [BBF01].”",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Motivation",
+      "quote" : "Bertino et al. attach enabling and disabling events to roles in their temporal model**. [BBF01]**"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "WRITING",
+    "title" : "Contraction Used",
+    "description" : "The proposal uses a contraction. Replace “doesn’t” with “does not” to comply with the no-contractions rule.",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "Problem",
+      "quote" : "The current process **doesn’t** scale and is the worst bottleneck of the chair."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "STRUCTURE",
+    "title" : "Introduction Lacks Text Before Its First Subsection",
+    "description" : "The Introduction jumps directly to subsection 1.1 without introductory prose. Add a short paragraph after the Introduction heading that previews the setting and existing infrastructure discussed in the subsections.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Introduction",
+      "quote" : "1 Introduction\n**1.1 Setting**"
+    } ]
+  } ]
+}

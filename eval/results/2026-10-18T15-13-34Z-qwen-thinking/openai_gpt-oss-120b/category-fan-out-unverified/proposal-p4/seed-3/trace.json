@@ -1,0 +1,327 @@
+{
+  "categories" : [ {
+    "category" : "STRUCTURE",
+    "generated" : [ {
+      "severity" : "CRITICAL",
+      "category" : "STRUCTURE",
+      "title" : "Missing Abstract Section",
+      "description" : "The proposal does not contain an Abstract section, which is required."
+    }, {
+      "severity" : "MAJOR",
+      "category" : "COMPLETENESS",
+      "title" : "Proposal Exceeds Maximum Length",
+      "description" : "The proposal spans 10 pages, exceeding the allowed 4-6 pages of text.",
+      "locations" : [ {
+        "page" : 1,
+        "quote" : "=== PAGE 1 ==="
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "CRITICAL",
+      "category" : "STRUCTURE",
+      "title" : "Missing Abstract Section",
+      "description" : "The proposal does not contain an Abstract section, which is required."
+    }, {
+      "severity" : "MAJOR",
+      "category" : "COMPLETENESS",
+      "title" : "Proposal Exceeds Maximum Length",
+      "description" : "The proposal spans 10 pages, exceeding the allowed 4-6 pages of text.",
+      "locations" : [ {
+        "page" : 1,
+        "quote" : "=== PAGE 1 ==="
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "PROBLEM_MOTIVATION_OBJECTIVES",
+    "generated" : [ {
+      "severity" : "CRITICAL",
+      "category" : "LOGIC",
+      "title" : "Problem section presents a solution",
+      "description" : "The Problem section includes a proposed self‑service platform, which is a solution rather than just describing the problem and its negative consequences.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "... **A self‑service platform that arms the workflow engine of Keycloak with an expiry date at grant time would end this accumulation**."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Objectives contain double verbs",
+      "description" : "Several objective statements use two verbs (e.g., “Design and implement”), which violates the guideline that each objective should be expressed in a single action form.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Objectives",
+        "quote" : "•   **Design and implement** connectors with expiry"
+      }, {
+        "page" : 5,
+        "section" : "Objectives",
+        "quote" : "4.2 **Design and Implement** Connectors with Expiry"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "CRITICAL",
+      "category" : "LOGIC",
+      "title" : "Problem section presents a solution",
+      "description" : "The Problem section includes a proposed self‑service platform, which is a solution rather than just describing the problem and its negative consequences.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "... **A self‑service platform that arms the workflow engine of Keycloak with an expiry date at grant time would end this accumulation**."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Objectives contain double verbs",
+      "description" : "Several objective statements use two verbs (e.g., “Design and implement”), which violates the guideline that each objective should be expressed in a single action form.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Objectives",
+        "quote" : "•   **Design and implement** connectors with expiry"
+      }, {
+        "page" : 5,
+        "section" : "Objectives",
+        "quote" : "4.2 **Design and Implement** Connectors with Expiry"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "BIBLIOGRAPHY",
+    "generated" : [ {
+      "severity" : "CRITICAL",
+      "category" : "CITATION",
+      "title" : "Non‑peer‑reviewed source in bibliography",
+      "description" : "The bibliography includes an entry [Key26] which is an online documentation guide and not a peer‑reviewed scientific publication; internet sources must be placed in footnotes, not the bibliography.",
+      "locations" : [ {
+        "page" : 8,
+        "section" : "Bibliography",
+        "quote" : "[Key26] **Keycloak Authors, “Keycloak Server Administration Guide.”** Accessed: Oct. 18, 2026. [Online]. Available: https://www.keycloak.org/docs/latest/server_admin/"
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "CITATION",
+      "title" : "Citation placed after period",
+      "description" : "The citation [SMJ01] appears after the period of the author abbreviation, violating the rule that citations must be placed before the full stop of the sentence.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "Schaad    et  al. **[SMJ01]** and   Kern   et  al."
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "CRITICAL",
+      "category" : "CITATION",
+      "title" : "Non‑peer‑reviewed source in bibliography",
+      "description" : "The bibliography includes an entry [Key26] which is an online documentation guide and not a peer‑reviewed scientific publication; internet sources must be placed in footnotes, not the bibliography.",
+      "locations" : [ {
+        "page" : 8,
+        "section" : "Bibliography",
+        "quote" : "[Key26] **Keycloak Authors, “Keycloak Server Administration Guide.”** Accessed: Oct. 18, 2026. [Online]. Available: https://www.keycloak.org/docs/latest/server_admin/"
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "CITATION",
+      "title" : "Citation placed after period",
+      "description" : "The citation [SMJ01] appears after the period of the author abbreviation, violating the rule that citations must be placed before the full stop of the sentence.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "Schaad    et  al. **[SMJ01]** and   Kern   et  al."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "FIGURES",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "FIGURES",
+      "title" : "Figure 2 caption is too short and non‑informative",
+      "description" : "The caption for Figure 2 consists only of a brief generic label “System Architecture”, which does not provide a detailed, informative description as required.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Design and Implement Connectors with Expiry",
+        "quote" : "Figure  2: **System Architecture**"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "FIGURES",
+      "title" : "Figure 2 caption is too short and non‑informative",
+      "description" : "The caption for Figure 2 consists only of a brief generic label “System Architecture”, which does not provide a detailed, informative description as required.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Design and Implement Connectors with Expiry",
+        "quote" : "Figure  2: **System Architecture**"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STYLE",
+    "generated" : [ {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Contraction used",
+      "description" : "Contractions are prohibited; replace \"doesn't\" with \"does not\".",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "The current process **doesn’t** scale and is the worst bottleneck of the chair."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Superlative used",
+      "description" : "Superlatives are prohibited; replace \"worst\" with a neutral description.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "The current process doesn’t scale and is the **worst** bottleneck of the chair."
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Contraction used",
+      "description" : "Contractions are prohibited; replace \"doesn't\" with \"does not\".",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "The current process **doesn’t** scale and is the worst bottleneck of the chair."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Superlative used",
+      "description" : "Superlatives are prohibited; replace \"worst\" with a neutral description.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "The current process doesn’t scale and is the **worst** bottleneck of the chair."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STRUCTURE",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Missing introductory text before first subsection in Introduction",
+      "description" : "Section 1 (Introduction) jumps directly to subsection 1.1 without any introductory paragraph, violating the guideline that every section must include introductory text before its first subsection.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Introduction",
+        "quote" : "**1  Introduction**"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Missing introductory text before first subsection in Introduction",
+      "description" : "Section 1 (Introduction) jumps directly to subsection 1.1 without any introductory paragraph, violating the guideline that every section must include introductory text before its first subsection.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Introduction",
+        "quote" : "**1  Introduction**"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_FORMATTING",
+    "generated" : [ {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Inconsistent spelling of “workflow”",
+      "description" : "The term “workflow” appears with two different spellings (“workfow” and “workflow”). Use a single consistent spelling throughout the proposal.",
+      "locations" : [ {
+        "page" : 4,
+        "quote" : "arms the **workfow** engine of Keycloak"
+      }, {
+        "page" : 6,
+        "quote" : "when the **workflow** engine fails"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Inconsistent spelling of “workflow”",
+      "description" : "The term “workflow” appears with two different spellings (“workfow” and “workflow”). Use a single consistent spelling throughout the proposal.",
+      "locations" : [ {
+        "page" : 4,
+        "quote" : "arms the **workfow** engine of Keycloak"
+      }, {
+        "page" : 6,
+        "quote" : "when the **workflow** engine fails"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "AI_TRANSPARENCY",
+    "generated" : [ {
+      "severity" : "CRITICAL",
+      "category" : "WRITING",
+      "title" : "Missing review confirmation in AI Transparency Statement",
+      "description" : "The AI transparency statement does not include the required sentence confirming that the author has carefully checked all AI‑generated text.",
+      "locations" : [ {
+        "page" : 10,
+        "section" : "AI Transparency Statement",
+        "quote" : "I used the following generative artificial intelligence (AI) tool while preparing this proposal. ... (table omitted) **[missing required review confirmation sentence]**"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "CRITICAL",
+      "category" : "WRITING",
+      "title" : "Missing review confirmation in AI Transparency Statement",
+      "description" : "The AI transparency statement does not include the required sentence confirming that the author has carefully checked all AI‑generated text.",
+      "locations" : [ {
+        "page" : 10,
+        "section" : "AI Transparency Statement",
+        "quote" : "I used the following generative artificial intelligence (AI) tool while preparing this proposal. ... (table omitted) **[missing required review confirmation sentence]**"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "SCHEDULE",
+    "generated" : [ {
+      "severity" : "CRITICAL",
+      "category" : "OTHER",
+      "title" : "Thesis writing tasks included in schedule",
+      "description" : "The schedule contains an iteration dedicated to writing the thesis and preparing the final presentation, which is prohibited by the schedule quality rules.",
+      "locations" : [ {
+        "page" : 7,
+        "section" : "Schedule",
+        "quote" : "Iteration 7 (18–31 March): **Write the thesis and prepare the final presentation**."
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "CRITICAL",
+      "category" : "OTHER",
+      "title" : "Thesis writing tasks included in schedule",
+      "description" : "The schedule contains an iteration dedicated to writing the thesis and preparing the final presentation, which is prohibited by the schedule quality rules.",
+      "locations" : [ {
+        "page" : 7,
+        "section" : "Schedule",
+        "quote" : "Iteration 7 (18–31 March): **Write the thesis and prepare the final presentation**."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  } ],
+  "categoryFailures" : { }
+}

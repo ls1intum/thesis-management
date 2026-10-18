@@ -1,0 +1,40 @@
+{
+  "job": "label-proposal-p1-pass3-15",
+  "answer": {
+    "judgements": [
+      {
+        "id": "F7bbf0f7d42",
+        "rule": "R1",
+        "reason": "R1 requires Introduction, Motivation and Objective sections. The document only has Problem Statement, Proposed Solution, Related Work, System Requirements, Expected Findings and Time Schedule, so all three are missing.",
+        "label": "valid"
+      },
+      {
+        "id": "F5f8dc8927a",
+        "rule": "R10",
+        "reason": "R10 requires every figure to be referenced in the text. The running text never mentions Figure 1 and only says 'This process is illustrated in section 4.'",
+        "label": "valid"
+      },
+      {
+        "id": "F708e79a5b2",
+        "rule": "R10",
+        "reason": "R10 requires a long, informative caption. The caption of Figure 1 is a single short phrase that does not explain the numbered interactions or the actors.",
+        "label": "valid"
+      },
+      {
+        "id": "F7e1df11525",
+        "rule": "R16",
+        "reason": "R16 requires consistent terminology for the same concept. The author calls the CI component a 'CI server', 'CI service', 'CI system' and 'CI application' in different places, as the quoted passages show.",
+        "label": "valid"
+      },
+      {
+        "id": "F7212c2aad3",
+        "rule": "R1",
+        "reason": "R1 requires a Motivation section. The document has no Motivation section, only a 'Motivation/Objective' label inside the abstract. The page-0 location is wrong, but the central claim holds.",
+        "label": "valid"
+      }
+    ]
+  },
+  "costUsd": 0.11122280000000001,
+  "durationMs": 7830,
+  "model": "claude-opus-5-5[1m]"
+}

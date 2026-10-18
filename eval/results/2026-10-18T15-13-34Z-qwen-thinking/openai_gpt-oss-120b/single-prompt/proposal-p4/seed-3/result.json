@@ -1,0 +1,93 @@
+{
+  "assessment" : "NEEDS_WORK",
+  "score" : 32,
+  "summary" : "The proposal is missing a required Abstract and contains several critical structural and compliance issues, such as a problem section that proposes a solution, non‑peer‑reviewed bibliography entries, and a schedule that includes thesis writing. Additionally, the AI transparency statement is incomplete and some objectives violate wording guidelines. These major deficiencies must be addressed before the proposal can be considered acceptable.",
+  "findings" : [ {
+    "severity" : "CRITICAL",
+    "category" : "completeness",
+    "title" : "Missing Abstract",
+    "description" : "The proposal does not contain an Abstract section, which is required."
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "logic",
+    "title" : "Problem Section Contains Solution",
+    "description" : "The Problem section presents a concrete solution (a self‑service platform) instead of only describing the problem and its negative consequences.",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "Problem",
+      "quote" : "A self‑service platform that arms the workfow engine of Keycloak with an expiry date at grant time would end this accumulation."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "writing",
+    "title" : "Double Verbs in Objective",
+    "description" : "Objective bullet 2 uses two verbs (“Design and implement”), violating the single‑verb action‑form rule.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Objective",
+      "quote" : "•   Design   and   implement      connectors     with   expiry"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "completeness",
+    "title" : "Objective Subsections Too Short",
+    "description" : "Each objective subsection contains only a single paragraph; the guidelines require at least two paragraphs per subsection.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Structure Resources as an Inheriting Tree",
+      "quote" : "I will replace the fat list of hosts and channels with a resource tree whose inner nodes are folders and whose leaves each carry a binding to one target system."
+    }, {
+      "page" : 6,
+      "section" : "Design and Implement Connectors with Expiry",
+      "quote" : "A Slack channel, a GitHub team, and a Keycloak group share only the idea of membership. I will defne one connector contract that validates a binding, grants and revokes access, and optionally lists the current members, and I will implement the keycloak-group, slack-channel, github-team, and webhook connectors on it."
+    }, {
+      "page" : 6,
+      "section" : "Delegate Request Review Without Privilege Escalation",
+      "quote" : "A requester should not need to know which resources a project needs. I will build declarative request forms whose felds, visibility conditions, and rules turn answers into requests for a resource path, a level, and a duration."
+    }, {
+      "page" : 6,
+      "section" : "Automate the Recertifcation of Grants",
+      "quote" : "I will attach a recertifcation interval to each resource, which its descendants inherit, and open a campaign whenever the interval elapses."
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "citation",
+    "title" : "Non‑Peer‑Reviewed Entry in Bibliography",
+    "description" : "The bibliography includes a non‑peer‑reviewed source ([Key26] Keycloak Server Administration Guide), which must not appear in the bibliography.",
+    "locations" : [ {
+      "page" : 8,
+      "section" : "Bibliography",
+      "quote" : "[Key26] Keycloak Authors, “Keycloak Server Administration Guide.”"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "figures",
+    "title" : "Insufficient Figure Caption",
+    "description" : "Figure 2 caption is overly short and generic (“System Architecture”), lacking a descriptive explanation.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Figures",
+      "quote" : "Figure  2:  System  Architecture"
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "other",
+    "title" : "Missing AI Verification Sentence",
+    "description" : "The AI Transparency statement does not contain the required confirmation sentence that the author has carefully checked all AI‑generated text.",
+    "locations" : [ {
+      "page" : 10,
+      "section" : "Transparency",
+      "quote" : "I used the following generative artificial intelligence (AI) tool while preparing this proposal..."
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "schedule",
+    "title" : "Thesis Writing Tasks in Schedule",
+    "description" : "Iteration 7 includes thesis writing and presentation preparation, which are prohibited tasks in the schedule.",
+    "locations" : [ {
+      "page" : 7,
+      "section" : "Schedule",
+      "quote" : "Iteration 7 (18–31 March): Write the thesis and prepare the final presentation."
+    } ]
+  } ]
+}

@@ -1,0 +1,250 @@
+{
+  "job": "label-proposal-p1-pass2-05",
+  "answer": {
+    "judgements": [
+      {
+        "id": "F0981fefd4c",
+        "rule": "R7",
+        "label": "valid",
+        "reason": "R7 asks for at least 6-8 peer-reviewed publications. The bibliography lists only five entries."
+      },
+      {
+        "id": "Fc7f54772c0",
+        "rule": "R1",
+        "label": "valid",
+        "reason": "R1 requires an Objective section with subsections. The document has none; its sections are Problem Statement, Proposed Solution, Related Work, System Requirements, Expected Findings and Time Schedule."
+      },
+      {
+        "id": "F7ab5d7a0e4",
+        "rule": "R16",
+        "label": "valid",
+        "reason": "R16 requires the same concept to be named consistently. The text writes both 'CI Server' and 'CI server', and both 'VC Server' and 'VC server'."
+      },
+      {
+        "id": "F8edbf9b068",
+        "rule": "R12",
+        "label": "valid",
+        "reason": "R12 forbids sentences starting with 'Since', 'To', 'In order to' or 'As'. All the quoted openers occur, for example 'Since some Version Control...', 'To achieve this goal' and 'In order to implement this idea'."
+      },
+      {
+        "id": "F1186d6652f",
+        "rule": "R4",
+        "label": "valid",
+        "reason": "R4 allows only problems in the Problem section, with no solutions. Section 1 states a desired solution: 'it would be useful to change the student build plans after the submission date...'."
+      },
+      {
+        "id": "Fa340fec0cd",
+        "rule": "R4",
+        "label": "valid",
+        "reason": "R4 requires negative consequences for identified actors. The manual build-plan update burden in Section 1 is not tied to any actor, such as the instructor."
+      },
+      {
+        "id": "Fb95c59c074",
+        "rule": "R20",
+        "label": "valid",
+        "reason": "R20 forbids requirements-gathering tasks in the schedule. The June entries include '4th week: Requirements (parallel to prototype implementation)'."
+      },
+      {
+        "id": "F3427a1c881",
+        "rule": "R11",
+        "label": "invalid",
+        "reason": "R11 forbids filler words. 'Furthermore' and 'Additionally' are linking words that express an additive relation, so they are not filler."
+      },
+      {
+        "id": "F55d71ca699",
+        "rule": "R13",
+        "label": "valid",
+        "reason": "R13 asks for 5-8 line paragraphs. The cited one- and two-line paragraphs in Sections 4 and 5 are clearly too short."
+      },
+      {
+        "id": "Fee50a8f2b4",
+        "rule": "R20",
+        "label": "valid",
+        "reason": "R20 forbids thesis-writing tasks in the schedule. The schedule lists 'October: Writing', 'Thesis ready for review' and 'Thesis'."
+      },
+      {
+        "id": "Fd27eeb2658",
+        "rule": "R19",
+        "label": "valid",
+        "reason": "R19 requires vertically-integrated deliverables. 'Models' is a stand-alone horizontal work item, not an end-to-end increment."
+      },
+      {
+        "id": "F37ce8e9c2b",
+        "rule": "R10",
+        "label": "valid",
+        "reason": "R10 requires every figure to be referenced in the text. No sentence refers to Figure 1; the text only mentions 'section 4'."
+      },
+      {
+        "id": "F98f9541f01",
+        "rule": "R20",
+        "label": "valid",
+        "reason": "R20 forbids documentation tasks in the schedule. September lists 'Documentation for installation and confguration of Artemis with GitLab CI'."
+      },
+      {
+        "id": "F4d12f79f68",
+        "rule": "R10",
+        "label": "valid",
+        "reason": "R10 requires every figure to be referenced in the text. Figure 1 is never referenced."
+      },
+      {
+        "id": "Fb77a4cdbf0",
+        "rule": "R11",
+        "label": "valid",
+        "reason": "R11 forbids filler words. At least the intensifier 'very' in 'very cumbersome' is filler; some other listed words, such as 'additional' and 'Furthermore', are weaker examples."
+      },
+      {
+        "id": "F6e83e187e6",
+        "rule": "R13",
+        "label": "valid",
+        "reason": "R13 asks for prose rather than lists outside the schedule and objective lists. Section 4 relies on a 14-step enumerated list, which neither exception covers."
+      },
+      {
+        "id": "F70bfaf0580",
+        "rule": "R12",
+        "label": "valid",
+        "reason": "R12 forbids certain sentence starters. Sentences begin with 'Since', 'To' and 'In order to' as quoted."
+      },
+      {
+        "id": "F7c832fc465",
+        "rule": "R1",
+        "label": "valid",
+        "reason": "R1 requires a Motivation section. The document has no such section."
+      },
+      {
+        "id": "F151d649190",
+        "rule": "R17",
+        "label": "valid",
+        "reason": "R17 requires an AI transparency statement. The document contains none."
+      },
+      {
+        "id": "F13338d075e",
+        "rule": "R20",
+        "label": "valid",
+        "reason": "R20 forbids writing and documentation tasks in the schedule. The schedule contains 'Writing', 'Thesis ready for review', 'Thesis' and a documentation task."
+      },
+      {
+        "id": "F7279c71e38",
+        "rule": "R10",
+        "label": "valid",
+        "reason": "R10 requires every figure to be referenced in the text. No sentence refers to Figure 1; the text only says 'illustrated in section 4'."
+      },
+      {
+        "id": "Fa7878527ef",
+        "rule": null,
+        "label": "out_of_scope",
+        "reason": "The finding objects to first-person 'I'. No rule forbids the first person."
+      },
+      {
+        "id": "F5e383bf858",
+        "rule": "R19",
+        "label": "valid",
+        "reason": "R19 requires measurable deliverables. 'Models', 'Revise models with concrete implementation' and 'Implement improvements' do not name verifiable outcomes."
+      },
+      {
+        "id": "Fd4fd1a5f1d",
+        "rule": "R7",
+        "label": "valid",
+        "reason": "R7 asks for at least 6-8 publications. Only five bibliography entries are present."
+      },
+      {
+        "id": "Fab29a36217",
+        "rule": "R12",
+        "label": "valid",
+        "reason": "R12 requires abbreviations to be defined before use. 'API' is used in the Abstract and later sections and is never defined."
+      },
+      {
+        "id": "Fd69325a2e1",
+        "rule": "R12",
+        "label": "valid",
+        "reason": "R12 requires abbreviations to be defined before use. 'API' is never expanded."
+      },
+      {
+        "id": "F5adb44b5f1",
+        "rule": "R17",
+        "label": "valid",
+        "reason": "R17 requires an AI transparency statement. The document has none."
+      },
+      {
+        "id": "Fdf040f03a5",
+        "rule": "R7",
+        "label": "valid",
+        "reason": "R7 asks for at least 6-8 publications. Only five are listed."
+      },
+      {
+        "id": "Fc4f7a91ebc",
+        "rule": "R7",
+        "label": "valid",
+        "reason": "R7 asks for at least 6-8 publications. The bibliography has five entries."
+      },
+      {
+        "id": "Fde63c10f81",
+        "rule": "R1",
+        "label": "valid",
+        "reason": "R1 requires a Motivation section. It is missing."
+      },
+      {
+        "id": "Fff7ff71359",
+        "rule": "R19",
+        "label": "valid",
+        "reason": "R19 requires 2-4 week iterations with vertically-integrated deliverables. The schedule is a month-by-month list of single-week, layered tasks."
+      },
+      {
+        "id": "F5b3bcfd60b",
+        "rule": "R9",
+        "label": "valid",
+        "reason": "R9 requires at least two figures. The proposal contains only Figure 1."
+      },
+      {
+        "id": "F6a63e96a10",
+        "rule": "R11",
+        "label": "valid",
+        "reason": "R11 requires active voice. Passive constructions occur, such as 'The CI server should be migrated' and 'The student base repository is copied'."
+      },
+      {
+        "id": "F4c18e2e070",
+        "rule": "R13",
+        "label": "invalid",
+        "reason": "R13 asks for one idea per paragraph. Both sentences present further-research opportunities that follow from the stated lead sentence, so the paragraph keeps to one idea."
+      },
+      {
+        "id": "Fd7df127ce1",
+        "rule": "R13",
+        "label": "valid",
+        "reason": "R13 asks for 5-8 line paragraphs. Several Problem Statement paragraphs and Abstract parts span only 2-3 lines."
+      },
+      {
+        "id": "F8c7a37045e",
+        "rule": "R13",
+        "label": "valid",
+        "reason": "R13 asks for prose rather than lists. Section 4 is mainly a 14-item list framed by two one-line sentences."
+      },
+      {
+        "id": "Fa537ff4a5c",
+        "rule": "R16",
+        "label": "valid",
+        "reason": "R16 requires consistent terminology. The author uses 'CI service' and 'CI server' interchangeably for the thing being migrated."
+      },
+      {
+        "id": "F4ea61eabf4",
+        "rule": "R20",
+        "label": "valid",
+        "reason": "R20 forbids documentation and thesis-writing tasks in the schedule. The schedule includes documentation, 'Writing' and 'Thesis' items."
+      },
+      {
+        "id": "F39e99eb1e7",
+        "rule": "R13",
+        "label": "valid",
+        "reason": "R13 asks for 5-8 line paragraphs. The one-line paragraph introducing the scenario is clearly too short."
+      },
+      {
+        "id": "F285deca834",
+        "rule": "R10",
+        "label": "valid",
+        "reason": "R10 requires a long, informative caption. The caption of Figure 1 is a single line that only names the figure."
+      }
+    ]
+  },
+  "costUsd": 0.2956508,
+  "durationMs": 42310,
+  "model": "claude-opus-5-5[1m]"
+}

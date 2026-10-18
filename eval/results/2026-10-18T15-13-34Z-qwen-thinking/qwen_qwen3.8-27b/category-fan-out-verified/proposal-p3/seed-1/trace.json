@@ -1,0 +1,262 @@
+{
+  "categories" : [ {
+    "category" : "STRUCTURE",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "PROBLEM_MOTIVATION_OBJECTIVES",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "BIBLIOGRAPHY",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "FIGURES",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STYLE",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Excessive use of first-person singular 'I' (≈25 occurrences)",
+      "description" : "The guidelines explicitly state to avoid 'I' and to use 'we' sparingly, only for the thesis approach. The proposal uses first-person singular 'I' approximately 25 times (e.g., 'I develop,' 'I evaluate,' 'I model,' 'I implement,' 'I reach this objective,' 'I divide,' 'I deliver,' 'I used'). The student should restructure most of these sentences to identify the actor/subject without 'I', or replace the thesis-approach instances with 'we' used sparingly. For the schedule items, consider nominal or passive-free constructions (e.g., 'Iteration 1 delivers…') or a single introductory 'We deliver…' to reduce repetition.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "**I** develop a self-service platform on which every grant carries an expiry date from the moment somebody requests it."
+      }, {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "**I** evaluate the platform at the chair on correctness, administrative efort, and extensibility."
+      }, {
+        "page" : 4,
+        "section" : "Objective",
+        "quote" : "In this thesis, **I** develop a self-service platform on which requesters ask for time-limited access"
+      }, {
+        "page" : 4,
+        "section" : "Objective",
+        "quote" : "Following the object-oriented software engineering method of Bruegge and Dutoit, **I** pursue four objectives:"
+      }, {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "**I** model the resources as a tree whose folders pass maintainership, audit policy, and grants down to leaves bound to target systems"
+      }, {
+        "page" : 6,
+        "section" : "Objective",
+        "quote" : "**I** implement the keycloak-group, slack-channel, github-team, and webhook connectors, whose credentials administrators configure at runtime"
+      }, {
+        "page" : 6,
+        "section" : "Objective",
+        "quote" : "**I** reach this objective when the webhook connector, written after **I** freeze the framework, needs one new class and one registry entry."
+      }, {
+        "page" : 7,
+        "section" : "Objective",
+        "quote" : "**I** evaluate correctness with an automated scenario that provisions SSH, Slack, and GitHub access from one approval."
+      }, {
+        "page" : 8,
+        "section" : "Objective",
+        "quote" : "Keycloak gates its workflow API on a realm-wide administrative role that maintainers must not hold, so **I** split each decision into a review step"
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "**I** divide the work into six iterations of four weeks, each ending with a vertically integrated increment"
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "Iteration 1, 1–28 October (Objective 1): **I** deliver the Keycloak realm with OpenID Connect login, SSH key self-service, and the resource tree with inherited maintainers."
+      }, {
+        "page" : 12,
+        "section" : "AI Transparency Statement",
+        "quote" : "**I** used the following generative artificial intelligence (AI) tool while preparing this proposal."
+      }, {
+        "page" : 12,
+        "section" : "AI Transparency Statement",
+        "quote" : "**I** take full responsibility for the content of this proposal."
+      } ]
+    } ],
+    "ungrounded" : [ {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Excessive use of first-person singular 'I' (≈25 occurrences)",
+      "description" : "The guidelines explicitly state to avoid 'I' and to use 'we' sparingly, only for the thesis approach. The proposal uses first-person singular 'I' approximately 25 times (e.g., 'I develop,' 'I evaluate,' 'I model,' 'I implement,' 'I reach this objective,' 'I divide,' 'I deliver,' 'I used'). The student should restructure most of these sentences to identify the actor/subject without 'I', or replace the thesis-approach instances with 'we' used sparingly. For the schedule items, consider nominal or passive-free constructions (e.g., 'Iteration 1 delivers…') or a single introductory 'We deliver…' to reduce repetition.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "**I** develop a self-service platform on which every grant carries an expiry date from the moment somebody requests it."
+      }, {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "**I** evaluate the platform at the chair on correctness, administrative efort, and extensibility."
+      }, {
+        "page" : 4,
+        "section" : "Objective",
+        "quote" : "In this thesis, **I** develop a self-service platform on which requesters ask for time-limited access"
+      }, {
+        "page" : 4,
+        "section" : "Objective",
+        "quote" : "Following the object-oriented software engineering method of Bruegge and Dutoit, **I** pursue four objectives:"
+      }, {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "**I** model the resources as a tree whose folders pass maintainership, audit policy, and grants down to leaves bound to target systems"
+      }, {
+        "page" : 6,
+        "section" : "Objective",
+        "quote" : "**I** implement the keycloak-group, slack-channel, github-team, and webhook connectors, whose credentials administrators configure at runtime"
+      }, {
+        "page" : 6,
+        "section" : "Objective",
+        "quote" : "**I** reach this objective when the webhook connector, written after **I** freeze the framework, needs one new class and one registry entry."
+      }, {
+        "page" : 7,
+        "section" : "Objective",
+        "quote" : "**I** evaluate correctness with an automated scenario that provisions SSH, Slack, and GitHub access from one approval."
+      }, {
+        "page" : 8,
+        "section" : "Objective",
+        "quote" : "Keycloak gates its workflow API on a realm-wide administrative role that maintainers must not hold, so **I** split each decision into a review step"
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "**I** divide the work into six iterations of four weeks, each ending with a vertically integrated increment"
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "Iteration 1, 1–28 October (Objective 1): **I** deliver the Keycloak realm with OpenID Connect login, SSH key self-service, and the resource tree with inherited maintainers."
+      }, {
+        "page" : 12,
+        "section" : "AI Transparency Statement",
+        "quote" : "**I** used the following generative artificial intelligence (AI) tool while preparing this proposal."
+      }, {
+        "page" : 12,
+        "section" : "AI Transparency Statement",
+        "quote" : "**I** take full responsibility for the content of this proposal."
+      } ]
+    } ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STRUCTURE",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_FORMATTING",
+    "generated" : [ {
+      "severity" : "MINOR",
+      "category" : "OTHER",
+      "title" : "Inconsistent terminology: 'drift check' vs. 'drift report'",
+      "description" : "The mechanism that lists memberships outliving their grants is called a 'drift check' in Section 4.2 but a 'drift report' in the Schedule (Iteration 5). Both use the verb 'lists' with the same object, indicating they refer to the same artifact. Pick one term and use it throughout.",
+      "locations" : [ {
+        "page" : 7,
+        "section" : "4.2 Enforce an Expiry Date on Every Grant",
+        "quote" : "A **drift check** lists every membership that outlives its grant."
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "I deliver recertifcation campaigns with escalation, the **drift report**, and e-mail notifcations. Outcome: an ignored campaign escalates, and the **drift report** lists a membership that outlives its grant."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "OTHER",
+      "title" : "Inconsistent terminology: 'administrative rights' vs. 'administrative privileges'",
+      "description" : "The same concept (the level of authority needed to manage systems) is called 'administrative rights' in the Problem section and 'administrative privileges' in the Figure 1 caption. Unify to one term throughout the author's prose.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "The common workaround hands maintainers full **administrative rights**, which violates the principle of least privilege"
+      }, {
+        "page" : 5,
+        "section" : "4 Objective",
+        "quote" : "a maintainer grants a reviewed request alone when it touches no binding that requires **administrative privileges**"
+      } ]
+    } ],
+    "ungrounded" : [ {
+      "severity" : "MINOR",
+      "category" : "OTHER",
+      "title" : "Inconsistent terminology: 'drift check' vs. 'drift report'",
+      "description" : "The mechanism that lists memberships outliving their grants is called a 'drift check' in Section 4.2 but a 'drift report' in the Schedule (Iteration 5). Both use the verb 'lists' with the same object, indicating they refer to the same artifact. Pick one term and use it throughout.",
+      "locations" : [ {
+        "page" : 7,
+        "section" : "4.2 Enforce an Expiry Date on Every Grant",
+        "quote" : "A **drift check** lists every membership that outlives its grant."
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "I deliver recertifcation campaigns with escalation, the **drift report**, and e-mail notifcations. Outcome: an ignored campaign escalates, and the **drift report** lists a membership that outlives its grant."
+      } ]
+    } ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MINOR",
+      "category" : "OTHER",
+      "title" : "Inconsistent terminology: 'administrative rights' vs. 'administrative privileges'",
+      "description" : "The same concept (the level of authority needed to manage systems) is called 'administrative rights' in the Problem section and 'administrative privileges' in the Figure 1 caption. Unify to one term throughout the author's prose.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "The common workaround hands maintainers full **administrative rights**, which violates the principle of least privilege"
+      }, {
+        "page" : 5,
+        "section" : "4 Objective",
+        "quote" : "a maintainer grants a reviewed request alone when it touches no binding that requires **administrative privileges**"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "AI_TRANSPARENCY",
+    "generated" : [ {
+      "severity" : "MINOR",
+      "category" : "COMPLETENESS",
+      "title" : "Review confirmation sentence omits the explicit purpose clause",
+      "description" : "The guidelines require language similar to 'I have carefully checked all texts created with these tools to ensure that they are correct and make sense.' The current statement says 'I carefully checked all AI-generated text, revised it where necessary, verified every citation against the original publication, and compiled and inspected every diagram.' While the checking is confirmed, the explicit purpose clause 'to ensure that they are correct and make sense' is absent. The student should add this phrasing (or a close equivalent) to the confirmation sentence so it reads, for example: 'I have carefully checked all texts created with these tools to ensure that they are correct and make sense.'",
+      "locations" : [ {
+        "page" : 12,
+        "section" : "Transparency in the Use of AI Tools",
+        "quote" : "I carefully checked all AI-generated text, revised it where necessary, verified every citation against the original publication, and compiled and inspected every diagram."
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ {
+      "finding" : {
+        "severity" : "MINOR",
+        "category" : "COMPLETENESS",
+        "title" : "Review confirmation sentence omits the explicit purpose clause",
+        "description" : "The guidelines require language similar to 'I have carefully checked all texts created with these tools to ensure that they are correct and make sense.' The current statement says 'I carefully checked all AI-generated text, revised it where necessary, verified every citation against the original publication, and compiled and inspected every diagram.' While the checking is confirmed, the explicit purpose clause 'to ensure that they are correct and make sense' is absent. The student should add this phrasing (or a close equivalent) to the confirmation sentence so it reads, for example: 'I have carefully checked all texts created with these tools to ensure that they are correct and make sense.'",
+        "locations" : [ {
+          "page" : 12,
+          "section" : "Transparency in the Use of AI Tools",
+          "quote" : "I carefully checked all AI-generated text, revised it where necessary, verified every citation against the original publication, and compiled and inspected every diagram."
+        } ]
+      },
+      "reason" : "The rules only require that 'the statement confirms the author carefully checked all AI-generated text'; the specific purpose clause 'to ensure that they are correct and make sense' is not stated anywhere in the given rules, making this an invented requirement."
+    } ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "SCHEDULE",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  } ],
+  "categoryFailures" : { }
+}

@@ -1,0 +1,11 @@
+{
+  "strategy" : "SinglePromptReviewer",
+  "llmCalls" : 1,
+  "toolCalls" : 0,
+  "callDepth" : 1,
+  "promptTokens" : 12011,
+  "completionTokens" : 12209,
+  "categoriesCovered" : 9,
+  "categoriesTotal" : 9,
+  "wallMillis" : 222232
+}

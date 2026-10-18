@@ -1,0 +1,250 @@
+{
+  "job": "label-proposal-p2-pass2-08",
+  "answer": {
+    "judgements": [
+      {
+        "id": "F25f18524a0",
+        "rule": "R11",
+        "reason": "R11 forbids filler words. 'Moreover', 'Additionally' and 'In addition' are connectives that state a logical relation, so they are not filler words.",
+        "label": "invalid"
+      },
+      {
+        "id": "F339eaf927a",
+        "rule": "R17",
+        "reason": "R17 requires the statement to name the sections involved. The statement names tools and purposes but no proposal sections.",
+        "label": "valid"
+      },
+      {
+        "id": "F326512362b",
+        "rule": "R20",
+        "reason": "R20 forbids documentation tasks in the schedule, and Iteration 9 lists 'Documentation'.",
+        "label": "valid"
+      },
+      {
+        "id": "F57b53a02d6",
+        "rule": "R11",
+        "reason": "R11 requires active voice. 'until the proposal is accepted' and 'no LLM-generated feedback is produced' are passive, although some of the other quoted sentences are not.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd29da3355b",
+        "rule": "R13",
+        "reason": "R13 sets paragraphs at 5-8 lines with one idea each. This Motivation paragraph runs about 11 lines across pages 4-5 and covers several ideas.",
+        "label": "valid"
+      },
+      {
+        "id": "F3e7e7929ac",
+        "rule": "R12",
+        "reason": "R12 forbids starting a sentence with 'As', and the Motivation sentence 'As Figure 1 illustrates, ...' does exactly that.",
+        "label": "valid"
+      },
+      {
+        "id": "F704dfff463",
+        "rule": "R2",
+        "reason": "R2 limits the Motivation to 3/4 page. It fills about 22 lines against roughly 33 lines on a full page, so it stays within the limit.",
+        "label": "invalid"
+      },
+      {
+        "id": "F4e2d42f079",
+        "rule": null,
+        "reason": "No rule covers whether schedule dates match the stated start date.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F7682c0404e",
+        "rule": "R19",
+        "reason": "R19 requires measurable, vertically integrated deliverables. 'Review the system and check for bugs' is a vague test-and-fix phase with no measurable deliverable.",
+        "label": "valid"
+      },
+      {
+        "id": "F036b733dc3",
+        "rule": "R11",
+        "reason": "R11 forbids filler words. 'Moreover' is a logical connective, not a filler word.",
+        "label": "invalid"
+      },
+      {
+        "id": "F3876baaa48",
+        "rule": "R11",
+        "reason": "R11 requires active voice. 'the thesis-lifecycle portal used by around 50 research groups' is a passive participle construction; it appears in the Abstract on page 2, not in Section 4.1 as cited.",
+        "label": "valid"
+      },
+      {
+        "id": "F451c36cefb",
+        "rule": "R13",
+        "reason": "R13 sets paragraphs at 5-8 lines with one idea each. The first paragraph of Section 4.1 runs about 11 lines and mixes the preprocessing pipeline with the ethical argument.",
+        "label": "valid"
+      },
+      {
+        "id": "F9b2ebfd81d",
+        "rule": "R20",
+        "reason": "R20 forbids documentation tasks in the schedule, and Iteration 9 includes 'Documentation'.",
+        "label": "valid"
+      },
+      {
+        "id": "Fe9a64910c7",
+        "rule": "R19",
+        "reason": "R19 requires measurable deliverables. The evaluation items are paired with concrete prototype implementations of the setups being compared, so they are not a clear breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fc28dfa9d5b",
+        "rule": null,
+        "reason": "No rule covers internal consistency of schedule dates.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Fe008b6418d",
+        "rule": "R15",
+        "reason": "R15 requires title case. Capitalizing the four-letter preposition 'With' is acceptable in common title-case styles such as APA, so this is not a clear breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "F4190cdc0a5",
+        "rule": "R2",
+        "reason": "R2 limits the proposal to 4-6 pages. Without figures and the schedule, the body text fills about 6 pages, which is at the limit rather than clearly over it.",
+        "label": "invalid"
+      },
+      {
+        "id": "F61ad0db4c3",
+        "rule": "R11",
+        "reason": "R11 forbids filler words. 'Also', 'Moreover', 'Additionally' and 'In addition' are ordinary connectives, not filler words.",
+        "label": "invalid"
+      },
+      {
+        "id": "F4c73ac020f",
+        "rule": "R19",
+        "reason": "R19 requires vertically integrated deliverables. Iteration 1 only modularizes Thesis Management and Iteration 2 builds a pipeline, so neither delivers an end-to-end feature.",
+        "label": "valid"
+      },
+      {
+        "id": "F6ac50450ae",
+        "rule": "R19",
+        "reason": "R19 requires measurable deliverables. The bare 'Documentation' item names no measurable outcome.",
+        "label": "valid"
+      },
+      {
+        "id": "F6907b8502b",
+        "rule": "R15",
+        "reason": "R15 requires title case. Capitalizing 'With' in a heading is acceptable in common title-case styles, so this is not a clear breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "Faecf40ba8e",
+        "rule": "R20",
+        "reason": "R20 forbids documentation tasks in the schedule, and Iteration 9 lists 'Documentation'.",
+        "label": "valid"
+      },
+      {
+        "id": "Fee4c74cf03",
+        "rule": "R2",
+        "reason": "R2 limits the Problem section to 3/4 page. It fills about 28 lines (20 on page 3 and 8 on page 4), roughly 0.85 of a full page.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc0423e9733",
+        "rule": null,
+        "reason": "No rule covers whether schedule dates match the thesis start date.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F28d41df53e",
+        "rule": "R7",
+        "reason": "R7 requires at least 6-8 peer-reviewed publications, and the bibliography lists only five.",
+        "label": "valid"
+      },
+      {
+        "id": "F1b6fb8a849",
+        "rule": "R3",
+        "reason": "R3 requires at least two paragraphs per objective subsection. Subsection 4.1 has two paragraphs; the second begins 'This approach supports several modes...'.",
+        "label": "invalid"
+      },
+      {
+        "id": "F0261ec3287",
+        "rule": "R19",
+        "reason": "R19 requires vertically integrated deliverables. Several items, such as modularizing Thesis Management and building the core pipeline, are horizontal component work rather than end-to-end features.",
+        "label": "valid"
+      },
+      {
+        "id": "F2e541610b5",
+        "rule": "R7",
+        "reason": "R7 requires at least 6-8 peer-reviewed publications, and only five are listed.",
+        "label": "valid"
+      },
+      {
+        "id": "F325629362f",
+        "rule": "R11",
+        "reason": "R11 says to avoid superlatives. The text uses 'least disruption', 'greatest simplification' and 'what matters most'.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb3d4696a4d",
+        "rule": "R16",
+        "reason": "R16 requires consistent terminology. The same component is called 'Reviewer' in the Motivation and 'feedback tool' elsewhere.",
+        "label": "valid"
+      },
+      {
+        "id": "Fe735b36b96",
+        "rule": "R16",
+        "reason": "R16 requires consistent terminology. 'LLM-powered Reviewer' and 'feedback tool' name the same concept.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd8f1e8bcb1",
+        "rule": "R5",
+        "reason": "R5 says the Motivation must not repeat the Problem. It restates the problem with 'the repetitive, non-content-related layer of feedback that currently drains supervisors'.",
+        "label": "valid"
+      },
+      {
+        "id": "Fa7d49f5dae",
+        "rule": null,
+        "reason": "No rule forbids the first person, and R17 actually requires a first-person statement.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F263e851966",
+        "rule": "R11",
+        "reason": "R11 forbids filler words. The cited transitions express logical relations and are not filler words.",
+        "label": "invalid"
+      },
+      {
+        "id": "F1b261ab5a1",
+        "rule": "R17",
+        "reason": "R17 requires the statement to name the sections involved, and no proposal sections are named.",
+        "label": "valid"
+      },
+      {
+        "id": "F8a7e309d54",
+        "rule": null,
+        "reason": "No rule covers date consistency in the schedule.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F1c5ae92de0",
+        "rule": "R12",
+        "reason": "R12 forbids sentences starting with 'As', 'Because' or 'Since', and all three occur. The 'Because' sentence is on page 5, not page 8 as cited.",
+        "label": "valid"
+      },
+      {
+        "id": "Ff3555e03c9",
+        "rule": "R16",
+        "reason": "R16 requires consistent terminology. 'Local' and 'locally self-hosted' are explicitly linked and refer to the same option clearly, so there is no real inconsistency.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fd0f24ff7f9",
+        "rule": "R17",
+        "reason": "R17 requires the statement to name the sections involved, and the statement names none.",
+        "label": "valid"
+      },
+      {
+        "id": "F5391516a12",
+        "rule": "R17",
+        "reason": "R17 requires the statement to name the sections involved. The statement gives tools and purposes but no sections.",
+        "label": "valid"
+      }
+    ]
+  },
+  "costUsd": 0.31279080000000004,
+  "durationMs": 46652,
+  "model": "claude-opus-5-5[1m]"
+}

@@ -1,0 +1,197 @@
+saltzer1975protection:
+  type: article
+  title: The Protection of Information in Computer Systems
+  author:
+    - Saltzer, Jerome H.
+    - Schroeder, Michael D.
+  date: 1975
+  page-range: 1278-1308
+  serial-number:
+    doi: 10.1109/PROC.1975.9939
+  parent:
+    type: periodical
+    title: Proceedings of the IEEE
+    volume: 63
+    issue: 9
+
+sandhu1996role:
+  type: article
+  title: Role-Based Access Control Models
+  author:
+    - Sandhu, Ravi S.
+    - Coyne, Edward J.
+    - Feinstein, Hal L.
+    - Youman, Charles E.
+  date: 1996
+  page-range: 38-47
+  serial-number:
+    doi: 10.1109/2.485845
+  parent:
+    type: periodical
+    title: Computer
+    volume: 29
+    issue: 2
+
+sandhu1999arbac97:
+  type: article
+  title: The ARBAC97 Model for Role-Based Administration of Roles
+  author:
+    - Sandhu, Ravi
+    - Bhamidipati, Venkata
+    - Munawer, Qamar
+  date: 1999
+  page-range: 105-135
+  serial-number:
+    doi: 10.1145/300830.300839
+  parent:
+    type: periodical
+    title: ACM Transactions on Information and System Security
+    volume: 2
+    issue: 1
+
+barka2000framework:
+  type: article
+  title: Framework for Role-Based Delegation Models
+  author:
+    - Barka, Ezedin
+    - Sandhu, Ravi
+  date: 2000
+  page-range: 168-176
+  serial-number:
+    doi: 10.1109/ACSAC.2000.898870
+  parent:
+    type: proceedings
+    title: Proceedings of the 16th Annual Computer Security Applications Conference (ACSAC)
+    publisher: IEEE
+
+bertino2001trbac:
+  type: article
+  title: "TRBAC: A Temporal Role-Based Access Control Model"
+  author:
+    - Bertino, Elisa
+    - Bonatti, Piero Andrea
+    - Ferrari, Elena
+  date: 2001
+  page-range: 191-223
+  serial-number:
+    doi: 10.1145/501978.501979
+  parent:
+    type: periodical
+    title: ACM Transactions on Information and System Security
+    volume: 4
+    issue: 3
+
+joshi2005generalized:
+  type: article
+  title: A Generalized Temporal Role-Based Access Control Model
+  author:
+    - Joshi, James B. D.
+    - Bertino, Elisa
+    - Latif, Usman
+    - Ghafoor, Arif
+  date: 2005
+  page-range: 4-23
+  parent:
+    type: periodical
+    title: IEEE Transactions on Knowledge and Data Engineering
+    volume: 17
+    issue: 1
+
+schaad2001role:
+  type: article
+  title: "The Role-Based Access Control System of a European Bank: A Case Study and Discussion"
+  author:
+    - Schaad, Andreas
+    - Moffett, Jonathan
+    - Jacob, Jeremy
+  date: 2001
+  page-range: 3-9
+  parent:
+    type: proceedings
+    title: Proceedings of the 6th ACM Symposium on Access Control Models and Technologies (SACMAT)
+    publisher: ACM
+
+kern2002observations:
+  type: article
+  title: Observations on the Role Life-Cycle in the Context of Enterprise Security Management
+  author:
+    - Kern, Axel
+    - Kuhlmann, Martin
+    - Schaad, Andreas
+    - Moffett, Jonathan
+  date: 2002
+  page-range: 43-51
+  serial-number:
+    doi: 10.1145/507711.507717
+  parent:
+    type: proceedings
+    title: Proceedings of the 7th ACM Symposium on Access Control Models and Technologies (SACMAT)
+    publisher: ACM
+
+beautement2008compliance:
+  type: article
+  title: "The Compliance Budget: Managing Security Behaviour in Organisations"
+  author:
+    - Beautement, Adam
+    - Sasse, M. Angela
+    - Wonham, Mike
+  date: 2008
+  page-range: 47-58
+  serial-number:
+    doi: 10.1145/1595676.1595684
+  parent:
+    type: proceedings
+    title: Proceedings of the 2008 New Security Paradigms Workshop (NSPW)
+    publisher: ACM
+
+bauer2009real:
+  type: article
+  title: Real Life Challenges in Access-Control Management
+  author:
+    - Bauer, Lujo
+    - Cranor, Lorrie Faith
+    - Reeder, Robert W.
+    - Reiter, Michael K.
+    - Vaniea, Kami
+  date: 2009
+  page-range: 899-908
+  serial-number:
+    doi: 10.1145/1518701.1518838
+  parent:
+    type: proceedings
+    title: Proceedings of the SIGCHI Conference on Human Factors in Computing Systems (CHI)
+    publisher: ACM
+
+hu2015attribute:
+  type: article
+  title: Attribute-Based Access Control
+  author:
+    - Hu, Vincent C.
+    - Kuhn, D. Richard
+    - Ferraiolo, David F.
+  date: 2015
+  page-range: 85-88
+  serial-number:
+    doi: 10.1109/MC.2015.33
+  parent:
+    type: periodical
+    title: Computer
+    volume: 48
+    issue: 2
+
+ucan2026generative:
+  type: article
+  title: "Generative AI in Student Writing: A Six-Level Taxonomy for Responsible Use in Higher Education Assessment"
+  author:
+    - Ucan, Serkan
+    - Demirel Ucan, Ayse
+  date: 2026
+  page-range: 63
+  serial-number:
+    doi: 10.1007/s10805-026-09739-y
+    issn: 1572-8544
+  parent:
+    type: periodical
+    title: Journal of Academic Ethics
+    volume: 24
+    issue: 2

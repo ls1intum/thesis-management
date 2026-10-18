@@ -1,0 +1,32 @@
+# proposal-p3 — agentic
+
+- **Model:** Qwen/Qwen3.8-27B
+- **Document type:** PROPOSAL
+- **Seed:** 3
+- **Assessment:** ACCEPTABLE
+- **Score:** 88
+- **Findings:** 2
+- **Cost:** 6 calls, 19 tool calls, depth 6, 121840 tokens, 287s
+- **Coverage:** 9/9 categories
+
+## Summary
+
+A strong, well-structured proposal. All required sections are present and within length limits; the Problem section isolates actors (requesters, maintainers, auditors) without proposing solutions; the Motivation is visionary without repeating the Problem; all four objectives and their subsection headings are in single-verb action form with two-paragraph subsections. The Bibliography holds 12 peer-reviewed entries in a consistent alpha citation style with citations placed before full stops, and internet sources (Keycloak, Slack, GitHub docs) are correctly footnoted. Three UML figures (use case, object, component) are all referenced in text with long descriptive captions, and no sequence diagrams are used. The AI Transparency Statement is specific (tool, model, date, level, purposes, sections) and confirms the author checked all AI-generated text. The Schedule is six 4-week vertically integrated iterations with measurable outcomes, a buffer, no requirements sprint, and no thesis-writing tasks. Two issues found: (1) MAJOR — the body text is written systematically in first-person singular "I" (abstract, Section 4, Schedule), against the group rule to avoid "I" and prefer "we"/third person; (2) MINOR — the Bruegge & Dutoit book, a legitimate bibliography source, is cited only via a commercial store-page URL footnote instead of a proper reference entry. Fixing the voice issue and adding the book entry would bring the proposal to a clean state.
+
+## Findings
+
+### 1. First-person "I" used pervasively against the group's style rule
+
+`MAJOR` · `WRITING`
+
+The group's writing-style rules say to avoid "one", "I", and "our" (use "we" sparingly, only for the thesis approach). This proposal writes the body text systematically in the first person singular: the abstract ("I develop", "I evaluate"), Section 4 ("I pursue four objectives", "I model", "I implement", "I freeze the framework", "I split each decision", "I reach this objective when…" three times), and the Schedule ("I divide the work", "I reserve", "I deliver" in every iteration). Rewrite the recurring occurrences: use "we" for the thesis approach itself or, better, third-person subjects such as "the platform" (which the text already uses heavily and fits the style). The AI Transparency Statement may legitimately stay in first person.
+
+- Page 2, Abstract: “In this thesis, **I develop** a self-service platform on which every grant carries an expiry date from the moment somebody requests it.”
+
+### 2. Scientific book cited only via a store-page URL footnote
+
+`MINOR` · `CITATION`
+
+The book by Bruegge and Dutoit is cited in the text only by name plus footnote 3, which points to a commercial store page (https://pearson.com/store/p/object-oriented-software-engineering-using-uml-patterns-and-java/P200000003319), and the Bibliography contains no entry for it. A scientific book is an acceptable bibliography source, so give it a proper entry (authors, title, edition, publisher, year, ISBN/DOI) and keep only a URL if additionally desired. As it stands, a reader cannot identify which edition is meant.
+
+- Page 4, Objective: “Following the object-oriented software engineering method of **Bruegge and Dutoit** 3, I pursue four objectives:”

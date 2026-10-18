@@ -1,0 +1,409 @@
+{
+  "categories" : [ {
+    "category" : "STRUCTURE",
+    "generated" : [ {
+      "severity" : "CRITICAL",
+      "category" : "COMPLETENESS",
+      "title" : "Missing required Abstract section",
+      "description" : "The proposal contains no Abstract section. The document proceeds directly from the title page (page 1) to Section 1 'Introduction' on page 2. The guidelines require an Abstract of 1/3 to 1/2 page that provides a high-level summary of the thesis problem, approach, and expected contribution. The student must add an Abstract section before the Introduction."
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "CRITICAL",
+      "category" : "COMPLETENESS",
+      "title" : "Missing required Abstract section",
+      "description" : "The proposal contains no Abstract section. The document proceeds directly from the title page (page 1) to Section 1 'Introduction' on page 2. The guidelines require an Abstract of 1/3 to 1/2 page that provides a high-level summary of the thesis problem, approach, and expected contribution. The student must add an Abstract section before the Introduction."
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "PROBLEM_MOTIVATION_OBJECTIVES",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Problem section presents a solution",
+      "description" : "The final sentence of the Problem section introduces and describes a concrete solution ('a self-service platform that arms the workflow engine of Keycloak with an expiry date at grant time'). The Problem section is restricted to describing problems and their negative consequences for identified actors; it must not propose solutions or alternatives. Remove this sentence or relocate the idea to the Motivation or Objective section.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "**A self-service platform that arms the workfow engine of Keycloak with an expiry date at grant time would end this accumulation.**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Objective 2 uses a double verb (\"Design and implement\")",
+      "description" : "Objective 2, both in the bullet list under Section 4 and in the heading of subsection 4.2, uses two verbs: 'Design and implement.' The guidelines explicitly prohibit double-verb formulations ('Design and implement' is given as the canonical bad example). Pick a single action verb (e.g., 'Implement connectors with expiry' or 'Design connectors with expiry') in both the bullet and the heading.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Objective",
+        "quote" : "• **Design and implement** connectors with expiry"
+      }, {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "4.2 **Design and Implement** Connectors with Expiry"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Objective subsection 4.4 contains only one paragraph",
+      "description" : "Subsection 4.4 ('Automate the Recertification of Grants') consists of a single continuous paragraph spanning pages 6–7. The guidelines require each objective subsection to be at least two paragraphs long with detailed descriptions. Split the content into at least two distinct paragraphs — for example, one covering the recertification interval, campaign mechanics, and escalation, and a second covering the audit/logging requirements and the immutable-record design.",
+      "locations" : [ {
+        "page" : 6,
+        "section" : "Objective",
+        "quote" : "I will attach a recertifcation interval to each resource, which its descendants inherit, and open a campaign whenever the interval elapses. The maintainer decides to keep or revoke each grant, and the platform stores every decision as an immutable record. Ignored campaigns escalate and may revoke grants automat-ically, but never in a campaign that reached nobody. The platform logs every"
+      }, {
+        "page" : 7,
+        "section" : "Objective",
+        "quote" : "change with the person who made it, and the admin event log of Keycloak keeps a second copy."
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Problem section presents a solution",
+      "description" : "The final sentence of the Problem section introduces and describes a concrete solution ('a self-service platform that arms the workflow engine of Keycloak with an expiry date at grant time'). The Problem section is restricted to describing problems and their negative consequences for identified actors; it must not propose solutions or alternatives. Remove this sentence or relocate the idea to the Motivation or Objective section.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "**A self-service platform that arms the workfow engine of Keycloak with an expiry date at grant time would end this accumulation.**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Objective 2 uses a double verb (\"Design and implement\")",
+      "description" : "Objective 2, both in the bullet list under Section 4 and in the heading of subsection 4.2, uses two verbs: 'Design and implement.' The guidelines explicitly prohibit double-verb formulations ('Design and implement' is given as the canonical bad example). Pick a single action verb (e.g., 'Implement connectors with expiry' or 'Design connectors with expiry') in both the bullet and the heading.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Objective",
+        "quote" : "• **Design and implement** connectors with expiry"
+      }, {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "4.2 **Design and Implement** Connectors with Expiry"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Objective subsection 4.4 contains only one paragraph",
+      "description" : "Subsection 4.4 ('Automate the Recertification of Grants') consists of a single continuous paragraph spanning pages 6–7. The guidelines require each objective subsection to be at least two paragraphs long with detailed descriptions. Split the content into at least two distinct paragraphs — for example, one covering the recertification interval, campaign mechanics, and escalation, and a second covering the audit/logging requirements and the immutable-record design.",
+      "locations" : [ {
+        "page" : 6,
+        "section" : "Objective",
+        "quote" : "I will attach a recertifcation interval to each resource, which its descendants inherit, and open a campaign whenever the interval elapses. The maintainer decides to keep or revoke each grant, and the platform stores every decision as an immutable record. Ignored campaigns escalate and may revoke grants automat-ically, but never in a campaign that reached nobody. The platform logs every"
+      }, {
+        "page" : 7,
+        "section" : "Objective",
+        "quote" : "change with the person who made it, and the admin event log of Keycloak keeps a second copy."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "BIBLIOGRAPHY",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "CITATION",
+      "title" : "Non-peer-reviewed documentation source in bibliography",
+      "description" : "The entry [Key26] ('Keycloak Server Administration Guide') is an online documentation guide (https://www.keycloak.org/docs/latest/server_admin/), not a peer-reviewed publication. Per the guidelines, internet sources and documentation links must appear as footnotes, not as bibliography entries. This entry should be removed from the bibliography and the corresponding citation in the text should be converted to a footnote (similar to how the Slack/GitHub API URLs are already handled on page 2). The remaining 12 entries are all peer-reviewed, so the minimum count is still met.",
+      "locations" : [ {
+        "page" : 8,
+        "section" : "Bibliography",
+        "quote" : "[Key26] Keycloak Authors, \"Keycloak Server Administration Guide.\" Accessed: Oct. 18, 2026. [Online]. Available: **https://www.keycloak.org/docs/latest/server_admin/**"
+      }, {
+        "page" : 2,
+        "section" : "Introduction",
+        "quote" : "its Fine-Grained Admin Permissions restrict an administrative right to a single group **[Key26]**."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "CITATION",
+      "title" : "Citation placed after the full stop",
+      "description" : "The citation [BBF01] is placed after the period at the end of a sentence: 'temporal model. [BBF01]'. Per the guidelines, citations must be placed before the full stop, e.g., 'temporal model [BBF01].'. The period should move after the citation.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Motivation",
+        "quote" : "Bertino et al. attach enabling and disabling events to roles in their temporal model. **[BBF01]**"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "CITATION",
+      "title" : "Non-peer-reviewed documentation source in bibliography",
+      "description" : "The entry [Key26] ('Keycloak Server Administration Guide') is an online documentation guide (https://www.keycloak.org/docs/latest/server_admin/), not a peer-reviewed publication. Per the guidelines, internet sources and documentation links must appear as footnotes, not as bibliography entries. This entry should be removed from the bibliography and the corresponding citation in the text should be converted to a footnote (similar to how the Slack/GitHub API URLs are already handled on page 2). The remaining 12 entries are all peer-reviewed, so the minimum count is still met.",
+      "locations" : [ {
+        "page" : 8,
+        "section" : "Bibliography",
+        "quote" : "[Key26] Keycloak Authors, \"Keycloak Server Administration Guide.\" Accessed: Oct. 18, 2026. [Online]. Available: **https://www.keycloak.org/docs/latest/server_admin/**"
+      }, {
+        "page" : 2,
+        "section" : "Introduction",
+        "quote" : "its Fine-Grained Admin Permissions restrict an administrative right to a single group **[Key26]**."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "CITATION",
+      "title" : "Citation placed after the full stop",
+      "description" : "The citation [BBF01] is placed after the period at the end of a sentence: 'temporal model. [BBF01]'. Per the guidelines, citations must be placed before the full stop, e.g., 'temporal model [BBF01].'. The period should move after the citation.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Motivation",
+        "quote" : "Bertino et al. attach enabling and disabling events to roles in their temporal model. **[BBF01]**"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "FIGURES",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "FIGURES",
+      "title" : "Figure 2 caption is too short and generic",
+      "description" : "The caption for Figure 2 is simply \"System Architecture\", which is a two-word generic label. The guidelines require every figure to have a long, informative caption that is descriptive and extensive. Compare with Figure 1's caption, which spans multiple sentences explaining the actors, their roles, and the rationale for secondary actors. Figure 2's caption should describe what the diagram shows (the component decomposition, the connector architecture, the data flow through the outbox, the separation of user-token vs. admin-API calls, the read-only LDAP projection, etc.) and why the architecture is structured this way.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Objective 4.2",
+        "quote" : "**Figure 2: System Architecture**"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "FIGURES",
+      "title" : "Figure 2 caption is too short and generic",
+      "description" : "The caption for Figure 2 is simply \"System Architecture\", which is a two-word generic label. The guidelines require every figure to have a long, informative caption that is descriptive and extensive. Compare with Figure 1's caption, which spans multiple sentences explaining the actors, their roles, and the rationale for secondary actors. Figure 2's caption should describe what the diagram shows (the component decomposition, the connector architecture, the data flow through the outbox, the separation of user-token vs. admin-API calls, the read-only LDAP projection, etc.) and why the architecture is structured this way.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Objective 4.2",
+        "quote" : "**Figure 2: System Architecture**"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STYLE",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Contraction: \"doesn't\"",
+      "description" : "The text must not use contractions. The sentence on page 3 uses \"doesn't\" instead of \"does not.\" This is a clear, unambiguous violation of the no-contractions rule.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "The current process **doesn't** scale and is the worst bottleneck of the chair."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Excessive use of first-person singular \"I\"",
+      "description" : "The guidelines state: Avoid 'one,' 'I,' and 'our.' The student uses \"I\" as the subject in 15+ sentences throughout the Objective, Schedule, and AI Transparency sections. The text should restructure sentences to use the platform, the thesis, or the system as the subject (e.g., \"The proposed platform builds…\", \"The thesis follows…\", \"The objective section pursues four objectives\"). Only a single transitional \"we\" is permitted for describing the thesis approach, and even that should be sparing. The current density of \"I\" makes the proposal read as a personal narrative rather than a structured research document.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "**I will build** a platform on which any member of the chair requests time-limited access to any resource, a maintainer decides, and the access ends on its own."
+      }, {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "**I follow** the object-oriented software engineering method of Bruegge and Dutoit, and Figure 1 shows the actors and use cases of the platform as a use case diagram in the Unifed Modeling Language. **I pursue** four objectives:"
+      }, {
+        "page" : 6,
+        "section" : "4.1 Structure Resources as an Inheriting Tree",
+        "quote" : "**I will replace** the fat list of hosts and channels with a resource tree whose inner nodes are folders and whose leaves each carry a binding to one target system."
+      }, {
+        "page" : 6,
+        "section" : "4.1 Structure Resources as an Inheriting Tree",
+        "quote" : "**I will store** the tree with a transitive-closure table of ancestor–descendant pairs and cap the fan-out, so that an approval on the root never reaches the whole infrastructure by accident."
+      }, {
+        "page" : 6,
+        "section" : "4.2 Design and Implement Connectors with Expiry",
+        "quote" : "**I will defne** one connector contract that validates a binding, grants and revokes access, and optionally lists the current members, and **I will implement** the keycloak-group, slack-channel, github-team, and webhook connectors on it."
+      }, {
+        "page" : 7,
+        "section" : "4.3 Delegate Request Review Without Privilege Escalation",
+        "quote" : "**I will build** declarative request forms whose felds, visibility conditions, and rules turn answers into requests for a resource path, a level, and a duration."
+      }, {
+        "page" : 7,
+        "section" : "4.3 Delegate Request Review Without Privilege Escalation",
+        "quote" : "**I will therefore split** the approval: in the review step, the resource owner records a decision without changing Keycloak, and in the grant step, the super admin sets membership and expiry atomically, in bulk for a vetted queue."
+      }, {
+        "page" : 7,
+        "section" : "4.3 Delegate Request Review Without Privilege Escalation",
+        "quote" : "**I will compare** the manual administrative actions and the time to working access with the current process."
+      }, {
+        "page" : 7,
+        "section" : "4.4 Automate the Recertifcation of Grants",
+        "quote" : "**I will attach** a recertifcation interval to each resource, which its descendants inherit, and open a campaign whenever the interval elapses."
+      }, {
+        "page" : 7,
+        "section" : "Schedule",
+        "quote" : "The thesis runs from 1 October 2026 to 31 March 2027, and **I divide** it into iterations of two to four weeks."
+      }, {
+        "page" : 7,
+        "section" : "Schedule",
+        "quote" : "Outcome: the correctness scenarios pass, and **I measure** the efort."
+      }, {
+        "page" : 10,
+        "section" : "AI Transparency Statement",
+        "quote" : "**I used** the following generative artifcial intelligence (AI) tool while preparing this proposal."
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Contraction: \"doesn't\"",
+      "description" : "The text must not use contractions. The sentence on page 3 uses \"doesn't\" instead of \"does not.\" This is a clear, unambiguous violation of the no-contractions rule.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "The current process **doesn't** scale and is the worst bottleneck of the chair."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Excessive use of first-person singular \"I\"",
+      "description" : "The guidelines state: Avoid 'one,' 'I,' and 'our.' The student uses \"I\" as the subject in 15+ sentences throughout the Objective, Schedule, and AI Transparency sections. The text should restructure sentences to use the platform, the thesis, or the system as the subject (e.g., \"The proposed platform builds…\", \"The thesis follows…\", \"The objective section pursues four objectives\"). Only a single transitional \"we\" is permitted for describing the thesis approach, and even that should be sparing. The current density of \"I\" makes the proposal read as a personal narrative rather than a structured research document.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "**I will build** a platform on which any member of the chair requests time-limited access to any resource, a maintainer decides, and the access ends on its own."
+      }, {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "**I follow** the object-oriented software engineering method of Bruegge and Dutoit, and Figure 1 shows the actors and use cases of the platform as a use case diagram in the Unifed Modeling Language. **I pursue** four objectives:"
+      }, {
+        "page" : 6,
+        "section" : "4.1 Structure Resources as an Inheriting Tree",
+        "quote" : "**I will replace** the fat list of hosts and channels with a resource tree whose inner nodes are folders and whose leaves each carry a binding to one target system."
+      }, {
+        "page" : 6,
+        "section" : "4.1 Structure Resources as an Inheriting Tree",
+        "quote" : "**I will store** the tree with a transitive-closure table of ancestor–descendant pairs and cap the fan-out, so that an approval on the root never reaches the whole infrastructure by accident."
+      }, {
+        "page" : 6,
+        "section" : "4.2 Design and Implement Connectors with Expiry",
+        "quote" : "**I will defne** one connector contract that validates a binding, grants and revokes access, and optionally lists the current members, and **I will implement** the keycloak-group, slack-channel, github-team, and webhook connectors on it."
+      }, {
+        "page" : 7,
+        "section" : "4.3 Delegate Request Review Without Privilege Escalation",
+        "quote" : "**I will build** declarative request forms whose felds, visibility conditions, and rules turn answers into requests for a resource path, a level, and a duration."
+      }, {
+        "page" : 7,
+        "section" : "4.3 Delegate Request Review Without Privilege Escalation",
+        "quote" : "**I will therefore split** the approval: in the review step, the resource owner records a decision without changing Keycloak, and in the grant step, the super admin sets membership and expiry atomically, in bulk for a vetted queue."
+      }, {
+        "page" : 7,
+        "section" : "4.3 Delegate Request Review Without Privilege Escalation",
+        "quote" : "**I will compare** the manual administrative actions and the time to working access with the current process."
+      }, {
+        "page" : 7,
+        "section" : "4.4 Automate the Recertifcation of Grants",
+        "quote" : "**I will attach** a recertifcation interval to each resource, which its descendants inherit, and open a campaign whenever the interval elapses."
+      }, {
+        "page" : 7,
+        "section" : "Schedule",
+        "quote" : "The thesis runs from 1 October 2026 to 31 March 2027, and **I divide** it into iterations of two to four weeks."
+      }, {
+        "page" : 7,
+        "section" : "Schedule",
+        "quote" : "Outcome: the correctness scenarios pass, and **I measure** the efort."
+      }, {
+        "page" : 10,
+        "section" : "AI Transparency Statement",
+        "quote" : "**I used** the following generative artifcial intelligence (AI) tool while preparing this proposal."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STRUCTURE",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Section 1 (Introduction) has no introductory text before its first subsection",
+      "description" : "Section 1 'Introduction' jumps directly into subsection 1.1 'Setting' without any introductory prose. Every chapter/section must include at least a short introductory paragraph before its first subsection, orienting the reader on what the section covers. Add 2-3 sentences under the '1 Introduction' heading that frame the overall context of the thesis before diving into 1.1.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Introduction",
+        "quote" : "**1  Introduction**\n\n**1.1 Setting**\n\nA university research chair, or a team of similar size, operates shared infrastructure…"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Section 1 (Introduction) has no introductory text before its first subsection",
+      "description" : "Section 1 'Introduction' jumps directly into subsection 1.1 'Setting' without any introductory prose. Every chapter/section must include at least a short introductory paragraph before its first subsection, orienting the reader on what the section covers. Add 2-3 sentences under the '1 Introduction' heading that frame the overall context of the thesis before diving into 1.1.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Introduction",
+        "quote" : "**1  Introduction**\n\n**1.1 Setting**\n\nA university research chair, or a team of similar size, operates shared infrastructure…"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_FORMATTING",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "AI_TRANSPARENCY",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "COMPLETENESS",
+      "title" : "Missing review confirmation sentence in AI Transparency Statement",
+      "description" : "The AI Transparency Statement (Page 10) does not include the required confirmation that the author has carefully checked all AI-generated text. The guidelines require a sentence such as: \"I have carefully checked all texts created with these tools to ensure that they are correct and make sense.\" The statement currently ends after the tool table without any such attestation. The student must add this explicit confirmation sentence.",
+      "locations" : [ {
+        "page" : 10,
+        "section" : "Transparency in the Use of AI Tools",
+        "quote" : "I used the following generative artificial intelligence (AI) tool while preparing this proposal. The level refers to the six-level taxonomy of generative AI use in writing by Uçan and Demirel Uçan [UD26]."
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "COMPLETENESS",
+      "title" : "Missing review confirmation sentence in AI Transparency Statement",
+      "description" : "The AI Transparency Statement (Page 10) does not include the required confirmation that the author has carefully checked all AI-generated text. The guidelines require a sentence such as: \"I have carefully checked all texts created with these tools to ensure that they are correct and make sense.\" The statement currently ends after the tool table without any such attestation. The student must add this explicit confirmation sentence.",
+      "locations" : [ {
+        "page" : 10,
+        "section" : "Transparency in the Use of AI Tools",
+        "quote" : "I used the following generative artificial intelligence (AI) tool while preparing this proposal. The level refers to the six-level taxonomy of generative AI use in writing by Uçan and Demirel Uçan [UD26]."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "SCHEDULE",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Iteration 7 contains thesis writing and presentation preparation tasks",
+      "description" : "Iteration 7 (18–31 March) is dedicated to writing the thesis and preparing the final presentation. The schedule should focus on development/research work only and must not include thesis writing, documentation writing, or presentation preparation tasks. This iteration should be removed or replaced with a development increment (e.g., final integration testing, performance validation, or additional connector work) so that every iteration delivers a measurable, usable increment of the platform.",
+      "locations" : [ {
+        "page" : 7,
+        "section" : "Schedule",
+        "quote" : "Iteration 7 (18–31 March): **Write the thesis and prepare the final presentation**."
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Iteration 7 contains thesis writing and presentation preparation tasks",
+      "description" : "Iteration 7 (18–31 March) is dedicated to writing the thesis and preparing the final presentation. The schedule should focus on development/research work only and must not include thesis writing, documentation writing, or presentation preparation tasks. This iteration should be removed or replaced with a development increment (e.g., final integration testing, performance validation, or additional connector work) so that every iteration delivers a measurable, usable increment of the platform.",
+      "locations" : [ {
+        "page" : 7,
+        "section" : "Schedule",
+        "quote" : "Iteration 7 (18–31 March): **Write the thesis and prepare the final presentation**."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  } ],
+  "categoryFailures" : { }
+}

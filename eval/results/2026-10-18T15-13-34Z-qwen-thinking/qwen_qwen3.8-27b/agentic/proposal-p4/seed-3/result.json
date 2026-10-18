@@ -1,0 +1,125 @@
+{
+  "assessment" : "NEEDS_WORK",
+  "score" : 58,
+  "summary" : "The proposal is substantively strong — a concrete, well-observed problem with clearly identified actors, 13 references (12 peer-reviewed), two informative UML diagrams both referenced in the text, and a mostly agile, vertically integrated 7-iteration schedule. However, it is missing the required Abstract entirely (critical), and the AI transparency statement lacks the mandatory confirmation that the author checked all AI-generated text. Other must/should-fix issues: the Problem section ends by presenting the solution; objective 2 uses the explicitly forbidden double verb 'Design and implement' (in bullet and heading); subsection 4.4 has only one paragraph; [Key26] (Keycloak documentation) belongs in a footnote, not the bibliography; one citation is placed after the full stop; Figure 2's caption is the generic 'System Architecture'; a contraction ('doesn't') and pervasive first-person 'I' violate the style rules; Section 1 has no introductory text before 1.1; and Iteration 7 is a thesis-writing/presentation task that is not allowed in the schedule. Fix the Abstract and the transparency confirmation first, then work through the majors; the proposal will be in good shape afterwards.",
+  "findings" : [ {
+    "severity" : "CRITICAL",
+    "category" : "STRUCTURE",
+    "title" : "Required Abstract section is missing",
+    "description" : "The proposal has no Abstract section at all — the document goes from the title page directly to '1 Introduction' (search confirms the word 'Abstract' does not occur anywhere). The required sections are Abstract, Introduction, Problem, Motivation, Objective, Schedule, Bibliography, and AI Transparency Statement. Add an Abstract of 1/3 to 1/2 page summarising problem, approach, and objectives.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Abstract"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "LOGIC",
+    "title" : "Problem section presents a solution",
+    "description" : "The Problem section must describe only problems and their negative consequences — no solutions. The final sentence of the Problem section proposes the actual solution (a self-service platform arming Keycloak's workflow engine with expiry dates). Move this forward-looking statement to Motivation or Objective, and let the Problem end on the negative consequences.",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "Problem",
+      "quote" : "A self-service platform that arms the workfow engine of Keycloak with an expiry date at grant time would end this accumulation."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "WRITING",
+    "title" : "Objective 2 uses the double verb 'Design and implement'",
+    "description" : "Objective 2 uses a double verb — 'Design and implement' is explicitly the example the group guidelines give for what to avoid; pick one verb per objective. The same double verb appears in both the bullet list in Section 4 and the heading of subsection 4.2. Rewrite both, e.g. 'Implement connectors with expiry' (or 'Design connectors with expiry').",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Objective",
+      "quote" : "Design and implement connectors with expiry"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "STRUCTURE",
+    "title" : "Objective subsection 4.4 has only one paragraph",
+    "description" : "Subsection 4.4 consists of a single paragraph (it runs from 'I will attach a recertifcation interval...' on page 6 over the page break and ends with '...keeps a second copy.' at the top of page 7, immediately followed by '5 Schedule'). Each objective subsection must be at least two paragraphs long. Split 4.4 into at least two paragraphs, e.g. one on the recertification campaign mechanics and one on the escalation/audit-record behaviour.",
+    "locations" : [ {
+      "page" : 6,
+      "section" : "4.4 Automate the Recertifcation of Grants",
+      "quote" : "I will attach a recertifcation interval to each resource, which its descendants inherit, and open a campaign whenever the interval elapses."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "CITATION",
+    "title" : "Citation [BBF01] placed after the full stop",
+    "description" : "The citation for [BBF01] is placed after the full stop ('temporal model. [BBF01]') at the top of page 4, continuing the sentence from page 3 ('Bertino et al. attach enabling and disabling events to roles in their temporal model'). Citations must be placed before the full stop: 'Bertino et al. attach enabling and disabling events to roles in their temporal model [BBF01].'",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Motivation",
+      "quote" : "temporal model. [BBF01]"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "CITATION",
+    "title" : "Non-peer-reviewed documentation ([Key26]) listed as a bibliography entry",
+    "description" : "Reference [Key26] is the Keycloak Server Administration Guide — an online product documentation page, not a peer-reviewed publication. The bibliography must contain only scientific, peer-reviewed publications; internet sources and documentation links belong in footnotes (as was done correctly for the Slack and GitHub API URLs on page 2). Remove [Key26] from the bibliography and cite the Keycloak documentation via a footnote at its use in Section 1.2. The remaining 12 entries then still satisfy the 6-8 peer-reviewed minimum.",
+    "locations" : [ {
+      "page" : 8,
+      "section" : "Bibliography",
+      "quote" : "Keycloak Authors, \"Keycloak Server Administration Guide. \" Accessed: Oct. 18, 2026. [Online]. Available: https://www.keycloak.org/docs/"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "FIGURES",
+    "title" : "Figure 2 has a short, generic caption",
+    "description" : "The caption of Figure 2 (page 5) is just 'Figure 2: System Architecture' — a short, generic caption, exactly the kind of anti-example the guidelines give. Expand it into a long, descriptive caption like Figure 1's: what the diagram shows (mgmt-ui, mgmt-api with GrantPlanner/ConnectorRegistry/DeprovisionReaper, PostgreSQL, ldap-bridge), which interfaces connect which components (OIDC login, admin API with and without user token, bot tokens, LDAP), and why each boundary matters.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "4.2 Design and Implement Connectors with Expiry",
+      "quote" : "Figure 2: System Architecture"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "WRITING",
+    "title" : "Contraction 'doesn't' used in Problem section",
+    "description" : "The text must not use contractions. Page 3 uses 'doesn't'. Rewrite as 'The current process does not scale and is the worst bottleneck of the chair.' (This is the only contraction in the document.)",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "Problem",
+      "quote" : "The current process doesn't scale and is the worst bottleneck of the chair."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "WRITING",
+    "title" : "Pervasive first-person 'I' where the guidelines ask for 'we'",
+    "description" : "The group style rules say to avoid 'I' (use 'we', sparingly, for the thesis approach). The proposal is written almost entirely in the first person singular: 'I will build a platform', 'I follow the object-oriented software engineering method', 'I pursue four objectives', 'I will replace the flat list', 'I will define one connector contract', 'I measure extensibility', 'I will therefore split the approval', 'I will attach a recertifcation interval', 'I divide it into iterations', etc. (roughly a dozen occurrences across Sections 4 and 5). Rewrite the approach statements with 'we' where it concerns the thesis work; note that the AI Transparency Statement on page 10 must stay in first person.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Objective",
+      "quote" : "I will build a platform on which any member of the chair requests time-limited access to any resource, a maintainer decides, and the access ends on its own."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "STRUCTURE",
+    "title" : "Section 1 has no introductory text before its first subsection",
+    "description" : "Section 1 jumps straight from the '1 Introduction' heading to subsection 1.1 'Setting' with no introductory text. Every chapter must have introductory text before its first subsection (Sections 2, 3, 4 and 5 all have it). Add 2-3 introductory sentences under '1 Introduction' that frame the setting and the existing infrastructure before 1.1.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Introduction",
+      "quote" : "1.1 Setting"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "COMPLETENESS",
+    "title" : "AI transparency statement lacks the review-confirmation sentence",
+    "description" : "The AI transparency statement is otherwise good (specific tool, model, dates, level, purposes, and sections), but it is missing the mandatory confirmation that the author checked all AI-generated text. Add a sentence such as: 'I have carefully checked all texts created with these tools to ensure that they are correct and make sense.'",
+    "locations" : [ {
+      "page" : 10,
+      "section" : "Transparency in the Use of AI Tools",
+      "quote" : "I used the following generative artifcial intelligence (AI) tool while preparing this proposal."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "METHODOLOGY",
+    "title" : "Schedule contains a thesis-writing/presentation iteration",
+    "description" : "Iteration 7 is dedicated entirely to 'Write the thesis and prepare the final presentation'. The schedule must not include thesis-writing, documentation, or presentation-preparation tasks; it should cover development/research work only. Reallocate the 18-31 March window to development or evaluation work (e.g., final deployment at the chair, the extensibility measurement via the webhook connector, running the correctness scenarios), so the schedule ends with a deliverable increment.",
+    "locations" : [ {
+      "page" : 7,
+      "section" : "Schedule",
+      "quote" : "Iteration 7 (18–31 March): Write the thesis"
+    } ]
+  } ]
+}

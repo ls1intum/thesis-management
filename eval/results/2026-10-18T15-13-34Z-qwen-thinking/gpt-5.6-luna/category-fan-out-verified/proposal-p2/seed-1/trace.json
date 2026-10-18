@@ -1,0 +1,693 @@
+{
+  "categories" : [ {
+    "category" : "STRUCTURE",
+    "generated" : [ {
+      "severity" : "MINOR",
+      "category" : "STRUCTURE",
+      "title" : "Objectives are not formatted as a bullet list",
+      "description" : "Section 4 presents the four objectives as a numbered list rather than the required bullet list. Replace the numbered list with four bullet points, keeping each objective to one line.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "**1. Generate Feedback Based on Guidelines**"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MINOR",
+      "category" : "STRUCTURE",
+      "title" : "Objectives are not formatted as a bullet list",
+      "description" : "Section 4 presents the four objectives as a numbered list rather than the required bullet list. Replace the numbered list with four bullet points, keeping each objective to one line.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "**1. Generate Feedback Based on Guidelines**"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "PROBLEM_MOTIVATION_OBJECTIVES",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Motivation repeats the Problem",
+      "description" : "The Motivation section repeats the Problem’s account of repetitive feedback burden and delayed supervisor responses instead of consistently presenting a forward-looking vision. Remove or substantially condense the problem restatement, then emphasize the scientific and educational value of formative, guideline-based feedback and improved self-regulated learning.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Motivation",
+        "quote" : "This Reviewer covers exactly the **repetitive, non-content-related layer of feedback that currently drains supervisors**, freeing them to focus on specific content and on discussions with their students."
+      }, {
+        "page" : 4,
+        "section" : "Motivation",
+        "quote" : "Additionally, supervisors can **provide feedback faster**, making the process more scalable."
+      } ]
+    } ],
+    "ungrounded" : [ {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Motivation repeats the Problem",
+      "description" : "The Motivation section repeats the Problem’s account of repetitive feedback burden and delayed supervisor responses instead of consistently presenting a forward-looking vision. Remove or substantially condense the problem restatement, then emphasize the scientific and educational value of formative, guideline-based feedback and improved self-regulated learning.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Motivation",
+        "quote" : "This Reviewer covers exactly the **repetitive, non-content-related layer of feedback that currently drains supervisors**, freeing them to focus on specific content and on discussions with their students."
+      }, {
+        "page" : 4,
+        "section" : "Motivation",
+        "quote" : "Additionally, supervisors can **provide feedback faster**, making the process more scalable."
+      } ]
+    } ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "BIBLIOGRAPHY",
+    "generated" : [ {
+      "severity" : "CRITICAL",
+      "category" : "COMPLETENESS",
+      "title" : "Bibliography contains fewer than the required minimum number of publications",
+      "description" : "The bibliography contains only 5 publications ([TP21], [AAM17], [BBE10], [Bog+07], and [NM06]), but the proposal requires at least 6–8 peer-reviewed publications. Add at least one more relevant peer-reviewed publication, preferably enough to reach the target range of 6–8.",
+      "locations" : [ {
+        "page" : 11,
+        "section" : "Bibliography",
+        "quote" : "**Bibliography contains five entries:** [TP21], [AAM17], [BBE10], [Bog+07], and [NM06]."
+      } ]
+    } ],
+    "ungrounded" : [ {
+      "severity" : "CRITICAL",
+      "category" : "COMPLETENESS",
+      "title" : "Bibliography contains fewer than the required minimum number of publications",
+      "description" : "The bibliography contains only 5 publications ([TP21], [AAM17], [BBE10], [Bog+07], and [NM06]), but the proposal requires at least 6–8 peer-reviewed publications. Add at least one more relevant peer-reviewed publication, preferably enough to reach the target range of 6–8.",
+      "locations" : [ {
+        "page" : 11,
+        "section" : "Bibliography",
+        "quote" : "**Bibliography contains five entries:** [TP21], [AAM17], [BBE10], [Bog+07], and [NM06]."
+      } ]
+    } ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "FIGURES",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STYLE",
+    "generated" : [ {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Use active voice more consistently",
+      "description" : "Several sentences use passive voice without identifying the responsible actor. Rewrite them with explicit subjects where possible, especially when describing system behavior or institutional processes.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Problem",
+        "quote" : "Having to wait for feedback on purely formal aspects of a thesis or proposal can be frustrating for students, as these issues **are governed by institutional conventions** rather than research substance."
+      }, {
+        "page" : 5,
+        "section" : "Motivation",
+        "quote" : "Because the feedback tool **is powered by LLMs**, students can obtain instant formative feedback at any point during the writing process."
+      }, {
+        "page" : 6,
+        "section" : "Objective — Generate Feedback Based on Guidelines",
+        "quote" : "In one mode, **no LLM-generated feedback is produced** at all and all feedback comes from the supervisor."
+      }, {
+        "page" : 8,
+        "section" : "Objective — Compare Prompting Techniques and LLM Models",
+        "quote" : "Attention can dilute when many heterogeneous criteria **are bundled into one request**."
+      }, {
+        "page" : 9,
+        "section" : "Objective — Integrate With Thesis Management",
+        "quote" : "The student hands in the thesis itself as a single final submission without an iterative feedback cycle."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Forbidden sentence starter: “As”",
+      "description" : "The sentence starts with “As,” which is forbidden by the writing guidelines. Recast the sentence so that the subject performs the action without using this starter.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Motivation",
+        "quote" : "**As** Figure 1 illustrates, an LLM-powered Reviewer works alongside the supervisor, evaluating the thesis against the research group’s writing guidelines and generating automatic formative feedback [NM06]."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Forbidden sentence starter: “Because”",
+      "description" : "The sentence starts with “Because,” which is forbidden by the writing guidelines. Move the causal explanation to a later position or use a different sentence structure.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Motivation",
+        "quote" : "**Because** the feedback tool is powered by LLMs, students can obtain instant formative feedback at any point during the writing process."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Forbidden sentence starter: “Since”",
+      "description" : "The sentence starts with “Since,” which is forbidden by the writing guidelines. Rewrite it with the subject and action first.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Objective — Generate Feedback Based on Guidelines",
+        "quote" : "**Since** guidelines may not already be in a suitable format, the LLM may first need to preprocess them into a structured representation it can act on."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Repeated use of filler transitions",
+      "description" : "The proposal repeatedly uses transitional fillers such as “Moreover,” “Additionally,” and “In addition.” Remove these words where they do not add a necessary logical relation, or replace them with an explicit statement of how the ideas relate.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "**Moreover**, the time spent on repetitive feedback leaves less time for what matters most: helping students with their research and providing feedback on substantive topics."
+      }, {
+        "page" : 4,
+        "section" : "Motivation",
+        "quote" : "**Additionally**, supervisors can provide feedback faster, making the process more scalable."
+      }, {
+        "page" : 8,
+        "section" : "Objective — Compare Prompting Techniques and LLM Models",
+        "quote" : "**In addition**, privacy regulations and cost require careful consideration of when to use locally self-hosted LLMs versus cloud-hosted ones."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Avoid unsupported intensifiers and superlatives",
+      "description" : "The proposal uses superlative or broad intensifying wording that should be replaced with precise, supportable claims. In particular, qualify or remove “wide” and “greatest” unless the comparison is defined and evidenced.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "Supervisors provide feedback on a **wide** range of topics, including the content itself, the structure of the document and its chapters, writing coherence and cohesion, and linguistic accuracy."
+      }, {
+        "page" : 8,
+        "section" : "Objective — Integrate With Thesis Management",
+        "quote" : "By building on existing processes, the integration causes the least disruption to supervisors and delivers the **greatest** simplification of their workflow."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Repeated first-person usage",
+      "description" : "The transparency statement repeatedly uses the first-person pronoun “I,” although the guidelines advise avoiding it. Recast the statements in an impersonal form or use “this thesis” where appropriate.",
+      "locations" : [ {
+        "page" : 12,
+        "section" : "Transparency in the Use of AI Tools",
+        "quote" : "In preparing this proposal, **I made use** of several AI-based tools across different stages of the writing process."
+      }, {
+        "page" : 12,
+        "section" : "Transparency in the Use of AI Tools",
+        "quote" : "For grammar and style correction, **I used** Grammarly to identify grammatical errors, improve sentence structure, and refine the overall writing style of my drafts."
+      }, {
+        "page" : 12,
+        "section" : "Transparency in the Use of AI Tools",
+        "quote" : "For content generation and idea expansion, **I used** ChatGPT, OpenAI Codex, Claude, and Claude Code to reformulate sentences I had already drafted, expand on ideas I had outlined, and obtain suggestions for clearer phrasing."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Undefined abbreviation: AI",
+      "description" : "The abbreviation “AI” appears without being defined before use. Define it at first occurrence, for example as “artificial intelligence (AI),” and then use the abbreviation consistently.",
+      "locations" : [ {
+        "page" : 7,
+        "quote" : "Figure 2: Activity diagram of the envisioned feedback workflow. After the student submits a thesis, the supervisor and the feedback tool work in parallel, with specialized agents analyzing the thesis. The supervisor then revises the **AI-generated** draft, joins it with their own feedback, and publishes the result to the student."
+      }, {
+        "page" : 12,
+        "section" : "Transparency in the Use of AI Tools",
+        "quote" : "Transparency in the Use of **AI** Tools"
+      } ]
+    } ],
+    "ungrounded" : [ {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Use active voice more consistently",
+      "description" : "Several sentences use passive voice without identifying the responsible actor. Rewrite them with explicit subjects where possible, especially when describing system behavior or institutional processes.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Problem",
+        "quote" : "Having to wait for feedback on purely formal aspects of a thesis or proposal can be frustrating for students, as these issues **are governed by institutional conventions** rather than research substance."
+      }, {
+        "page" : 5,
+        "section" : "Motivation",
+        "quote" : "Because the feedback tool **is powered by LLMs**, students can obtain instant formative feedback at any point during the writing process."
+      }, {
+        "page" : 6,
+        "section" : "Objective — Generate Feedback Based on Guidelines",
+        "quote" : "In one mode, **no LLM-generated feedback is produced** at all and all feedback comes from the supervisor."
+      }, {
+        "page" : 8,
+        "section" : "Objective — Compare Prompting Techniques and LLM Models",
+        "quote" : "Attention can dilute when many heterogeneous criteria **are bundled into one request**."
+      }, {
+        "page" : 9,
+        "section" : "Objective — Integrate With Thesis Management",
+        "quote" : "The student hands in the thesis itself as a single final submission without an iterative feedback cycle."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Forbidden sentence starter: “Since”",
+      "description" : "The sentence starts with “Since,” which is forbidden by the writing guidelines. Rewrite it with the subject and action first.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Objective — Generate Feedback Based on Guidelines",
+        "quote" : "**Since** guidelines may not already be in a suitable format, the LLM may first need to preprocess them into a structured representation it can act on."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Repeated first-person usage",
+      "description" : "The transparency statement repeatedly uses the first-person pronoun “I,” although the guidelines advise avoiding it. Recast the statements in an impersonal form or use “this thesis” where appropriate.",
+      "locations" : [ {
+        "page" : 12,
+        "section" : "Transparency in the Use of AI Tools",
+        "quote" : "In preparing this proposal, **I made use** of several AI-based tools across different stages of the writing process."
+      }, {
+        "page" : 12,
+        "section" : "Transparency in the Use of AI Tools",
+        "quote" : "For grammar and style correction, **I used** Grammarly to identify grammatical errors, improve sentence structure, and refine the overall writing style of my drafts."
+      }, {
+        "page" : 12,
+        "section" : "Transparency in the Use of AI Tools",
+        "quote" : "For content generation and idea expansion, **I used** ChatGPT, OpenAI Codex, Claude, and Claude Code to reformulate sentences I had already drafted, expand on ideas I had outlined, and obtain suggestions for clearer phrasing."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Undefined abbreviation: AI",
+      "description" : "The abbreviation “AI” appears without being defined before use. Define it at first occurrence, for example as “artificial intelligence (AI),” and then use the abbreviation consistently.",
+      "locations" : [ {
+        "page" : 7,
+        "quote" : "Figure 2: Activity diagram of the envisioned feedback workflow. After the student submits a thesis, the supervisor and the feedback tool work in parallel, with specialized agents analyzing the thesis. The supervisor then revises the **AI-generated** draft, joins it with their own feedback, and publishes the result to the student."
+      }, {
+        "page" : 12,
+        "section" : "Transparency in the Use of AI Tools",
+        "quote" : "Transparency in the Use of **AI** Tools"
+      } ]
+    } ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Forbidden sentence starter: “As”",
+      "description" : "The sentence starts with “As,” which is forbidden by the writing guidelines. Recast the sentence so that the subject performs the action without using this starter.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Motivation",
+        "quote" : "**As** Figure 1 illustrates, an LLM-powered Reviewer works alongside the supervisor, evaluating the thesis against the research group’s writing guidelines and generating automatic formative feedback [NM06]."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Forbidden sentence starter: “Because”",
+      "description" : "The sentence starts with “Because,” which is forbidden by the writing guidelines. Move the causal explanation to a later position or use a different sentence structure.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Motivation",
+        "quote" : "**Because** the feedback tool is powered by LLMs, students can obtain instant formative feedback at any point during the writing process."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Repeated use of filler transitions",
+      "description" : "The proposal repeatedly uses transitional fillers such as “Moreover,” “Additionally,” and “In addition.” Remove these words where they do not add a necessary logical relation, or replace them with an explicit statement of how the ideas relate.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "**Moreover**, the time spent on repetitive feedback leaves less time for what matters most: helping students with their research and providing feedback on substantive topics."
+      }, {
+        "page" : 4,
+        "section" : "Motivation",
+        "quote" : "**Additionally**, supervisors can provide feedback faster, making the process more scalable."
+      }, {
+        "page" : 8,
+        "section" : "Objective — Compare Prompting Techniques and LLM Models",
+        "quote" : "**In addition**, privacy regulations and cost require careful consideration of when to use locally self-hosted LLMs versus cloud-hosted ones."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Avoid unsupported intensifiers and superlatives",
+      "description" : "The proposal uses superlative or broad intensifying wording that should be replaced with precise, supportable claims. In particular, qualify or remove “wide” and “greatest” unless the comparison is defined and evidenced.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "Supervisors provide feedback on a **wide** range of topics, including the content itself, the structure of the document and its chapters, writing coherence and cohesion, and linguistic accuracy."
+      }, {
+        "page" : 8,
+        "section" : "Objective — Integrate With Thesis Management",
+        "quote" : "By building on existing processes, the integration causes the least disruption to supervisors and delivers the **greatest** simplification of their workflow."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STRUCTURE",
+    "generated" : [ {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Introduction paragraph is too long",
+      "description" : "This paragraph extends beyond the recommended 5–8 lines when the continuation on page 3 is included. Split it into two paragraphs, for example by separating the description of proposal contents from the thesis-lifecycle workflow context.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Introduction",
+        "quote" : "Before starting their research project, students typically write a research proposal. In this proposal, they define the research question and problem they want to explore, outline their methodology, and specify the scope of their work."
+      }, {
+        "page" : 3,
+        "section" : "Introduction",
+        "quote" : "At around 50 research groups at the Technical University of Munich (TUM), supervisors and students manage the thesis lifecycle through Thesis Management 1, an in-house portal developed at TUM."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Guideline-based feedback paragraph is too long",
+      "description" : "This paragraph is substantially longer than the recommended 5–8 lines. Divide it into separate paragraphs, such as one explaining guideline-based feedback and another explaining the distinction between formative and normative feedback.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "4.1 Generate Feedback Based on Guidelines",
+        "quote" : "Supervisors should be able to provide their own scientific writing guidelines as well as conventions on the style of theses and proposals. Based on these guidelines, the LLM can provide formative feedback that is restricted to the aspects they cover."
+      }, {
+        "page" : 6,
+        "section" : "4.1 Generate Feedback Based on Guidelines",
+        "quote" : "Ethically, it is difficult to let LLMs grade a final thesis, as this constitutes normative feedback and requires close scrutiny. Formative feedback, on the other hand, is less critical since it serves as input for students to improve their work."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "AI transparency statement is too long",
+      "description" : "The AI transparency statement is presented as one very long paragraph exceeding the recommended paragraph length. Split it into shorter paragraphs by tool purpose, such as writing and translation, content generation, coding, and citation management.",
+      "locations" : [ {
+        "page" : 12,
+        "section" : "Transparency in the Use of AI Tools",
+        "quote" : "In preparing this proposal, I made use of several AI-based tools across different stages of the writing process. For grammar and style correction, I used Grammarly to identify grammatical errors, improve sentence structure, and refine the overall writing style of my drafts."
+      }, {
+        "page" : 12,
+        "section" : "Transparency in the Use of AI Tools",
+        "quote" : "For coding assistance, I used GitHub Copilot, ChatGPT, OpenAI Codex, Claude, and Claude Code to support Typst formatting, generate snippets for figures and macros, and resolve template-related issues. For citation assistance, I used Zotero to manage my references and to ensure proper citation formatting throughout the proposal."
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Introduction paragraph is too long",
+      "description" : "This paragraph extends beyond the recommended 5–8 lines when the continuation on page 3 is included. Split it into two paragraphs, for example by separating the description of proposal contents from the thesis-lifecycle workflow context.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Introduction",
+        "quote" : "Before starting their research project, students typically write a research proposal. In this proposal, they define the research question and problem they want to explore, outline their methodology, and specify the scope of their work."
+      }, {
+        "page" : 3,
+        "section" : "Introduction",
+        "quote" : "At around 50 research groups at the Technical University of Munich (TUM), supervisors and students manage the thesis lifecycle through Thesis Management 1, an in-house portal developed at TUM."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Guideline-based feedback paragraph is too long",
+      "description" : "This paragraph is substantially longer than the recommended 5–8 lines. Divide it into separate paragraphs, such as one explaining guideline-based feedback and another explaining the distinction between formative and normative feedback.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "4.1 Generate Feedback Based on Guidelines",
+        "quote" : "Supervisors should be able to provide their own scientific writing guidelines as well as conventions on the style of theses and proposals. Based on these guidelines, the LLM can provide formative feedback that is restricted to the aspects they cover."
+      }, {
+        "page" : 6,
+        "section" : "4.1 Generate Feedback Based on Guidelines",
+        "quote" : "Ethically, it is difficult to let LLMs grade a final thesis, as this constitutes normative feedback and requires close scrutiny. Formative feedback, on the other hand, is less critical since it serves as input for students to improve their work."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "AI transparency statement is too long",
+      "description" : "The AI transparency statement is presented as one very long paragraph exceeding the recommended paragraph length. Split it into shorter paragraphs by tool purpose, such as writing and translation, content generation, coding, and citation management.",
+      "locations" : [ {
+        "page" : 12,
+        "section" : "Transparency in the Use of AI Tools",
+        "quote" : "In preparing this proposal, I made use of several AI-based tools across different stages of the writing process. For grammar and style correction, I used Grammarly to identify grammatical errors, improve sentence structure, and refine the overall writing style of my drafts."
+      }, {
+        "page" : 12,
+        "section" : "Transparency in the Use of AI Tools",
+        "quote" : "For coding assistance, I used GitHub Copilot, ChatGPT, OpenAI Codex, Claude, and Claude Code to support Typst formatting, generate snippets for figures and macros, and resolve template-related issues. For citation assistance, I used Zotero to manage my references and to ensure proper citation formatting throughout the proposal."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_FORMATTING",
+    "generated" : [ {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Inconsistent Hyphenation of “Prompt Chaining”",
+      "description" : "Use one consistent form for the term “prompt chaining.” The abstract hyphenates it, while the Objective section and Schedule use the unhyphenated form; choose one form and apply it throughout the author’s prose.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "We evaluate single-prompt, **prompt-chaining**, and agentic setups"
+      }, {
+        "page" : 8,
+        "section" : "Objective",
+        "quote" : "Alternatives include **prompt chaining** and agentic setups"
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "Build prototype implementations for agentic and **prompt chaining** setups"
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Inconsistent Naming of the Feedback System",
+      "description" : "The feedback system is referred to inconsistently as the “LLM-powered Reviewer,” “Reviewer,” “feedback tool,” and “tool.” Define the relationship between these terms if they denote different components; otherwise, select one canonical name and use it consistently.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Motivation",
+        "quote" : "an LLM-powered **Reviewer** works alongside the supervisor"
+      }, {
+        "page" : 5,
+        "section" : "Motivation",
+        "quote" : "This **Reviewer** covers exactly the repetitive, non-content-related layer of feedback"
+      }, {
+        "page" : 6,
+        "section" : "Objective",
+        "quote" : "When the **feedback tool** has access to previous iterations"
+      }, {
+        "page" : 8,
+        "section" : "Objective",
+        "quote" : "the **feedback tool** needs to cover a range of aspects and topics across the thesis"
+      } ]
+    } ],
+    "ungrounded" : [ {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Inconsistent Naming of the Feedback System",
+      "description" : "The feedback system is referred to inconsistently as the “LLM-powered Reviewer,” “Reviewer,” “feedback tool,” and “tool.” Define the relationship between these terms if they denote different components; otherwise, select one canonical name and use it consistently.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Motivation",
+        "quote" : "an LLM-powered **Reviewer** works alongside the supervisor"
+      }, {
+        "page" : 5,
+        "section" : "Motivation",
+        "quote" : "This **Reviewer** covers exactly the repetitive, non-content-related layer of feedback"
+      }, {
+        "page" : 6,
+        "section" : "Objective",
+        "quote" : "When the **feedback tool** has access to previous iterations"
+      }, {
+        "page" : 8,
+        "section" : "Objective",
+        "quote" : "the **feedback tool** needs to cover a range of aspects and topics across the thesis"
+      } ]
+    } ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Inconsistent Hyphenation of “Prompt Chaining”",
+      "description" : "Use one consistent form for the term “prompt chaining.” The abstract hyphenates it, while the Objective section and Schedule use the unhyphenated form; choose one form and apply it throughout the author’s prose.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "We evaluate single-prompt, **prompt-chaining**, and agentic setups"
+      }, {
+        "page" : 8,
+        "section" : "Objective",
+        "quote" : "Alternatives include **prompt chaining** and agentic setups"
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "Build prototype implementations for agentic and **prompt chaining** setups"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "AI_TRANSPARENCY",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "COMPLETENESS",
+      "title" : "Proposal sections used with AI tools are not specified",
+      "description" : "The statement names tools and their purposes but does not identify which proposal sections each tool was used for. Revise it to map the tools and activities to specific sections, such as the Abstract, Introduction, Problem, Motivation, Objective, Schedule, or Bibliography; if a tool was used throughout, state that explicitly.",
+      "locations" : [ {
+        "page" : 12,
+        "section" : "AI Transparency Statement",
+        "quote" : "In preparing this proposal, I made use of several AI-based tools **across diferent stages of the writing process**."
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "COMPLETENESS",
+      "title" : "Proposal sections used with AI tools are not specified",
+      "description" : "The statement names tools and their purposes but does not identify which proposal sections each tool was used for. Revise it to map the tools and activities to specific sections, such as the Abstract, Introduction, Problem, Motivation, Objective, Schedule, or Bibliography; if a tool was used throughout, state that explicitly.",
+      "locations" : [ {
+        "page" : 12,
+        "section" : "AI Transparency Statement",
+        "quote" : "In preparing this proposal, I made use of several AI-based tools **across diferent stages of the writing process**."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "SCHEDULE",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "FORMATTING",
+      "title" : "Iteration 1 falls outside the thesis period",
+      "description" : "Iteration 1 is scheduled before the stated thesis start date and does not provide an explicit end date. Correct the iteration dates so the schedule is consistent with the project period and each iteration has a clearly defined 2–4 week interval.",
+      "locations" : [ {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "The Bachelor thesis starts on 26.06.2026 and the submission is on 26.10.2026. We divided the time into several two-week iterations... Iteration 1 (08.06.2026 - 2 weeks)"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "METHODOLOGY",
+      "title" : "Iteration deliverables lack measurable acceptance criteria",
+      "description" : "Several work items are not measurable because they do not define concrete outputs, evaluation data, or acceptance criteria. Replace vague activities such as implementing, connecting, building, and evaluating with deliverables that can be verified, for example an executable end-to-end prototype, a defined test set, and specified quality or performance metrics.",
+      "locations" : [ {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "• Implement core feedback generation pipeline (Objective 1)"
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "• Connect feedback tool to Thesis Management (Objective 4)"
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "• Build prototype implementations for agentic and prompt chaining setups"
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "• Evaluate different LLM models and providers (Objective 3)"
+      }, {
+        "page" : 10,
+        "section" : "Schedule",
+        "quote" : "• Review the system and check for bugs"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Early iterations are split by technical layers rather than vertical features",
+      "description" : "The first iterations split the work into architectural and subsystem phases: modularization, a core pipeline, and later portal integration. This is a horizontal, waterfall-like decomposition rather than vertically integrated features. Reorganize the early work into end-to-end slices, such as generating guideline-based feedback and displaying or editing it in Thesis Management, with each iteration producing usable functionality.",
+      "locations" : [ {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "• Modularize Thesis Management to prepare integration of the feedback module (Objective 4)"
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "• Implement core feedback generation pipeline (Objective 1)"
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "• Connect feedback tool to Thesis Management (Objective 4)"
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "• Extend feedback workflow in Thesis Management for thesis (Objective 4)"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "COMPLETENESS",
+      "title" : "Schedule includes a documentation task",
+      "description" : "The final iteration includes documentation, which is explicitly outside the permitted schedule scope. Remove this task and use the iteration for development or research work, such as testing the integrated system against predefined cases and recording measurable evaluation results as research outputs rather than documentation work.",
+      "locations" : [ {
+        "page" : 10,
+        "section" : "Schedule",
+        "quote" : "• Review the system and check for bugs\n\n• Documentation"
+      } ]
+    } ],
+    "ungrounded" : [ {
+      "severity" : "MAJOR",
+      "category" : "FORMATTING",
+      "title" : "Iteration 1 falls outside the thesis period",
+      "description" : "Iteration 1 is scheduled before the stated thesis start date and does not provide an explicit end date. Correct the iteration dates so the schedule is consistent with the project period and each iteration has a clearly defined 2–4 week interval.",
+      "locations" : [ {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "The Bachelor thesis starts on 26.06.2026 and the submission is on 26.10.2026. We divided the time into several two-week iterations... Iteration 1 (08.06.2026 - 2 weeks)"
+      } ]
+    } ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "METHODOLOGY",
+      "title" : "Iteration deliverables lack measurable acceptance criteria",
+      "description" : "Several work items are not measurable because they do not define concrete outputs, evaluation data, or acceptance criteria. Replace vague activities such as implementing, connecting, building, and evaluating with deliverables that can be verified, for example an executable end-to-end prototype, a defined test set, and specified quality or performance metrics.",
+      "locations" : [ {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "• Implement core feedback generation pipeline (Objective 1)"
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "• Connect feedback tool to Thesis Management (Objective 4)"
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "• Build prototype implementations for agentic and prompt chaining setups"
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "• Evaluate different LLM models and providers (Objective 3)"
+      }, {
+        "page" : 10,
+        "section" : "Schedule",
+        "quote" : "• Review the system and check for bugs"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Early iterations are split by technical layers rather than vertical features",
+      "description" : "The first iterations split the work into architectural and subsystem phases: modularization, a core pipeline, and later portal integration. This is a horizontal, waterfall-like decomposition rather than vertically integrated features. Reorganize the early work into end-to-end slices, such as generating guideline-based feedback and displaying or editing it in Thesis Management, with each iteration producing usable functionality.",
+      "locations" : [ {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "• Modularize Thesis Management to prepare integration of the feedback module (Objective 4)"
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "• Implement core feedback generation pipeline (Objective 1)"
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "• Connect feedback tool to Thesis Management (Objective 4)"
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "• Extend feedback workflow in Thesis Management for thesis (Objective 4)"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "COMPLETENESS",
+      "title" : "Schedule includes a documentation task",
+      "description" : "The final iteration includes documentation, which is explicitly outside the permitted schedule scope. Remove this task and use the iteration for development or research work, such as testing the integrated system against predefined cases and recording measurable evaluation results as research outputs rather than documentation work.",
+      "locations" : [ {
+        "page" : 10,
+        "section" : "Schedule",
+        "quote" : "• Review the system and check for bugs\n\n• Documentation"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  } ],
+  "categoryFailures" : { }
+}

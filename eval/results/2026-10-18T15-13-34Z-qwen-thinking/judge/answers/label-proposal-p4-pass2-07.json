@@ -1,0 +1,250 @@
+{
+  "job": "label-proposal-p4-pass2-07",
+  "answer": {
+    "judgements": [
+      {
+        "id": "F6b1479930e",
+        "rule": "R11",
+        "reason": "R11 forbids contractions; the Problem section uses \"doesn't\".",
+        "label": "valid"
+      },
+      {
+        "id": "Ff1aca10280",
+        "rule": "R3",
+        "reason": "R3 requires at least two paragraphs per objective subsection; 4.4 is a single paragraph that continues onto page 7.",
+        "label": "valid"
+      },
+      {
+        "id": "F36678828eb",
+        "rule": "R14",
+        "reason": "R14 requires introductory text before the first subsection; '1 Introduction' is followed directly by '1.1 Setting'.",
+        "label": "valid"
+      },
+      {
+        "id": "F34386448e8",
+        "rule": "R14",
+        "reason": "R14 requires introductory text before the first subsection; the Introduction goes straight to 1.1.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc3b9ba50d5",
+        "rule": "R10",
+        "reason": "R10 requires long, informative captions; Figure 2's caption is only 'System Architecture'.",
+        "label": "valid"
+      },
+      {
+        "id": "F461522653b",
+        "rule": "R4",
+        "reason": "R4 says the Problem section must contain no solutions; its last sentence proposes a self-service platform as the solution.",
+        "label": "valid"
+      },
+      {
+        "id": "F25318ddcbd",
+        "rule": "R1",
+        "reason": "R1 requires an Abstract; the document goes from the title page straight to the Introduction.",
+        "label": "valid"
+      },
+      {
+        "id": "F7e92d5ca66",
+        "rule": "R7",
+        "reason": "R7 says internet sources belong in footnotes; the online Keycloak guide [Key26] is in the bibliography.",
+        "label": "valid"
+      },
+      {
+        "id": "Ff2d0bcb10e",
+        "rule": "R6",
+        "reason": "R6 forbids double verbs; Objective 2 and the 4.2 heading say 'Design and implement'.",
+        "label": "valid"
+      },
+      {
+        "id": "F942bf04f82",
+        "rule": "R1",
+        "reason": "R1 requires an Abstract, and the document has none.",
+        "label": "valid"
+      },
+      {
+        "id": "F99bfcfc352",
+        "rule": "R7",
+        "reason": "R7 says internet sources belong in footnotes; the Keycloak documentation [Key26] is a bibliography entry.",
+        "label": "valid"
+      },
+      {
+        "id": "F3a7067cc19",
+        "rule": "R20",
+        "reason": "R20 forbids thesis-writing tasks in the schedule; Iteration 7 is 'Write the thesis'.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc6161d5303",
+        "rule": "R18",
+        "reason": "R18 requires confirming that all AI-generated text was checked; the statement has no such sentence.",
+        "label": "valid"
+      },
+      {
+        "id": "Ff1a7ec3ad7",
+        "rule": "R4",
+        "reason": "R4 says the Problem section must contain no solutions; its last sentence prescribes the platform.",
+        "label": "valid"
+      },
+      {
+        "id": "F8c7e858706",
+        "rule": "R6",
+        "reason": "R6 forbids double verbs; Objective 2 and its heading use 'Design and implement'.",
+        "label": "valid"
+      },
+      {
+        "id": "F91b31e1f99",
+        "rule": "R18",
+        "reason": "R18 requires the confirmation of checking AI-generated text; the statement ends at the table without it.",
+        "label": "valid"
+      },
+      {
+        "id": "F12d06ca1d7",
+        "rule": null,
+        "reason": "No rule forbids the first person, and R11's list of things to avoid does not include 'I'.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F39877ef73a",
+        "rule": "R7",
+        "reason": "R7 says internet sources belong in footnotes, not the bibliography; [Key26] is an online guide listed in the bibliography.",
+        "label": "valid"
+      },
+      {
+        "id": "F2a68bd69bc",
+        "rule": "R20",
+        "reason": "R20 forbids thesis-writing tasks in the schedule; Iteration 7 contains them.",
+        "label": "valid"
+      },
+      {
+        "id": "F1a624da555",
+        "rule": "R20",
+        "reason": "R20 forbids thesis-writing tasks in the schedule; Iteration 7 lists writing the thesis.",
+        "label": "valid"
+      },
+      {
+        "id": "F48baa67b1f",
+        "rule": "R10",
+        "reason": "R10 requires informative captions; Figure 2's caption is only 'System Architecture'.",
+        "label": "valid"
+      },
+      {
+        "id": "Ffe842c63e0",
+        "rule": "R11",
+        "reason": "R11 forbids contractions; the document uses 'doesn't'.",
+        "label": "valid"
+      },
+      {
+        "id": "Fdd9de79870",
+        "rule": "R3",
+        "reason": "R3 requires two paragraphs per objective subsection; 4.4 clearly has only one. Whether 4.2 has one or two is unclear because the figure splits its text.",
+        "label": "valid"
+      },
+      {
+        "id": "F2feae4bf35",
+        "rule": "R1",
+        "reason": "R1 requires an Abstract, and the document has none.",
+        "label": "valid"
+      },
+      {
+        "id": "F6fc3b69d3c",
+        "rule": "R12",
+        "reason": "nslcd and sshd are names of software programs, not prose abbreviations that R12 requires to be defined, and SSH itself is defined.",
+        "label": "invalid"
+      },
+      {
+        "id": "F0ecc350739",
+        "rule": "R20",
+        "reason": "R20 forbids thesis-writing tasks in the schedule; Iteration 7 is thesis writing.",
+        "label": "valid"
+      },
+      {
+        "id": "F437656be21",
+        "rule": "R4",
+        "reason": "R4 says the Problem section must contain no solutions; its final sentence proposes the platform.",
+        "label": "valid"
+      },
+      {
+        "id": "F131953a20e",
+        "rule": "R1",
+        "reason": "R1 requires an Abstract; the document goes from the title page to the Introduction.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd6743fc6c1",
+        "rule": "R3",
+        "reason": "R3 requires two paragraphs per objective subsection, and 4.4 has only one. The claim is wrong for 4.1 and 4.3, which have two paragraphs each.",
+        "label": "valid"
+      },
+      {
+        "id": "F1456b4e11a",
+        "rule": "R7",
+        "reason": "R7 says internet sources belong in footnotes; the Keycloak guide is in the bibliography.",
+        "label": "valid"
+      },
+      {
+        "id": "F9c700f310d",
+        "rule": "R11",
+        "reason": "R11 forbids contractions; the document uses 'doesn't'.",
+        "label": "valid"
+      },
+      {
+        "id": "F6296e16db5",
+        "rule": "R3",
+        "reason": "R3 requires at least two paragraphs per objective subsection; 4.4 is one paragraph.",
+        "label": "valid"
+      },
+      {
+        "id": "F8e1f1be913",
+        "rule": "R11",
+        "reason": "R11 forbids contractions; the document uses 'doesn't' on page 3.",
+        "label": "valid"
+      },
+      {
+        "id": "Fa28562bdfa",
+        "rule": "R1",
+        "reason": "R1 requires an Abstract, and the document has none.",
+        "label": "valid"
+      },
+      {
+        "id": "Fa586b15509",
+        "rule": "R8",
+        "reason": "R8 requires citations before the full stop; the text reads 'temporal model. [BBF01]'.",
+        "label": "valid"
+      },
+      {
+        "id": "Ff2559216ed",
+        "rule": "R10",
+        "reason": "R10 requires long, informative captions; Figure 2's caption is only two words.",
+        "label": "valid"
+      },
+      {
+        "id": "F8c79eca964",
+        "rule": "R8",
+        "reason": "R8 requires citations before the full stop; '[BBF01]' comes after the period.",
+        "label": "valid"
+      },
+      {
+        "id": "F15145f0ad5",
+        "rule": "R20",
+        "reason": "R20 forbids thesis-writing tasks in the schedule; Iteration 7 includes writing the thesis.",
+        "label": "valid"
+      },
+      {
+        "id": "F8375e383f6",
+        "rule": "R16",
+        "reason": "R16 requires consistent terms; the actor called 'maintainer' elsewhere, who reviews requests, is called 'resource owner' in 4.3.",
+        "label": "valid"
+      },
+      {
+        "id": "F10554f9b70",
+        "rule": "R7",
+        "reason": "R7 says internet sources belong in footnotes; [Key26] is documentation listed in the bibliography.",
+        "label": "valid"
+      }
+    ]
+  },
+  "costUsd": 0.2714628,
+  "durationMs": 34748,
+  "model": "claude-opus-5-5[1m]"
+}

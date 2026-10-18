@@ -1,0 +1,351 @@
+{
+  "categories" : [ {
+    "category" : "STRUCTURE",
+    "generated" : [ {
+      "severity" : "CRITICAL",
+      "category" : "STRUCTURE",
+      "title" : "Missing Abstract Section",
+      "description" : "The proposal does not contain an Abstract section, which is a required part of the structure."
+    }, {
+      "severity" : "CRITICAL",
+      "category" : "STRUCTURE",
+      "title" : "Proposal Exceeds Maximum Length",
+      "description" : "The proposal spans 10 pages of text, exceeding the allowed maximum of 6 pages for a complete proposal.",
+      "locations" : [ {
+        "page" : 1,
+        "quote" : "=== PAGE 1 ==="
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "CRITICAL",
+      "category" : "STRUCTURE",
+      "title" : "Missing Abstract Section",
+      "description" : "The proposal does not contain an Abstract section, which is a required part of the structure."
+    }, {
+      "severity" : "CRITICAL",
+      "category" : "STRUCTURE",
+      "title" : "Proposal Exceeds Maximum Length",
+      "description" : "The proposal spans 10 pages of text, exceeding the allowed maximum of 6 pages for a complete proposal.",
+      "locations" : [ {
+        "page" : 1,
+        "quote" : "=== PAGE 1 ==="
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "PROBLEM_MOTIVATION_OBJECTIVES",
+    "generated" : [ {
+      "severity" : "CRITICAL",
+      "category" : "LOGIC",
+      "title" : "Solution described in Problem section",
+      "description" : "The Problem section presents a concrete solution (a self‑service platform with expiry) which violates the guideline that the Problem section must only describe problems and their negative consequences.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "A **self-service platform** that arms the workflow engine of Keycloak with an expiry date at grant time **would end this accumulation**."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "METHODOLOGY",
+      "title" : "Double verbs in Objective formulation",
+      "description" : "Objective \"Design and implement connectors with expiry\" uses two verbs, violating the rule that each objective should be formulated with a single action verb.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Objectives",
+        "quote" : "•   **Design and implement** connectors with expiry"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "CRITICAL",
+      "category" : "LOGIC",
+      "title" : "Solution described in Problem section",
+      "description" : "The Problem section presents a concrete solution (a self‑service platform with expiry) which violates the guideline that the Problem section must only describe problems and their negative consequences.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "A **self-service platform** that arms the workflow engine of Keycloak with an expiry date at grant time **would end this accumulation**."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "METHODOLOGY",
+      "title" : "Double verbs in Objective formulation",
+      "description" : "Objective \"Design and implement connectors with expiry\" uses two verbs, violating the rule that each objective should be formulated with a single action verb.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Objectives",
+        "quote" : "•   **Design and implement** connectors with expiry"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "BIBLIOGRAPHY",
+    "generated" : [ {
+      "severity" : "CRITICAL",
+      "category" : "CITATION",
+      "title" : "Non-peer-reviewed source included in bibliography",
+      "description" : "The bibliography contains an entry that is not a scientific, peer‑reviewed publication (Keycloak Server Administration Guide). Internet sources must be placed as footnotes, not in the bibliography.",
+      "locations" : [ {
+        "page" : 8,
+        "section" : "Bibliography",
+        "quote" : "[Key26] Keycloak Authors, “**Keycloak Server Administration Guide**.” Accessed: Oct. 18, 2026. [Online]. Available: https://www.keycloak.org/docs/latest/server_admin/"
+      } ]
+    } ],
+    "ungrounded" : [ {
+      "severity" : "CRITICAL",
+      "category" : "CITATION",
+      "title" : "Non-peer-reviewed source included in bibliography",
+      "description" : "The bibliography contains an entry that is not a scientific, peer‑reviewed publication (Keycloak Server Administration Guide). Internet sources must be placed as footnotes, not in the bibliography.",
+      "locations" : [ {
+        "page" : 8,
+        "section" : "Bibliography",
+        "quote" : "[Key26] Keycloak Authors, “**Keycloak Server Administration Guide**.” Accessed: Oct. 18, 2026. [Online]. Available: https://www.keycloak.org/docs/latest/server_admin/"
+      } ]
+    } ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "FIGURES",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "FIGURES",
+      "title" : "Figure caption too short",
+      "description" : "The caption for Figure 2 is generic and not sufficiently descriptive, violating the requirement for long, informative captions.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "Figure  2: **System  Architecture**"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "FIGURES",
+      "title" : "Figure caption too short",
+      "description" : "The caption for Figure 2 is generic and not sufficiently descriptive, violating the requirement for long, informative captions.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "Figure  2: **System  Architecture**"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STYLE",
+    "generated" : [ {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Contraction usage",
+      "description" : "Contractions are not allowed; replace with the full form.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "The current process **doesn’t** scale and is the worst bottleneck of the chair."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Superlative usage",
+      "description" : "Superlatives such as \"worst\" should be avoided in formal writing.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "The current process doesn’t scale and is the **worst** bottleneck of the chair."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Undefined abbreviation",
+      "description" : "Abbreviation SSH appears without being defined first.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Existing Infrastructure",
+        "quote" : "Keycloak serves as the identity provider of the chair. It handles OpenID Connect (OIDC) login, groups, and profle attributes such as **SSH** public keys, and its Fine-Grained Admin Permissions..."
+      } ]
+    } ],
+    "ungrounded" : [ {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Undefined abbreviation",
+      "description" : "Abbreviation SSH appears without being defined first.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Existing Infrastructure",
+        "quote" : "Keycloak serves as the identity provider of the chair. It handles OpenID Connect (OIDC) login, groups, and profle attributes such as **SSH** public keys, and its Fine-Grained Admin Permissions..."
+      } ]
+    } ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Contraction usage",
+      "description" : "Contractions are not allowed; replace with the full form.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "The current process **doesn’t** scale and is the worst bottleneck of the chair."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Superlative usage",
+      "description" : "Superlatives such as \"worst\" should be avoided in formal writing.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "The current process doesn’t scale and is the **worst** bottleneck of the chair."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STRUCTURE",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Missing introductory text before first subsection",
+      "description" : "Section \"Introduction\" jumps directly to subsection 1.1 without any introductory paragraph, violating the guideline that every section must include introductory text before its first subsection.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Introduction",
+        "quote" : "1 Introduction\n\n**1.1 Setting**"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Missing introductory text before first subsection",
+      "description" : "Section \"Introduction\" jumps directly to subsection 1.1 without any introductory paragraph, violating the guideline that every section must include introductory text before its first subsection.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Introduction",
+        "quote" : "1 Introduction\n\n**1.1 Setting**"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_FORMATTING",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "OTHER",
+      "title" : "Inconsistent spelling of “recertifcation”",
+      "description" : "The term for periodic review is spelled inconsistently as “Recertifcation” and “recertifcation”, which may cause confusion.",
+      "locations" : [ {
+        "page" : 6,
+        "section" : "4.4 Automate the Recertifcation of Grants",
+        "quote" : "Automate the **Recertifcation** of Grants"
+      }, {
+        "page" : 6,
+        "section" : "4.4 Automate the Recertifcation of Grants",
+        "quote" : "I will attach a **recertifcation** interval to each resource"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "OTHER",
+      "title" : "Inconsistent spelling of “workflow”",
+      "description" : "The term “workflow” is misspelled as “workfow” in multiple locations, leading to inconsistent terminology.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "4 Objective",
+        "quote" : "the **workfow** engine of Keycloak at grant time"
+      }, {
+        "page" : 6,
+        "section" : "4.3 Delegate Request Review Without Privilege Escalation",
+        "quote" : "the **workfow** engine fails"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "OTHER",
+      "title" : "Inconsistent spelling of “recertifcation”",
+      "description" : "The term for periodic review is spelled inconsistently as “Recertifcation” and “recertifcation”, which may cause confusion.",
+      "locations" : [ {
+        "page" : 6,
+        "section" : "4.4 Automate the Recertifcation of Grants",
+        "quote" : "Automate the **Recertifcation** of Grants"
+      }, {
+        "page" : 6,
+        "section" : "4.4 Automate the Recertifcation of Grants",
+        "quote" : "I will attach a **recertifcation** interval to each resource"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "OTHER",
+      "title" : "Inconsistent spelling of “workflow”",
+      "description" : "The term “workflow” is misspelled as “workfow” in multiple locations, leading to inconsistent terminology.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "4 Objective",
+        "quote" : "the **workfow** engine of Keycloak at grant time"
+      }, {
+        "page" : 6,
+        "section" : "4.3 Delegate Request Review Without Privilege Escalation",
+        "quote" : "the **workfow** engine fails"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "AI_TRANSPARENCY",
+    "generated" : [ {
+      "severity" : "CRITICAL",
+      "category" : "COMPLETENESS",
+      "title" : "Missing AI tool usage review confirmation",
+      "description" : "The AI Transparency Statement does not contain a sentence confirming that the author has carefully checked all AI‑generated text, as required by the guidelines.",
+      "locations" : [ {
+        "page" : 10,
+        "section" : "AI Transparency Statement",
+        "quote" : "I used **the following generative artificial intelligence (AI) tool while preparing this proposal**."
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "CRITICAL",
+      "category" : "COMPLETENESS",
+      "title" : "Missing AI tool usage review confirmation",
+      "description" : "The AI Transparency Statement does not contain a sentence confirming that the author has carefully checked all AI‑generated text, as required by the guidelines.",
+      "locations" : [ {
+        "page" : 10,
+        "section" : "AI Transparency Statement",
+        "quote" : "I used **the following generative artificial intelligence (AI) tool while preparing this proposal**."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "SCHEDULE",
+    "generated" : [ {
+      "severity" : "CRITICAL",
+      "category" : "OTHER",
+      "title" : "Thesis writing tasks included in schedule",
+      "description" : "The schedule contains an iteration dedicated to thesis writing and presentation preparation, which is prohibited. Iterations must focus solely on development/research work.",
+      "locations" : [ {
+        "page" : 7,
+        "section" : "Schedule",
+        "quote" : "Iteration 7 (18–31 March): **Write the thesis** and prepare the final presentation."
+      } ]
+    } ],
+    "ungrounded" : [ {
+      "severity" : "CRITICAL",
+      "category" : "OTHER",
+      "title" : "Thesis writing tasks included in schedule",
+      "description" : "The schedule contains an iteration dedicated to thesis writing and presentation preparation, which is prohibited. Iterations must focus solely on development/research work.",
+      "locations" : [ {
+        "page" : 7,
+        "section" : "Schedule",
+        "quote" : "Iteration 7 (18–31 March): **Write the thesis** and prepare the final presentation."
+      } ]
+    } ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  } ],
+  "categoryFailures" : { }
+}

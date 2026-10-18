@@ -1,0 +1,170 @@
+{
+  "assessment" : "NEEDS_WORK",
+  "score" : 45,
+  "summary" : "The proposal lacks several mandatory structural sections and key compliance elements such as the AI Transparency Statement and required figures, leading to critical deficiencies. While the topic is relevant, numerous formatting, citation, and scheduling issues further reduce its readiness for submission.",
+  "findings" : [ {
+    "severity" : "CRITICAL",
+    "category" : "structure",
+    "title" : "Missing Introduction section",
+    "description" : "The proposal does not contain an Introduction section, which is required by the guidelines."
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "structure",
+    "title" : "Missing Motivation section",
+    "description" : "The proposal does not contain a Motivation section, which is required by the guidelines."
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "structure",
+    "title" : "Missing Objective section with subsections",
+    "description" : "The proposal lacks an Objective section (Section 4) with the required bullet list of objectives and subsections for each objective."
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "figures",
+    "title" : "Insufficient number of figures",
+    "description" : "The proposal includes only one figure (Figure 1) whereas the guidelines require at least two diagrams, mockups, or figures.",
+    "locations" : [ {
+      "page" : 4,
+      "quote" : "Figure 1: Depiction of the top-level workfow of the interactions in relation to Artemis and GitLab CI"
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "figures",
+    "title" : "Missing required UML diagram",
+    "description" : "The guidelines mandate at least one suitable UML diagram (class, activity, component, etc.). No UML diagram is present in the submission.",
+    "locations" : [ {
+      "page" : 4,
+      "quote" : "Figure 1: Depiction of the top-level workfow of the interactions in relation to Artemis and GitLab CI"
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "other",
+    "title" : "Missing AI Transparency Statement",
+    "description" : "The proposal does not contain the required AI Transparency Statement, which must be included as a separate section detailing the AI tools used, purposes, sections affected, and a confirmation of manual review."
+  }, {
+    "severity" : "MAJOR",
+    "category" : "writing",
+    "title" : "Undefined abbreviation \"API\"",
+    "description" : "The abbreviation \"API\" is used without being defined on first occurrence.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Proposed Solution",
+      "quote" : "the build plan can be made available via the **API** of Artemis"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "figures",
+    "title" : "Figure not referenced in the text",
+    "description" : "Figure 1 is included but there is no textual reference such as \"Figure 1 shows...\" in the surrounding sections.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "System Requirements and Top Level Design",
+      "quote" : "Figure 1: Depiction of the top-level workfow of the interactions in relation to Artemis and GitLab CI"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "formatting",
+    "title" : "Abstract paragraphs too short",
+    "description" : "Paragraphs in the Abstract consist of only one or two lines, while the guidelines require each paragraph to be 5‑8 lines long.",
+    "locations" : [ {
+      "page" : 1,
+      "section" : "Abstract",
+      "quote" : "**Motivation/Objective: Since some Version Control (VC) systems include a Continuous Integration (CI) application, it is possible to reduce the efort required to maintain the servers and migrate the CI service from external applications as Jenkins to the inbuilt CI service.**"
+    }, {
+      "page" : 1,
+      "section" : "Abstract",
+      "quote" : "**Problem Statement: The interactive learning platform Artemis currently only supports setups with an external CI server.**"
+    }, {
+      "page" : 1,
+      "section" : "Abstract",
+      "quote" : "**Proposed Solution: GitLab CI is the CI system provided by the GitLab VC server.**"
+    }, {
+      "page" : 1,
+      "section" : "Abstract",
+      "quote" : "**(Expected) Results: We expect to use the bridge pattern to dynamically bind Artemis to the concrete implementation with GitLab CI.**"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "formatting",
+    "title" : "Overuse of bullet/numbered lists instead of prose",
+    "description" : "Section 4 contains a multi‑line enumerated list of workflow steps, which should be expressed in prose rather than a list of bullet points.",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "System Requirements and Top Level Design",
+      "quote" : "**1)  Name:      Exercise work fow**"
+    }, {
+      "page" : 4,
+      "section" : "System Requirements and Top Level Design",
+      "quote" : "**1.1:  Push code  template, test  cases**"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "formatting",
+    "title" : "Headings not in title case",
+    "description" : "Several subsection headings use sentence case instead of title case, violating formatting guidelines.",
+    "locations" : [ {
+      "page" : 4,
+      "quote" : "1.1: **Push code template, test cases and sample solution**"
+    }, {
+      "page" : 4,
+      "quote" : "1.2: **Assign exercise**"
+    }, {
+      "page" : 4,
+      "quote" : "2.1: **Participate in exercise**"
+    }, {
+      "page" : 4,
+      "quote" : "2.2: **Setup student repository**"
+    }, {
+      "page" : 4,
+      "quote" : "3.1: **Push code**"
+    }, {
+      "page" : 4,
+      "quote" : "3.3: **Send build results**"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "other",
+    "title" : "Thesis writing tasks appear in the schedule",
+    "description" : "The schedule includes tasks such as 'Writing ...', 'Thesis ready for review', 'Review finished', and 'Thesis' in October‑December, which violate the rule that the schedule must not contain thesis writing or documentation tasks.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Schedule",
+      "quote" : "October: **Writing . . .**"
+    }, {
+      "page" : 5,
+      "section" : "Schedule",
+      "quote" : "November – **2nd week: Thesis ready for review**"
+    }, {
+      "page" : 5,
+      "section" : "Schedule",
+      "quote" : "December – **1st week: Thesis**"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "logic",
+    "title" : "Paragraph combines multiple unrelated ideas",
+    "description" : "In the Problem Statement paragraph, the text discusses both the need to migrate CI to the VC server and the requirement to adjust the build plan after the task has been assigned, mixing two separate ideas in one paragraph.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Problem Statement",
+      "quote" : "The interactive learning platform Artemis currently only supports setups with an external CI server. **The CI server should be migrated to the VC server.** Furthermore, **it should be possible to adjust the build plan after the task has been assigned**."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "logic",
+    "title" : "Horizontal split of work items rather than vertically integrated features",
+    "description" : "The schedule breaks development into separate low‑level activities (e.g., Docker runner configuration, API configuration, sending build results) across different weeks instead of delivering end‑to‑end functionality in each iteration.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Schedule",
+      "quote" : "April – **2nd week: Docker GitLab CI Runner confguration**"
+    }, {
+      "page" : 5,
+      "section" : "Schedule",
+      "quote" : "May – **3nd week: prototype implementation: Artemis API for confguration**"
+    }, {
+      "page" : 5,
+      "section" : "Schedule",
+      "quote" : "June – **4th week: prototype implementation: Sending build results to Artemis**"
+    } ]
+  } ]
+}

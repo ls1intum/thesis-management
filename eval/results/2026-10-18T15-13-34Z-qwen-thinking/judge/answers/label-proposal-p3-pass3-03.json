@@ -1,0 +1,196 @@
+{
+  "job": "label-proposal-p3-pass3-03",
+  "answer": {
+    "judgements": [
+      {
+        "id": "F540fe19a57",
+        "rule": "R10",
+        "reason": "R10 requires long, informative captions. The Figure 2 caption runs several sentences and explains the folders, the leaf connectors, and the approval scope, so it is not brief.",
+        "label": "invalid"
+      },
+      {
+        "id": "Faa66c7bf9c",
+        "rule": null,
+        "reason": "No rule among R1–R20 forbids the first person.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Fb02d0edf05",
+        "rule": "R2",
+        "reason": "R2 limits the proposal text to 4-6 pages, but the 12-page count includes the title page, bibliography, and transparency statement. The body text on pages 2-9, after subtracting about 1.5 pages of figures, is near the limit and not a clear breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "F3e3c201845",
+        "rule": "R18",
+        "reason": "R18 only requires confirming that all AI-generated text was carefully checked. The statement says exactly that, so no specific phrasing is missing.",
+        "label": "invalid"
+      },
+      {
+        "id": "F2880c46c63",
+        "rule": "R11",
+        "reason": "R11 requires active voice. The quoted clause \"nobody records an end date\" is already in active voice.",
+        "label": "invalid"
+      },
+      {
+        "id": "F69100460a6",
+        "rule": "R4",
+        "reason": "R4 forbids solutions in the Problem section. The shared login and the full-admin-rights workaround are presented as current bad practice with negative consequences, not as proposed solutions.",
+        "label": "invalid"
+      },
+      {
+        "id": "Ff1f6483584",
+        "rule": null,
+        "reason": "No rule among R1–R20 forbids \"I\".",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F520b8e6517",
+        "rule": null,
+        "reason": "No rule among R1–R20 covers spelling or typos.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F26909af971",
+        "rule": "R2",
+        "reason": "R2 limits the text to 4-6 pages. Once figures are excluded, the body text is near the limit, so there is no clear breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fd774c774b0",
+        "rule": "R13",
+        "reason": "R13 asks for 5-8 line paragraphs. The cited paragraphs in the abstract, introduction, problem, motivation, and objective are about 4-6 lines each, and none exceeds ten lines.",
+        "label": "invalid"
+      },
+      {
+        "id": "F9585de6600",
+        "rule": "R4",
+        "reason": "R4 forbids solutions in the Problem section. The full-admin-rights workaround is described as current practice together with its negative consequence (it violates least privilege), not as a solution.",
+        "label": "invalid"
+      },
+      {
+        "id": "F94ecffec3b",
+        "rule": "R3",
+        "reason": "R3 requires at least two paragraphs per objective subsection. Subsection 4.3 has two: \"Requesters fill in...\" and \"Keycloak gates...\".",
+        "label": "invalid"
+      },
+      {
+        "id": "F230891ac4b",
+        "rule": null,
+        "reason": "R7 only says internet sources go in footnotes. No rule requires books to have a bibliography entry, and the store URL already sits in a footnote.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Fe275da73b6",
+        "rule": "R18",
+        "reason": "R18 only requires confirming that all AI-generated text was carefully checked. The statement does so, so there is nothing to change.",
+        "label": "invalid"
+      },
+      {
+        "id": "F1b78c54efe",
+        "rule": null,
+        "reason": "No rule among R1–R20 covers typos. The \"confgures\" spelling also looks like a lost \"fi\" ligature from text extraction.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F35b895c838",
+        "rule": "R11",
+        "reason": "R11 requires active voice. The quoted sentences have active main clauses; the cited participles (granted, bound, written, disabled) only modify nouns and are not passive constructions.",
+        "label": "invalid"
+      },
+      {
+        "id": "F8ab97fb178",
+        "rule": "R3",
+        "reason": "R3 requires at least two paragraphs per objective subsection. Subsection 4.1 has the tree paragraph and a separate connector paragraph after Figure 2 (\"Every target system joins...\").",
+        "label": "invalid"
+      },
+      {
+        "id": "F4d1cb70e9f",
+        "rule": "R2",
+        "reason": "R2 sets the abstract at 1/3-1/2 page. The abstract has two paragraphs of about ten lines, roughly a third of a full page, so it is not clearly too short.",
+        "label": "invalid"
+      },
+      {
+        "id": "F3381eb3f2d",
+        "rule": "R18",
+        "reason": "R18 only requires confirming that all AI-generated text was carefully checked. The statement already confirms this, so the missing purpose clause is not required.",
+        "label": "invalid"
+      },
+      {
+        "id": "F725fb06a80",
+        "rule": "R2",
+        "reason": "R2 limits the proposal text to 4-6 pages, but the 12-page count includes the title page, bibliography, and transparency statement. The body text is near the limit and not a clear breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "Ffac27e95a2",
+        "rule": "R3",
+        "reason": "R3 requires at least two paragraphs per objective subsection. Subsection 4.1 has two: the resource-tree paragraph and the connector paragraph after Figure 2.",
+        "label": "invalid"
+      },
+      {
+        "id": "F9ad4e0951a",
+        "rule": null,
+        "reason": "No rule among R1–R20 forbids \"I\" or asks for \"we\".",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Fc5f75624fa",
+        "rule": null,
+        "reason": "No rule among R1–R20 forbids the first person.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Fc7bb27bca3",
+        "rule": "R4",
+        "reason": "R4 forbids solutions in the Problem section. The shared-login and admin-rights workarounds are described as current problematic behaviour with consequences, not as solutions.",
+        "label": "invalid"
+      },
+      {
+        "id": "F406f98c506",
+        "rule": "R4",
+        "reason": "R4 forbids solutions in the Problem section. The cited workarounds are framed as current practice that causes harm, not as proposed solutions.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fdaa312677a",
+        "rule": "R3",
+        "reason": "R3 requires at least two paragraphs per objective subsection. Subsection 4.1 also has the connector paragraph on page 6, so it has two.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fbfde503d8b",
+        "rule": "R16",
+        "reason": "R16 requires one term per concept in the author's prose. The same servers are called \"compute hosts\" in the Abstract and Problem but \"Linux hosts\" in the Introduction.",
+        "label": "valid"
+      },
+      {
+        "id": "F3a515ca782",
+        "rule": "R2",
+        "reason": "R2 caps the abstract at 1/2 page. The abstract has about ten lines, roughly a third of a page, so it does not exceed the limit.",
+        "label": "invalid"
+      },
+      {
+        "id": "F97e4d547a3",
+        "rule": null,
+        "reason": "No rule requires a textbook to appear as a bibliography entry. R7 only puts internet sources in footnotes, which the document already does.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Fab01b01497",
+        "rule": "R10",
+        "reason": "R10 requires long, informative captions. The Figure 1 caption runs several sentences and explains the actors, the use cases, and the secondary actors.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fac09b8242b",
+        "rule": null,
+        "reason": "No rule among R1–R20 forbids first-person formulations.",
+        "label": "out_of_scope"
+      }
+    ]
+  },
+  "costUsd": 0.3223348,
+  "durationMs": 53944,
+  "model": "claude-opus-5-5[1m]"
+}

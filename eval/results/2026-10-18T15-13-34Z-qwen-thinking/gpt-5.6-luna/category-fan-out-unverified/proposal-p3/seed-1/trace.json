@@ -1,0 +1,183 @@
+{
+  "categories" : [ {
+    "category" : "STRUCTURE",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "PROBLEM_MOTIVATION_OBJECTIVES",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Problem section presents workaround alternatives",
+      "description" : "The Problem section introduces current workaround alternatives, rather than limiting itself to the problems and their consequences. Remove the descriptions of shared-login and full-administrative-rights workarounds, or rephrase them solely as consequences of the underlying access-management problem without presenting the workaround itself.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "A student who needs a host, a channel, and a repository asks several people and waits for each of them, and some **bridge the delay with a shared login** that hides who acted."
+      }, {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "The **common workaround hands maintainers full administrative rights**, which violates the principle of least privilege [SS75] and exposes every user and every host to a mistake made for a single project."
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Problem section presents workaround alternatives",
+      "description" : "The Problem section introduces current workaround alternatives, rather than limiting itself to the problems and their consequences. Remove the descriptions of shared-login and full-administrative-rights workarounds, or rephrase them solely as consequences of the underlying access-management problem without presenting the workaround itself.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "A student who needs a host, a channel, and a repository asks several people and waits for each of them, and some **bridge the delay with a shared login** that hides who acted."
+      }, {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "The **common workaround hands maintainers full administrative rights**, which violates the principle of least privilege [SS75] and exposes every user and every host to a mistake made for a single project."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "BIBLIOGRAPHY",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "FIGURES",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STYLE",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Repeated first-person phrasing",
+      "description" : "The proposal repeatedly uses first-person “I,” although the guidelines advise avoiding it. Replace it with an explicit subject such as “the platform,” “the implementation,” or “the thesis,” and retain first person only where describing the thesis approach is necessary.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "In this thesis, **I develop** a self-service platform on which every grant carries an expiry date from the moment somebody requests it."
+      }, {
+        "page" : 4,
+        "section" : "Objective",
+        "quote" : "In this thesis, **I develop** a self-service platform on which requesters ask for time-limited access, maintainers decide, and access ends on its own."
+      }, {
+        "page" : 6,
+        "section" : "Objective — Unify Heterogeneous Resources in One Tree",
+        "quote" : "**I implement** the keycloak-group, slack-channel, github-team, and webhook connectors, whose credentials administrators configure at runtime."
+      }, {
+        "page" : 7,
+        "section" : "Objective — Enforce an Expiry Date on Every Grant",
+        "quote" : "**I evaluate** correctness with an automated scenario that provisions SSH, Slack, and GitHub access from one approval."
+      }, {
+        "page" : 8,
+        "section" : "Objective — Delegate the Approval of Requests to Maintainers",
+        "quote" : "**I reach** this objective when administrators perform fewer manual actions and requesters wait less than in the current process."
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "**I divide** the work into six iterations of four weeks, each ending with a vertically integrated increment that a user can try in the web application."
+      }, {
+        "page" : 12,
+        "section" : "Transparency in the Use of AI Tools",
+        "quote" : "**I used** the following generative artificial intelligence (AI) tool while preparing this proposal."
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Repeated first-person phrasing",
+      "description" : "The proposal repeatedly uses first-person “I,” although the guidelines advise avoiding it. Replace it with an explicit subject such as “the platform,” “the implementation,” or “the thesis,” and retain first person only where describing the thesis approach is necessary.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "In this thesis, **I develop** a self-service platform on which every grant carries an expiry date from the moment somebody requests it."
+      }, {
+        "page" : 4,
+        "section" : "Objective",
+        "quote" : "In this thesis, **I develop** a self-service platform on which requesters ask for time-limited access, maintainers decide, and access ends on its own."
+      }, {
+        "page" : 6,
+        "section" : "Objective — Unify Heterogeneous Resources in One Tree",
+        "quote" : "**I implement** the keycloak-group, slack-channel, github-team, and webhook connectors, whose credentials administrators configure at runtime."
+      }, {
+        "page" : 7,
+        "section" : "Objective — Enforce an Expiry Date on Every Grant",
+        "quote" : "**I evaluate** correctness with an automated scenario that provisions SSH, Slack, and GitHub access from one approval."
+      }, {
+        "page" : 8,
+        "section" : "Objective — Delegate the Approval of Requests to Maintainers",
+        "quote" : "**I reach** this objective when administrators perform fewer manual actions and requesters wait less than in the current process."
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "**I divide** the work into six iterations of four weeks, each ending with a vertically integrated increment that a user can try in the web application."
+      }, {
+        "page" : 12,
+        "section" : "Transparency in the Use of AI Tools",
+        "quote" : "**I used** the following generative artificial intelligence (AI) tool while preparing this proposal."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STRUCTURE",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_FORMATTING",
+    "generated" : [ {
+      "severity" : "MINOR",
+      "category" : "FORMATTING",
+      "title" : "Subsection Heading Uses Inconsistent Title Case",
+      "description" : "Capitalize “Every” in this subsection heading to follow title case. The corrected heading is “Enforce an Expiry Date on Every Grant.”",
+      "locations" : [ {
+        "page" : 7,
+        "section" : "Objective",
+        "quote" : "4.2 Enforce an Expiry Date on **Every** Grant"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MINOR",
+      "category" : "FORMATTING",
+      "title" : "Subsection Heading Uses Inconsistent Title Case",
+      "description" : "Capitalize “Every” in this subsection heading to follow title case. The corrected heading is “Enforce an Expiry Date on Every Grant.”",
+      "locations" : [ {
+        "page" : 7,
+        "section" : "Objective",
+        "quote" : "4.2 Enforce an Expiry Date on **Every** Grant"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "AI_TRANSPARENCY",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "SCHEDULE",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  } ],
+  "categoryFailures" : { }
+}

@@ -48,10 +48,36 @@ public final class GuidelinesPrompt {
 	 * @return the guidelines prompt text for this category
 	 */
 	public static String forCategory(StructuredGuidelines guidelines, ReviewCategory category) {
+		StringBuilder sb = header(guidelines,
+				"apply them precisely and keep your evaluation focused on the specific rules of your task above.");
+		appendRules(sb, guidelines, category);
+		return sb.toString();
+	}
+
+	/**
+	 * Builds the reference-guidelines section for every category at once, for a strategy that checks
+	 * them all in a single call. The overview and the security preamble appear once; each category's
+	 * rules follow under the same heading {@link #forCategory} gives them, so both renderings hand a
+	 * model byte-identical rule text.
+	 *
+	 * @param guidelines the research group's structured guidelines; may be {@code null}
+	 * @return the guidelines prompt text for all categories, in {@link ReviewCategory} order
+	 */
+	public static String forAllCategories(StructuredGuidelines guidelines) {
+		StringBuilder sb = header(guidelines,
+				"apply each category's rules precisely to the matching check above.");
+		for (ReviewCategory category : ReviewCategory.values()) {
+			appendRules(sb, guidelines, category);
+		}
+		return sb.toString();
+	}
+
+	/** The heading, the security preamble, and the group overview. */
+	private static StringBuilder header(StructuredGuidelines guidelines, String focus) {
 		StringBuilder sb = new StringBuilder("## Reference Guidelines\n\n");
 		sb.append("The following are the official guidelines from the research group, provided inside ")
 				.append(OPEN).append(" tags. They are the authoritative review criteria — ")
-				.append("apply them precisely and keep your evaluation focused on the specific rules of your task above.\n");
+				.append(focus).append("\n");
 		sb.append("\n").append(SECURITY_PROMPT).append("\n");
 
 		String overview = guidelines != null ? guidelines.overview() : null;
@@ -59,7 +85,11 @@ public final class GuidelinesPrompt {
 			sb.append("\n### Group overview\n");
 			appendFenced(sb, overview.strip());
 		}
+		return sb;
+	}
 
+	/** One category's rules under their own heading, or the fallback sentence when it has none. */
+	private static void appendRules(StringBuilder sb, StructuredGuidelines guidelines, ReviewCategory category) {
 		// Filter before branching: a category whose stored rules are all blank must still get the
 		// fallback sentence, otherwise the prompt carries a bare heading with no rules under it.
 		List<String> rules = (guidelines != null ? guidelines.rulesForCategory(category.getSlug()) : List.<String>of())
@@ -75,7 +105,6 @@ public final class GuidelinesPrompt {
 		} else {
 			appendFenced(sb, String.join("\n", rules));
 		}
-		return sb.toString();
 	}
 
 	/**

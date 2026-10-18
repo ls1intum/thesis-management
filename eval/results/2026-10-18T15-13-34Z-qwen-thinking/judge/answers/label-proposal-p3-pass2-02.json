@@ -1,0 +1,250 @@
+{
+  "job": "label-proposal-p3-pass2-02",
+  "answer": {
+    "judgements": [
+      {
+        "id": "Fc9d2ab389a",
+        "rule": "R16",
+        "reason": "R16 asks for consistent terminology. The same mechanism is called 'drift check' in 4.2 and 'drift report' in the Schedule, and other concepts also get two names ('administrative privileges/rights', 'compute/Linux hosts').",
+        "label": "valid"
+      },
+      {
+        "id": "F26e633a04f",
+        "rule": "R3",
+        "reason": "R3 requires at least two paragraphs per objective subsection. Section 4.1 is one paragraph: the text on page 6 continues the page-5 paragraph across the figure, with no new-paragraph indent.",
+        "label": "valid"
+      },
+      {
+        "id": "F2f95ae0b7a",
+        "rule": null,
+        "reason": "No rule says a scientific book must appear as a bibliography entry. R7 only says internet sources go in footnotes, and the document follows that.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Faf540ffd5e",
+        "rule": "R4",
+        "reason": "R4 forbids solutions in the Problem section. The shared login and the admin-rights workaround are described as harmful behaviours with negative consequences, not as proposed solutions.",
+        "label": "invalid"
+      },
+      {
+        "id": "F043f625ca0",
+        "rule": "R3",
+        "reason": "R3 requires at least two paragraphs per objective subsection. Section 4.2 has two indented paragraphs ('The platform changes...' and 'A drift check lists...').",
+        "label": "invalid"
+      },
+      {
+        "id": "F3381eb3f2d",
+        "rule": "R18",
+        "reason": "R18 requires a confirmation that the author checked all AI-generated text. The statement says 'I carefully checked all AI-generated text', and the rule requires no exact wording.",
+        "label": "invalid"
+      },
+      {
+        "id": "F9585de6600",
+        "rule": "R4",
+        "reason": "R4 forbids solutions in the Problem section. The workaround is presented as a problem that violates least privilege and exposes users, not as a solution.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fe275da73b6",
+        "rule": "R18",
+        "reason": "R18 only requires confirming that all AI text was carefully checked, and the statement does this. The suggested extra phrasing gives nothing the rule demands.",
+        "label": "invalid"
+      },
+      {
+        "id": "F1b78c54efe",
+        "rule": null,
+        "reason": "No rule covers spelling. 'confgures' is also most likely an fi-ligature lost in text extraction.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F97e4d547a3",
+        "rule": null,
+        "reason": "No rule requires books to have bibliography entries. Internet links in footnotes follow R7.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Ffbb4c67122",
+        "rule": null,
+        "reason": "No rule requires the Bruegge and Dutoit book to be a bibliography entry rather than a footnote.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F8738ff07b1",
+        "rule": "R3",
+        "reason": "R3 requires at least two paragraphs per objective subsection. Section 4.4 has two paragraphs ('Every resource carries...' and 'The platform writes...').",
+        "label": "invalid"
+      },
+      {
+        "id": "F6b5fb69cfe",
+        "rule": "R12",
+        "reason": "R12 requires abbreviations to be defined before use. UML is expanded at its first use on page 4, and the finding names no undefined abbreviation.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fa9ae5c0f8e",
+        "rule": "R13",
+        "reason": "R13 asks for 5-8 line paragraphs. The quoted lines are the end of a paragraph that starts on page 3, and the whole paragraph is about six lines.",
+        "label": "invalid"
+      },
+      {
+        "id": "F94ecffec3b",
+        "rule": "R3",
+        "reason": "R3 requires at least two paragraphs per objective subsection. Section 4.3 has two paragraphs ('Requesters fill...' and 'Keycloak gates...').",
+        "label": "invalid"
+      },
+      {
+        "id": "Fbd5c18acbc",
+        "rule": "R12",
+        "reason": "R12 requires abbreviations to be defined before use. UML is defined on page 4, before the Figure 1 caption on page 5.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fdaa312677a",
+        "rule": "R3",
+        "reason": "R3 requires at least two paragraphs per objective subsection. Section 4.1 is a single paragraph that runs across Figure 2.",
+        "label": "valid"
+      },
+      {
+        "id": "F19103dedb3",
+        "rule": null,
+        "reason": "No rule covers spelling or typos, and 'ft' is likely a ligature lost in extraction.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Fd732506f19",
+        "rule": "R11",
+        "reason": "R11 requires active voice. Reduced passive participles such as 'access granted for one project', 'written after I freeze the framework' and 'disabled on purpose' hide who acts.",
+        "label": "valid"
+      },
+      {
+        "id": "Ffac27e95a2",
+        "rule": "R3",
+        "reason": "R3 requires at least two paragraphs per objective subsection, and Section 4.1 has only one.",
+        "label": "valid"
+      },
+      {
+        "id": "Fe0a86577af",
+        "rule": null,
+        "reason": "No rule covers spelling or typos.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Ffd6a06260b",
+        "rule": null,
+        "reason": "No rule forbids the first person, and R17 even asks for a first-person transparency statement.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Fff5f3aabf3",
+        "rule": "R2",
+        "reason": "R2 limits the proposal text to 4-6 pages. Pages 2-8 are partly filled by three figures, so the text adds up to roughly five to six pages, which is not a clear breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fc5045c7548",
+        "rule": "R4",
+        "reason": "R4 forbids solutions in the Problem section. The workaround is described through its negative consequences, not offered as a solution.",
+        "label": "invalid"
+      },
+      {
+        "id": "F9ef19ce99f",
+        "rule": "R4",
+        "reason": "R4 forbids solutions in the Problem section. The quoted workarounds are framed as problematic behaviours with harmful effects, which fits the section.",
+        "label": "invalid"
+      },
+      {
+        "id": "F725fb06a80",
+        "rule": "R2",
+        "reason": "R2 limits the proposal text, not the whole file. The 12-page count includes the title page, figures, bibliography and statement, and the text itself stays within the limit.",
+        "label": "invalid"
+      },
+      {
+        "id": "F94f0764407",
+        "rule": null,
+        "reason": "No rule requires a book cited in a footnote to also have a bibliography entry.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F455a77f2f6",
+        "rule": "R18",
+        "reason": "R18 requires a confirmation that the author carefully checked all AI-generated text. The statement gives it, and no exact wording is required.",
+        "label": "invalid"
+      },
+      {
+        "id": "F35b895c838",
+        "rule": "R11",
+        "reason": "R11 requires active voice. Reduced passives such as 'access granted for one project', 'written after I freeze' and 'disabled on purpose' are present. The cited 'I model...' sentence is active, but the other locations support the claim.",
+        "label": "valid"
+      },
+      {
+        "id": "Fcb85c2c770",
+        "rule": "R10",
+        "reason": "R10 requires a long, informative caption for every figure. The Figure 3 caption runs to five lines and explains the components and their credentials.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fe64f043d4e",
+        "rule": "R15",
+        "reason": "R15 requires title case in headings. The heading 'Unify Heterogeneous Resources in One Tree' is already in title case.",
+        "label": "invalid"
+      },
+      {
+        "id": "F3aede5d808",
+        "rule": null,
+        "reason": "No rule forbids using 'I'.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F2433b77258",
+        "rule": "R18",
+        "reason": "R18 requires a confirmation that the author carefully checked all AI-generated text. The statement gives it, and no specific clause is required.",
+        "label": "invalid"
+      },
+      {
+        "id": "F7864d27dc5",
+        "rule": "R3",
+        "reason": "R3 requires at least two paragraphs per objective subsection. Section 4.1 has one paragraph that continues across Figure 2.",
+        "label": "valid"
+      },
+      {
+        "id": "Fbf6dc2106e",
+        "rule": "R11",
+        "reason": "R11 requires active voice. 'that message is often the only record' uses a linking verb and is not passive.",
+        "label": "invalid"
+      },
+      {
+        "id": "F520b8e6517",
+        "rule": null,
+        "reason": "No rule covers spelling. 'efect' and similar words are ligatures lost in extraction.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F06b6b18615",
+        "rule": "R2",
+        "reason": "R2 limits the Problem section to 3/4 page. The section is about 18 lines on page 3, which is close to the limit but not clearly over it.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fdf891eaa59",
+        "rule": "R3",
+        "reason": "R3 requires at least two paragraphs per objective subsection, and Section 4.1 is a single paragraph.",
+        "label": "valid"
+      },
+      {
+        "id": "Fffb6371d33",
+        "rule": null,
+        "reason": "No rule says each objective must fit on one line, and here each objective does fit on one line anyway.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Facc830938b",
+        "rule": "R2",
+        "reason": "R2 limits the proposal text, not the total page count. The 12 pages include the title page, figures, bibliography and statement, and the text stays within limits.",
+        "label": "invalid"
+      }
+    ]
+  },
+  "costUsd": 0.3326268,
+  "durationMs": 50024,
+  "model": "claude-opus-5-5[1m]"
+}

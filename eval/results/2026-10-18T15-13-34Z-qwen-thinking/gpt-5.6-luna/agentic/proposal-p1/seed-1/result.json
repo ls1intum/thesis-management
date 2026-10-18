@@ -1,0 +1,132 @@
+{
+  "assessment" : "NEEDS_WORK",
+  "score" : 38,
+  "summary" : "The proposal has a promising problem context and a plausible GitLab CI direction, but it requires substantial revision before approval. Critical gaps are the missing required sections and AI transparency statement, insufficient bibliography, and only one figure without the required UML coverage. The problem section mixes in solution material, while the schedule is not organized into agile 2–4-week iterations and includes requirements, documentation, and thesis-writing tasks. Several smaller writing and figure-reference issues should also be corrected.",
+  "findings" : [ {
+    "severity" : "CRITICAL",
+    "category" : "STRUCTURE",
+    "title" : "Required sections are missing",
+    "description" : "The required proposal structure is incomplete: there is no Introduction, Motivation, or Objective section with objective subsections, and no AI Transparency Statement. Add each required section; Section 4 is titled “System Requirements and Top Level Design” and does not satisfy the required Objective section structure.",
+    "locations" : [ {
+      "page" : 1
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "BIBLIOGRAPHY",
+    "title" : "Bibliography is below the minimum publication count",
+    "description" : "The bibliography contains only five publications ([Booch95], [Gamma95], [Hilton16], [Krusche17], and [Krusche18]), below the required minimum of six to eight peer-reviewed publications. Add at least one more suitable peer-reviewed publication, preferably several to reach the target range.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "References",
+      "quote" : "References"
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "FIGURES",
+    "title" : "Required second figure and UML diagram are missing",
+    "description" : "Only one figure is included, but the guidelines require at least two diagrams, mockups, or figures, including at least one suitable UML diagram. Add a second figure and ensure that at least one figure is a suitable UML diagram.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "System Requirements and Top Level Design",
+      "quote" : "Figure 1: Depiction of the top-level workfow of the interactions in relation to Artemis and GitLab CI"
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "AI_TRANSPARENCY",
+    "title" : "AI transparency statement is missing",
+    "description" : "No AI transparency statement appears in the proposal. Add a first-person statement naming each AI tool used, its purpose, the sections affected, and confirmation that all AI-generated text was carefully checked.",
+    "locations" : [ {
+      "page" : 6
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "METHODOLOGY",
+    "title" : "Problem section proposes a solution",
+    "description" : "The Problem Statement includes a proposed change rather than only describing the problem and its consequences. Move solution material to the solution/objectives section and leave the problem section focused on the negative impact and affected stakeholders.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Problem Statement",
+      "quote" : "In exams, it would be useful to change the student build plans after the submission date to frstly hide the test cases during the exam and only compile the code and secondly use a debug compiler not failing due to a simple syntax error."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "COMPLETENESS",
+    "title" : "Stakeholder impacts are not explicitly developed",
+    "description" : "The Problem Statement does not clearly identify the relevant actors and how the problem negatively affects each of them. Name the affected stakeholders (for example, instructors, students, and university administrators) in the problem section and state the concrete consequence for each.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Problem Statement",
+      "quote" : "Particularly smaller universities might then not use Artemis."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "WRITING",
+    "title" : "Forbidden sentence starter in the abstract",
+    "description" : "This sentence starts with the forbidden starter “Since”. Rewrite it with a direct subject, for example by stating that the inclusion of CI in some VC systems enables the reduction.",
+    "locations" : [ {
+      "page" : 1,
+      "section" : "Abstract",
+      "quote" : "Since some Version Control (VC) systems include a Continuous Integration (CI) application, it is possible to reduce the efort required to maintain the servers and migrate the CI service from external applications as Jenkins to the inbuilt CI service."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "WRITING",
+    "title" : "API is not defined",
+    "description" : "The abbreviation “API” is used without being expanded on first use. Define it as “application programming interface (API)” before using the abbreviation.",
+    "locations" : [ {
+      "page" : 1,
+      "section" : "Abstract",
+      "quote" : "This system supports the provision of the build plan via the Artemis API, which makes it possible to update the build plan retrospectively, as the build plan is fetched from the API on each run."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "FIGURES",
+    "title" : "Figure 1 is not explicitly referenced",
+    "description" : "The figure is not explicitly referenced by figure number in the prose. Replace the generic reference to “section 4” with a direct reference such as “Figure 1 shows…”, so readers can locate the diagram unambiguously.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Proposed Solution",
+      "quote" : "This process is illustrated in section 4."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "SCHEDULE",
+    "title" : "Schedule contains prohibited writing and documentation tasks",
+    "description" : "The schedule includes thesis writing, documentation, review, and revision tasks, although the schedule rules require it to focus on development/research work. Remove or relocate these tasks from the proposal schedule and retain concrete research or implementation deliverables.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Time Schedule",
+      "quote" : "–  2nd week: Documentation for installation and confguration of Artemis with GitLab CI"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "SCHEDULE",
+    "title" : "Schedule includes a requirements task",
+    "description" : "The schedule contains a requirements-only work item, which conflicts with the agile scheduling rule. Replace it with a time-boxed, vertically integrated deliverable selected from a backlog, such as an end-to-end requirement implemented and validated through Artemis and GitLab CI.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Time Schedule",
+      "quote" : "–  4th week: Requirements (parallel to prototype implementation)"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "SCHEDULE",
+    "title" : "Schedule lacks agile iterations and measurable deliverables",
+    "description" : "The plan is organized as isolated monthly or single-week activities rather than 2–4-week iterations with measurable, end-to-end deliverables. Recast the work into explicit 2–4-week iterations, each naming a demonstrable outcome and linking it to a high-level objective.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Time Schedule",
+      "quote" : "–  4th week: Models (parallel to prototype implementation)"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "WRITING",
+    "title" : "Forbidden sentence starter in related work",
+    "description" : "The sentence starts with the forbidden phrase “In order to”. Replace it with a direct formulation such as “The lecture is split up…” without the introductory phrase.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Related Work",
+      "quote" : "In order to implement this idea, the lecture is split up"
+    } ]
+  } ]
+}

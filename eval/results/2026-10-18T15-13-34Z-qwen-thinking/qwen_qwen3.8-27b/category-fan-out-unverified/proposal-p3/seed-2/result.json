@@ -1,0 +1,110 @@
+{
+  "assessment" : "ACCEPTABLE",
+  "score" : 72,
+  "summary" : "The proposal is well-structured with a clear problem statement, well-defined objectives, a concrete schedule, and appropriate figures; structure, problem/motivation, figures, and schedule sections all passed review without issues. The primary weakness is the pervasive use of first-person singular \"I\" (~20 instances), which directly violates the stated writing-style guideline and should be replaced with the platform or other actors as subject. Secondary issues include a terminology inconsistency (\"compute hosts\" vs. \"Linux hosts\"), a minor gap in the AI transparency statement wording, and a bibliographic formatting suggestion; all are straightforward to fix.",
+  "findings" : [ {
+    "severity" : "MAJOR",
+    "category" : "writing",
+    "title" : "Excessive use of first-person singular \"I\" throughout the main body",
+    "description" : "The writing style guidelines explicitly state to avoid \"I.\" The main body of the proposal (Abstract through Schedule, pages 2–9) uses \"I\" approximately 20 times (e.g., \"I develop,\" \"I evaluate,\" \"I model,\" \"I implement,\" \"I reach this objective,\" \"I divide,\" \"I reserve,\" and six \"I deliver\" in the Schedule). The guideline advises using \"we\" sparingly only for the thesis approach, or restructuring sentences so the platform/actor is the subject. The student should replace most instances of \"I\" with the platform as subject (e.g., \"The platform models resources as a tree…\") or use passive-free active constructions. The AI Transparency section (page 12) is a personal disclosure where \"I\" is expected and can be retained.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Abstract",
+      "quote" : "In this thesis, **I develop** a self-service platform on which every grant carries an expiry date from the moment somebody requests it."
+    }, {
+      "page" : 2,
+      "section" : "Abstract",
+      "quote" : "**I evaluate** the platform at the chair on correctness, administrative effort, and extensibility."
+    }, {
+      "page" : 4,
+      "section" : "Objective",
+      "quote" : "Following the object-oriented software engineering method of Bruegge and Dutoit, **I pursue** four objectives:"
+    }, {
+      "page" : 5,
+      "section" : "Objective",
+      "quote" : "**I model** the resources as a tree whose folders pass maintainership, audit policy, and grants down to leaves bound to target systems."
+    }, {
+      "page" : 6,
+      "section" : "Objective",
+      "quote" : "**I implement** the keycloak-group, slack-channel, github-team, and webhook connectors, whose credentials administrators configure at runtime."
+    }, {
+      "page" : 6,
+      "section" : "Objective",
+      "quote" : "**I reach** this objective when the webhook connector, written after **I freeze** the framework, needs one new class and one registry entry."
+    }, {
+      "page" : 7,
+      "section" : "Objective",
+      "quote" : "**I evaluate** correctness with an automated scenario that provisions SSH, Slack, and GitHub access from one approval."
+    }, {
+      "page" : 7,
+      "section" : "Objective",
+      "quote" : "**I reach** this objective when each access disappears after expiry and, in a second run with the workflow engine disabled on purpose, the drift check reports the remaining SSH membership."
+    }, {
+      "page" : 8,
+      "section" : "Objective",
+      "quote" : "Keycloak gates its workflow API on a realm-wide administrative role that maintainers must not hold, so **I split** each decision into a review step."
+    }, {
+      "page" : 8,
+      "section" : "Objective",
+      "quote" : "**I reach** this objective when administrators perform fewer manual actions and requesters wait less than in the current process."
+    }, {
+      "page" : 8,
+      "section" : "Objective",
+      "quote" : "**I reach** this objective when the platform answers, for any grant, who requested it and why, who reviewed and granted it, when it ended, and who confirmed it since."
+    }, {
+      "page" : 9,
+      "section" : "Schedule",
+      "quote" : "**I divide** the work into six iterations of four weeks, each ending with a vertically integrated increment that a user can try in the web application."
+    }, {
+      "page" : 9,
+      "section" : "Schedule",
+      "quote" : "**I reserve** the final two weeks, from 18 to 31 March 2027, as buffer for features that slip from earlier iterations."
+    }, {
+      "page" : 9,
+      "section" : "Schedule",
+      "quote" : "Iteration 1, 1–28 October (Objective 1): **I deliver** the Keycloak realm with OpenID Connect login, SSH key self-service, and the resource tree with inherited maintainers."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Inconsistent terminology: \"compute hosts\" vs \"Linux hosts\"",
+    "description" : "The same servers are referred to as \"compute hosts\" in the Abstract and Problem section, but as \"Linux hosts\" in the Introduction and in Figure 3. Per the consistency rule, the same concept should always use the same term. Choose one term (e.g., \"compute hosts\" or \"Linux hosts\") and use it uniformly throughout the prose.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Abstract",
+      "quote" : "A university research chair grants access to its **compute hosts**, chat workspace, and code repositories by hand"
+    }, {
+      "page" : 2,
+      "section" : "Introduction",
+      "quote" : "Linux hosts with graphics processors that its members reach over Secure Shell (SSH)"
+    }, {
+      "page" : 3,
+      "section" : "Problem",
+      "quote" : "former students keep login access to the **compute hosts** long after they leave"
+    }, {
+      "page" : 7,
+      "section" : "Objective",
+      "quote" : "Linux host sshd, nslcd, pam_access"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "AI transparency statement omits the explicit purpose clause (correctness and coherence)",
+    "description" : "The transparency statement says 'I carefully checked all AI-generated text, revised it where necessary, verified every citation against the original publication, and compiled and inspected every diagram.' While this confirms the author checked the text, the guidelines call for language similar to 'I have carefully checked all texts created with these tools to ensure that they are correct and make sense.' The student's version describes the actions taken (revised, verified, compiled, inspected) but omits the explicit purpose clause — that the checking was done to ensure the text is correct and makes sense. The student should add or rephrase to include that purpose, e.g., 'I have carefully checked all AI-generated text to ensure that it is correct and makes sense, and revised it where necessary…'",
+    "locations" : [ {
+      "page" : 12,
+      "section" : "AI Transparency Statement",
+      "quote" : "I carefully checked all AI-generated text, revised it where necessary, verified every citation against the original publication, and compiled and inspected every diagram."
+    } ]
+  }, {
+    "severity" : "SUGGESTION",
+    "category" : "citation",
+    "title" : "Bruegge & Dutoit book cited only as a store URL in a footnote",
+    "description" : "The book by Bruegge and Dutoit ('Object-Oriented Software Engineering: Using UML, Patterns, and Java') is a scientific book, which the guidelines list as a valid bibliography entry type (conference papers, journal articles, scientific books). Currently it appears only as a Pearson store URL in footnote 3 on page 4. Consider adding it as a proper bibliography entry (authors, title, publisher, year, ISBN) and keeping the store URL (or dropping it) as a supplementary footnote. This would give the reference the formal bibliographic treatment expected for a scientific book.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Objective",
+      "quote" : "Following the object-oriented software engineering method of Bruegge and Dutoit **3**, I pursue four objectives:"
+    } ]
+  } ]
+}

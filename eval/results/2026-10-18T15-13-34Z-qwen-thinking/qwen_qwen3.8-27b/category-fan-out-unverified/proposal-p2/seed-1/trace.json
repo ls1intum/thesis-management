@@ -1,0 +1,519 @@
+{
+  "categories" : [ {
+    "category" : "STRUCTURE",
+    "generated" : [ {
+      "severity" : "MINOR",
+      "category" : "FORMATTING",
+      "title" : "Objectives presented as a numbered list instead of a bullet list",
+      "description" : "The guidelines specify that the Objective section must start with a short introduction and a **bullet list** of 3-4 high-level objectives. The proposal uses a numbered list (1., 2., 3., 4.) instead of an unordered/bullet list (e.g., using bullet symbols such as • or –). This is a minor deviation from the prescribed format. Change the numbered items to bullet points to match the guideline.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "The scope of the thesis is to fulfill the following goals: 1. Generate Feedback Based on Guidelines 2. Highlight Changes Across Iterations 3. Compare Prompting Techniques and LLM Models 4. Integrate With Thesis Management"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MINOR",
+      "category" : "FORMATTING",
+      "title" : "Objectives presented as a numbered list instead of a bullet list",
+      "description" : "The guidelines specify that the Objective section must start with a short introduction and a **bullet list** of 3-4 high-level objectives. The proposal uses a numbered list (1., 2., 3., 4.) instead of an unordered/bullet list (e.g., using bullet symbols such as • or –). This is a minor deviation from the prescribed format. Change the numbered items to bullet points to match the guideline.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "The scope of the thesis is to fulfill the following goals: 1. Generate Feedback Based on Guidelines 2. Highlight Changes Across Iterations 3. Compare Prompting Techniques and LLM Models 4. Integrate With Thesis Management"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "PROBLEM_MOTIVATION_OBJECTIVES",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "BIBLIOGRAPHY",
+    "generated" : [ {
+      "severity" : "CRITICAL",
+      "category" : "CITATION",
+      "title" : "Bibliography contains only 5 publications; minimum of 6 required",
+      "description" : "The bibliography lists only 5 entries ([TP21], [AAM17], [BBE10], [Bog+07], [NM06]). The guidelines require at least 6–8 peer-reviewed publications. The student must add at least one additional relevant peer-reviewed publication to meet the minimum threshold.",
+      "locations" : [ {
+        "page" : 11,
+        "section" : "Bibliography",
+        "quote" : "[TP21] T. Tuononen and A. Parpala … [AAM17] P. Ashwin, A. Abbas, and M. McLean … [BBE10] J. Bitchener, H. Basturkmen, and M. East … [Bog+07] M. Bogo, C. Regehr, R. Power, and G. Regehr … [NM06] D. J. Nicol and D. Macfarlane-Dick …"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "CRITICAL",
+      "category" : "CITATION",
+      "title" : "Bibliography contains only 5 publications; minimum of 6 required",
+      "description" : "The bibliography lists only 5 entries ([TP21], [AAM17], [BBE10], [Bog+07], [NM06]). The guidelines require at least 6–8 peer-reviewed publications. The student must add at least one additional relevant peer-reviewed publication to meet the minimum threshold.",
+      "locations" : [ {
+        "page" : 11,
+        "section" : "Bibliography",
+        "quote" : "[TP21] T. Tuononen and A. Parpala … [AAM17] P. Ashwin, A. Abbas, and M. McLean … [BBE10] J. Bitchener, H. Basturkmen, and M. East … [Bog+07] M. Bogo, C. Regehr, R. Power, and G. Regehr … [NM06] D. J. Nicol and D. Macfarlane-Dick …"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "FIGURES",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STYLE",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Forbidden sentence starter: 'As'",
+      "description" : "The sentence begins with 'As,' which is a forbidden sentence starter per the group's writing style guidelines. Rewrite the sentence to avoid starting with 'As' (e.g., 'Figure 1 illustrates how an LLM-powered Reviewer works alongside the supervisor…').",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Motivation",
+        "quote" : "**As** Figure 1 illustrates, an LLM-powered Reviewer works alongside the supervisor, evaluating the thesis against the research group's writing guidelines and generating automatic formative feedback [NM06]."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Forbidden sentence starter: 'Since'",
+      "description" : "The sentence begins with 'Since,' which is a forbidden sentence starter per the group's writing style guidelines. Restructure the sentence so it does not open with 'Since' (e.g., 'Guidelines may not already be in a suitable format; in that case, the LLM may first need to preprocess them…').",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "**Since** guidelines may not already be in a suitable format, the LLM may first need to preprocess them into a structured representation it can act on."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Forbidden sentence starter: 'Because'",
+      "description" : "The sentence begins with 'Because,' which is a forbidden sentence starter per the group's writing style guidelines. Restructure the sentence (e.g., 'The feedback tool is powered by LLMs, so students can obtain instant formative feedback at any point during the writing process.').",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Motivation",
+        "quote" : "**Because** the feedback tool is powered by LLMs, students can obtain instant formative feedback at any point during the writing process."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Passive voice: 'are governed by'",
+      "description" : "The phrase 'are governed by institutional conventions' is passive voice. The guidelines require active voice with identifiable actors. Rewrite to make the subject the actor, e.g., 'institutional conventions rather than research substance govern these issues.'",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Problem",
+        "quote" : "Having to wait for feedback on purely formal aspects of a thesis or proposal can be frustrating for students, as these issues **are governed by** institutional conventions rather than research substance."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Passive voice: 'is produced'",
+      "description" : "The phrase 'no LLM-generated feedback is produced at all' uses passive voice. Rewrite in active voice, e.g., 'the tool produces no LLM-generated feedback, and all feedback comes from the supervisor.'",
+      "locations" : [ {
+        "page" : 6,
+        "section" : "Objective",
+        "quote" : "In one mode, no LLM-generated feedback **is produced** at all and all feedback comes from the supervisor."
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Forbidden sentence starter: 'As'",
+      "description" : "The sentence begins with 'As,' which is a forbidden sentence starter per the group's writing style guidelines. Rewrite the sentence to avoid starting with 'As' (e.g., 'Figure 1 illustrates how an LLM-powered Reviewer works alongside the supervisor…').",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Motivation",
+        "quote" : "**As** Figure 1 illustrates, an LLM-powered Reviewer works alongside the supervisor, evaluating the thesis against the research group's writing guidelines and generating automatic formative feedback [NM06]."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Forbidden sentence starter: 'Since'",
+      "description" : "The sentence begins with 'Since,' which is a forbidden sentence starter per the group's writing style guidelines. Restructure the sentence so it does not open with 'Since' (e.g., 'Guidelines may not already be in a suitable format; in that case, the LLM may first need to preprocess them…').",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "**Since** guidelines may not already be in a suitable format, the LLM may first need to preprocess them into a structured representation it can act on."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Forbidden sentence starter: 'Because'",
+      "description" : "The sentence begins with 'Because,' which is a forbidden sentence starter per the group's writing style guidelines. Restructure the sentence (e.g., 'The feedback tool is powered by LLMs, so students can obtain instant formative feedback at any point during the writing process.').",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Motivation",
+        "quote" : "**Because** the feedback tool is powered by LLMs, students can obtain instant formative feedback at any point during the writing process."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Passive voice: 'are governed by'",
+      "description" : "The phrase 'are governed by institutional conventions' is passive voice. The guidelines require active voice with identifiable actors. Rewrite to make the subject the actor, e.g., 'institutional conventions rather than research substance govern these issues.'",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Problem",
+        "quote" : "Having to wait for feedback on purely formal aspects of a thesis or proposal can be frustrating for students, as these issues **are governed by** institutional conventions rather than research substance."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Passive voice: 'is produced'",
+      "description" : "The phrase 'no LLM-generated feedback is produced at all' uses passive voice. Rewrite in active voice, e.g., 'the tool produces no LLM-generated feedback, and all feedback comes from the supervisor.'",
+      "locations" : [ {
+        "page" : 6,
+        "section" : "Objective",
+        "quote" : "In one mode, no LLM-generated feedback **is produced** at all and all feedback comes from the supervisor."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STRUCTURE",
+    "generated" : [ {
+      "severity" : "MINOR",
+      "category" : "STRUCTURE",
+      "title" : "Single-line paragraph in Introduction",
+      "description" : "The sentence 'The student, by contrast, hands in the thesis itself as a single final submission.' stands alone as a one-line paragraph at the end of Section 1. Paragraphs should be 5–8 lines; a 1-line paragraph should be merged into the preceding paragraph about the iterative proposal workflow to form a coherent closing thought.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Introduction",
+        "quote" : "The student, by contrast, hands in the thesis itself as a **single final submission**."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "STRUCTURE",
+      "title" : "Paragraph exceeds 10 lines in Motivation",
+      "description" : "The paragraph beginning 'Integrating large language models (LLMs) to assist supervisors…' spans approximately 11 rendered lines, exceeding the 10-line upper bound. It can be split after the sentence ending '[BBE10, NM06]' to separate the description of the Reviewer's role from the resulting benefits (quality improvement and scalability).",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Motivation",
+        "quote" : "Integrating large language models (LLMs) to assist supervisors with non-content-related feedback could improve the thesis writing process. As Figure 1 illustrates, an LLM-powered Reviewer works alongside the supervisor, evaluating the thesis against the research group's writing guidelines and generating automatic formative feedback [NM06]. This Reviewer covers exactly the repetitive, non-content-related layer of feedback that currently drains supervisors, freeing them to focus on specific content and on discussions with their students, which is key in mentoring environments [BBE10, NM06]. **The quality of feedback improves as supervisors have more time to engage deeply with the thesis, leading to better outcomes overall. Additionally, supervisors can provide feedback faster, making the process more scalable.**"
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Paragraph exceeds 10 lines and mixes multiple ideas in Motivation",
+      "description" : "The paragraph beginning 'Better and faster feedback has significant advantages for students as well…' spans approximately 12 rendered lines (continuing from page 4 onto page 5) and covers at least three distinct ideas: (1) the immediacy benefit of faster feedback, (2) the student's knowledge-and-beliefs model and self-regulated learning process, and (3) the LLM-powered capability to obtain instant feedback at any point. It should be split into at least two paragraphs so that each develops a single coherent idea.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Motivation",
+        "quote" : "Better and faster feedback has significant advantages for students as well. When feedback arrives sooner, students can act on it while the writing process is still fresh in their minds. **The student brings both knowledge, comprising theoretical and practical domain expertise, and beliefs about how to approach the task and how to work and write scientifically, which include the student's personal interpretation of the writing guidelines. Drawing on this knowledge and these beliefs, the student writes the thesis. Through self-regulated learning, the student engages with the Reviewer's feedback, reflecting on it independently or discussing it with the supervisor, and uses it to improve their knowledge, beliefs, and broader strategy for proceeding with the work [NM06]. Because the feedback tool is powered by LLMs, students can obtain instant formative feedback at any point during the writing process.**"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MINOR",
+      "category" : "STRUCTURE",
+      "title" : "Single-line paragraph in Introduction",
+      "description" : "The sentence 'The student, by contrast, hands in the thesis itself as a single final submission.' stands alone as a one-line paragraph at the end of Section 1. Paragraphs should be 5–8 lines; a 1-line paragraph should be merged into the preceding paragraph about the iterative proposal workflow to form a coherent closing thought.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Introduction",
+        "quote" : "The student, by contrast, hands in the thesis itself as a **single final submission**."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "STRUCTURE",
+      "title" : "Paragraph exceeds 10 lines in Motivation",
+      "description" : "The paragraph beginning 'Integrating large language models (LLMs) to assist supervisors…' spans approximately 11 rendered lines, exceeding the 10-line upper bound. It can be split after the sentence ending '[BBE10, NM06]' to separate the description of the Reviewer's role from the resulting benefits (quality improvement and scalability).",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Motivation",
+        "quote" : "Integrating large language models (LLMs) to assist supervisors with non-content-related feedback could improve the thesis writing process. As Figure 1 illustrates, an LLM-powered Reviewer works alongside the supervisor, evaluating the thesis against the research group's writing guidelines and generating automatic formative feedback [NM06]. This Reviewer covers exactly the repetitive, non-content-related layer of feedback that currently drains supervisors, freeing them to focus on specific content and on discussions with their students, which is key in mentoring environments [BBE10, NM06]. **The quality of feedback improves as supervisors have more time to engage deeply with the thesis, leading to better outcomes overall. Additionally, supervisors can provide feedback faster, making the process more scalable.**"
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Paragraph exceeds 10 lines and mixes multiple ideas in Motivation",
+      "description" : "The paragraph beginning 'Better and faster feedback has significant advantages for students as well…' spans approximately 12 rendered lines (continuing from page 4 onto page 5) and covers at least three distinct ideas: (1) the immediacy benefit of faster feedback, (2) the student's knowledge-and-beliefs model and self-regulated learning process, and (3) the LLM-powered capability to obtain instant feedback at any point. It should be split into at least two paragraphs so that each develops a single coherent idea.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Motivation",
+        "quote" : "Better and faster feedback has significant advantages for students as well. When feedback arrives sooner, students can act on it while the writing process is still fresh in their minds. **The student brings both knowledge, comprising theoretical and practical domain expertise, and beliefs about how to approach the task and how to work and write scientifically, which include the student's personal interpretation of the writing guidelines. Drawing on this knowledge and these beliefs, the student writes the thesis. Through self-regulated learning, the student engages with the Reviewer's feedback, reflecting on it independently or discussing it with the supervisor, and uses it to improve their knowledge, beliefs, and broader strategy for proceeding with the work [NM06]. Because the feedback tool is powered by LLMs, students can obtain instant formative feedback at any point during the writing process.**"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_FORMATTING",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "OTHER",
+      "title" : "Inconsistent naming: \"Reviewer\" vs \"feedback tool\"",
+      "description" : "The same system component is called an \"LLM-powered Reviewer\" (or \"LLM Reviewer\" / \"This Reviewer\") in the Motivation section and its figure caption, but is then referred to as \"the feedback tool\" throughout the Objective section and Figure 2 caption. The two names are never reconciled, leaving the reader uncertain whether they denote the same entity or different components. The author should pick one term (or explicitly define the relationship, e.g., \"the Reviewer, which we refer to as the feedback tool\") and use it consistently.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Motivation",
+        "quote" : "an **LLM-powered Reviewer** works alongside the supervisor, evaluating the thesis against the research group's writing guidelines and generating automatic formative feedback"
+      }, {
+        "page" : 5,
+        "section" : "Motivation",
+        "quote" : "an **LLM Reviewer** works alongside the supervisor, generating formative feedback on the thesis"
+      }, {
+        "page" : 6,
+        "section" : "Objective",
+        "quote" : "When **the feedback tool** has access to previous iterations of the proposal or thesis, it can compare the latest submission with earlier ones"
+      }, {
+        "page" : 7,
+        "section" : "Objective",
+        "quote" : "the supervisor and **the feedback tool** work in parallel, with specialized agents analyzing the thesis"
+      }, {
+        "page" : 8,
+        "section" : "Objective",
+        "quote" : "supervisors invoke **the feedback tool** to write feedback directly into Thesis Management"
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "OTHER",
+      "title" : "Inconsistent hyphenation: \"prompt-chaining\" vs \"prompt chaining\"",
+      "description" : "The technique is written with a hyphen on page 2 (\"prompt-chaining\") when used as a compound modifier, but without a hyphen on pages 8 and 9 (\"prompt chaining\") in both noun and modifier positions. Pick one form and use it consistently throughout the proposal.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "We evaluate single-prompt, **prompt-chaining**, and agentic setups"
+      }, {
+        "page" : 8,
+        "section" : "Objective",
+        "quote" : "Alternatives include **prompt chaining** and agentic setups"
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "Build prototype implementations for agentic and **prompt chaining** setups"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "OTHER",
+      "title" : "Inconsistent naming: \"Reviewer\" vs \"feedback tool\"",
+      "description" : "The same system component is called an \"LLM-powered Reviewer\" (or \"LLM Reviewer\" / \"This Reviewer\") in the Motivation section and its figure caption, but is then referred to as \"the feedback tool\" throughout the Objective section and Figure 2 caption. The two names are never reconciled, leaving the reader uncertain whether they denote the same entity or different components. The author should pick one term (or explicitly define the relationship, e.g., \"the Reviewer, which we refer to as the feedback tool\") and use it consistently.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Motivation",
+        "quote" : "an **LLM-powered Reviewer** works alongside the supervisor, evaluating the thesis against the research group's writing guidelines and generating automatic formative feedback"
+      }, {
+        "page" : 5,
+        "section" : "Motivation",
+        "quote" : "an **LLM Reviewer** works alongside the supervisor, generating formative feedback on the thesis"
+      }, {
+        "page" : 6,
+        "section" : "Objective",
+        "quote" : "When **the feedback tool** has access to previous iterations of the proposal or thesis, it can compare the latest submission with earlier ones"
+      }, {
+        "page" : 7,
+        "section" : "Objective",
+        "quote" : "the supervisor and **the feedback tool** work in parallel, with specialized agents analyzing the thesis"
+      }, {
+        "page" : 8,
+        "section" : "Objective",
+        "quote" : "supervisors invoke **the feedback tool** to write feedback directly into Thesis Management"
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "OTHER",
+      "title" : "Inconsistent hyphenation: \"prompt-chaining\" vs \"prompt chaining\"",
+      "description" : "The technique is written with a hyphen on page 2 (\"prompt-chaining\") when used as a compound modifier, but without a hyphen on pages 8 and 9 (\"prompt chaining\") in both noun and modifier positions. Pick one form and use it consistently throughout the proposal.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "We evaluate single-prompt, **prompt-chaining**, and agentic setups"
+      }, {
+        "page" : 8,
+        "section" : "Objective",
+        "quote" : "Alternatives include **prompt chaining** and agentic setups"
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "Build prototype implementations for agentic and **prompt chaining** setups"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "AI_TRANSPARENCY",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "COMPLETENESS",
+      "title" : "AI transparency statement does not specify which sections of the proposal the tools were used for",
+      "description" : "The statement says tools were used 'across diferent stages of the writing process' but never names specific proposal sections (e.g., Abstract, Introduction, Problem, Motivation, Objective, Schedule). The guidelines require the statement to specify which sections the AI tools were applied to. The student should indicate, for example, which tools were used in which sections (e.g., 'I used Grammarly throughout all sections,' 'I used ChatGPT primarily in the Problem and Motivation sections for idea expansion').",
+      "locations" : [ {
+        "page" : 12,
+        "section" : "AI Transparency Statement",
+        "quote" : "In preparing this proposal, I made use of several AI-based tools across **diferent stages of the writing process**."
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "COMPLETENESS",
+      "title" : "AI transparency statement does not specify which sections of the proposal the tools were used for",
+      "description" : "The statement says tools were used 'across diferent stages of the writing process' but never names specific proposal sections (e.g., Abstract, Introduction, Problem, Motivation, Objective, Schedule). The guidelines require the statement to specify which sections the AI tools were applied to. The student should indicate, for example, which tools were used in which sections (e.g., 'I used Grammarly throughout all sections,' 'I used ChatGPT primarily in the Problem and Motivation sections for idea expansion').",
+      "locations" : [ {
+        "page" : 12,
+        "section" : "AI Transparency Statement",
+        "quote" : "In preparing this proposal, I made use of several AI-based tools across **diferent stages of the writing process**."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "SCHEDULE",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "LOGIC",
+      "title" : "Iteration dates inconsistent with thesis start date and total duration",
+      "description" : "The thesis is stated to start on 26.06.2026 and end on 26.10.2026 (~17.4 weeks), yet Iteration 1 begins on 08.06.2026, which is 18 days before the stated start date. Furthermore, the nine iterations span 08.06–26.10, totaling approximately 20 weeks of work, which exceeds the actual 17.4-week thesis period. The dates need to be reconciled so all iterations fall within the declared start–end window and the total planned work fits within the available time.",
+      "locations" : [ {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "The Bachelor thesis starts on 26.06.2026 and the submission is on 26.10.2026."
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "Iteration 1 (08.06.2026 - 2 weeks)"
+      }, {
+        "page" : 10,
+        "section" : "Schedule",
+        "quote" : "Iteration 9 (05.10.2026 - 3 weeks)"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "COMPLETENESS",
+      "title" : "Vague, non-measurable deliverables in several iterations",
+      "description" : "Several iterations contain tasks that lack concrete, measurable outcomes. 'Modularize Thesis Management to prepare integration' (Iter 1) does not state what the modularized structure looks like or what the acceptance criterion is. 'Build prototype implementations for agentic and prompt chaining setups' and 'Evaluate agentic and prompt chaining setups' (Iter 5) do not specify what the prototype must demonstrate or what evaluation metrics will be used. 'Build prototype implementations for the selected LLM models and providers' and 'Evaluate different LLM models and providers' (Iter 6) are similarly underspecified. 'Review the system and check for bugs' (Iter 9) is not a measurable deliverable. Each task should state a specific, verifiable outcome (e.g., 'The pipeline produces structured JSON feedback on a sample thesis covering N guideline categories' or 'A comparison table of accuracy/latency/cost across models X, Y, Z is produced').",
+      "locations" : [ {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "Modularize Thesis Management to prepare integration of the feedback module (Objective 4)"
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "Build prototype implementations for agentic and prompt chaining setups (Objective 3)"
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "Evaluate agentic and prompt chaining setups (Objective 3)"
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "Build prototype implementations for the selected LLM models and providers (Objective 3)"
+      }, {
+        "page" : 10,
+        "section" : "Schedule",
+        "quote" : "Review the system and check for bugs"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Documentation task included in the schedule",
+      "description" : "Iteration 9 lists 'Documentation' as a work item. The schedule should focus exclusively on development and research deliverables; thesis writing and documentation tasks should not appear here. If documentation is needed, it should be removed from the iteration plan.",
+      "locations" : [ {
+        "page" : 10,
+        "section" : "Schedule",
+        "quote" : "Iteration 9 (05.10.2026 - 3 weeks) • Review the system and check for bugs • Documentation"
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Introductory text says 'two-week iterations' but Iterations 8 and 9 are three weeks",
+      "description" : "The schedule introduction states 'We divided the time into several two-week iterations,' yet Iteration 8 and Iteration 9 are each listed as 3 weeks. The descriptive text should be updated to reflect the actual iteration lengths (e.g., 'two- to three-week iterations').",
+      "locations" : [ {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "We divided the time into several two-week iterations, each containing tasks to fulfill the overall goals:"
+      }, {
+        "page" : 10,
+        "section" : "Schedule",
+        "quote" : "Iteration 8 (14.09.2026 - 3 weeks)"
+      }, {
+        "page" : 10,
+        "section" : "Schedule",
+        "quote" : "Iteration 9 (05.10.2026 - 3 weeks)"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "LOGIC",
+      "title" : "Iteration dates inconsistent with thesis start date and total duration",
+      "description" : "The thesis is stated to start on 26.06.2026 and end on 26.10.2026 (~17.4 weeks), yet Iteration 1 begins on 08.06.2026, which is 18 days before the stated start date. Furthermore, the nine iterations span 08.06–26.10, totaling approximately 20 weeks of work, which exceeds the actual 17.4-week thesis period. The dates need to be reconciled so all iterations fall within the declared start–end window and the total planned work fits within the available time.",
+      "locations" : [ {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "The Bachelor thesis starts on 26.06.2026 and the submission is on 26.10.2026."
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "Iteration 1 (08.06.2026 - 2 weeks)"
+      }, {
+        "page" : 10,
+        "section" : "Schedule",
+        "quote" : "Iteration 9 (05.10.2026 - 3 weeks)"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "COMPLETENESS",
+      "title" : "Vague, non-measurable deliverables in several iterations",
+      "description" : "Several iterations contain tasks that lack concrete, measurable outcomes. 'Modularize Thesis Management to prepare integration' (Iter 1) does not state what the modularized structure looks like or what the acceptance criterion is. 'Build prototype implementations for agentic and prompt chaining setups' and 'Evaluate agentic and prompt chaining setups' (Iter 5) do not specify what the prototype must demonstrate or what evaluation metrics will be used. 'Build prototype implementations for the selected LLM models and providers' and 'Evaluate different LLM models and providers' (Iter 6) are similarly underspecified. 'Review the system and check for bugs' (Iter 9) is not a measurable deliverable. Each task should state a specific, verifiable outcome (e.g., 'The pipeline produces structured JSON feedback on a sample thesis covering N guideline categories' or 'A comparison table of accuracy/latency/cost across models X, Y, Z is produced').",
+      "locations" : [ {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "Modularize Thesis Management to prepare integration of the feedback module (Objective 4)"
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "Build prototype implementations for agentic and prompt chaining setups (Objective 3)"
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "Evaluate agentic and prompt chaining setups (Objective 3)"
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "Build prototype implementations for the selected LLM models and providers (Objective 3)"
+      }, {
+        "page" : 10,
+        "section" : "Schedule",
+        "quote" : "Review the system and check for bugs"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Documentation task included in the schedule",
+      "description" : "Iteration 9 lists 'Documentation' as a work item. The schedule should focus exclusively on development and research deliverables; thesis writing and documentation tasks should not appear here. If documentation is needed, it should be removed from the iteration plan.",
+      "locations" : [ {
+        "page" : 10,
+        "section" : "Schedule",
+        "quote" : "Iteration 9 (05.10.2026 - 3 weeks) • Review the system and check for bugs • Documentation"
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Introductory text says 'two-week iterations' but Iterations 8 and 9 are three weeks",
+      "description" : "The schedule introduction states 'We divided the time into several two-week iterations,' yet Iteration 8 and Iteration 9 are each listed as 3 weeks. The descriptive text should be updated to reflect the actual iteration lengths (e.g., 'two- to three-week iterations').",
+      "locations" : [ {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "We divided the time into several two-week iterations, each containing tasks to fulfill the overall goals:"
+      }, {
+        "page" : 10,
+        "section" : "Schedule",
+        "quote" : "Iteration 8 (14.09.2026 - 3 weeks)"
+      }, {
+        "page" : 10,
+        "section" : "Schedule",
+        "quote" : "Iteration 9 (05.10.2026 - 3 weeks)"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  } ],
+  "categoryFailures" : { }
+}

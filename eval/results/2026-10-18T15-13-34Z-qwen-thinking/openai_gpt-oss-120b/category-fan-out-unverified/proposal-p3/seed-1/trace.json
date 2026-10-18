@@ -1,0 +1,279 @@
+{
+  "categories" : [ {
+    "category" : "STRUCTURE",
+    "generated" : [ {
+      "severity" : "CRITICAL",
+      "category" : "STRUCTURE",
+      "title" : "Proposal exceeds maximum allowed length",
+      "description" : "The total text length of the proposal (excluding figures, tables, and schedule) spans more than 6 pages, violating the 4‑6 page limit.",
+      "locations" : [ {
+        "page" : 12,
+        "quote" : "**=== PAGE 12 ===**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Insufficient paragraph count in Objective subsection",
+      "description" : "Subsection 4.1 \"Unify Heterogeneous Resources in One Tree\" contains only a single paragraph, but the guidelines require at least two paragraphs per objective subsection.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "I model   the   resources    as a  tree whose    folders  pass   maintainership,      audit  policy, and   grants   down    to  leaves  bound     to target   systems,    as  the  UML     object   diagram   in Figure 2 shows."
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "CRITICAL",
+      "category" : "STRUCTURE",
+      "title" : "Proposal exceeds maximum allowed length",
+      "description" : "The total text length of the proposal (excluding figures, tables, and schedule) spans more than 6 pages, violating the 4‑6 page limit.",
+      "locations" : [ {
+        "page" : 12,
+        "quote" : "**=== PAGE 12 ===**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Insufficient paragraph count in Objective subsection",
+      "description" : "Subsection 4.1 \"Unify Heterogeneous Resources in One Tree\" contains only a single paragraph, but the guidelines require at least two paragraphs per objective subsection.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "I model   the   resources    as a  tree whose    folders  pass   maintainership,      audit  policy, and   grants   down    to  leaves  bound     to target   systems,    as  the  UML     object   diagram   in Figure 2 shows."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "PROBLEM_MOTIVATION_OBJECTIVES",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Objective subsections lack required detail",
+      "description" : "Each objective subsection contains only a single paragraph; the guidelines require at least two paragraphs with detailed descriptions for every objective.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "4.1 Unify Heterogeneous Resources in One Tree",
+        "quote" : "**I model the resources as a tree whose folders pass maintainership, audit policy, and grants down to leaves bound to target systems, as the UML object diagram in Figure 2 shows. One approval on a folder covers every resource beneath it, including later additions.**"
+      }, {
+        "page" : 6,
+        "section" : "4.2 Enforce an Expiry Date on Every Grant",
+        "quote" : "**The platform changes Keycloak only with the token of the calling user and holds no service account, so no background process of the platform can remove a membership.**"
+      }, {
+        "page" : 8,
+        "section" : "4.3 Delegate the Approval of Requests to Maintainers",
+        "quote" : "**Requesters fll in a declarative request form instead of naming resources, and its rules turn answers into requests for a resource path, an access level, and a duration, which the platform routes to the maintainer of each resource.**"
+      }, {
+        "page" : 8,
+        "section" : "4.4 Automate the Recertifcation of Active Grants",
+        "quote" : "**Every resource carries a recertifcation interval that its descendants inherit, and each elapsed interval opens a campaign in which the maintainer keeps or revokes every grant with an immutable decision.**"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Objective subsections lack required detail",
+      "description" : "Each objective subsection contains only a single paragraph; the guidelines require at least two paragraphs with detailed descriptions for every objective.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "4.1 Unify Heterogeneous Resources in One Tree",
+        "quote" : "**I model the resources as a tree whose folders pass maintainership, audit policy, and grants down to leaves bound to target systems, as the UML object diagram in Figure 2 shows. One approval on a folder covers every resource beneath it, including later additions.**"
+      }, {
+        "page" : 6,
+        "section" : "4.2 Enforce an Expiry Date on Every Grant",
+        "quote" : "**The platform changes Keycloak only with the token of the calling user and holds no service account, so no background process of the platform can remove a membership.**"
+      }, {
+        "page" : 8,
+        "section" : "4.3 Delegate the Approval of Requests to Maintainers",
+        "quote" : "**Requesters fll in a declarative request form instead of naming resources, and its rules turn answers into requests for a resource path, an access level, and a duration, which the platform routes to the maintainer of each resource.**"
+      }, {
+        "page" : 8,
+        "section" : "4.4 Automate the Recertifcation of Active Grants",
+        "quote" : "**Every resource carries a recertifcation interval that its descendants inherit, and each elapsed interval opens a campaign in which the maintainer keeps or revokes every grant with an immutable decision.**"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "BIBLIOGRAPHY",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "FIGURES",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STYLE",
+    "generated" : [ {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Undefined abbreviation \"UML\" used without prior definition",
+      "description" : "The abbreviation 'UML' appears in the proposal before it is defined, which violates the guideline that abbreviations must be defined before use.",
+      "locations" : [ {
+        "page" : 5,
+        "quote" : "Figure 1: **UML** use case diagram of the access management platform."
+      }, {
+        "page" : 6,
+        "quote" : "Figure 2: **UML** object diagram of a small resource tree at the chair."
+      }, {
+        "page" : 7,
+        "quote" : "Figure 3: **UML** component diagram of the platform and its environment."
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Undefined abbreviation \"UML\" used without prior definition",
+      "description" : "The abbreviation 'UML' appears in the proposal before it is defined, which violates the guideline that abbreviations must be defined before use.",
+      "locations" : [ {
+        "page" : 5,
+        "quote" : "Figure 1: **UML** use case diagram of the access management platform."
+      }, {
+        "page" : 6,
+        "quote" : "Figure 2: **UML** object diagram of a small resource tree at the chair."
+      }, {
+        "page" : 7,
+        "quote" : "Figure 3: **UML** component diagram of the platform and its environment."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STRUCTURE",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "FORMATTING",
+      "title" : "Paragraph exceeds recommended length",
+      "description" : "The abstract consists of a single paragraph that spans more than ten lines, exceeding the 5‑8 line recommendation.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "**A university   research    chair  grants   access   to its compute     hosts,  chat   workspace,** and  code   repositories    by  hand,   while  the  people    who   need   that  access  change    every semester.    Requests    travel   by  chat  message     or  e-mail,  nobody     records   an   end  date, and   access  granted    for  one   project   outlives   the  time   a person    spends    at the  chair."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "FORMATTING",
+      "title" : "Paragraph exceeds recommended length",
+      "description" : "The introductory paragraph of the \"Introduction\" section contains more than ten lines, exceeding the 5‑8 line recommendation.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Introduction",
+        "quote" : "**A  university    research    chair,  or  a team    of similar   size,  runs  shared    infrastruc** ture:  Linux    hosts   with   graphics     processors    that   its  members      reach   over   Secure"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "FORMATTING",
+      "title" : "Paragraph exceeds recommended length",
+      "description" : "The first paragraph of the \"Problem\" section is longer than ten lines, violating the 5‑8 line guideline.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "**Requesters,       such   as thesis  students    and   external   collaborators,     do  not  know** who manages which system. A student who needs a host, a channel, and a"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "FORMATTING",
+      "title" : "Paragraph exceeds recommended length",
+      "description" : "The introductory paragraph of the \"Motivation\" section exceeds ten lines, which is longer than the allowed range.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Motivation",
+        "quote" : "**Expiring    access   reverses   the   default   of an   organisation:     access   lasts  until  its** expiry   date  unless   its holder   explains    the  need   for more    time."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "FORMATTING",
+      "title" : "Paragraph exceeds recommended length",
+      "description" : "The opening paragraph of the \"Objective\" section (before the enumerated list) is longer than ten lines, exceeding the paragraph length guideline.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Objective",
+        "quote" : "**In  this  thesis,  I develop    a self-service    platform    on   which    requesters    ask  for** time-limited    access,   maintainers     decide,   and  access   ends  on  its own;   Figure  1  shows"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "FORMATTING",
+      "title" : "Paragraph exceeds recommended length",
+      "description" : "The abstract consists of a single paragraph that spans more than ten lines, exceeding the 5‑8 line recommendation.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "**A university   research    chair  grants   access   to its compute     hosts,  chat   workspace,** and  code   repositories    by  hand,   while  the  people    who   need   that  access  change    every semester.    Requests    travel   by  chat  message     or  e-mail,  nobody     records   an   end  date, and   access  granted    for  one   project   outlives   the  time   a person    spends    at the  chair."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "FORMATTING",
+      "title" : "Paragraph exceeds recommended length",
+      "description" : "The introductory paragraph of the \"Introduction\" section contains more than ten lines, exceeding the 5‑8 line recommendation.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Introduction",
+        "quote" : "**A  university    research    chair,  or  a team    of similar   size,  runs  shared    infrastruc** ture:  Linux    hosts   with   graphics     processors    that   its  members      reach   over   Secure"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "FORMATTING",
+      "title" : "Paragraph exceeds recommended length",
+      "description" : "The first paragraph of the \"Problem\" section is longer than ten lines, violating the 5‑8 line guideline.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "**Requesters,       such   as thesis  students    and   external   collaborators,     do  not  know** who manages which system. A student who needs a host, a channel, and a"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "FORMATTING",
+      "title" : "Paragraph exceeds recommended length",
+      "description" : "The introductory paragraph of the \"Motivation\" section exceeds ten lines, which is longer than the allowed range.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Motivation",
+        "quote" : "**Expiring    access   reverses   the   default   of an   organisation:     access   lasts  until  its** expiry   date  unless   its holder   explains    the  need   for more    time."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "FORMATTING",
+      "title" : "Paragraph exceeds recommended length",
+      "description" : "The opening paragraph of the \"Objective\" section (before the enumerated list) is longer than ten lines, exceeding the paragraph length guideline.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Objective",
+        "quote" : "**In  this  thesis,  I develop    a self-service    platform    on   which    requesters    ask  for** time-limited    access,   maintainers     decide,   and  access   ends  on  its own;   Figure  1  shows"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_FORMATTING",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "AI_TRANSPARENCY",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "SCHEDULE",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  } ],
+  "categoryFailures" : { }
+}

@@ -1,0 +1,92 @@
+{
+  "assessment" : "NEEDS_WORK",
+  "score" : 45,
+  "summary" : "The proposal lacks a required Abstract and includes a solution in the Problem section, violating core structural rules. It contains a double-verb objective, a short caption for Figure 2, a contraction, and a non‑peer‑reviewed bibliography entry. The AI transparency statement is missing the required verification sentence, and the schedule improperly includes thesis‑writing tasks. These issues must be addressed before the proposal can be considered acceptable.",
+  "findings" : [ {
+    "severity" : "CRITICAL",
+    "category" : "STRUCTURE",
+    "title" : "Missing Abstract",
+    "description" : "Missing required Abstract section.",
+    "locations" : [ {
+      "section" : "Abstract"
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "STRUCTURE",
+    "title" : "Missing Abstract",
+    "description" : "The proposal is missing the required Abstract section.",
+    "locations" : [ {
+      "section" : "Abstract"
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "METHODOLOGY",
+    "title" : "Solution in Problem Section",
+    "description" : "The Problem section presents a solution, which is prohibited.",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "Problem",
+      "quote" : "A self-service platform that arms the workfow engine of Keycloak with an expiry date at grant time would end this accumulation."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "METHODOLOGY",
+    "title" : "Double Verb in Objective",
+    "description" : "Objective bullet uses double verbs 'Design and implement', violating the single‑verb rule.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Objective",
+      "quote" : "•   Design   and   implement      connectors     with   expiry"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "FIGURES",
+    "title" : "Short Figure Caption",
+    "description" : "Figure 2 has an overly short caption; captions must be long and informative.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Figure 2",
+      "quote" : "Figure  2:  System  Architecture"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "WRITING",
+    "title" : "Contraction Used",
+    "description" : "The proposal uses a contraction \"doesn't\", which is prohibited.",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "Problem",
+      "quote" : "the current process doesn't scale and is the worst bottleneck of the chair."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "CITATION",
+    "title" : "Non‑peer‑reviewed bibliography entry",
+    "description" : "Bibliography entry [Key26] is a non‑peer‑reviewed online guide and should be a footnote, not a bibliography entry.",
+    "locations" : [ {
+      "page" : 8,
+      "section" : "Bibliography",
+      "quote" : "[Key26]       Keycloak     Authors,    “Keycloak     Server    Administration      Guide. ”   Accessed: Oct. 18, 2026. [Online]."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "OTHER",
+    "title" : "Missing AI verification sentence",
+    "description" : "AI transparency statement does not include a confirmation that the author carefully checked all AI‑generated text.",
+    "locations" : [ {
+      "page" : 10,
+      "section" : "AI Transparency",
+      "quote" : "I used the following generative artificial intelligence (AI) tool while preparing this proposal."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "OTHER",
+    "title" : "Thesis writing in schedule",
+    "description" : "Schedule includes thesis writing tasks, which are not allowed in the schedule.",
+    "locations" : [ {
+      "page" : 7,
+      "section" : "Schedule",
+      "quote" : "•   Iteration 7  (18–31      March):      Write   the   thesis  and   prepare    the  fnal   presen­ tation."
+    } ]
+  } ]
+}

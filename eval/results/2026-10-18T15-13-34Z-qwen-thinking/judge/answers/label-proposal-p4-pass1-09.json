@@ -1,0 +1,250 @@
+{
+  "job": "label-proposal-p4-pass1-09",
+  "answer": {
+    "judgements": [
+      {
+        "id": "F7e92d5ca66",
+        "rule": "R7",
+        "reason": "[Key26] is online documentation listed in the bibliography rather than as a footnote.",
+        "label": "valid"
+      },
+      {
+        "id": "F2f42b904e4",
+        "rule": "R11",
+        "reason": "The Problem section uses the contraction \"doesn't\".",
+        "label": "valid"
+      },
+      {
+        "id": "Feab16b205e",
+        "rule": "R20",
+        "reason": "Iteration 7 is thesis writing and presentation preparation.",
+        "label": "valid"
+      },
+      {
+        "id": "F9a4c338248",
+        "rule": "R8",
+        "reason": "\"temporal model. [BBF01]\" places the citation after the full stop.",
+        "label": "valid"
+      },
+      {
+        "id": "F40e1197831",
+        "rule": "R14",
+        "reason": "Section 1 goes directly to 1.1 Setting without introductory text.",
+        "label": "valid"
+      },
+      {
+        "id": "Ffd2c3c45bc",
+        "rule": "R20",
+        "reason": "Iteration 7 contains thesis writing, which the schedule must not include.",
+        "label": "valid"
+      },
+      {
+        "id": "Fcbc94ea8d8",
+        "rule": "R10",
+        "reason": "Figure 2's caption is just \"System Architecture\", which is neither long nor informative.",
+        "label": "valid"
+      },
+      {
+        "id": "Fee28ac1505",
+        "rule": "R18",
+        "reason": "The transparency statement, as given, ends with the table and has no confirmation that AI-generated text was checked.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc9445f792a",
+        "rule": "R1",
+        "reason": "There is no Abstract; the document goes from the title page straight to the Introduction.",
+        "label": "valid"
+      },
+      {
+        "id": "F1a9b37c61f",
+        "rule": "R11",
+        "reason": "The contraction \"doesn't\" appears in the Problem section.",
+        "label": "valid"
+      },
+      {
+        "id": "F5afbd63d85",
+        "rule": "R18",
+        "reason": "The statement contains no sentence confirming that AI-generated text was carefully checked.",
+        "label": "valid"
+      },
+      {
+        "id": "F39877ef73a",
+        "rule": "R7",
+        "reason": "The Keycloak guide is an internet source listed in the bibliography.",
+        "label": "valid"
+      },
+      {
+        "id": "F8365235531",
+        "rule": "R11",
+        "reason": "The contraction \"doesn't\" is used.",
+        "label": "valid"
+      },
+      {
+        "id": "F119b045376",
+        "rule": "R8",
+        "reason": "[BBF01] follows the full stop in the Motivation section.",
+        "label": "valid"
+      },
+      {
+        "id": "Ff1aca10280",
+        "rule": "R3",
+        "reason": "Subsection 4.4 consists of a single paragraph that continues across the page break.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd802c0058a",
+        "rule": "R18",
+        "reason": "The statement has no confirmation that AI-generated text was reviewed.",
+        "label": "valid"
+      },
+      {
+        "id": "Ff557e7d632",
+        "rule": "R8",
+        "reason": "The citation is placed after the period in \"temporal model. [BBF01]\".",
+        "label": "valid"
+      },
+      {
+        "id": "F7cb81412bd",
+        "rule": "R11",
+        "reason": "\"doesn't\" is a contraction.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb88a4f94b3",
+        "rule": "R20",
+        "reason": "The schedule includes a thesis-writing iteration.",
+        "label": "valid"
+      },
+      {
+        "id": "F34386448e8",
+        "rule": "R14",
+        "reason": "There is no introductory text between the Section 1 heading and 1.1.",
+        "label": "valid"
+      },
+      {
+        "id": "Fe7afaac036",
+        "rule": "R6",
+        "reason": "Objective 2 and the heading of 4.2 use the double verb \"Design and implement\".",
+        "label": "valid"
+      },
+      {
+        "id": "Fd4fd94e53a",
+        "rule": "R4",
+        "reason": "The Problem section proposes a self-service platform as a solution.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd9dc3ba05d",
+        "rule": "R14",
+        "reason": "The Introduction has no text before subsection 1.1.",
+        "label": "valid"
+      },
+      {
+        "id": "F8c7e858706",
+        "rule": "R6",
+        "reason": "The bullet and the heading use \"Design and implement\".",
+        "label": "valid"
+      },
+      {
+        "id": "Fd8e2042f1f",
+        "rule": "R2",
+        "reason": "The Problem section spans about six lines on page 2 and about 19 on page 3, roughly 0.6 page, so it does not clearly exceed 3/4 page.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fddb67292b3",
+        "rule": null,
+        "reason": "No rule forbids the first person \"I\"; R17 even asks for a first-person transparency statement.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F4cd482e11e",
+        "rule": "R6",
+        "reason": "Objective 2 uses the forbidden double verb \"Design and implement\".",
+        "label": "valid"
+      },
+      {
+        "id": "Fabceca2b76",
+        "rule": "R10",
+        "reason": "Figure 2's caption is generic and uninformative.",
+        "label": "valid"
+      },
+      {
+        "id": "Fe91c542058",
+        "rule": "R4",
+        "reason": "The Problem section ends with a proposed solution.",
+        "label": "valid"
+      },
+      {
+        "id": "F4a5656f34c",
+        "rule": "R14",
+        "reason": "Section 1 jumps directly into 1.1 without introductory text.",
+        "label": "valid"
+      },
+      {
+        "id": "Ff21a3c1d5e",
+        "rule": "R11",
+        "reason": "The superlative \"worst bottleneck\" appears in the Problem section.",
+        "label": "valid"
+      },
+      {
+        "id": "Fa0380ac22d",
+        "rule": "R10",
+        "reason": "Figure 2's caption is only \"System Architecture\".",
+        "label": "valid"
+      },
+      {
+        "id": "F131953a20e",
+        "rule": "R1",
+        "reason": "The required Abstract section is missing.",
+        "label": "valid"
+      },
+      {
+        "id": "Fca06821869",
+        "rule": "R13",
+        "reason": "The quotes join sentences from different paragraphs; the actual Problem paragraphs are near the 5-8 line range, each with one topic, so there is no clear breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "F24866bf416",
+        "rule": "R7",
+        "reason": "[Key26] is documentation in the bibliography rather than a footnote.",
+        "label": "valid"
+      },
+      {
+        "id": "F54960fda98",
+        "rule": "R1",
+        "reason": "The proposal has no Abstract.",
+        "label": "valid"
+      },
+      {
+        "id": "Fbbbaa48725",
+        "rule": "R4",
+        "reason": "The Problem section describes a solution platform.",
+        "label": "valid"
+      },
+      {
+        "id": "F566254d24a",
+        "rule": "R11",
+        "reason": "\"The objective is met when\" is passive voice and \"doesn't\" is a contraction; both appear in the document.",
+        "label": "valid"
+      },
+      {
+        "id": "Ff2d0bcb10e",
+        "rule": "R6",
+        "reason": "Objective 2 uses the double verb \"Design and implement\".",
+        "label": "valid"
+      },
+      {
+        "id": "F55ee34f5f7",
+        "rule": "R10",
+        "reason": "Figure 2's caption is not informative.",
+        "label": "valid"
+      }
+    ]
+  },
+  "costUsd": 0.2570268,
+  "durationMs": 29637,
+  "model": "claude-opus-5-5[1m]"
+}

@@ -1,0 +1,250 @@
+{
+  "job": "label-proposal-p1-pass3-02",
+  "answer": {
+    "judgements": [
+      {
+        "id": "F377e413a07",
+        "rule": "R2",
+        "reason": "R2 only sets an upper bound (at most 4-6 pages); being slightly short is not a breach, and the text roughly fills five pages anyway.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fdd5f08be5a",
+        "rule": "R20",
+        "reason": "The schedule contains 'October: Writing', '1st week: Thesis', a documentation task and a 'Requirements' item, which R20 forbids.",
+        "label": "valid"
+      },
+      {
+        "id": "Ffceff89527",
+        "rule": "R9",
+        "reason": "The document contains only one figure (Figure 1), so it falls short of the required two figures.",
+        "label": "valid"
+      },
+      {
+        "id": "Ff2d3955d59",
+        "rule": "R19",
+        "reason": "The schedule is a linear sequence (infrastructure, connectivity, API, results, documentation, writing) without iterative, agile increments, which breaches R19. Mapping iterations to objectives is not itself a rule.",
+        "label": "valid"
+      },
+      {
+        "id": "F9c83304887",
+        "rule": "R7",
+        "reason": "The bibliography lists only five publications, below the required 6-8.",
+        "label": "valid"
+      },
+      {
+        "id": "F55fc8a59b8",
+        "rule": "R7",
+        "reason": "Only five references are listed, fewer than the required 6-8 peer-reviewed publications.",
+        "label": "valid"
+      },
+      {
+        "id": "F5b3bcfd60b",
+        "rule": "R9",
+        "reason": "Only one figure is present, while at least two are required.",
+        "label": "valid"
+      },
+      {
+        "id": "Fcdabe6458a",
+        "rule": "R11",
+        "reason": "Passive constructions such as 'the base build plan is copied' and 'must be updated manually' occur in the document, breaching the active-voice requirement.",
+        "label": "valid"
+      },
+      {
+        "id": "F107b7423bd",
+        "rule": "R20",
+        "reason": "The schedule includes a 'Requirements' item in June, a requirements activity that R20 excludes from the schedule.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc4f88edc45",
+        "rule": "R4",
+        "reason": "The Problem section does identify actors (the instructor, students, smaller universities), and the finding's claim that the instructor is never named is false.",
+        "label": "invalid"
+      },
+      {
+        "id": "F74a769813b",
+        "rule": "R12",
+        "reason": "'API' appears in the Abstract and later without ever being defined.",
+        "label": "valid"
+      },
+      {
+        "id": "Fe886c84cc4",
+        "rule": "R1",
+        "reason": "The document has no Motivation section.",
+        "label": "valid"
+      },
+      {
+        "id": "F35ebd9fe39",
+        "rule": "R1",
+        "reason": "There is no separate Motivation section.",
+        "label": "valid"
+      },
+      {
+        "id": "Fa0c2999182",
+        "rule": "R12",
+        "reason": "'Since the benefts of using CI are quite high...' on page 3 starts with a forbidden word. The 'Because...' quote does not occur, but one valid location is enough.",
+        "label": "valid"
+      },
+      {
+        "id": "F29f5ca58c1",
+        "rule": "R1",
+        "reason": "The proposal has no standalone Motivation section.",
+        "label": "valid"
+      },
+      {
+        "id": "F151d649190",
+        "rule": "R17",
+        "reason": "No AI transparency statement appears anywhere in the document.",
+        "label": "valid"
+      },
+      {
+        "id": "F8f80bff435",
+        "rule": "R9",
+        "reason": "Only Figure 1 is present, while at least two figures are required.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc0f4366d5c",
+        "rule": "R13",
+        "reason": "The visionary scenario in Section 4 is written as a numbered list outside the Schedule and objective lists.",
+        "label": "valid"
+      },
+      {
+        "id": "F1410ad7724",
+        "rule": "R19",
+        "reason": "Schedule entries such as 'Models' and 'Writing' have no measurable deliverables or completion criteria, as R19 requires.",
+        "label": "valid"
+      },
+      {
+        "id": "F8a3ee4bcf3",
+        "rule": "R12",
+        "reason": "Sentences start with 'Since' (Abstract), 'To achieve', 'In order to', and 'As a result' / 'As described', all forbidden starters.",
+        "label": "valid"
+      },
+      {
+        "id": "F9148503598",
+        "rule": "R13",
+        "reason": "The Abstract paragraphs are each only about two to three lines long, well short of the 5-8 line paragraphs R13 asks for.",
+        "label": "valid"
+      },
+      {
+        "id": "F5ea2993011",
+        "rule": "R11",
+        "reason": "The quoted passive constructions ('should be migrated', 'is copied', 'gets triggered') and forbidden starters occur in the document.",
+        "label": "valid"
+      },
+      {
+        "id": "F0f45ae710c",
+        "rule": "R9",
+        "reason": "The central shortfall holds: only one figure is present, fewer than the required two. Calling Figure 1 a sequence diagram is doubtful, since it looks like a communication-style diagram.",
+        "label": "valid"
+      },
+      {
+        "id": "Ff7ada9a1d5",
+        "rule": "R19",
+        "reason": "The schedule entries are milestone dates spaced about two to four weeks apart, not one-week iterations.",
+        "label": "invalid"
+      },
+      {
+        "id": "F6083a1a552",
+        "rule": "R11",
+        "reason": "'Furthermore' and 'Additionally' are linking words, not the filler words R11 prohibits.",
+        "label": "invalid"
+      },
+      {
+        "id": "F7d48c8f345",
+        "rule": "R9",
+        "reason": "Only one figure is present, while at least two are required.",
+        "label": "valid"
+      },
+      {
+        "id": "Fea6418996b",
+        "rule": "R9",
+        "reason": "Only one figure is present, while at least two are required.",
+        "label": "valid"
+      },
+      {
+        "id": "Ff57744167f",
+        "rule": "R19",
+        "reason": "The prototype work is split into layers (connectivity, then API, then results) rather than vertically integrated end-to-end increments.",
+        "label": "valid"
+      },
+      {
+        "id": "F8e7792e44a",
+        "rule": "R1",
+        "reason": "The Introduction, Motivation and Objective sections are all missing.",
+        "label": "valid"
+      },
+      {
+        "id": "Ff63604dc62",
+        "rule": "R11",
+        "reason": "Linking words like 'Furthermore' and 'In addition' are not filler words under R11. One page citation is also wrong: that text is on page 4, not page 5.",
+        "label": "invalid"
+      },
+      {
+        "id": "F99b69f31c9",
+        "rule": "R19",
+        "reason": "Week entries mark milestone dates spaced about two to four weeks apart, not one-week iterations.",
+        "label": "invalid"
+      },
+      {
+        "id": "F0fcbdb99e5",
+        "rule": "R20",
+        "reason": "The schedule includes thesis-writing items ('1st week: Thesis', 'October: Writing').",
+        "label": "valid"
+      },
+      {
+        "id": "Fcba1b62ad3",
+        "rule": "R3",
+        "reason": "There is no Objective section with an intro, a bullet list of objectives and one subsection per objective.",
+        "label": "valid"
+      },
+      {
+        "id": "Ffe3bf144b1",
+        "rule": "R3",
+        "reason": "The required Objective section with a bullet list and subsections is absent.",
+        "label": "valid"
+      },
+      {
+        "id": "Fe2a688f35e",
+        "rule": "R12",
+        "reason": "'API' is used from the Abstract onward without ever being defined.",
+        "label": "valid"
+      },
+      {
+        "id": "F7775b31f02",
+        "rule": "R9",
+        "reason": "Figure 1 uses numbered messages (1.1, 2.1, ...) between actors, which matches a UML communication diagram, so the claim that it is not UML is not supported.",
+        "label": "invalid"
+      },
+      {
+        "id": "F1d8657018d",
+        "rule": "R20",
+        "reason": "The schedule includes documentation and thesis-writing tasks ('Documentation for installation...', 'Writing', 'Thesis').",
+        "label": "valid"
+      },
+      {
+        "id": "F51a1de2aec",
+        "rule": "R12",
+        "reason": "'API' is never expanded before use.",
+        "label": "valid"
+      },
+      {
+        "id": "Ffe95bc9904",
+        "rule": "R10",
+        "reason": "The text only says 'This process is illustrated in section 4' and never refers to Figure 1 by number, so the figure is not referenced.",
+        "label": "valid"
+      },
+      {
+        "id": "F5b8b68838f",
+        "rule": "R10",
+        "reason": "No sentence in the text references Figure 1.",
+        "label": "valid"
+      }
+    ]
+  },
+  "costUsd": 0.2893908,
+  "durationMs": 50921,
+  "model": "claude-opus-5-5[1m]"
+}

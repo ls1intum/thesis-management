@@ -1,0 +1,250 @@
+{
+  "job": "label-proposal-p2-pass1-04",
+  "answer": {
+    "judgements": [
+      {
+        "id": "F3bf29c210e",
+        "rule": "R13",
+        "reason": "R13 asks for paragraphs of 5-8 lines. The first Motivation paragraph and the first paragraph of 4.1 each run to about 11 printed lines and cover several ideas.",
+        "label": "valid"
+      },
+      {
+        "id": "F6079ff2500",
+        "rule": "R12",
+        "reason": "The quoted 'because' comes after a colon in the middle of a sentence. It does not start a sentence.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fca11146b93",
+        "rule": "R12",
+        "reason": "Three sentences start with forbidden words: 'As Figure 1 illustrates', 'Since guidelines may not...' and 'Because the feedback tool...'. The section labels are slightly off, but all three sentences exist.",
+        "label": "valid"
+      },
+      {
+        "id": "Fdb86d94d4e",
+        "rule": "R19",
+        "reason": "R19 asks for measurable, vertically-integrated deliverables. Iteration 1 only lists an internal refactoring ('Modularize Thesis Management') with no measurable outcome.",
+        "label": "valid"
+      },
+      {
+        "id": "F3020075e90",
+        "rule": "R17",
+        "reason": "R17 asks the statement to name the sections involved. The statement names tools and purposes but no proposal sections.",
+        "label": "valid"
+      },
+      {
+        "id": "Ffad8a94740",
+        "rule": "R13",
+        "reason": "The first Motivation paragraph runs to about 11 lines, which is over the 5-8 line target. The finding cites a 10-line limit, but the breach holds either way.",
+        "label": "valid"
+      },
+      {
+        "id": "F8b7e3ee817",
+        "rule": "R20",
+        "reason": "Iteration 9 lists 'Documentation', and R20 excludes documentation tasks from the schedule.",
+        "label": "valid"
+      },
+      {
+        "id": "F907c0044f5",
+        "rule": "R5",
+        "reason": "The Motivation repeats the problem: it says the repetitive feedback 'currently drains supervisors', which restates the Problem section.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb4e6fbeccc",
+        "rule": "R17",
+        "reason": "The tools are grouped only by purpose. No proposal sections are named, which R17 requires.",
+        "label": "valid"
+      },
+      {
+        "id": "Fa11d859761",
+        "rule": "R20",
+        "reason": "The schedule contains a 'Documentation' task in Iteration 9, which R20 forbids.",
+        "label": "valid"
+      },
+      {
+        "id": "F3c64831244",
+        "rule": "R12",
+        "reason": "Three sentences start with 'As', 'Since' and 'Because', all of which R12 forbids.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc4944486c3",
+        "rule": "R3",
+        "reason": "The objectives are given as a short list of four items after an intro sentence. Rejecting a numbered list for not using bullets reads R3 more strictly than it is written.",
+        "label": "invalid"
+      },
+      {
+        "id": "Faeb883b8cc",
+        "rule": null,
+        "reason": "No rule covers whether the iteration dates match the stated thesis start date.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Fd29da3355b",
+        "rule": "R13",
+        "reason": "The second Motivation paragraph spans about 12 lines across pages 4-5, which is over the 5-8 line target, and it combines several ideas.",
+        "label": "valid"
+      },
+      {
+        "id": "F77467539c7",
+        "rule": null,
+        "reason": "No rule covers whether the schedule dates match the stated thesis start date.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F91cd585df3",
+        "rule": "R17",
+        "reason": "The statement does not name which proposal sections each tool was used for.",
+        "label": "valid"
+      },
+      {
+        "id": "F263e851966",
+        "rule": "R11",
+        "reason": "'Moreover', 'Additionally' and 'In addition' are connectives that state a logical relation. They are not filler words.",
+        "label": "invalid"
+      },
+      {
+        "id": "F68972485f3",
+        "rule": "R2",
+        "reason": "The Motivation fills most of page 4 and part of page 5, roughly 85-90% of a page. That clearly exceeds the 3/4-page limit.",
+        "label": "valid"
+      },
+      {
+        "id": "F351d02d4b4",
+        "rule": "R2",
+        "reason": "The Problem section fills about two thirds of page 3 and a quarter of page 4, close to a full page. That exceeds the 3/4-page limit.",
+        "label": "valid"
+      },
+      {
+        "id": "F03814fde40",
+        "rule": "R17",
+        "reason": "The statement only says 'across different stages of the writing process' and never names sections.",
+        "label": "valid"
+      },
+      {
+        "id": "Ff6321aa4f5",
+        "rule": "R11",
+        "reason": "'Greatest' (and 'least') in Section 4.4 are superlatives. 'Wide' is not, but one cited location shows the breach.",
+        "label": "valid"
+      },
+      {
+        "id": "F326512362b",
+        "rule": "R20",
+        "reason": "Iteration 9 includes 'Documentation', which R20 excludes.",
+        "label": "valid"
+      },
+      {
+        "id": "F3a70f490dc",
+        "rule": "R2",
+        "reason": "The proposal text runs from page 2 to page 10, about 8-9 pages. That clearly exceeds the 4-6 page limit.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb0b8b32865",
+        "rule": "R13",
+        "reason": "In the Introduction, the 'by contrast' sentence continues the preceding paragraph (it has no indent), so it is not a short paragraph. The short Schedule lines fall under the Schedule exception in R13.",
+        "label": "invalid"
+      },
+      {
+        "id": "F478bbe9af8",
+        "rule": "R7",
+        "reason": "The bibliography lists only five publications, below the required 6-8.",
+        "label": "valid"
+      },
+      {
+        "id": "F3dae5dda33",
+        "rule": "R19",
+        "reason": "Several deliverables, such as 'Modularize...', 'Connect...' and 'Review the system and check for bugs', have no measurable outcome.",
+        "label": "valid"
+      },
+      {
+        "id": "F3e7e7929ac",
+        "rule": "R12",
+        "reason": "'As Figure 1 illustrates, ...' starts with the forbidden word 'As'.",
+        "label": "valid"
+      },
+      {
+        "id": "F8f1bff91b7",
+        "rule": "R12",
+        "reason": "All three cited sentences start with forbidden words (As, Since, Because).",
+        "label": "valid"
+      },
+      {
+        "id": "F187e9af21c",
+        "rule": "R20",
+        "reason": "'Documentation' is a separate task in Iteration 9, which R20 forbids.",
+        "label": "valid"
+      },
+      {
+        "id": "F73e04fde69",
+        "rule": "R5",
+        "reason": "The Motivation repeats the problem by restating that the feedback 'currently drains supervisors'.",
+        "label": "valid"
+      },
+      {
+        "id": "Fefc2ffe3b5",
+        "rule": "R7",
+        "reason": "Only five references are listed, below the 6-8 minimum.",
+        "label": "valid"
+      },
+      {
+        "id": "F4d46f18303",
+        "rule": "R16",
+        "reason": "The author's prose uses 'non-content-related' and 'non-content-specific' for the same type of feedback, which is inconsistent terminology.",
+        "label": "valid"
+      },
+      {
+        "id": "Fbf1da9da5f",
+        "rule": "R13",
+        "reason": "The first paragraph of 4.1 spans about 11 lines across pages 5-6, which is over 5-8 lines, and it mixes guideline handling with the ethical argument.",
+        "label": "valid"
+      },
+      {
+        "id": "F20835363c1",
+        "rule": "R20",
+        "reason": "Iteration 9 lists 'Documentation', which R20 forbids.",
+        "label": "valid"
+      },
+      {
+        "id": "F77b6c219dc",
+        "rule": "R2",
+        "reason": "The text part alone spans about 8-9 pages, beyond the 4-6 page limit. The count of 12 includes the title page, bibliography and statement, but the central claim holds.",
+        "label": "valid"
+      },
+      {
+        "id": "F5c65a102a6",
+        "rule": "R3",
+        "reason": "The objectives are already given as a short one-line-per-item list. Rejecting it for numbers instead of bullets reads R3 more strictly than it is written.",
+        "label": "invalid"
+      },
+      {
+        "id": "F25f18524a0",
+        "rule": "R11",
+        "reason": "The cited transitions are logical connectives, not filler words as R11 means them.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fcfc637f304",
+        "rule": "R12",
+        "reason": "'Because the feedback tool is powered by LLMs, ...' starts with the forbidden word 'Because'.",
+        "label": "valid"
+      },
+      {
+        "id": "F017aa7f20c",
+        "rule": "R13",
+        "reason": "The sentence has no paragraph indent and continues the preceding Introduction paragraph, so it is not a standalone short paragraph.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fac1aff763f",
+        "rule": "R2",
+        "reason": "The Motivation fills about 85-90% of a page, which exceeds the 3/4-page limit. Both of its paragraphs are also longer than the paragraph target.",
+        "label": "valid"
+      }
+    ]
+  },
+  "costUsd": 0.1101414,
+  "durationMs": 42108,
+  "model": "claude-opus-5-5[1m]"
+}

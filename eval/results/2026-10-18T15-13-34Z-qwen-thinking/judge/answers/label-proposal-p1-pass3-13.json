@@ -1,0 +1,250 @@
+{
+  "job": "label-proposal-p1-pass3-13",
+  "answer": {
+    "judgements": [
+      {
+        "id": "F772c0430f3",
+        "rule": "R10",
+        "reason": "R10 requires a long, informative caption. Figure 1's caption is a single short, generic sentence.",
+        "label": "valid"
+      },
+      {
+        "id": "F76767058d0",
+        "rule": "R9",
+        "reason": "R9 requires at least one suitable UML diagram. Figure 1 shows actors linked by numbered messages (1.1, 2.1, 3.1, ...), which is a UML communication diagram, so the claim that no UML diagram exists does not hold.",
+        "label": "invalid"
+      },
+      {
+        "id": "Ff0735a9ad9",
+        "rule": "R3",
+        "reason": "R3 requires an Objective section with an intro, a bullet list of objectives and one subsection per objective. The document has no such section; Section 4 is 'System Requirements and Top Level Design'.",
+        "label": "valid"
+      },
+      {
+        "id": "Fa0c7330a24",
+        "rule": "R10",
+        "reason": "R10 requires every figure to be referenced in the text. Figure 1 is never mentioned; the text only points to 'section 4'.",
+        "label": "valid"
+      },
+      {
+        "id": "F04864e9e66",
+        "rule": "R13",
+        "reason": "R13 asks for 5-8 line paragraphs. 'In addition, universities will save time and money...' stands alone as a one-line paragraph. The second quote belongs to a longer paragraph, but the first location shows the breach.",
+        "label": "valid"
+      },
+      {
+        "id": "F141375b34a",
+        "rule": "R1",
+        "reason": "R1 requires an Introduction section. The document goes straight from the Abstract to '1 Problem Statement'.",
+        "label": "valid"
+      },
+      {
+        "id": "F9dd688b5c5",
+        "rule": "R13",
+        "reason": "R13 requires prose outside the Schedule and objective lists. Section 4 presents the scenario as a long numbered list of steps. The second location (the figure label) is not a list, but the first location shows the breach.",
+        "label": "valid"
+      },
+      {
+        "id": "F442eaf2943",
+        "rule": "R20",
+        "reason": "R20 forbids thesis-writing and documentation tasks in the schedule. The schedule contains 'Documentation...', 'Writing', 'Thesis ready for review' and 'Thesis'.",
+        "label": "valid"
+      },
+      {
+        "id": "F2461cf1fbe",
+        "rule": "R17",
+        "reason": "R17 requires an AI transparency statement. The document has none.",
+        "label": "valid"
+      },
+      {
+        "id": "Ff9de2dea4c",
+        "rule": "R12",
+        "reason": "R12 forbids starting sentences with 'Since', 'To', 'In order to' or 'As'. All of the quoted sentences start with one of these words.",
+        "label": "valid"
+      },
+      {
+        "id": "F40288036c4",
+        "rule": "R20",
+        "reason": "R20 forbids writing and documentation tasks in the schedule. The quoted entries (writing, thesis review, documentation) are present.",
+        "label": "valid"
+      },
+      {
+        "id": "Fcbe29203bb",
+        "rule": "R16",
+        "reason": "R16 requires consistent terminology for the same concept. The author's prose writes both 'VC Server' and 'VC server'.",
+        "label": "valid"
+      },
+      {
+        "id": "F8f31ff7de0",
+        "rule": "R1",
+        "reason": "R1 requires an Introduction section. There is none.",
+        "label": "valid"
+      },
+      {
+        "id": "Fec98fc3c65",
+        "rule": "R20",
+        "reason": "R20 forbids writing and documentation tasks in the schedule. The schedule includes documentation, writing and thesis tasks.",
+        "label": "valid"
+      },
+      {
+        "id": "F27f657513c",
+        "rule": "R19",
+        "reason": "R19 requires 2-4 week iterations. The schedule lists single weekly items per month and defines no iterations.",
+        "label": "valid"
+      },
+      {
+        "id": "F7c5d099285",
+        "rule": "R17",
+        "reason": "R17 requires an AI transparency statement. The document has none.",
+        "label": "valid"
+      },
+      {
+        "id": "F615cb87741",
+        "rule": "R19",
+        "reason": "R19 requires measurable deliverables. Entries such as 'Models', 'Requirements' and 'Implement improvements' are vague activities, not measurable outputs.",
+        "label": "valid"
+      },
+      {
+        "id": "F78863c6d3e",
+        "rule": "R11",
+        "reason": "R11 requires active voice. The quoted sentence uses passive forms: 'are not patched automatically' and 'must be updated manually'.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd790b6510a",
+        "rule": "R1",
+        "reason": "R1 requires an Introduction section. There is none.",
+        "label": "valid"
+      },
+      {
+        "id": "F3ba6c25842",
+        "rule": "R19",
+        "reason": "R19 requires vertically integrated deliverables. The prototype work is split into separate components across months (connectivity, API, sending results). The cited pages are slightly off, but the claim holds.",
+        "label": "valid"
+      },
+      {
+        "id": "F0fb295c611",
+        "rule": "R4",
+        "reason": "R4 requires negative consequences for identified actors. The manual build-plan update problem never names who is affected or who has to do the work.",
+        "label": "valid"
+      },
+      {
+        "id": "F8846864ee0",
+        "rule": null,
+        "reason": "No rule forbids first-person writing.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F12dedbb961",
+        "rule": null,
+        "reason": "No rule forbids first-person writing.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Fcff3b2ae94",
+        "rule": "R17",
+        "reason": "R17 requires an AI transparency statement. The document has none.",
+        "label": "valid"
+      },
+      {
+        "id": "F364c6eb363",
+        "rule": "R20",
+        "reason": "R20 forbids a requirements task in the schedule. The June schedule lists 'Requirements'.",
+        "label": "valid"
+      },
+      {
+        "id": "F85c2190437",
+        "rule": null,
+        "reason": "No rule covers typos.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F7d43125905",
+        "rule": "R1",
+        "reason": "R1 requires a Motivation section. The document has none.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb9d2ddbb03",
+        "rule": "R12",
+        "reason": "R12 requires abbreviations to be defined before use. 'API' is used repeatedly but never defined.",
+        "label": "valid"
+      },
+      {
+        "id": "F24021dc191",
+        "rule": "R13",
+        "reason": "R13 requires one idea per paragraph. The quote comes from the Abstract's structured 'Problem Statement' paragraph, which is one coherent summary of the problem, not a Problem-section paragraph mixing unrelated ideas.",
+        "label": "invalid"
+      },
+      {
+        "id": "F326cef98f2",
+        "rule": "R17",
+        "reason": "R17 requires an AI transparency statement. The document has none.",
+        "label": "valid"
+      },
+      {
+        "id": "F3a446b0876",
+        "rule": "R17",
+        "reason": "R17 requires an AI transparency statement. The document has none.",
+        "label": "valid"
+      },
+      {
+        "id": "F8816262af3",
+        "rule": "R11",
+        "reason": "R11 requires active voice. The quoted passages ('is copied', 'must be updated manually', 'is split up') are all passive.",
+        "label": "valid"
+      },
+      {
+        "id": "F20e26c8cc7",
+        "rule": "R1",
+        "reason": "R1 requires a Motivation section. The document has none.",
+        "label": "valid"
+      },
+      {
+        "id": "Fbcf1c93bbd",
+        "rule": "R12",
+        "reason": "R12 forbids starting sentences with 'Since', 'To' or 'As'. The quoted sentences start with these words.",
+        "label": "valid"
+      },
+      {
+        "id": "F52de267f37",
+        "rule": "R10",
+        "reason": "R10 requires every figure to be referenced in the text. The text only refers to 'section 4', never to Figure 1.",
+        "label": "valid"
+      },
+      {
+        "id": "F5ef5a04d4c",
+        "rule": "R19",
+        "reason": "R19 requires 2-4 week iterations with vertically integrated increments. The schedule has neither.",
+        "label": "valid"
+      },
+      {
+        "id": "F86436d3057",
+        "rule": "R20",
+        "reason": "R20 forbids writing and documentation tasks in the schedule. The schedule contains them.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb5104fa1c8",
+        "rule": "R4",
+        "reason": "R4 requires negative consequences for identified actors. The build-plan and exam problems do not name the affected actors.",
+        "label": "valid"
+      },
+      {
+        "id": "F4cd45588ea",
+        "rule": "R4",
+        "reason": "R4 concerns the Problem section. The quoted prescriptive sentences come from the Abstract, not from the Problem section, so the cited location does not show the breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "F41dae41de1",
+        "rule": "R4",
+        "reason": "R4 says the Problem section describes only problems, with no solutions. 'In exams, it would be useful to change the student build plans...' prescribes a desired solution, and the affected actors are not clearly named.",
+        "label": "valid"
+      }
+    ]
+  },
+  "costUsd": 0.2612388,
+  "durationMs": 39180,
+  "model": "claude-opus-5-5[1m]"
+}

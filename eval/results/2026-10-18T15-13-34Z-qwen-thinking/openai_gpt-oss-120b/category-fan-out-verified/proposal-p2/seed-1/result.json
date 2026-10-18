@@ -1,0 +1,56 @@
+{
+  "assessment" : "NEEDS_WORK",
+  "score" : 45,
+  "summary" : "The proposal presents a clear objective and an innovative AI‑based feedback approach, but it suffers from several major issues: insufficient content in a key subsection, incomplete AI‑transparency details, and a prohibited documentation task in the schedule. Minor problems with formatting and writing style also need correction before submission.",
+  "findings" : [ {
+    "severity" : "MAJOR",
+    "category" : "structure",
+    "title" : "Objective subsection 4.1 lacks required length",
+    "description" : "Subsection 4.1 must contain at least two paragraphs, but only one paragraph is present.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Objective",
+      "quote" : "**4.1 Generate Feedback Based on Guidelines**\nSupervisors should be able to provide their own scientific writing guidelines as well as conventions on the style of theses and proposals. Based on these guidelines, the LLM can provide formative feedback that is restricted to the aspects they cover."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "completeness",
+    "title" : "Missing section-specific details in AI transparency statement",
+    "description" : "The AI transparency statement does not specify which sections of the proposal the AI tools were used for, as required by the group guidelines.",
+    "locations" : [ {
+      "page" : 12,
+      "section" : "Transparency in the Use of AI Tools",
+      "quote" : "In preparing this proposal, I made use of several AI-based tools **across different stages of the writing process**."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "other",
+    "title" : "Disallowed Documentation Task in Schedule",
+    "description" : "The schedule includes a documentation writing task, which is prohibited by the schedule rules (no thesis writing, documentation, or presentation preparation tasks).",
+    "locations" : [ {
+      "page" : 10,
+      "section" : "Schedule",
+      "quote" : "•   Documentation"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "formatting",
+    "title" : "Improper capitalization in heading",
+    "description" : "The heading \"4.4 Integrate With Thesis Management\" capitalizes the preposition \"With\". In title case, short prepositions such as \"with\" should be lower‑cased.",
+    "locations" : [ {
+      "page" : 8,
+      "section" : "4.4 Integrate With Thesis Management",
+      "quote" : "4.4 Integrate **With** Thesis Management"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Passive voice and prohibited sentence starter usage",
+    "description" : "The proposal uses passive voice and starts a sentence with the prohibited word \"Because\"; both should be revised to active voice and appropriate sentence starters.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Motivation",
+      "quote" : "**Because** the feedback tool **is powered** by LLMs, students can obtain instant formative feedback at any point during the writing process."
+    } ]
+  } ]
+}

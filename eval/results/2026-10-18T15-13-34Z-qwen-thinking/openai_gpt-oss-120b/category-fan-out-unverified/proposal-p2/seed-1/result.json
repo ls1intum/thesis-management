@@ -1,0 +1,199 @@
+{
+  "assessment" : "NEEDS_WORK",
+  "score" : 38,
+  "summary" : "The proposal presents an innovative idea of using LLMs to automate feedback for theses, but it suffers from several critical compliance issues. Major problems include excessive length, insufficient bibliography, missing AI transparency details, and schedule violations, along with numerous structural and writing deficiencies. Substantial revisions are required before submission.",
+  "findings" : [ {
+    "severity" : "CRITICAL",
+    "category" : "structure",
+    "title" : "Proposal exceeds maximum allowed length",
+    "description" : "The proposal spans more than the allowed 4‑6 pages of text, covering 12 pages in total, which is significantly longer than the guideline.",
+    "locations" : [ {
+      "page" : 12,
+      "quote" : "=== PAGE 12 ==="
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "structure",
+    "title" : "Objective subsections insufficient detail and paragraph count",
+    "description" : "Each objective subsection is written as a single short paragraph, lacking the required minimum of two paragraphs and detailed descriptions.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Objective 4.1",
+      "quote" : "**4.1 Generate            Feedback          Based       on    Guidelines** Supervisors     should   be  able  to provide    their  own   scientifc   writing   guidelines   as well  as conventions..."
+    }, {
+      "page" : 6,
+      "section" : "Objective 4.2",
+      "quote" : "**4.2 Highlight           Changes          Across       Iterations** When     the  feedback    tool   has  access   to  previous    iterations..."
+    }, {
+      "page" : 8,
+      "section" : "Objective 4.3",
+      "quote" : "**4.3 Compare             Prompting            Techniques           and     LLM       Models** Based    on  the   writing    guidelines,    the  feedback     tool  needs..."
+    }, {
+      "page" : 8,
+      "section" : "Objective 4.4",
+      "quote" : "**4.4 Integrate           With       Thesis       Management** Around     50  research    groups   at  TUM     use   Thesis   Management..."
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "completeness",
+    "title" : "Insufficient number of bibliography entries",
+    "description" : "The bibliography contains only five publications, but the guidelines require at least six to eight peer‑reviewed publications.",
+    "locations" : [ {
+      "page" : 11,
+      "section" : "Bibliography",
+      "quote" : "**[TP21] … [NM06]**"
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "logic",
+    "title" : "Schedule contains prohibited documentation task and focuses on horizontal splits rather than end‑to‑end features",
+    "description" : "The schedule includes a \"Documentation\" task, which is not allowed, and several tasks address low‑level modularization and preprocessing instead of delivering vertically integrated functionality.",
+    "locations" : [ {
+      "page" : 10,
+      "section" : "Schedule",
+      "quote" : "•   Documentation"
+    }, {
+      "page" : 9,
+      "section" : "Schedule",
+      "quote" : "•   Modularize Thesis Management to prepare integration of the feedback module (Objective 4)"
+    }, {
+      "page" : 9,
+      "section" : "Schedule",
+      "quote" : "•   Preprocess guidelines into a structured representation usable by the feedback tool (Objective 1)"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "logic",
+    "title" : "Motivation repeats problem description",
+    "description" : "The Motivation section restates the problem about repetitive, non‑content‑related feedback draining supervisors, which should be avoided according to the guidelines.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Motivation",
+      "quote" : "Integrating large language models (LLMs) to assist supervisors with non‑content‑related feedback could improve the thesis writing process. As Figure 1 illustrates, an LLM‑powered Reviewer works alongside the supervisor, evaluating the thesis against the research group’s writing guidelines and generating automatic formative feedback. This Reviewer covers exactly the **repetitive, non‑content‑related layer of feedback that currently drains supervisors**, freeing them to focus on specific content and on discussions with their students."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "completeness",
+    "title" : "Missing sections in AI transparency statement",
+    "description" : "The AI transparency statement does not specify which sections of the proposal the listed AI tools were used for, which is required by the guidelines.",
+    "locations" : [ {
+      "page" : 12,
+      "section" : "Transparency in the Use of AI Tools",
+      "quote" : "In preparing this proposal, I made use of several AI-based tools across **different stages of the writing process**. For grammar and style correction, I used Grammarly ... I have carefully checked all texts created with these tools to ensure that they are correct and make sense."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "citation",
+    "title" : "Non‑peer‑reviewed internet source not placed as footnote",
+    "description" : "An internet URL is included directly in the main text instead of being formatted as a footnote, violating the rule that non‑peer‑reviewed sources must appear as footnotes.",
+    "locations" : [ {
+      "page" : 3,
+      "quote" : "Thesis Management 1, **https://github.com/ls1intum/thesis-management**"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "writing",
+    "title" : "Passive voice usage",
+    "description" : "The proposal contains several instances of passive voice, which reduces clarity and does not follow the active voice requirement.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Abstract",
+      "quote" : "feedback **is** repetitive across students and disciplines."
+    }, {
+      "page" : 3,
+      "section" : "Problem",
+      "quote" : "the thesis‑lifecycle portal **used** by around 50 research groups at the Technical University of Munich."
+    }, {
+      "page" : 6,
+      "section" : "Objective",
+      "quote" : "feedback **is** less critical to grade a final thesis."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "writing",
+    "title" : "Forbidden sentence starters",
+    "description" : "Sentences start with prohibited words such as \"As\", \"Because\", and \"Since\", which violates the writing style guidelines.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Motivation",
+      "quote" : "**As** Figure 1 illustrates, an LLM‑powered Reviewer works alongside the supervisor..."
+    }, {
+      "page" : 8,
+      "section" : "Objective",
+      "quote" : "**Because** the feedback tool **is powered** by LLMs, students can obtain instant formative feedback..."
+    }, {
+      "page" : 5,
+      "section" : "Objective",
+      "quote" : "**Since** guidelines may not already be in a suitable format, the LLM may first need to preprocess them..."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "formatting",
+    "title" : "Paragraph exceeds recommended length in Abstract",
+    "description" : "The paragraph in the Abstract section contains more than the allowed 8 lines, making it hard to read and follow a single idea.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Abstract",
+      "quote" : "This thesis explores how large language models (LLMs) can generate **for mative feedback on theses and proposals based on supervisor‑provided writing guidelines. Beyond a single draft, the tool also compares iterations to highlight improvements and surface persistent issues with more explanatory feedback. We evaluate single‑prompt, prompt‑chaining, and agentic setups, and assess trade‑ofs between local and cloud hosting. The tool integrates into Thesis Management, the thesis‑lifecycle portal used by around 50 research groups at the Technical University of Munich, so supervisors can generate, revise, and publish feedback within their workfow.**"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "structure",
+    "title" : "Abstract is longer than allowed",
+    "description" : "The abstract occupies roughly a full page, exceeding the required 1/3–1/2 page length.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Abstract",
+      "quote" : "**Supervisors of theses  spend   considerable     time   on  non-content-related       feedback** such as document structure, coherence, and linguistic accuracy. Much of this feedback is repetitive across students and disciplines, draining supervisors and leaving less capacity for substantive research discussions."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "structure",
+    "title" : "Problem section exceeds length limit",
+    "description" : "The Problem section is longer than the maximum of 3/4 page specified in the guidelines.",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "Problem",
+      "quote" : "**For  students’    research    proposals     and   theses,   supervisors     often  provide    feed** back that is critical to their progress. The supervisor takes the role of an experienced peer and coach..."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "structure",
+    "title" : "Motivation section exceeds length limit",
+    "description" : "The Motivation section is longer than the allowed 3/4 page.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Motivation",
+      "quote" : "**Integrating large language models (LLMs) to assist supervisors with non-** content-related feedback could improve the thesis writing process. As Figure 1 illustrates, an LLM-powered Reviewer works alongside the supervisor...**"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Use of filler word \"also\"",
+    "description" : "The word \"also\" is used as a filler, which should be avoided for concise academic writing.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Abstract",
+      "quote" : "the tool **also** compares iterations to highlight improvements..."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "formatting",
+    "title" : "Paragraph too short (1 line)",
+    "description" : "A single‑line paragraph appears, which does not satisfy the minimum length requirement of 5 lines for regular prose.",
+    "locations" : [ {
+      "page" : 3,
+      "quote" : "**1 https://github.com/ls1intum/thesis-management**"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "formatting",
+    "title" : "Incorrect Capitalization in Heading",
+    "description" : "The heading \"4.4 Integrate With Thesis Management\" capitalizes the short preposition \"With\", which violates the title‑case rule for English headings.",
+    "locations" : [ {
+      "page" : 8,
+      "section" : "4.4 Integrate With Thesis Management",
+      "quote" : "4.4 Integrate **With** Thesis Management"
+    } ]
+  } ]
+}

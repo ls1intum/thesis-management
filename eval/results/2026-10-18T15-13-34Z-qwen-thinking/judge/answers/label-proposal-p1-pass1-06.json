@@ -1,0 +1,250 @@
+{
+  "job": "label-proposal-p1-pass1-06",
+  "answer": {
+    "judgements": [
+      {
+        "id": "F819b5dfe1e",
+        "rule": "R20",
+        "reason": "The schedule includes thesis-writing tasks: \"October: Writing . . .\" and \"Thesis ready for review\". R20 forbids these.",
+        "label": "valid"
+      },
+      {
+        "id": "F7c5d099285",
+        "rule": "R17",
+        "reason": "The document has no AI transparency statement anywhere.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb95c59c074",
+        "rule": "R20",
+        "reason": "The June schedule lists a dedicated \"Requirements\" task, which R20 excludes.",
+        "label": "valid"
+      },
+      {
+        "id": "F4f1df6a1de",
+        "rule": "R4",
+        "reason": "Problem must name actors and their negative consequences. Only 'smaller universities' is named. The manual build-plan update problem names no affected actor, such as instructors.",
+        "label": "valid"
+      },
+      {
+        "id": "F156c6444a8",
+        "rule": "R6",
+        "reason": "The quoted sentences are problem and motivation statements in the Abstract, not objectives, so R6 action-form rules do not apply to them.",
+        "label": "invalid"
+      },
+      {
+        "id": "Ffaced8a5f7",
+        "rule": "R20",
+        "reason": "The schedule contains a 'Requirements' task in June, which R20 prohibits.",
+        "label": "valid"
+      },
+      {
+        "id": "Ffd2aa4bc03",
+        "rule": "R17",
+        "reason": "There is no AI transparency statement in the document.",
+        "label": "valid"
+      },
+      {
+        "id": "F3d2f1f02f4",
+        "rule": null,
+        "reason": "R15 covers headings only. No rule requires title case in figure captions.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F790f73f1dc",
+        "rule": "R19",
+        "reason": "The schedule is a month/week list of single tasks, not 2-4 week iterations with measurable deliverables.",
+        "label": "valid"
+      },
+      {
+        "id": "F597a9dff14",
+        "rule": "R4",
+        "reason": "The quoted sentence comes from the Abstract on page 1, not the Problem Statement section on page 2. It does not appear in the Problem section as claimed.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fc6d24b1c2a",
+        "rule": "R20",
+        "reason": "The schedule contains a Requirements task and a documentation task, both excluded by R20.",
+        "label": "valid"
+      },
+      {
+        "id": "F370d5c87c4",
+        "rule": "R10",
+        "reason": "The text never refers to Figure 1. It only says 'This process is illustrated in section 4'.",
+        "label": "valid"
+      },
+      {
+        "id": "F7e1df11525",
+        "rule": "R16",
+        "reason": "The author's prose calls the same CI component 'CI server', 'CI service', 'CI system' and 'CI application' in different places.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc4730d8fe9",
+        "rule": "R20",
+        "reason": "The schedule includes documentation and writing tasks (September Documentation, October Writing, December Thesis).",
+        "label": "valid"
+      },
+      {
+        "id": "F5ef5a04d4c",
+        "rule": "R19",
+        "reason": "The schedule is not split into 2-4 week iterations with vertically integrated increments. It lists separate components by month.",
+        "label": "valid"
+      },
+      {
+        "id": "F53546389ae",
+        "rule": "R19",
+        "reason": "Items such as 'Requirements', 'Models', 'Implement improvements' and 'Thesis' name activities, not measurable deliverables.",
+        "label": "valid"
+      },
+      {
+        "id": "Fa24778b7a8",
+        "rule": "R19",
+        "reason": "The prototype work is split into horizontal layers (connectivity, API, results) rather than vertically integrated features.",
+        "label": "valid"
+      },
+      {
+        "id": "F3a8a45481f",
+        "rule": "R20",
+        "reason": "The schedule contains a dedicated 'Requirements' task, which R20 forbids.",
+        "label": "valid"
+      },
+      {
+        "id": "F57dc3b5d7d",
+        "rule": "R1",
+        "reason": "There is no Motivation section. Motivation appears only as a label inside the Abstract.",
+        "label": "valid"
+      },
+      {
+        "id": "F7d465a1267",
+        "rule": "R12",
+        "reason": "Sentences start with 'Since', 'To', 'In order to', 'Since' and 'As', all of which appear in the document as quoted.",
+        "label": "valid"
+      },
+      {
+        "id": "F6a946744ba",
+        "rule": "R12",
+        "reason": "The document uses 'API' from the Abstract onward and never defines it.",
+        "label": "valid"
+      },
+      {
+        "id": "Ff57744167f",
+        "rule": "R19",
+        "reason": "The prototype tasks are horizontal layers, not vertically integrated features. The page-4 location is wrong, but the claim holds on page 5.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb2aa37872f",
+        "rule": "R12",
+        "reason": "The Abstract sentence starts with 'Since', which R12 forbids.",
+        "label": "valid"
+      },
+      {
+        "id": "Fde2261d3e7",
+        "rule": "R1",
+        "reason": "There is no Objective section with subsections. Section 4 is 'System Requirements and Top Level Design'.",
+        "label": "valid"
+      },
+      {
+        "id": "F6a76e62df9",
+        "rule": "R9",
+        "reason": "The document contains only Figure 1, so it misses the minimum of two figures.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb79f82bade",
+        "rule": "R4",
+        "reason": "The quoted sentences are in the Abstract on page 1, not the Problem section on page 2. The cited location does not show the claimed breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fa5091252b5",
+        "rule": "R16",
+        "reason": "The author refers to the same CI component as 'CI application', 'CI service' and 'CI server'.",
+        "label": "valid"
+      },
+      {
+        "id": "Fbba69368f5",
+        "rule": "R11",
+        "reason": "The document contains passive constructions such as 'The student base repository is copied' and 'the build plan is fetched'.",
+        "label": "valid"
+      },
+      {
+        "id": "F78e61bd7df",
+        "rule": "R17",
+        "reason": "There is no AI transparency statement in the document.",
+        "label": "valid"
+      },
+      {
+        "id": "Fe886c84cc4",
+        "rule": "R1",
+        "reason": "The proposal has no Motivation section.",
+        "label": "valid"
+      },
+      {
+        "id": "F2176716cb4",
+        "rule": "R9",
+        "reason": "Only one figure is present, but R9 requires at least two.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd69325a2e1",
+        "rule": "R12",
+        "reason": "'API' is used several times but never defined.",
+        "label": "valid"
+      },
+      {
+        "id": "Fa0e1ce6f2b",
+        "rule": null,
+        "reason": "No rule forbids first-person 'I'.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F29f5ca58c1",
+        "rule": "R1",
+        "reason": "There is no standalone Motivation section.",
+        "label": "valid"
+      },
+      {
+        "id": "F4ea4d909e7",
+        "rule": "R13",
+        "reason": "The Krusche17 paragraph runs about 11-12 printed lines across pages 2-3 and covers several ideas, beyond the 5-8 line limit.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc701084864",
+        "rule": "R3",
+        "reason": "There is no Objectives section with an intro, a bullet list of objectives and per-objective subsections.",
+        "label": "valid"
+      },
+      {
+        "id": "F89291c6aff",
+        "rule": "R17",
+        "reason": "The document has no AI transparency statement.",
+        "label": "valid"
+      },
+      {
+        "id": "F672d023c2e",
+        "rule": "R15",
+        "reason": "The quoted text is message labels inside Figure 1, not headings, so R15 is not breached.",
+        "label": "invalid"
+      },
+      {
+        "id": "F2326c8c21d",
+        "rule": "R9",
+        "reason": "The proposal contains only Figure 1, fewer than the two figures required.",
+        "label": "valid"
+      },
+      {
+        "id": "F150a9794bf",
+        "rule": "R19",
+        "reason": "'Models', 'Requirements' and 'Implement improvements' are not measurable deliverables.",
+        "label": "valid"
+      }
+    ]
+  },
+  "costUsd": 0.2573468,
+  "durationMs": 37045,
+  "model": "claude-opus-5-5[1m]"
+}

@@ -1,0 +1,943 @@
+{
+  "categories" : [ {
+    "category" : "STRUCTURE",
+    "generated" : [ {
+      "severity" : "CRITICAL",
+      "category" : "STRUCTURE",
+      "title" : "Missing Introduction section",
+      "description" : "The required Introduction section is missing. Add a clearly titled Introduction section, separate from the Problem Statement and Related Work, and keep it under one page."
+    }, {
+      "severity" : "CRITICAL",
+      "category" : "STRUCTURE",
+      "title" : "Missing Motivation section",
+      "description" : "The required Motivation section is missing. The phrase “Motivation/Objective” appears only inside the abstract and does not substitute for a dedicated Motivation section. Add a clearly titled Motivation section of no more than three-quarters of a page."
+    }, {
+      "severity" : "CRITICAL",
+      "category" : "STRUCTURE",
+      "title" : "Missing Objective section and required objective subsections",
+      "description" : "The required Objective section is missing. Section 4 is titled “System Requirements and Top Level Design” rather than Objectives, and the proposal provides neither the required introductory paragraph and 3–4 one-line objective bullets nor a subsection of at least two paragraphs for each objective. Add Section 4 as Objectives and restructure its contents accordingly.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "System Requirements and Top Level Design",
+        "quote" : "4     **System Requirements              and     Top     Level     Design**"
+      }, {
+        "page" : 4,
+        "section" : "Expected Findings",
+        "quote" : "5     **Expected          Findings**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "COMPLETENESS",
+      "title" : "Proposal body is shorter than the required length",
+      "description" : "After excluding metadata, the figure, the schedule, and the bibliography, the substantive proposal text spans approximately three pages, below the expected minimum of four text pages. Adding the missing Introduction, Motivation, and properly structured Objectives sections should bring the proposal into the required 4–6-page range.",
+      "locations" : [ {
+        "page" : 1,
+        "section" : "Abstract",
+        "quote" : "Proposed Solution: GitLab CI is the CI system provided by the GitLab VC server."
+      }, {
+        "page" : 4,
+        "section" : "Expected Findings",
+        "quote" : "In addition, either Ansible or a Kubernetes cluster can be used for automatic deployment of the GitLab CI Runners."
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ {
+      "finding" : {
+        "severity" : "MAJOR",
+        "category" : "COMPLETENESS",
+        "title" : "Proposal body is shorter than the required length",
+        "description" : "After excluding metadata, the figure, the schedule, and the bibliography, the substantive proposal text spans approximately three pages, below the expected minimum of four text pages. Adding the missing Introduction, Motivation, and properly structured Objectives sections should bring the proposal into the required 4–6-page range.",
+        "locations" : [ {
+          "page" : 1,
+          "section" : "Abstract",
+          "quote" : "Proposed Solution: GitLab CI is the CI system provided by the GitLab VC server."
+        }, {
+          "page" : 4,
+          "section" : "Expected Findings",
+          "quote" : "In addition, either Ansible or a Kubernetes cluster can be used for automatic deployment of the GitLab CI Runners."
+        } ]
+      },
+      "reason" : "The rules do not clearly state a minimum of four pages or the proposed exclusions from the page count."
+    } ],
+    "kept" : [ {
+      "severity" : "CRITICAL",
+      "category" : "STRUCTURE",
+      "title" : "Missing Introduction section",
+      "description" : "The required Introduction section is missing. Add a clearly titled Introduction section, separate from the Problem Statement and Related Work, and keep it under one page."
+    }, {
+      "severity" : "CRITICAL",
+      "category" : "STRUCTURE",
+      "title" : "Missing Motivation section",
+      "description" : "The required Motivation section is missing. The phrase “Motivation/Objective” appears only inside the abstract and does not substitute for a dedicated Motivation section. Add a clearly titled Motivation section of no more than three-quarters of a page."
+    }, {
+      "severity" : "CRITICAL",
+      "category" : "STRUCTURE",
+      "title" : "Missing Objective section and required objective subsections",
+      "description" : "The required Objective section is missing. Section 4 is titled “System Requirements and Top Level Design” rather than Objectives, and the proposal provides neither the required introductory paragraph and 3–4 one-line objective bullets nor a subsection of at least two paragraphs for each objective. Add Section 4 as Objectives and restructure its contents accordingly.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "System Requirements and Top Level Design",
+        "quote" : "4     **System Requirements              and     Top     Level     Design**"
+      }, {
+        "page" : 4,
+        "section" : "Expected Findings",
+        "quote" : "5     **Expected          Findings**"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "PROBLEM_MOTIVATION_OBJECTIVES",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Missing dedicated Motivation section",
+      "description" : "The proposal does not contain a distinct Motivation section. The abstract combines motivation, objectives, the problem statement, and the proposed solution, while the body moves directly from Problem Statement to Proposed Solution. Add a dedicated Motivation section that explains the scientific importance of solving the problem and presents a positive vision of the expected impact.",
+      "locations" : [ {
+        "page" : 1,
+        "section" : "Abstract",
+        "quote" : "**Motivation/Objective:** Since some Version Control (VC) systems include a Continuous Integration (CI) application, it is possible to reduce the effort required to maintain the servers and migrate the CI service from external applications as Jenkins to the inbuilt CI service."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "LOGIC",
+      "title" : "Problem section includes a desired solution or alternative",
+      "description" : "The Problem section should describe only the existing problem and its consequences. The exam paragraph instead proposes desired changes to the build plans and specific testing configurations. Move these requirements to a motivation, objectives, or solution section, and state only the current limitation and its consequences in the Problem section.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Problem Statement",
+        "quote" : "In exams, it would be useful to **change the student build plans after the submission date to firstly hide the test cases during the exam and only compile the code and secondly use a debug compiler** not failing due to a simple syntax error."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "COMPLETENESS",
+      "title" : "Problem section does not explicitly describe impacts on all relevant actors",
+      "description" : "The Problem section mentions smaller universities and course scale, but it does not explicitly identify the main human stakeholders, such as instructors and students, or explain how the CI-server separation and manual build-plan updates affect them. Add explicit actor-impact statements, for example describing the administrative burden for instructors and the resulting limitations for students during exercises and exams.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Problem Statement",
+        "quote" : "Additionally, the base build plan is copied once after the student started the exercise. Later changes to the base build plan are not patched automatically to all student build plans, but rather the build plans must be updated manually in the CI Server."
+      }, {
+        "page" : 2,
+        "section" : "Problem Statement",
+        "quote" : "Particularly smaller universities might then not use Artemis."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "COMPLETENESS",
+      "title" : "No objectives section with action-form objective headings",
+      "description" : "The proposal has no Section 4 devoted to objectives and provides no set of objective headings formulated as actions. The numbered Section 4 is instead “System Requirements and Top Level Design.” Add the required objective section and formulate every objective heading as a single action, such as “Evaluate GitLab CI integration.”"
+    }, {
+      "severity" : "MAJOR",
+      "category" : "COMPLETENESS",
+      "title" : "Objective subsections are missing detailed descriptions",
+      "description" : "No objective subsections are present, so the requirement that each objective subsection contain at least two paragraphs of detailed description is not satisfied. Create a subsection for each objective and provide at least two substantive paragraphs explaining its scope, intended result, and how it will be addressed."
+    } ],
+    "ungrounded" : [ {
+      "severity" : "MAJOR",
+      "category" : "COMPLETENESS",
+      "title" : "Problem section does not explicitly describe impacts on all relevant actors",
+      "description" : "The Problem section mentions smaller universities and course scale, but it does not explicitly identify the main human stakeholders, such as instructors and students, or explain how the CI-server separation and manual build-plan updates affect them. Add explicit actor-impact statements, for example describing the administrative burden for instructors and the resulting limitations for students during exercises and exams.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Problem Statement",
+        "quote" : "Additionally, the base build plan is copied once after the student started the exercise. Later changes to the base build plan are not patched automatically to all student build plans, but rather the build plans must be updated manually in the CI Server."
+      }, {
+        "page" : 2,
+        "section" : "Problem Statement",
+        "quote" : "Particularly smaller universities might then not use Artemis."
+      } ]
+    } ],
+    "rejected" : [ {
+      "finding" : {
+        "severity" : "MAJOR",
+        "category" : "COMPLETENESS",
+        "title" : "Objective subsections are missing detailed descriptions",
+        "description" : "No objective subsections are present, so the requirement that each objective subsection contain at least two paragraphs of detailed description is not satisfied. Create a subsection for each objective and provide at least two substantive paragraphs explaining its scope, intended result, and how it will be addressed."
+      },
+      "reason" : "The rules do not require each objective subsection to contain at least two paragraphs of detailed description."
+    } ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Missing dedicated Motivation section",
+      "description" : "The proposal does not contain a distinct Motivation section. The abstract combines motivation, objectives, the problem statement, and the proposed solution, while the body moves directly from Problem Statement to Proposed Solution. Add a dedicated Motivation section that explains the scientific importance of solving the problem and presents a positive vision of the expected impact.",
+      "locations" : [ {
+        "page" : 1,
+        "section" : "Abstract",
+        "quote" : "**Motivation/Objective:** Since some Version Control (VC) systems include a Continuous Integration (CI) application, it is possible to reduce the effort required to maintain the servers and migrate the CI service from external applications as Jenkins to the inbuilt CI service."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "LOGIC",
+      "title" : "Problem section includes a desired solution or alternative",
+      "description" : "The Problem section should describe only the existing problem and its consequences. The exam paragraph instead proposes desired changes to the build plans and specific testing configurations. Move these requirements to a motivation, objectives, or solution section, and state only the current limitation and its consequences in the Problem section.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Problem Statement",
+        "quote" : "In exams, it would be useful to **change the student build plans after the submission date to firstly hide the test cases during the exam and only compile the code and secondly use a debug compiler** not failing due to a simple syntax error."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "COMPLETENESS",
+      "title" : "No objectives section with action-form objective headings",
+      "description" : "The proposal has no Section 4 devoted to objectives and provides no set of objective headings formulated as actions. The numbered Section 4 is instead “System Requirements and Top Level Design.” Add the required objective section and formulate every objective heading as a single action, such as “Evaluate GitLab CI integration.”"
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "BIBLIOGRAPHY",
+    "generated" : [ {
+      "severity" : "CRITICAL",
+      "category" : "COMPLETENESS",
+      "title" : "Bibliography contains fewer than the required minimum number of publications",
+      "description" : "The bibliography contains only 5 publications ([Booch95], [Gamma95], [Hilton16], [Krusche17], and [Krusche18]), but the guidelines require at least 6–8 peer-reviewed publications. Add at least one additional peer-reviewed publication, preferably several relevant sources to reach the recommended range.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "References",
+        "quote" : "References [Booch95] Booch, G. Object-oriented analysis and design with applications (2. ed.)."
+      }, {
+        "page" : 6,
+        "section" : "References",
+        "quote" : "[Krusche18] Krusche, S.; Seitz, A. ArTEMiS: An Automatic Assessment Management System for Interactive Learning."
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "CRITICAL",
+      "category" : "COMPLETENESS",
+      "title" : "Bibliography contains fewer than the required minimum number of publications",
+      "description" : "The bibliography contains only 5 publications ([Booch95], [Gamma95], [Hilton16], [Krusche17], and [Krusche18]), but the guidelines require at least 6–8 peer-reviewed publications. Add at least one additional peer-reviewed publication, preferably several relevant sources to reach the recommended range.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "References",
+        "quote" : "References [Booch95] Booch, G. Object-oriented analysis and design with applications (2. ed.)."
+      }, {
+        "page" : 6,
+        "section" : "References",
+        "quote" : "[Krusche18] Krusche, S.; Seitz, A. ArTEMiS: An Automatic Assessment Management System for Interactive Learning."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "FIGURES",
+    "generated" : [ {
+      "severity" : "CRITICAL",
+      "category" : "COMPLETENESS",
+      "title" : "Fewer than the required two figures",
+      "description" : "The proposal contains only one figure (Figure 1). Add at least one additional diagram, mockup, or figure; the additional figure may be another UML diagram, a mockup, a screenshot, or a chart.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "System Requirements and Top Level Design",
+        "quote" : "Figure 1: Depiction of the top-level workflow of the interactions in relation to Artemis and GitLab CI"
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Figure caption is not sufficiently informative",
+      "description" : "The caption identifies the general subject but does not provide a sufficiently detailed explanation of the actors, systems, and numbered interactions shown. Expand it so that the reader can understand the figure's scope and the meaning of the main relationships without relying on the surrounding text.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "System Requirements and Top Level Design",
+        "quote" : "Figure 1: **Depiction of the top-level workflow of the interactions in relation to Artemis and GitLab CI**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Figure is not explicitly referenced in the text",
+      "description" : "The figure is not explicitly referenced by figure number in the surrounding text. Replace the indirect statement with an explicit reference such as “Figure 1 shows the top-level workflow...” and similarly reference any additional figures that are added.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Proposed Solution",
+        "quote" : "This process is **illustrated in section 4**."
+      }, {
+        "page" : 4,
+        "section" : "System Requirements and Top Level Design",
+        "quote" : "Figure 1: Depiction of the top-level workflow of the interactions in relation to Artemis and GitLab CI"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "CRITICAL",
+      "category" : "COMPLETENESS",
+      "title" : "Fewer than the required two figures",
+      "description" : "The proposal contains only one figure (Figure 1). Add at least one additional diagram, mockup, or figure; the additional figure may be another UML diagram, a mockup, a screenshot, or a chart.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "System Requirements and Top Level Design",
+        "quote" : "Figure 1: Depiction of the top-level workflow of the interactions in relation to Artemis and GitLab CI"
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Figure caption is not sufficiently informative",
+      "description" : "The caption identifies the general subject but does not provide a sufficiently detailed explanation of the actors, systems, and numbered interactions shown. Expand it so that the reader can understand the figure's scope and the meaning of the main relationships without relying on the surrounding text.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "System Requirements and Top Level Design",
+        "quote" : "Figure 1: **Depiction of the top-level workflow of the interactions in relation to Artemis and GitLab CI**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Figure is not explicitly referenced in the text",
+      "description" : "The figure is not explicitly referenced by figure number in the surrounding text. Replace the indirect statement with an explicit reference such as “Figure 1 shows the top-level workflow...” and similarly reference any additional figures that are added.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Proposed Solution",
+        "quote" : "This process is **illustrated in section 4**."
+      }, {
+        "page" : 4,
+        "section" : "System Requirements and Top Level Design",
+        "quote" : "Figure 1: Depiction of the top-level workflow of the interactions in relation to Artemis and GitLab CI"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STYLE",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Excessive passive voice",
+      "description" : "The proposal uses passive constructions repeatedly, often without identifying the responsible actor. Rewrite these sentences with explicit subjects, such as Artemis, GitLab CI, or the instructor.",
+      "locations" : [ {
+        "page" : 1,
+        "section" : "Abstract",
+        "quote" : "GitLab CI fetches the build plan from the API on each run."
+      }, {
+        "page" : 2,
+        "section" : "Problem Statement",
+        "quote" : "Additionally, the base build plan **is copied once** after the student started the exercise."
+      }, {
+        "page" : 2,
+        "section" : "Proposed Solution",
+        "quote" : "The build plan **can be made available** via the API of Artemis and GitLab CI is downloading the build plan for each execution of the test cases."
+      }, {
+        "page" : 3,
+        "section" : "System Requirements and Top Level Design",
+        "quote" : "The student base repository **is copied**."
+      }, {
+        "page" : 3,
+        "section" : "System Requirements and Top Level Design",
+        "quote" : "GitLab CI **gets configured** so that it takes the build plan from the Artemis API."
+      }, {
+        "page" : 3,
+        "section" : "System Requirements and Top Level Design",
+        "quote" : "The GitLab CI build **gets triggered**."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Repeated filler and emphasis words",
+      "description" : "Filler and emphasis words occur repeatedly, particularly 'additional', 'furthermore', 'additionally', and 'also'. Remove them where they do not add meaning or replace them with a direct statement of the relationship between ideas.",
+      "locations" : [ {
+        "page" : 1,
+        "section" : "Abstract",
+        "quote" : "The CI server should be migrated to the VC server. **Furthermore**, it should be possible to adjust the build plan after the task has been assigned."
+      }, {
+        "page" : 2,
+        "section" : "Problem Statement",
+        "quote" : "This leads to **additional** server overhead, since the CI and the Version Control (VC) are running on diferent servers."
+      }, {
+        "page" : 2,
+        "section" : "Problem Statement",
+        "quote" : "**Additionally**, the base build plan is copied once after the student started the exercise."
+      }, {
+        "page" : 2,
+        "section" : "Proposed Solution",
+        "quote" : "**Furthermore**, the CI service should be part of the VC server to reduce additional efort by maintaining two servers."
+      }, {
+        "page" : 3,
+        "section" : "Related Work",
+        "quote" : "Not only projects using CI release twice as often as projects without CI, but the build is **also** less likely to fail in the master branch."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Forbidden sentence starters",
+      "description" : "Several sentences begin with forbidden starters. Recast each sentence so that it begins with its main subject or claim rather than with a subordinate clause or infinitive phrase.",
+      "locations" : [ {
+        "page" : 1,
+        "section" : "Abstract",
+        "quote" : "**Since** some Version Control (VC) systems include a Continuous Integration (CI) application, it is possible to reduce the efort required to maintain the servers and migrate the CI service from external applications as Jenkins to the inbuilt CI service."
+      }, {
+        "page" : 2,
+        "section" : "Problem Statement",
+        "quote" : "**To achieve** this goal, Artemis uses a Version Control (VC) and Continuous Integration (CI) server, to execute test cases predefned by the instructor on each submission of each student, display the build results and grade the submission [Krusche18]."
+      }, {
+        "page" : 2,
+        "section" : "Proposed Solution",
+        "quote" : "**As a result**, instructors are able to update the build plan after the release of an exercise, GitLab CI fetches the updated build plan when needed."
+      }, {
+        "page" : 2,
+        "section" : "Related Work",
+        "quote" : "**In order to** implement this idea, the lecture is split up into multiple iterations, each consisting of diferent phases [Krusche17]."
+      }, {
+        "page" : 3,
+        "section" : "Related Work",
+        "quote" : "**Since** CI services are now often included with VC servers, it is now possible to migrate external CI servers as Jenkins to GitLab CI and so reduce additional work for server administration."
+      }, {
+        "page" : 4,
+        "section" : "Expected Findings",
+        "quote" : "**As described** in section 3, this might lead to better developers and better code, due to the fact, that more students will be taught the concepts of CI."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Use of first person",
+      "description" : "The schedule uses first-person statements. Replace them with an impersonal formulation or a concrete plan stated directly, such as 'The thesis work will pause during the internship.'",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Time Schedule",
+        "quote" : "During this time, **I will not have time to work on my thesis. Instead, I plan to work** on my thesis for about 2 weeks during the summer holidays in August."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Undefined abbreviation",
+      "description" : "Define API at its first occurrence before using the abbreviation. For example, write 'application programming interface (API)' and use API thereafter.",
+      "locations" : [ {
+        "page" : 1,
+        "section" : "Abstract",
+        "quote" : "This system supports the provision of the build plan via the Artemis **API**, which makes it possible to update the build plan retrospectively, as the build plan is fetched from the API on each run."
+      } ]
+    } ],
+    "ungrounded" : [ {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Excessive passive voice",
+      "description" : "The proposal uses passive constructions repeatedly, often without identifying the responsible actor. Rewrite these sentences with explicit subjects, such as Artemis, GitLab CI, or the instructor.",
+      "locations" : [ {
+        "page" : 1,
+        "section" : "Abstract",
+        "quote" : "GitLab CI fetches the build plan from the API on each run."
+      }, {
+        "page" : 2,
+        "section" : "Problem Statement",
+        "quote" : "Additionally, the base build plan **is copied once** after the student started the exercise."
+      }, {
+        "page" : 2,
+        "section" : "Proposed Solution",
+        "quote" : "The build plan **can be made available** via the API of Artemis and GitLab CI is downloading the build plan for each execution of the test cases."
+      }, {
+        "page" : 3,
+        "section" : "System Requirements and Top Level Design",
+        "quote" : "The student base repository **is copied**."
+      }, {
+        "page" : 3,
+        "section" : "System Requirements and Top Level Design",
+        "quote" : "GitLab CI **gets configured** so that it takes the build plan from the Artemis API."
+      }, {
+        "page" : 3,
+        "section" : "System Requirements and Top Level Design",
+        "quote" : "The GitLab CI build **gets triggered**."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Repeated filler and emphasis words",
+      "description" : "Filler and emphasis words occur repeatedly, particularly 'additional', 'furthermore', 'additionally', and 'also'. Remove them where they do not add meaning or replace them with a direct statement of the relationship between ideas.",
+      "locations" : [ {
+        "page" : 1,
+        "section" : "Abstract",
+        "quote" : "The CI server should be migrated to the VC server. **Furthermore**, it should be possible to adjust the build plan after the task has been assigned."
+      }, {
+        "page" : 2,
+        "section" : "Problem Statement",
+        "quote" : "This leads to **additional** server overhead, since the CI and the Version Control (VC) are running on diferent servers."
+      }, {
+        "page" : 2,
+        "section" : "Problem Statement",
+        "quote" : "**Additionally**, the base build plan is copied once after the student started the exercise."
+      }, {
+        "page" : 2,
+        "section" : "Proposed Solution",
+        "quote" : "**Furthermore**, the CI service should be part of the VC server to reduce additional efort by maintaining two servers."
+      }, {
+        "page" : 3,
+        "section" : "Related Work",
+        "quote" : "Not only projects using CI release twice as often as projects without CI, but the build is **also** less likely to fail in the master branch."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Forbidden sentence starters",
+      "description" : "Several sentences begin with forbidden starters. Recast each sentence so that it begins with its main subject or claim rather than with a subordinate clause or infinitive phrase.",
+      "locations" : [ {
+        "page" : 1,
+        "section" : "Abstract",
+        "quote" : "**Since** some Version Control (VC) systems include a Continuous Integration (CI) application, it is possible to reduce the efort required to maintain the servers and migrate the CI service from external applications as Jenkins to the inbuilt CI service."
+      }, {
+        "page" : 2,
+        "section" : "Problem Statement",
+        "quote" : "**To achieve** this goal, Artemis uses a Version Control (VC) and Continuous Integration (CI) server, to execute test cases predefned by the instructor on each submission of each student, display the build results and grade the submission [Krusche18]."
+      }, {
+        "page" : 2,
+        "section" : "Proposed Solution",
+        "quote" : "**As a result**, instructors are able to update the build plan after the release of an exercise, GitLab CI fetches the updated build plan when needed."
+      }, {
+        "page" : 2,
+        "section" : "Related Work",
+        "quote" : "**In order to** implement this idea, the lecture is split up into multiple iterations, each consisting of diferent phases [Krusche17]."
+      }, {
+        "page" : 3,
+        "section" : "Related Work",
+        "quote" : "**Since** CI services are now often included with VC servers, it is now possible to migrate external CI servers as Jenkins to GitLab CI and so reduce additional work for server administration."
+      }, {
+        "page" : 4,
+        "section" : "Expected Findings",
+        "quote" : "**As described** in section 3, this might lead to better developers and better code, due to the fact, that more students will be taught the concepts of CI."
+      } ]
+    } ],
+    "rejected" : [ {
+      "finding" : {
+        "severity" : "MINOR",
+        "category" : "WRITING",
+        "title" : "Use of first person",
+        "description" : "The schedule uses first-person statements. Replace them with an impersonal formulation or a concrete plan stated directly, such as 'The thesis work will pause during the internship.'",
+        "locations" : [ {
+          "page" : 4,
+          "section" : "Time Schedule",
+          "quote" : "During this time, **I will not have time to work on my thesis. Instead, I plan to work** on my thesis for about 2 weeks during the summer holidays in August."
+        } ]
+      },
+      "reason" : "The rules do not prohibit first-person statements or require impersonal formulations."
+    } ],
+    "kept" : [ {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Undefined abbreviation",
+      "description" : "Define API at its first occurrence before using the abbreviation. For example, write 'application programming interface (API)' and use API thereafter.",
+      "locations" : [ {
+        "page" : 1,
+        "section" : "Abstract",
+        "quote" : "This system supports the provision of the build plan via the Artemis **API**, which makes it possible to update the build plan retrospectively, as the build plan is fetched from the API on each run."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STRUCTURE",
+    "generated" : [ {
+      "category" : "STRUCTURE",
+      "description" : "Several paragraphs in the Expected Findings section are only one or two lines long. Merge closely related sentences into fuller paragraphs of approximately 5–8 lines, while preserving distinct ideas as separate paragraphs where appropriate.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Expected Findings",
+        "quote" : "On long term, we expect that more universities will use Artemis, since the setup hurdle will become smaller."
+      }, {
+        "page" : 4,
+        "section" : "Expected Findings",
+        "quote" : "In addition, universities will save time and money as they will need at least one less server."
+      }, {
+        "page" : 4,
+        "section" : "Expected Findings",
+        "quote" : "The proposed solution opens up new opportunities for further research. with the envisaged implementation it will be possible to tackle the problem regarding the test execution during exams described in section 1."
+      }, {
+        "page" : 4,
+        "section" : "Expected Findings",
+        "quote" : "In addition, either Ansible or a Kubernetes cluster can be used for automatic deployment of the GitLab CI Runners."
+      } ]
+    }, {
+      "category" : "STRUCTURE",
+      "description" : "The System Requirements and Top Level Design section relies on a long numbered workflow instead of prose. Introduce the scenario in prose and explain the workflow in prose paragraphs, using a shorter list only for genuinely sequential steps.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "System Requirements and Top Level Design",
+        "quote" : "1) Name: Exercise work fow"
+      }, {
+        "page" : 3,
+        "section" : "System Requirements and Top Level Design",
+        "quote" : "3) Flow of events:"
+      } ]
+    }, {
+      "category" : "STRUCTURE",
+      "description" : "The introductory and concluding paragraphs around the workflow are too short to function as developed prose paragraphs. Expand them with the purpose, scope, and interpretation of the scenario, or merge them with adjacent explanatory text.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "System Requirements and Top Level Design",
+        "quote" : "The visionary scenario presents the supposed workfow of an exercise."
+      }, {
+        "page" : 3,
+        "section" : "System Requirements and Top Level Design",
+        "quote" : "Using the problem statement section 1 and the visionary scenario, it is possible to determine the relevant actors and systems for solving the problem."
+      } ]
+    }, {
+      "category" : "STRUCTURE",
+      "description" : "The schedule contains short introductory paragraphs, but the schedule lists themselves are permitted by the guidelines. Combine or expand the introductory sentences so they provide a substantive explanation of how the schedule is organized and justified.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Time Schedule",
+        "quote" : "The following assumptions were made for the preparation of the time schedule:"
+      }, {
+        "page" : 4,
+        "section" : "Time Schedule",
+        "quote" : "It is planned to adhere to the following time schedule:"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ {
+      "finding" : {
+        "category" : "STRUCTURE",
+        "description" : "The introductory and concluding paragraphs around the workflow are too short to function as developed prose paragraphs. Expand them with the purpose, scope, and interpretation of the scenario, or merge them with adjacent explanatory text.",
+        "locations" : [ {
+          "page" : 3,
+          "section" : "System Requirements and Top Level Design",
+          "quote" : "The visionary scenario presents the supposed workfow of an exercise."
+        }, {
+          "page" : 3,
+          "section" : "System Requirements and Top Level Design",
+          "quote" : "Using the problem statement section 1 and the visionary scenario, it is possible to determine the relevant actors and systems for solving the problem."
+        } ]
+      },
+      "reason" : "The guidelines require introductory text before subsections but do not require introductory or concluding paragraphs to be substantive, expanded, or merged."
+    }, {
+      "finding" : {
+        "category" : "STRUCTURE",
+        "description" : "The schedule contains short introductory paragraphs, but the schedule lists themselves are permitted by the guidelines. Combine or expand the introductory sentences so they provide a substantive explanation of how the schedule is organized and justified.",
+        "locations" : [ {
+          "page" : 4,
+          "section" : "Time Schedule",
+          "quote" : "The following assumptions were made for the preparation of the time schedule:"
+        }, {
+          "page" : 4,
+          "section" : "Time Schedule",
+          "quote" : "It is planned to adhere to the following time schedule:"
+        } ]
+      },
+      "reason" : "The guidelines permit lists in the Schedule and do not require schedule introductory sentences to be expanded or justified."
+    } ],
+    "kept" : [ {
+      "category" : "STRUCTURE",
+      "description" : "Several paragraphs in the Expected Findings section are only one or two lines long. Merge closely related sentences into fuller paragraphs of approximately 5–8 lines, while preserving distinct ideas as separate paragraphs where appropriate.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Expected Findings",
+        "quote" : "On long term, we expect that more universities will use Artemis, since the setup hurdle will become smaller."
+      }, {
+        "page" : 4,
+        "section" : "Expected Findings",
+        "quote" : "In addition, universities will save time and money as they will need at least one less server."
+      }, {
+        "page" : 4,
+        "section" : "Expected Findings",
+        "quote" : "The proposed solution opens up new opportunities for further research. with the envisaged implementation it will be possible to tackle the problem regarding the test execution during exams described in section 1."
+      }, {
+        "page" : 4,
+        "section" : "Expected Findings",
+        "quote" : "In addition, either Ansible or a Kubernetes cluster can be used for automatic deployment of the GitLab CI Runners."
+      } ]
+    }, {
+      "category" : "STRUCTURE",
+      "description" : "The System Requirements and Top Level Design section relies on a long numbered workflow instead of prose. Introduce the scenario in prose and explain the workflow in prose paragraphs, using a shorter list only for genuinely sequential steps.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "System Requirements and Top Level Design",
+        "quote" : "1) Name: Exercise work fow"
+      }, {
+        "page" : 3,
+        "section" : "System Requirements and Top Level Design",
+        "quote" : "3) Flow of events:"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_FORMATTING",
+    "generated" : [ {
+      "severity" : "MINOR",
+      "category" : "FORMATTING",
+      "title" : "Scenario Name Uses Sentence Case",
+      "description" : "The scenario name is not in title case. Capitalize the significant words consistently, for example: “Exercise Workflow.”",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "System Requirements and Top Level Design",
+        "quote" : "1)  Name:      **Exercise work fow**"
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Inconsistent Capitalization of Server Terms",
+      "description" : "The document varies the capitalization of the same common server terms. Standardize these terms, preferably as “CI server” and “VC server” unless they begin a sentence or are part of a proper name.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Problem Statement",
+        "quote" : "Artemis currently supports Bamboo 1 and Jenkins 2 as a **CI server** for executing the tests."
+      }, {
+        "page" : 2,
+        "section" : "Problem Statement",
+        "quote" : "the build plans must be updated manually in the **CI Server**."
+      }, {
+        "page" : 2,
+        "section" : "Proposed Solution",
+        "quote" : "each time the code in the **VC Server** gets updated"
+      }, {
+        "page" : 2,
+        "section" : "Proposed Solution",
+        "quote" : "The Version Control server GitLab 3 has an integrated CI service"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ {
+      "finding" : {
+        "severity" : "MINOR",
+        "category" : "FORMATTING",
+        "title" : "Scenario Name Uses Sentence Case",
+        "description" : "The scenario name is not in title case. Capitalize the significant words consistently, for example: “Exercise Workflow.”",
+        "locations" : [ {
+          "page" : 3,
+          "section" : "System Requirements and Top Level Design",
+          "quote" : "1)  Name:      **Exercise work fow**"
+        } ]
+      },
+      "reason" : "The rules do not require scenario names to use title case."
+    } ],
+    "kept" : [ {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Inconsistent Capitalization of Server Terms",
+      "description" : "The document varies the capitalization of the same common server terms. Standardize these terms, preferably as “CI server” and “VC server” unless they begin a sentence or are part of a proper name.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Problem Statement",
+        "quote" : "Artemis currently supports Bamboo 1 and Jenkins 2 as a **CI server** for executing the tests."
+      }, {
+        "page" : 2,
+        "section" : "Problem Statement",
+        "quote" : "the build plans must be updated manually in the **CI Server**."
+      }, {
+        "page" : 2,
+        "section" : "Proposed Solution",
+        "quote" : "each time the code in the **VC Server** gets updated"
+      }, {
+        "page" : 2,
+        "section" : "Proposed Solution",
+        "quote" : "The Version Control server GitLab 3 has an integrated CI service"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "AI_TRANSPARENCY",
+    "generated" : [ {
+      "severity" : "CRITICAL",
+      "category" : "COMPLETENESS",
+      "title" : "Missing AI transparency statement",
+      "description" : "The proposal does not contain an AI transparency statement. Add a dedicated statement written in the first person that names the AI tools used, explains their purposes, identifies the proposal sections in which they were used, and confirms that all AI-generated text was carefully checked for correctness and coherence."
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "CRITICAL",
+      "category" : "COMPLETENESS",
+      "title" : "Missing AI transparency statement",
+      "description" : "The proposal does not contain an AI transparency statement. Add a dedicated statement written in the first person that names the AI tools used, explains their purposes, identifies the proposal sections in which they were used, and confirms that all AI-generated text was carefully checked for correctness and coherence."
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "SCHEDULE",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "No 2–4-week iterations",
+      "description" : "The schedule is organized as isolated weekly milestones rather than 2–4-week iterations. Several planned work items are assigned to a single week, which is shorter than the required minimum. Reorganize the work into explicit 2–4-week iterations, each with a complete objective and deliverable.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Time Schedule",
+        "quote" : "Every week, Wednesday is set aside for working on the thesis."
+      }, {
+        "page" : 5,
+        "section" : "Time Schedule",
+        "quote" : "April – **2nd week: Docker GitLab CI Runner configuration**"
+      }, {
+        "page" : 5,
+        "section" : "Time Schedule",
+        "quote" : "April – **4th week: prototype implementation: Connectivity to GitLab CI**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "COMPLETENESS",
+      "title" : "Vague and non-measurable work items",
+      "description" : "Several schedule items are not measurable deliverables. In particular, “Models” and “Requirements” do not state what artifact, implemented behavior, test result, or acceptance criterion will be produced. Replace them with concrete outcomes, such as a defined data model implemented in the system and validated by specified tests.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Time Schedule",
+        "quote" : "June – **4th week: Models (parallel to prototype implementation)**"
+      }, {
+        "page" : 5,
+        "section" : "Time Schedule",
+        "quote" : "June – **4th week: Requirements (parallel to prototype implementation)**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "METHODOLOGY",
+      "title" : "Horizontal rather than vertically integrated planning",
+      "description" : "The implementation plan is split into technical layers and infrastructure components—runner configuration, CI connectivity, an Artemis API, and result transmission—instead of vertically integrated end-to-end features. Reframe each iteration around a usable workflow, for example: configure one exercise, execute it through GitLab CI, and return and display its results in Artemis, then extend that workflow to dynamic build-plan updates.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Time Schedule",
+        "quote" : "April – **2nd week: Docker GitLab CI Runner configuration**"
+      }, {
+        "page" : 5,
+        "section" : "Time Schedule",
+        "quote" : "April – **4th week: prototype implementation: Connectivity to GitLab CI**"
+      }, {
+        "page" : 5,
+        "section" : "Time Schedule",
+        "quote" : "May – **3nd week: prototype implementation: Artemis API for configuration**"
+      }, {
+        "page" : 5,
+        "section" : "Time Schedule",
+        "quote" : "June – **4th week: prototype implementation: Sending build results to Artemis**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "METHODOLOGY",
+      "title" : "Dedicated requirements activity",
+      "description" : "The schedule contains a dedicated requirements activity. Requirements should be maintained as a backlog and selected alongside implementation and validation work within each iteration, rather than planned as a separate sprint or phase.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Time Schedule",
+        "quote" : "June – 4th week: **Requirements (parallel to prototype implementation)**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Thesis and documentation tasks in the schedule",
+      "description" : "The schedule includes thesis writing, documentation writing, review preparation, and thesis completion tasks. Remove these items from the development/research schedule and use the schedule only for implementation, experimentation, evaluation, and other research work.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Time Schedule",
+        "quote" : "September – 2nd week: **Documentation for installation and configuration of Artemis with GitLab CI**"
+      }, {
+        "page" : 5,
+        "section" : "Time Schedule",
+        "quote" : "October: **Writing . . .**"
+      }, {
+        "page" : 5,
+        "section" : "Time Schedule",
+        "quote" : "November – 2nd week: **Thesis ready for review**"
+      }, {
+        "page" : 5,
+        "section" : "Time Schedule",
+        "quote" : "December – 1st week: **Thesis**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "METHODOLOGY",
+      "title" : "Waterfall-style schedule not tied to iterative objective validation",
+      "description" : "The schedule follows a largely waterfall-style sequence from infrastructure setup to separate implementation components, followed by documentation and writing, and it does not define recurring iterations that deliver and validate the proposal's high-level goals: GitLab CI integration, dynamically retrieved build plans, and build-result delivery to Artemis. Replace the sequence with 2–4-week cycles that each demonstrate and evaluate an increment of these goals.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Time Schedule",
+        "quote" : "April – 2nd week: Docker GitLab CI Runner configuration; April – 4th week: prototype implementation: Connectivity to GitLab CI; May – 3nd week: prototype implementation: Artemis API for configuration; June – 4th week: prototype implementation: Sending build results to Artemis"
+      }, {
+        "page" : 4,
+        "section" : "Expected Findings",
+        "quote" : "The research thesis deals with the question on how to connect Artemis with GitLab CI."
+      } ]
+    } ],
+    "ungrounded" : [ {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "No 2–4-week iterations",
+      "description" : "The schedule is organized as isolated weekly milestones rather than 2–4-week iterations. Several planned work items are assigned to a single week, which is shorter than the required minimum. Reorganize the work into explicit 2–4-week iterations, each with a complete objective and deliverable.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Time Schedule",
+        "quote" : "Every week, Wednesday is set aside for working on the thesis."
+      }, {
+        "page" : 5,
+        "section" : "Time Schedule",
+        "quote" : "April – **2nd week: Docker GitLab CI Runner configuration**"
+      }, {
+        "page" : 5,
+        "section" : "Time Schedule",
+        "quote" : "April – **4th week: prototype implementation: Connectivity to GitLab CI**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "COMPLETENESS",
+      "title" : "Vague and non-measurable work items",
+      "description" : "Several schedule items are not measurable deliverables. In particular, “Models” and “Requirements” do not state what artifact, implemented behavior, test result, or acceptance criterion will be produced. Replace them with concrete outcomes, such as a defined data model implemented in the system and validated by specified tests.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Time Schedule",
+        "quote" : "June – **4th week: Models (parallel to prototype implementation)**"
+      }, {
+        "page" : 5,
+        "section" : "Time Schedule",
+        "quote" : "June – **4th week: Requirements (parallel to prototype implementation)**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "METHODOLOGY",
+      "title" : "Horizontal rather than vertically integrated planning",
+      "description" : "The implementation plan is split into technical layers and infrastructure components—runner configuration, CI connectivity, an Artemis API, and result transmission—instead of vertically integrated end-to-end features. Reframe each iteration around a usable workflow, for example: configure one exercise, execute it through GitLab CI, and return and display its results in Artemis, then extend that workflow to dynamic build-plan updates.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Time Schedule",
+        "quote" : "April – **2nd week: Docker GitLab CI Runner configuration**"
+      }, {
+        "page" : 5,
+        "section" : "Time Schedule",
+        "quote" : "April – **4th week: prototype implementation: Connectivity to GitLab CI**"
+      }, {
+        "page" : 5,
+        "section" : "Time Schedule",
+        "quote" : "May – **3nd week: prototype implementation: Artemis API for configuration**"
+      }, {
+        "page" : 5,
+        "section" : "Time Schedule",
+        "quote" : "June – **4th week: prototype implementation: Sending build results to Artemis**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "METHODOLOGY",
+      "title" : "Dedicated requirements activity",
+      "description" : "The schedule contains a dedicated requirements activity. Requirements should be maintained as a backlog and selected alongside implementation and validation work within each iteration, rather than planned as a separate sprint or phase.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Time Schedule",
+        "quote" : "June – 4th week: **Requirements (parallel to prototype implementation)**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "METHODOLOGY",
+      "title" : "Waterfall-style schedule not tied to iterative objective validation",
+      "description" : "The schedule follows a largely waterfall-style sequence from infrastructure setup to separate implementation components, followed by documentation and writing, and it does not define recurring iterations that deliver and validate the proposal's high-level goals: GitLab CI integration, dynamically retrieved build plans, and build-result delivery to Artemis. Replace the sequence with 2–4-week cycles that each demonstrate and evaluate an increment of these goals.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Time Schedule",
+        "quote" : "April – 2nd week: Docker GitLab CI Runner configuration; April – 4th week: prototype implementation: Connectivity to GitLab CI; May – 3nd week: prototype implementation: Artemis API for configuration; June – 4th week: prototype implementation: Sending build results to Artemis"
+      }, {
+        "page" : 4,
+        "section" : "Expected Findings",
+        "quote" : "The research thesis deals with the question on how to connect Artemis with GitLab CI."
+      } ]
+    } ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Thesis and documentation tasks in the schedule",
+      "description" : "The schedule includes thesis writing, documentation writing, review preparation, and thesis completion tasks. Remove these items from the development/research schedule and use the schedule only for implementation, experimentation, evaluation, and other research work.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Time Schedule",
+        "quote" : "September – 2nd week: **Documentation for installation and configuration of Artemis with GitLab CI**"
+      }, {
+        "page" : 5,
+        "section" : "Time Schedule",
+        "quote" : "October: **Writing . . .**"
+      }, {
+        "page" : 5,
+        "section" : "Time Schedule",
+        "quote" : "November – 2nd week: **Thesis ready for review**"
+      }, {
+        "page" : 5,
+        "section" : "Time Schedule",
+        "quote" : "December – 1st week: **Thesis**"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  } ],
+  "categoryFailures" : { }
+}

@@ -1,0 +1,250 @@
+{
+  "job": "label-proposal-p4-pass3-04",
+  "answer": {
+    "judgements": [
+      {
+        "id": "F48baa67b1f",
+        "rule": "R10",
+        "reason": "R10 requires long, informative captions. The Figure 2 caption is only \"System Architecture\".",
+        "label": "valid"
+      },
+      {
+        "id": "F1780eaffce",
+        "rule": "R4",
+        "reason": "R4 allows only problems in the Problem section. Its last sentence proposes a self-service platform as the fix.",
+        "label": "valid"
+      },
+      {
+        "id": "Fca4c73ff06",
+        "rule": "R11",
+        "reason": "R11 forbids contractions. Page 3 uses \"doesn't\".",
+        "label": "valid"
+      },
+      {
+        "id": "Fb0a1c023ae",
+        "rule": null,
+        "reason": "R15 covers headings only. No rule requires figure captions to be in title case.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F197742f46a",
+        "rule": null,
+        "reason": "No rule forbids the first person.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F0b01d79c02",
+        "rule": "R14",
+        "reason": "R14 requires introductory text before the first subsection. Section 1 goes straight to 1.1 with no text in between.",
+        "label": "valid"
+      },
+      {
+        "id": "F06a6755f0c",
+        "rule": "R8",
+        "reason": "The full stop in \"et al.\" belongs to an abbreviation, not the end of a sentence. [SMJ01] sits mid-sentence, so R8 is not breached.",
+        "label": "invalid"
+      },
+      {
+        "id": "F6a6347e5da",
+        "rule": "R4",
+        "reason": "R4 allows only problems in the Problem section. Section 2 ends by proposing a self-service platform as the solution.",
+        "label": "valid"
+      },
+      {
+        "id": "F0ecc350739",
+        "rule": "R20",
+        "reason": "R20 bans thesis-writing tasks from the schedule. Iteration 7 is \"Write the thesis and prepare the final presentation\".",
+        "label": "valid"
+      },
+      {
+        "id": "F2fd243ed21",
+        "rule": "R14",
+        "reason": "R14 requires introductory text before the first subsection. The Introduction has none before 1.1.",
+        "label": "valid"
+      },
+      {
+        "id": "F31ea7945e9",
+        "rule": "R10",
+        "reason": "R10 requires informative captions. The Figure 2 caption is only two words.",
+        "label": "valid"
+      },
+      {
+        "id": "F76be3bd1a1",
+        "rule": null,
+        "reason": "No rule requires title case in figure captions. R15 covers headings only.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F9c700f310d",
+        "rule": "R11",
+        "reason": "R11 forbids contractions. Page 3 contains \"doesn't\".",
+        "label": "valid"
+      },
+      {
+        "id": "F6f04a36f4e",
+        "rule": "R18",
+        "reason": "R18 requires a confirmation that all AI-generated text was carefully checked. The statement and its table contain no such sentence.",
+        "label": "valid"
+      },
+      {
+        "id": "F0080c0b9db",
+        "rule": "R4",
+        "reason": "R4 allows only problems in the Problem section. The closing sentence proposes a concrete solution.",
+        "label": "valid"
+      },
+      {
+        "id": "F063785a878",
+        "rule": "R1",
+        "reason": "R1 requires an Abstract. The document goes from the title page straight to 1 Introduction.",
+        "label": "valid"
+      },
+      {
+        "id": "F0cff98b74d",
+        "rule": "R8",
+        "reason": "R8 requires citations before the full stop. Page 4 has \"temporal model. [BBF01]\", with the citation after it.",
+        "label": "valid"
+      },
+      {
+        "id": "F6f990a26e4",
+        "rule": "R15",
+        "reason": "Many title-case conventions capitalise prepositions of four or more letters, such as \"Without\". This is not a clear breach of R15.",
+        "label": "invalid"
+      },
+      {
+        "id": "F569dd706b3",
+        "rule": "R6",
+        "reason": "R6 forbids double verbs in objectives. The second objective bullet reads \"Design and implement connectors with expiry\".",
+        "label": "valid"
+      },
+      {
+        "id": "F2554f668fc",
+        "rule": "R1",
+        "reason": "R1 requires an Abstract, and the proposal has none.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd98ac222a5",
+        "rule": "R6",
+        "reason": "R6 forbids double verbs in objectives and headings. Both the bullet and the 4.2 heading use \"Design and Implement\".",
+        "label": "valid"
+      },
+      {
+        "id": "F9f770b230e",
+        "rule": "R7",
+        "reason": "R7 says internet sources go in footnotes, not the bibliography. [Key26] is an online documentation page listed in the bibliography.",
+        "label": "valid"
+      },
+      {
+        "id": "F75927b89e8",
+        "rule": "R1",
+        "reason": "R1 requires an Abstract, and the document has none.",
+        "label": "valid"
+      },
+      {
+        "id": "Ff2559216ed",
+        "rule": "R10",
+        "reason": "R10 requires long, informative captions. The Figure 2 caption is only \"System Architecture\".",
+        "label": "valid"
+      },
+      {
+        "id": "F1c0fc25fc3",
+        "rule": "R7",
+        "reason": "R7 puts internet sources in footnotes. The online Keycloak guide [Key26] appears in the bibliography instead.",
+        "label": "valid"
+      },
+      {
+        "id": "F6e65f01b06",
+        "rule": "R11",
+        "reason": "R11 forbids contractions. The Problem section uses \"doesn't\".",
+        "label": "valid"
+      },
+      {
+        "id": "F33e2eea245",
+        "rule": "R11",
+        "reason": "R11 forbids contractions. Page 3 contains \"doesn't\".",
+        "label": "valid"
+      },
+      {
+        "id": "Fc72ffb2969",
+        "rule": "R10",
+        "reason": "R10 requires informative captions. The Figure 2 caption is a generic two-word label.",
+        "label": "valid"
+      },
+      {
+        "id": "F480ef32fae",
+        "rule": "R7",
+        "reason": "R7 puts internet sources in footnotes. The online documentation [Key26] is listed in the bibliography.",
+        "label": "valid"
+      },
+      {
+        "id": "Fed0f9628f0",
+        "rule": "R20",
+        "reason": "R20 bans thesis-writing tasks from the schedule. Iteration 7 is thesis writing and presentation preparation.",
+        "label": "valid"
+      },
+      {
+        "id": "F1b6f261c6c",
+        "rule": "R10",
+        "reason": "R10 requires long, informative captions. The Figure 2 caption is only \"System Architecture\".",
+        "label": "valid"
+      },
+      {
+        "id": "Fdfa67c48aa",
+        "rule": "R4",
+        "reason": "R4 allows only problems in the Problem section. Its final sentence proposes a solution.",
+        "label": "valid"
+      },
+      {
+        "id": "Fa540ee0e44",
+        "rule": "R20",
+        "reason": "R20 bans thesis-writing tasks from the schedule. Iteration 7 is a thesis-writing iteration.",
+        "label": "valid"
+      },
+      {
+        "id": "F6aa84b91c5",
+        "rule": "R10",
+        "reason": "R10 requires informative captions. The Figure 2 caption is generic and very short.",
+        "label": "valid"
+      },
+      {
+        "id": "F41464f6f32",
+        "rule": "R11",
+        "reason": "R11 forbids contractions. Page 3 uses \"doesn't\".",
+        "label": "valid"
+      },
+      {
+        "id": "Fd612ee12ba",
+        "rule": "R14",
+        "reason": "R14 requires introductory text before the first subsection. Section 1 begins directly with 1.1.",
+        "label": "valid"
+      },
+      {
+        "id": "F0b319e2ebc",
+        "rule": "R4",
+        "reason": "R4 allows only problems in the Problem section. It proposes a self-service platform as the fix.",
+        "label": "valid"
+      },
+      {
+        "id": "F98c5abe6f3",
+        "rule": "R18",
+        "reason": "R18 requires a confirmation that all AI-generated text was carefully checked. The statement has no such confirmation.",
+        "label": "valid"
+      },
+      {
+        "id": "F494dcb2824",
+        "rule": "R1",
+        "reason": "R1 requires an Abstract. The proposal starts directly with the Introduction.",
+        "label": "valid"
+      },
+      {
+        "id": "F6fbeafde96",
+        "rule": "R16",
+        "reason": "R16 requires consistent terminology. Section 4.3 calls the reviewing role \"resource owner\", while Figure 1 and the rest of the proposal call the same role \"maintainer\".",
+        "label": "valid"
+      }
+    ]
+  },
+  "costUsd": 0.2436468,
+  "durationMs": 28876,
+  "model": "claude-opus-5-5[1m]"
+}

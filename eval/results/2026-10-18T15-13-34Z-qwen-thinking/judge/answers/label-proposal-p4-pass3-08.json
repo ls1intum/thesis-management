@@ -1,0 +1,250 @@
+{
+  "job": "label-proposal-p4-pass3-08",
+  "answer": {
+    "judgements": [
+      {
+        "id": "F6e5cd8cd4a",
+        "rule": "R18",
+        "reason": "The transparency statement names the tool, purpose and scope but has no sentence confirming the author checked the AI-generated text.",
+        "label": "valid"
+      },
+      {
+        "id": "Ffa2f2697f6",
+        "rule": "R12",
+        "reason": "The statement defines the abbreviation as 'generative artificial intelligence (AI)', and the quoted text does not occur as given.",
+        "label": "invalid"
+      },
+      {
+        "id": "Faa2a80371d",
+        "rule": "R8",
+        "reason": "The document reads 'temporal model. [BBF01]', so the citation comes after the full stop.",
+        "label": "valid"
+      },
+      {
+        "id": "F6f4910cecd",
+        "rule": "R4",
+        "reason": "The Problem section ends with a proposed self-service platform, which is a solution.",
+        "label": "valid"
+      },
+      {
+        "id": "F3a12812bc7",
+        "rule": "R1",
+        "reason": "There is no Abstract; the document goes from the title page straight to Section 1.",
+        "label": "valid"
+      },
+      {
+        "id": "F9a4c338248",
+        "rule": "R8",
+        "reason": "The [BBF01] citation follows the full stop.",
+        "label": "valid"
+      },
+      {
+        "id": "F119e442a5b",
+        "rule": "R1",
+        "reason": "The required Abstract section is missing.",
+        "label": "valid"
+      },
+      {
+        "id": "Ff34df0f88e",
+        "rule": "R7",
+        "reason": "The online Keycloak administration guide [Key26] is a bibliography entry; internet sources belong in footnotes.",
+        "label": "valid"
+      },
+      {
+        "id": "F063e5f45f5",
+        "rule": null,
+        "reason": "No rule forbids the first person; R17 in fact requires a first-person statement.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F78fd7823a6",
+        "rule": "R3",
+        "reason": "The cited subsection 4.1 has two paragraphs ('I will replace...' and 'Inheritance runs...'), so the claim is wrong for it.",
+        "label": "invalid"
+      },
+      {
+        "id": "F82db9bf68c",
+        "rule": "R16",
+        "reason": "The role that reviews requests is called 'maintainer' elsewhere but 'resource owner' in 4.3, with no distinction given.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd84a855c21",
+        "rule": "R4",
+        "reason": "The Problem section proposes the self-service platform as a solution.",
+        "label": "valid"
+      },
+      {
+        "id": "F798ad10ce1",
+        "rule": "R11",
+        "reason": "The main clause ('A university research chair... operates') is active; 'reached over SSH' only modifies 'hosts', so this is not a clear active-voice breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fc577929ff7",
+        "rule": "R6",
+        "reason": "The objective and the heading of 4.2 use the double verb 'Design and Implement'.",
+        "label": "valid"
+      },
+      {
+        "id": "F543ad56b06",
+        "rule": "R11",
+        "reason": "The Problem section contains the contraction 'doesn't'.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc3723a99cd",
+        "rule": "R11",
+        "reason": "'The objective is met when...' is a passive construction.",
+        "label": "valid"
+      },
+      {
+        "id": "F4c493bf14f",
+        "rule": "R10",
+        "reason": "The Figure 2 caption is only 'System Architecture', which is not long or informative.",
+        "label": "valid"
+      },
+      {
+        "id": "F1b28f03975",
+        "rule": "R6",
+        "reason": "The objective bullet reads 'Design and implement connectors with expiry', a double verb.",
+        "label": "valid"
+      },
+      {
+        "id": "F9fea08114a",
+        "rule": null,
+        "reason": "No rule forbids the first person, and R17 requires it in the statement.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F3696e30207",
+        "rule": "R7",
+        "reason": "The online Keycloak documentation appears in the bibliography instead of a footnote.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc1ddb720b4",
+        "rule": "R4",
+        "reason": "The Problem section presents the solution platform.",
+        "label": "valid"
+      },
+      {
+        "id": "F25318ddcbd",
+        "rule": "R1",
+        "reason": "The Abstract is missing.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb26804823e",
+        "rule": "R3",
+        "reason": "Subsection 4.4 is one paragraph that continues across the page break, so it lacks the required two paragraphs.",
+        "label": "valid"
+      },
+      {
+        "id": "F639ac0dcc1",
+        "rule": "R1",
+        "reason": "The Abstract section is missing.",
+        "label": "valid"
+      },
+      {
+        "id": "Fe837bf4be1",
+        "rule": "R2",
+        "reason": "The 10 pages include the title page, bibliography and statement; the body text (pages 2-7, with figures) is about six pages, so there is no clear breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fe826640115",
+        "rule": "R11",
+        "reason": "The contraction 'doesn't' appears in the Problem section.",
+        "label": "valid"
+      },
+      {
+        "id": "Fa5df0f16ef",
+        "rule": "R10",
+        "reason": "The Figure 2 caption 'System Architecture' is short and generic.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb2cde9398a",
+        "rule": null,
+        "reason": "No rule forbids the first person 'I'.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F12d06ca1d7",
+        "rule": null,
+        "reason": "No rule forbids the first person 'I'.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Fcb3519b713",
+        "rule": "R3",
+        "reason": "Subsection 4.4 consists of a single paragraph.",
+        "label": "valid"
+      },
+      {
+        "id": "Fe7afaac036",
+        "rule": "R6",
+        "reason": "Both the bullet and the 4.2 heading use the double verb 'Design and implement'.",
+        "label": "valid"
+      },
+      {
+        "id": "Fa1d2dc54a0",
+        "rule": "R16",
+        "reason": "The same reviewing role is called 'maintainer' elsewhere and 'resource owner' in 4.3, with no distinction given.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd5b4805ceb",
+        "rule": null,
+        "reason": "No rule forbids the first person 'I'.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Ff2d0bcb10e",
+        "rule": "R6",
+        "reason": "The objective uses the double verb 'Design and implement'.",
+        "label": "valid"
+      },
+      {
+        "id": "F883e207470",
+        "rule": "R11",
+        "reason": "The contraction 'doesn't' appears on page 3.",
+        "label": "valid"
+      },
+      {
+        "id": "F24866bf416",
+        "rule": "R7",
+        "reason": "[Key26] is online documentation listed in the bibliography rather than in a footnote.",
+        "label": "valid"
+      },
+      {
+        "id": "F6861081bb4",
+        "rule": "R7",
+        "reason": "The bibliography includes the non-peer-reviewed Keycloak guide.",
+        "label": "valid"
+      },
+      {
+        "id": "F732fd44c04",
+        "rule": "R14",
+        "reason": "The '1 Introduction' heading is followed directly by '1.1 Setting' with no introductory text.",
+        "label": "valid"
+      },
+      {
+        "id": "F410b56c47b",
+        "rule": "R14",
+        "reason": "Section 1 has no introductory text before subsection 1.1.",
+        "label": "valid"
+      },
+      {
+        "id": "F99bfcfc352",
+        "rule": "R7",
+        "reason": "The Keycloak documentation guide is a bibliography entry instead of a footnote.",
+        "label": "valid"
+      }
+    ]
+  },
+  "costUsd": 0.2804868,
+  "durationMs": 32306,
+  "model": "claude-opus-5-5[1m]"
+}

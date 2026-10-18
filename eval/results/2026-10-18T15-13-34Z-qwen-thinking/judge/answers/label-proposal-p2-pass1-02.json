@@ -1,0 +1,250 @@
+{
+  "job": "label-proposal-p2-pass1-02",
+  "answer": {
+    "judgements": [
+      {
+        "id": "Fabcea32de2",
+        "rule": "R17",
+        "reason": "R17 asks the statement to name the sections involved. The statement names tools and purposes but no proposal sections.",
+        "label": "valid"
+      },
+      {
+        "id": "Fbd9e82a82b",
+        "rule": "R16",
+        "reason": "R16 requires consistent terminology. The same system is called 'LLM-powered Reviewer' and 'LLM Reviewer' in the Motivation but 'the feedback tool' in the Objective.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb6c7f567f3",
+        "rule": null,
+        "reason": "No rule requires the Motivation to argue scientific importance or novelty. R5 only asks for a visionary Motivation that does not repeat the Problem.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Fb9a63dc5e5",
+        "rule": "R16",
+        "reason": "'prompt-chaining' and 'prompt chaining' are the same term with different hyphenation. This is a spelling variant, not inconsistent terminology for one concept.",
+        "label": "invalid"
+      },
+      {
+        "id": "F90c951968e",
+        "rule": "R7",
+        "reason": "R7 requires at least 6-8 peer-reviewed publications. The bibliography lists only five entries.",
+        "label": "valid"
+      },
+      {
+        "id": "Fae4a359070",
+        "rule": "R3",
+        "reason": "R3 requires at least two paragraphs per objective subsection. Subsection 4.1 has two ('Supervisors should be able...' and 'This approach supports...').",
+        "label": "invalid"
+      },
+      {
+        "id": "F06acefb551",
+        "rule": "R12",
+        "reason": "R12 forbids starting sentences with 'As'. The sentence 'As Figure 1 illustrates, ...' does exactly that.",
+        "label": "valid"
+      },
+      {
+        "id": "F00e7757c2d",
+        "rule": "R19",
+        "reason": "R19 requires vertically integrated deliverables. Several iterations are layer tasks, such as modularizing Thesis Management, building a core pipeline, and connecting to the portal, rather than end-to-end features.",
+        "label": "valid"
+      },
+      {
+        "id": "F7cfd06e30b",
+        "rule": "R15",
+        "reason": "Capitalizing the four-letter preposition 'With' is acceptable in common title-case styles. The heading is in title case, so this is not a clear breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "F1f272c84bb",
+        "rule": "R2",
+        "reason": "R2 allows an abstract of 1/3-1/2 page. The abstract takes about 14 of roughly 34 lines on page 2, which is within or near the limit, so there is no clear breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "F8b945f2b74",
+        "rule": "R12",
+        "reason": "R12 forbids starting sentences with 'Since'. The sentence 'Since guidelines may not already be in a suitable format...' starts with it.",
+        "label": "valid"
+      },
+      {
+        "id": "F259164bfc3",
+        "rule": "R3",
+        "reason": "R3 asks for a list of 3-4 objectives. A numbered list of four objectives meets this; the rule does not require unordered bullets.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fc3467ea241",
+        "rule": "R2",
+        "reason": "R2 allows the Motivation at most 3/4 page. Its text runs to about 3/4 page, which is near the limit rather than a clear breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "F4c73ac020f",
+        "rule": "R19",
+        "reason": "R19 requires vertically integrated deliverables. Iteration 1 (modularize Thesis Management) and Iteration 2 (core pipeline and contracts) are horizontal preparatory tasks without a usable end-to-end feature.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc869bae1b2",
+        "rule": "R2",
+        "reason": "R2 allows an abstract of 1/3-1/2 page. The abstract fills under or about half of page 2, so there is no clear breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "F3ae12cdceb",
+        "rule": "R20",
+        "reason": "R20 forbids documentation tasks in the schedule. Iteration 9 lists 'Documentation'.",
+        "label": "valid"
+      },
+      {
+        "id": "F5c0ed644de",
+        "rule": "R11",
+        "reason": "R11 asks to avoid filler words. 'Additionally' is a logical connective rather than a filler word, so it does not break the rule.",
+        "label": "invalid"
+      },
+      {
+        "id": "F4e2d42f079",
+        "rule": null,
+        "reason": "No rule requires the schedule dates to match the stated start date.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F325629362f",
+        "rule": "R11",
+        "reason": "R11 asks to avoid superlatives. The document uses 'what matters most', 'performs best', 'least disruption', and 'greatest simplification'.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd6902b0afd",
+        "rule": "R20",
+        "reason": "R20 forbids documentation tasks in the schedule. Iteration 9 includes 'Documentation'.",
+        "label": "valid"
+      },
+      {
+        "id": "F57b53a02d6",
+        "rule": "R11",
+        "reason": "R11 requires active voice. Passive constructions occur, for example 'the proposal is accepted', 'no LLM-generated feedback is produced', 'are bundled', and 'is handed in'.",
+        "label": "valid"
+      },
+      {
+        "id": "F2c092520c0",
+        "rule": "R11",
+        "reason": "R11 asks to avoid superlatives. 'what matters most', 'performs best', and 'least disruption'/'greatest simplification' occur, although the claim about filler transitions is weak.",
+        "label": "valid"
+      },
+      {
+        "id": "F73913f1458",
+        "rule": "R12",
+        "reason": "R12 forbids the starters 'As', 'Since', and 'Because'. 'As Figure 1 illustrates...' starts with a forbidden word, and other cited sentences start with 'Since' and 'Because'.",
+        "label": "valid"
+      },
+      {
+        "id": "Fdb93277b91",
+        "rule": "R13",
+        "reason": "R13 asks for 5-8 line paragraphs. The transparency statement is a single paragraph of about 15 lines, and the first Introduction paragraph runs about 11 lines.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd206273809",
+        "rule": "R3",
+        "reason": "R3 requires at least two paragraphs per objective subsection. Every objective subsection has at least two paragraphs, so the claim of single short paragraphs is false.",
+        "label": "invalid"
+      },
+      {
+        "id": "F0c668cf7ec",
+        "rule": "R11",
+        "reason": "R11 requires active voice. The cited clauses ('hands in the thesis', 'include the student's personal interpretation', 'keep student drafts') are already active.",
+        "label": "invalid"
+      },
+      {
+        "id": "F02b0f18670",
+        "rule": "R13",
+        "reason": "R13 asks for 5-8 line paragraphs. The second abstract paragraph runs about 9 lines, which is near the limit rather than a clear breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "F9f3455549a",
+        "rule": "R12",
+        "reason": "R12 forbids the starters 'As', 'Since', and 'Because'. Sentences starting with each of them occur on pages 4-5.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd558ec855d",
+        "rule": "R11",
+        "reason": "R11 asks to avoid filler words. 'Additionally' is a connective, not a filler word.",
+        "label": "invalid"
+      },
+      {
+        "id": "F9013fc60c8",
+        "rule": "R16",
+        "reason": "'local', 'locally self-hosted', and 'self-hosted' are near-identical phrasings that the text explicitly links. This is not a case of different terms for one concept.",
+        "label": "invalid"
+      },
+      {
+        "id": "F86f817b4fb",
+        "rule": "R12",
+        "reason": "R12 only forbids 'Since' at the start of a sentence. Here 'since' appears mid-sentence.",
+        "label": "invalid"
+      },
+      {
+        "id": "F7aba939f0b",
+        "rule": "R20",
+        "reason": "R20 forbids documentation tasks in the schedule. Iteration 9 lists 'Documentation'.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb96ac8007c",
+        "rule": "R7",
+        "reason": "R7 requires at least 6-8 peer-reviewed publications. Only five are cited.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb0a0ffe992",
+        "rule": "R7",
+        "reason": "R7 requires at least 6-8 peer-reviewed publications. Only five are cited.",
+        "label": "valid"
+      },
+      {
+        "id": "F451c36cefb",
+        "rule": "R13",
+        "reason": "R13 asks for 5-8 line paragraphs with one idea each. The first paragraph of 4.1 spans about 11 lines and mixes guideline preprocessing with the formative-versus-normative ethics. The finding wrongly cites a 10-line limit, but the breach still holds.",
+        "label": "valid"
+      },
+      {
+        "id": "F205aef3e47",
+        "rule": "R17",
+        "reason": "R17 asks the statement to name the sections involved. The statement names no specific sections.",
+        "label": "valid"
+      },
+      {
+        "id": "F6c2c816b69",
+        "rule": "R16",
+        "reason": "The hyphenation difference is a spelling and grammar variant of one term, not inconsistent terminology for a concept.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fa236de45b2",
+        "rule": "R17",
+        "reason": "R17 asks the statement to name the sections involved. The statement does not name any.",
+        "label": "valid"
+      },
+      {
+        "id": "Fdcfe473da4",
+        "rule": "R20",
+        "reason": "R20 forbids documentation tasks in the schedule. Iteration 9 lists 'Documentation'.",
+        "label": "valid"
+      },
+      {
+        "id": "F3fcf06ed15",
+        "rule": "R16",
+        "reason": "R16 requires consistent terminology. The system is called 'Reviewer' in the Motivation and 'the feedback tool' in the Objective.",
+        "label": "valid"
+      }
+    ]
+  },
+  "costUsd": 0.3115828,
+  "durationMs": 42425,
+  "model": "claude-opus-5-5[1m]"
+}

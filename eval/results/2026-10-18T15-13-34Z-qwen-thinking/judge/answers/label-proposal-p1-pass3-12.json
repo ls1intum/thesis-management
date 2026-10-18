@@ -1,0 +1,250 @@
+{
+  "job": "label-proposal-p1-pass3-12",
+  "answer": {
+    "judgements": [
+      {
+        "id": "F804a56611b",
+        "rule": "R11",
+        "reason": "R11 forbids filler words. The document says \"very cumbersome\", and \"very\" is a filler intensifier. Some quotes are inaccurate (the \"Additionally, the CI service\" wording does not occur) and some connectives are doubtful, but the central claim holds.",
+        "label": "valid"
+      },
+      {
+        "id": "F7ab5d7a0e4",
+        "rule": "R16",
+        "reason": "The same concept is written inconsistently: \"CI Server\" and \"VC Server\" with a capital S on page 2, and \"CI server\" and \"VC server\" elsewhere.",
+        "label": "valid"
+      },
+      {
+        "id": "F84b88f2ab7",
+        "rule": "R13",
+        "reason": "R13 asks for 5-8 line paragraphs. Each abstract paragraph is only 2-3 lines long.",
+        "label": "valid"
+      },
+      {
+        "id": "F3e7421139b",
+        "rule": null,
+        "reason": "No rule forbids the first person \"I\".",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F1e614b8ad5",
+        "rule": "R16",
+        "reason": "The abstract uses \"task\" once while the rest of the text says \"exercise\", and \"CI server\" and \"CI service\" are used interchangeably for the same concept.",
+        "label": "valid"
+      },
+      {
+        "id": "F70a361a750",
+        "rule": "R1",
+        "reason": "R1 requires a Motivation section, and the proposal has none.",
+        "label": "valid"
+      },
+      {
+        "id": "F5bad2bbab8",
+        "rule": null,
+        "reason": "No rule forbids the first person \"I\".",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F1d81523a41",
+        "rule": "R9",
+        "reason": "Figure 1 shows actors with numbered messages, which is a UML communication diagram, so a UML diagram is present.",
+        "label": "invalid"
+      },
+      {
+        "id": "F5d29c95445",
+        "rule": "R16",
+        "reason": "\"CI service\" and \"CI server\" are used interchangeably for the same concept, for example Jenkins is called both.",
+        "label": "valid"
+      },
+      {
+        "id": "F3c73d718bb",
+        "rule": "R15",
+        "reason": "R15 applies to headings. Schedule entries and use-case labels are not headings.",
+        "label": "invalid"
+      },
+      {
+        "id": "F71dcf97fff",
+        "rule": "R17",
+        "reason": "The proposal contains no AI transparency statement.",
+        "label": "valid"
+      },
+      {
+        "id": "Fdf040f03a5",
+        "rule": "R7",
+        "reason": "The bibliography lists only five publications, below the required 6-8 peer-reviewed publications.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd0df7b1e2e",
+        "rule": "R19",
+        "reason": "The schedule lists horizontal component tasks by calendar month, not 2-4 week iterations with measurable, vertically integrated deliverables.",
+        "label": "valid"
+      },
+      {
+        "id": "F8b4e141b2e",
+        "rule": "R9",
+        "reason": "R9 requires at least two figures. The document contains only Figure 1.",
+        "label": "valid"
+      },
+      {
+        "id": "Fbd282b303b",
+        "rule": "R11",
+        "reason": "The cited words are connectives (\"Furthermore\", \"Additionally\", \"In addition\") or the meaningful adjective \"additional\", not filler words.",
+        "label": "invalid"
+      },
+      {
+        "id": "F80b3fc98ef",
+        "rule": "R4",
+        "reason": "The Problem section contains a desired solution: changing build plans after submission to hide tests and use a debug compiler.",
+        "label": "valid"
+      },
+      {
+        "id": "F8cde43bf99",
+        "rule": "R19",
+        "reason": "Schedule items such as \"Models\" and \"Requirements\" are not measurable deliverables.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb95c59c074",
+        "rule": "R20",
+        "reason": "The schedule includes a separate \"Requirements\" task, which R20 prohibits.",
+        "label": "valid"
+      },
+      {
+        "id": "F343110b901",
+        "rule": "R17",
+        "reason": "The AI transparency statement is absent.",
+        "label": "valid"
+      },
+      {
+        "id": "Fe6274459be",
+        "rule": "R1",
+        "reason": "There is no Introduction section; the document goes from the Abstract straight to Problem Statement.",
+        "label": "valid"
+      },
+      {
+        "id": "F4dc654be78",
+        "rule": "R19",
+        "reason": "Items such as \"Models\", \"Implement improvements\" and \"Revise models\" have no measurable deliverables.",
+        "label": "valid"
+      },
+      {
+        "id": "F6c78f459ce",
+        "rule": "R20",
+        "reason": "The schedule contains \"Writing\", \"Documentation\" and \"Thesis ready for review\", which are thesis-writing and documentation tasks.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd7682748ff",
+        "rule": "R12",
+        "reason": "Sentences start with \"Since\", \"To achieve\" and \"As a result\", all forbidden starters.",
+        "label": "valid"
+      },
+      {
+        "id": "F0e852c3edd",
+        "rule": "R1",
+        "reason": "The document has no dedicated Motivation section.",
+        "label": "valid"
+      },
+      {
+        "id": "F556379368e",
+        "rule": "R11",
+        "reason": "\"Furthermore\" is a connective and \"additional\" carries meaning; neither is a filler word.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fe0a7fb11a7",
+        "rule": "R1",
+        "reason": "The Introduction section is missing.",
+        "label": "valid"
+      },
+      {
+        "id": "Faee2d22285",
+        "rule": "R1",
+        "reason": "The Introduction section is missing; the document goes from the Abstract straight to Problem Statement.",
+        "label": "valid"
+      },
+      {
+        "id": "F2f25fcd9ff",
+        "rule": "R13",
+        "reason": "The Krusche passage starts a new paragraph in the document; the quote merges separate paragraphs. Booch and Fowler share one idea, the CI practice.",
+        "label": "invalid"
+      },
+      {
+        "id": "F7208a41519",
+        "rule": "R17",
+        "reason": "The AI transparency statement is missing.",
+        "label": "valid"
+      },
+      {
+        "id": "F023f126b31",
+        "rule": "R12",
+        "reason": "\"As a result, instructors are able...\" starts with the forbidden word \"As\".",
+        "label": "valid"
+      },
+      {
+        "id": "Ffbebb418f9",
+        "rule": "R13",
+        "reason": "The opening paragraph of Section 4 is a single line, far below the 5-8 line paragraph length.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb4e16135ce",
+        "rule": "R19",
+        "reason": "The schedule is a list of sporadic monthly milestones, not 2-4 week iterations.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd94cbc6e88",
+        "rule": "R11",
+        "reason": "The words cited (\"Additionally\", \"In addition\", \"Furthermore\") are connectives, not filler words in the sense of R11.",
+        "label": "invalid"
+      },
+      {
+        "id": "F370d5c87c4",
+        "rule": "R10",
+        "reason": "The text never references Figure 1; it only mentions \"section 4\".",
+        "label": "valid"
+      },
+      {
+        "id": "F58b417f0b4",
+        "rule": "R9",
+        "reason": "The proposal contains only one figure, while R9 requires at least two.",
+        "label": "valid"
+      },
+      {
+        "id": "F26e99f469c",
+        "rule": "R13",
+        "reason": "The visionary scenario in Section 4 is written as numbered lists. R13 allows lists only in the Schedule and objective lists.",
+        "label": "valid"
+      },
+      {
+        "id": "F65ab65de73",
+        "rule": "R12",
+        "reason": "\"As described in section 3, this might lead...\" starts with the forbidden word \"As\".",
+        "label": "valid"
+      },
+      {
+        "id": "F461cc1f11d",
+        "rule": "R13",
+        "reason": "R13 exempts the Schedule, and the short lead-in sentences break no rule. The finding is essentially neutral.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fa7878527ef",
+        "rule": null,
+        "reason": "No rule forbids the first person \"I\".",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Faafc42c8c0",
+        "rule": null,
+        "reason": "No rule forbids the first person.",
+        "label": "out_of_scope"
+      }
+    ]
+  },
+  "costUsd": 0.28119879999999997,
+  "durationMs": 43469,
+  "model": "claude-opus-5-5[1m]"
+}

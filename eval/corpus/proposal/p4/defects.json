@@ -1,0 +1,122 @@
+[
+  {
+    "id": "D1",
+    "rule": "R1",
+    "category": "structure",
+    "section": "Abstract",
+    "page": 2,
+    "quote": null,
+    "violation": "The Abstract is missing entirely: the body starts with \"1 Introduction\" on page 2, with no Abstract heading and no abstract text.",
+    "conforming": "An unnumbered \"Abstract\" section of about 0.4 page before \"1 Introduction\" that summarises the setting, the problem, the platform, and its evaluation."
+  },
+  {
+    "id": "D2",
+    "rule": "R14",
+    "category": "writing-structure",
+    "section": "1 Introduction",
+    "page": 2,
+    "quote": "1 Introduction 1.1 Setting A university research chair",
+    "violation": "Section 1 opens directly with subsection 1.1; there is no introductory text between the section heading and its first subsection.",
+    "conforming": "1 Introduction This section describes the setting of the thesis and the infrastructure that the chair runs today. 1.1 Setting A university research chair"
+  },
+  {
+    "id": "D3",
+    "rule": "R7",
+    "category": "bibliography",
+    "section": "Bibliography",
+    "page": 8,
+    "quote": "[Key26] Keycloak Authors, “Keycloak Server Administration Guide.” Accessed: Oct. 18, 2026. [Online]. Available: https://www.keycloak.org/docs/ latest/server_admin/",
+    "violation": "A website (the Keycloak documentation) appears as a regular bibliography entry and is cited as [Key26] in Section 1.2 (page 2) instead of being placed in a footnote.",
+    "conforming": "No [Key26] entry; Section 1.2 ends the sentence with a footnote: \"restrict an administrative right to a single group.¹\" with footnote \"https://www.keycloak.org/docs/latest/server_admin/\"."
+  },
+  {
+    "id": "D4",
+    "rule": "R11",
+    "category": "writing-style",
+    "section": "2 Problem",
+    "page": 3,
+    "quote": "The current process doesn’t scale and is the worst bottleneck of the chair.",
+    "violation": "The sentence uses a contraction (\"doesn’t\") and a superlative (\"the worst\").",
+    "conforming": "Sentence removed; the paragraph ends with \"… explain it as a limited compliance budget [BSW08].\""
+  },
+  {
+    "id": "D5",
+    "rule": "R4",
+    "category": "problem-motivation-objectives",
+    "section": "2 Problem",
+    "page": 3,
+    "quote": "A self-service platform that arms the workflow engine of Keycloak with an expiry date at grant time would end this accumulation.",
+    "violation": "The Problem section proposes the remedy and names the planned system and its technology (Keycloak workflow engine).",
+    "conforming": "Sentence removed; the paragraph ends with \"… because the history sits in scattered chat messages.\""
+  },
+  {
+    "id": "D6",
+    "rule": "R8",
+    "category": "bibliography",
+    "section": "3 Motivation",
+    "page": 4,
+    "quote": "temporal model. [BBF01] Joshi et al. generalise this idea to role assignments with a limited duration [Jos+05].",
+    "violation": "The citation [BBF01] stands after the full stop of the sentence \"Bertino et al. attach enabling and disabling events to roles in their temporal model.\", which starts at the foot of page 3.",
+    "conforming": "Bertino et al. attach enabling and disabling events to roles in their temporal model [BBF01]. Joshi et al. generalise this idea to role assignments with a limited duration [Jos+05]."
+  },
+  {
+    "id": "D7",
+    "rule": "R6",
+    "category": "problem-motivation-objectives",
+    "section": "4 Objective / 4.2",
+    "page": 4,
+    "quote": "Design and implement connectors with expiry",
+    "violation": "The second objective uses a double verb (\"Design and implement\") in the objective list and in the heading \"4.2 Design and Implement Connectors with Expiry\" on page 5.",
+    "conforming": "List item \"Implement connectors with expiry\" and heading \"4.2 Implement Connectors with Expiry\"."
+  },
+  {
+    "id": "D8",
+    "rule": "R10",
+    "category": "figures",
+    "section": "4.2 Design and Implement Connectors with Expiry",
+    "page": 5,
+    "quote": "Figure 2: System Architecture",
+    "violation": "Figure 2 has a two-word caption that does not say what the figure shows or how to read it.",
+    "conforming": "Figure 2: UML component diagram of the deployment. The management API changes Keycloak with the token of the calling user, while the LDAP bridge holds a separate read-only credential and projects users, groups, and SSH keys to the hosts. The bot tokens that reach Slack and GitHub cannot reach Keycloak or the hosts."
+  },
+  {
+    "id": "D9",
+    "rule": "R16",
+    "category": "writing-formatting",
+    "section": "4.3 Delegate Request Review Without Privilege Escalation",
+    "page": 6,
+    "quote": "no resource owner may hold that role. I will therefore split the approval: in the review step, the resource owner records a decision without changing Keycloak",
+    "violation": "Section 4.3 calls the maintainer \"resource owner\" (three times), while every other section, the objective list, and Figure 1 use \"maintainer\".",
+    "conforming": "Every \"resource owner\" in Section 4.3 reads \"maintainer\", e.g. \"no maintainer may hold that role. … in the review step, the maintainer records a decision without changing Keycloak\" and \"The maintainer completes a request alone …\"."
+  },
+  {
+    "id": "D10",
+    "rule": "R3",
+    "category": "structure",
+    "section": "4.4 Automate the Recertification of Grants",
+    "page": 6,
+    "quote": "4.4 Automate the Recertification of Grants I will attach a recertification interval to each resource",
+    "violation": "Objective subsection 4.4 consists of a single paragraph instead of at least two.",
+    "conforming": "A second paragraph after the first, holding the audit sentence and the success criterion: \"The platform logs every change with the person who made it, and the admin event log of Keycloak keeps a second copy. The objective is met when the platform answers, for any grant, who requested it, who reviewed and granted it, when it ended, and who recertified it in between.\""
+  },
+  {
+    "id": "D11",
+    "rule": "R20",
+    "category": "schedule",
+    "section": "5 Schedule",
+    "page": 7,
+    "quote": "Iteration 7 (18–31 March): Write the thesis and prepare the final presentation.",
+    "violation": "The schedule contains an iteration for thesis writing and presentation preparation.",
+    "conforming": "Buffer (18–31 March): two weeks remain for unplanned work from earlier iterations."
+  },
+  {
+    "id": "D12",
+    "rule": "R18",
+    "category": "ai-transparency",
+    "section": "Transparency in the Use of AI Tools",
+    "page": null,
+    "quote": null,
+    "violation": "The AI statement (unnumbered last page) names the tool, purpose, and scope but never confirms that the author checked all AI-generated text; the confirmation belongs directly below the table.",
+    "conforming": "Below the table: \"I carefully checked all AI-generated text, verified every citation against the original publication, and take full responsibility for the submitted work.\""
+  }
+]

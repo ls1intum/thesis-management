@@ -1,0 +1,116 @@
+{
+  "assessment" : "NEEDS_WORK",
+  "score" : 42,
+  "summary" : "The proposal presents a clear research direction but suffers from several key writing and structural shortcomings. Major issues include insufficient paragraph depth in a core subsection and pervasive improper pronoun usage, while minor problems involve passive voice and stray page‑number lines. Addressing these will be essential before the proposal can be submitted.",
+  "findings" : [ {
+    "severity" : "MAJOR",
+    "category" : "structure",
+    "title" : "Subsection 4.1 lacks required two paragraphs",
+    "description" : "Section 4.1 \"Unify Heterogeneous Resources in One Tree\" contains only a single paragraph, while each objective subsection must consist of at least two paragraphs.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Objective",
+      "quote" : "**I model the resources as a tree whose folders pass maintainership, audit policy, and grants down to leaves bound to target systems, as the UML object diagram in Figure 2 shows. One approval on a folder covers every resource beneath it, including later additions. A transitive-closure table stores the tree, and a fan-out cap keeps an approval on the root from provisioning the whole infrastructure.**"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "writing",
+    "title" : "Improper pronoun usage (vague \"one\" and first‑person \"I\")",
+    "description" : "The proposal overuses the indefinite pronoun \"one\" and the first‑person singular pronoun \"I\", reducing precision and violating writing style guidelines. Replace with specific references and adopt an impersonal or third‑person style.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Abstract",
+      "quote" : "access granted for **one** project outlives the time a person spends at the chair."
+    }, {
+      "page" : 5,
+      "section" : "Objective",
+      "quote" : "**One** approval on a folder covers every resource beneath it."
+    }, {
+      "page" : 6,
+      "section" : "Objective",
+      "quote" : "**one** approval on project-alpha covers both resources in the dashed box."
+    }, {
+      "page" : 6,
+      "section" : "Implementation",
+      "quote" : "needs **one** new class and **one** registry entry."
+    }, {
+      "page" : 9,
+      "section" : "Schedule",
+      "quote" : "the connector needs **one** new class and **one** registry entry."
+    }, {
+      "page" : 2,
+      "section" : "Abstract",
+      "quote" : "In this thesis, **I** develop a self‑service platform on which every grant carries an expiry date ..."
+    }, {
+      "page" : 4,
+      "section" : "Objective",
+      "quote" : "In this thesis, **I** develop a self‑service platform on which requesters ask for time‑limited access ..."
+    }, {
+      "page" : 6,
+      "section" : "Implementation",
+      "quote" : "**I** implement the keycloak‑group, slack‑channel, github‑team, and webhook connectors ..."
+    }, {
+      "page" : 7,
+      "section" : "Evaluation",
+      "quote" : "**I** reach this objective when the webhook connector, written after I freeze the framework, needs one new class ..."
+    }, {
+      "page" : 8,
+      "section" : "Evaluation",
+      "quote" : "**I** reach this objective when administrators perform fewer manual actions ..."
+    }, {
+      "page" : 9,
+      "section" : "Schedule",
+      "quote" : "**I** deliver the Keycloak realm with OpenID Connect login ..."
+    }, {
+      "page" : 12,
+      "section" : "AI Transparency Statement",
+      "quote" : "**I** used Claude Code to draft the text of the abstract ..."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Passive voice usage",
+    "description" : "Passive constructions are used, reducing clarity and making the actor ambiguous.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Abstract",
+      "quote" : "access **granted** for one project outlives the time a person spends at the chair."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "formatting",
+    "title" : "Isolated page-number paragraphs",
+    "description" : "Single-line paragraphs consisting only of the page number appear, which do not meet the 5‑8 line paragraph length requirement.",
+    "locations" : [ {
+      "page" : 2,
+      "quote" : "2"
+    }, {
+      "page" : 3,
+      "quote" : "3"
+    }, {
+      "page" : 4,
+      "quote" : "4"
+    }, {
+      "page" : 5,
+      "quote" : "5"
+    }, {
+      "page" : 6,
+      "quote" : "6"
+    }, {
+      "page" : 7,
+      "quote" : "7"
+    }, {
+      "page" : 8,
+      "quote" : "8"
+    }, {
+      "page" : 9,
+      "quote" : "9"
+    }, {
+      "page" : 10,
+      "quote" : "10"
+    }, {
+      "page" : 11,
+      "quote" : "11"
+    } ]
+  } ]
+}

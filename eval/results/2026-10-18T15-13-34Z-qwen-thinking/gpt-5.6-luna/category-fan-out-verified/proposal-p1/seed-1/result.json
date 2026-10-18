@@ -1,0 +1,122 @@
+{
+  "assessment" : "NEEDS_WORK",
+  "score" : 32,
+  "summary" : "The proposal addresses a relevant integration problem and presents a plausible solution involving Artemis and GitLab CI. However, it is not ready for submission because several required sections and structural elements are missing, figure requirements are unmet, the problem impacts are underdeveloped, and the schedule and AI-transparency requirements need substantial revision.",
+  "findings" : [ {
+    "severity" : "CRITICAL",
+    "category" : "structure",
+    "title" : "Missing Introduction section",
+    "description" : "Add a dedicated Introduction section of no more than one page to establish the research context and scope."
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "structure",
+    "title" : "Missing and inadequately framed Motivation section",
+    "description" : "Add a dedicated Motivation section of no more than three quarters of a page. Explain the broader scientific and educational importance of the problem and the positive vision enabled by the solution, rather than focusing primarily on implementation choices such as migrating to GitLab CI or reducing server-maintenance effort.",
+    "locations" : [ {
+      "page" : 1,
+      "section" : "Abstract",
+      "quote" : "Motivation/Objective: Since some Version Control (VC) systems include a Continuous Integration (CI) application, it is possible to reduce the effort required to maintain the servers and migrate the CI service from external applications as Jenkins to the inbuilt CI service."
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "structure",
+    "title" : "Missing Objective section and required objective structure",
+    "description" : "Replace the current Section 4 with a dedicated Objective section. Begin it with a short introduction, provide a one-line bullet list of 3–4 high-level objectives, and add one subsection per objective, with at least two paragraphs in each subsection.",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "System Requirements and Top Level Design",
+      "quote" : "4     System Requirements              and     Top     Level     Design"
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "figures",
+    "title" : "Insufficient figure coverage and inadequate Figure 1 reference and caption",
+    "description" : "Add a second diagram, mockup, or figure to meet the minimum requirement of two figures. Also expand Figure 1's caption to explain the actors, systems, numbered interactions, and roles of Artemis and GitLab CI, and explicitly reference the figure by number in the surrounding prose while explaining how it supports the proposed solution.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "System Requirements and Top Level Design",
+      "quote" : "Figure 1: Depiction of the top-level workfow of the interactions in relation to Artemis and GitLab CI"
+    }, {
+      "page" : 3,
+      "section" : "System Requirements and Top Level Design",
+      "quote" : "Using the problem statement section 1 and the visionary scenario, it is possible to determine the relevant actors and systems for solving the problem."
+    }, {
+      "page" : 2,
+      "section" : "Proposed Solution",
+      "quote" : "This process is illustrated in section 4."
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "completeness",
+    "title" : "Missing AI transparency statement",
+    "description" : "Add a dedicated AI transparency statement written in the first person. Name each AI tool used, explain its purpose, identify the proposal sections in which it was used, and confirm that all AI-generated text was checked for correctness and coherence."
+  }, {
+    "severity" : "MAJOR",
+    "category" : "completeness",
+    "title" : "Problem section does not fully identify affected actors and impacts",
+    "description" : "Expand the Problem section by explicitly naming the affected instructors, course administrators, and students and describing how manual build-plan maintenance and exam-related limitations negatively affect each group.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Problem Statement",
+      "quote" : "Later changes to the base build plan are not patched automatically to all student build plans, but rather the build plans must be updated manually in the CI Server. Especially in large software engineering courses this is nearly impossible."
+    }, {
+      "page" : 2,
+      "section" : "Problem Statement",
+      "quote" : "In exams, it would be useful to change the student build plans after the submission date to firstly hide the test cases during the exam and only compile the code and secondly use a debug compiler not failing due to a simple syntax error."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "structure",
+    "title" : "Schedule includes documentation and thesis-writing tasks",
+    "description" : "Revise the development schedule to contain development or research deliverables rather than documentation and thesis-writing tasks. Remove installation and configuration documentation, general writing, and thesis tasks from the development schedule, or track them separately from the agile implementation iterations.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Time Schedule",
+      "quote" : "September – 2nd week: Documentation for installation and configuration of Artemis with GitLab CI"
+    }, {
+      "page" : 5,
+      "section" : "Time Schedule",
+      "quote" : "October: Writing . . ."
+    }, {
+      "page" : 5,
+      "section" : "Time Schedule",
+      "quote" : "December – 1st week: Thesis"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Undefined abbreviation",
+    "description" : "Define “API” at first use as “application programming interface (API).”",
+    "locations" : [ {
+      "page" : 1,
+      "section" : "Abstract",
+      "quote" : "This system supports the provision of the build plan via the Artemis API, which makes it possible to update the build plan retrospectively, as the build plan is fetched from the API on each run."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Repeated filler transitions",
+    "description" : "Remove repeated filler transitions such as “Furthermore,” “Additionally,” and “In addition” where they do not express a necessary logical relation, or replace them with precise links between the claims.",
+    "locations" : [ {
+      "page" : 1,
+      "section" : "Abstract",
+      "quote" : "The CI server should be migrated to the VC server. Furthermore, it should be possible to adjust the build plan after the task has been assigned."
+    }, {
+      "page" : 2,
+      "section" : "Problem Statement",
+      "quote" : "Additionally, the base build plan is copied once after the student started the exercise [Krusche18]."
+    }, {
+      "page" : 2,
+      "section" : "Proposed Solution",
+      "quote" : "It could be transposed with a CI server which is dynamically updating the student build plan. Furthermore, the CI service should be part of the VC server to reduce additional efort by maintaining two servers."
+    }, {
+      "page" : 4,
+      "section" : "Expected Findings",
+      "quote" : "In addition, universities will save time and money as they will need at least one less server."
+    }, {
+      "page" : 4,
+      "section" : "Expected Findings",
+      "quote" : "In addition, either Ansible or a Kubernetes cluster can be used for automatic deployment of the GitLab CI Runners."
+    } ]
+  } ]
+}

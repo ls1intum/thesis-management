@@ -1,0 +1,144 @@
+{
+  "assessment" : "NEEDS_WORK",
+  "score" : 48,
+  "summary" : "The proposal presents a coherent concept and several clearly stated objectives, but substantial work is needed before submission. The main weaknesses are the horizontally layered schedule, insufficiently measurable deliverables, incomplete AI transparency details, and several smaller formatting and writing issues.",
+  "findings" : [ {
+    "severity" : "MAJOR",
+    "category" : "completeness",
+    "title" : "Proposal sections are not identified in the AI Transparency Statement",
+    "description" : "The AI Transparency Statement identifies the tools and their purposes but does not specify which proposal sections each tool was used for. Add explicit section names, such as Abstract, Introduction, Problem, Motivation, Objective, Schedule, or Bibliography, and associate the relevant tools and uses with them.",
+    "locations" : [ {
+      "page" : 12,
+      "section" : "AI Transparency Statement",
+      "quote" : "In preparing this proposal, I made use of several AI-based tools across different stages of the writing process. For grammar and style correction, I used Grammarly to identify grammatical errors, improve sentence structure, and refine the overall writing style of my drafts."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "methodology",
+    "title" : "Iterations are split by horizontal layers",
+    "description" : "The schedule is organized around horizontal system layers rather than vertically integrated, end-to-end features. Reorganize the iterations so that each delivers a usable slice—for example, guideline input through feedback generation to supervisor review in Thesis Management—while incrementally expanding functionality.",
+    "locations" : [ {
+      "page" : 9,
+      "section" : "Schedule",
+      "quote" : "Iteration 1 (08.06.2026 - 2 weeks) • Modularize Thesis Management to prepare integration of the feedback module (Objective 4)"
+    }, {
+      "page" : 9,
+      "section" : "Schedule",
+      "quote" : "Iteration 2 (22.06.2026 - 2 weeks) • Implement core feedback generation pipeline (Objective 1)"
+    }, {
+      "page" : 9,
+      "section" : "Schedule",
+      "quote" : "Iteration 3 (06.07.2026 - 2 weeks) • Connect feedback tool to Thesis Management (Objective 4)"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "completeness",
+    "title" : "Schedule deliverables lack measurable acceptance criteria",
+    "description" : "Several iteration deliverables are not sufficiently measurable because they do not define an observable output, acceptance criterion, test set, or evaluation result. Replace broad activities with concrete deliverables such as a demonstrable workflow, a specified number of supported guideline formats, a test suite with target coverage, or benchmark results using a defined dataset and metric.",
+    "locations" : [ {
+      "page" : 9,
+      "section" : "Schedule",
+      "quote" : "• Modularize Thesis Management to prepare integration of the feedback module (Objective 4)"
+    }, {
+      "page" : 9,
+      "section" : "Schedule",
+      "quote" : "• Implement core feedback generation pipeline (Objective 1)"
+    }, {
+      "page" : 9,
+      "section" : "Schedule",
+      "quote" : "• Connect feedback tool to Thesis Management (Objective 4)"
+    }, {
+      "page" : 10,
+      "section" : "Schedule",
+      "quote" : "• Review the system and check for bugs"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "writing",
+    "title" : "Schedule includes a documentation task",
+    "description" : "The schedule includes a documentation task. Under the schedule rules, iterations must focus on development and research work; remove this item and replace it with a concrete validation, integration, or research deliverable.",
+    "locations" : [ {
+      "page" : 10,
+      "section" : "Schedule",
+      "quote" : "• Documentation"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "formatting",
+    "title" : "High-level objectives are not formatted as bullet points",
+    "description" : "The high-level objectives are presented as a numbered list rather than the required bullet list. Convert objectives 1–4 to bullet points while keeping each objective on one line.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Objective",
+      "quote" : "**1.** Generate Feedback Based on Guidelines\n**2.** Highlight Changes Across Iterations\n**3.** Compare Prompting Techniques and LLM Models\n**4.** Integrate With Thesis Management"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Remove filler transitions and unsupported superlatives",
+    "description" : "Remove filler transition words where they do not express a necessary logical relation, or replace them with direct connections between sentences. Also replace unsupported superlative expressions with precise, measurable wording or provide evidence for the comparisons.",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "Problem",
+      "quote" : "Moreover, the time spent on repetitive feedback leaves less time for what matters most: helping students with their research and providing feedback on substantive topics."
+    }, {
+      "page" : 4,
+      "section" : "Motivation",
+      "quote" : "Additionally, supervisors can provide feedback faster, making the process more scalable."
+    }, {
+      "page" : 8,
+      "section" : "Objective — Compare Prompting Techniques and LLM Models",
+      "quote" : "In addition, privacy regulations and cost require careful consideration of when to use locally self-hosted LLMs versus cloud-hosted ones."
+    }, {
+      "page" : 8,
+      "section" : "Objective — Compare Prompting Techniques and LLM Models",
+      "quote" : "We benchmark which of these options performs best in this setting."
+    }, {
+      "page" : 8,
+      "section" : "Objective — Integrate With Thesis Management",
+      "quote" : "By building on existing processes, the integration causes the least disruption to supervisors and delivers the greatest simplification of their workflow."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "structure",
+    "title" : "Introductory paragraph is too short",
+    "description" : "This introductory paragraph is only about four rendered lines long. Expand it with the role and significance of research proposals, or merge it with the preceding paragraph so that the introductory discussion develops a sufficiently substantial unit.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Introduction",
+      "quote" : "Before starting their research project, students typically write a research proposal. In this proposal, they define the research question and problem they want to explore, outline their methodology, and specify the scope of their work."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "structure",
+    "title" : "Feedback-generation paragraph is too long",
+    "description" : "This paragraph exceeds ten rendered lines. Divide the three feedback-generation modes into a short introductory paragraph followed by separate paragraphs for supervisor-only feedback, direct LLM feedback, and the combined supervisor–LLM workflow.",
+    "locations" : [ {
+      "page" : 6,
+      "section" : "4.1 Generate Feedback Based on Guidelines",
+      "quote" : "This approach supports several modes of feedback generation. In one mode, no LLM-generated feedback is produced at all and all feedback comes from the supervisor. Alternatively, the student can obtain instant feedback on their proposal or thesis directly from the LLM, while keeping in mind that the supervisor has not reviewed this output. A third mode combines both sources, as illustrated in Figure 2. In this combined mode, multiple specialized agents analyze specific parts of the thesis in parallel. The supervisor then aggregates and reviews the resulting feedback and adds their own feedback. Finally, the supervisor merges both sets and publishes them to the student."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Standardize the name of the LLM-based system",
+    "description" : "The envisioned LLM-based system is referred to with multiple terms, including “LLM-powered Reviewer,” “Reviewer,” and “feedback tool.” Define the relationship between these terms and use one consistent name for the same system throughout; if “Reviewer” denotes a distinct component or role, state that distinction explicitly.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Motivation",
+      "quote" : "As Figure 1 illustrates, an LLM-powered Reviewer works alongside the supervisor, evaluating the thesis against the research group’s writing guidelines and generating automatic formative feedback [NM06]."
+    }, {
+      "page" : 5,
+      "section" : "Motivation",
+      "quote" : "Through self-regulated learning, the student engages with the Reviewer’s feedback, reflecting on it independently or"
+    }, {
+      "page" : 6,
+      "section" : "Objective — Generate Feedback Based on Guidelines",
+      "quote" : "When the feedback tool has access to previous iterations of the proposal or thesis, it can compare the latest submission with earlier ones"
+    }, {
+      "page" : 8,
+      "section" : "Objective — Compare Prompting Techniques and LLM Models",
+      "quote" : "Based on the writing guidelines, the feedback tool needs to cover a range of aspects and topics across the thesis"
+    } ]
+  } ]
+}

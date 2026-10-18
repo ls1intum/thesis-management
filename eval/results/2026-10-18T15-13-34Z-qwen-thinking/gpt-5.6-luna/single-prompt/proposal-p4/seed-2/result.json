@@ -1,0 +1,123 @@
+{
+  "assessment" : "NEEDS_WORK",
+  "score" : 42,
+  "summary" : "The proposal has a coherent technical direction, identifies relevant stakeholders, provides two UML-style diagrams, and includes a substantial peer-reviewed bibliography. However, it is not ready for submission because the required Abstract is missing, the Problem and Motivation sections are too long, the Problem section includes a solution, the schedule contains prohibited thesis-writing work, and the AI transparency statement lacks the required review confirmation.",
+  "findings" : [ {
+    "severity" : "CRITICAL",
+    "category" : "completeness",
+    "title" : "Missing Abstract",
+    "description" : "Add a dedicated Abstract section. The proposal currently starts with the Introduction and therefore omits a required section; the abstract should occupy approximately one-third to one-half of a page."
+  }, {
+    "severity" : "MAJOR",
+    "category" : "structure",
+    "title" : "Problem and Motivation Sections Exceed Their Length Limits",
+    "description" : "Shorten the Problem section to no more than three-quarters of a page and shorten the Motivation section to no more than three-quarters of a page. Both sections occupy approximately a full page in the rendered proposal.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Problem",
+      "quote" : "2 Problem"
+    }, {
+      "page" : 3,
+      "section" : "Motivation",
+      "quote" : "3 Motivation"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "logic",
+    "title" : "Problem Section Presents a Solution",
+    "description" : "Remove the proposed solution from the Problem section. Move this sentence to the Motivation or Objective section, and leave the Problem section focused only on the existing problems and their consequences.",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "Problem",
+      "quote" : "A **self-service platform that arms the workflow engine of Keycloak with an expiry date at grant time would end this accumulation**."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "schedule",
+    "title" : "Schedule Includes Prohibited Thesis Tasks",
+    "description" : "Replace Iteration 7 with development or research work. The schedule must not contain thesis writing or presentation preparation tasks, and all iterations should produce project-related deliverables.",
+    "locations" : [ {
+      "page" : 7,
+      "section" : "Schedule",
+      "quote" : "Iteration 7 (18–31 March): **Write the thesis and prepare the final presentation**."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "citation",
+    "title" : "Non-Peer-Reviewed Documentation in Bibliography",
+    "description" : "Remove the Keycloak administration guide from the bibliography and place it in a footnote where it is used. The bibliography should contain only scientific, peer-reviewed publications; documentation and URLs belong in footnotes.",
+    "locations" : [ {
+      "page" : 8,
+      "section" : "Bibliography",
+      "quote" : "[Key26] Keycloak Authors, “**Keycloak Server Administration Guide**.” Accessed: Oct. 18, 2026. [Online]. Available: https://www.keycloak.org/docs/latest/server_admin/"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "completeness",
+    "title" : "AI Statement Lacks Review Confirmation",
+    "description" : "Complete the AI transparency statement with an explicit first-person confirmation that you carefully checked all AI-generated text for correctness and coherence.",
+    "locations" : [ {
+      "page" : 10,
+      "section" : "Transparency in the Use of AI Tools",
+      "quote" : "I used the following generative artificial intelligence (AI) tool while preparing this proposal."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Contraction Used in Formal Academic Prose",
+    "description" : "Avoid contractions throughout the proposal. Replace “doesn’t” with “does not” and check the full document for any other contractions.",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "Problem",
+      "quote" : "The current process **doesn’t** scale and is the worst bottleneck of the chair."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Overuse of First-Person Formulations",
+    "description" : "Reduce repeated first-person formulations such as “I will” and express the planned work through direct active formulations or clearly stated research objectives. The current wording uses first person extensively rather than sparingly.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Objective",
+      "quote" : "**I will build** a platform on which any member of the chair requests time-limited access to any resource."
+    }, {
+      "page" : 5,
+      "section" : "Structure Resources as an Inheriting Tree",
+      "quote" : "**I will replace** the fat list of hosts and channels with a resource tree."
+    }, {
+      "page" : 6,
+      "section" : "Delegate Request Review Without Privilege Escalation",
+      "quote" : "**I will therefore split** the approval: in the review step, the resource owner records a decision without changing Keycloak."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Citation Appears After the Full Stop",
+    "description" : "Place the citation before the full stop. Change “model. [BBF01]” to “model [BBF01].” and check the document for the same punctuation pattern elsewhere.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Motivation",
+      "quote" : "Bertino et al. attach enabling and disabling events to roles in their temporal model**. [BBF01]**"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Objective Heading Uses Two Verbs",
+    "description" : "Avoid combining two independent action verbs in one objective heading. Split this into one objective or reformulate it around a single main action, for example “Define Connectors with Expiry” or “Implement Expiring Connectors.”",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Design and Implement Connectors with Expiry",
+      "quote" : "4.2 **Design and Implement** Connectors with Expiry"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "figures",
+    "title" : "Figure 2 Caption Is Not Informative Enough",
+    "description" : "Replace the generic Figure 2 caption with a longer, informative caption that explains the principal components, trust boundaries, data flows, and the roles of Keycloak, LDAP, Linux hosts, Slack, and GitHub in the architecture.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Design and Implement Connectors with Expiry",
+      "quote" : "Figure 2: **System Architecture**"
+    } ]
+  } ]
+}

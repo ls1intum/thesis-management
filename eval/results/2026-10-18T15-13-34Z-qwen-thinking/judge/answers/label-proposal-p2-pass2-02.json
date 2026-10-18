@@ -1,0 +1,250 @@
+{
+  "job": "label-proposal-p2-pass2-02",
+  "answer": {
+    "judgements": [
+      {
+        "id": "Fbad4557cd5",
+        "rule": "R16",
+        "reason": "The same system is called 'LLM-powered Reviewer'/'Reviewer' in Motivation and 'feedback tool' elsewhere, including in Motivation itself.",
+        "label": "valid"
+      },
+      {
+        "id": "Ff1bd7597ff",
+        "rule": "R12",
+        "reason": "'Since guidelines may not...', 'Because the feedback tool...' and 'As Figure 1 illustrates...' all appear in the document.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb5ce3a059a",
+        "rule": "R19",
+        "reason": "Several schedule items such as 'Review the system and check for bugs' and 'Implement core feedback generation pipeline' do not state measurable deliverables.",
+        "label": "valid"
+      },
+      {
+        "id": "F18d4e27f5f",
+        "rule": "R7",
+        "reason": "The bibliography lists only five publications, below the required 6-8.",
+        "label": "valid"
+      },
+      {
+        "id": "Fabcea32de2",
+        "rule": "R17",
+        "reason": "The statement names tools and purposes but does not name the proposal sections involved.",
+        "label": "valid"
+      },
+      {
+        "id": "Fbbfbe85c09",
+        "rule": null,
+        "reason": "No rule forbids the first person, and R17 actually requires a first-person statement.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Ff537cbf8e2",
+        "rule": "R2",
+        "reason": "The abstract fills about 13 of roughly 31 lines on page 2, which is under half a page, so there is no clear breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fdcfe473da4",
+        "rule": "R20",
+        "reason": "Iteration 9 lists 'Documentation', which the schedule rules exclude.",
+        "label": "valid"
+      },
+      {
+        "id": "F2383bb45c5",
+        "rule": "R16",
+        "reason": "The body itself says 'locally self-hosted', so 'local' in the abstract matches the body's terminology. There is no real inconsistency.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fb65a7e824e",
+        "rule": "R19",
+        "reason": "Iterations 1-3 split the work into modularization, core pipeline and later connection to the portal, which is horizontal layering rather than vertically integrated increments.",
+        "label": "valid"
+      },
+      {
+        "id": "Ffe37e10f6a",
+        "rule": "R13",
+        "reason": "The AI statement is one paragraph of about 14 lines covering several topics, well beyond the 5-8 line guidance.",
+        "label": "valid"
+      },
+      {
+        "id": "Fbffd4c694c",
+        "rule": "R12",
+        "reason": "'Because the feedback tool is powered by LLMs, ...' starts with a forbidden word, at the end of Motivation on page 5.",
+        "label": "valid"
+      },
+      {
+        "id": "F2c0e4b5ebe",
+        "rule": null,
+        "reason": "Consistency between the start date and the iteration dates is not covered by any rule.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Fbe5e56a351",
+        "rule": "R20",
+        "reason": "'Documentation' appears as a schedule task in Iteration 9.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc869bae1b2",
+        "rule": "R2",
+        "reason": "The abstract is roughly 0.4 of a page, within the 1/3-1/2 page limit.",
+        "label": "invalid"
+      },
+      {
+        "id": "F632623ce23",
+        "rule": "R11",
+        "reason": "Passive constructions such as 'are governed by', 'is powered by' and 'are bundled into' occur. The page-9 quote is actually an active sentence on page 3, but other locations show the breach.",
+        "label": "valid"
+      },
+      {
+        "id": "F20835363c1",
+        "rule": "R20",
+        "reason": "Iteration 9 includes a 'Documentation' task, which is prohibited.",
+        "label": "valid"
+      },
+      {
+        "id": "F73e04fde69",
+        "rule": "R5",
+        "reason": "The quoted clause only briefly links back to the problem while describing the envisioned solution. The Motivation does not restate the Problem section.",
+        "label": "invalid"
+      },
+      {
+        "id": "F6225c2610a",
+        "rule": "R7",
+        "reason": "Only five publications are listed, below the minimum of 6-8.",
+        "label": "valid"
+      },
+      {
+        "id": "Fad10c9ff8a",
+        "rule": "R2",
+        "reason": "Motivation text fills about 22 lines (roughly 0.7 of a page, excluding the figure), which is near the limit but not clearly over it.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fb6c7f567f3",
+        "rule": null,
+        "reason": "R5 requires the Motivation to be visionary and not repeat the Problem. No rule requires a scientific-contribution argument.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F8f1bff91b7",
+        "rule": "R12",
+        "reason": "All three sentences starting with 'As', 'Since' and 'Because' occur as quoted.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd971a7b640",
+        "rule": "R15",
+        "reason": "'Integrate With Thesis Management' is acceptable title case (several styles capitalize four-letter prepositions), and 'LLM Models' is redundant wording rather than inconsistent terminology.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fd66105589b",
+        "rule": "R11",
+        "reason": "'no LLM-generated feedback is produced at all' is passive voice with no actor named.",
+        "label": "valid"
+      },
+      {
+        "id": "F2a32bc5be4",
+        "rule": "R12",
+        "reason": "'As Figure 1 illustrates, ...' starts with a forbidden word.",
+        "label": "valid"
+      },
+      {
+        "id": "Ff7bd5ea3d2",
+        "rule": null,
+        "reason": "No rule covers whether iteration dates match the stated thesis period.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F1fb4ba6df1",
+        "rule": "R16",
+        "reason": "'prompt-chaining' and 'prompt chaining' are the same term with a hyphenation variant. The author does not use different terms for one concept.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fc16c396423",
+        "rule": "R3",
+        "reason": "The objectives appear as a short list of four items after an intro sentence. A numbered list satisfies the list requirement.",
+        "label": "invalid"
+      },
+      {
+        "id": "F68972485f3",
+        "rule": "R2",
+        "reason": "Motivation runs to roughly 0.7 of a page of text, so it is not substantially over the 3/4 page limit.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fde2c546797",
+        "rule": "R19",
+        "reason": "'Build prototype implementations' and 'Evaluate ...' in Iterations 5-6 do not specify measurable deliverables.",
+        "label": "valid"
+      },
+      {
+        "id": "Fdb4d576870",
+        "rule": "R16",
+        "reason": "The system is called 'the tool', 'LLM-powered Reviewer', 'the LLM' and 'the feedback tool' interchangeably.",
+        "label": "valid"
+      },
+      {
+        "id": "F4d8ecdbbb8",
+        "rule": "R2",
+        "reason": "The Problem section fills about 27 lines across pages 3-4, about 0.85 of a full page and clearly above 3/4.",
+        "label": "valid"
+      },
+      {
+        "id": "F1924b89bbe",
+        "rule": "R11",
+        "reason": "'Moreover', 'Additionally', 'also' and 'In addition' are ordinary connectives rather than filler words, and 'wide' is not a superlative.",
+        "label": "invalid"
+      },
+      {
+        "id": "Febf93cc428",
+        "rule": "R3",
+        "reason": "Subsection 4.1 has two paragraphs (the second begins 'This approach supports several modes...').",
+        "label": "invalid"
+      },
+      {
+        "id": "F84b8b63792",
+        "rule": "R2",
+        "reason": "The Problem section spans about 0.85 of a page, exceeding the 3/4 page maximum.",
+        "label": "valid"
+      },
+      {
+        "id": "Fdbab36ecff",
+        "rule": "R19",
+        "reason": "'Documentation' is a vague schedule item with no measurable deliverable.",
+        "label": "valid"
+      },
+      {
+        "id": "F5e5ea405b9",
+        "rule": "R20",
+        "reason": "Iteration 9 includes 'Documentation', which is excluded from the schedule.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc526b41a24",
+        "rule": "R3",
+        "reason": "Subsections 4.1, 4.3 and 4.4 each contain two paragraphs.",
+        "label": "invalid"
+      },
+      {
+        "id": "F478bbe9af8",
+        "rule": "R7",
+        "reason": "Only five bibliography entries are present, below the minimum of 6-8.",
+        "label": "valid"
+      },
+      {
+        "id": "F4608c21e31",
+        "rule": "R12",
+        "reason": "The sentence starts with forbidden 'Because'.",
+        "label": "valid"
+      }
+    ]
+  },
+  "costUsd": 0.3243268,
+  "durationMs": 50092,
+  "model": "claude-opus-5-5[1m]"
+}

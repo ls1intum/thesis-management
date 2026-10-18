@@ -1,0 +1,97 @@
+{
+  "assessment" : "NEEDS_WORK",
+  "score" : 45,
+  "summary" : "The proposal has a coherent problem, motivation, objective structure, two relevant diagrams, and a specific first-person AI statement. However, it requires substantial revision before submission because the bibliography is below the required minimum, the AI statement omits section-specific usage, and the schedule contains date inconsistencies, documentation work, and a vague final deliverable.",
+  "findings" : [ {
+    "severity" : "CRITICAL",
+    "category" : "completeness",
+    "title" : "Insufficient Bibliography Size",
+    "description" : "The bibliography contains only five publications, below the required minimum of 6–8 peer-reviewed publications. Add at least one, preferably several, relevant peer-reviewed sources and cite them where they support the proposal.",
+    "locations" : [ {
+      "page" : 11,
+      "section" : "Bibliography",
+      "quote" : "[TP21] T. Tuononen and A. Parpala, “The Role of Academic Competences and Learning Processes in Predicting Bachelor's and Master's Thesis Grades,”"
+    }, {
+      "page" : 11,
+      "section" : "Bibliography",
+      "quote" : "[NM06] D. J. Nicol and D. Macfarlane-Dick, “Formative Assessment and Self-Regulated Learning: A Model and Seven Principles of Good Feedback Practice,”"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "completeness",
+    "title" : "AI Statement Does Not Identify Sections",
+    "description" : "The AI transparency statement does not identify the proposal sections in which each tool was used. Revise it to state the relevant sections—for example, whether a tool was used for the Abstract, Introduction, Objectives, Schedule, or other specific sections.",
+    "locations" : [ {
+      "page" : 12,
+      "section" : "Transparency in the Use of AI Tools",
+      "quote" : "In preparing this proposal, I made use of several AI-based tools across different stages of the writing process."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "structure",
+    "title" : "Schedule Starts Before Thesis Start Date",
+    "description" : "The schedule begins before the stated thesis start date: Iteration 1 starts on 08.06.2026 and Iteration 2 starts on 22.06.2026, while the thesis start date is 26.06.2026. Align the iteration dates with the official thesis period or explain the authorized pre-thesis work.",
+    "locations" : [ {
+      "page" : 1,
+      "quote" : "Start Date: 26.06.2026"
+    }, {
+      "page" : 9,
+      "section" : "Schedule",
+      "quote" : "Iteration 1 (08.06.2026 - 2 weeks)"
+    }, {
+      "page" : 9,
+      "section" : "Schedule",
+      "quote" : "Iteration 2 (22.06.2026 - 2 weeks)"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "methodology",
+    "title" : "Noncompliant and Vague Final Iteration",
+    "description" : "The final iteration contains a prohibited thesis-writing/documentation task and an insufficiently measurable item. Replace “Documentation” with a research or development deliverable and specify what system checks, test results, or acceptance criteria the review must produce.",
+    "locations" : [ {
+      "page" : 10,
+      "section" : "Schedule",
+      "quote" : "• Review the system and check for bugs"
+    }, {
+      "page" : 10,
+      "section" : "Schedule",
+      "quote" : "• Documentation"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Forbidden Sentence Starters",
+    "description" : "Several sentences begin with forbidden subordinating or infinitive starters. Rewrite these sentences with explicit subjects and active constructions, for example: “Figure 1 illustrates...” and “Guidelines may require preprocessing...”",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Motivation",
+      "quote" : "**As Figure 1 illustrates**, an LLM-powered Reviewer works alongside the supervisor..."
+    }, {
+      "page" : 5,
+      "section" : "Objective",
+      "quote" : "**Since guidelines may not already be in a suitable format**, the LLM may first need to preprocess them..."
+    }, {
+      "page" : 5,
+      "section" : "Motivation",
+      "quote" : "**Because the feedback tool is powered by LLMs**, students can obtain instant formative feedback..."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Passive Voice in Explanatory Prose",
+    "description" : "The proposal uses passive constructions in several explanatory passages where the responsible actor can be stated directly. Prefer active formulations that identify who performs the action, such as “the supervisor hands in the thesis” or “the system stores student drafts.”",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "Introduction",
+      "quote" : "The student, by contrast, **hands in the thesis itself as a single final submission**."
+    }, {
+      "page" : 4,
+      "section" : "Motivation",
+      "quote" : "The student brings both knowledge... and beliefs about how to approach the task and how to work and write scientifically, which **include the student’s personal interpretation** of the writing guidelines."
+    }, {
+      "page" : 8,
+      "section" : "Objective",
+      "quote" : "Self-hosted models **keep student drafts inside the university’s infrastructure** but are limited by the available hardware..."
+    } ]
+  } ]
+}

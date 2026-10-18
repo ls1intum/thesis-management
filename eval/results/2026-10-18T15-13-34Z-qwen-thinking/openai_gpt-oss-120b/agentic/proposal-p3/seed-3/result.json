@@ -1,0 +1,133 @@
+{
+  "findings" : [ {
+    "severity" : "MAJOR",
+    "category" : "STRUCTURE",
+    "title" : "Insufficient paragraph count in Objective subsection 4.1",
+    "description" : "Objective subsection 4.1 contains only a single paragraph; each objective subsection must have at least two paragraphs.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Objective",
+      "quote" : "4.1 Unify         Heterogeneous               Resources          in   One      Tree"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "STRUCTURE",
+    "title" : "Insufficient paragraph count in Objective subsection 4.2",
+    "description" : "Objective subsection 4.2 contains only a single paragraph; each objective subsection must have at least two paragraphs.",
+    "locations" : [ {
+      "page" : 7,
+      "section" : "Objective",
+      "quote" : "4.2 Enforce          an    Expiry        Date      on   Every       Grant"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "STRUCTURE",
+    "title" : "Insufficient paragraph count in Objective subsection 4.3",
+    "description" : "Objective subsection 4.3 contains only a single paragraph; each objective subsection must have at least two paragraphs.",
+    "locations" : [ {
+      "page" : 8,
+      "section" : "Objective",
+      "quote" : "4.3 Delegate           the    Approval          of   Requests          to   Maintainers"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "STRUCTURE",
+    "title" : "Insufficient paragraph count in Objective subsection 4.4",
+    "description" : "Objective subsection 4.4 contains only a single paragraph; each objective subsection must have at least two paragraphs.",
+    "locations" : [ {
+      "page" : 8,
+      "section" : "Objective",
+      "quote" : "4.4 Automate             the     Recertifcation              of  Active       Grants"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "WRITING",
+    "title" : "Spelling error: recertifcation",
+    "description" : "The word \"recertifcation\" is misspelled; should be \"recertification\".",
+    "locations" : [ {
+      "page" : 8,
+      "section" : "Objective",
+      "quote" : "4.4 Automate             the     **Recertifcation**              of  Active       Grants"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "WRITING",
+    "title" : "Typo: fll",
+    "description" : "Typo \"fll\" should be \"fill\".",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Figure",
+      "quote" : "requesters **fll** in request forms"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "WRITING",
+    "title" : "Typo: confgures",
+    "description" : "Typo \"confgures\" should be \"configures\".",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Introduction",
+      "quote" : "ansible role **confgures** each host"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "WRITING",
+    "title" : "Typo: confgure",
+    "description" : "Typo \"confgure\" should be \"configure\".",
+    "locations" : [ {
+      "page" : 6,
+      "section" : "Implementation",
+      "quote" : "administrators **confgure** at runtime"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "WRITING",
+    "title" : "Typo: confguration",
+    "description" : "Typo \"confguration\" should be \"configuration\".",
+    "locations" : [ {
+      "page" : 8,
+      "section" : "Objective",
+      "quote" : "**confguration** error"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "WRITING",
+    "title" : "Typo: ft",
+    "description" : "Typo \"ft\" should be \"fit\".",
+    "locations" : [ {
+      "page" : 6,
+      "section" : "Implementation",
+      "quote" : "how they **ft** into the platform"
+    } ]
+  }, {
+    "severity" : "SUGGESTION",
+    "category" : "FIGURES",
+    "title" : "Figure caption could be more detailed",
+    "description" : "Caption for Figure 3 is brief; should be more descriptive, explaining key elements and their role.",
+    "locations" : [ {
+      "page" : 7,
+      "section" : "Figures",
+      "quote" : "Figure 3: UML component diagram of the platform and its environment."
+    } ]
+  }, {
+    "severity" : "SUGGESTION",
+    "category" : "FIGURES",
+    "title" : "Figure caption could be more detailed",
+    "description" : "Caption for Figure 2 is brief; consider adding details about the resource tree and its significance.",
+    "locations" : [ {
+      "page" : 6,
+      "section" : "Figures",
+      "quote" : "Figure 2: UML object diagram of a small resource tree at the chair."
+    } ]
+  }, {
+    "severity" : "SUGGESTION",
+    "category" : "FIGURES",
+    "title" : "Figure caption could be more detailed",
+    "description" : "Caption for Figure 1 is brief; elaborate on the actors and interactions shown.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Figures",
+      "quote" : "Figure 1: UML use case diagram of the access management platform."
+    } ]
+  } ]
+}

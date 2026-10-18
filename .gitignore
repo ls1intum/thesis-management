@@ -24,6 +24,10 @@ node_modules/
 .e2e-client.log
 .e2e-client-build.log
 
+# AI review evaluation: local settings hold the endpoint key, and output gets large.
+# The corpus under eval/corpus and the .local.sh.example template ARE committed.
+execute-review-eval.local.sh
+
 # Documentation screenshot capture
 .capture-pids/
 .capture-server.log

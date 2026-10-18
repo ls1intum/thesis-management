@@ -1,0 +1,360 @@
+{
+  "categories" : [ {
+    "category" : "STRUCTURE",
+    "generated" : [ {
+      "severity" : "CRITICAL",
+      "category" : "STRUCTURE",
+      "title" : "Missing Abstract",
+      "description" : "The proposal does not contain an Abstract section, which is required."
+    }, {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Proposal exceeds maximum length",
+      "description" : "The proposal text spans 10 pages, exceeding the allowed maximum of 6 pages.",
+      "locations" : [ {
+        "page" : 1,
+        "quote" : "=== PAGE 1 ==="
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Problem section exceeds length limit",
+      "description" : "The Problem section occupies more than the allowed 3/4 page.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Problem",
+        "quote" : "2  Problem"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "CRITICAL",
+      "category" : "STRUCTURE",
+      "title" : "Missing Abstract",
+      "description" : "The proposal does not contain an Abstract section, which is required."
+    }, {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Proposal exceeds maximum length",
+      "description" : "The proposal text spans 10 pages, exceeding the allowed maximum of 6 pages.",
+      "locations" : [ {
+        "page" : 1,
+        "quote" : "=== PAGE 1 ==="
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Problem section exceeds length limit",
+      "description" : "The Problem section occupies more than the allowed 3/4 page.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Problem",
+        "quote" : "2  Problem"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "PROBLEM_MOTIVATION_OBJECTIVES",
+    "generated" : [ {
+      "severity" : "CRITICAL",
+      "category" : "LOGIC",
+      "title" : "Problem section contains solution description",
+      "description" : "The Problem section presents a proposed self‑service platform, which is a solution, violating the rule that the Problem section must only describe the problem and its negative consequences.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "**A self-service platform** that arms the workfow engine of Keycloak with an expiry date at grant time **would end this accumulation**."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Objective uses double verbs",
+      "description" : "The objective list and sub‑section heading use 'Design and implement', which contains two verbs, breaching the rule that each objective must use a single action verb.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Objective",
+        "quote" : "•   **Design and implement** connectors with expiry"
+      }, {
+        "page" : 5,
+        "section" : "4.2 Design and Implement Connectors with Expiry",
+        "quote" : "**Design and Implement** Connectors with Expiry"
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "COMPLETENESS",
+      "title" : "Objective subsections lack required detail length",
+      "description" : "Objective subsections 4.2 and 4.4 consist of only a single paragraph each, but the guidelines require each objective subsection to contain at least two paragraphs with detailed description.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "4.2 Design and Implement Connectors with Expiry",
+        "quote" : "A Slack channel, a GitHub team, and a Keycloak group share only the idea of membership. I will defne one connector contract that validates a binding, grants and revokes access, and optionally lists the current members, and I will implement the keycloak-group, slack-channel, github-team, and webhook connectors on it."
+      }, {
+        "page" : 6,
+        "section" : "4.4 Automate the Recertifcation of Grants",
+        "quote" : "I will attach a recertifcation interval to each resource, which its descendants inherit, and open a campaign whenever the interval elapses."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "STRUCTURE",
+      "title" : "Objective section heading not in action form",
+      "description" : "The heading of Section 4 is simply 'Objective', which is not phrased as an action verb phrase as required.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Objective",
+        "quote" : "4  Objective"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ {
+      "finding" : {
+        "severity" : "MINOR",
+        "category" : "COMPLETENESS",
+        "title" : "Objective subsections lack required detail length",
+        "description" : "Objective subsections 4.2 and 4.4 consist of only a single paragraph each, but the guidelines require each objective subsection to contain at least two paragraphs with detailed description.",
+        "locations" : [ {
+          "page" : 5,
+          "section" : "4.2 Design and Implement Connectors with Expiry",
+          "quote" : "A Slack channel, a GitHub team, and a Keycloak group share only the idea of membership. I will defne one connector contract that validates a binding, grants and revokes access, and optionally lists the current members, and I will implement the keycloak-group, slack-channel, github-team, and webhook connectors on it."
+        }, {
+          "page" : 6,
+          "section" : "4.4 Automate the Recertifcation of Grants",
+          "quote" : "I will attach a recertifcation interval to each resource, which its descendants inherit, and open a campaign whenever the interval elapses."
+        } ]
+      },
+      "reason" : "No rule about paragraph count for objective subsections."
+    }, {
+      "finding" : {
+        "severity" : "MINOR",
+        "category" : "STRUCTURE",
+        "title" : "Objective section heading not in action form",
+        "description" : "The heading of Section 4 is simply 'Objective', which is not phrased as an action verb phrase as required.",
+        "locations" : [ {
+          "page" : 4,
+          "section" : "Objective",
+          "quote" : "4  Objective"
+        } ]
+      },
+      "reason" : "Rule does not require the overall 'Objective' section heading to be an action phrase."
+    } ],
+    "kept" : [ {
+      "severity" : "CRITICAL",
+      "category" : "LOGIC",
+      "title" : "Problem section contains solution description",
+      "description" : "The Problem section presents a proposed self‑service platform, which is a solution, violating the rule that the Problem section must only describe the problem and its negative consequences.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "**A self-service platform** that arms the workfow engine of Keycloak with an expiry date at grant time **would end this accumulation**."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Objective uses double verbs",
+      "description" : "The objective list and sub‑section heading use 'Design and implement', which contains two verbs, breaching the rule that each objective must use a single action verb.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Objective",
+        "quote" : "•   **Design and implement** connectors with expiry"
+      }, {
+        "page" : 5,
+        "section" : "4.2 Design and Implement Connectors with Expiry",
+        "quote" : "**Design and Implement** Connectors with Expiry"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "BIBLIOGRAPHY",
+    "generated" : [ {
+      "severity" : "CRITICAL",
+      "category" : "CITATION",
+      "title" : "Non‑peer‑reviewed source in bibliography",
+      "description" : "The bibliography includes an internet documentation source (Keycloak Server Administration Guide) which is not a peer‑reviewed publication; such sources must be placed in footnotes, not the bibliography.",
+      "locations" : [ {
+        "page" : 8,
+        "section" : "Bibliography",
+        "quote" : "[Key26]       Keycloak     Authors,    “**Keycloak Server Administration Guide**.”   Accessed: Oct. 18, 2026. [Online]. Available: https://www.keycloak.org/docs/latest/server_admin/"
+      } ]
+    } ],
+    "ungrounded" : [ {
+      "severity" : "CRITICAL",
+      "category" : "CITATION",
+      "title" : "Non‑peer‑reviewed source in bibliography",
+      "description" : "The bibliography includes an internet documentation source (Keycloak Server Administration Guide) which is not a peer‑reviewed publication; such sources must be placed in footnotes, not the bibliography.",
+      "locations" : [ {
+        "page" : 8,
+        "section" : "Bibliography",
+        "quote" : "[Key26]       Keycloak     Authors,    “**Keycloak Server Administration Guide**.”   Accessed: Oct. 18, 2026. [Online]. Available: https://www.keycloak.org/docs/latest/server_admin/"
+      } ]
+    } ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "FIGURES",
+    "generated" : [ {
+      "severity" : "MINOR",
+      "category" : "FIGURES",
+      "title" : "Figure caption too short",
+      "description" : "Figure 2 caption is generic and not informative; it should be extended to describe the architecture components depicted.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "4.2 Design and Implement Connectors with Expiry",
+        "quote" : "Figure  2: **System  Architecture**"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MINOR",
+      "category" : "FIGURES",
+      "title" : "Figure caption too short",
+      "description" : "Figure 2 caption is generic and not informative; it should be extended to describe the architecture components depicted.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "4.2 Design and Implement Connectors with Expiry",
+        "quote" : "Figure  2: **System  Architecture**"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STYLE",
+    "generated" : [ {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Contraction used",
+      "description" : "Contractions are prohibited; the proposal contains a contraction that should be replaced with its full form.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "The current process **doesn’t** scale and is the worst bottleneck of the chair."
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Contraction used",
+      "description" : "Contractions are prohibited; the proposal contains a contraction that should be replaced with its full form.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "The current process **doesn’t** scale and is the worst bottleneck of the chair."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STRUCTURE",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Missing introductory text before first subsection",
+      "description" : "Section 1 Introduction jumps directly to subsection 1.1 without any introductory paragraph, violating the rule that each chapter/section must include introductory text before its first subsection.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Introduction",
+        "quote" : "**1.1 Setting**"
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "FORMATTING",
+      "title" : "Paragraph too short",
+      "description" : "The paragraph under subsection 4.1 'Structure Resources as an Inheriting Tree' contains only two lines, below the required 5‑8 lines per paragraph.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "4.1 Structure Resources as an Inheriting Tree",
+        "quote" : "**I will replace   the   fat  list of  hosts   and   channels    with   a  resource    tree  whose**\n**inner  nodes   are  folders   and  whose    leaves each   carry   a binding    to one  target   system.**"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ {
+      "finding" : {
+        "severity" : "MINOR",
+        "category" : "FORMATTING",
+        "title" : "Paragraph too short",
+        "description" : "The paragraph under subsection 4.1 'Structure Resources as an Inheriting Tree' contains only two lines, below the required 5‑8 lines per paragraph.",
+        "locations" : [ {
+          "page" : 5,
+          "section" : "4.1 Structure Resources as an Inheriting Tree",
+          "quote" : "**I will replace   the   fat  list of  hosts   and   channels    with   a  resource    tree  whose**\n**inner  nodes   are  folders   and  whose    leaves each   carry   a binding    to one  target   system.**"
+        } ]
+      },
+      "reason" : "Wrong category; rule is in STRUCTURE, not FORMATTING"
+    } ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Missing introductory text before first subsection",
+      "description" : "Section 1 Introduction jumps directly to subsection 1.1 without any introductory paragraph, violating the rule that each chapter/section must include introductory text before its first subsection.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Introduction",
+        "quote" : "**1.1 Setting**"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_FORMATTING",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "AI_TRANSPARENCY",
+    "generated" : [ {
+      "severity" : "CRITICAL",
+      "category" : "COMPLETENESS",
+      "title" : "Missing review confirmation sentence in AI transparency statement",
+      "description" : "The AI transparency statement does not contain the required sentence confirming that the author has carefully checked all AI‑generated text for correctness and sense.",
+      "locations" : [ {
+        "page" : 10,
+        "section" : "Transparency in the Use of AI Tools",
+        "quote" : "I used the following generative artificial intelligence (AI) tool while preparing this proposal. The level refers to the six-level taxonomy of generative AI use in writing by Uçan and Demirel Uçan [UD26].\n\nTool Model / Date(s) Level Purpose Scope\nAnthropic Claude Opus 5.5 18.10.2026 5 Drafting text, Sections 1-5, Figures 1-2, Typst sources and bibliography diagrams, entries researching references"
+      } ]
+    } ],
+    "ungrounded" : [ {
+      "severity" : "CRITICAL",
+      "category" : "COMPLETENESS",
+      "title" : "Missing review confirmation sentence in AI transparency statement",
+      "description" : "The AI transparency statement does not contain the required sentence confirming that the author has carefully checked all AI‑generated text for correctness and sense.",
+      "locations" : [ {
+        "page" : 10,
+        "section" : "Transparency in the Use of AI Tools",
+        "quote" : "I used the following generative artificial intelligence (AI) tool while preparing this proposal. The level refers to the six-level taxonomy of generative AI use in writing by Uçan and Demirel Uçan [UD26].\n\nTool Model / Date(s) Level Purpose Scope\nAnthropic Claude Opus 5.5 18.10.2026 5 Drafting text, Sections 1-5, Figures 1-2, Typst sources and bibliography diagrams, entries researching references"
+      } ]
+    } ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "SCHEDULE",
+    "generated" : [ {
+      "severity" : "CRITICAL",
+      "category" : "OTHER",
+      "title" : "Thesis writing tasks in schedule",
+      "description" : "The schedule includes an iteration dedicated to writing the thesis and preparing the final presentation, which is prohibited by the schedule guidelines.",
+      "locations" : [ {
+        "page" : 7,
+        "section" : "Schedule",
+        "quote" : "Iteration 7 (18–31 March): **Write the thesis and prepare the final presentation**."
+      } ]
+    } ],
+    "ungrounded" : [ {
+      "severity" : "CRITICAL",
+      "category" : "OTHER",
+      "title" : "Thesis writing tasks in schedule",
+      "description" : "The schedule includes an iteration dedicated to writing the thesis and preparing the final presentation, which is prohibited by the schedule guidelines.",
+      "locations" : [ {
+        "page" : 7,
+        "section" : "Schedule",
+        "quote" : "Iteration 7 (18–31 March): **Write the thesis and prepare the final presentation**."
+      } ]
+    } ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  } ],
+  "categoryFailures" : { }
+}

@@ -1,0 +1,40 @@
+{
+  "job": "label-proposal-p1-pass2-15",
+  "answer": {
+    "judgements": [
+      {
+        "id": "F2f25fcd9ff",
+        "rule": "R13",
+        "reason": "In the document, the Krusche et al. sentence starts a new paragraph. The paragraph in question covers only Booch and Fowler, and both are about regular integration, so it holds one idea. The quote merges two paragraphs and does not show the claimed breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "F3a8a45481f",
+        "rule": "R20",
+        "reason": "The schedule lists '4th week: Requirements (parallel to prototype implementation)' in June. That is a requirements-gathering task, which R20 forbids.",
+        "label": "valid"
+      },
+      {
+        "id": "F3e7421139b",
+        "rule": null,
+        "reason": "No rule forbids the first person. R11 and R12 do not list 'I' among the things to avoid.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Fb1c770e8ef",
+        "rule": "R7",
+        "reason": "The bibliography has only five entries, and two of them are books. That falls short of the required 6-8 peer-reviewed publications.",
+        "label": "valid"
+      },
+      {
+        "id": "F3339a48bd0",
+        "rule": "R10",
+        "reason": "Figure 1's caption is one short generic line. It does not explain the actors, the numbered interactions, or what the diagram shows, so it is not a long, informative caption.",
+        "label": "valid"
+      }
+    ]
+  },
+  "costUsd": 0.10991480000000001,
+  "durationMs": 8445,
+  "model": "claude-opus-5-5[1m]"
+}

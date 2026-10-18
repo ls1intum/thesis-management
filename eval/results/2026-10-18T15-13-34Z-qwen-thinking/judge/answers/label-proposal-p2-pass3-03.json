@@ -1,0 +1,250 @@
+{
+  "job": "label-proposal-p2-pass3-03",
+  "answer": {
+    "judgements": [
+      {
+        "id": "F1b6fb8a849",
+        "rule": "R3",
+        "reason": "Subsection 4.1 has two paragraphs ('Supervisors should be able...' and 'This approach supports several modes...'), so the requirement is met.",
+        "label": "invalid"
+      },
+      {
+        "id": "F77b6c219dc",
+        "rule": "R2",
+        "reason": "The 12-page count includes the title page, bibliography and transparency statement. The proposal text, without the full-page figure areas, is about 7 pages including the schedule, which is not a clear breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fdb86d94d4e",
+        "rule": "R19",
+        "reason": "Iteration 1's only deliverable, 'Modularize Thesis Management to prepare integration', is internal preparation with no measurable, vertically integrated outcome.",
+        "label": "valid"
+      },
+      {
+        "id": "F2e23aeb2c4",
+        "rule": "R13",
+        "reason": "The transparency statement is one paragraph of about 14 lines, well over the 5-8 line paragraph length. The cited '10-line maximum' is wrong, but the breach holds.",
+        "label": "valid"
+      },
+      {
+        "id": "F42de2ef2c7",
+        "rule": "R11",
+        "reason": "'Moreover', 'Additionally' and 'In addition' are connectors that show logical relations, not filler words. The document does not breach R11 here.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fe3d30a22b4",
+        "rule": "R2",
+        "reason": "Motivation fills about 19 lines on page 4 and 4 lines on page 5, roughly three quarters of a page. This is near the limit, not a clear breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "F8f1bff91b7",
+        "rule": "R12",
+        "reason": "Sentences do begin with 'As Figure 1 illustrates', 'Since guidelines may not...' and 'Because the feedback tool...', all of which are forbidden starters.",
+        "label": "valid"
+      },
+      {
+        "id": "F8c8f67e08b",
+        "rule": "R19",
+        "reason": "Iteration 2 builds the core pipeline, but guideline input, the core of Objective 1, only arrives in Iteration 4. This is a horizontal split rather than a vertically integrated deliverable.",
+        "label": "valid"
+      },
+      {
+        "id": "F3dae5dda33",
+        "rule": "R19",
+        "reason": "Items such as 'Review the system and check for bugs' and 'Connect feedback tool to Thesis Management' have no measurable deliverable.",
+        "label": "valid"
+      },
+      {
+        "id": "F9cb41e895c",
+        "rule": "R2",
+        "reason": "Without figures and the schedule, the text runs to about 5.5-6 pages, inside the 4-6 page range. No clear breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "F374701a073",
+        "rule": "R20",
+        "reason": "Iteration 9 lists 'Documentation', a task R20 does not allow in the schedule.",
+        "label": "valid"
+      },
+      {
+        "id": "Fca11146b93",
+        "rule": "R12",
+        "reason": "The cited sentences begin with 'As', 'Since' and 'Because', which are forbidden starters.",
+        "label": "valid"
+      },
+      {
+        "id": "Fbe5e56a351",
+        "rule": "R20",
+        "reason": "The schedule contains a 'Documentation' task in Iteration 9.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd558ec855d",
+        "rule": "R11",
+        "reason": "'Additionally' is a connector, not a filler word, so R11 is not breached.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fd21c0646a9",
+        "rule": "R17",
+        "reason": "The statement names tools and purposes but no sections of the proposal, which R17 requires.",
+        "label": "valid"
+      },
+      {
+        "id": "F3c9511e941",
+        "rule": "R7",
+        "reason": "The bibliography lists only five publications (TP21, AAM17, BBE10, Bog+07, NM06), below the minimum of 6-8.",
+        "label": "valid"
+      },
+      {
+        "id": "F0e111baf63",
+        "rule": "R12",
+        "reason": "The sentence 'Because the feedback tool is powered by LLMs...' starts with the forbidden word 'Because'.",
+        "label": "valid"
+      },
+      {
+        "id": "F98e9642c77",
+        "rule": "R2",
+        "reason": "The 12-page count includes non-text pages. The proposal text is about 7 pages at most, which is not a clear breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "F121f17aa88",
+        "rule": "R17",
+        "reason": "The transparency statement does not name the sections where each tool was used.",
+        "label": "valid"
+      },
+      {
+        "id": "F81f02bcd27",
+        "rule": "R20",
+        "reason": "Iteration 9 contains a 'Documentation' task and a vague bug-check item, as claimed.",
+        "label": "valid"
+      },
+      {
+        "id": "F3876baaa48",
+        "rule": "R11",
+        "reason": "The document is mostly in active voice. The cited participle phrase 'used by' is in the Abstract, not on page 5, and does not show frequent passive voice.",
+        "label": "invalid"
+      },
+      {
+        "id": "F5d59575c57",
+        "rule": "R12",
+        "reason": "The sentence 'Since guidelines may not already be in a suitable format...' starts with the forbidden word 'Since'.",
+        "label": "valid"
+      },
+      {
+        "id": "F8b945f2b74",
+        "rule": "R12",
+        "reason": "The 'Since' sentence exists in 4.1, on page 5 rather than the cited page 6, and starts with a forbidden word.",
+        "label": "valid"
+      },
+      {
+        "id": "Fe008b6418d",
+        "rule": "R15",
+        "reason": "Capitalizing 'With' follows common title-case conventions for words of four letters or more, and matches 'Across' in another heading. Not a clear breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fc480a1c8e9",
+        "rule": "R12",
+        "reason": "All three cited sentences begin with forbidden starters ('As', 'Since', 'Because').",
+        "label": "valid"
+      },
+      {
+        "id": "F205aef3e47",
+        "rule": "R17",
+        "reason": "The statement refers only to 'drafts' and 'throughout the proposal' and never names sections.",
+        "label": "valid"
+      },
+      {
+        "id": "F525133dd32",
+        "rule": "R13",
+        "reason": "The paragraph 'Better and faster feedback...' runs about 12 lines across pages 4-5 and mixes several ideas, exceeding 5-8 lines.",
+        "label": "valid"
+      },
+      {
+        "id": "Fae4a359070",
+        "rule": "R3",
+        "reason": "Subsection 4.1 contains two paragraphs, so the requirement is met.",
+        "label": "invalid"
+      },
+      {
+        "id": "F57b53a02d6",
+        "rule": "R11",
+        "reason": "The cited passages do contain passive constructions ('is accepted', 'is produced', 'are bundled', 'are limited by', 'is handed in') where actors could be named as subjects.",
+        "label": "valid"
+      },
+      {
+        "id": "Febc2c478dd",
+        "rule": "R12",
+        "reason": "The sentence 'As Figure 1 illustrates...' starts with the forbidden word 'As'.",
+        "label": "valid"
+      },
+      {
+        "id": "Fdd3fd63a34",
+        "rule": "R13",
+        "reason": "The Motivation paragraph spans about 12 lines and combines several ideas, exceeding the 5-8 line length.",
+        "label": "valid"
+      },
+      {
+        "id": "F9013fc60c8",
+        "rule": "R16",
+        "reason": "'Local', 'locally self-hosted' and 'self-hosted' are close variants of the same term and do not form inconsistent terminology.",
+        "label": "invalid"
+      },
+      {
+        "id": "F6907b8502b",
+        "rule": "R15",
+        "reason": "Capitalizing 'With' is acceptable under common title-case conventions (words of four letters or more), so this is not a clear breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "F3a70f490dc",
+        "rule": "R2",
+        "reason": "The 12-page count includes title, bibliography and statement pages. The proposal text is not clearly over the limit.",
+        "label": "invalid"
+      },
+      {
+        "id": "F0e8ea55dbe",
+        "rule": "R14",
+        "reason": "Section 4 has introductory text ('The scope of the thesis is to fulfill the following goals:') and a list before 4.1.",
+        "label": "invalid"
+      },
+      {
+        "id": "F5391516a12",
+        "rule": "R17",
+        "reason": "The statement does not identify which proposal sections each tool assisted.",
+        "label": "valid"
+      },
+      {
+        "id": "F743aa75e39",
+        "rule": "R17",
+        "reason": "The statement gives no section-specific detail on where the tools were used.",
+        "label": "valid"
+      },
+      {
+        "id": "F3bf29c210e",
+        "rule": "R13",
+        "reason": "For example, the first Motivation paragraph runs about 11 lines, exceeding the 5-8 line length.",
+        "label": "valid"
+      },
+      {
+        "id": "F8961bc37c2",
+        "rule": "R13",
+        "reason": "The sentence is not indented as a new paragraph; it continues the preceding paragraph, so no too-short paragraph exists.",
+        "label": "invalid"
+      },
+      {
+        "id": "F4c73ac020f",
+        "rule": "R19",
+        "reason": "Iteration 1 (modularization) and Iteration 2 (pipeline and contract) deliver horizontal layers rather than end-to-end usable features.",
+        "label": "valid"
+      }
+    ]
+  },
+  "costUsd": 0.35508680000000004,
+  "durationMs": 65154,
+  "model": "claude-opus-5-5[1m]"
+}

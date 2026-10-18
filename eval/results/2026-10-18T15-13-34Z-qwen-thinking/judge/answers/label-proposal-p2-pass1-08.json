@@ -1,0 +1,250 @@
+{
+  "job": "label-proposal-p2-pass1-08",
+  "answer": {
+    "judgements": [
+      {
+        "id": "F05512452ca",
+        "rule": "R11",
+        "reason": "R11 forbids filler words, but 'especially' here narrows the claim to non-content categories. It carries meaning and is not filler.",
+        "label": "invalid"
+      },
+      {
+        "id": "Ff1b4a804c7",
+        "rule": "R11",
+        "reason": "R11 requires active voice, but the quotes are inaccurate or not passive: 'feedback is repetitive' is a copula, and the third quote does not occur in the document. No real breach is shown.",
+        "label": "invalid"
+      },
+      {
+        "id": "F63d8caf8b3",
+        "rule": "R20",
+        "reason": "R20 bans documentation tasks in the schedule, and Iteration 9 explicitly lists 'Documentation'.",
+        "label": "valid"
+      },
+      {
+        "id": "F220194cd0a",
+        "rule": "R7",
+        "reason": "R7 requires at least 6-8 peer-reviewed publications, and the bibliography lists only five entries.",
+        "label": "valid"
+      },
+      {
+        "id": "F4608c21e31",
+        "rule": "R12",
+        "reason": "R12 forbids sentences starting with 'Because', and the sentence 'Because the feedback tool is powered by LLMs, ...' on page 5 starts that way.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc0423e9733",
+        "rule": null,
+        "reason": "No rule requires the iteration dates to match the stated thesis start date.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F0e5d0ccb00",
+        "rule": "R7",
+        "reason": "R7 requires at least 6-8 peer-reviewed publications, and the bibliography contains only five.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb980701b75",
+        "rule": "R12",
+        "reason": "R12 requires abbreviations to be defined before use. 'AI' appears in the Figure 2 caption and is never expanded anywhere.",
+        "label": "valid"
+      },
+      {
+        "id": "F7a6fc85378",
+        "rule": "R2",
+        "reason": "R2 limits the proposal text to 4-6 pages. The body runs from page 2 to page 10, which is clearly more than 6 pages even without the figures, although the finding's count wrongly includes the title page and appendix.",
+        "label": "valid"
+      },
+      {
+        "id": "F6f85769eb6",
+        "rule": "R13",
+        "reason": "R13 asks for 5-8 line paragraphs with one idea each. The first paragraph of 4.1 runs about 11 lines and mixes guideline preprocessing with the ethics of formative feedback; the 4.2 regression paragraph also exceeds 8 lines.",
+        "label": "valid"
+      },
+      {
+        "id": "F1158186933",
+        "rule": "R13",
+        "reason": "The 'Better and faster feedback...' paragraph spans about 11 lines, which exceeds R13's 5-8 lines even though the finding cites a 10-line maximum.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd8c261fb02",
+        "rule": "R17",
+        "reason": "R17 requires the statement to name the sections involved, and it never does.",
+        "label": "valid"
+      },
+      {
+        "id": "Fe735b36b96",
+        "rule": "R16",
+        "reason": "R16 requires consistent terminology, but the same system is called 'LLM-powered Reviewer' in Section 3 and 'feedback tool' in Section 4.",
+        "label": "valid"
+      },
+      {
+        "id": "F050d150472",
+        "rule": "R13",
+        "reason": "The quoted text spans two separate paragraphs. The first paragraph keeps to one idea (supervisor benefits) and the second covers student benefits, so no paragraph mixes ideas as claimed.",
+        "label": "invalid"
+      },
+      {
+        "id": "F036b733dc3",
+        "rule": "R11",
+        "reason": "A single 'Moreover' is a normal connective, not a filler word under R11, and no rule lists it as banned.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fa218fa2a43",
+        "rule": "R12",
+        "reason": "R12 forbids starting a sentence with 'Since', and section 4.1 has 'Since guidelines may not already be in a suitable format...'.",
+        "label": "valid"
+      },
+      {
+        "id": "F743aa75e39",
+        "rule": "R17",
+        "reason": "R17 requires the sections involved to be named, and the statement does not name any.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc51412c75a",
+        "rule": "R17",
+        "reason": "R17 requires the sections involved to be named, and the statement does not name any.",
+        "label": "valid"
+      },
+      {
+        "id": "F8e6e8fffa2",
+        "rule": "R17",
+        "reason": "R17 requires the sections involved to be named. The statement only says 'across different stages' and 'throughout the proposal'.",
+        "label": "valid"
+      },
+      {
+        "id": "Ffe37e10f6a",
+        "rule": "R13",
+        "reason": "R13 asks for 5-8 line paragraphs, and the transparency statement is one paragraph of about 14 lines.",
+        "label": "valid"
+      },
+      {
+        "id": "F5f9dd1033b",
+        "rule": "R16",
+        "reason": "This is a hyphenation variant of the same term, not inconsistent terminology for one concept. The abstract hyphenates the compound because it is used attributively.",
+        "label": "invalid"
+      },
+      {
+        "id": "F85f549e6db",
+        "rule": "R16",
+        "reason": "R16 requires consistent terminology, but 'Reviewer' and 'feedback tool' both name the same system, and the document never relates the two terms.",
+        "label": "valid"
+      },
+      {
+        "id": "F9a61f665a5",
+        "rule": "R12",
+        "reason": "R12 forbids these sentence openings, and all three appear: 'As Figure 1 illustrates', 'Since guidelines...', and 'Because the feedback tool...'.",
+        "label": "valid"
+      },
+      {
+        "id": "F1924b89bbe",
+        "rule": "R11",
+        "reason": "'also', 'Moreover', 'Additionally' and 'In addition' are ordinary connectives, not filler words that R11 lists. 'wide' is not a superlative.",
+        "label": "invalid"
+      },
+      {
+        "id": "F59d9854867",
+        "rule": "R12",
+        "reason": "R12 forbids starting a sentence with 'Because', and this sentence does. It sits in the Motivation section, not Objective as the finding says.",
+        "label": "valid"
+      },
+      {
+        "id": "F61ad0db4c3",
+        "rule": "R11",
+        "reason": "The cited connectives are not filler words under R11's wording, so there is no breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "F18a1cbe5f2",
+        "rule": "R19",
+        "reason": "R19 requires vertically integrated deliverables, but the early iterations are horizontal layers (modularize Thesis Management, then build the core pipeline, then connect them) instead of end-to-end slices.",
+        "label": "valid"
+      },
+      {
+        "id": "F2dc2fb4ebe",
+        "rule": "R17",
+        "reason": "R17 requires the sections involved to be named, and the statement does not name any.",
+        "label": "valid"
+      },
+      {
+        "id": "Fbb1ee17817",
+        "rule": "R12",
+        "reason": "R12 requires abbreviations to be defined before use, and 'AI' is never expanded in the document.",
+        "label": "valid"
+      },
+      {
+        "id": "F3876baaa48",
+        "rule": "R11",
+        "reason": "The quote comes from the Abstract, not section 4.1, and the reduced participle 'used by' does not show frequent passive voice. The excessive passive voice claimed is not demonstrated.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fa0a9c1aa27",
+        "rule": "R20",
+        "reason": "R20 bans documentation tasks in the schedule, and Iteration 9 lists 'Documentation'.",
+        "label": "valid"
+      },
+      {
+        "id": "F5cd09658bb",
+        "rule": "R7",
+        "reason": "R7 asks for internet sources in footnotes, and the GitHub URL already sits in footnote 1, as R7 requires.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fd0f24ff7f9",
+        "rule": "R17",
+        "reason": "R17 requires the sections involved to be named, and the statement does not name any.",
+        "label": "valid"
+      },
+      {
+        "id": "F8a7e309d54",
+        "rule": null,
+        "reason": "No rule covers whether the schedule dates are consistent with the start date.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Fc1277c39e1",
+        "rule": "R12",
+        "reason": "R12 forbids starting a sentence with 'Since', and the cited sentence in section 4.1 does.",
+        "label": "valid"
+      },
+      {
+        "id": "F07c31fdb6a",
+        "rule": null,
+        "reason": "No rule requires the iterations to align with the thesis start date.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Fe4c689ffa6",
+        "rule": "R13",
+        "reason": "The abstract paragraphs run about 5 and 9 lines, not one or two lines, so they are not too short.",
+        "label": "invalid"
+      },
+      {
+        "id": "F43a56e4655",
+        "rule": "R17",
+        "reason": "R17 requires the sections involved to be named, and the statement does not name any.",
+        "label": "valid"
+      },
+      {
+        "id": "F562ecf87ba",
+        "rule": "R13",
+        "reason": "R13 caps paragraphs at 8 lines. The Introduction's first paragraph runs about 10 lines, which shows the breach; the cited first abstract paragraph is within the limit.",
+        "label": "valid"
+      },
+      {
+        "id": "Fbe7a96ee88",
+        "rule": "R12",
+        "reason": "R12 forbids these sentence openings, and the 'As', 'Because' and 'Since' sentences all appear in the document.",
+        "label": "valid"
+      }
+    ]
+  },
+  "costUsd": 0.3243988,
+  "durationMs": 51618,
+  "model": "claude-opus-5-5[1m]"
+}

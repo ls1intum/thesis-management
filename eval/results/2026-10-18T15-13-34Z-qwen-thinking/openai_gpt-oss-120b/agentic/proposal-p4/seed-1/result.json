@@ -1,0 +1,75 @@
+{
+  "findings" : [ {
+    "severity" : "CRITICAL",
+    "category" : "STRUCTURE",
+    "title" : "Missing Abstract",
+    "description" : "The proposal does not contain an Abstract section, which is required."
+  }, {
+    "severity" : "MAJOR",
+    "category" : "STRUCTURE",
+    "title" : "Excessive Length",
+    "description" : "The proposal exceeds the allowed total length of 4-6 pages (it spans 10 pages).",
+    "locations" : [ {
+      "quote" : "=== PAGE 10 ==="
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "PROBLEM",
+    "title" : "Solution described in Problem",
+    "description" : "The Problem section presents a solution by describing a self‑service platform, which should be avoided.",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "Problem",
+      "quote" : "A **self-service platform that arms the workfow engine of Keycloak with an expiry date at grant time would end this accumulation**."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "OBJECTIVES",
+    "title" : "Double verbs in objective",
+    "description" : "Objective bullet uses double verbs \"design and implement\", which violates the single‑verb rule.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Objective",
+      "quote" : "• **design and implement connectors with expiry**"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "FIGURES",
+    "title" : "Insufficient Figure Caption",
+    "description" : "Figure 2 caption is too short and generic; it should be a longer, informative description.",
+    "locations" : [ {
+      "page" : 5,
+      "quote" : "Figure  2:  System  Architecture"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "WRITING",
+    "title" : "Contraction usage",
+    "description" : "The proposal uses a contraction \"doesn't\", which is prohibited.",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "Problem",
+      "quote" : "The current process **doesn't** scale"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "AI TRANSPARENCY",
+    "title" : "Missing AI verification sentence",
+    "description" : "The AI transparency statement does not include the required verification sentence confirming the author has carefully checked all AI-generated text.",
+    "locations" : [ {
+      "page" : 10,
+      "section" : "AI Transparency",
+      "quote" : "I used the following generative artifcial intelligence (AI) tool while preparing this proposal."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "SCHEDULE",
+    "title" : "Disallowed thesis writing in schedule",
+    "description" : "Iteration 7 includes thesis writing and presentation preparation, which is prohibited in the schedule.",
+    "locations" : [ {
+      "page" : 7,
+      "section" : "Schedule",
+      "quote" : "write the thesis and prepare the fnal presen­ tation."
+    } ]
+  } ]
+}

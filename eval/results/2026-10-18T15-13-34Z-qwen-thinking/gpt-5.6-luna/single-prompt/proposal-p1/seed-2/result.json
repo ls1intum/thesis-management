@@ -1,0 +1,106 @@
+{
+  "assessment" : "NEEDS_WORK",
+  "score" : 25,
+  "summary" : "The proposal presents a relevant problem, a plausible GitLab CI direction, and a small set of appropriate technical references. However, it is not ready for submission because the required Introduction, Motivation, Objectives, and AI transparency statement are absent, the bibliography is below the minimum, and the proposal contains only one figure. The schedule also needs substantial restructuring into measurable agile iterations without writing, documentation, or requirements-gathering tasks.",
+  "findings" : [ {
+    "severity" : "CRITICAL",
+    "category" : "structure",
+    "title" : "Required Sections Are Missing",
+    "description" : "The proposal is missing several required sections: Introduction, Motivation, and Section 4 Objectives. Add an Introduction, a distinct visionary Motivation section, and an Objectives section containing a short introduction, 3–4 one-line high-level objectives, and one subsection per objective with at least two paragraphs each."
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "completeness",
+    "title" : "AI Transparency Statement Missing",
+    "description" : "No AI transparency statement is included. Add a first-person statement naming the specific AI tools used, their purposes, the proposal sections in which they were used, and confirming that all AI-generated text was carefully checked for correctness and sense."
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "citation",
+    "title" : "Bibliography Has Too Few Publications",
+    "description" : "The bibliography contains only five publication entries: Booch95, Gamma95, Hilton16, Krusche17, and Krusche18. The URL-based footnotes do not count as bibliography publications. Add at least one to three additional peer-reviewed scientific publications to reach the required minimum of six to eight.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "References",
+      "quote" : "[Booch95] Booch, G. Object-oriented analysis and design with applications (2. ed.)."
+    }, {
+      "page" : 6,
+      "section" : "References",
+      "quote" : "[Krusche18] Krusche, S.; Seitz, A. ArTEMiS: An Automatic Assessment Management System for Interactive Learning."
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "figures",
+    "title" : "Required Figures and Explicit Figure References Are Incomplete",
+    "description" : "Only one figure is included, which does not satisfy the requirement for at least two figures or diagrams. Add a second meaningful diagram, mockup, or chart, ensure that at least one figure is a suitable UML diagram, reference each figure explicitly by number in the prose, and retain informative captions.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "System Requirements and Top Level Design",
+      "quote" : "Figure 1: Depiction of the top-level workfow of the interactions in relation to Artemis and GitLab CI"
+    }, {
+      "page" : 2,
+      "section" : "Proposed Solution",
+      "quote" : "This process is illustrated in section 4."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "methodology",
+    "title" : "Problem Impacts Are Not Fully Mapped to Actors",
+    "description" : "The Problem section does not clearly identify all affected stakeholders and connect the problem to their negative consequences. Explicitly state how the separate CI and version-control servers affect instructors, students, university administrators, and smaller universities, and distinguish these consequences from the proposed solution.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Problem Statement",
+      "quote" : "Particularly smaller universities might then not use Artemis."
+    }, {
+      "page" : 2,
+      "section" : "Problem Statement",
+      "quote" : "Especially in large software engineering courses this is nearly impossible."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "methodology",
+    "title" : "Schedule Does Not Follow the Required Agile Iteration Structure",
+    "description" : "The schedule is not organized into 2–4 week iterations with measurable, vertically integrated deliverables. Replace isolated tasks such as runner configuration, API work, and build-result handling with end-to-end increments that implement and validate complete objectives. Remove the requirements task and all thesis-writing, documentation, and review tasks from the development schedule.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Time Schedule",
+      "quote" : "April – 2nd week: Docker GitLab CI Runner confguration"
+    }, {
+      "page" : 5,
+      "section" : "Time Schedule",
+      "quote" : "June – 4th week: Requirements (parallel to prototype implementation)"
+    }, {
+      "page" : 5,
+      "section" : "Time Schedule",
+      "quote" : "September – 2nd week: Documentation for installation and confguration of Artemis with GitLab CI"
+    }, {
+      "page" : 5,
+      "section" : "Time Schedule",
+      "quote" : "October: Writing . . ."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Forbidden Sentence Starters Occur Repeatedly",
+    "description" : "Several sentences begin with forbidden starters. Rewrite these sentences so that they begin with an explicit subject or main clause rather than 'Since', 'To', 'In order to', or 'As'.",
+    "locations" : [ {
+      "page" : 1,
+      "section" : "Abstract",
+      "quote" : "**Since** some Version Control (VC) systems include a Continuous Integration (CI) application, it is possible to reduce the efort required to maintain the servers."
+    }, {
+      "page" : 2,
+      "section" : "Problem Statement",
+      "quote" : "**To** achieve this goal, Artemis uses a Version Control (VC) and Continuous Integration (CI) server."
+    }, {
+      "page" : 2,
+      "section" : "Related Work",
+      "quote" : "**In order to** implement this idea, the lecture is split up into multiple iterations."
+    }, {
+      "page" : 3,
+      "section" : "Related Work",
+      "quote" : "**Since** the benefts of using CI are quite high and nearly half of the developers who do not use CI mention a lack of familiarity as the reason for not using a CI service, it is useful to teach the concepts of CI at university."
+    }, {
+      "page" : 4,
+      "section" : "Expected Findings",
+      "quote" : "**As described** in section 3, this might lead to better developers and better code."
+    } ]
+  } ]
+}

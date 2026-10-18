@@ -1,0 +1,250 @@
+{
+  "job": "label-proposal-p1-pass3-10",
+  "answer": {
+    "judgements": [
+      {
+        "id": "Fe2328aa14d",
+        "rule": "R11",
+        "label": "valid",
+        "reason": "R11 forbids filler words; 'very cumbersome' (in the Problem Statement, mislabelled as Proposed Solution) and similar fillers occur in the text."
+      },
+      {
+        "id": "F386ddf67f0",
+        "rule": "R9",
+        "label": "valid",
+        "reason": "R9 requires at least two figures; the document contains only Figure 1. The sequence-diagram claim is doubtful (the numbered messages suggest a communication diagram), but the central claim holds."
+      },
+      {
+        "id": "Febfac42b0c",
+        "rule": "R3",
+        "label": "valid",
+        "reason": "There is no Objective section with an intro, a bullet list of objectives and one subsection per objective; Section 4 is 'System Requirements and Top Level Design'."
+      },
+      {
+        "id": "F254bc1a7a7",
+        "rule": "R1",
+        "label": "valid",
+        "reason": "No Motivation section exists; the sections are Problem Statement, Proposed Solution, Related Work, System Requirements, Expected Findings and Time Schedule."
+      },
+      {
+        "id": "F4d0d067e98",
+        "rule": "R1",
+        "label": "valid",
+        "reason": "There is no Introduction section; after the Abstract the document goes straight to '1 Problem Statement'."
+      },
+      {
+        "id": "F8e9b825526",
+        "rule": "R15",
+        "label": "invalid",
+        "reason": "The quoted texts are message labels inside Figure 1, not headings, so the title-case rule does not apply to them."
+      },
+      {
+        "id": "F3339a48bd0",
+        "rule": "R10",
+        "label": "valid",
+        "reason": "R10 requires a long, informative caption; Figure 1's caption is a single short line that does not explain the diagram's content."
+      },
+      {
+        "id": "F98f9541f01",
+        "rule": "R20",
+        "label": "valid",
+        "reason": "The schedule includes documentation and thesis-writing tasks (Documentation in September, 'October: Writing', thesis review), which R20 forbids."
+      },
+      {
+        "id": "F512dc6f2bd",
+        "rule": "R20",
+        "label": "valid",
+        "reason": "The schedule contains 'October: Writing', thesis review entries and documentation tasks, which R20 forbids."
+      },
+      {
+        "id": "Fcbf5d64929",
+        "rule": "R1",
+        "label": "valid",
+        "reason": "The required Introduction section is absent."
+      },
+      {
+        "id": "F0a8067975c",
+        "rule": "R17",
+        "label": "valid",
+        "reason": "The document contains no AI transparency statement."
+      },
+      {
+        "id": "F5d5dabf26f",
+        "rule": "R3",
+        "label": "valid",
+        "reason": "Section 4 is not an Objectives section and has no objective list or subsections. One quote is fabricated, but the central claim holds."
+      },
+      {
+        "id": "F01d0907f9a",
+        "rule": "R13",
+        "label": "valid",
+        "reason": "R13 requires mainly prose outside the Schedule and objective lists; Section 4 consists almost entirely of a 14-step numbered list."
+      },
+      {
+        "id": "F8f8694d7e4",
+        "rule": "R13",
+        "label": "valid",
+        "reason": "The 'save time and money' paragraph is a single line, well below 5-8 lines, and the final paragraph mixes the exam topic with Ansible/Kubernetes deployment."
+      },
+      {
+        "id": "Fe9c62008d4",
+        "rule": "R17",
+        "label": "valid",
+        "reason": "No AI Transparency Statement is present in the document."
+      },
+      {
+        "id": "F9276d04e2d",
+        "rule": "R7",
+        "label": "valid",
+        "reason": "The bibliography lists only five entries, fewer than the required 6-8 peer-reviewed publications."
+      },
+      {
+        "id": "F6536281ff6",
+        "rule": "R1",
+        "label": "valid",
+        "reason": "The document jumps from the Abstract to '1 Problem Statement' with no Introduction."
+      },
+      {
+        "id": "F03feda1826",
+        "rule": "R9",
+        "label": "valid",
+        "reason": "Only one figure is included, whereas R9 requires at least two."
+      },
+      {
+        "id": "F57dc3b5d7d",
+        "rule": "R1",
+        "label": "valid",
+        "reason": "Motivation appears only as a label in the abstract; there is no Motivation section."
+      },
+      {
+        "id": "F777d128c56",
+        "rule": "R10",
+        "label": "valid",
+        "reason": "The Figure 1 caption is one short line and lacks the long, informative description R10 requires."
+      },
+      {
+        "id": "Fdd39da102f",
+        "rule": "R13",
+        "label": "valid",
+        "reason": "Section 4 is dominated by a numbered list with only one-line prose framing, contrary to R13's prose requirement."
+      },
+      {
+        "id": "F77242919b5",
+        "rule": "R19",
+        "label": "invalid",
+        "reason": "The schedule entries are milestones spaced weeks apart (e.g., April 2nd and 4th week, May 3rd week), not one-week iterations, so the claim of too-short iterations is not supported."
+      },
+      {
+        "id": "F79d3327e75",
+        "rule": "R16",
+        "label": "valid",
+        "reason": "The author uses 'CI server', 'CI service', 'CI system' and 'CI application' interchangeably for the same concept."
+      },
+      {
+        "id": "Fc398ca6d8c",
+        "rule": "R1",
+        "label": "valid",
+        "reason": "The required Motivation section is absent."
+      },
+      {
+        "id": "Feab5b48f2b",
+        "rule": "R4",
+        "label": "invalid",
+        "reason": "The Problem section names affected actors and consequences, for example smaller universities not adopting Artemis and instructors having to update build plans manually."
+      },
+      {
+        "id": "F8fccb45f02",
+        "rule": "R19",
+        "label": "invalid",
+        "reason": "The '5th week: Proposal' entry is a milestone date, not a one-week iteration; the schedule does not define one-week iterations."
+      },
+      {
+        "id": "F13b2236688",
+        "rule": "R13",
+        "label": "valid",
+        "reason": "Section 4 presents the workflow as a long numbered list instead of prose, which R13 permits only in the Schedule and objective lists."
+      },
+      {
+        "id": "Ff0b049fd52",
+        "rule": "R3",
+        "label": "valid",
+        "reason": "There is no Objective section with an introduction, objective bullet list or per-objective subsections."
+      },
+      {
+        "id": "F9baa6949f9",
+        "rule": "R9",
+        "label": "invalid",
+        "reason": "Figure 1 uses hierarchical numbered messages (1.1, 2.2, 3.3) typical of a communication diagram, not a sequence diagram, so the claimed breach is not shown."
+      },
+      {
+        "id": "Fca7b988e3e",
+        "rule": "R3",
+        "label": "valid",
+        "reason": "The proposal lacks an Objective section with an intro, a 3-4 item objective list and subsections; 'Expected Findings' does not fill this role."
+      },
+      {
+        "id": "F6a63e96a10",
+        "rule": "R11",
+        "label": "valid",
+        "reason": "Passive constructions occur, e.g., 'The CI server should be migrated' and 'The student base repository is copied', contrary to R11's active-voice requirement."
+      },
+      {
+        "id": "F4ea4d909e7",
+        "rule": "R13",
+        "label": "valid",
+        "reason": "The Krusche paragraph runs over the page break to about 12 lines and covers several ideas, exceeding 5-8 lines with one idea each."
+      },
+      {
+        "id": "Fc84c32ffd1",
+        "rule": "R13",
+        "label": "valid",
+        "reason": "The paragraph after the scenario is only two lines, well below the 5-8 line paragraph length."
+      },
+      {
+        "id": "F6bc87050d4",
+        "rule": "R10",
+        "label": "valid",
+        "reason": "Figure 1 is never referenced by name; the text only says 'This process is illustrated in section 4'."
+      },
+      {
+        "id": "F7892affa40",
+        "rule": "R11",
+        "label": "valid",
+        "reason": "'very cumbersome' uses the filler word 'very', which R11 says to avoid."
+      },
+      {
+        "id": "Fef0f21de5d",
+        "rule": "R7",
+        "label": "valid",
+        "reason": "The References list only five publications, below the required 6-8."
+      },
+      {
+        "id": "Fac2fa95383",
+        "rule": "R20",
+        "label": "valid",
+        "reason": "The September schedule includes a documentation task, which R20 forbids."
+      },
+      {
+        "id": "F091d525185",
+        "rule": "R13",
+        "label": "valid",
+        "reason": "The final Expected Findings paragraph combines further research, the exam problem and Ansible/Kubernetes deployment, breaking the one-idea-per-paragraph rule."
+      },
+      {
+        "id": "F45e3d19026",
+        "rule": "R12",
+        "label": "valid",
+        "reason": "The abstract sentence starts with 'Since', a forbidden sentence opener."
+      },
+      {
+        "id": "Fba5afa9abd",
+        "rule": null,
+        "label": "out_of_scope",
+        "reason": "No rule forbids first-person 'I'; R11 covers voice, contractions, filler words and superlatives only."
+      }
+    ]
+  },
+  "costUsd": 0.1191258,
+  "durationMs": 45375,
+  "model": "claude-opus-5-5[1m]"
+}

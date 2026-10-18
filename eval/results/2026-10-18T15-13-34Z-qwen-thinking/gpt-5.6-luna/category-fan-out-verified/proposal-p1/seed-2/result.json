@@ -1,0 +1,186 @@
+{
+  "assessment" : "NEEDS_WORK",
+  "score" : 28,
+  "summary" : "The proposal has a relevant problem and a plausible proposed solution, but it currently fails several required structural, completeness, and presentation requirements. Before submission, it needs dedicated Introduction, Motivation, and Objectives sections, more scholarly sources and figures, an AI transparency statement, and revisions to the problem framing, schedule, figure integration, and prose clarity.",
+  "findings" : [ {
+    "severity" : "CRITICAL",
+    "category" : "structure",
+    "title" : "Missing Introduction section",
+    "description" : "Add a clearly titled Introduction section, separate from the Problem Statement and Related Work, and keep it under one page."
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "structure",
+    "title" : "Missing dedicated Motivation section",
+    "description" : "Add a dedicated Motivation section of no more than three-quarters of a page. It should explain the scientific importance of solving the problem and present a positive vision of the expected impact; the motivation currently appears only in the abstract and is combined there with objectives, the problem statement, and the proposed solution.",
+    "locations" : [ {
+      "page" : 1,
+      "section" : "Abstract",
+      "quote" : "**Motivation/Objective:** Since some Version Control (VC) systems include a Continuous Integration (CI) application, it is possible to reduce the effort required to maintain the servers and migrate the CI service from external applications as Jenkins to the inbuilt CI service."
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "structure",
+    "title" : "Missing Objectives section and required objective subsections",
+    "description" : "Replace the current Section 4 with a dedicated Objectives section. Include an introductory paragraph, 3–4 one-line objective bullets formulated as actions, and a subsection of at least two paragraphs for each objective. The current section is titled System Requirements and Top Level Design and does not provide the required objective structure.",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "System Requirements and Top Level Design",
+      "quote" : "4     **System Requirements              and     Top     Level     Design**"
+    }, {
+      "page" : 4,
+      "section" : "Expected Findings",
+      "quote" : "5     **Expected          Findings**"
+    }, {
+      "page" : 4,
+      "section" : "System Requirements and Top Level Design",
+      "quote" : "The numbered Section 4 is instead “System Requirements and Top Level Design.”"
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "completeness",
+    "title" : "Bibliography contains fewer than the required minimum number of publications",
+    "description" : "Expand the bibliography from five publications to at least six, preferably reaching the recommended range of 6–8 peer-reviewed publications. Add relevant peer-reviewed sources rather than relying only on the current entries.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "References",
+      "quote" : "References [Booch95] Booch, G. Object-oriented analysis and design with applications (2. ed.)."
+    }, {
+      "page" : 6,
+      "section" : "References",
+      "quote" : "[Krusche18] Krusche, S.; Seitz, A. ArTEMiS: An Automatic Assessment Management System for Interactive Learning."
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "completeness",
+    "title" : "Fewer than the required two figures",
+    "description" : "Add at least one additional diagram, mockup, screenshot, or chart so that the proposal contains the required minimum of two figures.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "System Requirements and Top Level Design",
+      "quote" : "Figure 1: Depiction of the top-level workflow of the interactions in relation to Artemis and GitLab CI"
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "completeness",
+    "title" : "Missing AI transparency statement",
+    "description" : "Add a dedicated first-person AI transparency statement that names the AI tools used, explains their purposes, identifies the proposal sections in which they were used, and confirms that all AI-generated text was checked for correctness and coherence."
+  }, {
+    "severity" : "MAJOR",
+    "category" : "logic",
+    "title" : "Problem section includes a desired solution or alternative",
+    "description" : "Restrict the Problem Statement to the existing problem and its consequences. Move proposed changes to build plans, hidden test cases, compilation behavior, and debug compiler settings to the Motivation, Objectives, or Proposed Solution section.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Problem Statement",
+      "quote" : "In exams, it would be useful to **change the student build plans after the submission date to firstly hide the test cases during the exam and only compile the code and secondly use a debug compiler** not failing due to a simple syntax error."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "structure",
+    "title" : "Thesis and documentation tasks in the schedule",
+    "description" : "Remove thesis writing, documentation writing, review preparation, and thesis completion from the development/research schedule. Use the schedule for implementation, experimentation, evaluation, and other research work only.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Time Schedule",
+      "quote" : "September – 2nd week: **Documentation for installation and configuration of Artemis with GitLab CI**"
+    }, {
+      "page" : 5,
+      "section" : "Time Schedule",
+      "quote" : "October: **Writing . . .**"
+    }, {
+      "page" : 5,
+      "section" : "Time Schedule",
+      "quote" : "November – 2nd week: **Thesis ready for review**"
+    }, {
+      "page" : 5,
+      "section" : "Time Schedule",
+      "quote" : "December – 1st week: **Thesis**"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "structure",
+    "title" : "Figures are not explicitly referenced in the text",
+    "description" : "Reference figures explicitly by number in the surrounding prose, for example, “Figure 1 shows the top-level workflow.” Replace the indirect reference to Section 4 and similarly reference any additional figures that are added.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Proposed Solution",
+      "quote" : "This process is **illustrated in section 4**."
+    }, {
+      "page" : 4,
+      "section" : "System Requirements and Top Level Design",
+      "quote" : "Figure 1: Depiction of the top-level workflow of the interactions in relation to Artemis and GitLab CI"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Figure caption is not sufficiently informative",
+    "description" : "Expand the Figure 1 caption to explain the actors, systems, and numbered interactions shown, so that the figure's scope and main relationships are understandable without relying on surrounding text.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "System Requirements and Top Level Design",
+      "quote" : "Figure 1: **Depiction of the top-level workflow of the interactions in relation to Artemis and GitLab CI**"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Undefined abbreviation",
+    "description" : "Define the abbreviation at its first occurrence by writing “application programming interface (API),” then use API thereafter.",
+    "locations" : [ {
+      "page" : 1,
+      "section" : "Abstract",
+      "quote" : "This system supports the provision of the build plan via the Artemis **API**, which makes it possible to update the build plan retrospectively, as the build plan is fetched from the API on each run."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Inconsistent capitalization of server terms",
+    "description" : "Standardize capitalization of common server terms, preferably using “CI server” and “VC server” unless the terms begin a sentence or are part of a proper name.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Problem Statement",
+      "quote" : "Artemis currently supports Bamboo 1 and Jenkins 2 as a **CI server** for executing the tests."
+    }, {
+      "page" : 2,
+      "section" : "Problem Statement",
+      "quote" : "the build plans must be updated manually in the **CI Server**."
+    }, {
+      "page" : 2,
+      "section" : "Proposed Solution",
+      "quote" : "each time the code in the **VC Server** gets updated"
+    }, {
+      "page" : 2,
+      "section" : "Proposed Solution",
+      "quote" : "The Version Control server GitLab 3 has an integrated CI service"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "structure",
+    "title" : "Short paragraphs and list-heavy workflow reduce readability",
+    "description" : "Merge closely related short paragraphs in Expected Findings into fuller paragraphs of approximately 5–8 lines while preserving distinct ideas as separate paragraphs. Also introduce the workflow in System Requirements and Top Level Design with explanatory prose and explain the numbered workflow in prose paragraphs, using a shorter list only for genuinely sequential steps.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Expected Findings",
+      "quote" : "On long term, we expect that more universities will use Artemis, since the setup hurdle will become smaller."
+    }, {
+      "page" : 4,
+      "section" : "Expected Findings",
+      "quote" : "In addition, universities will save time and money as they will need at least one less server."
+    }, {
+      "page" : 4,
+      "section" : "Expected Findings",
+      "quote" : "The proposed solution opens up new opportunities for further research. with the envisaged implementation it will be possible to tackle the problem regarding the test execution during exams described in section 1."
+    }, {
+      "page" : 4,
+      "section" : "Expected Findings",
+      "quote" : "In addition, either Ansible or a Kubernetes cluster can be used for automatic deployment of the GitLab CI Runners."
+    }, {
+      "page" : 3,
+      "section" : "System Requirements and Top Level Design",
+      "quote" : "1) Name: Exercise work fow"
+    }, {
+      "page" : 3,
+      "section" : "System Requirements and Top Level Design",
+      "quote" : "3) Flow of events:"
+    } ]
+  } ]
+}

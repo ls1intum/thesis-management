@@ -1,0 +1,86 @@
+{
+  "assessment" : "NEEDS_WORK",
+  "score" : 45,
+  "summary" : "The proposal covers the required sections and includes appropriate figures, but it suffers from critical structural problems such as excessive length and an insufficient bibliography. Additionally, the objectives section does not fully meet the paragraph requirement, and the writing style contains passive constructions and prohibited sentence starters. Addressing these issues is essential before the proposal can be considered ready for submission.",
+  "findings" : [ {
+    "severity" : "CRITICAL",
+    "category" : "structure",
+    "title" : "Proposal exceeds maximum allowed length",
+    "description" : "The proposal spans 12 pages, which is significantly longer than the maximum of 6 pages for the text portion.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Abstract",
+      "quote" : "Abstract"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "structure",
+    "title" : "Abstract longer than permitted",
+    "description" : "The abstract occupies more than half a page, exceeding the allowed 1/3–1/2 page range.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Abstract",
+      "quote" : "Supervisors of theses spend considerable time on non-content-related feedback..."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "structure",
+    "title" : "Objective 4.1 lacks two paragraphs",
+    "description" : "Section 4.1 \"Generate Feedback Based on Guidelines\" contains only a single paragraph, but each objective subsection must have at least two paragraphs.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "4.1 Generate Feedback Based on Guidelines",
+      "quote" : "Supervisors should be able to provide their own scientific writing guidelines as well as conventions on the style of theses and proposals..."
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "citation",
+    "title" : "Insufficient bibliography entries",
+    "description" : "Only five publications are listed in the bibliography, while the guidelines require at least six to eight peer‑reviewed works.",
+    "locations" : [ {
+      "page" : 11,
+      "section" : "Bibliography",
+      "quote" : "Bibliography"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "writing",
+    "title" : "Excessive passive voice",
+    "description" : "The document frequently uses passive constructions (e.g., \"the thesis‑lifecycle portal used by around 50 research groups\"), reducing clarity and active engagement.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "4.1 Generate Feedback Based on Guidelines",
+      "quote" : "The tool integrates into Thesis Management, the thesis‑lifecycle portal **used** by around 50 research groups at the Technical University of Munich."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Forbidden sentence starter \"As\"",
+    "description" : "A sentence begins with \"As\" which is prohibited by the style guidelines.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Motivation",
+      "quote" : "**As** Figure 1 illustrates, an LLM‑powered Reviewer works alongside the supervisor..."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Forbidden sentence starter \"Since\"",
+    "description" : "A sentence starts with \"Since\", which is not allowed by the writing rules.",
+    "locations" : [ {
+      "page" : 6,
+      "section" : "4.1 Generate Feedback Based on Guidelines",
+      "quote" : "**Since** guidelines may not already be in a suitable format, the LLM may first need to preprocess them..."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Undefined abbreviation \"LLM\"",
+    "description" : "The abbreviation \"LLM\" (large language model) is used without being defined at its first occurrence.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Abstract",
+      "quote" : "large language models (**LLMs**) can generate formative feedback..."
+    } ]
+  } ]
+}

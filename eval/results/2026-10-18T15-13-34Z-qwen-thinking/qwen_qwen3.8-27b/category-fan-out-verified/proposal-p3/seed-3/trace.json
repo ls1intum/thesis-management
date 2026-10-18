@@ -1,0 +1,219 @@
+{
+  "categories" : [ {
+    "category" : "STRUCTURE",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "PROBLEM_MOTIVATION_OBJECTIVES",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "BIBLIOGRAPHY",
+    "generated" : [ {
+      "severity" : "MINOR",
+      "category" : "CITATION",
+      "title" : "Book reference cited only via store URL in footnote instead of proper bibliographic entry",
+      "description" : "The reference to Bruegge and Dutoit's textbook (footnote 3) is given only as a URL to the Pearson store page (https://pearson.com/store/p/object-oriented-software-engineering-using-uml-patterns-and-java/P200000003319). As a scientific book, this reference should carry full bibliographic details (authors, title, publisher, year, edition, ISBN). Ideally it belongs in the Bibliography as a proper book entry; at minimum the footnote should contain the complete citation rather than a bare commercial URL.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Objective",
+        "quote" : "Following the object-oriented software engineering method of **Bruegge and Dutoit** 3,"
+      }, {
+        "page" : 4,
+        "section" : "Objective",
+        "quote" : "**https://pearson.com/store/p/object-oriented-software-engineering-using-uml-patterns-and-java/P200000003319**"
+      } ]
+    } ],
+    "ungrounded" : [ {
+      "severity" : "MINOR",
+      "category" : "CITATION",
+      "title" : "Book reference cited only via store URL in footnote instead of proper bibliographic entry",
+      "description" : "The reference to Bruegge and Dutoit's textbook (footnote 3) is given only as a URL to the Pearson store page (https://pearson.com/store/p/object-oriented-software-engineering-using-uml-patterns-and-java/P200000003319). As a scientific book, this reference should carry full bibliographic details (authors, title, publisher, year, edition, ISBN). Ideally it belongs in the Bibliography as a proper book entry; at minimum the footnote should contain the complete citation rather than a bare commercial URL.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Objective",
+        "quote" : "Following the object-oriented software engineering method of **Bruegge and Dutoit** 3,"
+      }, {
+        "page" : 4,
+        "section" : "Objective",
+        "quote" : "**https://pearson.com/store/p/object-oriented-software-engineering-using-uml-patterns-and-java/P200000003319**"
+      } ]
+    } ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "FIGURES",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STYLE",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Excessive use of first-person singular \"I\"",
+      "description" : "The guidelines state to avoid \"I\" and use \"we\" sparingly, only for the thesis approach. The proposal uses \"I\" approximately 20+ times across the Abstract, Objective, and all Objective subsections. The thesis-approach sentences (development, evaluation, implementation) should use \"we\" per the guideline, and other sentences should be restructured to eliminate the first-person singular. For example, \"I develop a self-service platform\" should become \"We develop a self-service platform\" or \"This thesis develops a self-service platform.\" The same applies to \"I evaluate,\" \"I implement,\" \"I model,\" \"I reach this objective when…,\" \"I split each decision…,\" \"I divide the work…,\" and each \"I deliver\" in the Schedule.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "In this thesis, **I develop** a self-service platform on which every grant carries an expiry date from the moment somebody requests it."
+      }, {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "**I evaluate** the platform at the chair on correctness, administrative effort, and extensibility."
+      }, {
+        "page" : 4,
+        "section" : "Objective",
+        "quote" : "In this thesis, **I develop** a self-service platform on which requesters ask for time-limited access, maintainers decide, and access ends on its own"
+      }, {
+        "page" : 4,
+        "section" : "Objective",
+        "quote" : "Following the object-oriented software engineering method of Bruegge and Dutoit, **I pursue** four objectives:"
+      }, {
+        "page" : 5,
+        "section" : "4.1 Unify Heterogeneous Resources in One Tree",
+        "quote" : "**I model** the resources as a tree whose folders pass maintainership, audit policy, and grants down to leaves bound to target systems"
+      }, {
+        "page" : 6,
+        "section" : "4.1 Unify Heterogeneous Resources in One Tree",
+        "quote" : "**I implement** the keycloak-group, slack-channel, github-team, and webhook connectors, whose credentials administrators configure at runtime"
+      }, {
+        "page" : 6,
+        "section" : "4.1 Unify Heterogeneous Resources in One Tree",
+        "quote" : "**I reach** this objective when the webhook connector, written after **I** freeze the framework, needs one new class and one registry entry."
+      }, {
+        "page" : 7,
+        "section" : "4.2 Enforce an Expiry Date on Every Grant",
+        "quote" : "**I evaluate** correctness with an automated scenario that provisions SSH, Slack, and GitHub access from one approval."
+      }, {
+        "page" : 7,
+        "section" : "4.2 Enforce an Expiry Date on Every Grant",
+        "quote" : "**I reach** this objective when each access disappears after expiry and, in a second run with the workflow engine disabled on purpose, the drift check reports the remaining SSH membership."
+      }, {
+        "page" : 8,
+        "section" : "4.3 Delegate the Approval of Requests to Maintainers",
+        "quote" : "Keycloak gates its workflow API on a realm-wide administrative role that maintainers must not hold, so **I split** each decision into a review step"
+      }, {
+        "page" : 8,
+        "section" : "4.3 Delegate the Approval of Requests to Maintainers",
+        "quote" : "**I reach** this objective when administrators perform fewer manual actions and requesters wait less than in the current process."
+      }, {
+        "page" : 8,
+        "section" : "4.4 Automate the Recertification of Active Grants",
+        "quote" : "**I reach** this objective when the platform answers, for any grant, who requested it and why, who reviewed and granted it, when it ended, and who confirmed it since."
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "**I divide** the work into six iterations of four weeks, each ending with a vertically integrated increment"
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "**I reserve** the final two weeks, from 18 to 31 March 2027, as buffer for features that slip from earlier iterations."
+      } ]
+    } ],
+    "ungrounded" : [ {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Excessive use of first-person singular \"I\"",
+      "description" : "The guidelines state to avoid \"I\" and use \"we\" sparingly, only for the thesis approach. The proposal uses \"I\" approximately 20+ times across the Abstract, Objective, and all Objective subsections. The thesis-approach sentences (development, evaluation, implementation) should use \"we\" per the guideline, and other sentences should be restructured to eliminate the first-person singular. For example, \"I develop a self-service platform\" should become \"We develop a self-service platform\" or \"This thesis develops a self-service platform.\" The same applies to \"I evaluate,\" \"I implement,\" \"I model,\" \"I reach this objective when…,\" \"I split each decision…,\" \"I divide the work…,\" and each \"I deliver\" in the Schedule.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "In this thesis, **I develop** a self-service platform on which every grant carries an expiry date from the moment somebody requests it."
+      }, {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "**I evaluate** the platform at the chair on correctness, administrative effort, and extensibility."
+      }, {
+        "page" : 4,
+        "section" : "Objective",
+        "quote" : "In this thesis, **I develop** a self-service platform on which requesters ask for time-limited access, maintainers decide, and access ends on its own"
+      }, {
+        "page" : 4,
+        "section" : "Objective",
+        "quote" : "Following the object-oriented software engineering method of Bruegge and Dutoit, **I pursue** four objectives:"
+      }, {
+        "page" : 5,
+        "section" : "4.1 Unify Heterogeneous Resources in One Tree",
+        "quote" : "**I model** the resources as a tree whose folders pass maintainership, audit policy, and grants down to leaves bound to target systems"
+      }, {
+        "page" : 6,
+        "section" : "4.1 Unify Heterogeneous Resources in One Tree",
+        "quote" : "**I implement** the keycloak-group, slack-channel, github-team, and webhook connectors, whose credentials administrators configure at runtime"
+      }, {
+        "page" : 6,
+        "section" : "4.1 Unify Heterogeneous Resources in One Tree",
+        "quote" : "**I reach** this objective when the webhook connector, written after **I** freeze the framework, needs one new class and one registry entry."
+      }, {
+        "page" : 7,
+        "section" : "4.2 Enforce an Expiry Date on Every Grant",
+        "quote" : "**I evaluate** correctness with an automated scenario that provisions SSH, Slack, and GitHub access from one approval."
+      }, {
+        "page" : 7,
+        "section" : "4.2 Enforce an Expiry Date on Every Grant",
+        "quote" : "**I reach** this objective when each access disappears after expiry and, in a second run with the workflow engine disabled on purpose, the drift check reports the remaining SSH membership."
+      }, {
+        "page" : 8,
+        "section" : "4.3 Delegate the Approval of Requests to Maintainers",
+        "quote" : "Keycloak gates its workflow API on a realm-wide administrative role that maintainers must not hold, so **I split** each decision into a review step"
+      }, {
+        "page" : 8,
+        "section" : "4.3 Delegate the Approval of Requests to Maintainers",
+        "quote" : "**I reach** this objective when administrators perform fewer manual actions and requesters wait less than in the current process."
+      }, {
+        "page" : 8,
+        "section" : "4.4 Automate the Recertification of Active Grants",
+        "quote" : "**I reach** this objective when the platform answers, for any grant, who requested it and why, who reviewed and granted it, when it ended, and who confirmed it since."
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "**I divide** the work into six iterations of four weeks, each ending with a vertically integrated increment"
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "**I reserve** the final two weeks, from 18 to 31 March 2027, as buffer for features that slip from earlier iterations."
+      } ]
+    } ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STRUCTURE",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_FORMATTING",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "AI_TRANSPARENCY",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "SCHEDULE",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  } ],
+  "categoryFailures" : { }
+}

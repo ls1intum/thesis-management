@@ -1,0 +1,135 @@
+{
+  "assessment" : "NEEDS_WORK",
+  "score" : 22,
+  "summary" : "The proposal contains several critical structural and content deficiencies, including missing mandatory sections (Introduction, Motivation, Objectives, AI Transparency) and significant figure and schedule issues. It also has minor writing and formatting problems. Substantial revisions are required before the proposal can be submitted.",
+  "findings" : [ {
+    "severity" : "CRITICAL",
+    "category" : "structure",
+    "title" : "Missing Introduction Section",
+    "description" : "The proposal does not contain an Introduction section, which is required by the guidelines.",
+    "locations" : [ {
+      "page" : 0
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "structure",
+    "title" : "Missing Motivation Section",
+    "description" : "The proposal does not contain a dedicated Motivation section, which is required to be visionary and focus on the positive impact of solving the problem.",
+    "locations" : [ {
+      "page" : 0
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "structure",
+    "title" : "Missing Objectives Section",
+    "description" : "The proposal lacks an Objectives section where objectives should be formulated in action form, avoid double verbs, and be detailed with at least two paragraphs per objective.",
+    "locations" : [ {
+      "page" : 0
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "logic",
+    "title" : "Problem section contains solution suggestion",
+    "description" : "The Problem section includes a recommendation that describes a solution (migration of CI server), violating the rule that the Problem section must not present solutions or alternatives.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Problem",
+      "quote" : "The CI server **should be migrated** to the VC server."
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "structure",
+    "title" : "Missing AI Transparency Statement",
+    "description" : "The proposal does not contain an AI Transparency Statement, which is required by the group guidelines.",
+    "locations" : [ {
+      "page" : 0
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "figures",
+    "title" : "Insufficient number of figures and missing required UML diagram",
+    "description" : "The proposal includes only one figure, which is insufficient, and does not provide a required UML diagram (class, activity, component, etc.)."
+  }, {
+    "severity" : "MAJOR",
+    "category" : "structure",
+    "title" : "Iteration length shorter than 2 weeks",
+    "description" : "The schedule defines iterations of a single week, which is less than the required 2‑4 week minimum.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Schedule",
+      "quote" : "–  **5th week**: Proposal"
+    }, {
+      "page" : 5,
+      "section" : "Schedule",
+      "quote" : "–  **2nd week**: Docker GitLab CI Runner configuration"
+    }, {
+      "page" : 5,
+      "section" : "Schedule",
+      "quote" : "–  **4th week**: prototype implementation: Connectivity to GitLab CI"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "figures",
+    "title" : "Figure caption too brief",
+    "description" : "The caption for Figure 1 is short and lacks a detailed description of the diagram's content.",
+    "locations" : [ {
+      "page" : 4,
+      "quote" : "**Figure 1**: Depiction of the top-level workfow of the interactions in relation to Artemis and GitLab CI"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Use of filler words",
+    "description" : "Filler words such as “Furthermore”, “additional” are used; remove or replace them to improve conciseness.",
+    "locations" : [ {
+      "page" : 1,
+      "section" : "Abstract",
+      "quote" : "**Furthermore**, it should be possible to adjust the build plan after the task has been assigned."
+    }, {
+      "page" : 2,
+      "section" : "Problem Statement",
+      "quote" : "This leads to **additional** server overhead, since the CI and the Version Control (VC) are running on different servers."
+    }, {
+      "page" : 2,
+      "section" : "Proposed Solution",
+      "quote" : "**Furthermore**, the CI service should be part of the VC server to reduce additional effort by maintaining two servers."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "formatting",
+    "title" : "Subheadings not in title case",
+    "description" : "Several subheadings use sentence case with lowercase words instead of title case, violating the formatting rule.",
+    "locations" : [ {
+      "page" : 4,
+      "quote" : "1.1: **Push code** template, **test cases** and **sample solution**"
+    }, {
+      "page" : 4,
+      "quote" : "1.2: **Assign** exercise"
+    }, {
+      "page" : 4,
+      "quote" : "2.2: **Setup** student repository"
+    }, {
+      "page" : 4,
+      "quote" : "3.2: Trigger CI"
+    }, {
+      "page" : 4,
+      "quote" : "3.3: **Send** **build** results"
+    }, {
+      "page" : 4,
+      "quote" : "2.1: **Participate** in **exercise**"
+    }, {
+      "page" : 4,
+      "quote" : "3.1: **Push** **code**"
+    } ]
+  }, {
+    "severity" : "SUGGESTION",
+    "category" : "logic",
+    "title" : "Schedule follows a waterfall‑style timeline",
+    "description" : "The schedule enumerates sequential, single‑week tasks rather than iterative, incremental sprints, which does not align with agile principles.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Schedule",
+      "quote" : "It is planned to adhere to the following **time schedule**"
+    } ]
+  } ]
+}

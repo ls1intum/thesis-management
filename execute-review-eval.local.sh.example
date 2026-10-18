@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# ============================================================================
+# Local evaluation settings — NOT COMMITTED
+#
+# Your endpoint credentials and the sweep you actually want to run, so neither
+# has to be retyped and the key never reaches your shell history or the repo.
+#
+#   cp execute-review-eval.local.sh.example execute-review-eval.local.sh
+#   # fill in OPENAI_API_KEY and the models
+#   ./execute-review-eval.local.sh
+#
+# Anything you pass is forwarded to execute-review-eval.sh and overrides the
+# defaults set here, so a one-off variation needs no edit:
+#
+#   ./execute-review-eval.local.sh --seeds=1 --approaches=agentic
+#   ./execute-review-eval.local.sh --skip-judge
+#
+# execute-review-eval.local.sh is gitignored. This .example file is committed,
+# so the setup survives a fresh clone — keep secrets out of it.
+# ============================================================================
+
+# --- Endpoint ---------------------------------------------------------------
+export OPENAI_BASE_URL="https://logos.aet.cit.tum.de/v1"
+export OPENAI_API_KEY=""   # <-- your key
+
+# --- Models to compare ------------------------------------------------------
+# Every model runs the whole corpus through every strategy. Add or comment out
+# lines to change the sweep; the run count is models x approaches x docs x seeds,
+# so this list is the biggest lever on how long an evaluation takes.
+# A capability ladder rather than breadth at one tier: the question is whether the
+# agentic arm degrades faster than the fixed workflow as the model gets weaker.
+MODELS=(
+	"Qwen/Qwen3.8-27B"     # 262k ctx, self-hosted  — the stress case
+	"openai/gpt-oss-120b"  # 131k ctx, self-hosted  — what application-dev.yml runs
+	"gpt-5.6-terra"        # 1.05M ctx, Azure       — the ceiling
+)
+
+# --- Sweep ------------------------------------------------------------------
+# All four arms; narrow to one to iterate. The two fan-out arms run the same
+# reviewer and differ only in whether findings are verified before the merge.
+APPROACHES="single-prompt,category-fan-out-unverified,category-fan-out-verified,agentic"
+SEEDS=3                                 # repetitions per combination
+# 1.0 is the ONLY temperature gpt-5.6-* accepts ("Only the default (1) value is
+# supported"), and it is also this application's own default — so it is the one
+# setting that can be held constant across every model in the ladder.
+TEMPERATURE=1.0
+# Qwen3 behind vLLM answers without reasoning unless the request turns thinking on;
+# the other two models reason by default, so this keeps the comparison fair.
+THINKING_MODELS="Qwen/Qwen3.8-27B"
+
+# --- Run --------------------------------------------------------------------
+ROOT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+if [[ -z "$OPENAI_API_KEY" ]]; then
+	echo "Set OPENAI_API_KEY in $(basename "$0") first." >&2
+	exit 1
+fi
+
+if [[ ${#MODELS[@]} -eq 0 ]]; then
+	echo "List at least one model in MODELS in $(basename "$0")." >&2
+	exit 1
+fi
+
+models_csv=$(IFS=,; echo "${MODELS[*]}")
+
+# "$@" last so a flag typed on the command line wins over the defaults above.
+exec "$ROOT_DIR/execute-review-eval.sh" \
+	--models="$models_csv" \
+	--approaches="$APPROACHES" \
+	--seeds="$SEEDS" \
+	--temperature="$TEMPERATURE" \
+	--thinking-models="$THINKING_MODELS" \
+	"$@"

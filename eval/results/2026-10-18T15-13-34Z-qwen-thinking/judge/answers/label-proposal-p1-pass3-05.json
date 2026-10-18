@@ -1,0 +1,250 @@
+{
+  "job": "label-proposal-p1-pass3-05",
+  "answer": {
+    "judgements": [
+      {
+        "id": "F1186d6652f",
+        "rule": "R4",
+        "reason": "Section 1 proposes a change: 'it would be useful to change the student build plans after the submission date...'. The first two quotes come from the abstract, not from the Problem section, but the third location shows the breach.",
+        "label": "valid"
+      },
+      {
+        "id": "Fa537ff4a5c",
+        "rule": "R16",
+        "reason": "The prose switches between 'CI server', 'CI service' and 'CI application' for the same CI component, as the quotes show.",
+        "label": "valid"
+      },
+      {
+        "id": "Ff8abd19f19",
+        "rule": "R16",
+        "reason": "The CI component is called both 'CI server' and 'CI service', and the student assignment is called both 'task' and 'exercise'. The terminology is inconsistent.",
+        "label": "valid"
+      },
+      {
+        "id": "Ffdbe3873a7",
+        "rule": "R4",
+        "reason": "Section 1 contains a proposed change to the build plans during exams, which is solution content rather than a problem.",
+        "label": "valid"
+      },
+      {
+        "id": "Fdd637c70c7",
+        "rule": "R2",
+        "reason": "Section 1 has about four short paragraphs and fills well under half a page, so it does not clearly exceed 3/4 page.",
+        "label": "invalid"
+      },
+      {
+        "id": "F9ab10339c9",
+        "rule": "R17",
+        "reason": "The document has no AI transparency statement.",
+        "label": "valid"
+      },
+      {
+        "id": "F3427a1c881",
+        "rule": "R11",
+        "reason": "'Furthermore' and 'Additionally' are transition words that link ideas. They are not filler words that the rule forbids.",
+        "label": "invalid"
+      },
+      {
+        "id": "F7c1b801cfd",
+        "rule": "R7",
+        "reason": "The bibliography lists only five publications, below the required 6-8.",
+        "label": "valid"
+      },
+      {
+        "id": "F091ef5a2e0",
+        "rule": "R16",
+        "reason": "The document uses 'CI service' and 'CI server' interchangeably for the same component.",
+        "label": "valid"
+      },
+      {
+        "id": "F0b597f6209",
+        "rule": "R7",
+        "reason": "There are only five bibliography entries, below the minimum of 6-8.",
+        "label": "valid"
+      },
+      {
+        "id": "F1e10102e4e",
+        "rule": "R7",
+        "reason": "There are only five bibliography entries, below the minimum of 6-8.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb84a1d6bef",
+        "rule": "R19",
+        "reason": "The schedule lists single weeks per month instead of 2-4 week iterations with vertically integrated deliverables.",
+        "label": "valid"
+      },
+      {
+        "id": "F5ce6774706",
+        "rule": "R1",
+        "reason": "There is no Objective section. Section 4 is 'System Requirements and Top Level Design'.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd311f8a126",
+        "rule": "R1",
+        "reason": "The document goes straight from the Abstract to '1 Problem Statement' and has no Introduction.",
+        "label": "valid"
+      },
+      {
+        "id": "Feb56222d15",
+        "rule": "R7",
+        "reason": "Only five publications are listed, fewer than the required 6-8.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb1c770e8ef",
+        "rule": "R7",
+        "reason": "Only five publications are listed, fewer than the required 6-8.",
+        "label": "valid"
+      },
+      {
+        "id": "F1d4d60c7f8",
+        "rule": "R1",
+        "reason": "The Introduction, Motivation, Objective and AI Transparency Statement sections are all missing.",
+        "label": "valid"
+      },
+      {
+        "id": "F839cd8420c",
+        "rule": "R12",
+        "reason": "A sentence in the abstract starts with the forbidden word 'Since'.",
+        "label": "valid"
+      },
+      {
+        "id": "F2c6a7dd6f7",
+        "rule": null,
+        "reason": "No rule forbids using the first person in the schedule.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Fa2562872ec",
+        "rule": "R12",
+        "reason": "Sentences start with 'Since', 'To', 'In order to' and 'As', as the quotes show.",
+        "label": "valid"
+      },
+      {
+        "id": "F88cfc0cf70",
+        "rule": "R13",
+        "reason": "The sentence about saving time and money stands alone as a one-line paragraph, well below the 5-8 lines required.",
+        "label": "valid"
+      },
+      {
+        "id": "F55d71ca699",
+        "rule": "R13",
+        "reason": "Several one- and two-line paragraphs exist in Sections 4 and 5, far below the 5-8 line requirement.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc7700c4d90",
+        "rule": "R20",
+        "reason": "The only cited location is a planning assumption ('Wednesday is set aside'), not a scheduled thesis-writing task. The cited location therefore does not show the breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "F285deca834",
+        "rule": "R10",
+        "reason": "The Figure 1 caption is one short line that names the figure but does not explain the actors or the flow, so it is not long and informative.",
+        "label": "valid"
+      },
+      {
+        "id": "Fa4e20ec1f0",
+        "rule": "R1",
+        "reason": "The proposal has no Motivation section.",
+        "label": "valid"
+      },
+      {
+        "id": "Fed2f50682c",
+        "rule": "R1",
+        "reason": "The proposal has no Motivation section.",
+        "label": "valid"
+      },
+      {
+        "id": "F7d2a427486",
+        "rule": "R13",
+        "reason": "The final paragraph lists further research opportunities under one umbrella idea (future work). It is short, but it does not clearly mix unrelated ideas.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fb2aa37872f",
+        "rule": "R12",
+        "reason": "A sentence in the abstract starts with 'Since'.",
+        "label": "valid"
+      },
+      {
+        "id": "Fab29a36217",
+        "rule": "R12",
+        "reason": "'API' is used in the abstract and in later sections but is never defined.",
+        "label": "valid"
+      },
+      {
+        "id": "F44fd364610",
+        "rule": "R11",
+        "reason": "Section 1 uses passive constructions such as 'is copied', 'are not patched' and 'must be updated'.",
+        "label": "valid"
+      },
+      {
+        "id": "F829cfca4aa",
+        "rule": "R10",
+        "reason": "The text never refers to Figure 1. The only pointer is 'illustrated in section 4'.",
+        "label": "valid"
+      },
+      {
+        "id": "F38ef070574",
+        "rule": "R17",
+        "reason": "The document has no AI transparency statement.",
+        "label": "valid"
+      },
+      {
+        "id": "F8be7206aad",
+        "rule": "R3",
+        "reason": "Section 4 has no intro with a bullet list of 3-4 objectives and no subsection per objective.",
+        "label": "valid"
+      },
+      {
+        "id": "F819b5dfe1e",
+        "rule": "R20",
+        "reason": "The schedule includes 'October: Writing...' and 'Thesis ready for review', which are thesis-writing tasks.",
+        "label": "valid"
+      },
+      {
+        "id": "F4ecd7307db",
+        "rule": "R1",
+        "reason": "There is no Introduction section; the document goes directly to Problem Statement.",
+        "label": "valid"
+      },
+      {
+        "id": "F44f063060b",
+        "rule": "R20",
+        "reason": "The schedule contains Requirements, Documentation and Writing entries, and it does not use 2-4 week agile iterations.",
+        "label": "valid"
+      },
+      {
+        "id": "F0cd94d5754",
+        "rule": "R14",
+        "reason": "Section 4 has no subsections, and its one-line introduction before the scenario does not break R14. The finding is only a suggested improvement.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fe00b831328",
+        "rule": "R1",
+        "reason": "The proposal has no Introduction section.",
+        "label": "valid"
+      },
+      {
+        "id": "F83c6c509e7",
+        "rule": "R4",
+        "reason": "The quoted sentence comes from the abstract, not from the Problem section (Section 1), so it does not show a breach of R4 in the Problem section.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fb03f529053",
+        "rule": "R10",
+        "reason": "Figure 1 is never referenced by number; the text only says 'illustrated in section 4'.",
+        "label": "valid"
+      }
+    ]
+  },
+  "costUsd": 0.10509819999999999,
+  "durationMs": 37980,
+  "model": "claude-opus-5-5[1m]"
+}

@@ -1,0 +1,167 @@
+{
+  "assessment" : "NEEDS_WORK",
+  "score" : 42,
+  "summary" : "The proposal demonstrates a clear research direction and integrates AI tools thoughtfully, but it fails to meet several mandatory requirements. Critical issues include insufficient bibliography entries and a prohibited documentation task, while major problems involve length violations, missing detail in objectives, and style infractions. Substantial revisions are needed before submission.",
+  "findings" : [ {
+    "severity" : "MAJOR",
+    "category" : "structure",
+    "title" : "Proposal exceeds maximum allowed length",
+    "description" : "The full document spans more than 6 pages of text (excluding schedule), which violates the 4‑6 page limit.",
+    "locations" : [ {
+      "page" : 12,
+      "quote" : "=== PAGE 12 ==="
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "structure",
+    "title" : "Problem and Motivation sections exceed allowed length",
+    "description" : "Problem and Motivation sections each occupy more than the permitted 3/4 page.",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "Problem",
+      "quote" : "**Problem** section text exceeds the permitted length."
+    }, {
+      "page" : 4,
+      "section" : "Motivation",
+      "quote" : "**Motivation** section text exceeds the permitted length."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "completeness",
+    "title" : "Objective subsection 4.1 insufficient detail and length",
+    "description" : "Subsection 4.1 contains fewer than two paragraphs and lacks sufficient detailed description, violating the requirement for each objective subsection.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Objective",
+      "quote" : "**4.1 Generate Feedback Based on Guidelines**"
+    }, {
+      "page" : 5,
+      "section" : "Objective",
+      "quote" : "**Supervisors should be able to provide their own scientific writing guidelines as well as conventions on the style of theses and proposals. Based on these guidelines, the LLM can provide formative feedback that is restricted to the aspects they cover. Since guidelines may not already be in a suitable format, the LLM may first need to preprocess them into a structured representation it can act on.**"
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "completeness",
+    "title" : "Insufficient number of bibliography entries",
+    "description" : "The bibliography contains only 5 entries, but the guidelines require at least 6‑8 peer‑reviewed publications.",
+    "locations" : [ {
+      "page" : 11,
+      "section" : "Bibliography",
+      "quote" : "Bibliography ... [TP21] ... [AAM17] ... [BBE10] ... [Bog+07] ... **[NM06]**."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "writing",
+    "title" : "Forbidden sentence starters (As, Since, Because)",
+    "description" : "Sentences begin with prohibited words 'As', 'Since', and 'Because', violating the writing style rule.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Motivation",
+      "quote" : "**As** Figure 1 illustrates, an LLM-powered Reviewer works alongside the supervisor, evaluating the thesis against the research group’s writing guidelines and generating automatic formative feedback [NM06]."
+    }, {
+      "page" : 5,
+      "section" : "4.1 Generate Feedback Based on Guidelines",
+      "quote" : "**Since** guidelines may not already be in a suitable format, the LLM may first ..."
+    }, {
+      "page" : 5,
+      "quote" : "**Because** the feedback tool is powered by LLMs, students can obtain instant formative feedback at any point during the writing process."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "writing",
+    "title" : "Passive voice usage",
+    "description" : "Passive constructions are used throughout the proposal, reducing clarity and contravening the active‑voice requirement.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Motivation",
+      "quote" : "While the problem **is less severe** for students, they still experience its consequences."
+    }, {
+      "page" : 5,
+      "quote" : "the feedback tool **is powered** by LLMs"
+    }, {
+      "page" : 6,
+      "section" : "4.2 Highlight Changes Across Iterations",
+      "quote" : "no LLM-generated feedback **is produced** at all"
+    }, {
+      "page" : 6,
+      "section" : "4.2 Highlight Changes Across Iterations",
+      "quote" : "Formative feedback, on the other hand, **is less critical** since it serves as input for students ..."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "formatting",
+    "title" : "Paragraph exceeds recommended length",
+    "description" : "The abstract and introductory paragraphs exceed the recommended 5‑8 line length.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Abstract",
+      "quote" : "**Supervisors of theses spend considerable time on non-content-related feedback such as document structure, coherence, and linguistic accuracy.**"
+    }, {
+      "page" : 2,
+      "section" : "Introduction",
+      "quote" : "**Bachelor’s and Master’s theses represent important final projects that students complete before graduating [TP21].**"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "formatting",
+    "title" : "Paragraph too short",
+    "description" : "A single-line paragraph containing only a URL is shorter than the minimum of 5 lines.",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "Problem",
+      "quote" : "**1https://github.com/ls1intum/thesis-management**"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Multiple ideas in a single paragraph",
+    "description" : "A paragraph in the Motivation section combines distinct ideas, mixing discussion of LLM functionality with separate student benefits.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Motivation",
+      "quote" : "**Integrating large language models (LLMs) to assist supervisors with non-content-related feedback could improve the thesis writing process. As Figure 1 illustrates, an LLM-powered Reviewer works alongside the supervisor...** **Better and faster feedback has signifcant advantages for students as well.**"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "other",
+    "title" : "Missing section specifications in AI transparency statement",
+    "description" : "The AI transparency statement does not specify which sections of the proposal the AI tools were used for; it only refers vaguely to \"drafts\" and \"throughout the proposal\" instead of naming concrete sections.",
+    "locations" : [ {
+      "page" : 12,
+      "section" : "Transparency in the Use of AI Tools",
+      "quote" : "I made use of several AI-based tools across different stages of the writing process... For citation assistance, I used Zotero to manage my references and to ensure proper citation formatting **throughout the proposal**. I have carefully checked all texts created with these tools to ensure that they are correct and make sense."
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "other",
+    "title" : "Prohibited documentation task in schedule",
+    "description" : "Iteration 9 includes a documentation writing task, which is not allowed in the schedule according to the group rules.",
+    "locations" : [ {
+      "page" : 10,
+      "section" : "Schedule",
+      "quote" : "•   Documentation"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "logic",
+    "title" : "Schedule lacks vertically integrated features",
+    "description" : "Schedule items describe horizontal component work rather than vertically integrated, end‑to‑end user‑visible features, violating the vertically integrated feature requirement.",
+    "locations" : [ {
+      "page" : 9,
+      "section" : "Schedule",
+      "quote" : "•   Modularize Thesis Management to prepare integration of the feedback module (Objective 4)"
+    }, {
+      "page" : 9,
+      "section" : "Schedule",
+      "quote" : "•   Implement core feedback generation pipeline (Objective 1)"
+    }, {
+      "page" : 9,
+      "section" : "Schedule",
+      "quote" : "•   Connect feedback tool to Thesis Management (Objective 4)"
+    }, {
+      "page" : 9,
+      "section" : "Schedule",
+      "quote" : "•   Allow supervisors to upload custom guidelines (Objective 1)"
+    } ]
+  } ]
+}

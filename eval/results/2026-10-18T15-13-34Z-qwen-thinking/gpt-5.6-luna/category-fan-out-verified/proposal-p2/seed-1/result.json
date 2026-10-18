@@ -1,0 +1,178 @@
+{
+  "assessment" : "ACCEPTABLE",
+  "score" : 58,
+  "summary" : "The proposal is on the right track and presents a coherent motivation, objectives, and planned system integration. Before submission, it needs substantial revision to make the schedule measurable and vertically integrated, bring the AI transparency statement into compliance, and address several formatting and writing issues.",
+  "findings" : [ {
+    "severity" : "MAJOR",
+    "category" : "completeness",
+    "title" : "AI transparency statement does not specify the sections in which tools were used",
+    "description" : "The AI transparency statement names tools and their purposes but does not identify which proposal sections each tool was used for. Map each tool and activity to specific sections, such as the Abstract, Introduction, Problem, Motivation, Objective, Schedule, or Bibliography; if a tool was used throughout, state that explicitly.",
+    "locations" : [ {
+      "page" : 12,
+      "section" : "AI Transparency Statement",
+      "quote" : "In preparing this proposal, I made use of several AI-based tools **across diferent stages of the writing process**."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "methodology",
+    "title" : "Schedule deliverables lack measurable acceptance criteria",
+    "description" : "Several schedule activities are not measurable because they lack concrete outputs, evaluation data, or acceptance criteria. Replace vague activities such as implementing, connecting, building, and evaluating with verifiable deliverables, including an executable end-to-end prototype, a defined test set, and specified quality or performance metrics.",
+    "locations" : [ {
+      "page" : 9,
+      "section" : "Schedule",
+      "quote" : "• Implement core feedback generation pipeline (Objective 1)"
+    }, {
+      "page" : 9,
+      "section" : "Schedule",
+      "quote" : "• Connect feedback tool to Thesis Management (Objective 4)"
+    }, {
+      "page" : 9,
+      "section" : "Schedule",
+      "quote" : "• Build prototype implementations for agentic and prompt chaining setups"
+    }, {
+      "page" : 9,
+      "section" : "Schedule",
+      "quote" : "• Evaluate different LLM models and providers (Objective 3)"
+    }, {
+      "page" : 10,
+      "section" : "Schedule",
+      "quote" : "• Review the system and check for bugs"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "structure",
+    "title" : "Early schedule iterations are organized by technical layers rather than vertical features",
+    "description" : "The first iterations are divided into architectural and subsystem phases—modularization, a core pipeline, and later portal integration—rather than vertically integrated features. Reorganize the early work into end-to-end slices, such as generating guideline-based feedback and displaying or editing it in Thesis Management, with each iteration producing usable functionality.",
+    "locations" : [ {
+      "page" : 9,
+      "section" : "Schedule",
+      "quote" : "• Modularize Thesis Management to prepare integration of the feedback module (Objective 4)"
+    }, {
+      "page" : 9,
+      "section" : "Schedule",
+      "quote" : "• Implement core feedback generation pipeline (Objective 1)"
+    }, {
+      "page" : 9,
+      "section" : "Schedule",
+      "quote" : "• Connect feedback tool to Thesis Management (Objective 4)"
+    }, {
+      "page" : 9,
+      "section" : "Schedule",
+      "quote" : "• Extend feedback workflow in Thesis Management for thesis (Objective 4)"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "completeness",
+    "title" : "Schedule includes a task outside the permitted scope",
+    "description" : "The final iteration includes documentation, which is outside the permitted schedule scope. Remove this task and use the iteration for development or research work, such as testing the integrated system against predefined cases and recording measurable evaluation results as research outputs.",
+    "locations" : [ {
+      "page" : 10,
+      "section" : "Schedule",
+      "quote" : "• Review the system and check for bugs\n\n• Documentation"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "structure",
+    "title" : "Objectives are not formatted as a bullet list",
+    "description" : "Section 4 presents the four objectives as a numbered list rather than the required bullet list. Replace the numbered list with four bullet points, keeping each objective to one line.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Objective",
+      "quote" : "**1. Generate Feedback Based on Guidelines**"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Sentences use forbidden starters",
+    "description" : "Recast the sentences so they do not begin with the forbidden starters “As” or “Because.” For example, make Figure 1 the subject of the first sentence and move the causal explanation in the second sentence to a later position or use a different sentence structure.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Motivation",
+      "quote" : "**As** Figure 1 illustrates, an LLM-powered Reviewer works alongside the supervisor, evaluating the thesis against the research group’s writing guidelines and generating automatic formative feedback [NM06]."
+    }, {
+      "page" : 5,
+      "section" : "Motivation",
+      "quote" : "**Because** the feedback tool is powered by LLMs, students can obtain instant formative feedback at any point during the writing process."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Remove unnecessary transitional fillers",
+    "description" : "Remove transitional fillers where they do not express a necessary logical relation, or replace them with explicit statements explaining how the ideas relate.",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "Problem",
+      "quote" : "**Moreover**, the time spent on repetitive feedback leaves less time for what matters most: helping students with their research and providing feedback on substantive topics."
+    }, {
+      "page" : 4,
+      "section" : "Motivation",
+      "quote" : "**Additionally**, supervisors can provide feedback faster, making the process more scalable."
+    }, {
+      "page" : 8,
+      "section" : "Objective — Compare Prompting Techniques and LLM Models",
+      "quote" : "**In addition**, privacy regulations and cost require careful consideration of when to use locally self-hosted LLMs versus cloud-hosted ones."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Replace unsupported intensifiers and superlatives",
+    "description" : "Replace broad intensifying wording with precise, supportable claims. Qualify or remove “wide” and “greatest” unless the comparison is defined and supported by evidence.",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "Problem",
+      "quote" : "Supervisors provide feedback on a **wide** range of topics, including the content itself, the structure of the document and its chapters, writing coherence and cohesion, and linguistic accuracy."
+    }, {
+      "page" : 8,
+      "section" : "Objective — Integrate With Thesis Management",
+      "quote" : "By building on existing processes, the integration causes the least disruption to supervisors and delivers the **greatest** simplification of their workflow."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Several paragraphs are too long",
+    "description" : "Break up paragraphs that substantially exceed the recommended 5–8 lines. Separate distinct ideas into shorter paragraphs, such as proposal contents from thesis-lifecycle context, guideline-based feedback from formative versus normative feedback, and the AI transparency statement by tool purpose.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Introduction",
+      "quote" : "Before starting their research project, students typically write a research proposal. In this proposal, they define the research question and problem they want to explore, outline their methodology, and specify the scope of their work."
+    }, {
+      "page" : 3,
+      "section" : "Introduction",
+      "quote" : "At around 50 research groups at the Technical University of Munich (TUM), supervisors and students manage the thesis lifecycle through Thesis Management 1, an in-house portal developed at TUM."
+    }, {
+      "page" : 5,
+      "section" : "4.1 Generate Feedback Based on Guidelines",
+      "quote" : "Supervisors should be able to provide their own scientific writing guidelines as well as conventions on the style of theses and proposals. Based on these guidelines, the LLM can provide formative feedback that is restricted to the aspects they cover."
+    }, {
+      "page" : 6,
+      "section" : "4.1 Generate Feedback Based on Guidelines",
+      "quote" : "Ethically, it is difficult to let LLMs grade a final thesis, as this constitutes normative feedback and requires close scrutiny. Formative feedback, on the other hand, is less critical since it serves as input for students to improve their work."
+    }, {
+      "page" : 12,
+      "section" : "Transparency in the Use of AI Tools",
+      "quote" : "In preparing this proposal, I made use of several AI-based tools across different stages of the writing process. For grammar and style correction, I used Grammarly to identify grammatical errors, improve sentence structure, and refine the overall writing style of my drafts."
+    }, {
+      "page" : 12,
+      "section" : "Transparency in the Use of AI Tools",
+      "quote" : "For coding assistance, I used GitHub Copilot, ChatGPT, OpenAI Codex, Claude, and Claude Code to support Typst formatting, generate snippets for figures and macros, and resolve template-related issues. For citation assistance, I used Zotero to manage my references and to ensure proper citation formatting throughout the proposal."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Use consistent hyphenation for “prompt chaining”",
+    "description" : "Use one consistent form for “prompt chaining.” The abstract hyphenates the term, while the Objective section and Schedule use the unhyphenated form; choose one form and apply it throughout the prose.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Abstract",
+      "quote" : "We evaluate single-prompt, **prompt-chaining**, and agentic setups"
+    }, {
+      "page" : 8,
+      "section" : "Objective",
+      "quote" : "Alternatives include **prompt chaining** and agentic setups"
+    }, {
+      "page" : 9,
+      "section" : "Schedule",
+      "quote" : "Build prototype implementations for agentic and **prompt chaining** setups"
+    } ]
+  } ]
+}

@@ -1,0 +1,32 @@
+{
+  "_comment": "Labels and roles of the corpus documents and the models, keyed by the ids the sweep writes (runs.jsonl). A document missing here is labelled by its id.",
+  "cloudModel": "gpt-5.6-luna",
+  "models": {
+    "gpt-5.6-luna": "gpt-5.6-luna",
+    "Qwen/Qwen3.8-27B": "Qwen3.8-27B",
+    "openai/gpt-oss-120b": "gpt-oss-120b"
+  },
+  "approaches": {
+    "single-prompt": "Single prompt",
+    "category-fan-out-unverified": "Per category",
+    "category-fan-out-verified": "Per category + verif.",
+    "agentic": "Agentic"
+  },
+  "documents": {
+    "proposal-p1": {
+      "label": "P1"
+    },
+    "proposal-p2": {
+      "label": "P2"
+    },
+    "proposal-p3": {
+      "label": "P3",
+      "role": "conforming"
+    },
+    "proposal-p4": {
+      "label": "P4",
+      "role": "defective",
+      "defects": "eval/corpus/proposal/p4/defects.json"
+    }
+  }
+}

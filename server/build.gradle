@@ -194,6 +194,34 @@ bootRun {
 	environment "SERVER_PORT", "8180"
 }
 
+// Review-strategy evaluation sweep. Boots the review pipeline once per model/approach/seed
+// combination and writes each review to disk; see feedback.eval.EvalApplication. Needs a reachable
+// OpenAI-compatible endpoint (OPENAI_BASE_URL / OPENAI_API_KEY) and a corpus directory outside the
+// repository. Never runs as part of `check`.
+//
+//   ./gradlew evalReview -Pmodels=openai/gpt-oss-120b,google/gemma-4-26B-A4B-it \
+//     -Pcorpus=/path/to/corpus -Pseeds=3
+// -Pkey=value on the command line becomes --key=value for EvalPlan; anything not given falls back
+// to the matching environment variable. Resolved through the provider API so the configuration
+// cache tracks these properties as inputs rather than reading `project` at execution time.
+def evalArguments = ["models", "approaches", "corpus", "out", "seeds", "temperature", "base-url", "api-key", "thinking-models"]
+	.collect { name -> providers.gradleProperty(name).map { "--$name=$it".toString() } }
+
+tasks.register("evalReview", JavaExec) {
+	group = "verification"
+	description = "Runs the AI review strategies over a fixed corpus across models and writes the results"
+	mainClass = "de.tum.cit.aet.thesis.feedback.eval.EvalApplication"
+	// Test source set, not main: @SpringBootApplication component-scans de.tum.cit.aet.thesis, so
+	// an @Configuration living under feedback.eval in src/main would be picked up by the real
+	// server and its beans would collide with the production ones. Evaluation tooling also has no
+	// business in the shipped jar.
+	classpath = sourceSets.test.runtimeClasspath
+	// devtools is on the runtime classpath and would otherwise restart main() on a new thread
+	// with no arguments, which fails the sweep immediately on its own argument validation.
+	systemProperty "spring.devtools.restart.enabled", "false"
+	argumentProviders.add({ evalArguments.findAll { it.present }.collect { it.get() } } as CommandLineArgumentProvider)
+}
+
 // PostgreSQL image tag for integration-test Testcontainers. Single source of truth is the repo-root
 // .env file (POSTGRES_IMAGE_TAG), shared with the docker-compose files. A POSTGRES_IMAGE_TAG shell/CI
 // environment variable overrides it, and 18.6-alpine is the final fallback so IDE/Gradle runs work

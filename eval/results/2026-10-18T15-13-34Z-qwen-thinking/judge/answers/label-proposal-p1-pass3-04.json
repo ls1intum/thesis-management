@@ -1,0 +1,250 @@
+{
+  "job": "label-proposal-p1-pass3-04",
+  "answer": {
+    "judgements": [
+      {
+        "id": "F156c6444a8",
+        "rule": "R6",
+        "reason": "Objectives must be in action form. The abstract's objective and problem statements use passive or impersonal wording (\"should be migrated\", \"it should be possible\"), and no action-form objectives appear anywhere.",
+        "label": "valid"
+      },
+      {
+        "id": "F65de5c5854",
+        "rule": "R17",
+        "reason": "An AI transparency statement is required. The document has none.",
+        "label": "valid"
+      },
+      {
+        "id": "F1efeea90c3",
+        "rule": "R16",
+        "reason": "The same CI component is called \"CI application\", \"CI service\", \"CI system\" and \"CI server\" in the author's prose, so the terminology is inconsistent.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb3af458a84",
+        "rule": "R7",
+        "reason": "At least 6-8 peer-reviewed publications are required. The bibliography lists only five entries.",
+        "label": "valid"
+      },
+      {
+        "id": "Fed238d8b62",
+        "rule": "R10",
+        "reason": "Figure 1 is never referenced by number; the text only says \"illustrated in section 4\". Its caption is a single short line rather than a long, informative caption.",
+        "label": "valid"
+      },
+      {
+        "id": "F86d35aed9f",
+        "rule": "R4",
+        "reason": "The Problem section does name actors: students, smaller universities, and large courses where manual updates are nearly impossible. It also states negative consequences for them, so the claim that actors are missing does not hold.",
+        "label": "invalid"
+      },
+      {
+        "id": "F87de2eaf9b",
+        "rule": "R10",
+        "reason": "Every figure must be referenced in the text. Figure 1 is only indirectly pointed to via \"section 4\" and is never referenced by number.",
+        "label": "valid"
+      },
+      {
+        "id": "F46721a1ad2",
+        "rule": "R12",
+        "reason": "\"API\" is used from the abstract onward and is never defined.",
+        "label": "valid"
+      },
+      {
+        "id": "F1690724d91",
+        "rule": "R16",
+        "reason": "\"CI server\", \"CI service\" and \"CI system\" are used for the same component. One quote's section label is wrong, but the inconsistency is real.",
+        "label": "valid"
+      },
+      {
+        "id": "F47445ccc25",
+        "rule": "R20",
+        "reason": "The schedule includes thesis-writing and documentation tasks such as \"October: Writing\", \"Thesis ready for review\", \"Thesis\" and \"Documentation for installation\".",
+        "label": "valid"
+      },
+      {
+        "id": "F23c79e09c0",
+        "rule": "R9",
+        "reason": "At least two figures are required. The document contains only Figure 1.",
+        "label": "valid"
+      },
+      {
+        "id": "Ffca20ade97",
+        "rule": "R4",
+        "reason": "The Problem section does identify affected actors, such as smaller universities and students, and gives consequences. The claim that actors are not identified does not hold.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fe529de6ccd",
+        "rule": "R4",
+        "reason": "The Problem section states a desired capability (\"it would be useful to change the student build plans after the submission date\"). That is solution-oriented content, not purely a problem.",
+        "label": "valid"
+      },
+      {
+        "id": "F7d465a1267",
+        "rule": "R12",
+        "reason": "Sentences start with \"Since\", \"To\", \"In order to\" and \"As\", as quoted. All of these openers are listed as forbidden.",
+        "label": "valid"
+      },
+      {
+        "id": "F0ca684b9f0",
+        "rule": "R17",
+        "reason": "There is no AI transparency statement in the document.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd994d568ac",
+        "rule": "R7",
+        "reason": "The bibliography has only five references, below the required 6-8 peer-reviewed publications.",
+        "label": "valid"
+      },
+      {
+        "id": "F0f293491f0",
+        "rule": "R19",
+        "reason": "Deliverables must be measurable. Items such as \"Models\", \"Revise models\" and \"Implement improvements\" are vague and have no measurable outcome.",
+        "label": "valid"
+      },
+      {
+        "id": "F3b832807e3",
+        "rule": "R12",
+        "reason": "The quoted sentences start with the forbidden words \"Since\", \"To\" and \"In order to\". The page given for one location is slightly off, but the breach holds.",
+        "label": "valid"
+      },
+      {
+        "id": "F051323bfa3",
+        "rule": "R9",
+        "reason": "Only one figure is present, and no clearly identifiable UML diagram is included.",
+        "label": "valid"
+      },
+      {
+        "id": "F1284861a5e",
+        "rule": "R4",
+        "reason": "The Problem section names smaller universities and students and gives negative consequences. The claim that it fails to cover stakeholders does not clearly hold.",
+        "label": "invalid"
+      },
+      {
+        "id": "Ff0b1238692",
+        "rule": "R3",
+        "reason": "No Objective section exists. There is no intro with 3-4 bullet objectives and no per-objective subsections.",
+        "label": "valid"
+      },
+      {
+        "id": "Fbb971a52d2",
+        "rule": "R20",
+        "reason": "The schedule contains \"4th week: Requirements (parallel to prototype implementation)\", which is a requirements-gathering task.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb44a95b957",
+        "rule": "R13",
+        "reason": "Paragraphs should run 5-8 lines. The two cited Expected Findings paragraphs are only one or two lines each.",
+        "label": "valid"
+      },
+      {
+        "id": "F6b8a11eb57",
+        "rule": "R9",
+        "reason": "Only one figure is present, but at least two are required.",
+        "label": "valid"
+      },
+      {
+        "id": "F5c34431736",
+        "rule": "R12",
+        "reason": "\"API\" is used without being defined.",
+        "label": "valid"
+      },
+      {
+        "id": "F790f73f1dc",
+        "rule": "R19",
+        "reason": "The schedule lists single-week tasks by month instead of 2-4 week iterations with measurable, vertically integrated deliverables.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb036c3ec42",
+        "rule": "R16",
+        "reason": "\"CI service\" and \"CI server\" are used interchangeably for the same concept.",
+        "label": "valid"
+      },
+      {
+        "id": "F78e61bd7df",
+        "rule": "R17",
+        "reason": "There is no AI transparency statement in the document.",
+        "label": "valid"
+      },
+      {
+        "id": "Fa0e1ce6f2b",
+        "rule": null,
+        "reason": "None of the rules forbids the first person, so avoiding \"I\" is not a requirement here.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F944a7a79dd",
+        "rule": "R19",
+        "reason": "The prototype work is split into separate layer-by-layer tasks (connectivity, API, sending results) rather than vertically integrated deliverables.",
+        "label": "valid"
+      },
+      {
+        "id": "F589d845aa7",
+        "rule": "R11",
+        "reason": "Active voice is required. The document uses passive constructions frequently, for example \"must be updated manually\", \"is copied\" and \"is split up\".",
+        "label": "valid"
+      },
+      {
+        "id": "F8c7a37045e",
+        "rule": "R13",
+        "reason": "Section 4 is mostly a 14-item numbered list framed by one-line sentences. That breaks the prose-first rule, which allows lists only in the Schedule and objective lists.",
+        "label": "valid"
+      },
+      {
+        "id": "F46f67bc712",
+        "rule": null,
+        "reason": "None of the rules requires the schedule to reference the objectives.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Fa8ba3d9bff",
+        "rule": "R10",
+        "reason": "Captions must be long and informative. The Figure 1 caption is one brief generic line.",
+        "label": "valid"
+      },
+      {
+        "id": "Ffaced8a5f7",
+        "rule": "R20",
+        "reason": "The schedule includes a \"Requirements\" task, which counts as requirements gathering.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc81712ac80",
+        "rule": "R1",
+        "reason": "The required Objective section with subsections is absent.",
+        "label": "valid"
+      },
+      {
+        "id": "F67ecedf0c2",
+        "rule": "R12",
+        "reason": "A sentence in the abstract starts with \"Since\", which is forbidden.",
+        "label": "valid"
+      },
+      {
+        "id": "F8edbf9b068",
+        "rule": "R12",
+        "reason": "The quoted sentences start with \"Since\", \"To\", \"In order to\" and \"As\", all of which are listed as forbidden openers.",
+        "label": "valid"
+      },
+      {
+        "id": "Fdc7171295c",
+        "rule": "R17",
+        "reason": "There is no AI transparency statement in the document.",
+        "label": "valid"
+      },
+      {
+        "id": "F55e8f952d4",
+        "rule": "R17",
+        "reason": "There is no AI transparency statement in the document.",
+        "label": "valid"
+      }
+    ]
+  },
+  "costUsd": 0.2654708,
+  "durationMs": 39639,
+  "model": "claude-opus-5-5[1m]"
+}

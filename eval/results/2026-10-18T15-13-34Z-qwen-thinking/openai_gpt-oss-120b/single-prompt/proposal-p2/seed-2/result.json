@@ -1,0 +1,95 @@
+{
+  "assessment" : "NEEDS_WORK",
+  "score" : 45,
+  "summary" : "The proposal covers the required sections and includes the needed figures, but it exceeds the allowed page length, lacks enough bibliography entries, and contains several formatting and content issues. Key problems include overly long sections, an incomplete objectives subsection, improper citation handling, and an insufficiently detailed AI transparency statement. Addressing these critical and major issues is necessary before submission.",
+  "findings" : [ {
+    "severity" : "CRITICAL",
+    "category" : "completeness",
+    "title" : "Proposal exceeds allowed page count",
+    "description" : "The document spans 12 pages, which is significantly longer than the required 4‑6 pages for the proposal text.",
+    "locations" : [ {
+      "page" : 1,
+      "quote" : "Technical University of Munich ... Bachelor’s Thesis in Informatics"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "completeness",
+    "title" : "Abstract is too long",
+    "description" : "The abstract occupies more than half a page, exceeding the required 1/3 to 1/2 page length.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Abstract",
+      "quote" : "**Supervisors of theses spend considerable time on non-content-related feedback** such as document structure, coherence, and linguistic accuracy. Much of this feedback is repetitive across students and disciplines, draining supervisors and leaving less capacity for substantive research discussions."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "completeness",
+    "title" : "Problem section exceeds length limit",
+    "description" : "The Problem section is longer than the maximum allowed 3/4 page.",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "Problem",
+      "quote" : "**For students’ research proposals and theses, supervisors often provide feedback that is critical to their progress**. The supervisor takes the role of an experienced peer and coach in a mentoring environment, gradually increasing the student’s level of independence."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "completeness",
+    "title" : "Motivation section exceeds length limit",
+    "description" : "The Motivation section is longer than the maximum allowed 3/4 page.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Motivation",
+      "quote" : "**Integrating large language models (LLMs) to assist supervisors with non-content-related feedback could improve the thesis writing process**. As Figure 1 illustrates, an LLM-powered Reviewer works alongside the supervisor, evaluating the thesis against the research group’s writing guidelines and generating automatic formative feedback."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "structure",
+    "title" : "Objective 4.1 lacks required paragraph count",
+    "description" : "Subsection 4.1 contains only a single paragraph; each objective subsection must have at least two paragraphs.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "4.1 Generate Feedback Based on Guidelines",
+      "quote" : "**Supervisors should be able to provide their own scientific writing guidelines as well as conventions on the style of theses and proposals**. Based on these guidelines, the LLM can provide formative feedback that is restricted to the aspects they cover."
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "citation",
+    "title" : "Bibliography contains too few entries",
+    "description" : "Only five bibliography entries are present, while the guidelines require at least six to eight peer‑reviewed publications.",
+    "locations" : [ {
+      "page" : 11,
+      "section" : "Bibliography",
+      "quote" : "[TP21] ...\n[AAM17] ...\n[BBE10] ...\n[Bog+07] ...\n[NM06] ..."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "citation",
+    "title" : "Internet source not formatted as footnote",
+    "description" : "A URL is inserted directly in the text rather than being placed as a footnote, violating the citation rules.",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "Problem",
+      "quote" : "**1https://github.com/ls1intum/thesis-management**"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Sentence starts with prohibited word \"As\"",
+    "description" : "The sentence begins with \"As\", which is forbidden according to the writing style rules.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Motivation",
+      "quote" : "**As Figure 1 illustrates**, an LLM-powered Reviewer works alongside the supervisor..."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "other",
+    "title" : "AI transparency statement lacks specific section references",
+    "description" : "The statement mentions using AI tools across different stages but does not specify which proposal sections they were applied to, which is required for a valid AI transparency statement.",
+    "locations" : [ {
+      "page" : 12,
+      "section" : "Transparency in the Use of AI Tools",
+      "quote" : "**In preparing this proposal, I made use of several AI‑based tools across different stages of the writing process**."
+    } ]
+  } ]
+}

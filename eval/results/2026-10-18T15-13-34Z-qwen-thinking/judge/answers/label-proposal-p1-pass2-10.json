@@ -1,0 +1,250 @@
+{
+  "job": "label-proposal-p1-pass2-10",
+  "answer": {
+    "judgements": [
+      {
+        "id": "F139f55de6e",
+        "rule": "R20",
+        "reason": "The schedule must not include thesis-writing tasks. It lists 'October: Writing', 'Thesis ready for review', 'Review finished' and 'Thesis'.",
+        "label": "valid"
+      },
+      {
+        "id": "Faf4008261c",
+        "rule": "R13",
+        "reason": "Paragraphs should run 5-8 lines. The cited paragraph in Section 5 is a single line.",
+        "label": "valid"
+      },
+      {
+        "id": "Fa0c2999182",
+        "rule": "R12",
+        "reason": "Sentences must not start with 'Since'. The sentence on page 3 starting 'Since the benefits...' breaks this. The quoted 'Because...' sentence does not occur in the document.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc662ee8fb5",
+        "rule": "R12",
+        "reason": "The abstract sentence starts with the forbidden word 'Since'.",
+        "label": "valid"
+      },
+      {
+        "id": "F76c38c6a87",
+        "rule": "R9",
+        "reason": "Figure 1 shows actors exchanging numbered messages (1.1, 2.1, ...), which is the form of a UML communication diagram. The claim that no UML diagram exists is not supported.",
+        "label": "invalid"
+      },
+      {
+        "id": "F7f53ed3d6e",
+        "rule": "R12",
+        "reason": "Both the Related Work sentence and the abstract sentence start with 'Since'.",
+        "label": "valid"
+      },
+      {
+        "id": "F55e8f952d4",
+        "rule": "R17",
+        "reason": "A specific, first-person AI transparency statement is required. The document has none.",
+        "label": "valid"
+      },
+      {
+        "id": "F82a4856453",
+        "rule": "R16",
+        "reason": "'VC server', 'Version Control server' and 'VC Server' are the abbreviation, the full form and a capitalization variant of one term. This is not inconsistent terminology for the same concept.",
+        "label": "invalid"
+      },
+      {
+        "id": "F386ddf67f0",
+        "rule": "R9",
+        "reason": "At least two figures are required, and the proposal has only Figure 1. That central claim holds, although calling Figure 1 a sequence diagram is doubtful: its numbered messages suggest a communication diagram.",
+        "label": "valid"
+      },
+      {
+        "id": "Fbcf1c93bbd",
+        "rule": "R12",
+        "reason": "Several sentences start with forbidden words: 'Since' (abstract and page 3), 'To achieve', 'As a result' and 'As described'.",
+        "label": "valid"
+      },
+      {
+        "id": "Facc8261e29",
+        "rule": "R9",
+        "reason": "At least two figures are required. The proposal contains only Figure 1.",
+        "label": "valid"
+      },
+      {
+        "id": "F37bdbacf44",
+        "rule": "R12",
+        "reason": "The cited sentences start with 'Since', 'To' and 'In order to', which are all forbidden starters.",
+        "label": "valid"
+      },
+      {
+        "id": "F6ace968af7",
+        "rule": "R12",
+        "reason": "The abstract sentence starts with 'Since'.",
+        "label": "valid"
+      },
+      {
+        "id": "F8846864ee0",
+        "rule": null,
+        "reason": "No rule forbids using the first person 'I'.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Ffe95bc9904",
+        "rule": "R10",
+        "reason": "Every figure must be referenced in the text. Figure 1 is never referenced by number; the text only says 'This process is illustrated in section 4.'",
+        "label": "valid"
+      },
+      {
+        "id": "Fa5091252b5",
+        "rule": "R16",
+        "reason": "The prose uses 'CI application', 'CI service' and 'CI server' interchangeably for the same CI component.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd0df7b1e2e",
+        "rule": "R19",
+        "reason": "Work should be split into 2-4 week iterations with measurable, vertically integrated deliverables. The schedule is a list of horizontal component tasks with vague items and gaps.",
+        "label": "valid"
+      },
+      {
+        "id": "Fcf42683d81",
+        "rule": "R7",
+        "reason": "At least 6-8 peer-reviewed publications are required. The bibliography has only five entries, two of which are books.",
+        "label": "valid"
+      },
+      {
+        "id": "F678cf73a89",
+        "rule": "R4",
+        "reason": "The Problem section must tie negative consequences to identified actors. Apart from 'smaller universities', consequences such as 'nearly impossible' in large courses are not attributed to any named actor.",
+        "label": "valid"
+      },
+      {
+        "id": "F150a9794bf",
+        "rule": "R19",
+        "reason": "Deliverables must be measurable. Items such as 'Models', 'Requirements' and 'Implement improvements' are vague.",
+        "label": "valid"
+      },
+      {
+        "id": "F5d5dabf26f",
+        "rule": "R1",
+        "reason": "An Objective section is required. Section 4 is 'System Requirements and Top Level Design' and has no objectives. The third quote does not occur in the document, but the central claim holds.",
+        "label": "valid"
+      },
+      {
+        "id": "F79d3327e75",
+        "rule": "R16",
+        "reason": "The document alternates among 'CI server', 'CI service', 'CI application' and 'CI system' for the same concept.",
+        "label": "valid"
+      },
+      {
+        "id": "F7775b31f02",
+        "rule": "R9",
+        "reason": "Figure 1 has numbered messages between actors, which resembles a UML communication diagram. The claim that it is not UML is not supported.",
+        "label": "invalid"
+      },
+      {
+        "id": "Ffeb657628a",
+        "rule": "R20",
+        "reason": "The schedule must not include documentation or thesis-writing tasks. It lists installation documentation, 'Writing' and 'Thesis'.",
+        "label": "valid"
+      },
+      {
+        "id": "F6faff9c889",
+        "rule": "R4",
+        "reason": "The Problem section lists consequences without clearly naming the affected actors; for example, the build-plan update problem is not attributed to instructors.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd269ddfbde",
+        "rule": "R20",
+        "reason": "A requirements task must not appear in the schedule. June lists 'Requirements' as a work item.",
+        "label": "valid"
+      },
+      {
+        "id": "Fde2261d3e7",
+        "rule": "R1",
+        "reason": "The required Objective section with subsections is missing.",
+        "label": "valid"
+      },
+      {
+        "id": "Fa5d4da21a8",
+        "rule": "R9",
+        "reason": "The finding claims Figure 1 is a sequence diagram, but its numbered messages between actors indicate a communication diagram. Nothing in the text shows lifelines.",
+        "label": "invalid"
+      },
+      {
+        "id": "F242823ce66",
+        "rule": "R17",
+        "reason": "An AI transparency statement is required. The document has none.",
+        "label": "valid"
+      },
+      {
+        "id": "F3d85839c6f",
+        "rule": "R3",
+        "reason": "There is no Objective section with an intro, a bullet list of 3-4 objectives and one subsection per objective; Section 4 covers system requirements instead.",
+        "label": "valid"
+      },
+      {
+        "id": "Ff63604dc62",
+        "rule": "R11",
+        "reason": "Transition words such as 'Furthermore', 'Additionally' and 'In addition' connect ideas and are not filler words. The rule does not limit their use.",
+        "label": "invalid"
+      },
+      {
+        "id": "F79357ec02e",
+        "rule": "R9",
+        "reason": "At least two figures are required. Only one figure is present.",
+        "label": "valid"
+      },
+      {
+        "id": "F364c6eb363",
+        "rule": "R20",
+        "reason": "The schedule contains a 'Requirements' task in June.",
+        "label": "valid"
+      },
+      {
+        "id": "F3679bf5e41",
+        "rule": "R16",
+        "reason": "'CI server', 'CI service' and 'CI system' are used interchangeably for the same component.",
+        "label": "valid"
+      },
+      {
+        "id": "F2cf19f2a1b",
+        "rule": "R11",
+        "reason": "Active voice is required. The document uses passive constructions such as 'should be migrated', 'is copied', 'are not patched' and 'can be made available'.",
+        "label": "valid"
+      },
+      {
+        "id": "F5bad2bbab8",
+        "rule": null,
+        "reason": "No rule forbids using the first person 'I'.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Fd94cbc6e88",
+        "rule": "R11",
+        "reason": "Connectives such as 'Additionally' and 'Furthermore' are not filler words, and the counts the finding gives are also inaccurate.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fc90b40f808",
+        "rule": "R20",
+        "reason": "The schedule includes a documentation task in the 2nd week of September.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc6d24b1c2a",
+        "rule": "R20",
+        "reason": "The schedule contains a 'Requirements' item and a documentation task, both forbidden by R20.",
+        "label": "valid"
+      },
+      {
+        "id": "F6f7e4daa7a",
+        "rule": "R10",
+        "reason": "Figure 1 is never referenced by number in the text.",
+        "label": "valid"
+      }
+    ]
+  },
+  "costUsd": 0.2665668,
+  "durationMs": 41376,
+  "model": "claude-opus-5-5[1m]"
+}

@@ -1,0 +1,15 @@
+{
+  "assessment" : "NEEDS_WORK",
+  "score" : 45,
+  "summary" : "The proposal includes all required sections, a sufficient bibliography, and proper AI transparency statement, but it far exceeds the permitted page limit, making it unsuitable for submission in its current form.",
+  "findings" : [ {
+    "severity" : "CRITICAL",
+    "category" : "structure",
+    "title" : "Proposal exceeds allowed page count",
+    "description" : "The document spans 12 pages of text, which is significantly longer than the maximum allowed length of 4-6 pages for the proposal.",
+    "locations" : [ {
+      "page" : 12,
+      "quote" : "=== PAGE 12 ==="
+    } ]
+  } ]
+}

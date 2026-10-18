@@ -1,0 +1,11 @@
+{
+  "strategy" : "AgenticReviewer",
+  "llmCalls" : 28,
+  "toolCalls" : 28,
+  "callDepth" : 28,
+  "promptTokens" : 427243,
+  "completionTokens" : 5037,
+  "categoriesCovered" : 9,
+  "categoriesTotal" : 9,
+  "wallMillis" : 65047
+}

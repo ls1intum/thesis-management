@@ -1,0 +1,203 @@
+{
+  "categories" : [ {
+    "category" : "STRUCTURE",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "PROBLEM_MOTIVATION_OBJECTIVES",
+    "generated" : [ {
+      "severity" : "MINOR",
+      "category" : "STRUCTURE",
+      "title" : "Problem section includes a workaround",
+      "description" : "The Problem section introduces an existing workaround/alternative, although this section should describe only the problem and its negative consequences. Remove the workaround as a proposed or alternative approach, or recast it solely as a consequence of the underlying access-management problem.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "The **common workaround hands maintainers full administrative rights**, which violates the principle of least privilege [SS75] and exposes every user and every host to a mistake made for a single project."
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MINOR",
+      "category" : "STRUCTURE",
+      "title" : "Problem section includes a workaround",
+      "description" : "The Problem section introduces an existing workaround/alternative, although this section should describe only the problem and its negative consequences. Remove the workaround as a proposed or alternative approach, or recast it solely as a consequence of the underlying access-management problem.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "The **common workaround hands maintainers full administrative rights**, which violates the principle of least privilege [SS75] and exposes every user and every host to a mistake made for a single project."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "BIBLIOGRAPHY",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "FIGURES",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STYLE",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Excessive use of first-person singular",
+      "description" : "The proposal repeatedly uses first-person singular constructions, although the guidelines advise avoiding “I.” Recast these sentences with the thesis, platform, implementation, or evaluation as the subject; for example, write “This thesis develops...” or “The implementation evaluates...” rather than “I develop...” or “I evaluate....”",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "**In this thesis, I develop** a self-service platform on which every grant carries an expiry date from the moment somebody requests it."
+      }, {
+        "page" : 4,
+        "section" : "Objective",
+        "quote" : "**In this thesis, I develop** a self-service platform on which requesters ask for time-limited access, maintainers decide, and access ends on its own;"
+      }, {
+        "page" : 6,
+        "section" : "Unify Heterogeneous Resources in One Tree",
+        "quote" : "**I implement** the keycloak-group, slack-channel, github-team, and webhook connectors"
+      }, {
+        "page" : 7,
+        "section" : "Enforce an Expiry Date on Every Grant",
+        "quote" : "**I evaluate** correctness with an automated scenario that provisions SSH, Slack, and GitHub access from one approval."
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "**I deliver** the Keycloak realm with OpenID Connect login, SSH key self-service, and the resource tree with inherited maintainers."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Reduced passive constructions omit actors",
+      "description" : "Several clauses use reduced passive constructions that omit the actor. Identify who performs each action and use an active formulation, such as “the chair grants access for one project,” “the connectors bind leaves to target systems,” and “I write the webhook connector after freezing the framework.”",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "and **access granted for one project** outlives the time a person spends at the chair."
+      }, {
+        "page" : 5,
+        "section" : "Unify Heterogeneous Resources in One Tree",
+        "quote" : "I model the resources as a tree whose folders pass maintainership, audit policy, and grants down to **leaves bound to target systems**"
+      }, {
+        "page" : 6,
+        "section" : "Unify Heterogeneous Resources in One Tree",
+        "quote" : "I reach this objective when the webhook connector, **written after I freeze the framework**, needs one new class and one registry entry."
+      } ]
+    } ],
+    "ungrounded" : [ {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Excessive use of first-person singular",
+      "description" : "The proposal repeatedly uses first-person singular constructions, although the guidelines advise avoiding “I.” Recast these sentences with the thesis, platform, implementation, or evaluation as the subject; for example, write “This thesis develops...” or “The implementation evaluates...” rather than “I develop...” or “I evaluate....”",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "**In this thesis, I develop** a self-service platform on which every grant carries an expiry date from the moment somebody requests it."
+      }, {
+        "page" : 4,
+        "section" : "Objective",
+        "quote" : "**In this thesis, I develop** a self-service platform on which requesters ask for time-limited access, maintainers decide, and access ends on its own;"
+      }, {
+        "page" : 6,
+        "section" : "Unify Heterogeneous Resources in One Tree",
+        "quote" : "**I implement** the keycloak-group, slack-channel, github-team, and webhook connectors"
+      }, {
+        "page" : 7,
+        "section" : "Enforce an Expiry Date on Every Grant",
+        "quote" : "**I evaluate** correctness with an automated scenario that provisions SSH, Slack, and GitHub access from one approval."
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "**I deliver** the Keycloak realm with OpenID Connect login, SSH key self-service, and the resource tree with inherited maintainers."
+      } ]
+    } ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Reduced passive constructions omit actors",
+      "description" : "Several clauses use reduced passive constructions that omit the actor. Identify who performs each action and use an active formulation, such as “the chair grants access for one project,” “the connectors bind leaves to target systems,” and “I write the webhook connector after freezing the framework.”",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "and **access granted for one project** outlives the time a person spends at the chair."
+      }, {
+        "page" : 5,
+        "section" : "Unify Heterogeneous Resources in One Tree",
+        "quote" : "I model the resources as a tree whose folders pass maintainership, audit policy, and grants down to **leaves bound to target systems**"
+      }, {
+        "page" : 6,
+        "section" : "Unify Heterogeneous Resources in One Tree",
+        "quote" : "I reach this objective when the webhook connector, **written after I freeze the framework**, needs one new class and one registry entry."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STRUCTURE",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_FORMATTING",
+    "generated" : [ {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Use Consistent Terminology for the Platform",
+      "description" : "The proposal uses both “self-service platform” and “access management platform” for the same system. Choose one canonical term and use it consistently throughout the author’s prose, or explicitly define the relationship between the two terms.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "In this thesis, I develop a **self-service platform** on which every grant carries an expiry date from the moment somebody requests it."
+      }, {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "Figure 1: UML use case diagram of the **access management platform**."
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Use Consistent Terminology for the Platform",
+      "description" : "The proposal uses both “self-service platform” and “access management platform” for the same system. Choose one canonical term and use it consistently throughout the author’s prose, or explicitly define the relationship between the two terms.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "In this thesis, I develop a **self-service platform** on which every grant carries an expiry date from the moment somebody requests it."
+      }, {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "Figure 1: UML use case diagram of the **access management platform**."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "AI_TRANSPARENCY",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "SCHEDULE",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  } ],
+  "categoryFailures" : { }
+}

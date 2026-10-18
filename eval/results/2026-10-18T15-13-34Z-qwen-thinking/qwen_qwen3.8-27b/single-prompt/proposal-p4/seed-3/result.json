@@ -1,0 +1,126 @@
+{
+  "assessment" : "NEEDS_WORK",
+  "score" : 47,
+  "summary" : "The proposal presents a well-structured and technically coherent research topic on time-limited access management, with clear objectives, two appropriate UML diagrams, and a solid bibliography of 12 peer-reviewed sources. However, it is missing the mandatory Abstract section (critical), the Problem section inappropriately proposes a solution, and several explicit rule violations exist: a double-verb objective, vendor documentation in the bibliography, a non-compliant AI transparency statement (missing review confirmation), excessive first-person 'I' usage, and a thesis-writing task in the schedule. These issues are all fixable with targeted edits.",
+  "findings" : [ {
+    "severity" : "CRITICAL",
+    "category" : "structure",
+    "title" : "Missing Abstract section",
+    "description" : "The proposal does not contain an Abstract section. The guidelines require an Abstract of 1/3 to 1/2 page as a mandatory section. The document jumps from the title page directly into Section 1 (Introduction). Add an Abstract summarising the problem, approach, and expected contribution.",
+    "locations" : [ {
+      "page" : 1
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "logic",
+    "title" : "Problem section presents a solution",
+    "description" : "The Problem section must describe only problems and their negative consequences, not propose solutions. The sentence 'A self-service platform that arms the workflow engine of Keycloak with an expiry date at grant time would end this accumulation' introduces the proposed solution. Remove this sentence from the Problem section; the solution belongs in the Motivation or Objectives.",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "Problem",
+      "quote" : "A self-service platform that **arms the workfow engine of Keycloak with an expiry date at grant time would end this accumulation**."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "logic",
+    "title" : "Double verb in objective formulation",
+    "description" : "The objective 'Design and implement connectors with expiry' uses two verbs. The guidelines require one verb per objective. Choose a single action verb (e.g., 'Implement connectors with expiry' or 'Build connectors with expiry') and update both the bullet list and the subsection heading 4.2 accordingly.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Objective",
+      "quote" : "**Design and implement** connectors with expiry"
+    }, {
+      "page" : 5,
+      "section" : "Objective",
+      "quote" : "4.2 **Design and Implement** Connectors with Expiry"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "citation",
+    "title" : "Non-peer-reviewed documentation in bibliography",
+    "description" : "Entry [Key26] ('Keycloak Server Administration Guide') is vendor documentation, not a peer-reviewed publication. The bibliography must contain only scientific publications. Move this reference to a footnote in the text where it is cited (Section 1.2) and remove it from the Bibliography section.",
+    "locations" : [ {
+      "page" : 8,
+      "section" : "Bibliography",
+      "quote" : "[Key26] Keycloak Authors, \"Keycloak Server Administration Guide.\" Accessed: Oct. 18, 2026. [Online]. Available: https://www.keycloak.org/docs/latest/server_admin/"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "completeness",
+    "title" : "AI Transparency Statement missing review confirmation",
+    "description" : "The transparency statement must include a sentence confirming the author has carefully checked all AI-generated text (e.g., 'I have carefully checked all texts created with these tools to ensure that they are correct and make sense.'). Add this sentence after the table.",
+    "locations" : [ {
+      "page" : 10,
+      "section" : "Transparency in the Use of AI Tools",
+      "quote" : "I used the following generative artificial intelligence (AI) tool while preparing this proposal. The level refers to the six-level taxonomy of generative AI use in writing by Uçan and Demirel Uçan [UD26]."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "writing",
+    "title" : "Excessive use of first-person 'I'",
+    "description" : "The guidelines state to avoid 'I'. The student uses 'I' approximately 14 times across Sections 4 and 5 (e.g., 'I will build', 'I will replace', 'I will store', 'I divide it into iterations'). Replace with 'we' (sparingly, for the thesis approach) or restructure sentences to use the platform/system as the subject (e.g., 'The platform will be built on…', 'The resource tree will replace…').",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Objective",
+      "quote" : "**I will build** a platform on which any member of the chair requests time-limited access to any resource."
+    }, {
+      "page" : 5,
+      "section" : "Objective",
+      "quote" : "**I will replace** the flat list of hosts and channels with a resource tree."
+    }, {
+      "page" : 7,
+      "section" : "Schedule",
+      "quote" : "and **I divide** it into iterations of two to four weeks."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "methodology",
+    "title" : "Schedule includes thesis-writing task",
+    "description" : "Iteration 7 ('Write the thesis and prepare the final presentation') must be removed. The schedule should focus exclusively on development/research work. Thesis writing and presentation preparation are not part of the iterative development plan.",
+    "locations" : [ {
+      "page" : 7,
+      "section" : "Schedule",
+      "quote" : "Iteration 7 (18–31 March): **Write the thesis and prepare the final presentation.**"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "citation",
+    "title" : "Citation placed after the full stop",
+    "description" : "In the Motivation section, the citation [BBF01] appears after the period: 'their temporal model. [BBF01]'. Citations must be placed before the full stop: 'their temporal model [BBF01].'",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "Motivation",
+      "quote" : "Bertino et al. attach enabling and disabling events to roles in their temporal model**.** **[BBF01]**"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "figures",
+    "title" : "Figure 2 caption is too short and generic",
+    "description" : "The caption 'Figure 2: System Architecture' is a single phrase and does not describe the diagram's content. Expand it to an informative sentence describing the components shown (mgmt-ui, mgmt-api, Keycloak, ldap-bridge, Slack, GitHub, Linux host) and how they interact, similar to the detailed caption of Figure 1.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Objective",
+      "quote" : "Figure 2: **System Architecture**"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Contraction used in Problem section",
+    "description" : "The text uses the contraction 'doesn't' which is not allowed in academic writing. Replace with 'does not'.",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "Problem",
+      "quote" : "The current process **doesn't** scale and is the worst bottleneck of the chair."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "structure",
+    "title" : "Section 1 lacks introductory text before first subsection",
+    "description" : "Section 1 (Introduction) jumps directly into subsection 1.1 (Setting) without any introductory paragraph. Every section must include at least one or two sentences of introductory text before its first subsection. Add a brief introductory sentence or two before '1.1 Setting'.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Introduction",
+      "quote" : "1 Introduction\n\n1.1 Setting"
+    } ]
+  } ]
+}

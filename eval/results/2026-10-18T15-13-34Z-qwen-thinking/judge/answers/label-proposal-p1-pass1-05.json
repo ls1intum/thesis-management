@@ -1,0 +1,250 @@
+{
+  "job": "label-proposal-p1-pass1-05",
+  "answer": {
+    "judgements": [
+      {
+        "id": "Fd994d568ac",
+        "rule": "R7",
+        "reason": "At least 6-8 peer-reviewed publications are required; the bibliography lists only five entries.",
+        "label": "valid"
+      },
+      {
+        "id": "F3a2d9317e0",
+        "rule": "R11",
+        "reason": "R11 forbids filler words; 'very cumbersome' is a filler intensifier in the document, though transition words like 'Furthermore' are not really filler.",
+        "label": "valid"
+      },
+      {
+        "id": "F37ce8e9c2b",
+        "rule": "R10",
+        "reason": "Every figure must be referenced in the text; the text only refers to 'section 4' and never to Figure 1.",
+        "label": "valid"
+      },
+      {
+        "id": "Fedc7949c15",
+        "rule": "R20",
+        "reason": "Requirements tasks are not allowed in the schedule; June lists '4th week: Requirements'.",
+        "label": "valid"
+      },
+      {
+        "id": "Fba5afa9abd",
+        "rule": null,
+        "reason": "No rule forbids first-person singular.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F76767058d0",
+        "rule": "R9",
+        "reason": "At least one suitable UML diagram is required; the only figure is an informal workflow depiction, not identified as a UML diagram.",
+        "label": "valid"
+      },
+      {
+        "id": "F6c78f459ce",
+        "rule": "R20",
+        "reason": "Thesis-writing and documentation tasks are forbidden; the schedule contains 'Documentation...', 'Writing', 'Thesis ready for review', 'Thesis'.",
+        "label": "valid"
+      },
+      {
+        "id": "F8f31ff7de0",
+        "rule": "R1",
+        "reason": "An Introduction section is required; the document goes from Abstract directly to 'Problem Statement'.",
+        "label": "valid"
+      },
+      {
+        "id": "F8a017b8751",
+        "rule": "R12",
+        "reason": "Abbreviations must be defined before use; 'API' is never defined.",
+        "label": "valid"
+      },
+      {
+        "id": "Ff63604dc62",
+        "rule": "R11",
+        "reason": "Transition words such as 'Furthermore' and 'In addition' carry logical function and are not filler words; the cited passages do not show the claimed breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "F6c2bace195",
+        "rule": "R19",
+        "reason": "Work must be divided into 2-4 week iterations; the schedule is listed by month with isolated week entries.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc81712ac80",
+        "rule": "R1",
+        "reason": "An Objective section with subsections is required; none exists (only 'System Requirements' and 'Expected Findings').",
+        "label": "valid"
+      },
+      {
+        "id": "F86d35aed9f",
+        "rule": "R4",
+        "reason": "The Problem section does name actors (students, instructor, smaller universities, large courses) and consequences, so the claim does not hold.",
+        "label": "invalid"
+      },
+      {
+        "id": "F492fe0a8a5",
+        "rule": "R19",
+        "reason": "Deliverables must be vertically integrated; the schedule splits work by technical layer (runner config, connectivity, API, results, models).",
+        "label": "valid"
+      },
+      {
+        "id": "F40bdfcc56c",
+        "rule": "R11",
+        "reason": "The cited 'Additionally' and 'Furthermore' are transition words, not filler words; the cited locations do not show a breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "F1284861a5e",
+        "rule": "R4",
+        "reason": "The section identifies actors (students, instructor, smaller universities) and negative consequences; requiring all stakeholders explicitly goes beyond the rule.",
+        "label": "invalid"
+      },
+      {
+        "id": "F9dd688b5c5",
+        "rule": "R13",
+        "reason": "Prose is required outside schedule and objective lists; Section 4 relies on a 14-item numbered list. The figure location is wrong but the main claim holds.",
+        "label": "valid"
+      },
+      {
+        "id": "Feab5b48f2b",
+        "rule": "R4",
+        "reason": "The Problem section does mention students, instructors and smaller universities and consequences for them.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fd790b6510a",
+        "rule": "R1",
+        "reason": "Required Introduction section is absent.",
+        "label": "valid"
+      },
+      {
+        "id": "F79d3327e75",
+        "rule": "R16",
+        "reason": "The same concept is called CI server, CI service, CI application, and CI system interchangeably.",
+        "label": "valid"
+      },
+      {
+        "id": "F3339a48bd0",
+        "rule": "R10",
+        "reason": "Captions must be long and informative; Figure 1 has a one-line generic caption.",
+        "label": "valid"
+      },
+      {
+        "id": "F8d0041f159",
+        "rule": "R9",
+        "reason": "At least two figures are required; only Figure 1 exists.",
+        "label": "valid"
+      },
+      {
+        "id": "F6fd3f68783",
+        "rule": "R12",
+        "reason": "Sentences start with 'Since' (Abstract, page 3) and 'To' (page 2).",
+        "label": "valid"
+      },
+      {
+        "id": "F6dc2035a7e",
+        "rule": "R11",
+        "reason": "Active voice is required; cited passives like 'should be migrated', 'must be updated manually' occur.",
+        "label": "valid"
+      },
+      {
+        "id": "F35ebd9fe39",
+        "rule": "R1",
+        "reason": "No Motivation section exists.",
+        "label": "valid"
+      },
+      {
+        "id": "Ff9b79b5cab",
+        "rule": "R19",
+        "reason": "The schedule is month-based with no 2-4 week iterations or vertically integrated deliverables.",
+        "label": "valid"
+      },
+      {
+        "id": "Fdbee968b00",
+        "rule": "R13",
+        "reason": "Paragraphs should be 5-8 lines; the cited paragraphs are one-sentence, 1-2 line paragraphs.",
+        "label": "valid"
+      },
+      {
+        "id": "F7df82901e3",
+        "rule": "R12",
+        "reason": "Sentences start with 'Since' (Abstract, Related Work) and 'As' ('As a result...').",
+        "label": "valid"
+      },
+      {
+        "id": "F0a8067975c",
+        "rule": "R17",
+        "reason": "No AI transparency statement appears in the document.",
+        "label": "valid"
+      },
+      {
+        "id": "Fbb971a52d2",
+        "rule": "R20",
+        "reason": "Schedule includes a 'Requirements' task in June.",
+        "label": "valid"
+      },
+      {
+        "id": "F46fb68f112",
+        "rule": "R16",
+        "reason": "The term is written 'CI Server' once and 'CI server' elsewhere, an inconsistency in the same term.",
+        "label": "valid"
+      },
+      {
+        "id": "F52de267f37",
+        "rule": "R10",
+        "reason": "Figure 1 is never referenced by name; only 'section 4' is referenced.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb9d2ddbb03",
+        "rule": "R12",
+        "reason": "'API' is used without definition.",
+        "label": "valid"
+      },
+      {
+        "id": "F2ca5baada8",
+        "rule": null,
+        "reason": "Typos/duplicated words are not covered by any rule.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Fd724b1b57a",
+        "rule": "R1",
+        "reason": "Introduction section is missing; Abstract leads directly to Problem Statement.",
+        "label": "valid"
+      },
+      {
+        "id": "Fca7b988e3e",
+        "rule": "R3",
+        "reason": "No Objective section with intro, bullet list of 3-4 objectives, and subsections exists.",
+        "label": "valid"
+      },
+      {
+        "id": "Fdd39da102f",
+        "rule": "R13",
+        "reason": "The workflow section relies on a long numbered list with only one-line prose paragraphs.",
+        "label": "valid"
+      },
+      {
+        "id": "F8e7792e44a",
+        "rule": "R1",
+        "reason": "Introduction, Motivation, and Objective sections are absent.",
+        "label": "valid"
+      },
+      {
+        "id": "F5b8b68838f",
+        "rule": "R10",
+        "reason": "Figure 1 is not referenced in the text.",
+        "label": "valid"
+      },
+      {
+        "id": "F556379368e",
+        "rule": "R11",
+        "reason": "'Furthermore' and 'additional' are transition/meaningful words, not filler; no breach shown.",
+        "label": "invalid"
+      }
+    ]
+  },
+  "costUsd": 0.2724428,
+  "durationMs": 43736,
+  "model": "claude-opus-5-5[1m]"
+}

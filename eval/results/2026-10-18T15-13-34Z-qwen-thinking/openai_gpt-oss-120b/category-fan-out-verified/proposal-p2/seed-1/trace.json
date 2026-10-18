@@ -1,0 +1,437 @@
+{
+  "categories" : [ {
+    "category" : "STRUCTURE",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Objective subsection 4.1 lacks required length",
+      "description" : "Subsection 4.1 must contain at least two paragraphs, but only one paragraph is present.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "**4.1 Generate Feedback Based on Guidelines**\nSupervisors should be able to provide their own scientific writing guidelines as well as conventions on the style of theses and proposals. Based on these guidelines, the LLM can provide formative feedback that is restricted to the aspects they cover."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "COMPLETENESS",
+      "title" : "Proposal exceeds maximum page count",
+      "description" : "The proposal spans 12 pages, exceeding the allowed 4‑6 pages of text.",
+      "locations" : [ {
+        "quote" : "The document contains **12** pages of content."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "STRUCTURE",
+      "title" : "Abstract exceeds allowed length",
+      "description" : "The abstract appears longer than half a page, exceeding the 1/3‑1/2 page guideline.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "**Supervisors of theses spend considerable time on non-content-related feedback** such as document structure, coherence, and linguistic accuracy. Much of this feedback is repetitive across students and disciplines, draining supervisors and leaving less capacity for substantive research discussions."
+      } ]
+    } ],
+    "ungrounded" : [ {
+      "severity" : "MAJOR",
+      "category" : "COMPLETENESS",
+      "title" : "Proposal exceeds maximum page count",
+      "description" : "The proposal spans 12 pages, exceeding the allowed 4‑6 pages of text.",
+      "locations" : [ {
+        "quote" : "The document contains **12** pages of content."
+      } ]
+    } ],
+    "rejected" : [ {
+      "finding" : {
+        "severity" : "MINOR",
+        "category" : "STRUCTURE",
+        "title" : "Abstract exceeds allowed length",
+        "description" : "The abstract appears longer than half a page, exceeding the 1/3‑1/2 page guideline.",
+        "locations" : [ {
+          "page" : 2,
+          "section" : "Abstract",
+          "quote" : "**Supervisors of theses spend considerable time on non-content-related feedback** such as document structure, coherence, and linguistic accuracy. Much of this feedback is repetitive across students and disciplines, draining supervisors and leaving less capacity for substantive research discussions."
+        } ]
+      },
+      "reason" : "Quoted text does not demonstrate that the abstract exceeds the length limit."
+    } ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Objective subsection 4.1 lacks required length",
+      "description" : "Subsection 4.1 must contain at least two paragraphs, but only one paragraph is present.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "**4.1 Generate Feedback Based on Guidelines**\nSupervisors should be able to provide their own scientific writing guidelines as well as conventions on the style of theses and proposals. Based on these guidelines, the LLM can provide formative feedback that is restricted to the aspects they cover."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "PROBLEM_MOTIVATION_OBJECTIVES",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "LOGIC",
+      "title" : "Motivation repeats problem description",
+      "description" : "The Motivation section repeats problem statements, describing the draining effect on supervisors, which should be avoided.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Motivation",
+        "quote" : "This Reviewer covers exactly the repetitive, non-content-related layer of feedback that **currently drains supervisors**, freeing them to focus on ..."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "COMPLETENESS",
+      "title" : "Objective 4.1 lacks required length",
+      "description" : "Objective subsection 4.1 contains only a single paragraph; each objective subsection must be at least two paragraphs long.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "4.1 Generate Feedback Based on Guidelines",
+        "quote" : "**Supervisors should be able to provide their own scientifc writing guidelines as well as conventions on the style of theses and proposals.** Based on these guidelines, the LLM can provide formative feedback that is restricted to the aspects they cover. Since guidelines may not already be in a suitable format, the LLM may first need to preprocess them into a structured representation it can act on."
+      } ]
+    } ],
+    "ungrounded" : [ {
+      "severity" : "MAJOR",
+      "category" : "LOGIC",
+      "title" : "Motivation repeats problem description",
+      "description" : "The Motivation section repeats problem statements, describing the draining effect on supervisors, which should be avoided.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Motivation",
+        "quote" : "This Reviewer covers exactly the repetitive, non-content-related layer of feedback that **currently drains supervisors**, freeing them to focus on ..."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "COMPLETENESS",
+      "title" : "Objective 4.1 lacks required length",
+      "description" : "Objective subsection 4.1 contains only a single paragraph; each objective subsection must be at least two paragraphs long.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "4.1 Generate Feedback Based on Guidelines",
+        "quote" : "**Supervisors should be able to provide their own scientifc writing guidelines as well as conventions on the style of theses and proposals.** Based on these guidelines, the LLM can provide formative feedback that is restricted to the aspects they cover. Since guidelines may not already be in a suitable format, the LLM may first need to preprocess them into a structured representation it can act on."
+      } ]
+    } ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "BIBLIOGRAPHY",
+    "generated" : [ {
+      "severity" : "CRITICAL",
+      "category" : "COMPLETENESS",
+      "title" : "Insufficient bibliography entries",
+      "description" : "The bibliography contains only 5 references, but the guidelines require at least 6-8 peer-reviewed publications.",
+      "locations" : [ {
+        "page" : 11,
+        "section" : "Bibliography",
+        "quote" : "**[TP21] T. Tuononen and A. Parpala, … 2021, doi: 10.1016/j.stueduc.2021.101001.\n[AAM17] P. Ashwin, A. Abbas, and M. McLean, … 2017, doi: 10.1080/02602938.2016.1154501.\n[BBE10] J. Bitchener, H. Basturkmen, and M. East, … 2010.\n[Bog+07] M. Bogo, C. Regehr, R. Power, and G. Regehr, … 2007, doi: 10.1300/J001v26n01_08.\n[NM06] D. J. Nicol and D. Macfarlane-Dick, … 2006, doi: 10.1080/03075070600572090.**"
+      } ]
+    } ],
+    "ungrounded" : [ {
+      "severity" : "CRITICAL",
+      "category" : "COMPLETENESS",
+      "title" : "Insufficient bibliography entries",
+      "description" : "The bibliography contains only 5 references, but the guidelines require at least 6-8 peer-reviewed publications.",
+      "locations" : [ {
+        "page" : 11,
+        "section" : "Bibliography",
+        "quote" : "**[TP21] T. Tuononen and A. Parpala, … 2021, doi: 10.1016/j.stueduc.2021.101001.\n[AAM17] P. Ashwin, A. Abbas, and M. McLean, … 2017, doi: 10.1080/02602938.2016.1154501.\n[BBE10] J. Bitchener, H. Basturkmen, and M. East, … 2010.\n[Bog+07] M. Bogo, C. Regehr, R. Power, and G. Regehr, … 2007, doi: 10.1300/J001v26n01_08.\n[NM06] D. J. Nicol and D. Macfarlane-Dick, … 2006, doi: 10.1080/03075070600572090.**"
+      } ]
+    } ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "FIGURES",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STYLE",
+    "generated" : [ {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Passive voice usage",
+      "description" : "Passive voice used; should be rewritten in active voice.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Motivation",
+        "quote" : "**Because** the feedback tool **is powered** by LLMs, students can obtain instant formative feedback at any point during the writing process."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Use of filler word 'Moreover'",
+      "description" : "Filler word 'Moreover' used; avoid unnecessary filler words.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "**Moreover**, the time spent on repetitive feedback leaves less time for what matters most."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Forbidden sentence starter 'As'",
+      "description" : "Sentence starts with prohibited word 'As'. Rewrite to avoid.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Motivation",
+        "quote" : "**As** Figure 1 illustrates, an LLM‑powered Reviewer works alongside the supervisor."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Forbidden sentence starter 'Since'",
+      "description" : "Sentence starts with prohibited word 'Since'.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "**Since** guidelines may not already be in a suitable format, the LLM may first need to preprocess them."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Forbidden sentence starter 'Because'",
+      "description" : "Sentence starts with prohibited word 'Because'.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Motivation",
+        "quote" : "**Because** the feedback tool is powered by LLMs, students can obtain instant formative feedback at any point during the writing process."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Undefined abbreviation 'AI'",
+      "description" : "Abbreviation 'AI' used without prior definition.",
+      "locations" : [ {
+        "page" : 12,
+        "section" : "Transparency",
+        "quote" : "In preparing this proposal, I made use of several **AI**‑based tools across different stages of the writing process."
+      } ]
+    } ],
+    "ungrounded" : [ {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Use of filler word 'Moreover'",
+      "description" : "Filler word 'Moreover' used; avoid unnecessary filler words.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "**Moreover**, the time spent on repetitive feedback leaves less time for what matters most."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Forbidden sentence starter 'As'",
+      "description" : "Sentence starts with prohibited word 'As'. Rewrite to avoid.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Motivation",
+        "quote" : "**As** Figure 1 illustrates, an LLM‑powered Reviewer works alongside the supervisor."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Forbidden sentence starter 'Since'",
+      "description" : "Sentence starts with prohibited word 'Since'.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "**Since** guidelines may not already be in a suitable format, the LLM may first need to preprocess them."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Undefined abbreviation 'AI'",
+      "description" : "Abbreviation 'AI' used without prior definition.",
+      "locations" : [ {
+        "page" : 12,
+        "section" : "Transparency",
+        "quote" : "In preparing this proposal, I made use of several **AI**‑based tools across different stages of the writing process."
+      } ]
+    } ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Passive voice usage",
+      "description" : "Passive voice used; should be rewritten in active voice.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Motivation",
+        "quote" : "**Because** the feedback tool **is powered** by LLMs, students can obtain instant formative feedback at any point during the writing process."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Forbidden sentence starter 'Because'",
+      "description" : "Sentence starts with prohibited word 'Because'.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Motivation",
+        "quote" : "**Because** the feedback tool is powered by LLMs, students can obtain instant formative feedback at any point during the writing process."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STRUCTURE",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Paragraphs too short (1–2 lines)",
+      "description" : "Paragraphs should be 5–8 lines long. The following paragraphs consist of only a single line, violating the length requirement.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Motivation",
+        "quote" : "**While the problem is less severe for students, they still experience its consequences.**"
+      }, {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "**The scope of the thesis is to fulfil the following goals:**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Paragraph contains multiple ideas",
+      "description" : "A paragraph should develop a single coherent idea. The abstract paragraph mixes several distinct ideas (problem description, proposed solution, evaluation approach, and integration details) in one long block.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "**Supervisors of theses spend considerable time on non-content-related feedback such as document structure, coherence, and linguistic accuracy. Much of this feedback is repetitive across students and disciplines, draining supervisors and leaving less capacity for substantive research discussions. For students, it translates into slower feedback turnaround. This thesis explores how large language models (LLMs) can generate formative feedback on theses and proposals based on supervisor-provided writing guidelines. Beyond a single draft, the tool also compares iterations to highlight improvements and surface persistent issues with more explanatory feedback. We evaluate single-prompt, prompt-chaining, and agentic setups, and assess trade-offs between local and cloud hosting. The tool integrates into Thesis Management, the thesis-lifecycle portal used by around 50 research groups at the Technical University of Munich, so supervisors can generate, revise, and publish feedback within their workflow.**"
+      } ]
+    }, {
+      "severity" : "CRITICAL",
+      "category" : "STRUCTURE",
+      "title" : "Section missing introductory text before first subsection",
+      "description" : "Each section must contain introductory prose before its first subsection. Section 4 \"Objective\" jumps directly from the heading to the first subsection (4.1) without any introductory paragraph.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "**4  Objective**"
+      } ]
+    } ],
+    "ungrounded" : [ {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Paragraphs too short (1–2 lines)",
+      "description" : "Paragraphs should be 5–8 lines long. The following paragraphs consist of only a single line, violating the length requirement.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Motivation",
+        "quote" : "**While the problem is less severe for students, they still experience its consequences.**"
+      }, {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "**The scope of the thesis is to fulfil the following goals:**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Paragraph contains multiple ideas",
+      "description" : "A paragraph should develop a single coherent idea. The abstract paragraph mixes several distinct ideas (problem description, proposed solution, evaluation approach, and integration details) in one long block.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "**Supervisors of theses spend considerable time on non-content-related feedback such as document structure, coherence, and linguistic accuracy. Much of this feedback is repetitive across students and disciplines, draining supervisors and leaving less capacity for substantive research discussions. For students, it translates into slower feedback turnaround. This thesis explores how large language models (LLMs) can generate formative feedback on theses and proposals based on supervisor-provided writing guidelines. Beyond a single draft, the tool also compares iterations to highlight improvements and surface persistent issues with more explanatory feedback. We evaluate single-prompt, prompt-chaining, and agentic setups, and assess trade-offs between local and cloud hosting. The tool integrates into Thesis Management, the thesis-lifecycle portal used by around 50 research groups at the Technical University of Munich, so supervisors can generate, revise, and publish feedback within their workflow.**"
+      } ]
+    } ],
+    "rejected" : [ {
+      "finding" : {
+        "severity" : "CRITICAL",
+        "category" : "STRUCTURE",
+        "title" : "Section missing introductory text before first subsection",
+        "description" : "Each section must contain introductory prose before its first subsection. Section 4 \"Objective\" jumps directly from the heading to the first subsection (4.1) without any introductory paragraph.",
+        "locations" : [ {
+          "page" : 5,
+          "section" : "Objective",
+          "quote" : "**4  Objective**"
+        } ]
+      },
+      "reason" : "the quoted evidence does not show the missing introductory text"
+    } ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_FORMATTING",
+    "generated" : [ {
+      "severity" : "MINOR",
+      "category" : "FORMATTING",
+      "title" : "Improper capitalization in heading",
+      "description" : "The heading \"4.4 Integrate With Thesis Management\" capitalizes the preposition \"With\". In title case, short prepositions such as \"with\" should be lower‑cased.",
+      "locations" : [ {
+        "page" : 8,
+        "section" : "4.4 Integrate With Thesis Management",
+        "quote" : "4.4 Integrate **With** Thesis Management"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MINOR",
+      "category" : "FORMATTING",
+      "title" : "Improper capitalization in heading",
+      "description" : "The heading \"4.4 Integrate With Thesis Management\" capitalizes the preposition \"With\". In title case, short prepositions such as \"with\" should be lower‑cased.",
+      "locations" : [ {
+        "page" : 8,
+        "section" : "4.4 Integrate With Thesis Management",
+        "quote" : "4.4 Integrate **With** Thesis Management"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "AI_TRANSPARENCY",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "COMPLETENESS",
+      "title" : "Missing section-specific details in AI transparency statement",
+      "description" : "The AI transparency statement does not specify which sections of the proposal the AI tools were used for, as required by the group guidelines.",
+      "locations" : [ {
+        "page" : 12,
+        "section" : "Transparency in the Use of AI Tools",
+        "quote" : "In preparing this proposal, I made use of several AI-based tools **across different stages of the writing process**."
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "COMPLETENESS",
+      "title" : "Missing section-specific details in AI transparency statement",
+      "description" : "The AI transparency statement does not specify which sections of the proposal the AI tools were used for, as required by the group guidelines.",
+      "locations" : [ {
+        "page" : 12,
+        "section" : "Transparency in the Use of AI Tools",
+        "quote" : "In preparing this proposal, I made use of several AI-based tools **across different stages of the writing process**."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "SCHEDULE",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "OTHER",
+      "title" : "Disallowed Documentation Task in Schedule",
+      "description" : "The schedule includes a documentation writing task, which is prohibited by the schedule rules (no thesis writing, documentation, or presentation preparation tasks).",
+      "locations" : [ {
+        "page" : 10,
+        "section" : "Schedule",
+        "quote" : "•   Documentation"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "OTHER",
+      "title" : "Disallowed Documentation Task in Schedule",
+      "description" : "The schedule includes a documentation writing task, which is prohibited by the schedule rules (no thesis writing, documentation, or presentation preparation tasks).",
+      "locations" : [ {
+        "page" : 10,
+        "section" : "Schedule",
+        "quote" : "•   Documentation"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  } ],
+  "categoryFailures" : { }
+}

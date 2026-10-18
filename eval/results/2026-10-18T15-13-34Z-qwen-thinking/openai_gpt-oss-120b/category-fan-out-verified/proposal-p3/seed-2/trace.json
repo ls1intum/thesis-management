@@ -1,0 +1,323 @@
+{
+  "categories" : [ {
+    "category" : "STRUCTURE",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "COMPLETENESS",
+      "title" : "Proposal exceeds allowed length",
+      "description" : "The main textual content (excluding metadata, figures, tables, and schedule) spans more than six pages, violating the 4–6 page limit for the proposal.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "**Abstract**"
+      }, {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "**2  Problem**"
+      }, {
+        "page" : 4,
+        "section" : "Objective",
+        "quote" : "**4  Objective**"
+      }, {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "**Figure 1:** UML use case diagram of the access management platform."
+      }, {
+        "page" : 6,
+        "section" : "Objective",
+        "quote" : "**Figure 2:** UML object diagram of a small resource tree at the chair."
+      }, {
+        "page" : 8,
+        "section" : "Objective",
+        "quote" : "**4.4 Automate the Recertifcation of Active Grants**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "COMPLETENESS",
+      "title" : "Problem section too long",
+      "description" : "The Problem section exceeds the maximum allowed length of three‑quarters of a page.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "Requesters, such as thesis students and external collaborators, do not know who manages which system. **A student who needs a host, a channel, and a repository asks several people and waits for each of them, and some bridge the delay with a shared login that hides who acted.**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "COMPLETENESS",
+      "title" : "Motivation section too long",
+      "description" : "The Motivation section exceeds the maximum allowed length of three‑quarters of a page.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Motivation",
+        "quote" : "Expiring access reverses the default of an organisation: access lasts until its expiry date unless its holder explains the need for more time. **Requesters describe their project once and receive working access on the same day, maintainers decide about their own resources without privileges over anything else, administrators work through a queue that maintainers have already reviewed, and auditors receive evidence as a by‑product of daily operation.**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Objective subsection 4.1 lacks required paragraphs",
+      "description" : "Subsection 4.1 (Unify Heterogeneous Resources in One Tree) contains fewer than the required two paragraphs.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "4.1 Unify Heterogeneous Resources in One Tree",
+        "quote" : "I model the resources as a tree whose folders pass maintainership, audit policy, and grants down to leaves bound to target systems, as the UML object diagram in Figure 2 shows. **One approval on a folder covers every resource beneath it, including later additions.**"
+      } ]
+    } ],
+    "ungrounded" : [ {
+      "severity" : "MAJOR",
+      "category" : "COMPLETENESS",
+      "title" : "Motivation section too long",
+      "description" : "The Motivation section exceeds the maximum allowed length of three‑quarters of a page.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Motivation",
+        "quote" : "Expiring access reverses the default of an organisation: access lasts until its expiry date unless its holder explains the need for more time. **Requesters describe their project once and receive working access on the same day, maintainers decide about their own resources without privileges over anything else, administrators work through a queue that maintainers have already reviewed, and auditors receive evidence as a by‑product of daily operation.**"
+      } ]
+    } ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "COMPLETENESS",
+      "title" : "Proposal exceeds allowed length",
+      "description" : "The main textual content (excluding metadata, figures, tables, and schedule) spans more than six pages, violating the 4–6 page limit for the proposal.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "**Abstract**"
+      }, {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "**2  Problem**"
+      }, {
+        "page" : 4,
+        "section" : "Objective",
+        "quote" : "**4  Objective**"
+      }, {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "**Figure 1:** UML use case diagram of the access management platform."
+      }, {
+        "page" : 6,
+        "section" : "Objective",
+        "quote" : "**Figure 2:** UML object diagram of a small resource tree at the chair."
+      }, {
+        "page" : 8,
+        "section" : "Objective",
+        "quote" : "**4.4 Automate the Recertifcation of Active Grants**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "COMPLETENESS",
+      "title" : "Problem section too long",
+      "description" : "The Problem section exceeds the maximum allowed length of three‑quarters of a page.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "Requesters, such as thesis students and external collaborators, do not know who manages which system. **A student who needs a host, a channel, and a repository asks several people and waits for each of them, and some bridge the delay with a shared login that hides who acted.**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Objective subsection 4.1 lacks required paragraphs",
+      "description" : "Subsection 4.1 (Unify Heterogeneous Resources in One Tree) contains fewer than the required two paragraphs.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "4.1 Unify Heterogeneous Resources in One Tree",
+        "quote" : "I model the resources as a tree whose folders pass maintainership, audit policy, and grants down to leaves bound to target systems, as the UML object diagram in Figure 2 shows. **One approval on a folder covers every resource beneath it, including later additions.**"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "PROBLEM_MOTIVATION_OBJECTIVES",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "LOGIC",
+      "title" : "Problem section includes solution description",
+      "description" : "The Problem section presents a workaround (granting maintainers full administrative rights) which constitutes a solution, violating the rule that the Problem section must describe only problems and their negative consequences without offering solutions.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "The common workaround **hands maintainers full administrative rights**, which violates the principle of least privilege [SS75] and exposes every user and every host to a mistake made for a single project."
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "LOGIC",
+      "title" : "Problem section includes solution description",
+      "description" : "The Problem section presents a workaround (granting maintainers full administrative rights) which constitutes a solution, violating the rule that the Problem section must describe only problems and their negative consequences without offering solutions.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "The common workaround **hands maintainers full administrative rights**, which violates the principle of least privilege [SS75] and exposes every user and every host to a mistake made for a single project."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "BIBLIOGRAPHY",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "FIGURES",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STYLE",
+    "generated" : [ {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Passive voice usage",
+      "description" : "Passive construction used; rewrite in active voice.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "Requests travel by chat message or e‑mail, nobody records an end date, and **access granted** for one project outlives the time a person spends at the chair."
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Passive voice usage",
+      "description" : "Passive construction used; rewrite in active voice.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "exposes every user and every host to a **mistake made** for a single project."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Undefined abbreviation",
+      "description" : "The abbreviation \"UML\" appears without prior definition; define it as \"Unified Modeling Language (UML)\" before first use.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "Figure 1: **UML** use case diagram of the access management platform."
+      } ]
+    } ],
+    "ungrounded" : [ {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Passive voice usage",
+      "description" : "Passive construction used; rewrite in active voice.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "Requests travel by chat message or e‑mail, nobody records an end date, and **access granted** for one project outlives the time a person spends at the chair."
+      } ]
+    } ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Passive voice usage",
+      "description" : "Passive construction used; rewrite in active voice.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "exposes every user and every host to a **mistake made** for a single project."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Undefined abbreviation",
+      "description" : "The abbreviation \"UML\" appears without prior definition; define it as \"Unified Modeling Language (UML)\" before first use.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "Figure 1: **UML** use case diagram of the access management platform."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STRUCTURE",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_FORMATTING",
+    "generated" : [ {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Inconsistent spelling of “recertification”",
+      "description" : "The term “recertification” is misspelled as “Recertifcation”/“recertifcation” in multiple places, breaking terminology consistency.",
+      "locations" : [ {
+        "page" : 8,
+        "section" : "4.4 Automate the Recertifcation of Active Grants",
+        "quote" : "4.4 Automate             the     **Recertifcation**              of  Active       Grants"
+      }, {
+        "page" : 8,
+        "section" : "4.4 Automate the Recertifcation of Active Grants",
+        "quote" : "Every    resource    carries  a  **recertifcation**     interval   that   its descendants      inherit"
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Inconsistent spelling of “workflow”",
+      "description" : "The word “workflow” is misspelled as “workfow” in several sentences, leading to inconsistent terminology.",
+      "locations" : [ {
+        "page" : 7,
+        "section" : "4.2 Enforce an Expiry Date on Every Grant",
+        "quote" : "the platform therefore arms the **workfow** engine of Keycloak through its API at grant time"
+      }, {
+        "page" : 8,
+        "section" : "4.4 Automate the Recertifcation of Active Grants",
+        "quote" : "the scenario passes without the **workfow** engine"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Inconsistent spelling of “recertification”",
+      "description" : "The term “recertification” is misspelled as “Recertifcation”/“recertifcation” in multiple places, breaking terminology consistency.",
+      "locations" : [ {
+        "page" : 8,
+        "section" : "4.4 Automate the Recertifcation of Active Grants",
+        "quote" : "4.4 Automate             the     **Recertifcation**              of  Active       Grants"
+      }, {
+        "page" : 8,
+        "section" : "4.4 Automate the Recertifcation of Active Grants",
+        "quote" : "Every    resource    carries  a  **recertifcation**     interval   that   its descendants      inherit"
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Inconsistent spelling of “workflow”",
+      "description" : "The word “workflow” is misspelled as “workfow” in several sentences, leading to inconsistent terminology.",
+      "locations" : [ {
+        "page" : 7,
+        "section" : "4.2 Enforce an Expiry Date on Every Grant",
+        "quote" : "the platform therefore arms the **workfow** engine of Keycloak through its API at grant time"
+      }, {
+        "page" : 8,
+        "section" : "4.4 Automate the Recertifcation of Active Grants",
+        "quote" : "the scenario passes without the **workfow** engine"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "AI_TRANSPARENCY",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "SCHEDULE",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  } ],
+  "categoryFailures" : { }
+}

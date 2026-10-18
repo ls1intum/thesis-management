@@ -1,0 +1,154 @@
+{
+  "job": "label-proposal-p2-pass2-09",
+  "answer": {
+    "judgements": [
+      {
+        "id": "Fafffd3aa12",
+        "rule": "R19",
+        "reason": "R19 requires measurable deliverables; 'Review the system and check for bugs' in Iteration 9 has no measurable outcome.",
+        "label": "valid"
+      },
+      {
+        "id": "Fad2b0ddc1b",
+        "rule": "R13",
+        "reason": "R13 asks for 5-8 line paragraphs; the 'Better and faster feedback' paragraph runs about 11 lines across pages 4-5, so it is too long even though the finding cites a 10-line limit.",
+        "label": "valid"
+      },
+      {
+        "id": "Ff977acad0c",
+        "rule": "R16",
+        "reason": "The same component is called 'LLM-powered Reviewer'/'the Reviewer' in the Motivation and 'the feedback tool' elsewhere, even within the Motivation itself.",
+        "label": "valid"
+      },
+      {
+        "id": "F77b6c219dc",
+        "rule": "R2",
+        "reason": "The 12 pages include the title page, figures, schedule, bibliography and statement; the actual body text is about 5-6 pages, so there is no clear breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "F8344c14f78",
+        "rule": "R11",
+        "reason": "'the feedback tool is powered by LLMs' on page 5 is passive voice, which R11 says to avoid.",
+        "label": "valid"
+      },
+      {
+        "id": "Ff2cebf270b",
+        "rule": "R7",
+        "reason": "The bibliography lists only five publications (TP21, AAM17, BBE10, Bog+07, NM06), below the minimum of 6-8.",
+        "label": "valid"
+      },
+      {
+        "id": "F2c092520c0",
+        "rule": "R11",
+        "reason": "Superlatives such as 'what matters most', 'performs best', 'least disruption' and 'greatest simplification' occur in the text, which R11 forbids.",
+        "label": "valid"
+      },
+      {
+        "id": "F0000a409e1",
+        "rule": "R12",
+        "reason": "Sentences start with 'As Figure 1 illustrates', 'Because the feedback tool' and 'Since guidelines', all forbidden openers.",
+        "label": "valid"
+      },
+      {
+        "id": "F96c76d2eeb",
+        "rule": "R2",
+        "reason": "The Problem section fills about 28 lines (most of page 3 plus 8 lines of page 4), roughly a full page, which clearly exceeds 3/4 page.",
+        "label": "valid"
+      },
+      {
+        "id": "Facf83ea324",
+        "rule": "R2",
+        "reason": "Excluding the title page, figures and schedule, the body text is about 5.6 pages, which is within the 4-6 page limit.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fc480a1c8e9",
+        "rule": "R12",
+        "reason": "All three cited sentences ('As...', 'Since...', 'Because...') occur in the document and begin with forbidden words.",
+        "label": "valid"
+      },
+      {
+        "id": "F8c731d044c",
+        "rule": "R2",
+        "reason": "The page count includes non-text pages; the body text is about 5-6 pages, so there is no clear breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "Ffacce2364e",
+        "rule": "R2",
+        "reason": "Excluding figures and the schedule, the text fills about 5.6 pages, not substantially more than 6.",
+        "label": "invalid"
+      },
+      {
+        "id": "F6c2acb2cbc",
+        "rule": "R2",
+        "reason": "The Problem section spans about a full page across pages 3-4, which exceeds 3/4 page.",
+        "label": "valid"
+      },
+      {
+        "id": "F1e2f5b897a",
+        "rule": "R2",
+        "reason": "The body text excluding the schedule is about 5.6 pages, within the 4-6 page limit.",
+        "label": "invalid"
+      },
+      {
+        "id": "F374701a073",
+        "rule": "R20",
+        "reason": "Iteration 9 lists 'Documentation', a documentation task that R20 says must not appear in the schedule.",
+        "label": "valid"
+      },
+      {
+        "id": "F8051b5e3ff",
+        "rule": "R5",
+        "reason": "The Motivation restates the Problem's point that repetitive feedback 'currently drains supervisors' and leaves them less time, which repeats the Problem.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd8c261fb02",
+        "rule": "R17",
+        "reason": "The statement names the tools and their purposes but never says which sections of the proposal they were used for.",
+        "label": "valid"
+      },
+      {
+        "id": "F8e6e8fffa2",
+        "rule": "R17",
+        "reason": "The statement uses only general phrases such as 'across different stages' and 'throughout the proposal' and does not name the sections involved.",
+        "label": "valid"
+      },
+      {
+        "id": "F18a1cbe5f2",
+        "rule": "R19",
+        "reason": "The early iterations are split into technical layers (modularize the portal, then the core pipeline, then the connection) rather than vertically integrated deliverables.",
+        "label": "valid"
+      },
+      {
+        "id": "F1ee5942095",
+        "rule": "R7",
+        "reason": "The Thesis Management URL is already in a footnote (marker 1, footnote at the bottom of page 3), not in the main text or the bibliography.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fd78f96f940",
+        "rule": "R20",
+        "reason": "Iteration 9 contains the prohibited 'Documentation' task and the vague bug-checking item.",
+        "label": "valid"
+      },
+      {
+        "id": "Fac1aff763f",
+        "rule": "R2",
+        "reason": "The central claim is that the Motivation exceeds 3/4 page, but at about 22 lines against a roughly 29-line full page it is at the limit, not clearly over it.",
+        "label": "invalid"
+      },
+      {
+        "id": "F9a5f9f795f",
+        "rule": "R2",
+        "reason": "The Motivation is about 22 lines, roughly 3/4 of a page; that is near the limit and not a clear breach.",
+        "label": "invalid"
+      }
+    ]
+  },
+  "costUsd": 0.2539268,
+  "durationMs": 39627,
+  "model": "claude-opus-5-5[1m]"
+}

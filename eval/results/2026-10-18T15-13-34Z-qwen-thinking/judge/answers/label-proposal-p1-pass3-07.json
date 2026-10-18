@@ -1,0 +1,250 @@
+{
+  "job": "label-proposal-p1-pass3-07",
+  "answer": {
+    "judgements": [
+      {
+        "id": "Fc25d949dc6",
+        "rule": "R10",
+        "reason": "Every figure has to be referenced in the text. The prose only points to \"section 4\" and never mentions Figure 1 by number.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd67b779f01",
+        "rule": "R11",
+        "reason": "R11 forbids filler words, but the flagged words are not filler. \"Additionally\" and \"Furthermore\" are ordinary connectives, and \"additional\" carries meaning (\"additional server overhead\").",
+        "label": "invalid"
+      },
+      {
+        "id": "Fe76ac56669",
+        "rule": "R9",
+        "reason": "The rules require at least two figures. The document contains only Figure 1.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd4fd1a5f1d",
+        "rule": "R7",
+        "reason": "At least 6-8 peer-reviewed publications are required. The bibliography lists only five entries, and two of them are books.",
+        "label": "valid"
+      },
+      {
+        "id": "F89291c6aff",
+        "rule": "R17",
+        "reason": "An AI transparency statement is required. The document has none.",
+        "label": "valid"
+      },
+      {
+        "id": "F492fe0a8a5",
+        "rule": "R19",
+        "reason": "Iterations should deliver vertically integrated features. The schedule instead splits the work by technical layer: runner setup, connectivity, API, then results.",
+        "label": "valid"
+      },
+      {
+        "id": "F303c3d5ad6",
+        "rule": "R9",
+        "reason": "The central claim holds: only one figure exists, but two are required. Calling Figure 1 a sequence diagram looks wrong, since it reads as a numbered communication diagram.",
+        "label": "valid"
+      },
+      {
+        "id": "Ff2ad611c60",
+        "rule": "R13",
+        "reason": "Paragraphs should run 5-8 lines. The cited sentence on page 3 stands alone as a paragraph of about two lines.",
+        "label": "valid"
+      },
+      {
+        "id": "Fcc0d5d4406",
+        "rule": "R15",
+        "reason": "The title-case rule covers headings only. Schedule list items and the scenario name are not headings, and \"workfow\" is a text-extraction artifact of the \"fl\" ligature, not a spelling error.",
+        "label": "invalid"
+      },
+      {
+        "id": "Facc8261e29",
+        "rule": "R9",
+        "reason": "The rules require at least two figures. Only Figure 1 is present.",
+        "label": "valid"
+      },
+      {
+        "id": "F7c832fc465",
+        "rule": "R1",
+        "reason": "Motivation is a required section. The document has no Motivation section.",
+        "label": "valid"
+      },
+      {
+        "id": "F2f401d5793",
+        "rule": "R17",
+        "reason": "An AI transparency statement is required. None is present.",
+        "label": "valid"
+      },
+      {
+        "id": "F67759e1a89",
+        "rule": "R12",
+        "reason": "Abbreviations must be defined before use. \"API\" is used in the abstract and Section 2 and is never spelled out.",
+        "label": "valid"
+      },
+      {
+        "id": "F24e6547260",
+        "rule": "R11",
+        "reason": "Active voice is required. Quoted passages such as \"the build plans must be updated manually\" are passive.",
+        "label": "valid"
+      },
+      {
+        "id": "F3d85839c6f",
+        "rule": "R3",
+        "reason": "An Objective section with an intro, a bullet list of 3-4 objectives, and one subsection per objective is required. The document has no such section.",
+        "label": "valid"
+      },
+      {
+        "id": "F5b48274dec",
+        "rule": "R19",
+        "reason": "Work should come in 2-4 week iterations with vertically integrated deliverables. The schedule lists isolated milestones by month and week instead.",
+        "label": "valid"
+      },
+      {
+        "id": "F81ef71ca1b",
+        "rule": "R1",
+        "reason": "Introduction is a required section. The document goes straight from the Abstract to the Problem Statement.",
+        "label": "valid"
+      },
+      {
+        "id": "F793cc2e6d3",
+        "rule": "R4",
+        "reason": "The quoted sentence comes from the Abstract, not the Problem section. \"Proposed Solution\" is a separate section, not a subsection of Problem, and Section 1 itself describes problems.",
+        "label": "invalid"
+      },
+      {
+        "id": "Ff64f77d053",
+        "rule": "R20",
+        "reason": "Requirements-gathering and thesis-writing tasks are forbidden in the schedule. It contains \"Requirements\", \"Writing\", and \"Thesis\" tasks.",
+        "label": "valid"
+      },
+      {
+        "id": "F7c1f9f3528",
+        "rule": "R12",
+        "reason": "Sentences must not start with 'To', 'Since', or 'In order to'. The cited sentence \"To achieve this goal, ...\" breaks this rule.",
+        "label": "valid"
+      },
+      {
+        "id": "Ff1ce13fae1",
+        "rule": "R7",
+        "reason": "At least six peer-reviewed publications are required. The bibliography has only five entries.",
+        "label": "valid"
+      },
+      {
+        "id": "F042ffb1087",
+        "rule": "R13",
+        "reason": "Paragraphs should run 5-8 lines. Expected Findings contains several one- or two-line paragraphs, such as \"In addition, universities will save time...\".",
+        "label": "valid"
+      },
+      {
+        "id": "Fd1eb570386",
+        "rule": "R1",
+        "reason": "Introduction is a required section. It is missing.",
+        "label": "valid"
+      },
+      {
+        "id": "Fedc7949c15",
+        "rule": "R20",
+        "reason": "A requirements-gathering task is not allowed in the schedule. The June entry \"Requirements\" is one.",
+        "label": "valid"
+      },
+      {
+        "id": "F6ace968af7",
+        "rule": "R12",
+        "reason": "Sentences must not start with 'Since'. The abstract's first sentence begins with \"Since\".",
+        "label": "valid"
+      },
+      {
+        "id": "F962b2a60e4",
+        "rule": "R11",
+        "reason": "Active voice is required. The cited clauses, such as \"the base build plan is copied\", are passive.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb6ed08c76a",
+        "rule": null,
+        "reason": "No rule forbids the first person.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F90500cbc83",
+        "rule": "R17",
+        "reason": "An AI transparency statement is required. None is present.",
+        "label": "valid"
+      },
+      {
+        "id": "F18cf14c61a",
+        "rule": "R10",
+        "reason": "Every figure must be referenced in the text. Figure 1 is never referenced by number.",
+        "label": "valid"
+      },
+      {
+        "id": "F2e8744d183",
+        "rule": "R19",
+        "reason": "The schedule should follow agile iterations. It is a linear waterfall sequence (setup, prototype parts, documentation, writing) with no iterative deliverables.",
+        "label": "valid"
+      },
+      {
+        "id": "Fbed2e4b1e0",
+        "rule": "R17",
+        "reason": "An AI transparency statement is required. It is entirely missing.",
+        "label": "valid"
+      },
+      {
+        "id": "F84eace241f",
+        "rule": "R1",
+        "reason": "Motivation is a required section. It is missing.",
+        "label": "valid"
+      },
+      {
+        "id": "F7e5a03d497",
+        "rule": "R3",
+        "reason": "Each objective needs its own subsection of at least two paragraphs. No objective subsections exist.",
+        "label": "valid"
+      },
+      {
+        "id": "Fefae563795",
+        "rule": "R3",
+        "reason": "Each objective needs its own subsection of at least two paragraphs. No objective subsections exist.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd1365b9d4d",
+        "rule": "R11",
+        "reason": "Active voice is required. The cited constructions, such as \"must be updated\" and \"is copied\", are passive.",
+        "label": "valid"
+      },
+      {
+        "id": "F4f1df6a1de",
+        "rule": "R4",
+        "reason": "Problems must be tied to negative consequences for identified actors. The Problem section mostly names no actor; for example, \"the build plans must be updated manually\" never says who is burdened.",
+        "label": "valid"
+      },
+      {
+        "id": "F37bdbacf44",
+        "rule": "R12",
+        "reason": "Sentences must not start with 'Since', 'To', or 'In order to'. All four cited sentences start with one of these.",
+        "label": "valid"
+      },
+      {
+        "id": "F76c38c6a87",
+        "rule": "R9",
+        "reason": "The claim that no UML diagram exists is wrong. Figure 1 shows actors and numbered messages (1.1, 2.1, ...), which is a UML communication diagram.",
+        "label": "invalid"
+      },
+      {
+        "id": "F2326c8c21d",
+        "rule": "R9",
+        "reason": "The rules require at least two figures. Only Figure 1 exists.",
+        "label": "valid"
+      },
+      {
+        "id": "F5578ee33c0",
+        "rule": "R19",
+        "reason": "Deliverables must be measurable. \"Models\" and \"Requirements\" name no verifiable artifact, and the schedule is not split into 2-4 week iterations.",
+        "label": "valid"
+      }
+    ]
+  },
+  "costUsd": 0.2659188,
+  "durationMs": 37446,
+  "model": "claude-opus-5-5[1m]"
+}

@@ -103,4 +103,27 @@ class GuidelinesPromptTest {
 	private static int countOf(String haystack, String needle) {
 		return haystack.split(Pattern.quote(needle), -1).length - 1;
 	}
+
+	@Test
+	void allCategoriesCarryTheOverviewOnceAndEveryCategorysRulesVerbatim() {
+		StructuredGuidelines guidelines = new StructuredGuidelines(
+				"We value concise, well-cited proposals.",
+				List.of(
+						new CategoryGuidelines("bibliography", List.of("Cite at least 6 peer-reviewed sources.")),
+						new CategoryGuidelines("structure", List.of("Include an Abstract."))));
+
+		String prompt = GuidelinesPrompt.forAllCategories(guidelines);
+
+		assertThat(prompt.split(Pattern.quote("We value concise"), -1)).hasSize(2);
+		for (ReviewCategory category : ReviewCategory.values()) {
+			assertThat(prompt).contains("### Group rules for " + category.getDisplayName() + "\n");
+		}
+		// Byte-identical to what the fan-out hands each category, so the single prompt and the
+		// fan-out judge by the same rule text.
+		for (ReviewCategory category : List.of(ReviewCategory.BIBLIOGRAPHY, ReviewCategory.STRUCTURE)) {
+			String perCategory = GuidelinesPrompt.forCategory(guidelines, category);
+			String rulesSection = perCategory.substring(perCategory.indexOf("### Group rules for"));
+			assertThat(prompt).contains(rulesSection);
+		}
+	}
 }

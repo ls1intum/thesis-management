@@ -1,0 +1,250 @@
+{
+  "job": "label-proposal-p1-pass1-01",
+  "answer": {
+    "judgements": [
+      {
+        "id": "Febfac42b0c",
+        "rule": "R1",
+        "reason": "There is no Objective section. The sections are Problem Statement, Proposed Solution, Related Work, System Requirements and Top Level Design, Expected Findings, and Time Schedule.",
+        "label": "valid"
+      },
+      {
+        "id": "F1e614b8ad5",
+        "rule": "R16",
+        "reason": "The Abstract says 'task has been assigned', while the rest of the text says 'exercise'. 'CI server' and 'CI service' are also used interchangeably for the same thing.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc87405a704",
+        "rule": "R10",
+        "reason": "Figure 1 is never referenced by number; the text only says 'illustrated in section 4'. Its caption is a short single line.",
+        "label": "valid"
+      },
+      {
+        "id": "F589d845aa7",
+        "rule": "R11",
+        "reason": "The quoted sentence is passive ('are not patched', 'must be updated'), and the document uses passive voice in many other places.",
+        "label": "valid"
+      },
+      {
+        "id": "Fad9e157805",
+        "rule": "R9",
+        "reason": "The document contains only one figure (Figure 1), but at least two are required.",
+        "label": "valid"
+      },
+      {
+        "id": "F6b4af4beea",
+        "rule": "R11",
+        "reason": "Words like 'Furthermore', 'Additionally', and 'In addition' are connectives that mark a logical relationship, not filler words. Some quotes, such as 'additional server overhead', contain no filler at all.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fa7878527ef",
+        "rule": null,
+        "reason": "No rule forbids writing in the first person.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Ff7ada9a1d5",
+        "rule": "R19",
+        "reason": "The schedule does not define one-week iterations. The single-week entries are milestones spaced roughly 2-4 weeks apart, so the claim that iterations are too short does not match the document.",
+        "label": "invalid"
+      },
+      {
+        "id": "F10dfb65e1d",
+        "rule": "R10",
+        "reason": "Figure 1 is never referenced by number in the text; the only pointer is 'This process is illustrated in section 4.'",
+        "label": "valid"
+      },
+      {
+        "id": "Fc398ca6d8c",
+        "rule": "R1",
+        "reason": "The proposal has no Motivation section.",
+        "label": "valid"
+      },
+      {
+        "id": "F4d0d067e98",
+        "rule": "R1",
+        "reason": "There is no Introduction section; the document goes straight from the Abstract to '1 Problem Statement'.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb9fb139d8c",
+        "rule": "R1",
+        "reason": "The proposal has no Introduction section.",
+        "label": "valid"
+      },
+      {
+        "id": "Fa305341095",
+        "rule": "R15",
+        "reason": "The heading writes 'and' in lowercase, which title case requires. The claim of an uppercase conjunction is false, so the heading complies.",
+        "label": "invalid"
+      },
+      {
+        "id": "F6172fedc16",
+        "rule": "R20",
+        "reason": "The June schedule lists '4th week: Requirements' as a separate work item.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc25d949dc6",
+        "rule": "R10",
+        "reason": "Figure 1 is not referenced by number; the text refers only to 'section 4'.",
+        "label": "valid"
+      },
+      {
+        "id": "F8995fe3011",
+        "rule": "R1",
+        "reason": "There is no Objective section with subsections. Section 4 (System Requirements and Top Level Design) and Section 5 (Expected Findings) do not provide one.",
+        "label": "valid"
+      },
+      {
+        "id": "F6083a1a552",
+        "rule": "R11",
+        "reason": "'Additionally' is a connective that marks a logical relationship, not a filler word.",
+        "label": "invalid"
+      },
+      {
+        "id": "Ffa8a68309c",
+        "rule": "R19",
+        "reason": "The schedule is a linear month-by-month plan with separate model, documentation, and writing phases, not agile iterations with vertically integrated deliverables.",
+        "label": "valid"
+      },
+      {
+        "id": "F0cd94d5754",
+        "rule": "R13",
+        "reason": "Section 4 opens with a single-sentence paragraph followed by a long numbered list, which falls short of the 5-8 line prose paragraphs the rule requires.",
+        "label": "valid"
+      },
+      {
+        "id": "Fdee5dcffec",
+        "rule": "R11",
+        "reason": "Connectives like 'Additionally', 'Furthermore', and 'In addition' mark logical relationships and are not filler words.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fb036c3ec42",
+        "rule": "R16",
+        "reason": "The text switches between 'CI server' and 'CI service' for the same concept, and between 'VC server' and 'VC Server'.",
+        "label": "valid"
+      },
+      {
+        "id": "F2de375adf2",
+        "rule": "R1",
+        "reason": "There is no Introduction section; the Abstract leads directly into '1 Problem Statement'. The finding's quote is a description rather than document text, but its central claim is correct.",
+        "label": "valid"
+      },
+      {
+        "id": "Fe2a688f35e",
+        "rule": "R12",
+        "reason": "'API' is used from the Abstract onward and is never spelled out.",
+        "label": "valid"
+      },
+      {
+        "id": "F3427a1c881",
+        "rule": "R11",
+        "reason": "'Furthermore' and 'Additionally' are connectives that mark logical relationships, not filler words.",
+        "label": "invalid"
+      },
+      {
+        "id": "F3c32a657c7",
+        "rule": "R13",
+        "reason": "Section 5 contains one-line paragraphs, such as 'In addition, universities will save time and money...', which are well below 5 lines.",
+        "label": "valid"
+      },
+      {
+        "id": "Fed238d8b62",
+        "rule": "R10",
+        "reason": "Figure 1 is not referenced by number, and its caption is a single short line.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc0f4d5a6fb",
+        "rule": "R4",
+        "reason": "The quoted sentence comes from the Abstract, not from the Problem section (Section 1), so the claimed breach is not in the Problem section.",
+        "label": "invalid"
+      },
+      {
+        "id": "F5ea2993011",
+        "rule": "R12",
+        "reason": "Several sentences start with forbidden words: 'Since some Version Control...', 'To achieve this goal', 'In order to implement this idea', and 'As a result'. The text also contains passive constructions.",
+        "label": "valid"
+      },
+      {
+        "id": "F7d2a427486",
+        "rule": "R13",
+        "reason": "The final paragraph has one idea: further research opportunities that the solution opens up. Both the exam problem and the Ansible/Kubernetes deployment are examples of that idea.",
+        "label": "invalid"
+      },
+      {
+        "id": "F2bf9de772f",
+        "rule": "R11",
+        "reason": "The text contains many passive constructions, such as 'is fetched', 'must be updated', 'is copied', and 'gets triggered'.",
+        "label": "valid"
+      },
+      {
+        "id": "F6ca29df8bd",
+        "rule": "R11",
+        "reason": "The cited words ('especially', 'additionally', 'furthermore', 'additional', 'also') are neither superlatives nor clear filler words. They carry meaning in context.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fa4e20ec1f0",
+        "rule": "R1",
+        "reason": "The proposal has no dedicated Motivation section.",
+        "label": "valid"
+      },
+      {
+        "id": "F5ce6774706",
+        "rule": "R1",
+        "reason": "There is no Objective section; Section 4 is 'System Requirements and Top Level Design'.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd0924b8ad2",
+        "rule": "R10",
+        "reason": "Figure 1 is never referenced by number, and its one-line caption is not informative.",
+        "label": "valid"
+      },
+      {
+        "id": "F0b597f6209",
+        "rule": "R7",
+        "reason": "The bibliography lists only five entries, below the minimum of 6-8.",
+        "label": "valid"
+      },
+      {
+        "id": "F285deca834",
+        "rule": "R10",
+        "reason": "The caption of Figure 1 is one short line and does not explain the actors and interactions, so it is not long or informative.",
+        "label": "valid"
+      },
+      {
+        "id": "F141375b34a",
+        "rule": "R1",
+        "reason": "There is no Introduction section between the Abstract and the Problem Statement.",
+        "label": "valid"
+      },
+      {
+        "id": "Ff00bc45670",
+        "rule": "R20",
+        "reason": "The schedule contains '4th week: Requirements' as a separate work item.",
+        "label": "valid"
+      },
+      {
+        "id": "Fbed2e4b1e0",
+        "rule": "R17",
+        "reason": "The document has no AI transparency statement.",
+        "label": "valid"
+      },
+      {
+        "id": "F8f8694d7e4",
+        "rule": "R13",
+        "reason": "Section 5 contains a standalone one-line paragraph, which breaks the 5-8 line rule. The second claim, about mixed ideas, is weaker.",
+        "label": "valid"
+      }
+    ]
+  },
+  "costUsd": 0.12203939999999999,
+  "durationMs": 47387,
+  "model": "claude-opus-5-5[1m]"
+}

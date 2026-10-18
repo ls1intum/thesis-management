@@ -1,0 +1,250 @@
+{
+  "job": "label-proposal-p4-pass2-04",
+  "answer": {
+    "judgements": [
+      {
+        "id": "Fafe96daa5d",
+        "rule": "R11",
+        "reason": "R11 says to avoid superlatives. The Problem section calls the process \"the worst bottleneck of the chair\", which is a superlative.",
+        "label": "valid"
+      },
+      {
+        "id": "F6d06428d8e",
+        "rule": "R20",
+        "reason": "R20 bans thesis-writing tasks from the schedule. Iteration 7 is \"Write the thesis and prepare the final presentation\".",
+        "label": "valid"
+      },
+      {
+        "id": "F95efe41264",
+        "rule": "R10",
+        "reason": "R10 requires a long, informative caption for every figure. The caption of Figure 2 is only \"System Architecture\".",
+        "label": "valid"
+      },
+      {
+        "id": "F1e09a6e436",
+        "rule": "R20",
+        "reason": "R20 bans thesis-writing tasks from the schedule. Iteration 7 is dedicated to writing the thesis.",
+        "label": "valid"
+      },
+      {
+        "id": "F2388d2b073",
+        "rule": "R10",
+        "reason": "R10 requires informative captions. The caption of Figure 2 is the two-word label \"System Architecture\".",
+        "label": "valid"
+      },
+      {
+        "id": "Fca06821869",
+        "rule": "R13",
+        "reason": "The first quote stitches together sentences from separate paragraphs, so it does not appear in the document. The real Problem paragraphs are roughly 7-8 lines long and each covers one problem, so R13 is not clearly breached.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fc54256514a",
+        "rule": "R16",
+        "reason": "R16 requires consistent terminology. The reviewing role is called \"maintainer\" in most of the text but \"resource owner\" in Section 4.3. The Motivation quote is on page 3, not page 4, but the central claim holds.",
+        "label": "valid"
+      },
+      {
+        "id": "F4db1e9f979",
+        "rule": "R2",
+        "reason": "The text pages 2-7 come to about six pages, and that includes figures and the schedule. The 4-6 page limit is not clearly exceeded.",
+        "label": "invalid"
+      },
+      {
+        "id": "Feea067f9e8",
+        "rule": "R2",
+        "reason": "The Problem section fills roughly three-quarters of a page, which is near the limit rather than clearly over it. The Motivation section is well under three-quarters of a page.",
+        "label": "invalid"
+      },
+      {
+        "id": "F3af0c3e390",
+        "rule": "R1",
+        "reason": "R1 requires an Abstract. The document goes straight from the title page to the Introduction, with no abstract.",
+        "label": "valid"
+      },
+      {
+        "id": "F640f77bb61",
+        "rule": "R18",
+        "reason": "R18 requires the statement to confirm that the author carefully checked all AI-generated text. The statement contains only an introduction and a table, with no such confirmation.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd13477d00c",
+        "rule": "R10",
+        "reason": "R10 requires informative captions. The caption of Figure 2 is just \"System Architecture\".",
+        "label": "valid"
+      },
+      {
+        "id": "Fd27349f6de",
+        "rule": "R20",
+        "reason": "R20 bans thesis-writing tasks from the schedule. Iteration 7 covers thesis writing and presentation preparation.",
+        "label": "valid"
+      },
+      {
+        "id": "F9fea08114a",
+        "rule": null,
+        "reason": "No rule forbids writing in the first person.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Fc3e8568f0c",
+        "rule": "R1",
+        "reason": "R1 requires an Abstract section, and the document has none.",
+        "label": "valid"
+      },
+      {
+        "id": "Fcbc94ea8d8",
+        "rule": "R10",
+        "reason": "R10 requires long, informative captions. The caption of Figure 2 is two generic words.",
+        "label": "valid"
+      },
+      {
+        "id": "F6edd2bf2ef",
+        "rule": null,
+        "reason": "No rule forbids first-person narration.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F4a5656f34c",
+        "rule": "R14",
+        "reason": "R14 requires introductory text before a section's first subsection. Section 1 moves straight from its heading to 1.1 Setting.",
+        "label": "valid"
+      },
+      {
+        "id": "F9495ac5b3b",
+        "rule": "R18",
+        "reason": "R18 requires a confirmation that the author checked all AI-generated text. The statement has no such sentence.",
+        "label": "valid"
+      },
+      {
+        "id": "F3c69279de3",
+        "rule": "R8",
+        "reason": "The document has no lowercase citation such as [bsw08]. All citation keys, including [BSW08], are in uppercase alpha style.",
+        "label": "invalid"
+      },
+      {
+        "id": "F2714bb7291",
+        "rule": "R1",
+        "reason": "R1 requires an Abstract, and none appears in the document.",
+        "label": "valid"
+      },
+      {
+        "id": "F2f42b904e4",
+        "rule": "R11",
+        "reason": "R11 bans contractions. The Problem section uses \"doesn't\".",
+        "label": "valid"
+      },
+      {
+        "id": "F8365235531",
+        "rule": "R11",
+        "reason": "R11 bans contractions. The Problem section contains \"doesn't\".",
+        "label": "valid"
+      },
+      {
+        "id": "Fdc6b9a3df4",
+        "rule": "R10",
+        "reason": "R10 requires informative captions. The caption of Figure 2 is only \"System Architecture\".",
+        "label": "valid"
+      },
+      {
+        "id": "F33e2eea245",
+        "rule": "R11",
+        "reason": "R11 bans contractions. The Problem section uses \"doesn't\".",
+        "label": "valid"
+      },
+      {
+        "id": "Fa0761d33a0",
+        "rule": "R6",
+        "reason": "R6 forbids double verbs in objectives. The objective list contains \"Design and implement connectors with expiry\".",
+        "label": "valid"
+      },
+      {
+        "id": "F6fbeafde96",
+        "rule": "R16",
+        "reason": "R16 requires consistent terminology. Section 4.3 calls the role \"resource owner\" while the rest of the text calls it \"maintainer\".",
+        "label": "valid"
+      },
+      {
+        "id": "F0153f3b4b6",
+        "rule": "R14",
+        "reason": "R14 requires introductory text before a section's first subsection. Section 1 has none before 1.1.",
+        "label": "valid"
+      },
+      {
+        "id": "F3318a42f8d",
+        "rule": "R6",
+        "reason": "R6 forbids double verbs and names 'Design and implement' as its example. This wording appears in both the objective list and the heading of 4.2.",
+        "label": "valid"
+      },
+      {
+        "id": "F64fc20307f",
+        "rule": "R10",
+        "reason": "R10 requires informative captions. The caption of Figure 2 is a brief generic label.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb26804823e",
+        "rule": "R3",
+        "reason": "R3 requires at least two paragraphs per objective subsection. Subsection 4.4 is a single paragraph that runs across the page break.",
+        "label": "valid"
+      },
+      {
+        "id": "F7a82d01f74",
+        "rule": null,
+        "reason": "No rule covers spelling. The missing 'fi' in \"recertifcation\" also looks like a text-extraction artifact of a ligature, not a terminology inconsistency.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F41464f6f32",
+        "rule": "R11",
+        "reason": "R11 bans contractions. The Problem section uses \"doesn't\".",
+        "label": "valid"
+      },
+      {
+        "id": "Fcb3519b713",
+        "rule": "R3",
+        "reason": "R3 requires at least two paragraphs per objective subsection. Subsection 4.4 consists of one paragraph.",
+        "label": "valid"
+      },
+      {
+        "id": "Fe024047739",
+        "rule": "R10",
+        "reason": "R10 requires informative captions. The caption of Figure 2 is just \"System Architecture\".",
+        "label": "valid"
+      },
+      {
+        "id": "Ff557e7d632",
+        "rule": "R8",
+        "reason": "R8 requires citations before the full stop. The text reads \"temporal model. [BBF01]\". The finding labels this as Motivation, which is the correct section.",
+        "label": "valid"
+      },
+      {
+        "id": "F216d6738ef",
+        "rule": "R16",
+        "reason": "R16 requires consistent terminology. The same role is called \"maintainer\" in the Problem section and \"resource owner\" in Section 4.3.",
+        "label": "valid"
+      },
+      {
+        "id": "F07691a45d1",
+        "rule": "R1",
+        "reason": "R1 requires an Abstract, and none is present.",
+        "label": "valid"
+      },
+      {
+        "id": "F7fee937be6",
+        "rule": null,
+        "reason": "No rule limits first-person formulations.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F66037a579e",
+        "rule": "R1",
+        "reason": "R1 requires an Abstract, and the document has none.",
+        "label": "valid"
+      }
+    ]
+  },
+  "costUsd": 0.2695108,
+  "durationMs": 34801,
+  "model": "claude-opus-5-5[1m]"
+}

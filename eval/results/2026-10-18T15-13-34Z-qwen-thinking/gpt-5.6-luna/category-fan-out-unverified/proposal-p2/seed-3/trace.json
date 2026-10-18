@@ -1,0 +1,414 @@
+{
+  "categories" : [ {
+    "category" : "STRUCTURE",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Objectives are not presented as a bullet list",
+      "description" : "Section 4 introduces four objectives using a numbered list rather than the required bullet list. Replace the numbered list with bullet points while retaining the four one-line high-level objectives.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "The scope of the thesis is to fulfil the following goals: **1. Generate Feedback Based on Guidelines**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "COMPLETENESS",
+      "title" : "Problem section exceeds the maximum length",
+      "description" : "The Problem section spans more than the permitted three-quarters of a page, continuing from page 3 into page 4. Condense the background and consequences discussion so that the complete section fits within three-quarters of a page.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "**2 Problem** For students’ research proposals and theses, supervisors often provide feedback that is critical to their progress."
+      }, {
+        "page" : 4,
+        "section" : "Problem",
+        "quote" : "While the problem is less severe for students, they still experience its consequences."
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Objectives are not presented as a bullet list",
+      "description" : "Section 4 introduces four objectives using a numbered list rather than the required bullet list. Replace the numbered list with bullet points while retaining the four one-line high-level objectives.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "The scope of the thesis is to fulfil the following goals: **1. Generate Feedback Based on Guidelines**"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "COMPLETENESS",
+      "title" : "Problem section exceeds the maximum length",
+      "description" : "The Problem section spans more than the permitted three-quarters of a page, continuing from page 3 into page 4. Condense the background and consequences discussion so that the complete section fits within three-quarters of a page.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "**2 Problem** For students’ research proposals and theses, supervisors often provide feedback that is critical to their progress."
+      }, {
+        "page" : 4,
+        "section" : "Problem",
+        "quote" : "While the problem is less severe for students, they still experience its consequences."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "PROBLEM_MOTIVATION_OBJECTIVES",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Motivation repeats the Problem instead of focusing exclusively on the positive vision",
+      "description" : "The Motivation section repeats the Problem section’s description of repetitive feedback draining supervisors and delaying students, rather than maintaining a consistently forward-looking vision. Reframe these statements around the desired benefits and scientific significance of the proposed approach without restating the current difficulties.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Motivation",
+        "quote" : "This Reviewer covers exactly the **repetitive, non-content-related layer of feedback that currently drains supervisors**, freeing them to focus on specific content and on discussions with their students."
+      }, {
+        "page" : 4,
+        "section" : "Motivation",
+        "quote" : "Additionally, supervisors can **provide feedback faster**, making the process more scalable."
+      }, {
+        "page" : 5,
+        "section" : "Motivation",
+        "quote" : "**Because the feedback tool is powered by LLMs, students can obtain instant formative feedback at any point during the writing process.**"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Motivation repeats the Problem instead of focusing exclusively on the positive vision",
+      "description" : "The Motivation section repeats the Problem section’s description of repetitive feedback draining supervisors and delaying students, rather than maintaining a consistently forward-looking vision. Reframe these statements around the desired benefits and scientific significance of the proposed approach without restating the current difficulties.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Motivation",
+        "quote" : "This Reviewer covers exactly the **repetitive, non-content-related layer of feedback that currently drains supervisors**, freeing them to focus on specific content and on discussions with their students."
+      }, {
+        "page" : 4,
+        "section" : "Motivation",
+        "quote" : "Additionally, supervisors can **provide feedback faster**, making the process more scalable."
+      }, {
+        "page" : 5,
+        "section" : "Motivation",
+        "quote" : "**Because the feedback tool is powered by LLMs, students can obtain instant formative feedback at any point during the writing process.**"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "BIBLIOGRAPHY",
+    "generated" : [ {
+      "severity" : "CRITICAL",
+      "category" : "CITATION",
+      "title" : "Insufficient number of bibliography entries",
+      "description" : "The bibliography contains only 5 publications ([TP21], [AAM17], [BBE10], [Bog+07], and [NM06]). It must contain at least 6–8 peer-reviewed publications; add at least one more suitable peer-reviewed source, preferably enough to meet the expected range.",
+      "locations" : [ {
+        "page" : 11,
+        "section" : "Bibliography",
+        "quote" : "[TP21] T. Tuononen and A. Parpala, “The Role of Academic Competences and Learning Processes in Predicting Bachelor's and Master's Thesis Grades,” ... [NM06] D. J. Nicol and D. Macfarlane-Dick, “Formative Assessment and Self-Regulated Learning: A Model and Seven Principles of Good Feedback Practice,”"
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "CITATION",
+      "title" : "Inconsistent citation-key style",
+      "description" : "Citation identifiers are not fully consistent: [Bog+07] uses a three-letter abbreviation with a plus sign, whereas the other in-text citations use author initials without a plus sign (for example, [TP21], [AAM17], and [BBE10]). Adopt one citation-key style throughout, such as a consistent alpha-year convention.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "Giving repetitive feedback is a draining activity for supervisors **[Bog+07]**."
+      }, {
+        "page" : 2,
+        "section" : "Introduction",
+        "quote" : "Bachelor’s and Master’s theses represent important final projects that students complete before graduating **[TP21]**."
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "CRITICAL",
+      "category" : "CITATION",
+      "title" : "Insufficient number of bibliography entries",
+      "description" : "The bibliography contains only 5 publications ([TP21], [AAM17], [BBE10], [Bog+07], and [NM06]). It must contain at least 6–8 peer-reviewed publications; add at least one more suitable peer-reviewed source, preferably enough to meet the expected range.",
+      "locations" : [ {
+        "page" : 11,
+        "section" : "Bibliography",
+        "quote" : "[TP21] T. Tuononen and A. Parpala, “The Role of Academic Competences and Learning Processes in Predicting Bachelor's and Master's Thesis Grades,” ... [NM06] D. J. Nicol and D. Macfarlane-Dick, “Formative Assessment and Self-Regulated Learning: A Model and Seven Principles of Good Feedback Practice,”"
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "CITATION",
+      "title" : "Inconsistent citation-key style",
+      "description" : "Citation identifiers are not fully consistent: [Bog+07] uses a three-letter abbreviation with a plus sign, whereas the other in-text citations use author initials without a plus sign (for example, [TP21], [AAM17], and [BBE10]). Adopt one citation-key style throughout, such as a consistent alpha-year convention.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "Giving repetitive feedback is a draining activity for supervisors **[Bog+07]**."
+      }, {
+        "page" : 2,
+        "section" : "Introduction",
+        "quote" : "Bachelor’s and Master’s theses represent important final projects that students complete before graduating **[TP21]**."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "FIGURES",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STRUCTURE",
+    "generated" : [ {
+      "category" : "STRUCTURE",
+      "description" : "This paragraph is approximately 11 lines long, exceeding the 5–8-line guideline. Split it into two paragraphs, for example after explaining how the Reviewer supports supervisors, before discussing the resulting quality and scalability benefits.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Motivation",
+        "quote" : "Integrating large language models (LLMs) to assist supervisors with non-content-related feedback could improve the thesis writing process. As Figure 1 illustrates, an LLM-powered Reviewer works alongside the supervisor, evaluating the thesis against the research group’s writing guidelines and generating automatic formative feedback [NM06]. This Reviewer covers exactly the repetitive, non-content-related layer of feedback that currently drains supervisors, freeing them to focus on specific content and on discussions with their students, which is key in mentoring environments [BBE10, NM06]. The quality of feedback improves as supervisors have more time to engage deeply with the thesis, leading to better outcomes overall. Additionally, supervisors can provide feedback faster, making the process more scalable."
+      } ]
+    }, {
+      "category" : "STRUCTURE",
+      "description" : "This paragraph spans roughly 13–14 lines and combines three distinct ideas: preprocessing guidelines, the ethics of grading with LLMs, and why formative feedback is less critical. Split it into shorter paragraphs, separating guideline preprocessing from the ethical rationale.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "4.1 Generate Feedback Based on Guidelines",
+        "quote" : "Supervisors should be able to provide their own scientific writing guidelines as well as conventions on the style of theses and proposals. Based on these guidelines, the LLM can provide formative feedback that is restricted to the aspects they cover. Since guidelines may not already be in a suitable format, the LLM may first need to preprocess them into a structured representation it can act on. **Ethically, it is difficult to let LLMs grade a final thesis, as this constitutes normative feedback and requires close scrutiny.** Formative feedback, on the other hand, is less critical since it serves as input for students to improve their work."
+      }, {
+        "page" : 6,
+        "section" : "4.1 Generate Feedback Based on Guidelines",
+        "quote" : "Ethically, it is difficult to let LLMs grade a final thesis, as this constitutes normative feedback and requires close scrutiny. Formative feedback, on the other hand, is less critical since it serves as input for students to improve their work. The idea is that students interpret the feedback themselves and discuss it, either independently or with their supervisor. Therefore, it is less important that every output of the LLM is perfectly correct."
+      } ]
+    }, {
+      "category" : "STRUCTURE",
+      "description" : "This paragraph is approximately 14 lines long, exceeding the recommended maximum of 8 lines. Divide it into separate paragraphs for the three feedback-generation modes and the supervisor-review workflow.",
+      "locations" : [ {
+        "page" : 6,
+        "section" : "4.1 Generate Feedback Based on Guidelines",
+        "quote" : "This approach supports several modes of feedback generation. In one mode, no LLM-generated feedback is produced at all and all feedback comes from the supervisor. Alternatively, the student can obtain instant feedback on their proposal or thesis directly from the LLM, while keeping in mind that the supervisor has not reviewed this output. A third mode combines both sources, as illustrated in Figure 2. In this combined mode, multiple specialized agents analyze specific parts of the thesis in parallel. The supervisor then aggregates and reviews the resulting feedback and adds their own feedback. Finally, the supervisor merges both sets and publishes them to the student."
+      } ]
+    }, {
+      "category" : "STRUCTURE",
+      "description" : "This paragraph spans approximately 11 lines across the page break and exceeds the 5–8-line guideline. Split it after defining regression and persistent issues, then explain the adaptive feedback and supervisor-escalation response separately.",
+      "locations" : [ {
+        "page" : 6,
+        "section" : "4.2 Highlight Changes Across Iterations",
+        "quote" : "If a regression occurs or an issue persists across iterations, the previous feedback was likely hard for the student to understand and act on. A regression means an aspect that was previously fine has worsened, while a persistent issue means earlier feedback flagged the same problem and the student has not yet resolved it. In such cases, the feedback tool should adapt its style, for example by being more explanatory, more verbose, or providing concrete examples that illustrate"
+      }, {
+        "page" : 7,
+        "section" : "4.2 Highlight Changes Across Iterations",
+        "quote" : "the desired outcome. Where the feedback tool repeatedly fails to communicate an issue, it should defer the discussion to the supervisor."
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "category" : "STRUCTURE",
+      "description" : "This paragraph is approximately 11 lines long, exceeding the 5–8-line guideline. Split it into two paragraphs, for example after explaining how the Reviewer supports supervisors, before discussing the resulting quality and scalability benefits.",
+      "locations" : [ {
+        "page" : 4,
+        "section" : "Motivation",
+        "quote" : "Integrating large language models (LLMs) to assist supervisors with non-content-related feedback could improve the thesis writing process. As Figure 1 illustrates, an LLM-powered Reviewer works alongside the supervisor, evaluating the thesis against the research group’s writing guidelines and generating automatic formative feedback [NM06]. This Reviewer covers exactly the repetitive, non-content-related layer of feedback that currently drains supervisors, freeing them to focus on specific content and on discussions with their students, which is key in mentoring environments [BBE10, NM06]. The quality of feedback improves as supervisors have more time to engage deeply with the thesis, leading to better outcomes overall. Additionally, supervisors can provide feedback faster, making the process more scalable."
+      } ]
+    }, {
+      "category" : "STRUCTURE",
+      "description" : "This paragraph spans roughly 13–14 lines and combines three distinct ideas: preprocessing guidelines, the ethics of grading with LLMs, and why formative feedback is less critical. Split it into shorter paragraphs, separating guideline preprocessing from the ethical rationale.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "4.1 Generate Feedback Based on Guidelines",
+        "quote" : "Supervisors should be able to provide their own scientific writing guidelines as well as conventions on the style of theses and proposals. Based on these guidelines, the LLM can provide formative feedback that is restricted to the aspects they cover. Since guidelines may not already be in a suitable format, the LLM may first need to preprocess them into a structured representation it can act on. **Ethically, it is difficult to let LLMs grade a final thesis, as this constitutes normative feedback and requires close scrutiny.** Formative feedback, on the other hand, is less critical since it serves as input for students to improve their work."
+      }, {
+        "page" : 6,
+        "section" : "4.1 Generate Feedback Based on Guidelines",
+        "quote" : "Ethically, it is difficult to let LLMs grade a final thesis, as this constitutes normative feedback and requires close scrutiny. Formative feedback, on the other hand, is less critical since it serves as input for students to improve their work. The idea is that students interpret the feedback themselves and discuss it, either independently or with their supervisor. Therefore, it is less important that every output of the LLM is perfectly correct."
+      } ]
+    }, {
+      "category" : "STRUCTURE",
+      "description" : "This paragraph is approximately 14 lines long, exceeding the recommended maximum of 8 lines. Divide it into separate paragraphs for the three feedback-generation modes and the supervisor-review workflow.",
+      "locations" : [ {
+        "page" : 6,
+        "section" : "4.1 Generate Feedback Based on Guidelines",
+        "quote" : "This approach supports several modes of feedback generation. In one mode, no LLM-generated feedback is produced at all and all feedback comes from the supervisor. Alternatively, the student can obtain instant feedback on their proposal or thesis directly from the LLM, while keeping in mind that the supervisor has not reviewed this output. A third mode combines both sources, as illustrated in Figure 2. In this combined mode, multiple specialized agents analyze specific parts of the thesis in parallel. The supervisor then aggregates and reviews the resulting feedback and adds their own feedback. Finally, the supervisor merges both sets and publishes them to the student."
+      } ]
+    }, {
+      "category" : "STRUCTURE",
+      "description" : "This paragraph spans approximately 11 lines across the page break and exceeds the 5–8-line guideline. Split it after defining regression and persistent issues, then explain the adaptive feedback and supervisor-escalation response separately.",
+      "locations" : [ {
+        "page" : 6,
+        "section" : "4.2 Highlight Changes Across Iterations",
+        "quote" : "If a regression occurs or an issue persists across iterations, the previous feedback was likely hard for the student to understand and act on. A regression means an aspect that was previously fine has worsened, while a persistent issue means earlier feedback flagged the same problem and the student has not yet resolved it. In such cases, the feedback tool should adapt its style, for example by being more explanatory, more verbose, or providing concrete examples that illustrate"
+      }, {
+        "page" : 7,
+        "section" : "4.2 Highlight Changes Across Iterations",
+        "quote" : "the desired outcome. Where the feedback tool repeatedly fails to communicate an issue, it should defer the discussion to the supervisor."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_FORMATTING",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "AI_TRANSPARENCY",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "COMPLETENESS",
+      "title" : "AI use is not tied to specific proposal sections",
+      "description" : "The statement names the tools and their purposes but does not identify which proposal sections each tool was used for. Specify the relevant sections, such as the Abstract, Introduction, Motivation, Objectives, Schedule, and AI Transparency Statement, for each tool or category of use.",
+      "locations" : [ {
+        "page" : 12,
+        "section" : "Transparency in the Use of AI Tools",
+        "quote" : "In preparing this proposal, I made use of several AI-based tools **across different stages of the writing process**."
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "COMPLETENESS",
+      "title" : "AI use is not tied to specific proposal sections",
+      "description" : "The statement names the tools and their purposes but does not identify which proposal sections each tool was used for. Specify the relevant sections, such as the Abstract, Introduction, Motivation, Objectives, Schedule, and AI Transparency Statement, for each tool or category of use.",
+      "locations" : [ {
+        "page" : 12,
+        "section" : "Transparency in the Use of AI Tools",
+        "quote" : "In preparing this proposal, I made use of several AI-based tools **across different stages of the writing process**."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "SCHEDULE",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "METHODOLOGY",
+      "title" : "Iterations are organized as horizontal layers rather than vertical features",
+      "description" : "The schedule is split into horizontal technical layers rather than vertically integrated features: first the existing portal is modularized, then the feedback pipeline is implemented, and only afterward are the two systems connected. Reorganize these iterations around demonstrable end-to-end slices, such as submitting a document with guidelines, generating feedback, allowing supervisor revision, and publishing the result through Thesis Management.",
+      "locations" : [ {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "Iteration 1 (08.06.2026 - 2 weeks) • **Modularize Thesis Management to prepare integration of the feedback module** (Objective 4)"
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "Iteration 2 (22.06.2026 - 2 weeks) • **Implement core feedback generation pipeline** (Objective 1)"
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "Iteration 3 (06.07.2026 - 2 weeks) • **Connect feedback tool to Thesis Management** (Objective 4)"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "COMPLETENESS",
+      "title" : "Multiple deliverables lack measurable acceptance criteria",
+      "description" : "Several iteration items are not measurable deliverables because they do not define an observable outcome or acceptance criterion. Specify what will exist or be demonstrated at the end of each iteration—for example, supported input types, output fields, test cases, evaluation metrics, or a working user flow—instead of using broad verbs such as modularize, implement, or adapt.",
+      "locations" : [ {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "• **Modularize Thesis Management to prepare integration of the feedback module** (Objective 4)"
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "• **Implement core feedback generation pipeline** (Objective 1)"
+      }, {
+        "page" : 10,
+        "section" : "Schedule",
+        "quote" : "• **Adapt feedback style for persistent issues** (more verbose, or defer to supervisor) (Objective 2)"
+      }, {
+        "page" : 10,
+        "section" : "Schedule",
+        "quote" : "• **Surface acknowledgements for improvements in the feedback output** (Objective 2)"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Schedule includes a prohibited documentation task",
+      "description" : "Documentation is a thesis-writing/documentation task, which is explicitly excluded from the development and research schedule. Replace it with a concrete development or research deliverable, such as a reproducible evaluation, usability test, deployment validation, or final bug-fix milestone; thesis writing should not appear as an iteration task.",
+      "locations" : [ {
+        "page" : 10,
+        "section" : "Schedule",
+        "quote" : "Iteration 9 (05.10.2026 - 3 weeks) • Review the system and check for bugs • **Documentation**"
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "COMPLETENESS",
+      "title" : "Final validation work is not measurable",
+      "description" : "The final iteration contains the vague item “review the system and check for bugs” without defining the scope, test suite, target scenarios, or completion criterion. Replace it with measurable validation work, such as running a specified regression test suite, testing the documented end-to-end workflows, and resolving a defined set of release-blocking defects.",
+      "locations" : [ {
+        "page" : 10,
+        "section" : "Schedule",
+        "quote" : "• **Review the system and check for bugs**"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "METHODOLOGY",
+      "title" : "Iterations are organized as horizontal layers rather than vertical features",
+      "description" : "The schedule is split into horizontal technical layers rather than vertically integrated features: first the existing portal is modularized, then the feedback pipeline is implemented, and only afterward are the two systems connected. Reorganize these iterations around demonstrable end-to-end slices, such as submitting a document with guidelines, generating feedback, allowing supervisor revision, and publishing the result through Thesis Management.",
+      "locations" : [ {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "Iteration 1 (08.06.2026 - 2 weeks) • **Modularize Thesis Management to prepare integration of the feedback module** (Objective 4)"
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "Iteration 2 (22.06.2026 - 2 weeks) • **Implement core feedback generation pipeline** (Objective 1)"
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "Iteration 3 (06.07.2026 - 2 weeks) • **Connect feedback tool to Thesis Management** (Objective 4)"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "COMPLETENESS",
+      "title" : "Multiple deliverables lack measurable acceptance criteria",
+      "description" : "Several iteration items are not measurable deliverables because they do not define an observable outcome or acceptance criterion. Specify what will exist or be demonstrated at the end of each iteration—for example, supported input types, output fields, test cases, evaluation metrics, or a working user flow—instead of using broad verbs such as modularize, implement, or adapt.",
+      "locations" : [ {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "• **Modularize Thesis Management to prepare integration of the feedback module** (Objective 4)"
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "• **Implement core feedback generation pipeline** (Objective 1)"
+      }, {
+        "page" : 10,
+        "section" : "Schedule",
+        "quote" : "• **Adapt feedback style for persistent issues** (more verbose, or defer to supervisor) (Objective 2)"
+      }, {
+        "page" : 10,
+        "section" : "Schedule",
+        "quote" : "• **Surface acknowledgements for improvements in the feedback output** (Objective 2)"
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Schedule includes a prohibited documentation task",
+      "description" : "Documentation is a thesis-writing/documentation task, which is explicitly excluded from the development and research schedule. Replace it with a concrete development or research deliverable, such as a reproducible evaluation, usability test, deployment validation, or final bug-fix milestone; thesis writing should not appear as an iteration task.",
+      "locations" : [ {
+        "page" : 10,
+        "section" : "Schedule",
+        "quote" : "Iteration 9 (05.10.2026 - 3 weeks) • Review the system and check for bugs • **Documentation**"
+      } ]
+    }, {
+      "severity" : "MINOR",
+      "category" : "COMPLETENESS",
+      "title" : "Final validation work is not measurable",
+      "description" : "The final iteration contains the vague item “review the system and check for bugs” without defining the scope, test suite, target scenarios, or completion criterion. Replace it with measurable validation work, such as running a specified regression test suite, testing the documented end-to-end workflows, and resolving a defined set of release-blocking defects.",
+      "locations" : [ {
+        "page" : 10,
+        "section" : "Schedule",
+        "quote" : "• **Review the system and check for bugs**"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  } ],
+  "categoryFailures" : {
+    "writing-style" : "tools.jackson.core.exc.StreamReadException: Unexpected close marker '}': expected ']' (for Array starting at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); byte offset: #UNKNOWN])\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); byte offset: #UNKNOWN] (through reference chain: de.tum.cit.aet.thesis.feedback.review.CategoryFindings[\"findings\"])"
+  }
+}

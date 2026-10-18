@@ -1,0 +1,103 @@
+{
+  "findings" : [ {
+    "severity" : "CRITICAL",
+    "category" : "STRUCTURE",
+    "title" : "Missing Introduction",
+    "description" : "Missing required Introduction section."
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "STRUCTURE",
+    "title" : "Missing Motivation",
+    "description" : "Missing required Motivation section."
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "STRUCTURE",
+    "title" : "Missing Objectives",
+    "description" : "Missing required Objectives section with subsections and bullet list."
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "OTHER",
+    "title" : "Missing AI Transparency Statement",
+    "description" : "AI transparency statement is missing."
+  }, {
+    "severity" : "MAJOR",
+    "category" : "METHODOLOGY",
+    "title" : "Missing actors in Problem",
+    "description" : "Problem section does not identify actors affected by the problem.",
+    "locations" : [ {
+      "page" : 1,
+      "section" : "Problem Statement",
+      "quote" : "Problem Statement: The interactive learning platform Artemis currently only supports setups with an external CI server."
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "CITATION",
+    "title" : "Insufficient bibliography entries",
+    "description" : "Bibliography contains only 5 entries; at least 6-8 peer-reviewed publications required.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Bibliography",
+      "quote" : "References"
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "FIGURES",
+    "title" : "Insufficient number of figures",
+    "description" : "Only one figure is present; at least two diagrams are required.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Figure",
+      "quote" : "Figure 1: Depiction of the top-level workfow of the interactions in relation to Artemis and GitLab CI"
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "FIGURES",
+    "title" : "Figure not referenced",
+    "description" : "Figure 1 is not referenced in the main text.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Figure",
+      "quote" : "Figure 1: Depiction of the top-level workfow of the interactions in relation to Artemis and GitLab CI"
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "FIGURES",
+    "title" : "Missing UML diagram",
+    "description" : "The only figure present is a workflow diagram, not a suitable UML diagram as required.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Figure",
+      "quote" : "Figure 1: Depiction of the top-level workfow of the interactions in relation to Artemis and GitLab CI"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "WRITING",
+    "title" : "Forbidden sentence starter",
+    "description" : "Sentence starts with forbidden starter 'Since' in the abstract.",
+    "locations" : [ {
+      "page" : 1,
+      "section" : "Abstract",
+      "quote" : "Since some Version Control (VC) systems include a Continuous Integration (CI) application, it is possible to reduce the efort required to maintain the servers and migrate the CI service from external applications as Jenkins to the inbuilt CI service."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "COMPLETENESS",
+    "title" : "Iteration length too short",
+    "description" : "Schedule defines iterations of a single week, which is shorter than the required 2-4 weeks.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Schedule",
+      "quote" : "–  5th week: Proposal"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "COMPLETENESS",
+    "title" : "Thesis writing tasks in schedule",
+    "description" : "Schedule includes thesis writing tasks, which are not allowed in the schedule.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Schedule",
+      "quote" : "–  1st week: Thesis"
+    } ]
+  } ]
+}

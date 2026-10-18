@@ -1,0 +1,250 @@
+{
+  "job": "label-proposal-p2-pass2-05",
+  "answer": {
+    "judgements": [
+      {
+        "id": "Fb2424517c4",
+        "rule": null,
+        "reason": "No rule requires schedule dates to align with the cover-page start date.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F850a85ea1c",
+        "rule": "R12",
+        "reason": "Sentences must not start with 'As'; page 4 contains 'As Figure 1 illustrates, ...'.",
+        "label": "valid"
+      },
+      {
+        "id": "F24ec1aba2a",
+        "rule": "R2",
+        "reason": "The Problem section is about 26 lines, compared with roughly 32 lines on a full page. That is at most marginally over 3/4 page, not a clear breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "F8cc39ed026",
+        "rule": "R7",
+        "reason": "At least 6-8 peer-reviewed publications are required; the bibliography lists only five.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb96ac8007c",
+        "rule": "R7",
+        "reason": "The bibliography contains only five publications, below the required 6-8.",
+        "label": "valid"
+      },
+      {
+        "id": "F037f5bc335",
+        "rule": "R12",
+        "reason": "'As Figure 1 illustrates' begins a sentence with a forbidden starter.",
+        "label": "valid"
+      },
+      {
+        "id": "Fcfab411e95",
+        "rule": "R7",
+        "reason": "There are only five bibliography entries, fewer than the required 6-8.",
+        "label": "valid"
+      },
+      {
+        "id": "F2696620fba",
+        "rule": "R12",
+        "reason": "'AI' is never defined, yet it appears in the Figure 2 caption and the transparency heading.",
+        "label": "valid"
+      },
+      {
+        "id": "F3c64831244",
+        "rule": "R12",
+        "reason": "Sentences starting with 'As', 'Since' and 'Because' all occur on pages 4-5 as quoted.",
+        "label": "valid"
+      },
+      {
+        "id": "F00e7757c2d",
+        "rule": "R19",
+        "reason": "The early iterations are split by layer (modularize the portal, build the pipeline, then connect them) instead of delivering vertically integrated features.",
+        "label": "valid"
+      },
+      {
+        "id": "F24de70941a",
+        "rule": "R3",
+        "reason": "Section 4.1 has two paragraphs ('Supervisors should...' and 'This approach supports...').",
+        "label": "invalid"
+      },
+      {
+        "id": "F81f02bcd27",
+        "rule": "R20",
+        "reason": "Iteration 9 contains a 'Documentation' task, which is forbidden in the schedule.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc537c35473",
+        "rule": "R17",
+        "reason": "The statement names tools and their purposes but no specific proposal sections.",
+        "label": "valid"
+      },
+      {
+        "id": "F87b9fc1243",
+        "rule": "R12",
+        "reason": "The sentence starts with the forbidden word 'As'.",
+        "label": "valid"
+      },
+      {
+        "id": "F5f5b0ce5b4",
+        "rule": "R11",
+        "reason": "The text uses passive constructions such as 'are governed by', 'no LLM-generated feedback is produced' and 'is handed in'; one of the quotes is actually active and slightly misquoted.",
+        "label": "valid"
+      },
+      {
+        "id": "Ffad8a94740",
+        "rule": "R13",
+        "reason": "The first Motivation paragraph runs about 10 lines, beyond the 5-8 line target, and covers several ideas.",
+        "label": "valid"
+      },
+      {
+        "id": "F42de2ef2c7",
+        "rule": "R11",
+        "reason": "Discourse connectors like 'Moreover' are transitions, not filler words, so they do not breach the filler-word rule.",
+        "label": "invalid"
+      },
+      {
+        "id": "F5f7658ed41",
+        "rule": null,
+        "reason": "No rule covers whether schedule dates match the stated start date.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F58e71fac4d",
+        "rule": "R3",
+        "reason": "The section gives a short intro and a list of four objectives; a numbered list satisfies the list requirement.",
+        "label": "invalid"
+      },
+      {
+        "id": "F85976983e5",
+        "rule": "R2",
+        "reason": "Body text from the Abstract to the Schedule fills roughly 7.5 pages, clearly above the 4-6 page limit; the cited page number is wrong.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb4e6fbeccc",
+        "rule": "R17",
+        "reason": "The transparency statement does not name the sections where each tool was used.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb58e4ecf79",
+        "rule": "R8",
+        "reason": "[Bog+07] is the standard alpha key for four or more authors, consistent with the other keys.",
+        "label": "invalid"
+      },
+      {
+        "id": "Febc2c478dd",
+        "rule": "R12",
+        "reason": "The sentence starts with the forbidden 'As'.",
+        "label": "valid"
+      },
+      {
+        "id": "F77467539c7",
+        "rule": null,
+        "reason": "Date consistency between the schedule and the start date is not covered by any rule.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F12c7cfe78b",
+        "rule": null,
+        "reason": "No rule forbids the first person; R17 in fact requires a first-person statement.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F5600aa3fbd",
+        "rule": "R12",
+        "reason": "'Since guidelines may not already be in a suitable format...' starts with a forbidden word.",
+        "label": "valid"
+      },
+      {
+        "id": "Fbb1ee17817",
+        "rule": "R12",
+        "reason": "'AI' is used without ever being defined.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd4ac62c31c",
+        "rule": null,
+        "reason": "Avoiding 'I' is not a rule; R17 requires first person.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F4d46f18303",
+        "rule": "R16",
+        "reason": "The same concept appears as both 'non-content-related' and 'non-content-specific'.",
+        "label": "valid"
+      },
+      {
+        "id": "Fa11d859761",
+        "rule": "R20",
+        "reason": "Iteration 9 lists 'Documentation', which the schedule must not include.",
+        "label": "valid"
+      },
+      {
+        "id": "F53b0751368",
+        "rule": "R12",
+        "reason": "'AI' appears (Figure 2 caption, transparency statement) without definition.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc49f258b40",
+        "rule": "R3",
+        "reason": "Each objective subsection 4.1-4.4 actually contains two paragraphs.",
+        "label": "invalid"
+      },
+      {
+        "id": "F017aa7f20c",
+        "rule": "R13",
+        "reason": "The quoted sentence ends the 'At around 50 research groups' paragraph rather than standing alone.",
+        "label": "invalid"
+      },
+      {
+        "id": "F3fcf06ed15",
+        "rule": "R16",
+        "reason": "The system is called 'the tool', 'LLM-powered Reviewer' and 'the feedback tool' interchangeably.",
+        "label": "valid"
+      },
+      {
+        "id": "F9c1f223372",
+        "rule": "R11",
+        "reason": "The quoted sentence ('Each university often defines...', 'the academic community has not standardized') is already in active voice.",
+        "label": "invalid"
+      },
+      {
+        "id": "F64b24fd2d1",
+        "rule": "R19",
+        "reason": "'Evaluate different LLM models and providers' gives no measurable deliverable or decision artifact.",
+        "label": "valid"
+      },
+      {
+        "id": "F9464b7b792",
+        "rule": "R7",
+        "reason": "Only five bibliography entries are listed, below the required 6-8.",
+        "label": "valid"
+      },
+      {
+        "id": "F4384e84c4e",
+        "rule": "R7",
+        "reason": "The bibliography has five publications, fewer than six.",
+        "label": "valid"
+      },
+      {
+        "id": "F1a2e66d137",
+        "rule": "R2",
+        "reason": "The Problem section is only marginally over 3/4 page (about 26 lines of a roughly 32-line page), so the breach is not clear.",
+        "label": "invalid"
+      },
+      {
+        "id": "F7cfd06e30b",
+        "rule": "R15",
+        "reason": "Capitalizing a four-letter preposition like 'With' is acceptable in common title-case styles, so the heading is not clearly wrong.",
+        "label": "invalid"
+      }
+    ]
+  },
+  "costUsd": 0.1344214,
+  "durationMs": 51962,
+  "model": "claude-opus-5-5[1m]"
+}

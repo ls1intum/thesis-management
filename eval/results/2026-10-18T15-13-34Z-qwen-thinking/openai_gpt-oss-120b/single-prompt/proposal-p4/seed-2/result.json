@@ -1,0 +1,91 @@
+{
+  "assessment" : "NEEDS_WORK",
+  "score" : 40,
+  "summary" : "The proposal is missing a critical Abstract section and includes a non‑peer‑reviewed bibliography entry, both serious deficiencies. Several major issues—such as presenting a solution in the Problem section, a double‑verb objective, a missing AI‑transparency verification sentence, and an impermissible thesis‑writing task in the schedule—must be corrected before submission. Minor writing style and figure caption problems are also noted.",
+  "findings" : [ {
+    "severity" : "CRITICAL",
+    "category" : "completeness",
+    "title" : "Missing Abstract section",
+    "description" : "The proposal does not contain an Abstract section, which is required."
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "citation",
+    "title" : "Bibliography contains non‑peer‑reviewed source",
+    "description" : "The bibliography entry for the Keycloak Server Administration Guide is an online documentation resource, not a peer‑reviewed publication.",
+    "locations" : [ {
+      "page" : 8,
+      "section" : "Bibliography",
+      "quote" : "[Key26] **Keycloak Server Administration Guide**. Accessed: Oct. 18, 2026. [Online]."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "logic",
+    "title" : "Problem section presents a solution",
+    "description" : "The Problem section should only describe the problem; it introduces a self‑service platform as a solution.",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "Problem",
+      "quote" : "A **self-service platform** that arms the workflow engine of Keycloak with an expiry date at grant time would end this accumulation."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "writing",
+    "title" : "Objective bullet uses double verbs",
+    "description" : "The second objective bullet contains two verbs \"Design and implement\", which violates the rule that objectives must use a single verb.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Objective",
+      "quote" : "•   **Design and implement**      connectors     with   expiry"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "other",
+    "title" : "AI transparency statement missing verification sentence",
+    "description" : "The AI transparency statement does not contain a sentence confirming that the author has carefully checked all AI‑generated text.",
+    "locations" : [ {
+      "page" : 10,
+      "section" : "AI Transparency Statement",
+      "quote" : "I used the following generative artificial intelligence (AI) tool while preparing this proposal…"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "other",
+    "title" : "Schedule includes thesis‑writing task",
+    "description" : "Iteration 7 lists \"Write the thesis and prepare final presentation\", which is prohibited for the schedule.",
+    "locations" : [ {
+      "page" : 7,
+      "section" : "Schedule",
+      "quote" : "•   Iteration 7 (18–31 March): **Write the thesis** and prepare final presentation."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "figures",
+    "title" : "Figure 2 caption is too brief",
+    "description" : "The caption for Figure 2 is just \"System Architecture\", which is not sufficiently descriptive.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Figures",
+      "quote" : "Figure  2: **System Architecture**"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Use of contractions",
+    "description" : "The proposal contains contractions such as \"doesn’t\", which are prohibited.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Problem",
+      "quote" : "The current process **doesn’t** scale and is the worst bottleneck of the chair."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Use of superlative language",
+    "description" : "The phrase \"the worst bottleneck\" uses a superlative, which should be avoided.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Problem",
+      "quote" : "is the **worst** bottleneck of the chair."
+    } ]
+  } ]
+}

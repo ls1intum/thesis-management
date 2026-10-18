@@ -1,0 +1,94 @@
+{
+  "assessment" : "NEEDS_WORK",
+  "score" : 68,
+  "summary" : "The proposal presents a coherent, technically specific access-management problem, four substantial objectives, two diagrams, and a generally measurable iterative schedule. It needs revision before approval: the required abstract is missing; the Problem section includes a proposed solution; one objective uses double verbs; the bibliography contains an Internet documentation entry; Figure 2 has a generic caption; the prose contains a contraction; and the AI transparency statement lacks the required confirmation that generated text was carefully checked. The schedule’s final iteration also allocates time to thesis writing and presentation preparation rather than development/research.",
+  "findings" : [ {
+    "severity" : "CRITICAL",
+    "category" : "COMPLETENESS",
+    "title" : "Abstract is missing",
+    "description" : "Add a dedicated Abstract of approximately one-third to one-half page before the Introduction. The current document begins with the Introduction and contains no abstract.",
+    "locations" : [ {
+      "section" : "Abstract"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "LOGIC",
+    "title" : "Problem section proposes a solution",
+    "description" : "Remove the proposed platform and its mechanism from the Problem section. Keep this section to the actors, current deficiencies, and consequences; move the proposed intervention to Motivation or Objective.",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "Problem",
+      "quote" : "A self-service platform that arms the workflow engine of Keycloak with an expiry date at grant time would end this accumulation."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "LOGIC",
+    "title" : "Objective uses double verbs",
+    "description" : "Rewrite the objective as one action rather than two coordinated verbs—for example, choose either designing the connector contract or implementing connectors, or make one the high-level objective and the other a subordinate method.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Objective",
+      "quote" : "Design and implement connectors with expiry"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "CITATION",
+    "title" : "Citation appears after the full stop",
+    "description" : "Place the citation before the sentence-ending full stop. Apply the same correction wherever a citation follows a full stop, including the cited temporal-model sentence.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Motivation",
+      "quote" : "Temporal model. [BBF01] Joshi et al. generalise this idea to role assignments with a limited duration [Jos+05]."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "FIGURES",
+    "title" : "Figure 2 has an insufficiently informative caption",
+    "description" : "Expand the caption to explain the architecture’s components, interfaces, and the role of the connectors; the current caption does not provide meaningful descriptive information beyond a generic label.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Figures & Diagrams",
+      "quote" : "Figure 2: System Architecture"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "WRITING",
+    "title" : "Contraction used in formal prose",
+    "description" : "Replace the contraction with its expanded form (“does not”). Search for and correct any other contractions to meet the proposal’s formal-style requirement.",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "Problem",
+      "quote" : "The current process doesn’t scale and is the worst bottleneck of the chair."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "COMPLETENESS",
+    "title" : "AI statement lacks review confirmation",
+    "description" : "Add a first-person sentence confirming that you carefully checked all AI-generated text for correctness and coherence. The statement currently identifies the tool, purposes, and scope but provides no review confirmation.",
+    "locations" : [ {
+      "page" : 10,
+      "section" : "Transparency in the Use of AI Tools",
+      "quote" : "I used the following generative artificial intelligence (AI) tool while preparing this proposal."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "STRUCTURE",
+    "title" : "Introduction jumps directly to a subsection",
+    "description" : "Add a short introductory paragraph immediately after the Introduction heading and before subsection 1.1, briefly orienting the reader to what the chapter covers.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Introduction",
+      "quote" : "1 Introduction\n\n1.1 Setting"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "CITATION",
+    "title" : "Internet documentation is listed as a bibliography entry",
+    "description" : "Move the Keycloak administration guide out of the bibliography and cite it in a footnote instead. The bibliography should contain only scientific peer-reviewed publications.",
+    "locations" : [ {
+      "page" : 8,
+      "section" : "Bibliography",
+      "quote" : "[Key26]       Keycloak     Authors,    “Keycloak     Server    Administration      Guide. ”   Accessed: Oct. 18, 2026. [Online]. Available: https://www.keycloak.org/docs/"
+    } ]
+  } ]
+}

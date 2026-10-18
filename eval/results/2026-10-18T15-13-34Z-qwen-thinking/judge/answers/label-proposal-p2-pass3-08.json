@@ -1,0 +1,250 @@
+{
+  "job": "label-proposal-p2-pass3-08",
+  "answer": {
+    "judgements": [
+      {
+        "id": "Fd8c261fb02",
+        "rule": "R17",
+        "reason": "R17 requires the statement to name the sections involved. The statement lists tools and purposes but refers only to 'different stages of the writing process' and names no sections.",
+        "label": "valid"
+      },
+      {
+        "id": "F2f4c8f97d4",
+        "rule": "R12",
+        "reason": "R12 forbids starting a sentence with 'Because'. The Motivation sentence 'Because the feedback tool is powered by LLMs...' starts with it and also uses passive voice.",
+        "label": "valid"
+      },
+      {
+        "id": "F187e9af21c",
+        "rule": "R20",
+        "reason": "R20 forbids documentation tasks in the schedule. Iteration 9 lists 'Documentation' as a work item.",
+        "label": "valid"
+      },
+      {
+        "id": "F7688f7397d",
+        "rule": "R12",
+        "reason": "R12 forbids starting sentences with 'As' or 'Because'. 'As Figure 1 illustrates...' and 'Because the feedback tool...' both appear in the Motivation.",
+        "label": "valid"
+      },
+      {
+        "id": "Fe896fe9a57",
+        "rule": "R3",
+        "reason": "R3 requires a short intro followed by a list of 3-4 objectives. The document has an intro sentence and a four-item list with one line per item, so it complies; numbering the list is not a breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fb2424517c4",
+        "rule": null,
+        "reason": "No rule requires the schedule dates to match the cover-page start date.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F17d9d43e0f",
+        "rule": "R17",
+        "reason": "R17 requires the sections involved to be named. The statement names no sections.",
+        "label": "valid"
+      },
+      {
+        "id": "Fbb1ee17817",
+        "rule": "R12",
+        "reason": "R12 requires abbreviations to be defined before use. 'AI' appears in the Figure 2 caption and the transparency statement and is never spelled out.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc0423e9733",
+        "rule": null,
+        "reason": "No rule covers whether the schedule dates are consistent with the stated start date.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Fd8f1e8bcb1",
+        "rule": "R5",
+        "reason": "R5 says the Motivation must not repeat the Problem. The Motivation restates the Problem's point about repetitive, non-content-related feedback that 'currently drains supervisors'.",
+        "label": "valid"
+      },
+      {
+        "id": "F8b7e3ee817",
+        "rule": "R20",
+        "reason": "R20 forbids documentation tasks in the schedule. Iteration 9 includes 'Documentation'.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd2c1a3146c",
+        "rule": "R7",
+        "reason": "R7 requires at least 6-8 peer-reviewed publications. The bibliography has only five entries.",
+        "label": "valid"
+      },
+      {
+        "id": "F91cd585df3",
+        "rule": "R17",
+        "reason": "R17 requires the sections involved to be named. The statement does not name any sections.",
+        "label": "valid"
+      },
+      {
+        "id": "Fbd9e82a82b",
+        "rule": "R16",
+        "reason": "R16 requires consistent terminology for the same concept. The same system is called 'Reviewer'/'LLM Reviewer' in the Motivation and Figure 1, but 'the feedback tool' elsewhere.",
+        "label": "valid"
+      },
+      {
+        "id": "F5f5b0ce5b4",
+        "rule": "R11",
+        "reason": "R11 requires active voice. The document contains passive constructions such as 'are governed by', 'is produced', and 'is handed in'. One cited quote is actually active, but the other locations show the breach.",
+        "label": "valid"
+      },
+      {
+        "id": "F7682c0404e",
+        "rule": "R19",
+        "reason": "R19 requires measurable, vertically integrated deliverables. Iteration 9's 'Review the system and check for bugs' is a vague end-phase testing task, not a measurable deliverable.",
+        "label": "valid"
+      },
+      {
+        "id": "F5387ceeaa3",
+        "rule": "R19",
+        "reason": "R19 requires measurable deliverables. 'Review the system and check for bugs' has no defined scope or completion criteria.",
+        "label": "valid"
+      },
+      {
+        "id": "F20835363c1",
+        "rule": "R20",
+        "reason": "R20 forbids documentation tasks in the schedule. Iteration 9 lists 'Documentation'.",
+        "label": "valid"
+      },
+      {
+        "id": "F5c0ed644de",
+        "rule": "R11",
+        "reason": "R11 says to avoid filler words. 'Additionally' is a transition that connects two points, not a filler word.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fb6c7f567f3",
+        "rule": null,
+        "reason": "The rules ask for a visionary Motivation that does not repeat the Problem. No rule requires the Motivation to argue for scientific importance.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Fbf1da9da5f",
+        "rule": "R13",
+        "reason": "R13 asks for 5-8 line paragraphs with one idea each. The first paragraph of 4.1 runs about 11 lines and mixes guideline preprocessing with the ethics of formative versus normative feedback.",
+        "label": "valid"
+      },
+      {
+        "id": "F0ae9d17f45",
+        "rule": "R13",
+        "reason": "R13 requires one idea per paragraph. The first 4.1 paragraph combines guideline preprocessing with ethical considerations; the quote is partly paraphrased, but the central claim holds.",
+        "label": "valid"
+      },
+      {
+        "id": "F85976983e5",
+        "rule": "R2",
+        "reason": "R2 limits the text to 4-6 pages. The text from Abstract through Schedule fills roughly eight printed pages of body text, a clear breach, although the cited location and the 12-page count are imprecise.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd971a7b640",
+        "rule": "R15",
+        "reason": "R15 requires title case. 'Integrate With Thesis Management' is valid title case under common styles that capitalize four-letter prepositions, so the heading complies.",
+        "label": "invalid"
+      },
+      {
+        "id": "F562ecf87ba",
+        "rule": "R13",
+        "reason": "R13 limits paragraphs to 5-8 lines. The Introduction's first paragraph runs about 11 lines and the second Abstract paragraph about 9.",
+        "label": "valid"
+      },
+      {
+        "id": "F5ba77f5534",
+        "rule": "R19",
+        "reason": "R19 requires vertically integrated deliverables. Iterations 1-3 split the work into horizontal layers (modularize the portal, build the pipeline, then connect them).",
+        "label": "valid"
+      },
+      {
+        "id": "F8cc39ed026",
+        "rule": "R7",
+        "reason": "R7 requires at least 6-8 peer-reviewed publications. Only five are listed.",
+        "label": "valid"
+      },
+      {
+        "id": "F87b9fc1243",
+        "rule": "R12",
+        "reason": "R12 forbids starting a sentence with 'As'. 'As Figure 1 illustrates...' does so.",
+        "label": "valid"
+      },
+      {
+        "id": "F18d4e27f5f",
+        "rule": "R7",
+        "reason": "R7 requires at least 6-8 peer-reviewed publications. Only five are listed.",
+        "label": "valid"
+      },
+      {
+        "id": "Fe83e49beb1",
+        "rule": "R9",
+        "reason": "R9 requires at least one suitable UML diagram. Figure 1 is an analysis object model and Figure 2 is an activity diagram, both UML diagrams.",
+        "label": "invalid"
+      },
+      {
+        "id": "F64b24fd2d1",
+        "rule": "R19",
+        "reason": "R19 requires measurable deliverables. 'Evaluate different LLM models and providers' gives no criteria or concrete output.",
+        "label": "valid"
+      },
+      {
+        "id": "F73913f1458",
+        "rule": "R12",
+        "reason": "R12 forbids starting sentences with 'As', 'Since', or 'Because'. All three starters occur in the document.",
+        "label": "valid"
+      },
+      {
+        "id": "F5cd09658bb",
+        "rule": "R7",
+        "reason": "R7 requires internet sources to go in footnotes. The GitHub URL is already in footnote 1, not in the running text.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fbbfbe85c09",
+        "rule": null,
+        "reason": "No rule forbids the first person. R17 actually requires the transparency statement to be written in the first person.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F869455d3ac",
+        "rule": "R12",
+        "reason": "R12 forbids starting sentences with 'As', 'Because', or 'Since'. All three occur; some of the cited page numbers are slightly off.",
+        "label": "valid"
+      },
+      {
+        "id": "F71c0286c62",
+        "rule": "R19",
+        "reason": "R19 requires vertically integrated iterations. The early iterations separate portal modularization, pipeline implementation, and integration into horizontal layers.",
+        "label": "valid"
+      },
+      {
+        "id": "F4678964364",
+        "rule": "R16",
+        "reason": "R16 requires consistent terminology. The system is called 'Reviewer' in the Motivation and Figure 1 but 'the feedback tool' elsewhere.",
+        "label": "valid"
+      },
+      {
+        "id": "Fcfab411e95",
+        "rule": "R7",
+        "reason": "R7 requires at least 6-8 peer-reviewed publications. Only five are listed.",
+        "label": "valid"
+      },
+      {
+        "id": "F2e541610b5",
+        "rule": "R7",
+        "reason": "R7 requires at least 6-8 peer-reviewed publications. Only five are listed.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb3d4696a4d",
+        "rule": "R16",
+        "reason": "R16 requires consistent terminology. The names 'LLM Reviewer' and 'feedback tool' are used for the same component and never linked.",
+        "label": "valid"
+      }
+    ]
+  },
+  "costUsd": 0.1225808,
+  "durationMs": 49441,
+  "model": "claude-opus-5-5[1m]"
+}

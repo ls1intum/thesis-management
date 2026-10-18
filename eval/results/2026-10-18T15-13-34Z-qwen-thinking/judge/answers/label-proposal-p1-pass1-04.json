@@ -1,0 +1,250 @@
+{
+  "job": "label-proposal-p1-pass1-04",
+  "answer": {
+    "judgements": [
+      {
+        "id": "F55fc8a59b8",
+        "rule": "R7",
+        "reason": "R7 requires at least 6-8 peer-reviewed publications. The bibliography lists only five entries.",
+        "label": "valid"
+      },
+      {
+        "id": "Fcbf5d64929",
+        "rule": "R1",
+        "reason": "R1 requires an Introduction. The document goes straight from the Abstract to '1 Problem Statement'.",
+        "label": "valid"
+      },
+      {
+        "id": "Fa5d4da21a8",
+        "rule": "R9",
+        "reason": "The finding's central claim is that Figure 1 is a sequence diagram. The figure shows actors with numbered messages (1.1, 2.2, ...) and no lifelines, which resembles a communication diagram, so the claim is not supported.",
+        "label": "invalid"
+      },
+      {
+        "id": "F03feda1826",
+        "rule": "R9",
+        "reason": "R9 requires at least two figures. The document contains only Figure 1.",
+        "label": "valid"
+      },
+      {
+        "id": "F51a1de2aec",
+        "rule": "R12",
+        "reason": "R12 requires abbreviations to be defined before use. 'API' appears in the Abstract and later sections and is never expanded.",
+        "label": "valid"
+      },
+      {
+        "id": "Fbcf1c93bbd",
+        "rule": "R12",
+        "reason": "R12 forbids certain sentence openers. The quoted sentences beginning with 'Since', 'To', and 'As' all occur in the document.",
+        "label": "valid"
+      },
+      {
+        "id": "F3c91fd007f",
+        "rule": "R1",
+        "reason": "R1 requires an Introduction. There is none; the document goes from the Abstract straight to the Problem Statement.",
+        "label": "valid"
+      },
+      {
+        "id": "Fec9692a45e",
+        "rule": null,
+        "reason": "No rule prohibits first-person 'I'.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Fa84f16cbcd",
+        "rule": "R3",
+        "reason": "R3 requires an Objective section with one subsection per objective. Section 4 is 'System Requirements and Top Level Design', and no objectives or objective subsections exist.",
+        "label": "valid"
+      },
+      {
+        "id": "Ff9de2dea4c",
+        "rule": "R12",
+        "reason": "R12 forbids certain sentence openers. Sentences beginning with 'Since', 'To', 'In order to', and 'As' all occur in the document.",
+        "label": "valid"
+      },
+      {
+        "id": "F1d8657018d",
+        "rule": "R20",
+        "reason": "R20 bars thesis-writing and documentation tasks from the schedule. The schedule lists 'Documentation...', 'Writing', and 'Thesis'.",
+        "label": "valid"
+      },
+      {
+        "id": "F2686afef25",
+        "rule": "R20",
+        "reason": "R20 bars thesis-writing and documentation tasks from the schedule. The schedule contains 'October: Writing' and other thesis and documentation entries.",
+        "label": "valid"
+      },
+      {
+        "id": "F2a9e5a9bf9",
+        "rule": "R13",
+        "reason": "R13 asks for prose rather than bullet points. The abstract uses labelled paragraphs, but they are full prose sentences, not bullet points, so it does not break R13.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fdd637c70c7",
+        "rule": "R2",
+        "reason": "R2 limits the Problem section to 3/4 page. The Problem Statement fills only about half of page 2, so there is no clear breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "F7edf24fedc",
+        "rule": "R1",
+        "reason": "R1 requires a Motivation section. The document has no such section.",
+        "label": "valid"
+      },
+      {
+        "id": "F90500cbc83",
+        "rule": "R17",
+        "reason": "R17 requires an AI transparency statement. The document contains none.",
+        "label": "valid"
+      },
+      {
+        "id": "Fa0c2999182",
+        "rule": "R12",
+        "reason": "R12 forbids starting sentences with 'Since'. The 'Since the benefts...' sentence on page 3 does this. The quoted 'Because...' sentence does not appear in the document, and the section label is wrong, but the central claim holds.",
+        "label": "valid"
+      },
+      {
+        "id": "F67ecedf0c2",
+        "rule": "R12",
+        "reason": "R12 forbids starting sentences with 'Since'. The abstract sentence begins with 'Since'.",
+        "label": "valid"
+      },
+      {
+        "id": "F8fe981d7a3",
+        "rule": null,
+        "reason": "No rule prohibits first-person 'I'.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F777d128c56",
+        "rule": "R10",
+        "reason": "R10 requires a long, informative caption. Figure 1 has a short one-line caption that does not explain the interactions shown.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb5104fa1c8",
+        "rule": "R4",
+        "reason": "R4 requires negative consequences for identified actors. The build-plan and exam problems do not name the affected actors (instructors, students) or how each is harmed.",
+        "label": "valid"
+      },
+      {
+        "id": "F829cfca4aa",
+        "rule": "R10",
+        "reason": "R10 requires every figure to be referenced in the text. Figure 1 is never referenced; the text only points to 'section 4'.",
+        "label": "valid"
+      },
+      {
+        "id": "F309eb1a121",
+        "rule": "R12",
+        "reason": "R12 forbids certain sentence openers. All six quoted openers ('Since', 'To', 'As', 'In order to') occur in the document.",
+        "label": "valid"
+      },
+      {
+        "id": "Ffdbe3873a7",
+        "rule": "R4",
+        "reason": "R4 allows only problems and consequences in the Problem section. The Problem Statement proposes changing build plans after submission, which is a solution.",
+        "label": "valid"
+      },
+      {
+        "id": "F7ab5d7a0e4",
+        "rule": "R16",
+        "reason": "R16 requires consistent terminology. The same term appears both as 'CI Server' and 'CI server', and as 'VC Server' and 'VC server', in the author's prose.",
+        "label": "valid"
+      },
+      {
+        "id": "Fa2a7953693",
+        "rule": null,
+        "reason": "No rule covers typos.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F7e5a03d497",
+        "rule": "R3",
+        "reason": "R3 requires objective subsections of at least two paragraphs each. No objective subsections exist.",
+        "label": "valid"
+      },
+      {
+        "id": "Fcf42683d81",
+        "rule": "R7",
+        "reason": "R7 requires at least 6-8 peer-reviewed publications. Only five are cited.",
+        "label": "valid"
+      },
+      {
+        "id": "Fec98fc3c65",
+        "rule": "R20",
+        "reason": "R20 bars thesis-writing and documentation tasks from the schedule. The schedule contains documentation, writing, and thesis entries.",
+        "label": "valid"
+      },
+      {
+        "id": "F962b2a60e4",
+        "rule": "R11",
+        "reason": "R11 requires active voice. The quoted passive constructions occur in the document, e.g. 'the base build plan is copied' and 'must be updated manually'.",
+        "label": "valid"
+      },
+      {
+        "id": "F24c48659b6",
+        "rule": "R11",
+        "reason": "R11 asks authors to avoid filler words. The filler 'very' appears in 'very cumbersome'. Some other words listed, such as 'additional', are questionable, but at least one location shows the breach.",
+        "label": "valid"
+      },
+      {
+        "id": "F7f53ed3d6e",
+        "rule": "R12",
+        "reason": "R12 forbids starting sentences with 'Since'. The quoted sentence on page 3 begins with 'Since'.",
+        "label": "valid"
+      },
+      {
+        "id": "F71ae2b3579",
+        "rule": "R1",
+        "reason": "R1 requires an Introduction. The document goes from the Abstract directly to the Problem Statement.",
+        "label": "valid"
+      },
+      {
+        "id": "Fcbe29203bb",
+        "rule": "R16",
+        "reason": "R16 requires consistent terminology. The author writes both 'VC Server' and 'VC server' for the same concept.",
+        "label": "valid"
+      },
+      {
+        "id": "F0f293491f0",
+        "rule": "R19",
+        "reason": "R19 requires measurable deliverables. The schedule items 'Models', 'Revise models', and 'Implement improvements' are vague and not measurable.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb03f529053",
+        "rule": "R10",
+        "reason": "R10 requires every figure to be referenced in the text. Figure 1 is never referenced by number; the text only says 'illustrated in section 4'.",
+        "label": "valid"
+      },
+      {
+        "id": "Ffbebb418f9",
+        "rule": "R13",
+        "reason": "R13 asks for 5-8 line paragraphs. Section 4's opening paragraph is a single one-line sentence.",
+        "label": "valid"
+      },
+      {
+        "id": "F44f063060b",
+        "rule": "R20",
+        "reason": "R20 bars requirements work and thesis-writing or documentation tasks from the schedule. The schedule contains a 'Requirements' task and writing, documentation, and thesis tasks.",
+        "label": "valid"
+      },
+      {
+        "id": "F9eec1f42e1",
+        "rule": "R12",
+        "reason": "R12 forbids starting sentences with 'Since'. The abstract sentence begins with 'Since'.",
+        "label": "valid"
+      },
+      {
+        "id": "F3679bf5e41",
+        "rule": "R16",
+        "reason": "R16 requires consistent terminology. The author uses 'CI server', 'CI service', 'CI system', and 'CI application' interchangeably for the same CI component.",
+        "label": "valid"
+      }
+    ]
+  },
+  "costUsd": 0.2797588,
+  "durationMs": 40603,
+  "model": "claude-opus-5-5[1m]"
+}

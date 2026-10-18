@@ -1,0 +1,299 @@
+{
+  "categories" : [ {
+    "category" : "STRUCTURE",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Subsection 4.1 lacks required two paragraphs",
+      "description" : "Section 4.1 \"Unify Heterogeneous Resources in One Tree\" contains only a single paragraph, while each objective subsection must consist of at least two paragraphs.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "**I model the resources as a tree whose folders pass maintainership, audit policy, and grants down to leaves bound to target systems, as the UML object diagram in Figure 2 shows. One approval on a folder covers every resource beneath it, including later additions. A transitive-closure table stores the tree, and a fan-out cap keeps an approval on the root from provisioning the whole infrastructure.**"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Subsection 4.1 lacks required two paragraphs",
+      "description" : "Section 4.1 \"Unify Heterogeneous Resources in One Tree\" contains only a single paragraph, while each objective subsection must consist of at least two paragraphs.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "**I model the resources as a tree whose folders pass maintainership, audit policy, and grants down to leaves bound to target systems, as the UML object diagram in Figure 2 shows. One approval on a folder covers every resource beneath it, including later additions. A transitive-closure table stores the tree, and a fan-out cap keeps an approval on the root from provisioning the whole infrastructure.**"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "PROBLEM_MOTIVATION_OBJECTIVES",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "BIBLIOGRAPHY",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "FIGURES",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STYLE",
+    "generated" : [ {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Passive voice usage",
+      "description" : "Passive constructions are used, reducing clarity and making the actor ambiguous.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "access **granted** for one project outlives the time a person spends at the chair."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Use of vague pronoun \"one\"",
+      "description" : "The indefinite pronoun \"one\" is used excessively, which weakens precision. Replace with specific references.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "access granted for **one** project outlives the time a person spends at the chair."
+      }, {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "**One** approval on a folder covers every resource beneath it."
+      }, {
+        "page" : 6,
+        "section" : "Objective",
+        "quote" : "**one** approval on project-alpha covers both resources in the dashed box."
+      }, {
+        "page" : 6,
+        "section" : "Implementation",
+        "quote" : "needs **one** new class and **one** registry entry."
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "the connector needs **one** new class and **one** registry entry."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "First‑person singular pronoun \"I\" usage",
+      "description" : "The proposal uses the first‑person singular pronoun \"I\", which is prohibited by the writing style guidelines. Rewrite sentences in an impersonal or third‑person style.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "In this thesis, **I** develop a self‑service platform on which every grant carries an expiry date ..."
+      }, {
+        "page" : 4,
+        "section" : "Objective",
+        "quote" : "In this thesis, **I** develop a self‑service platform on which requesters ask for time‑limited access ..."
+      }, {
+        "page" : 6,
+        "section" : "Implementation",
+        "quote" : "**I** implement the keycloak‑group, slack‑channel, github‑team, and webhook connectors ..."
+      }, {
+        "page" : 7,
+        "section" : "Evaluation",
+        "quote" : "**I** reach this objective when the webhook connector, written after I freeze the framework, needs one new class ..."
+      }, {
+        "page" : 8,
+        "section" : "Evaluation",
+        "quote" : "**I** reach this objective when administrators perform fewer manual actions ..."
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "**I** deliver the Keycloak realm with OpenID Connect login ..."
+      }, {
+        "page" : 12,
+        "section" : "AI Transparency Statement",
+        "quote" : "**I** used Claude Code to draft the text of the abstract ..."
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Passive voice usage",
+      "description" : "Passive constructions are used, reducing clarity and making the actor ambiguous.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "access **granted** for one project outlives the time a person spends at the chair."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Use of vague pronoun \"one\"",
+      "description" : "The indefinite pronoun \"one\" is used excessively, which weakens precision. Replace with specific references.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "access granted for **one** project outlives the time a person spends at the chair."
+      }, {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "**One** approval on a folder covers every resource beneath it."
+      }, {
+        "page" : 6,
+        "section" : "Objective",
+        "quote" : "**one** approval on project-alpha covers both resources in the dashed box."
+      }, {
+        "page" : 6,
+        "section" : "Implementation",
+        "quote" : "needs **one** new class and **one** registry entry."
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "the connector needs **one** new class and **one** registry entry."
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "First‑person singular pronoun \"I\" usage",
+      "description" : "The proposal uses the first‑person singular pronoun \"I\", which is prohibited by the writing style guidelines. Rewrite sentences in an impersonal or third‑person style.",
+      "locations" : [ {
+        "page" : 2,
+        "section" : "Abstract",
+        "quote" : "In this thesis, **I** develop a self‑service platform on which every grant carries an expiry date ..."
+      }, {
+        "page" : 4,
+        "section" : "Objective",
+        "quote" : "In this thesis, **I** develop a self‑service platform on which requesters ask for time‑limited access ..."
+      }, {
+        "page" : 6,
+        "section" : "Implementation",
+        "quote" : "**I** implement the keycloak‑group, slack‑channel, github‑team, and webhook connectors ..."
+      }, {
+        "page" : 7,
+        "section" : "Evaluation",
+        "quote" : "**I** reach this objective when the webhook connector, written after I freeze the framework, needs one new class ..."
+      }, {
+        "page" : 8,
+        "section" : "Evaluation",
+        "quote" : "**I** reach this objective when administrators perform fewer manual actions ..."
+      }, {
+        "page" : 9,
+        "section" : "Schedule",
+        "quote" : "**I** deliver the Keycloak realm with OpenID Connect login ..."
+      }, {
+        "page" : 12,
+        "section" : "AI Transparency Statement",
+        "quote" : "**I** used Claude Code to draft the text of the abstract ..."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STRUCTURE",
+    "generated" : [ {
+      "severity" : "MINOR",
+      "category" : "FORMATTING",
+      "title" : "Isolated page-number paragraphs",
+      "description" : "Single-line paragraphs consisting only of the page number appear, which do not meet the 5‑8 line paragraph length requirement.",
+      "locations" : [ {
+        "page" : 2,
+        "quote" : "2"
+      }, {
+        "page" : 3,
+        "quote" : "3"
+      }, {
+        "page" : 4,
+        "quote" : "4"
+      }, {
+        "page" : 5,
+        "quote" : "5"
+      }, {
+        "page" : 6,
+        "quote" : "6"
+      }, {
+        "page" : 7,
+        "quote" : "7"
+      }, {
+        "page" : 8,
+        "quote" : "8"
+      }, {
+        "page" : 9,
+        "quote" : "9"
+      }, {
+        "page" : 10,
+        "quote" : "10"
+      }, {
+        "page" : 11,
+        "quote" : "11"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MINOR",
+      "category" : "FORMATTING",
+      "title" : "Isolated page-number paragraphs",
+      "description" : "Single-line paragraphs consisting only of the page number appear, which do not meet the 5‑8 line paragraph length requirement.",
+      "locations" : [ {
+        "page" : 2,
+        "quote" : "2"
+      }, {
+        "page" : 3,
+        "quote" : "3"
+      }, {
+        "page" : 4,
+        "quote" : "4"
+      }, {
+        "page" : 5,
+        "quote" : "5"
+      }, {
+        "page" : 6,
+        "quote" : "6"
+      }, {
+        "page" : 7,
+        "quote" : "7"
+      }, {
+        "page" : 8,
+        "quote" : "8"
+      }, {
+        "page" : 9,
+        "quote" : "9"
+      }, {
+        "page" : 10,
+        "quote" : "10"
+      }, {
+        "page" : 11,
+        "quote" : "11"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_FORMATTING",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "AI_TRANSPARENCY",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "SCHEDULE",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  } ],
+  "categoryFailures" : { }
+}

@@ -1,0 +1,152 @@
+{
+  "assessment" : "NEEDS_WORK",
+  "score" : 28,
+  "summary" : "The proposal presents a relevant problem, a plausible GitLab CI direction, and a useful initial workflow. However, it needs substantial revision before submission because several required sections and the AI transparency statement are missing, the bibliography and figure count are insufficient, and the schedule does not follow the required agile iteration model.",
+  "findings" : [ {
+    "severity" : "CRITICAL",
+    "category" : "completeness",
+    "title" : "Required Sections and Objective Structure Are Missing",
+    "description" : "The proposal does not contain the required Introduction, Motivation, or Objective section. Section 4 is titled \"System Requirements and Top Level Design\" and Section 5 is titled \"Expected Findings\", but neither provides the required Objectives structure: a short introduction, 3–4 one-line high-level objectives, and one subsection of at least two paragraphs for each objective. Add and structure these sections explicitly."
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "completeness",
+    "title" : "AI Transparency Statement Missing",
+    "description" : "No AI transparency statement is included. Add a first-person statement naming the specific AI tools used, their purposes, the proposal sections in which they were used, and confirmation that all AI-generated text was carefully checked."
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "figures",
+    "title" : "Fewer Than Two Required Figures",
+    "description" : "The proposal contains only one figure, although at least two diagrams, mockups, or figures are required. Add a second meaningful figure, such as an activity, component, or deployment diagram, and ensure that at least one figure is a suitable UML diagram.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "System Requirements and Top Level Design",
+      "quote" : "Figure 1: Depiction of the top-level workfow of the interactions in relation to Artemis and GitLab CI"
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "citation",
+    "title" : "Bibliography Has Too Few Publications",
+    "description" : "The bibliography contains only five entries: Booch, Gamma, Hilton et al., Krusche et al. (2017), and Krusche and Seitz (2018). Add at least one more scientific, peer-reviewed publication so that the bibliography contains the required minimum of six publications; preferably include six to eight relevant sources.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "References",
+      "quote" : "[Krusche17] Krusche, S.; Seitz, A.; Borstler, J.; Brugge, B. Interactive learning: Increasing student participation through shorter exercise cycles."
+    }, {
+      "page" : 6,
+      "section" : "References",
+      "quote" : "[Krusche18] Krusche, S.; Seitz, A. ArTEMiS: An Automatic Assessment Management System for Interactive Learning."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "completeness",
+    "title" : "Problem Section Does Not Clearly Cover Stakeholders",
+    "description" : "The Problem section identifies the platform and smaller universities, but it does not clearly identify all relevant human stakeholders or explain the negative consequences for each. State explicitly how the current architecture affects instructors, students, and university administrators, including the operational and educational consequences.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Problem Statement",
+      "quote" : "Particularly smaller universities might then not use Artemis."
+    }, {
+      "page" : 2,
+      "section" : "Problem Statement",
+      "quote" : "Especially in large software engineering courses this is nearly impossible."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "methodology",
+    "title" : "Schedule Is Not Iterative or Vertically Integrated",
+    "description" : "The schedule is not divided into 2–4-week iterations and uses isolated component tasks rather than measurable, vertically integrated increments. Replace the month/week milestones with iterations that each deliver an end-to-end capability, such as configuring one complete exercise workflow, updating a build plan through the API, and returning results to Artemis, with explicit acceptance criteria.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Time Schedule",
+      "quote" : "April – 2nd week: Docker GitLab CI Runner confguration – 4th week: prototype implementation: Connectivity to GitLab CI"
+    }, {
+      "page" : 5,
+      "section" : "Time Schedule",
+      "quote" : "May – 3nd week: prototype implementation: Artemis API for confguration"
+    }, {
+      "page" : 5,
+      "section" : "Time Schedule",
+      "quote" : "June – 4th week: prototype implementation: Sending build results to Artemis"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "methodology",
+    "title" : "Schedule Contains Prohibited and Vague Tasks",
+    "description" : "The schedule includes work that should not appear in the development/research schedule, including documentation and thesis writing, and it contains vague items without measurable deliverables. Remove thesis-writing and documentation tasks from this schedule and replace vague entries such as \"Models\" and \"Writing\" with concrete research or implementation deliverables.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Time Schedule",
+      "quote" : "4th week: Models (parallel to prototype implementation)"
+    }, {
+      "page" : 5,
+      "section" : "Time Schedule",
+      "quote" : "2nd week: Documentation for installation and confguration of Artemis with GitLab CI"
+    }, {
+      "page" : 5,
+      "section" : "Time Schedule",
+      "quote" : "October: Writing . . ."
+    }, {
+      "page" : 5,
+      "section" : "Time Schedule",
+      "quote" : "1st week: Thesis"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Forbidden Sentence Starters Occur Repeatedly",
+    "description" : "Several sentences begin with forbidden subordinating or infinitive starters. Rewrite these sentences with explicit subjects and active constructions, for example by replacing \"Since\" or \"In order to\" with a direct statement of the cause or purpose.",
+    "locations" : [ {
+      "page" : 1,
+      "section" : "Abstract",
+      "quote" : "**Since** some Version Control (VC) systems include a Continuous Integration (CI) application, it is possible to reduce the efort required to maintain the servers."
+    }, {
+      "page" : 2,
+      "section" : "Problem Statement",
+      "quote" : "**To** achieve this goal, Artemis uses a Version Control (VC) and Continuous Integration (CI) server."
+    }, {
+      "page" : 2,
+      "section" : "Related Work",
+      "quote" : "**In order to** implement this idea, the lecture is split up into multiple iterations."
+    }, {
+      "page" : 3,
+      "section" : "Related Work",
+      "quote" : "**Since** the benefts of using CI are quite high and nearly half of the developers who do not use CI mention a lack of familiarity as the reason for not using a CI service, it is useful to teach the concepts of CI at university."
+    }, {
+      "page" : 4,
+      "section" : "Expected Findings",
+      "quote" : "**As** described in section 3, this might lead to better developers and better code."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Passive Voice Obscures Actors",
+    "description" : "The proposal uses passive constructions frequently, which obscures the responsible actor. Rewrite them in active voice by naming the component or stakeholder performing the action, for example, \"Artemis copies the student repository\" and \"GitLab CI fetches the build plan from the Artemis API.\"",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "System Requirements and Top Level Design",
+      "quote" : "The student base repository **is copied**."
+    }, {
+      "page" : 3,
+      "section" : "System Requirements and Top Level Design",
+      "quote" : "GitLab CI **gets confgured** so that it takes the build plan from the Artemis API."
+    }, {
+      "page" : 1,
+      "section" : "Abstract",
+      "quote" : "the build plan **is fetched** from the API on each run."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "figures",
+    "title" : "Figure Is Not Directly Referenced in the Text",
+    "description" : "The only figure is not explicitly referenced by figure number in the prose. Replace the vague reference to \"section 4\" with a direct reference such as \"Figure 1 shows the top-level interactions\". Add an equivalent direct reference for the second figure.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Proposed Solution",
+      "quote" : "This process is illustrated in **section 4**."
+    }, {
+      "page" : 4,
+      "section" : "System Requirements and Top Level Design",
+      "quote" : "Figure 1: Depiction of the top-level workfow of the interactions in relation to Artemis and GitLab CI"
+    } ]
+  } ]
+}

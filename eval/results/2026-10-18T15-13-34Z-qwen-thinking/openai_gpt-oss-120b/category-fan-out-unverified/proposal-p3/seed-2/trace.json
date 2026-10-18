@@ -1,0 +1,191 @@
+{
+  "categories" : [ {
+    "category" : "STRUCTURE",
+    "generated" : [ {
+      "severity" : "CRITICAL",
+      "category" : "STRUCTURE",
+      "title" : "Proposal exceeds allowed page limit",
+      "description" : "The proposal spans 12 pages, exceeding the maximum of 6 pages specified.",
+      "locations" : [ {
+        "page" : 12,
+        "section" : "Bibliography",
+        "quote" : "=== PAGE **12** ==="
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Objective subsections are too short",
+      "description" : "Each objective subsection (4.1–4.4) contains only a single paragraph; the guidelines require at least two paragraphs per subsection.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "4.1 **Unify** Heterogeneous Resources in One Tree"
+      }, {
+        "page" : 7,
+        "section" : "Objective",
+        "quote" : "4.2 **Enforce** an Expiry Date on Every Grant"
+      }, {
+        "page" : 8,
+        "section" : "Objective",
+        "quote" : "4.3 **Delegate** the Approval of Requests to Maintainers"
+      }, {
+        "page" : 8,
+        "section" : "Objective",
+        "quote" : "4.4 **Automate** the Recertifcation of Active Grants"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "CRITICAL",
+      "category" : "STRUCTURE",
+      "title" : "Proposal exceeds allowed page limit",
+      "description" : "The proposal spans 12 pages, exceeding the maximum of 6 pages specified.",
+      "locations" : [ {
+        "page" : 12,
+        "section" : "Bibliography",
+        "quote" : "=== PAGE **12** ==="
+      } ]
+    }, {
+      "severity" : "MAJOR",
+      "category" : "STRUCTURE",
+      "title" : "Objective subsections are too short",
+      "description" : "Each objective subsection (4.1–4.4) contains only a single paragraph; the guidelines require at least two paragraphs per subsection.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "4.1 **Unify** Heterogeneous Resources in One Tree"
+      }, {
+        "page" : 7,
+        "section" : "Objective",
+        "quote" : "4.2 **Enforce** an Expiry Date on Every Grant"
+      }, {
+        "page" : 8,
+        "section" : "Objective",
+        "quote" : "4.3 **Delegate** the Approval of Requests to Maintainers"
+      }, {
+        "page" : 8,
+        "section" : "Objective",
+        "quote" : "4.4 **Automate** the Recertifcation of Active Grants"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "PROBLEM_MOTIVATION_OBJECTIVES",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "COMPLETENESS",
+      "title" : "Objective subsection 4.1 insufficient length",
+      "description" : "The subsection 4.1 \"Unify Heterogeneous Resources in One Tree\" contains only a single paragraph. According to the guidelines each objective subsection must have at least two paragraphs with detailed descriptions.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "**I model the resources as a tree whose folders pass maintainership, audit policy, and grants down to leaves bound to target systems, as the UML object diagram in Figure 2 shows. One approval on a folder covers every resource beneath it, including later additions. A transitive‑closure table stores the tree, and a fan‑out cap keeps an approval on the root from provisioning the whole infrastructure.**"
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "COMPLETENESS",
+      "title" : "Objective subsection 4.1 insufficient length",
+      "description" : "The subsection 4.1 \"Unify Heterogeneous Resources in One Tree\" contains only a single paragraph. According to the guidelines each objective subsection must have at least two paragraphs with detailed descriptions.",
+      "locations" : [ {
+        "page" : 5,
+        "section" : "Objective",
+        "quote" : "**I model the resources as a tree whose folders pass maintainership, audit policy, and grants down to leaves bound to target systems, as the UML object diagram in Figure 2 shows. One approval on a folder covers every resource beneath it, including later additions. A transitive‑closure table stores the tree, and a fan‑out cap keeps an approval on the root from provisioning the whole infrastructure.**"
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "BIBLIOGRAPHY",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "FIGURES",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STYLE",
+    "generated" : [ {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Passive voice usage",
+      "description" : "The sentence uses passive voice ('written after I freeze the framework'), which conflicts with the active voice requirement.",
+      "locations" : [ {
+        "page" : 6,
+        "section" : "Objective",
+        "quote" : "I reach this objective when the webhook connector, **written after I freeze the framework**, needs one new class and one registry entry."
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MINOR",
+      "category" : "WRITING",
+      "title" : "Passive voice usage",
+      "description" : "The sentence uses passive voice ('written after I freeze the framework'), which conflicts with the active voice requirement.",
+      "locations" : [ {
+        "page" : 6,
+        "section" : "Objective",
+        "quote" : "I reach this objective when the webhook connector, **written after I freeze the framework**, needs one new class and one registry entry."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_STRUCTURE",
+    "generated" : [ {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Paragraph mixes multiple ideas",
+      "description" : "A paragraph in the Problem section combines distinct topics (persistent access, audit consequences, and historical traceability) instead of focusing on a single coherent idea, violating the one‑idea‑per‑paragraph rule.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "**Access never ends. Nobody records when a person stops needing access, so access piles up, and former students keep login access to the compute hosts long after they leave, a decay that studies of enterprises report as well [Ker+02, SMJ01].** Auditors bear the consequence: the history lies scattered across systems and chat logs, and nobody can say who had access to a host last March and who approved it."
+      } ]
+    } ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ {
+      "severity" : "MAJOR",
+      "category" : "WRITING",
+      "title" : "Paragraph mixes multiple ideas",
+      "description" : "A paragraph in the Problem section combines distinct topics (persistent access, audit consequences, and historical traceability) instead of focusing on a single coherent idea, violating the one‑idea‑per‑paragraph rule.",
+      "locations" : [ {
+        "page" : 3,
+        "section" : "Problem",
+        "quote" : "**Access never ends. Nobody records when a person stops needing access, so access piles up, and former students keep login access to the compute hosts long after they leave, a decay that studies of enterprises report as well [Ker+02, SMJ01].** Auditors bear the consequence: the history lies scattered across systems and chat logs, and nobody can say who had access to a host last March and who approved it."
+      } ]
+    } ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "WRITING_FORMATTING",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "AI_TRANSPARENCY",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  }, {
+    "category" : "SCHEDULE",
+    "generated" : [ ],
+    "ungrounded" : [ ],
+    "rejected" : [ ],
+    "kept" : [ ],
+    "ruleCheckFailed" : false
+  } ],
+  "categoryFailures" : { }
+}

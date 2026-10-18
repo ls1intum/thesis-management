@@ -1,0 +1,87 @@
+{
+  "startedAt": "2026-10-18T15:13:34.442572Z",
+  "models": [
+    "Qwen/Qwen3.8-27B",
+    "openai/gpt-oss-120b",
+    "gpt-5.6-luna"
+  ],
+  "approaches": [
+    "single-prompt",
+    "category-fan-out-unverified",
+    "category-fan-out-verified",
+    "agentic"
+  ],
+  "seeds": 3,
+  "temperature": 1.0,
+  "baseUrl": "https://logos.aet.cit.tum.de/v1",
+  "corpus": "/Users/benjaminschmitz/Development/thesis-management/eval/corpus",
+  "anonymized": false,
+  "agentMaxTurns": 40,
+  "documents": {
+    "proposal-p1": {
+      "file": "/Users/benjaminschmitz/Development/thesis-management/eval/corpus/proposal/p1.pdf",
+      "type": "PROPOSAL"
+    },
+    "proposal-p2": {
+      "file": "/Users/benjaminschmitz/Development/thesis-management/eval/corpus/proposal/p2.pdf",
+      "type": "PROPOSAL"
+    },
+    "proposal-p3": {
+      "file": "/Users/benjaminschmitz/Development/thesis-management/eval/corpus/proposal/p3.pdf",
+      "type": "PROPOSAL"
+    },
+    "proposal-p4": {
+      "file": "/Users/benjaminschmitz/Development/thesis-management/eval/corpus/proposal/p4.pdf",
+      "type": "PROPOSAL"
+    }
+  },
+  "replacedModels": {
+    "models": [
+      "Qwen/Qwen3.8-27B"
+    ],
+    "from": "eval/results/qwen-thinking/2026-10-18T18-44-07Z",
+    "rerunManifest": {
+      "startedAt": "2026-10-18T18:44:07.249263Z",
+      "models": [
+        "Qwen/Qwen3.8-27B"
+      ],
+      "approaches": [
+        "single-prompt",
+        "category-fan-out-unverified",
+        "category-fan-out-verified",
+        "agentic"
+      ],
+      "seeds": 3,
+      "temperature": 1.0,
+      "baseUrl": "https://logos.aet.cit.tum.de/v1",
+      "corpus": "/Users/benjaminschmitz/Development/thesis-management/eval/corpus",
+      "anonymized": false,
+      "thinkingModels": [
+        "Qwen/Qwen3.8-27B"
+      ],
+      "requestTimeout": "10m",
+      "agentMaxTurns": 40,
+      "documents": {
+        "proposal-p1": {
+          "type": "PROPOSAL",
+          "file": "/Users/benjaminschmitz/Development/thesis-management/eval/corpus/proposal/p1.pdf"
+        },
+        "proposal-p2": {
+          "type": "PROPOSAL",
+          "file": "/Users/benjaminschmitz/Development/thesis-management/eval/corpus/proposal/p2.pdf"
+        },
+        "proposal-p3": {
+          "type": "PROPOSAL",
+          "file": "/Users/benjaminschmitz/Development/thesis-management/eval/corpus/proposal/p3.pdf"
+        },
+        "proposal-p4": {
+          "type": "PROPOSAL",
+          "file": "/Users/benjaminschmitz/Development/thesis-management/eval/corpus/proposal/p4.pdf"
+        }
+      }
+    }
+  },
+  "thinkingModels": [
+    "Qwen/Qwen3.8-27B"
+  ]
+}

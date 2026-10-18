@@ -1,0 +1,84 @@
+{
+  "assessment" : "NEEDS_WORK",
+  "score" : 38,
+  "summary" : "The proposal is missing a required abstract and contains several structural and writing issues, including a problem section that mixes solution content and exceeds length limits, and the overall document exceeds the page limit. While the objectives and figures are generally clear, the numerous critical and major problems mean the proposal is not ready for submission.",
+  "findings" : [ {
+    "severity" : "CRITICAL",
+    "category" : "structure",
+    "title" : "Missing Abstract",
+    "description" : "The proposal does not contain an Abstract section, which is required.",
+    "locations" : [ {
+      "page" : 1,
+      "section" : "Front Matter",
+      "quote" : "Missing Abstract"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "structure",
+    "title" : "Proposal exceeds maximum length",
+    "description" : "The proposal text spans 10 pages, exceeding the allowed maximum of 6 pages.",
+    "locations" : [ {
+      "page" : 1,
+      "section" : "General",
+      "quote" : "=== PAGE 1 ==="
+    } ]
+  }, {
+    "severity" : "CRITICAL",
+    "category" : "structure",
+    "title" : "Problem section issues (content and length)",
+    "description" : "The Problem section includes a description of the proposed solution, which violates the rule that only the problem should be described, and it also exceeds the allowed length of three‑quarters of a page.",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "Problem",
+      "quote" : "**A self-service platform** that arms the workfow engine of Keycloak with an expiry date at grant time **would end this accumulation**."
+    }, {
+      "page" : 2,
+      "section" : "Problem",
+      "quote" : "2  Problem"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "writing",
+    "title" : "Objective uses double verbs",
+    "description" : "The objective list and subsection heading use 'Design and implement', containing two verbs, breaching the rule that each objective must use a single action verb.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Objective",
+      "quote" : "•   **Design and implement** connectors with expiry"
+    }, {
+      "page" : 5,
+      "section" : "4.2 Design and Implement Connectors with Expiry",
+      "quote" : "**Design and Implement** Connectors with Expiry"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "structure",
+    "title" : "Missing introductory text before first subsection",
+    "description" : "Section 1 Introduction jumps directly to subsection 1.1 without any introductory paragraph, violating the rule that each chapter/section must include introductory text before its first subsection.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Introduction",
+      "quote" : "**1.1 Setting**"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "figures",
+    "title" : "Figure caption too short",
+    "description" : "Figure 2 caption is generic and not informative; it should be extended to describe the architecture components depicted.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "4.2 Design and Implement Connectors with Expiry",
+      "quote" : "Figure  2: **System  Architecture**"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "writing",
+    "title" : "Contraction used",
+    "description" : "Contractions are prohibited; the proposal contains a contraction that should be replaced with its full form.",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "Problem",
+      "quote" : "The current process **doesn’t** scale and is the worst bottleneck of the chair."
+    } ]
+  } ]
+}

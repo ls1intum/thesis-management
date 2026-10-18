@@ -1,0 +1,94 @@
+{
+  "assessment" : "NEEDS_WORK",
+  "score" : 68,
+  "summary" : "The proposal presents a coherent and technically concrete access-management project, with four actionable objectives, two diagrams, a detailed schedule, and an adequate peer-reviewed research base. Before acceptance, add the missing Abstract, remove the solution proposal from the Problem section, revise the double-verb objective, move the Keycloak documentation to a footnote, expand Figure 2's caption, eliminate the contraction, add explicit AI-output review confirmation, and remove thesis-writing/presentation tasks from the development schedule. Also add introductory prose before subsection 1.1 and correct the citation placed after a full stop.",
+  "findings" : [ {
+    "severity" : "CRITICAL",
+    "category" : "COMPLETENESS",
+    "title" : "Required Abstract is missing",
+    "description" : "Add the required Abstract section before the Introduction. It should summarise the problem, motivation, objectives, and planned approach in roughly one-third to one-half page.",
+    "locations" : [ {
+      "page" : 1,
+      "section" : "Abstract"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "LOGIC",
+    "title" : "Problem section proposes a solution",
+    "description" : "Remove this proposed solution from the Problem section. Keep the section limited to the current process, its stakeholders, and negative consequences; move the platform proposal to Motivation or Objective.",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "Problem",
+      "quote" : "A self-service platform that arms the workflow engine of Keycloak with an expiry date at grant time would end this accumulation."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "LOGIC",
+    "title" : "Objective combines two verbs",
+    "description" : "Use one action per objective, for example “Implement connectors with expiry” or “Specify connectors with expiry,” rather than combining two verbs in one objective.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Objective",
+      "quote" : "Design and implement connectors with expiry"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "FIGURES",
+    "title" : "Figure 2 has a generic caption",
+    "description" : "Expand the caption to explain the architecture’s components, their responsibilities, and the principal connections shown. “System Architecture” alone is not an informative caption.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Objective",
+      "quote" : "Figure 2: System Architecture"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "WRITING",
+    "title" : "Contraction used in formal prose",
+    "description" : "Replace the contraction with its non-contracted form (“does not”). Search for and remove any other contractions throughout the proposal.",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "Problem",
+      "quote" : "The current process doesn’t scale and is the worst bottleneck of the chair."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "COMPLETENESS",
+    "title" : "AI statement lacks review confirmation",
+    "description" : "Add a review-confirmation sentence to the AI transparency statement explicitly stating that you carefully checked all AI-generated text for correctness and sense.",
+    "locations" : [ {
+      "page" : 10,
+      "section" : "Transparency in the Use of AI Tools",
+      "quote" : "I used the following generative artificial intelligence (AI) tool while preparing this proposal."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "CITATION",
+    "title" : "Citation appears after the full stop",
+    "description" : "Move the citation before the preceding full stop so the sentence follows the required placement style: “...temporal model [BBF01].” Check the document for the same pattern elsewhere.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Motivation",
+      "quote" : "temporal    model.    [BBF01]     Joshi  et  al. generalise   this  idea  to  role  assignments"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "CITATION",
+    "title" : "Internet documentation is listed in the bibliography",
+    "description" : "Move this documentation source out of the bibliography and place it in a footnote at its first use. The bibliography should contain scientific peer-reviewed publications only.",
+    "locations" : [ {
+      "page" : 8,
+      "section" : "Bibliography",
+      "quote" : "[Key26]       Keycloak     Authors,    “Keycloak     Server    Administration      Guide. ”   Accessed:"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "STRUCTURE",
+    "title" : "Introduction begins directly with a subsection",
+    "description" : "Add a short introductory paragraph immediately after the Introduction heading and before subsection 1.1, explaining the purpose and scope of the chapter.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Introduction"
+    } ]
+  } ]
+}

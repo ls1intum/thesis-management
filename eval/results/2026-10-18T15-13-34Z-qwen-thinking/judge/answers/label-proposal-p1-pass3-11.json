@@ -1,0 +1,250 @@
+{
+  "job": "label-proposal-p1-pass3-11",
+  "answer": {
+    "judgements": [
+      {
+        "id": "F8751556666",
+        "rule": "R4",
+        "reason": "The finding says the Problem section names no actors at all, but it explicitly names smaller universities and large courses as affected parties.",
+        "label": "invalid"
+      },
+      {
+        "id": "Ff291300822",
+        "rule": null,
+        "reason": "No rule covers typos or capitalization after a full stop.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F53f6c1d432",
+        "rule": "R3",
+        "reason": "R3 requires an Objective section with an intro, a bullet list of 3-4 objectives, and one subsection per objective. Section 4 is a requirements/design scenario with none of this.",
+        "label": "valid"
+      },
+      {
+        "id": "F678cf73a89",
+        "rule": "R4",
+        "reason": "R4 asks for negative consequences tied to identified actors. The Problem section never attributes the manual build-plan updates to instructors or administrators, so the consequences are not fully mapped to actors.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd82b8672e5",
+        "rule": "R11",
+        "reason": "\"Furthermore\", \"Additionally\" and \"In addition\" are logical connectives, not filler words, so the cited sentences do not breach the filler-word rule.",
+        "label": "invalid"
+      },
+      {
+        "id": "F98590bbb80",
+        "rule": "R1",
+        "reason": "R1 requires a Motivation section, and the document has none.",
+        "label": "valid"
+      },
+      {
+        "id": "Ffa52668ae1",
+        "rule": "R6",
+        "reason": "R6 requires objectives and their headings in action form. Section 4 has a noun-phrase heading and contains no action-form objectives.",
+        "label": "valid"
+      },
+      {
+        "id": "F57a9b67f41",
+        "rule": "R10",
+        "reason": "R10 requires every figure to be referenced in the text. Figure 1 is never mentioned; the text only says \"illustrated in section 4\".",
+        "label": "valid"
+      },
+      {
+        "id": "F4ef88c11d4",
+        "rule": "R7",
+        "reason": "R7 requires at least 6-8 peer-reviewed publications. The bibliography has only five entries, two of them books.",
+        "label": "valid"
+      },
+      {
+        "id": "F02d97a29d5",
+        "rule": "R9",
+        "reason": "Figure 1 shows actors with hierarchically numbered messages and no lifelines. That is closer to a communication or workflow diagram, so the claim that it is a sequence diagram is not supported.",
+        "label": "invalid"
+      },
+      {
+        "id": "F5fe4cd15b1",
+        "rule": "R20",
+        "reason": "R20 forbids requirements-gathering tasks in the schedule. The June entry \"Requirements (parallel to prototype implementation)\" is one.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc267344750",
+        "rule": "R19",
+        "reason": "R19 requires vertically integrated deliverables. The schedule splits the work into horizontal parts: runner configuration, the API, and sending build results.",
+        "label": "valid"
+      },
+      {
+        "id": "F306af32e74",
+        "rule": "R13",
+        "reason": "R13 asks for 5-8 line paragraphs. Several cited paragraphs in Sections 4 and 5 are only one or two lines long.",
+        "label": "valid"
+      },
+      {
+        "id": "F093692d519",
+        "rule": "R16",
+        "reason": "\"CI Server\" and \"CI server\" are the same term with different capitalization, not different terms for one concept, so this is not a terminology inconsistency under R16.",
+        "label": "invalid"
+      },
+      {
+        "id": "F905d9a510d",
+        "rule": "R13",
+        "reason": "R13 asks for 5-8 line paragraphs. The cited Expected Findings paragraphs are only one to three lines long.",
+        "label": "valid"
+      },
+      {
+        "id": "F6a8864636b",
+        "rule": "R12",
+        "reason": "R12 forbids starting sentences with these words. Sentences in the document do begin with \"Since\", \"To\", \"In order to\" and \"As\".",
+        "label": "valid"
+      },
+      {
+        "id": "Fec9692a45e",
+        "rule": null,
+        "reason": "No rule forbids the first person.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F139f55de6e",
+        "rule": "R20",
+        "reason": "R20 forbids thesis-writing tasks in the schedule. The schedule lists \"Writing\", \"Thesis ready for review\" and \"Thesis\".",
+        "label": "valid"
+      },
+      {
+        "id": "Fbfb6d52081",
+        "rule": "R1",
+        "reason": "R1 requires an Objective section with subsections, and the document has none.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd0382d8c09",
+        "rule": "R13",
+        "reason": "R13 asks for 5-8 line paragraphs with one idea each. The Krusche paragraph runs about 12 lines across pages 2-3 and covers several ideas.",
+        "label": "valid"
+      },
+      {
+        "id": "Ff308a220fa",
+        "rule": "R4",
+        "reason": "The finding claims no actors are identified, but the Problem section names smaller universities and large courses as affected.",
+        "label": "invalid"
+      },
+      {
+        "id": "F2bf9de772f",
+        "rule": "R11",
+        "reason": "R11 requires active voice. The document uses passive constructions such as \"must be updated manually\" and \"is split up\".",
+        "label": "valid"
+      },
+      {
+        "id": "Fc0ac77c421",
+        "rule": "R7",
+        "reason": "R7 requires at least 6-8 peer-reviewed publications, and only five references are listed.",
+        "label": "valid"
+      },
+      {
+        "id": "F723de798ac",
+        "rule": "R11",
+        "reason": "The cited connectives serve a logical purpose and are not filler words. The finding also claims \"Additionally\" appears in the Abstract, which it does not.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fbaca5b0b3c",
+        "rule": "R19",
+        "reason": "R19 requires 2-4 week iterations with measurable deliverables. The schedule lists single-week activities with no defined iterations or measurable outcomes.",
+        "label": "valid"
+      },
+      {
+        "id": "Fffd68314cb",
+        "rule": "R20",
+        "reason": "R20 forbids requirements-gathering tasks, and the schedule contains a standalone \"Requirements\" task.",
+        "label": "valid"
+      },
+      {
+        "id": "F794a4d393a",
+        "rule": "R9",
+        "reason": "R9 requires at least two figures, and the document has only Figure 1.",
+        "label": "valid"
+      },
+      {
+        "id": "F1c626c3009",
+        "rule": "R9",
+        "reason": "R9 requires at least two figures including a suitable UML diagram. There is only one figure and it is not a clear UML diagram; it is also never referenced.",
+        "label": "valid"
+      },
+      {
+        "id": "F39a82c53bf",
+        "rule": "R19",
+        "reason": "The schedule items are milestones spaced two or more weeks apart, not one-week iterations, so the claimed breach does not hold.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fde2261d3e7",
+        "rule": "R1",
+        "reason": "R1 requires an Objective section with subsections, and the document has none.",
+        "label": "valid"
+      },
+      {
+        "id": "F5adb44b5f1",
+        "rule": "R17",
+        "reason": "R17 requires an AI transparency statement, and the document has none.",
+        "label": "valid"
+      },
+      {
+        "id": "F536b4134a3",
+        "rule": "R7",
+        "reason": "R7 requires at least 6-8 peer-reviewed publications, and only five references are listed.",
+        "label": "valid"
+      },
+      {
+        "id": "Fa6b5c2f997",
+        "rule": "R9",
+        "reason": "R9 requires at least two figures, and only one is present.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc0f4596bac",
+        "rule": "R4",
+        "reason": "R4 allows only problems in the Problem section. It proposes changing build plans to hide tests and to use a debug compiler, which describes a desired solution.",
+        "label": "valid"
+      },
+      {
+        "id": "Fa340fec0cd",
+        "rule": "R4",
+        "reason": "R4 asks for consequences tied to identified actors. The manual build-plan update burden is described without naming instructors as the affected actor.",
+        "label": "valid"
+      },
+      {
+        "id": "F940f35eb35",
+        "rule": "R9",
+        "reason": "R9 requires at least two figures, and only one is present.",
+        "label": "valid"
+      },
+      {
+        "id": "F17f40c0e42",
+        "rule": "R13",
+        "reason": "R13 asks for 5-8 line paragraphs. The Krusche paragraph spans about 12 lines across pages 2-3.",
+        "label": "valid"
+      },
+      {
+        "id": "F70ba8e5ecd",
+        "rule": "R20",
+        "reason": "R20 forbids thesis-writing tasks in the schedule, and the schedule lists \"October: Writing\".",
+        "label": "valid"
+      },
+      {
+        "id": "Fad9e157805",
+        "rule": "R9",
+        "reason": "R9 requires at least two figures, and only one is present.",
+        "label": "valid"
+      },
+      {
+        "id": "F53546389ae",
+        "rule": "R19",
+        "reason": "R19 requires measurable deliverables. Items such as \"Requirements\", \"Models\" and \"Implement improvements\" name activities, not checkable outcomes.",
+        "label": "valid"
+      }
+    ]
+  },
+  "costUsd": 0.2741788,
+  "durationMs": 41846,
+  "model": "claude-opus-5-5[1m]"
+}

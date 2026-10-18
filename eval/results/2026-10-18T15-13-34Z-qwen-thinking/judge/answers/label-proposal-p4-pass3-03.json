@@ -1,0 +1,250 @@
+{
+  "job": "label-proposal-p4-pass3-03",
+  "answer": {
+    "judgements": [
+      {
+        "id": "F6fb640e861",
+        "rule": "R1",
+        "reason": "An Abstract is required; the document goes from the title page straight to '1 Introduction' with no abstract.",
+        "label": "valid"
+      },
+      {
+        "id": "F434bcf1c85",
+        "rule": "R16",
+        "reason": "'Recertifcation' and 'workfow' are ligature extraction artifacts, and each term is spelled the same way everywhere, so the terminology is consistent.",
+        "label": "invalid"
+      },
+      {
+        "id": "Feb7d6e22d3",
+        "rule": null,
+        "reason": "R15 requires title case for headings only; no rule requires title case in figure captions.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Ff557e7d632",
+        "rule": "R8",
+        "reason": "Citations must come before the full stop; the document has 'temporal model. [BBF01]'.",
+        "label": "valid"
+      },
+      {
+        "id": "F2e9b101429",
+        "rule": "R8",
+        "reason": "The [BBF01] citation comes after the full stop, which breaks the placement rule.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc765354eb1",
+        "rule": "R1",
+        "reason": "The required Abstract section is absent from the document.",
+        "label": "valid"
+      },
+      {
+        "id": "Fcc76bb68d1",
+        "rule": "R10",
+        "reason": "The Figure 2 caption is only 'System Architecture', which is not long or informative. The other quoted locations are diagram labels, not captions.",
+        "label": "valid"
+      },
+      {
+        "id": "F0506e7d72f",
+        "rule": "R4",
+        "reason": "The Problem section ends by proposing a self-service platform as the fix, which is a solution.",
+        "label": "valid"
+      },
+      {
+        "id": "Faba154284e",
+        "rule": "R2",
+        "reason": "The 10 pages include the title page, bibliography and AI statement. The body text spans pages 2–7, about 6 pages including figures, so there is no clear breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fd8bf5d4641",
+        "rule": "R4",
+        "reason": "The Problem section's last sentence presents the self-service platform as a solution.",
+        "label": "valid"
+      },
+      {
+        "id": "F66808e3b79",
+        "rule": "R10",
+        "reason": "The Figure 2 caption 'System Architecture' is not long or informative.",
+        "label": "valid"
+      },
+      {
+        "id": "F9cc042b59d",
+        "rule": "R7",
+        "reason": "Internet sources belong in footnotes, but the online Keycloak administration guide [Key26] is listed in the bibliography.",
+        "label": "valid"
+      },
+      {
+        "id": "F81e2476a14",
+        "rule": "R20",
+        "reason": "Iteration 7 is 'Write the thesis and prepare the final presentation', a thesis-writing task the schedule must not include.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc54256514a",
+        "rule": "R16",
+        "reason": "The reviewing role is called 'maintainer' throughout, including in Figure 1, but 'resource owner' in Section 4.3 for the same role.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc478bb64d3",
+        "rule": "R10",
+        "reason": "The Figure 2 caption is only 'System Architecture', which is not informative.",
+        "label": "valid"
+      },
+      {
+        "id": "F61716f3df2",
+        "rule": "R1",
+        "reason": "There is no Abstract; page 2 starts directly with '1 Introduction'.",
+        "label": "valid"
+      },
+      {
+        "id": "F868a0e4107",
+        "rule": "R18",
+        "reason": "The AI statement has no sentence confirming that the author carefully checked the AI-generated text.",
+        "label": "valid"
+      },
+      {
+        "id": "F542f0b17c7",
+        "rule": "R14",
+        "reason": "Section 1 goes straight from its heading to subsection 1.1 'Setting' with no introductory text.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc3e8568f0c",
+        "rule": "R1",
+        "reason": "The required Abstract section is missing.",
+        "label": "valid"
+      },
+      {
+        "id": "F9a2f1ccf17",
+        "rule": "R18",
+        "reason": "The transparency statement has no confirmation that the author checked the AI-generated text.",
+        "label": "valid"
+      },
+      {
+        "id": "F2a68bd69bc",
+        "rule": "R20",
+        "reason": "Iteration 7 schedules thesis writing, which the rule forbids.",
+        "label": "valid"
+      },
+      {
+        "id": "F437656be21",
+        "rule": "R4",
+        "reason": "The Problem section ends with a proposed solution and its expected benefit.",
+        "label": "valid"
+      },
+      {
+        "id": "F3af0c3e390",
+        "rule": "R1",
+        "reason": "The document has no Abstract before the Introduction.",
+        "label": "valid"
+      },
+      {
+        "id": "Ffeff555e28",
+        "rule": "R3",
+        "reason": "Each objective subsection needs at least two paragraphs; Subsection 4.4 is one paragraph that runs to '...keeps a second copy.'.",
+        "label": "valid"
+      },
+      {
+        "id": "Fe1333b1aaf",
+        "rule": "R6",
+        "reason": "The objective bullet 'Design and implement connectors with expiry' uses a double verb.",
+        "label": "valid"
+      },
+      {
+        "id": "F64fc20307f",
+        "rule": "R10",
+        "reason": "The Figure 2 caption is a generic label and not informative.",
+        "label": "valid"
+      },
+      {
+        "id": "F0a4381eb48",
+        "rule": "R11",
+        "reason": "Contractions must be avoided; the Problem section contains 'doesn't'.",
+        "label": "valid"
+      },
+      {
+        "id": "F461522653b",
+        "rule": "R4",
+        "reason": "The Problem section's last sentence proposes a solution.",
+        "label": "valid"
+      },
+      {
+        "id": "F43aabba057",
+        "rule": "R7",
+        "reason": "The online Keycloak guide [Key26] should be a footnote but is in the bibliography.",
+        "label": "valid"
+      },
+      {
+        "id": "F7582876740",
+        "rule": "R20",
+        "reason": "Iteration 7 includes 'Write the thesis', which the schedule must not include.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb5d01f1da1",
+        "rule": null,
+        "reason": "No rule restricts first-person phrasing.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F190a41d0d3",
+        "rule": "R3",
+        "reason": "Subsection 4.1 has two paragraphs ('I will replace...' and 'Inheritance runs...'), so it meets the minimum.",
+        "label": "invalid"
+      },
+      {
+        "id": "F7a82d01f74",
+        "rule": "R16",
+        "reason": "'Recertifcation' is a ligature extraction artifact spelled the same way everywhere, so there is no terminology inconsistency.",
+        "label": "invalid"
+      },
+      {
+        "id": "F563109a1d7",
+        "rule": "R11",
+        "reason": "The Problem section uses the contraction 'doesn't'.",
+        "label": "valid"
+      },
+      {
+        "id": "F36b194ef7a",
+        "rule": "R3",
+        "reason": "Subsection 4.4 is a single paragraph, below the two-paragraph minimum.",
+        "label": "valid"
+      },
+      {
+        "id": "Ffcc43e255f",
+        "rule": "R6",
+        "reason": "Both the objective bullet and the 4.2 heading use the double verb 'Design and Implement'.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc6a487d341",
+        "rule": "R4",
+        "reason": "The Problem section proposes a concrete solution, the self-service platform.",
+        "label": "valid"
+      },
+      {
+        "id": "F67f6f4d0f7",
+        "rule": "R18",
+        "reason": "The statement lacks a confirmation that the author carefully checked the AI-generated text.",
+        "label": "valid"
+      },
+      {
+        "id": "F041f573099",
+        "rule": "R10",
+        "reason": "The Figure 2 caption 'System Architecture' is generic and not informative.",
+        "label": "valid"
+      },
+      {
+        "id": "F640f77bb61",
+        "rule": "R18",
+        "reason": "The AI statement has no review-confirmation sentence.",
+        "label": "valid"
+      }
+    ]
+  },
+  "costUsd": 0.2656588,
+  "durationMs": 35810,
+  "model": "claude-opus-5-5[1m]"
+}

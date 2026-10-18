@@ -1,0 +1,250 @@
+{
+  "job": "label-proposal-p1-pass3-09",
+  "answer": {
+    "judgements": [
+      {
+        "id": "Fc3b9520d87",
+        "rule": "R10",
+        "label": "valid",
+        "reason": "R10 requires a long, informative caption. The Figure 1 caption is one generic line that does not explain the interactions shown."
+      },
+      {
+        "id": "F2eb2c3d0e7",
+        "rule": "R11",
+        "label": "valid",
+        "reason": "R11 requires active voice. The quoted passive constructions, such as 'the base build plan is copied' and 'the lecture is split up', occur in the document."
+      },
+      {
+        "id": "Fc4730d8fe9",
+        "rule": "R20",
+        "label": "valid",
+        "reason": "R20 bans documentation and writing tasks from the schedule. The schedule lists 'Documentation for installation...', 'October: Writing' and 'Thesis'."
+      },
+      {
+        "id": "F0385da2c7c",
+        "rule": "R1",
+        "label": "valid",
+        "reason": "R1 requires an Objective section with subsections. The document has none: Sections 4 and 5 are 'System Requirements and Top Level Design' and 'Expected Findings'."
+      },
+      {
+        "id": "F96ea2cebd9",
+        "rule": "R9",
+        "label": "invalid",
+        "reason": "R9 requires at least one suitable UML diagram. Figure 1 has actors and numbered messages (1.1, 2.1, 3.2...), which is the form of a UML communication diagram, so the claim that no UML diagram exists does not hold."
+      },
+      {
+        "id": "F2a3b51f6dc",
+        "rule": "R1",
+        "label": "valid",
+        "reason": "R1 requires a Motivation section. The document has no such section."
+      },
+      {
+        "id": "Ff1f444cd57",
+        "rule": "R9",
+        "label": "invalid",
+        "reason": "R9 requires a UML diagram. Figure 1 uses numbered messages between actors and systems, the form of a UML communication diagram, so the claim that the document has no UML diagram is not supported."
+      },
+      {
+        "id": "F24c48659b6",
+        "rule": "R11",
+        "label": "valid",
+        "reason": "R11 forbids filler words. The intensifier 'very' appears in 'makes it very cumbersome'. Other cited items such as 'additional' are not clearly filler words."
+      },
+      {
+        "id": "Fff7ff71359",
+        "rule": "R19",
+        "label": "valid",
+        "reason": "R19 requires 2-4 week iterations with vertically integrated deliverables. The schedule is a month-by-month list of single-week, horizontally layered tasks."
+      },
+      {
+        "id": "F31b3562beb",
+        "rule": "R4",
+        "label": "invalid",
+        "reason": "R4 applies to the Problem section. The quoted sentence is in the Abstract's 'Problem Statement' label, not in the Problem section (Section 1)."
+      },
+      {
+        "id": "Fc0f4d5a6fb",
+        "rule": "R4",
+        "label": "invalid",
+        "reason": "The quote 'The CI server should be migrated to the VC server' appears only in the Abstract, not in the Problem section on page 2 as the finding claims."
+      },
+      {
+        "id": "Fa84f16cbcd",
+        "rule": "R1",
+        "label": "valid",
+        "reason": "R1 requires an Objective section with subsections. The document has no such section."
+      },
+      {
+        "id": "F426579d0eb",
+        "rule": "R19",
+        "label": "valid",
+        "reason": "R19 requires agile iterations. The schedule is a sequence of single-week tasks without iterations."
+      },
+      {
+        "id": "F7279c71e38",
+        "rule": "R10",
+        "label": "valid",
+        "reason": "R10 requires every figure to be referenced in the text. The text points only to 'section 4' and never refers to Figure 1."
+      },
+      {
+        "id": "F298d943c87",
+        "rule": "R11",
+        "label": "valid",
+        "reason": "R11 forbids filler words. 'very cumbersome' appears in the Problem Statement on page 2; the finding's page 3 'Discussion' location is wrong."
+      },
+      {
+        "id": "F2686afef25",
+        "rule": "R20",
+        "label": "valid",
+        "reason": "R20 bans thesis-writing and documentation tasks. The schedule contains 'October: Writing', 'Thesis ready for review' and documentation items."
+      },
+      {
+        "id": "Fc5034ba2c9",
+        "rule": "R11",
+        "label": "valid",
+        "reason": "R11 requires active voice. Passive constructions such as 'the build plan is fetched' and 'Artemis was built' occur. API is also never defined."
+      },
+      {
+        "id": "F83d2726564",
+        "rule": "R19",
+        "label": "valid",
+        "reason": "R19 requires 2-4 week iterations. The schedule is organized by month and single weeks with no iterations."
+      },
+      {
+        "id": "F62c9929e99",
+        "rule": "R20",
+        "label": "valid",
+        "reason": "R20 forbids a requirements-gathering task. The schedule lists 'Requirements (parallel to prototype implementation)'."
+      },
+      {
+        "id": "F50640b6a54",
+        "rule": "R1",
+        "label": "valid",
+        "reason": "R1 requires a Motivation section. The document has none."
+      },
+      {
+        "id": "Ff7913325bb",
+        "rule": "R15",
+        "label": "invalid",
+        "reason": "R15 applies to headings. 'Name', 'Participating actors' and 'Flow of events' are labels in a scenario list, not headings, and typo fixes are not covered by any rule."
+      },
+      {
+        "id": "Ff9b79b5cab",
+        "rule": "R19",
+        "label": "valid",
+        "reason": "R19 requires 2-4 week iterations. The schedule follows a monthly, waterfall-like sequence with no iteration structure."
+      },
+      {
+        "id": "F7d787ca1ff",
+        "rule": "R12",
+        "label": "valid",
+        "reason": "R12 requires abbreviations to be defined before use. 'API' is used in the Abstract and later sections and is never spelled out."
+      },
+      {
+        "id": "Fc3d088660c",
+        "rule": "R19",
+        "label": "valid",
+        "reason": "R19 requires 2-4 week iterations. The schedule lists individual weeks and does not group work into iterations."
+      },
+      {
+        "id": "F46fb68f112",
+        "rule": "R16",
+        "label": "invalid",
+        "reason": "R16 concerns using the same term for the same concept. 'CI Server' and 'CI server' are the same term; only the capitalization differs, so the terminology is not inconsistent."
+      },
+      {
+        "id": "F06497a0def",
+        "rule": "R7",
+        "label": "valid",
+        "reason": "R7 requires at least 6-8 peer-reviewed publications. The bibliography lists only five entries."
+      },
+      {
+        "id": "F6d9e2bbe71",
+        "rule": "R19",
+        "label": "valid",
+        "reason": "R19 requires 2-4 week iterations with vertically integrated deliverables. The schedule is a horizontal sequence of tasks without iterations."
+      },
+      {
+        "id": "F05343d1ada",
+        "rule": "R17",
+        "label": "valid",
+        "reason": "R17 requires an AI transparency statement. The document has none."
+      },
+      {
+        "id": "F5e1ddbde8c",
+        "rule": "R11",
+        "label": "invalid",
+        "reason": "R11 forbids filler words, but the cited items ('Furthermore', 'Additionally', 'also', 'In addition') are transition words that state additive relationships, not filler words."
+      },
+      {
+        "id": "F64ca11c601",
+        "rule": "R7",
+        "label": "valid",
+        "reason": "R7 requires at least 6-8 peer-reviewed publications. Only five references are listed."
+      },
+      {
+        "id": "F2278b18367",
+        "rule": "R16",
+        "label": "invalid",
+        "reason": "R16 concerns consistent terminology. 'VC Server' and 'VC server' are the same term with different capitalization, which is not a terminology inconsistency."
+      },
+      {
+        "id": "Fc7f54772c0",
+        "rule": "R1",
+        "label": "valid",
+        "reason": "R1 requires an Objectives section. The document has none."
+      },
+      {
+        "id": "Fb5d139834d",
+        "rule": "R10",
+        "label": "valid",
+        "reason": "R10 requires a long caption and an in-text reference for every figure. The Figure 1 caption is short and generic, and the text refers only to 'section 4', never to the figure."
+      },
+      {
+        "id": "Ff0396c57ee",
+        "rule": "R12",
+        "label": "valid",
+        "reason": "R12 requires abbreviations to be defined before use. 'API' is never expanded. Its first use is actually in the Abstract, not on page 2."
+      },
+      {
+        "id": "F2cf19f2a1b",
+        "rule": "R11",
+        "label": "valid",
+        "reason": "R11 requires active voice. Passive forms such as 'should be migrated', 'is copied' and 'can be made available' occur in the document."
+      },
+      {
+        "id": "Fa94404c564",
+        "rule": "R17",
+        "label": "valid",
+        "reason": "R17 requires an AI transparency statement. The document has none."
+      },
+      {
+        "id": "F69510e636e",
+        "rule": "R1",
+        "label": "valid",
+        "reason": "R1 requires Introduction, Motivation and Objective sections. None of these appear among the document's sections (Problem Statement, Proposed Solution, Related Work, System Requirements, Expected Findings, Schedule)."
+      },
+      {
+        "id": "F96ee23ab3e",
+        "rule": "R19",
+        "label": "valid",
+        "reason": "R19 requires 2-4 week iterations with end-to-end deliverables. The schedule consists of isolated weekly milestones."
+      },
+      {
+        "id": "F21c519b1d9",
+        "rule": "R1",
+        "label": "valid",
+        "reason": "R1 requires a Motivation section. The document has none."
+      },
+      {
+        "id": "F1e4d9ae2bc",
+        "rule": "R20",
+        "label": "valid",
+        "reason": "R20 forbids a requirements-gathering task. The schedule has a dedicated 'Requirements' item in June."
+      }
+    ]
+  },
+  "costUsd": 0.2752268,
+  "durationMs": 40757,
+  "model": "claude-opus-5-5[1m]"
+}

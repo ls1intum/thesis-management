@@ -1,0 +1,250 @@
+{
+  "job": "label-proposal-p1-pass1-12",
+  "answer": {
+    "judgements": [
+      {
+        "id": "F6a63e96a10",
+        "rule": "R11",
+        "reason": "Central claim is passive voice; the document has passive sentences such as 'The CI server should be migrated to the VC server.' and 'the base build plan is copied'. Some extra sub-claims (first person) are not rules, but the central claim holds.",
+        "label": "valid"
+      },
+      {
+        "id": "Fae02282db3",
+        "rule": "R7",
+        "reason": "The bibliography lists only five entries, below the minimum of 6-8 peer-reviewed publications.",
+        "label": "valid"
+      },
+      {
+        "id": "F2a3b51f6dc",
+        "rule": "R1",
+        "reason": "The proposal has no Motivation section; its sections are Problem Statement, Proposed Solution, Related Work, System Requirements, Expected Findings and Time Schedule.",
+        "label": "valid"
+      },
+      {
+        "id": "Ffceff89527",
+        "rule": "R9",
+        "reason": "The document contains only one figure (Figure 1), while at least two are required.",
+        "label": "valid"
+      },
+      {
+        "id": "F31b3562beb",
+        "rule": "R4",
+        "reason": "The abstract's Problem Statement part prescribes a solution ('The CI server should be migrated to the VC server.') instead of describing a problem.",
+        "label": "valid"
+      },
+      {
+        "id": "F7208a41519",
+        "rule": "R1",
+        "reason": "No AI transparency statement appears anywhere in the document.",
+        "label": "valid"
+      },
+      {
+        "id": "F5e1ddbde8c",
+        "rule": "R11",
+        "reason": "Transitions such as 'Furthermore', 'Additionally' and 'In addition' express additive relationships and are not filler words in the sense of R11.",
+        "label": "invalid"
+      },
+      {
+        "id": "F87de2eaf9b",
+        "rule": "R10",
+        "reason": "Figure 1 is never referenced by number; the text only says 'This process is illustrated in section 4.'",
+        "label": "valid"
+      },
+      {
+        "id": "Ffeb657628a",
+        "rule": "R20",
+        "reason": "The schedule contains 'Documentation for installation...', 'October: Writing . . .' and 'Thesis' tasks.",
+        "label": "valid"
+      },
+      {
+        "id": "F24021dc191",
+        "rule": "R13",
+        "reason": "The quote is from the abstract, not the Problem Statement, and both points form one coherent problem statement, so it is not a clear breach of the one-idea rule.",
+        "label": "invalid"
+      },
+      {
+        "id": "F13338d075e",
+        "rule": "R20",
+        "reason": "The schedule includes writing, thesis review and documentation tasks.",
+        "label": "valid"
+      },
+      {
+        "id": "F46721a1ad2",
+        "rule": "R12",
+        "reason": "'API' is used from the abstract onward and is never defined.",
+        "label": "valid"
+      },
+      {
+        "id": "F0e852c3edd",
+        "rule": "R1",
+        "reason": "There is no dedicated Motivation section; motivation appears only in the abstract.",
+        "label": "valid"
+      },
+      {
+        "id": "F93a68ce725",
+        "rule": "R19",
+        "reason": "The schedule is organized as scattered calendar-week items, not consistent 2-4 week iterations with deliverables.",
+        "label": "valid"
+      },
+      {
+        "id": "F944a7a79dd",
+        "rule": "R19",
+        "reason": "The prototype is built in horizontal slices (connectivity, API, sending results) rather than vertically integrated increments.",
+        "label": "valid"
+      },
+      {
+        "id": "F536b4134a3",
+        "rule": "R7",
+        "reason": "Only five bibliography entries are present, fewer than the required 6-8.",
+        "label": "valid"
+      },
+      {
+        "id": "F62c515999b",
+        "rule": "R7",
+        "reason": "The bibliography has five entries, below the 6-8 minimum.",
+        "label": "valid"
+      },
+      {
+        "id": "F70bfaf0580",
+        "rule": "R12",
+        "reason": "Sentences start with 'Since' (Abstract, Section 3), 'To' (Section 1) and 'In order to' (Section 3), as quoted.",
+        "label": "valid"
+      },
+      {
+        "id": "F091ef5a2e0",
+        "rule": "R16",
+        "reason": "The author uses both 'CI server' and 'CI service' for the same component being migrated (e.g., 'migrate the CI service' vs 'The CI server should be migrated').",
+        "label": "valid"
+      },
+      {
+        "id": "F364c6eb363",
+        "rule": "R20",
+        "reason": "The schedule lists '4th week: Requirements (parallel to prototype implementation)', which is a requirements task.",
+        "label": "valid"
+      },
+      {
+        "id": "F2eb2c3d0e7",
+        "rule": "R11",
+        "reason": "Passive constructions such as 'the base build plan is copied' and 'the lecture is split up' occur as quoted.",
+        "label": "valid"
+      },
+      {
+        "id": "Fbd282b303b",
+        "rule": "R11",
+        "reason": "The flagged words ('Furthermore', 'additional', 'also', 'In addition') are ordinary connectives or adjectives, not filler words.",
+        "label": "invalid"
+      },
+      {
+        "id": "F839cd8420c",
+        "rule": "R12",
+        "reason": "The abstract sentence starts with 'Since', which is forbidden.",
+        "label": "valid"
+      },
+      {
+        "id": "F1c626c3009",
+        "rule": "R9",
+        "reason": "There is only one figure, and it is not referenced by number in the text; two figures are required.",
+        "label": "valid"
+      },
+      {
+        "id": "F093692d519",
+        "rule": "R16",
+        "reason": "'CI Server' vs 'CI server' is the same term with a capitalization variance, not inconsistent terminology for a concept.",
+        "label": "invalid"
+      },
+      {
+        "id": "Ff291300822",
+        "rule": null,
+        "reason": "A lowercase letter after a full stop is a typo; no rule covers typographic errors.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F31e589fede",
+        "rule": "R12",
+        "reason": "'API' is never expanded at first use.",
+        "label": "valid"
+      },
+      {
+        "id": "F95415d2f3f",
+        "rule": "R1",
+        "reason": "The document has no Objective section with subsections; 'Expected Findings' does not fill that role.",
+        "label": "valid"
+      },
+      {
+        "id": "F65ab65de73",
+        "rule": "R12",
+        "reason": "In Expected Findings, the sentence 'As described in section 3, this might lead...' starts with 'As'.",
+        "label": "valid"
+      },
+      {
+        "id": "Fa9ffe633a7",
+        "rule": "R1",
+        "reason": "There is no standalone Motivation section in the document.",
+        "label": "valid"
+      },
+      {
+        "id": "F8e9b825526",
+        "rule": "R15",
+        "reason": "The quoted texts are arrow labels inside Figure 1, not headings, so the title-case rule does not apply.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fdd5f08be5a",
+        "rule": "R20",
+        "reason": "The schedule contains writing, thesis, documentation and requirements items.",
+        "label": "valid"
+      },
+      {
+        "id": "Ff17f276a21",
+        "rule": "R12",
+        "reason": "'API' is used without being defined.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc90b40f808",
+        "rule": "R20",
+        "reason": "The schedule contains the documentation task 'Documentation for installation and confguration of Artemis with GitLab CI'.",
+        "label": "valid"
+      },
+      {
+        "id": "F40288036c4",
+        "rule": "R20",
+        "reason": "Writing, review, thesis and documentation tasks appear in the schedule.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd27eeb2658",
+        "rule": "R19",
+        "reason": "'Models' is a horizontal artifact task, not a vertically integrated deliverable.",
+        "label": "valid"
+      },
+      {
+        "id": "F7c1f9f3528",
+        "rule": "R12",
+        "reason": "'To achieve this goal, Artemis uses...' starts with 'To'; other forbidden openers also occur.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc0f4596bac",
+        "rule": "R4",
+        "reason": "The Problem Statement proposes a remedy ('it would be useful to change the student build plans... use a debug compiler'), which is solution content.",
+        "label": "valid"
+      },
+      {
+        "id": "F5c34431736",
+        "rule": "R12",
+        "reason": "'API' is not defined at first use.",
+        "label": "valid"
+      },
+      {
+        "id": "F83d2726564",
+        "rule": "R19",
+        "reason": "The schedule lists calendar weeks per month rather than 2-4 week iterations with measurable deliverables.",
+        "label": "valid"
+      }
+    ]
+  },
+  "costUsd": 0.2942268,
+  "durationMs": 44211,
+  "model": "claude-opus-5-5[1m]"
+}

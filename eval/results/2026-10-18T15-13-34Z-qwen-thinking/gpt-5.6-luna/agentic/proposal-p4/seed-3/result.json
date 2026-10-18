@@ -1,0 +1,114 @@
+{
+  "assessment" : "NEEDS_WORK",
+  "score" : 62,
+  "summary" : "The proposal has a coherent problem context, four objectives, two referenced diagrams, a detailed schedule, and a specific AI-tools table. However, it needs substantial revision: the required Abstract is absent; the Problem section proposes the solution; one objective uses two verbs and one objective subsection does not meet the two-paragraph requirement; a documentation page is incorrectly included in the bibliography; the AI statement lacks the required confirmation that generated text was checked; the schedule includes thesis writing and presentation preparation; and at least one citation, a contraction, and the Figure 2 caption violate the stated rules.",
+  "findings" : [ {
+    "severity" : "CRITICAL",
+    "category" : "COMPLETENESS",
+    "title" : "Required Abstract Is Missing",
+    "description" : "Add the required Abstract section before the Introduction, with a proposal summary of approximately one-third to one-half page.",
+    "locations" : [ {
+      "page" : 1,
+      "section" : "Abstract"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "STRUCTURE",
+    "title" : "Introduction Lacks Text Before Its First Subsection",
+    "description" : "Add a short introductory paragraph under Section 1 before subsection 1.1, explaining what the introduction covers; the section currently jumps directly from the chapter heading to a subsection.",
+    "locations" : [ {
+      "page" : 2,
+      "section" : "Introduction"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "LOGIC",
+    "title" : "Problem Section Proposes a Solution",
+    "description" : "Keep the Problem section limited to the problem and its consequences. Move the proposed platform and expiry-based solution to Motivation or Objective, or rewrite this sentence as a consequence without proposing a system.",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "Problem",
+      "quote" : "A self-service platform that arms the workfow engine of Keycloak with an expiry date at grant time would end this accumulation."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "METHODOLOGY",
+    "title" : "Objective Uses Two Verbs",
+    "description" : "Rewrite the objective with one action verb, for example by choosing either designing or implementing, and apply the same correction to the corresponding subsection heading and objective bullet.",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Objective",
+      "quote" : "•   Design   and   implement      connectors     with   expiry"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "CITATION",
+    "title" : "Citation Follows the Full Stop",
+    "description" : "Move the citation before the sentence-ending full stop so the citation is integrated into the sentence, e.g. “temporal model [BBF01].”",
+    "locations" : [ {
+      "page" : 4,
+      "section" : "Motivation",
+      "quote" : "temporal    model.    [BBF01]     Joshi  et  al. generalise   this  idea  to  role  assignments"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "CITATION",
+    "title" : "Documentation Is Listed as a Bibliography Entry",
+    "description" : "Remove the Keycloak administration guide from the bibliography and retain it as a footnote or other non-bibliography web reference, because the bibliography should contain peer-reviewed publications only.",
+    "locations" : [ {
+      "page" : 8,
+      "section" : "Bibliography",
+      "quote" : "[Key26]       Keycloak     Authors,    “Keycloak     Server    Administration      Guide. ”   Accessed:"
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "COMPLETENESS",
+    "title" : "AI Statement Lacks Review Confirmation",
+    "description" : "Add an explicit first-person confirmation that you carefully checked all AI-generated text for correctness and coherence, as required by the transparency statement.",
+    "locations" : [ {
+      "page" : 10,
+      "section" : "Transparency in the Use of AI Tools",
+      "quote" : "I used  the   following   generative    artifcial   intelligence    (AI)  tool  while   preparing    this proposal."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "SCHEDULE",
+    "title" : "Schedule Includes Thesis Writing and Presentation Tasks",
+    "description" : "Remove thesis writing and final-presentation preparation from the development schedule. Replace this iteration with research or implementation work tied to the objectives, and schedule thesis writing separately if needed outside the agile development plan.",
+    "locations" : [ {
+      "page" : 7,
+      "section" : "Schedule",
+      "quote" : "•   Iteration     7 (18–31      March):      Write   the   thesis  and   prepare    the  fnal   presen­ tation."
+    } ]
+  }, {
+    "severity" : "MAJOR",
+    "category" : "STRUCTURE",
+    "title" : "Objective Subsection Has Only One Paragraph",
+    "description" : "Split subsection 4.1 into at least two paragraphs, while retaining the detailed content. It currently presents the subsection as one continuous paragraph, unlike the required two-paragraph minimum for every objective subsection.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Objective — Structure Resources as an Inheriting Tree",
+      "quote" : "Maintainership,      audit  policy,  and   grants  pass  down    from   a  folder  to  every  resource beneath    it. One   approval    on  a project   folder   therefore   covers   its Slack  channel    and                                                                                    its   GitHub     team,    and   it covers   a  resource    that  a  maintainer     adds   to  the   folder   next   month    without    a   second   decision."
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "WRITING",
+    "title" : "Contraction Used in Formal Prose",
+    "description" : "Replace the contraction with its expanded form (“does not”). Apply the same check throughout the proposal because contractions are disallowed by the writing rules.",
+    "locations" : [ {
+      "page" : 3,
+      "section" : "Problem",
+      "quote" : "The    current   process    doesn’t                                                                                    scale"
+    } ]
+  }, {
+    "severity" : "MINOR",
+    "category" : "FIGURES",
+    "title" : "Figure 2 Caption Is Not Informative Enough",
+    "description" : "Expand the Figure 2 caption to explain the components, trust boundaries, and data/control flows shown, rather than providing only a generic label.",
+    "locations" : [ {
+      "page" : 5,
+      "section" : "Objective — Design and Implement Connectors with Expiry",
+      "quote" : "Figure  2:  System  Architecture"
+    } ]
+  } ]
+}

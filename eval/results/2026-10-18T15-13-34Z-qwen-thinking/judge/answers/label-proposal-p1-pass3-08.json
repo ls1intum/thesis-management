@@ -1,0 +1,250 @@
+{
+  "job": "label-proposal-p1-pass3-08",
+  "answer": {
+    "judgements": [
+      {
+        "id": "Ffbb9908cb9",
+        "rule": "R11",
+        "reason": "The highlighted phrase \"GitLab CI is downloading the build plan\" is already active voice (progressive aspect), not passive, so it shows no R11 breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "F1f19953155",
+        "rule": "R9",
+        "reason": "R9 requires at least two figures. The document contains only Figure 1.",
+        "label": "valid"
+      },
+      {
+        "id": "F1760d694c2",
+        "rule": "R1",
+        "reason": "R1 requires an Introduction. The document goes straight from the Abstract to \"1 Problem Statement\" with no Introduction.",
+        "label": "valid"
+      },
+      {
+        "id": "Fd7df127ce1",
+        "rule": "R13",
+        "reason": "R13 asks for 5-8 line paragraphs. The Abstract paragraphs and the Problem Statement paragraphs are only about 2-3 lines each.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb6493f2262",
+        "rule": "R1",
+        "reason": "R1 requires a Motivation section, and the document has none.",
+        "label": "valid"
+      },
+      {
+        "id": "F6ca29df8bd",
+        "rule": "R11",
+        "reason": "The cited words (\"Especially\", \"Additionally\", \"Furthermore\", \"additional\", \"also\") are content-bearing qualifiers or transitions, not filler words or superlatives, so there is no clear R11 breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "F5e383bf858",
+        "rule": "R19",
+        "reason": "R19 requires measurable deliverables. The schedule items \"Models\", \"Revise models with concrete implementation\" and \"Implement improvements\" do not say what concrete result each produces.",
+        "label": "valid"
+      },
+      {
+        "id": "Fa93ba5b4c9",
+        "rule": "R19",
+        "reason": "R19 requires 2-4 week iterations. The schedule is a month-by-month timeline with scattered single-week entries and no defined iterations.",
+        "label": "valid"
+      },
+      {
+        "id": "Fbba69368f5",
+        "rule": "R11",
+        "reason": "R11 requires active voice. \"The student base repository is copied\", \"GitLab CI gets confgured\" and \"the build plan is fetched\" are passive constructions.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc701084864",
+        "rule": "R3",
+        "reason": "R3 requires an Objectives section with an intro, a bullet list of 3-4 objectives and one subsection per objective. Section 4 is a visionary scenario and a figure, without that structure.",
+        "label": "valid"
+      },
+      {
+        "id": "F89bfa9c3b1",
+        "rule": "R14",
+        "reason": "\"1.1: Push code template...\" are labels inside Figure 1, not document subsections, so R14 does not apply to them.",
+        "label": "invalid"
+      },
+      {
+        "id": "F10dfb65e1d",
+        "rule": "R10",
+        "reason": "R10 requires every figure to be referenced in the text. The text only says \"illustrated in section 4\" and never refers to Figure 1.",
+        "label": "valid"
+      },
+      {
+        "id": "Fdaa151637d",
+        "rule": "R13",
+        "reason": "R13 asks for 5-8 line paragraphs. The cited paragraph in Expected Findings is a single one-line sentence.",
+        "label": "valid"
+      },
+      {
+        "id": "Ff5abc950b1",
+        "rule": "R1",
+        "reason": "R1 requires an Introduction, and the document has none.",
+        "label": "valid"
+      },
+      {
+        "id": "F296967aa4f",
+        "rule": "R4",
+        "reason": "R4 requires problems with negative consequences for identified actors. Apart from \"smaller universities\", the Problem Statement does not name who suffers from manual build-plan updates or the exam limitation.",
+        "label": "valid"
+      },
+      {
+        "id": "F71ae2b3579",
+        "rule": "R1",
+        "reason": "R1 requires an Introduction, and the document goes straight from the Abstract to the Problem Statement.",
+        "label": "valid"
+      },
+      {
+        "id": "Fcc50851d8a",
+        "rule": "R19",
+        "reason": "R19 requires 2-4 week iterations with deliverables. The schedule lists one-off single-week tasks spread across months, with gaps and no iteration boundaries.",
+        "label": "valid"
+      },
+      {
+        "id": "Fb79f82bade",
+        "rule": "R4",
+        "reason": "Both quoted sentences come from the labeled \"Problem Statement:\" part of the Abstract on page 1, not from the Problem section on page 2 that R4 governs. The finding therefore does not show R4 being broken where it applies.",
+        "label": "invalid"
+      },
+      {
+        "id": "Fc87405a704",
+        "rule": "R10",
+        "reason": "R10 requires a long, informative caption and a reference in the text. Figure 1 has a short one-line caption and is referenced only as \"section 4\".",
+        "label": "valid"
+      },
+      {
+        "id": "Fe5530b92ad",
+        "rule": "R10",
+        "reason": "R10 requires every figure to be referenced. Figure 1 is never referenced by number; the text only points to \"section 4\".",
+        "label": "valid"
+      },
+      {
+        "id": "Ffc528f3653",
+        "rule": "R1",
+        "reason": "R1 requires Introduction, Motivation and Objective sections. None of them exists; the document has \"System Requirements and Top Level Design\" and \"Expected Findings\" instead.",
+        "label": "valid"
+      },
+      {
+        "id": "F59ad5cd0b9",
+        "rule": "R11",
+        "reason": "The highlighted phrase \"GitLab CI is downloading the build plan\" is active voice, not passive, so there is no R11 breach.",
+        "label": "invalid"
+      },
+      {
+        "id": "F31c0a5936f",
+        "rule": "R1",
+        "reason": "R1 requires a dedicated Motivation section, and the document has none.",
+        "label": "valid"
+      },
+      {
+        "id": "F720dc574f8",
+        "rule": "R4",
+        "reason": "R4 requires consequences for identified actors. The Problem Statement does not say which actors are harmed by manual build-plan updates; it names only smaller universities for the server issue.",
+        "label": "valid"
+      },
+      {
+        "id": "F723a72e696",
+        "rule": "R7",
+        "reason": "R7 requires at least 6-8 peer-reviewed publications. The bibliography lists only five entries.",
+        "label": "valid"
+      },
+      {
+        "id": "F93a68ce725",
+        "rule": "R19",
+        "reason": "R19 requires 2-4 week iterations with deliverables. The schedule is organized by month with sporadic week entries, and some gaps between items exceed 4 weeks.",
+        "label": "valid"
+      },
+      {
+        "id": "F2a9e5a9bf9",
+        "rule": "R13",
+        "reason": "The Abstract consists of prose sentences under inline labels, not bullet points. No rule requires a single unlabeled paragraph, so R13 is not broken.",
+        "label": "invalid"
+      },
+      {
+        "id": "F898381687f",
+        "rule": null,
+        "reason": "No rule forbids first-person phrasing in the proposal.",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "Fbe417f3503",
+        "rule": "R1",
+        "reason": "R1 requires an Introduction, and the document has none.",
+        "label": "valid"
+      },
+      {
+        "id": "F6faff9c889",
+        "rule": "R4",
+        "reason": "R4 requires consequences for identified actors. The Problem Statement lists consequences without clearly tying them to named actors such as instructors or students.",
+        "label": "valid"
+      },
+      {
+        "id": "Fa305341095",
+        "rule": "R15",
+        "reason": "The finding calls \"and\" an uppercase conjunction, but it is lowercase, which is correct title case. Hyphenating \"Top-Level\" is not covered by any rule, so the heading complies.",
+        "label": "invalid"
+      },
+      {
+        "id": "F6c2bace195",
+        "rule": "R19",
+        "reason": "R19 requires 2-4 week iterations. The schedule is organized by calendar month with scattered week references and no defined iterations.",
+        "label": "valid"
+      },
+      {
+        "id": "F2de375adf2",
+        "rule": "R1",
+        "reason": "R1 requires an Introduction. The document goes from the Abstract directly to \"1 Problem Statement\" without one.",
+        "label": "valid"
+      },
+      {
+        "id": "Fbadd12ad0e",
+        "rule": "R12",
+        "reason": "R12 forbids starting sentences with \"In order to\". The sentence \"In order to implement this idea, the lecture is split up\" in Related Work does exactly that.",
+        "label": "valid"
+      },
+      {
+        "id": "F6798355cef",
+        "rule": "R11",
+        "reason": "R11 requires active voice. \"is fetched\", \"are not patched\" and \"are now often included\" are passive. The third quote is actually in Related Work, not the Problem section, but the breach still holds.",
+        "label": "valid"
+      },
+      {
+        "id": "F62c515999b",
+        "rule": "R7",
+        "reason": "R7 requires at least 6-8 peer-reviewed publications. The bibliography has only five entries.",
+        "label": "valid"
+      },
+      {
+        "id": "F8fe981d7a3",
+        "rule": null,
+        "reason": "No rule prohibits using \"I\".",
+        "label": "out_of_scope"
+      },
+      {
+        "id": "F8ee59f9adc",
+        "rule": "R19",
+        "reason": "R19 requires vertically integrated deliverables. The schedule splits work by technical layer (runner configuration, connectivity, API, sending results) instead of delivering end-to-end increments.",
+        "label": "valid"
+      },
+      {
+        "id": "F8995fe3011",
+        "rule": "R3",
+        "reason": "R3 requires an Objectives section with an objective list and one subsection per objective. Neither Section 4 nor Section 5 provides that structure.",
+        "label": "valid"
+      },
+      {
+        "id": "Fc6d24b1c2a",
+        "rule": "R20",
+        "reason": "R20 forbids requirements and documentation tasks in the schedule. The schedule contains \"Requirements\" in June, \"Documentation for installation...\" in September, and writing tasks.",
+        "label": "valid"
+      }
+    ]
+  },
+  "costUsd": 0.11884859999999998,
+  "durationMs": 42484,
+  "model": "claude-opus-5-5[1m]"
+}
