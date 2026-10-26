@@ -16,9 +16,11 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -221,8 +223,13 @@ public class UserSessionService {
 		}
 
 		if (session.isRotationRequired() && repository.claimRotation(session.getId()) == 1) {
-			Created rotated = rotate(session, client, now);
-			return new Authenticated(rotated.session(), user.get(), Optional.of(rotated.cookieValue()));
+			Optional<Created> rotated = rotate(session, client, now);
+
+			if (rotated.isEmpty()) {
+				return new Rejected(Reason.ENDED);
+			}
+
+			return new Authenticated(rotated.get().session(), user.get(), Optional.of(rotated.get().cookieValue()));
 		}
 
 		touch(session, client, now);
@@ -302,15 +309,39 @@ public class UserSessionService {
 	}
 
 	/**
-	 * Ends all of the caller's sessions except the one making the request.
+	 * Returns the ids of a session and of the sessions it was rotated into. A request that still carries the cookie
+	 * value from before a rotation (inside the grace window) is authenticated as the old row, while the browser
+	 * already uses the replacement; both belong to the same login.
+	 *
+	 * @param sessionId the session that authenticated the request
+	 * @return the session and its successors, newest last
+	 */
+	public Set<UUID> currentAndSuccessors(UUID sessionId) {
+		Set<UUID> ids = new LinkedHashSet<>();
+		UUID next = sessionId;
+
+		for (int hops = 0; next != null && hops <= MAX_ROTATION_HOPS; hops++) {
+			ids.add(next);
+			next = repository.findById(next)
+					.filter(session -> session.getEndReason() == UserSessionEndReason.ROTATED)
+					.map(UserSession::getSupersededBy)
+					.orElse(null);
+		}
+
+		return ids;
+	}
+
+	/**
+	 * Ends all of the caller's sessions except the one making the request (and its rotation successors).
 	 *
 	 * @param userId the caller
 	 * @param currentSessionId the session to keep
 	 * @return the number of ended sessions
 	 */
 	public int endOthers(UUID userId, UUID currentSessionId) {
+		Set<UUID> keep = currentAndSuccessors(currentSessionId);
 		List<UserSession> others = repository.findByUserIdAndEndedAtIsNullOrderByCreatedAtAsc(userId).stream()
-				.filter(session -> !session.getId().equals(currentSessionId))
+				.filter(session -> !keep.contains(session.getId()))
 				.toList();
 
 		others.forEach(session -> end(session, UserSessionEndReason.LOGOUT));
@@ -434,7 +465,12 @@ public class UserSessionService {
 		session.setLastIp(ip);
 	}
 
-	private Created rotate(UserSession old, ClientInfo client, Instant now) {
+	/**
+	 * Replaces a session. Creating the replacement and marking the old session as rotated are separate database
+	 * operations, so a logout can end the old session in between. In that case the replacement is ended again and
+	 * nothing is handed out: a session that was ended must not be revived by a concurrent rotation.
+	 */
+	private Optional<Created> rotate(UserSession old, ClientInfo client, Instant now) {
 		UserSessionTokens.Issued issued = UserSessionTokens.generate();
 
 		UserSession replacement = new UserSession();
@@ -449,12 +485,19 @@ public class UserSessionService {
 		applyClient(replacement, client, false);
 
 		replacement = repository.save(replacement);
-		repository.markRotated(old.getId(), now, replacement.getId(), now.plus(properties.rotationGrace()));
+
+		if (repository.markRotated(old.getId(), now, replacement.getId(), now.plus(properties.rotationGrace())) == 0) {
+			repository.endById(replacement.getId(), now, UserSessionEndReason.REVOKED);
+			log.info("Session {} of user {} ended while it was being rotated; the replacement was dropped",
+					UserSessionTokens.logId(old.getTokenIdentifier()), old.getUserId());
+
+			return Optional.empty();
+		}
 
 		log.info("Session {} of user {} rotated to {}", UserSessionTokens.logId(old.getTokenIdentifier()), old.getUserId(),
 				UserSessionTokens.logId(replacement.getTokenIdentifier()));
 
-		return new Created(replacement, issued.cookieValue());
+		return Optional.of(new Created(replacement, issued.cookieValue()));
 	}
 
 	private void evictOldestSessions(UUID userId) {

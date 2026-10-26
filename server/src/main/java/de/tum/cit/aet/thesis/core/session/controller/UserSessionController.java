@@ -30,6 +30,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.time.Clock;
 import java.time.Duration;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -92,7 +93,7 @@ public class UserSessionController {
 	public ResponseEntity<SessionInfoDto> getSession(@RequestAttribute(UserSessionAuthenticationFilter.SESSION_ATTRIBUTE) UserSession session) {
 		return ResponseEntity.ok()
 				.cacheControl(CacheControl.noStore())
-				.body(new SessionInfoDto(session.getCsrfToken(), session.getExpiresAt()));
+				.body(new SessionInfoDto(session.getCsrfToken(), session.getExpiresAt(), session.getUserId()));
 	}
 
 	/**
@@ -120,8 +121,9 @@ public class UserSessionController {
 	 */
 	@GetMapping("/sessions")
 	public ResponseEntity<List<UserSessionDto>> listSessions(@RequestAttribute(UserSessionAuthenticationFilter.SESSION_ATTRIBUTE) UserSession current) {
+		Set<UUID> currentIds = sessionService.currentAndSuccessors(current.getId());
 		List<UserSessionDto> sessions = sessionService.listActive(current.getUserId()).stream()
-				.map(session -> UserSessionDto.from(session, current.getId()))
+				.map(session -> UserSessionDto.from(session, currentIds))
 				.toList();
 
 		return ResponseEntity.ok()
@@ -169,7 +171,7 @@ public class UserSessionController {
 		return ResponseEntity.ok()
 				.header(HttpHeaders.SET_COOKIE, cookie.toString())
 				.cacheControl(CacheControl.noStore())
-				.body(new SessionInfoDto(session.getCsrfToken(), session.getExpiresAt()));
+				.body(new SessionInfoDto(session.getCsrfToken(), session.getExpiresAt(), session.getUserId()));
 	}
 
 	private Duration remainingLifetime(UserSession session) {

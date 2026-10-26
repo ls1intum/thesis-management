@@ -150,7 +150,8 @@ class UserSessionControllerTest extends BaseSessionIntegrationTest {
 		mockMvc.perform(as(login, MockMvcRequestBuilders.get("/v2/auth/session")))
 				.andExpect(status().isOk())
 				.andExpect(header().string(HttpHeaders.CACHE_CONTROL, org.hamcrest.Matchers.containsString("no-store")))
-				.andExpect(jsonPath("$.csrfToken").value(login.csrfToken()));
+				.andExpect(jsonPath("$.csrfToken").value(login.csrfToken()))
+				.andExpect(jsonPath("$.userId").value(userRepository.findByUniversityId("get-session-user").orElseThrow().getId().toString()));
 	}
 
 	@Test

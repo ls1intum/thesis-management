@@ -401,6 +401,24 @@ class UserSessionServiceIntegrationTest extends BaseIntegrationTest {
 	}
 
 	@Test
+	void endOthers_withAPreRotationSession_keepsTheCallersLiveReplacement() {
+		User user = createUser("svc-others-grace");
+		Created current = sessionService.create(user, client(CHROME_MAC_130));
+		Created elsewhere = sessionService.create(user, client(CHROME_MAC_130));
+		sessionService.markForRotation(user.getId());
+		Authenticated rotated = authenticated(authenticate(current));
+
+		// a parallel request that still carries the pre-rotation cookie asks to end all other sessions
+		at(Duration.ofSeconds(5));
+		Authenticated viaOldCookie = authenticated(authenticate(current));
+		int ended = sessionService.endOthers(user.getId(), viaOldCookie.session().getId());
+
+		assertThat(ended).isEqualTo(1);
+		authenticated(sessionService.authenticate(rotated.newCookieValue().orElseThrow(), client(CHROME_MAC_130)));
+		assertThat(rejected(authenticate(elsewhere)).reason()).isEqualTo(Reason.ENDED);
+	}
+
+	@Test
 	void revokeAll_endsEveryActiveSessionOfTheUser() {
 		User user = createUser("svc-revoke");
 		Created first = sessionService.create(user, client(CHROME_MAC_130));

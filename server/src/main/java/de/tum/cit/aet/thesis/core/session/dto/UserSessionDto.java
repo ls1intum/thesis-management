@@ -5,6 +5,7 @@ import de.tum.cit.aet.thesis.core.session.entity.UserSession;
 import de.tum.cit.aet.thesis.core.session.service.UserAgentSignature;
 
 import java.time.Instant;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -24,17 +25,17 @@ public record UserSessionDto(UUID id, Instant createdAt, Instant lastUsedAt, Str
 	 * Converts a session for the list of the user's sessions.
 	 *
 	 * @param session the session
-	 * @param currentSessionId the id of the session that made the request
+	 * @param currentSessionIds the id of the session that made the request and of the sessions it was rotated into
 	 * @return the DTO
 	 */
-	public static UserSessionDto from(UserSession session, UUID currentSessionId) {
+	public static UserSessionDto from(UserSession session, Set<UUID> currentSessionIds) {
 		return new UserSessionDto(
 				session.getId(),
 				session.getCreatedAt(),
 				session.getLastUsedAt(),
 				session.getLastIp(),
 				UserAgentSignature.label(session.getUserAgentSignature()),
-				session.getId().equals(currentSessionId)
+				currentSessionIds.contains(session.getId())
 		);
 	}
 }
