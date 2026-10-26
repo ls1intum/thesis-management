@@ -43,21 +43,6 @@ class UserInfoControllerTest extends BaseIntegrationTest {
 		}
 
 		@Test
-		void getUserInfo_CreatesUserOnFirstAccess() throws Exception {
-			String universityId = "newuser" + System.currentTimeMillis();
-			String auth = generateTestAuthenticationHeader(universityId, List.of("student"));
-
-			String response = mockMvc.perform(MockMvcRequestBuilders.get("/v2/user-info")
-							.header("Authorization", auth))
-					.andExpect(status().isOk())
-					.andReturn().getResponse().getContentAsString();
-
-			JsonNode json = objectMapper.readTree(response);
-			assertThat(json.get("universityId").asString()).isEqualTo(universityId);
-			assertThat(json.get("userId").asString()).isNotBlank();
-		}
-
-		@Test
 		void getUserInfo_Unauthenticated_ReturnsUnauthorized() throws Exception {
 			mockMvc.perform(MockMvcRequestBuilders.get("/v2/user-info"))
 					.andExpect(status().isUnauthorized());
@@ -103,6 +88,34 @@ class UserInfoControllerTest extends BaseIntegrationTest {
 			assertThat(json.get("lastName").asString()).isEqualTo("Doe");
 			assertThat(json.get("gender").asString()).isEqualTo("male");
 			assertThat(json.get("nationality").asString()).isEqualTo("German");
+		}
+
+		@Test
+		void updateUserInfo_IgnoresEmailInPayload() throws Exception {
+			TestUser user = createRandomTestUser(List.of("student"));
+			String auth = generateTestAuthenticationHeader(user.universityId(), List.of("student"));
+
+			String dataJson = objectMapper.writeValueAsString(Map.of(
+					"firstName", "John",
+					"lastName", "Doe",
+					"email", "changed@evil.example",
+					"customData", Map.of()
+			));
+
+			String response = mockMvc.perform(MockMvcRequestBuilders.multipart("/v2/user-info")
+							.file(new MockMultipartFile("data", "", "application/json", dataJson.getBytes()))
+							.with(request -> {
+								request.setMethod("PUT");
+								return request;
+							})
+							.header("Authorization", auth)
+							.contentType(MediaType.MULTIPART_FORM_DATA))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			JsonNode json = objectMapper.readTree(response);
+			assertThat(json.get("firstName").asString()).isEqualTo("John");
+			assertThat(json.get("email").asString()).isEqualTo(user.universityId() + "@example.com");
 		}
 
 		@Test

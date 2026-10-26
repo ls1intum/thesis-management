@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -56,27 +56,29 @@ public class UserInfoController {
 	}
 
 	/**
-	 * Retrieves the profile information of the authenticated user.
+	 * Retrieves the profile information of the authenticated user. This is a plain read; the user is created
+	 * and synchronized from Keycloak when the session is created (see {@code POST /v2/auth/session}).
 	 *
-	 * @param jwt the JWT authentication token
+	 * @param authentication the authentication of the current request
 	 * @return the authenticated user's profile information
 	 */
 	@GetMapping
-	public ResponseEntity<UserDto> getInfo(JwtAuthenticationToken jwt) {
-		User user = this.authenticationService.updateAuthenticatedUser(jwt);
+	public ResponseEntity<UserDto> getInfo(Authentication authentication) {
+		User user = this.authenticationService.getAuthenticatedUser(authentication);
 
 		return ResponseEntity.ok(UserDto.fromUserEntity(user));
 	}
 
 	/**
-	 * Updates the authenticated user's profile information and uploaded documents.
+	 * Updates the authenticated user's profile information and uploaded documents. The email address is
+	 * synchronized from the university account at login and cannot be changed here.
 	 *
 	 * @param payload the payload containing updated user information
 	 * @param examinationReport the examination report file
 	 * @param cv the CV file
 	 * @param degreeReport the degree report file
 	 * @param avatar the avatar image file
-	 * @param jwt the JWT authentication token
+	 * @param authentication the authentication of the current request
 	 * @return the updated user profile information
 	 */
 	@PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -86,9 +88,9 @@ public class UserInfoController {
 			@RequestPart(value = "cv", required = false) MultipartFile cv,
 			@RequestPart(value = "degreeReport", required = false) MultipartFile degreeReport,
 			@RequestPart(value = "avatar", required = false) MultipartFile avatar,
-			JwtAuthenticationToken jwt
+			Authentication authentication
 	) {
-		User authenticatedUser = this.authenticationService.getAuthenticatedUser(jwt);
+		User authenticatedUser = this.authenticationService.getAuthenticatedUser(authentication);
 
 		authenticatedUser = this.authenticationService.updateUserInformation(
 				authenticatedUser,
@@ -96,7 +98,6 @@ public class UserInfoController {
 				RequestValidator.validateStringMaxLengthAllowNull(payload.lastName(), StringLimits.SHORTTEXT.getLimit()),
 				RequestValidator.validateStringMaxLengthAllowNull(payload.gender(), StringLimits.SHORTTEXT.getLimit()),
 				RequestValidator.validateStringMaxLengthAllowNull(payload.nationality(), StringLimits.SHORTTEXT.getLimit()),
-				RequestValidator.validateEmailAllowNull(payload.email()),
 				RequestValidator.validateStringMaxLengthAllowNull(payload.studyDegree(), StringLimits.SHORTTEXT.getLimit()),
 				RequestValidator.validateStringMaxLengthAllowNull(payload.studyProgram(), StringLimits.SHORTTEXT.getLimit()),
 				payload.enrolledAt(),
@@ -116,12 +117,12 @@ public class UserInfoController {
 	/**
 	 * Retrieves the notification settings of the authenticated user.
 	 *
-	 * @param jwt the JWT authentication token
+	 * @param authentication the authentication of the current request
 	 * @return the list of notification settings
 	 */
 	@GetMapping("/notifications")
-	public ResponseEntity<List<NotificationSettingDto>> getNotificationSettings(JwtAuthenticationToken jwt) {
-		User user = this.authenticationService.getAuthenticatedUser(jwt);
+	public ResponseEntity<List<NotificationSettingDto>> getNotificationSettings(Authentication authentication) {
+		User user = this.authenticationService.getAuthenticatedUser(authentication);
 
 		List<NotificationSetting> settings = authenticationService.getNotificationSettings(user);
 
@@ -134,15 +135,15 @@ public class UserInfoController {
 	 * Updates the notification settings of the authenticated user.
 	 *
 	 * @param payload the payload containing notification setting updates
-	 * @param jwt the JWT authentication token
+	 * @param authentication the authentication of the current request
 	 * @return the updated list of notification settings
 	 */
 	@PutMapping("/notifications")
 	public ResponseEntity<List<NotificationSettingDto>> updateNotificationSettings(
 			@RequestBody UpdateNotificationSettingPayload payload,
-			JwtAuthenticationToken jwt
+			Authentication authentication
 	) {
-		User user = this.authenticationService.getAuthenticatedUser(jwt);
+		User user = this.authenticationService.getAuthenticatedUser(authentication);
 
 		List<NotificationSetting> settings = authenticationService.updateNotificationSettings(
 				user,
@@ -159,12 +160,12 @@ public class UserInfoController {
 	 * Imports the authenticated user's profile picture from an external avatar service.
 	 * The request is made server-side so that the user's IP address is not exposed to the external service.
 	 *
-	 * @param jwt the JWT authentication token
+	 * @param authentication the authentication of the current request
 	 * @return the updated user profile information
 	 */
 	@PostMapping("/import-profile-picture")
-	public ResponseEntity<UserDto> importProfilePicture(JwtAuthenticationToken jwt) {
-		User user = this.authenticationService.getAuthenticatedUser(jwt);
+	public ResponseEntity<UserDto> importProfilePicture(Authentication authentication) {
+		User user = this.authenticationService.getAuthenticatedUser(authentication);
 
 		String email = user.getEmail() != null ? user.getEmail().getAddress() : null;
 		if (email == null || email.isBlank()) {

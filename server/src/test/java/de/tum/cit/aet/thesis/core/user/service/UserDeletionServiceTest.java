@@ -584,7 +584,8 @@ class UserDeletionServiceTest extends BaseIntegrationTest {
 			String authHeader = generateTestAuthenticationHeader(
 					swt.student().universityId(), List.of("student"));
 
-			mockMvc.perform(MockMvcRequestBuilders.get("/v2/user-info")
+			// logging in means exchanging the Keycloak token for a session, which is refused for deleted accounts
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/auth/session")
 							.header("Authorization", authHeader))
 					.andExpect(status().isForbidden());
 		}

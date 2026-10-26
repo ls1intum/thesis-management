@@ -1,6 +1,7 @@
 package de.tum.cit.aet.thesis.mock;
 
 import com.auth0.jwt.JWT;
+import de.tum.cit.aet.thesis.core.session.service.UserSessionService;
 import de.tum.cit.aet.thesis.core.user.repository.UserGroupRepository;
 import de.tum.cit.aet.thesis.core.user.service.AccessManagementService;
 import org.mockito.Mockito;
@@ -97,7 +98,7 @@ public class TestSecurityConfig {
 	}
 
 	@Bean
-	public AccessManagementService accessManagementService(UserGroupRepository userGroupRepository) {
+	public AccessManagementService accessManagementService(UserGroupRepository userGroupRepository, UserSessionService userSessionService) {
 		// Use a spy of the real service so DB operations (role mutations) execute against
 		// the test database. Keycloak user-lookup methods (getUserByUsername, getAllUsers)
 		// are not called by default — tests that need them can stub them individually.
@@ -106,7 +107,8 @@ public class TestSecurityConfig {
 				"thesis-management",
 				"test-client",
 				"test-secret",
-				userGroupRepository
+				userGroupRepository,
+				userSessionService
 		);
 		return Mockito.spy(realService);
 	}

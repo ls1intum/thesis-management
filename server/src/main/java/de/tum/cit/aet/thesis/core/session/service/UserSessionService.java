@@ -9,7 +9,10 @@ import de.tum.cit.aet.thesis.core.user.entity.User;
 import de.tum.cit.aet.thesis.core.user.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -65,6 +68,16 @@ public class UserSessionService {
 	 * @param userAgent the User-Agent header
 	 */
 	public record ClientInfo(String ip, String userAgent) {
+		/**
+		 * Reads the client properties from a request. The IP is the remote address, which reflects the real
+		 * client when the server trusts the forwarded headers of its proxy.
+		 *
+		 * @param request the request
+		 * @return the client properties
+		 */
+		public static ClientInfo from(HttpServletRequest request) {
+			return new ClientInfo(request.getRemoteAddr(), request.getHeader(HttpHeaders.USER_AGENT));
+		}
 	}
 
 	/**

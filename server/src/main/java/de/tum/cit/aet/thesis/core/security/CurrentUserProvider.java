@@ -7,9 +7,9 @@ import de.tum.cit.aet.thesis.core.user.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -24,8 +24,8 @@ private User cachedUser;
 public User getUser() {
 	if (cachedUser == null) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authentication instanceof JwtAuthenticationToken jwt) {
-			cachedUser = authenticationService.getAuthenticatedUserWithResearchGroup(jwt);
+		if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
+			cachedUser = authenticationService.getAuthenticatedUserWithResearchGroup(authentication);
 		} else {
 			throw new AccessDeniedException("Please login first.");
 		}

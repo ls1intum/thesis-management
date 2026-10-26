@@ -77,7 +77,6 @@ class AuthenticationServiceTest {
 				"User",
 				"Male",
 				"German",
-				"updated@test.com",
 				"Bachelor",
 				"Computer Science",
 				Instant.now(),
