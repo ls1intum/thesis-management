@@ -75,6 +75,16 @@ test.describe('Keycloak outage', () => {
     await expect(page.getByText('Find a Thesis Topic')).toBeVisible()
     await expect(page.locator('header').getByText('Login')).toBeVisible()
 
+    // logging in needs Keycloak: the user is told so instead of being sent to a dead page or left waiting
+    await page.locator('header').getByRole('button', { name: 'Login' }).click()
+    await expect(
+      page
+        .locator('.mantine-Notification-description')
+        .filter({ hasText: /login service is currently unavailable/i })
+        .first(),
+    ).toBeVisible({ timeout: 15_000 })
+    await expect(page).toHaveURL(/localhost:\d+\/?$/)
+
     await context.close()
   })
 
