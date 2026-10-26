@@ -14,6 +14,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Session queries. The bulk updates deliberately do not clear the persistence context: they are called from
+ * the middle of other flows (role changes, account deletion) whose managed entities must stay attached.
+ */
 @Repository
 public interface UserSessionRepository extends JpaRepository<UserSession, UUID> {
 	Optional<UserSession> findByTokenIdentifier(String tokenIdentifier);
@@ -26,12 +30,12 @@ public interface UserSessionRepository extends JpaRepository<UserSession, UUID> 
 
 	List<UserSession> findByEndedAtIsNullAndLastUsedAtBefore(Instant cutoff);
 
-	@Modifying(clearAutomatically = true, flushAutomatically = true)
+	@Modifying
 	@Transactional
 	@Query("UPDATE UserSession s SET s.rotationRequired = TRUE WHERE s.userId = :userId AND s.endedAt IS NULL")
 	int markRotationRequiredForUser(@Param("userId") UUID userId);
 
-	@Modifying(clearAutomatically = true, flushAutomatically = true)
+	@Modifying
 	@Transactional
 	@Query("UPDATE UserSession s SET s.endedAt = :endedAt, s.endReason = :reason WHERE s.userId = :userId AND s.endedAt IS NULL")
 	int endAllForUser(@Param("userId") UUID userId, @Param("endedAt") Instant endedAt, @Param("reason") UserSessionEndReason reason);
@@ -40,29 +44,29 @@ public interface UserSessionRepository extends JpaRepository<UserSession, UUID> 
 	 * Atomically takes over the pending rotation of a session. Returns 1 for exactly one caller, so
 	 * parallel requests do not each create a replacement session.
 	 */
-	@Modifying(clearAutomatically = true, flushAutomatically = true)
+	@Modifying
 	@Transactional
 	@Query("UPDATE UserSession s SET s.rotationRequired = FALSE WHERE s.id = :id AND s.rotationRequired = TRUE AND s.endedAt IS NULL")
 	int claimRotation(@Param("id") UUID id);
 
-	@Modifying(clearAutomatically = true, flushAutomatically = true)
+	@Modifying
 	@Transactional
 	@Query("UPDATE UserSession s SET s.endedAt = :endedAt, s.endReason = :reason WHERE s.id = :id AND s.endedAt IS NULL")
 	int endById(@Param("id") UUID id, @Param("endedAt") Instant endedAt, @Param("reason") UserSessionEndReason reason);
 
-	@Modifying(clearAutomatically = true, flushAutomatically = true)
+	@Modifying
 	@Transactional
 	@Query("UPDATE UserSession s SET s.endedAt = :endedAt, s.endReason = de.tum.cit.aet.thesis.core.session.entity.UserSessionEndReason.ROTATED, "
 			+ "s.supersededBy = :supersededBy, s.supersededUntil = :supersededUntil WHERE s.id = :id AND s.endedAt IS NULL")
 	int markRotated(@Param("id") UUID id, @Param("endedAt") Instant endedAt, @Param("supersededBy") UUID supersededBy,
 					@Param("supersededUntil") Instant supersededUntil);
 
-	@Modifying(clearAutomatically = true, flushAutomatically = true)
+	@Modifying
 	@Transactional
 	@Query("UPDATE UserSession s SET s.lastUsedAt = :at, s.lastIp = :ip WHERE s.id = :id")
 	int touchLastUsed(@Param("id") UUID id, @Param("at") Instant at, @Param("ip") String ip);
 
-	@Modifying(clearAutomatically = true, flushAutomatically = true)
+	@Modifying
 	@Transactional
 	@Query("DELETE FROM UserSession s WHERE s.endedAt IS NOT NULL AND s.endedAt < :cutoff")
 	int deleteEndedBefore(@Param("cutoff") Instant cutoff);
