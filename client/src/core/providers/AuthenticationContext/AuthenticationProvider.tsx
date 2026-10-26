@@ -467,6 +467,15 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
             return
           }
 
+          // Logging in is the one thing that needs Keycloak: say so instead of sending the user to a dead page.
+          if (!(await isKeycloakReachable())) {
+            showSimpleError(
+              'The login service is currently unavailable. Please try again in a few minutes.',
+            )
+
+            return
+          }
+
           const client = await ensureKeycloak()
           const keycloakRedirectUri = getLoginRedirectUri(redirectUri)
 

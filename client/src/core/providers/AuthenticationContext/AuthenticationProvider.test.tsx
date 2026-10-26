@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import AuthenticationProvider from '@/core/providers/AuthenticationContext/AuthenticationProvider'
 import { useAuthenticationContext } from '@/core/hooks/authentication'
 import * as keycloakClient from '@/core/auth/keycloakClient'
@@ -50,6 +50,9 @@ const Probe = () => {
       <span data-testid='ready'>{String(auth.isReady)}</span>
       <span data-testid='authenticated'>{String(auth.isAuthenticated)}</span>
       <span data-testid='user'>{auth.user?.universityId ?? ''}</span>
+      <button type='button' onClick={() => void auth.login('/dashboard')}>
+        log in
+      </button>
     </div>
   )
 }
@@ -128,5 +131,36 @@ describe('AuthenticationProvider startup', () => {
 
     await waitFor(() => expect(screen.getByTestId('ready').textContent).toBe('true'))
     expect(screen.getByTestId('authenticated').textContent).toBe('false')
+  })
+
+  it('does not redirect to an unreachable Keycloak when logging in', async () => {
+    vi.mocked(session.fetchSession).mockResolvedValue(undefined)
+    vi.mocked(keycloakClient.initKeycloak).mockResolvedValue(false)
+    vi.mocked(keycloakClient.isKeycloakReachable).mockResolvedValue(false)
+
+    renderProvider()
+    await waitFor(() => expect(screen.getByTestId('ready').textContent).toBe('true'))
+    fireEvent.click(screen.getByRole('button', { name: 'log in' }))
+
+    await waitFor(() =>
+      expect(showSimpleError).toHaveBeenCalledWith(expect.stringMatching(/login service/i)),
+    )
+    expect(keycloakClient.ensureKeycloak).not.toHaveBeenCalled()
+  })
+
+  it('redirects to Keycloak when logging in and Keycloak is reachable', async () => {
+    const login = vi.fn().mockResolvedValue(undefined)
+    vi.mocked(session.fetchSession).mockResolvedValue(undefined)
+    vi.mocked(keycloakClient.initKeycloak).mockResolvedValue(false)
+    vi.mocked(keycloakClient.isKeycloakReachable).mockResolvedValue(true)
+    vi.mocked(keycloakClient.ensureKeycloak).mockResolvedValue({ login } as never)
+
+    renderProvider()
+    await waitFor(() => expect(screen.getByTestId('ready').textContent).toBe('true'))
+    fireEvent.click(screen.getByRole('button', { name: 'log in' }))
+
+    await waitFor(() =>
+      expect(login).toHaveBeenCalledWith({ redirectUri: `${window.location.origin}/dashboard` }),
+    )
   })
 })
