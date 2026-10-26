@@ -71,6 +71,13 @@ public class UserSession {
 	@Column(name = "superseded_until")
 	private Instant supersededUntil;
 
+	/**
+	 * The session this one replaced when it was rotated. It is set when the replacement is inserted, before the
+	 * old row is marked as rotated, so a replacement can always be found from its predecessor.
+	 */
+	@Column(name = "rotated_from")
+	private UUID rotatedFrom;
+
 	@NotNull
 	@Column(name = "csrf_token", nullable = false, updatable = false)
 	private String csrfToken;

@@ -419,6 +419,31 @@ class UserSessionServiceIntegrationTest extends BaseIntegrationTest {
 	}
 
 	@Test
+	void endOthers_whileTheCallersReplacementIsStillBeingCreated_doesNotEndIt() {
+		User user = createUser("svc-others-inflight");
+		Created current = sessionService.create(user, client(CHROME_MAC_130));
+		Created elsewhere = sessionService.create(user, client(CHROME_MAC_130));
+
+		// rotation has inserted the replacement but has not yet marked the old row as rotated (supersededBy is null)
+		UserSession replacement = new UserSession();
+		replacement.setTokenIdentifier("in-flight-identifier");
+		replacement.setVerifierHash(new byte[] {1});
+		replacement.setUserId(user.getId());
+		replacement.setCreatedAt(START);
+		replacement.setLastUsedAt(START);
+		replacement.setExpiresAt(START.plus(Duration.ofHours(24)));
+		replacement.setCsrfToken("csrf");
+		replacement.setRotatedFrom(current.session().getId());
+		replacement = sessionRepository.save(replacement);
+
+		int ended = sessionService.endOthers(user.getId(), current.session().getId());
+
+		assertThat(ended).isEqualTo(1);
+		assertThat(sessionRepository.findById(replacement.getId()).orElseThrow().getEndedAt()).isNull();
+		assertThat(rejected(authenticate(elsewhere)).reason()).isEqualTo(Reason.ENDED);
+	}
+
+	@Test
 	void revokeAll_endsEveryActiveSessionOfTheUser() {
 		User user = createUser("svc-revoke");
 		Created first = sessionService.create(user, client(CHROME_MAC_130));

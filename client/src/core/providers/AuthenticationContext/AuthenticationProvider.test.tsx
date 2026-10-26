@@ -262,4 +262,25 @@ describe('AuthenticationProvider startup', () => {
     expect(screen.getByTestId('authenticated').textContent).toBe('true')
     expect(logout).not.toHaveBeenCalled()
   })
+
+  it('tells the user only once in a while that login is unavailable, even if login is requested repeatedly', async () => {
+    vi.mocked(session.fetchSession).mockResolvedValue(undefined)
+    vi.mocked(keycloakClient.initKeycloak).mockResolvedValue(false)
+    vi.mocked(keycloakClient.isKeycloakReachable).mockResolvedValue(false)
+
+    renderProvider()
+    await waitFor(() => expect(screen.getByTestId('ready').textContent).toBe('true'))
+    vi.mocked(showSimpleError).mockClear()
+
+    const button = screen.getByRole('button', { name: 'log in' })
+    for (let i = 0; i < 5; i++) {
+      fireEvent.click(button)
+    }
+
+    await waitFor(() =>
+      expect(showSimpleError).toHaveBeenCalledWith(expect.stringMatching(/login service/i)),
+    )
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    expect(showSimpleError).toHaveBeenCalledTimes(1)
+  })
 })

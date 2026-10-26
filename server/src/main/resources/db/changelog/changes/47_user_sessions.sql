@@ -14,6 +14,7 @@ CREATE TABLE user_sessions (
     rotation_required BOOLEAN NOT NULL DEFAULT FALSE,
     superseded_by UUID,
     superseded_until TIMESTAMP,
+    rotated_from UUID,
     csrf_token VARCHAR(64) NOT NULL,
     created_ip VARCHAR(64),
     last_ip VARCHAR(64),
@@ -24,3 +25,4 @@ CREATE TABLE user_sessions (
 CREATE UNIQUE INDEX idx_user_sessions_token_identifier ON user_sessions (token_identifier);
 CREATE INDEX idx_user_sessions_user_id ON user_sessions (user_id);
 CREATE INDEX idx_user_sessions_ended_at ON user_sessions (ended_at);
+CREATE INDEX idx_user_sessions_rotated_from ON user_sessions (rotated_from);

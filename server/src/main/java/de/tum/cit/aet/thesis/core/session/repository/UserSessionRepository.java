@@ -30,6 +30,10 @@ public interface UserSessionRepository extends JpaRepository<UserSession, UUID> 
 
 	List<UserSession> findByEndedAtIsNullAndLastUsedAtBefore(Instant cutoff);
 
+	/** Reads from the database (not from an entity that may have been loaded before a rotation finished). */
+	@Query("SELECT s.id FROM UserSession s WHERE s.rotatedFrom = :id")
+	List<UUID> findIdsByRotatedFrom(@Param("id") UUID id);
+
 	@Modifying
 	@Transactional
 	@Query("UPDATE UserSession s SET s.rotationRequired = TRUE WHERE s.userId = :userId AND s.endedAt IS NULL")
@@ -60,6 +64,18 @@ public interface UserSessionRepository extends JpaRepository<UserSession, UUID> 
 			+ "s.supersededBy = :supersededBy, s.supersededUntil = :supersededUntil WHERE s.id = :id AND s.endedAt IS NULL")
 	int markRotated(@Param("id") UUID id, @Param("endedAt") Instant endedAt, @Param("supersededBy") UUID supersededBy,
 					@Param("supersededUntil") Instant supersededUntil);
+
+	/**
+	 * Ends the user's active sessions except the kept ones and the sessions that replaced a kept one. A single
+	 * statement, so a replacement inserted by a concurrent rotation is spared as well: it records its predecessor
+	 * when it is inserted.
+	 */
+	@Modifying
+	@Transactional
+	@Query("UPDATE UserSession s SET s.endedAt = :endedAt, s.endReason = :reason WHERE s.userId = :userId AND s.endedAt IS NULL "
+			+ "AND s.id NOT IN :keep AND (s.rotatedFrom IS NULL OR s.rotatedFrom NOT IN :keep)")
+	int endAllExcept(@Param("userId") UUID userId, @Param("keep") java.util.Collection<UUID> keep,
+					@Param("endedAt") Instant endedAt, @Param("reason") UserSessionEndReason reason);
 
 	@Modifying
 	@Transactional

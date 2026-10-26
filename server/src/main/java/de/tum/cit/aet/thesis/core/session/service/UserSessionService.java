@@ -239,7 +239,9 @@ public class UserSessionService {
 
 	/**
 	 * Ends a session. Does nothing if it already ended. If the session was rotated, its replacement(s) end too:
-	 * a logout that still carries the cookie value from before a rotation must not leave the session alive.
+	 * a logout that still carries the cookie value from before a rotation must not leave the session alive. The
+	 * replacements are looked up in the database, not on the given entity, which may have been loaded before a
+	 * concurrent rotation finished.
 	 *
 	 * @param session the session to end
 	 * @param reason why it ends
@@ -251,14 +253,20 @@ public class UserSessionService {
 			log.info("Session {} of user {} ended: {}", UserSessionTokens.logId(session.getTokenIdentifier()), session.getUserId(), reason);
 		}
 
-		UUID next = session.getSupersededBy();
+		endReplacements(session.getId(), session.getUserId(), reason, now, 0);
+	}
 
-		for (int hops = 0; next != null && hops < MAX_ROTATION_HOPS; hops++) {
-			if (repository.endById(next, now, reason) > 0) {
-				log.info("Session {} of user {} ended with its predecessor: {}", next, session.getUserId(), reason);
+	private void endReplacements(UUID sessionId, UUID userId, UserSessionEndReason reason, Instant now, int depth) {
+		if (depth >= MAX_ROTATION_HOPS) {
+			return;
+		}
+
+		for (UUID replacementId : repository.findIdsByRotatedFrom(sessionId)) {
+			if (repository.endById(replacementId, now, reason) > 0) {
+				log.info("Session {} of user {} ended with its predecessor: {}", replacementId, userId, reason);
 			}
 
-			next = repository.findById(next).map(UserSession::getSupersededBy).orElse(null);
+			endReplacements(replacementId, userId, reason, now, depth + 1);
 		}
 	}
 
@@ -314,39 +322,42 @@ public class UserSessionService {
 	 * already uses the replacement; both belong to the same login.
 	 *
 	 * @param sessionId the session that authenticated the request
-	 * @return the session and its successors, newest last
+	 * @return the session and its replacements, found in the database
 	 */
 	public Set<UUID> currentAndSuccessors(UUID sessionId) {
 		Set<UUID> ids = new LinkedHashSet<>();
-		UUID next = sessionId;
-
-		for (int hops = 0; next != null && hops <= MAX_ROTATION_HOPS; hops++) {
-			ids.add(next);
-			next = repository.findById(next)
-					.filter(session -> session.getEndReason() == UserSessionEndReason.ROTATED)
-					.map(UserSession::getSupersededBy)
-					.orElse(null);
-		}
+		collectReplacements(sessionId, ids, 0);
 
 		return ids;
 	}
 
+	private void collectReplacements(UUID sessionId, Set<UUID> ids, int depth) {
+		ids.add(sessionId);
+
+		if (depth >= MAX_ROTATION_HOPS) {
+			return;
+		}
+
+		repository.findIdsByRotatedFrom(sessionId).forEach(replacementId -> collectReplacements(replacementId, ids, depth + 1));
+	}
+
 	/**
-	 * Ends all of the caller's sessions except the one making the request (and its rotation successors).
+	 * Ends all of the caller's sessions except the one making the request and its replacements. One statement
+	 * ends them, and a replacement that a concurrent rotation inserts is spared because it records its
+	 * predecessor, so this device is never logged out by its own rotation.
 	 *
 	 * @param userId the caller
 	 * @param currentSessionId the session to keep
 	 * @return the number of ended sessions
 	 */
 	public int endOthers(UUID userId, UUID currentSessionId) {
-		Set<UUID> keep = currentAndSuccessors(currentSessionId);
-		List<UserSession> others = repository.findByUserIdAndEndedAtIsNullOrderByCreatedAtAsc(userId).stream()
-				.filter(session -> !keep.contains(session.getId()))
-				.toList();
+		int ended = repository.endAllExcept(userId, currentAndSuccessors(currentSessionId), clock.instant(), UserSessionEndReason.LOGOUT);
 
-		others.forEach(session -> end(session, UserSessionEndReason.LOGOUT));
+		if (ended > 0) {
+			log.info("User {} ended {} other sessions", userId, ended);
+		}
 
-		return others.size();
+		return ended;
 	}
 
 	/**
@@ -480,6 +491,7 @@ public class UserSessionService {
 		replacement.setCreatedAt(old.getCreatedAt());
 		replacement.setExpiresAt(old.getExpiresAt());
 		replacement.setCsrfToken(old.getCsrfToken());
+		replacement.setRotatedFrom(old.getId());
 		replacement.setLastUsedAt(now);
 		replacement.setCreatedIp(old.getCreatedIp());
 		applyClient(replacement, client, false);

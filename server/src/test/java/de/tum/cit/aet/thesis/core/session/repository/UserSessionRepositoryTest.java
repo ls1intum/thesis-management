@@ -164,6 +164,39 @@ class UserSessionRepositoryTest extends BaseIntegrationTest {
 	}
 
 	@Test
+	void findIdsByRotatedFrom_returnsTheReplacementsOfASession() {
+		User user = createUser("session-user-9");
+		UserSession old = newSession(user.getId(), "identifier-9a");
+		UserSession replacement = newSession(user.getId(), "identifier-9b");
+		replacement.setRotatedFrom(old.getId());
+		userSessionRepository.save(replacement);
+		newSession(user.getId(), "identifier-9c");
+
+		assertThat(userSessionRepository.findIdsByRotatedFrom(old.getId())).containsExactly(replacement.getId());
+		assertThat(userSessionRepository.findIdsByRotatedFrom(replacement.getId())).isEmpty();
+	}
+
+	@Test
+	void endAllExcept_endsOtherActiveSessionsOfTheUserAndSparesTheKeptOnesAndTheirReplacements() {
+		User user = createUser("session-user-10");
+		User other = createUser("session-user-11");
+		UserSession kept = newSession(user.getId(), "identifier-10a");
+		UserSession replacementOfKept = newSession(user.getId(), "identifier-10b");
+		replacementOfKept.setRotatedFrom(kept.getId());
+		userSessionRepository.save(replacementOfKept);
+		UserSession elsewhere = newSession(user.getId(), "identifier-10c");
+		UserSession strangers = newSession(other.getId(), "identifier-11a");
+
+		int ended = userSessionRepository.endAllExcept(user.getId(), List.of(kept.getId()), Instant.now(), UserSessionEndReason.LOGOUT);
+
+		assertThat(ended).isEqualTo(1);
+		assertThat(userSessionRepository.findById(kept.getId()).orElseThrow().getEndedAt()).isNull();
+		assertThat(userSessionRepository.findById(replacementOfKept.getId()).orElseThrow().getEndedAt()).isNull();
+		assertThat(userSessionRepository.findById(elsewhere.getId()).orElseThrow().getEndedAt()).isNotNull();
+		assertThat(userSessionRepository.findById(strangers.getId()).orElseThrow().getEndedAt()).isNull();
+	}
+
+	@Test
 	void deletingUser_cascadesToSessions() {
 		User user = createUser("session-user-6");
 		UserSession session = newSession(user.getId(), "identifier-6");

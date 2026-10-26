@@ -19,6 +19,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Component
 public class InvalidSessionTokenLimiter {
+	/** Upper bound for the number of tracked addresses, so made-up source addresses cannot grow the map without limit. */
+	static final int MAX_TRACKED_ADDRESSES = 10_000;
+
 	private static final Duration WINDOW = Duration.ofMinutes(1);
 
 	private final Map<String, Deque<Instant>> guesses = new ConcurrentHashMap<>();
@@ -43,6 +46,15 @@ public class InvalidSessionTokenLimiter {
 	 */
 	public void recordGuess(String ip) {
 		Instant now = clock.instant();
+
+		if (!guesses.containsKey(ip) && guesses.size() >= MAX_TRACKED_ADDRESSES) {
+			prune();
+
+			if (guesses.size() >= MAX_TRACKED_ADDRESSES) {
+				return;
+			}
+		}
+
 		Deque<Instant> window = guesses.computeIfAbsent(ip, key -> new ArrayDeque<>());
 
 		synchronized (window) {
@@ -69,6 +81,15 @@ public class InvalidSessionTokenLimiter {
 
 			return window.size() > properties.invalidTokenLimitPerMinute();
 		}
+	}
+
+	/**
+	 * Returns how many addresses are currently tracked.
+	 *
+	 * @return the number of addresses with recorded invalid cookies
+	 */
+	int trackedAddresses() {
+		return guesses.size();
 	}
 
 	/** Forgets addresses without recent invalid cookies, so the map does not grow without bound. */

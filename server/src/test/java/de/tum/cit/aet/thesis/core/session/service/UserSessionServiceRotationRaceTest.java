@@ -82,4 +82,27 @@ class UserSessionServiceRotationRaceTest {
 		verify(repository).endById(eq(replacement.getValue().getId()), any(), eq(UserSessionEndReason.REVOKED));
 		verify(repository, never()).touchLastUsed(any(), any(), any());
 	}
+
+	@Test
+	void endingASessionWhoseRotationFinishedAfterItWasLoaded_endsTheReplacementToo() {
+		UserSessionRepository repository = mock(UserSessionRepository.class);
+		UserSessionProperties properties = new UserSessionProperties(Duration.ofHours(4), Duration.ofHours(24), 10,
+				Duration.ofMinutes(5), Duration.ofSeconds(30), Duration.ofDays(30), 20, UserAgentMismatchAction.END);
+		UserSessionService service = new UserSessionService(repository, mock(UserRepository.class), properties, Clock.fixed(NOW, ZoneOffset.UTC));
+
+		// the entity was loaded before rotation finished, so it does not know its successor (supersededBy is null)
+		UserSession loadedBeforeRotation = new UserSession();
+		loadedBeforeRotation.setId(UUID.randomUUID());
+		loadedBeforeRotation.setTokenIdentifier("identifier");
+		loadedBeforeRotation.setUserId(UUID.randomUUID());
+		UUID replacementId = UUID.randomUUID();
+		when(repository.endById(eq(loadedBeforeRotation.getId()), any(), any())).thenReturn(0);
+		// the database knows it: the replacement records its predecessor from the moment it is inserted
+		when(repository.findIdsByRotatedFrom(loadedBeforeRotation.getId())).thenReturn(java.util.List.of(replacementId));
+		when(repository.findIdsByRotatedFrom(replacementId)).thenReturn(java.util.List.of());
+
+		service.end(loadedBeforeRotation, UserSessionEndReason.LOGOUT);
+
+		verify(repository).endById(eq(replacementId), any(), eq(UserSessionEndReason.LOGOUT));
+	}
 }

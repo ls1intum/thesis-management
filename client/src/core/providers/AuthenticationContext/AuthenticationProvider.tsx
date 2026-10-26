@@ -30,6 +30,8 @@ import {
   setSessionRecoveryHandler,
 } from '@/core/auth/session'
 
+const LOGIN_UNAVAILABLE_NOTICE_INTERVAL_MS = 15_000
+
 // Keycloak tokens used to be persisted here. Authentication tokens must not live in web storage.
 const LEGACY_TOKEN_STORAGE_KEY = 'authentication_tokens'
 
@@ -195,6 +197,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
 
   const [hasSession, setHasSession] = useState(false)
   const hasSessionRef = useRef(false)
+  const loginUnavailableNoticeAt = useRef(0)
   const [user, setUser] = useState<IUser>()
 
   useClearAvatarCacheOnSignOut(hasSession)
@@ -489,9 +492,17 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
 
           // Logging in is the one thing that needs Keycloak: say so instead of sending the user to a dead page.
           if (!(await isKeycloakReachable())) {
-            showSimpleError(
-              'The login service is currently unavailable. Please try again in a few minutes.',
-            )
+            // Some pages ask for a login repeatedly (the interview booking page every second): tell the user once
+            // in a while, not with every call.
+            if (
+              Date.now() - loginUnavailableNoticeAt.current >
+              LOGIN_UNAVAILABLE_NOTICE_INTERVAL_MS
+            ) {
+              loginUnavailableNoticeAt.current = Date.now()
+              showSimpleError(
+                'The login service is currently unavailable. Please try again in a few minutes.',
+              )
+            }
 
             return
           }
