@@ -8,9 +8,13 @@ import { GLOBAL_CONFIG } from '@/core/config/global'
 export interface ISessionInfo {
   csrfToken: string
   expiresAt: string
+  /** The user the session belongs to; compared before a request is replayed under a replaced session. */
+  userId?: string
 }
 
 let csrfToken: string | undefined
+let sessionUserId: string | undefined
+let identityChangeHandler: (() => void) | undefined
 let recoveryHandler: (() => Promise<boolean>) | undefined
 let recoveryInFlight: Promise<boolean> | undefined
 
@@ -22,14 +26,39 @@ export const setCsrfToken = (token: string | undefined) => {
   csrfToken = token
 }
 
+export const getSessionUserId = () => sessionUserId
+
+export const setSessionUserId = (userId: string | undefined) => {
+  sessionUserId = userId
+}
+
 export const clearSessionState = () => {
   csrfToken = undefined
+  sessionUserId = undefined
+}
+
+/**
+ * Registers what happens when the session turns out to belong to a different user than the one this tab was
+ * showing (someone else logged in, in another tab). The default reloads the page, which drops all state of the
+ * previous user.
+ */
+export const setIdentityChangeHandler = (handler: (() => void) | undefined) => {
+  identityChangeHandler = handler
+}
+
+export function handleIdentityChange() {
+  if (identityChangeHandler) {
+    identityChangeHandler()
+  } else {
+    window.location.reload()
+  }
 }
 
 const readSessionInfo = async (response: Response): Promise<ISessionInfo> => {
   const info = (await response.json()) as ISessionInfo
 
   setCsrfToken(info.csrfToken)
+  sessionUserId = info.userId
 
   return info
 }
@@ -96,8 +125,9 @@ export function refreshCsrfToken(): Promise<string | undefined> {
 
 /**
  * Ends the session on the server. If the server rejects the CSRF token (another tab replaced the session in
- * the meantime) the token is refreshed and the logout is retried once, so a logout never silently fails.
- * Local state is cleared even if the server cannot be reached.
+ * the meantime) the token is refreshed and the logout is retried once. A session that is already gone counts as
+ * ended. Any other failure is reported to the caller, which must not pretend that the user is logged out: the
+ * HttpOnly cookie would still sign them in again. The CSRF token is kept so that the logout can be retried.
  */
 export async function deleteSession(): Promise<void> {
   const send = (token: string | undefined) =>
@@ -107,26 +137,22 @@ export async function deleteSession(): Promise<void> {
       headers: token ? { 'X-CSRF-Token': token } : {},
     })
 
-  try {
-    const sentToken = csrfToken
-    let response = await send(sentToken)
+  const sentToken = csrfToken
+  let response = await send(sentToken)
 
-    if (response.status === 403) {
-      const refreshedToken = await refreshCsrfToken()
+  if (response.status === 403) {
+    const refreshedToken = await refreshCsrfToken()
 
-      if (refreshedToken && refreshedToken !== sentToken) {
-        response = await send(refreshedToken)
-      }
+    if (refreshedToken && refreshedToken !== sentToken) {
+      response = await send(refreshedToken)
     }
-
-    if (!response.ok && response.status !== 401) {
-      console.error(`The server did not end the session (${response.status})`)
-    }
-  } catch (error) {
-    console.error('Failed to end the session on the server', error)
-  } finally {
-    clearSessionState()
   }
+
+  if (!response.ok && response.status !== 401) {
+    throw new Error(`The server did not end the session (${response.status})`)
+  }
+
+  clearSessionState()
 }
 
 /** Registers how the web app silently re-establishes a session (Keycloak check-sso + exchange). */

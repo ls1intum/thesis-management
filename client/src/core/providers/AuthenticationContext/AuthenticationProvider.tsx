@@ -710,38 +710,49 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
             throw new Error(await getPasskeyErrorMessage(response))
           }
         }),
-      logout: (redirectUri: string) => {
+      logout: async (redirectUri: string) => {
+        await readySignal
+
+        // End the application session first (it works without Keycloak). If that fails the HttpOnly cookie still
+        // signs the user in, so do not act as if they were logged out: say so and stay logged in.
+        try {
+          await deleteSession()
+        } catch (error) {
+          console.error('Failed to end the session', error)
+          showSimpleError(
+            'Logging out failed: the server could not end your session. You are still logged in, please try again.',
+          )
+
+          return false
+        }
+
         updateHasSession(false)
         setUser(undefined)
 
         const target = `${window.location.origin}${redirectUri}`
 
-        // End the application session first (it works without Keycloak), then end the Keycloak
-        // single-sign-on session if Keycloak is reachable. Otherwise the next page load would
-        // silently sign the user in again.
-        void (async () => {
-          try {
-            await readySignal
-            await deleteSession()
+        // Then end the Keycloak single-sign-on session if Keycloak is reachable. Otherwise the next page load
+        // would silently sign the user in again.
+        try {
+          if (await isKeycloakReachable()) {
+            // The silent check yields the id token that lets Keycloak end the login without asking
+            // for a confirmation; without a Keycloak login there is nothing to end.
+            await ensureSsoChecked()
+            const client = getKeycloak()
 
-            if (await isKeycloakReachable()) {
-              // The silent check yields the id token that lets Keycloak end the login without asking
-              // for a confirmation; without a Keycloak login there is nothing to end.
-              await ensureSsoChecked()
-              const client = getKeycloak()
+            if (client?.authenticated) {
+              await client.logout({ redirectUri: target })
 
-              if (client?.authenticated) {
-                await client.logout({ redirectUri: target })
-
-                return
-              }
+              return true
             }
-          } catch (error) {
-            console.error('Failed to end the Keycloak session', error)
           }
+        } catch (error) {
+          console.error('Failed to end the Keycloak session', error)
+        }
 
-          window.location.href = target
-        })()
+        window.location.href = target
+
+        return true
       },
       researchGroups: researchGroups,
       isPasskeySupported,

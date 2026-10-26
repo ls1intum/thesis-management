@@ -242,4 +242,24 @@ describe('AuthenticationProvider startup', () => {
     expect(keycloakClient.initKeycloak).not.toHaveBeenCalled()
     expect(session.createSession).not.toHaveBeenCalled()
   })
+
+  it('stays logged in and says so when the server could not end the session', async () => {
+    const logout = vi.fn()
+    vi.mocked(session.fetchSession).mockResolvedValue({ csrfToken: 'c', expiresAt: 'x' })
+    vi.mocked(session.deleteSession).mockRejectedValue(
+      new Error('The server did not end the session (500)'),
+    )
+    vi.mocked(keycloakClient.isKeycloakReachable).mockResolvedValue(true)
+    vi.mocked(keycloakClient.getKeycloak).mockReturnValue({ authenticated: true, logout } as never)
+
+    renderProvider()
+    await waitFor(() => expect(screen.getByTestId('authenticated').textContent).toBe('true'))
+    fireEvent.click(screen.getByRole('button', { name: 'log out' }))
+
+    await waitFor(() =>
+      expect(showSimpleError).toHaveBeenCalledWith(expect.stringMatching(/logging out failed/i)),
+    )
+    expect(screen.getByTestId('authenticated').textContent).toBe('true')
+    expect(logout).not.toHaveBeenCalled()
+  })
 })

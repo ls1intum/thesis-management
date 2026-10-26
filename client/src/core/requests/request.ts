@@ -1,5 +1,11 @@
 import { GLOBAL_CONFIG } from '@/core/config/global'
-import { getCsrfToken, recoverSession, refreshCsrfToken } from '@/core/auth/session'
+import {
+  getCsrfToken,
+  getSessionUserId,
+  handleIdentityChange,
+  recoverSession,
+  refreshCsrfToken,
+} from '@/core/auth/session'
 
 export type ApiResponse<T> =
   | { ok: true; status: number; data: T }
@@ -46,6 +52,15 @@ export function doRequest<T>(
   const controller = options.controller ?? new AbortController()
 
   const executeRequest = async (isReplay = false): Promise<ApiResponse<T>> => {
+    // Who the tab was showing when the request was made. A request is only replayed under a replaced session if it
+    // still belongs to that user: replaying Alice's request under Bob's session would execute it as Bob.
+    const userIdAtStart = getSessionUserId()
+    const sessionBelongsToOtherUser = () => {
+      const userId = getSessionUserId()
+
+      return userIdAtStart !== undefined && userId !== undefined && userId !== userIdAtStart
+    }
+
     const params = new URLSearchParams()
 
     if (options.params) {
@@ -74,16 +89,25 @@ export function doRequest<T>(
     // The session ended (24 hour limit, ended from another device). A 401 means the server rejected
     // the request before processing it, so replaying it once after a silent re-login is safe.
     if (result.status === 401 && options.requiresAuth && !isReplay && (await recoverSession())) {
-      return executeRequest(true)
+      if (!sessionBelongsToOtherUser()) {
+        return executeRequest(true)
+      }
+
+      handleIdentityChange()
     }
 
     // A 403 for a request that carried a CSRF token may mean that another tab replaced the session and with it
-    // the token. Replay once if the token really changed; otherwise it is an ordinary permission error.
+    // the token. Replay once if the token really changed (and the session still belongs to the same user);
+    // otherwise it is an ordinary permission error.
     if (result.status === 403 && csrfToken && !isReplay) {
       const refreshedToken = await refreshCsrfToken()
 
       if (refreshedToken && refreshedToken !== csrfToken) {
-        return executeRequest(true)
+        if (!sessionBelongsToOtherUser()) {
+          return executeRequest(true)
+        }
+
+        handleIdentityChange()
       }
     }
 

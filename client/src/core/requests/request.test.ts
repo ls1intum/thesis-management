@@ -1,6 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { doRequest } from '@/core/requests/request'
-import { clearSessionState, setCsrfToken, setSessionRecoveryHandler } from '@/core/auth/session'
+import {
+  clearSessionState,
+  setCsrfToken,
+  setIdentityChangeHandler,
+  setSessionRecoveryHandler,
+  setSessionUserId,
+} from '@/core/auth/session'
 
 const jsonResponse = (status: number, body: unknown = {}) =>
   new Response(JSON.stringify(body), {
@@ -14,6 +20,7 @@ describe('doRequest', () => {
   beforeEach(() => {
     vi.stubGlobal('fetch', fetchMock)
     clearSessionState()
+    setIdentityChangeHandler(undefined)
     setCsrfToken('csrf-token')
     setSessionRecoveryHandler(undefined)
   })
@@ -194,5 +201,62 @@ describe('doRequest', () => {
     expect(url).toContain('/api/v2/things')
     expect(init.headers).toMatchObject({ 'Content-Type': 'application/json' })
     expect(init.body).toBe(JSON.stringify({ name: 'x' }))
+  })
+
+  it('does not replay a request after recovery when the session now belongs to another user', async () => {
+    const identityChanged = vi.fn()
+    setIdentityChangeHandler(identityChanged)
+    setSessionUserId('alice')
+    setSessionRecoveryHandler(() => {
+      setSessionUserId('bob')
+      return Promise.resolve(true)
+    })
+    fetchMock.mockResolvedValue(jsonResponse(401))
+
+    const result = await doRequest('/v2/account', { method: 'DELETE', requiresAuth: true })
+
+    expect(result.status).toBe(401)
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+    expect(identityChanged).toHaveBeenCalledTimes(1)
+  })
+
+  it('does not replay a request after a CSRF resync when the session now belongs to another user', async () => {
+    const identityChanged = vi.fn()
+    setIdentityChangeHandler(identityChanged)
+    setSessionUserId('alice')
+    setCsrfToken('alice-token')
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(403))
+      .mockResolvedValueOnce(
+        jsonResponse(200, { csrfToken: 'bob-token', expiresAt: 'x', userId: 'bob' }),
+      )
+
+    const result = await doRequest('/v2/user-info', {
+      method: 'PUT',
+      requiresAuth: true,
+      data: { a: 1 },
+    })
+
+    expect(result.status).toBe(403)
+    expect(fetchMock).toHaveBeenCalledTimes(2)
+    expect(identityChanged).toHaveBeenCalledTimes(1)
+  })
+
+  it('still replays when the session was replaced for the same user', async () => {
+    const identityChanged = vi.fn()
+    setIdentityChangeHandler(identityChanged)
+    setSessionUserId('alice')
+    setCsrfToken('old')
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(403))
+      .mockResolvedValueOnce(
+        jsonResponse(200, { csrfToken: 'new', expiresAt: 'x', userId: 'alice' }),
+      )
+      .mockResolvedValueOnce(jsonResponse(200, { done: true }))
+
+    const result = await doRequest('/v2/x', { method: 'POST', requiresAuth: true, data: { a: 1 } })
+
+    expect(result.ok).toBe(true)
+    expect(identityChanged).not.toHaveBeenCalled()
   })
 })

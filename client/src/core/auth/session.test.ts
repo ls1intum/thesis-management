@@ -73,10 +73,10 @@ describe('session', () => {
     expect(getCsrfToken()).toBe('csrf-2')
   })
 
-  it('deleteSession sends the CSRF token and clears local state even when the server fails', async () => {
+  it('deleteSession sends the CSRF token and clears local state when the server ends the session', async () => {
     fetchMock.mockResolvedValueOnce(jsonResponse(200, { csrfToken: 'csrf-3', expiresAt: 'x' }))
     await fetchSession()
-    fetchMock.mockRejectedValueOnce(new TypeError('Failed to fetch'))
+    fetchMock.mockResolvedValueOnce(new Response(null, { status: 204 }))
 
     await deleteSession()
 
@@ -84,6 +84,26 @@ describe('session', () => {
     expect(init.method).toBe('DELETE')
     expect(init.headers['X-CSRF-Token']).toBe('csrf-3')
     expect(getCsrfToken()).toBeUndefined()
+  })
+
+  it('deleteSession treats an already ended session (401) as done', async () => {
+    setCsrfToken('stale')
+    fetchMock.mockResolvedValueOnce(new Response(null, { status: 401 }))
+
+    await expect(deleteSession()).resolves.toBeUndefined()
+    expect(getCsrfToken()).toBeUndefined()
+  })
+
+  it('deleteSession reports a failure and keeps the CSRF token so that the logout can be retried', async () => {
+    setCsrfToken('csrf-4')
+    fetchMock.mockResolvedValueOnce(new Response(null, { status: 500 }))
+
+    await expect(deleteSession()).rejects.toThrow(/500/)
+    expect(getCsrfToken()).toBe('csrf-4')
+
+    fetchMock.mockRejectedValueOnce(new TypeError('Failed to fetch'))
+    await expect(deleteSession()).rejects.toThrow('Failed to fetch')
+    expect(getCsrfToken()).toBe('csrf-4')
   })
 
   it('recoverSession shares one in-flight attempt between concurrent callers', async () => {
