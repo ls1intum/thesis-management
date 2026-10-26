@@ -153,7 +153,12 @@ class UserInfoControllerTest extends BaseIntegrationTest {
 	class AvatarPrompt {
 		@Test
 		void getUserInfo_NewUser_AvatarPromptNotDismissed() throws Exception {
-			String auth = generateTestAuthenticationHeader("prompt" + System.currentTimeMillis(), List.of("student"));
+			String universityId = "prompt" + System.currentTimeMillis();
+			String auth = generateTestAuthenticationHeader(universityId, List.of("student"));
+
+			// a new user is created by logging in, i.e. by the session exchange
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/auth/session").header("Authorization", auth))
+					.andExpect(status().isOk());
 
 			String response = mockMvc.perform(MockMvcRequestBuilders.get("/v2/user-info")
 							.header("Authorization", auth))
