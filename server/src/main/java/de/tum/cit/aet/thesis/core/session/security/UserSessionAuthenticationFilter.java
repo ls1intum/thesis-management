@@ -79,7 +79,7 @@ public class UserSessionAuthenticationFilter extends OncePerRequestFilter {
 		AuthResult result = sessionService.authenticate(cookieValue.get(), client);
 
 		if (result instanceof Rejected rejected) {
-			handleRejected(rejected.reason(), request, response);
+			handleRejected(rejected.reason(), client, request, response);
 
 			if (rejected.reason().countsAsGuess()) {
 				limiter.recordGuess(client.ip());
@@ -113,8 +113,13 @@ public class UserSessionAuthenticationFilter extends OncePerRequestFilter {
 		chain.doFilter(request, response);
 	}
 
-	private void handleRejected(Reason reason, HttpServletRequest request, HttpServletResponse response) {
-		log.info("Rejected session cookie ({}) for {} {}", reason, request.getMethod(), request.getRequestURI());
+	private void handleRejected(Reason reason, ClientInfo client, HttpServletRequest request, HttpServletResponse response) {
+		if (reason.countsAsGuess()) {
+			// the signature of guessing: worth an alert, with the source for correlation
+			log.warn("Rejected session cookie ({}) from {} for {} {}", reason, client.ip(), request.getMethod(), request.getRequestURI());
+		} else {
+			log.info("Rejected session cookie ({}) for {} {}", reason, request.getMethod(), request.getRequestURI());
+		}
 
 		// After a rotation the browser may already hold the replacement cookie while a delayed request still
 		// carries the old value; clearing the cookie then would log the user out.

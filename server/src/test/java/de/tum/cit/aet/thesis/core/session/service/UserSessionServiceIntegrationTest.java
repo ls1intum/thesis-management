@@ -277,6 +277,40 @@ class UserSessionServiceIntegrationTest extends BaseIntegrationTest {
 	}
 
 	@Test
+	void end_onAPreRotationSession_alsoEndsItsReplacement() {
+		User user = createUser("svc-end-superseded");
+		Created created = sessionService.create(user, client(CHROME_MAC_130));
+		sessionService.markForRotation(user.getId());
+		Authenticated rotated = authenticated(authenticate(created));
+		String replacementCookie = rotated.newCookieValue().orElseThrow();
+
+		// a logout that still carries the cookie value from before the rotation (inside the grace window)
+		at(Duration.ofSeconds(5));
+		Authenticated viaOldCookie = authenticated(authenticate(created));
+		sessionService.end(viaOldCookie.session(), UserSessionEndReason.LOGOUT);
+
+		assertThat(rejected(sessionService.authenticate(replacementCookie, client(CHROME_MAC_130))).reason())
+				.isEqualTo(Reason.ENDED);
+		assertThat(sessionService.listActive(user.getId())).isEmpty();
+	}
+
+	@Test
+	void replaceExisting_endsTheCallersCurrentSessionOnlyForTheSameUser() {
+		User user = createUser("svc-replace");
+		User other = createUser("svc-replace-other");
+		Created current = sessionService.create(user, client(CHROME_MAC_130));
+		Created foreign = sessionService.create(other, client(CHROME_MAC_130));
+
+		sessionService.replaceExisting(current.cookieValue(), user);
+		sessionService.replaceExisting(foreign.cookieValue(), user);
+		sessionService.replaceExisting("garbage", user);
+		sessionService.replaceExisting(null, user);
+
+		assertThat(rejected(authenticate(current)).reason()).isEqualTo(Reason.ENDED);
+		authenticated(authenticate(foreign));
+	}
+
+	@Test
 	void cleanup_endsOverdueSessionsAndDeletesOldEndedOnes() {
 		User user = createUser("svc-cleanup");
 		Created overdue = sessionService.create(user, client(CHROME_MAC_130));

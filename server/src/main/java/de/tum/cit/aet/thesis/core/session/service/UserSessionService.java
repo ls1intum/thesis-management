@@ -35,6 +35,7 @@ public class UserSessionService {
 	private static final int CSRF_TOKEN_BYTES = 32;
 	private static final int MAX_IP_LENGTH = 64;
 	private static final int MAX_USER_AGENT_LENGTH = 255;
+	private static final int MAX_ROTATION_HOPS = 5;
 
 	private final UserSessionRepository repository;
 	private final UserRepository userRepository;
@@ -230,15 +231,40 @@ public class UserSessionService {
 	}
 
 	/**
-	 * Ends a session. Does nothing if it already ended.
+	 * Ends a session. Does nothing if it already ended. If the session was rotated, its replacement(s) end too:
+	 * a logout that still carries the cookie value from before a rotation must not leave the session alive.
 	 *
 	 * @param session the session to end
 	 * @param reason why it ends
 	 */
 	public void end(UserSession session, UserSessionEndReason reason) {
-		if (repository.endById(session.getId(), clock.instant(), reason) > 0) {
+		Instant now = clock.instant();
+
+		if (repository.endById(session.getId(), now, reason) > 0) {
 			log.info("Session {} of user {} ended: {}", UserSessionTokens.logId(session.getTokenIdentifier()), session.getUserId(), reason);
 		}
+
+		UUID next = session.getSupersededBy();
+
+		for (int hops = 0; next != null && hops < MAX_ROTATION_HOPS; hops++) {
+			repository.endById(next, now, reason);
+			next = repository.findById(next).map(UserSession::getSupersededBy).orElse(null);
+		}
+	}
+
+	/**
+	 * Ends the session that a browser presents while it logs in again, so that logging in twice does not leave an
+	 * orphaned session behind. Cookie values that are malformed, unknown, or belong to another user are ignored.
+	 *
+	 * @param cookieValue the raw cookie value of the request, may be null
+	 * @param user the user who just authenticated with Keycloak
+	 */
+	public void replaceExisting(String cookieValue, User user) {
+		UserSessionTokens.parse(cookieValue)
+				.flatMap(parsed -> repository.findByTokenIdentifier(parsed.identifier())
+						.filter(session -> UserSessionTokens.matches(session.getVerifierHash(), parsed.verifier())))
+				.filter(session -> session.getUserId().equals(user.getId()))
+				.ifPresent(session -> end(session, UserSessionEndReason.LOGOUT));
 	}
 
 	/**

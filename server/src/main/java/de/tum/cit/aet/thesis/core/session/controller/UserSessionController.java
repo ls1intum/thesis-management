@@ -71,6 +71,10 @@ public class UserSessionController {
 	@PostMapping("/session")
 	public ResponseEntity<SessionInfoDto> createSession(JwtAuthenticationToken jwt, HttpServletRequest request) {
 		User user = authenticationService.updateAuthenticatedUser(jwt);
+
+		// logging in while the browser still holds a session of this user replaces it
+		cookies.read(request).ifPresent(cookieValue -> sessionService.replaceExisting(cookieValue, user));
+
 		Created created = sessionService.create(user, ClientInfo.from(request));
 
 		return sessionResponse(created.session(), cookies.create(created.cookieValue(), remainingLifetime(created.session())));

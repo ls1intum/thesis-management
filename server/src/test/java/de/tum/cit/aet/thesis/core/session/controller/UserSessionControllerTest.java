@@ -69,6 +69,21 @@ class UserSessionControllerTest extends BaseSessionIntegrationTest {
 	}
 
 	@Test
+	void exchange_whileHoldingAValidSession_replacesItInsteadOfLeavingAnOrphan() throws Exception {
+		Login first = login("replace-user", "student");
+
+		mockMvc.perform(MockMvcRequestBuilders.post("/v2/auth/session")
+						.header(HttpHeaders.AUTHORIZATION, keycloakBearer("replace-user"))
+						.header(HttpHeaders.USER_AGENT, CHROME_MAC)
+						.cookie(new Cookie(COOKIE_NAME, first.cookieValue())))
+				.andExpect(status().isOk());
+
+		User user = userRepository.findByUniversityId("replace-user").orElseThrow();
+		assertThat(sessionRepository.findByUserIdAndEndedAtIsNullOrderByCreatedAtAsc(user.getId())).hasSize(1);
+		mockMvc.perform(as(first, MockMvcRequestBuilders.get("/v2/auth/session"))).andExpect(status().isUnauthorized());
+	}
+
+	@Test
 	void exchange_newUserGetsStudentGroupBeforeTheSessionExists() throws Exception {
 		Login login = exchange("brand-new-user");
 
