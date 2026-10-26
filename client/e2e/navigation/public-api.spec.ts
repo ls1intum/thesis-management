@@ -168,12 +168,12 @@ test.describe('Authenticated avatar loading', () => {
   test.use({ storageState: authStatePath('supervisor') })
 
   // The student user is a STUDENT on thesis 1 (WRITING/PRIVATE).
-  // The CustomAvatar component must use authenticated fetch (doRequest with
-  // Authorization header) instead of plain <img src> so that avatars of
+  // The CustomAvatar component must use authenticated fetch (doRequest, which sends the
+  // session cookie) instead of plain <img src> so that avatars of
   // non-publicly-visible users load correctly.
   const STUDENT_AVATAR_FILENAME = 'avatar_test_student.png'
 
-  test('avatar requests use Authorization header when user is authenticated', async ({
+  test('avatar requests carry the session cookie when user is authenticated', async ({
     page,
   }) => {
     test.setTimeout(60_000)
@@ -190,17 +190,22 @@ test.describe('Authenticated avatar loading', () => {
       fs.writeFileSync(avatarPath, png)
     }
 
-    // Track all avatar requests and whether they include an Authorization header.
-    // With the fix (doRequest + blob URLs), avatar fetches include the Bearer token.
-    // Without the fix (plain <img src>), the browser sends no Authorization header,
+    // Track all avatar requests and whether they include the session cookie.
+    // With the fix (doRequest + blob URLs), avatar fetches are sent with credentials.
+    // Without the fix (plain <img src>), a cross-origin image request carries no cookie,
     // causing 404 for non-publicly-visible users on production.
     const avatarRequests: { url: string; hasAuth: boolean }[] = []
+    const pendingChecks: Promise<void>[] = []
     page.on('request', (request) => {
       if (request.url().includes('/v2/avatars/')) {
-        avatarRequests.push({
-          url: request.url(),
-          hasAuth: request.headers()['authorization'] !== undefined,
-        })
+        pendingChecks.push(
+          request.allHeaders().then((headers) => {
+            avatarRequests.push({
+              url: request.url(),
+              hasAuth: /(?:^|;\s*)(?:__Host-)?sid=/.test(headers['cookie'] ?? ''),
+            })
+          }),
+        )
       }
     })
 
@@ -218,15 +223,17 @@ test.describe('Authenticated avatar loading', () => {
     // Wait for avatar requests to complete (CustomAvatar fetches asynchronously)
     await page.waitForTimeout(3_000)
 
+    await Promise.all(pendingChecks)
+
     // Verify at least one avatar request was made (the student has an avatar)
     expect(avatarRequests.length, 'Expected at least one avatar request').toBeGreaterThan(0)
 
-    // Verify ALL avatar requests include the Authorization header.
+    // Verify ALL avatar requests include the session cookie.
     // Without the fix, <img src> sends unauthenticated requests.
     const unauthenticated = avatarRequests.filter((r) => !r.hasAuth)
     expect(
       unauthenticated,
-      `Avatar requests without Authorization header: ${JSON.stringify(unauthenticated)}`,
+      `Avatar requests without the session cookie: ${JSON.stringify(unauthenticated)}`,
     ).toHaveLength(0)
   })
 })
