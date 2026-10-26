@@ -36,8 +36,10 @@ services:
       - "traefik.http.middlewares.server-compress.compress=true"
       # Tell browsers to use https only for this host (sent on https responses only). Deliberately without
       # includeSubdomains and preload: the parent domain hosts other services this project does not own.
-      - "traefik.http.middlewares.hsts.headers.stsSeconds=31536000"
-      - "traefik.http.routers.server.middlewares=api-ratelimit,server-compress,hsts"
+      # Each container defines its own middleware: Traefik drops a container's labels while it is down, and a
+      # router that references a missing middleware is disabled, so the two routers must not share one.
+      - "traefik.http.middlewares.server-hsts.headers.stsSeconds=31536000"
+      - "traefik.http.routers.server.middlewares=api-ratelimit,server-compress,server-hsts"
       - "traefik.http.routers.server.priority=10"
     depends_on:
       db:
@@ -80,7 +82,8 @@ services:
       - "traefik.http.routers.client.entrypoints=websecure"
       - "traefik.http.routers.client.tls.certresolver=letsencrypt"
       - "traefik.http.middlewares.client-compress.compress=true"
-      - "traefik.http.routers.client.middlewares=client-compress,hsts"
+      - "traefik.http.middlewares.client-hsts.headers.stsSeconds=31536000"
+      - "traefik.http.routers.client.middlewares=client-compress,client-hsts"
       - "traefik.http.routers.client.priority=1"
     restart: unless-stopped
     expose:
