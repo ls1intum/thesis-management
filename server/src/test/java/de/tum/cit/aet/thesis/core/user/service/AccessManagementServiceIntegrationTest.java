@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import de.tum.cit.aet.thesis.core.user.entity.User;
 import de.tum.cit.aet.thesis.core.user.repository.UserRepository;
@@ -12,7 +11,6 @@ import de.tum.cit.aet.thesis.core.user.service.AccessManagementService.KeycloakU
 import de.tum.cit.aet.thesis.mock.BaseKeycloakIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.List;
 import java.util.Set;
@@ -27,9 +25,7 @@ class AccessManagementServiceIntegrationTest extends BaseKeycloakIntegrationTest
 	private UserRepository userRepository;
 
 	private User createLocalUser(String username) throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/v2/user-info")
-						.header("Authorization", authHeaderFor(username)))
-				.andExpect(status().isOk());
+		sessionFor(username);
 
 		return userRepository.findByUniversityId(username).orElseThrow();
 	}
