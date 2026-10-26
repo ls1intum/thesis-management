@@ -53,6 +53,9 @@ const Probe = () => {
       <button type='button' onClick={() => void auth.login('/dashboard')}>
         log in
       </button>
+      <button type='button' onClick={() => auth.logout('/')}>
+        log out
+      </button>
     </div>
   )
 }
@@ -162,5 +165,38 @@ describe('AuthenticationProvider startup', () => {
     await waitFor(() =>
       expect(login).toHaveBeenCalledWith({ redirectUri: `${window.location.origin}/dashboard` }),
     )
+  })
+
+  it('ends the session and then the Keycloak login, using the id token of a silent check', async () => {
+    const logout = vi.fn().mockResolvedValue(undefined)
+    vi.mocked(session.fetchSession).mockResolvedValue({ csrfToken: 'c', expiresAt: 'x' })
+    vi.mocked(session.deleteSession).mockResolvedValue(undefined)
+    vi.mocked(keycloakClient.isKeycloakReachable).mockResolvedValue(true)
+    vi.mocked(keycloakClient.ensureSsoChecked).mockResolvedValue(true)
+    vi.mocked(keycloakClient.getKeycloak).mockReturnValue({ authenticated: true, logout } as never)
+
+    renderProvider()
+    await waitFor(() => expect(screen.getByTestId('authenticated').textContent).toBe('true'))
+    fireEvent.click(screen.getByRole('button', { name: 'log out' }))
+
+    await waitFor(() =>
+      expect(logout).toHaveBeenCalledWith({ redirectUri: `${window.location.origin}/` }),
+    )
+    expect(session.deleteSession).toHaveBeenCalled()
+    expect(screen.getByTestId('authenticated').textContent).toBe('false')
+  })
+
+  it('does not contact Keycloak for the logout when it is unreachable', async () => {
+    vi.mocked(session.fetchSession).mockResolvedValue({ csrfToken: 'c', expiresAt: 'x' })
+    vi.mocked(session.deleteSession).mockResolvedValue(undefined)
+    vi.mocked(keycloakClient.isKeycloakReachable).mockResolvedValue(false)
+
+    renderProvider()
+    await waitFor(() => expect(screen.getByTestId('authenticated').textContent).toBe('true'))
+    fireEvent.click(screen.getByRole('button', { name: 'log out' }))
+
+    await waitFor(() => expect(session.deleteSession).toHaveBeenCalled())
+    expect(keycloakClient.ensureSsoChecked).not.toHaveBeenCalled()
+    expect(screen.getByTestId('authenticated').textContent).toBe('false')
   })
 })

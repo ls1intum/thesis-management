@@ -705,11 +705,16 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
             await deleteSession()
 
             if (await isKeycloakReachable()) {
-              const client = await ensureKeycloak()
+              // The silent check yields the id token that lets Keycloak end the login without asking
+              // for a confirmation; without a Keycloak login there is nothing to end.
+              await ensureSsoChecked()
+              const client = getKeycloak()
 
-              await client.logout({ redirectUri: target })
+              if (client?.authenticated) {
+                await client.logout({ redirectUri: target })
 
-              return
+                return
+              }
             }
           } catch (error) {
             console.error('Failed to end the Keycloak session', error)
