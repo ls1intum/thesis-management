@@ -56,7 +56,9 @@ const openPasswordLogin = async (page: Page) => {
       return
     }
 
-    await headerLoginButton.click()
+    // The app may redirect to Keycloak by itself right after the entry point was checked, which removes the
+    // button: do not wait for a click that can no longer happen, look at the Keycloak form instead.
+    await headerLoginButton.click({ timeout: 5_000 }).catch(() => undefined)
 
     if (await isKeycloakPasswordLoginVisible(page, 10_000)) {
       return
