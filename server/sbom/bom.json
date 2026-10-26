@@ -1355,73 +1355,6 @@
         },
         {
             "type": "library",
-            "bom-ref": "pkg:maven/com.github.stephenc.jcip/jcip-annotations@1.0-1?type=jar",
-            "group": "com.github.stephenc.jcip",
-            "name": "jcip-annotations",
-            "version": "1.0-1",
-            "description": "A clean room implementation of the JCIP Annotations based entirely on the specification provided by the javadocs.",
-            "hashes": [
-                {
-                    "alg": "MD5",
-                    "content": "d62dbfa8789378457ada685e2f614846"
-                },
-                {
-                    "alg": "SHA-1",
-                    "content": "ef31541dd28ae2cefdd17c7ebf352d93e9058c63"
-                },
-                {
-                    "alg": "SHA-256",
-                    "content": "4fccff8382aafc589962c4edb262f6aa595e34f1e11e61057d1c6a96e8fc7323"
-                },
-                {
-                    "alg": "SHA-512",
-                    "content": "02fcd16a30d0e68b3e9e4899731181c6abb7117baa15c096ca940e01dde08bb86101cbeae552c497f8a90d923b5fa2f2b6f3850baf8dc94dbd399887924a9069"
-                },
-                {
-                    "alg": "SHA-384",
-                    "content": "88b0ecfde391a3d8468349c70e1539569768dfac3233dfe0b4660904df04e6c6bf26ed9c0784b9b22c122c3448e2a6b6"
-                },
-                {
-                    "alg": "SHA3-384",
-                    "content": "487b53f48b55b98a61ae60abedc43543887944867aa6bcb78d5ed46e2d0d7c19510c5fcadc362d939313feafdcfc55e1"
-                },
-                {
-                    "alg": "SHA3-256",
-                    "content": "3e79c8f58865d2d58a5311a8bb45772007f07e7f3ed2780784d1e4382dc934d0"
-                },
-                {
-                    "alg": "SHA3-512",
-                    "content": "ff32665e1b6d8176ccc7e8c836ca7343c2603dab053e42d79b4258d51a14ff63933c67d24034169ac91e11ebda21cc2c84a2a540072e656d2a8e6fcea7808421"
-                }
-            ],
-            "licenses": [
-                {
-                    "license": {
-                        "id": "Apache-2.0"
-                    }
-                }
-            ],
-            "purl": "pkg:maven/com.github.stephenc.jcip/jcip-annotations@1.0-1?type=jar",
-            "modified": false,
-            "externalReferences": [
-                {
-                    "type": "issue-tracker",
-                    "url": "http://github.com/stephenc/jcip-annotations/issues"
-                },
-                {
-                    "type": "vcs",
-                    "url": "http://github.com/stephenc/jcip-annotations/tree/master/"
-                }
-            ],
-            "properties": [
-                {
-                    "name": "cdx:maven:package:test",
-                    "value": "false"
-                }
-            ]
-        },
-        {
-            "type": "library",
             "bom-ref": "pkg:maven/com.google.code.findbugs/jsr305@3.0.2?type=jar",
             "group": "com.google.code.findbugs",
             "name": "jsr305",
@@ -3087,150 +3020,6 @@
         },
         {
             "type": "library",
-            "bom-ref": "pkg:maven/com.nimbusds/content-type@2.3?type=jar",
-            "publisher": "Connect2id Ltd.",
-            "group": "com.nimbusds",
-            "name": "content-type",
-            "version": "2.3",
-            "description": "Java library for Content (Media) Type representation",
-            "hashes": [
-                {
-                    "alg": "MD5",
-                    "content": "f0fc0d6be73e838863e2197c03a27c3f"
-                },
-                {
-                    "alg": "SHA-1",
-                    "content": "e3aa0be212d7a42839a8f3f506f5b990bcce0222"
-                },
-                {
-                    "alg": "SHA-256",
-                    "content": "60349793e006fba96b532cb0c21e10e969fe0db8d87f91c3b9eaf82ba2998895"
-                },
-                {
-                    "alg": "SHA-512",
-                    "content": "58f7fe3b4303cecd6eac73c3345af71536479ce4bc38c88153bdcf6176a7cf5a0875420ea4a6024b4e734b78de08a8e544014b435cb63416c759b957ad3818e4"
-                },
-                {
-                    "alg": "SHA-384",
-                    "content": "9dbe31f543aaf807093fe1dd18a0ed33346252e2f6fce598e1b193b9d73fcebf79608fce6a620ede8ea7adf45f1a7422"
-                },
-                {
-                    "alg": "SHA3-384",
-                    "content": "67b8b5d051230739ee85678006758450cd6510c5fb9a6b3134d43f644c2d70bc6dc3cff6133b132b5b158a1f346880a9"
-                },
-                {
-                    "alg": "SHA3-256",
-                    "content": "b8046b3dd12321400b4643ff0c47ea5c1e77d6252177bdd8be6f0e0b234c80bf"
-                },
-                {
-                    "alg": "SHA3-512",
-                    "content": "734a6a5a383aac8dcfaca09c8e37637f74334ce2d5c050b519277ad7c20f065fad44b5a6417cdc32d6cd43f80c0e1e0c37d9daa9279651facb6c38cb88376396"
-                }
-            ],
-            "licenses": [
-                {
-                    "license": {
-                        "id": "Apache-2.0"
-                    }
-                }
-            ],
-            "purl": "pkg:maven/com.nimbusds/content-type@2.3?type=jar",
-            "modified": false,
-            "externalReferences": [
-                {
-                    "type": "website",
-                    "url": "https://connect2id.com"
-                },
-                {
-                    "type": "distribution",
-                    "url": "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-                },
-                {
-                    "type": "vcs",
-                    "url": "https://bitbucket.org/connect2id/nimbus-content-type"
-                }
-            ],
-            "properties": [
-                {
-                    "name": "cdx:maven:package:test",
-                    "value": "false"
-                }
-            ]
-        },
-        {
-            "type": "library",
-            "bom-ref": "pkg:maven/com.nimbusds/lang-tag@1.7?type=jar",
-            "publisher": "Connect2id Ltd.",
-            "group": "com.nimbusds",
-            "name": "lang-tag",
-            "version": "1.7",
-            "description": "Java implementation of \"Tags for Identifying Languages\" (RFC 5646)",
-            "hashes": [
-                {
-                    "alg": "MD5",
-                    "content": "31b8a4f76fdbf21f1d667f9d6618e0b2"
-                },
-                {
-                    "alg": "SHA-1",
-                    "content": "97c73ecd70bc7e8eefb26c5eea84f251a63f1031"
-                },
-                {
-                    "alg": "SHA-256",
-                    "content": "e8c1c594e2425bdbea2d860de55c69b69fc5d59454452449a0f0913c2a5b8a31"
-                },
-                {
-                    "alg": "SHA-512",
-                    "content": "494267766c974ce16a99cb221953edc91fde8db0c920230758ecea0ea9d3006e95d86ad46f7a9d61b810d85b0fa6da9a3ce2b507cdbe4be320c499eaea93666b"
-                },
-                {
-                    "alg": "SHA-384",
-                    "content": "fdc2cde39a1b07a2542cbc07222afd6292ae19cb1f9ae008476f7ec1b8ebe1e3e84aca08e47e1ef81887a23ac5267d00"
-                },
-                {
-                    "alg": "SHA3-384",
-                    "content": "b0e673087533f60173a11a55b0fde554c0830e7b3b6609e1ea6546de19fc9a97fbfe6eee73580d09b2de66989d0603c7"
-                },
-                {
-                    "alg": "SHA3-256",
-                    "content": "ea208d4eb55212ce9835a9be60396861b0fc33f4161efee3736c3e7159acb9f7"
-                },
-                {
-                    "alg": "SHA3-512",
-                    "content": "450f819981d73711c30d838261ff55a7f1988c8b965c786708dc27fbd10a2018cfde82b8fee5d7d1022eacf085dfdabe22d9de92462eba80e2c15a116c3c73ed"
-                }
-            ],
-            "licenses": [
-                {
-                    "license": {
-                        "id": "Apache-2.0"
-                    }
-                }
-            ],
-            "purl": "pkg:maven/com.nimbusds/lang-tag@1.7?type=jar",
-            "modified": false,
-            "externalReferences": [
-                {
-                    "type": "website",
-                    "url": "https://connect2id.com/"
-                },
-                {
-                    "type": "distribution",
-                    "url": "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-                },
-                {
-                    "type": "vcs",
-                    "url": "https://bitbucket.org/connect2id/nimbus-language-tags.git"
-                }
-            ],
-            "properties": [
-                {
-                    "name": "cdx:maven:package:test",
-                    "value": "false"
-                }
-            ]
-        },
-        {
-            "type": "library",
             "bom-ref": "pkg:maven/com.nimbusds/nimbus-jose-jwt@10.9?type=jar",
             "publisher": "Connect2id Ltd.",
             "group": "com.nimbusds",
@@ -3292,78 +3081,6 @@
                 {
                     "type": "vcs",
                     "url": "https://bitbucket.org/connect2id/nimbus-jose-jwt"
-                }
-            ],
-            "properties": [
-                {
-                    "name": "cdx:maven:package:test",
-                    "value": "false"
-                }
-            ]
-        },
-        {
-            "type": "library",
-            "bom-ref": "pkg:maven/com.nimbusds/oauth2-oidc-sdk@11.37.2?type=jar",
-            "publisher": "Connect2id Ltd.",
-            "group": "com.nimbusds",
-            "name": "oauth2-oidc-sdk",
-            "version": "11.37.2",
-            "description": "OAuth 2.0 SDK with OpenID Connection extensions for developing client and server applications.",
-            "hashes": [
-                {
-                    "alg": "MD5",
-                    "content": "a0896c7feee39572a49bac9b5790974b"
-                },
-                {
-                    "alg": "SHA-1",
-                    "content": "09034768074fa4810a93fa0e9df7293c65b83f83"
-                },
-                {
-                    "alg": "SHA-256",
-                    "content": "b66e74746dcf516d77f20344e6fbcbcffe1b483b5cf1ad41ea81cec83cb27b3c"
-                },
-                {
-                    "alg": "SHA-512",
-                    "content": "a0f30dac78cce23cd1a8d9c0f6af2707722b0b36fb6ea8ac9afbd1051e121182a7fd82f6107ea25c6b4b4d8c5aca56f40dd0ddc62cd9f029bd1a068e561277ac"
-                },
-                {
-                    "alg": "SHA-384",
-                    "content": "08e4727e78ed1fbb6055620f5032e8ef4b8f15f8d0a4d49420476745840b935cb42cf1dc3e0b4455888ec0c7a28f67eb"
-                },
-                {
-                    "alg": "SHA3-384",
-                    "content": "4edb0ef58b3ab707591cca1707a43ed1b455cd6b73f48bc30dd48fcfc801aa582332fdd1eccac53af5ac4d28834acc08"
-                },
-                {
-                    "alg": "SHA3-256",
-                    "content": "254d946f4d8fc7fb08a7049452aff0bc12c6407ac6be4b4a8ff466312448a6a1"
-                },
-                {
-                    "alg": "SHA3-512",
-                    "content": "0c91de6b9a56707a1b7046462cb01db30a57b951a021000658e445fd9f30644e4a9d648c402ac7b29499aea31fc36e6f4b45297ef527550a8e7a7757c418a25c"
-                }
-            ],
-            "licenses": [
-                {
-                    "license": {
-                        "id": "Apache-2.0"
-                    }
-                }
-            ],
-            "purl": "pkg:maven/com.nimbusds/oauth2-oidc-sdk@11.37.2?type=jar",
-            "modified": false,
-            "externalReferences": [
-                {
-                    "type": "website",
-                    "url": "https://connect2id.com"
-                },
-                {
-                    "type": "distribution",
-                    "url": "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-                },
-                {
-                    "type": "vcs",
-                    "url": "https://bitbucket.org/connect2id/oauth-2.0-sdk-with-openid-connect-extensions"
                 }
             ],
             "properties": [
@@ -15513,78 +15230,6 @@
         },
         {
             "type": "library",
-            "bom-ref": "pkg:maven/org.springframework.boot/spring-boot-security-oauth2-client@4.1.0?type=jar",
-            "publisher": "VMware, Inc.",
-            "group": "org.springframework.boot",
-            "name": "spring-boot-security-oauth2-client",
-            "version": "4.1.0",
-            "description": "Spring Boot Security OAuth2 Client",
-            "hashes": [
-                {
-                    "alg": "MD5",
-                    "content": "730f61198632875f0e2b53c78badea73"
-                },
-                {
-                    "alg": "SHA-1",
-                    "content": "57d25a244fed8b72a002f190c41f0bac503015bf"
-                },
-                {
-                    "alg": "SHA-256",
-                    "content": "cdf7e36a52b80b0b139f82e05ea9db0e58c8711c207b25fb85dcc48bd891fae2"
-                },
-                {
-                    "alg": "SHA-512",
-                    "content": "4f375111e18514d28c3fbfa9fa5a8169948c6d8708ae8163a2afbd5825f526e1e397a1f06ae9d69b710558c028175f2158a4f6fc25f88a49353c425005bcd5f2"
-                },
-                {
-                    "alg": "SHA-384",
-                    "content": "8aa39878417ba7e6d2d79ac84b5919e044955d141fd5b65cf27f06104a03b00a7edecd7cea0b1089e620773f01f0aab7"
-                },
-                {
-                    "alg": "SHA3-384",
-                    "content": "74cdb3c95100b3a8b4928c3674f8c7fadd1f921e3c69146aee3ca6ba9df5c55883647a5c1f049f3b269a1f24b38b914f"
-                },
-                {
-                    "alg": "SHA3-256",
-                    "content": "ca9ea9264457b32b5a4641502e7e96f0467846497733075b9b1db2ac07e9acb2"
-                },
-                {
-                    "alg": "SHA3-512",
-                    "content": "17bae971bc68064beac201540d74672f7c783098fc96d9c672b258513b45dcd4c78890df1717ea7ef8987918bfaffa413885df33c06c4fd1010fca3c9d8999b8"
-                }
-            ],
-            "licenses": [
-                {
-                    "license": {
-                        "id": "Apache-2.0"
-                    }
-                }
-            ],
-            "purl": "pkg:maven/org.springframework.boot/spring-boot-security-oauth2-client@4.1.0?type=jar",
-            "modified": false,
-            "externalReferences": [
-                {
-                    "type": "website",
-                    "url": "https://spring.io"
-                },
-                {
-                    "type": "issue-tracker",
-                    "url": "https://github.com/spring-projects/spring-boot/issues"
-                },
-                {
-                    "type": "vcs",
-                    "url": "https://github.com/spring-projects/spring-boot"
-                }
-            ],
-            "properties": [
-                {
-                    "name": "cdx:maven:package:test",
-                    "value": "false"
-                }
-            ]
-        },
-        {
-            "type": "library",
             "bom-ref": "pkg:maven/org.springframework.boot/spring-boot-security-oauth2-resource-server@4.1.0?type=jar",
             "publisher": "VMware, Inc.",
             "group": "org.springframework.boot",
@@ -16569,78 +16214,6 @@
                 }
             ],
             "purl": "pkg:maven/org.springframework.boot/spring-boot-starter-reactor-netty@4.1.0?type=jar",
-            "modified": false,
-            "externalReferences": [
-                {
-                    "type": "website",
-                    "url": "https://spring.io"
-                },
-                {
-                    "type": "issue-tracker",
-                    "url": "https://github.com/spring-projects/spring-boot/issues"
-                },
-                {
-                    "type": "vcs",
-                    "url": "https://github.com/spring-projects/spring-boot"
-                }
-            ],
-            "properties": [
-                {
-                    "name": "cdx:maven:package:test",
-                    "value": "false"
-                }
-            ]
-        },
-        {
-            "type": "library",
-            "bom-ref": "pkg:maven/org.springframework.boot/spring-boot-starter-security-oauth2-client@4.1.0?type=jar",
-            "publisher": "VMware, Inc.",
-            "group": "org.springframework.boot",
-            "name": "spring-boot-starter-security-oauth2-client",
-            "version": "4.1.0",
-            "description": "Starter for using Spring Security's OAuth2/OpenID Connect client features",
-            "hashes": [
-                {
-                    "alg": "MD5",
-                    "content": "8891b9277cedb15bbfd2aad8cfea8f8a"
-                },
-                {
-                    "alg": "SHA-1",
-                    "content": "4dd99ecda3d7f597e1e71a1aac3019b08de0a9e3"
-                },
-                {
-                    "alg": "SHA-256",
-                    "content": "117c7911d27a3e2b4e670bf43b37583924f6aa8311efc123828333e23d47c20a"
-                },
-                {
-                    "alg": "SHA-512",
-                    "content": "0fdbe7d0d02ae73185ca2d59de18041992d77489a44bd730767c390288fcdb3d50c389d7e819c0e11810caae2479cdcd14abdfadc5dfb8d0699c81789f3716d7"
-                },
-                {
-                    "alg": "SHA-384",
-                    "content": "0fc7a45420d5574e6432c28587252c0b0e20a6add7e30a2cd79ee8fccae63222572f1a2c7709372aca0e127439b44702"
-                },
-                {
-                    "alg": "SHA3-384",
-                    "content": "069378883639f95783408e84ba43d241bd70ce31f104437fb7ff145e78767bbcd91064e0d580d0881e2c77d9815fac8c"
-                },
-                {
-                    "alg": "SHA3-256",
-                    "content": "3623f7dfc67c4b186fbd83499467ce80092a6fd6b7745a7b60a2416f686c151d"
-                },
-                {
-                    "alg": "SHA3-512",
-                    "content": "9e0fdc492965ffdbbd90304a3f1a711fbc832b149bde464ae68923c9f980afc4494451f5cff7f4c046308f8611fc33c2df71a7ad4e1bcdd2b648dfe9b440b955"
-                }
-            ],
-            "licenses": [
-                {
-                    "license": {
-                        "id": "Apache-2.0"
-                    }
-                }
-            ],
-            "purl": "pkg:maven/org.springframework.boot/spring-boot-starter-security-oauth2-client@4.1.0?type=jar",
             "modified": false,
             "externalReferences": [
                 {
@@ -18565,78 +18138,6 @@
                 }
             ],
             "purl": "pkg:maven/org.springframework.security/spring-security-crypto@7.1.0?type=jar",
-            "modified": false,
-            "externalReferences": [
-                {
-                    "type": "website",
-                    "url": "https://spring.io"
-                },
-                {
-                    "type": "issue-tracker",
-                    "url": "https://github.com/spring-projects/spring-security/issues"
-                },
-                {
-                    "type": "vcs",
-                    "url": "https://github.com/spring-projects/spring-security"
-                }
-            ],
-            "properties": [
-                {
-                    "name": "cdx:maven:package:test",
-                    "value": "false"
-                }
-            ]
-        },
-        {
-            "type": "library",
-            "bom-ref": "pkg:maven/org.springframework.security/spring-security-oauth2-client@7.1.0?type=jar",
-            "publisher": "Pivotal Software, Inc.",
-            "group": "org.springframework.security",
-            "name": "spring-security-oauth2-client",
-            "version": "7.1.0",
-            "description": "Spring Security",
-            "hashes": [
-                {
-                    "alg": "MD5",
-                    "content": "c65dbe9b9caf70bc1d02597fa959a1d9"
-                },
-                {
-                    "alg": "SHA-1",
-                    "content": "af3acc9013f81baa64cc642794f26d887413dbca"
-                },
-                {
-                    "alg": "SHA-256",
-                    "content": "6a90451711b3623f7f705ae5d555131b18be1e8f7299d7fc423fcf2e7b87128b"
-                },
-                {
-                    "alg": "SHA-512",
-                    "content": "14f80619b2f18cc5b4a0792e600d9196447fce593b625cfe886f6cfaed664e1174484e3044ffa712cf84eed490eb10f5ad4f9ac47900fa009f459e7ff81463c4"
-                },
-                {
-                    "alg": "SHA-384",
-                    "content": "43ce03d9707c413d0b82d5657bdd3d016f9a526eeeb9c0a9a33482e7b279801c318601a715e3a208493300986d57aa0c"
-                },
-                {
-                    "alg": "SHA3-384",
-                    "content": "152105eb9f52c87ae10e612316bb5fa189f51a74b259fb64240c91d482f93b063f058c2af19f4f8b6238bcbcdce9e411"
-                },
-                {
-                    "alg": "SHA3-256",
-                    "content": "900534d55f0114286d0f3585bac54f69a51d605177de3378648e680e9bd890f1"
-                },
-                {
-                    "alg": "SHA3-512",
-                    "content": "7bdc0d46ba99b2959c9f404e8dada4a4ac15a5a4c37cc53e720e55cabbed610894608358849ab7eb7240fd25d27665c49a7b79b71a0ffc810a64cc626f5da819"
-                }
-            ],
-            "licenses": [
-                {
-                    "license": {
-                        "id": "Apache-2.0"
-                    }
-                }
-            ],
-            "purl": "pkg:maven/org.springframework.security/spring-security-oauth2-client@7.1.0?type=jar",
             "modified": false,
             "externalReferences": [
                 {
@@ -21136,12 +20637,6 @@
             ]
         },
         {
-            "ref": "pkg:maven/com.github.stephenc.jcip/jcip-annotations@1.0-1?type=jar",
-            "dependsOn": [
-                
-            ]
-        },
-        {
             "ref": "pkg:maven/com.google.code.findbugs/jsr305@3.0.2?type=jar",
             "dependsOn": [
                 
@@ -21371,31 +20866,9 @@
             ]
         },
         {
-            "ref": "pkg:maven/com.nimbusds/content-type@2.3?type=jar",
-            "dependsOn": [
-                
-            ]
-        },
-        {
-            "ref": "pkg:maven/com.nimbusds/lang-tag@1.7?type=jar",
-            "dependsOn": [
-                
-            ]
-        },
-        {
             "ref": "pkg:maven/com.nimbusds/nimbus-jose-jwt@10.9?type=jar",
             "dependsOn": [
                 
-            ]
-        },
-        {
-            "ref": "pkg:maven/com.nimbusds/oauth2-oidc-sdk@11.37.2?type=jar",
-            "dependsOn": [
-                "pkg:maven/com.github.stephenc.jcip/jcip-annotations@1.0-1?type=jar",
-                "pkg:maven/com.nimbusds/content-type@2.3?type=jar",
-                "pkg:maven/com.nimbusds/lang-tag@1.7?type=jar",
-                "pkg:maven/com.nimbusds/nimbus-jose-jwt@10.9?type=jar",
-                "pkg:maven/net.minidev/json-smart@2.6.0?type=jar"
             ]
         },
         {
@@ -21530,7 +21003,6 @@
                 "pkg:maven/org.springframework.boot/spring-boot-starter-data-jpa@4.1.0?type=jar",
                 "pkg:maven/org.springframework.boot/spring-boot-starter-liquibase@4.1.0?type=jar",
                 "pkg:maven/org.springframework.boot/spring-boot-starter-mail@4.1.0?type=jar",
-                "pkg:maven/org.springframework.boot/spring-boot-starter-security-oauth2-client@4.1.0?type=jar",
                 "pkg:maven/org.springframework.boot/spring-boot-starter-security-oauth2-resource-server@4.1.0?type=jar",
                 "pkg:maven/org.springframework.boot/spring-boot-starter-security@4.1.0?type=jar",
                 "pkg:maven/org.springframework.boot/spring-boot-starter-test@4.1.0?type=jar",
@@ -22900,14 +22372,6 @@
             ]
         },
         {
-            "ref": "pkg:maven/org.springframework.boot/spring-boot-security-oauth2-client@4.1.0?type=jar",
-            "dependsOn": [
-                "pkg:maven/org.springframework.boot/spring-boot-security@4.1.0?type=jar",
-                "pkg:maven/org.springframework.boot/spring-boot@4.1.0?type=jar",
-                "pkg:maven/org.springframework.security/spring-security-oauth2-client@7.1.0?type=jar"
-            ]
-        },
-        {
             "ref": "pkg:maven/org.springframework.boot/spring-boot-security-oauth2-resource-server@4.1.0?type=jar",
             "dependsOn": [
                 "pkg:maven/org.springframework.boot/spring-boot-security@4.1.0?type=jar",
@@ -23016,15 +22480,6 @@
                 "pkg:maven/org.springframework.boot/spring-boot-reactor-netty@4.1.0?type=jar",
                 "pkg:maven/org.springframework.boot/spring-boot-reactor@4.1.0?type=jar",
                 "pkg:maven/org.springframework.boot/spring-boot-starter@4.1.0?type=jar"
-            ]
-        },
-        {
-            "ref": "pkg:maven/org.springframework.boot/spring-boot-starter-security-oauth2-client@4.1.0?type=jar",
-            "dependsOn": [
-                "pkg:maven/org.springframework.boot/spring-boot-security-oauth2-client@4.1.0?type=jar",
-                "pkg:maven/org.springframework.boot/spring-boot-starter-security@4.1.0?type=jar",
-                "pkg:maven/org.springframework.boot/spring-boot-starter@4.1.0?type=jar",
-                "pkg:maven/org.springframework.security/spring-security-oauth2-jose@7.1.0?type=jar"
             ]
         },
         {
@@ -23272,16 +22727,6 @@
             "ref": "pkg:maven/org.springframework.security/spring-security-crypto@7.1.0?type=jar",
             "dependsOn": [
                 
-            ]
-        },
-        {
-            "ref": "pkg:maven/org.springframework.security/spring-security-oauth2-client@7.1.0?type=jar",
-            "dependsOn": [
-                "pkg:maven/com.nimbusds/oauth2-oidc-sdk@11.37.2?type=jar",
-                "pkg:maven/org.springframework.security/spring-security-core@7.1.0?type=jar",
-                "pkg:maven/org.springframework.security/spring-security-oauth2-core@7.1.0?type=jar",
-                "pkg:maven/org.springframework.security/spring-security-web@7.1.0?type=jar",
-                "pkg:maven/org.springframework/spring-core@7.0.8?type=jar"
             ]
         },
         {
