@@ -4,6 +4,7 @@ import AuthenticationProvider from '@/core/providers/AuthenticationContext/Authe
 import { useAuthenticationContext } from '@/core/hooks/authentication'
 import * as keycloakClient from '@/core/auth/keycloakClient'
 import * as session from '@/core/auth/session'
+import { recoverSession } from '@/core/auth/session'
 import { showSimpleError } from '@/core/utils/notification'
 
 vi.mock('@/core/auth/keycloakClient', () => ({
@@ -210,5 +211,35 @@ describe('AuthenticationProvider startup', () => {
     expect(screen.getByTestId('authenticated').textContent).toBe('false')
     expect(keycloakClient.initKeycloak).not.toHaveBeenCalled()
     expect(showSimpleError).toHaveBeenCalled()
+  })
+
+  it('does not let the reachability probe stand in the way of the redirect back from the Keycloak login', async () => {
+    window.location.hash = '#state=abc&code=def'
+    vi.mocked(session.fetchSession).mockResolvedValue(undefined)
+    vi.mocked(keycloakClient.isKeycloakReachable).mockResolvedValue(false)
+    vi.mocked(keycloakClient.initKeycloak).mockResolvedValue(true)
+    vi.mocked(keycloakClient.getKeycloak).mockReturnValue({
+      authenticated: true,
+      token: 'kc-token',
+    } as never)
+    vi.mocked(session.createSession).mockResolvedValue({ csrfToken: 'c', expiresAt: 'x' })
+
+    renderProvider()
+
+    await waitFor(() => expect(screen.getByTestId('authenticated').textContent).toBe('true'))
+    expect(session.createSession).toHaveBeenCalledWith('kc-token')
+    window.location.hash = ''
+  })
+
+  it('adopts a session another tab has just created instead of logging in again', async () => {
+    vi.mocked(session.fetchSession).mockResolvedValueOnce({ csrfToken: 'c', expiresAt: 'x' })
+    renderProvider()
+    await waitFor(() => expect(screen.getByTestId('authenticated').textContent).toBe('true'))
+
+    vi.mocked(session.fetchSession).mockResolvedValue({ csrfToken: 'other-tab', expiresAt: 'x' })
+
+    await expect(recoverSession()).resolves.toBe(true)
+    expect(keycloakClient.initKeycloak).not.toHaveBeenCalled()
+    expect(session.createSession).not.toHaveBeenCalled()
   })
 })

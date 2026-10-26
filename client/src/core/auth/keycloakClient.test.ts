@@ -62,7 +62,7 @@ describe('isKeycloakReachable', () => {
     await expect(isKeycloakReachable()).resolves.toBe(true)
   })
 
-  it('is false when a proxy in front of Keycloak answers with an error', async () => {
+  it('is false when the error answer of an unavailable Keycloak is readable (same origin or CORS enabled)', async () => {
     fetchMock.mockResolvedValue({ ok: false, status: 503 })
 
     await expect(isKeycloakReachable()).resolves.toBe(false)

@@ -94,9 +94,11 @@ export async function ensureKeycloak(): Promise<Keycloak> {
  * Cheap reachability probe, used before anything redirects to Keycloak or waits for it, so that an unavailable
  * Keycloak does not turn a login or logout into a browser error page or an endless wait.
  *
- * It asks for the realm's discovery document. A readable answer must be a success: a proxy in front of an
- * unavailable Keycloak typically answers 502/503. If the browser may not read the answer (cross-origin rules),
- * a network-level check is the best available signal.
+ * It asks for the realm's discovery document. A readable answer must be a success. Keycloak is usually on
+ * another origin than the web app, and an error page from a proxy in front of an unavailable Keycloak then
+ * typically carries no CORS headers, so the browser hides it: it looks like a network failure, and the
+ * fallback (a network-level check) reports "reachable". That case is not detected here; the 10 second bound on
+ * the silent check is the backstop, and the login redirect ends on the proxy's error page.
  */
 export async function isKeycloakReachable(timeoutMs = 2000): Promise<boolean> {
   const url = `${GLOBAL_CONFIG.keycloak.host.replace(/\/+$/, '')}/realms/${encodeURIComponent(GLOBAL_CONFIG.keycloak.realm)}/.well-known/openid-configuration`

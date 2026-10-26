@@ -75,27 +75,53 @@ export async function createSession(keycloakToken: string): Promise<ISessionInfo
   return readSessionInfo(response)
 }
 
+let csrfRefreshInFlight: Promise<string | undefined> | undefined
+
 /**
  * Asks the server for the current CSRF token. Used when a request was rejected as a CSRF failure: the
  * session cookie is shared by all tabs, so another tab may have replaced the session (and its token).
- * Resolves to `undefined` when there is no session or the server cannot be reached.
+ * Concurrent callers share one request. Resolves to `undefined` when there is no session or the server
+ * cannot be reached.
  */
-export async function refreshCsrfToken(): Promise<string | undefined> {
-  try {
-    return (await fetchSession())?.csrfToken
-  } catch {
-    return undefined
-  }
+export function refreshCsrfToken(): Promise<string | undefined> {
+  csrfRefreshInFlight ??= fetchSession()
+    .then((info) => info?.csrfToken)
+    .catch(() => undefined)
+    .finally(() => {
+      csrfRefreshInFlight = undefined
+    })
+
+  return csrfRefreshInFlight
 }
 
-/** Ends the session on the server. Local state is cleared even if the server cannot be reached. */
+/**
+ * Ends the session on the server. If the server rejects the CSRF token (another tab replaced the session in
+ * the meantime) the token is refreshed and the logout is retried once, so a logout never silently fails.
+ * Local state is cleared even if the server cannot be reached.
+ */
 export async function deleteSession(): Promise<void> {
-  try {
-    await fetch(sessionUrl(), {
+  const send = (token: string | undefined) =>
+    fetch(sessionUrl(), {
       method: 'DELETE',
       credentials: 'include',
-      headers: csrfToken ? { 'X-CSRF-Token': csrfToken } : {},
+      headers: token ? { 'X-CSRF-Token': token } : {},
     })
+
+  try {
+    const sentToken = csrfToken
+    let response = await send(sentToken)
+
+    if (response.status === 403) {
+      const refreshedToken = await refreshCsrfToken()
+
+      if (refreshedToken && refreshedToken !== sentToken) {
+        response = await send(refreshedToken)
+      }
+    }
+
+    if (!response.ok && response.status !== 401) {
+      console.error(`The server did not end the session (${response.status})`)
+    }
   } catch (error) {
     console.error('Failed to end the session on the server', error)
   } finally {

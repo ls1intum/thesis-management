@@ -6,6 +6,8 @@ import {
   fetchSession,
   getCsrfToken,
   recoverSession,
+  refreshCsrfToken,
+  setCsrfToken,
   setSessionRecoveryHandler,
 } from '@/core/auth/session'
 
@@ -111,5 +113,30 @@ describe('session', () => {
 
     setSessionRecoveryHandler(() => Promise.reject(new Error('keycloak down')))
     expect(await recoverSession()).toBe(false)
+  })
+
+  it('deleteSession resyncs a stale CSRF token and retries the logout once', async () => {
+    setCsrfToken('stale')
+    fetchMock
+      .mockResolvedValueOnce(new Response(null, { status: 403 }))
+      .mockResolvedValueOnce(jsonResponse(200, { csrfToken: 'fresh', expiresAt: 'x' }))
+      .mockResolvedValueOnce(new Response(null, { status: 204 }))
+
+    await deleteSession()
+
+    expect(fetchMock).toHaveBeenCalledTimes(3)
+    expect(fetchMock.mock.calls[0][1].headers['X-CSRF-Token']).toBe('stale')
+    expect(fetchMock.mock.calls[2][1].method).toBe('DELETE')
+    expect(fetchMock.mock.calls[2][1].headers['X-CSRF-Token']).toBe('fresh')
+    expect(getCsrfToken()).toBeUndefined()
+  })
+
+  it('refreshCsrfToken shares one request between concurrent callers', async () => {
+    fetchMock.mockResolvedValue(jsonResponse(200, { csrfToken: 'shared', expiresAt: 'x' }))
+
+    const tokens = await Promise.all([refreshCsrfToken(), refreshCsrfToken(), refreshCsrfToken()])
+
+    expect(tokens).toEqual(['shared', 'shared', 'shared'])
+    expect(fetchMock).toHaveBeenCalledTimes(1)
   })
 })

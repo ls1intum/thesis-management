@@ -214,8 +214,11 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
    * login page) and, if so, exchanges that login for an application session.
    */
   const establishSessionFromKeycloak = async (): Promise<boolean> => {
-    // The silent check waits for Keycloak and would hang if it is down, so look first.
-    if (!(await isKeycloakReachable())) {
+    // The silent check waits for Keycloak and would hang if it is down, so look first. Not when the browser has
+    // just come back from the Keycloak login: its one-time code must be exchanged now, and Keycloak just answered.
+    const returningFromLogin = /[?#&]code=/.test(`${window.location.search}${window.location.hash}`)
+
+    if (!returningFromLogin && !(await isKeycloakReachable())) {
       throw new Error('Keycloak is unreachable')
     }
 
@@ -262,6 +265,16 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
   }
 
   const recoverSessionSilently = async (): Promise<boolean> => {
+    // Another tab may have signed in again already: the session cookie is shared, so adopt that session
+    // instead of logging in a second time (which would replace it and desynchronise the other tabs).
+    const existingSession = await fetchSession().catch(() => undefined)
+
+    if (existingSession) {
+      updateHasSession(true)
+
+      return true
+    }
+
     clearSessionState()
 
     try {
