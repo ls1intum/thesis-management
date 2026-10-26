@@ -29,15 +29,6 @@ spring:
       max-request-size: 25MB
   security:
     oauth2:
-      client:
-        registration:
-          keycloak:
-            client-id: ${KEYCLOAK_CLIENT_ID:thesis-management-app}
-            scope: openid
-        provider:
-          keycloak:
-            issuer-uri: ${KEYCLOAK_HOST:http://localhost:8181}/realms/${KEYCLOAK_REALM_NAME:thesis-management}
-            user-name-attribute: preferred_username
       resourceserver:
         jwt:
           jwk-set-uri: ${KEYCLOAK_HOST:http://localhost:8181}/realms/${KEYCLOAK_REALM_NAME:thesis-management}/protocol/openid-connect/certs
