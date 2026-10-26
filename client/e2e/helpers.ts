@@ -278,6 +278,12 @@ export { KEYCLOAK_ORIGIN, SERVER_ORIGIN }
  * with a session of their own that no other test shares.
  */
 export async function loginWithApi(context: BrowserContext, username: string) {
+  // A fresh context has none of the "do not ask again" flags that the shared login setup stores, so the passkey
+  // and profile picture prompts would open modals that cover the page under test.
+  await context.addInitScript((keys: string[]) => {
+    keys.forEach((key) => localStorage.setItem(key, 'true'))
+  }, ['passkey_prompt_disabled', 'profile_picture_prompt_disabled'])
+
   const tokenResponse = await context.request.post(
     `${KEYCLOAK_ORIGIN}/realms/thesis-management/protocol/openid-connect/token`,
     {
