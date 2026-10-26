@@ -34,6 +34,19 @@ describe('doRequest', () => {
     expect(init.headers.Authorization).toBeUndefined()
   })
 
+  it('treats an empty 204 response as a success without a body', async () => {
+    fetchMock.mockResolvedValue(new Response(null, { status: 204 }))
+
+    const result = await doRequest('/v2/auth/sessions/abc', {
+      method: 'DELETE',
+      requiresAuth: true,
+    })
+
+    expect(result.ok).toBe(true)
+    expect(result.status).toBe(204)
+    expect(result.data).toBeUndefined()
+  })
+
   it('adds the CSRF token only on unsafe methods', async () => {
     fetchMock.mockResolvedValue(jsonResponse(200))
 

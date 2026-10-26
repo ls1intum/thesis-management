@@ -17,6 +17,21 @@ export interface IRequestOptions {
   controller?: AbortController
 }
 
+/** Reads the body of a successful response; responses without content (204) have none. */
+const readSuccessBody = async (result: Response, responseType?: ResponseType) => {
+  if (responseType === 'blob') {
+    return result.blob()
+  }
+
+  if (result.status === 204 || result.status === 205) {
+    return undefined
+  }
+
+  const text = await result.text()
+
+  return text ? JSON.parse(text) : undefined
+}
+
 export function doRequest<T>(url: string, options: IRequestOptions): Promise<ApiResponse<T>>
 export function doRequest<T>(
   url: string,
@@ -66,7 +81,7 @@ export function doRequest<T>(
       return {
         ok: true,
         status: result.status,
-        data: options.responseType === 'blob' ? await result.blob() : await result.json(),
+        data: await readSuccessBody(result, options.responseType),
       }
     } else {
       let errorMessage: string | undefined = undefined
