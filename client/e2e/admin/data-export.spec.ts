@@ -37,6 +37,11 @@ test.describe('Data Export - Student', () => {
 
     const requestButton = page.getByRole('button', { name: /Request Data Export/i })
 
+    // Wait until the status has loaded: either the request button or the latest export is shown
+    await expect(requestButton.or(page.getByText('Latest Export')).first()).toBeVisible({
+      timeout: 30_000,
+    })
+
     // The button may be disabled if the student already requested an export (from prior E2E runs)
     const isEnabled = await requestButton.isEnabled({ timeout: 5_000 }).catch(() => false)
     if (!isEnabled) {

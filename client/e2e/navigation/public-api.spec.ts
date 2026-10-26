@@ -190,19 +190,21 @@ test.describe('Authenticated avatar loading', () => {
       fs.writeFileSync(avatarPath, png)
     }
 
-    // Track all avatar requests and whether they include the session cookie.
-    // With the fix (doRequest + blob URLs), avatar fetches are sent with credentials.
-    // Without the fix (plain <img src>), a cross-origin image request carries no cookie,
-    // causing 404 for non-publicly-visible users on production.
-    const avatarRequests: { url: string; hasAuth: boolean }[] = []
+    // Track the avatar requests. With the fix (doRequest + blob URLs), avatars are fetched with credentials,
+    // so the browser sends the session cookie. Without the fix (plain <img src>), a cross-origin image
+    // request carries no cookie, causing 404 for non-publicly-visible users on production.
+    // Only finished requests count (a request React cancels before it is sent never carries the cookie), and
+    // a response served from the browser cache is not sent at all, so some requests show no cookie.
+    const avatarRequests: { url: string; resourceType: string; hasCookie: boolean }[] = []
     const pendingChecks: Promise<void>[] = []
-    page.on('request', (request) => {
+    page.on('requestfinished', (request) => {
       if (request.url().includes('/v2/avatars/')) {
         pendingChecks.push(
           request.allHeaders().then((headers) => {
             avatarRequests.push({
               url: request.url(),
-              hasAuth: /(?:^|;\s*)(?:__Host-)?sid=/.test(headers['cookie'] ?? ''),
+              resourceType: request.resourceType(),
+              hasCookie: /(?:^|;\s*)(?:__Host-)?sid=/.test(headers['cookie'] ?? ''),
             })
           }),
         )
@@ -228,13 +230,18 @@ test.describe('Authenticated avatar loading', () => {
     // Verify at least one avatar request was made (the student has an avatar)
     expect(avatarRequests.length, 'Expected at least one avatar request').toBeGreaterThan(0)
 
-    // Verify ALL avatar requests include the session cookie.
-    // Without the fix, <img src> sends unauthenticated requests.
-    const unauthenticated = avatarRequests.filter((r) => !r.hasAuth)
+    // No avatar may be loaded as a plain <img> (unauthenticated) request ...
+    const plainImageRequests = avatarRequests.filter((r) => r.resourceType === 'image')
     expect(
-      unauthenticated,
-      `Avatar requests without the session cookie: ${JSON.stringify(unauthenticated)}`,
+      plainImageRequests,
+      `Avatar requests loaded as plain images: ${JSON.stringify(plainImageRequests)}`,
     ).toHaveLength(0)
+
+    // ... and the authenticated fetches carry the session cookie.
+    expect(
+      avatarRequests.some((r) => r.hasCookie),
+      `No avatar request carried the session cookie: ${JSON.stringify(avatarRequests)}`,
+    ).toBe(true)
   })
 })
 
