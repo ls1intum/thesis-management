@@ -107,7 +107,7 @@ public class UserSessionAuthenticationFilter extends OncePerRequestFilter {
 
 		String universityId = authenticated.user().getUniversityId();
 		SecurityContext context = SecurityContextHolder.createEmptyContext();
-		context.setAuthentication(new UserSessionAuthentication(universityId, session, authorities.forUser(universityId)));
+		context.setAuthentication(new UserSessionAuthentication(universityId, session, authorities.forUser(authenticated.user())));
 		SecurityContextHolder.setContext(context);
 
 		chain.doFilter(request, response);
