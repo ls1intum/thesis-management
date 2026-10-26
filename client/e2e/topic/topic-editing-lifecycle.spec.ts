@@ -103,12 +103,11 @@ test.describe.serial('Topic 7 - Edit then Close', () => {
     const reasonInput = dialog.getByRole('combobox', { name: 'Reason' })
     await expect(reasonInput).toBeVisible()
 
-    // Select a reason (Mantine Select renders options in a portal, so we use keyboard navigation)
+    // The form preselects the first reason, and a Mantine Select clears its value when the selected option is picked
+    // again. Pick a different option; Mantine renders them in a portal, so look them up on the page.
     await reasonInput.click()
-    // Wait for the dropdown options to appear
     await expect(page.getByRole('option').first()).toBeVisible({ timeout: 5_000 })
-    await page.keyboard.press('ArrowDown')
-    await page.keyboard.press('Enter')
+    await page.getByRole('option').nth(1).click()
     await expect(reasonInput).not.toHaveValue('')
 
     // Verify "Notify Students" checkbox is present and check it
