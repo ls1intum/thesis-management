@@ -15,6 +15,80 @@ servers:
     description: ''
     x-last-modified: 1720732807668
 paths:
+  /auth/session:
+    summary: Application-owned session
+    post:
+      tags: []
+      summary: Exchange a Keycloak access token for a session
+      description: |-
+        The only endpoint that accepts a Keycloak access token (Authorization: Bearer). Creates or updates the user from the token's claims and
+        creates a session. The session cookie is returned in Set-Cookie (HttpOnly, SameSite=Strict); the CSRF token in the body.
+      security:
+        - KeycloakBearer: []
+      responses:
+        '200':
+          description: Session created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionInfo'
+        '401':
+          description: Missing or invalid Keycloak token
+        '403':
+          description: The account was deleted
+    get:
+      tags: []
+      summary: Current session
+      description: Returns the CSRF token of the current session. 401 if the browser has no valid session.
+      responses:
+        '200':
+          description: Valid session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionInfo'
+        '401':
+          description: No valid session
+    delete:
+      tags: []
+      summary: End the current session (logout)
+      description: Requires the X-CSRF-Token header.
+      responses:
+        '204':
+          description: Session ended and cookie cleared
+  /auth/sessions:
+    summary: Active sessions of the authenticated user
+    get:
+      tags: []
+      summary: List the caller's active sessions
+      responses:
+        '200':
+          description: Active sessions, oldest first
+    delete:
+      tags: []
+      summary: End all sessions except the current one
+      description: Requires the X-CSRF-Token header.
+      responses:
+        '204':
+          description: Other sessions ended
+  /auth/sessions/{id}:
+    summary: One session of the authenticated user
+    delete:
+      tags: []
+      summary: End one of the caller's sessions
+      description: Requires the X-CSRF-Token header.
+      parameters:
+        - name: id
+          schema:
+            format: uuid
+            type: string
+          in: path
+          required: true
+      responses:
+        '204':
+          description: Session ended
+        '404':
+          description: No such session of the caller
   /dashboard:
     summary: ''
     get:
@@ -1246,15 +1320,31 @@ paths:
     x-last-modified: 1720738336407
 components:
   securitySchemes:
-    JWTAuth:
+    SessionCookie:
+      type: apiKey
+      in: cookie
+      name: __Host-sid
+      description: |-
+        Session cookie set by POST /auth/session (named sid over plain http in local development). Requests that
+        change state must also send the CSRF token from the session response in the X-CSRF-Token header.
+        Authorization: Bearer headers are ignored on every endpoint except POST /auth/session.
+    KeycloakBearer:
       scheme: bearer
       bearerFormat: JWT
       type: http
       description: |-
+        Keycloak access token, accepted only by POST /auth/session.
         Example: 
         > Authorization: Bearer <token>
-      x-last-modified: 1720729705844
   schemas:
+    SessionInfo:
+      type: object
+      properties:
+        csrfToken:
+          type: string
+        expiresAt:
+          type: string
+          format: date-time
     Application:
       type: object
       properties:
@@ -1353,5 +1443,5 @@ components:
   responses: {}
   parameters: {}
 security:
-  - JWTAuth: []
+  - SessionCookie: []
 tags: []

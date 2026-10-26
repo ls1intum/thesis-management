@@ -3,9 +3,203 @@
 		"_postman_id": "c8ea09ff-2ad1-4e64-94ea-832de8c02372",
 		"name": "Thesis Management API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "18638253"
+		"_exporter_id": "18638253",
+		"description": "Authentication: Bearer tokens are only accepted by POST {{baseUrl}}/auth/session. Run 'Authentication / Create Session' first (it signs in through Keycloak and stores the session cookie in Postman's cookie jar and the CSRF token in the collection variable csrfToken); all other requests are authenticated by that cookie, and the collection's pre-request script adds the X-CSRF-Token header to state-changing requests. Sessions expire after 4 hours of inactivity or 24 hours in total; run Create Session again."
 	},
 	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Create Session",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/auth/session",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"session"
+							]
+						},
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "refreshTokenUrl",
+									"value": "{{baseKeycloakUrl}}/realms/{{realm}}/protocol/openid-connect/token",
+									"type": "string"
+								},
+								{
+									"key": "state",
+									"value": "{{$guid}}",
+									"type": "string"
+								},
+								{
+									"key": "scope",
+									"value": "openid",
+									"type": "string"
+								},
+								{
+									"key": "clientId",
+									"value": "{{clientId}}",
+									"type": "string"
+								},
+								{
+									"key": "accessTokenUrl",
+									"value": "{{baseKeycloakUrl}}/realms/{{realm}}/protocol/openid-connect/token",
+									"type": "string"
+								},
+								{
+									"key": "authUrl",
+									"value": "{{baseKeycloakUrl}}/realms/{{realm}}/protocol/openid-connect/auth",
+									"type": "string"
+								},
+								{
+									"key": "redirect_uri",
+									"value": "{{redirectUrl}}",
+									"type": "string"
+								},
+								{
+									"key": "grant_type",
+									"value": "authorization_code_with_pkce",
+									"type": "string"
+								},
+								{
+									"key": "tokenName",
+									"value": "Keycloak Token",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"description": "Exchanges the Keycloak access token (collection OAuth2 settings) for a session. Returns the CSRF token and sets the session cookie."
+					},
+					"response": [],
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"const body = pm.response.json();",
+									"pm.collectionVariables.set('csrfToken', body.csrfToken);"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Get Session",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/auth/session",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"session"
+							]
+						},
+						"description": "Returns the CSRF token of the current session, or 401 if there is none."
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/auth/session",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"session"
+							]
+						},
+						"description": "Ends the current session."
+					},
+					"response": []
+				},
+				{
+					"name": "List Sessions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/auth/sessions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"sessions"
+							]
+						},
+						"description": "Lists the caller's active sessions (devices and browsers)."
+					},
+					"response": []
+				},
+				{
+					"name": "End Session",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/auth/sessions/:sessionId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"sessions",
+								":sessionId"
+							],
+							"variable": [
+								{
+									"key": "sessionId",
+									"value": ""
+								}
+							]
+						},
+						"description": "Ends one of the caller's sessions by its id."
+					},
+					"response": []
+				},
+				{
+					"name": "End Other Sessions",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/auth/sessions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"sessions"
+							]
+						},
+						"description": "Ends all sessions of the caller except the current one."
+					},
+					"response": []
+				}
+			]
+		},
 		{
 			"name": "Applications",
 			"item": [
@@ -3844,59 +4038,7 @@
 		}
 	],
 	"auth": {
-		"type": "oauth2",
-		"oauth2": [
-			{
-				"key": "refreshTokenUrl",
-				"value": "{{baseKeycloakUrl}}/realms/{{realm}}/protocol/openid-connect/token",
-				"type": "string"
-			},
-			{
-				"key": "state",
-				"value": "{{$guid}}",
-				"type": "string"
-			},
-			{
-				"key": "scope",
-				"value": "openid",
-				"type": "string"
-			},
-			{
-				"key": "clientId",
-				"value": "{{clientId}}",
-				"type": "string"
-			},
-			{
-				"key": "accessTokenUrl",
-				"value": "{{baseKeycloakUrl}}/realms/{{realm}}/protocol/openid-connect/token",
-				"type": "string"
-			},
-			{
-				"key": "authUrl",
-				"value": "{{baseKeycloakUrl}}/realms/{{realm}}/protocol/openid-connect/auth",
-				"type": "string"
-			},
-			{
-				"key": "redirect_uri",
-				"value": "{{redirectUrl}}",
-				"type": "string"
-			},
-			{
-				"key": "grant_type",
-				"value": "authorization_code_with_pkce",
-				"type": "string"
-			},
-			{
-				"key": "tokenName",
-				"value": "Keycloak Token",
-				"type": "string"
-			},
-			{
-				"key": "addTokenTo",
-				"value": "header",
-				"type": "string"
-			}
-		]
+		"type": "noauth"
 	},
 	"event": [
 		{
@@ -3904,7 +4046,13 @@
 			"script": {
 				"type": "text/javascript",
 				"exec": [
-					""
+					"// State-changing requests that carry the session cookie must also send the CSRF token handed out with the session.",
+					"const isSessionCreation = pm.request.method === 'POST' && pm.request.url.getPath().endsWith('/auth/session');",
+					"const isSafe = ['GET', 'HEAD', 'OPTIONS'].includes(pm.request.method);",
+					"const csrfToken = pm.collectionVariables.get('csrfToken');",
+					"if (!isSafe && !isSessionCreation && csrfToken) {",
+					"    pm.request.headers.upsert({ key: 'X-CSRF-Token', value: csrfToken });",
+					"}"
 				]
 			}
 		},
@@ -3949,6 +4097,10 @@
 		},
 		{
 			"key": "refreshToken",
+			"value": ""
+		},
+		{
+			"key": "csrfToken",
 			"value": ""
 		}
 	]

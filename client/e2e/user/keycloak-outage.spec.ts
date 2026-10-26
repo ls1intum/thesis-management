@@ -34,7 +34,8 @@ test.describe('Keycloak outage', () => {
     await expect(page.getByRole('tab', { name: 'My Information' })).toBeVisible({ timeout: 15_000 })
     await expect(page.locator('header').getByText('Login')).toBeHidden()
 
-    // the page never asked Keycloak to authenticate or refresh anything
+    // The page never asked Keycloak to authenticate or refresh anything. (It may still probe Keycloak's
+    // passkey health endpoint on load; that only decides whether passkey buttons are shown.)
     expect(
       keycloakRequests.filter((url) => url.includes('/protocol/openid-connect/')),
     ).toStrictEqual([])

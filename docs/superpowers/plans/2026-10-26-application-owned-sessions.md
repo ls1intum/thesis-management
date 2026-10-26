@@ -21,7 +21,7 @@
 - Authorization stays in `user_groups`, read on every request; no roles in the session row.
 - No `@Transactional` on service methods (project rule); `@Modifying` repository methods carry their own.
 - Server code: tabs, Javadoc on public classes/methods like the surrounding code, checkstyle clean (`./gradlew checkstyleMain checkstyleTest`), `./gradlew spotlessApply`.
-- Never write "frontend" or "backend" in code, comments, docs or commit messages. Commit messages: project style, no AI attribution lines (the user's global instruction overrides any default).
+- Never use the project's two banned tier words (see the user's saved vocabulary rule) in code, comments, docs or commit messages; say "user interface", "web app", "application server" or the component name instead. Commit messages: project style, no AI attribution lines (the user's global instruction overrides any default).
 - Do not stage the unrelated working-tree change in `.gitignore`; stage files explicitly.
 
 ## Review Focus
