@@ -214,6 +214,11 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
    * login page) and, if so, exchanges that login for an application session.
    */
   const establishSessionFromKeycloak = async (): Promise<boolean> => {
+    // The silent check waits for Keycloak and would hang if it is down, so look first.
+    if (!(await isKeycloakReachable())) {
+      throw new Error('Keycloak is unreachable')
+    }
+
     const authenticated = await initKeycloak({ checkSso: true })
     const keycloakToken = getKeycloak()?.token
 

@@ -75,6 +75,19 @@ export async function createSession(keycloakToken: string): Promise<ISessionInfo
   return readSessionInfo(response)
 }
 
+/**
+ * Asks the server for the current CSRF token. Used when a request was rejected as a CSRF failure: the
+ * session cookie is shared by all tabs, so another tab may have replaced the session (and its token).
+ * Resolves to `undefined` when there is no session or the server cannot be reached.
+ */
+export async function refreshCsrfToken(): Promise<string | undefined> {
+  try {
+    return (await fetchSession())?.csrfToken
+  } catch {
+    return undefined
+  }
+}
+
 /** Ends the session on the server. Local state is cleared even if the server cannot be reached. */
 export async function deleteSession(): Promise<void> {
   try {

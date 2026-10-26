@@ -70,7 +70,7 @@ const renderProvider = () =>
 describe('AuthenticationProvider startup', () => {
   beforeEach(() => {
     localStorage.clear()
-    vi.mocked(keycloakClient.isKeycloakReachable).mockResolvedValue(false)
+    vi.mocked(keycloakClient.isKeycloakReachable).mockResolvedValue(true)
   })
 
   afterEach(() => {
@@ -198,5 +198,17 @@ describe('AuthenticationProvider startup', () => {
     await waitFor(() => expect(session.deleteSession).toHaveBeenCalled())
     expect(keycloakClient.ensureSsoChecked).not.toHaveBeenCalled()
     expect(screen.getByTestId('authenticated').textContent).toBe('false')
+  })
+
+  it('finishes loading without waiting for Keycloak when it is unreachable and there is no session', async () => {
+    vi.mocked(session.fetchSession).mockResolvedValue(undefined)
+    vi.mocked(keycloakClient.isKeycloakReachable).mockResolvedValue(false)
+
+    renderProvider()
+
+    await waitFor(() => expect(screen.getByTestId('ready').textContent).toBe('true'))
+    expect(screen.getByTestId('authenticated').textContent).toBe('false')
+    expect(keycloakClient.initKeycloak).not.toHaveBeenCalled()
+    expect(showSimpleError).toHaveBeenCalled()
   })
 })

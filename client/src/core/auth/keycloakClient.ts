@@ -9,6 +9,27 @@ import { GLOBAL_CONFIG } from '@/core/config/global'
 let keycloak: Keycloak | undefined
 let ssoCheck: Promise<boolean> | undefined
 
+// keycloak-js settles the silent check only when the hidden iframe posts a message; if Keycloak is down
+// the iframe never does, so the check must be bounded.
+const SSO_CHECK_TIMEOUT_MS = 10_000
+
+function withTimeout<T>(promise: Promise<T>, timeoutMs: number, message: string): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error(message)), timeoutMs)
+
+    promise.then(
+      (value) => {
+        clearTimeout(timer)
+        resolve(value)
+      },
+      (error: unknown) => {
+        clearTimeout(timer)
+        reject(error instanceof Error ? error : new Error(String(error)))
+      },
+    )
+  })
+}
+
 const createKeycloakClient = () =>
   new Keycloak({
     realm: GLOBAL_CONFIG.keycloak.realm,
@@ -26,13 +47,21 @@ export function initKeycloak(options: { checkSso: boolean }): Promise<boolean> {
   const client = createKeycloakClient()
   keycloak = client
 
-  const initialised = client.init({
+  const initialisation = client.init({
     ...(options.checkSso ? { onLoad: 'check-sso' as const } : {}),
     pkceMethod: 'S256',
     silentCheckSsoRedirectUri: `${window.location.origin}/silent-check-sso.html`,
     silentCheckSsoFallback: false,
     checkLoginIframe: false,
   })
+
+  const initialised = options.checkSso
+    ? withTimeout(
+        initialisation,
+        SSO_CHECK_TIMEOUT_MS,
+        'Keycloak did not answer the silent login check',
+      )
+    : initialisation
 
   if (options.checkSso) {
     // remember the outcome so that features asking later do not repeat the silent check
@@ -62,15 +91,35 @@ export async function ensureKeycloak(): Promise<Keycloak> {
 }
 
 /**
- * Cheap reachability probe used before redirecting to Keycloak for logout, so that an unavailable
- * Keycloak does not turn a logout into a browser error page.
+ * Cheap reachability probe, used before anything redirects to Keycloak or waits for it, so that an unavailable
+ * Keycloak does not turn a login or logout into a browser error page or an endless wait.
+ *
+ * It asks for the realm's discovery document. A readable answer must be a success: a proxy in front of an
+ * unavailable Keycloak typically answers 502/503. If the browser may not read the answer (cross-origin rules),
+ * a network-level check is the best available signal.
  */
 export async function isKeycloakReachable(timeoutMs = 2000): Promise<boolean> {
+  const url = `${GLOBAL_CONFIG.keycloak.host.replace(/\/+$/, '')}/realms/${encodeURIComponent(GLOBAL_CONFIG.keycloak.realm)}/.well-known/openid-configuration`
+
+  const probe = async (init: RequestInit) => {
+    const controller = new AbortController()
+    const timer = setTimeout(() => controller.abort(), timeoutMs)
+
+    try {
+      return await fetch(url, { ...init, cache: 'no-store', signal: controller.signal })
+    } finally {
+      clearTimeout(timer)
+    }
+  }
+
   try {
-    await fetch(
-      `${GLOBAL_CONFIG.keycloak.host.replace(/\/+$/, '')}/realms/${encodeURIComponent(GLOBAL_CONFIG.keycloak.realm)}/.well-known/openid-configuration`,
-      { mode: 'no-cors', cache: 'no-store', signal: AbortSignal.timeout(timeoutMs) },
-    )
+    return (await probe({})).ok
+  } catch {
+    // blocked by cross-origin rules or not reachable: tell the two apart with a request whose answer is opaque
+  }
+
+  try {
+    await probe({ mode: 'no-cors' })
 
     return true
   } catch {
