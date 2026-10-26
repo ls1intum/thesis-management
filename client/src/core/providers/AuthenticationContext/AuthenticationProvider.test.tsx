@@ -9,6 +9,7 @@ import { showSimpleError } from '@/core/utils/notification'
 vi.mock('@/core/auth/keycloakClient', () => ({
   initKeycloak: vi.fn(),
   ensureKeycloak: vi.fn(),
+  ensureSsoChecked: vi.fn(),
   getKeycloak: vi.fn(),
   isKeycloakReachable: vi.fn(),
 }))

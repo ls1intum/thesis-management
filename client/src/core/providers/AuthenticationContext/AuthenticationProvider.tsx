@@ -16,6 +16,7 @@ import type { ILightResearchGroup } from '@/core/group/requests/responses/resear
 import { getDeviceName, getPasskeyErrorMessage } from '@/core/utils/passkey'
 import {
   ensureKeycloak,
+  ensureSsoChecked,
   getKeycloak,
   initKeycloak,
   isKeycloakReachable,
@@ -234,7 +235,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
     let client = getKeycloak()
 
     if (!client?.authenticated) {
-      await initKeycloak({ checkSso: true })
+      await ensureSsoChecked()
       client = getKeycloak()
     }
 

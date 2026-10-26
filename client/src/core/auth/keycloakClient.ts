@@ -7,6 +7,7 @@ import { GLOBAL_CONFIG } from '@/core/config/global'
  * persisted. A page load that already has an application session does not start Keycloak at all.
  */
 let keycloak: Keycloak | undefined
+let ssoCheck: Promise<boolean> | undefined
 
 const createKeycloakClient = () =>
   new Keycloak({
@@ -21,17 +22,34 @@ export const getKeycloak = () => keycloak
  * Creates a fresh keycloak-js client and initialises it. With `checkSso` a silent single-sign-on
  * check is made. Resolves to whether the browser currently holds a Keycloak session.
  */
-export async function initKeycloak(options: { checkSso: boolean }): Promise<boolean> {
+export function initKeycloak(options: { checkSso: boolean }): Promise<boolean> {
   const client = createKeycloakClient()
   keycloak = client
 
-  return client.init({
+  const initialised = client.init({
     ...(options.checkSso ? { onLoad: 'check-sso' as const } : {}),
     pkceMethod: 'S256',
     silentCheckSsoRedirectUri: `${window.location.origin}/silent-check-sso.html`,
     silentCheckSsoFallback: false,
     checkLoginIframe: false,
   })
+
+  if (options.checkSso) {
+    // remember the outcome so that features asking later do not repeat the silent check
+    ssoCheck = initialised
+    initialised.catch(() => {
+      if (ssoCheck === initialised) {
+        ssoCheck = undefined
+      }
+    })
+  }
+
+  return initialised
+}
+
+/** Runs the silent single-sign-on check once per page load, however many features ask for it. */
+export function ensureSsoChecked(): Promise<boolean> {
+  return ssoCheck ?? initKeycloak({ checkSso: true })
 }
 
 /** Returns the initialised client, creating it (without a silent SSO check) if none exists yet. */
