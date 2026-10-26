@@ -225,8 +225,12 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
     return true
   }
 
-  /** Returns a valid Keycloak access token for Keycloak-native features, signing in again if needed. */
-  const getKeycloakAccessToken = async (): Promise<string> => {
+  /**
+   * Returns a valid Keycloak access token for Keycloak-native features. When the browser has no
+   * Keycloak session, `allowLoginRedirect` decides whether to send the user to the login page
+   * (explicit actions) or to fail (passive reads such as listing passkeys).
+   */
+  const getKeycloakAccessToken = async (allowLoginRedirect: boolean): Promise<string> => {
     let client = getKeycloak()
 
     if (!client?.authenticated) {
@@ -235,7 +239,9 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
     }
 
     if (!client?.authenticated) {
-      await client?.login({ redirectUri: window.location.href })
+      if (allowLoginRedirect) {
+        await client?.login({ redirectUri: window.location.href })
+      }
 
       throw new Error('Please sign in again to continue')
     }
@@ -533,7 +539,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
 
           let accessToken: string
           try {
-            accessToken = await getKeycloakAccessToken()
+            accessToken = await getKeycloakAccessToken(true)
           } catch (error) {
             throw new Error(
               await getPasskeyErrorMessage(
@@ -623,7 +629,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
 
           let accessToken: string
           try {
-            accessToken = await getKeycloakAccessToken()
+            accessToken = await getKeycloakAccessToken(false)
           } catch {
             throw new Error('Failed to refresh the access token for credential listing')
           }
@@ -656,7 +662,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
 
           let accessToken: string
           try {
-            accessToken = await getKeycloakAccessToken()
+            accessToken = await getKeycloakAccessToken(true)
           } catch {
             throw new Error('Failed to refresh the access token for credential deletion')
           }
